@@ -38,3 +38,7 @@ stream  warmFeed               T                346.29535675     1e-4
 kpi     preheater              vf_out           0                1e-4
 utility column01               cooling.condenser.carried 1                1e-4
 utility preheater              heating.-.carried 1                1e-4
+boundary global                 H_feeds_kW       9456.24190295    1e-4
+boundary global                 Q_boundary_kW    1846.42629755    1e-4
+boundary global                 H_products_kW    11301.1814122    1e-4
+boundary global                 residual_kW      1.48678830579    1e-4

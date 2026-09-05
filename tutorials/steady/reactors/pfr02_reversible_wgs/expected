@@ -14,3 +14,6 @@ kpi     wgs                    V_R              0.002            1e-4
 kpi     wgs                    X_limiting       0.841431577908   1e-4
 kpi     wgs                    dHrxn_kJ_per_mol -38.9410707335   1e-4
 kpi     wgs                    tau_s            268.807168191    1e-4
+boundary global                 H_feeds_kW       -46.229778536    1e-4
+boundary global                 Q_boundary_kW    -4.55086758232   1e-4
+boundary global                 H_products_kW    -50.7806461183   1e-4

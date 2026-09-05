@@ -101,3 +101,7 @@ kpi     F1                     K_CO2            54.1616845107    1e-4
 kpi     F1                     K_H2             332.592091645    1e-4
 kpi     F1                     K_water          0.00736635270072 1e-4
 utility HX1                    heating.-.carried 1                1e-4
+boundary global                 H_feeds_kW       -4817.68074076   1e-4
+boundary global                 Q_boundary_kW    -1.89530097704   1e-4
+boundary global                 H_products_kW    -4821.8147791    1e-4
+boundary global                 residual_kW      2.23873736188    1e-4

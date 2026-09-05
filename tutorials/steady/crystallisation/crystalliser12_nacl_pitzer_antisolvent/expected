@@ -28,3 +28,6 @@ stream  brine                  T                298.15           1e-4
 stream  crystals               T                298.15           1e-4
 stream  ethanol                T                298.15           1e-4
 stream  motherLiquor           T                298.15           1e-4
+boundary global                 H_feeds_kW       -12927.0710213   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -12927.0710213   1e-4

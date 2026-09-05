@@ -20,3 +20,6 @@ kpi     reformer               y_water          0.270316268672   1e-4
 stream  feed                   T                1000             1e-4
 stream  syngas                 T                1000             1e-4
 kpi     reformer               Q_kW             57.7812038582    1e-4
+boundary global                 H_feeds_kW       -189.873475619   1e-4
+boundary global                 Q_boundary_kW    57.7812038582    1e-4
+boundary global                 H_products_kW    -132.092271761   1e-4

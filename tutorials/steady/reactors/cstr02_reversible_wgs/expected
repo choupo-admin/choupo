@@ -17,3 +17,6 @@ stream  feed                   T                600              1e-4
 stream  products               T                600              1e-4
 kpi     wgs                    Q_kW             -4.55086962331   1e-4
 kpi     wgs                    minus_r_CO       116.865549344    1e-4
+boundary global                 H_feeds_kW       -46.229778536    1e-4
+boundary global                 Q_boundary_kW    -4.55086962331   1e-4
+boundary global                 H_products_kW    -50.7806481593   1e-4

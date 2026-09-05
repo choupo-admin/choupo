@@ -52,3 +52,6 @@ stream  feed                   T                350              1e-4
 stream  stageLiquid            T                367.339784921    1e-4
 stream  stageMix               T                483.325341357    1e-4
 stream  stageVapour            T                367.339784921    1e-4
+boundary global                 H_feeds_kW       -7646.90904065   1e-4
+boundary global                 Q_boundary_kW    47.9929440396    1e-4
+boundary global                 H_products_kW    -7598.91609631   1e-4

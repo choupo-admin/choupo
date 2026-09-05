@@ -50,3 +50,7 @@ kpi     dryer                  v_particle       0.708470341874   1e-4
 kpi     dryer                  water_activity   0.0626058190889  1e-4
 kpi     dryer                  water_residual   0.000147518927006 1e-4
 kpi     dryer                  wheelSpeed       20000            1e-4
+boundary global                 H_feeds_kW       -265.683731381   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -263.025339218   1e-4
+boundary global                 residual_kW      -2.65839216221   1e-4

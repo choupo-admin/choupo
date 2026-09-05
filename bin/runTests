@@ -509,6 +509,16 @@ get_equipment() {
         }'
 }
 
+#  boundary global <field> -- one number of the plant-boundary first law the
+#  energyBalance report decided (`globalEnergyBoundary`, ONE object on ONE
+#  line, emitted 2026-09-05 so the GUI draws the engine's ledger instead of a
+#  sum of its own).  `name` is the fixed word `global`: there is one boundary.
+get_boundary() {
+    local out="$1" key="$3"
+    printf '%s\n' "$out" | grep -m1 '"globalEnergyBoundary": {' \
+        | grep -oE "\"$key\": *-?[0-9][0-9.eE+-]*" | sed -E 's/^"[^"]*": *//'
+}
+
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
     #  The CLAIM (published vs self-recorded) is a different column and does
@@ -520,6 +530,7 @@ get_any() {
     elif [ "$kind" = csv     ]; then get_csv     "${5:-}" "$name" "$key"
     elif [ "$kind" = verdict ]; then get_verdict "$out" "$name" "$key"
     elif [ "$kind" = equipment ]; then get_equipment "$out" "$name" "$key"
+    elif [ "$kind" = boundary ]; then get_boundary "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
 
@@ -800,7 +811,15 @@ else
             pdir="$(dirname "$(dirname "$cd")")"
             if [ -f "$pdir/.known-broken" ]; then CASES+=("$pdir"); continue; fi
             [ -f "$pdir/expected" ] || continue
-            grep -q "children" "$pdir/system/flowsheetDict" 2>/dev/null && continue
+            #  A FRACTAL case (top flowsheetDict carrying `children`) used to
+            #  be skipped here too, on the reason that "its curate-vs-simulate
+            #  sector dispatch is still an open call".  That call was settled
+            #  2026-06-08 (flattenNode: one flat solver problem), and the
+            #  exclusion outlived it by three months -- so the flagship
+            #  ChemicalPlantTutorial shipped a golden the full suite never
+            #  compared (only gates that run the case themselves saw it),
+            #  found 2026-09-05 when Vitor asked.  A golden is a promise to
+            #  check; a case that ships one is in the walk, fractal or flat.
             CASES+=("$pdir")
         done < <(find "tutorials/plant" -path '*/system/controlDict' 2>/dev/null | sort)
     fi
@@ -987,6 +1006,24 @@ auto_generate() {
                         }
                 }
             }'
+        #  the plant-boundary first law (2026-09-05).  The three TERMS are
+        #  pinned at the relative tolerance; the RESIDUAL is their difference
+        #  and is pinned only when it is a number and not round-off -- a
+        #  1e-13 kW residual on a 1 MW flash pinned at 1e-4 RELATIVE is the
+        #  column13 nanowatt lesson (a golden over cancellation noise).  The
+        #  threshold lives HERE and nowhere else: `check_energy_boundary_pinned`
+        #  requires the three terms and checks any residual row it finds.
+        gbl=$(printf '%s\n' "$out" | grep -m1 '"globalEnergyBoundary": {')
+        if [ -n "$gbl" ]; then
+            for gk in H_feeds_kW Q_boundary_kW H_products_kW; do
+                gv=$(printf '%s\n' "$gbl" | grep -oE "\"$gk\": *-?[0-9][0-9.eE+-]*" | sed -E 's/^"[^"]*": *//')
+                [ -n "$gv" ] && printf 'boundary %-20s %-16s %-18s %s\n' global "$gk" "$gv" "$reltol"
+            done
+            gv=$(printf '%s\n' "$gbl" | grep -oE '"residual_kW": *-?[0-9][0-9.eE+-]*' | sed -E 's/^"[^"]*": *//')
+            if [ -n "$gv" ] && awk -v v="$gv" 'BEGIN{ if (v<0) v=-v; exit (v >= 1e-3) ? 0 : 1 }'; then
+                printf 'boundary %-20s %-16s %-18s %s\n' global residual_kW "$gv" "$reltol"
+            fi
+        fi
         #  overlay AADs: how far each model sits from the MEASURED dataset.
         #  These are the numbers a `compare_*` case exists to publish, and
         #  until 2026-08-12 auto-generation walked straight past them, so the
@@ -1182,7 +1219,7 @@ if [ -n "$RECORD" ]; then
                     #  is the second home for the list of kinds, and the check
                     #  loop below has no such list at all, so the two cannot
                     #  be kept honest by reading one of them.
-                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment) ;; *) continue;; esac
+                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary) ;; *) continue;; esac
                     if ! awk -v k="$gkind" -v n="$gname" -v y="$gkey" \
                          '$1==k && $2==n && $3==y {found=1} END{exit !found}' "$exp"; then
                         printf '%-7s %-22s %-16s %-16s %s\n' \
@@ -4600,6 +4637,20 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/equippin.$$
+
+    # Energy-boundary pinned gate (2026-09-05): the plant-boundary first law
+    # the energyBalance report decides now travels on the result as
+    # `globalEnergyBoundary`; every steady case that publishes it pins its
+    # three terms, and every pinned row is still published.
+    if "$ROOT/bin/curate/check_energy_boundary_pinned.py" > /tmp/ebpin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "energy-boundary-pinned-gate" "$(tail -1 /tmp/ebpin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_energy_boundary_pinned.py)\n" "energy-boundary-pinned-gate"
+        cat /tmp/ebpin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ebpin.$$
 
     # Mass-closure gate (2026-09-04): no steady case may ship a plant that does
     # not conserve mass, and a case that DECLARES a balance report and never

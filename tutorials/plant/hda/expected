@@ -62,3 +62,7 @@ stream  TolueneRecycle         T                320              1e-4
 stream  hpLiquid               T                320              1e-4
 stream  hpVapor                T                320              1e-4
 stream  mixed                  T                330              1e-4
+boundary global                 H_feeds_kW       284.307970808    1e-4
+boundary global                 Q_boundary_kW    -2636.97973945   1e-4
+boundary global                 H_products_kW    -650.760557071   1e-4
+boundary global                 residual_kW      -1701.91121157   1e-4

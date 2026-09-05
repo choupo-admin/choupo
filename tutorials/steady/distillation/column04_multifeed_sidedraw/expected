@@ -31,3 +31,7 @@ stream  feed                   T                365              1e-4
 stream  feed2                  F                0.0166666666667  1e-4
 stream  feed2                  T                390              1e-4
 stream  intermediateCut        T                379.771154596    1e-4
+boundary global                 H_feeds_kW       1016.44420531    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    1095.13808128    1e-4
+boundary global                 residual_kW      -78.6938759725   1e-4

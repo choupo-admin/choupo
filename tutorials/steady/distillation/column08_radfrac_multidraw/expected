@@ -33,3 +33,7 @@ stream  drawC4                 T                378.81701421     1e-4
 stream  drawC5                 T                422.542495804    1e-4
 stream  feed1                  T                290              1e-4
 stream  feed2                  T                320              1e-4
+boundary global                 H_feeds_kW       -8790.44935655   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -7898.46928088   1e-4
+boundary global                 residual_kW      -891.980075677   1e-4

@@ -17,3 +17,6 @@ kpi     flash04                K_benzene        1.65136809583    1e-4
 kpi     flash04                K_toluene        0.673501829388   1e-4
 kpi     flash04                Q                0                1e-4
 kpi     flash04                Q_kW             0                1e-4
+boundary global                 H_feeds_kW       1325.77625708    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    1325.77625708    1e-4

@@ -55,6 +55,7 @@ The kinds today, each naming WHERE and nothing else:
 | `csv` | one cell of a case-emitted CSV | file | `<rowIdx>:<colName>` |
 | `verdict` | `operationResults[].curation` | op | field (compares a WORD) |
 | `equipment` | `equipment[]` | unit | `basis` (a WORD, `exact`, whitespace→`_`) · `values.<key>` · `cost.<purchased\|bareModule\|totalModule>` |
+| `boundary` | `globalEnergyBoundary` (one object) | the fixed word `global` | `H_feeds_kW` · `Q_boundary_kW` · `H_products_kW` · `residual_kW` (generated only when ≥ 1 W in magnitude — a smaller one is round-off, the column13 lesson; the threshold has ONE home, the generator) |
 
 The `claim` column (`anchor`) stays orthogonal: the kind says where the number
 is read from, the claim says what the row asserts about it.  One column per

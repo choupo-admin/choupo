@@ -62,6 +62,7 @@ import type { CaseFiles } from "../case/types.js";
 import type { JsonDict } from "../dict/index.js";
 import type { PairOrigin, ValidityDomain, PromotionOverride,
   EquipmentItem,
+  GlobalEnergyBoundary,
 } from "./SolverAdapter.js";
 import type {
   AadRecord,
@@ -160,7 +161,7 @@ export class WasmAdapter implements SolverAdapter {
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
         const { displayLog, streams, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
-          utilityAllocation, computed, timeline, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
+          utilityAllocation, globalEnergyBoundary, computed, timeline, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
@@ -171,6 +172,7 @@ export class WasmAdapter implements SolverAdapter {
         if (unitSectors && Object.keys(unitSectors).length > 0) result.unitSectors = unitSectors;
         if (equipment && equipment.length > 0) result.equipment = equipment;
         if (utilityAllocation && utilityAllocation.length > 0) result.utilityAllocation = utilityAllocation;
+        if (globalEnergyBoundary) result.globalEnergyBoundary = globalEnergyBoundary;
         if (computed && Object.keys(computed).length > 0) result.computed = computed;
         if (timeline && timeline.length > 0) result.timeline = timeline;
         if (advisories && advisories.length > 0) result.advisories = advisories;
@@ -345,6 +347,7 @@ export function extractStructured(log: string,
   kpis: { [unitName: string]: { [k: string]: number } };
   /** Per-duty utility allocation rows (which utility, kg/s, MW, EUR/h). */
   utilityAllocation?: UtilityAllocationRow[];
+  globalEnergyBoundary?: GlobalEnergyBoundary;
   /** Post-processing computed expressions (variables{} `compute` entries:
    *  W_net, eta_thermal,...), evaluated by the solver after the run. */
   computed?: { [name: string]: number };
@@ -568,6 +571,9 @@ export function extractStructured(log: string,
 ...(parsed.utilityAllocation
       ? { utilityAllocation: parsed.utilityAllocation }
     : {}),
+...(parsed.globalEnergyBoundary
+      ? { globalEnergyBoundary: parsed.globalEnergyBoundary }
+    : {}),
 ...(computed ? { computed } : {}),
 ...(parsed.timeline && parsed.timeline.length > 0
       ? { timeline: parsed.timeline }
@@ -677,6 +683,7 @@ interface ResultPayload {
     Tdew: number[];
   };
   utilityAllocation?: UtilityAllocationRow[];
+  globalEnergyBoundary?: GlobalEnergyBoundary;
   //  DERIVED FROM THE CONTRACT, never re-spelled.  This used to list the row's
   //  fields a SECOND time -- so the shape lived in three places (the
   //  `OperationResult` interface, this parsed shape, and the rebuild below)

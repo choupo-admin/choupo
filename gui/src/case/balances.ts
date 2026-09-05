@@ -124,121 +124,13 @@ export function massBalance(
   return { components, visibleComponents, inPerComp, outPerComp, inSum, outSum, closureErr };
 }
 
-// ---- energy balance --------------------------------------------------------
-
-export interface EnergyBalance {
-  /** Flow enthalpy of boundary streams in / out [kW]. */
-  inKw: number;
-  outKw: number;
-  /** Net energy ADDED to the process by the units [kW], signed (+ into the
-   *  process): heat duties (utility heating − cooling) and shaft work
-   *  (compressor/pump + ; turbine −).  These are what close the balance:
-   *  a flash, heater, column or compressor changes the stream enthalpy by
-   *  exactly this much. */
-  heatKw: number;
-  workKw: number;
-  /** Δ = (inKw + heatKw + workKw) − outKw [kW].  ≈ 0 for a converged case —
-   *  the FULL first-law closure (streams + duties + work), NOT streams alone. */
-  delta: number;
-  /** |Δ| / (inKw + heatKw + workKw): the relative energy-closure error. */
-  closureErr: number;
-  /** Boundary streams skipped because the solver emitted no enthalpy. */
-  skipped: number;
-  /** Components genuinely PRESENT in a boundary stream that have NO enthalpy
-   *  datum (no standardThermochemistry, no aqueous-ion reference) -- the reason the
-   *  balance is REFUSED, named for the student.  Empty when the solver did not
-   *  report them (older run log) even though `skipped` > 0; the refusal still
-   *  holds, just unnamed.  Deduplicated, in first-seen order. */
-  missingComponents: string[];
-}
-
-/** Total flow enthalpy of one stream [kW].  Prefer the solver's H_kW (which
- *  counts the crystalline phase s[] a solid product carries -- F*H misses it);
- *  fall back to F [kmol/s] · H [J/mol] for fluid-only streams. */
-export function enthalpyKw(s: StreamResult): number | null {
-  if (s.H_kW !== undefined) return s.H_kW;
-  if (s.H === undefined) return null;
-  return s.F * s.H;
-}
-
-/** First-law balance over the plant boundary: boundary-stream enthalpy PLUS the
- *  energy the units add (heat duties + shaft work).  `added` is summed by the
- *  caller from the run's utilityAllocation (heat) + kpis (W_shaft); omitting it
- *  reproduces the old streams-only Δ. */
-export function energyBalance(
-  streams: StreamResult[],
-  added?: { heatKw?: number; workKw?: number },
-): EnergyBalance {
-  const feeds = streams.filter((s) => s.role === "feed" && !s.observed);
-  const products = streams.filter((s) => s.role === "product");
-  let inKw = 0, outKw = 0, skipped = 0;
-  // A boundary stream with mass but no enthalpy is missing-DATA, not
-  // composition (composition never nulls a stream's enthalpy -- the kernel
-  // skips absent species internally).  Name the offending component(s) so the
-  // refusal points the student at the curation gap (the no-silent-crutch
-  // credo), instead of a bare "N streams skipped".
-  const missingSet = new Set<string>();
-  const noteSkip = (s: StreamResult) => {
-    if ((s.F_mass ?? 0) > 1e-15) {
-      skipped++;
-      for (const c of s.H_missing ?? []) missingSet.add(c);
-    }
-  };
-  for (const s of feeds) {
-    const h = enthalpyKw(s);
-    if (h === null) noteSkip(s); else inKw += h;
-  }
-  for (const s of products) {
-    const h = enthalpyKw(s);
-    if (h === null) noteSkip(s); else outKw += h;
-  }
-  const heatKw = added?.heatKw ?? 0;
-  const workKw = added?.workKw ?? 0;
-  const delta = (inKw + heatKw + workKw) - outKw;
-  const denom = Math.abs(inKw + heatKw + workKw);
-  const closureErr = denom > 1e-9 ? Math.abs(delta) / denom : 0;
-  return {
-    inKw, outKw, heatKw, workKw, delta, closureErr, skipped,
-    missingComponents: [...missingSet],
-  };
-}
-
-/** Net energy the units ADD to the streams [kW], from a run result.  Heat from
- *  the utility allocation (explicit heating/cooling tier); shaft work from the
- *  rotating-unit kpis (W_shaft_kW is already signed: + compressor/pump, − turbine). */
-export function unitEnergy(
-  utilityAllocation: { tier: string; duty_kW: number }[] | undefined,
-  kpis: { [unit: string]: { [k: string]: number } } | undefined,
-): { heatAddedKw: number; heatRemovedKw: number; workKw: number } {
-  // SPLIT the duties by direction, not netted: heat ADDED (reboilers, heaters)
-  // belongs on the INPUTS side, heat REMOVED (condensers, coolers -- the "cold")
-  // on the OUTPUTS side.  Netting them onto one side is physically wrong and
-  // makes the bars unreadable; split, and both columns close at the same level.
-  let heatAddedKw = 0, heatRemovedKw = 0;
-  for (const a of utilityAllocation ?? []) {
-    const d = Math.abs(a.duty_kW);
-    if (a.tier === "heating") heatAddedKw += d;
-    else if (a.tier === "cooling") heatRemovedKw += d;
-  }
-  let workKw = 0;
-  // Reactor / heat-transfer DUTIES from the unit kpis (Q_kW), signed: a duty is
-  // heat crossing the plant boundary that no NAMED utility absorbed.  Q_kW > 0
-  // = heat ADDED (endothermic reactor, heater) -> INPUTS; Q_kW < 0 = heat
-  // REMOVED (exothermic reactor -- e.g. the water-gas-shift Gibbs reactor at a
-  // held T, coolers) -> OUTPUTS.  Only counted when NO utility allocation was
-  // resolved, so a case that DID assign utilities (its duties already in
-  // utilityAllocation) is never double-counted; a standalone reactor whose heat
-  // was not routed to a utility (gibbs01) now closes.
-  const noUtilities = (utilityAllocation?.length ?? 0) === 0;
-  let workKw2 = 0;
-  for (const k of Object.values(kpis ?? {})) {
-    if (typeof k.W_shaft_kW === "number") workKw2 += k.W_shaft_kW;
-    else if (typeof k.W_shaft === "number") workKw2 += k.W_shaft / 1000.0;
-    if (noUtilities && typeof k.Q_kW === "number") {
-      if (k.Q_kW > 0) heatAddedKw += k.Q_kW;
-      else heatRemovedKw += -k.Q_kW;
-    }
-  }
-  workKw = workKw2;
-  return { heatAddedKw, heatRemovedKw, workKw };
-}
+//  THE FIRST LAW IS NOT COMPUTED HERE (2026-09-05).  This file used to carry
+//  `energyBalance()` + `unitEnergy()`, a GUI-side sum of boundary-stream
+//  enthalpies plus utility-ALLOCATED duties.  It was a second home for a
+//  balance the engine's energyBalance report already decides, and the two
+//  disagreed on the flagship plant by an order of magnitude (372.5 kW shown
+//  against 34.4 kW in the engine's own ledger) because a cooling duty no
+//  utility served never entered the GUI's sum.  The engine now stamps its
+//  ledger on the result as `globalEnergyBoundary`; the GUI draws it and, when
+//  it is absent, says the report did not run.  Nothing here may grow a
+//  replacement.

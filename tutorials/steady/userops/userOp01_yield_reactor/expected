@@ -9,3 +9,7 @@ kpi     reactor                X                0.8                1e-4
 kpi     reactor                converted_kmol_h 0.8                1e-4
 stream  feed                   T                320              1e-4
 stream  out                    T                320              1e-4
+boundary global                 H_feeds_kW       -51.7413268856   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -48.028683133    1e-4
+boundary global                 residual_kW      -3.71264375254   1e-4

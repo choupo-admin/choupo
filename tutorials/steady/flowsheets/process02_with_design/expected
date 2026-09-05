@@ -73,3 +73,6 @@ equipment reactor                cost.bareModule  16032.6189526    1e-4
 equipment reactor                cost.totalModule 18918.490364     1e-4
 equipment heater                 basis            A_=_Q/(U*LMTD)_with_U_and_LMTD_author-set exact
 equipment reactor                basis            V_R_=_declared_operation.V_R_(pass-through);_D_and_H_from_L_over_D;_t_wall_ASME_thin-wall exact
+boundary global                 H_feeds_kW       -100.850423911   1e-4
+boundary global                 Q_boundary_kW    -0.918980957977  1e-4
+boundary global                 H_products_kW    -101.769401974   1e-4

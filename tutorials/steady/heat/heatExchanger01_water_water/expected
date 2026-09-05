@@ -24,3 +24,6 @@ stream  coldOut                T                337.268504628    1e-4
 stream  hot                    T                360              1e-4
 stream  hotOut                 T                315.277794446    1e-4
 utility hx                     heating.-.carried 1                1e-4
+boundary global                 H_feeds_kW       -17367.950467    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -17367.950467    1e-4

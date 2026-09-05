@@ -25,3 +25,7 @@ stream  cleanGas               T                308.88795701     1e-4
 stream  gasFeed                T                298.15           1e-4
 stream  richLiquid             T                315.417418114    1e-4
 stream  solvent                T                298.15           1e-4
+boundary global                 H_feeds_kW       -12061.0107667   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -12033.0269181   1e-4
+boundary global                 residual_kW      -27.9838485895   1e-4

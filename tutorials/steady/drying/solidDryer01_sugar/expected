@@ -17,3 +17,7 @@ stream  drySolid               T                347.5126791      1e-4
 stream  hotAir                 T                420              1e-4
 stream  humidExhaust           T                347.5126791      1e-4
 stream  wetSolid               T                330              1e-4
+boundary global                 H_feeds_kW       -9044.22305614   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -9416.87923055   1e-4
+boundary global                 residual_kW      372.656174412    1e-4

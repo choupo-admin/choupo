@@ -149,3 +149,7 @@ kpi     FL4                    K_nOctane        0.027960908962   1e-4
 kpi     FL4                    K_nPentane       0.890379812536   1e-4
 kpi     FL4                    K_nUndecane      0.000946247551132 1e-4
 kpi     FL4                    K_propane        10.3352395233    1e-4
+boundary global                 H_feeds_kW       -1589255.047     1e-4
+boundary global                 Q_boundary_kW    -570360.883296   1e-4
+boundary global                 H_products_kW    -1610296.81759   1e-4
+boundary global                 residual_kW      -549319.112703   1e-4

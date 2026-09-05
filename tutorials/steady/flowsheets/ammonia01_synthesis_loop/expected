@@ -70,3 +70,6 @@ stream  rawLiquid              T                250              1e-4
 stream  reacted                T                700              1e-4
 stream  recycle                T                250              1e-4
 stream  unreactedGas           T                250              1e-4
+boundary global                 H_feeds_kW       0.0131074108111  1e-4
+boundary global                 Q_boundary_kW    -9.07481066607   1e-4
+boundary global                 H_products_kW    -9.0617033404    1e-4

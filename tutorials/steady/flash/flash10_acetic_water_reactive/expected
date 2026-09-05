@@ -21,3 +21,6 @@ kpi     flash01                phaseSet         0                1e-4
 stream  feed                   T                368.15           1e-4
 stream  liquid                 T                368.15           1e-4
 stream  vapor                  T                368.15           1e-4
+boundary global                 H_feeds_kW       -8045.87238987   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -8045.87238987   1e-4

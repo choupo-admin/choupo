@@ -31,3 +31,7 @@ stream  acidFeed               T                293              1e-4
 stream  bottoms                T                363.229492539    1e-4
 stream  distillate             T                329.991387092    1e-4
 stream  feed                   T                293              1e-4
+boundary global                 H_feeds_kW       -6.08609160764   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -6.24988180396   1e-4
+boundary global                 residual_kW      0.163790196317   1e-4

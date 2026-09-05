@@ -37,3 +37,6 @@ stream  feed                   T                350              1e-4
 stream  liqProd                T                365              1e-4
 stream  reactorOut             T                350              1e-4
 stream  vapProd                T                365              1e-4
+boundary global                 H_feeds_kW       -100.850423911   1e-4
+boundary global                 Q_boundary_kW    3.10260584581    1e-4
+boundary global                 H_products_kW    -97.7478181284   1e-4

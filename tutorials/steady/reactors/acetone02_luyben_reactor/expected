@@ -25,3 +25,7 @@ kpi     reactor                Q_reaction_kW    470.487527672    1e-4
 kpi     reactor                Q_sensible_kW    369.77570698     1e-4
 stream  Rin                    T                389              1e-4
 stream  Rout                   T                623              1e-4
+boundary global                 H_feeds_kW       -4599.21460708   1e-4
+boundary global                 Q_boundary_kW    840.263234652    1e-4
+boundary global                 H_products_kW    -3547.38114744   1e-4
+boundary global                 residual_kW      -211.570224988   1e-4

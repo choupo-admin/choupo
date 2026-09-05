@@ -28,3 +28,7 @@ utility tower                  cooling.coolingWater.eur_h 0.0740628622432    1e-
 stream  bottoms                T                370.531146763    1e-4
 stream  distillate             T                355.393273713    1e-4
 stream  feed                   T                360              1e-4
+boundary global                 H_feeds_kW       -7691.47586112   1e-4
+boundary global                 Q_boundary_kW    20.4840094204    1e-4
+boundary global                 H_products_kW    -7683.78643709   1e-4
+boundary global                 residual_kW      12.7945853927    1e-4

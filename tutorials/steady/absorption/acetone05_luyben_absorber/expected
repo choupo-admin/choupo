@@ -31,3 +31,7 @@ stream  bottoms                T                321.205142041    1e-4
 stream  gasIn                  T                318              1e-4
 stream  offgas                 T                326.737585634    1e-4
 stream  washWater              T                320              1e-4
+boundary global                 H_feeds_kW       -1926.17138724   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -1885.59440643   1e-4
+boundary global                 residual_kW      -40.5769808056   1e-4

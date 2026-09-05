@@ -2,3 +2,6 @@
 # kind   name      key         expected        reltol
 stream  feed                   F                0.0277777777778    1e-4
 stream  feed                   T                370              1e-4
+boundary global                 H_feeds_kW       0                1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    0                1e-4

@@ -20,3 +20,6 @@ utility freezer01              cooling.-.unserved 1                  1e-4
 stream  feed                   T                298.15           1e-4
 stream  liquor                 T                258.15           1e-4
 stream  vent                   T                258.15           1e-4
+boundary global                 H_feeds_kW       -7931.98052773   1e-4
+boundary global                 Q_boundary_kW    -167.415991569   1e-4
+boundary global                 H_products_kW    -8099.3965193    1e-4

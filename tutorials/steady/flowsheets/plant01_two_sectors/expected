@@ -16,3 +16,6 @@ stream  bottoms                T                378              1e-4
 stream  feed                   T                365              1e-4
 stream  vaporA                 T                370              1e-4
 stream  vaporB                 T                378              1e-4
+boundary global                 H_feeds_kW       1154.14146199    1e-4
+boundary global                 Q_boundary_kW    913.697946819    1e-4
+boundary global                 H_products_kW    2067.83937611    1e-4

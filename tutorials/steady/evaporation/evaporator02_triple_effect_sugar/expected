@@ -106,3 +106,7 @@ stream  cond2                  T                368.720127028    1e-4
 stream  cond3                  T                352.480058192    1e-4
 stream  feed                   T                295              1e-4
 stream  utilitySteam_200kPa    T                392.1781136      1e-4
+boundary global                 H_feeds_kW       -132109.319944   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -125946.817994   1e-4
+boundary global                 residual_kW      -6162.50194992   1e-4

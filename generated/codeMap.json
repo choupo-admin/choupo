@@ -589,6 +589,9 @@
   "GibbsReactor": [
    "src/unitOperations/reactor/GibbsReactor.H"
   ],
+  "GlobalEnergyBoundary": [
+   "src/result/SimulationResult.H"
+  ],
   "Gnielinski": [
    "src/unitOperations/heatTransfer/htc/Gnielinski.H"
   ],

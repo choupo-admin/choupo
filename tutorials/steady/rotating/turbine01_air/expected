@@ -19,3 +19,6 @@ kpi     turbine01              ratio            7.59133551538      1e-4
 stream  exhaust                T                582.935206477    1e-4
 stream  hotAir                 T                900              1e-4
 kpi     turbine01              W_shaft_kW       -10              1e-4
+boundary global                 H_feeds_kW       18.4565442424    1e-4
+boundary global                 Q_boundary_kW    -10              1e-4
+boundary global                 H_products_kW    8.45654463905    1e-4

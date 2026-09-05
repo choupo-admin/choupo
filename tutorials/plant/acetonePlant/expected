@@ -170,3 +170,7 @@ stream  offgas                 T                333.458796058    1e-4
 stream  ventGas                T                325              1e-4
 stream  washWater              T                320              1e-4
 stream  waterProduct           T                365.480608374    1e-4
+boundary global                 H_feeds_kW       -5862.58875482   1e-4
+boundary global                 Q_boundary_kW    667.321580138    1e-4
+boundary global                 H_products_kW    -5236.98782168   1e-4
+boundary global                 residual_kW      41.7206469955    1e-4

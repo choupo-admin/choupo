@@ -43,3 +43,7 @@ stream  waterProduct           water            0.987071195419     1e-4
 stream  B1                     T                370              1e-4
 stream  ipaRecycle             T                355.832266988    1e-4
 stream  waterProduct           T                366.174785539    1e-4
+boundary global                 H_feeds_kW       -3178.8730559    1e-4
+boundary global                 Q_boundary_kW    -6.03582201604   1e-4
+boundary global                 H_products_kW    -3184.91884593   1e-4
+boundary global                 residual_kW      0.00996801918336 1e-4

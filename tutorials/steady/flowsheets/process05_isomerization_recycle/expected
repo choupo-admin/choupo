@@ -49,3 +49,7 @@ kpi     mixer                  n_in             2                1e-4
 kpi     mixer                  vf               0                1e-4
 kpi     reactor                Q_kW             4.54350908223    1e-4
 kpi     reactor                minus_r_neoPentane 67.9494240888    1e-4
+boundary global                 H_feeds_kW       -51.7413268856   1e-4
+boundary global                 Q_boundary_kW    6.74153186808    1e-4
+boundary global                 H_products_kW    -45.1345837886   1e-4
+boundary global                 residual_kW      0.134788771118   1e-4

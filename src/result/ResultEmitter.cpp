@@ -954,6 +954,24 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     //   exactly the columns of reports/economics/cashFlow.csv.  Emitted ONLY
     //   when an economics postDict ran (economics.present); omitted otherwise
     //   so every non-economics case's JSON is byte-for-byte unchanged.
+    //  The plant-boundary first law, ONE LINE so the golden extractor and the
+    //  GUI read the same object (see SimulationResult::GlobalEnergyBoundary).
+    if (r.globalEnergyBoundary.present)
+    {
+        const auto& gb = r.globalEnergyBoundary;
+        os << ",\n  \"globalEnergyBoundary\": { "
+           << "\"H_feeds_kW\": "    << num(gb.H_feeds_kW)
+           << ", \"Q_boundary_kW\": " << num(gb.Q_boundary_kW)
+           << ", \"H_products_kW\": " << num(gb.H_products_kW)
+           << ", \"residual_kW\": "   << num(gb.residual_kW)
+           << ", \"residual_pct\": "  << num(gb.residual_pct)
+           << ", \"n_feeds\": "       << gb.n_feeds
+           << ", \"n_products\": "    << gb.n_products
+           << ", \"n_gap\": "         << gb.n_gap
+           << ", \"noBoundary\": "    << (gb.noBoundary ? "true" : "false")
+           << ", \"datum\": "         << esc(gb.datum)
+           << " }";
+    }
     if (r.economics.present)
     {
         const auto& e = r.economics;

@@ -35,3 +35,7 @@ stream  Rin                    T                389              1e-4
 stream  Rout                   T                623              1e-4
 stream  flashGas               T                318              1e-4
 stream  flashLiquid            T                318              1e-4
+boundary global                 H_feeds_kW       -4599.21460708   1e-4
+boundary global                 Q_boundary_kW    -127.349716123   1e-4
+boundary global                 H_products_kW    -4124.38837922   1e-4
+boundary global                 residual_kW      -602.175943979   1e-4

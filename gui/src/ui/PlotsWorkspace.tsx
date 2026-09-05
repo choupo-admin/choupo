@@ -70,7 +70,6 @@ import { popOutCurrentPlot } from "./plotPopOut.js";
 import { ConvergencePlot } from "./plotting/ConvergencePlot.js";
 import { EnergyBalancePlot } from "./plotting/EnergyBalancePlot.js";
 import { MassBalancePlot } from "./plotting/MassBalancePlot.js";
-import { unitEnergy } from "../case/balances.js";
 import { CampaignBalancePlot } from "./plotting/CampaignBalancePlot.js";
 import { DynamicBalancePlot } from "./plotting/DynamicBalancePlot.js";
 import { ElementBalancePlot } from "./plotting/ElementBalancePlot.js";
@@ -389,8 +388,13 @@ export function PlotsWorkspace() {
           flowUnit={prefs.flow}
         />
       );
+      //  The boundary heat+work bar is the ENGINE's Q_boundary (its energy
+      //  report's ledger), never a sum of utility-allocated duties -- that sum
+      //  missed every cooling duty no utility served (2026-09-05).
       case "energyBalance": return <EnergyBalancePlot streams={result.streams}
-        added={unitEnergy(result.utilityAllocation, result.kpis)} />;
+        added={result.globalEnergyBoundary
+          ? { qBoundaryKw: result.globalEnergyBoundary.Q_boundary_kW }
+          : undefined} />;
       case "txy":         return result.txy         ? <TxyPlot txy={result.txy} /> : null;
       case "profile":     return result.profiles
         ? <ProfilePlot profiles={result.profiles}

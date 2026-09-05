@@ -40,3 +40,7 @@ stream  warmedProcess          T                342.706826825    1e-4
 kpi     preheater              vf_out           0                1e-4
 utility column01               cooling.condenser.carried 1                1e-4
 utility preheater              heating.-.carried 1                1e-4
+boundary global                 H_feeds_kW       23575.3250035    1e-4
+boundary global                 Q_boundary_kW    1279.30480005    1e-4
+boundary global                 H_products_kW    24222.6736556    1e-4
+boundary global                 residual_kW      631.956147952    1e-4

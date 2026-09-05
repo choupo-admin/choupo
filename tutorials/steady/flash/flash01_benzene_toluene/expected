@@ -17,3 +17,6 @@ kpi     flash01                P                100000           1e-4
 kpi     flash01                Q                0                1e-4
 kpi     flash01                Q_kW             0                1e-4
 kpi     flash01                phaseSet         0                1e-4
+boundary global                 H_feeds_kW       1325.77625708    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    1325.77625708    1e-4

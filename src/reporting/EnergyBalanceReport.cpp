@@ -47,6 +47,15 @@ License
 
 namespace Choupo {
 
+//  THE ENTHALPY DATUM, named once.  Every stream enthalpy this report sums is
+//  on the elements/formation datum (dHf(elements, 25 C, 1 bar) inside each
+//  species' h), which is WHY no heat-of-reaction term appears in the first law
+//  it prints: the reaction heat lives inside the stream enthalpies.  The word
+//  goes to the per-unit CSV's `reference` column and onto the result block so
+//  the GUI can say it beside the numbers (Vitor, 2026-09-05: students read
+//  -20.9 MW "in" and see an absurdity, not a datum).
+static const std::string kEnthalpyDatum = "elements";
+
 void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
 {
     const scalar Tref = dict->lookupScalarOrDefault("Tref", 298.15);
@@ -378,7 +387,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         f << r.name << "," << std::fixed << std::setprecision(4)
           << r.hIn << "," << r.hOut << "," << r.dH << ","
           << r.items << "," << std::setprecision(2) << r.closure << ","
-          << "elements" << ",";
+          << kEnthalpyDatum << ",";
         if (le)
             f << std::fixed << std::setprecision(4)
               << le->raw_kW << "," << le->step_kW << ","
@@ -564,7 +573,10 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     //     carries NO process stream, so it is skipped (it would double-count);
     //   * the evaporator's utility-medium `duty_kW` stays excluded (its chest
     //     steam is already a feed in Σ H(feeds)), exactly as it is per-unit.
-    // This is the single number the GUI shows green and the regression asserts on.
+    // This is the single number the GUI shows green (read off the result's
+    // `globalEnergyBoundary` block since 2026-09-05 -- it used to re-derive Q
+    // from the utility allocation and disagree) and the `boundary` golden
+    // rows pin.
     {
         scalar Hfeeds = 0.0, Hprods = 0.0;
         const scalar Qext = globalQext;
@@ -711,6 +723,23 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         // phantom 21 %).  Any OPEN plant has a real denom and is unaffected.
         const bool   noBoundary = (nFeed == 0 && nProd == 0 && denom <= 1.0e-6);
         const scalar relPct   = noBoundary ? 0.0 : 100.0 * residual / denom;
+
+        //  The ledger travels on the result, so the GUI draws THIS and never a
+        //  sum of its own (2026-09-05 -- see SimulationResult.H).
+        {
+            auto& gb = ctx.result.globalEnergyBoundary;
+            gb.present       = true;
+            gb.H_feeds_kW    = Hfeeds;
+            gb.Q_boundary_kW = Qext;
+            gb.H_products_kW = Hprods;
+            gb.residual_kW   = residual;
+            gb.residual_pct  = relPct;
+            gb.n_feeds       = nFeed;
+            gb.n_products    = nProd;
+            gb.n_gap         = nGap;
+            gb.noBoundary    = noBoundary;
+            gb.datum         = kEnthalpyDatum;
+        }
 
         const std::filesystem::path gpath = dir / "globalEnergyBoundary.csv";
         std::ofstream g(gpath);

@@ -9,3 +9,6 @@ kpi     splitter               overhead_fraction 0.515              1e-4
 stream  bottoms                T                360              1e-4
 stream  feed                   T                360              1e-4
 stream  overhead               T                360              1e-4
+boundary global                 H_feeds_kW       1108.06863474    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    1108.06863474    1e-4

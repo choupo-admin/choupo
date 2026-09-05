@@ -28,3 +28,7 @@ kpi     cryst                  yield            0.280589039381   1e-4
 stream  feed                   T                353.15           1e-4
 stream  magma                  T                293.15           1e-4
 kpi     cryst                  Q_kW             -269.5761605     1e-4
+kpi     cryst                  V_magma          5                1e-4
+boundary global                 H_feeds_kW       -15772.7563326   1e-4
+boundary global                 Q_boundary_kW    -269.5761605     1e-4
+boundary global                 H_products_kW    -16042.3324931   1e-4

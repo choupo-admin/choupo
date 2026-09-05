@@ -39,7 +39,7 @@ import { Fragment } from "react";
 import { Box, Button, Group, ScrollArea, SimpleGrid, Stack, Table, Text } from "@mantine/core";
 
 import { useStore } from "../state/store.js";
-import { massBalance, energyBalance, unitEnergy } from "../case/balances.js";
+import { massBalance } from "../case/balances.js";
 import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
 import type { UnitSpec } from "../case/types.js";
 import type { EquipmentItem } from "../adapters/SolverAdapter.js";
@@ -82,14 +82,12 @@ export function ReportsWorkspace() {
   const totalEurh = utils.reduce((a, [, g]) => a + g.eurh, 0);
 
   const mb = massBalance(runResult.streams, runResult.componentMolarMass);
-  const { heatAddedKw, heatRemovedKw, workKw } = unitEnergy(
-    runResult.utilityAllocation,
-    runResult.kpis,
-  );
-  const eb = energyBalance(runResult.streams, {
-    heatKw: heatAddedKw - heatRemovedKw,
-    workKw,
-  });
+  // The first law is the ENGINE's: its energyBalance report decides which
+  // duties are boundary heat, which are internal and which are already a
+  // feed, and stamps the ledger on the result.  The GUI draws it.  (It used
+  // to sum utility-allocated duties itself and missed every cooling duty no
+  // utility served -- 372.5 kW against the engine's 34.4 kW on the flagship.)
+  const gb = runResult.globalEnergyBoundary;
   const kgh = (kgs: number) => (kgs * 3600);
 
   const econ = runResult.economics;
@@ -191,33 +189,46 @@ export function ReportsWorkspace() {
 
         {/* ---- Global energy balance ------------------------------------ */}
         <Section title="Global energy balance" subtitle="flow enthalpy at the boundary (kW)">
-          {eb.skipped > 0 ? (
+          {!gb ? (
+            <Text size="sm" c="dimmed" ff="monospace">
+              The energyBalance report did not run for this case (or refused) — see
+              the run log. The GUI computes no balance of its own.
+            </Text>
+          ) : gb.n_gap > 0 ? (
             // No-silent-crutch: a boundary stream carries a component with no
-            // enthalpy datum, so the elements-datum balance cannot close.  We
-            // REFUSE to present a number (no misleading Δ / bar) and name the
-            // culprit -- the mass balance above is unaffected.
+            // enthalpy datum, so the elements-datum balance cannot close.  The
+            // engine skipped it and said so; we present no number in its place.
             <Text size="sm" c="red.5" ff="monospace">
-              REFUSED — the energy balance cannot close: {eb.skipped} boundary
-              stream(s) have no enthalpy datum
-              {eb.missingComponents.length > 0
-                ? ` (${eb.missingComponents.join(", ")})`
-                : ""}
-              . Add a standardThermochemistry{" "}block to the component .dat, or configure
+              REFUSED — the energy balance cannot close: {gb.n_gap} boundary
+              stream(s) have no enthalpy datum (named in the run log). Add a
+              standardThermochemistry{" "}block to the component .dat, or configure
               it as an electrolyte. The mass balance is unaffected.
+            </Text>
+          ) : gb.noBoundary ? (
+            <Text size="sm" c="dimmed" ff="monospace">
+              Closed loop — nothing crosses the plant boundary, so the first law
+              over it is vacuous; the per-unit balances carry the verification.
             </Text>
           ) : (
             <>
               <Table withTableBorder fz="sm" ff="monospace" w="auto">
                 <Table.Tbody>
-                  <Table.Tr><Table.Td>Stream enthalpy IN</Table.Td><Table.Td ta="right">{eb.inKw.toFixed(1)} kW</Table.Td></Table.Tr>
-                  {Math.abs(eb.heatKw) > 0.05 && <Table.Tr><Table.Td>Net heat into process</Table.Td><Table.Td ta="right">{eb.heatKw.toFixed(1)} kW</Table.Td></Table.Tr>}
-                  {Math.abs(eb.workKw) > 0.05 && <Table.Tr><Table.Td>Net shaft work into process</Table.Td><Table.Td ta="right">{eb.workKw.toFixed(1)} kW</Table.Td></Table.Tr>}
-                  <Table.Tr><Table.Td>Stream enthalpy OUT</Table.Td><Table.Td ta="right">{eb.outKw.toFixed(1)} kW</Table.Td></Table.Tr>
-                  <Table.Tr><Table.Td><strong>First-law residual</strong></Table.Td><Table.Td ta="right"><strong>{eb.delta.toFixed(3)} kW</strong></Table.Td></Table.Tr>
+                  <Table.Tr><Table.Td>Stream enthalpy IN (Σ H feeds)</Table.Td><Table.Td ta="right">{gb.H_feeds_kW.toFixed(1)} kW</Table.Td></Table.Tr>
+                  {Math.abs(gb.Q_boundary_kW) > 0.05 && <Table.Tr><Table.Td>Boundary heat + work into process</Table.Td><Table.Td ta="right">{gb.Q_boundary_kW.toFixed(1)} kW</Table.Td></Table.Tr>}
+                  <Table.Tr><Table.Td>Stream enthalpy OUT (Σ H products)</Table.Td><Table.Td ta="right">{gb.H_products_kW.toFixed(1)} kW</Table.Td></Table.Tr>
+                  <Table.Tr><Table.Td><strong>First-law residual</strong></Table.Td><Table.Td ta="right"><strong>{gb.residual_kW.toFixed(3)} kW</strong></Table.Td></Table.Tr>
                 </Table.Tbody>
               </Table>
-              <Text size="xs" c={eb.closureErr <= 1e-3 ? "teal.4" : "yellow.5"} mt={4}>
-                Imbalance |H in + Q + W − H out| / |H in + Q + W| = {(eb.closureErr * 100).toFixed(4)}%.
+              <Text size="xs" c={Math.abs(gb.residual_pct) <= 0.1 ? "teal.4" : "yellow.5"} mt={4}>
+                Imbalance |H in + Q + W − H out| / max(|H in|, |H out|, |Q + W|) = {Math.abs(gb.residual_pct).toFixed(4)}% — the engine's
+                globalEnergyBoundary ledger ({gb.n_feeds} feed(s), {gb.n_products} product(s)).
+              </Text>
+              <Text size="xs" c="dimmed" mt={2}>
+                All enthalpies are on the {gb.datum ?? "elements"} datum (ΔHf° of formation at 25 °C inside each
+                stream's h), so the heat of reaction lives INSIDE the stream enthalpies and no reaction term appears
+                in this equation; the absolute values are large and negative for that reason — only differences are
+                physical. Q + W is what actually crosses the plant boundary (a duty served by a boundary steam stream
+                is already inside Σ H feeds; an internal exchange is not boundary heat).
               </Text>
             </>
           )}

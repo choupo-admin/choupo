@@ -22,3 +22,7 @@ kpi     condenser              Q_latent_kW      370.981855874    1e-4
 kpi     condenser              Q_sensible_kW    -1001.49072428   1e-4
 kpi     condenser              T_in             390              1e-4
 kpi     condenser              vf_in            0                1e-4
+boundary global                 H_feeds_kW       1229.90196807    1e-4
+boundary global                 Q_boundary_kW    -630.508868406   1e-4
+boundary global                 H_products_kW    1498.03303014    1e-4
+boundary global                 residual_kW      -898.639930477   1e-4

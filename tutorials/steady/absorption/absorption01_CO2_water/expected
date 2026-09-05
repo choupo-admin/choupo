@@ -19,3 +19,6 @@ kpi     scrubber               phaseSet         0                  1e-4
 stream  cleanGas               T                298.15           1e-4
 stream  feed                   T                298.15           1e-4
 stream  richLiquid             T                298.15           1e-4
+boundary global                 H_feeds_kW       -398873.292138   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -398873.292138   1e-4

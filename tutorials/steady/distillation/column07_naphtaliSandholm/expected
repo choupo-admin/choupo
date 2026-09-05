@@ -24,3 +24,7 @@ stream  bottoms                T                296.58946842     1e-4
 stream  distillate             F                0.0833333333333  1e-4
 stream  distillate             T                272.658743462    1e-4
 stream  feed                   T                272.04           1e-4
+boundary global                 H_feeds_kW       -70924.1244871   1e-4
+boundary global                 Q_boundary_kW    1291.76222026    1e-4
+boundary global                 H_products_kW    -69632.413627    1e-4
+boundary global                 residual_kW      0.0513601575221  1e-4

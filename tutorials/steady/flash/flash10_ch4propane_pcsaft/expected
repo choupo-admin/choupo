@@ -18,3 +18,6 @@ stream  liq                    T                273.15           1e-4
 stream  vap                    T                273.15           1e-4
 kpi     node                   K_CH4            6.35200186422    1e-4
 kpi     node                   K_propane        0.31898768248    1e-4
+boundary global                 H_feeds_kW       -26.7848153024   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -26.7848396566   1e-4

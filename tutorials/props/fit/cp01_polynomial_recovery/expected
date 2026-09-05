@@ -17,3 +17,4 @@ diag    cp_dce_liquid_fit      R2               1                  1e-12
 diag    cp_dce_liquid_fit      dHvap_dT_kirchhoff -81.8435           1e-4
 diag    cp_dce_liquid_fit      degree           2                  1e-4
 diag    cp_dce_liquid_fit      n_points         21                 1e-4
+verdict cp_dce_liquid_fit      verdict          notClaimed       exact

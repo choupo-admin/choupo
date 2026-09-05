@@ -108,3 +108,7 @@ equipment CONCENTRATION.Evap1    basis            A_=_declared_operation.area_(r
 equipment CONCENTRATION.Evap2    basis            A_=_declared_operation.area_(rating_model;_pass-through) exact
 equipment DRYING.SD              basis            W_evap_=_water_evaporated_(unit_result;_pass-through) exact
 equipment FERMENTATION.Fermentor basis            V_R_=_declared_operation.V_R_(pass-through);_D_and_H_from_L_over_D;_t_wall_ASME_thin-wall exact
+boundary global                 H_feeds_kW       -20869.1538199   1e-4
+boundary global                 Q_boundary_kW    -263.296354403   1e-4
+boundary global                 H_products_kW    -21166.8628207   1e-4
+boundary global                 residual_kW      34.4126464633    1e-4

@@ -13,3 +13,6 @@ kpi     decanter01             phaseSet         1                  1e-4
 stream  aqueous                T                298.15           1e-4
 stream  feed                   T                298.15           1e-4
 stream  organic                T                298.15           1e-4
+boundary global                 H_feeds_kW       -8280.54358316   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -8280.54358316   1e-4

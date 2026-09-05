@@ -22,3 +22,6 @@ kpi     cyclone                Q_gas            1.02571699975    1e-4
 kpi     cyclone                dP_cyclone       4903.83536027    1e-4
 kpi     cyclone                eulerNumber      8                1e-4
 kpi     cyclone                loading          0.0118992372584  1e-4
+boundary global                 H_feeds_kW       -208.261349603   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -208.261349603   1e-4

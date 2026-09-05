@@ -23,3 +23,7 @@ stream  air                    T                298.15           1e-4
 stream  coolWater              T                300.778649138    1e-4
 stream  hotWater               T                318.15           1e-4
 stream  humidAir               T                307.613817692    1e-4
+boundary global                 H_feeds_kW       -8017.07812294   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -8002.54796411   1e-4
+boundary global                 residual_kW      -14.5301588308   1e-4

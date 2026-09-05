@@ -26,3 +26,6 @@ kpi     node                   u_saltation      8.47583059607    1e-4
 kpi     node                   u_terminal       0.917882330342   1e-4
 stream  Feed                   T                298              1e-4
 stream  conveyed               T                298              1e-4
+boundary global                 H_feeds_kW       -11789.7982848   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -11789.7982848   1e-4

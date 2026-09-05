@@ -16,3 +16,6 @@ kpi     flashAdiab             H_residual       -0.00215364377073 1e-4
 kpi     flashAdiab             P                101325           1e-4
 kpi     flashAdiab             T_drop           11.3381963657    1e-4
 kpi     flashAdiab             T_feed           380              1e-4
+boundary global                 H_feeds_kW       1091.40523931    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    1091.40517767    1e-4

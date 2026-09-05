@@ -52,3 +52,6 @@ stream  hotStream              T                361.879907822    1e-4
 stream  liqProd                T                361.879907822    1e-4
 stream  reactorOut             T                350              1e-4
 stream  vapProd                T                361.879907822    1e-4
+boundary global                 H_feeds_kW       -100.850423911   1e-4
+boundary global                 Q_boundary_kW    -0.918980957977  1e-4
+boundary global                 H_products_kW    -101.769401974   1e-4

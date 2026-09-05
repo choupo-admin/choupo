@@ -15,3 +15,4 @@ diag    psat_water_fit         C                -31.7369999323   1e-6
 diag    psat_water_fit         R2               1                1e-12
 diag    psat_water_fit         dHvap_kJ_per_mol 42.1162117513    1e-4
 diag    psat_water_fit         n_points         20               1e-4
+verdict psat_water_fit         verdict          notClaimed       exact

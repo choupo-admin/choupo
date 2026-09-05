@@ -113,3 +113,7 @@ stream  steamCondensate        T                899.419453058    1e-4
 stream  steamExhaust           T                1010.3292627     1e-4
 stream  steamFeed              T                400              1e-4
 utility hrsg                   heating.-.carried 1                1e-4
+boundary global                 H_feeds_kW       -2039.70617441   1e-4
+boundary global                 Q_boundary_kW    -267.79237392    1e-4
+boundary global                 H_products_kW    -2174.33367521   1e-4
+boundary global                 residual_kW      -133.164873121   1e-4

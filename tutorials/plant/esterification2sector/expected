@@ -16,3 +16,7 @@ stream  vapor                  T                355              1e-4
 closure SEPARATION.flash       raw_kW           807.999502666    1e-4
 closure SEPARATION.flash       step_kW          807.999435904    1e-4
 closure SEPARATION.flash       remaining_kW     6.67622151695e-05 1e-4
+boundary global                 H_feeds_kW       -10052.3479466   1e-4
+boundary global                 Q_boundary_kW    -472.571050557   1e-4
+boundary global                 H_products_kW    -9716.9194945    1e-4
+boundary global                 residual_kW      -807.999502666   1e-4

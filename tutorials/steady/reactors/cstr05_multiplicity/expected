@@ -19,3 +19,6 @@ kpi     reactor                tau_s            310.291329081    1e-4
 kpi     reactor                xi_esterification_etac_mol_per_s 0.13779537841    1e-4
 stream  feed                   T                300              1e-4
 stream  reactorOut             T                405.903598573    1e-4
+boundary global                 H_feeds_kW       -102.485146133   1e-4
+boundary global                 Q_boundary_kW    8.68283223099e-12 1e-4
+boundary global                 H_products_kW    -102.485146133   1e-4

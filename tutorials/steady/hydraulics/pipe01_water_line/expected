@@ -18,3 +18,6 @@ kpi     P1                     velocity         1.28038123008    1e-4
 kpi     P1                     viscosity        0.000853566435819 1e-4
 stream  downstream             T                300              1e-4
 stream  feed                   T                300              1e-4
+boundary global                 H_feeds_kW       -159034.398185   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -159034.398185   1e-4

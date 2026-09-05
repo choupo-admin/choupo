@@ -30,3 +30,7 @@ kpi     flash01                K_water          0.861741346682   1e-4
 stream  feed                   T                358.15           1e-4
 stream  liquid                 T                358.15           1e-4
 stream  vapor                  T                358.15           1e-4
+boundary global                 H_feeds_kW       -7827.78382608   1e-4
+boundary global                 Q_boundary_kW    665.815899842    1e-4
+boundary global                 H_products_kW    -7161.7172867    1e-4
+boundary global                 residual_kW      -0.250639537157  1e-4

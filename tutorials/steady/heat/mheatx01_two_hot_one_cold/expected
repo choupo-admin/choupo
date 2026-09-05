@@ -24,3 +24,6 @@ stream  hot1                   T                380              1e-4
 stream  hot1Out                T                330              1e-4
 stream  hot2                   T                360              1e-4
 stream  hot2Out                T                330              1e-4
+boundary global                 H_feeds_kW       -39515.3217685   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -39515.3217685   1e-4

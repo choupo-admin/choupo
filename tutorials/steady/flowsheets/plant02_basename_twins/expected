@@ -28,3 +28,6 @@ stream  feed                   T                298.15           1e-4
 stream  hot                    T                366.647115308    1e-4
 stream  out                    T                434.694914778    1e-4
 kpi     h                      vf_out           1                1e-4
+boundary global                 H_feeds_kW       0                1e-4
+boundary global                 Q_boundary_kW    4                1e-4
+boundary global                 H_products_kW    4.0000000199     1e-4

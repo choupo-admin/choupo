@@ -29,3 +29,6 @@ utility condenser              cooling.coolingWater.kg_s 12.1220219323      1e-4
 utility condenser              cooling.coolingWater.eur_h 0.729648744149     1e-4
 stream  condensate             T                372.755918611    1e-4
 stream  steam                  T                372.76           1e-4
+boundary global                 H_feeds_kW       1338.59362263    1e-4
+boundary global                 Q_boundary_kW    -506.70051677    1e-4
+boundary global                 H_products_kW    831.893105862    1e-4

@@ -43,3 +43,7 @@ kpi     V1                     P_in             1000000          1e-4
 kpi     V1                     P_out            100000           1e-4
 kpi     V1                     T_in             413.089781612    1e-4
 kpi     V1                     dT               -43.7851387618   1e-4
+boundary global                 H_feeds_kW       967.77190598     1e-4
+boundary global                 Q_boundary_kW    260              1e-4
+boundary global                 H_products_kW    1233.21638119    1e-4
+boundary global                 residual_kW      -5.44447521402   1e-4

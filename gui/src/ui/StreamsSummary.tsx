@@ -49,7 +49,7 @@ import { Box, Group, Stack, Table, Text, Tooltip } from "@mantine/core";
 import { IconCircleCheck, IconAlertTriangle, IconArrowsSplit2 } from "@tabler/icons-react";
 
 import type { RunResult } from "../adapters/SolverAdapter.js";
-import { massBalance, energyBalance, unitEnergy } from "../case/balances.js";
+import { massBalance } from "../case/balances.js";
 import {
   flowBasis,
   formatFlow,
@@ -100,18 +100,18 @@ export function StreamsSummary({
   flow: FlowUnit;
 }) {
   const mb = massBalance(result.streams, result.componentMolarMass);
-  // Energy balance now CLOSES: it counts the energy the units add (heat duties
-  // + shaft work), not just the boundary-stream enthalpy.
-  const { heatAddedKw, heatRemovedKw, workKw } = unitEnergy(result.utilityAllocation, result.kpis);
-  const heatKw = heatAddedKw - heatRemovedKw;   // net, for the one-line summary text
-  const eb = energyBalance(result.streams, { heatKw, workKw });
+  // The first law over the plant boundary is the ENGINE's ledger
+  // (`globalEnergyBoundary`, stamped by its energyBalance report).  Drawn,
+  // never recomputed here -- see ReportsWorkspace for why.
+  const gb = result.globalEnergyBoundary;
   const u = massUnit(flow);
   const duties = columnDuties(result);
 
   const massOk = mb.closureErr < MASS_TOL;
   const closurePct = (mb.closureErr * 100).toFixed(mb.closureErr < 1e-4 ? 4 : 2);
-  const energyOk = eb.skipped === 0 && eb.closureErr < ENERGY_TOL;
-  const energyPct = (eb.closureErr * 100).toFixed(eb.closureErr < 1e-4 ? 4 : 2);
+  const energyErr = gb ? Math.abs(gb.residual_pct) / 100 : NaN;
+  const energyOk = !!gb && gb.n_gap === 0 && (gb.noBoundary || energyErr < ENERGY_TOL);
+  const energyPct = gb ? (energyErr * 100).toFixed(energyErr < 1e-4 ? 4 : 2) : "—";
 
   // Per-component rows, biggest first; closure-% per component.
   const compRows = mb.visibleComponents
@@ -285,30 +285,30 @@ export function StreamsSummary({
           <Tooltip
             multiline
             w={290}
-            label="First law over the plant boundary: feed enthalpy + heat duties (heating − cooling) + shaft work = product enthalpy. The duty is the energy a flash / heater / column / compressor adds; counting it is what closes the balance (a closed mass balance does NOT imply a closed energy balance unless the duties are included)."
+            label="First law over the plant boundary, as the engine's energyBalance report decided it: Σ H(feeds) + Q_boundary = Σ H(products) + residual. Q_boundary is the heat and shaft work that actually cross the boundary (a duty served by a boundary steam stream is already inside Σ H(feeds); an internal exchange is not boundary heat). All enthalpies on the elements datum (ΔHf° inside each h): the heat of reaction lives inside the stream enthalpies, so no reaction term appears. The GUI draws this ledger and computes none of its own."
           >
             <Text size="sm" ff="monospace" style={{ cursor: "help" }}>
-              streams in {eb.inKw.toFixed(1)} · out {eb.outKw.toFixed(1)} kW
-              {(Math.abs(heatKw) > 0.05 || Math.abs(workKw) > 0.05) && (
-                <Text span size="sm" ff="monospace" c="dimmed">
-                  {"  + "}
-                  {Math.abs(heatKw) > 0.05 ? `heat ${heatKw >= 0 ? "+" : "−"}${Math.abs(heatKw).toFixed(1)}` : ""}
-                  {Math.abs(workKw) > 0.05 ? `${Math.abs(heatKw) > 0.05 ? " · " : ""}work ${workKw >= 0 ? "+" : "−"}${Math.abs(workKw).toFixed(1)}` : ""}
-                  {" kW"}
-                </Text>
-              )}
+              {gb
+                ? <>streams in {gb.H_feeds_kW.toFixed(1)} · out {gb.H_products_kW.toFixed(1)} kW
+                    {Math.abs(gb.Q_boundary_kW) > 0.05 && (
+                      <Text span size="sm" ff="monospace" c="dimmed">
+                        {"  + boundary Q "}{gb.Q_boundary_kW >= 0 ? "+" : "−"}{Math.abs(gb.Q_boundary_kW).toFixed(1)}{" kW"}
+                      </Text>
+                    )}</>
+                : "energy report did not run"}
             </Text>
           </Tooltip>
-          {eb.skipped > 0 ? (
+          {!gb ? (
+            <Text size="xs" c="dimmed" ff="monospace">
+              no engine ledger — the energyBalance report did not run or refused
+            </Text>
+          ) : gb.n_gap > 0 ? (
             <Text size="xs" c="red.5" ff="monospace">
-              REFUSED — {eb.skipped} boundary stream(s) have no enthalpy datum
-              {eb.missingComponents.length > 0
-                ? `: ${eb.missingComponents.join(", ")}`
-                : ""}
+              REFUSED — {gb.n_gap} boundary stream(s) have no enthalpy datum (see the run log)
             </Text>
           ) : (
             <Text size="xs" c={energyOk ? "teal.4" : "yellow.5"} ff="monospace">
-              imbalance {energyPct} %
+              {gb.noBoundary ? "closed loop — first law vacuous over the boundary" : <>imbalance {energyPct} %</>}
             </Text>
           )}
         </Stack>

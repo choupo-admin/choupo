@@ -341,6 +341,25 @@ export interface EquipmentItem {
   cost?: EquipmentCost;
 }
 
+/** One object, one line in the result JSON (`globalEnergyBoundary`), pinned by
+ *  the `boundary` golden kind.  Field names are the engine's. */
+export interface GlobalEnergyBoundary {
+  H_feeds_kW: number;
+  Q_boundary_kW: number;
+  H_products_kW: number;
+  residual_kW: number;
+  residual_pct: number;
+  n_feeds: number;
+  n_products: number;
+  /** boundary streams with no enthalpy datum -- skipped and announced by the engine */
+  n_gap: number;
+  /** a fully closed loop: nothing crosses the boundary and the first law is vacuous */
+  noBoundary: boolean;
+  /** the enthalpy reference every term is on -- "elements" (dHf of formation inside each h,
+   *  so no heat-of-reaction term appears in the equation) */
+  datum?: string;
+}
+
 export interface RunResult {
   status: "done" | "error";
   log: string;
@@ -411,6 +430,14 @@ export interface RunResult {
    *  temperature level, or flagged carried.  Lets the GUI show "which
    *  utility, how much, how much €" next to the duty. */
   utilityAllocation?: UtilityAllocationRow[];
+  /** The plant-boundary FIRST LAW as the engine's energyBalance report
+   *  decided it (Σ H feeds + Q_boundary = Σ H products + residual).  The GUI
+   *  DRAWS this and computes no balance of its own: until 2026-09-05 it
+   *  re-derived Q from the utility allocation and showed the flagship plant
+   *  at 372.5 kW (1.79 %) where the engine closes at 34.4 kW (0.163 %) --
+   *  two cooling duties no utility served were absent from its sum.  Absent
+   *  when the report did not run (or refused): say so, never recompute. */
+  globalEnergyBoundary?: GlobalEnergyBoundary;
   /** Batch campaign timeline: every recipe action that FIRED (with the
    *  trigger that fired it -- the scheduled time or the tripped `when`
    *  condition, verbatim) plus unit status events (a rectifier hitting

@@ -18,3 +18,7 @@ stream  feed                   T                450              1e-4
 stream  polymerMelt            T                450              1e-4
 kpi     reactor                Q_kW             -50.8699400972   1e-4
 kpi     reactor                dHrxn_kJ_per_mol -186.598072896   1e-4
+boundary global                 H_feeds_kW       -193.6123126     1e-4
+boundary global                 Q_boundary_kW    -50.8699400972   1e-4
+boundary global                 H_products_kW    -235.151929275   1e-4
+boundary global                 residual_kW      -9.33032342286   1e-4

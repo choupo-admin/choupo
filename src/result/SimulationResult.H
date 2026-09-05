@@ -264,6 +264,32 @@ struct SimulationResult
     // see reporting/ModelBoundaryLedger.H on why that duplication is
     // deliberate).  Emitted as `energyClosures` in the result JSON.
     std::vector<EnergyClosureRecord>                              energyClosures;
+    // THE PLANT-BOUNDARY FIRST LAW, as the energyBalance report decided it:
+    //   Σ H(feeds) + Q_boundary = Σ H(products) + residual.
+    // Stamped by the report (the ONE home of that arithmetic -- which
+    // duties count as boundary heat, which are internal, which are already a
+    // feed) and emitted as `globalEnergyBoundary` in the result JSON so the
+    // GUI DRAWS it.  Until 2026-09-05 the GUI re-derived Q from the utility
+    // allocation and showed the flagship at 372.5 kW (1.79 %) where this
+    // ledger closes at 34.4 kW (0.163 %): the two cooling duties no utility
+    // served were simply absent from its sum.  `present` is false until the
+    // report runs; a reader that finds it false says the report did not run
+    // and computes nothing in its place.
+    struct GlobalEnergyBoundary
+    {
+        bool   present       = false;
+        scalar H_feeds_kW    = 0.0;
+        scalar Q_boundary_kW = 0.0;
+        scalar H_products_kW = 0.0;
+        scalar residual_kW   = 0.0;
+        scalar residual_pct  = 0.0;
+        int    n_feeds       = 0;
+        int    n_products    = 0;
+        int    n_gap         = 0;     // boundary streams with no enthalpy datum (skipped, announced)
+        bool   noBoundary    = false; // a fully closed loop: the first law is vacuous here
+        std::string datum;            // the enthalpy reference every term is on ("elements")
+    };
+    GlobalEnergyBoundary                                          globalEnergyBoundary;
     // Economic appraisal: the headline scalars + the full year-by-year DCF
     // table, populated by EconomicsPass.  `present` is false until the pass
     // runs.  The .ods / .csv cash-flow spreadsheet is built from this.

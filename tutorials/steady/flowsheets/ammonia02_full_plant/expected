@@ -234,3 +234,7 @@ equipment FEHE                   basis            A_=_Q/(U*LMTD)_with_U_and_LMTD
 equipment makeupComp             basis            power_=_W_shaft_(unit_result;_pass-through) exact
 equipment recycleComp            basis            power_=_W_shaft_(unit_result;_pass-through) exact
 equipment waterCooler            basis            A_=_Q/(U*LMTD)_with_U_and_LMTD_author-set exact
+boundary global                 H_feeds_kW       -39777909.9013   1e-4
+boundary global                 Q_boundary_kW    -920.209270367   1e-4
+boundary global                 H_products_kW    -39788020.7486   1e-4
+boundary global                 residual_kW      9190.63804429    1e-4

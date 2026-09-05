@@ -29,3 +29,4 @@ kpi     cryst                  yield            0.572956175887   1e-4
 stream  brine                  T                298.15           1e-4
 stream  ethanol                T                298.15           1e-4
 stream  magma                  T                298.15           1e-4
+kpi     cryst                  V_magma          5                1e-4

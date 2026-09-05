@@ -13,3 +13,6 @@ kpi     decanter01             phaseSet         1                  1e-4
 stream  butanolRich            T                320              1e-4
 stream  feed                   T                320              1e-4
 stream  waterRich              T                320              1e-4
+boundary global                 H_feeds_kW       -8114.08370112   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -8114.08370112   1e-4

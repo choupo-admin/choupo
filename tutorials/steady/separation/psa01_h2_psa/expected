@@ -22,3 +22,6 @@ kpi     h2psa                  tailgas_purity_CO2 0.377353611112     1e-4
 stream  feed                   T                313              1e-4
 stream  hydrogen               T                313              1e-4
 stream  tailgas                T                313              1e-4
+boundary global                 H_feeds_kW       -21811.9669936   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -21811.9669936   1e-4

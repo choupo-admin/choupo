@@ -45,3 +45,7 @@ stream  B1                     isopropanol      0.0949714312657    1e-4
 stream  B1                     T                353.606283382    1e-4
 stream  F1                     T                325              1e-4
 stream  acetoneProduct         T                329.375048712    1e-4
+boundary global                 H_feeds_kW       -5415.56076627   1e-4
+boundary global                 Q_boundary_kW    32.7455905589    1e-4
+boundary global                 H_products_kW    -5382.81287886   1e-4
+boundary global                 residual_kW      -0.00229685153499 1e-4

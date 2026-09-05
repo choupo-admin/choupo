@@ -24,3 +24,6 @@ utility reboiler               heating.steamLP.kg_s 0.0511457662144    1e-4
 utility reboiler               heating.steamLP.eur_h 4.82996066161      1e-4
 stream  feed                   T                372              1e-4
 stream  wetVapour              T                372.755918611    1e-4
+boundary global                 H_feeds_kW       207.29749354     1e-4
+boundary global                 Q_boundary_kW    111.804644945    1e-4
+boundary global                 H_products_kW    319.102138484    1e-4

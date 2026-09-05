@@ -27,3 +27,7 @@ stream  extract                T                298.15           1e-4
 stream  feed                   T                298.15           1e-4
 stream  raffinate              T                298.15           1e-4
 stream  solvent                T                298.15           1e-4
+boundary global                 H_feeds_kW       -6263.31488417   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -6262.43343965   1e-4
+boundary global                 residual_kW      -0.881444521125  1e-4

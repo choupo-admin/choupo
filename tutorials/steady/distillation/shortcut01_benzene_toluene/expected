@@ -17,3 +17,7 @@ kpi     column                 x_D_LK           0.99               1e-4
 stream  bottoms                T                365.266024892    1e-4
 stream  distillate             T                365.266024892    1e-4
 stream  feed                   T                365              1e-4
+boundary global                 H_feeds_kW       1128.37419029    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    1129.45454694    1e-4
+boundary global                 residual_kW      -1.08035664281   1e-4

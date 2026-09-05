@@ -38,3 +38,7 @@ utility column11               cooling.coolingWater.eur_h 1.84938845187    1e-4
 stream  bottoms                T                381.492133108    1e-4
 stream  distillate             T                354.258012906    1e-4
 stream  feed                   T                370              1e-4
+boundary global                 H_feeds_kW       1779.54082551    1e-4
+boundary global                 Q_boundary_kW    -3.28395309659   1e-4
+boundary global                 H_products_kW    1143.73103803    1e-4
+boundary global                 residual_kW      632.525834379    1e-4

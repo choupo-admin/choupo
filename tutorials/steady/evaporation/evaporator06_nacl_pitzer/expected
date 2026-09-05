@@ -40,3 +40,7 @@ stream  saturatedSteam130C     T                401.6288333      1e-4
 stream  vapour                 T                389.441595638    1e-4
 kpi     evap                   Q_dilution_kW    10.1599871139    1e-4
 kpi     evap                   molality_salt    4.06809473996    1e-4
+boundary global                 H_feeds_kW       -11607.3310955   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -11121.63685     1e-4
+boundary global                 residual_kW      -485.694245503   1e-4

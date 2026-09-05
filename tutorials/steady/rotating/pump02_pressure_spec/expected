@@ -21,3 +21,7 @@ utility pump02                 power.electricity.kg_s 0                  1e-4
 utility pump02                 power.electricity.eur_h 0.0849310484211    1e-4
 stream  feed                   T                298.15           1e-4
 stream  out                    T                298.523735099    1e-4
+boundary global                 H_feeds_kW       -2864.01591733   1e-4
+boundary global                 Q_boundary_kW    0.8062           1e-4
+boundary global                 H_products_kW    -2863.73374733   1e-4
+boundary global                 residual_kW      0.52403          1e-4

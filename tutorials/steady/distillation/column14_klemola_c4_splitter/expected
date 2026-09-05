@@ -31,3 +31,7 @@ utility splitter               cooling.coolingWater.eur_h 12.4622362603      1e-
 stream  bottoms                T                329.436820919    1e-4
 stream  distillate             T                312.209486706    1e-4
 stream  feed                   T                323.5875148      1e-4
+boundary global                 H_feeds_kW       -17793.6015407   1e-4
+boundary global                 Q_boundary_kW    -187.192947552   1e-4
+boundary global                 H_products_kW    -17989.4111132   1e-4
+boundary global                 residual_kW      8.61662493351    1e-4

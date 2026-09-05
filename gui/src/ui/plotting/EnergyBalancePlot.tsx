@@ -51,11 +51,14 @@ import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 
 interface EnergyBalancePlotProps {
   streams: StreamResult[];
-  /** Energy the units exchange, SPLIT by direction: heat ADDED (reboilers,
-   *  heaters) goes on the INPUTS side, heat REMOVED (condensers, coolers -- the
-   *  "cold") on the OUTPUTS side, shaft work by its sign.  Drawn as extra bars so
-   *  the balance CLOSES with the hot on the left and the cold on the right. */
-  added?: { heatAddedKw: number; heatRemovedKw: number; workKw: number };
+  /** The ENGINE's boundary heat + shaft work, `globalEnergyBoundary.Q_boundary_kW`
+   *  from its energyBalance report: positive crosses INTO the plant (drawn on the
+   *  inputs side), negative leaves it (outputs side).  ONE net number, because
+   *  that is what the ledger decides; splitting it into "heating" and "cooling"
+   *  from utility-allocated duties is the GUI-side sum this prop replaced on
+   *  2026-09-05 (it missed every cooling duty no utility served).  Absent when
+   *  the report did not run: the bars then show streams only and say so. */
+  added?: { qBoundaryKw: number };
 }
 
 export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
@@ -128,13 +131,10 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
   // Each contributes a POSITIVE chunk on its own side, so both columns close at
   // the same level with the hot on the left and the cold on the right.
   const extras: { label: string; kw: number; side: "in" | "out"; color: string }[] = [];
-  if (added) {
-    if ((added.heatAddedKw ?? 0) > 0.05)
-      extras.push({ label: "heat in (reboiler / heaters / endothermic duty)", kw: added.heatAddedKw, side: "in", color: PLOT_COLORS.warm });
-    if ((added.heatRemovedKw ?? 0) > 0.05)
-      extras.push({ label: "heat out (cooling / exothermic reaction duty)", kw: added.heatRemovedKw, side: "out", color: "#4a90d9" });
-    if (Math.abs(added.workKw ?? 0) > 0.05)
-      extras.push({ label: "shaft work", kw: Math.abs(added.workKw), side: added.workKw >= 0 ? "in" : "out", color: PLOT_COLORS.accent2 });
+  if (added && Math.abs(added.qBoundaryKw) > 0.05) {
+    extras.push({ label: "boundary heat + work (engine ledger)", kw: Math.abs(added.qBoundaryKw),
+                  side: added.qBoundaryKw >= 0 ? "in" : "out",
+                  color: added.qBoundaryKw >= 0 ? PLOT_COLORS.warm : "#4a90d9" });
   }
   for (const e of extras) {
     const isInput = e.side === "in";

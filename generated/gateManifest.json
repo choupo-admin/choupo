@@ -945,6 +945,11 @@
       "exit": 0,
       "claim": "[excused: a sweep with no golden -- which point is the answer is RESERVED, task #77] tutorials/plant/sugarPlantEconomicsSweep",
       "seconds": 0.5
+    },
+    "check_energy_boundary_pinned": {
+      "exit": 0,
+      "claim": "check_energy_boundary_pinned: OK -- 523 plant-boundary first-law quantit(ies) pinned across 151 golden-shipping case(s) that publish `globalEnergyBoundary`, in both directions (published implies pinned for the three terms; every pinned row is still emitted).  The residual row follows the generator's own >= 1 W rule and is checked only for existence here.  NOT JUDGED standalone: 3 case(s) whose bare run fails here (tutorials/props/estimate/userEstimate01_linear_tb, tutorials/steady/userops/userOp01_yield_reactor, tutorials/steady/userops/userOp02_component_splitter) -- judged under the suite, whose cache carries the harness's own run.  NOT CHECKED: whether the engine's ledger is right, and the per-unit residuals the report cannot attribute.",
+      "seconds": 794.5
     }
   }
 }

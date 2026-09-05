@@ -25,3 +25,6 @@ kpi     flash01                K_ethanol        1.1797375844     1e-4
 kpi     flash01                K_water          0.0732111598691  1e-4
 kpi     flash01                Q                0                1e-4
 kpi     flash01                Q_kW             0                1e-4
+boundary global                 H_feeds_kW       -7953.91926189   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -7953.91926189   1e-4

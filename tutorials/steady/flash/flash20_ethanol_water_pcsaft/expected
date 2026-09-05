@@ -38,3 +38,7 @@ stream  liqNRTL                T                358.15           1e-4
 stream  liqPCSAFT              T                358.15           1e-4
 stream  vapNRTL                T                358.15           1e-4
 stream  vapPCSAFT              T                358.15           1e-4
+boundary global                 H_feeds_kW       -14014.9475299   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -14057.8085273   1e-4
+boundary global                 residual_kW      42.8609974295    1e-4

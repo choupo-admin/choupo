@@ -17,3 +17,6 @@ utility heater01               heating.steamLP.eur_h 4.32               1e-4
 stream  feed                   T                300              1e-4
 stream  hotStream              T                338.338658146    1e-4
 kpi     heater01               vf_out           0                1e-4
+boundary global                 H_feeds_kW       -7832.67814048   1e-4
+boundary global                 Q_boundary_kW    100              1e-4
+boundary global                 H_products_kW    -7732.67814048   1e-4

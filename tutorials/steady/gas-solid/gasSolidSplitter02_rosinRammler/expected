@@ -14,3 +14,6 @@ kpi     separator              solidsRecovery   0.9              1e-4
 stream  capturedSolids         T                300              1e-4
 stream  cleanGas               T                300              1e-4
 stream  feed                   T                300              1e-4
+boundary global                 H_feeds_kW       -208.261349603   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -208.261349603   1e-4

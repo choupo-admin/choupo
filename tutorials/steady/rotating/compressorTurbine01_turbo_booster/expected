@@ -38,3 +38,6 @@ stream  boostedAir             T                633.374206884    1e-4
 stream  hotExhaust             T                800              1e-4
 stream  turbExhaust            T                640.727389372    1e-4
 kpi     turbine                W_shaft_kW       -5               1e-4
+boundary global                 H_feeds_kW       15.2264672096    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    15.2264682372    1e-4

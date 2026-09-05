@@ -17,3 +17,6 @@ stream  gasOff                 T                298.15           1e-4
 stream  sodaWater              T                298.15           1e-4
 kpi     node                   K_CO2            1618.55415741    1e-4
 kpi     node                   K_water          0.0312533801141  1e-4
+boundary global                 H_feeds_kW       -79.5869815195   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -79.5869815195   1e-4

@@ -46,3 +46,7 @@ csv     reports/unitOperations/tower/profile.csv  7:m_H2Saq   0.008247863  1e-4
 stream  bottoms                T                372.031545213    1e-4
 stream  distillate             T                356.430868413    1e-4
 stream  feed                   T                360              1e-4
+boundary global                 H_feeds_kW       -7651.23761289   1e-4
+boundary global                 Q_boundary_kW    24.1083131582    1e-4
+boundary global                 H_products_kW    -7644.60969283   1e-4
+boundary global                 residual_kW      17.4803930986    1e-4

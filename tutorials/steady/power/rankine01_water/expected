@@ -44,3 +44,6 @@ stream  exhaust                T                530.878445241    1e-4
 stream  feedSteam              T                800              1e-4
 kpi     cooler                 vf_out           1                1e-4
 kpi     steamTurbine           W_shaft_kW       -10              1e-4
+boundary global                 H_feeds_kW       -223.767674129   1e-4
+boundary global                 Q_boundary_kW    -15              1e-4
+boundary global                 H_products_kW    -238.767673292   1e-4

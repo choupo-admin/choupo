@@ -21,3 +21,6 @@ kpi     flash01                K_CaCO3          0                1e-4
 kpi     flash01                K_water          0.0722361438845  1e-4
 kpi     flash01                Q                0                1e-4
 kpi     flash01                Q_kW             0                1e-4
+boundary global                 H_feeds_kW       -7913.13581493   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -7913.13581493   1e-4

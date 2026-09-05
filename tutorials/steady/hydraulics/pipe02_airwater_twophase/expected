@@ -23,3 +23,7 @@ kpi     P1                     vaporFraction    0.0114381198303  1e-4
 kpi     P1                     voidFraction     0.642208577119   1e-4
 stream  downstream             T                298.15           1e-4
 stream  feed                   T                298.15           1e-4
+boundary global                 H_feeds_kW       -15910.7459342   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -15910.7271108   1e-4
+boundary global                 residual_kW      -0.0188234394609 1e-4

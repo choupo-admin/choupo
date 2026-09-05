@@ -49,3 +49,7 @@ stream  brine                  T                313.15           1e-4
 stream  feed                   T                313.15           1e-4
 stream  offgas                 T                313.15           1e-4
 stream  warmBrine              T                330.806557015    1e-4
+boundary global                 H_feeds_kW       -7799.15475013   1e-4
+boundary global                 Q_boundary_kW    40               1e-4
+boundary global                 H_products_kW    -7762.13983367   1e-4
+boundary global                 residual_kW      2.98508353763    1e-4

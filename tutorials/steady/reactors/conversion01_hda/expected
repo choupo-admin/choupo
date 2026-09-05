@@ -13,3 +13,6 @@ kpi     reactor                Q_reaction_kW    -1007.67392146   1e-4
 kpi     reactor                Q_sensible_kW    0                1e-4
 stream  feed                   T                900              1e-4
 stream  product                T                900              1e-4
+boundary global                 H_feeds_kW       6015.44639582    1e-4
+boundary global                 Q_boundary_kW    -1007.67392146   1e-4
+boundary global                 H_products_kW    5007.77247435    1e-4

@@ -49,3 +49,7 @@ kpi     Devolatiliser          K_pclRepeat      0.0420638229653  1e-4
 kpi     Devolatiliser          K_water          107.337073481    1e-4
 kpi     Reactor                Q_kW             -50.8247774967   1e-4
 kpi     Reactor                dHrxn_kJ_per_mol -186.598072896   1e-4
+boundary global                 H_feeds_kW       -193.6123126     1e-4
+boundary global                 Q_boundary_kW    -48.6297499101   1e-4
+boundary global                 H_products_kW    -231.632546576   1e-4
+boundary global                 residual_kW      -10.6095159344   1e-4

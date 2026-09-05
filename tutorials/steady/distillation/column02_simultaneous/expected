@@ -27,3 +27,7 @@ kpi     column01               Q_condenser_kW   -1281.04347534   1e-4
 kpi     column01               Q_reboiler_kW    1299.61040477    1e-4
 kpi     column01               nFeeds           1                1e-4
 kpi     column01               nSideDraws       0                1e-4
+boundary global                 H_feeds_kW       1128.37419029    1e-4
+boundary global                 Q_boundary_kW    18.5669294295    1e-4
+boundary global                 H_products_kW    1145.84595374    1e-4
+boundary global                 residual_kW      1.09516598884    1e-4

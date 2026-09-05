@@ -15,3 +15,6 @@ kpi     reactor                V_R              0.005            1e-4
 kpi     reactor                minus_r_ethanol  14.6085310767    1e-4
 kpi     reactor                tau_s            310.291329081    1e-4
 kpi     reactor                xi_mol_per_s     0.0730426553834  1e-4
+boundary global                 H_feeds_kW       -100.850423911   1e-4
+boundary global                 Q_boundary_kW    -1.87948262728   1e-4
+boundary global                 H_products_kW    -102.729906538   1e-4

@@ -45,3 +45,7 @@ stream  expanded               T                425.796533401    1e-4
 stream  feed                   T                430              1e-4
 stream  liquid                 T                353              1e-4
 stream  vapor                  T                353              1e-4
+boundary global                 H_feeds_kW       -3746.79740357   1e-4
+boundary global                 Q_boundary_kW    -416.177313739   1e-4
+boundary global                 H_products_kW    -3626.93876728   1e-4
+boundary global                 residual_kW      -536.035950031   1e-4

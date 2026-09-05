@@ -18,3 +18,6 @@ kpi     flash05                K_nHexane        1.98526737348    1e-4
 kpi     flash05                K_toluene        0.575521757802   1e-4
 kpi     flash05                Q                0                1e-4
 kpi     flash05                Q_kW             0                1e-4
+boundary global                 H_feeds_kW       137.936699296    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    137.936699296    1e-4

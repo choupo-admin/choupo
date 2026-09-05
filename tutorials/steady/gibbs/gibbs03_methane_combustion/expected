@@ -23,3 +23,6 @@ kpi     burner                 y_water          0.18963314288    1e-4
 stream  feed                   T                1800             1e-4
 stream  flueGas                T                1800             1e-4
 kpi     burner                 Q_kW             -220.358726449   1e-4
+boundary global                 H_feeds_kW       132.452680975    1e-4
+boundary global                 Q_boundary_kW    -220.358726449   1e-4
+boundary global                 H_products_kW    -87.906045474    1e-4

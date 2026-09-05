@@ -62,3 +62,7 @@ equipment dryer                  values.design_targetSize_um 40               1e
 equipment dryer                  values.design_wheelSpeed_rpm 39751.5114383    1e-4
 equipment dryer                  values.pressureDesign 1                1e-4
 equipment dryer                  basis            W_evap_=_water_evaporated_(unit_result;_pass-through) exact
+boundary global                 H_feeds_kW       -265.683731381   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -263.025339218   1e-4
+boundary global                 residual_kW      -2.65839216221   1e-4

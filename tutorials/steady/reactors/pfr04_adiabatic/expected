@@ -19,3 +19,6 @@ kpi     reactor                nSteps           100              1e-4
 kpi     reactor                tau_s            310.291329081    1e-4
 stream  feed                   T                350              1e-4
 stream  reactorOut             T                454.513818186    1e-4
+boundary global                 H_feeds_kW       -100.850423911   1e-4
+boundary global                 Q_boundary_kW    -1.42108547152e-14 1e-4
+boundary global                 H_products_kW    -100.850423911   1e-4

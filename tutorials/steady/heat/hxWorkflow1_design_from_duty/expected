@@ -42,3 +42,7 @@ stream  coldTube               T                300              1e-4
 stream  hotOut                 T                314.979482641    1e-4
 stream  hotShell               T                330              1e-4
 utility hx                     heating.-.carried 1                1e-4
+boundary global                 H_feeds_kW       11660.2416512    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    11660.1793863    1e-4
+boundary global                 residual_kW      0.0622648985536  1e-4

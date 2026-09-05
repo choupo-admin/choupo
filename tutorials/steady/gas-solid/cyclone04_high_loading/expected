@@ -22,3 +22,6 @@ stream  capturedSolids         T                300              1e-4
 stream  cleanGas               T                300              1e-4
 stream  feed                   T                300              1e-4
 kpi     cyclone                Q_gas            1.02571699975    1e-4
+boundary global                 H_feeds_kW       -8418.16509801   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -8418.16509801   1e-4

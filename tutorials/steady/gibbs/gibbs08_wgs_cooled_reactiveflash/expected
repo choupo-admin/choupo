@@ -26,3 +26,7 @@ stream  condensate             T                350              1e-4
 stream  feed                   T                350              1e-4
 stream  gas                    T                350              1e-4
 kpi     wgs                    Q_kW             -4.43921125705   1e-4
+boundary global                 H_feeds_kW       -64.2794399268   1e-4
+boundary global                 Q_boundary_kW    -4.43921125705   1e-4
+boundary global                 H_products_kW    -62.0275228998   1e-4
+boundary global                 residual_kW      -6.69112828405   1e-4

@@ -51,3 +51,7 @@ stream  feed                   T                298.15           1e-4
 stream  powder                 T                372.025243986    1e-4
 kpi     dryer                  atomiserPower    159.219110425    1e-4
 kpi     dryer                  wheelSpeed       0                1e-4
+boundary global                 H_feeds_kW       -265.683731381   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -263.025339218   1e-4
+boundary global                 residual_kW      -2.65839216221   1e-4

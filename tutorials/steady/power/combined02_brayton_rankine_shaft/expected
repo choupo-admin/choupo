@@ -129,3 +129,7 @@ kpi     gibbsCombustor         Q_kW             452.369814266    1e-4
 kpi     steamCooler            vf_out           1                1e-4
 kpi     steamTurbine           W_shaft_kW       -50              1e-4
 utility hrsg                   heating.-.carried 1                1e-4
+boundary global                 H_feeds_kW       -2561.32555084   1e-4
+boundary global                 Q_boundary_kW    -242.630185734   1e-4
+boundary global                 H_products_kW    -2803.56173544   1e-4
+boundary global                 residual_kW      -0.394001134381  1e-4

@@ -44,7 +44,7 @@ Design question ("how many stages for 90 \%?") is a DesignSpec on `\$stages`, NO
 \goldrow{kpi}{scrubber}{L\_over\_V}{1.5}
 \goldrow{kpi}{scrubber}{T\_bottom}{315.417418114}
 \goldrow{kpi}{scrubber}{T\_top}{308.88795701}
-\goldmore{10}
+\goldmore{14}
 \end{tutgolden}
 
 \clearpage
@@ -87,7 +87,7 @@ Toggling the GUI Units menu to Mass-basis shows the absorption as CO2 mass trans
 \goldrow{kpi}{scrubber}{Q\_kW}{0}
 \goldrow{kpi}{scrubber}{T}{298.15}
 \goldrow{kpi}{scrubber}{V\_over\_F}{0.0115913086075}
-\goldmore{4}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -138,7 +138,7 @@ The thermodynamics is PREDICTIVE UNIFAC with H2 authorised outside the activity 
 \goldrow{kpi}{absorber}{K\_acetone}{5.86073166871}
 \goldrow{kpi}{absorber}{K\_isopropanol}{0.11122382052}
 \goldrow{kpi}{absorber}{K\_water}{0.0627155235376}
-\goldmore{16}
+\goldmore{20}
 \end{tutgolden}
 
 \clearpage
@@ -182,7 +182,7 @@ KPIs to watch: recovery\_ethanol (fraction of ethanol leaving in the extract), d
 \goldrow{kpi}{extractor01}{distribution\_benzene}{295.27509389}
 \goldrow{kpi}{extractor01}{distribution\_ethanol}{0.555106921422}
 \goldrow{kpi}{extractor01}{distribution\_water}{0.00706545462823}
-\goldmore{13}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -221,6 +221,8 @@ Demonstrates: `phases (...)` syntax with TWO liquid phases `phaseSet LL` in the 
 \goldrow{stream}{aqueous}{T}{298.15}
 \goldrow{stream}{feed}{T}{298.15}
 \goldrow{stream}{organic}{T}{298.15}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-8280.54358316}
+\goldmore{2}
 \end{tutgolden}
 
 \clearpage
@@ -260,7 +262,7 @@ Expected: S\_NH3 > 1 $\to$ most of the NH3 stripped into the gas; stripped liqui
 \goldrow{kpi}{stripper}{T\_bottom}{313.524974667}
 \goldrow{kpi}{stripper}{T\_top}{315.973930965}
 \goldrow{kpi}{stripper}{V\_in}{0.0277777777778}
-\goldmore{10}
+\goldmore{14}
 \end{tutgolden}
 
 \subsection{crystallisation}
@@ -289,6 +291,7 @@ A hot sugar solution (z\_sucrose 0.15, \textasciitilde{}3.35 kg/kg water, below 
 \goldrow{stream}{feed}{T}{353.15}
 \goldrow{stream}{magma}{T}{293.15}
 \goldrow{kpi}{cryst}{Q\_kW}{-271.677114808}
+\goldmore{3}
 \end{tutgolden}
 
 \clearpage
@@ -315,7 +318,7 @@ Continuous MSMPR crystalliser. A hot near-saturated sugar solution is fed to a c
 \goldrow{kpi}{cryst}{growthRate}{1.95272330048e-08}
 \goldrow{kpi}{cryst}{liquorFlow}{0.0266203308749}
 \goldrow{kpi}{cryst}{magmaDensity}{302.920529908}
-\goldmore{13}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -342,7 +345,7 @@ Same physical setup as crystalliser02\_msmpr (hot sugar syrup, 5 m$^3$ vessel at
 \goldrow{kpi}{cryst}{crystal\_mol}{0.00116912099742}
 \goldrow{kpi}{cryst}{growthRate\_L0}{1.90635340048e-08}
 \goldrow{kpi}{cryst}{liquorFlow}{0.0266086567804}
-\goldmore{14}
+\goldmore{18}
 \end{tutgolden}
 
 \clearpage
@@ -369,7 +372,7 @@ Same hot-sugar feed and 5 m$^3$ vessel at 20 $^\circ$C as crystalliser03, only `
 \goldrow{kpi}{cryst}{crystal\_mol}{0.00118828062534}
 \goldrow{kpi}{cryst}{growthRate\_L0}{1.83025070562e-08}
 \goldrow{kpi}{cryst}{liquorFlow}{0.0265894971524}
-\goldmore{14}
+\goldmore{18}
 \end{tutgolden}
 
 \clearpage
@@ -517,7 +520,7 @@ The supersaturation here comes from the eNRTL ion-activity Ksp (the antisolvent 
 \goldrow{kpi}{cryst}{crystal\_flow}{0.092730856228}
 \goldrow{kpi}{cryst}{crystal\_mol}{0.00158677029822}
 \goldrow{kpi}{cryst}{growthRate}{1.92664299147e-09}
-\goldmore{15}
+\goldmore{16}
 \end{tutgolden}
 
 \clearpage
@@ -704,7 +707,7 @@ Basis: 100 kmol/h saturated brine (x\_water 0.900, x\_NaCl 0.100; \textasciitild
 \goldrow{kpi}{cryst}{cakeMoisture}{0.1}
 \goldrow{kpi}{cryst}{cakeWetness\_pct}{0}
 \goldrow{kpi}{cryst}{crystal\_flow}{0}
-\goldmore{13}
+\goldmore{16}
 \end{tutgolden}
 
 \clearpage
@@ -795,7 +798,7 @@ IT WAS RUN THE OTHER WAY FIRST, and the run is the reason this paragraph exists 
 \goldrow{kpi}{C1}{nFeeds}{1}
 \goldrow{kpi}{C1}{nSideDraws}{0}
 \goldrow{kpi}{C1}{nStages}{66}
-\goldmore{17}
+\goldmore{21}
 \end{tutgolden}
 
 \clearpage
@@ -842,7 +845,7 @@ THE DISTILLATE RATE IS HIS, 5.88 kmol/h, and that matters here in a way it did n
 \goldrow{kpi}{C2}{nFeeds}{1}
 \goldrow{kpi}{C2}{nSideDraws}{0}
 \goldrow{kpi}{C2}{nStages}{19}
-\goldmore{17}
+\goldmore{21}
 \end{tutgolden}
 
 \clearpage
@@ -879,7 +882,7 @@ Benzene/toluene distillation --- classical textbook problem with Raoult, no azeo
 \goldrow{utility}{column01}{cooling.coolingWater.eur\_h}{1.84470261124}
 \goldrow{stream}{bottoms}{F}{0.0138888888889}
 \goldrow{stream}{bottoms}{T}{382.893530951}
-\goldmore{15}
+\goldmore{19}
 \end{tutgolden}
 
 \clearpage
@@ -917,7 +920,7 @@ Expected (identical to column01): T\_top $\approx$ 354.2 K, T\_bottom $\approx$ 
 \goldrow{kpi}{column01}{x\_D\_LK}{0.981245125322}
 \goldrow{utility}{column01}{heating.steamLP.duty\_kW}{1299.61040477}
 \goldrow{utility}{column01}{heating.steamLP.T}{382.893527916}
-\goldmore{13}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -957,7 +960,7 @@ NOTE: asking for a distillate ABOVE the azeotrope (x\_eth > 0.894) is physically
 \goldrow{kpi}{column}{x\_D\_LK}{0.804616545279}
 \goldrow{utility}{column}{heating.steamLP.duty\_kW}{935.650111764}
 \goldrow{utility}{column}{heating.steamLP.T}{357.713408957}
-\goldmore{13}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -998,7 +1001,7 @@ Multiple feeds as FLOWSHEET STREAMS (`inputs ( feed feed2 )`) + a liquid side dr
 \goldrow{kpi}{radfracLite}{feedStage}{5}
 \goldrow{kpi}{radfracLite}{nFeeds}{2}
 \goldrow{kpi}{radfracLite}{nSideDraws}{1}
-\goldmore{17}
+\goldmore{21}
 \end{tutgolden}
 
 \clearpage
@@ -1039,7 +1042,7 @@ Both feeds are FLOWSHEET STREAMS (`inputs ( feed acidFeed )`) -- so the plant-bo
 \goldrow{kpi}{rdColumn}{feedStage}{20}
 \goldrow{kpi}{rdColumn}{nFeeds}{2}
 \goldrow{kpi}{rdColumn}{nSideDraws}{0}
-\goldmore{17}
+\goldmore{21}
 \end{tutgolden}
 
 \clearpage
@@ -1083,7 +1086,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{kpi}{column06}{nFeeds}{1}
 \goldrow{kpi}{column06}{nSideDraws}{0}
 \goldrow{kpi}{column06}{nStages}{15}
-\goldmore{13}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -1119,7 +1122,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{kpi}{column07}{nStages}{20}
 \goldrow{kpi}{column07}{x\_B\_HK}{0.416665691626}
 \goldrow{kpi}{column07}{x\_D\_LK}{0.999874145869}
-\goldmore{10}
+\goldmore{14}
 \end{tutgolden}
 
 \clearpage
@@ -1156,7 +1159,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{kpi}{radfrac}{T\_bottom}{454.498489397}
 \goldrow{kpi}{radfrac}{T\_top}{321.647346922}
 \goldrow{kpi}{radfrac}{feedStage}{10}
-\goldmore{19}
+\goldmore{23}
 \end{tutgolden}
 
 \clearpage
@@ -1200,7 +1203,7 @@ Read the printed table. The flow parameter F\_LV climbs below the feed (more liq
 \goldrow{kpi}{column09}{T\_top}{354.21089412}
 \goldrow{kpi}{column09}{V\_rect}{0.0416666666667}
 \goldrow{kpi}{column09}{V\_strip}{0.0416666666667}
-\goldmore{22}
+\goldmore{26}
 \end{tutgolden}
 
 \clearpage
@@ -1242,7 +1245,7 @@ Note the downcomer, too: the backup reaches 268.5 mm against a 275 mm limit. Nar
 \goldrow{kpi}{column10}{T\_top}{354.21089412}
 \goldrow{kpi}{column10}{V\_rect}{0.0416666666667}
 \goldrow{kpi}{column10}{V\_strip}{0.0416666666667}
-\goldmore{22}
+\goldmore{26}
 \end{tutgolden}
 
 \clearpage
@@ -1296,7 +1299,7 @@ NOTE: the efficiency is folded into an effective K, with the vapour from the tra
 \goldrow{kpi}{column11}{T\_top}{355.136328304}
 \goldrow{kpi}{column11}{V\_rect}{0.0416666666667}
 \goldrow{kpi}{column11}{V\_strip}{0.0416666666667}
-\goldmore{23}
+\goldmore{27}
 \end{tutgolden}
 
 \clearpage
@@ -1360,7 +1363,7 @@ WHY THE DRAWS ARE ON ONE STAGE AND NOT TWO. Both draws come off stage 5. A liqui
 \goldrow{kpi}{recombine}{n\_in}{2}
 \goldrow{kpi}{recombine}{vf}{1}
 \goldrow{kpi}{restage}{F\_in}{0.00555555555556}
-\goldmore{37}
+\goldmore{41}
 \end{tutgolden}
 
 \clearpage
@@ -1428,7 +1431,7 @@ WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converg
 \goldrow{kpi}{recombine}{n\_in}{2}
 \goldrow{kpi}{recombine}{vf}{0}
 \goldrow{kpi}{restage}{F\_in}{0.000555555555556}
-\goldmore{37}
+\goldmore{40}
 \end{tutgolden}
 
 \clearpage
@@ -1632,7 +1635,7 @@ That shape is worth more than a single number. At 74 trays and R = 11.4 this col
 \goldrow{kpi}{splitter}{T\_top}{314.249966433}
 \goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
 \goldrow{kpi}{splitter}{V\_strip}{0.479095314524}
-\goldmore{16}
+\goldmore{20}
 \end{tutgolden}
 
 \clearpage
@@ -1700,7 +1703,7 @@ ONE MORE OBSERVATION, and it is about the ENGINE rather than the column. These t
 \goldrow{kpi}{splitter}{T\_top}{314.116313789}
 \goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
 \goldrow{kpi}{splitter}{V\_strip}{0.479095314524}
-\goldmore{15}
+\goldmore{19}
 \end{tutgolden}
 
 \clearpage
@@ -1743,7 +1746,7 @@ Compare with the rigorous column01 (Wang-Henke): FUG is a fast design estimate; 
 \goldrow{kpi}{column}{theta}{1.42716041594}
 \goldrow{kpi}{column}{x\_B\_HK}{0.99}
 \goldrow{kpi}{column}{x\_D\_LK}{0.99}
-\goldmore{3}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -1793,7 +1796,7 @@ DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/ and sha
 \goldrow{kpi}{tower}{nFeeds}{1}
 \goldrow{kpi}{tower}{nSideDraws}{0}
 \goldrow{kpi}{tower}{nStages}{8}
-\goldmore{13}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -1842,7 +1845,7 @@ DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/ and sha
 \goldrow{kpi}{tower}{nFeeds}{1}
 \goldrow{kpi}{tower}{nSideDraws}{0}
 \goldrow{kpi}{tower}{nStages}{8}
-\goldmore{23}
+\goldmore{27}
 \end{tutgolden}
 
 \subsection{drying}
@@ -1959,7 +1962,7 @@ Wet solid: 10 kmol/h sucrose (3423 kg/h) + 38 kmol/h bound water (X\_in=0.20). H
 \goldrow{kpi}{solidDryer}{water\_activity}{0.00431158404412}
 \goldrow{kpi}{solidDryer}{water\_removed}{0.189112936127}
 \goldrow{stream}{drySolid}{T}{347.5126791}
-\goldmore{3}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -1999,7 +2002,7 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \goldrow{kpi}{dryer}{d\_droplet}{6.04023981348e-05}
 \goldrow{kpi}{dryer}{d\_droplet\_micron}{60.4023981348}
 \goldrow{kpi}{dryer}{d\_particle}{3.80926671659e-05}
-\goldmore{36}
+\goldmore{40}
 \end{tutgolden}
 
 \clearpage
@@ -2081,7 +2084,7 @@ The dryer atomises the feed with a PRESSURE-SWIRL nozzle at 40 bar (d32 = 9575$\
 \goldrow{kpi}{dryer}{X\_critical}{0.15}
 \goldrow{kpi}{dryer}{X\_equilibrium}{0.0132756494842}
 \goldrow{kpi}{dryer}{X\_final}{0.0132756494842}
-\goldmore{36}
+\goldmore{40}
 \end{tutgolden}
 
 \clearpage
@@ -2121,7 +2124,7 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \goldrow{kpi}{dryer}{X\_critical}{0.15}
 \goldrow{kpi}{dryer}{X\_equilibrium}{0.0132756494842}
 \goldrow{kpi}{dryer}{X\_final}{0.0132756494842}
-\goldmore{36}
+\goldmore{40}
 \end{tutgolden}
 
 \clearpage
@@ -2161,7 +2164,7 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \goldrow{kpi}{dryer}{X\_critical}{0.5}
 \goldrow{kpi}{dryer}{X\_equilibrium}{0.0134981947613}
 \goldrow{kpi}{dryer}{X\_final}{0.0134981947613}
-\goldmore{36}
+\goldmore{40}
 \end{tutgolden}
 
 \clearpage
@@ -2201,7 +2204,7 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \goldrow{kpi}{dryer}{X\_critical}{0.15}
 \goldrow{kpi}{dryer}{X\_equilibrium}{0.0132756494842}
 \goldrow{kpi}{dryer}{X\_final}{0.0132756494842}
-\goldmore{36}
+\goldmore{40}
 \end{tutgolden}
 
 \clearpage
@@ -2241,7 +2244,7 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \goldrow{kpi}{dryer}{X\_critical}{0.15}
 \goldrow{kpi}{dryer}{X\_equilibrium}{0.0132756494842}
 \goldrow{kpi}{dryer}{X\_final}{0.0132756494842}
-\goldmore{47}
+\goldmore{51}
 \end{tutgolden}
 
 \subsection{economics}
@@ -2292,7 +2295,7 @@ Prices (product/raw-material/labour) live in constant/economics, each dated and 
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
 \goldrow{kpi}{heater}{Q}{300000}
-\goldmore{64}
+\goldmore{67}
 \end{tutgolden}
 
 \clearpage
@@ -2458,7 +2461,7 @@ Closing the inter-effect mass balance turns the cascade into a coupled system (o
 \goldrow{kpi}{effect1}{A}{100}
 \goldrow{kpi}{effect1}{A\_m2}{100}
 \goldrow{kpi}{effect1}{BPE}{0.107198891506}
-\goldmore{92}
+\goldmore{96}
 \end{tutgolden}
 
 \clearpage
@@ -2648,7 +2651,7 @@ Constraints: productConc.F\_mass = 0.3125 kg/s (40 wt\%) effect3.P = 13.5 kPa (t
 \goldrow{kpi}{evap}{F\_cond}{0.2251875}
 \goldrow{kpi}{evap}{F\_cond\_kg\_h}{810.675}
 \goldrow{kpi}{evap}{F\_in}{0.0277777777778}
-\goldmore{26}
+\goldmore{30}
 \end{tutgolden}
 
 \clearpage
@@ -2684,7 +2687,7 @@ Constraints: productConc.F\_mass = 0.3125 kg/s (40 wt\%) effect3.P = 13.5 kPa (t
 \goldrow{kpi}{evap}{F\_cond}{0.2251875}
 \goldrow{kpi}{evap}{F\_cond\_kg\_h}{810.675}
 \goldrow{kpi}{evap}{F\_in}{0.0277777777778}
-\goldmore{25}
+\goldmore{29}
 \end{tutgolden}
 
 \clearpage
@@ -2726,7 +2729,7 @@ Contrast evaporator06 (whose CASE-LOCAL pair overlay omits the T-slots, so ITS N
 \goldrow{kpi}{evap}{F\_cond}{0.3753125}
 \goldrow{kpi}{evap}{F\_cond\_kg\_h}{1351.125}
 \goldrow{kpi}{evap}{F\_in}{0.0277777777778}
-\goldmore{26}
+\goldmore{30}
 \end{tutgolden}
 
 \clearpage
@@ -2762,7 +2765,7 @@ Contrast evaporator06 (whose CASE-LOCAL pair overlay omits the T-slots, so ITS N
 \goldrow{kpi}{evap}{F\_cond}{0.2251875}
 \goldrow{kpi}{evap}{F\_cond\_kg\_h}{810.675}
 \goldrow{kpi}{evap}{F\_in}{0.0281111111111}
-\goldmore{26}
+\goldmore{30}
 \end{tutgolden}
 
 \subsection{flash}
@@ -2803,7 +2806,7 @@ The outlet pressure is a plain editable value -- tweak it in the GUI's Propertie
 \goldrow{kpi}{flashAdiab}{H\_residual}{-0.00215364377073}
 \goldrow{kpi}{flashAdiab}{P}{101325}
 \goldrow{kpi}{flashAdiab}{T\_drop}{11.3381963657}
-\goldmore{1}
+\goldmore{4}
 \end{tutgolden}
 
 \clearpage
@@ -2950,6 +2953,9 @@ Bubble-T of a 30/70 ethanol/water liquid at 1 atm (NRTL gamma, non-ideal). A sat
 \goldrow{kpi}{bubble01}{y\_ethanol}{0.581915403358}
 \goldrow{kpi}{bubble01}{y\_water}{0.418084596646}
 \goldrow{stream}{feed}{T}{350}
+\goldrow{boundary}{global}{H\_feeds\_kW}{0}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{0}
+\goldrow{boundary}{global}{H\_products\_kW}{0}
 \end{tutgolden}
 
 \clearpage
@@ -2975,6 +2981,9 @@ Same conditions as bubbleT01 (NRTL): a strongly non-ideal binary whose bubble te
 \goldrow{kpi}{bubble02}{y\_ethanol}{0.582711434226}
 \goldrow{kpi}{bubble02}{y\_water}{0.417288565785}
 \goldrow{stream}{feed}{T}{350}
+\goldrow{boundary}{global}{H\_feeds\_kW}{0}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{0}
+\goldrow{boundary}{global}{H\_products\_kW}{0}
 \end{tutgolden}
 
 \clearpage
@@ -2993,6 +3002,9 @@ Dew-T of a 30/70 ethanol/water vapour at 1 atm (NRTL gamma, non-ideal). The mirr
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{stream}{feed}{T}{370}
+\goldrow{boundary}{global}{H\_feeds\_kW}{0}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{0}
+\goldrow{boundary}{global}{H\_products\_kW}{0}
 \end{tutgolden}
 
 \clearpage
@@ -3028,7 +3040,7 @@ THE first tutorial: isothermal flash of a 40/60 benzene/toluene feed (100 kmol/h
 \goldrow{kpi}{flash01}{K\_benzene}{1.65136809583}
 \goldrow{kpi}{flash01}{K\_toluene}{0.673501829388}
 \goldrow{kpi}{flash01}{P}{100000}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -3063,7 +3075,7 @@ NOTE (golden re-recorded): the operation pressure formerly read a BARE `P 1.0132
 \goldrow{stream}{liquid}{T}{355}
 \goldrow{stream}{vapor}{T}{355}
 \goldrow{kpi}{flash02}{K\_ethanol}{2.22741301451}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -3098,7 +3110,7 @@ NOTE (golden re-recorded): the operation pressure formerly read a BARE `P 1.0132
 \goldrow{stream}{liquid}{T}{355}
 \goldrow{stream}{vapor}{T}{355}
 \goldrow{kpi}{flash03}{K\_ethanol}{2.07217514574}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -3139,7 +3151,7 @@ Demonstrates the (d) form of stream declaration; see userGuide "Composition basi
 \goldrow{stream}{liquid}{T}{370}
 \goldrow{stream}{vapor}{T}{370}
 \goldrow{kpi}{flash04}{K\_benzene}{1.65136809583}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -3194,7 +3206,7 @@ Toggle the units menu in the GUI to Mass-basis to see the F and composition flip
 \goldrow{stream}{liquid}{T}{365}
 \goldrow{stream}{vapor}{T}{365}
 \goldrow{kpi}{flash05}{K\_benzene}{1.43515088002}
-\goldmore{4}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -3284,7 +3296,7 @@ Soda water at 298 K: 1 bar flash of a CO2-rich feed. The THERMO is not a pile of
 \goldrow{kpi}{node}{phaseSet}{0}
 \goldrow{stream}{flatWater}{T}{298.15}
 \goldrow{stream}{gasOff}{T}{298.15}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -3313,7 +3325,7 @@ THE AGREEMENT IS EXECUTABLE (2026-08-10). Everything above was prose: the golden
 \goldrow{kpi}{node}{phaseSet}{0}
 \goldrow{kpi}{node}{K\_N2}{3.047}
 \goldrow{kpi}{node}{K\_CH4}{0.638}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -3348,7 +3360,7 @@ Ammonia in water IONISES (NH3 + H2O <$\to$ NH4+ + OH-) and VOLATILISES (Henry) a
 \goldrow{kpi}{flash01}{pH}{9.899823444}
 \goldrow{kpi}{flash01}{p\_eq\_sum\_atm}{1}
 \goldrow{kpi}{flash01}{phaseSet}{0}
-\goldmore{5}
+\goldmore{8}
 \end{tutgolden}
 
 \clearpage
@@ -3385,7 +3397,7 @@ THE OPERATING POINT IS DELIBERATELY SUBSATURATED (T fixed at 368.15 K, 1 atm; su
 \goldrow{kpi}{flash01}{dimer\_share}{0.0948608286627}
 \goldrow{kpi}{flash01}{pH}{2.15260602547}
 \goldrow{kpi}{flash01}{p\_dimer\_atm}{0.00389347151965}
-\goldmore{6}
+\goldmore{9}
 \end{tutgolden}
 
 \clearpage
@@ -3412,7 +3424,7 @@ Methane/propane, 273.15 K, 20 bar, z = 0.50/0.50. CH4 is supercritical (Tc = 190
 \goldrow{kpi}{node}{phaseSet}{0}
 \goldrow{stream}{feed}{T}{273.15}
 \goldrow{stream}{liq}{T}{273.15}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -3482,7 +3494,7 @@ The chemistry does the interesting work in the LIQUID: NH3 + HAc $\to$ NH4+ + Ac
 \goldrow{kpi}{flash01}{dimer\_share}{0.0226239722903}
 \goldrow{kpi}{flash01}{pH}{4.6182465052}
 \goldrow{kpi}{flash01}{p\_dimer\_atm}{0.000106738278327}
-\goldmore{7}
+\goldmore{10}
 \end{tutgolden}
 
 \clearpage
@@ -3519,7 +3531,7 @@ On the NRTL backbone the feed's bubble pressure is \textasciitilde{}1.1 atm (gam
 \goldrow{kpi}{flash01}{dimer\_share}{0.0276466273131}
 \goldrow{kpi}{flash01}{pH}{4.98104745363}
 \goldrow{kpi}{flash01}{p\_dimer\_atm}{0.000161043019564}
-\goldmore{15}
+\goldmore{19}
 \end{tutgolden}
 
 \clearpage
@@ -3589,7 +3601,7 @@ On the NRTL backbone the feed's bubble pressure is \textasciitilde{}1.1 atm (gam
 \goldrow{kpi}{flash01}{phaseSet}{0}
 \goldrow{stream}{feed}{T}{313.15}
 \goldrow{stream}{liquid}{T}{313.15}
-\goldmore{6}
+\goldmore{9}
 \end{tutgolden}
 
 \clearpage
@@ -3628,7 +3640,7 @@ KPIs: V/F, pH, p\_benzene\_atm, p\_ethanol\_atm, p\_eq\_sum\_atm (= P, two-phase
 \goldrow{kpi}{flash01}{dimer\_share}{0.00665763422177}
 \goldrow{kpi}{flash01}{pH}{2.89010173914}
 \goldrow{kpi}{flash01}{p\_benzene\_atm}{0.232353913068}
-\goldmore{16}
+\goldmore{19}
 \end{tutgolden}
 
 \clearpage
@@ -3710,7 +3722,7 @@ Contract: docs/design/aqueous-stream-basis-proposal.md.
 \goldrow{kpi}{flash01}{p\_eq\_sum\_atm}{1}
 \goldrow{kpi}{flash01}{p\_ethanol\_atm}{0.011504063078}
 \goldrow{kpi}{flash01}{phaseSet}{0}
-\goldmore{10}
+\goldmore{13}
 \end{tutgolden}
 
 \clearpage
@@ -3763,7 +3775,7 @@ A model boundary note: the two units run DIFFERENT thermo worlds on the same glo
 \goldrow{kpi}{flashNRTL}{P}{101325}
 \goldrow{kpi}{flashNRTL}{Q}{0}
 \goldrow{kpi}{flashNRTL}{Q\_kW}{0}
-\goldmore{23}
+\goldmore{27}
 \end{tutgolden}
 
 \clearpage
@@ -3835,7 +3847,7 @@ A CAVEAT THIS CASE ANNOUNCES AND DOES NOT HIDE: the energy report tries to re-re
 \goldrow{kpi}{freezer01}{aEq\_water}{0.857434120855}
 \goldrow{kpi}{freezer01}{a\_water}{0.857434120931}
 \goldrow{kpi}{freezer01}{phaseSet}{0}
-\goldmore{5}
+\goldmore{8}
 \end{tutgolden}
 
 \clearpage
@@ -3934,7 +3946,7 @@ A leaf carries `type` + `operation` (the unit) + `boundary` (its interface) + `s
 \goldrow{stream}{liquid}{T}{370}
 \goldrow{stream}{vapor}{T}{370}
 \goldrow{kpi}{flash}{K\_benzene}{1.65136809583}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -4072,6 +4084,8 @@ HISTORICAL NOTE: an earlier version of this case carried only a DECHEMA VLE-fit 
 \goldrow{stream}{butanolRich}{T}{320}
 \goldrow{stream}{feed}{T}{320}
 \goldrow{stream}{waterRich}{T}{320}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-8114.08370112}
+\goldmore{2}
 \end{tutgolden}
 
 \clearpage
@@ -4162,7 +4176,7 @@ Plus the one declared approximation, in constant/thermoPhysPropDict: H2 runs out
 \goldrow{kpi}{separator}{F\_alpha}{0.0134132525714}
 \goldrow{kpi}{separator}{F\_beta}{0.0123053585397}
 \goldrow{kpi}{separator}{F\_in}{0.0257186111111}
-\goldmore{20}
+\goldmore{24}
 \end{tutgolden}
 
 \clearpage
@@ -4215,7 +4229,7 @@ HONEST SIMPLIFICATIONS. (1) The loop is isobaric at 200 bar; the makeup compress
 \goldrow{kpi}{converter}{N\_in\_mol\_s}{0.562684679632}
 \goldrow{kpi}{converter}{N\_out\_mol\_s}{0.432717777908}
 \goldrow{kpi}{converter}{P}{20000000}
-\goldmore{55}
+\goldmore{58}
 \end{tutgolden}
 
 \clearpage
@@ -4281,7 +4295,7 @@ HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs 
 \goldrow{stream}{productNH3}{F}{0.967859425136}
 \goldrow{stream}{purge}{F}{0.287376077346}
 \goldrow{stream}{rawLiquid}{F}{0.975315310604}
-\goldmore{219}
+\goldmore{223}
 \end{tutgolden}
 
 \clearpage
@@ -4339,7 +4353,7 @@ TWO tears still close all three loops: cut the two mixer outlets and every strea
 \goldrow{kpi}{FL1}{F\_alpha}{23.6955550394}
 \goldrow{kpi}{FL1}{F\_beta}{3.68430363786}
 \goldrow{kpi}{FL1}{F\_in}{27.3798586772}
-\goldmore{134}
+\goldmore{138}
 \end{tutgolden}
 
 \clearpage
@@ -4368,7 +4382,7 @@ Two flashes in series, each a GENUINE vapour/liquid split. flash1 (370 K) splits
 \goldrow{kpi}{flash2}{F\_alpha}{0.00370154472079}
 \goldrow{kpi}{flash2}{F\_beta}{0.00285992674691}
 \goldrow{kpi}{flash2}{F\_in}{0.0065614714677}
-\goldmore{26}
+\goldmore{29}
 \end{tutgolden}
 
 \clearpage
@@ -4410,7 +4424,7 @@ Compare with flash01\_benzene\_toluene, where the same separation is asked as `i
 \goldrow{stream}{feed}{T}{350}
 \goldrow{stream}{heated}{F}{0.0277777777778}
 \goldrow{stream}{heated}{T}{413.089781612}
-\goldmore{28}
+\goldmore{32}
 \end{tutgolden}
 
 \clearpage
@@ -4437,7 +4451,7 @@ A FACTORY whose children are SECTORS that are themselves composite (each a flows
 \goldrow{utility}{secB.fb}{heating.steamLP.eur\_h}{9.79490485056}
 \goldrow{stream}{bottoms}{T}{378}
 \goldrow{stream}{feed}{T}{365}
-\goldmore{2}
+\goldmore{5}
 \end{tutgolden}
 
 \clearpage
@@ -4464,7 +4478,7 @@ A top-level stream `feed` (the domain inlet) and a sector-INTERNAL edge also nam
 \goldrow{utility}{A.h1}{heating.steamMP.duty\_kW}{1}
 \goldrow{utility}{A.h1}{heating.steamMP.T}{400.742542906}
 \goldrow{utility}{A.h1}{heating.steamMP.kg\_s}{0.000502260170768}
-\goldmore{13}
+\goldmore{16}
 \end{tutgolden}
 
 \clearpage
@@ -4507,7 +4521,7 @@ Reaction kinetics are in constant/reactions Solver defaults are in system/solver
 \goldrow{kpi}{reactor}{k}{0.00357499942014}
 \goldrow{kpi}{reactor}{minus\_r\_ethanol}{14.6085310767}
 \goldrow{kpi}{reactor}{tau\_s}{310.291329081}
-\goldmore{22}
+\goldmore{25}
 \end{tutgolden}
 
 \clearpage
@@ -4548,7 +4562,7 @@ The flash inherits T from its input stream (no explicit operation.T) --- propaga
 \goldrow{kpi}{heater}{T\_out}{361.879907822}
 \goldrow{kpi}{heater}{dT}{11.8799078219}
 \goldrow{kpi}{heater}{vf\_out}{0.00022200059932}
-\goldmore{37}
+\goldmore{40}
 \end{tutgolden}
 
 \clearpage
@@ -4593,7 +4607,7 @@ The flash inherits T from its input stream (no explicit operation.T) --- propaga
 \goldrow{kpi}{heater}{T\_out}{361.879907822}
 \goldrow{kpi}{heater}{dT}{11.8799078219}
 \goldrow{kpi}{heater}{vf\_out}{0.00022200059932}
-\goldmore{58}
+\goldmore{61}
 \end{tutgolden}
 
 \clearpage
@@ -4644,7 +4658,7 @@ The CSTR converts \textasciitilde{}25\% per pass (small volume); without recycle
 \goldrow{kpi}{mixer01}{vf}{0}
 \goldrow{kpi}{reactor}{Da\_kTau}{4.22484004006}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1.49670933668}
-\goldmore{33}
+\goldmore{36}
 \end{tutgolden}
 
 \clearpage
@@ -4685,7 +4699,7 @@ Identical to flash02\_ethanol\_water, but this case demonstrates the RESEARCH WO
 \goldrow{stream}{liquid}{T}{355}
 \goldrow{stream}{vapor}{T}{355}
 \goldrow{kpi}{flash01}{K\_ethanol}{2.22741301451}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -4731,7 +4745,7 @@ This is the case to open in the GUI and to read the reports/ CSVs from: streamTa
 \goldrow{kpi}{column}{T\_top}{349.6579691}
 \goldrow{kpi}{column}{V\_rect}{0.000258333333333}
 \goldrow{kpi}{column}{V\_strip}{0.000258333333333}
-\goldmore{35}
+\goldmore{39}
 \end{tutgolden}
 
 \clearpage
@@ -4783,7 +4797,7 @@ feed      M1 mixer     recycle1 (hot)                              recycle2 (col
 \goldrow{stream}{toFlash}{F}{0.000375486726088}
 \goldrow{stream}{warmCW}{F}{0.0166666666667}
 \goldrow{kpi}{F1}{F\_alpha}{4.97902319203e-05}
-\goldmore{86}
+\goldmore{90}
 \end{tutgolden}
 
 \clearpage
@@ -4835,7 +4849,7 @@ The CSTR converts \textasciitilde{}25\% per pass (small volume); without recycle
 \goldrow{kpi}{mixer01}{vf}{0}
 \goldrow{kpi}{reactor}{Da\_kTau}{4.2248400393}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1.49670933797}
-\goldmore{33}
+\goldmore{36}
 \end{tutgolden}
 
 \subsection{gas-solid}
@@ -4874,7 +4888,7 @@ Gas: 150 kmol/h N2, 300 K, 1 atm Dust: 50 kg/h silica, PSD 1..50 um Filter: 40 m
 \goldrow{kpi}{baghouse}{rho\_gas}{1.13794383208}
 \goldrow{kpi}{baghouse}{solidsCaptured\_mass}{0.0138796420244}
 \goldrow{kpi}{baghouse}{solidsEscaped\_mass}{9.24686396528e-06}
-\goldmore{4}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -4911,7 +4925,7 @@ Gas: 150 kmol/h N2, 300 K, 1 atm Dust: 50 kg/h silica, ?\_p = 2650 kg/m\textasci
 \goldrow{kpi}{cyclone}{rho\_particle}{2650}
 \goldrow{kpi}{cyclone}{solidsCaptured\_mass}{0.0113952002651}
 \goldrow{kpi}{cyclone}{solidsEscaped\_mass}{0.00249368862328}
-\goldmore{8}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage
@@ -4948,7 +4962,7 @@ Gas: 150 kmol/h N2, 300 K, 1 atm Dust: 50 kg/h silica, ?\_p = 2650 kg/m\textasci
 \goldrow{kpi}{cyclone}{rho\_particle}{2650}
 \goldrow{kpi}{cyclone}{solidsCaptured\_mass}{0.0122228937197}
 \goldrow{kpi}{cyclone}{solidsEscaped\_mass}{0.0016659951687}
-\goldmore{8}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage
@@ -4985,7 +4999,7 @@ Gas: 150 kmol/h N2, 300 K, 1 atm Dust: 50 kg/h silica, ?\_p = 2650 kg/m\textasci
 \goldrow{kpi}{cyclone}{loading}{0.0118992372584}
 \goldrow{kpi}{cyclone}{mu\_gas}{1.78433840676e-05}
 \goldrow{kpi}{cyclone}{numberOfTurns}{5}
-\goldmore{8}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage
@@ -5022,7 +5036,7 @@ Gas: 150 kmol/h N2, 300 K, 1 atm Dust: 2000 kg/h silica, ?\_p = 2650 kg/m\textas
 \goldrow{kpi}{cyclone}{mu\_gas}{1.78433840676e-05}
 \goldrow{kpi}{cyclone}{numberOfTurns}{5}
 \goldrow{kpi}{cyclone}{rho\_gas}{1.13794383208}
-\goldmore{8}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage
@@ -5126,6 +5140,8 @@ Use it when a physics model is overkill ("assume 90 \% capture"), as a placehold
 \goldrow{stream}{capturedSolids}{T}{300}
 \goldrow{stream}{cleanGas}{T}{300}
 \goldrow{stream}{feed}{T}{300}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-208.261349603}
+\goldmore{2}
 \end{tutgolden}
 
 \clearpage
@@ -5159,6 +5175,8 @@ Use it when a physics model is overkill ("assume 90 \% capture"), as a placehold
 \goldrow{stream}{capturedSolids}{T}{300}
 \goldrow{stream}{cleanGas}{T}{300}
 \goldrow{stream}{feed}{T}{300}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-208.261349603}
+\goldmore{2}
 \end{tutgolden}
 
 \clearpage
@@ -5192,6 +5210,8 @@ Use it when a physics model is overkill ("assume 90 \% capture"), as a placehold
 \goldrow{stream}{capturedSolids}{T}{300}
 \goldrow{stream}{cleanGas}{T}{300}
 \goldrow{stream}{feed}{T}{300}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-208.261349603}
+\goldmore{2}
 \end{tutgolden}
 
 \clearpage
@@ -5225,6 +5245,8 @@ Use it when a physics model is overkill ("assume 90 \% capture"), as a placehold
 \goldrow{stream}{capturedSolids}{T}{300}
 \goldrow{stream}{cleanGas}{T}{300}
 \goldrow{stream}{feed}{T}{300}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-208.261349603}
+\goldmore{2}
 \end{tutgolden}
 
 \subsection{gibbs}
@@ -5297,7 +5319,7 @@ Water-gas shift reactor at 800 K, 1 bar. CO + water <$\to$ CO2 + H2 Equimolar fe
 \goldrow{kpi}{wgs}{lambda\_O}{-294758.913033}
 \goldrow{kpi}{wgs}{y\_CO}{0.16409231685}
 \goldrow{kpi}{wgs}{y\_CO2}{0.33590768315}
-\goldmore{5}
+\goldmore{8}
 \end{tutgolden}
 
 \clearpage
@@ -5329,7 +5351,7 @@ Industrial methane steam reforming feed: methane plus excess steam (steam-to-car
 \goldrow{kpi}{reformer}{lambda\_O}{-309185.611918}
 \goldrow{kpi}{reformer}{y\_CH4}{0.0024289965616}
 \goldrow{kpi}{reformer}{y\_CO}{0.0979819433622}
-\goldmore{6}
+\goldmore{9}
 \end{tutgolden}
 
 \clearpage
@@ -5361,7 +5383,7 @@ Stoichiometric combustion of methane in air: CH4 + 2 (O2 + 3.76 N2) -$\to$ CO2 +
 \goldrow{kpi}{burner}{lambda\_N}{-201371.845813}
 \goldrow{kpi}{burner}{lambda\_O}{-268835.220885}
 \goldrow{kpi}{burner}{y\_CH4}{7.51542148893e-20}
-\goldmore{9}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -5425,7 +5447,7 @@ Lean methane combustion at $\varphi$ = 0.5 (100 \% excess air): 1 mol CH4 + 4 mo
 \goldrow{kpi}{burner}{lambda\_N}{-162961.775795}
 \goldrow{kpi}{burner}{lambda\_O}{-186456.945423}
 \goldrow{kpi}{burner}{outerIterations}{3}
-\goldmore{9}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -5495,7 +5517,7 @@ TWO LESSONS THIS CASE TEACHES: 1. THE RADICALS' WORK: endothermic dissociation (
 \goldrow{kpi}{burner}{lambda\_N}{-201373.229482}
 \goldrow{kpi}{burner}{lambda\_O}{-269787.239957}
 \goldrow{kpi}{burner}{y\_CH4}{9.68349314225e-20}
-\goldmore{10}
+\goldmore{13}
 \end{tutgolden}
 
 \clearpage
@@ -5535,7 +5557,7 @@ Outlets: `gas` (the dry-ish product gas) + `condensate` (liquid water).
 \goldrow{kpi}{wgs}{converged}{1}
 \goldrow{kpi}{wgs}{lambda\_C}{50085.9480936}
 \goldrow{kpi}{wgs}{lambda\_H}{-24736.1727481}
-\goldmore{12}
+\goldmore{16}
 \end{tutgolden}
 
 \clearpage
@@ -5577,7 +5599,7 @@ Outlets: `gas` (the dry-ish product gas) + `condensate` (liquid water).
 \goldrow{kpi}{wgs}{converged}{1}
 \goldrow{kpi}{wgs}{lambda\_C}{50085.9480935}
 \goldrow{kpi}{wgs}{lambda\_H}{-24736.1727482}
-\goldmore{12}
+\goldmore{16}
 \end{tutgolden}
 
 \clearpage
@@ -5619,7 +5641,7 @@ Outlets: `gas` (the dry-ish product gas) + `condensate` (liquid water).
 \goldrow{kpi}{wgs}{converged}{1}
 \goldrow{kpi}{wgs}{liquidFraction}{0.135779645985}
 \goldrow{kpi}{wgs}{twoPhase}{1}
-\goldmore{12}
+\goldmore{16}
 \end{tutgolden}
 
 \clearpage
@@ -5653,7 +5675,7 @@ N2 + 3 H2 <$\to$ 2 NH3 at 700 K and 200 bar, a stoichiometric feed. The Gibbs re
 \goldrow{kpi}{ammonia}{lambda\_N}{-59416.3950887}
 \goldrow{kpi}{ammonia}{y\_H2}{0.507099864715}
 \goldrow{kpi}{ammonia}{y\_N2}{0.169033288238}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \subsection{heat}
@@ -5698,7 +5720,7 @@ All film/saturation properties are IAPWS-IF97 water. The case carries its own co
 \goldrow{kpi}{condenser}{T\_in}{372.76}
 \goldrow{kpi}{condenser}{T\_out}{372.755918611}
 \goldrow{kpi}{condenser}{T\_wall}{325.855275434}
-\goldmore{14}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -5738,7 +5760,7 @@ What to look at in the output: T\_water\_out against the wet-bulb floor (T\_wb \
 \goldrow{kpi}{tower01}{approach\_K}{7.75695115581}
 \goldrow{kpi}{tower01}{evaporation\_kg\_s}{0.0120283876424}
 \goldrow{kpi}{tower01}{evaporation\_pct\_of\_L}{2.40367446642}
-\goldmore{8}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -5782,7 +5804,7 @@ Expected (eps-NTU, Cp\_water \textasciitilde{} 75 J/mol/K): C\_hot = 100/3.6 $\a
 \goldrow{kpi}{hx}{T\_cold\_in}{300}
 \goldrow{kpi}{hx}{T\_cold\_out}{337.268504628}
 \goldrow{kpi}{hx}{T\_hot\_in}{360}
-\goldmore{10}
+\goldmore{13}
 \end{tutgolden}
 
 \clearpage
@@ -5825,7 +5847,7 @@ Expected order of magnitude (clean water-water): U \textasciitilde{} 2000-3000 W
 \goldrow{kpi}{hx}{Pr\_shell}{3.16405821902}
 \goldrow{kpi}{hx}{Pr\_tube}{5.87094963164}
 \goldrow{kpi}{hx}{Q}{2065604.42087}
-\goldmore{27}
+\goldmore{31}
 \end{tutgolden}
 
 \clearpage
@@ -5864,7 +5886,7 @@ The preheater is heated by the column's rejected condenser duty (\textasciitilde
 \goldrow{kpi}{column01}{R}{2}
 \goldrow{kpi}{column01}{T\_bottom}{382.893530951}
 \goldrow{kpi}{column01}{T\_top}{354.21089412}
-\goldmore{26}
+\goldmore{30}
 \end{tutgolden}
 
 \clearpage
@@ -5904,7 +5926,7 @@ The preheater (UPSTREAM of the column) is heated by the column's CONDENSER duty 
 \goldrow{kpi}{column01}{T\_bottom}{365.99791143}
 \goldrow{kpi}{column01}{T\_top}{354.558892551}
 \goldrow{kpi}{column01}{V\_rect}{0.0347222222222}
-\goldmore{24}
+\goldmore{28}
 \end{tutgolden}
 
 \clearpage
@@ -5949,7 +5971,7 @@ If you instead need a specific T\_out (say "I want exactly 338 K"), wrap the hea
 \goldrow{utility}{heater01}{heating.steamLP.T}{338.338658146}
 \goldrow{utility}{heater01}{heating.steamLP.kg\_s}{0.0457456541629}
 \goldrow{utility}{heater01}{heating.steamLP.eur\_h}{4.32}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -6000,7 +6022,7 @@ Water-water, clean service, 2-pass U-tube (the general arrangement). Expect: \te
 \goldrow{kpi}{hx}{Pr\_shell}{3.16405821902}
 \goldrow{kpi}{hx}{Pr\_tube}{5.87094963164}
 \goldrow{kpi}{hx}{Q}{1888506.69951}
-\goldmore{27}
+\goldmore{31}
 \end{tutgolden}
 
 \clearpage
@@ -6045,7 +6067,7 @@ Numbers are RESULTS pinned by --record. Same clean water-water service, same Gni
 \goldrow{kpi}{hx}{Pr\_shell}{3.16405821902}
 \goldrow{kpi}{hx}{Pr\_tube}{5.87094963164}
 \goldrow{kpi}{hx}{Q}{1888394.47754}
-\goldmore{27}
+\goldmore{31}
 \end{tutgolden}
 
 \clearpage
@@ -6092,7 +6114,7 @@ The cold flow is sized so the bundle is adiabatic: cold absorbs what the two hot
 \goldrow{kpi}{mhx}{Q\_hot\_kW}{-142.611111111}
 \goldrow{kpi}{mhx}{balanceCloses}{1}
 \goldrow{kpi}{mhx}{dT\_min}{30}
-\goldmore{10}
+\goldmore{13}
 \end{tutgolden}
 
 \clearpage
@@ -6128,7 +6150,7 @@ Same outlet vocabulary as rankine02\_water's IF97 boiler/condenser, on the GENER
 \goldrow{stream}{feedVapour}{T}{390}
 \goldrow{stream}{wetOut}{T}{367.494289759}
 \goldrow{kpi}{condenser}{F}{0.0277777777778}
-\goldmore{6}
+\goldmore{10}
 \end{tutgolden}
 
 \clearpage
@@ -6232,7 +6254,7 @@ All film/saturation properties are IAPWS-IF97 water (incl. sigma via R1-76). The
 \goldrow{kpi}{reboiler}{chf\_margin}{0.0709724846287}
 \goldrow{kpi}{reboiler}{dT\_excess}{8.6345895313}
 \goldrow{kpi}{reboiler}{q\_CHF}{1253960.82217}
-\goldmore{10}
+\goldmore{13}
 \end{tutgolden}
 
 \subsection{hydraulics}
@@ -6270,7 +6292,7 @@ Friction factor: Churchill (default) --- one explicit correlation across laminar
 \goldrow{kpi}{P1}{head\_loss\_m}{1.79235705234}
 \goldrow{kpi}{P1}{regime}{2}
 \goldrow{kpi}{P1}{reynolds}{149291.31749}
-\goldmore{4}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -6316,7 +6338,7 @@ Basis: N2 3 kmol/h (the fast light gas) + water 200 kmol/h (the slow heavy liqui
 \goldrow{kpi}{P1}{holdup\_liquid}{0.357791422881}
 \goldrow{kpi}{P1}{jG}{4.07152675186}
 \goldrow{kpi}{P1}{jL}{0.514023769077}
-\goldmore{8}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -6957,7 +6979,7 @@ Data: transcribed from constant/experiments/ethanol-water-101kPa (the raw- data 
 \goldrow{diag}{fit\_NRTL\_ethanol\_water}{n\_data}{11}
 \goldrow{diag}{fit\_NRTL\_ethanol\_water}{n\_params}{4}
 \goldrow{diag}{fit\_NRTL\_ethanol\_water}{params\_at\_bound}{0}
-\goldmore{6}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -7443,7 +7465,7 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
 \goldrow{kpi}{gasGenerator}{W\_shaft}{600000}
 \goldrow{kpi}{gasGenerator}{W\_shaft\_kW}{600}
 \goldrow{kpi}{gasGenerator}{eta\_generator}{0.97}
-\goldmore{98}
+\goldmore{102}
 \end{tutgolden}
 
 \clearpage
@@ -7485,7 +7507,7 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
 \goldrow{kpi}{compressor}{P\_out}{828817.033759}
 \goldrow{kpi}{compressor}{T\_in}{300}
 \goldrow{kpi}{compressor}{T\_out}{592.090873473}
-\goldmore{115}
+\goldmore{119}
 \end{tutgolden}
 
 \clearpage
@@ -7516,7 +7538,7 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
 \goldrow{kpi}{generator}{W\_electric}{9700}
 \goldrow{kpi}{generator}{W\_electric\_kW}{9.7}
 \goldrow{kpi}{generator}{W\_losses}{300}
-\goldmore{30}
+\goldmore{33}
 \end{tutgolden}
 
 \clearpage
@@ -7566,7 +7588,7 @@ Contrast: rankine01\_water runs the SAME architecture on the ideal gas, in the g
 \goldrow{utility}{boiler}{heating.-.unserved}{1}
 \goldrow{utility}{condenser}{cooling.coolingWater.duty\_kW}{-39.0172479639}
 \goldrow{utility}{condenser}{cooling.coolingWater.T}{446.515894355}
-\goldmore{55}
+\goldmore{58}
 \end{tutgolden}
 
 \subsection{reactors}
@@ -7616,7 +7638,7 @@ NOT MODELLED, and named rather than implied: the reactor's SIZE. Luyben specifie
 \goldrow{stream}{Rout}{H2}{0.375506280579}
 \goldrow{stream}{Rout}{water}{0.207264518777}
 \goldrow{kpi}{reactor}{Q\_reaction\_kW}{470.487527672}
-\goldmore{3}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -7688,6 +7710,8 @@ A single gas-phase conversion reactor: toluene + H2 $\to$ benzene + CH4, 75 \% o
 \goldrow{kpi}{reactor}{Q\_sensible\_kW}{0}
 \goldrow{stream}{feed}{T}{900}
 \goldrow{stream}{product}{T}{900}
+\goldrow{boundary}{global}{H\_feeds\_kW}{6015.44639582}
+\goldmore{2}
 \end{tutgolden}
 
 \clearpage
@@ -7755,7 +7779,7 @@ CSTR single-reaction tutorial. The reaction kinetics live in constant/reactions;
 \goldrow{kpi}{reactor}{V\_R}{0.005}
 \goldrow{kpi}{reactor}{minus\_r\_ethanol}{14.6085310767}
 \goldrow{kpi}{reactor}{tau\_s}{310.291329081}
-\goldmore{1}
+\goldmore{4}
 \end{tutgolden}
 
 \clearpage
@@ -7793,7 +7817,7 @@ V\_R is picked large enough (1e-3 m\textasciicircum{}3 for a 1 kmol/h feed) that
 \goldrow{kpi}{wgs}{tau\_s}{134.403584096}
 \goldrow{kpi}{wgs}{xi\_mol\_per\_s}{0.116865549344}
 \goldrow{stream}{feed}{T}{600}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -7872,7 +7896,7 @@ A non-isothermal CSTR can have up to THREE steady states (multiplicity). The New
 \goldrow{kpi}{reactor}{nReactions}{1}
 \goldrow{kpi}{reactor}{newtonResidual}{3.5527136788e-15}
 \goldrow{kpi}{reactor}{tau\_s}{310.291329081}
-\goldmore{4}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -7914,7 +7938,7 @@ Choupo scans, finds them all, prints them, and reports the one nearest `T\_guess
 \goldrow{kpi}{reactor}{nReactions}{1}
 \goldrow{kpi}{reactor}{newtonResidual}{8.32667268469e-16}
 \goldrow{kpi}{reactor}{steadyStates}{3}
-\goldmore{4}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -7954,7 +7978,7 @@ Check it by hand from the printed KPIs: Q\_kW should equal UA (T\_c - T\_out), a
 \goldrow{kpi}{reactor}{nReactions}{1}
 \goldrow{kpi}{reactor}{newtonResidual}{1.38777878078e-16}
 \goldrow{kpi}{reactor}{steadyStates}{1}
-\goldmore{4}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -7996,7 +8020,7 @@ The plateau is not asserted anywhere in the dict. It is where k1 a'\_HOAc a'\_Me
 \goldrow{kpi}{reactor}{tau\_s}{366.524129505}
 \goldrow{kpi}{reactor}{xi\_esterification\_meoac\_mol\_per\_s}{0.0680930737737}
 \goldrow{stream}{feed}{T}{333.15}
-\goldmore{1}
+\goldmore{5}
 \end{tutgolden}
 
 \clearpage
@@ -8036,7 +8060,7 @@ Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3). At 1100 K, 1 bar the 
 \goldrow{kpi}{reformer}{extent\_wgs\_kmol\_h}{0.329306020923}
 \goldrow{kpi}{reformer}{nReactions}{2}
 \goldrow{kpi}{reformer}{newtonResidual}{3.2596148003e-13}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -8069,6 +8093,9 @@ PFR with the same kinetics and conditions as cstr01. For a first-order reaction 
 \goldrow{kpi}{reactor}{X\_limiting}{0.670207404765}
 \goldrow{kpi}{reactor}{dHrxn\_kJ\_per\_mol}{-25.7313020373}
 \goldrow{kpi}{reactor}{tau\_s}{310.291329081}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-100.850423911}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{-2.39518182773}
+\goldmore{1}
 \end{tutgolden}
 
 \clearpage
@@ -8106,6 +8133,7 @@ not the X = 1 a forward-only PFR would chase. V\_R is taken large enough that th
 \goldrow{kpi}{wgs}{X\_limiting}{0.841431577908}
 \goldrow{kpi}{wgs}{dHrxn\_kJ\_per\_mol}{-38.9410707335}
 \goldrow{kpi}{wgs}{tau\_s}{268.807168191}
+\goldmore{3}
 \end{tutgolden}
 
 \clearpage
@@ -8180,7 +8208,7 @@ The exothermic esterification heats its own stream, which accelerates the Arrhen
 \goldrow{kpi}{reactor}{hotSpot\_dT}{104.513818186}
 \goldrow{kpi}{reactor}{k\_esterification\_etac}{0.00357499942014}
 \goldrow{kpi}{reactor}{nReactions}{1}
-\goldmore{4}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -8220,7 +8248,7 @@ Try a `sweep` over operation.V\_R and watch Xn, Mn and PDI climb and the Flory-S
 \goldrow{kpi}{reactor}{Xw}{106.664477667}
 \goldrow{kpi}{reactor}{p\_conversion}{0.981423770929}
 \goldrow{kpi}{reactor}{tau\_s}{5829.95951417}
-\goldmore{4}
+\goldmore{8}
 \end{tutgolden}
 
 \subsection{rotating}
@@ -8263,7 +8291,7 @@ Hand check (ideal gas, Cp \textasciitilde{} 29.2 J/(mol$\ast$K), gamma \textasci
 \goldrow{kpi}{compressor01}{W\_shaft\_kW}{10}
 \goldrow{kpi}{compressor01}{dS\_gen}{4.22615345389}
 \goldrow{kpi}{compressor01}{dT}{335.224206884}
-\goldmore{9}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -8351,7 +8379,7 @@ The wire makes the energy flow visible at the case level --- a single edge in th
 \goldrow{kpi}{compressor}{W\_isen\_kW}{3.75}
 \goldrow{kpi}{compressor}{W\_shaft}{5000}
 \goldrow{kpi}{compressor}{W\_shaft\_kW}{5}
-\goldmore{24}
+\goldmore{27}
 \end{tutgolden}
 
 \clearpage
@@ -8392,7 +8420,7 @@ Hand check (water: v \textasciitilde{} 1.8e-5 m3/mol, Cp\_liq \textasciitilde{} 
 \goldrow{kpi}{pump01}{dT}{0.927152317881}
 \goldrow{kpi}{pump01}{eta}{0.65}
 \goldrow{kpi}{pump01}{head\_m}{735.848502288}
-\goldmore{7}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage
@@ -8435,7 +8463,7 @@ Hand check (water: v \textasciitilde{} 1.8e-5 m3/mol): F = 36 kmol/h = 10 mol/s 
 \goldrow{kpi}{pump02}{dT}{0.373735099338}
 \goldrow{kpi}{pump02}{eta}{0.65}
 \goldrow{kpi}{pump02}{head\_m}{296.620531272}
-\goldmore{7}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage
@@ -8475,7 +8503,7 @@ Per the credo, P\_out is a RESULT. If the turbine must exhaust at a fixed back-p
 \goldrow{kpi}{turbine01}{dS\_gen}{3.19034018436}
 \goldrow{kpi}{turbine01}{dT}{-317.064793523}
 \goldrow{kpi}{turbine01}{dT\_isen}{-375.536146266}
-\goldmore{5}
+\goldmore{8}
 \end{tutgolden}
 
 \subsection{separation}
@@ -8520,7 +8548,7 @@ The run header prints, out loud, what the equilibrium shortcut does NOT model (b
 \goldrow{kpi}{h2psa}{purgeRatio}{0.15}
 \goldrow{kpi}{h2psa}{purity\_H2}{0.984779152498}
 \goldrow{kpi}{h2psa}{recovery\_H2}{0.735762032407}
-\goldmore{8}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage
@@ -8557,7 +8585,7 @@ This teaching case uses a CASE-LOCAL synthetic property anchor: cpSolid = 920 J/
 \goldrow{stream}{cleanHe}{T}{298}
 \goldrow{stream}{feed}{T}{298}
 \goldrow{stream}{regenerationGas}{T}{298}
-\goldmore{8}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -8604,7 +8632,7 @@ Operation block is HARDWARE only (the credo): pipe diameter, length, rise. Every
 \goldrow{kpi}{node}{nBends}{0}
 \goldrow{kpi}{node}{particleWallFriction}{0.4}
 \goldrow{kpi}{node}{rho\_gas}{3.39180174393}
-\goldmore{12}
+\goldmore{15}
 \end{tutgolden}
 
 \clearpage
@@ -8631,7 +8659,7 @@ The same sand-in-N2 service as pneumaticConveyor01 (loading \textasciitilde{}2),
 \goldrow{kpi}{node}{nBends}{6}
 \goldrow{kpi}{node}{particleWallFriction}{0.4}
 \goldrow{kpi}{node}{rho\_gas}{3.39180174393}
-\goldmore{12}
+\goldmore{15}
 \end{tutgolden}
 
 \subsection{thermo}
@@ -8669,7 +8697,7 @@ Z-SEEDING NOTE (glass-box honesty): The expansion captures the member mole fract
 \goldrow{utility}{airHeater}{heating.steamHP.T}{468.478847995}
 \goldrow{utility}{airHeater}{heating.steamHP.kg\_s}{0.00291715285881}
 \goldrow{utility}{airHeater}{heating.steamHP.eur\_h}{0.324}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -8743,7 +8771,7 @@ Before the 2026-08-09 heater fix the sensible inversion happened to track the gl
 \goldrow{kpi}{speciator}{K\_NH3}{0.777804159627}
 \goldrow{kpi}{speciator}{K\_ethanol}{0.180718643037}
 \goldrow{kpi}{speciator}{K\_water}{0.0721940189402}
-\goldmore{34}
+\goldmore{38}
 \end{tutgolden}
 
 \clearpage
@@ -8782,7 +8810,7 @@ Pedagogical caveat: the stream that crosses from the turbine (SRK) into the flas
 \goldrow{kpi}{flash}{Q\_kW}{-413.177313739}
 \goldrow{kpi}{flash}{T}{353}
 \goldrow{kpi}{flash}{V\_over\_F}{0.384521828832}
-\goldmore{30}
+\goldmore{34}
 \end{tutgolden}
 
 \subsection{thermoTest}
@@ -8856,7 +8884,7 @@ BPE NOTE (2026-07-02, a story in three acts): (1) frozen 25 C surface $\to$ BPE 
 \goldrow{kpi}{evap}{F\_cond}{0.2251875}
 \goldrow{kpi}{evap}{F\_cond\_kg\_h}{810.675}
 \goldrow{kpi}{evap}{F\_in}{0.0277777777778}
-\goldmore{26}
+\goldmore{30}
 \end{tutgolden}
 
 \clearpage
@@ -8935,7 +8963,7 @@ thermoTest model5\_nrtl\_flash / flowsheetDict Water + ethanol as MOLECULAR comp
 \goldrow{kpi}{flash}{phaseSet}{0}
 \goldrow{stream}{feed}{T}{353}
 \goldrow{stream}{liquid}{T}{353}
-\goldmore{3}
+\goldmore{6}
 \end{tutgolden}
 
 \subsection{userops}
@@ -8971,6 +8999,10 @@ The op converts a SPECIFIED fraction of the reactant to the product (no kinetics
 \goldrow{kpi}{reactor}{converted\_kmol\_h}{0.8}
 \goldrow{stream}{feed}{T}{320}
 \goldrow{stream}{out}{T}{320}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-51.7413268856}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{0}
+\goldrow{boundary}{global}{H\_products\_kW}{-48.028683133}
+\goldrow{boundary}{global}{residual\_kW}{-3.71264375254}
 \end{tutgolden}
 
 \clearpage
@@ -9005,6 +9037,9 @@ The op is a SHORTCUT separator: a per-component recovery to the overhead. Here a
 \goldrow{stream}{bottoms}{T}{360}
 \goldrow{stream}{feed}{T}{360}
 \goldrow{stream}{overhead}{T}{360}
+\goldrow{boundary}{global}{H\_feeds\_kW}{1108.06863474}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{0}
+\goldrow{boundary}{global}{H\_products\_kW}{1108.06863474}
 \end{tutgolden}
 
 \subsection{utilities}

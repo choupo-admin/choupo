@@ -21,3 +21,4 @@ diag    fit_NRTL_ethanol_water t_crit95         2.365              1e-4
 diag    fit_NRTL_ethanol_water well_conditioned 0                  1e-4
 diag    fit_NRTL_ethanol_water chi2_in_sample   1.04279          1e-4
 diag    fit_NRTL_ethanol_water n_heldout        0                1e-4
+verdict fit_NRTL_ethanol_water verdict          notClaimed       exact
