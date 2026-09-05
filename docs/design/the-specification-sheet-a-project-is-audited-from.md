@@ -253,3 +253,48 @@ pattern nobody argued for.
 report this writer does not produce (`massBalance_byUnit.csv`), because that
 is the only arm that could catch a port mass computed without the crystals,
 and it did.
+
+## 9. Slice 3 (2026-09-05, same day as slice 2): the tree says what KIND of folder it draws
+
+Vítor, on the flagship's Case tree: *"as cores podem ser melhoradas… vê com os
+generais se os alunos acham aquilo intuitivo.  Este caso é muito importante
+porque eles vão terminar com um caso tão ou mais complexo que estes."*  A
+review with three students' eyes (one from `flash01`, one who authored two
+sectors, one asking "what did the run produce and what did I write") found
+the same fact under all three confusions: the tree distinguished two kinds
+(`system/`/`constant/` yellow, everything else cyan) and sorted the rest
+alphabetically, so on the flagship `converged/` sat between two sectors **and
+read as a fifth sector**, and nothing marked the folders the run overwrites.
+The code knew — the worker harvests exactly the run outputs, the workspace
+merges them from their own result fields — and threw the fact away before
+drawing.  It lived in five places (worker list, two result fields, the
+workspace merge, `CaseIntro`'s own positive keep-list) and as a
+classification in none.
+
+**Adopted.**  `caseTree.kindOf()` is the ONE home: `declared` (`system/`,
+`constant/`) · `state0` (`0/`) · `sector` (any other folder — a sector IS a
+case) · `output` (`RUN_OUTPUT_ROOTS`: `converged/ design/ iterations/
+economics/ postProcessing/` and numeric instants).  Order by kind then name
+(README · declared · `0/` · sectors · outputs); declared yellow, `0/` the
+same family lighter, sectors cyan with a sitemap glyph, outputs dimmed with
+a `run output` badge at the root whose tooltip says *edit `system/` or `0/`
+instead*.  `CaseIntro` filters by `kindOf` instead of its positive list —
+which had silently hidden every sector of a fractal case from the intro
+(task #81, closed here).  The worker's harvest list is pinned as a SUBSET of
+`RUN_OUTPUT_ROOTS` (it harvests what MEMFS produces today; the tree
+classifies what the disk can hold).
+
+**Trap paid for, predicted by the reviewer and then met:** `squash()` joins
+`DRYING` + `system` into one label with prefix `DRYING/system`; a kind read
+from the tail called that node *declared* and sorted the sector FIRST at the
+root, above `system/` itself.  A node's kind is decided on its first OWN
+segment (`nodeKind`), never on a squashed tail; the test that caught it is
+kept.
+
+**Rejected:** a synthetic "Sectors" heading (invents a level the disk does
+not have — the tree's founding rule), hiding or collapsing outputs (the third
+student needs to see them), colouring leaves by extension (noise in a pane
+this narrow — weight carries more than hue).  **Not verified:** whether real
+students find it intuitive; three imagined readers are a design argument,
+not a measurement.
+

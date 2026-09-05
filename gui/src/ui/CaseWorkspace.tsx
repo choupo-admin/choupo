@@ -72,17 +72,9 @@ License
 
 import { useMemo, useState } from "react";
 import { useReducedMotion } from "@mantine/hooks";
-import {
-  ActionIcon,
-  Box,
-  Group,
-  ScrollArea,
-  SegmentedControl,
-  Stack,
-  Text,
-} from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
-import { buildTree, squash, sortedChildren, type TreeNode } from "./caseTree";
+import { ActionIcon, Badge, Box, Group, ScrollArea, SegmentedControl, Stack, Text, Tooltip } from "@mantine/core";
+import { IconChevronDown, IconChevronRight, IconSitemap } from "@tabler/icons-react";
+import { buildTree, nodeKind, squash, sortedChildren, type TreeNode } from "./caseTree";
 
 import { lessonOutline } from "../case/lesson.js";
 import { parse, type DictEntry } from "../dict/index.js";
@@ -667,7 +659,16 @@ function FileTree({
 
   const renderNode = (node: TreeNode, depth: number) => {
     const isCollapsed = collapsed.has(node.prefix);
-    const declared = node.prefix === "system" || node.prefix === "constant";
+    //  Colour, weight and glyph follow the node's KIND (caseTree.kindOf -- the
+    //  one home): what the case declares in yellow, its initial state in the
+    //  same family, a sector in the case colour with a sitemap glyph (a sector
+    //  IS a case), and what the RUN wrote dimmed with a badge, so a student
+    //  never edits a file the next run overwrites.  Hue carries less than
+    //  weight in a pane this narrow, which is why outputs are also lighter.
+    const kind = nodeKind(node);
+    const colour = kind === "declared" ? "yellow" : kind === "state0" ? "yellow.3"
+                 : kind === "sector" ? "accent" : "dimmed";
+    const weight = kind === "output" ? 400 : kind === "state0" ? 500 : 600;
     return (
       <Stack key={node.prefix} gap={0} mb={depth === 0 ? 4 : 0}>
         <Group
@@ -684,9 +685,17 @@ function FileTree({
           >
             {isCollapsed ? <IconChevronRight size={12} /> : <IconChevronDown size={12} />}
           </ActionIcon>
-          <Text size="xs" c={declared ? "yellow" : "accent"} fw={600} ff="monospace">
+          {kind === "sector" && <IconSitemap size={11} style={{ opacity: 0.8, flex: "none" }} />}
+          <Text size="xs" c={colour} fw={weight} ff="monospace">
             {node.label}/
           </Text>
+          {kind === "output" && depth === 0 && (
+            <Tooltip label="Written by the solver on every run and regenerated whole -- edit system/ or 0/ instead." withArrow>
+              <Badge size="xs" variant="light" color="gray" style={{ textTransform: "none", cursor: "help" }}>
+                run output
+              </Badge>
+            </Tooltip>
+          )}
         </Group>
         {!isCollapsed && (
           <>

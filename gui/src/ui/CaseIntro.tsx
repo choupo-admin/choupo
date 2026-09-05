@@ -53,6 +53,7 @@ import { IconArrowLeft, IconFolderCode, IconPlayerPlay, IconRobot, IconRoute, Ic
 
 import { useStore } from "../state/store.js";
 import { Lesson } from "./Lesson.js";
+import { kindOf } from "./caseTree";
 
 const APP_LABEL: { [k: string]: string } = {
   choupoSolve: "Steady-state",
@@ -140,9 +141,15 @@ function modelOf(block: unknown): string | undefined {
 // The case's REAL file tree (the simulation files only -- not teaching/agent
 // artefacts), so the student sees Choupo is a folder of plain-text dicts.
 function caseTree(rawFiles: { [p: string]: string }, caseName: string): string {
+  //  The simulation files are everything the student AUTHORS: the marker, the
+  //  declared dicts, the initial state and every sector's own tree.  What the
+  //  RUN writes is excluded through caseTree.kindOf -- the ONE home for that
+  //  fact (this used to be a positive list of three roots, which silently
+  //  hid every sector of a fractal case from the intro).  Root-level prose
+  //  (README.md and the like) is teaching material, not a simulation file.
   const keep = (p: string) =>
-    /\.cho$/.test(p) || p.startsWith("system/") || p.startsWith("constant/")
-      || p.startsWith("0/");
+    /\.cho$/.test(p)
+      || (p.includes("/") && kindOf(p.slice(0, p.lastIndexOf("/"))) !== "output");
   const paths = Object.keys(rawFiles).filter(keep).sort();
   const top: string[] = [];
   const folders: { [f: string]: string[] } = {};

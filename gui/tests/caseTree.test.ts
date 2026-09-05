@@ -16,7 +16,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { buildTree, squash, sortedChildren } from "../src/ui/caseTree";
+import { buildTree, kindOf, nodeKind, RUN_OUTPUT_ROOTS, squash, sortedChildren } from "../src/ui/caseTree";
 
 const plant = [
   "ChemicalPlantTutorial.cho",
@@ -81,10 +81,14 @@ describe("caseTree: the shape", () => {
     expect(Array.from(t.children.keys())).toEqual(["system"]);
   });
 
-  it("orders system/ then constant/ then the rest alphabetically, at every depth", () => {
-    const t = squash(buildTree(plant));
+  it("orders by KIND -- declared, 0/, sectors, run outputs -- then by name, at every depth", () => {
+    const t = squash(buildTree([...plant,
+      "0/RawJuice", "DRYING/system/flowsheetDict", "iterations/0001/RawJuice"]));
+    //  Alphabetically `converged` would sit between CONCENTRATION and DRYING
+    //  (the flagship screenshot: a fifth sector).  By kind it goes last.
     expect(sortedChildren(t).map((n) => n.label))
-      .toEqual(["system", "constant", "CONCENTRATION", "converged/CONCENTRATION", "design"]);
+      .toEqual(["system", "constant", "0", "CONCENTRATION", "DRYING/system",
+                "converged/CONCENTRATION", "design", "iterations/0001"]);
     const conc = t.children.get("CONCENTRATION")!;
     expect(sortedChildren(conc).map((n) => n.label)).toEqual(["system", "Evap1/system", "Evap2/system"]);
   });
@@ -96,6 +100,41 @@ describe("caseTree: the shape", () => {
     expect(a).toBe("system");
     expect(b).toBe("CONCENTRATION/system");
     expect(a).not.toBe(b);
+  });
+});
+
+describe("caseTree.kindOf: one home for what the RUN writes", () => {
+  it("classifies by PATH, so a squashed output label is still an output", () => {
+    expect(kindOf("system")).toBe("declared");
+    expect(kindOf("CONCENTRATION/system")).toBe("declared");
+    expect(kindOf("0")).toBe("state0");
+    expect(kindOf("0/FERMENTATION")).toBe("state0");
+    expect(kindOf("CONCENTRATION")).toBe("sector");
+    expect(kindOf("CONCENTRATION/Cryst")).toBe("sector");
+    expect(kindOf("converged")).toBe("output");
+    expect(kindOf("converged/CONCENTRATION")).toBe("output");
+    expect(kindOf("design/CONCENTRATION/Cryst")).toBe("output");
+    expect(kindOf("0.01")).toBe("output");
+    expect(kindOf("iterations")).toBe("output");
+  });
+  it("a SQUASHED sector keeps its own kind (DRYING/system is the sector DRYING, not a declared dict)", () => {
+    const t = squash(buildTree(["system/controlDict", "DRYING/system/flowsheetDict", "converged/DRYING/Out"]));
+    const byLabel = new Map(sortedChildren(t).map((n) => [n.label, nodeKind(n)]));
+    expect(byLabel.get("DRYING/system")).toBe("sector");
+    expect(byLabel.get("converged/DRYING")).toBe("output");
+    expect(byLabel.get("system")).toBe("declared");
+  });
+  it("the worker harvests a SUBSET of the roots the tree classifies as output", () => {
+    const worker = readFileSync(resolve(__dirname, "..", "public/workers/solverWorker.js"), "utf8");
+    const m = worker.match(/OUTPUT_ROOTS\s*=\s*\[([^\]]*)\]/);
+    expect(m).not.toBeNull();
+    const harvested = m![1]!.split(",").map((x) => x.trim().replace(/"/g, "")).filter(Boolean);
+    for (const r of harvested) expect(RUN_OUTPUT_ROOTS).toContain(r);
+  });
+  it("CaseIntro reads the one home instead of its own keep-list", () => {
+    const intro = readFileSync(resolve(__dirname, "..", "src/ui/CaseIntro.tsx"), "utf8");
+    expect(intro).toMatch(/kindOf\(/);
+    expect(intro).not.toMatch(/p\.startsWith\("system\/"\) \|\| p\.startsWith\("constant\/"\)/);
   });
 });
 

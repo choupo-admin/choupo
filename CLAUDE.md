@@ -1013,6 +1013,12 @@ trees from ONE list (`OUTPUT_ROOTS`) instead of a hard-coded converged literal
 — the literal being exactly why the sheets did not reach the browser the day
 the engine wrote them.  `designFiles` is its own `RunResult` field: folding it
 into `convergedFiles` would make "no sizing pass" read as "did not solve".
+**Slice 3, same day:** the tree draws by KIND — `caseTree.kindOf()` is the
+ONE home for *declared / initial state / sector / run output* (the fact had
+five homes in the GUI and none in the tree, so `converged/` read as a fifth
+sector on the flagship); outputs dimmed with a `run output` badge, sectors
+with a glyph, order by kind; `CaseIntro` reads the same home.  Trap: a
+squashed label's kind is decided on its first OWN segment, never its tail.
 Gate:
 `check_design_sheet` (its load-bearing arm reads `massBalance_byUnit.csv`, a
 report this writer does not produce, which is what caught the crystals).
@@ -1041,6 +1047,26 @@ round-off and hides that it is one.  Gate: `check_design_sheet` arms (i)
 dicts).  NOT gated, said plainly: whether a basis string is TRUE of its
 sizer.  Record:
 [`docs/design/a-basis-nobody-stated-and-a-volume-in-kilomoles.md`](docs/design/a-basis-nobody-stated-and-a-volume-in-kilomoles.md).
+
+**A FIRST LAW THE GUI COMPUTED FOR ITSELF (2026-09-05).**  The live site
+showed the flagship plant violating the first law by 372.5 kW (1.79 %); the
+engine's own energyBalance report closes the same run at 34.4 kW (0.163 %).
+The GUI was summing utility-ALLOCATED duties itself, so every cooling duty no
+utility served was absent from its sum — a second home for a balance the
+2026-07-19 doctrine makes engine-owned, and the two disagreed by an order of
+magnitude.  Rule: **the plant-boundary first law travels on the result
+(`globalEnergyBoundary`, ONE object on ONE line) and the GUI DRAWS it**;
+absent, it says the report did not run and computes nothing in its place (a
+fallback computation is the second home under another name).  `boundary`
+golden kind, rows appended corpus-wide with `--record-append` (adds only — a
+`--record` sweep would silently re-pin any drift within tolerance); the
+residual is pinned only when ≥ 1 W, threshold in the generator alone (the
+column13 lesson).  Found on the way: the flagship's golden was NEVER in the
+full suite — fractal `children` cases were skipped on a reason settled
+2026-06-08 — and is in the walk now; and three of its units do not close
+(Evap1 98.45 %, Cryst 110.66 %, Fermentor 82.02 %), the engine's own stated
+finding, left as such.  Gate: `check_energy_boundary_pinned`.  Record:
+[`docs/design/a-first-law-the-gui-computed-for-itself.md`](docs/design/a-first-law-the-gui-computed-for-itself.md).
 
 **A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04).**  `flattenNode`
 knows each leaf's owning sector exactly — `nsPrefix` IS the parent chain — and
