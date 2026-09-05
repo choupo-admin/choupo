@@ -61,3 +61,4 @@ equipment dryer                  values.design_residence_s 0.242937288631   1e-4
 equipment dryer                  values.design_targetSize_um 40               1e-4
 equipment dryer                  values.design_wheelSpeed_rpm 39751.5114383    1e-4
 equipment dryer                  values.pressureDesign 1                1e-4
+equipment dryer                  basis            W_evap_=_water_evaporated_(unit_result;_pass-through) exact

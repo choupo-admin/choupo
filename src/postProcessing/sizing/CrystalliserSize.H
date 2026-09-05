@@ -30,16 +30,24 @@ Class
 
 Description
     Sizing for an MSMPR crystalliser.  The characteristic size is the magma
-    (working) volume V_magma [m^3], recovered from the unit-op KPIs as the
-    liquor volumetric flow times the mean residence time:
+    (working) volume V_magma [m^3] -- the unit's DECLARED `operation.volume`,
+    which the unit publishes as a KPI and this sizer passes through (the
+    MSMPR is a rating model: V is its input, tau = V/Q its result).  The
+    basis says so.
 
-        V_magma = liquorFlow [m^3/s] * residenceTime [s]
+    Until 2026-09-05 this header read "V_magma = liquorFlow [m^3/s] *
+    residenceTime [s]" and the code did exactly that -- but `liquorFlow` is
+    the unit's MOLAR flow (kmol/s, labelled so in Crystalliser.cpp), so the
+    "volume" was a molar holdup: 18.46 "m^3" on a vessel declared 1.0 m^3,
+    costed on the flagship plant.  Found by writing the basis string.
 
     Costed with a single-anchor power-law (Cp = Cp_ref*(V/V_ref)^n,
     n ~ 0.6), near-atmospheric -> F_P = 1.  Wetted material sets F_M.
 
     Inputs (from result.kpis[unitName]):
-        liquorFlow       -- mother-liquor volumetric flow [m^3/s]
+        V_magma          -- declared working volume [m^3]   (the size key)
+        throughput       -- volumetric flow Q [m^3/s]       (tau is taken on it)
+        liquorFlow       -- mother-liquor MOLAR flow [kmol/s] (reported, not a size)
         residenceTime    -- mean residence time [s]
     Inputs (from designRules):
         pressureDesign   -- design pressure [bar] (default 1, near-atm)

@@ -60,6 +60,7 @@ EquipmentSizing SprayDryerSize::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "sprayDryer";
     d.material       = material.name;
+    d.basis          = "W_evap = water_evaporated (unit result; pass-through)";
     d.set("W_evap",         W_evap,      "kg/s");
     d.set("pressureDesign", P_des,       "bar");
     if (k.count("chamberDiameter")) d.set("chamberDiameter", k.at("chamberDiameter"), "m");

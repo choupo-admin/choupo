@@ -1019,6 +1019,29 @@ report this writer does not produce, which is what caught the crystals).
 Record:
 [`docs/design/the-specification-sheet-a-project-is-audited-from.md`](docs/design/the-specification-sheet-a-project-is-audited-from.md).
 
+**EVERY SIZER STATES ITS BASIS, AND WRITING ONE FOUND A VOLUME IN KILOMOLES
+(2026-09-05).**  The Reports header promised a design basis for every item
+and one sizer in eight stated one.  Rule: a sizer states the rule that
+produced its Guthrie size key, AT the site where the rule is applied; a
+pass-through says it is one; `EquipmentSizing::basis` is the one home and
+`(not stated)` stays the rendering of an empty field on every surface, so a
+forgotten basis is visible rather than defaulted away.  Writing the string
+for `CrystalliserSize` required reading what its inputs ARE: it multiplied
+`liquorFlow` — the unit's MOLAR flow, kmol/s, labelled so in its own source —
+by the residence time and called the product m³, so the flagship plant's
+crystalliser was costed on a molar holdup an order of magnitude too large,
+at exit 0, with a golden pinning it to four decimals.  **A golden pins what
+a run PRINTS; only a recomputation from the DECLARATION can see a size that
+is wrong** — the MSMPR is a rating model, so the unit now publishes its
+declared volume and the sizer passes it through.  Deriving it as
+`throughput × residenceTime` was rejected: it reproduces the declaration to
+round-off and hides that it is one.  Gate: `check_design_sheet` arms (i)
+(source: every sizer assigns `d.basis`) and (j) (a crystalliser sheet's
+`V_magma` equals the case's declared `operation.volume`, read from the
+dicts).  NOT gated, said plainly: whether a basis string is TRUE of its
+sizer.  Record:
+[`docs/design/a-basis-nobody-stated-and-a-volume-in-kilomoles.md`](docs/design/a-basis-nobody-stated-and-a-volume-in-kilomoles.md).
+
 **A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04).**  `flattenNode`
 knows each leaf's owning sector exactly — `nsPrefix` IS the parent chain — and
 it concatenated that into the qualified name and kept only the string, so

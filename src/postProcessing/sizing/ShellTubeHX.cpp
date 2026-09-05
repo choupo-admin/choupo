@@ -68,6 +68,7 @@ EquipmentSizing ShellTubeHX::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "shellTubeHX";
     d.material       = material.name;
+    d.basis          = "A = Q/(U*LMTD) with U and LMTD author-set";
     d.set("Q_kW",           Q_kW,           "kW");
     d.set("U",              U,              "W/(m2.K)");
     d.set("LMTD",           LMTD,           "K");

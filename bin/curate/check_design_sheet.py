@@ -256,6 +256,7 @@ def check_case(rel, expect_sector, problems, notes):
                             for k in ("C_purchased", "C_bare_module", "C_total_module")
                             if k in chead and chead.index(k) < len(r)}
 
+    sheets = []   # (equipmentType, V_magma) for arm (j)
     #  The per-unit mass balance, written by a DIFFERENT pass than the sheet.
     mb = find_csv(rel, "massBalance", "massBalance_byUnit.csv")
     mhead, mrows = csv_rows(mb)
@@ -302,6 +303,8 @@ def check_case(rel, expect_sector, problems, notes):
                     % (rel, path.relative_to(ROOT / rel)))
 
         sheet = parse_sheet(path.read_text(errors="replace"))
+        if "V_magma" in sheet["sizing"]:
+            sheets.append((sheet["header"].get("equipmentType"), sheet["sizing"]["V_magma"][0]))
         checked += 1
 
         # ---------------------------------------------------------------- (h)
@@ -374,6 +377,7 @@ def check_case(rel, expect_sector, problems, notes):
                     % (rel, unit, sout, bout))
             notes.append("%s in=%.1f out=%.1f kg/h" % (unit, sin, sout))
 
+    check_crystalliser_volume(rel, sheets, problems, notes)
     return checked
 
 
@@ -401,6 +405,75 @@ def check_refusal(problems):
                 "%s writes `values[...]` directly, past `set()` -- the one "
                 "call that records the unit beside the value."
                 % f.relative_to(ROOT))
+
+
+def check_basis_stated(problems):
+    """(i) SOURCE -- every sizer assigns `d.basis`.  Structural on purpose: a
+    list of the expected strings would be a second home for the sizers' own
+    vocabulary, and a sizer that forgets shows `(not stated)` on every surface
+    at once, which is the visible form this arm keeps visible.  It cannot
+    check that a basis is TRUE of its sizer; only a reader can (2026-09-05:
+    the first one read found a kmol holdup labelled m3)."""
+    for f in sorted((ROOT / "src/postProcessing/sizing").glob("*Size.cpp")) + \
+             [ROOT / "src/postProcessing/sizing/ShellTubeHX.cpp",
+              ROOT / "src/postProcessing/sizing/StirredTank.cpp"]:
+        if f.name == "EquipmentSize.cpp":
+            continue
+        src = f.read_text(errors="replace")
+        if "::size(" in src and not re.search(r"\b(d\.basis|basis)\s*=", src):
+            problems.append(
+                "%s states no design basis (`d.basis = ...`).  A size whose "
+                "rule is invisible cannot be defended, only reported -- and the "
+                "GUI header promises a basis for every item."
+                % f.relative_to(ROOT))
+
+
+def declared_crystalliser_volumes(rel):
+    """Every `type crystalliser` block's `volume` under the case, read from
+    the CASE DICTS -- never from the run."""
+    vols = []
+    for fd in sorted((ROOT / rel).rglob("flowsheetDict")):
+        txt = fd.read_text(errors="replace")
+        for m in re.finditer(r"type\s+crystalliser\s*;", txt):
+            tail = txt[m.end():m.end() + 4000]
+            v = re.search(r"\bvolume\s+([0-9.eE+-]+)\s*(\S*?)\s*;", tail)
+            if not v:
+                continue
+            val, unit = float(v.group(1)), v.group(2)
+            if unit in ("m3", "m^3", ""):
+                vols.append(val)
+            elif unit == "L":
+                vols.append(val * 1.0e-3)
+            else:
+                vols.append(None)      # a unit this arm does not convert: say so
+    return vols
+
+
+def check_crystalliser_volume(rel, sheets, problems, notes):
+    """(j) INDEPENDENT -- a crystalliser sheet's V_magma IS the unit's declared
+    `operation.volume`.  This is the arm that would have fired for the whole
+    life of the kmol-as-m3 defect: the golden pinned what the run PRINTED, and
+    only a recomputation from the declaration can see a size that is wrong."""
+    got = sorted(v for (ty, v) in sheets if ty == "crystalliser")
+    if not got:
+        return
+    want = declared_crystalliser_volumes(rel)
+    if any(w is None for w in want):
+        problems.append("%s: a crystalliser declares its volume in a unit this "
+                        "arm does not convert -- extend the arm, do not skip it."
+                        % rel)
+        return
+    want = sorted(want)
+    if len(got) != len(want) or any(not close(a, b, 1.0e-6) for a, b in zip(got, want)):
+        problems.append(
+            "%s: crystalliser sheet(s) size V_magma = %s m3 but the case "
+            "declares operation.volume = %s m3.  The MSMPR is a rating model: "
+            "its volume is the INPUT, and a sizer that computes something else "
+            "is sizing a different vessel (2026-09-05: liquorFlow[kmol/s] * tau "
+            "gave 18.46 'm3' on a 1.0 m3 vessel)."
+            % (rel, got, want))
+    else:
+        notes.append("crystalliser V_magma %s m3 = declared volume" % got)
 
 
 def check_ignored(problems):
@@ -456,6 +529,7 @@ def main() -> int:
 
     check_ignored(problems)
     check_refusal(problems)
+    check_basis_stated(problems)
 
     if problems:
         print("check_design_sheet: FAILED")
@@ -481,9 +555,13 @@ def main() -> int:
           "design records.  NOT CHECKED: that the engine's own parser accepts "
           "a sheet (arm (h) is structural, written in Python; the day anything "
           "reads one back, that reader replaces this arm), whether any number "
-          "is RIGHT, nesting deeper than one level (no corpus case nests "
-          "twice), the GUI's file tree (which groups by the first path segment "
-          "and would draw design/ flat), and every case but these two."
+          "is RIGHT beyond the crystalliser volume (arm (j) recomputes THAT "
+          "from the declared operation.volume, which is how a kmol holdup "
+          "labelled m3 would have been caught), whether any stated basis is "
+          "TRUE of its sizer (arm (i) only requires that every sizer states "
+          "one), nesting deeper than one level (no corpus case nests twice), "
+          "and every case but these two.  The GUI's Case tree is recursive "
+          "since 2026-09-05 and carries its own tests."
           % (n1, n2, "; ".join(notes[:3]) if notes else "no balance rows read"))
     return 0
 

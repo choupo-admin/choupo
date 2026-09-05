@@ -43,16 +43,28 @@ EquipmentSizing CrystalliserSize::size(const std::string&     unitName,
             + "' has no KPIs in the simulation result");
 
     const auto& k = kpiIt->second;
+    auto vm = k.find("V_magma");
     auto lf = k.find("liquorFlow");
     auto rt = k.find("residenceTime");
-    if (lf == k.end() || rt == k.end())
+    auto th = k.find("throughput");
+    if (vm == k.end() || lf == k.end() || rt == k.end() || th == k.end())
         throw std::runtime_error("Crystalliser: unit '" + unitName
-            + "' is missing 'liquorFlow' / 'residenceTime' KPIs -- is it an "
-              "MSMPR crystalliser?");
+            + "' is missing one of 'V_magma' / 'liquorFlow' / 'residenceTime' /"
+              " 'throughput' -- is it an MSMPR crystalliser?  (The yield-only"
+              " mode publishes no residence time and cannot be sized.)");
 
-    // Magma (working) volume = liquor volumetric flow * mean residence time.
-    const scalar V_magma = lf->second * rt->second;     // m^3
-
+    //  THE SIZE IS THE DECLARED WORKING VOLUME, passed through.  The MSMPR
+    //  unit is a RATING model -- `operation.volume` is its input and
+    //  tau = V/Q its result -- so the Guthrie size key is the declaration,
+    //  and the basis says so.  Until 2026-09-05 this sizer computed
+    //  `liquorFlow * residenceTime` and called the product m^3: liquorFlow is
+    //  the unit's MOLAR flow (kmol/s, labelled so in Crystalliser.cpp), so the
+    //  "volume" was a molar holdup in kmol, 18.46 on a vessel declared 1.0 m^3,
+    //  costed on the flagship plant at exit 0 with a golden pinning it.  Found
+    //  by writing the basis string: "which rule produced this size" had no
+    //  honest answer.  Deriving V as throughput * residenceTime was rejected --
+    //  it reproduces the declaration to round-off and hides that it is one.
+    const scalar V_magma = vm->second;                   // m^3, declared
     const scalar P_des = designRules->lookupScalar("pressureDesign");   // required: a silent
         // 1 bar default costed pressure equipment as atmospheric while the
         // identical omission on a stirredTank refused -- one decision, six
@@ -62,10 +74,12 @@ EquipmentSizing CrystalliserSize::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "crystalliser";
     d.material       = material.name;
-    d.set("V_magma",       V_magma,      "m3");    // Guthrie sizeKey
-    d.set("liquorFlow",    lf->second,   "m3/s");
-    d.set("residenceTime", rt->second,   "s");
-    d.set("pressureDesign", P_des,       "bar");
+    d.basis          = "V_magma = declared operation.volume (MSMPR working volume; pass-through)";
+    d.set("V_magma",        V_magma,      "m3");      // Guthrie sizeKey
+    d.set("throughput",     th->second,   "m3/s");    // Q, the VOLUMETRIC flow tau is taken on
+    d.set("liquorFlow",     lf->second,   "kmol/s");  // the MOLAR liquor flow -- NOT a volume rate
+    d.set("residenceTime",  rt->second,   "s");
+    d.set("pressureDesign", P_des,        "bar");
     return d;
 }
 

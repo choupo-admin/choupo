@@ -97,6 +97,7 @@ EquipmentSizing StirredTank::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "stirredTank";
     d.material       = material.name;
+    d.basis          = "V_R = declared operation.V_R (pass-through); D and H from L_over_D; t_wall ASME thin-wall";
     d.set("V_R",            V_R,            "m3");
     d.set("D",              D,              "m");
     d.set("H",              H,              "m");

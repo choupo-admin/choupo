@@ -230,3 +230,7 @@ equipment waterCooler            values.weight    40779.2788779    1e-4
 equipment waterCooler            cost.purchased   181269.699098    1e-4
 equipment waterCooler            cost.bareModule  785886.780877    1e-4
 equipment waterCooler            cost.totalModule 927346.401435    1e-4
+equipment FEHE                   basis            A_=_Q/(U*LMTD)_with_U_and_LMTD_author-set exact
+equipment makeupComp             basis            power_=_W_shaft_(unit_result;_pass-through) exact
+equipment recycleComp            basis            power_=_W_shaft_(unit_result;_pass-through) exact
+equipment waterCooler            basis            A_=_Q/(U*LMTD)_with_U_and_LMTD_author-set exact

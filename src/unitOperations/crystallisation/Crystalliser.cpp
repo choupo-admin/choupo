@@ -567,6 +567,7 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
     kpis_["Q_kW"]            = -Q_removed / 1000.0;  // kW, cooling NEGATIVE -> cold-utility stub
     kpis_["residenceTime"]   = tau;             // s   (RESULT, V/Q)
     kpis_["throughput"]      = Q;               // m^3/s
+    kpis_["V_magma"]         = V;               // m^3  (DECLARED operation.volume; the size a sizer passes through)
     kpis_["c_sat"]           = c_sat;           // kg/kg
     kpis_["supersaturation"] = S;               // c/c_sat (RESULT)
     kpis_["growthRate"]      = G;               // m/s
@@ -879,6 +880,7 @@ int Crystalliser::solveDiscretizedPBE(const DictPtr& dict,
     kpis_["Q_kW"]            = -Q_removed / 1000.0;  // kW, cooling NEGATIVE -> cold-utility stub
     kpis_["residenceTime"]   = tau;
     kpis_["throughput"]      = Q;
+    kpis_["V_magma"]         = V;               // m^3  (DECLARED operation.volume; the size a sizer passes through)
     kpis_["c_sat"]           = c_sat;
     kpis_["supersaturation"] = S;
     kpis_["growthRate_L0"]   = G0;

@@ -130,8 +130,11 @@ reports/balances/*.csv              the three conservation reports
 * The `reports {}` grammar is `kind { }`, and writing `kind;` refuses with a
   message that says what is wrong and **not what is right** — the same defect
   the missing-key hint closed for dictionaries.  Not fixed here.
-* No golden row reads the `basis` word.  `check_cost_provenance` is all that
-  stands behind it.
+* ~~No golden row reads the `basis` word.  `check_cost_provenance` is all that
+  stands behind it.~~  **Closed 2026-09-05:** the `equipment` golden kind pins
+  `basis` as a WORD (`exact`), every sizer now states one, and
+  `check_equipment_pinned` requires the row in both directions.  Record:
+  [`a-basis-nobody-stated-and-a-volume-in-kilomoles.md`](a-basis-nobody-stated-and-a-volume-in-kilomoles.md).
 * **THE EXIT CODE, and this one is a live question rather than a deferral.**
   Before the guard, an uncaught report exception propagated and the run exited
   non-zero.  With it, the chain continues and the run exits **0** even though a

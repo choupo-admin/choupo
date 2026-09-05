@@ -37,6 +37,7 @@ EquipmentSizing CompressorSize::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "compressor";
     d.material       = material.name;
+    d.basis          = "power = W_shaft (unit result; pass-through)";
     d.set("power", power_kW, "kW");
     if (k.count("ratio"))  d.set("ratio",  k.at("ratio"),  "-");
     if (k.count("P_out"))  d.set("P_out",  k.at("P_out"),  "Pa");
