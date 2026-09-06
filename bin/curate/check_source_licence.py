@@ -74,6 +74,26 @@ silently promoting a differing NBS printing over the CRC number a case's
 goldens were recorded against -- would put a fabrication where a measured
 value belongs.  The known violations are PINNED with their remedy; the pin
 list is the curation work-list, and a new violation fails immediately.
+
+
+THE CARD ARM (2026-09-06).  Every source this gate rules on has a card under
+thirdParty/<source>/README.md (CARDS), every card another gate rules on is
+named by that gate by path (CARDS_OF_OTHER_GATES), and no card on disk is an
+orphan.  Fired by hand, observed lines:
+  * an orphan card (a thirdParty/zzz_probe/README.md nobody names) ->
+      "FAILED -- card(s) no gate names: thirdParty/zzz_probe/README.md."
+  * a card this gate names removed (thirdParty/svehla/README.md) ->
+      "FAILED -- CARDS['NASA TR R-132'] names thirdParty/svehla/README.md,
+       which does not exist"
+  * the other gate's mention of its card removed ->
+      "FAILED -- thirdParty/lvpp-sigma/README.md must exist and be named, by
+       path, inside bin/curate/check_cosmo_scrub.py"
+  The FIRST positive run failed on its own: thirdParty/thermoml/ had data and
+  no card, only an index row -- the arm found a missing card before it found
+  a sabotage.  And the third sabotage SURVIVED its first attempt: renaming
+  the mention to README.mdX left the original path as a SUBSTRING of the
+  sabotaged one, so the `in` test still matched.  A sabotage must remove the
+  thing, not decorate it; the second attempt (README.md -> nothing) fired.
 """
 import re
 import sys
@@ -192,6 +212,28 @@ ACCEPTED_PUBLIC_DOMAIN = {
 #  under the general public-domain reading and carry no licence word; this
 #  contract binds the source the lennardJones records are drafted from.
 KNOWN_PUBLIC_DOMAIN = re.compile(r'\b(NASA\s+TR\s+R-132)\b')
+
+#  EVERY SOURCE THIS GATE RULES ON HAS A CARD, AND EVERY CARD IS NAMED BY A
+#  GATE (2026-09-06).  thirdParty/<source>/README.md records where a source
+#  comes from, what its licence says and whether Choupo redistributes it --
+#  the card is tracked, the data is ignored.  A licence verdict written only
+#  in a gate's table is a contract nobody can read; written only in a card
+#  it is a sentence nobody enforces.  Binding the two both ways is what keeps
+#  them from drifting apart, which the top-level README had already done once
+#  (its Burcat row said "free for scientific use" for five days after this
+#  gate started refusing Burcat as NonCommercial).
+CARDS = {
+    "ChemSep":       "thirdParty/chemsep/README.md",
+    "NASA TR R-132": "thirdParty/svehla/README.md",
+    "Burcat":        "thirdParty/README.md",   # one bulk file, no folder: its card is the index row
+}
+#  Cards this gate does NOT rule on but which must still be named by the gate
+#  that does -- so no card is an orphan and no gate a silent one.
+CARDS_OF_OTHER_GATES = {
+    "thirdParty/lvpp-sigma/README.md":   "bin/curate/check_cosmo_scrub.py",
+    "thirdParty/vt2005-cosmo/README.md": "bin/curate/check_cosmo_scrub.py",
+    "thirdParty/thermoml/README.md":     "docs/design/thermoml-archive-assessment.md",
+}
 LICENCE_WORD = re.compile(r'(?m)^\s*licence\s+(\w+)\s*;')
 
 #  KNOWN VIOLATIONS, pinned 2026-08-05 with the remedy each needs.  NOT
@@ -373,6 +415,29 @@ def main() -> int:
                   "is cited by NO record; either the records were renamed "
                   "(re-point the pattern) or the row is dead (remove it).")
             return 1
+    #  THE CARD ARM: published <=> pinned, between the gate and thirdParty/.
+    for name, card in CARDS.items():
+        if not (ROOT / card).is_file():
+            print(f"check_source_licence: FAILED -- CARDS['{name}'] names "
+                  f"{card}, which does not exist; a source this gate rules "
+                  "on has no card, so its licence position lives only here.")
+            return 1
+    for card, keeper in CARDS_OF_OTHER_GATES.items():
+        kp = ROOT / keeper
+        if not (ROOT / card).is_file() or not kp.is_file() \
+           or card not in kp.read_text(errors="ignore"):
+            print(f"check_source_licence: FAILED -- {card} must exist and be "
+                  f"named, by path, inside {keeper}; it is not.")
+            return 1
+    known_cards = set(CARDS.values()) | set(CARDS_OF_OTHER_GATES)
+    on_disk = {str(q.relative_to(ROOT)) for q in (ROOT / "thirdParty").glob("*/README.md")}
+    orphan = sorted(on_disk - known_cards)
+    if orphan:
+        print("check_source_licence: FAILED -- card(s) no gate names: "
+              + ", ".join(orphan) + ".  Add each to CARDS (this gate rules "
+              "on it) or CARDS_OF_OTHER_GATES (another gate does) so its "
+              "licence position is enforced somewhere.")
+        return 1
     accepted_txt = "; ".join(
         f"{n} ({ACCEPTED_DATABANK[n]['licence']}, {k} record(s))"
         for n, k in sorted(accepted_seen.items()))
@@ -386,7 +451,8 @@ def main() -> int:
           f"as a value's origin; {len(NC_COMPILATION)} existing ones do and "
           f"are pinned.  Accepted third-party databanks, by CONTRACT here and "
           f"cross-checked against the importer's LICENSE constant: "
-          f"{accepted_txt}.")
+          f"{accepted_txt}.  Every source ruled on here has a thirdParty/ card and "
+          f"every card on disk is named by a gate ({len(on_disk)} card(s)).")
     #  THE MANIFEST READS ONLY THE FIRST LINE.  gate_manifest.py captures
     #  `line[0]` as the gate's claim, so a claim printed on a second line is
     #  invisible in the one place that answers "what does this project

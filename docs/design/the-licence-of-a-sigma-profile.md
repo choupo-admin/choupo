@@ -191,6 +191,45 @@ decision on the tree's behalf.
   and `tutorials` for `.dat` records and cannot see these.  **Nothing was
   deleted** — whether they leave the tree, and whether `data/tmp/` becomes
   gitignored as its documents claim, is Vítor's call, reported not decided.
+
+  **SETTLED THE SAME DAY, on the evidence rather than on the label.**  Vítor
+  read the first framing and pushed back — *"não sejas mais papista que o
+  DWSIM"* — and he was right, so the two halves were separated and each
+  decided on what it IS.
+
+  * The **16 CSVs** stay.  A sigma profile is a computed physical fact, not
+    expression; what a compilation can protect is its selection and
+    arrangement, and in the EU the sui generis right reaches an extraction of
+    a SUBSTANTIAL part.  Fifteen of 1432 is 1 %, printed column by column
+    beside the LVPP values inside a study whose whole purpose is to show the
+    two are incompatible.  That is scientific quotation, and deleting it
+    would destroy the evidence for a ruling this project relies on.
+  * The **NIST `.cosmo`/`.sigma` pair** also stays, and this REVERSES the
+    morning's recommendation to remove it.  Reading what the file DOES
+    settled it: the `.cosmo` is the INPUT and the `.sigma` the golden OUTPUT
+    of `sigma_profile.py --selftest`, the only independent check that tool
+    has.  Removing it takes no value out of any Choupo record — no number in
+    either file reaches a `.dat`, a case or the runtime — and it would leave
+    a check that cannot run, which this project's doctrine forbids.  What was
+    wrong was the SILENCE, not the retention: the directory now carries a
+    `README.md` quoting NIST's restriction verbatim, saying this is a narrow
+    exception rather than the rule, and naming the remedy if the reading is
+    ever judged too generous — delete the pair AND make the selftest refuse
+    by name, never the quiet third option where the files go and the check
+    stops checking.
+  * The **`data/tmp/` tracking** is a documentation defect, not a licence
+    one, and is FIXED: the study's header called the tier gitignored while
+    `.gitignore` carries no rule for it and git tracks 436 files.  The header
+    now says the tree is public and points at the licence note.
+
+  **The durable rule, which is what the episode was about:** a licence
+  decision needs an EXTENT, not only a name.  "VT-2005 is no-grant" is not
+  applicable — it led to a proposal to rewrite 1187 commits over fifteen
+  rows.  "Choupo does not redistribute the VT-2005 database as a data
+  product; values quoted in a study for comparison are quotation, and one
+  reference pair used to verify a tool against the implementation that
+  produced it is a test fixture" is a rule a human can apply and a gate can
+  encode.
 * Two guide sentences were left as found because a `.tex` edit requires a
   PDF rebuild committed beside it (`check_guide_pdf_fresh`) and this slice
   touched no guide: `docs/propsGuide.tex` ("The standard catalogue ships

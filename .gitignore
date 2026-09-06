@@ -217,11 +217,19 @@ data.zip
 V1_READINESS_REPORT.md
 gui/tests/_*.test.ts
 
-# third-party reference originals (import sources; see thirdParty/README.md)
+# third-party reference originals (import sources; see thirdParty/README.md).
+#  THE DATA IS IGNORED, THE CARD IS TRACKED.  Each source keeps a README.md
+#  saying where it comes from, what its licence is, whether Choupo
+#  redistributes it and how to obtain it -- so a source cannot vanish from the
+#  project's memory merely because its values may not be shipped.  A card is
+#  NOT redistribution.
 thirdParty/*
 !thirdParty/README.md
-!thirdParty/chemsep/
-thirdParty/chemsep/*
+!thirdParty/*/
+thirdParty/*/*
+!thirdParty/*/README.md
+!thirdParty/*/LICENSE
+!thirdParty/*/NOTICE
 !thirdParty/chemsep/pcd/
 thirdParty/chemsep/pcd/*
 !thirdParty/chemsep/pcd/Artistic_license_2_0.txt

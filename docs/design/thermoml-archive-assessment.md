@@ -144,3 +144,12 @@ further, since Choupo needs nothing from their implementation).
 NOT verified: the archive's actual dataset count (the 120k figure is
 DWSIM's marketing claim); the terms of each publisher's cooperation
 agreement with NIST (not public, as far as searched); any EU-law analysis.
+
+---
+
+**Card (2026-09-06).**  The live status of this source — licence position,
+whether Choupo redistributes it, how to obtain a copy, what reads it — is
+kept on its card, `thirdParty/thermoml/README.md`, which
+`check_source_licence` requires to exist and to be named here.  This record
+is the dated reading that settled the position; the card is what a reader
+opens first.

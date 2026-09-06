@@ -1,6 +1,11 @@
 # COSMO-SAC sigma-profile VALIDATION STUDY — can an `LVPP` named set be generated?
 
-**Date** 2026-07-24 · **Tier** private staging (`data/tmp/`, gitignored) · **Scope** data only
+**Date** 2026-07-24 · **Tier** research staging (`data/tmp/`) · **Scope** data only
+**Correction, 2026-09-06:** this line said the tier is *gitignored*.  It is
+not, and never was: `.gitignore` carries no rule for `data/tmp`, and git
+tracks 436 files there.  Everything under this tree is PUBLIC.  Read the
+licence note in `_sources/nist_cosmosac_ref/README.md` before adding a file
+here on the assumption that it stays private.
 **Nothing under `src/`, `data/standards/` or `gui/` was read-write.** No profile was written into
 any component file. No commit.
 

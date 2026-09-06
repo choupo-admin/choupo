@@ -54,6 +54,13 @@ back OK.  A negative that passes proves nothing until a sabotage fails.
        VT-2005 set may be installed only under data/local ..."
   S4  (negative) the shipped tree: OK, 0 refusals; the five SYNTHETIC witness
       sets pass arm (v) on their declared SYNTHETIC word.
+
+
+CARDS.  The sources this gate rules on are documented in
+thirdParty/vt2005-cosmo/README.md (no data file, the three primary
+licence texts quoted) and thirdParty/lvpp-sigma/README.md (MIT, and the
+thermodynamic reason its profiles are not used); check_source_licence
+verifies that both cards exist and are named here, by path.
 """
 import re
 import sys
