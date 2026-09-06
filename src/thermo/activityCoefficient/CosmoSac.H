@@ -16,20 +16,49 @@ Class
 Description
     COSMO-SAC activity-coefficient model, the 2002 (Lin & Sandler) variant as
     implemented in the NIST benchmark (Bell et al., AIChE J. 65 (2019) e16194,
-    doi:10.1002/aic.16194; reference code usnistgov/COSMOSAC, US-gov public
-    domain).  Each component carries its OWN COSMO surface data in its
-    `component.dat` `cosmo { area; volume; sigmaProfile ( ... ); }` block
-    (sigma profiles from the LVPP open database, github.com/lvpp/sigma, MIT +
-    citation).  ln gamma_i = ln gamma_i^comb (Staverman-Guggenheim from
-    area/volume) + ln gamma_i^res (sigma-profile segment activities).
+    doi:10.1002/aic.16194; reference CODE usnistgov/COSMOSAC, MIT / not subject
+    to copyright in the USA -- the code, NOT the profile folders it bundles).
+    Each component carries its OWN COSMO surface data in its `component.dat`
+    `cosmo { <setName> { model; variant; source; licence; installed; area;
+    volume; sigmaProfile ( ... ); } }` block.  ln gamma_i = ln gamma_i^comb
+    (Staverman-Guggenheim from area/volume) + ln gamma_i^res (sigma-profile
+    segment activities).
 
-    Selected as `activityModel { model cosmoSAC; }`.  Multicomponent; no pair
-    parameters (the interactions come from the sigma profiles).  Pure-component
-    ln gamma is 0 by construction.  A component lacking the `cosmo` block is a
-    LOUD error (no silent crutch).
+    WHERE THE PROFILES COME FROM, stated as the tree actually does it
+    (corrected 2026-09-06 -- this header used to say "the LVPP open database"
+    and "LVPP == the NIST benchmark data", both false):
+      * The named set on every catalogue record is `VT2005`, the Virginia Tech
+        VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45
+        (2006) 4389; DMol3 DFT-COSMO) as bundled in usnistgov/COSMOSAC
+        profiles/VT2005.  That folder is under a LESS PERMISSIVE licence than
+        the code (academic, non-commercial, by BioVia permission; NIST's own
+        README), so the public tree ships NO VT-2005 value: every catalogue set
+        is an EXTERNAL REFERENCE (`licence externalRestricted; installed
+        false;`) and the user installs their own copy with
+        `bin/choupo-import-cosmo` into data/local/cosmo/ (gitignored).  Absent,
+        this model REFUSES by name with the install command.
+      * The witness cosmoSAC01 runs on SYNTHETIC teaching surrogates (GPL,
+        labelled so in their `source`), never on VT-2005 numbers.
+      * LVPP (github.com/lvpp/sigma, MIT) is a DIFFERENT database: a different
+        QM protocol and cavity, and its profiles are NOT usable under the 2002
+        constants (data/tmp/COSMO_VALIDATION_STUDY.md, 2026-07-24 -- the sign
+        of G^E flips on water/acetone).  A native LVPP variant is a NEW
+        ActivityModel, reserved; nothing here reads LVPP data.
+    Record: docs/design/the-licence-of-a-sigma-profile.md.
 
-    ONE variant only, ONE parameter source (LVPP == the NIST benchmark data):
-    constants and profiles are never mixed across sources.
+    Selected as `activityModel { model cosmoSAC; source <setName>; }` (the
+    `source` may be omitted when a component carries a single set).
+    Multicomponent; no pair parameters (the interactions come from the sigma
+    profiles).  Pure-component ln gamma is 0 by construction.  A component
+    lacking the `cosmo` block, or the requested set, is a LOUD error (no
+    silent crutch).
+
+    ONE variant only: a set must declare `model COSMOSAC; variant "2002";` and
+    any other family REFUSES -- constants and profiles are never mixed across
+    variants (never mix a profile with the wrong variant's constants).  That
+    guard is the ONLY thing between a foreign profile and a silently wrong
+    gamma, which is why a `variant "2002"` label on a non-VT-2005 profile is
+    refused by the scrub gate (check_cosmo_scrub) before it can reach here.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

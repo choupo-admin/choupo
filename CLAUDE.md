@@ -613,7 +613,9 @@ The public tree ships NO VT-2005 values: every set is an external REFERENCE
 own copy installs via `bin/choupo-import-cosmo` into `data/local/cosmo/`
 (gitignored); absent, CosmoSac refuses by name with the install command.
 cosmoSAC01 regresses on SYNTHETIC teaching surrogates (labelled GPL).
-Gate: check_cosmo_scrub (0 restricted values, enforced).
+Gate: check_cosmo_scrub (0 restricted values, enforced; since 2026-09-06 it
+also refuses a `variant "2002"` label on a non-VT-2005 profile and `installed
+true;` on any VT2005 set — see THE LICENCE OF A SIGMA PROFILE in §6).
 
 ### Electrolyte activity selector keys — `pitzer` ≠ `pitzerHMW` (settled 2026-06-29, A3, do NOT re-clash)
 
@@ -1805,11 +1807,32 @@ only, never the hot path.  Rejected: structure-first/RDKit, `PropertyResult<T>`
 in the solver, a runtime resolver, a parallel interface taxonomy,
 C++20/CMake/Eigen/PC-SAFT/CAPE-OPEN/open-core.
 
+**THE LICENCE OF A SIGMA PROFILE (2026-09-06).**  Vítor asked whether the
+COSMO-SAC parameters could be included in the standard base "if it is legal";
+the primary texts were read that day and the answer is no.  Rule, under §10's
+licence policy: **a dataset with NO licence statement is no-grant and stays
+out** (the VT-2005 page offers the files for download and says nothing about
+rights — silence is not permission); **a NonCommercial permission is out**
+(NIST's README: academic, non-commercial, by BioVia permission — and the UD
+folder forbids redistribution in its own words); **only a WRITTEN open-licence
+grant changes that**, from the dataset's authors, which is a human act nobody
+here can perform.  The 2026-07-26 separation stands.  Trap: two corrupted
+memories said the opposite — `CosmoSac.H` credited the profiles to "the LVPP
+open database" and this file called VT-2005 "US-gov public domain via the NIST
+bundle" — and a `variant "2002"` label is the only thing the engine's guard
+reads, so an LVPP profile pasted under it would run to a silently wrong gamma.
+Gate: `check_cosmo_scrub`, two arms — a `variant "2002"` set whose `source`
+names a foreign database or names neither VT-2005 nor a SYNTHETIC surrogate
+REFUSES; `installed true;` on any VT2005 set in the public tree REFUSES.
+Record:
+[`docs/design/the-licence-of-a-sigma-profile.md`](docs/design/the-licence-of-a-sigma-profile.md).
+
 **COSMO-SAC — the rejection was REVERSED 2026-07-15 (Vítor), for a MINIMAL, glass-box
 version only.**  The original blanket rejection was against *bloat* (heavy deps, quantum
 chemistry, thousands of imported compounds, a new architecture).  A lean COSMO-SAC that
 adds NONE of that IS in: the 2002 (Lin & Sandler) variant, exactly the NIST benchmark
-(Bell et al., AIChE J. 2019; reference code usnistgov/COSMOSAC, public domain), as a plain
+(Bell et al., AIChE J. 2019; reference CODE usnistgov/COSMOSAC — MIT / not subject to US
+copyright; the profile folders it bundles are NOT, see the sigma-profile paragraph below), as a plain
 `ActivityModel` subclass (`src/thermo/activityCoefficient/CosmoSac.{H,cpp}`, model key
 `cosmoSAC`) — no new interface, no new deps, ~150 lines of self-contained C++.  Each
 compound carries its OWN COSMO surface data in its `component.dat` `cosmo { <setName> {
@@ -1820,10 +1843,18 @@ when a component carries a single set — its lone set is the default; a multi-s
 then REQUIRES an explicit `source`).  Each set declares its `variant` → the matching
 constants (only `cosmoSAC2002` implemented today; a set with another variant is a LOUD
 error — never mix a profile with the wrong variant's constants).  MULTIPLE SOURCES ARE
-ALLOWED as long as each set names its own (Vítor 2026-07-15): 77 standard components carry
-a `VT2005` set (Mullins IECR 45 (2006) 4389, DFT-COSMO, US-gov public domain via the NIST
-bundle); LVPP (MIT, ~2500) and CHAOS (CC-BY, ~53000) are licence-compatible additional
-sets a component may ALSO carry, each labelled.  A component lacking a `cosmo` block, or
+ALLOWED as long as each set names its own (Vítor 2026-07-15): the standard components that
+carry a `VT2005` set carry it as an EXTERNAL REFERENCE ONLY (Mullins IECR 45 (2006) 4389,
+DFT-COSMO; NIST's own README says the bundled VT2005 folder is under a LESS PERMISSIVE
+licence than its code — academic, non-commercial, by BioVia permission — so the values are
+NOT shipped: `licence externalRestricted; installed false;`, the user's own copy via
+`bin/choupo-import-cosmo`; this sentence used to say "US-gov public domain via the NIST
+bundle", which was false — record
+[`docs/design/the-licence-of-a-sigma-profile.md`](docs/design/the-licence-of-a-sigma-profile.md));
+LVPP (MIT, ~2500) and CHAOS (CC-BY, ~53000) are licence-compatible additional sets a
+component may ALSO carry, each labelled — but LVPP's profiles are NOT usable under the
+2002 constants (a different QM protocol; `data/tmp/COSMO_VALIDATION_STUDY.md`), so an
+LVPP set is a NEW variant, reserved, never a `variant "2002"` label.  A component lacking a `cosmo` block, or
 the requested set, is a LOUD error.  NOT for the `data/groupEstimative/` lake (a name
 catalogue, not COSMO targets).  Validated: pure→lnγ=0 exact, water/hexane
 strongly non-ideal, and a bit-for-bit cross-check vs an independent implementation of the

@@ -308,8 +308,6 @@ DOC_COUNT_ALLOW = [
      "a measurement of ONE sealing defect, not a corpus size"),
     ("CLAUDE.md", "14/14 tear cases already satisfy it",
      "audit evidence dated in its own sentence, not a live tally"),
-    ("CLAUDE.md", "77 standard components carry",
-     "SUBSET tally -- a real second home; generate it or drop it (AR5)"),
     ("docs/developerGuide.tex", "kept 9 of its 28 pair parameters",
      "the same one-defect measurement as CLAUDE.md"),
     ("docs/developerGuide.tex", "67 component records carried",

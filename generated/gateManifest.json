@@ -163,8 +163,8 @@
     },
     "check_cosmo_scrub": {
       "exit": 0,
-      "claim": "cosmo-scrub gate: 693 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree (5093 records enumerated; an absent or collapsed scan root REFUSES)",
-      "seconds": 0.5
+      "claim": "cosmo-scrub gate: 697 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree; every variant-\"2002\" set names VT-2005 or a SYNTHETIC surrogate and no VT2005 set is installed (5120 records enumerated; an absent or collapsed scan root REFUSES)",
+      "seconds": 0.3
     },
     "check_cost_provenance": {
       "exit": 0,
