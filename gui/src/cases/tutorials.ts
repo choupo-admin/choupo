@@ -73,9 +73,16 @@ const CASE_FILES = import.meta.glob(
     // machine's stale sizing is served to every visitor before they run
     // anything.
     "!../../../tutorials/**/design/**",
-    // What happens inside each unit: the same class of RUN OUTPUT as design/
-    // (regenerated whole, gitignored), the same second lock.
-    "!../../../tutorials/**/internalStates/**",
+    // The SOLVED state view.  Gitignored, so the glob cannot reach one today
+    // -- but since 2026-09-06 it also carries each unit's INTERIOR
+    // (`converged/<SECTOR>/<unit>/<kind>`), which is exactly the sizing-sheet
+    // failure again: one machine's stale stage profile baked into the shipped
+    // bundle.  Locked here for the same reason `design/` is, and the two now
+    // stand or fall together.
+    "!../../../tutorials/**/converged/**",
+    // The interior a case DECLARES is NOT excluded, and that is the point: it
+    // lives in `0/<SECTOR>/<unit>/<kind>`, it is tracked, it is a case INPUT,
+    // and the browser must read it exactly as the native run does.
     "!../../../tutorials/**/.build/**",
     "!../../../tutorials/**/log.*",
     "!../../../tutorials/**/trajectory.csv",

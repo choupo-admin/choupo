@@ -71,7 +71,7 @@ Description
 #include "thermo/utility/UtilityCatalogue.H"
 #include "outerDriver/OuterDriver.H"
 #include "io/DesignSheetWriter.H"
-#include "io/InternalStateWriter.H"
+#include "io/InternalStateIO.H"
 #include "postProcessing/PostProcessor.H"
 #include "reporting/Report.H"
 #include "reporting/UtilityAllocationReport.H"
@@ -975,6 +975,25 @@ try
             f << ");\n";
         }
 
+        //  WHAT HAPPENS INSIDE THE EQUIPMENT, into the SAME state view, right
+        //  after the streams.  A state directory is a RESTARTABLE SNAPSHOT:
+        //  an OpenFOAM time directory holds one file per FIELD carrying its
+        //  boundary conditions AND its internal field, and until 2026-09-06
+        //  Choupo's held only the boundary half while the interiors sat in a
+        //  separate top-level `internalStates/` view.  In a state view a FILE
+        //  is a stream and a DIRECTORY is a unit's interior; `converged/` was
+        //  removed and rebuilt whole three lines above, so nothing stale can
+        //  survive beside these.  A failure is SAID and never fatal -- the
+        //  answer is already computed.  A `T_K` profile (van Heerden, Merkel)
+        //  is an analysis over a swept parameter, not equipment state; the
+        //  writer skips and announces it.
+        try {
+            InternalStateIO::write(dir.string(), result, verbosity);
+        } catch (const std::exception& e) {
+            std::cerr << "\nWARNING: the unit interiors were not written into"
+                         " converged/:\n  " << e.what() << "\n";
+        }
+
         if (verbosity >= 2)
             std::cout << "[state] wrote converged/ -- (sector-owned, componentFlows)"
                       << "  + problemDivergence (" << result.divergences.size()
@@ -1007,25 +1026,6 @@ try
             //  when one failing member used to kill every report after it.
             std::cerr << "\nWARNING: the equipment specification sheets were"
                          " not written:\n  " << e.what() << "\n";
-        }
-    };
-
-    //  WHAT HAPPENS INSIDE THE EQUIPMENT.  One dictionary per unit that
-    //  publishes a profile, under `internalStates/<SECTOR>/<unit>/<kind>` --
-    //  a PROJECTION of `result.profiles`, the same record the JSON and
-    //  `profile.csv` carry, so nothing is computed here and no golden moves.
-    //  Same posture as `design/`: only on a converged run, removed and
-    //  rewritten whole, a failure SAID and never fatal.  A `T_K` profile (van
-    //  Heerden, Merkel) is an analysis over a swept parameter, not equipment
-    //  state; the writer skips and announces it.
-    auto writeInternalStates = [&](const SimulationResult& result) {
-        if (!result.converged) return;
-        try {
-            InternalStateWriter::write(fs::current_path().string(), result,
-                                       verbosity);
-        } catch (const std::exception& e) {
-            std::cerr << "\nWARNING: the internal-state files were not"
-                         " written:\n  " << e.what() << "\n";
         }
     };
 
@@ -1119,7 +1119,6 @@ try
             if (!validate0(r)) finalRc = 1;
             writeConverged(r);
             writeDesignSheets(r);
-            writeInternalStates(r);
         }
         else if (reportsDict && !reportsDict->keys().empty())
         {
@@ -1210,7 +1209,6 @@ try
         if (!validate0(result)) finalRc = 1;
         writeConverged(result);
         writeDesignSheets(result);
-        writeInternalStates(result);
 
         // (utility allocation now done inside `simulate` -- carried on every
         // pass, direct + outer -- so the GUI always has it.)

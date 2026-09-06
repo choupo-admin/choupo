@@ -16,7 +16,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { buildTree, kindOf, nodeKind, RUN_OUTPUT_ROOTS, squash, sortedChildren } from "../src/ui/caseTree";
+import { buildTree, kindOf, nodeKind, rankNode, RUN_OUTPUT_ROOTS, sectorPaths, squash, sortedChildren } from "../src/ui/caseTree";
 
 const plant = [
   "ChemicalPlantTutorial.cho",
@@ -117,6 +117,51 @@ describe("caseTree.kindOf: one home for what the RUN writes", () => {
     expect(kindOf("0.01")).toBe("output");
     expect(kindOf("iterations")).toBe("output");
   });
+  it("a UNIT INTERIOR inside a state view is its own kind -- and only the case's geography can say so", () => {
+    //  2026-09-06.  In a state view a FILE is a stream and a DIRECTORY is a
+    //  unit's interior -- except the sector levels the view repeats from the
+    //  case.  `converged/CONCENTRATION` (a sector of the flagship) and
+    //  `converged/column01` (a unit of the flat column) are the same SHAPE of
+    //  path, so the discriminator is the case's own geography, passed in.
+    const flagship = sectorPaths([
+      "system/flowsheetDict",
+      "CONCENTRATION/system/flowsheetDict",
+      "converged/CONCENTRATION/liquor",
+      "converged/CONCENTRATION/Cryst/sizeDistribution",
+    ]);
+    expect(flagship.has("CONCENTRATION")).toBe(true);
+    expect(kindOf("converged/CONCENTRATION", flagship)).toBe("output");
+    expect(kindOf("converged/CONCENTRATION/Cryst", flagship)).toBe("interior");
+    expect(kindOf("0/CONCENTRATION/Cryst", flagship)).toBe("interior");
+    expect(kindOf("0/CONCENTRATION", flagship)).toBe("state0");
+
+    //  A FLAT case declares no sector at all, so every directory in its state
+    //  view is a unit -- "empty is not a sector called root", read forwards.
+    const flat = sectorPaths(["system/flowsheetDict", "0/feed",
+                              "converged/column01/stageProfile"]);
+    expect(flat.size).toBe(0);
+    expect(kindOf("converged/column01", flat)).toBe("interior");
+
+    //  WITHOUT the geography the answer is the pre-2026-09-06 one: guessing a
+    //  unit from a name would be name identity, so nothing is guessed.
+    expect(kindOf("converged/CONCENTRATION/Cryst")).toBe("output");
+  });
+  it("a unit interior sorts AFTER everything else, because the boundary is read first", () => {
+    const files = ["system/flowsheetDict", "0/feed", "converged/column01/stageProfile"];
+    const sectors = sectorPaths(files);
+    const t = buildTree(files);
+    const conv = t.children.get("converged")!;
+    const interior = conv.children.get("column01")!;
+    expect(nodeKind(interior, sectors)).toBe("interior");
+    expect(rankNode(interior, sectors))
+      .toBeGreaterThan(rankNode(t.children.get("converged")!, sectors));
+  });
+  it("nothing in the tree still names a retired internalStates/ view", () => {
+    //  The view existed for one day (2026-09-05 -> 2026-09-06).  A root that
+    //  no writer produces is a folder a student is told to look for and never
+    //  finds.
+    expect(RUN_OUTPUT_ROOTS).not.toContain("internalStates");
+  });
   it("a SQUASHED sector keeps its own kind (DRYING/system is the sector DRYING, not a declared dict)", () => {
     const t = squash(buildTree(["system/controlDict", "DRYING/system/flowsheetDict", "converged/DRYING/Out"]));
     const byLabel = new Map(sortedChildren(t).map((n) => [n.label, nodeKind(n)]));
@@ -144,25 +189,31 @@ describe("caseTree: the wiring the pure functions cannot see", () => {
   const workspace = readFileSync(resolve(root, "src/ui/CaseWorkspace.tsx"), "utf8");
   const adapter = readFileSync(resolve(root, "src/adapters/WasmAdapter.ts"), "utf8");
 
-  it("the worker selects run-output trees from ONE list, and design/ and internalStates/ are in it", () => {
-    //  The list, not a fixed literal: it grew from two roots to three on
-    //  2026-09-05 (internalStates/), and a test pinning the exact pair read
-    //  a ratified addition as a defect.  Each root the tree classifies as
-    //  output that the engine WRITES must be here, or it is written into
-    //  MEMFS and thrown away with the worker.
+  it("the worker selects run-output trees from ONE list, and design/ is in it", () => {
+    //  The list, not a fixed literal: a test pinning an exact tuple reads a
+    //  ratified addition as a defect, and reads a ratified REMOVAL as one too
+    //  (internalStates/ was a root here for exactly one day, 2026-09-05 to
+    //  2026-09-06).  Each root the tree classifies as output that the engine
+    //  WRITES must be here, or it is written into MEMFS and thrown away with
+    //  the worker.
     const m = worker.match(/OUTPUT_ROOTS\s*=\s*\[([^\]]*)\]/);
     expect(m).not.toBeNull();
     const roots = m![1]!.split(",").map((x) => x.trim().replace(/"/g, "")).filter(Boolean);
     expect(roots).toContain("converged");
     expect(roots).toContain("design");
-    expect(roots).toContain("internalStates");
   });
 
-  it("the worker posts internal states on their OWN channel, never folded into convergedFiles", () => {
-    expect(worker).toContain('type: "internalStateFiles"');
-    expect(adapter).toContain('msg.type === "internalStateFiles"');
-    expect(adapter).toContain("result.internalStateFiles = internalStateFiles");
-    expect(workspace).toContain("internalStateFiles");
+  it("a unit interior rides the converged channel: it IS the converged snapshot", () => {
+    //  2026-09-06.  A state directory is a RESTARTABLE SNAPSHOT, so the
+    //  interiors are part of the state view and not a tree of their own --
+    //  the `design/` argument for a separate channel ("no sizing pass" must
+    //  not read as "did not solve") does not apply, because an interior only
+    //  ever exists where a stream table does.  Nothing anywhere may still
+    //  route them onto a channel of their own.
+    expect(worker).not.toContain("internalStateFiles");
+    expect(adapter).not.toContain("internalStateFiles");
+    expect(workspace).not.toContain("internalStateFiles");
+    expect(worker).not.toContain('"/case/internalStates/"');
   });
 
   it("the worker carries no hard-coded converged literal (the defect this replaced)", () => {

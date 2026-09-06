@@ -147,3 +147,43 @@ nothing rebuilt.
   not a mechanical rule.
 * **Reading the files back.**  Nothing does; the structural arm in the gate
   is Python, and the day the engine reads one, that reader replaces it.
+
+---
+
+## 6.  SUPERSEDED IN LOCATION — 2026-09-06
+
+**Everything above about WHAT a unit's interior is still stands.  Where it
+LIVES does not.**  This record is kept whole, dated, and not edited in place:
+a decision that lasted one day is worth reading precisely because it was
+wrong in an instructive way.
+
+`internalStates/` was built on the `design/` precedent — "the shape a per-unit
+run-output tree takes", §1 — and that was the wrong neighbour.  `design/` is
+a DERIVATIVE: equipment sizing computed FROM the answer, on a design basis,
+by a post-processing pass.  A stage profile is not derived from the state; it
+IS state.  Vítor put it as the OpenFOAM reading: a time directory holds one
+file per FIELD, and that file carries `boundaryField` AND `internalField`
+together, which is exactly what makes the directory a complete, restartable
+snapshot.  Choupo's state directories carried only the boundary half.
+
+So the interiors moved INSIDE the state views, at the same address, one level
+down:
+
+```
+    internalStates/<SECTOR>/<unit>/<kind>      2026-09-05, retired
+    converged/<SECTOR>/<unit>/<kind>           the engine's snapshot
+    0/<SECTOR>/<unit>/<kind>                   the AUTHOR's — a declared seed
+```
+
+What survives unchanged: the boundary (§2 — a field over a coordinate of the
+equipment or its inventory; `T_K` excluded and announced), the kind table, the
+stamped-sector address, "empty is not a sector called root", the grammar, the
+projection rule (nothing is computed for these files), and the gate's name.
+`src/io/InternalStateWriter.{H,cpp}` became `src/io/InternalStateIO.{H,cpp}`
+because it now reads as well as writes.
+
+What §5 said was NOT done — *"Reading the files back.  Nothing does"* — is
+what the move made worth doing, and the distillation column does it now.  The
+successor record, with the seed silence at `DistillationColumn.H:65` that was
+the substantive half of the slice:
+[`a-state-directory-is-a-restartable-snapshot.md`](a-state-directory-is-a-restartable-snapshot.md).

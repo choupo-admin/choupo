@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 395,
+  "cases": 396,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -3000,6 +3000,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/distillation/column16_declared_interior": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/distillation/shortcut01_benzene_toluene": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5977,6 +5991,7 @@
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/distillation/column14_klemola_c4_splitter",
     "tutorials/steady/distillation/column15_klemola_ideal_trays",
+    "tutorials/steady/distillation/column16_declared_interior",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
@@ -6360,6 +6375,7 @@
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/distillation/column14_klemola_c4_splitter",
     "tutorials/steady/distillation/column15_klemola_ideal_trays",
+    "tutorials/steady/distillation/column16_declared_interior",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
@@ -6947,6 +6963,7 @@
     "tutorials/steady/distillation/column10_flooding",
     "tutorials/steady/distillation/column11_murphree",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
+    "tutorials/steady/distillation/column16_declared_interior",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",

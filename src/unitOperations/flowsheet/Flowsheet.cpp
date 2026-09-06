@@ -38,6 +38,7 @@ License
 #include "streams/SpeciationBlock.H"
 #include "streams/StreamOverrides.H"
 #include "streams/StreamOwnership.H"
+#include "io/InternalStateIO.H"
 #include "streams/StreamStateIO.H"
 #include <fstream>
 #include <functional>   // model-boundary audit (H conserved, T is the readout)
@@ -1292,6 +1293,8 @@ void runUnit(const DictPtr&                                          udict,
              std::map<std::string,std::map<std::string,scalar>>&      unitKpis,
              std::map<std::string,std::vector<scalar>>&               unitResiduals,
              std::map<std::string,UnitProfile>&                       unitProfiles,
+             const std::map<std::string,
+                            std::map<std::string,UnitProfile>>&       declaredInteriors,
              const ThermoPackage&                                     thermo,
              const DictPtr&                                           solverDict,
              const DictPtr&                                           reactionsDict,
@@ -1356,6 +1359,16 @@ void runUnit(const DictPtr&                                          udict,
     auto augmented = buildAugmentedDict(udict, utype, streams, thermo, solverDict, reactionsDict, dryingDict, crystDict);
 
     auto unit = UnitOperation::New(utype);
+
+    //  WHAT THE CASE DECLARES THIS UNIT STARTS FROM (0/<SECTOR>/<unit>/<kind>).
+    //  Handed over BEFORE solve so the unit can seed its own interior from it
+    //  -- and announce which of the two routes it took.  A unit that declares
+    //  no readable kind never sees one: the flowsheet refused the file at the
+    //  flatten seam.
+    {
+        auto di = declaredInteriors.find(uname);
+        if (di != declaredInteriors.end()) unit->setDeclaredInterior(di->second);
+    }
 
     // Silence inner logs during outer Wegstein iterations except the last one
     int vUsed = quiet ? 0 : verbosity;
@@ -2657,6 +2670,65 @@ int Flowsheet::solve(const DictPtr& dict,
         throw std::runtime_error(msg);
     }
 
+    // ---- The DECLARED INTERIORS (0/<SECTOR>/<unit>/<kind>) --------------
+    //  A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT: `0/` carries one file per
+    //  stream (the boundary) and one directory per unit (its interior), the
+    //  way an OpenFOAM time directory carries a field's boundary conditions
+    //  and its internal field in one file.  Read HERE, where the topology is
+    //  final and every sector is stamped, so the reader looks at exactly the
+    //  addresses the `converged/` writer produces.
+    //
+    //  Two refusals, and they are the two halves of the same contract: the
+    //  READER refuses a directory that answers to no unit (an orphan, the
+    //  same posture as an orphan stream file), and this loop refuses a KIND
+    //  no unit reads -- a declared field nobody reads is a comment, and a
+    //  comment that looks like state is worse than no state at all.
+    declaredInteriors_.clear();
+    if (!init0_)
+    {
+        declaredInteriors_ = InternalStateIO::read("0", topology_, verbosity);
+        for (const auto& [uname, byKind] : declaredInteriors_)
+        {
+            //  The unit's own declaration of what it will read.  Asked of the
+            //  class, never of a table here: a second list of kinds would be
+            //  a second home for the same fact.
+            std::string utype;
+            for (const auto& fu : topology_) if (fu.name == uname) utype = fu.type;
+            std::vector<std::string> reads;
+            try { reads = UnitOperation::New(utype)->readsInteriorKinds(); }
+            catch (const std::exception&) { reads.clear(); }
+
+            for (const auto& [kind, prof] : byKind)
+            {
+                (void)prof;
+                if (std::find(reads.begin(), reads.end(), kind) != reads.end())
+                    continue;
+                std::string can;
+                for (const auto& k : reads) can += (can.empty() ? "" : ", ") + k;
+                throw std::runtime_error(
+                    "Flowsheet: 0/ declares an interior `" + kind + "` for unit '"
+                    + uname + "' (type " + utype + "), and NOTHING reads it."
+                      "  A declared field nobody reads is a comment sitting in"
+                      " the state directory."
+                    + (can.empty()
+                         ? "  This unit type reads no declared interior at all"
+                           " -- it seeds its own, and says so on every run."
+                         : "  It reads: " + can + ".")
+                    + "  Remove the file, or declare the kind the unit reads.");
+            }
+        }
+        //  A LINT RUN REPORTS WHAT THE CASE DECLARES, per unit -- the whole
+        //  point of a read-only pass is to say what the solve would use.
+        if (lint_)
+            for (const auto& [uname, byKind] : declaredInteriors_)
+                for (const auto& [kind, prof] : byKind)
+                    std::cout << "  [lint] unit '" << uname
+                              << "' declares its interior in 0/: " << kind
+                              << " (" << prof.columns.size() << " column"
+                              << (prof.columns.size() == 1 ? "" : "s")
+                              << " over `" << prof.xAxis << "`)\n";
+    }
+
     // ---- Auto-seed unguessed tears (honest feed propagation) -----------
     //  A tear named in `tearStreams` normally carries its own initial guess
     //  as a 0/ state file (process03_recycle does).  If the author
@@ -2904,7 +2976,9 @@ int Flowsheet::solve(const DictPtr& dict,
         {
             auto wires = resolveEnergyInputs(udict, units, unitKpis_);
             for (auto& w : wires) energyWires_.push_back(std::move(w));
-            runUnit(udict, streams_, unitKpis_, unitResiduals_, unitProfiles_, thermoFor(udict->lookupWord("name"), udict, thermo),
+            runUnit(udict, streams_, unitKpis_, unitResiduals_, unitProfiles_,
+                    declaredInteriors_,
+                    thermoFor(udict->lookupWord("name"), udict, thermo),
                     solverDict_, reactionsDict_, dryingKineticsDict_, crystallisationDict_,
                     verbosity, unitIdx++, /*quiet=*/false);
         }
@@ -2957,6 +3031,7 @@ int Flowsheet::solve(const DictPtr& dict,
                 auto wires = resolveEnergyInputs(udict, units, unitKpis_);
                 for (auto& w : wires) energyWires_.push_back(std::move(w));
                 runUnit(udict, streams_, unitKpis_, unitResiduals_, unitProfiles_,
+                        declaredInteriors_,
                         thermoFor(udict->lookupWord("name"), udict, thermo),
                         solverDict_, reactionsDict_, dryingKineticsDict_, crystallisationDict_,
                         verbosity, unitIdx++, quiet);

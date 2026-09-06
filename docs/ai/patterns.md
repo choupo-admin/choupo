@@ -331,7 +331,7 @@ tutorials/plant/myPlant/
 │   └── flowsheetDict               PLANT: sectors (...) + named-edge connections
 ├── constant/
 │   └── thermoPhysPropDict          GLOBAL thermophysical system -- CASCADES DOWN
-├── 0/                              THE STREAM STATE (one file per stream)
+├── 0/                              THE STATE: a FILE is a stream, a DIRECTORY a unit's interior
 │   ├── REACTION/tolueneIn          inlet: owned by its consuming sector
 │   ├── REACTION/reactorOut         internal: owned by its producer
 │   └── SEPARATION/product          outlet: owned by its producer

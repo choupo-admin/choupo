@@ -113,11 +113,14 @@ stated reasons rather than by omission:
 * `txy`, `profiles` — curves, tens of points each.  The KPIs summarise them,
   and the gates that care about a specific point read the CSV artefact
   (`column13` reads its declared T back from the column's own `profile.csv`).
-  `internalStates/` (2026-09-05) is a PROJECTION of `profiles` — the same
-  record written a fifth time, under `<SECTOR>/<unit>/<kind>` — and is
-  pinned by the `csv` kind where a case chose to pin its profile, and by
+  A unit's INTERIOR in a state view (`<view>/<SECTOR>/<unit>/<kind>`,
+  2026-09-05, moved inside the view 2026-09-06) is a PROJECTION of
+  `profiles` — the same record written a fifth time — and is pinned by the
+  `csv` kind where a case chose to pin its profile, and by
   `check_internal_states` holding every file to the JSON value by value;
-  it adds no block and needs no new kind.
+  it adds no block and needs no new kind.  Nor does the DECLARED half: an
+  interior a case writes into `0/` is a SEED, so what a golden must pin is
+  that the ANSWER did not move, which the case's existing rows already do.
 * `componentCoverage` — booleans, a readiness surface with its own gate.
 * `modelBoundaries`, `problemDivergence`, `advisories` — words.  Each has its
   own gate asserting the words are present and correct;

@@ -62,8 +62,13 @@ Description
         q (feed quality, default 1 = saturated liquid).
 
     Algorithm:
-        1. Initial T-profile (linear between guesses) and x-profile
-           (heuristic Σ-z-rich at top, Σ-z-poor at bottom).
+        1. The starting interior.  The case may DECLARE it as
+           `0/<SECTOR>/<unit>/stageProfile` -- the same file `converged/`
+           writes -- and then the iteration starts from that profile; a
+           declared profile that does not satisfy the balances is a SEED, not
+           an answer.  With none declared the unit seeds itself (T linear
+           between guesses, feed composition on every stage) and SAYS so.
+           Both routes are announced; neither is silent.
         2. Outer loop:
            a. K_j = K(T_j, x_j) per stage from ThermoPackage.
            b. For each component, solve a tridiagonal system in stage
@@ -117,7 +122,35 @@ public:
         return profile_;
     }
 
+    //  THE COLUMN IS THE FIRST UNIT TO READ ITS OWN INTERIOR BACK.
+    //
+    //  Its stage profile is exactly what a `stageProfile` file carries -- the
+    //  same `UnitProfile` object this class publishes -- so a case may declare
+    //  `0/<SECTOR>/<unit>/stageProfile` and the column starts the iteration
+    //  from it instead of from the linear guess it invents in code below.
+    //  Declaring the kind is what makes the file legal: the flowsheet refuses
+    //  any interior no unit reads.
+    std::vector<std::string> readsInteriorKinds() const override
+    { return { "stageProfile" }; }
+
 private:
+    //  Seed T and x from the case's DECLARED interior, if it declared one.
+    //
+    //  Returns true when the declaration was used.  A declaration that does
+    //  not match this column REFUSES by name -- wrong stage count, a component
+    //  the case does not carry, a missing column, a non-finite value -- because
+    //  a seed silently ignored is exactly the silent crutch this feature
+    //  exists to remove.  What it does NOT check is whether the profile is an
+    //  ANSWER: a declared profile that violates the balances is a SEED, and
+    //  the iteration moves off it.
+    bool seedFromDeclaredInterior(std::size_t          N,
+                                  const ThermoPackage& thermo,
+                                  sVector&             T,
+                                  std::vector<sVector>& x,
+                                  int                  verbosity,
+                                  const char*          methodName) const;
+
+
     // Rigorous simultaneous-correction (MESH Newton) method --- selected
     // by `method simultaneous;` in the operation block.  Solves all the
     // stage equations at once by Newton (handles azeotropes, where the

@@ -1,0 +1,36 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0138888888889    1e-4
+stream  bottoms                T                382.89353034       1e-4
+stream  distillate             F                0.0138888888889    1e-4
+stream  distillate             T                353.630069357      1e-4
+stream  feed                   F                0.0277777777778    1e-4
+stream  feed                   T                370                1e-4
+kpi     column16               B                0.0138888888889    1e-4
+kpi     column16               D                0.0138888888889    1e-4
+kpi     column16               L_rect           0.0277777777778    1e-4
+kpi     column16               L_strip          0.0555555555556    1e-4
+kpi     column16               Q_condenser_kW   -1281.04347952     1e-4
+kpi     column16               Q_reboiler_kW    1279.30480464      1e-4
+kpi     column16               R                2                  1e-4
+kpi     column16               T_bottom         382.89353034       1e-4
+kpi     column16               T_top            354.210893693      1e-4
+kpi     column16               V_rect           0.0416666666667    1e-4
+kpi     column16               V_strip          0.0416666666667    1e-4
+kpi     column16               feedStage        8                  1e-4
+kpi     column16               nStages          15                 1e-4
+kpi     column16               x_B_HK           0.981245177563     1e-4
+kpi     column16               x_D_LK           0.981245054495     1e-4
+boundary global               H_feeds_kW       1779.54082551      1e-4
+boundary global               Q_boundary_kW    -1.73867488094     1e-4
+boundary global               H_products_kW    1145.84590097      1e-4
+boundary global               residual_kW      631.956249658      1e-4
+utility column16               heating.steamLP.duty_kW 1279.30480464      1e-4
+utility column16               heating.steamLP.T 382.89353034       1e-4
+utility column16               heating.steamLP.kg_s 0.58522635162      1e-4
+utility column16               heating.steamLP.eur_h 55.2659675605      1e-4
+utility column16               cooling.coolingWater.duty_kW -1281.04347952     1e-4
+utility column16               cooling.coolingWater.T 354.210893693      1e-4
+utility column16               cooling.coolingWater.kg_s 30.6469731943      1e-4
+utility column16               cooling.coolingWater.eur_h 1.84470261051      1e-4

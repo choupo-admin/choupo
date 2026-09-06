@@ -244,7 +244,7 @@ self.addEventListener("message", async (e) => {
               //
               //  Adding a tree (economics/ is the next one the architecture
               //  names) is one entry here plus one channel in the adapter.
-              const OUTPUT_ROOTS = ["converged", "design", "internalStates"];
+              const OUTPUT_ROOTS = ["converged", "design"];
               const outputs = {};
               for (const r of OUTPUT_ROOTS) outputs[r] = {};
 
@@ -304,8 +304,12 @@ self.addEventListener("message", async (e) => {
 
               // The solved stream state -> the Case tab, read-only.
               if (Object.keys(outputs.converged).length > 0) {
+                //  Stream files AND unit interiors: a state view carries both
+                //  since 2026-09-06 (`converged/<SECTOR>/<unit>/<kind>`), and
+                //  they ride the SAME channel because they are one snapshot --
+                //  the design/ argument for a separate channel does not apply.
                 log("[worker] collected " + Object.keys(outputs.converged).length
-                    + " converged/ stream file(s)");
+                    + " converged/ file(s) (streams + unit interiors)");
                 self.postMessage({ type: "convergedFiles", files: outputs.converged });
               }
 
@@ -316,16 +320,6 @@ self.addEventListener("message", async (e) => {
                 log("[worker] collected " + Object.keys(outputs.design).length
                     + " design/ specification sheet(s)");
                 self.postMessage({ type: "designFiles", files: outputs.design });
-              }
-
-              // What happens INSIDE each unit (internalStates/<SECTOR>/<unit>/<kind>,
-              // a projection of the profiles) -> the Case tab, read-only.  Its
-              // own channel for the same reason as design/: "no unit publishes
-              // a profile" must stay a different fact from "did not solve".
-              if (Object.keys(outputs.internalStates).length > 0) {
-                log("[worker] collected " + Object.keys(outputs.internalStates).length
-                    + " internalStates/ file(s)");
-                self.postMessage({ type: "internalStateFiles", files: outputs.internalStates });
               }
 
               // Real-time instant files -> the time scrubber.  Carried on their

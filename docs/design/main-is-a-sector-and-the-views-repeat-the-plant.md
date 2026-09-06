@@ -30,8 +30,9 @@ the case repeats it:
 ```
 0/               MAIN/ CONCENTRATION/ DRYING/ FERMENTATION/   the state before solving (authored)
 converged/       MAIN/ CONCENTRATION/ DRYING/ FERMENTATION/   the steady solution
+   …/<stream>    a FILE in a state view is a STREAM   — the boundary of the snapshot
+   …/<unit>/<kind>  a DIRECTORY in a state view is a UNIT'S INTERIOR (2026-09-06)
 design/          …/<unit>/<equipment>                          one specification sheet per item
-internalStates/  …/<unit>/<kind>                               what happens INSIDE the equipment (written 2026-09-05)
 iterations/      numerical history — how the solver got there, never physical time
 postProcessing/  the reports derived from the result
 ```
@@ -44,10 +45,9 @@ never inside the geography.  The nine-line language a student learns:
 constant        what we know
 system          how we solve
 MAIN/SECTORS    where we are in the plant
-0               where we started
-converged       where we ended
+0               where we started (streams, and what is inside each unit)
+converged       where we ended   (the same two halves, solved)
 design          how big the equipment is
-internalStates  what happens inside it
 iterations      how the solver got there
 postProcessing  what we report
 ```
@@ -86,3 +86,24 @@ the reviewer's three imagined readers and one shared reading of the tree,
 not a measurement.  The four-task exercise proposed to Vítor (find the
 fermentor's declared volume; the converged temperature of `Out`; Evap2's
 sized area; which files the next run overwrites) is how it would be measured.
+
+---
+
+## 8.  AMENDED 2026-09-06 — the views carry the units' INTERIORS too
+
+`internalStates/`, listed above as a view of its own the day this record was
+written, was RETIRED one day later.  It was the wrong neighbour: `design/` is
+a DERIVATIVE (equipment sizing computed from the answer) and a stage profile
+is STATE, so a unit's interior belongs INSIDE the view that holds the streams
+it sits between — `0/<SECTOR>/<unit>/<kind>` and
+`converged/<SECTOR>/<unit>/<kind>`.
+
+**Nothing in this record's ruling changed.**  A CAPS folder is still always a
+sector, a plant-level unit still lives in one, every view still repeats the
+one geography, and `system/`/`constant/` still sit at every level and never
+inside it.  What changed is what a view holds at the END of that geography: a
+FILE is a stream, a DIRECTORY is a unit.  The eight-line language above is the
+nine-line one with the retired view removed and `0/` told what it now carries.
+
+Record:
+[`a-state-directory-is-a-restartable-snapshot.md`](a-state-directory-is-a-restartable-snapshot.md).

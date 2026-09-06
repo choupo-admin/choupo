@@ -1707,6 +1707,62 @@ ONE MORE OBSERVATION, and it is about the ENGINE rather than the column. These t
 \end{tutgolden}
 
 \clearpage
+\tutentry{column16\_declared\_interior}{tutorials/steady/distillation/column16\_declared\_interior}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column16) at (0.0,-0.0) {\textbf{column16}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(column16.west)+(-1.05,0.00)$) -- ($(column16.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(column16.east)+(0,-0.34)$) -- ($(column16.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column16.east)+(0,0.00)$) -- ($(column16.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+  \draw[->] ($(column16.east)+(0,0.34)$) -- ($(column16.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A column that starts from the interior declared in 0/}
+\begin{tutnarrative}
+A COLUMN THAT STARTS FROM THE INTERIOR THE CASE DECLARES.
+
+Physically this is column01 -- benzene/toluene, Raoult, 15 stages, feed on 8, R = 2, D = 50 kmol/h -- and the answer is the same answer. What differs is where the ITERATION STARTS, and that is the whole subject of the case.
+
+THE OPENFOAM READING OF A STATE DIRECTORY. In OpenFOAM a time directory holds one file per FIELD, and that file carries `boundaryField` AND `internalField` together: the conditions at the edges of the domain and the values inside it, in one place, so the directory is a COMPLETE, RESTARTABLE snapshot. Choupo`s `0/` used to carry only the boundary half -- one file per STREAM -- while what each unit held inside it existed nowhere a case could declare it. Since 2026-09-06 a state view carries both:
+
+0/<stream> a FILE is a stream (the boundary) 0/<SECTOR>/<unit>/<kind> a DIRECTORY is a unit`s interior
+
+This case declares `0/column16/stageProfile`: the temperature and the liquid and vapour compositions on all 15 stages, in exactly the grammar the run writes to `converged/column16/stageProfile`. The same object travels both ways, which is what makes the snapshot restartable -- run the case, copy the file from `converged/` to `0/`, and the next run starts where the last one finished.
+
+WHY IT MATTERS HERE, and it is not the speed. Until this slice the column seeded its own interior in CODE -- "initial T-profile (linear between guesses)" -- undeclared, unseen and unowned, which is exactly the silent crutch Choupo forbids for every other solver aid (every aid is explicit in a dict and announces itself when it binds). Now the unit says which of the two routes it took, on every run, both ways:
+
+[seed] interior read from 0/ (stageProfile): 15 stages, T ... K [seed] interior seeded by the unit: linear T between the guesses ...
+
+A DECLARED PROFILE THAT DOES NOT SATISFY THE BALANCES IS A SEED, NOT AN ANSWER. Nothing checks this file against the column equations -- the iteration does that, and it moves off any profile that is wrong. Edit a stage temperature by fifty kelvin and the column still converges to the same distillate; it simply takes more outer iterations to get there. What IS checked is that the declaration describes THIS column: the stage count, the component set, and that every number is a number. A mismatch REFUSES by name and names the remedy -- a seed silently ignored would be the silence this case exists to end.
+
+WHAT THE STUDENT SHOULD DO WITH IT. Run the case and read the `iterations` KPI; then delete `0/column16/` and run it again. Both runs reach the same column; only one of them had to search for it. That difference is the entire value of a restartable snapshot, and it is why an interior is STATE and not a report.
+
+\end{tutnarrative}
+\tutreadme{Physically this is [column01\_benzene\_toluene](../column01\_benzene\_toluene): equimolar benzene/toluene, Raoult VLE, 15 stages (reboiler counted), feed on stage 8, R = 2, distillate 50 kmol/h, Wang--Henke. The answer is the same answer --- x\_D = 0.9812 benzene, x\_B = 0.9812 toluene. What differs is where the iteration starts.}
+\tutreadme{In OpenFOAM a time directory holds one file per field, and that file carries boundaryField $\ast$and$\ast$ internalField: the conditions at the edges of the domain and the values inside it, together, so the directory is a complete snapshot you can restart from.}
+\tutreadme{Choupo's 0/ used to carry only the boundary half --- one file per stream --- while what each unit held $\ast$inside$\ast$ it existed nowhere a case could declare. Since 2026-09-06 a state view carries both:}
+\tutreadme{This case declares 0/column16/stageProfile --- T and the liquid and vapour compositions on all fifteen stages, in exactly the grammar the run writes to converged/column16/stageProfile. The same object travels both ways. Run the case, copy the file from converged/ back into 0/, and the next run starts where the last one finished.}
+\tutreadme{Nothing checks this file against the column equations. The iteration does that, and it moves off any profile that is wrong. Edit a stage temperature by fifty kelvin and the column still converges to the same distillate --- it simply has further to travel.}
+\tutreadme{What $\ast$is$\ast$ checked is that the declaration describes this column: the stage count against nStages, the component set against the case's, every value finite. A mismatch refuses by name and says how to fix it. A seed silently ignored would be exactly the silence this case exists to end.}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0138888888889}
+\goldrow{stream}{bottoms}{T}{382.89353034}
+\goldrow{stream}{distillate}{F}{0.0138888888889}
+\goldrow{stream}{distillate}{T}{353.630069357}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{370}
+\goldrow{kpi}{column16}{B}{0.0138888888889}
+\goldrow{kpi}{column16}{D}{0.0138888888889}
+\goldrow{kpi}{column16}{L\_rect}{0.0277777777778}
+\goldrow{kpi}{column16}{L\_strip}{0.0555555555556}
+\goldrow{kpi}{column16}{Q\_condenser\_kW}{-1281.04347952}
+\goldrow{kpi}{column16}{Q\_reboiler\_kW}{1279.30480464}
+\goldrow{kpi}{column16}{R}{2}
+\goldrow{kpi}{column16}{T\_bottom}{382.89353034}
+\goldmore{19}
+\end{tutgolden}
+
+\clearpage
 \tutentry{shortcut01\_benzene\_toluene}{tutorials/steady/distillation/shortcut01\_benzene\_toluene}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

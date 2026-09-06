@@ -253,12 +253,11 @@ tutorials/**/design/
 #  named, rather than reached by a pattern that would take the records with it.
 docs/design/flashComplex/design/
 
-# what happens INSIDE each unit (internalStates/<SECTOR>/<unit>/<kind>, a
-# projection of the profiles, regenerated WHOLE by the solver like design/).
-# Scoped to cases for the same reason as design/, and for the same reader:
-# the GUI's Vite glob (second lock in gui/src/cases/tutorials.ts).
-tutorials/**/internalStates/
-docs/design/flashComplex/internalStates/
+#  WHAT HAPPENS INSIDE EACH UNIT is no longer a view of its own (2026-09-06):
+#  a unit's interior lives INSIDE the state view that holds its streams --
+#  `converged/<SECTOR>/<unit>/<kind>`, which is already ignored above with the
+#  rest of `converged/`, and `0/<SECTOR>/<unit>/<kind>`, which is TRACKED
+#  because a case DECLARING the interior it starts from is the whole point.
 
 # F3: projected local unit runs (regenerable artifacts, never authored state)
 **/.runs/

@@ -277,8 +277,8 @@ neither convention's number.
 
 | Directory | Holds |
 |---|---|
-| `0/` | the COMPLETE initial state, one file per stream |
-| `converged/` | the steady solution |
+| `0/` | the COMPLETE initial state: one FILE per stream, plus (optionally) one DIRECTORY per unit holding the interior the case declares |
+| `converged/` | the steady solution, both halves |
 | `iterations/` | optional numerical history — NEVER physical time |
 | `0.01/` `0.02/` … | physical transient snapshots |
 | `design/` | equipment realisation |
@@ -289,5 +289,15 @@ into a sector changes the DOMAIN, not the stream: a producer leaving the domain
 flips a stream's role from internal to inlet, and the child `0/` is
 materialised from the parent's persisted state — `converged/` by default, never
 a silent "latest".
+
+**A state view is a RESTARTABLE SNAPSHOT** (2026-09-06), the way an OpenFOAM
+time directory is: a FILE is a stream — the boundary — and a DIRECTORY is a
+unit's interior, `<view>/<SECTOR>/<unit>/<kind>`.  Copy
+`converged/<SECTOR>/<unit>/stageProfile` into `0/` at the same address and the
+next run STARTS from it; a declared profile that does not satisfy the balances
+is a SEED, not an answer, and the unit announces which route it took either
+way.  Only units that DECLARE the kind they read accept one (today: the
+distillation column, `stageProfile`); anything else refuses by name.  Witness:
+`tutorials/steady/distillation/column16_declared_interior`.
 
 Full contract: `docs/architecture/stream-state-architecture.md`.

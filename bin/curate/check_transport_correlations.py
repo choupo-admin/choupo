@@ -367,7 +367,7 @@ def strip_transport(text):
     return None
 
 
-def case_copy(src, ignore=("converged", "reports", "internalStates", "design", "log.*",
+def case_copy(src, ignore=("converged", "reports", "design", "log.*",
                            "expected")):
     tmp = Path(tempfile.mkdtemp(prefix="ctc_", dir=str(ROOT / "build")))
     dst = tmp / src.name

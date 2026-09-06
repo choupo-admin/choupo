@@ -89,17 +89,16 @@ lithiumBrinePlant/
 │   ├── system/flowsheetDict   the sector's own subgraph
 │   ├── system/solverDict       [optional override]
 │   └── constant/thermoPhysPropDict (+ propertyManifest)   the sector's THERMO WORLD (e.g. Pitzer, NRTL)
-├── 0/                COMPLETE INITIAL STREAM STATE  (one file per stream)
+├── 0/                COMPLETE INITIAL STATE.  A state view is a RESTARTABLE
+│   │                 SNAPSHOT: a FILE is a stream, a DIRECTORY is a unit.
 │   ├── BRINE/brineFeed  BRINE/naclMotherLiquor  BRINE/liRichBrine  …
-│   └── EXTRACTION/organicFeed  EXTRACTION/raffinate  EXTRACTION/loadedOrganic  …
-├── converged/        CONVERGED STEADY STATE       (same tree as 0/)
+│   ├── EXTRACTION/organicFeed  EXTRACTION/raffinate  EXTRACTION/loadedOrganic  …
+│   └── BRINE/EV-101/axialProfile   [optional] the INTERIOR the case declares
+├── converged/        CONVERGED STEADY STATE       (same tree as 0/, both halves)
 ├── iterations/       [optional] numerical history  000001/ 000002/ …   NEVER physical time
 ├── 0.01/ 0.02/ …     PHYSICAL TRANSIENT TIME snapshots
 ├── design/           PHYSICAL EQUIPMENT REALISATION  (BRINE/EV-101/crystalliser …)
 │                     ONE dictionary per equipment item -- see below
-├── internalStates/   WHAT HAPPENS INSIDE EACH UNIT  (BRINE/EV-101/axialProfile …)
-│                     ONE dictionary per unit that publishes a profile; a
-│                     PROJECTION of `SimulationResult::profiles` (2026-09-05)
 ├── economics/        COST & VALUE  (equipment/ · sectors/ · plant)
 └── postProcessing/   reports/ plots/ pinch/ comparisons/
 ```
@@ -111,12 +110,12 @@ lithiumBrinePlant/
 | `system/` | How the problem is organised and solved. |
 | `constant/` | Model and data that do not change during execution. |
 | `BRINE/`, `EXTRACTION/`, … | Process subdomains / sectors: a local subgraph + optional model overrides. |
-| `0/` | **Complete** initial stream state over the composed flowsheet. |
-| `converged/` | Converged steady state. |
+| `0/` | **Complete** initial state over the composed flowsheet: every stream (a FILE) and, optionally, what each unit holds inside it (a DIRECTORY, one file per kind). AUTHORED — the engine never writes here. |
+| `converged/` | Converged steady state, both halves, written whole on every converged run. |
 | `iterations/` | Optional numerical history. **Never** physical time. |
 | `0.01/`, `0.02/`, … | Physical transient-time snapshots. |
 | `design/` | Physical equipment realisation derived from process state + design basis. |
-| `internalStates/` | A field over a coordinate of the equipment (stage, position, particle size) or its inventory (loadings per component), per unit. A projection of the published profiles; a construction over a swept parameter (van Heerden, Merkel) is an analysis and is NOT here. |
+| `<view>/<SECTOR>/<unit>/` | A UNIT'S INTERIOR inside a state view (2026-09-06): a field over a coordinate of the equipment (stage, position, particle size) or its inventory (loadings per component). A projection of the published profiles; a construction over a swept parameter (van Heerden, Merkel) is an analysis and is NOT here. It is STATE, not a derivative, which is why it lives inside the view and not beside it. |
 | `economics/` | Equipment, sector and plant cost/value results. |
 | `postProcessing/` | Derived reporting and presentation outputs. |
 
@@ -133,6 +132,21 @@ sector topology stays in the sector subgraph — never duplicated at the root.
 
 Missing files AND orphan files are **FATAL for `choupoSolve`**. There is no
 partial state.
+
+**The contract counts STREAMS, and a unit interior is not one (amended
+2026-09-06).**  Since a state view carries each unit's interior as a
+DIRECTORY beside the stream FILES, the completeness validator ignores
+directories entirely: it reads bodies, not names, and only a file that looks
+like stream state is counted on either side.  A declared interior is
+therefore always OPTIONAL — a case may declare none, one, or one per unit,
+and none of it changes what "complete" means for the streams.
+
+An interior gets its own two refusals, both the same posture as the stream
+contract they sit beside: a unit DIRECTORY naming no unit of the flattened
+flowsheet is an ORPHAN and is fatal, and a kind file no unit declares it
+READS is fatal too — a declared field nobody reads is a comment sitting in
+the state directory.  Record:
+[`../design/a-state-directory-is-a-restartable-snapshot.md`](../design/a-state-directory-is-a-restartable-snapshot.md).
 
 ### 2.3 Stream role is inferred from TOPOLOGY (no mini-language)
 ```
@@ -410,13 +424,20 @@ executable.
    **`design/` DONE 2026-09-04** (`src/io/DesignSheetWriter.cpp`, filled from
    postDict's `sizing {}` pass — no `designBasis/` was needed).  `designBasis/`,
    `economicBasis/` and `economics/` remain outstanding.
-   **`internalStates/` DONE 2026-09-05** (`src/io/InternalStateWriter.cpp`,
-   a projection of `SimulationResult::profiles`, on the `design/` precedent;
-   record
+   **UNIT INTERIORS DONE 2026-09-05, RELOCATED 2026-09-06**
+   (`src/io/InternalStateIO.cpp`, a projection of
+   `SimulationResult::profiles`; record
    [`../design/internal-states-are-a-projection-of-profiles.md`](../design/internal-states-are-a-projection-of-profiles.md)).
-   It was not in this list because it is not a design or economics layer: it
-   is a VIEW of the solved state, beside `converged/`, and it arrived once
-   the per-unit run-output shape existed.
+   They first shipped as a top-level `internalStates/` view, on the `design/`
+   precedent — the wrong neighbour, because `design/` is a DERIVATIVE and a
+   stage profile is STATE.  They now live INSIDE the state views, at
+   `<view>/<SECTOR>/<unit>/<kind>`, and `0/` can DECLARE one:
+   [`../design/a-state-directory-is-a-restartable-snapshot.md`](../design/a-state-directory-is-a-restartable-snapshot.md).
+   This AMENDMENT extends what a state directory CONTAINS.  It does not
+   reopen the ontology this document ratified: a stream's state still lives in
+   its own file, roles are still inferred from topology, `0/` is still
+   authored and complete, and drill-in still materialises a child `0/` from a
+   parent's persisted state.
 
 ---
 

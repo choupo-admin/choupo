@@ -90,6 +90,7 @@ Dictionary form (topology only -- state in 0/):
 
 #include "core/Dictionary.H"
 #include "result/SimulationResult.H"
+#include "result/UnitProfile.H"
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
@@ -338,6 +339,13 @@ private:
     std::vector<scalar>                                    globalMassResiduals_;
     std::vector<scalar>                                    globalEnergyResiduals_;
     std::map<std::string, UnitProfile>                     unitProfiles_;
+
+    //  WHAT THE CASE DECLARES ITS UNITS START FROM.  Read once out of `0/`
+    //  at the flatten seam (where the sectors are stamped and the topology is
+    //  final), keyed by qualified unit name then by kind, and handed to each
+    //  unit before it solves.  Empty for every case that declares none, which
+    //  is every case in the corpus but the witness.
+    std::map<std::string, std::map<std::string, UnitProfile>> declaredInteriors_;
     DictPtr solverDict_;
     DictPtr reactionsDict_;
     DictPtr dryingKineticsDict_;   // constant/dryingKinetics (drying-curve library)

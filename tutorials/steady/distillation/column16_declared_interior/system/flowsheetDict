@@ -1,0 +1,85 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  A COLUMN THAT STARTS FROM THE INTERIOR THE CASE DECLARES.
+
+  Physically this is column01 -- benzene/toluene, Raoult, 15 stages, feed on
+  8, R = 2, D = 50 kmol/h -- and the answer is the same answer.  What differs
+  is where the ITERATION STARTS, and that is the whole subject of the case.
+
+  THE OPENFOAM READING OF A STATE DIRECTORY.  In OpenFOAM a time directory
+  holds one file per FIELD, and that file carries `boundaryField` AND
+  `internalField` together: the conditions at the edges of the domain and the
+  values inside it, in one place, so the directory is a COMPLETE, RESTARTABLE
+  snapshot.  Choupo`s `0/` used to carry only the boundary half -- one file
+  per STREAM -- while what each unit held inside it existed nowhere a case
+  could declare it.  Since 2026-09-06 a state view carries both:
+
+      0/<stream>                       a FILE is a stream   (the boundary)
+      0/<SECTOR>/<unit>/<kind>         a DIRECTORY is a unit`s interior
+
+  This case declares `0/column16/stageProfile`: the temperature and the
+  liquid and vapour compositions on all 15 stages, in exactly the grammar the
+  run writes to `converged/column16/stageProfile`.  The same object travels
+  both ways, which is what makes the snapshot restartable -- run the case,
+  copy the file from `converged/` to `0/`, and the next run starts where the
+  last one finished.
+
+  WHY IT MATTERS HERE, and it is not the speed.  Until this slice the column
+  seeded its own interior in CODE -- "initial T-profile (linear between
+  guesses)" -- undeclared, unseen and unowned, which is exactly the silent
+  crutch Choupo forbids for every other solver aid (every aid is explicit in a
+  dict and announces itself when it binds).  Now the unit says which of the
+  two routes it took, on every run, both ways:
+
+      [seed] interior read from 0/ (stageProfile): 15 stages, T ... K
+      [seed] interior seeded by the unit: linear T between the guesses ...
+
+  A DECLARED PROFILE THAT DOES NOT SATISFY THE BALANCES IS A SEED, NOT AN
+  ANSWER.  Nothing checks this file against the column equations -- the
+  iteration does that, and it moves off any profile that is wrong.  Edit a
+  stage temperature by fifty kelvin and the column still converges to the same
+  distillate; it simply takes more outer iterations to get there.  What IS
+  checked is that the declaration describes THIS column: the stage count, the
+  component set, and that every number is a number.  A mismatch REFUSES by
+  name and names the remedy -- a seed silently ignored would be the silence
+  this case exists to end.
+
+  WHAT THE STUDENT SHOULD DO WITH IT.  Run the case and read the `iterations`
+  KPI; then delete `0/column16/` and run it again.  Both runs reach the same
+  column; only one of them had to search for it.  That difference is the
+  entire value of a restartable snapshot, and it is why an interior is STATE
+  and not a report.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+// -- and, since 2026-09-06, the INTERIOR of each unit in 0/<unit>/<kind>.
+
+units
+(
+    {
+        name        column16;
+        type        distillationColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+        }
+
+        compositionTol   1e-7;
+        maxOuterIter     200;
+    }
+);

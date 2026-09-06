@@ -26,7 +26,9 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "io/InternalStateWriter.H"
+#include "io/InternalStateIO.H"
+
+#include "core/Dictionary.H"
 
 #include "core/FlatUnit.H"
 #include "result/UnitProfile.H"
@@ -48,7 +50,7 @@ namespace fs = std::filesystem;
 
 namespace Choupo
 {
-namespace InternalStateWriter
+namespace InternalStateIO
 {
 
 namespace
@@ -104,20 +106,22 @@ std::string kindOf(const std::string& xAxis, bool& declared)
     return "profile";
 }
 
-std::size_t write(const std::string&      caseRoot,
+std::size_t write(const std::string&      viewRoot,
                   const SimulationResult& result,
                   int                     verbosity)
 {
-    const fs::path root = fs::path(caseRoot) / "internalStates";
+    const fs::path root = fs::path(viewRoot);
 
-    //  STALE FILES MUST NEVER LINGER.  A previous run's topology may have had
-    //  units this one does not.  Same posture, same call, as `converged/`
-    //  and `design/`.
+    //  STALE FILES CANNOT LINGER, AND NOT BECAUSE THIS FUNCTION REMOVES THEM.
+    //  The view root is `converged/`, which its own writer removes and
+    //  rebuilds WHOLE immediately before this runs -- streams first, then the
+    //  interiors into the same fresh tree.  Removing anything here would
+    //  delete the streams this snapshot exists to complete.
     std::error_code ec;
-    fs::remove_all(root, ec);
 
-    //  NOTHING PUBLISHED, NO DIRECTORY.  An empty `internalStates/` reads as
-    //  "every unit is hollow"; an absent one reads as what it is.
+    //  NOTHING PUBLISHED, NO DIRECTORY.  A unit that says nothing about its
+    //  inside gets no directory beside the streams; an empty one would read
+    //  as "this unit is hollow".
     if (result.profiles.empty()) return 0;
 
     //  The owning sector and the equipment type, from the flattened topology
@@ -151,8 +155,8 @@ std::size_t write(const std::string&      caseRoot,
             etype  = uit->second->type;
         }
 
-        //  THE DIRECTORY.  `internalStates/<SECTOR>/<unit>/` where a sector
-        //  exists, `internalStates/<unit>/` where none does.  The leaf is the
+        //  THE DIRECTORY.  `<view>/<SECTOR>/<unit>/` where a sector
+        //  exists, `<view>/<unit>/` where none does.  The leaf is the
         //  qualified name with its OWN sector's prefix removed -- and only
         //  when that prefix really is the prefix.  This is not name identity:
         //  the sector is already known as data; it is used only to find where
@@ -194,12 +198,17 @@ std::size_t write(const std::string&      caseRoot,
         std::ostringstream o;
         o << "/*--------------------------------*- Choupo -*-----------------"
              "---------------*\\\n"
-             "  INTERNAL STATE OF ONE UNIT -- WRITTEN BY THE RUN.\n"
+             "  THE INTERNAL STATE OF ONE UNIT, inside the state view that\n"
+             "  holds its streams.  A state directory is a RESTARTABLE\n"
+             "  SNAPSHOT: the streams are the boundary, this is what the\n"
+             "  equipment holds between them.\n"
              "\n"
-             "  This file is REGENERATED WHOLE on every run: the\n"
-             "  `internalStates/` tree is removed and rebuilt, exactly as\n"
-             "  `converged/` and `design/` are.  Do not edit it -- an edit is\n"
-             "  destroyed by the next run without a word.\n"
+             "  In `converged/` this file is REGENERATED WHOLE on every run\n"
+             "  together with the streams beside it.  Do not edit it there --\n"
+             "  an edit is destroyed by the next run without a word.  COPY it\n"
+             "  into the case's `0/` at the same address to DECLARE it as the\n"
+             "  interior the next run starts from; a declared profile that\n"
+             "  does not satisfy the balances is a SEED, not an answer.\n"
              "\n"
              "  It is a PROJECTION of the profile this unit publishes through\n"
              "  `UnitOperation::profile()` -- the same record the result JSON\n"
@@ -270,7 +279,7 @@ std::size_t write(const std::string&      caseRoot,
     {
         if (!skipped.empty())
         {
-            std::cout << "  [internalStates] " << skipped.size()
+            std::cout << "  [interior] " << skipped.size()
                       << " profile" << (skipped.size() == 1 ? "" : "s")
                       << " NOT written: xAxis T_K is a construction over a"
                          " parameter sweep (van Heerden, Merkel), an analysis"
@@ -281,31 +290,177 @@ std::size_t write(const std::string&      caseRoot,
             std::cout << ")\n";
         }
         for (const auto& u : undeclared)
-            std::cout << "  [internalStates] " << u
+            std::cout << "  [interior] " << u
                       << ": axis has no declared kind -- written as"
                          " `profile`\n";
     }
 
     //  THE SUMMARY NAMES A DIRECTORY ONLY WHEN ONE EXISTS.  A run whose every
-    //  profile was declined writes no tree, and "wrote 0 files ->
-    //  internalStates/" would send the reader to a directory that is not there.
+    //  profile was declined writes no unit directory at all, and "wrote 0
+    //  files" naming one would send the reader somewhere that is not there.
     if (verbosity >= 2)
     {
         if (written == 0)
-            std::cout << "  [internalStates] nothing written: every published"
-                         " profile was declined, so no internalStates/"
-                         " directory exists\n";
+            std::cout << "  [interior] nothing written: every published profile"
+                         " was declined, so no unit directory exists in this"
+                         " state view\n";
         else
-            std::cout << "  [internalStates] wrote " << written << " file"
-                      << (written == 1 ? "" : "s")
-                      << " -> internalStates/  (regenerated whole; do not"
+            std::cout << "  [interior] wrote " << written << " unit interior"
+                      << (written == 1 ? "" : "s") << " into "
+                      << fs::path(viewRoot).filename().string()
+                      << "/  (regenerated whole with the streams; do not"
                          " edit)\n";
     }
 
     return written;
 }
 
-} // namespace InternalStateWriter
+
+// ---------------------------------------------------------------------------
+//  THE READER.  A state view's unit interiors, back as the very objects the
+//  writer rendered.  `0/` is where this matters: what a case DECLARES there is
+//  the interior the next run starts from, which is what makes a state
+//  directory a RESTARTABLE SNAPSHOT rather than a photograph of the streams.
+// ---------------------------------------------------------------------------
+namespace
+{
+
+//  The directory a unit's interior lives in, RELATIVE to the view root:
+//  `<SECTOR>/<leaf>` where a sector exists, `<leaf>` where none does.  The
+//  sector is the STAMPED `FlatUnit::sector` (dotted for a nested one), and the
+//  leaf is the qualified name with its own sector's prefix removed -- exactly
+//  the address `write` builds, so the two can never disagree.
+fs::path unitDirOf(const FlatUnit& u)
+{
+    fs::path    dir;
+    std::string leaf = u.name;
+    if (!u.sector.empty())
+    {
+        //  A dotted sector ("A.B") is a path ("A/B"): the same geography the
+        //  streams are filed under.
+        std::string seg;
+        for (char c : u.sector)
+        {
+            if (c == '.') { dir /= seg; seg.clear(); }
+            else          { seg += c; }
+        }
+        if (!seg.empty()) dir /= seg;
+
+        const std::string prefix = u.sector + ".";
+        if (leaf.rfind(prefix, 0) == 0) leaf = leaf.substr(prefix.size());
+    }
+    return dir / leaf;
+}
+
+//  Is this file an interior RECORD?  The record says so itself -- nothing here
+//  matches a file or a directory BY NAME.  Read as text before parsing so a
+//  stream state file (or anything else living in the view) costs nothing.
+bool looksLikeInternalState(const fs::path& file)
+{
+    std::ifstream probe(file.string());
+    if (!probe.is_open()) return false;
+    std::string body((std::istreambuf_iterator<char>(probe)),
+                     std::istreambuf_iterator<char>());
+    return body.find("recordType") != std::string::npos
+        && body.find("internalState") != std::string::npos;
+}
+
+UnitProfile parseProfile(const fs::path& file)
+{
+    UnitProfile p;
+    auto d = Dictionary::fromFile(file.string());
+    p.xAxis = d->lookupWord("xAxis");
+
+    if (!d->found("columns"))
+        throw std::runtime_error("declared interior " + file.string()
+            + ": no `columns {}` block -- an interior with no field is not a"
+              " state.");
+    auto cols = d->subDict("columns");
+    for (const auto& c : cols->keys())
+        p.columns[c] = cols->lookupList(c);
+
+    if (!p.columns.count(p.xAxis))
+        throw std::runtime_error("declared interior " + file.string()
+            + ": declares `xAxis " + p.xAxis + ";` and carries no column of"
+              " that name -- the axis is the one column that must be there.");
+
+    if (d->found("markers"))
+        for (const auto& m : d->lookupDictList("markers"))
+            p.markers.push_back(
+                ProfileMarker{ m->lookupScalar("x"),
+                               m->lookupWordOrDefault("label", "") });
+    return p;
+}
+
+} // namespace
+
+std::map<std::string, std::map<std::string, UnitProfile>>
+read(const std::string&           viewRoot,
+     const std::vector<FlatUnit>& topology,
+     int                          verbosity)
+{
+    std::map<std::string, std::map<std::string, UnitProfile>> out;
+    const fs::path root(viewRoot);
+    if (!fs::exists(root) || !fs::is_directory(root)) return out;
+
+    //  The addresses the writer would use, as a lookup from the relative
+    //  directory path back to the unit that owns it.
+    std::map<std::string, std::string> unitAt;      // "MAIN/C1" -> "MAIN.C1"
+    for (const auto& u : topology)
+        unitAt[unitDirOf(u).generic_string()] = u.name;
+
+    std::error_code ec;
+    std::size_t files = 0;
+    for (const auto& e : fs::recursive_directory_iterator(root, ec))
+    {
+        if (!e.is_regular_file()) continue;
+        const fs::path rel = fs::relative(e.path(), root, ec);
+        if (rel.empty() || !rel.has_parent_path()) continue;   // a stream file
+        if (!looksLikeInternalState(e.path())) continue;
+
+        const std::string dirKey = rel.parent_path().generic_string();
+        auto it = unitAt.find(dirKey);
+        if (it == unitAt.end())
+        {
+            //  AN ORPHAN INTERIOR -- the same posture as an orphan stream
+            //  file.  A record filed against a unit the flowsheet does not
+            //  have is a claim about nothing, and a case that keeps it will
+            //  keep believing the engine read it.
+            std::string known;
+            for (const auto& [k, v] : unitAt)
+                known += (known.empty() ? "" : ", ") + k + " (" + v + ")";
+            throw std::runtime_error(
+                "ORPHAN declared interior: " + fs::path(viewRoot).filename().string()
+                + "/" + rel.generic_string() + " -- the directory '" + dirKey
+                + "' names no unit in the flattened flowsheet.  A unit's"
+                  " interior lives at <view>/<SECTOR>/<unit>/<kind>, at the"
+                  " address its STAMPED sector dictates."
+                + (known.empty()
+                     ? std::string("  This flowsheet has no units at all.")
+                     : "  The units this flowsheet has: " + known + "."));
+        }
+
+        out[it->second][rel.filename().string()] = parseProfile(e.path());
+        ++files;
+    }
+
+    if (verbosity >= 2 && files > 0)
+    {
+        std::cout << "  [interior] " << files << " declared interior"
+                  << (files == 1 ? "" : "s") << " read from "
+                  << fs::path(viewRoot).filename().string() << "/:";
+        for (const auto& [uname, byKind] : out)
+            for (const auto& [kind, prof] : byKind)
+            {
+                (void)prof;
+                std::cout << " " << uname << "/" << kind;
+            }
+        std::cout << "\n";
+    }
+    return out;
+}
+
+} // namespace InternalStateIO
 } // namespace Choupo
 
 // ************************************************************************* //

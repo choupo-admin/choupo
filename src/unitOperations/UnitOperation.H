@@ -137,6 +137,42 @@ public:
     // optional means "do not show a profile plot for this unit".
     virtual std::optional<UnitProfile> profile() const { return std::nullopt; }
 
+    // ---- THE DECLARED INTERIOR (the other direction of the same object) ----
+    //
+    //  A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT.  In OpenFOAM a time
+    //  directory holds one file per FIELD, carrying the boundary conditions
+    //  and the internal field together; in Choupo a state view holds one file
+    //  per STREAM (the boundary) and one directory per unit (its interior).
+    //  What `converged/<SECTOR>/<unit>/<kind>` writes, a case may copy into
+    //  `0/<SECTOR>/<unit>/<kind>` and OWN -- and then the unit starts from it
+    //  instead of from a seed it invents in code.
+    //
+    //  `readsInteriorKinds()` is the unit's DECLARATION of which kinds it
+    //  will read.  It is not decoration: a kind file no unit reads is a
+    //  comment sitting in the state directory, and the flowsheet refuses it
+    //  by name.  Default empty -- a unit that seeds itself says so by
+    //  declaring nothing, and any declared interior for it refuses.
+    //
+    //  A DECLARED PROFILE THAT DOES NOT SATISFY THE BALANCES IS A SEED, NOT
+    //  AN ANSWER.  The unit still solves; the declaration only says where the
+    //  iteration starts.  Per the 2026-05-30 rule, the unit ANNOUNCES which
+    //  of the two routes it took, both ways.
+    virtual std::vector<std::string> readsInteriorKinds() const { return {}; }
+
+    //  Handed to the unit by the flowsheet, from the case's `0/`, BEFORE
+    //  solve().  Keyed by kind.
+    void setDeclaredInterior(std::map<std::string, UnitProfile> in)
+    { declaredInterior_ = std::move(in); }
+
+    //  The declared interior of one kind, or nullptr when the case declared
+    //  none.  A pointer rather than an optional: the profile is the case's,
+    //  the unit only reads it.
+    const UnitProfile* declaredInterior(const std::string& kind) const
+    {
+        auto it = declaredInterior_.find(kind);
+        return it == declaredInterior_.end() ? nullptr : &it->second;
+    }
+
     // Demand-driven INPUT flows the unit op computed during solve().
     // Used to push a utility stream's actual consumption back into the
     // Flowsheet's stream registry, so the Streams panel reflects what
@@ -181,6 +217,7 @@ public:
 
 private:
     std::vector<scalar>                    residuals_;
+    std::map<std::string, UnitProfile>     declaredInterior_;
     static std::map<std::string, Factory>& registry();
 };
 

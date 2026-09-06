@@ -79,7 +79,9 @@ case/
 │   ├── reactions          (opt) named-reaction library
 │   ├── crystallisation    (opt) per-kinetic-pair library
 │   └── dryingKinetics     (opt) drying-curve library
-└── 0/                     complete initial state, one file per stream
+└── 0/                     complete initial state: one file per stream, and
+                           (optional) <SECTOR>/<unit>/<kind> -- the interior
+                           the case declares each unit starts from
 ```
 
 Full details in `case-layout.md`.

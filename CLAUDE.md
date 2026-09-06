@@ -188,12 +188,21 @@ case/
   "standalone" mode — one consistent case format for everything.
 * **In a FRACTAL case a CAPS folder is always a SECTOR, and a plant-level
   unit lives in one — conventionally `MAIN/`** (2026-09-05).  Every VIEW of
-  the case (`0/`, `converged/`, `design/`, `internalStates/`) repeats the one
+  the case (`0/`, `converged/`, `design/`) repeats the one
   geography `MAIN · <SECTORS>`; `system/` (HOW) and `constant/` (WITH WHAT)
   sit at every level of the fractal and never inside the geography.  A
   convention for humans, never inferred by the engine from capitals, never
   forced on a flat case (its units ARE the plant).  Record:
   [`docs/design/main-is-a-sector-and-the-views-repeat-the-plant.md`](docs/design/main-is-a-sector-and-the-views-repeat-the-plant.md).
+* **A STATE VIEW HOLDS BOTH HALVES: a FILE is a stream, a DIRECTORY is a
+  unit's interior** (2026-09-06).  OpenFOAM's time directory carries a field's
+  `internalField` AND its `boundaryField` in one file, which is what makes it
+  restartable; a Choupo state view carries the streams (the boundary) as files
+  and each unit's interior as `<view>/<SECTOR>/<unit>/<kind>`.  `converged/`
+  writes them; `0/` may DECLARE them, tracked, and the unit then STARTS there
+  instead of from a seed it invents in code.  The completeness contract still
+  counts STREAMS and ignores directories.  Record:
+  [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md).
 * **The `.cho` marker file** is the openable entity in the GUI (the CLI is
   unaffected; `runCase`/`choupoSolve` take the folder path).  Intentionally
   empty for now; future GUI-only metadata lives here without polluting the
@@ -1099,13 +1108,38 @@ the 2026-09-04 specification sheets, which ride the `sizing {}` PASS in
 Record:
 [`docs/design/the-hierarchy-that-only-existed-in-the-name.md`](docs/design/the-hierarchy-that-only-existed-in-the-name.md).
 
+**A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT (2026-09-06).**  In OpenFOAM one
+FIELD file carries `internalField` AND `boundaryField`; a state view here now
+carries both halves too — **a FILE is a stream, a DIRECTORY is a unit's
+interior** (`<view>/<SECTOR>/<unit>/<kind>`) — and the top-level
+`internalStates/` view of the day before is RETIRED: `design/` is a
+DERIVATIVE and a profile is STATE, so it was the wrong neighbour.  The
+substantive half is the SEED: `DistillationColumn` invented its own starting
+interior in code and said nothing, the one solver aid that escaped the
+2026-05-30 rule, so it now READS `0/<...>/stageProfile` when the case declares
+one, refuses by name a declaration that does not describe THIS column, and
+ANNOUNCES both routes — **a declared profile that does not satisfy the
+balances is a SEED, not an answer.**  `0/` stays authored and TRACKED (a case
+may commit the state it starts from); an ORPHAN unit directory and a kind
+NOBODY READS each refuse.  Traps paid for: the completeness contract had to
+keep counting STREAMS, not files, or a declared interior would read as an
+orphan stream; a record must identify ITSELF (`recordType internalState;`)
+because a directory cannot be told from a sector by its name; and the GUI
+cannot classify a view's directories without the CASE's own geography, so it
+is passed in rather than guessed from a kind vocabulary that would be a fourth
+home for the engine's words.  Gate: `check_internal_states` (same name,
+changed claim).  Record:
+[`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md).
+
 **WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT
-(2026-09-05).**  `internalStates/<SECTOR>/<unit>/<kind>` is written by
-`src/io/InternalStateWriter.cpp` from `SimulationResult::profiles` — the
+(2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the
+address is now `<view>/<SECTOR>/<unit>/<kind>` inside `0/` and `converged/`,
+and everything else below still holds).**  It is written by
+`src/io/InternalStateIO.cpp` from `SimulationResult::profiles` — the
 record `UnitOperation::profile()` already publishes to the JSON, the Plot tab
 and `profile.csv` — on the `design/` precedent: sector as stamped data, no
-level on a flat case, rewritten whole, only when converged, gitignored under
-`tutorials/**/`, its own `internalStateFiles` channel to the Case tab.  The
+level on a flat case, rewritten whole, only when converged, gitignored with the
+view that holds it, riding the converged channel to the Case tab.  The
 kind is derived mechanically from the axis (`stageProfile` · `axialProfile` ·
 `sizeDistribution` · `swingTable`; anything else `profile`, announced).  **THE
 BOUNDARY (Vítor):** internal state is a field over a coordinate of the

@@ -188,6 +188,142 @@ sVector thomas(const sVector& A,
 
 } // anonymous namespace
 
+//  ---- THE INTERIOR THE CASE DECLARED, OR THE ONE THE UNIT INVENTS --------
+//
+//  Until 2026-09-06 this class seeded its own stage profile in code -- "initial
+//  T-profile (linear between guesses)" -- and said nothing about it.  Every
+//  other solver aid in Choupo is explicit in a dict and announced when it
+//  binds (the 2026-05-30 rule); this one was neither, on the unit whose
+//  interior a student is most likely to have an opinion about.  Both routes
+//  now speak, and the declared one is a FILE the case owns:
+//  `0/<SECTOR>/<unit>/stageProfile`, in the very grammar `converged/` writes.
+//
+//  A DECLARED PROFILE THAT DOES NOT SATISFY THE BALANCES IS A SEED, NOT AN
+//  ANSWER.  Nothing here checks the profile against the column equations --
+//  the iteration does that, and it moves off any profile that is wrong.  What
+//  IS checked is that the declaration describes THIS column: the stage count,
+//  the component set, and that every number is a number.
+bool DistillationColumn::seedFromDeclaredInterior(std::size_t           N,
+                                                  const ThermoPackage&  thermo,
+                                                  sVector&              T,
+                                                  std::vector<sVector>& x,
+                                                  int                   verbosity,
+                                                  const char*           methodName) const
+{
+    const UnitProfile* p = declaredInterior("stageProfile");
+    if (!p)
+    {
+        if (verbosity >= 2)
+            std::cout << "  [seed] interior seeded by the unit: linear T between"
+                         " the guesses, feed composition on every stage ("
+                      << methodName << ") -- declare"
+                         " 0/<SECTOR>/<unit>/stageProfile to own it\n";
+        return false;
+    }
+
+    const std::size_t n = thermo.n();
+    auto refuse = [&](const std::string& why) {
+        throw std::runtime_error(
+            "DistillationColumn: the interior declared in"
+            " 0/<SECTOR>/<unit>/stageProfile does not describe this column -- "
+            + why + ".  A declared interior is read as this unit's starting"
+              " state; it must carry `stage`, `T` and one `x_<component>`"
+              " column per component of the case, all of length nStages."
+              "  Re-copy it from converged/<SECTOR>/<unit>/stageProfile after a"
+              " run of THIS case, or delete it and let the unit seed itself.");
+    };
+
+    if (p->xAxis != "stage")
+        refuse("its xAxis is `" + p->xAxis + "`, not `stage`");
+
+    auto column = [&](const std::string& name) -> const sVector& {
+        auto it = p->columns.find(name);
+        if (it == p->columns.end())
+            refuse("it carries no `" + name + "` column");
+        return it->second;
+    };
+
+    const sVector& stageCol = column("stage");
+    if (stageCol.size() != N)
+        refuse("it carries " + std::to_string(stageCol.size())
+               + " stages and this column declares nStages "
+               + std::to_string(N));
+
+    const sVector& Tcol = column("T");
+    if (Tcol.size() != N)
+        refuse("its `T` column has " + std::to_string(Tcol.size())
+               + " values for " + std::to_string(N) + " stages");
+
+    //  THE COMPONENT SET IS THE CASE'S, both ways.  A missing component would
+    //  seed a composition that is not a composition; an extra one is a profile
+    //  written for a different case, and reading it silently would be name
+    //  identity between two unrelated systems.
+    std::vector<const sVector*> xcol(n, nullptr);
+    for (std::size_t i = 0; i < n; ++i)
+        xcol[i] = &column("x_" + thermo.comp(i).name());
+    for (const auto& [cname, vals] : p->columns)
+    {
+        (void)vals;
+        if (cname.rfind("x_", 0) != 0) continue;
+        const std::string comp = cname.substr(2);
+        bool known = false;
+        for (std::size_t i = 0; i < n; ++i)
+            if (thermo.comp(i).name() == comp) { known = true; break; }
+        if (!known)
+            refuse("it carries a column `" + cname + "` and this case has no"
+                   " component `" + comp + "`");
+    }
+    for (std::size_t i = 0; i < n; ++i)
+        if (xcol[i]->size() != N)
+            refuse("its `x_" + thermo.comp(i).name() + "` column has "
+                   + std::to_string(xcol[i]->size()) + " values for "
+                   + std::to_string(N) + " stages");
+
+    //  EVERY VALUE FINITE.  A `nan` in a state file is a fact about the run
+    //  that produced it, and seeding an iteration with one guarantees a
+    //  rank-deficient Jacobian that reads like a modelling failure.
+    auto finite = [&](const sVector& v, const std::string& what) {
+        for (std::size_t j = 0; j < v.size(); ++j)
+            if (!std::isfinite(v[j]))
+                refuse("its `" + what + "` column holds a non-finite value at"
+                       " stage " + std::to_string(j + 1));
+    };
+    finite(Tcol, "T");
+    for (std::size_t i = 0; i < n; ++i) finite(*xcol[i], "x_" + thermo.comp(i).name());
+
+    //  NORMALISED, AND SAID WHEN IT MATTERED.  A hand-authored profile need
+    //  not sum to one; the iteration normalises anyway.  Renormalising in
+    //  silence would hide a declaration that is not a composition.
+    scalar worst = 0.0;
+    std::size_t worstStage = 0;
+    for (std::size_t j = 0; j < N; ++j)
+    {
+        scalar s = 0.0;
+        for (std::size_t i = 0; i < n; ++i) s += (*xcol[i])[j];
+        if (s <= 0.0)
+            refuse("the mole fractions at stage " + std::to_string(j + 1)
+                   + " sum to " + std::to_string(s));
+        if (std::abs(s - 1.0) > worst) { worst = std::abs(s - 1.0); worstStage = j + 1; }
+        T[j] = Tcol[j];
+        for (std::size_t i = 0; i < n; ++i) x[j][i] = (*xcol[i])[j] / s;
+    }
+
+    if (verbosity >= 2)
+    {
+        std::cout << "  [seed] interior read from 0/ (stageProfile): " << N
+                  << " stages, T " << std::fixed << std::setprecision(2)
+                  << T.front() << " .. " << T.back()
+                  << " K (" << methodName << ") -- a declared profile is a SEED,"
+                     " not an answer: the balances still decide\n"
+                  << std::defaultfloat;
+        if (worst > 1.0e-9)
+            std::cout << "  [seed] the declared mole fractions do not sum to 1"
+                         " (worst " << worst << " at stage " << worstStage
+                      << ") -- normalised on read\n";
+    }
+    return true;
+}
+
 int DistillationColumn::solve(const DictPtr& dict,
                               const ThermoPackage& thermo,
                               int verbosity)
@@ -290,6 +426,11 @@ int DistillationColumn::solve(const DictPtr& dict,
     // For light/heavy intuition we use the same feed composition at all
     // stages; the iteration refines it.
     std::vector<sVector> x(N, z);
+
+    //  ...unless the CASE declared the interior.  Both routes announce; the
+    //  declared one replaces T and x wholesale and refuses a declaration that
+    //  does not describe this column.
+    seedFromDeclaredInterior(N, thermo, T, x, verbosity, "WangHenke");
 
     if (verbosity >= 3)
     {
@@ -1266,11 +1407,23 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
           if (tb > 0.0) { tbMin = std::min(tbMin, tb); tbMax = std::max(tbMax, tb); } }
         if (tbMax > tbMin) { Ttop = tbMin; Tbot = tbMax; }
     }
+    //  The unit's OWN seed, built first and then offered to the case: linear T
+    //  between the end guesses, `zGuess` on every stage.  A declared
+    //  `0/<SECTOR>/<unit>/stageProfile` replaces both; with none the two
+    //  vectors are exactly what this method has always packed into u0.
+    sVector              Tseed(N, 0.0);
+    std::vector<sVector> xseed(N, zGuess);
+    for (std::size_t j = 0; j < N; ++j)
+    {
+        const scalar a = static_cast<scalar>(j) / static_cast<scalar>(N - 1);
+        Tseed[j] = Ttop + a * (Tbot - Ttop);
+    }
+    seedFromDeclaredInterior(N, thermo, Tseed, xseed, verbosity, "simultaneous");
+
     sVector u0(nU, 0.0);
     for (std::size_t j = 0; j < N; ++j) {
-        const scalar a = static_cast<scalar>(j) / static_cast<scalar>(N - 1);
-        for (std::size_t i = 0; i + 1 < n; ++i) u0[j*nv + i] = zGuess[i];
-        u0[j*nv + (n-1)] = Ttop + a * (Tbot - Ttop);
+        for (std::size_t i = 0; i + 1 < n; ++i) u0[j*nv + i] = xseed[j][i];
+        u0[j*nv + (n-1)] = Tseed[j];
     }
 
     solver::NDOptions opts;
