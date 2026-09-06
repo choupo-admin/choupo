@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "TransportModel.H"
+#include "core/RegistryRefusal.H"
 #include "ChapmanEnskog.H"
 #include "ChungViscosity.H"
 
@@ -52,12 +53,8 @@ std::unique_ptr<TransportModel> TransportModel::New(const DictPtr& dict)
     const std::string name = dict->lookupWordOrDefault("model", "Chung");
     auto it = registry().find(name);
     if (it == registry().end())
-    {
-        std::string avail;
-        for (const auto& kv : registry()) avail += " " + kv.first;
-        throw std::runtime_error("TransportModel: unknown model '" + name
-            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
-    }
+        throw std::runtime_error(registryRefusal::message(
+            "gas-viscosity model", name, registryRefusal::keysOf(registry())));
     return it->second(dict);
 }
 

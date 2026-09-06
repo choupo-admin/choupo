@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EquationOfState.H"
+#include "core/RegistryRefusal.H"
 #include "IdealGas.H"
 #include "SRK.H"
 #include "PCSAFT.H"
@@ -56,7 +57,8 @@ EquationOfState::New(const DictPtr& dict, const std::vector<Component>& comps)
     const std::string modelName = dict->lookupWord("model");
     auto it = registry().find(modelName);
     if (it == registry().end())
-        throw std::runtime_error("Unknown EoS model '" + modelName + "'");
+        throw std::runtime_error(registryRefusal::message(
+            "equation of state", modelName, registryRefusal::keysOf(registry())));
     return it->second(dict, comps);
 }
 

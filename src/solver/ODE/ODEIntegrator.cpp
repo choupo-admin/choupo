@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ODEIntegrator.H"
+#include "core/RegistryRefusal.H"
 #include "RK4.H"
 #include "EulerSI.H"
 #include "Rosenbrock23.H"
@@ -58,8 +59,8 @@ std::unique_ptr<ODEIntegrator> ODEIntegrator::New(const std::string& name)
 {
     auto it = registry().find(name);
     if (it == registry().end())
-        throw std::runtime_error("Unknown ODE integrator '" + name
-            + "' (known: RK4, EulerSI, Rosenbrock23)");
+        throw std::runtime_error(registryRefusal::message(
+            "ODE integrator", name, registryRefusal::keysOf(registry())));
     return it->second();
 }
 

@@ -26,12 +26,22 @@ namespace dictAudit {
 
 std::size_t editDistance(const std::string& a, const std::string& b)
 {
-    //  Two rows, not a full matrix: the distance is all that is wanted, never
-    //  the alignment.
+    //  Damerau-Levenshtein (optimal string alignment): insertion, deletion and
+    //  substitution cost 1, AND SO DOES A TRANSPOSITION OF TWO ADJACENT
+    //  CHARACTERS.  Plain Levenshtein charges 2 for a transposition, which is
+    //  wrong about typing: swapping two letters is ONE slip of the fingers, and
+    //  on a short name it is the commonest one.  Measured 2026-09-06 on the
+    //  activity-model registry, where the tolerance for a 4-letter name is 1:
+    //  `NRTK` (substitution) and `idea` (deletion) were suggested `NRTL` and
+    //  `ideal`, while `NTRL` -- the transposition a student actually types for
+    //  NRTL -- got nothing.  THREE ROWS, not two, because a transposition
+    //  reaches back two rows.  The distance can only FALL against the previous
+    //  rule, so a suggestion can appear where there was none and none can be
+    //  taken away.
     const std::size_t n = a.size(), m = b.size();
     if (n == 0) return m;
     if (m == 0) return n;
-    std::vector<std::size_t> prev(m + 1), cur(m + 1);
+    std::vector<std::size_t> prev2(m + 1), prev(m + 1), cur(m + 1);
     for (std::size_t j = 0; j <= m; ++j) prev[j] = j;
     for (std::size_t i = 1; i <= n; ++i)
     {
@@ -40,8 +50,11 @@ std::size_t editDistance(const std::string& a, const std::string& b)
         {
             const std::size_t sub = prev[j - 1] + (a[i - 1] == b[j - 1] ? 0 : 1);
             cur[j] = std::min({ prev[j] + 1, cur[j - 1] + 1, sub });
+            if (i > 1 && j > 1 && a[i - 1] == b[j - 2] && a[i - 2] == b[j - 1])
+                cur[j] = std::min(cur[j], prev2[j - 2] + 1);
         }
-        prev = cur;
+        prev2 = prev;
+        prev  = cur;
     }
     return prev[m];
 }

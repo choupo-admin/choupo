@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Atomizer.H"
+#include "core/RegistryRefusal.H"
 #include "RotaryAtomizer.H"
 #include "PressureSwirlAtomizer.H"
 
@@ -54,9 +55,8 @@ std::unique_ptr<Atomizer> Atomizer::New(const DictPtr& dict)
     const std::string model = dict->lookupWordOrDefault("model", "rotary");
     auto it = registry().find(model);
     if (it == registry().end())
-        throw std::runtime_error("Atomizer::New: unknown atomiser model '" + model
-            + "'.  Available: rotary, pressureNozzle "
-              "(register in Atomizer::registerBuiltins).");
+        throw std::runtime_error(registryRefusal::message(
+            "atomiser model", model, registryRefusal::keysOf(registry())));
     return it->second(dict);
 }
 

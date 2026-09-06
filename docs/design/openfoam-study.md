@@ -103,21 +103,36 @@ four DIFFERENT failure modes — which is more useful than any count:
 | Site | Shape | Verdict |
 |---|---|---|
 | `UnitOperation::New` | iterates `registry()` and prints every key | **correct** — this is the OpenFOAM pattern |
-| `HeatCapacityModel::New` | `"Unknown heat-capacity model '" + name + "'"` | names nothing; the student must read source |
+| `HeatCapacityModel::New` | `"Unknown heat-capacity model '" + name + "'"` | named nothing; the student had to read source |
 | `ODEIntegrator::New` | `"(known: RK4, EulerSI, Rosenbrock23)"` — hardcoded | **a second home for the registry**; drifts the day a fourth is registered |
-| `TransportModel::New` | `"Registered: see TransportModel::availableModels()."` | names a remedy the student cannot perform from a dict |
+| `TransportModel::New` | `"Registered: see TransportModel::availableModels()."` | named a remedy the student cannot perform from a dict |
 
 The third is the interesting one.  It looks helpful and it is the arity sin in
 a refusal message — the same defect this project has been chasing in data,
 sitting in the one place a student reads when they are already stuck.
 
-**Recommendation (proposal only).**  One shared helper that every factory's
-`New` calls, printing the registry's own keys, so no message can hold its own
-copy of the list.  Then a gate that FAILS on any `unknown …` throw that does
-not go through it — enumerable by construction, unlike the census I could not
-automate.  This is the highest student-value change in the study and the
-cheapest: a student who misspells `model Wilson;` should be told what is
-available, in the terminal, without opening C++.
+**Recommendation — TAKEN 2026-09-06, and the three rows above are past
+tense because of it.**  `core/RegistryRefusal.{H,cpp}` is the one home: every
+factory's `New` calls `registryRefusal::message(what, asked, keysOf(registry()))`
+and no message holds its own copy of the list.  Six sites converted, the four
+shapes this study found among them.
+
+Two things the proposal did not foresee, both found by measuring rather than
+reasoning.  **The suggestion is worth more than the menu**, so the helper also
+names the closest registered word — and it borrows `dictAudit::editDistance`
+rather than inventing a second notion of "close enough", since a slip is a
+slip whether it lands in a key or a value.  **And that shared rule was blind
+to the commonest slip of all:** plain Levenshtein charges 2 for a
+transposition, the tolerance for a short name is 1, so `NRTK` and `idea` were
+suggested `NRTL` and `ideal` while `NTRL` — what a student actually types for
+NRTL — got nothing.  `editDistance` is Damerau-Levenshtein now; the distance
+can only fall, so a suggestion can appear where there was none and none can
+be taken away, and the dictionary keys gained the same improvement for free.
+
+Still open, and it is the half that makes this durable: the gate that FAILS
+on any `unknown …` throw not going through the helper.  Sixty-six source
+files carry such a throw; six are converted.  Until that gate exists, the
+next one written by hand will drift exactly as these did.
 
 ---
 

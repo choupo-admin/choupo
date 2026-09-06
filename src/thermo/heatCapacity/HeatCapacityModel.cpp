@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "HeatCapacityModel.H"
+#include "core/RegistryRefusal.H"
 #include "ChemSepCp16.H"
 #include "PolynomialCp.H"
 #include "RowlinsonBondi.H"
@@ -55,7 +56,8 @@ HeatCapacityModel::New(const DictPtr& dict)
     const std::string modelName = dict->lookupWord("model");
     auto it = registry().find(modelName);
     if (it == registry().end())
-        throw std::runtime_error("Unknown heat-capacity model '" + modelName + "'");
+        throw std::runtime_error(registryRefusal::message(
+            "heat-capacity model", modelName, registryRefusal::keysOf(registry())));
     return it->second(dict);
 }
 

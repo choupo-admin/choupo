@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ActivityModel.H"
+#include "core/RegistryRefusal.H"
 #include "IdealSolution.H"
 #include "NRTL.H"
 #include "UNIFAC.H"
@@ -60,7 +61,8 @@ ActivityModel::New(const DictPtr& dict,
     const std::string modelName = dict->lookupWord("model");
     auto it = registry().find(modelName);
     if (it == registry().end())
-        throw std::runtime_error("Unknown activity model '" + modelName + "'");
+        throw std::runtime_error(registryRefusal::message(
+            "activity model", modelName, registryRefusal::keysOf(registry())));
     return it->second(dict, components);
 }
 
