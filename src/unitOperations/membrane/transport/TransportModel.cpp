@@ -30,6 +30,8 @@ License
 #include "SolutionDiffusion.H"
 #include "DSPM_DE.H"
 
+#include "core/RegistryRefusal.H"
+
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -53,10 +55,8 @@ std::unique_ptr<TransportModel> TransportModel::New(const std::string& name)
     auto it = registry().find(name);
     if (it == registry().end())
     {
-        std::string avail;
-        for (const auto& kv : registry()) avail += " " + kv.first;
-        throw std::runtime_error("TransportModel::New: unknown model '" + name
-            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+        throw std::runtime_error(registryRefusal::message(
+            "membrane transport model", name, registryRefusal::keysOf(registry())));
     }
     return it->second();
 }

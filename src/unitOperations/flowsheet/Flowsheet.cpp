@@ -3481,7 +3481,8 @@ int Flowsheet::solve(const DictPtr& dict,
 
     // ---- Stream enthalpy (post-solve, formation reference) ----------
     // Choupo-native datum: each component contributes from its OWN
-    // tabulated phase (standardThermochemistry.phase -- gas / liquid / solid),
+    // tabulated rung (standardThermochemistry.referenceState --
+    // idealGas / pureLiquid / pureSolid; there is no `phase` key here),
     // applying the right phase transition at 298 K only when the
     // stream's phase differs from the natural one.  This carries the
     // heat of formation: h_out − h_in across a reactor IS the heat of

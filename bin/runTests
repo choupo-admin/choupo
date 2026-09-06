@@ -3774,6 +3774,23 @@ PYEOF
     fi
     rm -f /tmp/stdwrite.$$
 
+    # model-default-registered gate (2026-09-06).  A `massTransfer {}` block
+    # that merely forgot its `model` key died naming 'constant' -- a model the
+    # ENGINE invented in its own default, pruned from the factory on
+    # 2026-08-23.  The default and the registry were two homes for one
+    # vocabulary and only one was updated; RegistryRefusal.H says in its own
+    # words that it cannot see this class.  This recounts both sides and
+    # carries the construct itself as a probe.
+    if "$ROOT/bin/curate/check_model_default_registered.py" > /tmp/mdefault.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "model-default-registered-gate" "$(head -1 /tmp/mdefault.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_model_default_registered.py)\n" "model-default-registered-gate"
+        cat /tmp/mdefault.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/mdefault.$$
+
     #  ion-records-gate RETIRED 2026-08-05.  It was a MIGRATION-time guard:
     #  it compared the per-ion records of the pre-2026-07-01 aqueous layout
     #  against electrolyte/ions.dat.  BOTH are gone -- that home was deleted

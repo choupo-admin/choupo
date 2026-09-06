@@ -42,7 +42,11 @@
                                           rough hand-estimate above is
                                           order-of-magnitude only)
       Steam consumption          ≈ Q / ΔHvap_at_steam  ≈ 2000 kg/h
-      Economy                    ≈ V_evap / F_steam     ≈ 0.99
+      Economy                    ≈ V_evap / F_steam     ≈ 0.82  (the
+                                          CONVERGED run; the hand estimate
+                                          above would give ~0.99, and the
+                                          difference is the estimate's, not
+                                          the run's)
       x_NaCl_outlet              ≈ 0.059    (~5.5x the feed, matching
                                           the run header)
 

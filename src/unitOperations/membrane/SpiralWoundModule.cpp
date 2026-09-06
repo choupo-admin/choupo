@@ -314,7 +314,27 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     if (opDict->found("massTransfer"))
     {
         auto mt = opDict->subDict("massTransfer");
-        mtModel = MassTransferModel::New(mt->lookupWordOrDefault("model", "constant"));
+        //  NO DEFAULT HERE, DELIBERATELY.  This slot used to default to
+        //  "constant", which the factory has been unable to build since the
+        //  constant film model was pruned (2026-08-23) as a duplicate of the
+        //  bare `k_film` scalar --- so a block that simply forgot its `model`
+        //  key died naming a model the ENGINE had invented, and no document
+        //  could have warned the reader against a name only the engine used.
+        //  A default must never name what the factory cannot build; where
+        //  there is no honest default, refuse and name both routes.
+        if (!mt->found("model"))
+        {
+            std::string avail;
+            for (const auto& k : MassTransferModel::availableTypes())
+                avail += " " + k;
+            throw std::runtime_error(
+                "SpiralWoundModule: the `massTransfer {}` block declares no"
+                " `model` --- there is no default film model.\n"
+                "  Registered:" + (avail.empty() ? std::string(" (none)") : avail)
+                + "\n  For a FIXED coefficient declare no massTransfer block at"
+                  " all and give `k_film <value>;` in operation instead.");
+        }
+        mtModel = MassTransferModel::New(mt->lookupWord("model"));
         mtModel->readParameters(mt);
     }
     else

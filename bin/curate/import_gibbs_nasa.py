@@ -8,7 +8,7 @@
 # The NASA-7 polynomials are referenced to the elements, so the standard-state
 # enthalpy H0(298.15) IS the enthalpy of formation dHf0(298.15), and S0(298.15)
 # is the third-law absolute entropy -- exactly the two values Choupo's
-# standardThermochemistry{} block needs (phase gas).
+# standardThermochemistry{} block needs (referenceState idealGas).
 #
 # ISOMER GUARD (the C3H6O lesson): NASA names many species by FORMULA only and
 # "C3H6O" in TM-4513 is PROPYLENE OXIDE (Hf -93.7), NOT acetone (-217.1).  Every
@@ -114,7 +114,7 @@ def gibbs_block(dHf, s298):
             '[origin=measured method=NASA-TM4513]\n'
             f'    s_298     {s298:.2f};        // J/(mol.K) third-law absolute '
             '[NASA-TM4513]\n'
-            '    phase     gas;\n}')
+            '    referenceState idealGas;\n}')
 
 
 def existing_gibbs_is_estimate(text):

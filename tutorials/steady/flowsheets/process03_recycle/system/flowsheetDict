@@ -27,9 +27,10 @@
   selects the fixed-point accelerator instead — try both and compare
   the iteration counts.)
 
-  The CSTR converts ~25% per pass (small volume); without recycle most
-  ethanol would simply leave in liqProd.  With ~80% recycle, the overall
-  ethanol conversion approaches 100% at steady state.
+  The CSTR converts ~81% per pass at the converged tear (k.tau ~ 4.2 in
+  0.020 m3); the splitter returns 60% of liqProd, so the ethanol that
+  escapes one pass gets further passes instead of leaving in liqProd, and
+  the overall conversion is higher than the per-pass figure.
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

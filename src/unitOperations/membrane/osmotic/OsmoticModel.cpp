@@ -30,6 +30,8 @@ License
 #include "Pitzer.H"
 #include "VanHoff.H"
 
+#include "core/RegistryRefusal.H"
+
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -52,10 +54,8 @@ std::unique_ptr<OsmoticModel> OsmoticModel::New(const std::string& name)
     auto it = registry().find(name);
     if (it == registry().end())
     {
-        std::string avail;
-        for (const auto& kv : registry()) avail += " " + kv.first;
-        throw std::runtime_error("OsmoticModel::New: unknown model '" + name
-            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+        throw std::runtime_error(registryRefusal::message(
+            "osmotic-pressure model", name, registryRefusal::keysOf(registry())));
     }
     return it->second();
 }

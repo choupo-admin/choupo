@@ -36,9 +36,12 @@ Description
 
     Explicit-factory pattern, like CycloneModel / EquationOfState: a
     `massTransfer { model <name>;... }` sub-block in the unit's operation
-    picks the concrete model.  Built-ins:
+    picks the concrete model; the block has NO default model, so it must
+    name one (a default that names an unregistered model is a dead end the
+    reader cannot debug).  For a FIXED coefficient declare no block at all
+    and give `k_film <value>;` in operation --- that is the one route since
+    the duplicate `constant` model was pruned on 2026-08-23.  Built-ins:
 
-        constant      --  k_film is the value given (the behaviour)
         SchockMiquel  --  Sherwood correlation for spacer-filled channels,
                           Sh = a Re^b Sc^c  ->  k_film = Sh D / d_h,
                           so k_film is COMPUTED from the local crossflow

@@ -401,8 +401,13 @@ int EstimateComponent::run(const DictPtr& dict,
               << "// GAP (Gibbs reactor): Choupo needs S_298 (third-law) and Joback\n"
               << "// gives dGf_298, NOT S.  Joback estimates (ideal gas, 298 K):\n"
               << "//   Hf_298 = " << (Hf * 1000.0) << " J/mol    dGf_298 = " << (Gf * 1000.0) << " J/mol\n"
-              << "// Supply S_298, then declare standardThermochemistry { phase gas;\n"
-              << "//   Hf " << (Hf * 1000.0) << "; S " << "?; } to enable the Gibbs reactor.\n"
+              //  THE KEYS MUST BE THE ONES THE PARSER READS.  This line used
+              //  to name `phase`, `Hf` and `S`, none of which
+              //  `Component::readFromDict` looks for -- advice that produces a
+              //  record the engine reads on a rung the curator did not choose.
+              << "// Supply s_298, then declare standardThermochemistry\n"
+              << "//   { referenceState idealGas; dHf_298 " << (Hf * 1000.0)
+              << "; s_298 ?; } to enable the Gibbs reactor.\n"
               << "idealGasHeatCapacity\n{\n"
               << "    model         polynomial;\n"
               << "    // Cp [J/(mol*K)] = a0 + a1*T + a2*T^2 + a3*T^3   -- Cp(298) = " << Cp(298.15) << "\n"

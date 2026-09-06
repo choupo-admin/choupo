@@ -1073,11 +1073,14 @@ corresponding-states alternative (\code{vaporPressure \{ model
 AmbroseWalton; \}}) covers estimated components.  Ideal-gas and liquid
 heat capacities are polynomials in $T$; species used at flame
 temperatures carry two-range NASA-7 forms (\code{model NASA7}).  Each
-component's \code{standardThermochemistry \{ dHf\_298; s\_298; phase; \}} block
-pins the formation datum --- the \code{phase} keyword (\code{gas} /
-\code{liquid} / \code{solid}) declares on which rung of the enthalpy
-ladder the value is tabulated, and every energy balance that crosses a
-reactor requires it (\S\ref{sec:reactors}).
+component's
+\code{standardThermochemistry \{ dHf\_298; s\_298; referenceState; \}} block
+pins the formation datum --- the \code{referenceState} keyword
+(\code{idealGas} / \code{pureLiquid} / \code{pureSolid}) declares on
+which rung of the enthalpy ladder the value is tabulated, and every energy
+balance that crosses a reactor requires it (\S\ref{sec:reactors}).  It
+defaults to \code{idealGas} when absent, so a condensed-phase datum that
+does not declare it is read on the wrong rung in silence.
 
 \subsection{Multiple liquid phases (LLE / VLLE)}
 
@@ -4024,8 +4027,8 @@ right tier for what you are adding:
 \end{itemize}
 
 When a new file carries a \code{standardThermochemistry} block, declare the
-\code{phase} of the tabulated $\Delta h^\circ_f$ explicitly
-(\code{gas} / \code{liquid} / \code{solid}) --- it tells the solver
+\code{referenceState} of the tabulated $\Delta h^\circ_f$ explicitly
+(\code{idealGas} / \code{pureLiquid} / \code{pureSolid}) --- it tells the solver
 which rung of the enthalpy ladder the datum pins (Theory Guide
 \S\,``Which rung does the data file pin?'').  A component with no
 catalogue entry at all can be \emph{estimated} from its molecular

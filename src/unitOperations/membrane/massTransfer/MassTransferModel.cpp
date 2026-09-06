@@ -29,6 +29,8 @@ License
 #include "MassTransferModel.H"
 #include "SchockMiquel.H"
 
+#include "core/RegistryRefusal.H"
+
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -51,10 +53,8 @@ std::unique_ptr<MassTransferModel> MassTransferModel::New(const std::string& nam
     auto it = registry().find(name);
     if (it == registry().end())
     {
-        std::string avail;
-        for (const auto& kv : registry()) avail += " " + kv.first;
-        throw std::runtime_error("MassTransferModel::New: unknown model '" + name
-            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+        throw std::runtime_error(registryRefusal::message(
+            "feed-channel mass-transfer model", name, registryRefusal::keysOf(registry())));
     }
     return it->second();
 }

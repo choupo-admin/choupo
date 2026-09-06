@@ -28,7 +28,7 @@
       Q ~ 93 kW
       T_hot_out  ~ 315 K   (cooled ~45 K)
       T_cold_out ~ 337 K   (heated ~37 K)
-      LMTD ~ 22 K, and U.A.LMTD ~ Q (cross-check)
+      LMTD ~ 18.8 K, and U.A.LMTD ~ Q (cross-check: 5000 * 18.76 = 93.8 kW)
       energy balance: hot stream loses what the cold stream gains.
 \*---------------------------------------------------------------------------*/
 

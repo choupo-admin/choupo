@@ -36,9 +36,10 @@ Description
     Explicit-factory pattern (parallel to MassTransferModel / CycloneModel).
     A `pressureDrop { model <name>;... }` sub-block in the unit's operation
     picks the concrete model; without the block the legacy linear model is
-    used (`dP_feed_total / L`, the behaviour).  Built-ins:
+    used (`dP_feed_total / L`, the behaviour) --- that legacy route is the
+    one way to pin a fixed gradient since the duplicate `constant` model was
+    pruned on 2026-08-23.  Built-ins:
 
-        constant      --  dP/dz = dP_total / L  (a fixed gradient)
         SchockMiquel  --  spacer friction:  dP/dz = lambda * rho u^2 / (2 d_h),
                           lambda = a Re^-b,  Re = rho u d_h / mu.
                           Defaults a = 6.23, b = 0.3 (Schock & Miquel 1987);

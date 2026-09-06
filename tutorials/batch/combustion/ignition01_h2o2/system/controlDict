@@ -13,7 +13,7 @@
   at 1100 K.  KINETICS ARE REAL: the GRI-Mech 3.0 H/O subsystem (28 reactions,
   verbatim; see constant/reactions).  With the NASA-7 Cp overrides (constant/
   components/ -- the catalogue poly3 fits stop at 1500 K) the stiff run gives
-  tau_ign ~ 16 us (max dT/dt; 1100 K, 5 bar) and T_final = 2785 K (constant-V
+  tau_ign ~ 9 us (max dT/dt on a 1 us grid; 1100 K, 5 bar) and T_final = 2641 K (constant-V
   flame).  A slow initiation seeds radicals; chain branching then runs away
   and the mixture IGNITES -- a sharp temperature jump after an induction delay.
 

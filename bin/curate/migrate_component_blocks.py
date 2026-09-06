@@ -4,7 +4,8 @@
 #   identity{k v;}        -> k v;                (top level)
 #   critical{...}         -> flat
 #   gasIdeal{Cp{...}}     -> idealGasHeatCapacity{...}
-#   gasIdeal{Hf_298;S_298}-> standardThermochemistry{phase gas; Hf; S;}
+#   gasIdeal{Hf_298;S_298}-> standardThermochemistry{referenceState idealGas;
+#                             dHf_298; s_298;}
 #   liquidPure{Tb;HvapTb;Vliq;Cp{..};Psat{..}}
 #                         -> flat + liquidHeatCapacity{} + vaporPressure{}
 #   solid{Cp{...}}        -> solidHeatCapacity{}

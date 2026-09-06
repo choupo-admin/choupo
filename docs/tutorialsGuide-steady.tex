@@ -2430,7 +2430,7 @@ Heating side: saturated steam at 130 $^\circ$C (= 403.15 K, P $\approx$ 2.7 bar)
 
 Equipment: heat-exchange area = 20 m$^2$ overall U = 2000 W/(m$^2$$\cdot$K) operating pressure = 1 bar (process side)
 
-Expected order-of-magnitude (computed by the solver, not specified): T\_sat(water, 1 bar) $\approx$ 373 K (\textasciitilde{} 100 $^\circ$C) $\Delta$T\_drive (steam - process) $\approx$ 30 K Q = U $\cdot$ A $\cdot$ $\Delta$T $\approx$ 2000 $\cdot$ 20 $\cdot$ 30 $\approx$ 1200 kW V evaporated $\approx$ Q / $\Delta$Hvap $\approx$ 110 kmol/h $\approx$ 1980 kg/h water V/F (mol-basis) $\approx$ 0.82 (the CONVERGED run; the rough hand-estimate above is order-of-magnitude only) Steam consumption $\approx$ Q / $\Delta$Hvap\_at\_steam $\approx$ 2000 kg/h Economy $\approx$ V\_evap / F\_steam $\approx$ 0.99 x\_NaCl\_outlet $\approx$ 0.059 (\textasciitilde{}5.5x the feed, matching the run header)
+Expected order-of-magnitude (computed by the solver, not specified): T\_sat(water, 1 bar) $\approx$ 373 K (\textasciitilde{} 100 $^\circ$C) $\Delta$T\_drive (steam - process) $\approx$ 30 K Q = U $\cdot$ A $\cdot$ $\Delta$T $\approx$ 2000 $\cdot$ 20 $\cdot$ 30 $\approx$ 1200 kW V evaporated $\approx$ Q / $\Delta$Hvap $\approx$ 110 kmol/h $\approx$ 1980 kg/h water V/F (mol-basis) $\approx$ 0.82 (the CONVERGED run; the rough hand-estimate above is order-of-magnitude only) Steam consumption $\approx$ Q / $\Delta$Hvap\_at\_steam $\approx$ 2000 kg/h Economy $\approx$ V\_evap / F\_steam $\approx$ 0.82 (the CONVERGED run; the hand estimate above would give \textasciitilde{}0.99, and the difference is the estimate's, not the run's) x\_NaCl\_outlet $\approx$ 0.059 (\textasciitilde{}5.5x the feed, matching the run header)
 
 Industrial relevance: this is the building block of multi-effect evaporators in seawater desalination (MED, MSF), brine crystallisers, and the sugar industry. Real plants run under vacuum (T\_boil \textasciitilde{} 60 $^\circ$C at 0.2 bar) to minimise scaling and use BPE-loaded multi-effect cascades to recover the latent heat --- see evaporator02\_triple\_effect\_sugar.
 
@@ -4639,7 +4639,7 @@ The flash inherits T from its input stream (no explicit operation.T) --- propaga
 \begin{tutnarrative}
 Three-unit flowsheet --- physically realistic operation:
 
-feed (350 K) hotStream (\textasciitilde{}359 K, 0.9 \% vap)   reactorOut     CSTR 350 K, X=52\%   flash [reactor]       [heater]       [separator]       vapProd     liqProd
+feed (350 K) hotStream (\textasciitilde{}362 K, 0.02 \% vap)   reactorOut     CSTR 350 K, X=52\%   flash [reactor]       [heater]       [separator]       vapProd     liqProd
 
 The flash inherits T from its input stream (no explicit operation.T) --- propagation through the flowsheet.
 
@@ -4693,7 +4693,7 @@ freshFeed          vapProd (product)     [mixer]     [reactor]     [separator]  
 
 Tear stream: `recycle` --- declared explicitly; the Flowsheet runs NEWTON on the tear variables (F, z..., T) until the post-pass value matches the input guess to a tolerance. (`recycleSolver Wegstein;` selects the fixed-point accelerator instead --- try both and compare the iteration counts.)
 
-The CSTR converts \textasciitilde{}25\% per pass (small volume); without recycle most ethanol would simply leave in liqProd. With \textasciitilde{}80\% recycle, the overall ethanol conversion approaches 100\% at steady state.
+The CSTR converts \textasciitilde{}81\% per pass at the converged tear (k.tau \textasciitilde{} 4.2 in 0.020 m3); the splitter returns 60\% of liqProd, so the ethanol that escapes one pass gets further passes instead of leaving in liqProd, and the overall conversion is higher than the per-pass figure.
 
 \end{tutnarrative}
 \tutreadme{process01 with a loop: reactor $\to$ flash $\to$ splitter, and 60 \% of the flash liquid is sent $\ast$back$\ast$ to a mixer ahead of the reactor. The reactor is four times larger (20 litres). The golden: the reactor now sees 1.497 kmol/h (1.0 fresh + 0.497 recycle), converts 80.9 \% per pass at $\tau$ = 870 s, and the loop closes with the recycle stream at 0.4967 kmol/h, 364 K.}
@@ -5839,7 +5839,7 @@ Hardware (the credo): area + U. The outlet temperatures and the duty are RESULTS
 
 Hot : 100 kmol/h water at 360 K Cold : 120 kmol/h water at 300 K Hardware: A = 10 m\textasciicircum{}2, U = 500 W/(m\textasciicircum{}2.K), counter-current
 
-Expected (eps-NTU, Cp\_water \textasciitilde{} 75 J/mol/K): C\_hot = 100/3.6 $\ast$ 75 \textasciitilde{} 2083 W/K (= C\_min) C\_cold = 120/3.6 $\ast$ 75 \textasciitilde{} 2500 W/K NTU = U.A/C\_min \textasciitilde{} 2.4, C\_r \textasciitilde{} 0.83, effectiveness \textasciitilde{} 0.75 Q \textasciitilde{} 93 kW T\_hot\_out \textasciitilde{} 315 K (cooled \textasciitilde{}45 K) T\_cold\_out \textasciitilde{} 337 K (heated \textasciitilde{}37 K) LMTD \textasciitilde{} 22 K, and U.A.LMTD \textasciitilde{} Q (cross-check) energy balance: hot stream loses what the cold stream gains.
+Expected (eps-NTU, Cp\_water \textasciitilde{} 75 J/mol/K): C\_hot = 100/3.6 $\ast$ 75 \textasciitilde{} 2083 W/K (= C\_min) C\_cold = 120/3.6 $\ast$ 75 \textasciitilde{} 2500 W/K NTU = U.A/C\_min \textasciitilde{} 2.4, C\_r \textasciitilde{} 0.83, effectiveness \textasciitilde{} 0.75 Q \textasciitilde{} 93 kW T\_hot\_out \textasciitilde{} 315 K (cooled \textasciitilde{}45 K) T\_cold\_out \textasciitilde{} 337 K (heated \textasciitilde{}37 K) LMTD \textasciitilde{} 18.8 K, and U.A.LMTD \textasciitilde{} Q (cross-check: 5000 $\ast$ 18.76 = 93.8 kW) energy balance: hot stream loses what the cold stream gains.
 
 \end{tutnarrative}
 \tutreadme{Hot water (100 kmol/h, 360 K) against cold water (120 kmol/h, 300 K) in a counter-current exchanger of 10 m$^2$ at U = 500 W/m$^2$K. Nothing about the outlet temperatures is declared; the $\varepsilon$-NTU method finds them. The golden: Q = 93.79 kW, hot out 315.28 K, cold out 337.27 K, NTU 2.384, C\_r 0.833, $\varepsilon$ = 0.745, LMTD 18.76 K.}

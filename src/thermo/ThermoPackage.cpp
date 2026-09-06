@@ -1181,7 +1181,7 @@ std::optional<scalar> ThermoPackage::dHsolnForSolute(std::size_t i) const
     const Component& c = components_[i];
 
     // Only a dissolved molecular solute with a CRYSTALLINE formation datum
-    // (standardThermochemistry.phase solid) takes the aqueous rung.  Volatile species
+    // (standardThermochemistry.referenceState pureSolid) takes the aqueous rung.  Volatile species
     // and liquid/gas-datum components are untouched (byte-identical path).
     if (!c.isNonvolatile() || !c.hasGibbsData() || c.naturalPhase() != "solid")
         return std::nullopt;

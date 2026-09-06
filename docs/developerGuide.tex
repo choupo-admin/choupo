@@ -1345,72 +1345,74 @@ refine.}  (This corrects the pre-doctrine ``field-by-field'' behaviour.)
 The file format is identical in both tiers:
 
 \begin{lstlisting}[language=dict]
-component <name>;
-mw     78.11;            // g/mol
-Tc    562.05;            // K
-Pc     48.95;            // bar
-omega  0.2103;
-Tb    353.24;            // K
-Hvap_Tb  30720.0;        // J/mol at Tb
-Vliq   89.4e-6;          // m^3/mol (Wilson)
+name    benzene;         // the record's own key is `name`, not `component`
+formula C6H6;
+MW      78.114;          // kg/kmol  (the key is upper case)
+Tc      562.05;          // K
+Pc      48.95;           // bar
+omega   0.2103;
+Tb      353.24;          // K
+HvapTb  30720;           // J/mol at Tb   (one word, no underscore)
+Vliq    8.943e-5;        // m^3/mol
 
 vaporPressure
 {
-    model    Antoine;
-    A        4.01814;
-    B        1203.835;
-    C       -53.226;
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C):  the three sit in ONE list
+    coefficients  (4.01814   1203.835   -53.226);
+    Trange        (287.7  354.07);
 }
 
 idealGasHeatCapacity
 {
-    model       polynomial;
-    coeffs      ( -31.368  0.4746  -3.107e-4  8.524e-8 );
-    Tmin        200.0;
-    Tmax        1500.0;
+    model         polynomial;
+    coefficients  ( -31.368  0.4746  -3.107e-4  8.524e-8 );
+    Trange        (200.0  1500.0);
 }
 
 liquidHeatCapacity
 {
-    model       polynomial;
-    coeffs      ( 162.94  -0.3493  9.51e-4  0.0 );
-    Tmin        278.0;
-    Tmax        500.0;
+    model         polynomial;
+    coefficients  ( 162.94  -0.3493  9.51e-4  0.0 );
+    Trange        (278.0  500.0);
 }
 
 standardThermochemistry
 {
     dHf_298     82930.0;        // J/mol  (NIST ideal-gas value)
     s_298         269.20;       // J/(mol*K)  (third-law absolute)
-    phase       gas;            // phase in which dHf_298 / s_298 are tabulated
+    referenceState idealGas;    // the standard state dHf_298 / s_298 are on
 }
 \end{lstlisting}
 
 Source the values from DIPPR / Reid-Prausnitz-Poling and \emph{cite the
 source in a top-of-file comment} so they stay auditable.
 
-\paragraph{The \code{phase} field (mandatory in \code{standardThermochemistry}).}
+\paragraph{The \code{referenceState} field of \code{standardThermochemistry}.}
 The reference state for formation enthalpy is documented in the Theory
-Guide (chapter on the elements datum).  The \code{phase} keyword tells
-the solver in \emph{which phase} \code{dHf\_298} is tabulated, so
+Guide (chapter on the elements datum).  The \code{referenceState} keyword
+names the thermodynamic \emph{standard state} \code{dHf\_298} and
+\code{s\_298} are tabulated on, so
 \code{Component::h\_formation(T, targetPhase)} can build the right
 integration path through Hvap / Hfus jumps and the matching $c_p$ leg.
-Three values are allowed:
+Three values are allowed --- and they are the words below, not the bare
+phase names: the engine reads \code{referenceState}, and a key spelled
+\code{phase} here is read by nothing at all (\S\ref{sec:phase-key-was-never-read}):
 
 \begin{center}\small
 \begin{tabularx}{\linewidth}{@{}llX@{}}
 \toprule
-\code{phase} & required data & typical species \\
+\code{referenceState} & required data & typical species \\
 \midrule
-\code{gas}    & \code{idealGasHeatCapacity}, plus \code{HvapTb}+Tc+Tb if the
+\code{idealGas}    & \code{idealGasHeatCapacity}, plus \code{HvapTb}+Tc+Tb if the
                 liquid leg of any stream is needed
               & \emph{the convention --- all 45 standard volatiles + radicals;
                  follows NIST / JANAF} \\
-\code{liquid} & \code{liquidHeatCapacity}; \code{HvapTb}+Tc+Tb if any
+\code{pureLiquid} & \code{liquidHeatCapacity}; \code{HvapTb}+Tc+Tb if any
                 stream goes through the gas leg
               & reserved for compounds whose Hf is published in the
                 condensed datum (rare) \\
-\code{solid}  & \code{liquidHeatCapacity} (used as the dissolved-solute
+\code{pureSolid}  & \code{liquidHeatCapacity} (used as the dissolved-solute
                 approximation $c_p^{\mathrm{solid}}\!\approx\!c_p^{\mathrm{liq}}$)
               & crystalline non-volatiles whose Hf cannot be referenced to
                 gas because the compound never vaporises (sucrose) \\
@@ -1418,12 +1420,31 @@ Three values are allowed:
 \end{tabularx}
 \end{center}
 
-The default is \code{gas} for backward compatibility with the earliest
-component files, but \textbf{new components should always declare it
-explicitly} so the datum is unambiguous at the source of truth.  A
-\code{solid} or \code{liquid} declaration without the matching $c_p$
-model throws a clear error from \code{Component::h\_formation} the
-first time a stream containing the component is evaluated.
+The default is \code{idealGas} (the NIST / JANAF convention) for the
+overwhelming majority of volatile species, but \textbf{a condensed-phase
+datum must declare its \code{referenceState} explicitly} so the datum is
+unambiguous at the source of truth.  A \code{pureSolid} or
+\code{pureLiquid} declaration without the matching $c_p$ model throws a
+clear error from \code{Component::h\_formation} the first time a stream
+containing the component is evaluated.
+
+\begin{pitfall}
+\label{sec:phase-key-was-never-read}
+\textbf{This guide used to teach \code{phase gas;} here, and the parser
+has never read that key.}  \code{Component::readFromDict} reads
+\code{referenceState} and defaults it to \code{idealGas} when it is
+absent, so a record written the old way is not refused --- it is read on
+the ideal-gas rung whatever the author meant.  Measured on a copy of
+\file{crystalliser01\_sugar} with sucrose's
+\code{referenceState pureSolid;} replaced by \code{phase solid;}: exit 0,
+the cooling duty moves from 271.7 to 264.5\,kW and the heat of
+crystallisation collapses from 4377.5 to 0\,J/mol, and the only thing the
+run says is an advisory asking for sucrose's $T_c$, $T_b$ and
+\code{HvapTb} --- an ideal-gas leg the author never asked for.  Whether an
+unread key inside a component record should REFUSE or announce is a
+contract decision and is reserved; until it is taken, the guide is the
+only thing standing between a reader and that answer.
+\end{pitfall}
 
 \begin{pitfall}
 \textbf{A missing \code{standardThermochemistry} is now fatal, not papered over.}  The
