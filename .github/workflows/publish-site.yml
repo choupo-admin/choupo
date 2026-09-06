@@ -203,21 +203,31 @@ jobs:
 
           git clone --depth 1 "$SITE_REPO" /tmp/site
 
-          #  The two exclusions are LOAD-BEARING, not tidiness:
+          #  The two exclusions and the protect filter are LOAD-BEARING,
+          #  not tidiness:
           #    CNAME  belongs to the site repo -- it is what makes the domain
           #           resolve there, and overwriting it from here is how the
           #           domain gets contested.
           #    v*/    are the FROZEN release apps (/v2607/app/ ...), the
           #           citable URLs.  --delete without this exclusion erases
           #           every past release in one push.
+          #    assets/ are the PREVIOUS build's HASHED chunks.  GitHub Pages
+          #           serves index.html with a ~10 min cache, so a visitor who
+          #           reloads inside that window asks for chunk names --delete
+          #           had just removed: 404, blank app.  `P` PROTECTS the
+          #           receiver's chunks from deletion while the new ones are
+          #           still copied in; stale NON-asset files are still deleted.
           rsync -a --delete --exclude='.git' --exclude='CNAME' --exclude='v*/' \
+                --filter='P assets/**' \
                 site/_dist/ /tmp/site/
 
-          #  Prove the two survived before committing, not after pushing.
+          #  Prove all three survived before committing, not after pushing.
           grep -q 'www.choupo.org' /tmp/site/CNAME \
             || { echo "CNAME lost -- refusing to publish"; exit 1; }
           ls -d /tmp/site/v[0-9]*/app >/dev/null 2>&1 \
             || { echo "frozen release apps lost -- refusing to publish"; exit 1; }
+          ls /tmp/site/assets/*.js >/dev/null 2>&1 \
+            || { echo "no assets published -- refusing"; exit 1; }
 
           cd /tmp/site
           git config user.name  "Vítor Geraldes"
