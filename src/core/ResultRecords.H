@@ -161,6 +161,32 @@ struct EquipmentSizing
     //  the economics report subtotals capital on it, so a plant's cost is
     //  read the way the plant is built.
     std::string                                  sector;
+
+    //  WHICH OF THIS SIZE'S INPUTS THE ENGINE SUPPLIED (2026-09-06).  A
+    //  student defending a wall thickness must be able to tell what they
+    //  DECLARED from what the sizer assumed, and until now nothing anywhere
+    //  said which: `L_over_D`, `corrosionAllow` and `jointEfficiency` were
+    //  read with `lookupScalarOrDefault` and the default was indistinguishable
+    //  from a declaration on every surface at once.
+    //
+    //  KEYS, NOT VALUES, and that is deliberate.  A key that IS published
+    //  (`L_over_D`) already carries its value in `values` two lines up;
+    //  repeating it here would put one number in one file twice, which is the
+    //  arity sin this whole slice is about.  A key the sizer CONSUMES without
+    //  publishing (`corrosionAllow`, `jointEfficiency`) is named here and
+    //  valued in the advisory that announced it -- publishing it as a sizing
+    //  value would be new sizing content, which the 2026-09-06 slice excludes.
+    //
+    //  EMPTY MEANS NOTHING WAS ASSUMED, never "nobody looked": every default
+    //  a sizer takes goes through `designDefault::valueOr`, which is the one
+    //  call that records it.
+    std::vector<std::string>                     assumed;
+
+    void assume(const std::string& key)
+    {
+        for (const auto& k : assumed) if (k == key) return;
+        assumed.push_back(key);
+    }
 };
 
 // Energy wire.  A direct scalar coupling from one unit's

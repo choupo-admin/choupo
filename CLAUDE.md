@@ -1153,6 +1153,38 @@ arm (f) — two kinds on one unit — has NO live case, because
 `SimulationResult::profiles` carries one profile per unit).  Record:
 [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md).
 
+**A DEFAULT NOBODY DECLARED, AND A BANNER THAT WAS ACCIDENTALLY TRUE
+(2026-09-06).**  A specification sheet said `L_over_D 3;` whether the case
+declared it or `VesselSize` did, and `corrosionAllow` / `jointEfficiency`
+decided the wall thickness of a 220 bar separator while appearing on no page
+at all.  Rule: **a default that is USED is announced** (its site +
+`AdvisoryLog` + the caveat block + the result JSON, the CatalystPellet
+posture), **a DECLARED value announces nothing** so silence keeps meaning
+"nothing was assumed", **the surface a reader audits from says which**
+(`assumed ( ... )` on the design sheet, written only when something was), and
+**the costing header DRAWS what the model published** — `CostingModel::
+pricingFactors()`, the 2026-09-05 first-law rule, no fallback computation when
+a model publishes none.  It had printed `Year:`/`CEPCI:` by RE-READING the
+dict with its OWN defaults while the model read the same keys with ITS own and
+did the pricing: the literals agreed, so the banner was true by coincidence and
+would go false the day either copy moved.  **NOT DONE, and it is the
+substantive half: no value was chosen.**  `StirredTank` still assumes L/D 2.5
+and `VesselSize` 3.0 — same key, same question — and the ONE home
+(`sizing/DesignDefaults.{H,cpp}`) carries BOTH with the fact that they
+disagree, because reconciling them moves every un-declaring vessel's cost and
+is RESERVED for Vítor.  The 14 remaining `EconomicsPass` defaults are a
+CAMPAIGN, measured and stopped: fourteen announcements on one run is the wall
+of text the caveat block exists to prevent, and what an appraisal owes an
+undeclared `discountRate` is a decision nobody has taken.  Traps paid for: a
+guard whose only case satisfies it is a guard nothing tests (every shipped
+costing case declares all four price constants, so the probe had to stop
+declaring them), and a gate arm that matched `cepci` also matched `cepci2001`
+and accused the engine of announcing a key the case declared.  Gate:
+`check_cost_provenance` (+6 arms, 8 by-hand sabotages; arm (k) is a SOURCE arm
+because no output can separate a re-read from a draw when both find the same
+number).  Record:
+[`docs/design/a-default-nobody-declared.md`](docs/design/a-default-nobody-declared.md).
+
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
 The doctrine says a check that cannot run must not PASS; the MIRROR is just as
 bad — **it must not FAIL either, it must REFUSE.**  `bin/drive-app` filed "no

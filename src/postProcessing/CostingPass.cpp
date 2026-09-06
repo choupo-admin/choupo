@@ -72,11 +72,32 @@ int CostingPass::run(SimulationResult& result)
 
     auto model = CostingModel::New(costingDict_);
 
+    //  THE HEADER DRAWS WHAT THE MODEL PUBLISHED; IT DOES NOT RE-DERIVE IT.
+    //
+    //  This line used to read `year` and `cepci` off the costing dict with
+    //  its OWN defaults (2026.0 / 820.0) while the model read the same two
+    //  keys with ITS own and did the pricing.  The literals agreed, so the
+    //  banner was ACCIDENTALLY true -- and a banner that is true by
+    //  coincidence is a banner that goes false the day somebody edits one of
+    //  the two copies, printing one price index above a table costed with
+    //  another, at exit 0.  This is the header
+    //  `check_cost_provenance` teaches a student to defend the total with.
+    //
+    //  The rule is the 2026-09-05 first law's: the number travels on the
+    //  object that computed it and the reader DRAWS it.  A model that
+    //  publishes no price index gets a header that SAYS so and no number
+    //  computed in its place -- a fallback computation here would be the
+    //  second home under another name.
+    const std::map<std::string, scalar> priced = model->pricingFactors();
     std::cout << "\n========================  Equipment Costing  =========================\n";
-    std::cout << "  Method:  " << model->type()
-              << "    Year:  " << costingDict_->lookupScalarOrDefault("year", 2026.0)
-              << "    CEPCI: " << costingDict_->lookupScalarOrDefault("cepci", 820.0)
-              << "\n\n";
+    std::cout << "  Method:  " << model->type();
+    if (priced.count("year") && priced.count("cepci"))
+        std::cout << "    Year:  " << priced.at("year")
+                  << "    CEPCI: " << priced.at("cepci");
+    else
+        std::cout << "    (this costing model publishes no price index, so"
+                     " this header states none)";
+    std::cout << "\n\n";
 
     //  THE NAME COLUMN FITS THE NAMES.  Same rule and the same reason as the
     //  sizing table: a flattened plant's `SECTOR.unit` overflowed a fixed 14

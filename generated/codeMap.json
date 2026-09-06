@@ -106,6 +106,9 @@
   "AqueousVolumetricModel": [
    "src/thermo/electrolyte/AqueousVolumetric.H"
   ],
+  "Assumption": [
+   "src/postProcessing/sizing/DesignDefaults.H"
+  ],
   "Atomizer": [
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H"
   ],
@@ -3286,6 +3289,14 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/postProcessing/sizing/DesignDefaults.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/ResultRecords.H",
+   "src/core/Types.H",
+   "src/postProcessing/sizing/DesignDefaults.H"
+  ],
   "src/postProcessing/sizing/EquipmentSize.cpp": [
    "src/core/Advisory.H",
    "src/core/Dictionary.H",
@@ -3398,6 +3409,7 @@
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/materials/Material.H",
+   "src/postProcessing/sizing/DesignDefaults.H",
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/StirredTank.H",
    "src/result/SimulationResult.H",
@@ -3422,6 +3434,7 @@
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/materials/Material.H",
+   "src/postProcessing/sizing/DesignDefaults.H",
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/VesselSize.H",
    "src/result/SimulationResult.H",
@@ -7462,6 +7475,7 @@
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
+   "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
@@ -7695,6 +7709,7 @@
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
+   "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
@@ -7975,6 +7990,7 @@
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
+   "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
@@ -8853,6 +8869,7 @@
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
+   "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
@@ -8999,6 +9016,7 @@
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
+   "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
@@ -9442,6 +9460,11 @@
   "src/postProcessing/sizing/CycloneSize.H": [
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp"
+  ],
+  "src/postProcessing/sizing/DesignDefaults.H": [
+   "src/postProcessing/sizing/DesignDefaults.cpp",
+   "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/VesselSize.cpp"
   ],
   "src/postProcessing/sizing/EquipmentSize.H": [
    "src/postProcessing/PostProcessor.cpp",

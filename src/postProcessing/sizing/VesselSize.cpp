@@ -13,6 +13,7 @@
 \*---------------------------------------------------------------------------*/
 
 #include "VesselSize.H"
+#include "DesignDefaults.H"
 #include "core/Constants.H"
 #include "core/Advisory.H"
 #include <cmath>
@@ -91,13 +92,34 @@ EquipmentSizing VesselSize::size(const std::string&     unitName,
         throw std::runtime_error("Vessel: unit '" + unitName + "' sized to a"
             " non-positive volume -- check the flow KPI and the design basis");
 
-    const scalar L_over_D       = designRules->lookupScalarOrDefault("L_over_D", 3.0);
+    //  THE RECORD IS BUILT HERE, before the three constants below are read,
+    //  because it is what remembers which of them the case DECLARED and which
+    //  this sizer supplied.  All three used to be `lookupScalarOrDefault`
+    //  literals -- 3.0, 0.003, 1.0 -- two of them duplicated in
+    //  `StirredTank.cpp` and the third DISAGREEING with it (2.5 there, 3.0
+    //  here, same key, same question).  They now come from the ONE home
+    //  (`DesignDefaults`), which announces on use and marks the key here.
+    //  NO VALUE CHANGED, the 2.5/3.0 disagreement included: see that header.
+    EquipmentSizing d;
+    d.unitName       = unitName;
+    d.equipmentType  = "vessel";
+    d.material       = material.name;
+
+    //  EVERY HARD REQUIREMENT FIRST, THEN THE DEFAULTS -- so no announcement
+    //  is ever raised about a size that will not exist.  "the size below was
+    //  computed with the built-in default 0.003 m" is false when the unit
+    //  then refuses and there is no size below.
     const scalar pressureDesign = designRules->lookupScalar("pressureDesign");   // bar
-    const scalar corrosionAllow = designRules->lookupScalarOrDefault("corrosionAllow", 0.003);
-    const scalar jointEff       = designRules->lookupScalarOrDefault("jointEfficiency", 1.0);
     if (material.sigma_y <= 0.0)
         throw std::runtime_error("Vessel: material '" + material.name
             + "' has no sigma_y defined");
+
+    const scalar L_over_D = designDefault::valueOr(
+        designRules, designDefault::vesselLoverD, "vessel", unitName, d);
+    const scalar corrosionAllow = designDefault::valueOr(
+        designRules, designDefault::corrosionAllow, "vessel", unitName, d);
+    const scalar jointEff = designDefault::valueOr(
+        designRules, designDefault::jointEfficiency, "vessel", unitName, d);
     if (pressureDesign > material.maxP)
     {
         char b[220];
@@ -117,10 +139,6 @@ EquipmentSizing VesselSize::size(const std::string&     unitName,
                           + corrosionAllow;
     const scalar weight = material.density * constant::pi * D * H * t_wall;
 
-    EquipmentSizing d;
-    d.unitName       = unitName;
-    d.equipmentType  = "vessel";
-    d.material       = material.name;
     d.set("V_R",            V,              "m3");
     d.set("D",              D,              "m");
     d.set("H",              H,              "m");

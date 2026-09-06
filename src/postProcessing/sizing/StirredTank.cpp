@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "StirredTank.H"
+#include "DesignDefaults.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
 
@@ -53,14 +54,37 @@ EquipmentSizing StirredTank::size(const std::string&     unitName,
             + "' has no 'V_R' KPI — is it a CSTR or PFR?");
     const scalar V_R = v_it->second;     // m³
 
-    const scalar L_over_D       = designRules->lookupScalarOrDefault("L_over_D", 2.5);
+    //  THE RECORD IS BUILT FIRST because it is what remembers which of the
+    //  inputs below the case DECLARED and which this sizer supplied.  Three
+    //  of them used to be `lookupScalarOrDefault` literals -- 2.5, 0.003, 1.0
+    //  -- duplicated in `VesselSize.cpp` and announced nowhere; they now come
+    //  from the ONE home (`DesignDefaults`), which announces on use and marks
+    //  the key here.  No value changed: see the L/D note in that header.
+    EquipmentSizing d;
+    d.unitName       = unitName;
+    d.equipmentType  = "stirredTank";
+    d.material       = material.name;
+
+    //  EVERY HARD REQUIREMENT IS READ BEFORE ANY DEFAULT IS TAKEN, so an
+    //  announcement is never raised about a size that will not exist.  An
+    //  advisory reading "the size below was computed with the built-in
+    //  default 0.003 m" is false when the unit then refuses and there IS no
+    //  size below -- an announcement about a state the run never published,
+    //  which is the very failure `AdvisoryLog`'s trial/accepted stamp exists
+    //  to keep out of the caveat block.  No corpus case is affected: all of
+    //  them declare `pressureDesign`.
     const scalar pressureDesign = designRules->lookupScalar("pressureDesign");  // bar
-    const scalar corrosionAllow = designRules->lookupScalarOrDefault("corrosionAllow", 0.003);   // m
-    const scalar jointEff       = designRules->lookupScalarOrDefault("jointEfficiency", 1.0);
 
     if (material.sigma_y <= 0.0)
         throw std::runtime_error("StirredTank: material '" + material.name
             + "' has no σ_y defined");
+
+    const scalar L_over_D = designDefault::valueOr(
+        designRules, designDefault::stirredTankLoverD, "stirredTank", unitName, d);
+    const scalar corrosionAllow = designDefault::valueOr(
+        designRules, designDefault::corrosionAllow, "stirredTank", unitName, d);   // m
+    const scalar jointEff = designDefault::valueOr(
+        designRules, designDefault::jointEfficiency, "stirredTank", unitName, d);
     // Rating check (no-silent-crutch / "ratings should speak"): WARN, do not
     // abort.  Exceeding the material's pressure rating is a design red flag,
     // but throwing kills the whole run; a loud warning lets sizing complete so
@@ -93,10 +117,6 @@ EquipmentSizing StirredTank::size(const std::string&     unitName,
     // Weight (shell only; head contribution ~ +15% in practice — ignored here)
     const scalar weight = material.density * constant::pi * D * H * t_wall;
 
-    EquipmentSizing d;
-    d.unitName       = unitName;
-    d.equipmentType  = "stirredTank";
-    d.material       = material.name;
     d.basis          = "V_R = declared operation.V_R (pass-through); D and H from L_over_D; t_wall ASME thin-wall";
     d.set("V_R",            V_R,            "m3");
     d.set("D",              D,              "m");

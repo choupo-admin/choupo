@@ -31,6 +31,7 @@ License
 #include "core/Advisory.H"
 
 #include <cmath>
+#include <map>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -200,12 +201,88 @@ scalar pressureFactor_vessel(scalar D_m, scalar P_gauge_bar, scalar sigma_MPa)
 
 } // anonymous namespace
 
+//  THE FOUR PRICE-INDEX CONSTANTS, IN ONE PLACE, AND EACH ANNOUNCED WHEN IT
+//  IS USED (2026-09-06).
+//
+//  They used to be six literals: `2026.0`, `820.0`, `397.0`, `0.92` in the
+//  constructor's `lookupScalarOrDefault` calls AND the same four again as
+//  in-class member initialisers, plus `2026.0` and `820.0` a THIRD time
+//  inside `CostingPass`'s header line, which read the dict itself.  Three
+//  homes for two of them.  The literals all agreed, so nothing was wrong
+//  today and everything would be wrong the day one moved.
+//
+//  Announcing matters more here than the tidiness does.  A CEPCI is the
+//  factor that turns a 2001 correlation into this year's money: a total
+//  priced on an ASSUMED index and a total priced on a DECLARED one are
+//  different claims, and until now they printed identically.  Every corpus
+//  case declares all four (measured 2026-09-06: 8 of 8 costing cases), so no
+//  shipped case changes -- which is exactly why the default path had never
+//  been looked at.
+namespace {
+
+struct PriceIndexDefault
+{
+    const char* key;
+    scalar      value;
+    const char* why;
+};
+
+const PriceIndexDefault priceIndexDefaults[] =
+{
+    { "year",      2026.0, "the target year the cost is quoted in" },
+    { "cepci",      820.0, "the target-year CEPCI (Chemical Engineering Plant"
+                           " Cost Index).  It is PUBLISHED MONTHLY and this"
+                           " number is not a curated datum: quote the index"
+                           " for the year you are reporting in" },
+    { "cepci2001",  397.0, "the CEPCI of the correlations' own 2001 basis;"
+                           " changing it re-bases every coefficient in"
+                           " Turton App. A and should not be done casually" },
+    { "usdToEur",     0.92, "the USD->EUR rate the 2001 USD correlation is"
+                            " converted at; a rate is a date, so declare the"
+                            " one your report is dated on" },
+};
+
+//  The declared value, or the default ANNOUNCED.  A DECLARED value announces
+//  nothing: silence keeps meaning "nothing was assumed".
+scalar priceIndexOr(const DictPtr& dict, const PriceIndexDefault& d)
+{
+    if (dict && dict->found(d.key)) return dict->lookupScalar(d.key);
+
+    std::ostringstream v;
+    v << std::defaultfloat << std::setprecision(6) << d.value;
+
+    std::ostringstream m;
+    m << d.key << " was NOT declared in the `costing {}` block: every capital"
+         " cost below was priced with the engine's built-in default "
+      << v.str() << " -- " << d.why << ".  Declare `" << d.key << " "
+      << v.str() << ";` (or your own value) to make it the author's choice"
+         " rather than the engine's assumption.";
+
+    if (AdvisoryLog::instance().add("assumed", "warning", "costing", m.str()))
+        std::cout << "  [assumed] costing: " << m.str() << "\n";
+    return d.value;
+}
+
+} // anonymous namespace
+
 Guthrie::Guthrie(const DictPtr& dict)
 {
-    year_      = dict->lookupScalarOrDefault("year",      2026.0);
-    cepci_     = dict->lookupScalarOrDefault("cepci",     820.0);
-    cepci2001_ = dict->lookupScalarOrDefault("cepci2001", 397.0);
-    usdToEur_  = dict->lookupScalarOrDefault("usdToEur",  0.92);
+    year_      = priceIndexOr(dict, priceIndexDefaults[0]);
+    cepci_     = priceIndexOr(dict, priceIndexDefaults[1]);
+    cepci2001_ = priceIndexOr(dict, priceIndexDefaults[2]);
+    usdToEur_  = priceIndexOr(dict, priceIndexDefaults[3]);
+}
+
+//  ONE SET OF MEMBERS, TWO READERS.  `cost()` writes these same four values
+//  into every `CostBreakdown::factors`, so the header line the pass draws and
+//  the per-unit provenance line under it are two printings of one fact and
+//  cannot drift apart.
+std::map<std::string, scalar> Guthrie::pricingFactors() const
+{
+    return { { "year",      year_      },
+             { "cepci",     cepci_     },
+             { "cepci2001", cepci2001_ },
+             { "usdToEur",  usdToEur_  } };
 }
 
 CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) const

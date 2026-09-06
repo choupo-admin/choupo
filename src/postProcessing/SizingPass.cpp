@@ -240,6 +240,21 @@ int SizingPass::run(SimulationResult& result)
                 std::cout << "\n";
             }
 
+            //  AND WHICH INPUTS THE SIZER SUPPLIED ITSELF, beside the basis,
+            //  because they are the same question: the basis says what rule
+            //  produced the size, this says what the rule was fed that nobody
+            //  declared.  Printed only when something WAS assumed, so silence
+            //  keeps meaning "nothing was".  The values are in the `[assumed]`
+            //  lines above and in the end-of-run caveat block; repeating them
+            //  here would be a third printing of one fact.
+            if (!dims.assumed.empty())
+            {
+                std::cout << "        assumed:";
+                for (const auto& k : dims.assumed) std::cout << " " << k;
+                std::cout << "   (engine defaults -- declare them in"
+                             " `designRules {}` to own them)\n";
+            }
+
             // DESIGN INVERSION output (from a `design {}` rule): the geometry the
             // process targets require -- the rating model run BACKWARD.
             bool anyDesign = false;

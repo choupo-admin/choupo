@@ -311,6 +311,49 @@ void writeCashFlowOds(const EconomicsSummary& e)
 
 } // anonymous namespace
 
+//  A POLICY CARRIED AS A FLOAT (2026-09-06).
+//
+//  `refuseOnMissingPrice` is not a magnitude.  It decides whether this pass
+//  REFUSES when a price is absent or proceeds with zero revenue -- the
+//  difference between an appraisal and a number -- and it was read as
+//  `lookupScalarOrDefault("refuseOnMissingPrice", 1.0) != 0.0`: a DECISION
+//  behind a comparison, with the default silent.  A case that never mentions
+//  the key was refusing on the ENGINE's authority while its output read
+//  exactly like a case whose author had chosen to.
+//
+//  Fixed here: the policy has one home and SAYS WHOSE IT IS when nobody
+//  declared it.  A declared value announces nothing, so silence keeps
+//  meaning "the author chose".
+//
+//  NOT fixed, and it is a policy question rather than an oversight: THE KEY
+//  STAYS A NUMBER.  Six shipped postDicts write `refuseOnMissingPrice 1;`,
+//  two case READMEs and `docs/tutorialsGuide-steady.tex` document `0` and
+//  `1`, so spelling it as a word (`yes`/`no`) is a grammar change to authored
+//  cases and to published prose.  RESERVED for Vitor.  So is the neighbouring
+//  question this one raises: a value that is neither 0 nor 1 is silently read
+//  as "refuse" today, and whether that should refuse by name is a decision
+//  about the grammar, not about this pass.
+namespace {
+
+bool refuseOnMissingPriceOf(const DictPtr& d)
+{
+    if (d && d->found("refuseOnMissingPrice"))
+        return d->lookupScalar("refuseOnMissingPrice") != 0.0;
+
+    const std::string m =
+        "refuseOnMissingPrice was NOT declared in the `economics {}` block:"
+        " this appraisal REFUSES when a required price is absent, which is"
+        " the engine's default policy and not a choice this case made."
+        "  Declare `refuseOnMissingPrice 1;` to own the refusal, or `0;` to"
+        " proceed with zero revenue and the gap announced.";
+
+    if (AdvisoryLog::instance().add("assumed", "warning", "economics", m))
+        std::cout << "  [assumed] economics: " << m << "\n";
+    return true;
+}
+
+} // anonymous namespace
+
 EconomicsPass::EconomicsPass(const DictPtr& economicsDict)
 :   econDict_(economicsDict)
 {}
@@ -338,7 +381,7 @@ int EconomicsPass::run(SimulationResult& result)
     const scalar N_np              = econDict_->lookupScalarOrDefault("N_np",                  7.0);
     const int    estimateClass     = static_cast<int>(
                                       econDict_->lookupScalarOrDefault("estimateClass",       4.0));
-    const bool   refuseOnMissing   = econDict_->lookupScalarOrDefault("refuseOnMissingPrice", 1.0) != 0.0;
+    const bool   refuseOnMissing   = refuseOnMissingPriceOf(econDict_);
 
     //  `method` WAS DECORATIVE.  Three tutorial cases declare
     //  `method discountedCashFlow;` and nothing read it: the pass is

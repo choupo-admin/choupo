@@ -312,6 +312,32 @@ std::size_t write(const std::string&                       caseRoot,
         }
         o << sizingBlock.str();
 
+        //  ---- WHICH OF THOSE INPUTS THE ENGINE SUPPLIED ----------------
+        //  A sheet is what somebody AUDITS the project from, and until now it
+        //  could not tell a value the author DECLARED from one the sizer
+        //  assumed: `L_over_D 2.5;` read identically whether the case said so
+        //  or `StirredTank` did.  The list is written ONLY when a default was
+        //  actually taken, so its ABSENCE is the positive statement "this
+        //  sizer assumed nothing" -- the same reading `(not stated)` gives a
+        //  missing basis, and the reason the block is not printed empty.
+        //
+        //  A LIST OF KEYS, NOT A SECOND COPY OF THEIR VALUES.  A key that is
+        //  published (`L_over_D`) has its value in `sizing {}` five lines up
+        //  and writing it again would put one number in one file twice; a key
+        //  the sizer consumes without publishing (`corrosionAllow`,
+        //  `jointEfficiency`) is named here and VALUED in the advisory that
+        //  announced it and in the end-of-run caveat block.
+        if (!sz.assumed.empty())
+        {
+            o << "\n//  Inputs this sizer was not given and supplied itself."
+                 "  Each was announced at\n//  its site and appears in the"
+                 " run's ASSUMPTIONS AND CAVEATS block with the\n//  value"
+                 " used.  Declare it in the case's `designRules {}` to make it"
+                 " yours.\nassumed          (";
+            for (const auto& k : sz.assumed) o << " " << k;
+            o << " );\n";
+        }
+
         //  ---- the cost, when a costing pass ran ------------------------
         //  THE COST OF THIS EQUIPMENT belongs on this equipment's sheet: an
         //  auditor who has just read what was sized should not have to open

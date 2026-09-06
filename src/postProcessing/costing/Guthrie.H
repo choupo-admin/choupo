@@ -56,6 +56,15 @@ Description
 
 #include "CostingModel.H"
 
+//  `std::map` IS USED IN THIS HEADER'S OWN SIGNATURE, so this header includes
+//  it -- it does NOT lean on `CostingModel.H` happening to.  g++ lends a
+//  transitively-included declaration and emscripten's libc++ does not, which
+//  is the split that took www.choupo.org three commits stale on 2026-08-27:
+//  a green native suite says nothing about the site, because the site is a
+//  different toolchain.  `check_std_includes` caught this one before it
+//  shipped.
+#include <map>
+
 namespace Choupo {
 
 class Guthrie : public CostingModel
@@ -68,13 +77,26 @@ public:
     CostBreakdown cost(const EquipmentSizing& dim,
                        const Material&   mat) const override;
 
+    //  The four constants below, published so the pass's header can DRAW them
+    //  instead of re-deriving them from the dict with a second set of
+    //  defaults.  See `CostingModel::pricingFactors`.
+    std::map<std::string, scalar> pricingFactors() const override;
+
 private:
     inline static const std::string type_ = "Guthrie";
 
-    scalar  year_     = 2026.0;
-    scalar  cepci_    = 820.0;
-    scalar  cepci2001_= 397.0;
-    scalar  usdToEur_ = 0.92;
+    //  THE IN-CLASS INITIALISERS ARE GONE, and their absence is the point.
+    //  They used to read `= 2026.0`, `= 820.0`, `= 397.0`, `= 0.92` -- the
+    //  SAME four literals the constructor passes to
+    //  `lookupScalarOrDefault`, one line apart, so one fact had two homes and
+    //  the in-class copy was dead the whole time (the constructor assigns all
+    //  four unconditionally, on every path).  The one home is
+    //  `defaultPriceIndex` in Guthrie.cpp, which is also what announces when
+    //  a default is USED.
+    scalar  year_      = 0.0;
+    scalar  cepci_     = 0.0;
+    scalar  cepci2001_ = 0.0;
+    scalar  usdToEur_  = 0.0;
 };
 
 } // namespace Choupo
