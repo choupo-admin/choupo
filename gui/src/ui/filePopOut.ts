@@ -33,6 +33,8 @@ License
   technique as the streams pop-out — bypasses Firefox's popup blocker.
 \*---------------------------------------------------------------------------*/
 
+import { AUTHORED_FILE_HINT, RUN_OUTPUT_HINT, isRunOutput } from "./caseTree.js";
+
 // ---- pop-out colour scheme -------------------------------------------------
 // A pop-out is a FRESH document with no Mantine, so it cannot inherit the app's
 // theme.  We resolve the MAIN window's active colour scheme here and emit a
@@ -63,8 +65,20 @@ export function popoutColors(): PopoutColors {
   return dark ? POPOUT_DARK : POPOUT_LIGHT;
 }
 
-export function popOutFileHtml(rel: string, raw: string): void {
+/*  THE HINT UNDER A FILE MUST MATCH THE KIND OF FILE IT IS.  This printed
+ *  the authored sentence unconditionally, so it told a student to edit
+ *  `converged/<stream>` -- a file the next run rewrites whole.  The fact has
+ *  ONE home and this asks it: `caseTree.isRunOutput`, NOT `kindOf`.  The next
+ *  reader will reach for the kind, and the kind cannot answer this question:
+ *  a unit interior is "interior" under `0/` (authored -- a case may declare
+ *  the profile a column starts from) and under `converged/` (written by the
+ *  run), and only the view it sits in tells them apart.
+ *
+ *  Split from `popOutFileHtml` so the HTML can be tested as a string, with no
+ *  DOM and no Blob: what is at stake is which sentence a reader is given. */
+export function fileHtml(rel: string, raw: string): string {
   const C = popoutColors();
+  const hint = isRunOutput(rel) ? RUN_OUTPUT_HINT : AUTHORED_FILE_HINT;
   const html = `<!doctype html><html lang="en"><head>
 <meta charset="utf-8">
 <title>Choupo — ${escAttr(rel)}</title>
@@ -81,11 +95,14 @@ export function popOutFileHtml(rel: string, raw: string): void {
 </style>
 </head><body>
 <h2>${escText(rel)}</h2>
-<p class="hint">Read-only.  Edit this file in your text editor and reload the
-case in the Choupo tab.</p>
+<p class="hint">Read-only.  ${escText(hint)}</p>
 <pre>${escText(raw)}</pre>
 </body></html>`;
-  openHtmlInNewTab(html);
+  return html;
+}
+
+export function popOutFileHtml(rel: string, raw: string): void {
+  openHtmlInNewTab(fileHtml(rel, raw));
 }
 
 /** Open an HTML string in a new browser tab via Blob URL + programmatic

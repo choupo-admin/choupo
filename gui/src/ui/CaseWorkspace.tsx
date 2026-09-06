@@ -74,7 +74,7 @@ import { useMemo, useState } from "react";
 import { useReducedMotion } from "@mantine/hooks";
 import { ActionIcon, Badge, Box, Group, ScrollArea, SegmentedControl, Stack, Text, Tooltip } from "@mantine/core";
 import { IconBox, IconChevronDown, IconChevronRight, IconSitemap } from "@tabler/icons-react";
-import { buildTree, nodeKind, squash, sortedChildren, type TreeNode } from "./caseTree";
+import { RUN_OUTPUT_HINT, buildTree, nodeKind, squash, sortedChildren, type TreeNode } from "./caseTree";
 
 import { lessonOutline } from "../case/lesson.js";
 import { parse, type DictEntry } from "../dict/index.js";
@@ -708,7 +708,7 @@ function FileTree({
             {node.label}/
           </Text>
           {kind === "output" && depth === 0 && (
-            <Tooltip label="Written by the solver on every run and regenerated whole -- edit system/ or 0/ instead." withArrow>
+            <Tooltip label={RUN_OUTPUT_HINT} withArrow>
               <Badge size="xs" variant="light" color="gray" style={{ textTransform: "none", cursor: "help" }}>
                 run output
               </Badge>

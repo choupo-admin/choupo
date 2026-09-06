@@ -141,6 +141,19 @@ export function isRunOutput(prefix: string): boolean {
   return first !== "0" && (RUN_OUTPUT_ROOTS.includes(first) || isInstant(first));
 }
 
+/*  WHAT A READER MAY DO WITH THE FILE IN FRONT OF THEM -- one sentence per
+ *  answer, and each written ONCE.  The pop-out printed the authored sentence
+ *  under EVERY file it opened, so a student who followed it on a
+ *  `converged/` stream edited the file, reloaded, saw nothing change, and
+ *  had no way to learn from the screen that the next run had rewritten it.
+ *  The run-output sentence is the one the Case tree's `run output` badge has
+ *  always carried; it lives here, beside the predicate that decides which of
+ *  the two applies, so the pop-out and the badge can never drift apart.  */
+export const AUTHORED_FILE_HINT =
+  "Edit this file in your text editor and reload the case in the Choupo tab.";
+export const RUN_OUTPUT_HINT =
+  "Written by the solver on every run and regenerated whole -- edit system/ or 0/ instead.";
+
 export function kindOf(prefix: string): NodeKind {
   const segs = prefix.split("/");
   const first = segs[0] ?? "";
