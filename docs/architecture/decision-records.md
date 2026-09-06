@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 114 records already exist
+## 1. Why an index, when 115 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 114 design records, **68 state a rejected alternative and 46 do not** —
+- Of 115 design records, **69 state a rejected alternative and 46 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -67,6 +67,7 @@ direction is an error.
 
 | record | kind | alt | status |
 |---|---|---|---|
+| [`which-line-is-a-gates-claim.md`](../design/which-line-is-a-gates-claim.md) | ADR | yes | **SHIPPED 2026-09-06** — tasks #108/#100.  *Which* line of a gate's output is its CLAIM had two homes that disagreed unnoticed: `gate_manifest` took `line[0]`, while `bin/runTests` captured a PASS row per site (of 201 rows: 100 `head -1`, 89 `tail -1`, 3 `grep -m1`).  Five gates confirmed — the manifest recorded a heading, a path, one anchor row and two skipped-case lines as those gates' own accounts of themselves, and `check_equipment_pinned`'s coverage record named precisely the case it had SKIPPED.  ADOPTED: **the claim is the line the gate MARKS as one** (`<label>: OK …` / `[<label>] OK …`, label resolving to the gate's name), one home in `bin/curate/gate_claim.py`, importable AND runnable so the shell reads the same rule; **a gate that marks none gets none** (`claim: null`, censused; `--only` refuses).  Chosen from a measurement: 139 of 191 gates already marked one.  REJECTED: "the last line" (the same guess pointing the other way); matching the bare word `OK` (it would promote `check_ion_pins`' per-anchor row, the line already being mis-filed); donating a heading, a first or a last line to an unmarked gate; refusing to write the whole manifest while 50 gates are unmarked (it would be unregenerable for a month); routing all ~190 `runTests` sites through the helper today (it would blank a quarter of the suite's PASS rows to suit a tool).  The #100 rule is written down once here — a claim states what was SCANNED and what was NOT — with the census recounted (144 quantify, 102 state a limit, 29 neither) and the finding that **the census is itself contaminated by the defect**: two of the 29 have real claims that do both.  NOT done: the 50 unmarked gates and the 29 domain-less claims are NAMED, not rewritten (a campaign, Vítor's decision); no new gate |
 | [`a-tool-that-reported-what-it-could-not-see.md`](../design/a-tool-that-reported-what-it-could-not-see.md) | ADR | yes | **SHIPPED 2026-09-06** — a tool that could not LOOK must REFUSE, not report what it did not see: `bin/drive-app` demands a positive sentinel (the app's own chrome in the rendered DOM) before judging anything, and exits 2 naming the URL, Chromium's navigation error and the remedy; and a STALE result DIMS (fingerprint of the declared case stamped on the run, one home, **all of them or none** — never a per-value claim).  Rejected: annotating a stale number (still read as a number), requiring the version badge as the sentinel (absent on a partial mirror = a false refusal), treating the scratch-edit count as staleness (a run does not clear the overlay), and folding the display preset / frozen boundary state into the fingerprint (would make every result read as stale) |
 | [`the-student-walkthrough.md`](../design/the-student-walkthrough.md) | SCOPE | no | **WRITTEN 2026-09-02** — the programme behind legs 4–8 had no record of its own: legs 4 and 5 named themselves in their records, 6 in a commit body, 7 and 8 shipped the same day, and no leg below 4 is numbered anywhere in the tree (stated, not guessed).  One table, each leg cited to its commit or record; the method (drive the artefact a student meets, fix at the source) and the named next leg (output legibility) |
 | [`equilibrium-parameterisation-identity.md`](../design/equilibrium-parameterisation-identity.md) | ADR | no | SHIPPED — D2 migration closed 2026-07-26 |
@@ -268,7 +269,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**46 of 114 records state no rejected alternative.**  For a FORUM or a STUDY
+**46 of 115 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

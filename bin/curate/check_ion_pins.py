@@ -92,15 +92,36 @@ if fails: sys.exit(f"{fails} anchor(s) FAILED -- fix the tier before the L_phi b
 # stored second source -- re-introducing it is a HARD failure, not silent drift.
 import glob
 sins = []
+n_scanned = n_electrolyte = 0
 for p in (glob.glob(str(repo / "data/standards/components/*.dat"))
           + glob.glob(str(repo / "tutorials/**/constant/components/*.dat"), recursive=True)):
     t = open(p, errors="ignore").read()
-    if re.search(r"dissolutionEnthalpy", t) and re.search(r"(?m)^standardThermochemistry\s*\n\{", t):
-        sins.append(p)
+    n_scanned += 1
+    if re.search(r"dissolutionEnthalpy", t):
+        n_electrolyte += 1
+        if re.search(r"(?m)^standardThermochemistry\s*\n\{", t):
+            sins.append(p)
 if sins:
     sys.exit("ARITY-1 VIOLATION -- electrolyte component(s) ALSO carry a component\n"
              "standardThermochemistry block (a 2nd source of truth; the salt formation is\n"
              "DERIVED from ions + dissolutionEnthalpy, never stored):\n  "
              + "\n  ".join(sins))
 
-print("all ion-tier anchors consistent + no arity-1 second sources.")
+#  THE CLAIM LINE (2026-09-06).  This gate used to end on a sentence that
+#  marked itself as nothing -- so `gate_manifest` filed the FIRST line it
+#  printed, one anchor row about NaOH, as the gate's own account of itself,
+#  and `bin/runTests` showed the reader a different line again.  One home now
+#  decides which line is the claim (bin/curate/gate_claim.py); a gate that
+#  marks none gets none, so this states what was scanned and what is NOT
+#  claimed.  The wording changed; nothing this gate CHECKS did.
+print(f"check_ion_pins: OK -- {len(ANCHORS)} dissolution anchor(s) "
+      f"({', '.join(s for s, _, _ in ANCHORS)}) reproduce the aqueous ion "
+      f"tier to within {TOL / 1000.0:.1f} kJ/mol, and of {n_scanned} "
+      f"component record(s) scanned (data/standards/components + every "
+      f"tutorial constant/components) the {n_electrolyte} carrying "
+      f"dissolutionEnthalpy declare no second, component-level "
+      f"standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or "
+      f"solid Hf is RIGHT -- the anchors validate the arithmetic that relates "
+      f"them, never the published values; and the anchors above reach "
+      f"{len({i for _, ions, _ in ANCHORS for i in ions})} ion(s) only, so an "
+      f"ion no anchor touches is unvalidated here.")

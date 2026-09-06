@@ -274,4 +274,26 @@ elif len(drift) > len(actionable):
     print("  %d further difference(s) are documentation or additive data;"
           " run with --full-drift-report to list them." % (len(drift) - len(actionable)))
 
+#  THE CLAIM LINE (2026-09-06).  This gate printed a 40-line report and no
+#  verdict at all, so both readers of its output donated it a heading:
+#  `gate_manifest` filed the bare "SEALED CATALOGUE DRIFT SUMMARY" as the
+#  gate's own account of itself, and bin/runTests' PASS row showed the same
+#  words.  A heading is a title, not a claim.  One home now decides which line
+#  is the claim (bin/curate/gate_claim.py) and a gate that marks none gets
+#  none -- so this states what was inspected and, as importantly, what passing
+#  does NOT mean.  Nothing this gate CHECKS changed; the report above is
+#  untouched.
+if not damage:
+    print()
+    print("check_seal_drift: OK -- %d sealed manifest(s) and %d embedded "
+          "record(s) inspected; every sealed case still reproduces its own "
+          "records under its declared sealSchema (%d cosmetic difference(s), "
+          "which the parsed-content claim tolerates by design).  NOT CHECKED: "
+          "whether any sealed value is RIGHT.  And divergence from the LIVE "
+          "catalogue (%d record(s), %d case(s) worth a curator's eye) is "
+          "HISTORY, not a verdict -- this gate reports it, never fails on it, "
+          "and never re-seals to make the number smaller."
+          % (nManifests, nRecords, len(cosmeticSeal), len(drift),
+             cases_needing_review))
+
 sys.exit(1 if damage else 0)

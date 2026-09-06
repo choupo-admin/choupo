@@ -18,17 +18,31 @@ than recounted.  Ninety of them, transcribed at speed, is how a declaration
 comes to disagree with the gate it describes.  Four hand-compiled counts were
 found wrong that way in a single day.
 
-So the manifest is DERIVED FROM WHAT EACH GATE SAYS AT RUNTIME.  Every gate in
-this tree prints, on success, a one-line claim of what it checked -- and, by a
-convention that held across the whole 2026-08-05 slice, what it deliberately
-does NOT claim ("UNCHECKED, not clean", "this gate does not check whether ...").
+So the manifest is DERIVED FROM WHAT EACH GATE SAYS AT RUNTIME.  Most gates in
+this tree print, on success, a one-line claim of what they checked -- and, by a
+convention that held across the whole 2026-08-05 slice, what they deliberately
+do NOT claim ("UNCHECKED, not clean", "this gate does not check whether ...").
 That line is the gate's own account of itself, emitted by the code that does
 the checking. It cannot drift from the gate, because it IS the gate.
+
+WHICH LINE IS THE CLAIM IS NOT THIS FILE'S TO DECIDE (2026-09-06).  It used to
+be, twice over: the loop below took `line[0]` while the paragraph above said
+"the OK line", and `bin/runTests` captured the same gates' lines by its own
+per-site rules.  Two homes for one fact, disagreeing without anything noticing
+-- so for five confirmed gates the committed manifest recorded a DETAIL line as
+the gate's account of itself, `check_equipment_pinned`'s coverage record naming
+precisely the case it had SKIPPED.  The rule now lives in
+`bin/curate/gate_claim.py` and nowhere else: a claim is the line the gate MARKS
+as one.  A gate that marks none GETS none here -- `claim` is recorded as null
+rather than donating its heading, because picking a line out of prose and
+filing it as "what this gate proves" is the defect, not the fix.  Record:
+`docs/design/which-line-is-a-gates-claim.md`.
 
 WHAT THIS CAN AND CANNOT CAPTURE, stated plainly because the review asked for
 seven fields and this delivers two:
 
-  CAPTURED   claim  -- the OK line, verbatim
+  CAPTURED   claim  -- the gate's own marked claim line, verbatim (null when
+             the gate marks none)
              scope / known blind spots -- where the gate states them in that
              line, which most now do
 
@@ -98,6 +112,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from destructive_session import assert_tree_undisturbed  # noqa: E402
+from gate_claim import claim_in  # noqa: E402
 
 ROOT = HERE.parents[1]
 OUT = ROOT / "generated" / "gateManifest.json"
@@ -118,7 +133,16 @@ def gates():
 
 
 def claim_of(path):
-    """Run the gate; return (exit, first line of its output, elapsed seconds).
+    """Run the gate; return (exit, its marked claim or None, head, seconds).
+
+    The claim comes from `gate_claim.claim_in`, which is the ONE home for
+    which line of a gate's output is its claim; None means the gate marked
+    none, and this function does not invent one in its place.
+
+    `head` is the first line of the output, kept ONLY for the diagnostic
+    messages below: a failing gate has made no claim, and a reader still needs
+    to be told something about why it failed.  It is never recorded as a
+    claim.
 
     `exit` is None when the gate was killed by the timeout -- which is not
     the same kind of event as a failure and is handled separately by the
@@ -129,10 +153,11 @@ def claim_of(path):
         r = subprocess.run([sys.executable, str(path)], cwd=str(ROOT),
                            capture_output=True, text=True, timeout=TIMEOUT)
     except subprocess.TimeoutExpired:
-        return None, "", round(time.monotonic() - t0, 1)
-    line = (r.stdout or r.stderr).strip().splitlines()
-    return (r.returncode, line[0].strip() if line else "",
-            round(time.monotonic() - t0, 1))
+        return None, None, "", round(time.monotonic() - t0, 1)
+    text = (r.stdout or "") + "\n" + (r.stderr or "")
+    head = (r.stdout or r.stderr).strip().splitlines()
+    return (r.returncode, claim_in(text, path.stem),
+            head[0].strip() if head else "", round(time.monotonic() - t0, 1))
 
 
 def main() -> int:
@@ -194,12 +219,28 @@ def main() -> int:
             return 1
         doc = json.loads(OUT.read_text())
         for w in want:
-            rc, claim, secs = claim_of(HERE / f"{w}.py")
+            rc, claim, head, secs = claim_of(HERE / f"{w}.py")
             if rc != 0:
                 print(f"gate_manifest: REFUSING TO WRITE -- {w} "
                       + ("TIMED OUT" if rc is None else f"exited {rc}")
-                      + f": {claim[:90]}\n  A failure is the absence of a "
+                      + f": {head[:90]}\n  A failure is the absence of a "
                       "claim, not a claim.  Nothing was written.")
+                return 1
+            #  AND SO IS AN UNMARKED PASS.  This arm exists to REFRESH a
+            #  claim, so being asked to refresh one from a gate that marks
+            #  none is a request the tool cannot honour -- and writing null
+            #  over a reader's back, in an arm they invoked by name, would
+            #  hide the very thing they should be told.  The full arm records
+            #  the null and censuses it; here it refuses and says what to do.
+            if claim is None:
+                print(f"gate_manifest: REFUSING TO WRITE -- {w} passed but "
+                      "MARKS NO CLAIM.\n  A gate's claim is the line it marks "
+                      "as one (`<name>: OK -- ...`, see bin/curate/"
+                      "gate_claim.py);\n  no line of its output is that, and "
+                      "donating it a heading is the defect this rule\n  ends."
+                      "  Give the gate a claim line stating what it verified "
+                      "and what it does\n  NOT, then re-run.  Nothing was "
+                      "written.")
                 return 1
             before = doc["gates"].get(w, {}).get("claim", "")
             doc["gates"][w] = {"exit": rc, "claim": claim, "seconds": secs}
@@ -222,17 +263,20 @@ def main() -> int:
         return 0
 
     #  Full regeneration.
-    out = {"note": "DERIVED by running each gate and capturing the one-line "
-                   "claim it prints.  Never transcribed from a docstring -- a "
-                   "transcription is a second home and drifts.  Regenerate "
-                   "with bin/curate/gate_manifest.py.",
-           "captures": ["claim (the gate's own OK line, verbatim)"],
+    out = {"note": "DERIVED by running each gate and capturing the line it "
+                   "MARKS as its claim (bin/curate/gate_claim.py is the one "
+                   "home for that rule; a gate marking none gets a null "
+                   "claim, never a donated heading).  Never transcribed from "
+                   "a docstring -- a transcription is a second home and "
+                   "drifts.  Regenerate with bin/curate/gate_manifest.py.",
+           "captures": ["claim (the gate's own marked claim line, verbatim; "
+                        "null when the gate marks none)"],
            "doesNotCapture": ["positiveWitness", "negativeWitness",
                               "acceptedDebt", "retirementCondition",
                               "-- a gate's sabotages are not visible in its "
                               "output, and inferring them would be guessing"],
            "gates": {}}
-    silent, failed, timed_out = [], [], []
+    unmarked, failed, timed_out = [], [], []
     for p in gates():
         #  Between gates, not merely at the start: a gate that opens a
         #  destructive session and dies leaves the journal standing, and
@@ -242,15 +286,16 @@ def main() -> int:
         #  the run began.
         assert_tree_undisturbed("gate_manifest")
 
-        rc, claim, secs = claim_of(p)
+        rc, claim, head, secs = claim_of(p)
         out["gates"][p.stem] = {"exit": rc, "claim": claim, "seconds": secs}
-        print(f"  {p.stem:<38} exit={rc} {secs:>7.1f}s  {claim[:60]}")
+        shown = claim[:60] if claim else "(marks no claim)"
+        print(f"  {p.stem:<38} exit={rc} {secs:>7.1f}s  {shown}")
         if rc is None:
             timed_out.append(p.stem)
         elif rc != 0:
-            failed.append((p.stem, claim))
-        elif len(claim) < 20:
-            silent.append(p.stem)
+            failed.append((p.stem, head))
+        elif claim is None:
+            unmarked.append(p.stem)
 
     #  REFUSE TO WRITE.  A failing gate has made no claim -- a claim is what a
     #  gate says when it has something to say, and a failure is the absence of
@@ -282,12 +327,16 @@ def main() -> int:
     OUT.write_text(json.dumps(out, indent=2, sort_keys=False) + "\n")
     print(f"\nwrote {OUT.relative_to(ROOT)} ({len(out['gates'])} gates, "
           f"every one observed passing)")
-    if silent:
-        print("\nGATES THAT PASS WITHOUT STATING A CLAIM (nothing to record "
-              "about what they checked):\n  " + "\n  ".join(silent)
-              + "\n  A gate whose success says nothing cannot be audited "
-                "without reading its source, which is the situation this "
-                "manifest exists to end.")
+    if unmarked:
+        print(f"\nGATES THAT PASS WITHOUT MARKING A CLAIM ({len(unmarked)}), "
+              "recorded as null rather than\ngiven a line they never claimed:"
+              "\n  " + "\n  ".join(unmarked)
+              + "\n  A gate whose success marks nothing cannot be audited "
+                "without reading its source,\n  which is the situation this "
+                "manifest exists to end.  The remedy is one line in\n  the "
+                "gate -- `<name>: OK -- <what was scanned>.  NOT CHECKED: "
+                "<what was not>` --\n  never a rule here that guesses which "
+                "of its lines was meant.")
     return 0
 
 

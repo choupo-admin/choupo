@@ -129,7 +129,7 @@ Choupo/
   explicit decision, and never for a release anyone could have cited.  Two
   loose ends were RULED on 2026-09-03: `data/standards/CATALOGUE.dat` now
   names `Choupo-2608` (the catalogue the maintained release shipped), while
-  the 394 sealed manifests KEEP `catalogueRelease Choupo-2607` — the
+  the sealed manifests already frozen KEEP `catalogueRelease Choupo-2607` — the
   catalogue identity a seal records is the catalogue AS IT STOOD when the
   case was frozen, and the tree has moved since, so relabelling them would
   claim a freeze that never happened (the ruling is written in
@@ -1172,6 +1172,27 @@ waiting to happen; and `drive-app`'s frozen-shell check is a claim about a
 it printed 22 accusations against correct behaviour.  NO gate (a browser and a
 served copy; the Poling precedent).  Record:
 [`docs/design/a-tool-that-reported-what-it-could-not-see.md`](docs/design/a-tool-that-reported-what-it-could-not-see.md).
+
+**A GATE'S CLAIM IS THE LINE IT MARKS AS ONE (2026-09-06).**  *Which* line of
+a gate's output is its claim had TWO homes and they disagreed without anything
+noticing: `gate_manifest` took the FIRST line while `bin/runTests` captured a
+PASS row per site (`head -1` / `tail -1` / `grep -m1`), so a gate that prints
+detail before its verdict was described one way in the manifest and another
+way in the suite, in the same run — and the manifest, which answers *"what
+does this project check?"*, filed detail lines as proofs, one of them naming
+precisely the case its gate had SKIPPED.  Rule: the claim is the line marked
+`<label>: OK …` or `[<label>] OK …` whose label answers to the gate;
+`bin/curate/gate_claim.py` is the ONE home (importable and runnable, so the
+shell can reach it), and **a gate that marks none GETS none** — never its
+heading, its first line or its last, because picking a line out of prose and
+filing it as a proof is the defect.  *First line and last line are the same
+guess pointing two ways.*  A claim states its DOMAIN: what was scanned and
+what was NOT.  NOT done, and named rather than implied: the gates that mark no
+claim are a measured campaign awaiting a decision, and only the confirmed
+`bin/runTests` sites read the shared home — the rest is still a second home.
+NO new gate (a gate over the tool that reads gates needs its own decision).
+Record:
+[`docs/design/which-line-is-a-gates-claim.md`](docs/design/which-line-is-a-gates-claim.md).
 
 **WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT
 (2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the

@@ -393,8 +393,8 @@
     },
     "check_groups": {
       "exit": 0,
-      "claim": "[check_groups] tree: /home/user/choupo/data/standards/components",
-      "seconds": 0.4
+      "claim": "[check_groups] OK -- every enforced compound declares its groups.  NOT ENFORCED, and counted rather than hidden: 91 record(s) carry `reviewStatus interim` and no groups block, because the databank they were imported from does not supply group assignments and this project does not derive them from structure.  Each becomes enforced the moment it is marked reviewed.",
+      "seconds": 0.3
     },
     "check_guide_environments": {
       "exit": 0,
@@ -458,8 +458,8 @@
     },
     "check_ion_pins": {
       "exit": 0,
-      "claim": "NaOH   ions-solid =   -44.50 kJ/mol   anchor =   -44.51   OK",
-      "seconds": 0.2
+      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2192 component record(s) scanned (data/standards/components + every tutorial constant/components) the 79 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
+      "seconds": 0.1
     },
     "check_layering": {
       "exit": 0,
@@ -553,8 +553,8 @@
     },
     "check_overlay_aad_pinned": {
       "exit": 0,
-      "claim": "[skipped, run-only tier] tutorials/plant/esterification2sector/sectors/REACTION",
-      "seconds": 0.3
+      "claim": "check_overlay_aad_pinned: OK -- 14 AAD statistic(s) across 3 overlay case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published).  NOT CHECKED: whether any AAD is GOOD -- this gate makes the number falsifiable, never good; and these are self-recorded regression rows, never anchors, because an AAD is derived from the model and the dataset together and no primary published it.",
+      "seconds": 0.2
     },
     "check_ownership_index": {
       "exit": 0,
@@ -703,8 +703,8 @@
     },
     "check_seal_drift": {
       "exit": 0,
-      "claim": "SEALED CATALOGUE DRIFT SUMMARY",
-      "seconds": 19.4
+      "claim": "check_seal_drift: OK -- 397 sealed manifest(s) and 3622 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (10 cosmetic difference(s), which the parsed-content claim tolerates by design).  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (1321 record(s), 219 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
+      "seconds": 14.4
     },
     "check_seal_growth": {
       "exit": 0,
@@ -943,8 +943,8 @@
     },
     "check_equipment_pinned": {
       "exit": 0,
-      "claim": "[excused: a sweep with no golden -- which point is the answer is RESERVED, task #77] tutorials/plant/sugarPlantEconomicsSweep",
-      "seconds": 0.5
+      "claim": "check_equipment_pinned: OK -- 230 equipment key(s) across 8 sizing case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published), by the generator's own emission rule (basis when stated, every sizing value, the three cost totals; never the costing factors, which check_cost_provenance recomputes from).  1 golden-less sweep(s) excused by name.  NOT CHECKED: whether any size or cost is RIGHT, whether a sizer STATES a basis (task #78), or the pinned numbers' agreement with the run (bin/runTests' job for every row).",
+      "seconds": 0.4
     },
     "check_energy_boundary_pinned": {
       "exit": 0,
