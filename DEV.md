@@ -131,8 +131,17 @@ Gall: a system that works evolved from a simple one that worked; the
 working system is the engine and the corpus, and what does not yet work is
 what the student MEETS.  So, for September:
 
-1. **No new unit operations, models or gates.**  Engine debts (A2
-   `identity()`, #34, #35, #13) only if a student case trips one.
+1. **No new unit operations.**  Models only on Vítor's order (Chapman-Enskog
+   and modified Eucken, 2026-09-06, were).  **Gates are NOT frozen** — this
+   line used to say they were, and it was false within four days: measured
+   2026-09-06, fifteen gates landed between 09-02 and 09-06, and each one
+   saw a defect no case could see (a crystalliser volume in kilomoles, a
+   first law the GUI computed for itself, a dryer that made water).  The
+   2026-09-04 ruling *never trade a gate for speed* had already settled it,
+   and a freeze line that contradicts a ruling is the stale copy.  What IS
+   frozen is the apparatus's SHAPE: no new tier, manifest or framework.
+   Engine debts (A2 `identity()`, #34, #35, #13) only if a student case
+   trips one.
 2. **Cure the memory** — this file's §1 (done 2026-09-02), a home for the
    student-walkthrough programme (legs 4–5 have records, 6 is a task
    title, 1–3 are session memory: reconstruct from `git log`, and where
