@@ -49,11 +49,14 @@ Description
         its computable window verdict; then the case's declared mixing rules
         give mu_mix (Wilke) and k_mix (Wassiljewa / Mason-Saxena) at the
         composition y (equimolar when omitted, announced).  The spread across
-        models is published -- and today it is 0.00 % for both, because ONE
-        model is registered per gas family.  The bench says so instead of
-        hiding it: a spread of one is not agreement, it is the absence of a
-        second opinion, and Chapman-Enskog (Lennard-Jones sigma, eps/k that no
-        record carries yet) is the named next member.
+        models is published.  TWO models per gas family are registered since
+        2026-09-06 (Chung and Chapman-Enskog for mu; Eucken and the modified
+        Eucken for k), so the spread is a real disagreement wherever both can
+        price a component -- Chapman-Enskog needs a `lennardJones {}` block on
+        the record, and a component without one is LISTED as "not evaluable
+        by ChapmanEnskog", never skipped in silence.  Where only one model
+        could answer, the bench says a spread of one is not agreement: it is
+        the absence of a second opinion.
 
     THE BENCH NEVER RANKS.  Which correlation is right depends on the gas
     and the state; saying so here would be the silent crutch in a louder
@@ -71,8 +74,10 @@ Description
     Diagnostics: `dev_<model>` per correlation and `dev_wilkePhi`; with a
     comparison point, `mu_<model>_<component>` [Pa.s], `k_<model>_<component>`
     [W/(m K)], `mu_mix_Wilke`, `k_mix_Wassiljewa`, `spread_mu_pct`,
-    `spread_k_pct`, `n_models_mu`, `n_models_k` -- so a golden pins the
-    disagreement (or, today, its absence) and not only each number, and so
+    `spread_k_pct`, `n_models_mu`, `n_models_k` (registered) and
+    `n_evaluated_mu`, `n_evaluated_k` (the most models that could price one
+    component); `tol_<model>` where an anchor DECLARES its own tolerance --
+    so a golden pins the disagreement (or its absence) and not only each number, and so
     a gate can recompute Wilke and Wassiljewa from the pure values and the
     records' molar masses without trusting the log.
 \*---------------------------------------------------------------------------*/

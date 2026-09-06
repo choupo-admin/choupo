@@ -34,6 +34,7 @@ License
 
 #include "thermo/Database.H"
 #include "core/Constants.H"
+#include "core/Dimensions.H"
 
 #include <cmath>
 #include <filesystem>
@@ -258,6 +259,57 @@ void Component::readFromDict(const DictPtr& d)
         hansenSet_ = true;
     }
     diffusionVolume_ = d->lookupScalarOrDefault("diffusionVolume", 0.0);
+
+    // Lennard-Jones (12-6) force constants (intrinsic): `lennardJones { sigma
+    // [0 1 0 0 0] <m>; epsOverK <K> K; provenance {...} }`.  Read by the
+    // Chapman-Enskog gas viscosity -- ONE home, never re-declared per case.
+    // The CHECKED lookups: sigma must be declared as a LENGTH (the record
+    // writes the bracket form because angstrom is not a named unit) and
+    // eps/k as a TEMPERATURE; a bare number is accepted as canonical SI by
+    // the Dictionary contract, a wrong dimension refuses with the mismatch.
+    if (d->found("lennardJones"))
+    {
+        auto lj = d->subDict("lennardJones");
+        const bool hasS = lj->found("sigma"), hasE = lj->found("epsOverK");
+        if (!hasS || !hasE)
+            throw std::runtime_error("component '" + name_ + "': the"
+                " `lennardJones {}` block is PARTIAL -- `sigma` (a length)"
+                " and `epsOverK` (a temperature) must both be declared.  A"
+                " pair potential with one constant is not half a potential;"
+                " curate the missing value from the primary source"
+                " (bin/curate/propose_lennard_jones.py drafts both from"
+                " Svehla 1962), or remove the block and keep the honest"
+                " absence.");
+        ljSigma_ = lj->lookupScalar("sigma",    Dims::length);
+        ljEpsK_  = lj->lookupScalar("epsOverK", Dims::temperature);
+        if (ljSigma_ <= 0.0 || ljEpsK_ <= 0.0)
+            throw std::runtime_error("component '" + name_ + "': lennardJones"
+                " sigma and epsOverK must both be positive (sigma "
+                + std::to_string(ljSigma_) + " m, epsOverK "
+                + std::to_string(ljEpsK_) + " K declared).");
+        //  Provenance is PER VALUE: Svehla codes sigma and eps/k separately,
+        //  and He's sigma is a graphical fit while its eps/k is quantum-
+        //  mechanical.  The origin word goes through the one vocabulary
+        //  (core/Origin.H); an unknown word resolves to `unattributed`, which
+        //  the Chapman-Enskog model announces rather than reading as fact.
+        if (lj->found("provenance"))
+        {
+            auto pv = lj->subDict("provenance");
+            auto readOne = [&](const char* key, Origin& o, std::string& m)
+            {
+                if (!pv->found(key)) return;
+                const auto& ev = pv->entryValue(key);
+                if (!std::holds_alternative<DictPtr>(ev)) return;
+                auto sub = std::get<DictPtr>(ev);
+                o = originFromWord(sub->lookupWordOrDefault("origin", "unattributed"));
+                m = sub->lookupWordOrDefault("method", "");
+            };
+            readOne("sigma",    ljSigmaOrigin_, ljSigmaMethod_);
+            readOne("epsOverK", ljEpsKOrigin_,  ljEpsKMethod_);
+            ljSource_  = pv->lookupWordOrDefault("source", "");
+            ljLicence_ = pv->lookupWordOrDefault("licence", "");
+        }
+    }
 
     // Liquid-viscosity parameters: keep the raw `liquidViscosity`
     // block so the selected model (Andrade / Vogel) reads its own sub-block.

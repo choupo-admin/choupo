@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/transportBench.schema.json",
   "title": "transportBench operation",
-  "description": "The transport-correlation bench, in two parts. VERIFY (always): every registered model of the five transport families — gas viscosity (Chung), gas thermal conductivity (Eucken), gas binary diffusivity (Fuller), liquid viscosity (Andrade, Vogel, chemsepEq101), liquid thermal conductivity (SatoRiedel, chemsepEq16) — plus the shared Wilke phi_ij mixing factor reproduces its own anchor, and the deviation is printed beside the model's validity window, its PRIMARY citation and the KIND of anchor: 'theory' (an identity kinetic theory supplies, such as Eucken's monatomic limit) or 'arithmetic' (the correlation's own closed form at a stated point). The kind is printed because the catalogue holds NO measured transport data, so a 0.000 % on an arithmetic anchor proves a transcription and nothing else. COMPARE (optional): every registered gas-viscosity and gas-conductivity model is evaluated for every component of the case at one (T, P), each with its computable window verdict, then the case's declared mixing rules give the mixture mu (Wilke) and k (Wassiljewa / Mason-Saxena) at the declared or equimolar composition, and the spread across models is published per family — and is 0 while one model per family is registered, which the output says is not agreement. The bench never ranks the models.",
+  "description": "The transport-correlation bench, in two parts. VERIFY (always): every registered model of the five transport families — gas viscosity (Chung, ChapmanEnskog), gas thermal conductivity (Eucken, modifiedEucken), gas binary diffusivity (Fuller), liquid viscosity (Andrade, Vogel, chemsepEq101), liquid thermal conductivity (SatoRiedel, chemsepEq16) — plus the shared Wilke phi_ij mixing factor reproduces its own anchor, and the deviation is printed beside the model's validity window, its PRIMARY citation and the KIND of anchor: 'theory' (an identity kinetic theory supplies, such as Eucken's monatomic limit) or 'arithmetic' (the correlation's own closed form at a stated point, or — for ChapmanEnskog — Svehla's 1962 printed viscosity reproduced from his own constants within a tolerance the anchor DECLARES and the bench prints). The kind is printed because the catalogue holds NO measured transport data, so a 0.000 % on an arithmetic anchor proves a transcription and nothing else. COMPARE (optional): every registered gas-viscosity and gas-conductivity model is evaluated for every component of the case at one (T, P), each with its computable window verdict; a component a model cannot price (ChapmanEnskog on a record with no lennardJones block) is LISTED as not evaluable, by reason, never skipped in silence; then the case's declared mixing rules give the mixture mu (Wilke) and k (Wassiljewa / Mason-Saxena) at the declared or equimolar composition, and the spread across models is published per family — a real disagreement where two models could answer, and 0 with a sentence saying a spread over one is not agreement where only one could. The bench never ranks the models.",
   "type": "object",
   "properties": {
     "deviationTolerance": {
@@ -33,12 +33,18 @@
         },
         "y": {
           "type": "array",
-          "items": { "type": "number", "minimum": 0 },
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
           "title": "Gas composition for the mixing rules",
           "description": "Optional mole fractions, one per case component in declared order, summing to 1. Omitted, the composition is equimolar and the output says so — announced, never assumed silently."
         }
       },
-      "required": ["T", "P"],
+      "required": [
+        "T",
+        "P"
+      ],
       "additionalProperties": false
     }
   },

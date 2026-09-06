@@ -1,6 +1,8 @@
 # Correlations as first-class objects — the transport families
 
-*Record of the 2026-09-05 slice (task #91).  Engine:
+*Record of the 2026-09-05 slice (task #91), and — in §8 — of its
+2026-09-06 continuation (task #93 step 7b), the Chapman-Enskog campaign §7
+named.  Engine:
 `src/thermo/transport/` (all eight models, `GasMixingRules.{H,cpp}`,
 `CorrelationVerify.H`), `src/thermo/ThermoPackage.cpp`,
 `src/propertyOps/TransportBench`, `src/unitOperations/heatTransfer/SprayDryer.cpp`,
@@ -238,7 +240,7 @@ sealed by `bin/choupo-import` and its golden recorded on the sealed run.
 * Whether a basis string or a window string is TRUE of its correlation is
   not gated; it is read.
 
-## 7  The curation campaign this names and does not start
+## 7  The curation campaign this names and does not start (RUN on 2026-09-06 — see §8)
 
 Chapman-Enskog (gas μ and D_AB from Hirschfelder, Curtiss & Bird 1954, Ω
 from the Neufeld fit — which would leave `ChungViscosity.cpp` for ONE shared
@@ -281,3 +283,189 @@ from there.
 * **A second `viscosityGas`/`lennardJones` grammar to make the guide true**
   — the guide is corrected to the engine, never the engine bent to a
   listing.
+
+---
+
+## 8  Chapman-Enskog from Svehla's constants (2026-09-06, task #93 step 7b)
+
+*Engine: `src/thermo/transport/NeufeldOmega.{H,cpp}`, `ChapmanEnskog.{H,cpp}`,
+`ModifiedEucken.{H,cpp}`, `Component.{H,cpp}` (the `lennardJones {}` reader),
+`core/Origin.H`, `CorrelationVerify.H`, `TransportBench.cpp`.  Data:
+`bin/curate/svehla1962/` (the one committed transcription) and
+`bin/curate/propose_lennard_jones.py`.  Witness:
+`tutorials/props/transport/transport02_chapman_enskog`.  Gate:
+`check_transport_correlations` (extended), `check_source_licence` (a new
+class), `check_origin_census` (a new word).*
+
+### 8.1  Facts, verified before anything was written
+
+* The source §7 named was fetched and put under `thirdParty/svehla/`
+  (gitignored): Svehla, R. A. (1962), *Estimated viscosities and thermal
+  conductivities of gases at high temperatures*, NASA TR R-132 — a US
+  government work, public domain.  Table I(a) (211 rows, 206 molecules) was
+  transcribed **from the page image**, every row marked `verified image`;
+  the OCR text dump served only to find the pages.
+* Svehla's method section was READ, not remembered.  His eq. (1), report
+  page 2: η×10⁶ = 26.693 √(MT) / (σ² Ω^(2,2)*), micropoise, M in g/mol, σ in
+  Å.  His eq. (2), report page 3: λ = (R/M)[15/4 + 1.32(C_p/R − 5/2)] η — the
+  **modified** Eucken, with eqs. (3)/(4) splitting it into translational and
+  internal parts; appendix B derives it.  His Ω values came from the
+  Hirschfelder 1954 tables ("reference 1, pages 1126-1127"), his conversion
+  table (Table II, report page 26) uses 1 g-cal = 4.185 J.
+* **The Neufeld Ω^(1,1)\* coefficients are in no source in the tree** (grep
+  for 1.06036 / 0.15610 / 1.52996: nothing).  The brief's rule — take them
+  only from a source with the number in hand — therefore closes the
+  Chapman-Enskog binary DIFFUSIVITY: **not built**, and `NeufeldOmega.H`
+  says so and says where the coefficients belong when they are cited.
+* `core/Origin.H`'s `originFromWord` is TOLERANT: an unknown word resolves
+  to `unattributed` and nothing throws.  The brief's `measuredFit` would
+  have been silently dropped by the engine — a declared word reading as
+  "no provenance".  `check_origin_census` enumerates the words the tree
+  writes and would have caught a `measuredFit` under `data/standards/`, but
+  the first records carrying it live in `data/local/` and a case.
+
+### 8.2  Decisions (D1–D9 of the brief, as executed)
+
+* **D1 — one home for the data, derived proposals.**  The TSV, the Table
+  I(b) legend and the hand-written isomer table are committed under
+  `bin/curate/svehla1962/` with their `#` provenance headers.
+  `propose_lennard_jones.py` derives fragments into `data/local/lennardJones/`
+  (gitignored), matching by parsed elemental formula with a 0.5 % MW
+  cross-check, never by name; it REFUSES an `--out` under `data/standards/`,
+  is deterministic (two runs byte-identical, gate-checked) and prints its
+  coverage.  Coverage on 2026-09-06: 56 fragments (41 by unique composition,
+  15 with a flagged isomer pick), 50 with both constants fitted to measured
+  data (codes 1–4), 1 ambiguous row (C6H12, eight records), 20 Svehla
+  molecules whose only match is an excluded record (atoms/radicals with
+  `role nonvolatile`, two salts, silica, the compB/compC stand-ins), 128
+  rows with no record, 1 unparseable (Air).  **No block was written into
+  `data/standards/`.**
+* **D2 — origin per value.**  Codes 1–4 → `measuredFit`; code 20 →
+  `measured`; every other code → `estimated`; the `method` string always
+  carries Svehla's code and legend.  `measuredFit` is REGISTERED in
+  `originFromWord` as the `regressed` rung (a constant fitted to measured
+  data is exactly what that rung names) and added to the census gate's
+  vocabulary.  `licence publicDomain;` is a new licence word; the only
+  reader that enumerated licence words was the COSMO scrub, which is
+  about `externalRestricted` and does not concern it.
+* **D3 — grammar.**  `lennardJones { sigma [0 1 0 0 0] <m>; epsOverK <K> K;
+  provenance { sigma {origin; method;} epsOverK {origin; method;} source
+  "…"; licence publicDomain; } }`.  The component loader parses the bracket
+  form exactly as case dicts do (`Dictionary::fromFile`, the same parser);
+  the reader uses the CHECKED `lookupScalar(key, Dims::length)` /
+  `Dims::temperature`, so a wrong dimension refuses with the mismatch.
+  Verified by running, not assumed.  A PARTIAL block refuses at load.
+* **D4 — the witness carries its data case-locally.**  `transport02` was
+  sealed with `Chung` declared, the seven blocks appended to the mirrored
+  records, `ChapmanEnskog` declared, and re-imported with
+  `--adopt-local components/<g>.dat` for each — seven `adopted` records, the
+  edwards02 precedent.  The public catalogue records are untouched.
+* **D5 — the engine.**  `neufeld::omega22` is the ONE home of the Ω^(2,2)\*
+  fit; `ChungViscosity::neufeldOmega` calls it — same expression, same
+  order, every Chung value in transport01 byte-identical (checked row by
+  row in its golden).  `ChapmanEnskog` (TransportModel) refuses by name
+  without the block and announces both origins per component;
+  `modifiedEucken` (ThermalConductivityModel) is Svehla's eq. (2).  Both
+  registered explicitly, no macros.  Sutherland: not built, Svehla gives
+  no S.  D_AB: not built (8.1).
+* **D6 — the bench.**  Two models per gas family.  A component a model
+  cannot price is LISTED (`not evaluable by ChapmanEnskog (no lennardJones
+  {} block …)`) through a new non-pure `unavailableReason(component)` on
+  the two gas bases — never skipped in silence.  The spread sentence keys
+  on models EVALUATED (`n_evaluated_mu/k`, the most models that priced one
+  component), not registered: transport01 (no blocks) still says a spread
+  over one is not agreement and shows WHY; transport02 shows real spreads.
+* **D7 — the gate**, §8.4.  **D8 — docs**, this section, the guide, the
+  AI docs, CLAUDE.md, the schema, the generated references.
+
+### 8.3  What the witness shows (transport02, 300 K, 1 bar)
+
+Seven gases, both viscosities and both conductivities each, and for the
+first time the two spread lines are disagreements.  Water is the widest:
+Chung's non-polar truncation against a σ, ε/k pair Svehla fitted to steam
+viscosities, a third apart.  Argon is the control: the plain and modified
+Eucken coincide to the four figures its record's C_p polynomial returns
+for 5R/2, and the polyatomic flag stays silent.  Every Chapman-Enskog
+component is announced with both origins FITTED and the report page.
+
+**The reproduction anchor, and what its residual is.**  Fed Svehla's own
+M = 28.02, σ = 3.798 Å, ε/k = 71.4 K for N2, the engine returns 176.99 μP
+at 300 K against his printed 177.7 (report page 90): **−0.40 %**.  Across
+the seven gases at 300 K and 1000 K the fit reads 0.1–0.8 % BELOW his
+table, and 1.8 % below for water at 300 K (T\* = 0.37, near the fit's lower
+edge).  That is larger than Neufeld's own claim for the fit, and the reason
+is not a transcription: Svehla interpolated the Hirschfelder 1954 Ω tables,
+Neufeld fitted a later tabulation, and his printed values carry four
+figures.  So the anchor is ARITHMETIC, its tolerance is DECLARED at 1 % in
+`CorrelationVerify::tolerance` (a new field — 0 means the bench default)
+and PRINTED beside the row, and the gate recomputes both the deviation and
+the engine's published number so the two homes for one page agree or fail.
+The modified Eucken's guard reproduces his λ for N2 at 300 K from his own
+η and C_p/R through eq. (2) and his calorie to 0.05 % (his λ has three
+figures), declared at 0.2 %, before the THEORY anchor (the monatomic
+(15/4)Rμ/M) is returned.
+
+### 8.4  The gate, and the sabotages
+
+`check_transport_correlations` gained arms (l)–(q): Chapman-Enskog μ and
+modified-Eucken k for the seven gases recomputed from the sealed records
+with σ and ε/k parsed in the loader's grammar; the Svehla anchor recomputed
+and the published deviation held to it; refusal by name on a stripped copy;
+seven origin announcements; the tool's determinism, its refusal of
+`data/standards/`, and the equality of the witness's blocks with the tool's
+fragments (the arm that ties the one committed home to the case that runs
+from it); the public-domain FORM on the sealed records; the guide arm
+re-expressed — a `lennardJones` example is now REQUIRED and held to the
+loader's grammar, while `Sutherland`/`viscosityGas` stay refused.  The
+source arm now also holds Ω^(2,2)\* to one home.  Four by-hand sabotages,
+inputs and outputs only, recorded with their observed lines in the gate's
+docstring; the S3 shape recurred as expected (a record edited under the
+seal moves the engine and the recount together, and the golden plus the
+fragment-equality arm are what see it).
+
+`check_source_licence` gained a public-domain class as a CONTRACT — the
+Svehla report by name, the writing tool's `SOURCE_CLASS` cross-checked, a
+citing record required to declare `licence publicDomain;` — scoped to the
+report rather than to "NASA", because hundreds of records already cite NASA
+thermochemical polynomials in their authority fields under the general
+public-domain reading and carry no licence word; widening the contract to
+them is a curation decision the first draft of this arm took by accident
+(seven violations on records this slice never touched) and was narrowed
+back.
+
+### 8.5  What did NOT change, and what is still NOT verified
+
+* Every Chung, Eucken, Wilke and Wassiljewa number in transport01 and the
+  corpus; transport01's golden gained rows (the new models' anchors, the
+  evaluated-model counts, the now-nonzero conductivity spread) and moved
+  no value.
+* **Nothing here is compared with a measurement Choupo holds.**  Svehla's
+  σ and ε/k are HIS fits to viscosities measured before 1962; the anchor
+  reproduces his COMPUTED table.  Whether Chapman-Enskog on those constants
+  is right for any gas at any T is not established anywhere in this tree,
+  and the bench does not say which of the two viscosities is right.
+* The page-image transcription is verified once (by the transcriber); the
+  gate verifies that the tool reproduces it and the witness carries it, not
+  that the image was read correctly.  One smudged cell (C2H5Cl σ, read as
+  4.898 at 600 dpi) is named in the transcription's coverage notes.
+* Not built: Chapman-Enskog D_AB (Ω^(1,1)\* not citable), Sutherland (no S).
+* The isomer picks (15) read record NAMES to choose among composition-
+  identical candidates and are flagged in every fragment they produce.
+* Reserved for Vítor: promoting any fragment into `data/standards/`; the
+  `role nonvolatile` on gas-phase atoms and radicals that excluded them
+  from matching; whether codes 2–4 and 20 deserve finer origin words.
+
+### 8.6  Rejected alternatives
+
+* **Typing the Ω^(1,1)\* coefficients from memory to ship D_AB** — the
+  brief's own rule; a constant nobody can check is worse than an absence.
+* **Loosening the bench's default tolerance to 1 % so the reproduction
+  anchor passes** — every other anchor is an identity or a six-figure
+  literal; the tolerance belongs to the one anchor that needs it, declared
+  and printed there.
+* **Writing the blocks into `data/standards/components/`** — promotion is
+  a review; the witness adopts them locally instead.
+* **A default σ for a record without a block** — a refusal by name is the
+  only honest answer; the bench lists the gap instead.
+* **Keying the spread sentence on models REGISTERED** — two on the shelf
+  and one able to price the case is still one opinion.

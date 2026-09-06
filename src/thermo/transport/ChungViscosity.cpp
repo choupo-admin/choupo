@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ChungViscosity.H"
+#include "NeufeldOmega.H"
 #include "core/Advisory.H"
 #include "thermo/Component.H"
 
@@ -37,9 +38,9 @@ namespace Choupo {
 
 scalar ChungViscosity::neufeldOmega(scalar Tstar)
 {
-    return 1.16145 / std::pow(Tstar, 0.14874)
-         + 0.52487 / std::exp(0.77320 * Tstar)
-         + 2.16178 / std::exp(2.43787 * Tstar);
+    //  ONE HOME (2026-09-06): the fit lives in NeufeldOmega.{H,cpp}, shared
+    //  with ChapmanEnskog.  Same expression, same order -- no golden moved.
+    return neufeld::omega22(Tstar);
 }
 
 scalar ChungViscosity::kernel(scalar M, scalar Tc, scalar Pc, scalar w, scalar T)
@@ -101,7 +102,7 @@ CorrelationVerify ChungViscosity::verify() const
     //  measured viscosity to say that with.
     CorrelationVerify v;
     v.value_choupo = neufeldOmega(1.0);
-    v.value_published = 1.592520;
+    v.value_published = neufeld::OMEGA22_AT_ONE;
     v.dev = std::abs(v.value_choupo - v.value_published) / v.value_published;
     v.kind = "arithmetic";
     v.anchor = "Neufeld Omega_v at T* = 1: the fit's own three-term value "

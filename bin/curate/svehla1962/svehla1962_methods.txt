@@ -1,0 +1,33 @@
+# Svehla, R. A. (1962). Estimated viscosities and thermal conductivities of gases
+# at high temperatures. NASA Technical Report R-132, Lewis Research Center.
+# Table I(b) -- "Methods for determining sigma and epsilon/k", report page 25
+# (PDF page 27 of thirdParty/svehla/NASA-TR-R-132-Svehla-1962.pdf).
+# Transcribed from the page image (verified: image).  US government work,
+# public domain.  Method codes are the numbers in the "Method for sigma" and
+# "Method for epsilon/k" columns of Table I(a).  Group A codes rest on
+# EXPERIMENTAL transport data; groups B, C and D are ESTIMATES.
+#
+# code	group	legend as printed (equations transcribed in plain text)
+1	A. Methods Using Experimental Data	Least-squares fit of experimental viscosity data
+2	A. Methods Using Experimental Data	Graphically determined using experimental viscosity data
+3	A. Methods Using Experimental Data	Least-squares fit of experimental thermal conductivity data
+4	A. Methods Using Experimental Data	Graphically determined using experimental thermal conductivity data
+5	B. Methods Using Physical Properties	Molar volume at the boiling point (fig. 3): b0 = 2/3 pi N sigma^3 = 2.0 Vb - 5
+6	B. Methods Using Physical Properties	Molar volume at the melting point (ref. 1, p. 245): b0 = 2/3 pi N sigma^3 = 2.3 Vm
+7	B. Methods Using Physical Properties	Critical constants (fig. 4): b0 = 2/3 pi N sigma^3 = 17.28 Tc/Pc
+8	B. Methods Using Physical Properties	Boiling-point temperature (fig. 5): epsilon/k = 1.18 Tb (or 1.18 Tsub if Tb is not available)
+9	B. Methods Using Physical Properties	Critical temperature (fig. 6): epsilon/k = 0.75 Tc
+10	B. Methods Using Physical Properties	Virial coefficients (ref. 1, p. 166)
+11	C. Empirical and Combining Rules	sigma_monatomic = 2 rbar + 1.8
+12	C. Empirical and Combining Rules	sigma_triatomic = 5/12 (sigma_A,diatomic + sigma_B,diatomic + sigma_C,diatomic) - 0.55
+13	C. Empirical and Combining Rules	sigma_monatomic = 3/4 sigma_diatomic + 0.45
+14	C. Empirical and Combining Rules	sigma_diatomic = 4/3 sigma_monatomic - 0.60
+15	C. Empirical and Combining Rules	(epsilon/k)_monatomic = (epsilon/k)_diatomic
+16	C. Empirical and Combining Rules	sigma_AB = (sigma_AA + sigma_BB)/2 ; (epsilon/k)_AB = sqrt((epsilon/k)_AA (epsilon/k)_BB)
+17	C. Empirical and Combining Rules	Linear relation used between diatomic and highest polyatomic in the series
+18	D. Miscellaneous Methods	Brandt's correlation (fig. 7) using epsilon/k of table I(a)
+19	D. Miscellaneous Methods	Brandt's correlation (fig. 7) using sigma of table I(a)
+20	D. Miscellaneous Methods	Knudsen-gage radiometer measurements (ref. 145)
+21	D. Miscellaneous Methods	Estimated from similar type molecules
+22	D. Miscellaneous Methods	Calculated using quantum mechanical formulas (ref. 1, p. 1110)
+23	D. Miscellaneous Methods	(epsilon/k)_H = (epsilon/k)_H2, where (epsilon/k)_H2 was calculated from quantum mechanical formulas (ref. 1, p. 1110)

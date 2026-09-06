@@ -73,6 +73,14 @@ struct CorrelationVerify
     scalar value_published = 0.0;   // what it had to return
     std::string anchor;             // the point + where the number comes from
     std::string kind;               // "theory" | "arithmetic"
+    //  The tolerance THIS anchor claims (relative).  0 means "the bench's
+    //  default" (1e-4: an identity or a six-figure literal).  An anchor that
+    //  reproduces a PUBLISHED TABLE rather than its own closed form -- the
+    //  Chapman-Enskog model against Svehla's printed viscosity, where the
+    //  residual is two collision-integral sources disagreeing -- declares a
+    //  looser one here and the bench prints it beside the row, so a reader
+    //  sees that the tolerance was DECLARED and not quietly loosened.
+    scalar tolerance = 0.0;
 };
 
 } // namespace Choupo

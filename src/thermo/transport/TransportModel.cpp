@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "TransportModel.H"
+#include "ChapmanEnskog.H"
 #include "ChungViscosity.H"
 
 #include <map>
@@ -64,6 +65,8 @@ void TransportModel::registerBuiltins()
 {
     registerModel("Chung", [](const DictPtr& d) { return std::make_unique<ChungViscosity>(d); });
     registerModel("chung", [](const DictPtr& d) { return std::make_unique<ChungViscosity>(d); });
+    registerModel("ChapmanEnskog", [](const DictPtr& d) { return std::make_unique<ChapmanEnskog>(d); });
+    registerModel("chapmanEnskog", [](const DictPtr& d) { return std::make_unique<ChapmanEnskog>(d); });
 }
 
 std::vector<std::string> TransportModel::availableModels()

@@ -164,6 +164,36 @@ ACCEPTED_DATABANK = {
 #  stay in ENCUMBERED, which never has an accepted branch.)
 KNOWN_DATABANK = re.compile(r'\b(ChemSep)\b')
 
+#  THE FOURTH SHAPE: A UNITED STATES GOVERNMENT WORK (2026-09-06).  Svehla's
+#  NASA TR R-132 (1962) is the primary for every Lennard-Jones sigma / eps-k
+#  this project drafts (bin/curate/propose_lennard_jones.py), and a work of
+#  the US federal government is in the public domain under 17 U.S.C. 105 --
+#  no licence to honour, the primary to cite.  Until today that too was a
+#  sentence in a tool's docstring.  The contract: a record that names a
+#  public-domain source in an authority field must DECLARE the fact as the
+#  licence word `publicDomain` in the same file, and the tool that writes
+#  such records must carry the same word (cross-checked below, the ChemSep
+#  shape).  A public-domain claim that is a comment is not a claim.  The
+#  scan roots hold NO such record today -- the fragments live in data/local/
+#  and the witness's case-local records -- so this class pins the TOOL, and
+#  check_transport_correlations holds the sealed witness records to the
+#  form; the day a block is promoted into data/standards/ the form arm here
+#  applies to it with no change.
+ACCEPTED_PUBLIC_DOMAIN = {
+    "NASA TR R-132": {
+        "licenceWord": "publicDomain",
+        "why": "US government work (NASA Technical Report), public domain "
+               "under 17 U.S.C. 105 -- Svehla (1962) NASA TR R-132",
+        "tool": "bin/curate/propose_lennard_jones.py",
+    },
+}
+#  The report BY NAME, not the agency: hundreds of records cite NASA
+#  thermochemical polynomials (McBride et al.) in their authority fields
+#  under the general public-domain reading and carry no licence word; this
+#  contract binds the source the lennardJones records are drafted from.
+KNOWN_PUBLIC_DOMAIN = re.compile(r'\b(NASA\s+TR\s+R-132)\b')
+LICENCE_WORD = re.compile(r'(?m)^\s*licence\s+(\w+)\s*;')
+
 #  KNOWN VIOLATIONS, pinned 2026-08-05 with the remedy each needs.  NOT
 #  fixed here: a replacement datum is a curation act requiring a primary
 #  source, and fabricating one is worse than the exposure it hides.
@@ -194,6 +224,25 @@ def main() -> int:
                   f"declare LICENSE = '{acc['licence']}', the licence this gate "
                   f"accepts {name} under.  One decision, two homes, disagreeing.")
             return 1
+    #  THE PUBLIC-DOMAIN CLASS IS CHECKED THE SAME WAY: the tool that writes
+    #  records citing it must declare the licence word this table accepts.
+    for name, acc in ACCEPTED_PUBLIC_DOMAIN.items():
+        tool = ROOT / acc["tool"]
+        if not tool.exists():
+            print(f"check_source_licence: FAILED -- ACCEPTED_PUBLIC_DOMAIN['{name}'] "
+                  f"names tool {acc['tool']}, which does not exist; the acceptance "
+                  "cannot be cross-checked against nothing.")
+            return 1
+        if not re.search(r"LICENCE_WORD\s*=\s*(?:SOURCE_CLASS|['\"]"
+                         + re.escape(acc["licenceWord"]) + r"['\"])", tool.read_text()) \
+                or not re.search(r"SOURCE_CLASS\s*=\s*['\"]" + re.escape(acc["licenceWord"])
+                                 + r"['\"]", tool.read_text()):
+            print(f"check_source_licence: FAILED -- {acc['tool']} does not declare "
+                  f"SOURCE_CLASS = '{acc['licenceWord']}' as its licence word, the "
+                  f"word this gate accepts a {name} source under.  One decision, two "
+                  "homes, disagreeing.")
+            return 1
+
     #  A SCAN OVER NOTHING IS NOT A CLEAN CATALOGUE (2026-08-15 fleet
     #  census).  This gate shared the check_true_ions death shape: rename
     #  data/standards and rglob returns nothing, zero violations are found
@@ -237,6 +286,22 @@ def main() -> int:
                                           "authority and NOT in ACCEPTED_DATABANK "
                                           "-- a databank nobody has cleared\n        "
                                           f"{line.strip()[:110]}")
+                    break
+            #  A public-domain source cited AS the authority must be declared
+            #  as such by the licence word, in the same file.
+            for n, line in enumerate(lines, 1):
+                pd = KNOWN_PUBLIC_DOMAIN.search(line)
+                if pd and AUTHORITY_FIELD.search(line):
+                    want = ACCEPTED_PUBLIC_DOMAIN[pd.group(0)]["licenceWord"]
+                    words = set(LICENCE_WORD.findall(text))
+                    if want not in words:
+                        violations.append(f"{rel}:{n}  {pd.group(0)} cited AS the "
+                                          f"authority without `licence {want};` in the "
+                                          "record -- a public-domain claim that is a "
+                                          "comment is not a claim\n        "
+                                          f"{line.strip()[:110]}")
+                    else:
+                        accepted_seen[pd.group(0)] = accepted_seen.get(pd.group(0), 0) + 1
                     break
             for n, line in enumerate(lines, 1):
                 hit = ENCUMBERED.search(line) or DECHEMA.search(line)

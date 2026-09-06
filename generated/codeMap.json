@@ -184,6 +184,9 @@
   "CatalystRegistry": [
    "src/unitOperations/reactor/pellet/CatalystRegistry.H"
   ],
+  "ChapmanEnskog": [
+   "src/thermo/transport/ChapmanEnskog.H"
+  ],
   "ChemSepCond16": [
    "src/thermo/transport/ChemSepCond16.H"
   ],
@@ -778,6 +781,9 @@
   "ModelBoundaryLedger": [
    "src/reporting/ModelBoundaryLedger.H"
   ],
+  "ModifiedEucken": [
+   "src/thermo/transport/ModifiedEucken.H"
+  ],
   "MolecularActivity": [
    "src/propertyOps/MolecularActivity.H"
   ],
@@ -1274,6 +1280,9 @@
   ],
   "SurfaceTensionModel": [
    "src/thermo/SurfaceTensionModel.H"
+  ],
+  "SvehlaAnchor": [
+   "src/thermo/transport/ChapmanEnskog.H"
   ],
   "SweepDriver": [
    "src/outerDriver/SweepDriver.H"
@@ -5551,6 +5560,19 @@
    "src/thermo/SurfaceTensionModel.H",
    "src/thermo/transport/BrockBird.H"
   ],
+  "src/thermo/transport/ChapmanEnskog.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/transport/ChapmanEnskog.H",
+   "src/thermo/transport/CorrelationVerify.H",
+   "src/thermo/transport/NeufeldOmega.H",
+   "src/thermo/transport/TransportModel.H"
+  ],
   "src/thermo/transport/ChemSepCond16.cpp": [
    "src/core/Advisory.H",
    "src/core/Dictionary.H",
@@ -5586,6 +5608,7 @@
    "src/thermo/Component.H",
    "src/thermo/transport/ChungViscosity.H",
    "src/thermo/transport/CorrelationVerify.H",
+   "src/thermo/transport/NeufeldOmega.H",
    "src/thermo/transport/TransportModel.H"
   ],
   "src/thermo/transport/DiffusivityModel.cpp": [
@@ -5666,6 +5689,21 @@
    "src/thermo/transport/LiquidViscosityModel.H",
    "src/thermo/transport/Vogel.H"
   ],
+  "src/thermo/transport/ModifiedEucken.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/transport/CorrelationVerify.H",
+   "src/thermo/transport/ModifiedEucken.H",
+   "src/thermo/transport/ThermalConductivityModel.H"
+  ],
+  "src/thermo/transport/NeufeldOmega.cpp": [
+   "src/core/Types.H",
+   "src/thermo/transport/NeufeldOmega.H"
+  ],
   "src/thermo/transport/SatoRiedel.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -5683,12 +5721,14 @@
    "src/core/Types.H",
    "src/thermo/transport/CorrelationVerify.H",
    "src/thermo/transport/Eucken.H",
+   "src/thermo/transport/ModifiedEucken.H",
    "src/thermo/transport/ThermalConductivityModel.H"
   ],
   "src/thermo/transport/TransportModel.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
+   "src/thermo/transport/ChapmanEnskog.H",
    "src/thermo/transport/ChungViscosity.H",
    "src/thermo/transport/CorrelationVerify.H",
    "src/thermo/transport/TransportModel.H"
@@ -7445,6 +7485,7 @@
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
+   "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
@@ -7738,6 +7779,7 @@
    "src/thermo/solution/SolutionRegistry.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
@@ -7749,6 +7791,7 @@
    "src/thermo/transport/LiquidDiffusivityModel.H",
    "src/thermo/transport/LiquidDiffusivityModel.cpp",
    "src/thermo/transport/LiquidViscosityModel.cpp",
+   "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
@@ -8014,6 +8057,7 @@
    "src/thermo/solution/SolutionRegistry.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
@@ -8025,6 +8069,7 @@
    "src/thermo/transport/LiquidDiffusivityModel.H",
    "src/thermo/transport/LiquidDiffusivityModel.cpp",
    "src/thermo/transport/LiquidViscosityModel.cpp",
+   "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
@@ -8333,6 +8378,7 @@
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
@@ -8340,6 +8386,7 @@
    "src/thermo/transport/Fuller.cpp",
    "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/LiquidDiffusivityModel.H",
+   "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
@@ -8561,6 +8608,7 @@
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
@@ -8568,6 +8616,7 @@
    "src/thermo/transport/Fuller.cpp",
    "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/LiquidDiffusivityModel.H",
+   "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
@@ -9027,6 +9076,7 @@
    "src/thermo/solution/SolutionRegistry.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
@@ -9039,6 +9089,8 @@
    "src/thermo/transport/LiquidDiffusivityModel.H",
    "src/thermo/transport/LiquidDiffusivityModel.cpp",
    "src/thermo/transport/LiquidViscosityModel.cpp",
+   "src/thermo/transport/ModifiedEucken.cpp",
+   "src/thermo/transport/NeufeldOmega.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
@@ -10461,6 +10513,7 @@
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
@@ -10468,6 +10521,7 @@
    "src/thermo/transport/Fuller.cpp",
    "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/LiquidDiffusivityModel.H",
+   "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
@@ -11720,6 +11774,10 @@
    "src/thermo/SurfaceTensionModel.cpp",
    "src/thermo/transport/BrockBird.cpp"
   ],
+  "src/thermo/transport/ChapmanEnskog.H": [
+   "src/thermo/transport/ChapmanEnskog.cpp",
+   "src/thermo/transport/TransportModel.cpp"
+  ],
   "src/thermo/transport/ChemSepCond16.H": [
    "src/thermo/transport/ChemSepCond16.cpp",
    "src/thermo/transport/LiquidConductivityModel.cpp"
@@ -11740,6 +11798,7 @@
    "src/propertyOps/TransportBench.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/Andrade.cpp",
+   "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
@@ -11749,6 +11808,7 @@
    "src/thermo/transport/GasMixingRules.cpp",
    "src/thermo/transport/LiquidConductivityModel.cpp",
    "src/thermo/transport/LiquidViscosityModel.cpp",
+   "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
@@ -11809,6 +11869,15 @@
    "src/thermo/transport/LiquidViscosityModel.cpp",
    "src/thermo/transport/Vogel.cpp"
   ],
+  "src/thermo/transport/ModifiedEucken.H": [
+   "src/thermo/transport/ModifiedEucken.cpp",
+   "src/thermo/transport/ThermalConductivityModel.cpp"
+  ],
+  "src/thermo/transport/NeufeldOmega.H": [
+   "src/thermo/transport/ChapmanEnskog.cpp",
+   "src/thermo/transport/ChungViscosity.cpp",
+   "src/thermo/transport/NeufeldOmega.cpp"
+  ],
   "src/thermo/transport/SatoRiedel.H": [
    "src/thermo/transport/LiquidConductivityModel.cpp",
    "src/thermo/transport/SatoRiedel.cpp"
@@ -11821,6 +11890,7 @@
    "src/propertyOps/TransportBench.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/Eucken.cpp",
+   "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp"
   ],
   "src/thermo/transport/TransportModel.H": [
@@ -11830,6 +11900,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/propertyOps/TransportBench.cpp",
    "src/thermo/ThermoPackage.cpp",
+   "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/TransportModel.cpp"
   ],

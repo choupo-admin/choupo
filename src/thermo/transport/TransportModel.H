@@ -91,6 +91,16 @@ public:
     virtual std::string windowNote(const Component& /*c*/, scalar /*T_K*/) const
     { return ""; }
 
+    //  WHY THIS MODEL CANNOT PRICE THIS COMPONENT, or "" when it can
+    //  (2026-09-06).  A model that needs a record datum some components
+    //  lack -- Chapman-Enskog and the lennardJones block -- answers here so
+    //  the bench can LIST the component as not evaluable, by reason, instead
+    //  of skipping it in silence or aborting the whole comparison.  The hot
+    //  path does not consult it: there the model REFUSES by name.  NOT pure:
+    //  a model that reads only what every record carries returns "".
+    virtual std::string unavailableReason(const Component& /*c*/) const
+    { return ""; }
+
     // Pure-component low-pressure gas viscosity [Pa·s].
     virtual scalar viscosityGasPure(const Component& c, scalar T_K) const = 0;
 

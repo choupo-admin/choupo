@@ -114,6 +114,13 @@ inline Origin originFromWord(const std::string& w)
 {
     if (w == "literature" || w == "experimental" || w == "measured") return Origin::literature;
     if (w == "regressed"  || w == "fitted")                          return Origin::regressed;
+    // `measuredFit` (2026-09-06): a constant FITTED TO MEASURED transport
+    // data -- Svehla 1962's methods 1-4 (least-squares / graphical fits of
+    // sigma and eps/k to measured viscosities or conductivities).  It is the
+    // `regressed` rung under the word the lennardJones records write; it is
+    // registered here so a declared word never resolves to `unattributed`
+    // in silence.  check_origin_census enumerates it too (KNOWN).
+    if (w == "measuredFit")                                          return Origin::regressed;
     if (w == "predictive" || w == "predicted")                       return Origin::predictive;
     if (w == "estimated"  || w == "estimate")                        return Origin::estimated;
     if (w == "assumed")                                              return Origin::assumed;

@@ -1,0 +1,237 @@
+# Svehla, R. A. (1962). Estimated viscosities and thermal conductivities of gases at
+# high temperatures. NASA Technical Report R-132 (Lewis Research Center).
+# US government work -- public domain (no licence to honour; cite the primary).
+# Table I(a) "Force constants for molecules", report pages 20-24 = PDF pages 22-26 of
+# thirdParty/svehla/NASA-TR-R-132-Svehla-1962.pdf.  Table I(b) (method legend) is on report
+# page 25 = PDF page 27 -- see svehla1962_methods.txt beside this file.
+#
+# Every value below was READ FROM THE PAGE IMAGE (pdftoppm at 300 dpi, horizontal
+# slices); the pdftotext dump was used only to locate the pages.  `verified` is
+# `image` for every row; a row that could not be read would say `unreadable` with
+# empty values (there are none).  sigma in angstrom [A], epsilon/k in kelvin [K],
+# exactly as printed (no rounding, no unit conversion).  methodSigma / methodEps are
+# Svehla's Table I(b) codes: 1-4 rest on EXPERIMENTAL transport data (1 = least-squares
+# fit of viscosity data; 2 = graphical, viscosity; 3 = least-squares, thermal
+# conductivity; 4 = graphical, thermal conductivity); 5-23 are ESTIMATES.
+# svehlaDataPage = Svehla's column "Page (b)": the report page of his calculated
+# transport-property table for that molecule.  refsAsPrinted = his bibliography
+# numbers (his column "Experimental viscosity data references", or, on report page
+# 24 for the five repeated noble gases, "Experimental thermal conductivity data
+# references" -- `refsColumn` says which).
+# moleculeAsPrinted keeps Svehla's typography (subscripts flattened: CCl4, n-C4H10,
+# iso-C4H10, cyclo-C3H6, B(OCH3)3, C(CH3)4).  Ar, He, Kr, Ne and Xe appear TWICE:
+# once from viscosity data (report pages 20-23) and once from thermal-conductivity
+# data (report page 24, methods 3/4/22).
+#
+pdfPage	reportPage	moleculeAsPrinted	sigma_A	epsOverK_K	methodSigma	methodEps	svehlaDataPage	refsAsPrinted	refsColumn	verified
+22	20	Al	2.655	2750	5	8	27			image
+22	20	AlCl	3.578	932	16	16	27			image
+22	20	AlCl3	5.127	472	21	9	28			image
+22	20	AlF	3.148	556	16	16	28			image
+22	20	AlF3	4.198	1846	21	8	29			image
+22	20	AlN	3.369	2682	16	8	29			image
+22	20	AlO	3.204	542	16	16	30			image
+22	20	AlS	3.730	1526	16	16	30			image
+22	20	Al2	2.940	2750	14	15	31			image
+22	20	Air	3.711	78.6	1	1	117	23 to 39	viscosity	image
+22	20	Ar	3.542	93.3	1	1	31	23, 26, 34, 38, 40 to 44	viscosity	image
+22	20	AsH3	4.145	259.8	1	1	32	45	viscosity	image
+22	20	B	2.265	3331	18	8	32			image
+22	20	BBr3	5.439	430	7	9	33			image
+22	20	BCl	3.318	1026	16	16	33			image
+22	20	BCl2	4.222	682	17	17	34			image
+22	20	BCl3	5.127	337.7	1	1	34	46	viscosity	image
+22	20	BF	2.888	612	16	16	35			image
+22	20	BF2	3.543	399	17	17	35			image
+22	20	BF3	4.198	186.3	1	1	36	47 to 49	viscosity	image
+22	20	BI3	5.906	570.2	5	8	117			image
+22	20	BO	2.944	596	16	16	36			image
+22	20	B(OCH3)3	5.503	396.7	1	1	117	50	viscosity	image
+22	20	B2	2.420	3331	14	15	37			image
+22	20	B2H6	4.821	213.2	10	8	37			image
+22	20	B2O3	4.158	2092	5	8	38			image
+22	20	Be	2.618	3603	18	8	38			image
+22	20	BeBr2	4.235	936	12	8	117			image
+22	20	BeCl	3.554	1067	16	16	39			image
+22	20	BeCl2	4.169	936	12	8	39			image
+22	20	BeF	3.124	637	16	16	40			image
+22	20	BeF2	3.452	1266	12	8	40			image
+22	20	BeI2	4.955	1019	12	8	117			image
+22	20	Be2	2.891	3603	14	15	117			image
+22	20	Br	3.672	236.6	13	19	41			image
+22	20	BrF	3.826	239	16	16	41			image
+22	20	BrF3	4.366	481.7	5	8	117			image
+22	20	BrO	3.882	233	16	16	117			image
+22	20	Br2	4.296	507.9	1	1	42	33, 51	viscosity	image
+22	20	C	3.385	30.6	13	19	42			image
+22	20	CBrF3	5.01	235	20	20	43			image
+22	20	CBr4	6.12	442	20	20	43			image
+22	20	CCl	4.065	157.8	16	16	44			image
+22	20	CClF3	4.96	188	20	20	44			image
+22	20	CCl2	4.692	213	17	17	118			image
+22	20	CCl2F2	5.25	253	20	20	45			image
+22	20	CCl3	5.320	268	17	17	118			image
+22	20	CCl3F	5.44	334	20	20	45			image
+22	20	CCl4	5.947	322.7	1	1	46	32, 52 to 55	viscosity	image
+22	20	CF	3.635	94.2	16	16	46			image
+23	21	CF2	3.977	108	17	17	47			image
+23	21	CF3	4.320	121	17	17	47			image
+23	21	CF4	4.662	134.0	1	1	48	49	viscosity	image
+23	21	CH	3.370	68.6	16	16	48			image
+23	21	CHBrClF	5.13	345	20	20	118			image
+23	21	CHBrCl2	5.25	427	20	20	49			image
+23	21	CHBr3	5.33	559	20	20	49			image
+23	21	CHClF2	4.68	261	20	20	50			image
+23	21	CHCl3	5.389	340.2	1	1	50	32, 52, 56, 57	viscosity	image
+23	21	CHF3	4.33	240	20	20	51			image
+23	21	CH2BrCl	4.88	410	20	20	51			image
+23	21	CH2ClF	4.48	318	20	20	52			image
+23	21	CH2Cl2	4.898	356.3	1	1	52	52, 55	viscosity	image
+23	21	CH2F2	4.08	318	20	20	53			image
+23	21	CH2I2	5.16	630	20	20	53			image
+23	21	CH3Br	4.118	449.2	1	1	54	58, 59	viscosity	image
+23	21	CH3Cl	4.182	350	2	2	54	52, 56, 58 to 62	viscosity	image
+23	21	CH3F	3.73	333	20	20	55			image
+23	21	CH3I	4.23	519	20	20	55			image
+23	21	CH3OH	3.626	481.8	1	1	56	32	viscosity	image
+23	21	CH4	3.758	148.6	1	1	56	23, 27, 29, 39, 41, 44, 56, 63 to 66	viscosity	image
+23	21	CN	3.856	75.0	16	16	57			image
+23	21	CO	3.690	91.7	1	1	57	23, 24, 39, 40, 56, 67, 68, 69	viscosity	image
+23	21	COS	4.130	336.0	1	1	58	70	viscosity	image
+23	21	CO2	3.941	195.2	1	1	58	23, 34, 41, 42, 71	viscosity	image
+23	21	CP	4.400	227	16	16	59			image
+23	21	CS	4.216	199.4	16	19	59			image
+23	21	CS2	4.483	467	2	2	60	32	viscosity	image
+23	21	C2	3.913	78.8	16	16	60			image
+23	21	C2H2	4.033	231.8	1	1	61	23, 42, 58, 72	viscosity	image
+23	21	C2H4	4.163	224.7	1	1	61	25, 39, 58, 68, 73, 74	viscosity	image
+23	21	C2H6	4.443	215.7	1	1	62	27, 44, 58, 61, 72, 75	viscosity	image
+23	21	C2H5Cl	4.898	300	2	2	118	56, 61, 76	viscosity	image
+23	21	C2H5OH	4.530	362.6	1	1	118	32, 57	viscosity	image
+23	21	C2N2	4.361	348.6	1	1	62	66, 77	viscosity	image
+23	21	CH3OCH3	4.307	395.0	1	1	63	58, 74	viscosity	image
+23	21	CH2CHCH3	4.678	298.9	1	1	63	58, 72, 74, 78	viscosity	image
+23	21	CH3CCH	4.761	251.8	1	1	64	58	viscosity	image
+23	21	cyclo-C3H6	4.807	248.9	1	1	64	49, 58	viscosity	image
+23	21	C3H8	5.118	237.1	1	1	65	23, 27, 39, 58, 71, 72	viscosity	image
+23	21	n-C3H7OH	4.549	576.7	1	1	118	32	viscosity	image
+23	21	CH3COCH3	4.600	560.2	1	1	118	32	viscosity	image
+23	21	CH3COOCH3	4.936	469.8	1	1	118	32	viscosity	image
+23	21	n-C4H10	4.687	531.4	1	1	119	23, 39, 58	viscosity	image
+23	21	iso-C4H10	5.278	330.1	1	1	119	58	viscosity	image
+23	21	C2H5OC2H5	5.678	313.8	1	1	119	32, 56, 57	viscosity	image
+23	21	CH3COOC2H5	5.205	521.3	1	1	119	32	viscosity	image
+23	21	n-C5H12	5.784	341.1	1	1	119	32	viscosity	image
+24	22	C(CH3)4	6.464	193.4	1	1	119	49	viscosity	image
+24	22	C6H6	5.349	412.3	1	1	65	32	viscosity	image
+24	22	C6H12	6.182	297.1	1	1	119	32, 79	viscosity	image
+24	22	n-C6H14	5.949	399.3	1	1	119	32	viscosity	image
+24	22	Cd	2.606	1227	2	8	66	80	viscosity	image
+24	22	Cl	3.613	130.8	13	19	66			image
+24	22	ClCN	4.047	338.7	2	8	67	81	viscosity	image
+24	22	ClF	3.668	203.4	5	8	67			image
+24	22	ClF3	4.288	335.7	5	8	68			image
+24	22	ClO	3.842	184	16	16	68			image
+24	22	Cl2	4.217	316.0	1	1	69	23, 52, 82 to 84	viscosity	image
+24	22	F	2.968	112.6	13	15	69			image
+24	22	FCN	3.578	168	2	19	70	81	viscosity	image
+24	22	F2	3.357	112.6	1	1	70	22	viscosity	image
+24	22	H	2.708	37.0	2	23	71	85	viscosity	image
+24	22	HBr	3.353	449	2	2	71	86	viscosity	image
+24	22	HCN	3.630	569.1	1	1	72	52	viscosity	image
+24	22	HCl	3.339	344.7	1	1	72	86, 87	viscosity	image
+24	22	HF	3.148	330	2	2	73	88	viscosity	image
+24	22	HI	4.211	288.7	1	1	73	82, 83, 86	viscosity	image
+24	22	HS	3.673	86.4	16	19	74			image
+24	22	H2	2.827	59.7	1	1	74	23 to 27, 30, 39 to 41, 63, 65, 68, 71, 73, 89	viscosity	image
+24	22	H2O	2.641	809.1	1	1	75	43, 52, 90 to 96	viscosity	image
+24	22	H2O2	4.196	289.3	1	1	75	93	viscosity	image
+24	22	H2S	3.623	301.1	1	1	76	66, 97	viscosity	image
+24	22	He	2.551	10.22	2	22	76	23, 26, 41, 67, 78, 98 to 101	viscosity	image
+24	22	Hg	2.969	750	2	2	77	80	viscosity	image
+24	22	HgBr2	5.080	686.2	1	1	77	52	viscosity	image
+24	22	HgCl2	4.550	750	2	2	78	52	viscosity	image
+24	22	HgI2	5.625	695.6	1	1	78	52	viscosity	image
+24	22	I	4.320	210.7	13	19	79			image
+24	22	ICl	4.688	437.3	16	8	79			image
+24	22	I2	5.160	474.2	1	1	80	52, 102	viscosity	image
+24	22	Kr	3.655	178.9	1	1	80	103, 104, 105	viscosity	image
+24	22	Li	2.850	1899	5	8	81			image
+24	22	LiBr	3.748	1815	16	8	81			image
+24	22	LiCN	3.996	569.1	12	21	120			image
+24	22	LiCl	3.708	1919	16	8	82			image
+24	22	LiF	3.278	2305	16	8	82			image
+24	22	LiI	4.180	1726	16	8	83			image
+24	22	LiO	3.334	450	16	16	83			image
+24	22	Li2	3.200	1899	14	15	84			image
+25	23	Li2O	3.561	1827	12	21	84			image
+25	23	Mg	2.926	1614	5	8	85			image
+25	23	MgCl	3.759	714	16	16	85			image
+25	23	MgCl2	4.340	1988	12	8	86			image
+25	23	MgF	3.329	426	16	16	86			image
+25	23	MgF2	3.623	2964	12	8	87			image
+25	23	Mg2	3.301	1614	14	15	120			image
+25	23	N	3.298	71.4	13	15	87			image
+25	23	NF3	4.154	175	5	9	88			image
+25	23	NH	3.312	65.3	16	16	88			image
+25	23	NH3	2.900	558.3	1	1	89	23, 39, 42, 52, 56, 73, 74, 106	viscosity	image
+25	23	NO	3.492	116.7	1	1	89	23, 48, 63, 84, 107	viscosity	image
+25	23	NOCl	4.112	395.3	1	1	90	84	viscosity	image
+25	23	N2	3.798	71.4	1	1	90	23, 24, 34, 38, 39, 41, 48, 63, 68, 73, 108, 109	viscosity	image
+25	23	N2O	3.828	232.4	1	1	91	23, 56, 63, 69, 71, 110, 111	viscosity	image
+25	23	Na	3.567	1375	5	8	91			image
+25	23	NaBr	4.226	1963	16	8	92			image
+25	23	NaCN	4.395	2088	12	8	120			image
+25	23	NaCl	4.186	1989	16	8	92			image
+25	23	NaF	3.756	2333	16	8	93			image
+25	23	NaI	4.658	1856	16	8	93			image
+25	23	NaO	3.812	383	16	16	94			image
+25	23	NaOH	3.804	1962	12	8	94			image
+25	23	Na2	4.156	1375	14	15	95			image
+25	23	Na2O	4.358	1827	12	8	120			image
+25	23	Ne	2.820	32.8	1	1	95	23, 26, 41, 67, 75, 101, 104, 112, 113	viscosity	image
+25	23	O	3.050	106.7	13	15	96			image
+25	23	OF	3.412	109.6	16	16	96			image
+25	23	OF2	3.878	161	7	9	97			image
+25	23	OH	3.147	79.8	16	16	97			image
+25	23	O2	3.467	106.7	1	1	98	23, 39, 41, 42, 56, 63, 68, 73, 110	viscosity	image
+25	23	P	4.115	653	11	8	98			image
+25	23	PCl	4.552	454	16	16	120			image
+25	23	PCl3	5.240	419	5	9	99			image
+25	23	PF	4.122	271	16	16	99			image
+25	23	PF3	4.360	203.3	21	9	100			image
+25	23	PH3	3.981	251.5	1	1	100	45	viscosity	image
+25	23	PN	4.342	216	16	16	101			image
+25	23	PO	4.177	264	16	16	101			image
+25	23	PS	4.703	744	16	16	102			image
+25	23	P2	4.887	653	14	15	102			image
+25	23	P4	5.455	711	7	9	103			image
+25	23	S	3.839	847	11	8	103			image
+25	23	SF6	5.128	222.1	1	1	104	48, 49	viscosity	image
+25	23	SO	3.993	301	16	16	104			image
+26	24	SO2	4.112	335.4	1	1	105	23, 28, 41, 56, 58, 62, 82, 114, 115	viscosity	image
+26	24	S2	4.519	847	14	15	105			image
+26	24	S2F2	4.702	205.6	5	8	120			image
+26	24	Si	2.910	3036	6	8	106			image
+26	24	SiCl	3.748	980	16	16	106			image
+26	24	SiCl4	5.977	390.2	18	8	107			image
+26	24	SiF	3.318	585	16	16	107			image
+26	24	SiFCl3	5.540	329	7	9	108			image
+26	24	SiF2Cl2	5.270	277	7	9	120			image
+26	24	SiF3Cl	4.975	231	7	9	108			image
+26	24	SiF4	4.880	171.9	1	1	109	48, 49	viscosity	image
+26	24	SiH4	4.084	207.6	1	1	109	116	viscosity	image
+26	24	SiO	3.374	569	16	16	110			image
+26	24	SiO2	3.706	2954	12	8	110			image
+26	24	SiS	3.900	1432	16	8	111			image
+26	24	Si2	3.280	3036	14	15	111			image
+26	24	SnBr4	6.388	563.7	1	1	112	52	viscosity	image
+26	24	SnCl4	6.202	420	2	2	112	52	viscosity	image
+26	24	UF6	5.967	236.8	1	1	120	117, 118, 119	viscosity	image
+26	24	Xe	4.047	231.0	1	1	113	103 to 105, 120	viscosity	image
+26	24	Zn	2.284	1393	2	8	113	80	viscosity	image
+26	24	Ar	3.408	119.9	3	3	114	121 to 141	thermalConductivity	image
+26	24	He	2.608	10.22	4	22	114	121, 125, 126, 131 to 134, and 138	thermalConductivity	image
+26	24	Kr	3.690	164.7	3	3	115	121, 135, 141	thermalConductivity	image
+26	24	Ne	2.764	40.2	3	3	115	121, 132, 134, 135, 140, 142, 143, 144	thermalConductivity	image
+26	24	Xe	4.082	206.9	3	3	116	121, 135, 141	thermalConductivity	image

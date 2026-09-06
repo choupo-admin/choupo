@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- seven gases, ideal, with BOTH second opinions
+  declared: Chapman-Enskog for the gas viscosity (reads each record's
+  lennardJones {} block) and the modified Eucken for the conductivity.
+  The bench evaluates every registered model regardless; what is DECLARED
+  here is what a unit operation in this case would be handed, and what
+  feeds the conductivity models their viscosity.  Equilibrium is declared
+  (Raoult, ideal gas) because a package must be complete; nothing flashes.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( N2 O2 CO2 water CH4 Ar H2 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity           { model ChapmanEnskog; }    // gas mu   (sigma, eps/k, M)
+        thermalConductivity { model modifiedEucken; }   // gas k    (Cp + mu, Svehla eq. 2)
+    }
+}

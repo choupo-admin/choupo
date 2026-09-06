@@ -136,21 +136,33 @@ int TransportBench::run(const DictPtr& dict,
     std::size_t nTheory = 0, nArith = 0;
     for (const auto& r : rows)
     {
-        const bool pass = (r.v.dev <= devTol);
+        //  An anchor may DECLARE its own tolerance (CorrelationVerify.H):
+        //  the Chapman-Enskog reproduction of Svehla's table is two Omega
+        //  sources disagreeing, not a six-figure literal.  The declared
+        //  value is printed beside the row and published, so a looser
+        //  tolerance is visible where it applies and nowhere else.
+        const bool declared = r.v.tolerance > 0.0;
+        const scalar tol = declared ? r.v.tolerance : devTol;
+        const bool pass = (r.v.dev <= tol);
         allPass = allPass && pass;
         if (r.v.kind == "theory") ++nTheory; else ++nArith;
         diag_["dev_" + r.model] = r.v.dev;
+        if (declared) diag_["tol_" + r.model] = r.v.tolerance;
         os << "  " << std::left << std::setw(13) << r.model
            << "  [" << r.family << "]\n"
            << "               value  = " << std::scientific << std::setprecision(6)
            << r.v.value_choupo << "   anchor = " << r.v.value_published
            << "   dev = " << pct(r.v.dev) << "  "
-           << (pass ? "[PASS]" : "[FAIL]") << "   kind: " << r.v.kind << "\n"
+           << (pass ? "[PASS]" : "[FAIL]") << "   kind: " << r.v.kind;
+        if (declared)
+            os << "   tolerance DECLARED by the anchor = " << pct(r.v.tolerance);
+        os << "\n"
            << "               window:   " << r.window << "\n"
            << "               source:   " << r.source << "\n"
            << "               anchor:   " << r.v.anchor << "\n\n";
     }
-    os << "  deviation tolerance = " << pct(devTol) << "\n"
+    os << "  deviation tolerance (default; a row may declare its own) = "
+       << pct(devTol) << "\n"
        << "  " << rows.size() << " correlation(s): " << nTheory
        << " anchored on THEORY (an identity kinetic theory or the author"
           " supplies),\n  " << nArith << " on ARITHMETIC (the correlation's"
@@ -212,21 +224,39 @@ int TransportBench::run(const DictPtr& dict,
                 " models and the mixing rules -- add transport { vapour {"
                 " viscosity { model Chung; } } } to thermoPhysPropDict.");
 
+        //  A model that cannot price a component (Chapman-Enskog on a record
+        //  with no lennardJones block) is LISTED for it, by reason -- never
+        //  skipped in silence, never allowed to abort the others.  The count
+        //  of models that COULD answer, per component, is what the spread
+        //  sentence below is about: registered is not the same as evaluated.
+        std::size_t nEvalMu = 0, nEvalK = 0;   // max over components
         os << "\n  gas viscosity [Pa.s]\n";
         for (std::size_t i = 0; i < N; ++i)
         {
             const Component& c = thermo.comp(i);
+            std::size_t evaluated = 0;
             for (const auto& m : muModels)
             {
+                const std::string why = m->unavailableReason(c);
+                if (!why.empty())
+                {
+                    os << "    " << std::left << std::setw(10) << c.name()
+                       << std::setw(16) << m->modelName()
+                       << "not evaluable by " << m->modelName() << " (" << why
+                       << ")\n";
+                    continue;
+                }
                 const scalar mu = m->viscosityGasPure(c, T);
+                ++evaluated;
                 diag_["mu_" + m->modelName() + "_" + c.name()] = mu;
                 const std::string note = m->windowNote(c, T);
                 os << "    " << std::left << std::setw(10) << c.name()
-                   << std::setw(13) << m->modelName()
+                   << std::setw(16) << m->modelName()
                    << std::scientific << std::setprecision(6) << mu
                    << (note.empty() ? "" : "   <-- OUTSIDE ITS WINDOW") << "\n";
                 if (!note.empty()) os << "               " << note << "\n";
             }
+            nEvalMu = std::max(nEvalMu, evaluated);
         }
 
         os << "\n  gas thermal conductivity [W/(m.K)]  (mu from the case's"
@@ -241,20 +271,43 @@ int TransportBench::run(const DictPtr& dict,
                       " needs Cp; nothing evaluated)\n";
                 continue;
             }
+            const std::string whyMu = declaredMu->unavailableReason(c);
+            if (!whyMu.empty())
+            {
+                os << "    " << std::left << std::setw(10) << c.name()
+                   << "(the case's declared " << declaredMu->modelName()
+                   << " cannot price this component's viscosity: " << whyMu
+                   << " -- nothing evaluated)\n";
+                continue;
+            }
             const scalar mu = declaredMu->viscosityGasPure(c, T);
             const scalar cp = c.cpIdealGas().Cp(T);
+            std::size_t evaluated = 0;
             for (const auto& m : kModels)
             {
+                const std::string why = m->unavailableReason(c);
+                if (!why.empty())
+                {
+                    os << "    " << std::left << std::setw(10) << c.name()
+                       << std::setw(16) << m->modelName()
+                       << "not evaluable by " << m->modelName() << " (" << why
+                       << ")\n";
+                    continue;
+                }
                 const scalar k = m->conductivityGasPure(c, T, mu, cp);
+                ++evaluated;
                 diag_["k_" + m->modelName() + "_" + c.name()] = k;
                 const std::string note = m->windowNote(c, T);
                 os << "    " << std::left << std::setw(10) << c.name()
-                   << std::setw(13) << m->modelName()
+                   << std::setw(16) << m->modelName()
                    << std::scientific << std::setprecision(6) << k
                    << (note.empty() ? "" : "   <-- APPROXIMATION HERE") << "\n";
                 if (!note.empty()) os << "               " << note << "\n";
             }
+            nEvalK = std::max(nEvalK, evaluated);
         }
+        diag_["n_evaluated_mu"] = scalar(nEvalMu);
+        diag_["n_evaluated_k"]  = scalar(nEvalK);
 
         //  Mixture values through the package -- the SAME functions every
         //  unit operation calls, so what the bench prints is what a dryer
@@ -305,15 +358,28 @@ int TransportBench::run(const DictPtr& dict,
         diag_["spread_k_pct"]  = 100.0 * sK;
         os << "\n  spread across gas-viscosity models (worst component)    = "
            << std::fixed << std::setprecision(2) << (100.0 * sMu) << " %  ("
-           << muModels.size() << " model(s) registered)\n"
+           << muModels.size() << " model(s) registered, at most " << nEvalMu
+           << " evaluable on one component)\n"
            << "  spread across gas-conductivity models (worst component) = "
-           << (100.0 * sK) << " %  (" << kModels.size() << " model(s) registered)\n";
-        if (muModels.size() < 2 || kModels.size() < 2)
+           << (100.0 * sK) << " %  (" << kModels.size()
+           << " model(s) registered, at most " << nEvalK
+           << " evaluable on one component)\n";
+        //  The sentence keys on EVALUATED, not registered: two models on the
+        //  shelf and one that can price this case's components is still one
+        //  opinion.  It is absent the moment two disagree somewhere.
+        if (nEvalMu < 2 || nEvalK < 2)
             os << "  A SPREAD OVER ONE MODEL IS NOT AGREEMENT -- it is the"
-                  " absence of a second opinion.\n  Chapman-Enskog (Lennard-"
-                  "Jones sigma and eps/k, which no record carries yet) is the\n"
-                  "  named next member of both families; until it is curated"
-                  " this column says 0 and\n  means nothing.\n";
+                  " absence of a second opinion.\n  "
+               << (muModels.size() >= 2 && kModels.size() >= 2
+                   ? "Two models are registered per family, but only one could"
+                     " price every component here\n  (see the 'not evaluable'"
+                     " lines: Chapman-Enskog needs a lennardJones {} block on"
+                     " the record,\n  which bin/curate/propose_lennard_jones.py"
+                     " drafts from Svehla 1962 for review); until a\n  second"
+                     " opinion is evaluable this column says 0 and means"
+                     " nothing.\n"
+                   : "One model is registered for a family, so this column"
+                     " says 0 and means nothing.\n");
         os << "  The bench does NOT say which model is right: that depends on"
               " the gas and the state,\n  and ranking them here would hide the"
               " choice the engineer has to make.\n";

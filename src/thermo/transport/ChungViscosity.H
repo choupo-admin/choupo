@@ -45,7 +45,8 @@ Description
     Prausnitz & Poling, The Properties of Gases and Liquids, 4th ed. (1987),
     eq. 9-4.10, which is the ROUTE and not the source.  Collision integral:
     Neufeld, Janzen & Aziz (1972), J. Chem. Phys. 57(3), 1100-1102, stated
-    by its authors for 0.3 <= T* <= 100.
+    by its authors for 0.3 <= T* <= 100 -- evaluated from its one home,
+    transport/NeufeldOmega.H, which ChapmanEnskog shares.
 
     TWO THINGS THIS IMPLEMENTATION DOES THAT THE PAPER DOES NOT, and both are
     ANNOUNCED through the AdvisoryLog, once per component per run, naming the
@@ -85,7 +86,10 @@ public:
 
     //  THE KERNELS, public and static: the same arithmetic the hot path
     //  calls, reachable by the bench, the gate and verify() without a
-    //  Component.  One home for the formula.
+    //  Component.  One home for the formula.  `neufeldOmega` is a thin call
+    //  into neufeld::omega22 (NeufeldOmega.H, the fit's ONE home since
+    //  2026-09-06, shared with ChapmanEnskog); it stays on this class so the
+    //  kernel reads as the paper writes it.
     static scalar neufeldOmega(scalar Tstar);
     static scalar kernel(scalar M_g_per_mol, scalar Tc_K, scalar Pc_bar,
                          scalar omega, scalar T_K);          // Pa.s

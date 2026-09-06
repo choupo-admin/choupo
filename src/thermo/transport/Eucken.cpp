@@ -63,8 +63,8 @@ std::string Eucken::windowNote(const Component& c, scalar T) const
     const scalar cp = c.cpIdealGas().Cp(T);
     if (cp > 2.5 * R_GAS * 1.02)
         return "polyatomic (Cp = " + std::to_string(cp / R_GAS) + " R > 5R/2):"
-               " plain Eucken is an APPROXIMATION here; the modified Eucken"
-               " correction is not implemented";
+               " plain Eucken is an APPROXIMATION here; `model modifiedEucken;`"
+               " (Svehla 1962 eq. 2) weights the internal modes by 1.32";
     return "";
 }
 

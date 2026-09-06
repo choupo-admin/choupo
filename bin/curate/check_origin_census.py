@@ -87,7 +87,11 @@ RECORD = ROOT / "docs" / "design" / "provenance-semantics-five-axes.md"
 #  set actually WRITTEN, and a new one must be a decision, not a surprise.
 KNOWN = {"literature", "predictive", "estimated", "assumed", "measured",
          "standard", "regressed", "definition", "asserted", "placeholder",
-         "experimental", "fitted", "predicted", "calculated"}
+         "experimental", "fitted", "predicted", "calculated",
+         # 2026-09-06: the lennardJones records' word for a constant fitted
+         # to measured transport data (Svehla 1962 methods 1-4); resolves to
+         # `regressed` in core/Origin.H.  A decision, written down there.
+         "measuredFit"}
 
 
 def strip_comments(t):

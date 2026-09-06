@@ -174,8 +174,13 @@ const TRANSPORT_LABEL: Record<string, string> = {
   thermal_conductivity_liquid: "k liquid", thermal_conductivity: "k gas",
 };
 // Transport correlations with a real within-family CHOICE — the picker appears
-// ONLY where choosing moves the curve.  Gas viscosity/conductivity are
-// single-model (Chung / Eucken), so no picker is shown for them.
+// ONLY where choosing moves the curve.  Gas viscosity/conductivity are pinned
+// to Chung / Eucken here: since 2026-09-06 the engine also registers
+// ChapmanEnskog and modifiedEucken, but Chapman-Enskog reads a `lennardJones {}`
+// block that NO public catalogue record carries yet (the blocks live in
+// data/local/ and in one case-local witness), so a picker offering it would
+// offer a model that refuses on every record the Explorer can select.  The
+// picker for the gas families is the named absence, not the models.
 function transportModelsFor(property: string): string[] {
   if (property === "viscosity_liquid") return ["Andrade", "Vogel"];
   if (property === "thermal_conductivity_liquid") return ["SatoRiedel", "Latini"];

@@ -51,9 +51,10 @@ Description
 
     For POLYATOMIC gases the formula treats internal-mode energy transport
     with the same factor as translation, which it does not deserve; the
-    modified Eucken (RPP eq. 10-3.3) is the named correction and is NOT
-    implemented -- selecting `Eucken` on CO2 or NH3 is an approximation the
-    window string says so about.
+    modified Eucken (transport/ModifiedEucken.H, Svehla 1962 eq. (2), the
+    internal modes weighted 1.32) is the registered correction since
+    2026-09-06 -- selecting `Eucken` on CO2 or NH3 is an approximation the
+    window string says so about, and the bench prints both side by side.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -86,7 +87,8 @@ private:
         "dilute (low-pressure) gas; EXACT for a monatomic gas (Cp = 5R/2 "
         "gives the Chapman-Enskog (15/4) R mu / M); an APPROXIMATION for "
         "polyatomic gases, whose internal-mode transport it weights like "
-        "translation -- the modified Eucken correction is not implemented";
+        "translation -- declare `model modifiedEucken;` (Svehla 1962 eq. 2, "
+        "internal modes weighted 1.32) for the corrected form";
     inline static const std::string cite_ =
         "Eucken, A. (1913), Physik. Z. 14, 324-332 [primary]; transcribed "
         "via Reid, Prausnitz & Poling, 4th ed. (1987), eq. 10-3.2; monatomic "

@@ -1,0 +1,136 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-09-06";
+    importerVersion    "3";
+    records
+    {
+        "chemistry/CO2aq-formation.dat"
+        {
+            type          imported;
+            sha256        "f69137953ef414489ef19f53f30c11a04e6dba6ef888d969cf3e3876ad996674";
+            computationalSha256 "397e6b7932ce2cea42a683af87bfde75872eb68d1ced992e2d9ad03e4a1c83ca";
+            origin        "data/standards/chemistry/CO2aq-formation.dat";
+            originSha256  "f0f209e6dd7cca9e6999c19d30394b0a088d9f0710ac0c6dd6145bae31612f8e";
+            release       Choupo-2608;
+        }
+        "chemistry/CO3-formation.dat"
+        {
+            type          imported;
+            sha256        "ef47bb00658243b2ff0e836ed6942922e4bf26ec34a35e7d59a076d153c23fdc";
+            computationalSha256 "456cfa93c424f63aa3af4f8351a88ed25d9189c3bd5cf5055b4a136f5a36d09d";
+            origin        "data/standards/chemistry/CO3-formation.dat";
+            originSha256  "d08e8abdea3dfaaa57ed2fed4204f8be4a6aeda5712a75c6963be0569dd5fc90";
+            release       Choupo-2608;
+        }
+        "chemistry/water-dissociation.dat"
+        {
+            type          imported;
+            sha256        "e5e166abb5a1f1482bd50c50caf65cfaa46d725422cc78f6ab04786c8891f58f";
+            computationalSha256 "a4bf1f8f902f95e740a3100399b149894b8d380a82c9dfb17c6e81362ff91c89";
+            origin        "data/standards/chemistry/water-dissociation.dat";
+            originSha256  "b2ae1698798cd472c4e75d1c4b186e1ac762852b40512a998ba247a22a0b9a80";
+            release       Choupo-2608;
+        }
+        "components/Ar.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-09-06";
+        }
+        "components/CH4.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-09-06";
+        }
+        "components/CO2.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-09-06";
+        }
+        "components/H2.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-09-06";
+        }
+        "components/N2.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-09-06";
+        }
+        "components/O2.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-09-06";
+        }
+        "components/water.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-09-06";
+        }
+        "species/CO2aq.dat"
+        {
+            type          imported;
+            sha256        "d5d12e012ea577ebb7f4bbfdcdc6de9a00c950a96edea1e670b2aa8dd1b9b265";
+            computationalSha256 "96c07565307037fb39c2b9729badb6977ea8d1b10ed3044ea760263f3de38039";
+            origin        "data/standards/species/CO2aq.dat";
+            originSha256  "d5d12e012ea577ebb7f4bbfdcdc6de9a00c950a96edea1e670b2aa8dd1b9b265";
+            release       Choupo-2608;
+        }
+        "species/CO3.dat"
+        {
+            type          imported;
+            sha256        "d4965be9fbfaf3a37b1cef24dec28619f60538a1b965d19db04abc13a330c9ac";
+            computationalSha256 "bbf4192a057505d263af78881dd8ab33c0699d3d30f332b2d9eb0f693ed9ff04";
+            origin        "data/standards/species/CO3.dat";
+            originSha256  "d4965be9fbfaf3a37b1cef24dec28619f60538a1b965d19db04abc13a330c9ac";
+            release       Choupo-2608;
+        }
+        "species/H.dat"
+        {
+            type          imported;
+            sha256        "546c4d1c26d87018865e3c5a7a8c4ccf4d40282251a050d65b60e03da18380e7";
+            computationalSha256 "90961ff87d2ad611e0cfdb04652d16d0ad0fd07c3ed80a649037f56a032ee81b";
+            origin        "data/standards/species/H.dat";
+            originSha256  "546c4d1c26d87018865e3c5a7a8c4ccf4d40282251a050d65b60e03da18380e7";
+            release       Choupo-2608;
+        }
+        "species/HCO3.dat"
+        {
+            type          imported;
+            sha256        "9da544053a7c9ceee0b1cf13cc73d4f5df0a9a6acc316a48a15072c5dc1ffb3d";
+            computationalSha256 "2a8afca0045be3a8f6feade24d99cbc9e0ad518a3600801c735b7456f08d872e";
+            origin        "data/standards/species/HCO3.dat";
+            originSha256  "9da544053a7c9ceee0b1cf13cc73d4f5df0a9a6acc316a48a15072c5dc1ffb3d";
+            release       Choupo-2608;
+        }
+        "species/OH.dat"
+        {
+            type          imported;
+            sha256        "fc86085954e51b32832ac542b63cfe3618ade2b000b056558424025632d2f1dd";
+            computationalSha256 "ff41dbce484799f20632f7b669b1c654f40291c0088a6af709eb126e6f80818e";
+            origin        "data/standards/species/OH.dat";
+            originSha256  "fc86085954e51b32832ac542b63cfe3618ade2b000b056558424025632d2f1dd";
+            release       Choupo-2608;
+        }
+    }
+}

@@ -400,6 +400,28 @@ public:
     scalar diffusionVolume()    const { return diffusionVolume_; }
     bool   hasDiffusionVolume() const { return diffusionVolume_ > 0.0; }
 
+    // ---- Transport: Lennard-Jones (12-6) force constants (2026-09-06) ----
+    // The record's `lennardJones { sigma [0 1 0 0 0] <m>; epsOverK <K> K;
+    // provenance { sigma { origin; method; } epsOverK { origin; method; }
+    // source "..."; licence publicDomain; } }` block, read by the
+    // Chapman-Enskog gas viscosity (and, through it, the modified Eucken
+    // conductivity).  sigma is stored in METRES -- the record writes the
+    // bracket form because angstrom is not a named unit in core/Units.cpp --
+    // and epsilon/k in kelvin.  The two values carry their OWN origins
+    // (Svehla 1962 fits sigma and eps/k by separately coded methods); a
+    // reader that announces an estimate asks per value.  Absent block: both
+    // zero, `hasLennardJones()` false, and a model that needs them REFUSES
+    // by name (never a default sigma).  A PARTIAL block refuses at load.
+    scalar ljSigma()            const { return ljSigma_; }     // m
+    scalar ljEpsOverK()         const { return ljEpsK_; }      // K
+    bool   hasLennardJones()    const { return ljSigma_ > 0.0 && ljEpsK_ > 0.0; }
+    Origin ljSigmaOrigin()      const { return ljSigmaOrigin_; }
+    Origin ljEpsOverKOrigin()   const { return ljEpsKOrigin_; }
+    const std::string& ljSigmaMethod()    const { return ljSigmaMethod_; }
+    const std::string& ljEpsOverKMethod() const { return ljEpsKMethod_; }
+    const std::string& ljSource()         const { return ljSource_; }
+    const std::string& ljLicence()        const { return ljLicence_; }
+
     // ---- Transport: liquid-viscosity parameters -------------------
     // Optional `liquidViscosity { andrade { A; B; } vogel { A; B; C; } }`
     // block on the.dat.  The selected liquid-viscosity model (Andrade /
@@ -762,6 +784,14 @@ private:
 
     // Transport: Fuller diffusion volume Σv; 0 if not declared.
     scalar      diffusionVolume_ = 0.0;
+
+    // Transport: Lennard-Jones sigma [m] and eps/k [K]; 0 if not declared.
+    // Per-value origin + method, and the block's source/licence words.
+    scalar      ljSigma_ = 0.0;
+    scalar      ljEpsK_  = 0.0;
+    Origin      ljSigmaOrigin_ = Origin::unattributed;
+    Origin      ljEpsKOrigin_  = Origin::unattributed;
+    std::string ljSigmaMethod_, ljEpsKMethod_, ljSource_, ljLicence_;
 
     // Transport: liquid-viscosity parameters; raw block, null if absent.
     DictPtr     liquidViscDict_     = nullptr;

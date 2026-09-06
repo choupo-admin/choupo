@@ -322,8 +322,8 @@ transport
 {
     vapour
     {
-        viscosity           { model Chung; }    // gas mu
-        thermalConductivity { model Eucken; }   // gas k (Cp + mu)
+        viscosity           { model Chung; }    // gas mu (or ChapmanEnskog: needs lennardJones {} on each record)
+        thermalConductivity { model Eucken; }   // gas k (Cp + mu; or modifiedEucken, Svehla eq. 2)
         diffusivity         { model Fuller; }   // binary gas D (Sigma v)
     }
 
@@ -345,8 +345,8 @@ Pick by need:
 
 | Need | Sub-model |
 |---|---|
-| Gas viscosity (low pressure) | **`Chung`** — uses Tc/Pc/ω/MW, zero new data. |
-| Gas thermal conductivity | **`Eucken`** — `λ = (Cp+5R/4)·μ/M`, no extra data. |
+| Gas viscosity (low pressure) | **`Chung`** — uses Tc/Pc/ω/MW, zero new data (non-polar truncation, Vc estimated, both announced); or **`ChapmanEnskog`** — kinetic theory over the record's `lennardJones { sigma [0 1 0 0 0] <m>; epsOverK <K> K; provenance {…} }` block (REFUSES by name without it; `bin/curate/propose_lennard_jones.py` drafts the block from Svehla 1962 into `data/local/`, a case may adopt it locally). |
+| Gas thermal conductivity | **`Eucken`** — `λ = (Cp+5R/4)·μ/M`, no extra data (exact for a monatomic gas, an approximation for polyatomics, flagged); or **`modifiedEucken`** — Svehla 1962 eq. (2), `λ = (R/M)[15/4 + 1.32(Cp/R − 5/2)]·μ`, the internal modes weighted 1.32. |
 | Gas binary diffusivity | **`Fuller`** — needs `diffusionVolume` on each component (water/N2/O2/CO2/CH4/H2/CO ship it). |
 | Liquid viscosity | **`Vogel`** (3-param `ln μ = A+B/(T-C)`, water 0.2 % RMS) or **`Andrade`** (2-param). |
 | Liquid thermal conductivity | **`SatoRiedel`** (parameter-free, organics). |
@@ -364,10 +364,17 @@ and the Wilke / Wassiljewa mixture values (tutorial
 `props/transport/transport01_gas_bench`).  Two things it announces that a
 reader should expect: Chung estimates `Vc` from `Zc(omega)` and applies its
 NON-POLAR truncation to every component (once per component, in the caveat
-block), and plain Eucken is an approximation for any polyatomic gas.  NOT
-available, and not to be declared: `Sutherland` and `Chapman-Enskog` — no
-record carries a Sutherland constant or Lennard-Jones `sigma`/`epsOverK`
-(record: `docs/design/transport-correlations-as-objects.md`).
+block), and plain Eucken is an approximation for any polyatomic gas.  Every
+`ChapmanEnskog` component is announced with the ORIGIN of both constants
+(`measuredFit` = Svehla's least-squares fit to measured viscosities; `measured`;
+`estimated`) and the report page they were read from.  With two models per gas
+family the bench's spread column is a real disagreement (tutorial
+`props/transport/transport02_chapman_enskog`: water's Chung and Chapman-Enskog
+viscosities differ by a third at 300 K).  NOT available, and not to be
+declared: `Sutherland` — no record carries a Sutherland constant; and a
+Chapman-Enskog binary DIFFUSIVITY — the Ω(1,1)* collision-integral fit is not
+citable from any source in the tree (record:
+`docs/design/transport-correlations-as-objects.md` §8).
 
 ## The three-tier model-parameter rule
 

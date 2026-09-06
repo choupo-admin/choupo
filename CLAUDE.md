@@ -1258,13 +1258,50 @@ it cannot price instead of substituting water; the membrane module ANNOUNCES
 `[legacy] mu_feed 1e-3 / D_solute 1.6e-9` and honours a declared liquid
 transport model.  ChemSep's Artistic-2.0 acceptance is now a CONTRACT in
 `check_source_licence` (allowlist + importer cross-check), not an importer
-comment.  NOT built, named: Chapman-Enskog and Sutherland — no record carries
-σ/ε or S; that is a CURATION campaign (Svehla 1962, NASA TR R-132, public
-domain), never numbers invented here.  Witness `transport01_gas_bench`
+comment.  Witness `transport01_gas_bench`
 (nothing measured, its header says so); gate `check_transport_correlations`
 (4 by-hand sabotages on outputs/inputs; a sealed record edited under it ran to
 exit 0 — a FINDING for the seal, recorded not fixed).  Record:
 [`docs/design/transport-correlations-as-objects.md`](docs/design/transport-correlations-as-objects.md).
+
+**CHAPMAN-ENSKOG FROM SVEHLA'S CONSTANTS — the curation campaign the
+paragraph above named is RUN, and the second opinion exists (2026-09-06).**
+`ChapmanEnskog` (gas μ, Svehla 1962 eq. (1), `TransportModel`) and
+`modifiedEucken` (gas k, Svehla eq. (2), `ThermalConductivityModel`) are
+registered; the Neufeld Ω(2,2)* fit has ONE home
+(`src/thermo/transport/NeufeldOmega.H`), which Chung calls at its own T* with
+every Chung golden byte-identical.  Rule: **a Lennard-Jones pair is a
+RECORD fact with PER-VALUE origin** — `lennardJones { sigma [0 1 0 0 0] <m>;
+epsOverK <K> K; provenance { sigma {origin; method;} epsOverK {origin;
+method;} source; licence publicDomain; } }`, σ in the bracket form because
+ångström is not a named unit; the origin word follows Svehla's Table I(b)
+code (1–4 fitted to measured data → `measuredFit`, resolved to `regressed`
+in `core/Origin.H`; 20 → `measured`; else `estimated`) and the model
+ANNOUNCES both origins per component.  A record without the block REFUSES
+by name (no default σ); the bench LISTS such a component as "not evaluable"
+and its spread sentence keys on models EVALUATED, not registered.  The ONE
+committed home of the data is the page-image transcription
+`bin/curate/svehla1962/` (Table I(a), the method legend, the hand-written
+isomer table); `bin/curate/propose_lennard_jones.py` derives fragments into
+`data/local/lennardJones/` by parsed elemental formula + MW cross-check,
+never by name, deterministic, and REFUSES an `--out` under `data/standards/`
+— promotion is Vítor's review and NO block was written into the public
+catalogue; the witness `transport02_chapman_enskog` carries its seven blocks
+CASE-LOCALLY (adopted records, the edwards02 precedent).  Traps paid for:
+the `measuredFit` word would have resolved to `unattributed` in silence
+(`originFromWord` is tolerant) — a declared word must be registered where
+the vocabulary lives; Ω(2,2)* differs between Svehla's Hirschfelder 1954
+tables and the Neufeld 1972 fit by more than the fit's own claim, so the
+reproduction anchor DECLARES its tolerance and the bench prints it beside
+the row (`CorrelationVerify::tolerance`).  NOT built, said plainly:
+Chapman-Enskog binary DIFFUSIVITY — the Ω(1,1)* coefficients are not
+citable from any source in the tree, and Sutherland — Svehla gives no S.
+A US-government public-domain source is an accepted class in
+`check_source_licence` as a CONTRACT (the writing tool's licence word
+cross-checked, a citing record must declare `licence publicDomain;`).
+Gate: `check_transport_correlations` (extended, by-hand sabotages in its
+docstring).  Record:
+[`docs/design/transport-correlations-as-objects.md`](docs/design/transport-correlations-as-objects.md) §8.
 
 **A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH
 (2026-08-25).**  Everything a membrane needs was already here -- the

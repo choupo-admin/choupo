@@ -1185,7 +1185,7 @@ which property uses it & how & in source code\\
 $\Delta h^{\mathrm{vap}}(T)$ via Watson         & $T_c$, $T_b$, $\Delta h^{\mathrm{vap}}_{T_b}$  & \code{Component::Hvap\_latent}\\
 $\kappa^{\mathrm{liq}}(T)$ via Sato-Riedel    & $T_c$, $T_b$, $M$                              & \code{SatoRiedel} (ships; \code{transport.liquid.thermalConductivity}) \\
 $\varphi_i$ via cubic EOS                       & $T_c$, $P_c$, $\omega$                         & post-v1 \\
-$\mu^{\mathrm{gas}}(T)$ via Chapman-Enskog      & $\sigma$, $\epsilon/k$ (Lennard-Jones)  & future: NO record carries $\sigma$, $\epsilon/k$ (a curation campaign, not a coding task); \code{Chung} ships in its place \\
+$\mu^{\mathrm{gas}}(T)$ via Chapman-Enskog      & $\sigma$, $\epsilon/k$ (Lennard-Jones)  & \code{ChapmanEnskog} (ships since 2026-09-06; reads the record's \code{lennardJones\{\}} block, drafted from Svehla 1962 by \code{bin/curate/propose\_lennard\_jones.py}; \code{Chung} needs no such block) \\
 $P^{\mathrm{sat}}(T)$ validity ceiling          & $T_c$ as the upper bound on Antoine \code{Trange} & data-file metadata \\
 \bottomrule
 \end{tabular}
@@ -11792,10 +11792,10 @@ identical in spirit to Antoine for vapour pressure.
 \caption{The transport map: three coefficients, their correlations, and
 where they are consumed.  Each Newtonian coefficient (teal) is supplied by
 a two- or three-parameter correlation (orange)---Andrade/Vogel or
-Chung for viscosity, Sato--Riedel/Eucken for
+Chung/Chapman--Enskog for viscosity, Sato--Riedel/Eucken/modified Eucken for
 conductivity, Fuller and Wilke--Chang for diffusivity (the models the
-engine registers; Sutherland and Chapman--Enskog are taught below as
-theory and are NOT implemented).  The coefficients
+engine registers; Sutherland is taught below as theory and is NOT
+implemented).  The coefficients
 then assemble into the three dimensionless groups Re, Pr, Sc (blue), and
 nearly every downstream design equation is a power law in them
 ($\mathrm{Nu}=a\,\mathrm{Re}^b\mathrm{Pr}^c$,
@@ -11851,13 +11851,13 @@ The viscosity of a pure liquid follows the Andrade equation $\ln \mu
 = A + B/T$ --- a two-parameter fit that captures the strong
 Arrhenius-like decay of liquid viscosity with temperature.  Gases
 take the opposite trend ($\mu$ grows with $T$); the classical model
-is Sutherland.  The corresponding-states alternative for either
-phase is the Chapman-Enskog formula in terms of Lennard-Jones $\sigma$
-and $\epsilon/k$.  Both are taught here as theory; what Choupo SHIPS
-for a gas is Chung's corresponding-states realisation of the same
-kinetic theory, because no record in the catalogue carries a
-Sutherland constant or a Lennard-Jones pair.  Reid-Prausnitz-Poling
-Chapter~9.
+is Sutherland.  The kinetic-theory alternative is the Chapman-Enskog
+formula in terms of Lennard-Jones $\sigma$ and $\epsilon/k$.  Choupo SHIPS
+two gas models: \code{ChapmanEnskog}, which reads a record's
+\code{lennardJones} block (Svehla's 1962 fits to measured viscosities,
+curated by page), and \code{Chung}, the corresponding-states realisation
+of the same kinetic theory from $T_c$, $P_c$, $\omega$ alone.  Sutherland
+stays theory: no record carries $S$.  Reid-Prausnitz-Poling Chapter~9.
 \end{whatyoulllearn}
 
 \subsection{Pure liquid: Andrade}
@@ -11992,14 +11992,51 @@ The appeal of the LJ approach is that \emph{two} parameters
 and diffusivity --- not separately fitted per property.  Tabulations
 exist for most common species.
 
-\textbf{Status: NOT implemented.}  Of the components in the catalogue,
-none carries $\sigma$ or $\epsilon/k$; the engine registers no
-Chapman-Enskog model and reads no \code{lennardJones} block.  Building
-it is a CURATION campaign first (a cited table, matched to records by
-CAS, promoted after review) and a coding task second --- the campaign
-is named in \file{docs/design/transport-correlations-as-objects.md}.
-The Neufeld fit above IS in the engine, inside Chung, at Chung's
-reduced temperature $T^* = 1.2593\,T/T_c$.
+\textbf{Status: IMPLEMENTED (2026-09-06)} as \code{model ChapmanEnskog;},
+in the form Svehla (1962, NASA TR R-132, eq.~(1), report page 2) states
+it: $\eta\,[\mu\mathrm{P}] = 26.693\sqrt{MT}/(\sigma^2\Omega^{(2,2)*})$,
+the same expression as eq.~\eqref{eq:chapman-enskog} in other units.  The
+Neufeld fit above has ONE home in the engine
+(\file{src/thermo/transport/NeufeldOmega.H}), called by Chung at its
+reduced temperature $T^* = 1.2593\,T/T_c$ and by Chapman-Enskog at
+$T^* = kT/\epsilon$.  The model reads the component record's block,
+\begin{lstlisting}
+lennardJones                                   // in the component's .dat
+{
+    sigma      [0 1 0 0 0] 3.798e-10;          // m  (printed: 3.798 A)
+    epsOverK   71.4 K;
+    provenance
+    {
+        sigma    { origin measuredFit; method "Svehla 1962 method 1: ..."; }
+        epsOverK { origin measuredFit; method "Svehla 1962 method 1: ..."; }
+        source   "Svehla, R. A. (1962). ... NASA TR R-132, Table I(a), report page 23 (PDF page 25), row 'N2'";
+        licence  publicDomain;
+    }
+}
+\end{lstlisting}
+and is selected in the case with
+\code{transport \{ vapour \{ viscosity \{ model ChapmanEnskog; \} \} \}}.
+$\sigma$ is written in metres in the bracket form because \aa ngstr\"om is not
+a named unit in \file{src/core/Units.cpp}; $\epsilon/k$ in kelvin.  The
+provenance is PER VALUE, because Svehla codes $\sigma$ and $\epsilon/k$ by
+separate methods: codes 1--4 are fits to measured data (\code{measuredFit}),
+code 20 a radiometer measurement (\code{measured}), everything else an
+estimate (\code{estimated}) --- and the run ANNOUNCES the origin of both
+constants for every component it prices.  A component WITHOUT the block
+REFUSES by name; there is no default $\sigma$.  The blocks are drafted from
+the committed transcription of Svehla's Table I(a)
+(\file{bin/curate/svehla1962/}) by \code{bin/curate/propose\_lennard\_jones.py}
+into \file{data/local/lennardJones/}, matched to records by parsed elemental
+formula with an MW cross-check, never by name; promotion into the public
+catalogue is a review.  The model's own anchor is Svehla's printed
+viscosity for N$_2$ at 300~K (report page 90) from his own constants,
+reproduced within a declared 1\,\% (0.40\,\% observed: the Neufeld fit
+against the Hirschfelder 1954 $\Omega$ tables he interpolated) --- an
+arithmetic check of the constant and the unit chain, not a comparison with
+a measurement Choupo holds.  Tutorial \code{transport02\_chapman\_enskog}.
+\textbf{Binary diffusivity by Chapman-Enskog is NOT implemented}: the
+$\Omega^{(1,1)*}$ fit it needs is not citable from any source in the tree,
+and a constant typed from memory is a number nobody can check.
 
 \subsection{The Chung correlation --- what Choupo actually uses}
 The Lennard-Jones form needs $\sigma$ and $\epsilon/k$, which are tabulated
@@ -12054,11 +12091,14 @@ liquidViscosity                           // in the component's .dat
 }
 \end{lstlisting}
 An earlier printing of this section showed \code{viscosityGas},
-\code{Sutherland} and \code{lennardJones} keys.  No engine reader ever
-existed for any of them; the listing was corrected on 2026-09-05 and a gate
-(\code{check\_transport\_correlations}) now refuses the guide a
-\code{Sutherland} or \code{lennardJones} example while the engine has no
-reader for one.  Every registered transport model states its validity
+\code{Sutherland} and \code{lennardJones} keys.  No engine reader existed
+for any of them at the time; the listing was corrected on 2026-09-05, and on
+2026-09-06 a \code{lennardJones} reader arrived (the Chapman-Enskog model
+above, whose listing shows the grammar the loader reads).  The gate
+(\code{check\_transport\_correlations}) refuses the guide a
+\code{Sutherland} or \code{viscosityGas} example while the engine has no
+reader for one, and holds any \code{lennardJones} example here to the
+record grammar the engine parses.  Every registered transport model states its validity
 window, its PRIMARY citation and a self-check anchor, and
 \code{choupoProps transportBench} runs them all (tutorial
 \code{transport01\_gas\_bench}); record:
@@ -12174,15 +12214,29 @@ energy budget of a colliding-molecule model:
 The factor $\tfrac{5}{4}R$ corrects an Euler-type derivation that
 otherwise overpredicts $\kappa$ for monatomics.  Polyatomic
 molecules carry extra internal degrees of freedom; the
-\emph{modified Eucken} replaces the kernel with $(c_p + 1.32 R)$ or
-similar.  Either way, gas thermal conductivity is a derived quantity
-in this scheme --- no new fitted parameter beyond those already in
-$\mu$ and $c_p$.  \textbf{Status:} Choupo registers the plain Eucken
-form only; the modified Eucken is NOT implemented.  Plain Eucken is
-EXACT for a monatomic gas (with $c_p = 5R/2$ it gives the Chapman-Enskog
-$\kappa = \tfrac{15}{4}\,R\mu/M$, which is what its own \code{verify()}
-anchor checks) and an approximation for every polyatomic gas, which the
-\code{transportBench} flags per component from the record's own $c_p$.
+\emph{modified Eucken} separates the translational and internal
+contributions and weights the internal one by 1.32.  In the form Svehla
+(1962, NASA TR R-132, eq.~(2), report page 3) used for every polyatomic gas
+in his tables,
+\begin{equation}
+   \kappa \;=\; \frac{R}{M}\left[\frac{15}{4} + 1.32\left(\frac{c_p}{R} - \frac{5}{2}\right)\right]\mu
+   \qquad [\text{W/(m$\cdot$K)}],
+   \label{eq:modified-eucken}
+\end{equation}
+which on $c_v = c_p - R$ is the textbook $(\mu/M)(1.32\,c_v + 1.77\,R)$.
+Either way, gas thermal conductivity is a derived quantity in this scheme
+--- no new fitted parameter beyond those already in $\mu$ and $c_p$.
+\textbf{Status:} Choupo registers BOTH, \code{model Eucken;} and
+\code{model modifiedEucken;} (since 2026-09-06).  They coincide EXACTLY for
+a monatomic gas (with $c_p = 5R/2$ both give the Chapman-Enskog
+$\kappa = \tfrac{15}{4}\,R\mu/M$, which is what each one's own
+\code{verify()} anchor checks) and differ on every polyatomic gas, which the
+\code{transportBench} shows side by side --- the conductivity spread in
+tutorial \code{transport02\_chapman\_enskog} is that difference.  Plain
+Eucken is flagged per component as an approximation from the record's own
+$c_p$; the modified form's window is Svehla's own sentence, that the
+correction "may be rather poor at low temperatures" and improves as $T$
+rises.
 
 \subsection{Declaring the models}
 
@@ -12194,6 +12248,7 @@ just declares which model to use, inside the \code{transport} block:
 transport
 {
     thermalConductivity  { model Eucken; }      // gas (needs a viscosity model)
+ // thermalConductivity  { model modifiedEucken; } // gas, Svehla eq. (2), polyatomics
     liquidConductivity   { model SatoRiedel; }  // liquid, predictive
  // liquidConductivity   { model chemsepEq16; } // liquid, per-component fit
 }

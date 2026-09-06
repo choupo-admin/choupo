@@ -3228,6 +3228,44 @@ WHAT THIS CASE DOES NOT DO. It does not say which model is right, and it does no
 \goldrow{diag}{bench}{k\_Eucken\_N2}{0.0297082727854}
 \goldrow{diag}{bench}{k\_Eucken\_O2}{0.0306615645526}
 \goldrow{diag}{bench}{k\_Eucken\_water}{0.0250221542205}
-\goldmore{12}
+\goldmore{21}
+\end{tutgolden}
+
+\clearpage
+\tutentry{transport02\_chapman\_enskog}{tutorials/props/transport/transport02\_chapman\_enskog}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{bench}\\[-1pt]{\tiny transportBench}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Chapman-Enskog from Svehla's own force constants: seven gases at 300 K priced by two viscosity and two conductivity models, the spread a real disagreement for the first time; nothing measured here, the sigma/eps-k are Svehla's fits to pre-1962 viscosities, cited by page}
+\begin{tutnarrative}
+transport02 -- CHAPMAN-ENSKOG FROM SVEHLA'S CONSTANTS, AND THE FIRST REAL SPREAD.
+
+NOTHING IN THIS CASE IS MEASURED, except in the one sense the anchors state. The seven Lennard-Jones pairs (sigma, eps/k) on the records in constant/components/ are Svehla's LEAST-SQUARES FITS to viscosities measured before 1962 (his Table I(a) method 1, one row per gas, cited by report page in each record's own provenance block); Choupo holds none of those measurements and compares with none. What the run shows:
+
+TWO models per gas family, so the spread column is a DISAGREEMENT and not the 0.00 \% of transport01: Chung (corresponding states from Tc, Pc, omega -- non-polar truncation, Vc estimated, both announced) beside Chapman-Enskog (kinetic theory over the fitted sigma, eps/k); plain Eucken beside the modified Eucken (Svehla eq. (2), the internal modes weighted 1.32). Water is where the two viscosities part furthest: Chung's non-polar form against a pair FITTED to steam data. Argon is the control: monatomic, so Eucken and the modified Eucken coincide to the extent the record's Cp polynomial returns 5R/2 (it does, to four figures at 300 K; lambda'' is the residual) and the polyatomic flag stays silent. Every Chapman-Enskog component is ANNOUNCED with the ORIGIN of both constants (FITTED to measured transport data, Svehla method 1) and the page they were read from; an estimated pair would say ESTIMATED in the same place. The window verdict is T$\ast$ = kT/eps against the Neufeld fit's 0.3 <= T$\ast$ <= 100; water at 300 K sits at T$\ast$ = 0.37, inside, near the low edge. The comparison point is 300 K, 1 bar -- the 300 K row of Svehla's Table III -- so a reader can set the printed viscosities beside his (report pages 31 Ar, 56 CH4, 58 CO2, 74 H2, 75 H2O, 90 N2, 98 O2) and see the residual the anchor row measures: the Neufeld 1972 fit of the collision integral against the Hirschfelder 1954 tables he interpolated, 0.1-0.8 \% across these gases, 1.8 \% for water.
+
+THE ANCHORS. ChapmanEnskog: ARITHMETIC -- with Svehla's own M, sigma, eps/k for N2 the engine returns his printed eta at 300 K (report page 90) within a DECLARED 1 \% (0.40 \% observed); it checks the constant 26.693, the unit chain and the shared collision-integral home, nothing about any gas. modifiedEucken: THEORY -- a monatomic gas must give exactly (15/4) R mu / M -- after reproducing Svehla's printed N2 conductivity from his own eta and Cp/R through eq. (2). The bench prints the kind.
+
+WHAT THIS CASE DOES NOT DO. It does not say which viscosity is right for water or for anything else, and it does not compare with a measurement. The records are CASE-LOCAL (adopted, on the edwards02 precedent): the public catalogue carries no lennardJones block until Vitor promotes one; bin/curate/propose\_lennard\_jones.py drafts them into data/local/ from the committed transcription bin/curate/svehla1962/. Binary diffusivity by Chapman-Enskog is NOT here: the Omega(1,1)$\ast$ fit is not citable from any source in the tree. Record: docs/design/transport-correlations-as-objects.md, section 8.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{bench}{allPass}{1}
+\goldrow{diag}{bench}{dev\_Andrade}{5.35123586857e-08}
+\goldrow{diag}{bench}{dev\_ChapmanEnskog}{0.00400952242196}
+\goldrow{diag}{bench}{dev\_Chung}{2.53636147631e-07}
+\goldrow{diag}{bench}{dev\_Eucken}{0}
+\goldrow{diag}{bench}{dev\_Fuller}{5.617814941e-08}
+\goldrow{diag}{bench}{dev\_SatoRiedel}{3.4111766641e-06}
+\goldrow{diag}{bench}{dev\_Vogel}{0}
+\goldrow{diag}{bench}{dev\_chemsepEq101}{0}
+\goldrow{diag}{bench}{dev\_chemsepEq16}{0}
+\goldrow{diag}{bench}{dev\_modifiedEucken}{0}
+\goldrow{diag}{bench}{dev\_wilkePhi}{0}
+\goldrow{diag}{bench}{k\_Eucken\_Ar}{0.0178116749867}
+\goldrow{diag}{bench}{k\_Eucken\_CH4}{0.0321131371617}
+\goldmore{37}
 \end{tutgolden}
 

@@ -48,9 +48,11 @@ Description
     against measured pairs; none of those numbers is transcribed here, so
     the only anchor this code can honestly claim is its own closed form at a
     stated point -- which checks the transcription and the unit chain
-    (cm² -> m², bar), and nothing about the physics.  (Chapman-Enskog,
-    needing Lennard-Jones σ and ε/k that no record carries, is the named
-    next model; see docs/design/transport-correlations-as-objects.md.)
+    cm² -> m², bar), and nothing about the physics.  (A Chapman-Enskog
+    D_AB is NOT built: the viscosity model ships (transport/ChapmanEnskog.H)
+    but the Omega(1,1)* fit binary diffusion needs is not citable from any
+    source in the tree -- see transport/NeufeldOmega.H and
+    docs/design/transport-correlations-as-objects.md section 8.)
 \*---------------------------------------------------------------------------*/
 
 #pragma once

@@ -1,0 +1,23 @@
+# Hand-written isomer resolution for Svehla molecules whose PARSED composition matches
+# several Choupo records.  The composition match is by element counts; the pick among
+# the composition-identical candidates uses ONLY what Svehla PRINTS (a structural
+# formula or an n-/iso-/neo-/cyclo- prefix) against the isomer the record's declared
+# `name` denotes.  That last step reads a record name, which is why every proposal it
+# produces is flagged ISOMER PICK and must be confirmed by the curator.  A Svehla row
+# printed as a bare composition (C6H12) is NOT resolved here.
+# svehlaMolecule	chosenRecordName	basis
+C2H5OH	ethanol	Svehla prints the structural formula C2H5OH (ethyl alcohol); among the C2H6O records only `ethanol` denotes that isomer (the other is `dimethylEther`)
+CH3OCH3	dimethylEther	Svehla prints the structural formula CH3OCH3 (dimethyl ether); among the C2H6O records only `dimethylEther` denotes that isomer
+CH2CHCH3	propylene	Svehla prints the structural formula CH2CHCH3 (propene); among the C3H6 records only `propylene` denotes that isomer (the other is `cyclopropane`)
+cyclo-C3H6	cyclopropane	Svehla prints the cyclo- prefix; among the C3H6 records only `cyclopropane` denotes the ring
+CH3CCH	propyne	Svehla prints the structural formula CH3CCH (methylacetylene); among the C3H4 records only `propyne` denotes that isomer (the other, `propadiene`, is CH2CCH2)
+n-C3H7OH	1Propanol	Svehla prints the n- prefix on the propyl alcohol; among the C3H8O records only `1Propanol` denotes the normal primary alcohol (others: `isopropanol`, `methylEthylEther`)
+CH3COCH3	acetone	Svehla prints the structural formula CH3COCH3 (dimethyl ketone); among the C3H6O records only `acetone` denotes that isomer (others: `propanal`, `12PropyleneOxide`)
+CH3COOCH3	methylAcetate	Svehla prints the structural formula CH3COOCH3 (methyl acetate); among the C3H6O2 records only `methylAcetate` denotes that ester (others: `ethylFormate`, `propionicAcid`)
+n-C4H10	nButane	Svehla prints the n- prefix; among the C4H10 records only `nButane` denotes the normal alkane
+iso-C4H10	isoButane	Svehla prints the iso- prefix; among the C4H10 records only `isoButane` denotes 2-methylpropane
+C2H5OC2H5	diethylEther	Svehla prints the structural formula C2H5OC2H5 (diethyl ether); among the seven C4H10O records only `diethylEther` denotes that isomer
+CH3COOC2H5	ethylAcetate	Svehla prints the structural formula CH3COOC2H5 (ethyl acetate); among the five C4H8O2 records only `ethylAcetate` denotes that ester
+n-C5H12	nPentane	Svehla prints the n- prefix; among the C5H12 records only `nPentane` denotes the normal alkane
+C(CH3)4	neopentane	Svehla prints the structural formula C(CH3)4 (2,2-dimethylpropane); among the C5H12 records only `neopentane` denotes that isomer
+n-C6H14	nHexane	Svehla prints the n- prefix; among the five C6H14 records only `nHexane` denotes the normal alkane

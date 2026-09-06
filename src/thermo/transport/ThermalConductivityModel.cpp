@@ -28,6 +28,7 @@ License
 
 #include "ThermalConductivityModel.H"
 #include "Eucken.H"
+#include "ModifiedEucken.H"
 
 #include <map>
 #include <memory>
@@ -66,6 +67,8 @@ void ThermalConductivityModel::registerBuiltins()
 {
     registerModel("Eucken", [](const DictPtr& d) { return std::make_unique<Eucken>(d); });
     registerModel("eucken", [](const DictPtr& d) { return std::make_unique<Eucken>(d); });
+    registerModel("modifiedEucken", [](const DictPtr& d) { return std::make_unique<ModifiedEucken>(d); });
+    registerModel("ModifiedEucken", [](const DictPtr& d) { return std::make_unique<ModifiedEucken>(d); });
 }
 
 std::vector<std::string> ThermalConductivityModel::availableModels()
