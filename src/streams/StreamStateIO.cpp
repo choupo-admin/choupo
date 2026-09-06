@@ -3212,6 +3212,21 @@ readStateDir(const fs::path& dir, const ThermoPackage& thermo)
     {
         if (!e.is_regular_file()) continue;
         if (e.path().filename() == "manifest.dat") continue;
+        // THE UNIT INTERIORS ARE NOT STREAMS, BY ADDRESS AND NOT ONLY BY
+        // GRAMMAR.  `<view>/internalStates/` holds one file per UNIT
+        // (io/InternalStateIO), and this reader keys every file it accepts
+        // by its relative path -- so a stream-looking file misfiled under
+        // that root would become a stream called `internalStates.<x>`, and
+        // the completeness contract would then count it.  The contract
+        // counts STREAMS; the interior subtree is a different class of
+        // object and is skipped WHOLE here, at the one place the class of
+        // a file in a state view is decided.  (The body probe below still
+        // rejects an interior record on grammar; this line is the kind.)
+        {
+            const fs::path relTop = fs::relative(e.path(), dir);
+            if (!relTop.empty() && relTop.begin()->string() == "internalStates")
+                continue;
+        }
         // A stream-state file is CANONICAL: it carries a `componentFlows` block.
         // This is also the distinguisher from the aggregated SolutionWriter
         // snapshot (`0/streamFaces`, `0/byUnit/…`) -- a different grammar;

@@ -291,10 +291,12 @@ materialised from the parent's persisted state — `converged/` by default, neve
 a silent "latest".
 
 **A state view is a RESTARTABLE SNAPSHOT** (2026-09-06), the way an OpenFOAM
-time directory is: a FILE is a stream — the boundary — and a DIRECTORY is a
-unit's interior, `<view>/<SECTOR>/<unit>/<kind>`.  Copy
-`converged/<SECTOR>/<unit>/stageProfile` into `0/` at the same address and the
-next run STARTS from it; a declared profile that does not satisfy the balances
+time directory is: the streams are files, flat under their sectors — the
+boundary — and each unit's interior is ONE file under the view's own root,
+`<view>/internalStates/<SECTOR>/<unit>`, with one block per kind
+(`stageProfile { … }`).  Copy `converged/internalStates/<SECTOR>/<unit>` into
+`0/internalStates/` at the same address and the next run STARTS from it; a
+declared profile that does not satisfy the balances
 is a SEED, not an answer, and the unit announces which route it took either
 way.  Only units that DECLARE the kind they read accept one (today: the
 distillation column, `stageProfile`); anything else refuses by name.  Witness:

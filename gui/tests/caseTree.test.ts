@@ -16,7 +16,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { buildTree, kindOf, nodeKind, rankNode, RUN_OUTPUT_ROOTS, sectorPaths, squash, sortedChildren } from "../src/ui/caseTree";
+import { buildTree, INTERIOR_ROOT, isRunOutput, kindOf, nodeKind, rankNode, RUN_OUTPUT_ROOTS, squash, sortedChildren } from "../src/ui/caseTree";
 
 const plant = [
   "ChemicalPlantTutorial.cho",
@@ -117,50 +117,58 @@ describe("caseTree.kindOf: one home for what the RUN writes", () => {
     expect(kindOf("0.01")).toBe("output");
     expect(kindOf("iterations")).toBe("output");
   });
-  it("a UNIT INTERIOR inside a state view is its own kind -- and only the case's geography can say so", () => {
-    //  2026-09-06.  In a state view a FILE is a stream and a DIRECTORY is a
-    //  unit's interior -- except the sector levels the view repeats from the
-    //  case.  `converged/CONCENTRATION` (a sector of the flagship) and
-    //  `converged/column01` (a unit of the flat column) are the same SHAPE of
-    //  path, so the discriminator is the case's own geography, passed in.
-    const flagship = sectorPaths([
-      "system/flowsheetDict",
-      "CONCENTRATION/system/flowsheetDict",
-      "converged/CONCENTRATION/liquor",
-      "converged/CONCENTRATION/Cryst/sizeDistribution",
-    ]);
-    expect(flagship.has("CONCENTRATION")).toBe(true);
-    expect(kindOf("converged/CONCENTRATION", flagship)).toBe("output");
-    expect(kindOf("converged/CONCENTRATION/Cryst", flagship)).toBe("interior");
-    expect(kindOf("0/CONCENTRATION/Cryst", flagship)).toBe("interior");
-    expect(kindOf("0/CONCENTRATION", flagship)).toBe("state0");
-
-    //  A FLAT case declares no sector at all, so every directory in its state
-    //  view is a unit -- "empty is not a sector called root", read forwards.
-    const flat = sectorPaths(["system/flowsheetDict", "0/feed",
-                              "converged/column01/stageProfile"]);
-    expect(flat.size).toBe(0);
-    expect(kindOf("converged/column01", flat)).toBe("interior");
-
-    //  WITHOUT the geography the answer is the pre-2026-09-06 one: guessing a
-    //  unit from a name would be name identity, so nothing is guessed.
-    expect(kindOf("converged/CONCENTRATION/Cryst")).toBe("output");
+  it("the unit interiors of a state view are ONE root, internalStates/, and everything under it is interior", () => {
+    //  2026-09-06, one-file-per-unit amendment.  A state view holds the stream
+    //  files flat under the case's sector folders and, under
+    //  `internalStates/`, ONE file per unit -- so the PATH says which is
+    //  which, and no geography needs passing in.  The first shape (a
+    //  directory per unit BESIDE the stream files, one day old) could not be
+    //  classified from the path at all.
+    expect(INTERIOR_ROOT).toBe("internalStates");
+    expect(kindOf("converged/internalStates")).toBe("interior");
+    expect(kindOf("converged/internalStates/CONCENTRATION")).toBe("interior");
+    expect(kindOf("converged/internalStates/CONCENTRATION/Cryst")).toBe("interior");
+    expect(kindOf("0/internalStates")).toBe("interior");
+    expect(kindOf("0/internalStates/column16")).toBe("interior");
+    //  A sector folder inside a view keeps the view's own kind: the
+    //  flagship's `converged/CONCENTRATION` is where its stream files live.
+    expect(kindOf("converged/CONCENTRATION")).toBe("output");
+    expect(kindOf("0/CONCENTRATION")).toBe("state0");
+    //  Not a root of its own (that was the 2026-09-05 view, retired), so at
+    //  the top level the name is just another folder.
+    expect(kindOf("internalStates")).toBe("sector");
+    expect(RUN_OUTPUT_ROOTS).not.toContain("internalStates");
   });
-  it("a unit interior sorts AFTER everything else, because the boundary is read first", () => {
-    const files = ["system/flowsheetDict", "0/feed", "converged/column01/stageProfile"];
-    const sectors = sectorPaths(files);
+  it("isRunOutput is decided by the VIEW, not the kind: an interior under converged/ is the run's, under 0/ the student's", () => {
+    //  CaseIntro's keep-list reads this.  Keyed on kindOf it would have
+    //  listed `converged/internalStates/column01` -- kind "interior" -- as a
+    //  file the student authored.
+    expect(isRunOutput("converged/internalStates/column01")).toBe(true);
+    expect(isRunOutput("converged/CONCENTRATION")).toBe(true);
+    expect(isRunOutput("design/CONCENTRATION/Cryst")).toBe(true);
+    expect(isRunOutput("0.01")).toBe(true);
+    expect(isRunOutput("0/internalStates/column16")).toBe(false);
+    expect(isRunOutput("0/CONCENTRATION")).toBe(false);
+    expect(isRunOutput("system")).toBe(false);
+    expect(isRunOutput("CONCENTRATION")).toBe(false);
+  });
+  it("the interiors' root sorts AFTER everything else in its view, because the boundary is read first", () => {
+    const files = ["system/flowsheetDict", "0/feed", "converged/feed",
+                   "converged/internalStates/column01"];
     const t = buildTree(files);
     const conv = t.children.get("converged")!;
-    const interior = conv.children.get("column01")!;
-    expect(nodeKind(interior, sectors)).toBe("interior");
-    expect(rankNode(interior, sectors))
-      .toBeGreaterThan(rankNode(t.children.get("converged")!, sectors));
+    const interior = conv.children.get("internalStates")!;
+    expect(nodeKind(interior)).toBe("interior");
+    expect(rankNode(interior)).toBeGreaterThan(rankNode(t.children.get("converged")!));
   });
-  it("nothing in the tree still names a retired internalStates/ view", () => {
-    //  The view existed for one day (2026-09-05 -> 2026-09-06).  A root that
-    //  no writer produces is a folder a student is told to look for and never
-    //  finds.
+  it("nothing in the tree still names a retired TOP-LEVEL internalStates/ view", () => {
+    //  The top-level view existed for one day (2026-09-05 -> 2026-09-06).  A
+    //  root that no writer produces is a folder a student is told to look
+    //  for and never finds.  The NAME lives on, inside each state view, as
+    //  the interiors' own root -- that is INTERIOR_ROOT, not a run-output
+    //  root.
     expect(RUN_OUTPUT_ROOTS).not.toContain("internalStates");
+    expect(RUN_OUTPUT_ROOTS).not.toContain(INTERIOR_ROOT);
   });
   it("a SQUASHED sector keeps its own kind (DRYING/system is the sector DRYING, not a declared dict)", () => {
     const t = squash(buildTree(["system/controlDict", "DRYING/system/flowsheetDict", "converged/DRYING/Out"]));
@@ -176,9 +184,10 @@ describe("caseTree.kindOf: one home for what the RUN writes", () => {
     const harvested = m![1]!.split(",").map((x) => x.trim().replace(/"/g, "")).filter(Boolean);
     for (const r of harvested) expect(RUN_OUTPUT_ROOTS).toContain(r);
   });
-  it("CaseIntro reads the one home instead of its own keep-list", () => {
+  it("CaseIntro reads the one home instead of its own keep-list -- and reads the VIEW, not the kind", () => {
     const intro = readFileSync(resolve(__dirname, "..", "src/ui/CaseIntro.tsx"), "utf8");
-    expect(intro).toMatch(/kindOf\(/);
+    expect(intro).toMatch(/isRunOutput\(/);
+    expect(intro).not.toMatch(/kindOf\([^)]*\)\s*!==\s*"output"/);
     expect(intro).not.toMatch(/p\.startsWith\("system\/"\) \|\| p\.startsWith\("constant\/"\)/);
   });
 });

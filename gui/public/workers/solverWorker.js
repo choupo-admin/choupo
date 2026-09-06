@@ -305,9 +305,11 @@ self.addEventListener("message", async (e) => {
               // The solved stream state -> the Case tab, read-only.
               if (Object.keys(outputs.converged).length > 0) {
                 //  Stream files AND unit interiors: a state view carries both
-                //  since 2026-09-06 (`converged/<SECTOR>/<unit>/<kind>`), and
-                //  they ride the SAME channel because they are one snapshot --
-                //  the design/ argument for a separate channel does not apply.
+                //  since 2026-09-06 (`converged/internalStates/<SECTOR>/<unit>`,
+                //  one file per unit), and they ride the SAME channel because
+                //  they are one snapshot -- the design/ argument for a
+                //  separate channel does not apply.  The walk is recursive,
+                //  so the interiors' root needs no entry of its own here.
                 log("[worker] collected " + Object.keys(outputs.converged).length
                     + " converged/ file(s) (streams + unit interiors)");
                 self.postMessage({ type: "convergedFiles", files: outputs.converged });

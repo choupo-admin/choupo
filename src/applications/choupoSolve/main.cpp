@@ -980,10 +980,11 @@ try
         //  an OpenFOAM time directory holds one file per FIELD carrying its
         //  boundary conditions AND its internal field, and until 2026-09-06
         //  Choupo's held only the boundary half while the interiors sat in a
-        //  separate top-level `internalStates/` view.  In a state view a FILE
-        //  is a stream and a DIRECTORY is a unit's interior; `converged/` was
-        //  removed and rebuilt whole three lines above, so nothing stale can
-        //  survive beside these.  A failure is SAID and never fatal -- the
+        //  separate top-level `internalStates/` view.  A state view carries
+        //  its streams flat and, under `<view>/internalStates/`, ONE file per
+        //  unit with one block per kind (2026-09-06, the one-file-per-unit
+        //  amendment); `converged/` was removed and rebuilt whole three lines
+        //  above, so nothing stale can survive beside these.  A failure is SAID and never fatal -- the
         //  answer is already computed.  A `T_K` profile (van Heerden, Merkel)
         //  is an analysis over a swept parameter, not equipment state; the
         //  writer skips and announces it.

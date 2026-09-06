@@ -196,7 +196,8 @@ sVector thomas(const sVector& A,
 //  binds (the 2026-05-30 rule); this one was neither, on the unit whose
 //  interior a student is most likely to have an opinion about.  Both routes
 //  now speak, and the declared one is a FILE the case owns:
-//  `0/<SECTOR>/<unit>/stageProfile`, in the very grammar `converged/` writes.
+//  `0/internalStates/<SECTOR>/<unit>` (its `stageProfile` block), in the very
+//  grammar `converged/` writes.
 //
 //  A DECLARED PROFILE THAT DOES NOT SATISFY THE BALANCES IS A SEED, NOT AN
 //  ANSWER.  Nothing here checks the profile against the column equations --
@@ -216,21 +217,22 @@ bool DistillationColumn::seedFromDeclaredInterior(std::size_t           N,
         if (verbosity >= 2)
             std::cout << "  [seed] interior seeded by the unit: linear T between"
                          " the guesses, feed composition on every stage ("
-                      << methodName << ") -- declare"
-                         " 0/<SECTOR>/<unit>/stageProfile to own it\n";
+                      << methodName << ") -- declare a stageProfile block"
+                         " in 0/internalStates/<SECTOR>/<unit> to own it\n";
         return false;
     }
 
     const std::size_t n = thermo.n();
     auto refuse = [&](const std::string& why) {
         throw std::runtime_error(
-            "DistillationColumn: the interior declared in"
-            " 0/<SECTOR>/<unit>/stageProfile does not describe this column -- "
+            "DistillationColumn: the stageProfile block declared in"
+            " 0/internalStates/<SECTOR>/<unit> does not describe this column -- "
             + why + ".  A declared interior is read as this unit's starting"
               " state; it must carry `stage`, `T` and one `x_<component>`"
               " column per component of the case, all of length nStages."
-              "  Re-copy it from converged/<SECTOR>/<unit>/stageProfile after a"
-              " run of THIS case, or delete it and let the unit seed itself.");
+              "  Re-copy the file from converged/internalStates/<SECTOR>/<unit>"
+              " after a run of THIS case, or delete it and let the unit seed"
+              " itself.");
     };
 
     if (p->xAxis != "stage")
@@ -1409,7 +1411,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     }
     //  The unit's OWN seed, built first and then offered to the case: linear T
     //  between the end guesses, `zGuess` on every stage.  A declared
-    //  `0/<SECTOR>/<unit>/stageProfile` replaces both; with none the two
+    //  `stageProfile` block in `0/internalStates/<SECTOR>/<unit>` replaces
+    //  both; with none the two
     //  vectors are exactly what this method has always packed into u0.
     sVector              Tseed(N, 0.0);
     std::vector<sVector> xseed(N, zGuess);

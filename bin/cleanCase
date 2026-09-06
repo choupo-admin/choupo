@@ -48,7 +48,17 @@
 #      converged/       the solved state.  It is generated, but a DRILL-IN
 #                       materialises a child case's `0/` FROM it, so deleting
 #                       it silently destroys the input of a workflow the
-#                       architecture supports.
+#                       architecture supports.  The unit interiors ride it
+#                       (`converged/internalStates/`, ONE file per unit,
+#                       2026-09-06) and are kept with it; `0/internalStates/`
+#                       is AUTHORED and is never touched.
+#      <view>/<SECTOR>/<unit>/<kind>   IS removed, inside converged/ only: the
+#                       RETIRED one-directory-per-unit shape (one day old,
+#                       2026-09-06).  Nothing writes it any more, so a copy
+#                       left on disk is a stale run output that reads like
+#                       state.  Found by what the file SAYS (`recordType
+#                       internalState` outside `internalStates/`), never by
+#                       the directory's name.
 #      postProcessing/  the `reportsLayout postProcessing;` tree, the modern
 #                       home of what `reports/` holds in the default layout.
 #  Both are gitignored, so neither dirties a checkout.  Whether this tool
@@ -63,7 +73,7 @@ if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
     #  is the ASCII logo and the first line of the GPL notice -- so
     #  `cleanCase --help`, the one thing a reader types before deleting
     #  files, printed no usage at all.
-    sed -n '31,56p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '31,67p' "$0" | sed 's/^# \{0,1\}//'
     exit 0
 fi
 
@@ -82,6 +92,24 @@ for pat in 'log.*' '*.log' 'processor[0-9]*' 'reports' 'design' 'trajectory.csv'
         count=$((count + 1))
     done < <(find "$TARGET" -maxdepth 1 -name "$pat" -print0 2>/dev/null)
 done
+
+# The RETIRED interior shape inside converged/: a directory per unit holding
+# one file per kind, `<view>/<SECTOR>/<unit>/<kind>`.  Since 2026-09-06 the
+# engine writes ONE file per unit under converged/internalStates/ and reads
+# nothing else, so any such directory is a stale output of a shape nothing
+# produces.  A record is recognised by what it declares, not by where it
+# sits; the stream files beside it are never touched, and 0/ is never entered.
+if [ -d "$TARGET/converged" ]; then
+    while IFS= read -r -d '' f; do
+        case "$f" in */converged/internalStates/*) continue ;; esac
+        if grep -q 'recordType' "$f" && grep -q 'internalState' "$f"; then
+            d=$(dirname "$f")
+            [ "$d" = "$TARGET/converged" ] && continue
+            rm -rf "$d"
+            count=$((count + 1))
+        fi
+    done < <(find "$TARGET/converged" -mindepth 2 -type f -print0 2>/dev/null)
+fi
 
 # Per-case compiled binary (buildCode), but NEVER the source under code/.
 if [ -d "$TARGET/code/.build" ]; then

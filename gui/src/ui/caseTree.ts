@@ -77,71 +77,71 @@ export function squash(node: TreeNode, isRoot = true): TreeNode {
 
 /*  THE KIND OF A DIRECTORY -- one home (2026-09-05).
  *
- *  A case directory is one of four kinds, and until today the tree drew three
- *  of them in one colour, sorted alphabetically together: on the flagship
- *  plant `converged/` sat between two sectors and read as a fifth sector, and
- *  nothing told a student which folders the RUN writes (and overwrites) and
- *  which they author.  The code KNEW -- the worker harvests exactly the run
- *  outputs, the workspace merges them from their own result fields -- and the
- *  fact was thrown away before drawing.  It lived in five places
- *  (worker list, two result fields, the workspace merge, CaseIntro's own
- *  positive keep-list) and in none of them as a classification.  This is it.
+ *  A case directory is one of five kinds, and until 2026-09-05 the tree drew
+ *  three of them in one colour, sorted alphabetically together: on the
+ *  flagship plant `converged/` sat between two sectors and read as a fifth
+ *  sector, and nothing told a student which folders the RUN writes (and
+ *  overwrites) and which they author.  The code KNEW -- the worker harvests
+ *  exactly the run outputs, the workspace merges them from their own result
+ *  fields -- and the fact was thrown away before drawing.  It lived in five
+ *  places (worker list, two result fields, the workspace merge, CaseIntro's
+ *  own positive keep-list) and in none of them as a classification.  This
+ *  is it.
  *
- *    declared  system/ constant/        what the case DECLARES (dicts)
- *    state0    0/                        the authored initial state
- *    sector    any other folder          a sub-case: its own system/ 0/ ...
- *    output    converged/ design/ ...    written by the solver on EVERY run
- *    interior  <view>/<SECTOR>/<unit>/   what ONE unit holds inside it
+ *    declared  system/ constant/                 what the case DECLARES (dicts)
+ *    state0    0/                                 the authored initial state
+ *    sector    any other folder                   a sub-case: its own system/ 0/ ...
+ *    output    converged/ design/ ...             written by the solver on EVERY run
+ *    interior  <view>/internalStates/             what each unit holds inside it
  *
  *  Kind is decided on the PATH, never on a squashed label: everything under
  *  an output root is output (`converged/CONCENTRATION` squashes into one
  *  label, and its kind must still be output); everything under `0/` is
  *  initial state; otherwise the node's own name decides.  The ontology is
- *  docs/architecture/stream-state-architecture.md §2.
+ *  docs/architecture/stream-state-architecture.md section 2.
  *
- *  A STATE VIEW CARRIES ITS UNIT INTERIORS (2026-09-06).  In a state view a
- *  FILE is a stream and a DIRECTORY is a unit's interior -- except the
- *  SECTOR levels, which the view repeats from the case's own geography.  So
- *  the two cannot be told apart from a path alone: `converged/CONCENTRATION`
- *  is a sector of the flagship and `converged/column01` is a unit of the flat
- *  column, and nothing in either string says which.  The GEOGRAPHY is the
- *  discriminator, and it is a fact the caller holds -- the case's own
- *  top-level sector folders -- so it is PASSED IN.  Called without it,
- *  `kindOf` classifies exactly as it did before this rule existed: every
- *  level of a view is the view's kind.  That is deliberate: guessing a unit
- *  interior from a name would be name identity, and defaulting the other way
- *  would silently relabel every sector of every fractal case.  */
+ *  A STATE VIEW CARRIES ITS UNIT INTERIORS (2026-09-06), under ONE root of
+ *  their own: `<view>/internalStates/<SECTOR>/<unit>` is ONE file per unit
+ *  (blocks inside), beside the sector folders that hold the stream files.
+ *  The root is what tells an interior from a sector -- the first shape, one
+ *  day old, filed a DIRECTORY per unit beside the stream files, and then a
+ *  view's directories could not be told apart from a path alone (the case's
+ *  geography had to be passed in).  Now the path says it: `internalStates`
+ *  as the second segment of a state view, and everything under it, is
+ *  "interior".  That is ALL the GUI does with the new root (2026-09-06,
+ *  struck after the third reading: no virtual grouping, no further shaping;
+ *  the layout is closed, and what changes it next is a student, not a
+ *  reflection).  */
 export type NodeKind = "declared" | "state0" | "sector" | "output" | "interior";
 
 /*  Every directory the ENGINE writes as run output (stream-state-architecture
- *  §2).  The worker's OUTPUT_ROOTS harvests the subset MEMFS produces today
- *  (converged, design); this list classifies everything the DISK can hold, so
- *  a case opened from a folder with `iterations/` draws it dimmed too.
- *  caseTree.test.ts pins that the worker's list is a subset of this one.  */
+ *  section 2).  The worker's OUTPUT_ROOTS harvests the subset MEMFS produces
+ *  today (converged, design); this list classifies everything the DISK can
+ *  hold, so a case opened from a folder with `iterations/` draws it dimmed
+ *  too.  caseTree.test.ts pins that the worker's list is a subset of this
+ *  one.  `internalStates` is NOT a root: it lives inside a view.  */
 export const RUN_OUTPUT_ROOTS: readonly string[] =
   ["converged", "design", "iterations", "economics", "postProcessing"];
 
+/*  THE ROOT, inside a state view, under which the unit interiors are filed
+ *  -- the GUI's one copy of the engine's `InternalStateIO::ROOT`.  */
+export const INTERIOR_ROOT = "internalStates";
+
 const isInstant = (seg: string) => /^\d+(\.\d+)?$/.test(seg);   // 0.01/ 0.02/ ... transient snapshots
 
-/*  The case's OWN geography: the top-level folders that are sectors, as
- *  case-root-relative paths ("MAIN", "CONCENTRATION", "A/B" for a nested
- *  one).  Derived from the same `kindOf` this file exports, so "what is a
- *  sector" has ONE definition and a view is classified against the case it is
- *  a view OF.  Empty for a flat case -- which is exactly right: every
- *  directory in a flat case's state view IS a unit interior.  */
-export function sectorPaths(files: string[]): Set<string> {
-  const out = new Set<string>();
-  for (const f of files) {
-    const parts = f.split("/");
-    for (let i = 1; i < parts.length; i++) {
-      const dir = parts.slice(0, i).join("/");
-      if (kindOf(dir) === "sector") out.add(dir);
-    }
-  }
-  return out;
+/*  IS THIS PATH SOMETHING THE RUN WROTE?  The view a path sits in decides:
+ *  everything under a run-output root or a transient instant is the run's,
+ *  whatever its kind -- a unit interior under `converged/` is a run output
+ *  and one under `0/` is authored, and `kindOf` says "interior" for both.
+ *  CaseIntro's keep-list reads THIS, not the kind: keyed on the kind it
+ *  would have listed `converged/internalStates/column01` as a file the
+ *  student authored.  */
+export function isRunOutput(prefix: string): boolean {
+  const first = prefix.split("/")[0] ?? "";
+  return first !== "0" && (RUN_OUTPUT_ROOTS.includes(first) || isInstant(first));
 }
 
-export function kindOf(prefix: string, sectors?: ReadonlySet<string>): NodeKind {
+export function kindOf(prefix: string): NodeKind {
   const segs = prefix.split("/");
   const first = segs[0] ?? "";
   //  `0` is BOTH a numeric name and the authored state view, and the authored
@@ -151,14 +151,10 @@ export function kindOf(prefix: string, sectors?: ReadonlySet<string>): NodeKind 
              : RUN_OUTPUT_ROOTS.includes(first) || isInstant(first) ? "output"
              : null;
   if (view) {
-    //  Inside a state view.  Without the case's geography every level is the
-    //  view's own kind (the pre-2026-09-06 answer, and the safe one).  With
-    //  it, the first level that the case does NOT declare as a sector names a
-    //  UNIT, and that directory -- and everything under it -- is its interior.
-    if (sectors && segs.length > 1) {
-      const rest = segs.slice(1).join("/");
-      if (!sectors.has(rest)) return "interior";
-    }
+    //  Inside a state view: the interiors' own root, and everything under
+    //  it, is "interior"; every other level is the view's own kind (a
+    //  sector the view repeats from the case's geography).
+    if (segs.length > 1 && segs[1] === INTERIOR_ROOT) return "interior";
     return view;
   }
   const last = segs[segs.length - 1] ?? "";
@@ -182,22 +178,22 @@ export function kindOf(prefix: string, sectors?: ReadonlySet<string>): NodeKind 
  *  into a yellow line (found by the ordering test on 2026-09-05).  The node
  *  drawn at this depth IS `DRYING`, so its kind is kindOf("DRYING"): the
  *  prefix up to and including the first segment of its label.  */
-export function nodeKind(node: TreeNode, sectors?: ReadonlySet<string>): NodeKind {
+export function nodeKind(node: TreeNode): NodeKind {
   const head = node.label.split("/")[0] ?? node.label;
   const own = node.prefix.slice(0, node.prefix.length - node.label.length) + head;
-  return kindOf(own, sectors);
+  return kindOf(own);
 }
 
-export function rankNode(node: TreeNode, sectors?: ReadonlySet<string>): number {
-  const k = nodeKind(node, sectors);
+export function rankNode(node: TreeNode): number {
+  const k = nodeKind(node);
   if (k === "declared") return (node.label.split("/")[0] ?? "") === "system" ? 0 : 1;
   //  A unit interior sorts LAST, after the streams of its own sector: the
   //  boundary of a state view is read before what sits between the boundaries.
   return k === "sector" ? 2 : k === "state0" ? 3 : k === "output" ? 4 : 5;
 }
 
-export function sortedChildren(node: TreeNode, sectors?: ReadonlySet<string>): TreeNode[] {
+export function sortedChildren(node: TreeNode): TreeNode[] {
   return Array.from(node.children.values())
-    .sort((a, b) => rankNode(a, sectors) - rankNode(b, sectors)
+    .sort((a, b) => rankNode(a) - rankNode(b)
                  || a.label.localeCompare(b.label));
 }

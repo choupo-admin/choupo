@@ -18,15 +18,19 @@ while what each unit held *inside* it existed nowhere a case could declare.
 Since 2026-09-06 a state view carries both:
 
 ```
-0/<stream>                    a FILE      is a stream        (the boundary)
-0/<SECTOR>/<unit>/<kind>      a DIRECTORY is a unit interior (what it holds)
+0/<stream>                       a stream: one file, flat        (the boundary)
+0/internalStates/<unit>          a unit's interior: ONE file per unit, one
+                                 block per kind                  (what it holds)
 ```
 
-This case declares `0/column16/stageProfile` — T and the liquid and vapour
-compositions on all fifteen stages, in exactly the grammar the run writes to
-`converged/column16/stageProfile`.  **The same object travels both ways.**  Run
-the case, copy the file from `converged/` back into `0/`, and the next run
-starts where the last one finished.
+This case declares `0/internalStates/column16` — a `stageProfile` block with
+T and the liquid and vapour compositions on all fifteen stages, in exactly the
+grammar the run writes to `converged/internalStates/column16`.  **The same
+object travels both ways.**  Run the case, copy the file from
+`converged/internalStates/` into `0/internalStates/`, and the next run starts
+where the last one finished.  The interiors have their own root because a
+unit and a stream may share a name — identity is (kind, sector, name), never
+name alone.
 
 ## A declared profile is a SEED, not an answer
 
@@ -58,13 +62,13 @@ and, with nothing declared:
 
 ```
 [seed] interior seeded by the unit: linear T between the guesses, feed
-       composition on every stage (WangHenke) -- declare
-       0/<SECTOR>/<unit>/stageProfile to own it
+       composition on every stage (WangHenke) -- declare a stageProfile block
+       in 0/internalStates/<SECTOR>/<unit> to own it
 ```
 
 ## Try it
 
-Run the case and read the `iterations` KPI.  Then delete `0/column16/` and run
+Run the case and read the `iterations` KPI.  Then delete `0/internalStates/` and run
 it again.  Both runs reach the same column; only one of them had to search for
 it.  That difference is the whole value of a restartable snapshot — and it is
 why an interior is **state** and not a report.

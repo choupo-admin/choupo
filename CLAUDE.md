@@ -194,15 +194,22 @@ case/
   convention for humans, never inferred by the engine from capitals, never
   forced on a flat case (its units ARE the plant).  Record:
   [`docs/design/main-is-a-sector-and-the-views-repeat-the-plant.md`](docs/design/main-is-a-sector-and-the-views-repeat-the-plant.md).
-* **A STATE VIEW HOLDS BOTH HALVES: a FILE is a stream, a DIRECTORY is a
-  unit's interior** (2026-09-06).  OpenFOAM's time directory carries a field's
-  `internalField` AND its `boundaryField` in one file, which is what makes it
-  restartable; a Choupo state view carries the streams (the boundary) as files
-  and each unit's interior as `<view>/<SECTOR>/<unit>/<kind>`.  `converged/`
-  writes them; `0/` may DECLARE them, tracked, and the unit then STARTS there
-  instead of from a seed it invents in code.  The completeness contract still
-  counts STREAMS and ignores directories.  Record:
-  [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md).
+* **A STATE VIEW HOLDS BOTH HALVES: the streams as files, flat, and under
+  `internalStates/` ONE file per unit** (2026-09-06, amended the same day).
+  OpenFOAM's time directory carries a field's `internalField` AND its
+  `boundaryField` in one file, which is what makes it restartable; a Choupo
+  state view carries the streams (the boundary) as `<view>/<SECTOR>/<stream>`
+  and each unit's interior as `<view>/internalStates/<SECTOR>/<unit>`, one
+  block per kind (`stageProfile {}`, `axialProfile {}`, …).  The interior has
+  its own root because a unit and a stream MAY share a name — **identity is
+  (kind, sector, name), never name alone**; the homonym is announced, never
+  refused.  The reading: *the view shows the boundary directly; the interior
+  is namespaced inside the same view.*  `converged/` writes them; `0/` may
+  DECLARE them, tracked, and the unit then STARTS there instead of from a
+  seed it invents in code.  The completeness contract counts STREAMS and
+  skips the `internalStates/` subtree by name.  The layout is CLOSED; what
+  changes it next is a student, not a reflection.  Record:
+  [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md) §9.
 * **The `.cho` marker file** is the openable entity in the GUI (the CLI is
   unaffected; `runCase`/`choupoSolve` take the folder path).  Intentionally
   empty for now; future GUI-only metadata lives here without polluting the
@@ -1108,27 +1115,42 @@ the 2026-09-04 specification sheets, which ride the `sizing {}` PASS in
 Record:
 [`docs/design/the-hierarchy-that-only-existed-in-the-name.md`](docs/design/the-hierarchy-that-only-existed-in-the-name.md).
 
-**A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT (2026-09-06).**  In OpenFOAM one
-FIELD file carries `internalField` AND `boundaryField`; a state view here now
-carries both halves too — **a FILE is a stream, a DIRECTORY is a unit's
-interior** (`<view>/<SECTOR>/<unit>/<kind>`) — and the top-level
-`internalStates/` view of the day before is RETIRED: `design/` is a
+**A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT (2026-09-06, amended the same
+day to ONE FILE PER UNIT).**  In OpenFOAM one FIELD file carries
+`internalField` AND `boundaryField`; a state view here now carries both halves
+too — the streams as files, flat, and each unit's interior as ONE file at
+`<view>/internalStates/<SECTOR>/<unit>` with one block per kind — and the
+top-level `internalStates/` view of the day before is RETIRED: `design/` is a
 DERIVATIVE and a profile is STATE, so it was the wrong neighbour.  The
-substantive half is the SEED: `DistillationColumn` invented its own starting
-interior in code and said nothing, the one solver aid that escaped the
-2026-05-30 rule, so it now READS `0/<...>/stageProfile` when the case declares
-one, refuses by name a declaration that does not describe THIS column, and
-ANNOUNCES both routes — **a declared profile that does not satisfy the
-balances is a SEED, not an answer.**  `0/` stays authored and TRACKED (a case
-may commit the state it starts from); an ORPHAN unit directory and a kind
-NOBODY READS each refuse.  Traps paid for: the completeness contract had to
-keep counting STREAMS, not files, or a declared interior would read as an
-orphan stream; a record must identify ITSELF (`recordType internalState;`)
-because a directory cannot be told from a sector by its name; and the GUI
-cannot classify a view's directories without the CASE's own geography, so it
-is passed in rather than guessed from a kind vocabulary that would be a fourth
-home for the engine's words.  Gate: `check_internal_states` (same name,
-changed claim).  Record:
+morning's shape, a DIRECTORY per unit beside the stream files, was measured
+and corrected the same day (three-way reflection, Vítor/ChatGPT/assistant):
+every such directory held one file, and a unit file BESIDE the streams would
+collide in silence with a homonymous stream — so the interior has its own
+root, **identity is (kind, sector, name), never name alone**, and the homonym
+is ANNOUNCED, not refused.  The substantive half is the SEED:
+`DistillationColumn` invented its own starting interior in code and said
+nothing, the one solver aid that escaped the 2026-05-30 rule, so it now READS
+the `stageProfile` block of `0/internalStates/<...>/<unit>` when the case
+declares one, refuses by name a declaration that does not describe THIS
+column, and ANNOUNCES both routes — **a declared profile that does not satisfy
+the balances is a SEED, not an answer.**  `0/` stays authored and TRACKED (a
+case may commit the state it starts from); an ORPHAN unit file, an unknown
+BLOCK name, a kind NOBODY READS and a record MISFILED outside
+`internalStates/` (the retired shape, which both readers would otherwise skip
+in silence) each refuse.  Traps paid for: the completeness contract skips the
+`internalStates/` subtree BY NAME, not only by grammar, or a stream-looking
+file misfiled there becomes stream `internalStates.<x>`; a record must
+identify ITSELF (`recordType internalState;`); the GUI's keep-list read the
+KIND and would have listed `converged/internalStates/<unit>` as a file the
+student wrote — it reads the VIEW now (`caseTree.isRunOutput`); and
+`StreamOwnership::sectorOf` derives a stream's sector by SPLITTING the unit
+name where the interior uses the STAMP — two answers to one question, agreeing
+on today's one-level corpus, named and NOT fixed (a stream-ownership slice).
+NOT done: the symmetric `streams/` form (a 299-case migration that reopens the
+2026-07-06 spine).  **The layout is CLOSED; what changes it next is a student,
+not a reflection.**  Gate: `check_internal_states` (same name, changed claim;
+arm (f) — two kinds on one unit — has NO live case, because
+`SimulationResult::profiles` carries one profile per unit).  Record:
 [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md).
 
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
@@ -1153,8 +1175,9 @@ served copy; the Poling precedent).  Record:
 
 **WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT
 (2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the
-address is now `<view>/<SECTOR>/<unit>/<kind>` inside `0/` and `converged/`,
-and everything else below still holds).**  It is written by
+address is now `<view>/internalStates/<SECTOR>/<unit>` inside `0/` and
+`converged/`, one file per unit with the kind as a block, and everything else
+below still holds).**  It is written by
 `src/io/InternalStateIO.cpp` from `SimulationResult::profiles` — the
 record `UnitOperation::profile()` already publishes to the JSON, the Plot tab
 and `profile.csv` — on the `design/` precedent: sector as stamped data, no

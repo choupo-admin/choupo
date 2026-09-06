@@ -142,10 +142,11 @@ public:
     //  A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT.  In OpenFOAM a time
     //  directory holds one file per FIELD, carrying the boundary conditions
     //  and the internal field together; in Choupo a state view holds one file
-    //  per STREAM (the boundary) and one directory per unit (its interior).
-    //  What `converged/<SECTOR>/<unit>/<kind>` writes, a case may copy into
-    //  `0/<SECTOR>/<unit>/<kind>` and OWN -- and then the unit starts from it
-    //  instead of from a seed it invents in code.
+    //  per STREAM (the boundary) and, under `internalStates/`, one file per
+    //  unit (its interior, one block per kind).  What
+    //  `converged/internalStates/<SECTOR>/<unit>` writes, a case may copy
+    //  into `0/internalStates/<SECTOR>/<unit>` and OWN -- and then the unit
+    //  starts from it instead of from a seed it invents in code.
     //
     //  `readsInteriorKinds()` is the unit's DECLARATION of which kinds it
     //  will read.  It is not decoration: a kind file no unit reads is a

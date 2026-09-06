@@ -62,9 +62,10 @@ Description
         q (feed quality, default 1 = saturated liquid).
 
     Algorithm:
-        1. The starting interior.  The case may DECLARE it as
-           `0/<SECTOR>/<unit>/stageProfile` -- the same file `converged/`
-           writes -- and then the iteration starts from that profile; a
+        1. The starting interior.  The case may DECLARE it as the
+           `stageProfile` block of `0/internalStates/<SECTOR>/<unit>` -- the
+           same file `converged/` writes -- and then the iteration starts
+           from that profile; a
            declared profile that does not satisfy the balances is a SEED, not
            an answer.  With none declared the unit seeds itself (T linear
            between guesses, feed composition on every stage) and SAYS so.
@@ -126,8 +127,9 @@ public:
     //
     //  Its stage profile is exactly what a `stageProfile` file carries -- the
     //  same `UnitProfile` object this class publishes -- so a case may declare
-    //  `0/<SECTOR>/<unit>/stageProfile` and the column starts the iteration
-    //  from it instead of from the linear guess it invents in code below.
+    //  a `stageProfile` block in `0/internalStates/<SECTOR>/<unit>` and the
+    //  column starts the iteration from it instead of from the linear guess
+    //  it invents in code below.
     //  Declaring the kind is what makes the file legal: the flowsheet refuses
     //  any interior no unit reads.
     std::vector<std::string> readsInteriorKinds() const override

@@ -418,8 +418,9 @@ export interface RunResult {
   convergedFiles?: { [relPath: string]: string };
   /*  A STATE VIEW CARRIES ITS UNIT INTERIORS TOO (2026-09-06).  Since a state
    *  directory is a restartable snapshot, `convergedFiles` also holds
-   *  `converged/<SECTOR>/<unit>/<kind>` -- what each unit publishes about its
-   *  own inside, beside the streams that bound it.  They ride the SAME field
+   *  `converged/internalStates/<SECTOR>/<unit>` -- ONE file per unit, what it
+   *  publishes about its own inside, filed under its own root beside the
+   *  streams that bound it.  They ride the SAME field
    *  because they are ONE snapshot: the argument that gave `design/` its own
    *  channel ("no sizing pass" must not read as "did not solve") does not
    *  apply, since an interior only exists where a stream table does.  */

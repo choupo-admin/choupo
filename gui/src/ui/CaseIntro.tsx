@@ -53,7 +53,7 @@ import { IconArrowLeft, IconFolderCode, IconPlayerPlay, IconRobot, IconRoute, Ic
 
 import { useStore } from "../state/store.js";
 import { Lesson } from "./Lesson.js";
-import { kindOf } from "./caseTree";
+import { isRunOutput } from "./caseTree";
 
 const APP_LABEL: { [k: string]: string } = {
   choupoSolve: "Steady-state",
@@ -143,13 +143,16 @@ function modelOf(block: unknown): string | undefined {
 function caseTree(rawFiles: { [p: string]: string }, caseName: string): string {
   //  The simulation files are everything the student AUTHORS: the marker, the
   //  declared dicts, the initial state and every sector's own tree.  What the
-  //  RUN writes is excluded through caseTree.kindOf -- the ONE home for that
-  //  fact (this used to be a positive list of three roots, which silently
-  //  hid every sector of a fractal case from the intro).  Root-level prose
-  //  (README.md and the like) is teaching material, not a simulation file.
+  //  RUN writes is excluded through caseTree.isRunOutput -- the ONE home for
+  //  that fact (this used to be a positive list of three roots, which
+  //  silently hid every sector of a fractal case from the intro; and until
+  //  2026-09-06 it read the KIND, which would have listed
+  //  `converged/internalStates/<unit>` -- a run output of kind "interior" --
+  //  as a file the student wrote).  Root-level prose (README.md and the
+  //  like) is teaching material, not a simulation file.
   const keep = (p: string) =>
     /\.cho$/.test(p)
-      || (p.includes("/") && kindOf(p.slice(0, p.lastIndexOf("/"))) !== "output");
+      || (p.includes("/") && !isRunOutput(p.slice(0, p.lastIndexOf("/"))));
   const paths = Object.keys(rawFiles).filter(keep).sort();
   const top: string[] = [];
   const folders: { [f: string]: string[] } = {};

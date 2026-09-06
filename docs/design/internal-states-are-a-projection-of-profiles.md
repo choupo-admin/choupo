@@ -171,8 +171,11 @@ down:
 
 ```
     internalStates/<SECTOR>/<unit>/<kind>      2026-09-05, retired
-    converged/<SECTOR>/<unit>/<kind>           the engine's snapshot
+    converged/<SECTOR>/<unit>/<kind>           the engine's snapshot (one morning)
     0/<SECTOR>/<unit>/<kind>                   the AUTHOR's — a declared seed
+    <view>/internalStates/<SECTOR>/<unit>      AMENDED the same day (task #105):
+                                               ONE file per unit, the kind a
+                                               block — see the snapshot record §9
 ```
 
 What survives unchanged: the boundary (§2 — a field over a coordinate of the

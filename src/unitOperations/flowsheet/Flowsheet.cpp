@@ -1360,7 +1360,8 @@ void runUnit(const DictPtr&                                          udict,
 
     auto unit = UnitOperation::New(utype);
 
-    //  WHAT THE CASE DECLARES THIS UNIT STARTS FROM (0/<SECTOR>/<unit>/<kind>).
+    //  WHAT THE CASE DECLARES THIS UNIT STARTS FROM
+    //  (0/internalStates/<SECTOR>/<unit>, one block per kind).
     //  Handed over BEFORE solve so the unit can seed its own interior from it
     //  -- and announce which of the two routes it took.  A unit that declares
     //  no readable kind never sees one: the flowsheet refused the file at the
@@ -2670,22 +2671,57 @@ int Flowsheet::solve(const DictPtr& dict,
         throw std::runtime_error(msg);
     }
 
-    // ---- The DECLARED INTERIORS (0/<SECTOR>/<unit>/<kind>) --------------
+    // ---- The DECLARED INTERIORS (0/internalStates/<SECTOR>/<unit>) --------
     //  A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT: `0/` carries one file per
-    //  stream (the boundary) and one directory per unit (its interior), the
-    //  way an OpenFOAM time directory carries a field's boundary conditions
-    //  and its internal field in one file.  Read HERE, where the topology is
-    //  final and every sector is stamped, so the reader looks at exactly the
-    //  addresses the `converged/` writer produces.
+    //  stream (the boundary) and, under `internalStates/`, one file per unit
+    //  (its interior, one block per kind), the way an OpenFOAM time directory
+    //  carries a field's boundary conditions and its internal field in one
+    //  file.  Read HERE, where the topology is final and every sector is
+    //  stamped, so the reader looks at exactly the addresses the
+    //  `converged/` writer produces.
     //
     //  Two refusals, and they are the two halves of the same contract: the
-    //  READER refuses a directory that answers to no unit (an orphan, the
-    //  same posture as an orphan stream file), and this loop refuses a KIND
-    //  no unit reads -- a declared field nobody reads is a comment, and a
+    //  READER refuses a file that answers to no unit (an orphan, the same
+    //  posture as an orphan stream file), and this loop refuses a KIND no
+    //  unit reads -- a declared field nobody reads is a comment, and a
     //  comment that looks like state is worse than no state at all.
     declaredInteriors_.clear();
     if (!init0_)
     {
+        //  IDENTITY IS (kind, sector, name), NEVER NAME ALONE (2026-09-06).
+        //  Nothing forbids a stream and a unit sharing a name, and with the
+        //  interiors under their own root the two live at different paths
+        //  (`<view>/<SECTOR>/Flash` is the stream, `<view>/internalStates/
+        //  <SECTOR>/Flash` the interior) and are different objects.  The
+        //  homonym is not refused -- refusing it would make a name carry a
+        //  meaning it does not have -- but it is SAID, once, so a reader who
+        //  opens the two files knows they were never one.
+        if (verbosity >= 2)
+        {
+            std::set<std::string> streamNames;
+            for (const auto& u : topology_)
+            {
+                for (const auto& i : u.ins)  streamNames.insert(i);
+                for (const auto& o : u.outs) streamNames.insert(o);
+            }
+            std::set<std::string> said;
+            for (const auto& u : topology_)
+            {
+                if (!streamNames.count(u.name) || !said.insert(u.name).second)
+                    continue;
+                std::cout << "  [names] stream '" << u.name << "' and unit '"
+                          << u.name << "' share a name"
+                          << (u.sector.empty() ? std::string()
+                                               : " in " + u.sector)
+                          << "; they are different objects at different paths"
+                             " (<view>/" << (u.sector.empty() ? "" : "<SECTOR>/")
+                          << "<name> is the stream, <view>/"
+                          << InternalStateIO::ROOT << "/"
+                          << (u.sector.empty() ? "" : "<SECTOR>/")
+                          << "<name> the unit's interior)\n";
+            }
+        }
+
         declaredInteriors_ = InternalStateIO::read("0", topology_, verbosity);
         for (const auto& [uname, byKind] : declaredInteriors_)
         {

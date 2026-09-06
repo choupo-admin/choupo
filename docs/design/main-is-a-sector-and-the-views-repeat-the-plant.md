@@ -31,7 +31,7 @@ the case repeats it:
 0/               MAIN/ CONCENTRATION/ DRYING/ FERMENTATION/   the state before solving (authored)
 converged/       MAIN/ CONCENTRATION/ DRYING/ FERMENTATION/   the steady solution
    …/<stream>    a FILE in a state view is a STREAM   — the boundary of the snapshot
-   …/<unit>/<kind>  a DIRECTORY in a state view is a UNIT'S INTERIOR (2026-09-06)
+   …/internalStates/<SECTOR>/<unit>  a UNIT'S INTERIOR: one file per unit, under its own root (2026-09-06)
 design/          …/<unit>/<equipment>                          one specification sheet per item
 iterations/      numerical history — how the solver got there, never physical time
 postProcessing/  the reports derived from the result
@@ -95,15 +95,20 @@ sized area; which files the next run overwrites) is how it would be measured.
 written, was RETIRED one day later.  It was the wrong neighbour: `design/` is
 a DERIVATIVE (equipment sizing computed from the answer) and a stage profile
 is STATE, so a unit's interior belongs INSIDE the view that holds the streams
-it sits between — `0/<SECTOR>/<unit>/<kind>` and
-`converged/<SECTOR>/<unit>/<kind>`.
+it sits between — `0/internalStates/<SECTOR>/<unit>` and
+`converged/internalStates/<SECTOR>/<unit>`, ONE file per unit with one block
+per kind (amended the same day, task #105: a directory per unit beside the
+stream files lasted one morning).
 
 **Nothing in this record's ruling changed.**  A CAPS folder is still always a
 sector, a plant-level unit still lives in one, every view still repeats the
 one geography, and `system/`/`constant/` still sit at every level and never
-inside it.  What changed is what a view holds at the END of that geography: a
-FILE is a stream, a DIRECTORY is a unit.  The eight-line language above is the
-nine-line one with the retired view removed and `0/` told what it now carries.
+inside it.  What changed is what a view holds at the END of that geography:
+the stream files, flat, and — under the view's own `internalStates/`, which
+repeats the geography once more — one file per unit.  The reading, in one
+line: the view shows the boundary directly; the interior is namespaced inside
+the same view.  The eight-line language above is the nine-line one with the
+retired top-level view removed and `0/` told what it now carries.
 
 Record:
 [`a-state-directory-is-a-restartable-snapshot.md`](a-state-directory-is-a-restartable-snapshot.md).

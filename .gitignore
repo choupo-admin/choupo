@@ -262,10 +262,13 @@ tutorials/**/design/
 docs/design/flashComplex/design/
 
 #  WHAT HAPPENS INSIDE EACH UNIT is no longer a view of its own (2026-09-06):
-#  a unit's interior lives INSIDE the state view that holds its streams --
-#  `converged/<SECTOR>/<unit>/<kind>`, which is already ignored above with the
-#  rest of `converged/`, and `0/<SECTOR>/<unit>/<kind>`, which is TRACKED
-#  because a case DECLARING the interior it starts from is the whole point.
+#  a unit's interior lives INSIDE the state view that holds its streams, ONE
+#  file per unit under the view's own root --
+#  `converged/internalStates/<SECTOR>/<unit>`, which is already ignored above
+#  with the rest of `converged/`, and `0/internalStates/<SECTOR>/<unit>`,
+#  which is TRACKED because a case DECLARING the interior it starts from is
+#  the whole point.  No rule names `internalStates` on its own: it is not a
+#  root, and a top-level rule would take the authored half with it.
 
 # F3: projected local unit runs (regenerable artifacts, never authored state)
 **/.runs/

@@ -113,8 +113,9 @@ stated reasons rather than by omission:
 * `txy`, `profiles` — curves, tens of points each.  The KPIs summarise them,
   and the gates that care about a specific point read the CSV artefact
   (`column13` reads its declared T back from the column's own `profile.csv`).
-  A unit's INTERIOR in a state view (`<view>/<SECTOR>/<unit>/<kind>`,
-  2026-09-05, moved inside the view 2026-09-06) is a PROJECTION of
+  A unit's INTERIOR in a state view (`<view>/internalStates/<SECTOR>/<unit>`,
+  one file per unit with the kind as a block; 2026-09-05, moved inside the
+  view 2026-09-06 and given its own root the same day) is a PROJECTION of
   `profiles` — the same record written a fifth time — and is pinned by the
   `csv` kind where a case chose to pin its profile, and by
   `check_internal_states` holding every file to the JSON value by value;

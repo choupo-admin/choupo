@@ -74,7 +74,7 @@ import { useMemo, useState } from "react";
 import { useReducedMotion } from "@mantine/hooks";
 import { ActionIcon, Badge, Box, Group, ScrollArea, SegmentedControl, Stack, Text, Tooltip } from "@mantine/core";
 import { IconBox, IconChevronDown, IconChevronRight, IconSitemap } from "@tabler/icons-react";
-import { buildTree, nodeKind, sectorPaths, squash, sortedChildren, type TreeNode } from "./caseTree";
+import { buildTree, nodeKind, squash, sortedChildren, type TreeNode } from "./caseTree";
 
 import { lessonOutline } from "../case/lesson.js";
 import { parse, type DictEntry } from "../dict/index.js";
@@ -259,8 +259,8 @@ export function CaseWorkspace() {
   const designOut = useStore((s) => s.runResult?.designFiles);
   //  What happens inside each unit rides `convergedFiles` since 2026-09-06:
   //  a state directory is a RESTARTABLE SNAPSHOT, so
-  //  `converged/<SECTOR>/<unit>/<kind>` is part of the same view as the
-  //  streams and arrives on the same channel.
+  //  `converged/internalStates/<SECTOR>/<unit>` (one file per unit) is part
+  //  of the same view as the streams and arrives on the same channel.
   const raw = useMemo(
     () => ({ ...(caseFiles.rawFiles ?? {}), ...(convergedOut ?? {}), ...(designOut ?? {}) }),
     [caseFiles.rawFiles, convergedOut, designOut]);
@@ -619,10 +619,6 @@ function FileTree({
   onSelect: (path: string) => void;
 }) {
   const tree = useMemo(() => squash(buildTree(files)), [files]);
-  //  The case's OWN geography, so a state view can be read against the plant
-  //  it is a view of: a directory a view repeats from the case is a SECTOR,
-  //  one it does not is a UNIT and its files are that unit's interior.
-  const sectors = useMemo(() => sectorPaths(files), [files]);
   const isLesson = (f: string) => /^README\.md$/i.test(f);
 
   //  All expanded by default, as before.  Keyed on the full prefix.
@@ -673,7 +669,7 @@ function FileTree({
     //  IS a case), and what the RUN wrote dimmed with a badge, so a student
     //  never edits a file the next run overwrites.  Hue carries less than
     //  weight in a pane this narrow, which is why outputs are also lighter.
-    const kind = nodeKind(node, sectors);
+    const kind = nodeKind(node);
     const colour = kind === "declared" ? "yellow" : kind === "state0" ? "yellow.3"
                  : kind === "sector" ? "accent" : "dimmed";
     const weight = kind === "output" || kind === "interior" ? 400
@@ -695,13 +691,14 @@ function FileTree({
             {isCollapsed ? <IconChevronRight size={12} /> : <IconChevronDown size={12} />}
           </ActionIcon>
           {kind === "sector" && <IconSitemap size={11} style={{ opacity: 0.8, flex: "none" }} />}
-          {/*  A UNIT'S INTERIOR inside a state view: the streams beside it are
-               the boundary, this is what the equipment holds between them --
-               the OpenFOAM reading of a time directory, where one field file
-               carries its boundary conditions and its internal field.  */}
+          {/*  THE UNIT INTERIORS of a state view: the stream files beside this
+               root are the boundary, and under it sits what each unit holds
+               between them, ONE file per unit -- the OpenFOAM reading of a
+               time directory, where one field file carries its boundary
+               conditions and its internal field.  */}
           {kind === "interior" && (
             <Tooltip
-              label="What this unit holds inside it at this state -- a stage profile, an axial profile, a size distribution. Copy it into 0/ at the same address to declare the interior the next run starts from."
+              label="What each unit holds inside it at this state -- one file per unit, a block per kind (stage profile, axial profile, size distribution). Copy a file into 0/internalStates/ at the same address to declare the interior the next run starts from."
               withArrow
             >
               <IconBox size={11} style={{ opacity: 0.8, flex: "none", cursor: "help" }} />
@@ -721,15 +718,15 @@ function FileTree({
         {!isCollapsed && (
           <>
             {/*  A STATE VIEW READS BOUNDARY FIRST.  Its stream FILES are the
-                 boundary of the snapshot and its unit DIRECTORIES are what
-                 sits between them, so the interiors are drawn after the
-                 leaves -- every other kind of child still comes first.  */}
-            {sortedChildren(node, sectors)
-              .filter((k) => nodeKind(k, sectors) !== "interior")
+                 boundary of the snapshot and `internalStates/` is what sits
+                 between them, so that root is drawn after the leaves --
+                 every other kind of child still comes first.  */}
+            {sortedChildren(node)
+              .filter((k) => nodeKind(k) !== "interior")
               .map((k) => renderNode(k, depth + 1))}
             {node.leaves.map((f) => renderLeaf(f, depth + 1))}
-            {sortedChildren(node, sectors)
-              .filter((k) => nodeKind(k, sectors) === "interior")
+            {sortedChildren(node)
+              .filter((k) => nodeKind(k) === "interior")
               .map((k) => renderNode(k, depth + 1))}
           </>
         )}
@@ -746,7 +743,7 @@ function FileTree({
       {/*  The lesson first: a root README.md is what a student reads before
           anything else.  Then the folders, then the other root files.  */}
       {tree.leaves.filter(isLesson).map((f) => renderLeaf(f, 0))}
-      {sortedChildren(tree, sectors).map((k) => renderNode(k, 0))}
+      {sortedChildren(tree).map((k) => renderNode(k, 0))}
       {tree.leaves.filter((f) => !isLesson(f)).map((f) => renderLeaf(f, 0))}
     </Stack>
   );

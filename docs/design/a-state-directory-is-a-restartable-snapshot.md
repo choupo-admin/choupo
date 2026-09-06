@@ -7,6 +7,16 @@
 
 *and, on the proposal: "Avança".*
 
+**AMENDED THE SAME DAY (task #105) — read §9 before quoting any address in
+§§1–8.**  The shape those sections describe, a DIRECTORY per unit beside the
+stream files, lasted the morning: a unit's interior is now ONE file at
+`<view>/internalStates/<SECTOR>/<unit>`, with one block per kind.  The
+sentence *"a FILE is a stream, a DIRECTORY is a unit's interior"* is FALSE
+from §9 on.  Everything else — what is state, the seed, the two-way object,
+the refusals — stands.  The sections are kept as written because they are the
+record of a decision that was taken and then corrected, and a corrected
+decision is worth more to the next reader than a clean one.
+
 ---
 
 ## 1.  The observation, stated precisely
@@ -256,3 +266,137 @@ instead of passing.  The verbatim messages are in the gate's docstring.
 Deliberately not sabotaged, and said rather than implied: the two `[seed]`
 announcements themselves, because suppressing one needs a source patch and a
 rebuild — the shape only `check_gate_selftest` may take.
+
+---
+
+## 9.  AMENDED 2026-09-06 — one FILE per unit, under its own root (task #105)
+
+*Decided after a three-way reflection — Vítor, ChatGPT and the assistant —
+on the shape §2 ratified that morning; the second reading concurred with the
+asymmetric form, and the third reading struck everything beyond it: "convém
+parar de arquitectar e deixar a estrutura provar-se com uso real."*
+
+### 9.1  What was measured, and what it means
+
+**D1 — a directory that always holds one file is a file.**  §2's shape was
+`<view>/<SECTOR>/<unit>/<kind>`: a directory per unit, one file per kind of
+field.  Measured on the corpus: every unit that publishes a profile publishes
+exactly ONE kind, so every such directory held one file (the sweep that
+retired them removed 85 directories under `tutorials/`, not one of which held
+two).  A stream is ONE file carrying all its quantities; a unit's interior
+should be ONE file carrying all its kinds as blocks.  The rule, stated so the
+next object is filed right: *kinds of field on the same object live in one
+file; distinct physical objects get their own files.*  `design/` keeps its
+directory because its N are distinct PIECES of equipment, not kinds of one.
+
+**D2 — but a unit file beside the stream files is unsafe.**  Once the
+interior is a file, the only cue that told the two apart (file vs directory)
+is gone, and the engine does not forbid a unit and a stream sharing a name
+(0 collisions in the 299 cases today; nothing prevents the next).  Two files
+at one path overwrite each other in silence — name identity, the defect
+class this project hunts.  So the interior needs its own class in the path.
+
+**D3 — the shape, the ASYMMETRIC form:**
+
+```
+<view>/<SECTOR>/<stream>                  streams: UNCHANGED, flat, as ratified 2026-07-06
+<view>/internalStates/<SECTOR>/<unit>     interiors: ONE file per unit, blocks inside
+<view>/internalStates/<unit>              a flat case: no sector level
+```
+
+`internalStates/` in lower case is visibly not a CAPS sector — the
+case-of-name convention already in force.  `MAIN/` stays: a plant-level
+unit's interior is `<view>/internalStates/MAIN/<unit>`.  The asymmetry has a
+reading, and three readings converged on it; in one line: **the view shows
+the boundary directly; the interior is namespaced inside the same view.**
+The boundary IS the view (it is what the flowsheet connects); the interior is
+filed inside it.  Chosen over the SYMMETRIC form (`streams/` too) because that
+is a migration of 299 authored `0/` trees and reopens the 2026-07-06 spine.
+
+**D4 — the file.**  `recordType internalState; unit "<name>"; sector <S>;
+equipment <type>;` then one block per kind — `stageProfile { xAxis stage;
+nPoints N; columns { … } markers ( … ) }`, `axialProfile { … }`,
+`sizeDistribution { … }`, `swingTable { … }` — the same column grammar as
+before, the kind name becoming the block name.  A unit with two kinds gets
+two blocks.  The column reads its `stageProfile` block from
+`0/internalStates/…` exactly as it read the file the day before: same
+validation, same announcements, same refusals.
+
+**D5 — `0/` stays authored**, the completeness contract keeps counting
+STREAMS and now ignores the `internalStates/` subtree entirely, BY NAME and
+not only by grammar (`StreamStateIO::readStateDir` skips it at the one place
+the class of a file in a view is decided).  An orphan unit file under
+`0/internalStates/` refuses; an unknown block name refuses by name; and — a
+refusal §2 did not need — an interior record found ANYWHERE ELSE in the view
+refuses as MISFILED, naming the address it must move to.  Without that third
+one the retired shape would have been skipped in silence: an old
+`0/<unit>/<kind>` file is neither a stream body nor under the new root, so
+both readers would step over it and the case would go on believing it was
+seeded.  That is exactly the silence §3 exists to end, one day later.
+
+### 9.2  Identity, and the audit it ordered
+
+**D10 — IDENTITY IS (kind, sector, name), NEVER name alone.**  Two objects of
+different kinds MAY share a name: a stream `Flash` and a unit `Flash` in one
+sector live at different paths and are different objects.  The homonym is
+NOT refused — refusing it would make a name carry a meaning it does not have
+— but it is ANNOUNCED once, at verbosity ≥ 2, at the flatten seam:
+
+```
+  [names] stream 'column16' and unit 'column16' share a name; they are
+          different objects at different paths (<view>/<name> is the stream,
+          <view>/internalStates/<name> the unit's interior)
+```
+
+**D11 — the resolvers were audited.**  The real hazard is code that resolves
+a bare name without knowing the kind.  Every function that takes a name and
+returns a stream OR a unit was read:
+
+| Resolver | Carries the kind? | Finding |
+|---|---|---|
+| `StreamStateIO::readStateDir` | by grammar only, before this slice | **FIXED**: a stream-looking file misfiled under `internalStates/` would have become stream `internalStates.<x>` and been counted by the completeness contract.  It now skips the subtree by name.  Gate arm (m) greps for the skip so it cannot come back. |
+| `InternalStateIO::read` | yes — walks `internalStates/` only, and sweeps the rest of the view for MISFILED records | built this slice |
+| `StreamOwnership::canonicalManifest` / `ownershipPath` | yes — streams only, by id | but `sectorOf(unitName)` derives the OWNING SECTOR by splitting the unit name at its first dot, while the interior uses the STAMPED `FlatUnit::sector`.  Two answers to "which sector", agreeing on today's one-level corpus, diverging on the first nested sector.  NOT fixed: it is the ownership rule the writer, the validator and the reader share (forum #83), and moving it is a slice about stream ownership, not about interiors.  Named here; §7 already names the same split in `SolutionWriter::sectorOf` for the instants. |
+| `Flowsheet::validateSequentialPlan` | yes — unit names and stream producers as two sets | a DUPLICATE unit name refuses; a unit/stream homonym is announced (D10), not refused |
+| `Flowsheet` init0 `pathOf` | yes — graph streams only | clean |
+| `DesignSheetWriter` | yes — units only, own root `design/` | clean |
+| GUI `caseTree.kindOf` | yes — by the path's second segment under a view | the geography discriminator (`sectorPaths`) is REMOVED: a unit is never a directory in a view now, and a rule that encodes a falsehood is worse than a small diff |
+| GUI `caseTree.isRunOutput` | new | CaseIntro's keep-list read the KIND and would have listed `converged/internalStates/<unit>` as a file the student wrote — a run output of kind "interior".  The keep-list now reads the VIEW. |
+| GUI worker harvest | by root only (`converged`, `design`), recursive | clean; the new subtree rides `converged/` with no entry of its own |
+| GUI `resultSlice` / `pinch` `byName` maps | yes — built over `run.streams` alone; units come from `kpis`/`unitSectors` | clean: the result JSON keys the two classes separately |
+| `bin/choupo-lint`, `bin/choupo-init0` | thin `exec choupoSolve` wrappers | audited through the Flowsheet rows above |
+
+**D12 — NOT in this slice, struck after the third reading.**  No virtual
+"Streams / Internal states" grouping in the GUI, no further shaping.
+`caseTree.kindOf` classifies the new root as "interior" and that is ALL the
+GUI does here.  **The layout is CLOSED; what changes it next is a student,
+not a reflection.**
+
+### 9.3  What it cost, and what was not done
+
+* **The witness moved with the writer's own output.**  `column16`'s
+  declaration was regenerated by running the case unseeded and copying
+  `converged/internalStates/column16` into `0/internalStates/column16` — the
+  file the writer produced, unchanged.  1 outer iteration seeded against 108
+  unseeded, as the day before; the golden reproduces.
+* **`bin/cleanCase` knows the retired shape** and removes it inside
+  `converged/` only, by what a file DECLARES (`recordType internalState`
+  outside `internalStates/`), never by a directory's name; `0/` is never
+  entered.  Its `--help` range had to grow with its header — the second time
+  that tool's usage text has been one edit behind its own comment.
+* **Arm (f) has no live case, said plainly.**  `SimulationResult::profiles`
+  is a map keyed by unit, so no unit CAN publish two kinds through the engine
+  today; the writer's N is 1 everywhere.  The READER's multi-block parsing is
+  exercised instead by a built two-block fixture (a `stageProfile` and an
+  `axialProfile` block in one file, refusing on the second by name — which
+  is only possible if both were parsed) and by a bogus block name.
+* **NOT done: the symmetric form** (`<view>/streams/…`).  It is a separate
+  299-case migration and reopens the 2026-07-06 spine; if Vítor orders it,
+  it is its own slice.
+* **NOT done: `StreamOwnership::sectorOf`** (the split-vs-stamp finding
+  above).
+* **NOT done: `iterations/`, the dynamic instants, every unit but the
+  column** — §7 stands.
+
+Gate: `check_internal_states`, rewritten for the address and the block form
+(arms (a)–(m), sabotages by hand, verbatim lines in its docstring).

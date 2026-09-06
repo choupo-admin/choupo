@@ -50,20 +50,24 @@ are the source of truth.
 │   └── report.ods           coloured spreadsheet (multi-sheet)
 ├── converged/               GENERATED: the solved state.  A state view is a
 │                              RESTARTABLE SNAPSHOT and carries BOTH halves:
-│   ├── <SECTOR>/<stream>       a FILE is a stream -- the boundary of the
+│   ├── <SECTOR>/<stream>       a stream -- ONE file, flat, the boundary of the
 │   │                          snapshot, owned by its producing sector
-│   └── <SECTOR>/<unit>/<kind>  a DIRECTORY is a unit's INTERIOR -- what it
-│                              holds between those boundaries: `stageProfile`,
-│                              `axialProfile`, `sizeDistribution`, `swingTable`
-│                              (or `profile` for an axis with no declared kind).
+│   └── internalStates/<SECTOR>/<unit>   a unit's INTERIOR -- ONE file per
+│                              unit, what it holds between those boundaries,
+│                              one BLOCK per kind: `stageProfile {}`,
+│                              `axialProfile {}`, `sizeDistribution {}`,
+│                              `swingTable {}` (or `profile {}` for an axis
+│                              with no declared kind).  Under its own root so
+│                              a unit and a stream sharing a name never
+│                              collide (identity is kind + sector + name).
 │                              A PROJECTION of the same record as
 │                              `unitOperations/<unit>/profile.csv` above; a
 │                              temperature-swept construction (van Heerden,
 │                              Merkel) is an ANALYSIS, not equipment state, and
 │                              gets no file.  Rewritten whole every run, never
-│                              edited (gitignored) -- but COPY a `<kind>` file
-│                              into `0/` at the same address and the next run
-│                              STARTS from it.
+│                              edited (gitignored) -- but COPY a unit's file
+│                              into `0/internalStates/` at the same address
+│                              and the next run STARTS from it.
 ├── design/                  GENERATED: the EQUIPMENT SPECIFICATION SHEETS,
 │   └── <SECTOR>/<unit>/<equipmentTag>     one dictionary per physical item --
 │                              inlets, outlets, sizing (each value with its
@@ -86,7 +90,7 @@ same geography**.  The nine-line language a student needs:
 constant        what we know         (thermo, components, reactions, kinetics -- at EVERY level)
 system          how we solve         (controlDict, flowsheetDict, solverDict -- at EVERY level)
 MAIN/SECTORS    where we are in the plant
-0               where we started     (streams AND what is inside each unit; authored)
+0               where we started     (streams, AND under internalStates/ what is inside each unit; authored)
 converged       where we ended       (the same two halves, solved)      [run output]
 design          how big the equipment is (one sheet per item)           [run output]
 iterations      how the solver got there (numerical history, never physical time)  [run output]
@@ -102,8 +106,11 @@ geography.  Record:
 [`../design/main-is-a-sector-and-the-views-repeat-the-plant.md`](../design/main-is-a-sector-and-the-views-repeat-the-plant.md).
 **A state view carries the streams AND each unit's interior**, the way an
 OpenFOAM time directory carries a field's `boundaryField` and its
-`internalField` in one file: inside `0/` and `converged/`, a FILE is a stream
-and a DIRECTORY is a unit.  What the interior IS (a field over a coordinate of
+`internalField` in one file: inside `0/` and `converged/`, the streams are
+files flat under their sectors, and `internalStates/<SECTOR>/<unit>` is ONE
+file per unit with one block per kind — the view shows the boundary
+directly; the interior is namespaced inside the same view.  What the
+interior IS (a field over a coordinate of
 the equipment or its inventory, never a construction over a swept parameter)
 is in
 [`../design/internal-states-are-a-projection-of-profiles.md`](../design/internal-states-are-a-projection-of-profiles.md);

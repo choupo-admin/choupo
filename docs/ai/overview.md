@@ -80,8 +80,9 @@ case/
 │   ├── crystallisation    (opt) per-kinetic-pair library
 │   └── dryingKinetics     (opt) drying-curve library
 └── 0/                     complete initial state: one file per stream, and
-                           (optional) <SECTOR>/<unit>/<kind> -- the interior
-                           the case declares each unit starts from
+                           (optional) internalStates/<SECTOR>/<unit> -- ONE
+                           file per unit, the interior the case declares it
+                           starts from (one block per kind)
 ```
 
 Full details in `case-layout.md`.

@@ -90,10 +90,11 @@ lithiumBrinePlant/
 │   ├── system/solverDict       [optional override]
 │   └── constant/thermoPhysPropDict (+ propertyManifest)   the sector's THERMO WORLD (e.g. Pitzer, NRTL)
 ├── 0/                COMPLETE INITIAL STATE.  A state view is a RESTARTABLE
-│   │                 SNAPSHOT: a FILE is a stream, a DIRECTORY is a unit.
+│   │                 SNAPSHOT: the streams flat under their sectors, and
+│   │                 under internalStates/ ONE file per unit (blocks inside)
 │   ├── BRINE/brineFeed  BRINE/naclMotherLiquor  BRINE/liRichBrine  …
 │   ├── EXTRACTION/organicFeed  EXTRACTION/raffinate  EXTRACTION/loadedOrganic  …
-│   └── BRINE/EV-101/axialProfile   [optional] the INTERIOR the case declares
+│   └── internalStates/BRINE/EV-101   [optional] the INTERIOR the case declares
 ├── converged/        CONVERGED STEADY STATE       (same tree as 0/, both halves)
 ├── iterations/       [optional] numerical history  000001/ 000002/ …   NEVER physical time
 ├── 0.01/ 0.02/ …     PHYSICAL TRANSIENT TIME snapshots
@@ -110,12 +111,12 @@ lithiumBrinePlant/
 | `system/` | How the problem is organised and solved. |
 | `constant/` | Model and data that do not change during execution. |
 | `BRINE/`, `EXTRACTION/`, … | Process subdomains / sectors: a local subgraph + optional model overrides. |
-| `0/` | **Complete** initial state over the composed flowsheet: every stream (a FILE) and, optionally, what each unit holds inside it (a DIRECTORY, one file per kind). AUTHORED — the engine never writes here. |
+| `0/` | **Complete** initial state over the composed flowsheet: every stream (a FILE, flat under its sector) and, optionally, under `internalStates/`, what each unit holds inside it (ONE file per unit, one block per kind). AUTHORED — the engine never writes here. |
 | `converged/` | Converged steady state, both halves, written whole on every converged run. |
 | `iterations/` | Optional numerical history. **Never** physical time. |
 | `0.01/`, `0.02/`, … | Physical transient-time snapshots. |
 | `design/` | Physical equipment realisation derived from process state + design basis. |
-| `<view>/<SECTOR>/<unit>/` | A UNIT'S INTERIOR inside a state view (2026-09-06): a field over a coordinate of the equipment (stage, position, particle size) or its inventory (loadings per component). A projection of the published profiles; a construction over a swept parameter (van Heerden, Merkel) is an analysis and is NOT here. It is STATE, not a derivative, which is why it lives inside the view and not beside it. |
+| `<view>/internalStates/<SECTOR>/<unit>` | A UNIT'S INTERIOR inside a state view (2026-09-06, one FILE per unit under its own root): a field over a coordinate of the equipment (stage, position, particle size) or its inventory (loadings per component), one block per kind. A projection of the published profiles; a construction over a swept parameter (van Heerden, Merkel) is an analysis and is NOT here. It is STATE, not a derivative, which is why it lives inside the view and not beside it; it has its own root because a unit and a stream may share a name — identity is (kind, sector, name), never name alone. The reading: the view shows the boundary directly; the interior is namespaced inside the same view. |
 | `economics/` | Equipment, sector and plant cost/value results. |
 | `postProcessing/` | Derived reporting and presentation outputs. |
 
@@ -134,18 +135,22 @@ Missing files AND orphan files are **FATAL for `choupoSolve`**. There is no
 partial state.
 
 **The contract counts STREAMS, and a unit interior is not one (amended
-2026-09-06).**  Since a state view carries each unit's interior as a
-DIRECTORY beside the stream FILES, the completeness validator ignores
-directories entirely: it reads bodies, not names, and only a file that looks
-like stream state is counted on either side.  A declared interior is
-therefore always OPTIONAL — a case may declare none, one, or one per unit,
-and none of it changes what "complete" means for the streams.
+2026-09-06, twice).**  A state view carries each unit's interior as ONE file
+under `<view>/internalStates/`, and the completeness validator ignores that
+subtree ENTIRELY, by name and not only by grammar: `StreamStateIO::readStateDir`
+skips it at the one place the class of a file in a view is decided, so a
+stream-looking file misfiled there can never become a stream called
+`internalStates.<x>`.  A declared interior is therefore always OPTIONAL — a
+case may declare none, one, or one per unit, and none of it changes what
+"complete" means for the streams.
 
-An interior gets its own two refusals, both the same posture as the stream
-contract they sit beside: a unit DIRECTORY naming no unit of the flattened
-flowsheet is an ORPHAN and is fatal, and a kind file no unit declares it
-READS is fatal too — a declared field nobody reads is a comment sitting in
-the state directory.  Record:
+An interior gets its own refusals, each the same posture as the stream
+contract they sit beside: a unit FILE naming no unit of the flattened
+flowsheet is an ORPHAN and is fatal; a block whose name is not a kind is
+fatal; a kind no unit declares it READS is fatal — a declared field nobody
+reads is a comment sitting in the state directory; and an interior record
+found anywhere else in the view (the retired one-directory-per-unit shape)
+is MISFILED and fatal, naming the address it must move to.  Record:
 [`../design/a-state-directory-is-a-restartable-snapshot.md`](../design/a-state-directory-is-a-restartable-snapshot.md).
 
 ### 2.3 Stream role is inferred from TOPOLOGY (no mini-language)
@@ -430,8 +435,11 @@ executable.
    [`../design/internal-states-are-a-projection-of-profiles.md`](../design/internal-states-are-a-projection-of-profiles.md)).
    They first shipped as a top-level `internalStates/` view, on the `design/`
    precedent — the wrong neighbour, because `design/` is a DERIVATIVE and a
-   stage profile is STATE.  They now live INSIDE the state views, at
-   `<view>/<SECTOR>/<unit>/<kind>`, and `0/` can DECLARE one:
+   stage profile is STATE.  They now live INSIDE the state views, ONE file
+   per unit at `<view>/internalStates/<SECTOR>/<unit>` (a directory per unit
+   beside the stream files lasted one morning: every such directory held one
+   file, and a unit file beside the streams would collide with a homonymous
+   stream in silence), and `0/` can DECLARE one:
    [`../design/a-state-directory-is-a-restartable-snapshot.md`](../design/a-state-directory-is-a-restartable-snapshot.md).
    This AMENDMENT extends what a state directory CONTAINS.  It does not
    reopen the ontology this document ratified: a stream's state still lives in
