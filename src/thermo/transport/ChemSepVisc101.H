@@ -77,10 +77,25 @@ public:
     explicit ChemSepVisc101(const DictPtr& /*dict*/) {}
 
     const std::string& modelName() const override { return name_; }
+    const std::string& validityWindow() const override { return window_; }
+    const std::string& citation() const override { return cite_; }
     scalar viscosityLiquidPure(const Component& c, scalar T_K) const override;
+    CorrelationVerify verify() const override;
+
+    //  The kernel, public and static: one home for form 101.
+    static scalar kernel(scalar A, scalar B, scalar C, scalar D, scalar E,
+                         scalar T_K);                          // Pa.s
 
 private:
     inline static const std::string name_ = "chemsepEq101";
+    inline static const std::string window_ =
+        "saturated liquid inside the record's own Tmin..Tmax; leaving it is "
+        "ANNOUNCED through the AdvisoryLog and the value still returned";
+    inline static const std::string cite_ =
+        "ChemSep pure-component database (Kooijman, H. A. and Taylor, R.), "
+        "equation form 101, per-component coefficients in the record; the "
+        "database is distributed under the Artistic License 2.0 (accepted "
+        "source, bin/curate/check_source_licence.py)";
 };
 
 } // namespace Choupo

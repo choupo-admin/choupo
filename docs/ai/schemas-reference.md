@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*89 of 89 registered operations carry a schema and are documented below.*
+*90 of 90 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -1056,6 +1056,15 @@ The PROPS BENCH for one catalyst pellet: it resolves the pellet from its asset r
 | `verification` |   | object | — | Optional. The tolerances the run's PASS/FAIL verdict — and its exit code — are taken on. Omitting the block defaults them to field 1e-4, … |
 | `output` |   | object | — | Where the three data products are written, relative to the case directory. Each key is independent and each is optional — omit one and th… |
 | `thermal` |   | object | — | OPTIONAL, and its absence is not an isothermal claim -- it is the absence of a temperature field.  Declared, the op publishes T_over_Ts a… |
+
+## `transportBench`  (transportBench operation)
+
+The transport-correlation bench, in two parts. VERIFY (always): every registered model of the five transport families — gas viscosity (Chung), gas thermal conductivity (Eucken), gas binary diffusivity (Fuller), liquid viscosity (Andrade, Vogel, chemsepEq101), liquid thermal conductivity (SatoRiedel, chemsepEq16) — plus the shared Wilke phi_ij mixing factor reproduces its own anchor, and the deviation is printed beside the model's validity window, its PRIMARY citation and the KIND of anchor: 'theory' (an identity kinetic theory supplies, such as Eucken's monatomic limit) or 'arithmetic' (the correlation's own closed form at a stated point). The kind is printed because the catalogue holds NO measured transport data, so a 0.000 % on an arithmetic anchor proves a transcription and nothing else. COMPARE (optional): every registered gas-viscosity and gas-conductivity model is evaluated for every component of the case at one (T, P), each with its computable window verdict, then the case's declared mixing rules give the mixture mu (Wilke) and k (Wassiljewa / Mason-Saxena) at the declared or equimolar composition, and the spread across models is published per family — and is 0 while one model per family is registered, which the output says is not agreement. The bench never ranks the models.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `deviationTolerance` |   | number | - | Allowed relative deviation of each model from its own anchor; defaults to 1e-4. Tight on purpose: every anchor here is an exact identity … |
+| `compare` |   | object | — | Optional. Evaluate every registered gas model for every component at one state and publish the per-family spread and the mixture values. … |
 
 ## `tsaTwinBed`  (tsaTwinBed operation)
 

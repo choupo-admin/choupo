@@ -98,7 +98,7 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 362 witness(es), 23 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
+      "claim": "check_case_tiers: OK -- 363 witness(es), 23 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
       "seconds": 0.2
     },
     "check_caveat_surface": {
@@ -198,7 +198,7 @@
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 103 design record(s) appear in the index, and its stated counts (57 state a rejected alternative, 46 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
+      "claim": "check_decision_index: OK -- all 110 design record(s) appear in the index, and its stated counts (64 state a rejected alternative, 46 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
       "seconds": 0.0
     },
     "check_default_reports": {
@@ -218,7 +218,7 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 316 path mention(s) and 120 case name(s) across 20 AI-facing docs all resolve; 13 deliberate absences are listed with their reason and none of them has quietly come true",
+      "claim": "check_doc_references: OK -- 330 path mention(s) and 121 case name(s) across 20 AI-facing docs all resolve; 13 deliberate absences are listed with their reason and none of them has quietly come true",
       "seconds": 0.1
     },
     "check_doctrine": {
@@ -413,7 +413,7 @@
     },
     "check_guide_pdf_fresh": {
       "exit": 0,
-      "claim": "check_guide_pdf_fresh: OK -- 8 guide PDF(s) are renders of the sources now in the tree (freshness by git ancestry over each guide's own .tex plus everything it \\inputs, plus preamble/version), and all 8 tracked top-level docs/*.pdf are guides that docs/Makefile builds.  1 of them (tutorialsGuide) predate a source commit in git and were REBUILT here: identical bytes, so the committed render already reproduces the sources.  NOT checked: that a PDF dirty beside a dirty source was really rebuilt from it, that any render is CORRECT (that is the compile), the 7 PDF(s) under docs/slides/, or the published site's own copies.",
+      "claim": "check_guide_pdf_fresh: OK -- 8 guide PDF(s) are renders of the sources now in the tree (freshness by git ancestry over each guide's own .tex plus everything it \\inputs, plus preamble/version), and all 8 tracked top-level docs/*.pdf are guides that docs/Makefile builds.  NOT checked: that a PDF dirty beside a dirty source was really rebuilt from it, that any render is CORRECT (that is the compile), the 7 PDF(s) under docs/slides/, or the published site's own copies.",
       "seconds": 0.3
     },
     "check_guide_pdf_version": {
@@ -698,8 +698,8 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 87 registered operations carries a schema (82 exercised by the corpus over 652 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
-      "seconds": 31.1
+      "claim": "check_schema_coverage: OK -- every one of the 88 registered operations carries a schema (83 exercised by the corpus over 653 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
+      "seconds": 32.3
     },
     "check_seal_drift": {
       "exit": 0,
@@ -768,7 +768,7 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 1165 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.",
+      "claim": "check_source_licence: OK -- 1165 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 359 record(s)).",
       "seconds": 0.4
     },
     "check_species_citation": {
@@ -955,6 +955,11 @@
       "exit": 0,
       "claim": "check_internal_states: OK -- 2 file(s) on the fractal witness, 1 on the flat column and 1 on the PSA bed, each at the address its unit's STAMPED sector dictates (unitSectors from the JSON, never a split name; no level at all on a flat case), each reproducing its unit's published profile value by value at 1e-9 (Cryst/sizeDistribution (32 pts); SD/sizeDistribution (15 pts); column09/stageProfile (15 pts); h2psa/swingTable (5 pts)); no file answers to an unpublished profile; the T_K construction on the cooling tower produced no file and no directory and was announced; the swing table is filed as internal state; the tree is gitignored and excluded from the GUI glob while docs/design/ stays committable; the exclusion and the boundary sentence are still at their source.  NOT CHECKED: that the engine's own parser accepts a file (structural arm only), whether any profile is RIGHT (agreement between two surfaces, not truth), the V/z/z_m/position axes and the two undeclared ones (module, chainLength) beyond the suite running them, nesting deeper than one level, and the browser harvest itself.",
       "seconds": 0.2
+    },
+    "check_transport_correlations": {
+      "exit": 0,
+      "claim": "check_transport_correlations: OK -- all 9 transport correlations (five families + the shared Wilke phi_ij) verify against their own anchors within 0.01 % and print a window, a dated PRIMARY citation and the KIND of anchor (2 theory, 7 arithmetic, recounted from the output); Chung mu, Eucken k, Wilke mu_mix and Wassiljewa k_mix for N2/O2/CO2/water at 373.15 K are RECOMPUTED here from the sealed records to 1e-9 and agree; the spread column says a spread over ONE model is not agreement; Chung announces Vc-estimated and polar-terms-dropped once per present component, water included; Eucken flags every polyatomic by its record's own Cp; the Theory Guide shows no Sutherland/lennardJones/viscosityGas key while the engine has no reader; a spray dryer with no transport model REFUSES with the remedy (stripped copy) and a declared liquid model it cannot price REFUSES rather than substituting water; membrane01 announces its [legacy] mu_feed default; ThermoPackage.cpp keeps NO private phi_ij and reaches the one home twice; sprayDryer01 and membrane01 goldens unmoved.  NOT CHECKED: that any correlation is RIGHT -- the catalogue holds no measured transport data and seven anchors are the correlation's own closed form; Fuller and the liquid models are verify()-only here; Wilke-Chang gained nothing in this slice.",
+      "seconds": 4.7
     }
   }
 }

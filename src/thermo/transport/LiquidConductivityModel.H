@@ -50,6 +50,7 @@ Description
 
 #pragma once
 
+#include "CorrelationVerify.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
@@ -69,6 +70,19 @@ public:
     virtual ~LiquidConductivityModel() = default;
 
     virtual const std::string& modelName() const = 0;
+
+    // ---- What every correlation must state about itself (2026-09-05) ----
+    //  The FrictionFactorCorrelation discipline, applied to this family:
+    //  WHERE it is valid, in its own authors' words; WHO says so -- the
+    //  PRIMARY citation, because a correlation whose source is a comment is
+    //  one the reader cannot check; and a self-check against the one thing
+    //  about itself that can be verified with no measurement (see
+    //  CorrelationVerify.H for the two kinds of anchor).  PURE VIRTUAL on
+    //  purpose: a model registered without them does not compile, so the
+    //  family cannot grow a member that stays silent about its window.
+    virtual const std::string& validityWindow() const = 0;
+    virtual const std::string& citation() const = 0;
+    virtual CorrelationVerify verify() const = 0;
 
     // Pure-component saturated-liquid thermal conductivity [W/(m·K)].
     virtual scalar conductivityLiquidPure(const Component& c, scalar T_K) const = 0;

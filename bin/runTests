@@ -2868,6 +2868,27 @@ PYEOF
     fi
     rm -f /tmp/friction.$$
 
+    # transport-correlation gate (2026-09-05).  The five transport families
+    # (Chung, Eucken, Fuller, Andrade/Vogel/chemsepEq101, SatoRiedel/
+    # chemsepEq16) and the shared Wilke phi_ij became objects with a window, a
+    # PRIMARY citation and a verify() anchor whose KIND (theory | arithmetic)
+    # is printed -- the catalogue holds no measured transport data.  The gate
+    # recomputes Chung mu, Eucken k, Wilke and Wassiljewa mixing from the
+    # sealed RECORDS, and pins the four honesty fixes that rode with the
+    # slice: Chung's announcements, the spray dryer's refusal without a
+    # transport model (on a stripped copy), the membrane's [legacy] line,
+    # and the Theory Guide carrying no Sutherland/lennardJones example while
+    # the engine has no reader.  Four by-hand sabotages on outputs/inputs.
+    if "$ROOT/bin/curate/check_transport_correlations.py" > /tmp/transportc.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "transport-correlations-gate" "$(head -1 /tmp/transportc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_transport_correlations.py)\n" "transport-correlations-gate"
+        cat /tmp/transportc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/transportc.$$
+
     # chemsep-transport gate (2026-08-26).  Three model families -- chemsepCp16
     # on both Cp rungs, chemsepEq101 (liquid viscosity), chemsepEq16 (liquid
     # thermal conductivity) -- shipped across three days with no gate at all.

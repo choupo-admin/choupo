@@ -50,6 +50,7 @@ Description
 
 #pragma once
 
+#include "CorrelationVerify.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
@@ -69,6 +70,28 @@ public:
     virtual ~ThermalConductivityModel() = default;
 
     virtual const std::string& modelName() const = 0;
+
+    // ---- What every correlation must state about itself (2026-09-05) ----
+    //  The FrictionFactorCorrelation discipline, applied to this family:
+    //  WHERE it is valid, in its own authors' words; WHO says so -- the
+    //  PRIMARY citation, because a correlation whose source is a comment is
+    //  one the reader cannot check; and a self-check against the one thing
+    //  about itself that can be verified with no measurement (see
+    //  CorrelationVerify.H for the two kinds of anchor).  PURE VIRTUAL on
+    //  purpose: a model registered without them does not compile, so the
+    //  family cannot grow a member that stays silent about its window.
+    virtual const std::string& validityWindow() const = 0;
+    virtual const std::string& citation() const = 0;
+    virtual CorrelationVerify verify() const = 0;
+
+    //  A COMPUTABLE window verdict at one (component, T), for the bench's
+    //  comparison table: "" when the point is inside the window, a note
+    //  naming the reason otherwise.  NOT pure: a family member whose window
+    //  is text-only (a fitted per-record range) returns "" and the bench
+    //  prints its validityWindow() string beside the value instead, so a
+    //  blank never reads as "checked and inside".
+    virtual std::string windowNote(const Component& /*c*/, scalar /*T_K*/) const
+    { return ""; }
 
     // Pure-component low-pressure gas thermal conductivity [W/(m·K)].
     //   mu_pure   : pure-component gas viscosity [Pa·s]      (from TransportModel)

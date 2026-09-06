@@ -508,6 +508,10 @@ public:
     // in the thermo package.  `viscosityGas` mixes the pure-component gas
     // viscosities by Wilke's rule.  Throws if no transport block was set.
     bool   hasTransport() const { return transport_ != nullptr; }
+    // The declared gas-viscosity model object itself (null when none).  Read
+    // by the transportBench so a conductivity model can be fed the mu the
+    // CASE declared, not one the bench chose.
+    const TransportModel* transportModel() const { return transport_.get(); }
     scalar viscosityGas(scalar T_K, const sVector& y) const;
 
     // Gas thermal conductivity: optional sub-block

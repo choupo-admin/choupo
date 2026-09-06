@@ -87,7 +87,30 @@ scalar ChemSepCond16::conductivityLiquidPure(const Component& c, scalar T) const
     const scalar C = p->lookupScalar("C");
     const scalar D = p->lookupScalarOrDefault("D", 0.0);
     const scalar E = p->lookupScalarOrDefault("E", 0.0);
+    return kernel(A, B, C, D, E, T);
+}
+
+scalar ChemSepCond16::kernel(scalar A, scalar B, scalar C, scalar D,
+                             scalar E, scalar T)
+{
     return A + std::exp(B / T + C + D * T + E * T * T);      // W/(m.K)
+}
+
+CorrelationVerify ChemSepCond16::verify() const
+{
+    //  ARITHMETIC: with B = C = D = E = 0 the form is A + exp(0) = A + 1,
+    //  which pins the ONE structural way to mis-transcribe form 16 -- the
+    //  additive constant sits OUTSIDE the exponential.  Says nothing about
+    //  any liquid.
+    CorrelationVerify v;
+    v.value_choupo = kernel(0.1, 0.0, 0.0, 0.0, 0.0, 300.0);
+    v.value_published = 1.1;
+    v.dev = std::abs(v.value_choupo - v.value_published) / v.value_published;
+    v.kind = "arithmetic";
+    v.anchor = "B = C = D = E = 0: A + exp(0) = A + 1 = 1.1 exactly -- the "
+               "additive constant must sit OUTSIDE the exponential.  This "
+               "arm checks the form's structure, not any fit";
+    return v;
 }
 
 } // namespace Choupo

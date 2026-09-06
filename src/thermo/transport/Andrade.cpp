@@ -34,6 +34,11 @@ License
 
 namespace Choupo {
 
+scalar Andrade::kernel(scalar A, scalar B, scalar T)
+{
+    return std::exp(A + B / T);          // Pa·s
+}
+
 scalar Andrade::viscosityLiquidPure(const Component& c, scalar T) const
 {
     if (!c.hasLiquidViscosity())
@@ -47,7 +52,26 @@ scalar Andrade::viscosityLiquidPure(const Component& c, scalar T) const
     auto a = lv->subDict("andrade");
     const scalar A = a->lookupScalar("A");
     const scalar B = a->lookupScalar("B");
-    return std::exp(A + B / T);          // Pa·s
+    return kernel(A, B, T);
+}
+
+CorrelationVerify Andrade::verify() const
+{
+    //  ARITHMETIC, not physics.  exp(A + B/T) at the water record's own
+    //  A = -13.03, B = 1796.1 and T = 298.15 K; the literal was computed ONCE
+    //  and written here.  A fitted correlation has no theory anchor -- what
+    //  it can prove without a measurement is that the transcription of its
+    //  own form is right, and this says so.
+    CorrelationVerify v;
+    v.value_choupo = kernel(-13.03, 1796.1, 298.15);
+    v.value_published = 9.065620e-04;
+    v.dev = std::abs(v.value_choupo - v.value_published) / v.value_published;
+    v.kind = "arithmetic";
+    v.anchor = "A = -13.03, B = 1796.1 (the water record's own fit), T = "
+               "298.15 K: exp(A + B/T) = 9.06562e-04 Pa.s, a literal.  This "
+               "arm checks the TRANSCRIPTION of the form, not the fit's "
+               "agreement with any measurement";
+    return v;
 }
 
 } // namespace Choupo

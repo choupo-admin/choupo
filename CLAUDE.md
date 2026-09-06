@@ -1237,6 +1237,35 @@ publishes two spreads and never one.  NOT ESTABLISHED: no correlation here is
 checked against MEASURED data.  Gate: `check_friction_correlations`.  Record:
 [`docs/design/correlations-as-objects.md`](docs/design/correlations-as-objects.md).
 
+**THE TRANSPORT CORRELATIONS ARE OBJECTS TOO, AND EVERY ANCHOR SAYS WHAT
+KIND IT IS (2026-09-05).**  The five transport families (gas μ/k/D, liquid
+μ/k — Chung, Eucken, Fuller, Andrade, Vogel, chemsepEq101, SatoRiedel,
+chemsepEq16) gained `validityWindow()` · `citation()` · `verify()` as PURE
+virtuals, and the Wilke φ_ij that `ThermoPackage.cpp` carried TWICE has one
+home (`src/thermo/transport/GasMixingRules.H`).  Rule: **the catalogue holds NO measured
+transport data, so a `verify()` anchor is either THEORY (an identity kinetic
+theory supplies — Eucken on a monatomic gas is exactly (15/4)Rμ/M, Wilke's
+φ_ii = 1) or ARITHMETIC (the closed form at a stated point, a literal), and
+the bench prints which** — a 0.000 % on an arithmetic anchor proves a
+transcription, never a physics.  Four silences closed with NO number moved:
+the Theory Guide showed `viscosityGas { model Sutherland; }` and
+`lennardJones {}` keys no engine ever read; Chung ANNOUNCES per present
+component that Vc is estimated from Zc(ω) and its polar/association terms are
+dropped (a spray dryer's suspended crystal is no longer named as a gas it
+priced); the spray dryer REFUSES without a transport model instead of
+reporting a drying time of ZERO at exit 0, and refuses a declared liquid model
+it cannot price instead of substituting water; the membrane module ANNOUNCES
+`[legacy] mu_feed 1e-3 / D_solute 1.6e-9` and honours a declared liquid
+transport model.  ChemSep's Artistic-2.0 acceptance is now a CONTRACT in
+`check_source_licence` (allowlist + importer cross-check), not an importer
+comment.  NOT built, named: Chapman-Enskog and Sutherland — no record carries
+σ/ε or S; that is a CURATION campaign (Svehla 1962, NASA TR R-132, public
+domain), never numbers invented here.  Witness `transport01_gas_bench`
+(nothing measured, its header says so); gate `check_transport_correlations`
+(4 by-hand sabotages on outputs/inputs; a sealed record edited under it ran to
+exit 0 — a FINDING for the seal, recorded not fixed).  Record:
+[`docs/design/transport-correlations-as-objects.md`](docs/design/transport-correlations-as-objects.md).
+
 **A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH
 (2026-08-25).**  Everything a membrane needs was already here -- the
 solution-diffusion and DSPM-DE transport laws, van't Hoff and Pitzer osmotic,

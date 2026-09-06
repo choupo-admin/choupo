@@ -27,12 +27,18 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Vogel.H"
+#include "Andrade.H"
 #include "thermo/Component.H"
 
 #include <cmath>
 #include <stdexcept>
 
 namespace Choupo {
+
+scalar Vogel::kernel(scalar A, scalar B, scalar C, scalar T)
+{
+    return std::exp(A + B / (T - C));    // Pa·s
+}
 
 scalar Vogel::viscosityLiquidPure(const Component& c, scalar T) const
 {
@@ -48,7 +54,24 @@ scalar Vogel::viscosityLiquidPure(const Component& c, scalar T) const
     const scalar A = v->lookupScalar("A");
     const scalar B = v->lookupScalar("B");
     const scalar C = v->lookupScalarOrDefault("C", 0.0);
-    return std::exp(A + B / (T - C));    // Pa·s
+    return kernel(A, B, C, T);
+}
+
+CorrelationVerify Vogel::verify() const
+{
+    //  A STRUCTURAL identity this header has always claimed: with C = 0 the
+    //  form IS Andrade.  Checked against Andrade's own kernel, so the two
+    //  models cannot drift apart in the one place they must agree.
+    //  Arithmetic, not physics: it says nothing about any liquid.
+    CorrelationVerify v;
+    v.value_choupo = kernel(-13.03, 1796.1, 0.0, 298.15);
+    v.value_published = Andrade::kernel(-13.03, 1796.1, 298.15);
+    v.dev = std::abs(v.value_choupo - v.value_published) / v.value_published;
+    v.kind = "arithmetic";
+    v.anchor = "C = 0 must reduce EXACTLY to Andrade with the same A, B -- "
+               "checked against Andrade::kernel, not a literal.  This arm "
+               "checks the form's structure, not any liquid";
+    return v;
 }
 
 } // namespace Choupo

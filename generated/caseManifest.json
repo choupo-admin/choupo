@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 393,
+  "cases": 394,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -2402,6 +2402,20 @@
     "scalingScan",
     "speciate"
    ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/transport/transport01_gas_bench": {
+   "application": "choupoProps",
+   "ops": [
+    "transportBench"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
    "roles": [],
    "hasGolden": true
   },
@@ -5894,6 +5908,7 @@
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
+    "tutorials/props/transport/transport01_gas_bench",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
     "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars"
    ],
@@ -6901,6 +6916,7 @@
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
+    "tutorials/props/transport/transport01_gas_bench",
     "tutorials/steady/crystallisation/crystalliser01_sugar",
     "tutorials/steady/crystallisation/crystalliser02_msmpr",
     "tutorials/steady/crystallisation/crystalliser03_pbe_size_independent",
@@ -7228,6 +7244,9 @@
    "thielePellet": [
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/reactor/thiele02_prater_temperature"
+   ],
+   "transportBench": [
+    "tutorials/props/transport/transport01_gas_bench"
    ],
    "vaporPressureFit": [
     "tutorials/props/curation/curate01_water_evidence_partition",

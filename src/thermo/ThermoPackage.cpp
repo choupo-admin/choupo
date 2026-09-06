@@ -40,6 +40,7 @@ License
 #include "equationOfState/EquationOfState.H"
 #include "phase/Phase.H"
 #include "pureFluid/PureFluidModel.H"
+#include "transport/GasMixingRules.H"
 #include "transport/TransportModel.H"
 #include "transport/ThermalConductivityModel.H"
 #include "transport/DiffusivityModel.H"
@@ -1624,27 +1625,23 @@ scalar ThermoPackage::viscosityGas(scalar T, const sVector& y) const
             " thermoPackage, or `transport Chung;` under propertyMethods in"
             " the propertyPackage.");
     const std::size_t N = n();
-    sVector eta(N, 0.0);
-    for (std::size_t i = 0; i < N; ++i)
-        eta[i] = transport_->viscosityGasPure(components_[i], T);
-
-    // Wilke mixing rule for low-pressure gas viscosity.
-    scalar mu = 0.0;
+    sVector eta(N, 0.0), M(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
     {
+        M[i] = components_[i].MW();
+        //  Only species PRESENT in the gas (y > 0), as the conductivity path
+        //  always did: the rule below skips absent species on both indices,
+        //  so evaluating them changed no number -- but since 2026-09-05 Chung
+        //  ANNOUNCES each component it prices, and a suspended crystal that
+        //  never enters the gas must not be named as one it did.
         if (y[i] <= 0.0) continue;
-        scalar denom = 0.0;
-        for (std::size_t j = 0; j < N; ++j)
-        {
-            if (y[j] <= 0.0) continue;
-            const scalar Mi = components_[i].MW(), Mj = components_[j].MW();
-            const scalar t = 1.0 + std::sqrt(eta[i] / eta[j]) * std::pow(Mj / Mi, 0.25);
-            const scalar phi = (t * t) / std::sqrt(8.0 * (1.0 + Mi / Mj));
-            denom += y[j] * phi;
-        }
-        if (denom > 0.0) mu += y[i] * eta[i] / denom;
+        eta[i] = transport_->viscosityGasPure(components_[i], T);
     }
-    return mu;
+
+    // Wilke mixing rule for low-pressure gas viscosity.  The phi_ij lives in
+    // transport/GasMixingRules.H -- ONE home, shared with the conductivity
+    // rule below, which used to carry its own copy (2026-09-05).
+    return gasMixing::wilkeSum(y, eta, eta, M);
 }
 
 scalar ThermoPackage::thermalConductivityGas(scalar T, const sVector& y) const
@@ -1673,9 +1670,10 @@ scalar ThermoPackage::thermalConductivityGas(scalar T, const sVector& y) const
             " alongside the thermalConductivity sub-block (or `transport Chung;`"
             " under propertyMethods in a propertyPackage).");
     const std::size_t N = n();
-    sVector lam(N, 0.0), eta(N, 0.0);
+    sVector lam(N, 0.0), eta(N, 0.0), M(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
     {
+        M[i] = components_[i].MW();
         if (y[i] <= 0.0) continue;          // only species actually present
         if (!components_[i].hasCpIdealGas())
             throw std::runtime_error("ThermoPackage::thermalConductivityGas:"
@@ -1687,23 +1685,9 @@ scalar ThermoPackage::thermalConductivityGas(scalar T, const sVector& y) const
     }
 
     // Wassiljewa mixing rule, with Mason-Saxena interaction factors A_ij
-    // identical to the Wilke phi_ij used for viscosity.
-    scalar k = 0.0;
-    for (std::size_t i = 0; i < N; ++i)
-    {
-        if (y[i] <= 0.0) continue;
-        scalar denom = 0.0;
-        for (std::size_t j = 0; j < N; ++j)
-        {
-            if (y[j] <= 0.0) continue;
-            const scalar Mi = components_[i].MW(), Mj = components_[j].MW();
-            const scalar t = 1.0 + std::sqrt(eta[i] / eta[j]) * std::pow(Mj / Mi, 0.25);
-            const scalar phi = (t * t) / std::sqrt(8.0 * (1.0 + Mi / Mj));
-            denom += y[j] * phi;
-        }
-        if (denom > 0.0) k += y[i] * lam[i] / denom;
-    }
-    return k;
+    // identical to the Wilke phi_ij used for viscosity -- the SAME function,
+    // not a second transcription of it (transport/GasMixingRules.H).
+    return gasMixing::wilkeSum(y, lam, eta, M);
 }
 
 scalar ThermoPackage::diffusivityGas(scalar T, scalar P_Pa,

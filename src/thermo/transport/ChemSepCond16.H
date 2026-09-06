@@ -70,10 +70,26 @@ public:
     explicit ChemSepCond16(const DictPtr& /*dict*/) {}
 
     const std::string& modelName() const override { return name_; }
+    const std::string& validityWindow() const override { return window_; }
+    const std::string& citation() const override { return cite_; }
     scalar conductivityLiquidPure(const Component& c, scalar T_K) const override;
+    CorrelationVerify verify() const override;
+
+    //  The kernel, public and static: one home for form 16 AS A
+    //  CONDUCTIVITY (ChemSepCp16 keeps its own, deliberately -- see above).
+    static scalar kernel(scalar A, scalar B, scalar C, scalar D, scalar E,
+                         scalar T_K);                          // W/(m K)
 
 private:
     inline static const std::string name_ = "chemsepEq16";
+    inline static const std::string window_ =
+        "saturated liquid inside the record's own Tmin..Tmax; leaving it is "
+        "ANNOUNCED through the AdvisoryLog and the value still returned";
+    inline static const std::string cite_ =
+        "ChemSep pure-component database (Kooijman, H. A. and Taylor, R.), "
+        "equation form 16, per-component coefficients in the record; the "
+        "database is distributed under the Artistic License 2.0 (accepted "
+        "source, bin/curate/check_source_licence.py)";
 };
 
 } // namespace Choupo

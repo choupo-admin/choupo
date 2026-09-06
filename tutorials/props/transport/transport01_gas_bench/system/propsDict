@@ -1,0 +1,74 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  transport01 -- THE TRANSPORT CORRELATIONS, AS OBJECTS THAT PROVE THEMSELVES.
+
+  NOTHING IN THIS CASE IS MEASURED.  Read that first.  Choupo's catalogue
+  carries no measured gas viscosity, thermal conductivity or diffusivity,
+  so no number below is compared with an experiment.  What the case shows
+  is what CAN be shown without one, and it says which kind each check is:
+
+    THEORY      an identity kinetic theory or the correlation's own author
+                supplies -- Eucken on a monatomic gas MUST give the
+                Chapman-Enskog lambda = (15/4) R mu / M exactly; Wilke's
+                phi_ii MUST be 1 for identical species.  A wrong constant
+                fails here.
+    ARITHMETIC  the correlation's own closed form at a stated point,
+                written as a literal -- Chung's Neufeld Omega at T* = 1,
+                Fuller at round numbers, Sato-Riedel at T = Tb where its
+                bracket ratio is 1 by construction, the fitted liquid forms
+                reducing to Andrade.  This checks the TRANSCRIPTION and the
+                units, and the output says so rather than letting 0.0000 %
+                read as a validation.
+
+  WHAT THE RUN DOES, IN TWO PARTS.
+  (1) VERIFY.  Every registered model in five families, plus the shared
+      gas mixing rule, reproduces its own anchor; each prints its window,
+      its PRIMARY citation and the anchor's kind.
+  (2) COMPARE.  N2, O2, CO2 and water vapour at 373.15 K, 1 bar: every
+      registered gas-viscosity and gas-conductivity model for every
+      component, each with its computable window verdict (Chung's T*
+      against the Neufeld domain; Eucken's "polyatomic" by the record's own
+      Cp), then the case's mixing rules -- Wilke for mu, Wassiljewa /
+      Mason-Saxena for k -- at the equimolar composition (announced).
+
+  WHAT TO READ IN THE OUTPUT.  Three things.
+    * The spread across models is 0.00 % -- for BOTH gas families -- and
+      the bench says why: ONE model is registered per family.  A spread
+      over one is not agreement; Chapman-Enskog (Lennard-Jones sigma and
+      eps/k, which no record carries yet) is the named next member.
+    * Chung ANNOUNCES, for each of the four components, that Vc was
+      estimated from Zc(omega) and that the polar and association terms
+      were dropped.  Water is polar; the announcement is the only thing in
+      the run that says the non-polar form was applied to it anyway.
+    * Eucken flags CO2 and water (and, by their Cp, N2 and O2 -- diatomics
+      are polyatomic) as APPROXIMATION HERE, because plain Eucken is exact
+      only for a monatomic gas and this case has none.
+
+  WHAT THIS CASE DOES NOT DO.  It does not say which model is right, and
+  it does not compare with a measurement.  The golden pins that the
+  anchors, the values and the (absent) spread have not MOVED -- nothing
+  more.  Record: docs/design/transport-correlations-as-objects.md.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name     bench;
+        type     transportBench;
+        //  373.15 K, 1 bar: warm, dilute, well inside every gas window, so
+        //  the only verdicts that fire are the ones about the MODELS
+        //  (Eucken's polyatomic approximation), not about the state.
+        compare
+        {
+            T   373.15 K;
+            P   1 bar;
+        }
+    }
+);

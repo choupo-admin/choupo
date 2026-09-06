@@ -157,3 +157,10 @@ Each is a slice of this shape, and none needs new architecture.  What they
 need is what this one got: an object, a window, a citation, an anchor, and
 a bench that asks all of them the same question so a student can see them
 disagree.
+
+**Taken up 2026-09-05 for the transport layer** — Chung, Eucken, Fuller,
+Andrade, Vogel, chemsepEq101, SatoRiedel, chemsepEq16 and the shared Wilke
+φ_ij: [`transport-correlations-as-objects.md`](transport-correlations-as-objects.md)
+(`transportBench`, witness `transport01_gas_bench`, gate
+`check_transport_correlations`).  Wilke-Chang, Chilton-Colburn, Thiele,
+Weisz, Joback, Lee-Kesler, Rackett and Watson remain as listed above.

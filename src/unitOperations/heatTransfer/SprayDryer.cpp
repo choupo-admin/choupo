@@ -119,12 +119,28 @@ int SprayDryer::solve(const DictPtr& dict,
     std::string muLSource = "operation.liquidViscosity knob (default water 1e-3; no liquidViscosity model)";
     if (thermo.hasLiquidViscosity())
     {
+        //  A DECLARED model that cannot price this feed REFUSES, quoting the
+        //  package's own reason (2026-09-05).  Until then this was a
+        //  catch(...) that kept the water knob: the case had DECLARED a
+        //  liquid-viscosity model, the model could not serve (a solute with
+        //  no viscosity block, say), and the atomiser went on with 1e-3 Pa.s
+        //  and a source string naming a model that was not running.  The
+        //  remedy is the record's, not the unit's, and it is named.
         try
         {
             muL = thermo.viscosityLiquid(T_feed, zFeed);
             muLSource = "property layer mu_L(T_feed, x_feed) -- SOLUTION viscosity via the mixing rule";
         }
-        catch (const std::exception&) { /* keep the knob fallback */ }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error("SprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "': the case"
+                " declares a liquidViscosity transport model and it cannot"
+                " price the feed -- " + std::string(e.what()) + "\n  Remedy:"
+                " give every feed component the block that model reads, or"
+                " remove the liquidViscosity declaration and set"
+                " `operation.liquidViscosity` explicitly.  The unit will NOT"
+                " substitute water for a declared model.");
+        }
     }
     const scalar nRR   = oper->lookupScalarOrDefault("spreadParameter", 2.2);  // Rosin-Rammler width
     const scalar Dch   = oper->lookupScalarOrDefault("chamberDiameter", 0.0);  // m  (drying chamber)
@@ -326,15 +342,44 @@ int SprayDryer::solve(const DictPtr& dict,
 
     // -------------------------------------------------------------------
     //  Drying kinetics -- terminal velocity (Stokes) + Ranz-Marshall.
-    //  Needs the transport layer (gas mu / k / D).  Without it the M&E
-    //  and atomisation still stand; the kinetics are reported as zero.
+    //  Needs the transport layer (gas mu / k / D).  WITHOUT A GAS-VISCOSITY
+    //  MODEL THE UNIT REFUSES (2026-09-05).  Until then it "reported the
+    //  kinetics as zero": tau_dry_constant = 0, Re = 0, h = 0, exit 0 -- a
+    //  plausible-looking KPI row for a drying time nothing computed.  Every
+    //  sprayDryer case in the corpus declares `transport { vapour {
+    //  viscosity { model Chung; } } }`, so no golden depended on the zero
+    //  (checked case by case before this refusal was written).  k and D
+    //  stay optional: without them Pr and Sc are 0 and Nu = Sh = 2 -- the
+    //  pure-conduction limit -- and that is announced below rather than
+    //  refused, because it is a coarser model, not an absent one.
     // -------------------------------------------------------------------
     const scalar T_film  = 0.5 * (T_air + T_wb);
     scalar MW_air = 0.0; for (std::size_t i = 0; i < n; ++i) MW_air += yAir[i] * thermo.comp(i).MW();
     const scalar rho_g   = P_air * MW_air / (R * T_film);   // kg/m^3
 
+    if (!thermo.hasTransport())
+        throw std::runtime_error("SprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "': the drying"
+            " kinetics (Stokes terminal velocity, Ranz-Marshall Nu/Sh, the"
+            " constant-rate drying time) need the gas viscosity and the case"
+            " declares no transport model.  Remedy: add to"
+            " constant/thermoPhysPropDict\n"
+            "    transport { vapour { viscosity { model Chung; }"
+            " thermalConductivity { model Eucken; } diffusivity { model"
+            " Fuller; } } }\n"
+            "  The unit no longer reports a drying time of zero in its place.");
     scalar mu_g = 0.0, k_g = 0.0, Dab = 0.0;
-    if (thermo.hasTransport())             mu_g = thermo.viscosityGas(T_film, yAir);
+    mu_g = thermo.viscosityGas(T_film, yAir);
+    if (!thermo.hasThermalConductivity() || !thermo.hasDiffusivity())
+        AdvisoryLog::instance().add("model", "warning",
+            "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'",
+            std::string("drying kinetics without a declared gas ")
+            + (!thermo.hasThermalConductivity() && !thermo.hasDiffusivity()
+                 ? "thermalConductivity and diffusivity"
+                 : (!thermo.hasThermalConductivity() ? "thermalConductivity"
+                                                      : "diffusivity"))
+            + " model: Pr/Sc taken as 0, so Nu = Sh = 2 (pure conduction) and"
+              " the corresponding transfer coefficient is 0 -- declare the"
+              " sub-block in transport { vapour { ... } } to price it");
     if (thermo.hasThermalConductivity())   k_g  = thermo.thermalConductivityGas(T_film, yAir);
     if (thermo.hasDiffusivity())           Dab  = thermo.diffusivityGas(T_film, P_air, iSolv, iDry);
 

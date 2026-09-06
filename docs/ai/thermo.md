@@ -356,6 +356,19 @@ Pick by need:
 When a unit op needs a transport property the system doesn't supply, the
 solver throws a clear error naming the missing slot.
 
+Every registered transport model states its **validity window**, its
+**primary citation** and a **self-check anchor** (`verify()`), and the
+`choupoProps` operation **`transportBench`** runs them all — verify table
+plus, with a `compare { T; P; }` block, every gas model for every component
+and the Wilke / Wassiljewa mixture values (tutorial
+`props/transport/transport01_gas_bench`).  Two things it announces that a
+reader should expect: Chung estimates `Vc` from `Zc(omega)` and applies its
+NON-POLAR truncation to every component (once per component, in the caveat
+block), and plain Eucken is an approximation for any polyatomic gas.  NOT
+available, and not to be declared: `Sutherland` and `Chapman-Enskog` — no
+record carries a Sutherland constant or Lennard-Jones `sigma`/`epsOverK`
+(record: `docs/design/transport-correlations-as-objects.md`).
+
 ## The three-tier model-parameter rule
 
 A model's parameter lives at the **highest tier where it is true** — the

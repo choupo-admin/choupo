@@ -132,6 +132,38 @@ VIA = re.compile(r'\b(via|through|accessed\s+(?:via|through)|retrieved\s+from)\b
 #  `note` is commentary; a mention in `source`/`citation`/`method` is a claim.
 AUTHORITY_FIELD = re.compile(r'\b(source|citation|method|Source|Primary\s+data)\b')
 
+#  THE THIRD SHAPE: AN ACCEPTED THIRD-PARTY DATABANK, and why it is a table
+#  and not a comment (2026-09-05).  Hundreds of records name ChemSep as the
+#  origin of a value.  That is compliant -- the ChemSep pure-component
+#  database is distributed under the Artistic License 2.0, FSF-listed as
+#  GPL-compatible, and aggregating it as DATA beside GPL code is permitted --
+#  but until today the ONLY place that said so was a comment at the top of
+#  bin/curate/chemsep_to_choupo.py.  A licence decision recorded in a tool's
+#  comment is not enforced anywhere (CLAUDE.md section 7): had the importer
+#  been deleted, or its header rewritten, nothing would have noticed, and
+#  this gate would have gone on passing 356 records on a contract that no
+#  longer existed anywhere in the tree.
+#
+#  So the acceptance is a CONTRACT here: a databank name in an authority
+#  field is compliant only if it appears in this table WITH the licence that
+#  makes it so, and the importer's own LICENSE constant is checked to agree.
+#  A databank not in the table is treated as ENCUMBERED (a value cited from a
+#  source nobody has cleared), which is the fail-closed reading.  One row
+#  today.  Adding one is a licence decision: cite the licence text.
+ACCEPTED_DATABANK = {
+    "ChemSep": {
+        "licence": "Artistic-2.0",
+        "why": "ChemSep pure-component database (Kooijman & Taylor), "
+               "Artistic License 2.0 -- FSF-listed GPL-compatible; DATA "
+               "aggregation beside GPL-3.0 code",
+        "importer": "bin/curate/chemsep_to_choupo.py",
+    },
+}
+#  Databank names this gate KNOWS to look for.  A name here that is NOT in
+#  ACCEPTED_DATABANK fails as encumbered.  (The NEVER-list aggregators above
+#  stay in ENCUMBERED, which never has an accepted branch.)
+KNOWN_DATABANK = re.compile(r'\b(ChemSep)\b')
+
 #  KNOWN VIOLATIONS, pinned 2026-08-05 with the remedy each needs.  NOT
 #  fixed here: a replacement datum is a curation act requiring a primary
 #  source, and fabricating one is worse than the exposure it hides.
@@ -142,6 +174,26 @@ SCAN = ["data/standards"]
 def main() -> int:
     violations, pinned_seen, nfiles = [], set(), 0
     nc_new, nc_seen = [], set()
+    accepted_seen = {}
+    #  THE ACCEPTANCE IS CHECKED, NOT ASSUMED: the importer that writes these
+    #  records must state the SAME licence this table accepts them under.
+    #  Two homes for one decision are tolerated only because this arm makes
+    #  them agree or fail -- the importer keeps its constant because it
+    #  writes provenance blocks from it, and this gate keeps the table
+    #  because it is the one place a licence decision is enforced.
+    for name, acc in ACCEPTED_DATABANK.items():
+        imp = ROOT / acc["importer"]
+        if not imp.exists():
+            print(f"check_source_licence: FAILED -- ACCEPTED_DATABANK['{name}'] "
+                  f"names importer {acc['importer']}, which does not exist; the "
+                  "acceptance cannot be cross-checked against nothing.")
+            return 1
+        if not re.search(r"LICENSE\s*=\s*['\"]" + re.escape(acc["licence"]) + r"['\"]",
+                         imp.read_text()):
+            print(f"check_source_licence: FAILED -- {acc['importer']} does not "
+                  f"declare LICENSE = '{acc['licence']}', the licence this gate "
+                  f"accepts {name} under.  One decision, two homes, disagreeing.")
+            return 1
     #  A SCAN OVER NOTHING IS NOT A CLEAN CATALOGUE (2026-08-15 fleet
     #  census).  This gate shared the check_true_ions death shape: rename
     #  data/standards and rglob returns nothing, zero violations are found
@@ -174,6 +226,17 @@ def main() -> int:
                             f"{rel}:{n}  {nc.group(0)} is the ORIGIN of a "
                             f"value; the database is NonCommercial and no "
                             f"'via' rescues it\n        {line.strip()[:110]}")
+                    break
+            for n, line in enumerate(lines, 1):
+                db = KNOWN_DATABANK.search(line)
+                if db and AUTHORITY_FIELD.search(line):
+                    if db.group(0) in ACCEPTED_DATABANK:
+                        accepted_seen[db.group(0)] = accepted_seen.get(db.group(0), 0) + 1
+                    else:
+                        violations.append(f"{rel}:{n}  {db.group(0)} cited AS the "
+                                          "authority and NOT in ACCEPTED_DATABANK "
+                                          "-- a databank nobody has cleared\n        "
+                                          f"{line.strip()[:110]}")
                     break
             for n, line in enumerate(lines, 1):
                 hit = ENCUMBERED.search(line) or DECHEMA.search(line)
@@ -236,6 +299,18 @@ def main() -> int:
               "collapsed and a verdict over it would describe nothing.")
         return 1
 
+    #  AN ACCEPTED DATABANK NOBODY CITES IS A ROW THAT PINS NOTHING -- and a
+    #  row that pins nothing is the check_true_ions shape.  The table must
+    #  earn its place on every run.
+    for name in ACCEPTED_DATABANK:
+        if accepted_seen.get(name, 0) == 0:
+            print(f"check_source_licence: FAILED -- ACCEPTED_DATABANK['{name}'] "
+                  "is cited by NO record; either the records were renamed "
+                  "(re-point the pattern) or the row is dead (remove it).")
+            return 1
+    accepted_txt = "; ".join(
+        f"{n} ({ACCEPTED_DATABANK[n]['licence']}, {k} record(s))"
+        for n, k in sorted(accepted_seen.items()))
     print(f"check_source_licence: OK -- {nfiles} record(s) scanned (an "
           f"absent or collapsed scan root REFUSES); no "
           f"encumbered source stands as the authority for a value, except "
@@ -244,7 +319,9 @@ def main() -> int:
           "compliant and is not counted.  "
           f"NonCommercial compilations: no new record names Burcat/ReSpecTh "
           f"as a value's origin; {len(NC_COMPILATION)} existing ones do and "
-          f"are pinned.")
+          f"are pinned.  Accepted third-party databanks, by CONTRACT here and "
+          f"cross-checked against the importer's LICENSE constant: "
+          f"{accepted_txt}.")
     #  THE MANIFEST READS ONLY THE FIRST LINE.  gate_manifest.py captures
     #  `line[0]` as the gate's claim, so a claim printed on a second line is
     #  invisible in the one place that answers "what does this project

@@ -225,18 +225,84 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  NO sub-block the legacy constants are used (k_film / dP_feed_total ---
     //  membrane01/02/03 unchanged).
     scalar h_ch = 0.7e-3, eps = 0.9, mu_feed = 1.0e-3, D_solute = 1.6e-9;
+    bool muDeclared = false, DDeclared = false;
     auto readGeom = [&](const DictPtr& b)
     {
         h_ch    = b->lookupScalarOrDefault("channelHeight",  h_ch, Dims::length);
         eps     = b->lookupScalarOrDefault("spacerPorosity", eps);
-        mu_feed = b->lookupScalarOrDefault("viscosity",      mu_feed);
+        if (b->found("viscosity")) { mu_feed = b->lookupScalar("viscosity"); muDeclared = true; }
     };
     if (opDict->found("pressureDrop")) readGeom(opDict->subDict("pressureDrop"));
     if (opDict->found("massTransfer"))
     {
         auto mt = opDict->subDict("massTransfer");
         readGeom(mt);
-        D_solute = mt->lookupScalarOrDefault("diffusivity", D_solute);
+        if (mt->found("diffusivity")) { D_solute = mt->lookupScalar("diffusivity"); DDeclared = true; }
+    }
+    //  THE TWO LEGACY CONSTANTS ARE ANNOUNCED, NOT ASSUMED (2026-09-05).
+    //  mu_feed = 1e-3 Pa.s and D_solute = 1.6e-9 m²/s were hard-coded here
+    //  since the first membrane case -- water at 20 C and NaCl in water,
+    //  roughly, applied to every feed including a 10 g/L glucose NF and a
+    //  Pitzer brine.  The eleven membrane goldens were recorded on them, so
+    //  the VALUES stay; what changes is that a run says so.  Precedence:
+    //  a value declared in the sub-block wins (the case's own number); else
+    //  a declared package transport model prices it from the feed state
+    //  (announced with the model); else the legacy default, announced as
+    //  such with the remedy.  No case in the corpus declares liquid
+    //  transport, so the model route moves no golden -- checked.
+    if (!muDeclared)
+    {
+        if (thermo.hasLiquidViscosity())
+        {
+            mu_feed = thermo.viscosityLiquid(T_in, z_in);
+            AdvisoryLog::instance().add("model", "info",
+                "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
+                "feed viscosity " + std::to_string(mu_feed) + " Pa.s priced"
+                " from the case's declared liquidViscosity transport model"
+                " at the feed T and composition (no `viscosity` in the"
+                " massTransfer/pressureDrop sub-block)");
+        }
+        else
+            AdvisoryLog::instance().add("model", "warning",
+                "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
+                "[legacy] mu_feed 1e-3 Pa.s ASSUMED (water near 20 C) -- no"
+                " `viscosity` in the massTransfer/pressureDrop sub-block and"
+                " no liquidViscosity transport model declared; declare"
+                " transport { liquid { viscosity { model ...; } } } to price"
+                " it from the package, or set it in the sub-block");
+    }
+    if (!DDeclared && opDict->found("massTransfer"))
+    {
+        //  Only the film model reads D_solute; a case with a constant k_film
+        //  never touches it, so nothing is announced there.
+        if (thermo.hasLiquidDiffusivity() && thermo.hasLiquidViscosity())
+        {
+            //  One solute diffusivity serves the film model; price it for the
+            //  FIRST nonvolatile solute in water, and say which one.
+            std::size_t iSol = Ncomp, iW = thermo.indexOf("water");
+            for (std::size_t i = 0; i < Ncomp; ++i)
+                if (thermo.comp(i).isNonvolatile() && z_in[i] > 0.0) { iSol = i; break; }
+            if (iSol < Ncomp)
+            {
+                D_solute = thermo.diffusivityLiquid(T_in, iSol, iW);
+                AdvisoryLog::instance().add("model", "info",
+                    "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
+                    "solute diffusivity " + std::to_string(D_solute) + " m2/s"
+                    " priced for '" + thermo.comp(iSol).name() + "' in water"
+                    " from the case's declared liquidDiffusivity transport"
+                    " model at the feed T (no `diffusivity` in the"
+                    " massTransfer sub-block)");
+            }
+        }
+        else
+            AdvisoryLog::instance().add("model", "warning",
+                "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
+                "[legacy] D_solute 1.6e-9 m2/s ASSUMED (NaCl in water, roughly)"
+                " for the film model -- no `diffusivity` in the massTransfer"
+                " sub-block and no liquidDiffusivity (+ liquidViscosity)"
+                " transport model declared; declare transport { liquid {"
+                " diffusivity { model WilkeChang; } viscosity { model ...; } } }"
+                " to price it from the package, or set it in the sub-block");
     }
     const scalar W_ch      = A_membrane / (2.0 * L);   // leaf width (2-sided)
     const scalar A_channel = W_ch * h_ch * eps;

@@ -43,6 +43,13 @@ Description
     (liquid viscosity FALLS with temperature --- the opposite of a gas).
     For strongly hydrogen-bonded liquids (water) the 3-parameter Vogel does
     markedly better; see Choupo::Vogel.
+
+    PRIMARY: Andrade, E. N. da C. (1930), Nature 125, 309-310.  THE WINDOW
+    IS THE RECORD'S, not the model's: A and B are valid over the range they
+    were fitted to, and that range belongs in the component's block.  The
+    Andrade blocks in this catalogue declare NO Trange, so nothing is
+    announced when one is left -- a known gap, stated in validityWindow()
+    rather than hidden by it.  The anchor is arithmetic and says so.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -57,10 +64,26 @@ public:
     explicit Andrade(const DictPtr& /*dict*/) {}
 
     const std::string& modelName() const override { return name_; }
+    const std::string& validityWindow() const override { return window_; }
+    const std::string& citation() const override { return cite_; }
     scalar viscosityLiquidPure(const Component& c, scalar T_K) const override;
+    CorrelationVerify verify() const override;
+
+    //  The kernel, public and static: one home for the formula, and the
+    //  limit Vogel (C = 0) and chemsepEq101 (C = D = E = 0) must reduce to.
+    static scalar kernel(scalar A, scalar B, scalar T_K);      // Pa.s
 
 private:
     inline static const std::string name_ = "Andrade";
+    inline static const std::string window_ =
+        "saturated liquid, inside the temperature range the component's A "
+        "and B were fitted over -- a property of the RECORD, not the model; "
+        "the Andrade blocks in this catalogue declare no Trange, so leaving "
+        "it is not announced (a known gap)";
+    inline static const std::string cite_ =
+        "Andrade, E. N. da C. (1930), Nature 125, 309-310 [primary]; the "
+        "two-constant form as given in Reid, Prausnitz & Poling, 4th ed. "
+        "(1987), ch. 9";
 };
 
 } // namespace Choupo

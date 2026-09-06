@@ -29,20 +29,31 @@ Class
     Choupo::Eucken
 
 Description
-    Eucken (1913) estimate for low-pressure gas thermal conductivity
-    (Reid-Prausnitz-Poling, "The Properties of Gases and Liquids", 4th
-    ed., eq. 10-3.2):
+    Eucken (1913) estimate for low-pressure gas thermal conductivity:
 
-        λ = (Cp_ig + 5R/4) · μ / M                       [W/(m·K)]
+        lambda = (Cp_ig + 5R/4) mu / M                        [W/(m K)]
 
-    where Cp_ig is the molar ideal-gas heat capacity [J/(mol·K)], μ the
-    pure-component gas viscosity [Pa·s], and M the molar mass [kg/mol].
-    Uses ONLY quantities already available (Cp from the component's
-    idealGasHeatCapacity block, μ from the viscosity model) --- zero new
-    component data.  Reproduces N2 (~0.026), CO2 (~0.017) thermal
-    conductivity at 300 K to a few percent --- the simplest defensible
-    correlation.  (The modified Eucken splits translational/internal
-    contributions for better accuracy; left as a future model.)
+    Cp_ig the molar ideal-gas heat capacity [J/(mol K)], mu the pure gas
+    viscosity [Pa s], M the molar mass [kg/mol].  Uses ONLY quantities
+    already available (Cp from the component's idealGasHeatCapacity block,
+    mu from the viscosity model) -- zero new component data.
+
+    PRIMARY: Eucken, A. (1913), Physik. Z. 14, 324-332.  Transcribed from
+    Reid, Prausnitz & Poling, 4th ed. (1987), eq. 10-3.2 (the route).
+
+    THE ANCHOR THEORY SUPPLIES.  For a monatomic gas Cp = 5R/2, and Eucken's
+    bracket becomes (5R/2 + 5R/4) = 15R/4 -- which is EXACTLY the
+    Chapman-Enskog result for a monatomic gas, lambda = (15/4) (R/M) mu
+    (Chapman & Cowling, The Mathematical Theory of Non-uniform Gases,
+    1939).  Eucken's 5R/4 is not a fitted number: it is the constant that
+    makes the formula contain the rigorous monatomic limit.  verify() checks
+    that limit, and a wrong constant fails there.
+
+    For POLYATOMIC gases the formula treats internal-mode energy transport
+    with the same factor as translation, which it does not deserve; the
+    modified Eucken (RPP eq. 10-3.3) is the named correction and is NOT
+    implemented -- selecting `Eucken` on CO2 or NH3 is an approximation the
+    window string says so about.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -57,12 +68,30 @@ public:
     explicit Eucken(const DictPtr& /*dict*/) {}
 
     const std::string& modelName() const override { return name_; }
+    const std::string& validityWindow() const override { return window_; }
+    const std::string& citation() const override { return cite_; }
     scalar conductivityGasPure(const Component& c, scalar T_K,
                                scalar mu_pure,
                                scalar cp_ig_pure) const override;
+    CorrelationVerify verify() const override;
+    std::string windowNote(const Component& c, scalar T_K) const override;
+
+    //  The kernel, public and static: one home for the formula.
+    static scalar kernel(scalar cp_ig_J_per_molK, scalar mu_PaS,
+                         scalar M_kg_per_mol);                // W/(m K)
 
 private:
     inline static const std::string name_ = "Eucken";
+    inline static const std::string window_ =
+        "dilute (low-pressure) gas; EXACT for a monatomic gas (Cp = 5R/2 "
+        "gives the Chapman-Enskog (15/4) R mu / M); an APPROXIMATION for "
+        "polyatomic gases, whose internal-mode transport it weights like "
+        "translation -- the modified Eucken correction is not implemented";
+    inline static const std::string cite_ =
+        "Eucken, A. (1913), Physik. Z. 14, 324-332 [primary]; transcribed "
+        "via Reid, Prausnitz & Poling, 4th ed. (1987), eq. 10-3.2; monatomic "
+        "limit after Chapman, S. and Cowling, T. G., The Mathematical Theory "
+        "of Non-uniform Gases (1939)";
 };
 
 } // namespace Choupo

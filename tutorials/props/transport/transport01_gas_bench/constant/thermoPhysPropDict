@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- four gases, ideal, with the FULL vapour
+  transport block: the case exists to exercise these three declarations
+  and the mixing rules behind them.  Water is here because it is POLAR --
+  the one component for which Chung's non-polar truncation is a claim
+  worth hearing announced.  Equilibrium is declared (Raoult, ideal gas)
+  because a package must be complete; nothing in this case flashes.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( N2 O2 CO2 water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity           { model Chung; }    // gas mu   (Tc, Pc, omega, M)
+        thermalConductivity { model Eucken; }   // gas k    (Cp + mu)
+        diffusivity         { model Fuller; }   // binary D (Sigma v)
+    }
+}

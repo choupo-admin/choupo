@@ -1183,9 +1183,9 @@ state, no new data required.}
 which property uses it & how & in source code\\
 \midrule
 $\Delta h^{\mathrm{vap}}(T)$ via Watson         & $T_c$, $T_b$, $\Delta h^{\mathrm{vap}}_{T_b}$  & \code{Component::Hvap\_latent}\\
-$\kappa^{\mathrm{liq}}(T)$ via Sato-Riedel    & $T_c$, $T_b$, $M$                              & v1.x roadmap \\
+$\kappa^{\mathrm{liq}}(T)$ via Sato-Riedel    & $T_c$, $T_b$, $M$                              & \code{SatoRiedel} (ships; \code{transport.liquid.thermalConductivity}) \\
 $\varphi_i$ via cubic EOS                       & $T_c$, $P_c$, $\omega$                         & post-v1 \\
-$\mu^{\mathrm{gas}}(T)$ via Chapman-Enskog      & $\sigma$, $\epsilon/k$ (correspond to $T_c$, $P_c$)& v1.x roadmap \\
+$\mu^{\mathrm{gas}}(T)$ via Chapman-Enskog      & $\sigma$, $\epsilon/k$ (Lennard-Jones)  & future: NO record carries $\sigma$, $\epsilon/k$ (a curation campaign, not a coding task); \code{Chung} ships in its place \\
 $P^{\mathrm{sat}}(T)$ validity ceiling          & $T_c$ as the upper bound on Antoine \code{Trange} & data-file metadata \\
 \bottomrule
 \end{tabular}
@@ -11768,7 +11768,7 @@ identical in spirit to Antoine for vapour pressure.
 \node[prop] (k)   at (0,2.0) {thermal cond.\ $\kappa$};
 \node[prop] (d)   at (0,0.0) {diffusivity $D$};
 \node[corr] (andr) at (3.6,4.7) {Andrade $\ln\mu=A+B/T$ (liq)};
-\node[corr] (suth) at (3.6,3.3) {Sutherland / Chapman--Enskog (gas)};
+\node[corr] (suth) at (3.6,3.3) {Chung (gas; corresponding states)};
 \node[corr] (sato) at (3.6,2.0) {Sato--Riedel (liq), Eucken (gas)};
 \node[corr] (fwc)  at (3.6,0.5) {Fuller (gas), Wilke--Chang (liq)};
 \node[grp] (re) at (7.6,4.0) {Re $=\dfrac{\rho uL}{\mu}$};
@@ -11791,9 +11791,11 @@ identical in spirit to Antoine for vapour pressure.
 \end{tikzpicture}
 \caption{The transport map: three coefficients, their correlations, and
 where they are consumed.  Each Newtonian coefficient (teal) is supplied by
-a two- or three-parameter correlation (orange)---Andrade or
-Sutherland/Chapman--Enskog for viscosity, Sato--Riedel/Eucken for
-conductivity, Fuller and Wilke--Chang for diffusivity.  The coefficients
+a two- or three-parameter correlation (orange)---Andrade/Vogel or
+Chung for viscosity, Sato--Riedel/Eucken for
+conductivity, Fuller and Wilke--Chang for diffusivity (the models the
+engine registers; Sutherland and Chapman--Enskog are taught below as
+theory and are NOT implemented).  The coefficients
 then assemble into the three dimensionless groups Re, Pr, Sc (blue), and
 nearly every downstream design equation is a power law in them
 ($\mathrm{Nu}=a\,\mathrm{Re}^b\mathrm{Pr}^c$,
@@ -11851,7 +11853,11 @@ Arrhenius-like decay of liquid viscosity with temperature.  Gases
 take the opposite trend ($\mu$ grows with $T$); the classical model
 is Sutherland.  The corresponding-states alternative for either
 phase is the Chapman-Enskog formula in terms of Lennard-Jones $\sigma$
-and $\epsilon/k$.  Reid-Prausnitz-Poling Chapter~9.
+and $\epsilon/k$.  Both are taught here as theory; what Choupo SHIPS
+for a gas is Chung's corresponding-states realisation of the same
+kinetic theory, because no record in the catalogue carries a
+Sutherland constant or a Lennard-Jones pair.  Reid-Prausnitz-Poling
+Chapter~9.
 \end{whatyoulllearn}
 
 \subsection{Pure liquid: Andrade}
@@ -11954,6 +11960,11 @@ behaviour of hard-sphere theory).  Three parameters per component.
 Air: $\mu_0 = 1.716 \times 10^{-5}$~Pa·s, $T_0 = 273.15$~K,
 $S = 110.4$~K.
 
+\textbf{Status: NOT implemented.}  No component record carries $S$, and a
+Sutherland constant entered without a primary source per gas would be a
+number nobody can check.  It ships the day a cited table of $S$ is
+curated, and not before.
+
 \subsection{Either phase: Chapman-Enskog with Lennard-Jones}
 
 A corresponding-states alternative falls out of kinetic theory.  For
@@ -11981,6 +11992,15 @@ The appeal of the LJ approach is that \emph{two} parameters
 and diffusivity --- not separately fitted per property.  Tabulations
 exist for most common species.
 
+\textbf{Status: NOT implemented.}  Of the components in the catalogue,
+none carries $\sigma$ or $\epsilon/k$; the engine registers no
+Chapman-Enskog model and reads no \code{lennardJones} block.  Building
+it is a CURATION campaign first (a cited table, matched to records by
+CAS, promoted after review) and a coding task second --- the campaign
+is named in \file{docs/design/transport-correlations-as-objects.md}.
+The Neufeld fit above IS in the engine, inside Chung, at Chung's
+reduced temperature $T^* = 1.2593\,T/T_c$.
+
 \subsection{The Chung correlation --- what Choupo actually uses}
 The Lennard-Jones form needs $\sigma$ and $\epsilon/k$, which are tabulated
 for only some species.  Choupo instead ships the \textbf{Chung et al.\ (1988)}
@@ -12006,32 +12026,43 @@ $\sim$0.3\% of the measured value.  The model is DECLARED
 REFUSES to guess a viscosity without it --- no silent default.  (Water and
 steam take the higher-accuracy IAPWS transport formulation instead.)
 
-\subsection{Data-file extension (optional per-component override)}
+\subsection{Declaring the models --- the grammar the engine reads}
 
-The Chung/Sutherland corresponding-states route above needs no per-component
-viscosity datum.  A component MAY still carry an explicit measured correlation
-to OVERRIDE the estimate where higher accuracy is warranted:
+The Chung route above needs no per-component viscosity datum.  The case
+declares WHICH correlation serves each phase in the \code{transport} block
+of \file{thermoPhysPropDict}; the coefficients a FITTED liquid model needs
+live in the component's own record, under the model's name:
 \begin{lstlisting}
-viscosityLiq
+transport                                 // constant/thermoPhysPropDict
 {
-    model         Andrade;
-    coefficients  (A B);             // ln mu_Pa.s = A + B/T
-    Trange        (270 390);
+    vapour
+    {
+        viscosity           { model Chung; }    // gas mu   (Tc, Pc, omega, M)
+        thermalConductivity { model Eucken; }   // gas k    (Cp + mu)
+        diffusivity         { model Fuller; }   // binary D (diffusionVolume)
+    }
+    liquid
+    {
+        viscosity           { model Andrade; }  // or Vogel, chemsepEq101
+    }
 }
 
-viscosityGas
+liquidViscosity                           // in the component's .dat
 {
-    model         Sutherland;
-    coefficients  (mu0 T0 S);        // [Pa.s], [K], [K]
-    Trange        (200 700);
-}
-
-lennardJones
-{
-    sigma         3.617;             // angstrom
-    epsOverK      97.0;              // K
+    andrade { A -13.03;   B 1796.1; }              // ln(mu/Pa.s) = A + B/T
+    vogel   { A -10.5366; B 541.4;  C 144.0; }     // ln(mu/Pa.s) = A + B/(T-C)
 }
 \end{lstlisting}
+An earlier printing of this section showed \code{viscosityGas},
+\code{Sutherland} and \code{lennardJones} keys.  No engine reader ever
+existed for any of them; the listing was corrected on 2026-09-05 and a gate
+(\code{check\_transport\_correlations}) now refuses the guide a
+\code{Sutherland} or \code{lennardJones} example while the engine has no
+reader for one.  Every registered transport model states its validity
+window, its PRIMARY citation and a self-check anchor, and
+\code{choupoProps transportBench} runs them all (tutorial
+\code{transport01\_gas\_bench}); record:
+\file{docs/design/transport-correlations-as-objects.md}.
 
 \begin{tutoriallink}
 \textbf{Status note.}  Viscosity is wired in: the call surface is
@@ -12128,7 +12159,7 @@ need measured data, and the honest statement is that Choupo's
 catalogue does not currently carry measured liquid conductivities to
 check against.
 
-\subsection{Pure gas: modified Eucken}
+\subsection{Pure gas: Eucken}
 
 Eucken combined heat conduction and viscosity through the kinetic
 energy budget of a colliding-molecule model:
@@ -12146,7 +12177,12 @@ molecules carry extra internal degrees of freedom; the
 \emph{modified Eucken} replaces the kernel with $(c_p + 1.32 R)$ or
 similar.  Either way, gas thermal conductivity is a derived quantity
 in this scheme --- no new fitted parameter beyond those already in
-$\mu$ and $c_p$.
+$\mu$ and $c_p$.  \textbf{Status:} Choupo registers the plain Eucken
+form only; the modified Eucken is NOT implemented.  Plain Eucken is
+EXACT for a monatomic gas (with $c_p = 5R/2$ it gives the Chapman-Enskog
+$\kappa = \tfrac{15}{4}\,R\mu/M$, which is what its own \code{verify()}
+anchor checks) and an approximation for every polyatomic gas, which the
+\code{transportBench} flags per component from the record's own $c_p$.
 
 \subsection{Declaring the models}
 

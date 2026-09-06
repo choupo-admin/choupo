@@ -28,6 +28,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ChemSepVisc101.H"
+#include "Andrade.H"
 #include "core/Advisory.H"
 #include "thermo/Component.H"
 
@@ -96,8 +97,31 @@ scalar ChemSepVisc101::viscosityLiquidPure(const Component& c, scalar T) const
     const scalar C = p->lookupScalarOrDefault("C", 0.0);
     const scalar D = p->lookupScalarOrDefault("D", 0.0);
     const scalar E = p->lookupScalarOrDefault("E", 0.0);
+    return kernel(A, B, C, D, E, T);
+}
+
+scalar ChemSepVisc101::kernel(scalar A, scalar B, scalar C, scalar D,
+                              scalar E, scalar T)
+{
     return std::exp(A + B / T + C * std::log(T)
                     + (D != 0.0 ? D * std::pow(T, E) : 0.0));   // Pa.s
+}
+
+CorrelationVerify ChemSepVisc101::verify() const
+{
+    //  THE STRUCTURAL claim this header makes -- Andrade is form 101 with
+    //  the ln T and power terms removed -- checked against Andrade's own
+    //  kernel.  Arithmetic, not physics: it proves the five-parameter form
+    //  contains the two-parameter one, and nothing about any liquid.
+    CorrelationVerify v;
+    v.value_choupo = kernel(-13.03, 1796.1, 0.0, 0.0, 0.0, 298.15);
+    v.value_published = Andrade::kernel(-13.03, 1796.1, 298.15);
+    v.dev = std::abs(v.value_choupo - v.value_published) / v.value_published;
+    v.kind = "arithmetic";
+    v.anchor = "C = D = E = 0 must reduce EXACTLY to Andrade with the same "
+               "A, B -- checked against Andrade::kernel.  This arm checks "
+               "the form's structure, not any fit";
+    return v;
 }
 
 } // namespace Choupo
