@@ -55,3 +55,22 @@ License
 .choupo-compound-row:hover:not([data-on]) {
   background: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
 }
+
+/* ---------------------------------------------------------------------------
+   A STALE RESULT DIMS (2026-09-06).  When the case has changed since the
+   drawn result was computed, the surfaces that draw that result fade back;
+   the Run control says how many pending edits there are.  DIMMED rather than
+   annotated, by decision: in a teaching tool an annotated stale number is
+   still read as a number, and dimming forces the eye to stop.
+
+   The decision has ONE home (src/case/staleness.ts) and it is a FINGERPRINT,
+   not a dependency analysis -- it cannot say which numbers an edit
+   invalidated, so every result number fades together or none does.
+
+   On the CANVAS only the edges fade: a stream's colour is its solved phase
+   and its thickness is its solved flow, so the pipes ARE the result, while
+   the unit boxes and the wiring are the declaration and stay bright.  In a
+   result WORKSPACE the whole body fades, because the whole body is the run.
+   --------------------------------------------------------------------------- */
+.choupo-stale-canvas .react-flow__edge { opacity: 0.3; }
+.choupo-stale-body { opacity: 0.42; }

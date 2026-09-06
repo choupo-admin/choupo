@@ -53,6 +53,8 @@ import { useReducedMotion } from "@mantine/hooks";
 import { Suspense, lazy, useEffect, useState } from "react";
 
 import { useStore, hasCaseOpen } from "../state/store.js";
+import { useStaleResult } from "../state/useStaleResult.js";
+import { RESULT_WORKSPACES } from "./workspaces.js";
 import { AgentConsole } from "./AgentConsole.js";
 import { agentRowPx } from "./panelFold.js";
 import { CaseWorkspace } from "./CaseWorkspace.js";
@@ -127,6 +129,7 @@ export function AppShell() {
     (s) => Boolean(s.caseFiles.propsDict) && !s.caseFiles.flowsheet,
   );
   const activeWorkspace = useStore((s) => s.activeWorkspace);
+  const stale = useStaleResult();
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
   const tutorialName = useStore((s) => s.tutorialName);
   // When the Assistant console is DOCKED + open it takes a grid row, so the
@@ -394,7 +397,15 @@ export function AppShell() {
         </Box>
       </Box>
 
-      <Box style={{ gridArea: "center", position: "relative", minWidth: 0, minHeight: 0, height: "100%", overflow: "hidden" }}>
+      {/*  A STALE RESULT DIMS (2026-09-06).  A result workspace draws nothing
+           BUT the run, so the whole body dims when the case has moved since
+           it was computed; the flowsheet dims only its result layer, inside
+           FlowCanvas.  One decision, one home: state/useStaleResult.ts.  It
+           is a fingerprint, not a dependency analysis -- everything dims or
+           nothing does.  */}
+      <Box className={stale.stale && activeWorkspace !== null
+                      && RESULT_WORKSPACES.includes(activeWorkspace) ? "choupo-stale-body" : undefined}
+        style={{ gridArea: "center", position: "relative", minWidth: 0, minHeight: 0, height: "100%", overflow: "hidden" }}>
         {!caseOpen ? (
           // No case open (blank boot): the welcome on-ramp -- EXCEPT the
           // Property Explorer and the Methods workspace, which are standalone

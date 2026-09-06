@@ -1,6 +1,6 @@
 # column16_declared_interior — the interior the case declares
 
-Physically this is [`column01_benzene_toluene`](../column01_benzene_toluene):
+Physically this is `column01_benzene_toluene`:
 equimolar benzene/toluene, Raoult VLE, **15 stages** (reboiler counted), feed
 on **stage 8**, **R = 2**, distillate **50 kmol/h**, Wang–Henke.  The answer is
 the same answer — **x_D = 0.9812** benzene, **x_B = 0.9812** toluene.  What
@@ -69,4 +69,4 @@ it again.  Both runs reach the same column; only one of them had to search for
 it.  That difference is the whole value of a restartable snapshot — and it is
 why an interior is **state** and not a report.
 
-Record: [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](../../../../docs/design/a-state-directory-is-a-restartable-snapshot.md).
+Record: `docs/design/a-state-directory-is-a-restartable-snapshot.md`.

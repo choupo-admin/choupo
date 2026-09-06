@@ -64,6 +64,7 @@ import { boundaryForStream } from "../case/modelBoundary.js";
 import { tutorialByName } from "../cases/tutorials.js";
 import type { StreamSpec } from "../case/types.js";
 import { useStore, hasCaseOpen } from "../state/store.js";
+import { useStaleResult } from "../state/useStaleResult.js";
 import { findRunStream, popOutStreamByName } from "./streamPopOut.js";
 import { popOutUnitInternals } from "./unitFocus.js";
 import {
@@ -228,6 +229,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   const reduceMotion = useReducedMotion();
   const tutorialName = useStore((s) => s.tutorialName);
   const runResult = useStore((s) => s.runResult);
+  const stale = useStaleResult();
   const runStatus = useStore((s) => s.runStatus);
   const resetRun = useStore((s) => s.resetRun);
   const scrubIdx = useStore((s) => s.scrubIdx);
@@ -976,7 +978,14 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   }, [reactFlow, selectNode, selectedNodeId, togglePanel]);
 
   return (
-    <div style={{ width: "100%", height: "100%", background: "light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-8))" }}>
+    //  A STALE RESULT DIMS (2026-09-06).  `choupo-stale-canvas` dims the
+    //  EDGES, and only the edges: a stream's colour is its solved phase and
+    //  its thickness is its solved flow, so the pipes ARE the result, while
+    //  the boxes and the wiring are the declaration and stay bright.  The
+    //  class carries no per-value claim -- everything the run produced dims
+    //  together (case/staleness.ts).
+    <div className={stale.stale ? "choupo-stale-canvas" : undefined}
+      style={{ width: "100%", height: "100%", background: "light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-8))" }}>
       <ReactFlow
         nodes={styledNodes}
         edges={styledEdges}
@@ -1044,7 +1053,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         <Panel position="top-right">
           <Group gap={6}>
             {runStatus !== "running" && runResult?.status === "done" && (
-              <Badge size="sm" color="teal" variant="light">Latest run loaded</Badge>
+              stale.stale
+                ? <Badge size="sm" color="orange" variant="light"
+                    title="The case has changed since this result was computed -- the dimmed numbers answer the previous question">
+                    Result is stale
+                  </Badge>
+                : <Badge size="sm" color="teal" variant="light">Latest run loaded</Badge>
             )}
             {/* Reset: clear the converged results back to the unrun state.  A
                 run REPLACES results with the new solve; Reset is the explicit
@@ -1068,8 +1082,16 @@ function CanvasInner({ flowsheet, scrubInstant }: {
               <Button size="xs" color="accent" variant="filled"
                 leftSection={<IconPlayerPlay size={14} />}
                 onClick={() => window.dispatchEvent(new CustomEvent("choupo:run"))}
-                title="Run the flowsheet simulation (choupoSolve)">
-                Run flowsheet
+                title={stale.stale
+                  ? "The drawn result does not include what is declared now -- run to bring it up to date"
+                  : "Run the flowsheet simulation (choupoSolve)"}>
+                {/*  The COUNT is of pending EDITS, never of stale numbers: this
+                     knows what a student moved, not which results it touched. */}
+                {stale.stale
+                  ? (stale.pendingEdits > 0
+                      ? `Run flowsheet (${stale.pendingEdits} pending edit${stale.pendingEdits === 1 ? "" : "s"})`
+                      : "Run flowsheet (case changed)")
+                  : "Run flowsheet"}
               </Button>
             )}
           </Group>

@@ -20,7 +20,7 @@ is human-curated, reviewed, corrected, and maintained by **Vítor Geraldes**
 and **Pedro Mendes**.  Copyright belongs to the named human contributors
 according to `AUTHORS`, source headers, DCO sign-offs, and git.  The code is
 open; the *Choupo* **name and marks are NOT granted by the software licence**
-and are a trademark of **TalentGround Lda.** (Vítor's family holding) — open
+and are a registered trademark of **TalentGround Lda.** (Vítor's family holding) — open
 code, holding-owned name, deliberate (see §10).  See [`LICENSE`](LICENSE),
 [`NOTICE`](NOTICE), [`AUTHORS`](AUTHORS), [`CONTRIBUTING.md`](CONTRIBUTING.md),
 [`CITATION.cff`](CITATION.cff), [`TRADEMARKS.md`](TRADEMARKS.md).
@@ -1131,6 +1131,26 @@ home for the engine's words.  Gate: `check_internal_states` (same name,
 changed claim).  Record:
 [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md).
 
+**A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
+The doctrine says a check that cannot run must not PASS; the MIRROR is just as
+bad — **it must not FAIL either, it must REFUSE.**  `bin/drive-app` filed "no
+run control (absent)" against an app that works, because Chromium here cannot
+reach that host and a `querySelectorAll` over a blank document finds nothing.
+Rule: **verify a POSITIVE SENTINEL before judging anything** (the app's own
+chrome in the rendered DOM — never the absence of an error, which a blank page
+also shows), and refuse by name with the URL, the browser's own navigation
+error and the remedy.  Its companion: **a stale result DIMS** — a fingerprint
+of the declared case, stamped on the run, ONE home
+(`gui/src/case/staleness.ts`), and it dims ALL result numbers or none, because
+a fingerprint is not a dependency analysis and a per-value staleness claim
+would invent a graph this project does not have.  Traps paid for: a sentinel
+that can be absent on a working app (the version badge) is a false refusal
+waiting to happen; and `drive-app`'s frozen-shell check is a claim about a
+`/vYYMM/app/` copy alone — applied to the development app's root-hosted layout
+it printed 22 accusations against correct behaviour.  NO gate (a browser and a
+served copy; the Poling precedent).  Record:
+[`docs/design/a-tool-that-reported-what-it-could-not-see.md`](docs/design/a-tool-that-reported-what-it-could-not-see.md).
+
 **WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT
 (2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the
 address is now `<view>/<SECTOR>/<unit>/<kind>` inside `0/` and `converged/`,
@@ -2069,6 +2089,30 @@ Full diagnoses → [`docs/engine-capabilities.md`](docs/engine-capabilities.md) 
 When working on source code, **don't duplicate** case-authoring content into
 CLAUDE.md — put it under `docs/ai/`.
 
+### The operating model: COORDINATE, then REFLECT
+
+Ruled 2026-09-06 by Vítor, twice and the second time sharply — *"coordenares
+os generais e estares sempre disponível para refletires sozinho e comigo!!!!
+Por isso nas tuas regras!"*
+
+The assistant here is a COMMANDER: it dispatches written briefs to subagents
+and, **while they run, it REFLECTS — it does not poll.**  Reflecting is real
+work: read the tree, look for the pattern across the last few defects, bring
+findings and proposals to Vítor.  **A status line is not a contribution.**
+The fleet doctrine itself (what goes to a general, the written rules they get,
+NO YES-MEN) is DEV.md's; this is the commander's own half.
+
+Corollaries, each paid for:
+
+* **Never edit `bin/runTests`, `src/` or `gui/` while a suite runs.**  A
+  general stages per file, and a per-file stage sweeps in an unstaged edit of
+  yours that no one reviewed.
+* **One general owns the tree at a time**, and **a commit lands only on FAIL
+  0** of the full suite.
+* **Launch a background suite under the harness's own supervision.**  A plain
+  `nohup … &` from a tool call is killed when the call returns — it happened
+  twice in one day, losing two 30-minute runs.
+
 ### Pedagogical mindset, not industrial
 
 The user is **Vítor Geraldes**.  Every change is judged on: (1) pedagogical
@@ -2150,10 +2194,10 @@ split below).
   outbound under GPL-3.0-or-later — **no CLA, no copyright assignment, no
   commercial dual-licence**.  The guides/manuals are Vítor Geraldes + Pedro
   Mendes only.  The *Choupo* name/marks are separate (no
-  open-source licence grants trademark) — trademark of **TalentGround Lda.**,
-  INPI PT Classes 9+42.  **Do NOT add** a CLA, commercial/dual-license, or
-  closed proprietary modules.  Value is reputational/pedagogical, not
-  commercial.  Detail: [`CONTRIBUTING.md`](CONTRIBUTING.md),
+  open-source licence grants trademark) — REGISTERED trademark of
+  **TalentGround Lda.** (INPI PT 769805 MNA, classes 9 and 42).  **Do NOT
+  add** a CLA, commercial/dual-license, or closed proprietary modules.
+  Value is reputational/pedagogical, not commercial.  Detail: [`CONTRIBUTING.md`](CONTRIBUTING.md),
   [`TRADEMARKS.md`](TRADEMARKS.md).
 * **Brand / NAME CASING — SETTLED 2026-06-04, do NOT reopen.**  Three registers
   by surface: **`CHOUPO`** (uppercase) = visual product brand on BRAND/UI

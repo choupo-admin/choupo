@@ -175,6 +175,8 @@ export class Page {
      *  fetches the engine, so a page-only listener would have called the
      *  frozen-shell defect of 2026-09-02 clean. */
     this.requests = [];
+    /** Chromium's own word on the last goto() -- see goto(). */
+    this.lastNavigationError = null;
     this._network = false;
     this._childSessions = new Set();
   }
@@ -266,13 +268,20 @@ export class Page {
   }
 
   /** Navigate and wait for the load event (or the timeout, which is not fatal
-   *  on its own -- readiness is decided by the caller's own poll). */
+   *  on its own -- readiness is decided by the caller's own poll).
+   *
+   *  `lastNavigationError` keeps whatever Chromium said about THIS navigation
+   *  (`net::ERR_CONNECTION_RESET`, `net::ERR_NAME_NOT_RESOLVED`, ...), null
+   *  when it said nothing.  A caller that finds the page empty needs to be
+   *  able to tell "the app failed to render" from "the page never arrived",
+   *  and only the browser knows which. */
   async goto(url, timeoutMs = 30000) {
     let loaded = false;
     const off = this.browser.onEvent((m) => {
       if (m.sessionId === this.sessionId && m.method === "Page.loadEventFired") loaded = true;
     });
-    await this.send("Page.navigate", { url });
+    const nav = await this.send("Page.navigate", { url });
+    this.lastNavigationError = nav?.errorText || null;
     const t0 = Date.now();
     while (!loaded && Date.now() - t0 < timeoutMs) await new Promise((r) => setTimeout(r, 50));
     off();

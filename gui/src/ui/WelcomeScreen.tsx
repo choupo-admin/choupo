@@ -140,7 +140,7 @@ export function WelcomeScreen() {
               style={{ height: "clamp(52px, 14vw, 80px)", display: "block", flexShrink: 0 }} />
             <Stack gap={3} align="flex-start" style={{ minWidth: 0 }}>
               <Text fw={800} style={{ fontSize: "clamp(30px, 9vw, 40px)", letterSpacing: 1, lineHeight: 1 }}>
-                <span style={{ color: "light-dark(var(--mantine-color-accent-7), var(--mantine-color-accent-4))" }}>C</span>HOUPO<sup style={{ fontSize: "0.38em", fontWeight: 600, verticalAlign: "super", letterSpacing: 0 }}>™</sup>
+                <span style={{ color: "light-dark(var(--mantine-color-accent-7), var(--mantine-color-accent-4))" }}>C</span>HOUPO<sup style={{ fontSize: "0.38em", fontWeight: 600, verticalAlign: "super", letterSpacing: 0 }}>®</sup>
               </Text>
               <Text c="dimmed" size="sm" style={{ lineHeight: 1.15 }}>Open-source, glass-box chemical process simulator</Text>
             </Stack>
@@ -277,7 +277,7 @@ export function WelcomeScreen() {
           · GPL-3.0-or-later · Independent open-source project
         </Text>
         <Text size="xs" c="dimmed" ta="center">
-          CHOUPO™ is a trademark of TalentGround Lda.
+          CHOUPO® is a registered trademark of TalentGround Lda.
         </Text>
       </Stack>
     </Box>

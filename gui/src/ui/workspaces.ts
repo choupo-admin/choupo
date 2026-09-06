@@ -154,6 +154,18 @@ export const WORKSPACES: WorkspaceEntry[] = [
 /** The labels a case tab's menu may ever carry — every WORKSPACES entry and
  *  nothing else.  Exported so a test can state the invariant that gives this
  *  file its name: no mode is in the row. */
+/**  The workspaces that DRAW A RUN.  One home, because two questions read it
+ *  and both used to carry their own copy: which workspace must not be
+ *  restored on a fresh boot (a result view with no run behind it), and which
+ *  workspace dims when the drawn result no longer matches what is declared
+ *  (case/staleness.ts).  A third copy would be the arity sin on a fact about
+ *  this app's own surfaces.
+ *
+ *  The FLOWSHEET is deliberately absent: it draws a run AND the declaration,
+ *  so it dims only its result layer, inside FlowCanvas itself. */
+export const RESULT_WORKSPACES: readonly WorkspaceKey[] =
+  ["plots", "reports", "streams", "variables", "log", "pinch"] as const;
+
 export const VIEW_LABELS: ReadonlySet<string> =
   new Set(WORKSPACES.map((w) => w.label));
 

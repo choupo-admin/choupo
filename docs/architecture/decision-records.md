@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 113 records already exist
+## 1. Why an index, when 114 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,8 +27,8 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 113 design records, **67 state a rejected alternative and 46 do not** —
-  so for more than half, the reasoning that would prevent re-litigation is
+- Of 114 design records, **68 state a rejected alternative and 46 do not** —
+  so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
 ## 2. How to read the table
@@ -67,6 +67,7 @@ direction is an error.
 
 | record | kind | alt | status |
 |---|---|---|---|
+| [`a-tool-that-reported-what-it-could-not-see.md`](../design/a-tool-that-reported-what-it-could-not-see.md) | ADR | yes | **SHIPPED 2026-09-06** — a tool that could not LOOK must REFUSE, not report what it did not see: `bin/drive-app` demands a positive sentinel (the app's own chrome in the rendered DOM) before judging anything, and exits 2 naming the URL, Chromium's navigation error and the remedy; and a STALE result DIMS (fingerprint of the declared case stamped on the run, one home, **all of them or none** — never a per-value claim).  Rejected: annotating a stale number (still read as a number), requiring the version badge as the sentinel (absent on a partial mirror = a false refusal), treating the scratch-edit count as staleness (a run does not clear the overlay), and folding the display preset / frozen boundary state into the fingerprint (would make every result read as stale) |
 | [`the-student-walkthrough.md`](../design/the-student-walkthrough.md) | SCOPE | no | **WRITTEN 2026-09-02** — the programme behind legs 4–8 had no record of its own: legs 4 and 5 named themselves in their records, 6 in a commit body, 7 and 8 shipped the same day, and no leg below 4 is numbered anywhere in the tree (stated, not guessed).  One table, each leg cited to its commit or record; the method (drive the artefact a student meets, fix at the source) and the named next leg (output legibility) |
 | [`equilibrium-parameterisation-identity.md`](../design/equilibrium-parameterisation-identity.md) | ADR | no | SHIPPED — D2 migration closed 2026-07-26 |
 | [`computational-seal-migration.md`](../design/computational-seal-migration.md) | ADR | no | SHIPPED — `sealSchema computational`, 328/0 |
@@ -267,7 +268,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**46 of 113 records state no rejected alternative.**  For a FORUM or a STUDY
+**46 of 114 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

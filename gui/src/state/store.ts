@@ -37,10 +37,14 @@ import { tutorialByName } from "../cases/tutorials.js";
 import { readCaseAt } from "../cases/workspace.js";
 import type { CaseFiles } from "../case/types.js";
 import type { ScratchEdit, ScratchEdits } from "../case/scratch.js";
+import type { RunInputs } from "../case/staleness.js";
 import type { JsonDict } from "../dict/json.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { frozenStreamStateText } from "../case/resultSlice.js";
 import { zeroStateText } from "../case/toGraph.js";
+// RESULT_WORKSPACES: the ONE list of workspaces that draw a run (ui/workspaces.ts).
+// That module imports from here TYPE-ONLY, so this is not a runtime cycle.
+import { RESULT_WORKSPACES } from "../ui/workspaces.js";
 import {
   DEFAULT_PREFS,
   setDisplaySigFigs,
@@ -262,6 +266,13 @@ interface AppState {
   runStatus: RunStatus;
   runLog: string;
   runResult: RunResult | null;
+  /** What the drawn result was computed from -- see finishRun.  null = never
+   *  stamped (a fresh tab, or a drilled-in tab that INHERITED its parent's
+   *  result), and nothing is claimed about staleness.  Deliberately not
+   *  cleared beside `runResult`: with no result there is nothing to call
+   *  stale, so a leftover stamp cannot mislead, and one write site is one
+   *  home. */
+  runInputs: RunInputs | null;
   // Iteration audit: monotonic stamps of the last props (choupoProps) run vs the
   // last flowsheet (choupoSolve) run.  flowsheetRunAt >= propsRunAt => the
   // simulation reflects the consolidated props; propsRunAt > flowsheetRunAt =>
@@ -342,7 +353,13 @@ interface AppState {
   setActiveWorkspace: (key: WorkspaceKey | null) => void;
   startRun: () => void;
   appendLog: (chunk: string) => void;
-  finishRun: (result: RunResult) => void;
+  /** `inputs` is the FINGERPRINT OF WHAT WAS RUN (case/staleness.ts): the
+   *  case the solver was actually handed, scratch overlay included.  It is
+   *  what lets a later render tell "this result is the answer to what is on
+   *  screen" from "this result answers a question that has since changed".
+   *  Optional: a caller that does not stamp makes NO claim, and the result
+   *  then never reads as stale -- absence must not manufacture a verdict. */
+  finishRun: (result: RunResult, inputs?: RunInputs) => void;
   failRun: () => void;
   resetRun: () => void;
 
@@ -592,6 +609,7 @@ export const useStore = create<AppState>((set, get) => ({
   runStatus: initial.inherited ? initial.inherited.status : "idle",
   runLog: initial.inherited?.log ?? "",
   runResult: initial.inherited ?? null,
+  runInputs: null,
   propsRunAt: 0,
   flowsheetRunAt: initial.inherited && initial.files.flowsheet ? 1 : 0,
   // The card's fold comes from the READER's key, not from the session — so a
@@ -616,7 +634,7 @@ export const useStore = create<AppState>((set, get) => ({
           // empty result view restored from the last session.  Only a run-free
           // workspace (props/explore/methods/case) is restored; otherwise
           // null = Flowsheet.
-          : (["plots", "reports", "streams", "variables", "log", "pinch"] as WorkspaceKey[])
+          : RESULT_WORKSPACES
               .includes(bootSession?.activeWorkspace as WorkspaceKey)
               ? null
               : bootSession?.activeWorkspace ?? null),
@@ -870,7 +888,8 @@ export const useStore = create<AppState>((set, get) => ({
   // Reset (resetRun) is the explicit way to clear.
   startRun: () => set({ runStatus: "running", runLog: "", scrubIdx: null }),
   appendLog: (chunk) => set((s) => ({ runLog: s.runLog + chunk })),
-  finishRun: (result) => set({ runStatus: result.status, runResult: result }),
+  finishRun: (result, inputs) => set({ runStatus: result.status, runResult: result,
+                                      runInputs: inputs ?? null }),
   markPropsRun: () =>
     set((s) => ({ propsRunAt: Math.max(s.propsRunAt, s.flowsheetRunAt) + 1 })),
   markFlowsheetRun: () =>

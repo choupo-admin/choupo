@@ -54,9 +54,30 @@ License
        the defect that was found;
     4. records every request the page AND ITS WORKERS made (the engine is
        fetched by the worker), and reports any that left the app's own
-       prefix -- the frozen-shell class;
+       prefix -- the frozen-shell class, a FINDING only under a versioned
+       /vYYMM/app/ prefix, which is the only layout that must carry its own
+       assets (see the note beside the check);
     5. reads every console/worker error;
     6. exits 1 on any finding, 0 on none, 2 if it could not honestly run.
+
+  IT MUST BE RUN FROM A NETWORK THAT CAN REACH THE TARGET, OR IT REFUSES.
+  On 2026-09-06 this tool reported "no run control (absent)" and "engine
+  requests: 0" for all four cases it drove at www.choupo.org/app/ -- while
+  that same app, opened in a browser on a machine with a route to the host,
+  drew its flowsheet, ran the case and printed "Solved in 2 iterations".  The
+  page had never loaded: Chromium here dies on that host with
+  net::ERR_CONNECTION_RESET (the agent proxy), and a `querySelectorAll`
+  over a blank document finds no button, which the tool filed as an
+  OBSERVATION about the app.  A check that cannot run must not pass -- and
+  the mirror is exactly as bad: it must not FAIL either.  So the drive now
+  demands a POSITIVE SENTINEL before it judges anything -- the app's own
+  chrome in the rendered DOM (a mounted #root carrying the CHOUPO wordmark,
+  plus the version badge when the engine's version.json answered) -- and
+  when that sentinel is absent it RAISES THE REFUSAL PATH (exit 2), naming
+  the URL, what Chromium said about the navigation, and what little the
+  document did contain.  It never converts an unreachable host into a
+  finding about the app.  `--mirror` is the route around a blocked host:
+  curl fetches the served copy (proxy-aware) and `--serve` drives it here.
 
   A TOOL, NOT A GATE, and the reason is structural (the Poling precedent):
   it needs a browser and a SERVED copy, and the copy that matters most is on
@@ -133,35 +154,58 @@ function curl(url, to) {
   mkdirSync(dirname(to), { recursive: true });
   execFileSync("curl", ["-s", "-f", "-o", to, url], { stdio: ["ignore", "ignore", "pipe"] });
 }
+//  A REFERENCE IS SITE-ABSOLUTE, NOT PREFIX-RELATIVE.  The app is served at a
+//  prefix, but WHERE its assets live depends on the layout: the frozen
+//  /vYYMM/app/ copies carry theirs UNDER the prefix, while the delivered
+//  www.choupo.org/app/ (and bin/runSite, which builds the same shape) serves
+//  /assets, /wasm, /workers, /docs at the SITE ROOT so one origin carries both
+//  the landing and the app.  The first mirror resolved everything against the
+//  prefix and therefore fetched ZERO files from the live /app/ (measured
+//  2026-09-06) -- the drive then refused, correctly, against an empty
+//  document.  So every reference is kept as a path from the ORIGIN, and one
+//  that does not say where it lives is tried in both homes.
 function mirror(url, dir) {
   if (!url.endsWith("/")) url += "/";
-  const prefix = new URL(url).pathname;               // e.g. /v2608/app/
-  const appDir = join(dir, prefix);
-  log(`[mirror] ${url} -> ${appDir}`);
-  curl(url, join(appDir, "index.html"));
-  const index = readFileSync(join(appDir, "index.html"), "utf8");
-  const rel = new Set();
+  const u = new URL(url);
+  const prefix = u.pathname;                       // /app/ or /v2608/app/
+  log(`[mirror] ${url} -> ${join(dir, prefix)}`);
+  curl(url, join(dir, prefix, "index.html"));
+  const index = readFileSync(join(dir, prefix, "index.html"), "utf8");
+
+  //  Fetch one reference into the mirror, trying each home in turn; returns
+  //  the site path it landed at, or null when no home had it.
+  const got = new Set([`${prefix}index.html`]);
+  const homes = (ref) => ref.startsWith("/") ? [ref] : [prefix + ref, "/" + ref];
+  const fetchRef = (ref) => {
+    for (const path of homes(ref.replace(/^\.\//, ""))) {
+      if (got.has(path)) return path;
+      const to = join(dir, path);
+      if (existsSync(to)) { got.add(path); return path; }
+      try { curl(u.origin + path, to); got.add(path); return path; } catch { /* try the next home */ }
+    }
+    return null;
+  };
+
+  const queue = [];
   for (const m of index.matchAll(/(?:src|href)="([^"]+)"/g)) {
     const h = m[1];
-    if (h.startsWith(prefix)) rel.add(h.slice(prefix.length));
-    else if (!h.startsWith("/") && !h.startsWith("http")) rel.add(h);
+    if (!/^(https?:|data:|#|mailto:)/.test(h)) queue.push(h);
   }
-  const fixed = ["workers/solverWorker.js", "wasm/version.json", "docs/guides.json",
-    ...["choupoSolve", "choupoBatch", "choupoCtrl", "choupoProps"].flatMap((b) => [`wasm/${b}.js`, `wasm/${b}.wasm`])];
-  for (const f of fixed) rel.add(f);
-  // the lazy chunks: every "assets/*.js|css" literal in every JS the entry names
-  for (const f of [...rel]) {
-    if (!f.endsWith(".js") || !f.startsWith("assets/")) continue;
-    curl(url + f, join(appDir, f));
-    for (const m of readFileSync(join(appDir, f), "utf8").matchAll(/"(assets\/[A-Za-z0-9_.-]+\.(?:js|css))"/g)) rel.add(m[1]);
+  queue.push("workers/solverWorker.js", "wasm/version.json", "docs/guides.json",
+    ...["choupoSolve", "choupoBatch", "choupoCtrl", "choupoProps"].flatMap((b) => [`wasm/${b}.js`, `wasm/${b}.wasm`]));
+
+  //  The LAZY CHUNKS: every "assets/*.js|css" literal in every JS we fetch,
+  //  scanned transitively (the first mirror omitted these and invented a 404
+  //  in the Props view).
+  const missing = [];
+  for (let i = 0; i < queue.length; i++) {
+    const landed = fetchRef(queue[i]);
+    if (!landed) { missing.push(queue[i]); continue; }
+    if (!landed.endsWith(".js")) continue;
+    for (const m of readFileSync(join(dir, landed), "utf8").matchAll(/"(\/?assets\/[A-Za-z0-9_.-]+\.(?:js|css))"/g))
+      if (!queue.includes(m[1])) queue.push(m[1]);
   }
-  let n = 0, missing = [];
-  for (const f of rel) {
-    const to = join(appDir, f);
-    if (existsSync(to)) { n++; continue; }
-    try { curl(url + f, to); n++; } catch { missing.push(f); }
-  }
-  log(`[mirror] ${n} file(s); ${missing.length} not on the host: ${missing.join(" ") || "-"}`);
+  log(`[mirror] ${got.size} file(s); ${missing.length} not on the host: ${missing.join(" ") || "-"}`);
   return prefix;
 }
 
@@ -186,11 +230,67 @@ function serve(dir) {
 const VIEWS = ["Flowsheet", "Props", "Streams", "Variables", "Plots", "Log", "Case", "Pinch", "Reports", "Literature"];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+//  THE POSITIVE SENTINEL.  Read the app's OWN chrome out of the rendered
+//  document -- never the absence of an error, which a blank page also shows.
+//  `#root` with children means React mounted; the wordmark means it is THIS
+//  app and not somebody's error page; the version badge is reported when
+//  present but is NOT required, because it waits on a `wasm/version.json`
+//  fetch that a partial mirror may not carry.
+const APP_CHROME = `(() => {
+  const root = document.querySelector('#root');
+  const text = (document.body && document.body.innerText) || '';
+  const badge = [...document.querySelectorAll('*')]
+    .filter((e) => e.childElementCount === 0)
+    .map((e) => (e.textContent || '').trim())
+    .find((t) => /^Choupo-(dev|[0-9]{4})/.test(t)) || '';
+  return {
+    mounted: !!root && root.childElementCount > 0,
+    wordmark: /CHOUPO/.test(text),
+    badge,
+    title: document.title || '',
+    bodyLen: text.length,
+    head: text.replace(/\\s+/g, ' ').slice(0, 200),
+  };
+})()`;
+
+async function requireBootedApp(page, url, timeoutMs = 30000) {
+  let chrome = null;
+  for (let waited = 0; waited <= timeoutMs; waited += 500) {
+    chrome = await page.evaluate(APP_CHROME).catch((e) => ({ evaluateFailed: String(e.message || e) }));
+    if (chrome && chrome.mounted && chrome.wordmark) return chrome;
+    await sleep(500);
+  }
+  const nav = page.lastNavigationError;
+  //  WHICH REMEDY.  A document that arrived (a title, or any text at all) but
+  //  carries no app is a DIFFERENT failure from a page that never arrived, and
+  //  handing the reader the network remedy for a rendering failure sends them
+  //  to fix a route that works.  Chromium's own navigation error decides it
+  //  first; absent that, the document's own evidence does.
+  const reached = !nav && (!!chrome?.title || (chrome?.bodyLen ?? 0) > 0);
+  const seen = chrome?.evaluateFailed
+    ? `the page did not answer an evaluate: ${chrome.evaluateFailed}`
+    : `document.title "${chrome?.title ?? "?"}", #root ${chrome?.mounted ? "mounted" : "empty"}, `
+      + `body ${chrome?.bodyLen ?? 0} char(s)${chrome?.head ? `: "${chrome.head}"` : ""}`;
+  throw new Refusal(
+    `the app did not boot at ${url} -- no CHOUPO chrome in the document after ${timeoutMs / 1000} s; ${seen}`
+    + (nav ? `; the browser reported ${nav} for that navigation` : "")
+    + ". Nothing was judged: this tool reports what it SAW, and it saw no app.",
+    !reached
+      ? `this machine has no route from Chromium to that host (curl may still reach it through the proxy -- the browser does not). `
+        + `Run drive-app from a network that can reach it, or mirror the served copy and drive that here: `
+        + `bin/drive-app --mirror ${url.split("?")[0]} /tmp/mirror --case <id>`
+      : `the host answered but the app did not render -- open ${url} in a browser and read the console`);
+}
+
 async function driveCase(browser, base, id, findings) {
   const page = await browser.newPage(1400, 900);
   await page.enableNetwork();
   const url = `${base}?case=${encodeURIComponent(id)}`;
   await page.goto(url, 90000);
+  //  BEFORE ANY JUDGEMENT: did the app actually boot?  Absent, this raises
+  //  the Refusal path (exit 2, no findings) -- see the header.
+  const chrome = await requireBootedApp(page, url);
+  log(`    app booted: ${chrome.badge || "(no version badge)"}`);
   await sleep(4000);
   const origin = new URL(base).origin;
   const bodyText = async () => (await page.evaluate("document.body.innerText")).replace(/\s+/g, " ");
@@ -249,7 +349,21 @@ async function driveCase(browser, base, id, findings) {
   const outside = [...new Set(reqs.filter((u) => u.startsWith(origin) && !u.startsWith(base)))];
   log(`    engine requests: ${engine.length}  (${engine.filter((u) => u.startsWith(base)).length} inside the prefix)`);
   if (!engine.some((u) => /\.wasm/.test(u)) && ran === "clicked") findings.push(`${id}: no .wasm was fetched -- the run did not reach an engine`);
-  for (const u of outside) findings.push(`${id}: request OUTSIDE the app prefix: ${u}`);
+  //  THE FROZEN-SHELL CHECK IS A CLAIM ABOUT A FROZEN COPY, and only there.
+  //  A release at /vYYMM/app/ carries its OWN assets and engines under its own
+  //  prefix, so a request leaving it is the 2026-09-02 defect: a frozen shell
+  //  around the development engine.  The DEVELOPMENT app at /app/ is a
+  //  different layout on purpose -- one origin serves the landing and the app,
+  //  with /assets, /wasm, /workers at the site ROOT (bin/runSite builds exactly
+  //  that shape) -- so every asset request legitimately leaves /app/.  Filing
+  //  those as findings printed 22 accusations against a correct app on
+  //  2026-09-06, and a check that accuses the innocent teaches its reader to
+  //  ignore it.  Outside a versioned prefix the same requests are REPORTED,
+  //  which is what the reader can actually act on.
+  const frozenCopy = /^\/v\d{4}(\.\d+)?\/app\/$/.test(new URL(base).pathname);
+  if (outside.length && !frozenCopy)
+    log(`    ${outside.length} request(s) outside ${new URL(base).pathname} -- not a finding: this is not a /vYYMM/app/ frozen copy, whose assets alone must stay inside their prefix`);
+  if (frozenCopy) for (const u of outside) findings.push(`${id}: request OUTSIDE the app prefix: ${u}`);
   if (page.consoleErrors.length) log(`    console/worker errors: ${page.consoleErrors.length}`);
   await page.send("Target.closeTarget", { targetId: page.targetId }).catch(() => {});
 }

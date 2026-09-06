@@ -55,6 +55,7 @@ import { resolveAdapter, type AdapterKind } from "../adapters/index.js";
 import { withDisplayPrefs } from "../case/applyPrefs.js";
 import { withFrozenBoundaryState } from "../case/resultSlice.js";
 import { applyScratch } from "../case/scratch.js";
+import { runInputsOf } from "../case/staleness.js";
 import { downloadFlowsheetDict } from "../case/saveCase.js";
 import { caseHasUserCode, USER_CODE_MSG } from "../case/userCode.js";
 import { TUTORIALS } from "../cases/tutorials.js";
@@ -265,7 +266,12 @@ export function TopBar({ onMinWidth }: {
         appendLog,
         ctl.signal,
       );
-      finishRun(result);
+      //  STAMP WHAT WAS RUN.  `tinkered` -- not `filesForRun` -- is the
+      //  subject: the display preset and a drilled sector's frozen boundary
+      //  state are added by the run, not declared by the student, and
+      //  fingerprinting them would make every result read as stale.  See
+      //  case/staleness.ts.
+      finishRun(result, runInputsOf(tinkered, scratchEdits));
       // CURATION-PHASE: a composite case (sectors) whose streams are not wired
       // (children but empty connections) is still in curation -- choupoSolve
       // emits the curation message and there is NOTHING simulated.  The GUI must
@@ -415,7 +421,7 @@ export function TopBar({ onMinWidth }: {
           onClick={goHome} title="Home (welcome)">
           <img src={`${import.meta.env.BASE_URL}logo2-mark.png`} alt="" height={26} style={{ display: "block", width: "auto", marginBottom: 1 }} />
           <Text fw={700} size="md" style={{ letterSpacing: 0.3, lineHeight: 1 }}>
-            <span style={{ color: "light-dark(var(--mantine-color-accent-7), var(--mantine-color-accent-4))" }}>C</span>HOUPO<sup style={{ fontSize: "0.55em", fontWeight: 600, verticalAlign: "super", letterSpacing: 0 }}>™</sup>
+            <span style={{ color: "light-dark(var(--mantine-color-accent-7), var(--mantine-color-accent-4))" }}>C</span>HOUPO<sup style={{ fontSize: "0.55em", fontWeight: 600, verticalAlign: "super", letterSpacing: 0 }}>®</sup>
           </Text>
         </Group>
         {engineVersion && (
