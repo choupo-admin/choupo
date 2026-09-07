@@ -144,7 +144,11 @@ reads bodies, not names.  A unit directory naming no unit of the flattened
 flowsheet is an ORPHAN and refuses, the same posture as an orphan stream file.
 A kind file no unit declares it READS refuses too — *a declared field nobody
 reads is a comment sitting in the state directory*.  `choupo-init0` writes no
-interiors; `choupo-lint` REPORTS the declared ones per unit.
+interiors; `choupo-lint` REPORTS the declared ones per unit.  (**The
+`choupo-init0` half was REVERSED on 2026-09-07 — see §10.**  `0/` is still
+authored and never *engine*-written: what changed is that the AUTHOR'S OWN
+TOOL may now materialise the interior half of it, exactly as it has always
+materialised the stream half.)
 
 **D5 — the GUI.**  The interiors ride `convergedFiles`; the
 `internalStateFiles` channel is removed.  They ARE the converged snapshot, so
@@ -238,6 +242,10 @@ flowsheet asks each unit and refuses.
   spiral-wound module, the PSA bed and the rest publish interiors and read
   none; each declares no kind, so a declared file for them REFUSES rather than
   being silently ignored.  The next slices are named by that refusal.
+  (**The EXTRACTOR was the one that had to move, and it did on 2026-09-07 —
+  §10.**  The rest of this bullet stands, and §10.1 says why: for most
+  publishers the interior is an OUTPUT, and seeding a derivative is the one
+  thing this tree never does.)
 * **No interior is written for a non-converged run**, so a case that fails has
   nothing to restart from.  Deliberate — `converged/` is a name with a
   contract — but it is the obvious thing a user will ask for next.
@@ -405,3 +413,171 @@ not a reflection.**
 
 Gate: `check_internal_states`, rewritten for the address and the block form
 (arms (a)–(m), sabotages by hand, verbatim lines in its docstring).
+
+---
+
+## 10.  AMENDED 2026-09-07 — the title is now TRUE (task #133)
+
+*Vítor, reading §1 back against what the engine does:*
+
+> the interior of a unit that seeds itself is re-invented on every restart,
+> so a state directory carrying only the streams is not the snapshot this
+> record's own title claims.
+
+*The rule he proposed, and the architect decided: **every unit that starts
+from an interior declares it, and `0/` can be MATERIALISED with it.***
+
+### 10.1  The scope, measured again before building
+
+§7 said *"every unit but the column seeds itself"* and named the next slices
+by that sentence.  Measured on 2026-09-07, the sentence is right and the list
+it implies is much shorter than it sounds — because the test is not *does the
+unit publish an interior* but ***does its solve READ one to START***:
+
+* **16 unit types assign an `xAxis`**; two of those axes (`T_K`, on the CSTR's
+  van Heerden diagram and the cooling tower's Merkel construction) are
+  excluded by D2 as analyses, and **4 carry a `stage` axis**:
+  `DistillationColumn`, `Extractor`, `Absorber`, `Stripper`.
+* For most publishers the interior is an **OUTPUT**: a crystalliser's size
+  distribution falls out of the population balance, a PFR's axial profile out
+  of the integration.  Seeding one would be seeding a DERIVATIVE, and *the
+  tree never stores derivatives*.
+* **`DistillationColumn` was done** (§3, §9).
+* **`Extractor` was the one left.**  `Extractor.cpp` opened its cascade with
+  *"Initial guess: every stage's extract = the fresh solvent, every stage's
+  raffinate = the feed.  Honest, topology-propagated seed."*  The seed is
+  honest and the comment is true; what was missing is that a case could not
+  DECLARE it and the run did not ANNOUNCE which route it took — the same
+  half-kept 2026-05-30 rule the column was fixed for one day earlier.
+
+**One measurement disagreed with the brief that ordered this slice, and it is
+recorded rather than quietly absorbed.**  The brief called `Absorber` and
+`Stripper` *"KREMSER — analytic, closed form, no iteration, NO SEED"*.  Their
+MASS balance is indeed a direct tridiagonal solve that needs no seed.  But
+both carry an **outer loop over a temperature profile** when the energy
+balance is active (`maxIt = nonIso ? 200 : 1`), started at
+`Tprof(N, T0)` with `T0` the mean of the two feed temperatures — an in-code
+seed of exactly the class this slice is about.  It is not hypothetical: all
+three corpus cases that use them (`absorber01_NH3_water`,
+`stripper01_NH3_water`, `acetone05_luyben_absorber`) pin
+`nonIsothermal = 1`.  **They were still left alone**, which is the architect's
+decision and a defensible one — the seed is one temperature column, built from
+the two feeds, and the relaxed loop reaches its profile in a few sweeps — but
+the reason is now the real one (*small, and not worth a file*) instead of a
+false one (*there is no seed*).  Named here so the next slice starts from the
+measurement.
+
+### 10.2  What was built
+
+**D13 — the Extractor reads its interior.**  `readsInteriorKinds() ==
+{ "stageProfile" }`, and the cascade starts from the `stageProfile` block of
+`0/internalStates/<SECTOR>/<unit>` when the case declares one.  The
+declaration is reconstructed into the cascade's own unknowns — `F_extract[j]`
+and `F_raffinate[j]` distributed over the components by the `xE_*` / `xR_*`
+columns — and it REFUSES by name a declaration that does not describe THIS
+cascade: a wrong axis, a missing column, a stage count that is not `stages`, a
+column for a component the case does not carry, a non-finite value, a negative
+flow.  Both routes announce.  **A declared profile that does not satisfy the
+balances is a SEED, not an answer**, and the announcement says so.
+
+*One thing is deliberately NOT refused, and it is the same lesson the day
+before:* a stage whose extract composition is all zeros.  That is exactly what
+the writer emits for a stage where the LL flash found no split, so refusing it
+would refuse this module's own output — *a writer whose output its own reader
+refuses is a bug in both*.  The phase starts empty there and the run **counts
+and says** how many stages that was.
+
+**D14 — `choupo-init0` materialises the interior half.**  A unit that reads an
+interior gets one written at its own address; a unit that reads none gets
+nothing.  What is written is **the unit's OWN seed** — published by
+`UnitOperation::seedInterior`, which the Extractor builds through the very
+function its `solve()` starts from (`seedCascade`), so the file and the run
+can never describe two different guesses.  The tool's posture is unchanged: it
+never overwrites without `--force`.
+
+*Measured, and it is the proof that the rule was kept:* a case seeded from the
+file the tool wrote reproduces the unseeded answer **to the twelve significant
+digits the file carries** (34 sweeps either way; KPIs agreeing to ~1e-11
+relative, the round-trip precision of the format).  A tool that had "improved"
+the seed would move the answer, and the gate's arm (s) fires on exactly that.
+
+**D15 — the completeness of a DECLARED tree, as a SEPARATE check.**  The
+stream contract counts STREAMS and skips `internalStates/` by name (§9.1 D5);
+this counts UNITS, and folding the two together would mean one refusal message
+for two different faults.
+
+**What it refuses is exactly this much, and the boundary was argued before it
+was coded.**  A unit that reads an interior and finds none **seeds itself and
+says so** — that is the 2026-05-30 rule working (an auto-init is allowed when
+it is honest and announced), so it is *not* a fault and is *not* refused.  But
+once a case DECLARES an interior tree it has taken ownership of the interior
+half of its own snapshot, and a second unit in that case that reads one and is
+missing from the tree is a restart that silently re-invents half of what it
+claims to restore.  So: **a declared interior tree must be COMPLETE for the
+units that read one.**  A unit that reads none gains no entry, no count and no
+refusal.
+
+**The unconditional form was REJECTED, and this is the substantive
+disagreement of the slice.**  The brief specified *missing ⇒ refuse* outright:
+any unit that reads an interior and has none is fatal.  Measured, that is 30
+distillation cases and one extraction case in the corpus today, every one of
+which would have to ship a materialised interior — and then every one of them
+would start from a file written at 12 significant digits instead of from the
+double its own code produces, moving iteration counts and last digits across
+thirty goldens.  It also contradicts the 2026-05-30 rule directly: it bans an
+auto-init that is honest and announced, which is the case the rule exists to
+permit.  And the brief's own hard rule — *the undeclared path must be
+byte-identical* — presupposes that path still exists.  **Making it
+unconditional is a decision for Vítor, and it costs a 31-case migration and a
+golden re-record; it is not a thing to take by accident inside a slice about
+declaring a seed.**
+
+**D16 — the accounting is SAID even when nothing is wrong.**  Every run with
+at least one reader prints `[state] interiors: N of M unit(s) that read one
+are declared in 0/`, and `choupo-init0` prints what it wrote and what it
+kept — including the zero, because a case whose units all seed themselves is a
+FACT about the case and not an omission by the tool.
+
+**D17 — a reader that publishes no seed is NAMED, not skipped.**  The
+`DistillationColumn` reads an interior and does not publish a `seedInterior`
+yet, so `choupo-init0` writes nothing for it — and says so, by name, rather
+than letting the tool's own claim ("the interiors of the units that read one")
+go quietly false.  Building the column's seed is a slice of its own: its
+starting profile is assembled inside two different method paths from a `feed`
+dict the flatten seam composes, so publishing it means moving that seam, and a
+transcription of the formula into a second place would be the exact defect
+`seedCascade` exists to prevent.
+
+### 10.3  What it cost, what moved, and what did not
+
+* **Nothing moved on the undeclared path**, and it was proved per case rather
+  than asserted: `extract01`, `column01`, `column16` and `absorber01` were run
+  before and after and diffed whole.  The only differences in any of them are
+  the new announcement lines; `extract01`'s `converged/` tree is byte-identical
+  except for the one header sentence that flips because the extractor now
+  reads an interior — which is the 2026-09-06 conditional header doing exactly
+  what it was built to do.
+* **The witness**: `tutorials/steady/absorption/extract02_declared_interior` —
+  `extract01` physically, declaring `0/internalStates/extractor01` as a byte
+  copy of what `converged/` wrote.  **1 sweep against 34**, and the answer it
+  reaches is legitimately its own: both runs stop inside the same 1e-4 mass
+  closure target at slightly different points (recovery 0.44157 against
+  0.44176), so the witness carries its own golden.  That is the feature, not a
+  drift — a restart from an answer is not obliged to take the same path back
+  to it.
+* **A weakness in this project's own gate idiom, found by sabotage.**  The
+  first source arm asked `"seedInterior" not in ext`; renaming the method to
+  `seedInteriorXX` — which disconnects the override from its base and breaks
+  the whole feature — leaves that substring in place, and the sabotage
+  SURVIVED.  All four name tests in `check_source` now look for the name as a
+  CALLABLE.  *A name checked as a substring is not checked.*
+* **NOT done, said plainly**: the column's `seedInterior` (D17); the absorber
+  and the stripper (§10.1); the unconditional completeness refusal (D15,
+  reserved for Vítor); `iterations/` and the dynamic instants (§7 stands).
+
+Gate: `check_internal_states`, arms (s)–(v) — the init0 round trip **on the
+extractor**, the seed held to the case's own `0/` stream files rather than to
+the engine's arithmetic, a case whose units read nothing gaining nothing, and
+an incomplete declared tree refusing by name while never naming the unit that
+reads none.  Six by-hand sabotages (S21–S26), one of which survived its first
+form.

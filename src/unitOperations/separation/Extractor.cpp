@@ -34,6 +34,7 @@ License
 #include <iomanip>
 #include <limits>
 #include <iostream>
+#include <map>
 #include <stdexcept>
 
 namespace Choupo {
@@ -160,6 +161,280 @@ StageSplit equilibrateStage(const sVector& inMol,
 
 } // namespace
 
+//  ---- THE INTERIOR THE CASE DECLARED, OR THE ONE THE UNIT INVENTS --------
+//
+//  The cascade's unknowns ARE its stage profile: the extract and raffinate
+//  leaving every stage.  Until today this class wrote them in code -- "every
+//  stage's extract = the fresh solvent, every stage's raffinate = the feed" --
+//  and said nothing about it.  The seed is honest (it is built from the
+//  streams the case declares, never from a universal constant) and it is the
+//  2026-05-30 rule's other half that was missing: a solver aid is the
+//  student's to own, and the solver announces what it does to converge.  So
+//  the seed is now DECLARABLE -- a `stageProfile` block in
+//  `0/internalStates/<SECTOR>/<unit>`, in the very grammar `converged/`
+//  writes -- and BOTH routes speak.
+//
+//  A DECLARED PROFILE THAT DOES NOT SATISFY THE BALANCES IS A SEED, NOT AN
+//  ANSWER.  Nothing here checks the profile against the stage equilibria --
+//  the sweeps do that, and they move off any profile that is wrong.  What IS
+//  checked is that the declaration describes THIS cascade: the stage count,
+//  the component set, and that every number is a number.
+
+void Extractor::seedCascade(const sVector&        feedMol,
+                            const sVector&        solvMol,
+                            int                   N,
+                            std::vector<sVector>& Emol,
+                            std::vector<sVector>& Rmol)
+{
+    for (int j = 0; j < N; ++j) { Emol[j] = solvMol; Rmol[j] = feedMol; }
+}
+
+UnitProfile Extractor::renderCascade(const std::vector<sVector>& Emol,
+                                     const std::vector<sVector>& Rmol,
+                                     const std::vector<sVector>& xE,
+                                     const std::vector<sVector>& xR,
+                                     const ThermoPackage&        thermo)
+{
+    const std::size_t n = thermo.n();
+    const int         N = static_cast<int>(Emol.size());
+
+    UnitProfile prof;
+    prof.xAxis = "stage";
+    std::vector<scalar> stageAxis(N), Eflow(N), Rflow(N);
+    std::vector<std::vector<scalar>> xEcol(n, std::vector<scalar>(N, 0.0));
+    std::vector<std::vector<scalar>> xRcol(n, std::vector<scalar>(N, 0.0));
+    for (int j = 0; j < N; ++j)
+    {
+        stageAxis[j] = static_cast<scalar>(j + 1);
+        Eflow[j]     = totalOf(Emol[j]);
+        Rflow[j]     = totalOf(Rmol[j]);
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            xEcol[i][j] = (j < static_cast<int>(xE.size()) && xE[j].size() == n) ? xE[j][i] : 0.0;
+            xRcol[i][j] = (j < static_cast<int>(xR.size()) && xR[j].size() == n) ? xR[j][i] : 0.0;
+        }
+    }
+    prof.columns["stage"]      = stageAxis;
+    prof.columns["F_extract"]  = Eflow;
+    prof.columns["F_raffinate"]= Rflow;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        const std::string& nm = thermo.comp(i).name();
+        prof.columns["xE_" + nm] = xEcol[i];
+        prof.columns["xR_" + nm] = xRcol[i];
+    }
+    return prof;
+}
+
+bool Extractor::seedFromDeclaredInterior(int                   N,
+                                         const ThermoPackage&  thermo,
+                                         const sVector&        feedMol,
+                                         const sVector&        solvMol,
+                                         std::vector<sVector>& Emol,
+                                         std::vector<sVector>& Rmol,
+                                         int                   verbosity) const
+{
+    const UnitProfile* p = declaredInterior("stageProfile");
+    if (!p)
+    {
+        seedCascade(feedMol, solvMol, N, Emol, Rmol);
+        if (verbosity >= 2)
+            std::cout << "  [seed] interior seeded by the unit: the fresh"
+                         " solvent as every stage's extract, the feed as every"
+                         " stage's raffinate -- declare a stageProfile block in"
+                         " 0/internalStates/<SECTOR>/<unit> to own it\n";
+        return false;
+    }
+
+    const std::size_t n  = thermo.n();
+    const std::size_t Nu = static_cast<std::size_t>(N);
+    auto refuse = [&](const std::string& why) {
+        throw std::runtime_error(
+            "Extractor: the stageProfile block declared in"
+            " 0/internalStates/<SECTOR>/<unit> does not describe this cascade -- "
+            + why + ".  A declared interior is read as this unit's starting"
+              " state; it must carry `stage`, `F_extract`, `F_raffinate` and one"
+              " `xE_<component>` and `xR_<component>` column per component of the"
+              " case, all of length `stages`."
+              "  Re-copy the file from converged/internalStates/<SECTOR>/<unit>"
+              " after a run of THIS case, run bin/choupo-init0 to materialise the"
+              " unit's own seed, or delete it and let the unit seed itself.");
+    };
+
+    if (p->xAxis != "stage")
+        refuse("its xAxis is `" + p->xAxis + "`, not `stage`");
+
+    auto column = [&](const std::string& name) -> const sVector& {
+        auto it = p->columns.find(name);
+        if (it == p->columns.end())
+            refuse("it carries no `" + name + "` column");
+        return it->second;
+    };
+
+    const sVector& stageCol = column("stage");
+    if (stageCol.size() != Nu)
+        refuse("it carries " + std::to_string(stageCol.size())
+               + " stages and this cascade declares stages "
+               + std::to_string(N));
+
+    const sVector& Ecol = column("F_extract");
+    const sVector& Rcol = column("F_raffinate");
+    if (Ecol.size() != Nu)
+        refuse("its `F_extract` column has " + std::to_string(Ecol.size())
+               + " values for " + std::to_string(N) + " stages");
+    if (Rcol.size() != Nu)
+        refuse("its `F_raffinate` column has " + std::to_string(Rcol.size())
+               + " values for " + std::to_string(N) + " stages");
+
+    //  THE COMPONENT SET IS THE CASE'S, both ways -- the column's rule, and
+    //  for the same reason.  A missing component seeds a composition that is
+    //  not one; an extra component is a profile written for a different case,
+    //  and reading it silently would be name identity between two unrelated
+    //  systems.
+    std::vector<const sVector*> eCol(n, nullptr), rCol(n, nullptr);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        eCol[i] = &column("xE_" + thermo.comp(i).name());
+        rCol[i] = &column("xR_" + thermo.comp(i).name());
+    }
+    for (const auto& [cname, vals] : p->columns)
+    {
+        (void)vals;
+        if (cname.rfind("xE_", 0) != 0 && cname.rfind("xR_", 0) != 0) continue;
+        const std::string comp = cname.substr(3);
+        bool known = false;
+        for (std::size_t i = 0; i < n; ++i)
+            if (thermo.comp(i).name() == comp) { known = true; break; }
+        if (!known)
+            refuse("it carries a column `" + cname + "` and this case has no"
+                   " component `" + comp + "`");
+    }
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        if (eCol[i]->size() != Nu)
+            refuse("its `xE_" + thermo.comp(i).name() + "` column has "
+                   + std::to_string(eCol[i]->size()) + " values for "
+                   + std::to_string(N) + " stages");
+        if (rCol[i]->size() != Nu)
+            refuse("its `xR_" + thermo.comp(i).name() + "` column has "
+                   + std::to_string(rCol[i]->size()) + " values for "
+                   + std::to_string(N) + " stages");
+    }
+
+    //  EVERY VALUE FINITE, AND NO NEGATIVE FLOW.  A `nan` in a state file is
+    //  a fact about the run that produced it, and seeding a cascade with one
+    //  guarantees a stage flash that reads like a modelling failure; a
+    //  negative molar flow is not a state at all.
+    auto finite = [&](const sVector& v, const std::string& what) {
+        for (std::size_t j = 0; j < v.size(); ++j)
+            if (!std::isfinite(v[j]))
+                refuse("its `" + what + "` column holds a non-finite value at"
+                       " stage " + std::to_string(j + 1));
+    };
+    finite(Ecol, "F_extract");
+    finite(Rcol, "F_raffinate");
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        finite(*eCol[i], "xE_" + thermo.comp(i).name());
+        finite(*rCol[i], "xR_" + thermo.comp(i).name());
+    }
+    for (std::size_t j = 0; j < Nu; ++j)
+    {
+        if (Ecol[j] < 0.0)
+            refuse("its `F_extract` at stage " + std::to_string(j + 1)
+                   + " is negative");
+        if (Rcol[j] < 0.0)
+            refuse("its `F_raffinate` at stage " + std::to_string(j + 1)
+                   + " is negative");
+    }
+
+    //  A PHASE WITH NO DECLARED COMPOSITION STARTS EMPTY, AND IT IS SAID.
+    //  The writer emits exactly that for a stage where the LL flash found no
+    //  split -- the extract columns are zero there while the flow column is
+    //  not -- so refusing it would refuse this module's own output, which is
+    //  the bug in both.  What must not happen is that the flow is kept and
+    //  the composition invented; the phase is seeded empty and counted.
+    std::size_t noE = 0, noR = 0;
+    scalar worst = 0.0;
+    std::size_t worstStage = 0;
+    for (std::size_t j = 0; j < Nu; ++j)
+    {
+        scalar sE = 0.0, sR = 0.0;
+        for (std::size_t i = 0; i < n; ++i) { sE += (*eCol[i])[j]; sR += (*rCol[i])[j]; }
+        for (auto s : { sE, sR })
+            if (s > 0.0 && std::abs(s - 1.0) > worst)
+            { worst = std::abs(s - 1.0); worstStage = j + 1; }
+
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            Emol[j][i] = (sE > 0.0) ? Ecol[j] * (*eCol[i])[j] / sE : 0.0;
+            Rmol[j][i] = (sR > 0.0) ? Rcol[j] * (*rCol[i])[j] / sR : 0.0;
+        }
+        if (sE <= 0.0) ++noE;
+        if (sR <= 0.0) ++noR;
+    }
+
+    if (verbosity >= 2)
+    {
+        std::cout << "  [seed] interior read from 0/ (stageProfile): " << N
+                  << " stages, extract F " << std::scientific
+                  << std::setprecision(4) << Ecol.front() << " .. "
+                  << Ecol.back() << " kmol/s -- a declared profile is a SEED,"
+                     " not an answer: the balances still decide\n"
+                  << std::defaultfloat;
+        if (worst > 1.0e-9)
+            std::cout << "  [seed] the declared mole fractions do not sum to 1"
+                         " (worst " << worst << " at stage " << worstStage
+                      << ") -- normalised on read\n";
+        if (noE || noR)
+            std::cout << "  [seed] " << noE << " stage(s) declare no extract"
+                         " composition and " << noR << " no raffinate"
+                         " composition (the phase did not split there) --"
+                         " that phase starts empty\n";
+    }
+    return true;
+}
+
+std::map<std::string, UnitProfile>
+Extractor::seedInterior(const DictPtr&                    unitDict,
+                        const std::vector<ProcessStream>& inputs,
+                        const ThermoPackage&              thermo) const
+{
+    if (inputs.size() != 2)
+        throw std::runtime_error("Extractor: expected exactly 2 input streams"
+            " (feed + solvent); got " + std::to_string(inputs.size()));
+
+    const std::size_t n = thermo.n();
+    auto molOf = [&](const ProcessStream& s) {
+        sVector m(n, 0.0);
+        for (std::size_t i = 0; i < n && i < s.z.size(); ++i) m[i] = s.F * s.z[i];
+        return m;
+    };
+    const sVector feedMol = molOf(inputs[0]);
+    const sVector solvMol = molOf(inputs[1]);
+
+    const int N = static_cast<int>(
+        std::lround(unitDict->subDict("operation")->lookupScalar("stages")));
+    if (N < 1) throw std::runtime_error("Extractor: `stages` must be >= 1");
+
+    std::vector<sVector> Emol(N, sVector(n, 0.0)), Rmol(N, sVector(n, 0.0));
+    seedCascade(feedMol, solvMol, N, Emol, Rmol);
+
+    //  The compositions of the seed are the compositions of the two streams
+    //  it is made of -- normalised, because a `stageProfile` carries mole
+    //  fractions and the reader divides by their sum.
+    auto fractions = [&](const sVector& mol) {
+        sVector x(n, 0.0);
+        const scalar F = totalOf(mol);
+        if (F > 0.0) for (std::size_t i = 0; i < n; ++i) x[i] = mol[i] / F;
+        return x;
+    };
+    const std::vector<sVector> xE(N, fractions(solvMol));
+    const std::vector<sVector> xR(N, fractions(feedMol));
+
+    return { { "stageProfile", renderCascade(Emol, Rmol, xE, xR, thermo) } };
+}
+
 int Extractor::solve(const DictPtr& dict,
                      const ThermoPackage& thermo,
                      int verbosity)
@@ -253,9 +528,12 @@ int Extractor::solve(const DictPtr& dict,
     std::vector<sVector> xR(N, sVector(n, 0.0));
     std::vector<sVector> xE(N, sVector(n, 0.0));
 
-    // Initial guess: every stage's extract = the fresh solvent, every
-    // stage's raffinate = the feed.  Honest, topology-propagated seed.
-    for (int j = 0; j < N; ++j) { Emol[j] = solvMol; Rmol[j] = feedMol; }
+    // Where the cascade starts: the interior the CASE declared, or the seed
+    // this unit invents (every stage's extract = the fresh solvent, every
+    // stage's raffinate = the feed -- honest, topology-propagated).  Both
+    // routes announce; a declaration that does not describe this cascade
+    // refuses by name.
+    seedFromDeclaredInterior(N, thermo, feedMol, solvMol, Emol, Rmol, verbosity);
 
     const int    maxIt = 800;
     const scalar relax = 0.5;
@@ -407,32 +685,10 @@ int Extractor::solve(const DictPtr& dict,
     }
 
     // ---- Stage profile -------------------------------------------------
-    UnitProfile prof;
-    prof.xAxis = "stage";
-    std::vector<scalar> stageAxis(N), Eflow(N), Rflow(N);
-    std::vector<std::vector<scalar>> xEcol(n, std::vector<scalar>(N, 0.0));
-    std::vector<std::vector<scalar>> xRcol(n, std::vector<scalar>(N, 0.0));
-    for (int j = 0; j < N; ++j)
-    {
-        stageAxis[j] = static_cast<scalar>(j + 1);
-        Eflow[j]     = totalOf(Emol[j]);
-        Rflow[j]     = totalOf(Rmol[j]);
-        for (std::size_t i = 0; i < n; ++i)
-        {
-            xEcol[i][j] = (j < static_cast<int>(xE.size()) && xE[j].size() == n) ? xE[j][i] : 0.0;
-            xRcol[i][j] = (j < static_cast<int>(xR.size()) && xR[j].size() == n) ? xR[j][i] : 0.0;
-        }
-    }
-    prof.columns["stage"]      = stageAxis;
-    prof.columns["F_extract"]  = Eflow;
-    prof.columns["F_raffinate"]= Rflow;
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        const std::string& nm = thermo.comp(i).name();
-        prof.columns["xE_" + nm] = xEcol[i];
-        prof.columns["xR_" + nm] = xRcol[i];
-    }
-    profile_ = prof;
+    //  The same rendering `choupo-init0` writes for the SEED: one home, so
+    //  what `converged/` publishes and what `0/` may declare are two
+    //  spellings of one object.
+    profile_ = renderCascade(Emol, Rmol, xE, xR, thermo);
 
     // ---- Report --------------------------------------------------------
     if (verbosity >= 2)

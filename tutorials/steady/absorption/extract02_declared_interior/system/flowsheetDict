@@ -1,0 +1,66 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  extract02_declared_interior  --  the interior the case declares
+
+  PHYSICALLY THIS IS `extract01_ethanol_water_benzene`: the same feed, the
+  same benzene solvent, the same five theoretical stages, the same UNIFAC.
+  The answer is the same answer.  What differs is where the cascade STARTS.
+
+  A state directory is a RESTARTABLE SNAPSHOT.  `0/` carries one file per
+  stream -- the boundary -- and, under `internalStates/`, one file per unit:
+  what the equipment holds between them.  This case declares
+
+      0/internalStates/extractor01
+
+  a `stageProfile` block carrying the extract and raffinate leaving each of
+  the five stages with their compositions, in exactly the grammar the run
+  writes to `converged/internalStates/extractor01`.  THE SAME OBJECT TRAVELS
+  BOTH WAYS: run the case, copy the file from `converged/` into `0/`, and the
+  next run starts where the last one finished.
+
+  A DECLARED PROFILE THAT DOES NOT SATISFY THE BALANCES IS A SEED, NOT AN
+  ANSWER.  Nothing checks this file against the stage equilibria -- the sweeps
+  do, and they move off any profile that is wrong.  What IS checked is that
+  the declaration describes THIS cascade: the stage count, the component set,
+  every value finite, no negative flow.  A mismatch REFUSES by name.
+
+  Both routes announce, on every run:
+
+      [seed] interior read from 0/ (stageProfile): 5 stages, extract F ...
+      [seed] interior seeded by the unit: the fresh solvent as every stage's
+             extract, the feed as every stage's raffinate -- declare a
+             stageProfile block in 0/internalStates/<SECTOR>/<unit> to own it
+
+  TRY IT: read the `iterations` KPI here, then delete `0/internalStates/` and
+  run again.  Both runs reach the same cascade; only one had to search for it.
+  `bin/choupo-init0` materialises the unit's OWN seed (the fresh solvent and
+  the raw feed on every stage) -- never a better guess chosen for you.
+
+  Record: docs/design/a-state-directory-is-a-restartable-snapshot.md
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        extractor01;
+        type        extractor;
+        inputs      ( feed  solvent );        // feed at stage 1, solvent at stage N
+        outputs     ( extract  raffinate );   // extract leaves stage 1, raffinate stage N
+
+        operation
+        {
+            stages       5;
+            solvent      benzene;             // defines the extract phase
+            temperature  298.15 K;
+        }
+    }
+);

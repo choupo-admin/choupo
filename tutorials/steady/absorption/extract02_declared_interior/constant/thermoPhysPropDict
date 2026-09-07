@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- gammaGamma: the LLE/VLLE world.  Two or more
+  NAMED liquid phases, each on its OWN gamma surface (the LL split comes
+  from the gamma curvature across the miscibility gap); vapour optional
+  (present -> VLLE).  ONE Gibbs surface per phase, split by direct
+  minimisation -- never a K-value saddle.  Migrated mechanically from the
+  v1 phases() form (physics identical); v2 contract 2026-07-18.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water ethanol benzene );
+
+equilibrium
+{
+    formulation gammaGamma;         // 2+ liquid phases, one gamma surface each
+
+    liquidPhases
+    (
+        {
+            name raffinate;
+            activityModel
+            {
+                model UNIFAC;
+            }
+        }
+        {
+            name extract;
+            activityModel
+            {
+                model UNIFAC;
+            }
+        }
+    );
+}

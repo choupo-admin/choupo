@@ -1,0 +1,34 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  extract                F                0.0359300646331    1e-4
+stream  extract                T                298.15             1e-4
+stream  feed                   F                0.0277777777778    1e-4
+stream  feed                   T                298.15             1e-4
+stream  raffinate              F                0.0251777466298    1e-4
+stream  raffinate              T                298.15             1e-4
+stream  solvent                F                0.0333333333333    1e-4
+stream  solvent                T                298.15             1e-4
+kpi     extractor01            F_extract        0.0359300646331    1e-4
+kpi     extractor01            F_feed           0.0277777777778    1e-4
+kpi     extractor01            F_raffinate      0.0251777466298    1e-4
+kpi     extractor01            F_solvent        0.0333333333333    1e-4
+kpi     extractor01            P                101325             1e-4
+kpi     extractor01            T                298.15             1e-4
+kpi     extractor01            converged        1                  1e-4
+kpi     extractor01            distribution_benzene 295.936079995      1e-4
+kpi     extractor01            distribution_ethanol 0.554607637593     1e-4
+kpi     extractor01            distribution_water 0.00707063060025   1e-4
+kpi     extractor01            massClosure      5.39975175219e-05  1e-4
+kpi     extractor01            recovery_benzene 0.997647058743     1e-4
+kpi     extractor01            recovery_ethanol 0.441573187197     1e-4
+kpi     extractor01            recovery_water   0.00998902357373   1e-4
+kpi     extractor01            soluteDistribution 0.554607637593     1e-4
+kpi     extractor01            soluteRecovery   0.441573187197     1e-4
+kpi     extractor01            solventToFeed    1.2                1e-4
+kpi     extractor01            splitStages      5                  1e-4
+kpi     extractor01            stages           5                  1e-4
+boundary global               H_feeds_kW       -6263.31488417     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -6262.28860156     1e-4
+boundary global               residual_kW      -1.0262826128      1e-4

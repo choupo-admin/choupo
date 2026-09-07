@@ -162,6 +162,38 @@ WHAT THIS CHECKS:
       a throw into one warning and no interiors at all for the case, the
       partial tree that lies by omission.
 
+  (s) `choupo-init0` MATERIALISES THE INTERIOR HALF, AND WRITES THE UNIT'S OWN
+      SEED.  On a copy of the extractor case (which reads a `stageProfile` and
+      ships no declaration) the tool writes exactly ONE file, at the address
+      the reader looks at, carrying `recordType internalState;` and a block
+      whose axis is one of its columns.  What is IN it is held to the case's
+      own `0/feed` and `0/solvent`, read independently of the engine: every
+      stage's extract is the fresh solvent and every stage's raffinate is the
+      feed, which is the guess the unit would have made in silence.  A tool
+      that quietly improves a seed hands back a crutch nobody chose
+      (2026-05-30).  Then the case RUNS from what was written, announces
+      `[seed] interior read from 0/`, and reproduces `extract01`'s own golden
+      -- writer -> disk -> reader -> the same answer, on the EXTRACTOR and not
+      only on the column.
+
+  (t) A UNIT THAT READS NOTHING GAINS NOTHING.  On a copy of the crystalliser
+      case, `choupo-init0` creates no `0/internalStates/` at all and SAYS so.
+
+  (u) A DECLARED INTERIOR TREE MUST BE COMPLETE -- a SEPARATE check from the
+      stream completeness contract, which counts STREAMS and skips
+      `internalStates/` by name.  A unit that reads one and finds none seeds
+      itself and says so (the 2026-05-30 rule working, not a fault).  A case
+      that declares one for ONE reader and not the other restarts half the
+      plant from the answer and re-invents the rest: on a plant with TWO
+      columns and one absorber, declaring only `C1` refuses BY NAME, names
+      `C2`, and never names the absorber -- which reads none.  Declaring both
+      leaves that refusal behind.
+
+  (v) THE ROUND TRIP ON THE EXTRACTOR, `converged/` -> `0/` -> the answer.
+      The witness `extract02_declared_interior` ships the file the run wrote,
+      announces the read, reproduces its own golden, and reaches the cascade
+      in no more sweeps than the same case with the declaration removed.
+
 WHAT THIS DOES NOT CHECK, said plainly:
 
   * WHETHER A DECLARED PROFILE IS RIGHT.  It is a SEED, not an answer; nothing
@@ -172,6 +204,17 @@ WHAT THIS DOES NOT CHECK, said plainly:
     `Dictionary::fromFile`, on ONE kind (`stageProfile`).  No other kind has a
     reader yet.
   * A UNIT WRITING TWO KINDS.  There is no such unit (see (f)).
+  * WHETHER A UNIT THAT READS AN INTERIOR *SHOULD*.  Arms (s)-(v) hold the two
+    types that DECLARE a kind; nothing here can say whether a third ought to.
+    Measured 2026-09-07 and recorded rather than gated: four unit types publish
+    a `stage` axis, and the absorber and the stripper carry an outer loop over
+    a temperature profile seeded at the mean of their two feed temperatures --
+    analytic in the isothermal case only.  They read no interior by decision;
+    an arm here would pin that decision, not check it.
+  * WHETHER EVERY READER PUBLISHES A SEED.  `choupo-init0` materialises what a
+    unit offers; a type that reads an interior and offers none is ANNOUNCED by
+    the tool (the distillation column is in that state today) and no arm
+    requires it to offer one -- requiring it would be a schedule, not a check.
   * WHETHER AN AXIS COLUMN HOLDS THE RIGHT NUMBERS.  Arm (o) checks that the
     axis a profile declares is PRESENT; nothing here checks that the values in
     it are the coordinate they claim to be.
@@ -330,6 +373,60 @@ rule).  Observed, verbatim:
           derivation is broken and the arm would wave every COPY instruction
           through."
 
+  ADDED 2026-09-07 with arms (s)-(v) -- `choupo-init0` materialising the
+  interior half, and the completeness of a declared tree.  All by hand,
+  between the run and the check; the two source sabotages edit the TEXT the
+  arm reads and NOTHING was rebuilt, each reverted and the tree verified with
+  `git diff --stat` afterwards.
+
+  S21 doubled `F_extract` in the interior `choupo-init0` had just written
+      (a hand edit of this gate's fixture, between the tool's run and the
+      check -- the shape a tool that "improves" the seed would produce)
+      -- BOTH halves of (s) fired, which is what proves they are independent:
+      -> "(s) the materialised seed's `F_extract` is [0.0666666666666, ...];
+          the unit's OWN seed puts 0.0333333333333 on EVERY stage (the case's
+          own 0/ streams).  choupo-init0 must write the seed the unit would
+          have used, never a better one." AND
+      -> "(s) seeded from the interior choupo-init0 wrote, kpi
+          extractor01.recovery_ethanol = 0.442431604179; the case's own golden
+          says 0.441759080105 (reltol 0.0001).  The tool wrote the unit's OWN
+          seed, so the answer must not move."
+  S22 created `0/internalStates/` by hand on the crystalliser copy right after
+      the tool ran (what the tool would have done had it written a file for a
+      unit that reads nothing)
+      -> "(t) choupo-init0 created 0/internalStates on
+          tutorials/steady/crystallisation/crystalliser02_msmpr, whose units
+          read NO interior.  A declared field nobody reads is a comment
+          sitting in the state directory -- and the next run refuses it by
+          name."
+  S23 COMPLETED the incomplete fixture (wrote C2's stub beside C1's), so the
+      snapshot is whole and the completeness refusal cannot fire
+      -> "(u) the incomplete interior tree refused, but not as an incomplete
+          SNAPSHOT:" followed by the column's own, different refusal -- which
+      is the point: the arm can tell the two apart.
+  S24 moved the tracked witness's `0/internalStates/extractor01` aside
+      -> "(v) tutorials/steady/absorption/extract02_declared_interior does not
+          ship 0/internalStates/extractor01 -- the extractor's round-trip
+          witness has no declaration."
+  S25 renamed `seedInterior` to `seedInteriorXX` in `Extractor.H` (source
+      text, not rebuilt) -- **THE FIRST DRAFT OF THE SOURCE ARM SURVIVED
+      THIS**, and it is the same lesson S14 taught one arm along: the test
+      asked `"seedInterior" not in ext`, and a SUBSTRING is still there after
+      a rename that disconnects the override from its base.  All four name
+      tests in `check_source` now look for the name as a CALLABLE
+      (`<name>\\s*\\(`).  Observed twice, before and after:
+      -> (substring) "check_internal_states: OK ..."   [SURVIVED]
+      -> (callable)  "check_internal_states: Extractor no longer publishes its
+          own SEED, so choupo-init0 has nothing honest to materialise for it
+          -- and a seed invented by the tool is the crutch the 2026-05-30 rule
+          forbids."
+  S26 replaced the solve's `seedCascade(...)` call with the loop it used to
+      write inline (source text, not rebuilt), so the seed has two homes again
+      -> "check_internal_states: the extractor's seed no longer has ONE home
+          (`seedCascade`, called by the solve and by the published seed) --
+          the file choupo-init0 writes and the state the run starts from would
+          then be two different guesses."
+
   ARM (p) HAS NO POST-FIX SABOTAGE, said plainly.  It runs the real binary, so
   nothing short of rebuilding a broken engine reaches it -- and rebuilding is
   the tree-poisoning shape only `check_gate_selftest` may take.  Its evidence
@@ -363,6 +460,9 @@ SWEPT   = "tutorials/steady/heat/coolingTower01_merkel"             # T_K: NO fi
 SWING   = "tutorials/steady/separation/psa01_h2_psa"                # componentIndex -> swingTable
 SEEDED  = "tutorials/steady/distillation/column16_declared_interior"  # ships 0/internalStates/column16
 CRYST   = "tutorials/steady/crystallisation/crystalliser02_msmpr"   # sizeDistribution, READS none
+EXTRACT = "tutorials/steady/absorption/extract01_ethanol_water_benzene"  # READS one, declares none
+EXTRACT_SEEDED = "tutorials/steady/absorption/extract02_declared_interior"  # ships its declaration
+TWO_READERS = "tutorials/plant/acetonePlant"    # TWO units that read one + one that reads none
 
 #  THE CASES THIS GATE RUNS, and therefore the ONLY cases whose `converged/`
 #  it may read.  A `converged/` tree is a gitignored RUN OUTPUT: whatever
@@ -1477,6 +1577,308 @@ def check_resolvers(problems, notes):
                  "it alone, the GUI keeps no geography discriminator" % IROOT)
 
 
+def copy_any(rel, dst):
+    """A case, minus every run output, at `dst`."""
+    shutil.copytree(ROOT / rel, dst,
+                    ignore=shutil.ignore_patterns("converged", "reports",
+                                                  "iterations", "design",
+                                                  "log.*"))
+    return dst
+
+
+def run_init0(path, *args):
+    proc = subprocess.run([str(ROOT / "choupoSolve"), "-init0", str(path)] + list(args),
+                          capture_output=True, text=True)
+    return proc.returncode, proc.stdout, proc.stderr
+
+
+def stream_state(path):
+    """`F` and the component molar flows out of a `0/<stream>` file -- read
+    INDEPENDENTLY of the engine, so arm (s) can hold the materialised seed to
+    the streams the case declares rather than to the engine's own arithmetic."""
+    t = strip_comments(path.read_text(errors="replace"))
+    m = re.search(r'componentMolarFlows\s*\{([^}]*)\}', t) \
+        or re.search(r'componentFlows\s*\{([^}]*)\}', t)
+    if not m:
+        return None
+    flows = {}
+    for em in re.finditer(r'([A-Za-z_][\w]*)\s+([-\d.eE+]+)\s*([A-Za-z/]*)\s*;', m.group(1)):
+        v = float(em.group(2))
+        unit = em.group(3)
+        if unit == "kmol/h":
+            v /= 3600.0
+        elif unit not in ("", "kmol/s"):
+            return None                       # a unit this reader will not guess
+        flows[em.group(1)] = v
+    return flows
+
+
+def check_init0_interiors(problems, notes):
+    """(s)(t)  `choupo-init0` MATERIALISES the interior half -- for the units
+    that read one, and for nobody else.
+
+    (s) On a copy of the extractor case (which READS a stageProfile and ships
+        no declaration): the tool writes exactly one interior file, at the
+        address the reader looks at; what it writes is THE UNIT'S OWN SEED,
+        verified against the case's own `0/feed` and `0/solvent` files rather
+        than against the engine's arithmetic (a tool that quietly improves a
+        seed hands back a crutch nobody chose -- the 2026-05-30 rule); and the
+        same case then RUNS from it, announcing `[seed] interior read from 0/`
+        and reproducing extract01's own golden.  That last step is the round
+        trip the brief asks for on the EXTRACTOR and not only on the column:
+        writer -> disk -> reader -> the same answer.
+
+    (t) On a copy of the crystalliser case (whose units read NOTHING): no
+        `0/internalStates/` is created at all, and the tool SAYS so.  A unit
+        that reads none must gain no file, no count and no refusal.
+    """
+    tmp = Path(tempfile.mkdtemp(prefix="choupo_init0_"))
+    try:
+        # ---- (s) the extractor ------------------------------------------
+        case = copy_any(EXTRACT, tmp / "extract")
+        rc, out, err = run_init0(case)
+        if rc != 0:
+            problems.append("(s) choupo-init0 failed on %s (rc=%d).\n    %s"
+                            % (EXTRACT, rc, err.strip()[:300]))
+            return
+        made = sorted(p for p in (case / "0" / IROOT).rglob("*") if p.is_file()) \
+            if (case / "0" / IROOT).is_dir() else []
+        if [p.name for p in made] != ["extractor01"]:
+            problems.append("(s) choupo-init0 on %s materialised %s under 0/%s -- "
+                            "the case has exactly ONE unit that reads an interior "
+                            "and it must get exactly one file."
+                            % (EXTRACT, [p.name for p in made] or "nothing", IROOT))
+            return
+        if "[init0] interiors:" not in out:
+            problems.append("(s) choupo-init0 wrote an interior and did not COUNT it "
+                            "in its own summary -- a reader cannot tell a case whose "
+                            "units seed themselves from one this tool skipped.")
+
+        seed = parse_file(made[0].read_text(errors="replace"))
+        if seed["header"].get("recordType") != "internalState":
+            problems.append("(s) the materialised seed does not declare `recordType "
+                            "internalState;` -- the reader finds records by what they "
+                            "say about themselves, so this one would be skipped.")
+        blk = seed["blocks"].get("stageProfile")
+        if not blk:
+            problems.append("(s) the materialised seed carries no `stageProfile` "
+                            "block (it has: %s)." % sorted(seed["blocks"]))
+            return
+        if blk["xAxis"] not in blk["columns"]:
+            problems.append("(s) the materialised seed declares `xAxis %s;` and "
+                            "carries no column of that name -- a file this module's "
+                            "own reader refuses." % blk["xAxis"])
+
+        #  THE SEED IS THE UNIT'S OWN, and this is the arm that says so.  The
+        #  extractor's seed is every stage's extract = the fresh solvent and
+        #  every stage's raffinate = the feed; both are read here out of the
+        #  case's own 0/ stream files, so an "improved" seed (a converged
+        #  profile, a scaled guess, anything cleverer) fails.
+        feed = stream_state(case / "0" / "feed")
+        solv = stream_state(case / "0" / "solvent")
+        if feed is None or solv is None:
+            problems.append("(s) could not read 0/feed or 0/solvent independently, "
+                            "so the seed cannot be held to the case's own streams.")
+        else:
+            want = {"F_extract": sum(solv.values()), "F_raffinate": sum(feed.values())}
+            for col, w in want.items():
+                got = blk["columns"].get(col)
+                if not got:
+                    problems.append("(s) the materialised seed carries no `%s` "
+                                    "column." % col)
+                elif not all(close(v, w, 1.0e-9) for v in got):
+                    problems.append("(s) the materialised seed's `%s` is %s; the "
+                                    "unit's OWN seed puts %.12g on EVERY stage (the "
+                                    "case's own 0/ streams).  choupo-init0 must write "
+                                    "the seed the unit would have used, never a "
+                                    "better one." % (col, got, w))
+            for comp, v in solv.items():
+                got = blk["columns"].get("xE_" + comp)
+                w = v / sum(solv.values())
+                if not got or not all(close(x, w, 1.0e-9) for x in got):
+                    problems.append("(s) the materialised seed's `xE_%s` is %s; the "
+                                    "fresh solvent this case declares is %.12g."
+                                    % (comp, got, w))
+
+        #  The round trip: the unit reads back what the tool wrote, and the
+        #  answer is the case's own answer.
+        rc, out2, err2 = run_case(case)
+        if rc != 0:
+            problems.append("(s) the case failed to run from the interior "
+                            "choupo-init0 materialised (rc=%d).\n    %s"
+                            % (rc, err2.strip()[:300]))
+        else:
+            if "[seed] interior read from 0/" not in out2:
+                problems.append("(s) the case ran from a materialised interior and "
+                                "did NOT announce `[seed] interior read from 0/` -- "
+                                "a solver aid that binds without saying so is the "
+                                "silence this slice exists to end.")
+            j = result_json(out2) or {}
+            for kind, name, key, want, reltol in golden_rows(ROOT / EXTRACT):
+                got = (j.get("kpis", {}).get(name, {}) or {}).get(key) if kind == "kpi" \
+                    else (j.get("streams", {}).get(name, {}) or {}).get(key)
+                if got is None:
+                    continue
+                if abs(got - want) > reltol * max(abs(want), 1.0e-300):
+                    problems.append("(s) seeded from the interior choupo-init0 wrote, "
+                                    "%s %s.%s = %.12g; the case's own golden says "
+                                    "%.12g (reltol %g).  The tool wrote the unit's "
+                                    "OWN seed, so the answer must not move."
+                                    % (kind, name, key, got, want, reltol))
+            notes.append("init0 round trip: the extractor reads back the seed the "
+                         "tool wrote and reproduces its own golden")
+
+        # ---- (t) a case whose units read nothing -------------------------
+        none = copy_any(CRYST, tmp / "none")
+        rc, out3, err3 = run_init0(none)
+        if rc != 0:
+            problems.append("(t) choupo-init0 failed on %s (rc=%d).\n    %s"
+                            % (CRYST, rc, err3.strip()[:300]))
+        elif (none / "0" / IROOT).exists():
+            problems.append("(t) choupo-init0 created 0/%s on %s, whose units read "
+                            "NO interior.  A declared field nobody reads is a comment "
+                            "sitting in the state directory -- and the next run "
+                            "refuses it by name." % (IROOT, CRYST))
+        elif "[init0] interiors: 0" not in out3:
+            problems.append("(t) choupo-init0 wrote no interior on %s and did not say "
+                            "so.  Silence must mean 'nothing to write', never 'the "
+                            "step did not run'." % CRYST)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def check_interior_completeness(problems, notes):
+    """(u)  A DECLARED INTERIOR TREE MUST BE COMPLETE for the units that read
+    one -- a SEPARATE check from the stream completeness contract, which counts
+    streams and skips `internalStates/` by name.
+
+    A unit that reads an interior and finds NONE seeds itself and says so:
+    that is the 2026-05-30 rule working, and it is not refused.  But a case
+    that declares an interior for one reader and not for another restarts half
+    the plant from the answer and re-invents the other half in silence, which
+    is the defect the state view exists to end.
+
+    The fixture is a plant with TWO units that read one and a third that reads
+    none: declaring one refuses BY NAME, names the missing one, and never names
+    the unit that reads none.  Declaring both leaves that refusal behind (the
+    run then fails on the fixture's own deliberately wrong stage count, which
+    is a DIFFERENT message -- the pair is what proves the arm can tell them
+    apart).
+    """
+    tmp = Path(tempfile.mkdtemp(prefix="choupo_complete_"))
+    #  A minimal interior a unit READS: it parses, it is a kind the column
+    #  reads, and it deliberately does NOT describe the column -- the
+    #  completeness check must fire BEFORE the column ever looks at it.
+    def stub(unit):
+        return ('recordType  internalState;\n\nunit        "%s";\n'
+                'equipment   distillationColumn;\n\n'
+                'stageProfile\n{\n    xAxis       stage;\n    nPoints     2;\n\n'
+                '    columns\n    {\n        stage\n        (\n            1 2\n'
+                '        );\n    }\n}\n' % unit)
+    try:
+        half = copy_any(TWO_READERS, tmp / "half")
+        (half / "0" / IROOT).mkdir(parents=True, exist_ok=True)
+        (half / "0" / IROOT / "C1").write_text(stub("C1"))
+        rc, out, err = run_case(half)
+        blob = out + err
+        if rc == 0:
+            problems.append("(u) %s declares an interior for C1 and none for C2, "
+                            "which also reads one, and the run SUCCEEDED.  Half a "
+                            "snapshot restores half a plant and re-invents the rest."
+                            % TWO_READERS)
+        elif "and not for every unit that READS one" not in blob:
+            problems.append("(u) the incomplete interior tree refused, but not as an "
+                            "incomplete SNAPSHOT:\n    %s" % blob.strip()[-400:])
+        elif "C2" not in blob:
+            problems.append("(u) the refusal does not NAME the unit whose interior is "
+                            "missing:\n    %s" % blob.strip()[-400:])
+        elif "absorber" in blob.split("Materialise the missing")[0]:
+            problems.append("(u) the refusal names `absorber`, a unit that reads NO "
+                            "interior.  A unit that reads none must gain no entry, no "
+                            "count and no refusal:\n    %s" % blob.strip()[-400:])
+        else:
+            notes.append("interior completeness: an interior declared for one of two "
+                         "readers refuses by name")
+
+        both = copy_any(TWO_READERS, tmp / "both")
+        (both / "0" / IROOT).mkdir(parents=True, exist_ok=True)
+        (both / "0" / IROOT / "C1").write_text(stub("C1"))
+        (both / "0" / IROOT / "C2").write_text(stub("C2"))
+        rc, out2, err2 = run_case(both)
+        blob2 = out2 + err2
+        if "and not for every unit that READS one" in blob2:
+            problems.append("(u) with BOTH readers declared the run still refuses the "
+                            "tree as incomplete -- the check counts something other "
+                            "than the units that read one:\n    %s"
+                            % blob2.strip()[-400:])
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def check_extractor_round_trip(problems, notes):
+    """(v)  THE ROUND TRIP ON THE EXTRACTOR, converged -> 0/ -> the answer.
+
+    The shipped witness declares the file `converged/` wrote.  It must
+    announce the read, reproduce its OWN golden, and reach the answer in no
+    more sweeps than the same case with the declaration removed.  A cascade
+    restarted from its own answer that has to search again is not a restart.
+    """
+    tmp = Path(tempfile.mkdtemp(prefix="choupo_extract_"))
+    decl = Path("0") / IROOT / "extractor01"
+    try:
+        if not (ROOT / EXTRACT_SEEDED / decl).is_file():
+            problems.append("(v) %s does not ship %s -- the extractor's round-trip "
+                            "witness has no declaration." % (EXTRACT_SEEDED, decl))
+            return
+        rc, out, err = run_case(ROOT / EXTRACT_SEEDED)
+        if rc != 0:
+            problems.append("(v) %s failed (rc=%d).\n    %s"
+                            % (EXTRACT_SEEDED, rc, err.strip()[:300]))
+            return
+        if "[seed] interior read from 0/" not in out:
+            problems.append("(v) %s ships a declared interior and did not announce "
+                            "reading it." % EXTRACT_SEEDED)
+        j = result_json(out) or {}
+        it_seeded = (j.get("kpis", {}).get("extractor01", {}) or {}).get("iterations")
+        for kind, name, key, want, reltol in golden_rows(ROOT / EXTRACT_SEEDED):
+            got = (j.get("kpis", {}).get(name, {}) or {}).get(key) if kind == "kpi" \
+                else (j.get("streams", {}).get(name, {}) or {}).get(key)
+            if got is None:
+                problems.append("(v) the golden pins %s %s.%s and the run publishes "
+                                "no such value." % (kind, name, key))
+            elif abs(got - want) > reltol * max(abs(want), 1.0e-300):
+                problems.append("(v) %s gives %s %s.%s = %.12g; its own golden says "
+                                "%.12g (reltol %g)."
+                                % (EXTRACT_SEEDED, kind, name, key, got, want, reltol))
+
+        bare = copy_any(EXTRACT_SEEDED, tmp / "bare")
+        shutil.rmtree(bare / "0" / IROOT)
+        rc, out2, err2 = run_case(bare)
+        if rc != 0:
+            problems.append("(v) %s (declaration removed) failed (rc=%d).\n    %s"
+                            % (EXTRACT_SEEDED, rc, err2.strip()[:300]))
+            return
+        if "[seed] interior seeded by the unit" not in out2:
+            problems.append("(v) %s (declaration removed): the extractor did not "
+                            "announce that it seeded its OWN cascade."
+                            % EXTRACT_SEEDED)
+        j2 = result_json(out2) or {}
+        it_bare = (j2.get("kpis", {}).get("extractor01", {}) or {}).get("iterations")
+        if it_seeded is None or it_bare is None:
+            problems.append("(v) the extractor publishes no `iterations` KPI, so the "
+                            "round trip cannot be measured.")
+        elif it_seeded > it_bare:
+            problems.append("(v) the cascade seeded from its own answer took %g "
+                            "sweeps and the unseeded one took %g.  A declared "
+                            "interior that costs sweeps is not a restart."
+                            % (it_seeded, it_bare))
+        else:
+            notes.append("extractor round trip: %g sweeps seeded from 0/, %g unseeded"
+                         % (it_seeded, it_bare))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def check_source(problems):
     """(n) The exclusion, the boundary sentence and the two-way contract, at
     their source."""
@@ -1490,14 +1892,40 @@ def check_source(problems):
                         "the boundary (a field over a coordinate of the equipment or "
                         "its inventory vs a construction over a parameter sweep).")
     col = (ROOT / "src/unitOperations/distillation/DistillationColumn.H").read_text(errors="replace")
-    if "stageProfile" not in col or "readsInteriorKinds" not in col:
+    if "stageProfile" not in col or not re.search(r'readsInteriorKinds\s*\(', col):
         problems.append("check_internal_states: DistillationColumn no longer DECLARES "
                         "the interior kind it reads, so the flowsheet would refuse "
                         "every file the writer produces for it.")
+    ext = (ROOT / "src/unitOperations/separation/Extractor.H").read_text(errors="replace")
+    #  A NAME IS CHECKED AS A CALLABLE, NOT AS A SUBSTRING.  The first draft of
+    #  these three tests asked `"seedInterior" not in ext`, and the sabotage
+    #  that renamed the method to `seedInteriorXX` SURVIVED it: a rename that
+    #  disconnects an override from its base is invisible to a substring, which
+    #  is precisely the change these arms exist to catch.
+    if "stageProfile" not in ext or not re.search(r'readsInteriorKinds\s*\(', ext):
+        problems.append("check_internal_states: Extractor no longer DECLARES the "
+                        "interior kind it reads, so its cascade is back to inventing "
+                        "a seed the case cannot own.")
+    if not re.search(r'seedInterior\s*\(', ext):
+        problems.append("check_internal_states: Extractor no longer publishes its own "
+                        "SEED, so choupo-init0 has nothing honest to materialise for "
+                        "it -- and a seed invented by the tool is the crutch the "
+                        "2026-05-30 rule forbids.")
+    extc = (ROOT / "src/unitOperations/separation/Extractor.cpp").read_text(errors="replace")
+    if extc.count("seedCascade") < 3:
+        problems.append("check_internal_states: the extractor's seed no longer has ONE "
+                        "home (`seedCascade`, called by the solve and by the published "
+                        "seed) -- the file choupo-init0 writes and the state the run "
+                        "starts from would then be two different guesses.")
     base = (ROOT / "src/unitOperations/UnitOperation.H").read_text(errors="replace")
-    if "readsInteriorKinds" not in base or "setDeclaredInterior" not in base:
+    if not re.search(r'readsInteriorKinds\s*\(', base) \
+            or not re.search(r'setDeclaredInterior\s*\(', base):
         problems.append("check_internal_states: the declared-interior surface is gone "
                         "from UnitOperation -- nothing can read a state view back.")
+    if not re.search(r'seedInterior\s*\(', base):
+        problems.append("check_internal_states: the SEED surface is gone from "
+                        "UnitOperation -- choupo-init0 can no longer ask a unit what "
+                        "it would start from, and `0/` loses its interior half.")
 
 
 def main() -> int:
@@ -1524,6 +1952,9 @@ def main() -> int:
     check_axis_present(problems, notes)
     check_round_trip(problems, notes)
     check_round_trip_crystalliser(problems, notes)
+    check_extractor_round_trip(problems, notes)
+    check_init0_interiors(problems, notes)
+    check_interior_completeness(problems, notes)
     check_header_sentence(problems, notes)
     check_writer_refusal(problems, notes)
     check_no_retired_shape(problems, notes)
@@ -1564,7 +1995,10 @@ def main() -> int:
           "orphan file, the RETIRED one-directory-per-unit shape, a second block "
           "nobody reads and a block that is not a kind each REFUSE by name (a unit "
           "WRITING two kinds has no live case: the result record holds one profile "
-          "per unit).  AND IT HOLDS ON A UNIT THAT READS NOTHING: the "
+          "per unit).  IT HOLDS ON THE EXTRACTOR TOO -- its witness ships the "
+          "file converged/ wrote, announces the read, reproduces its own golden "
+          "and reaches the cascade in no more sweeps than the unseeded twin (%s).  "
+          "AND IT HOLDS ON A UNIT THAT READS NOTHING: the "
           "crystalliser's own written interior PARSES, its axis is present, and "
           "copied into 0/ it refuses ONLY as the kind nothing reads -- never for "
           "a missing axis.  EVERY FILE'S HEADER SENTENCE IS TRUE OF ITS UNIT: a "
@@ -1585,7 +2019,17 @@ def main() -> int:
           "on converged/.  THE RESOLVERS CARRY THE KIND: readStateDir skips "
           "internalStates/ by name, the interior reader walks it alone and "
           "refuses a record found elsewhere, the GUI keeps no geography "
-          "discriminator and its keep-list reads the view.  NOT CHECKED: whether "
+          "discriminator and its keep-list reads the view.  `choupo-init0` "
+          "MATERIALISES THE INTERIOR HALF: on the extractor case it writes ONE "
+          "file, at the address the reader looks at, holding the unit's OWN seed "
+          "(the fresh solvent and the raw feed on every stage, checked against the "
+          "case's own 0/ stream files rather than the engine's arithmetic), which "
+          "the same case then READS BACK, announces, and reproduces its golden "
+          "from (%s); on a case whose units read nothing it creates no "
+          "internalStates/ and says so.  A DECLARED INTERIOR TREE IS COMPLETE OR "
+          "IT REFUSES: on a plant with two columns and an absorber, declaring one "
+          "column's interior refuses by name, names the other column and never "
+          "names the absorber, which reads none.  NOT CHECKED: whether "
           "a declared profile is RIGHT (it is a SEED, not an answer), the engine's "
           "parser on any kind but stageProfile, a unit writing two kinds (none "
           "exists), whether an axis column holds the RIGHT numbers or how well "
@@ -1597,9 +2041,16 @@ def main() -> int:
           "the suite running them, iterations/ and the dynamic instants (neither "
           "carries interiors), the ownership rule's sector (it reads the same "
           "STAMP since 2026-09-06 and check_sector_hierarchy arm (g) holds "
-          "it), and the browser harvest."
+          "it), the browser harvest, whether a unit that reads no interior SHOULD "
+          "(the absorber and the stripper carry a seeded T loop and read none, by "
+          "decision), and whether every reader publishes a seed (a type that reads "
+          "one and offers none is announced by the tool, not required to)."
           % (n1, n2, n3, "; ".join(notes[:3]),
-             next((n for n in notes if n.startswith("round trip")), "not measured")))
+             next((n for n in notes if n.startswith("round trip")), "not measured"),
+             next((n for n in notes if n.startswith("extractor round trip")),
+                  "not measured"),
+             next((n for n in notes if n.startswith("init0 round trip")),
+                  "not measured")))
     return 0
 
 

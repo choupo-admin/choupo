@@ -157,6 +157,15 @@ std::string kindOf(const std::string& xAxis, bool& declared);
 //  `kindOf` produces from it and `read` checks against it.
 const std::vector<std::string>& knownKinds();
 
+//  WHERE a unit's interior lives inside a state view, RELATIVE to the view's
+//  own directory: `internalStates/<SECTOR path>/<leaf>`, or
+//  `internalStates/<leaf>` on a case with no geography.  ONE home for the
+//  address -- the writer, the seed writer, the reader and every refusal that
+//  must NAME the file ask here instead of spelling it again, which is how the
+//  writer and the reader stay unable to disagree.  The sector is the STAMPED
+//  one (`FlatUnit::sector`), never a split of the dotted name.
+std::string fileOf(const std::string& unitName, const std::string& sector);
+
 //  Write every unit's interior INTO an existing state view (`viewRoot` is the
 //  view's own directory, e.g. `<case>/converged`), as
 //  `<viewRoot>/internalStates/<SECTOR>/<unit>` -- one file per unit.
@@ -183,6 +192,32 @@ std::size_t write(const std::string&      viewRoot,
                   int                     verbosity,
                   const std::map<std::string, std::vector<std::string>>&
                                           readsByType);
+
+//  MATERIALISE SEED interiors into `0/` -- what `bin/choupo-init0` does for
+//  the interior half of a state view, and the ONLY writer here that ever
+//  touches `0/`.  `viewRoot` is the view's own directory (`<case>/0`);
+//  `seeds` is what each unit answered to `UnitOperation::seedInterior`, keyed
+//  by qualified unit name and then by kind.
+//
+//  The file is rendered by the SAME `renderBlock` `write` uses, so what this
+//  writes `read` accepts; the header sentence is the one thing that differs,
+//  because a `0/` file is the AUTHOR'S seed and a `converged/` file is a
+//  photograph, and a file that misdescribes itself is the defect this module
+//  has now paid for twice.
+//
+//  IT NEVER OVERWRITES WITHOUT `force` -- the tool's own posture, so a seed
+//  the student has edited survives.  Existing files left alone are counted
+//  into `kept`.  Returns the number of files written.  Throws when a file
+//  cannot be opened, and REFUSES (by throwing) a seed block whose name is not
+//  the kind its axis derives or whose axis is not one of its columns: a seed
+//  this module's own reader would refuse must not be written.
+std::size_t writeSeeds(const std::string&           viewRoot,
+                       const std::vector<FlatUnit>& topology,
+                       const std::map<std::string,
+                                      std::map<std::string, UnitProfile>>& seeds,
+                       bool                         force,
+                       int                          verbosity,
+                       std::size_t&                 kept);
 
 //  Read the DECLARED interiors out of a state view -- `0/`, in practice --
 //  keyed by the unit's qualified name and then by kind:

@@ -2824,6 +2824,87 @@ int Flowsheet::solve(const DictPtr& dict,
                     + "  Remove the file, or declare the kind the unit reads.");
             }
         }
+        //  ---- INTERIOR COMPLETENESS: a SEPARATE check, and named as one ----
+        //
+        //  The STREAM completeness contract above counts streams and skips
+        //  the `internalStates/` subtree BY NAME (2026-09-06).  This counts
+        //  UNITS, and it is deliberately not folded into that one: the two
+        //  count different objects, and a check that counts both would have to
+        //  choose one refusal message for two different faults.
+        //
+        //  WHAT IT REFUSES, and why it is exactly this much.  A unit that
+        //  reads an interior and finds none SEEDS ITSELF and says so on every
+        //  run -- that is the 2026-05-30 rule working (an auto-init is allowed
+        //  when it is honest and announced), so it is not a fault and is not
+        //  refused.  But once a case DECLARES an interior tree, it has taken
+        //  ownership of the interior half of its own snapshot, and a second
+        //  unit in that case that reads one and is missing from the tree is a
+        //  restart that silently re-invents half of what it claims to restore
+        //  -- the very defect the state view exists to end.  So: a declared
+        //  interior tree must be COMPLETE for the units that read one.
+        //
+        //  A unit that reads NONE gains no entry, no count and no refusal.
+        {
+            //  TWO COUNTS, TWO QUESTIONS, AND THEY ARE NOT THE SAME NUMBER:
+            //  `readers` counts UNITS, `missing` counts (unit, kind) PAIRS.
+            //  They coincide only while every reader declares exactly one
+            //  kind, which is true of every type today and is not a fact to
+            //  build an arithmetic on -- subtracting one from the other is
+            //  the category error that reads right until the first unit
+            //  reads two.
+            std::vector<std::string> readers;         // units that read one
+            std::vector<std::string> missing;         // (unit, kind) not declared
+            std::size_t declaredReaders = 0;          // readers lacking nothing
+            for (const auto& fu : topology_)
+            {
+                const std::vector<std::string> reads =
+                    UnitOperation::interiorKindsRead(fu.type);
+                if (reads.empty()) continue;
+                readers.push_back(fu.name);
+
+                auto it = declaredInteriors_.find(fu.name);
+                std::size_t lacked = 0;
+                for (const auto& kind : reads)
+                {
+                    if (it != declaredInteriors_.end() && it->second.count(kind))
+                        continue;
+                    ++lacked;
+                    missing.push_back("  MISSING  0/"
+                        + InternalStateIO::fileOf(fu.name, fu.sector)
+                        + "  (unit '" + fu.name + "', type " + fu.type
+                        + ", reads `" + kind + "`)");
+                }
+                if (lacked == 0) ++declaredReaders;
+            }
+
+            if (!declaredInteriors_.empty() && !missing.empty())
+            {
+                std::string msg = "Flowsheet: 0/ declares an interior for some"
+                    " units and not for every unit that READS one -- an"
+                    " incomplete snapshot restarts half the plant from the"
+                    " answer and re-invents the other half in code:\n";
+                for (const auto& m : missing) msg += m + "\n";
+                msg += "Materialise the missing ones with `bin/choupo-init0` "
+                       "(it writes each unit's OWN seed), or copy them from "
+                       "converged/internalStates/ after a run of this case.  "
+                       "Removing the whole 0/internalStates/ tree is also "
+                       "valid: every unit then seeds itself and announces it.";
+                throw std::runtime_error(msg);
+            }
+
+            //  THE COUNT IS SAID EVEN WHEN NOTHING IS WRONG.  A reader who
+            //  cannot see how many units start from a declared interior
+            //  cannot tell a restart from a fresh run.
+            if (verbosity >= 2 && !readers.empty())
+                std::cout << "  [state] interiors: " << declaredReaders
+                          << " of " << readers.size()
+                          << " unit(s) that read one are declared in 0/"
+                          << (missing.empty()
+                                ? ""
+                                : " -- the rest seed themselves, each saying so")
+                          << "\n";
+        }
+
         //  A LINT RUN REPORTS WHAT THE CASE DECLARES, per unit -- the whole
         //  point of a read-only pass is to say what the solve would use.
         if (lint_)
@@ -4058,11 +4139,102 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
         ++nWritten;
     }
 
+    // ---- The INTERIOR half of the state view ------------------------------
+    //  A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT, and until today this tool
+    //  materialised only the boundary: every stream got a file and every unit
+    //  that starts from an interior went on inventing one in code.  A unit
+    //  that READS an interior now gets one written for it, under
+    //  `0/internalStates/<SECTOR>/<unit>`.
+    //
+    //  WHAT IS WRITTEN IS THE UNIT'S OWN SEED (the 2026-05-30 rule).  The
+    //  profile comes from `UnitOperation::seedInterior`, which the unit builds
+    //  with the same function its `solve()` starts from, so materialising it
+    //  changes no answer -- it moves a guess that was invisible in C++ onto
+    //  disk where the student can read it, edit it and own it.  A unit that
+    //  reads no interior gets NO file: a declared field nobody reads is a
+    //  comment sitting in the state directory, and the run refuses it.
+    std::size_t nInterior = 0, nInteriorKept = 0;
+    bool anyReaderWithoutSeed = false;
+    {
+        std::map<std::string, std::map<std::string, UnitProfile>> seeds;
+        std::vector<std::string> couldNotSeed, publishesNoSeed;
+        for (const auto& u : units)
+        {
+            const std::string uname = u->lookupWordOrDefault("name", "unit");
+            const std::string utype = u->lookupWordOrDefault("type", "");
+            const std::vector<std::string> reads =
+                UnitOperation::interiorKindsRead(utype);
+            if (reads.empty()) continue;
+
+            try
+            {
+                std::unique_ptr<UnitOperation> op = UnitOperation::New(utype);
+                std::vector<ProcessStream> inputs;
+                for (const auto& si : inputsOf(u))
+                {
+                    auto it = streams_.find(si);
+                    if (it == streams_.end())
+                        throw std::runtime_error("its input stream '" + si
+                            + "' has no state to seed from");
+                    inputs.push_back(it->second);
+                }
+                auto s = op->seedInterior(u, inputs, thermo);
+                if (!s.empty()) seeds[uname] = std::move(s);
+                //  A UNIT THAT READS ONE AND PUBLISHES NO SEED IS NAMED.
+                //  Writing nothing and saying nothing would let this tool's
+                //  claim ("the interiors of the units that read one") go
+                //  quietly false for a type that has not published its seed
+                //  yet -- the silence this whole feature exists to end, one
+                //  layer up.
+                else
+                {
+                    publishesNoSeed.push_back("unit '" + uname + "' (" + utype + ")");
+                    anyReaderWithoutSeed = true;
+                }
+            }
+            catch (const std::exception& e)
+            {
+                //  ANNOUNCED, NEVER FATAL.  This tool exists to materialise a
+                //  state tree; a unit whose seed cannot be built from what the
+                //  case declares still runs (it seeds itself, and says so), so
+                //  refusing here would withhold every OTHER file over one
+                //  unit's incomplete dict.
+                couldNotSeed.push_back(uname + ": " + e.what());
+            }
+        }
+        if (!seeds.empty())
+            nInterior = InternalStateIO::writeSeeds(
+                "0", topology_, seeds, init0Force_, verbosity, nInteriorKept);
+        for (const auto& m : couldNotSeed)
+            std::cout << "  [init0] no interior seed for unit '" << m
+                      << "' -- the unit will seed itself at run time and say"
+                         " so\n";
+        for (const auto& m : publishesNoSeed)
+            std::cout << "  [init0] " << m << " reads an interior and"
+                         " publishes no seed for it -- nothing is written"
+                         " (the unit seeds itself in code and announces it;"
+                         " a seed invented here would not be the unit's own)\n";
+    }
+
     std::cout << "\n[init0] 0/ materialised: " << graphStreams.size()
               << " graph streams == " << (nWritten + nKept)
               << " state files  (" << nWritten << " written, "
-              << nKept << " kept)\n"
-              << "[init0] no simulation was run -- `choupoSolve` solves from "
+              << nKept << " kept)\n";
+    //  SAID EVEN WHEN IT IS ZERO -- and the line counts FILES, because that
+    //  is what this tool writes.  Calling them "units that read one" would be
+    //  false for the reader that publishes no seed: it reads one, it gets no
+    //  file, and it is named on its own line above.  The two zeros mean
+    //  different things and the sentence says which.
+    std::cout << "[init0] interiors: " << nInterior << " written, "
+              << nInteriorKept << " kept"
+              << ((nInterior + nInteriorKept) == 0
+                    ? (anyReaderWithoutSeed
+                         ? " -- the unit(s) named above read one and publish"
+                           " no seed yet"
+                         : " -- no unit here starts from a declared interior")
+                    : "")
+              << "\n";
+    std::cout << "[init0] no simulation was run -- `choupoSolve` solves from "
                  "this state.\n";
     return 0;
 }

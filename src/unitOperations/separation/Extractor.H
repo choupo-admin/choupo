@@ -94,7 +94,62 @@ public:
     std::map<std::string, scalar> kpis()            const override { return kpis_; }
     std::optional<UnitProfile>    profile()         const override { return profile_; }
 
+    //  THE CASCADE STARTS SOMEWHERE, AND THE CASE MAY OWN WHERE.
+    //
+    //  The stage profile this unit publishes -- the extract and raffinate
+    //  flow leaving every stage, with their compositions -- is exactly the
+    //  state the Gauss-Seidel sweep starts FROM, so a case may declare a
+    //  `stageProfile` block in `0/internalStates/<SECTOR>/<unit>` and the
+    //  cascade begins there instead of at the seed this class invents (every
+    //  stage holding the fresh solvent and the raw feed).  Declaring the kind
+    //  is what makes the file legal: the flowsheet refuses any interior no
+    //  unit reads.
+    std::vector<std::string> readsInteriorKinds() const override
+    { return { "stageProfile" }; }
+
+    //  The seed above, rendered as the profile `choupo-init0` materialises --
+    //  built by the SAME two functions the solve uses, so the file and the run
+    //  can never describe different starting states.
+    std::map<std::string, UnitProfile>
+    seedInterior(const DictPtr&                    unitDict,
+                 const std::vector<ProcessStream>& inputs,
+                 const ThermoPackage&              thermo) const override;
+
 private:
+    //  THE SEED, IN ITS ONE HOME.  Every stage's extract is the fresh
+    //  solvent and every stage's raffinate is the feed -- honest and
+    //  topology-propagated (it is made of the streams the case declares,
+    //  never of a universal constant).
+    static void seedCascade(const sVector&        feedMol,
+                            const sVector&        solvMol,
+                            int                   N,
+                            std::vector<sVector>& Emol,
+                            std::vector<sVector>& Rmol);
+
+    //  THE CASCADE AS A `stageProfile`, in its one home: the profile this
+    //  unit publishes at the answer and the one `choupo-init0` writes for
+    //  the seed are rendered here, so the round trip is between two
+    //  spellings of one object rather than two objects.
+    static UnitProfile renderCascade(const std::vector<sVector>& Emol,
+                                     const std::vector<sVector>& Rmol,
+                                     const std::vector<sVector>& xE,
+                                     const std::vector<sVector>& xR,
+                                     const ThermoPackage&        thermo);
+
+    //  Start the cascade from the case's DECLARED interior when it declared
+    //  one, and from `seedCascade` when it did not.  Returns true when the
+    //  declaration was used.  BOTH ROUTES ANNOUNCE (the 2026-05-30 rule); a
+    //  declaration that does not describe THIS cascade REFUSES by name.  What
+    //  is NOT checked is whether the profile is an ANSWER: a declared profile
+    //  that violates the stage balances is a SEED, and the sweeps move off it.
+    bool seedFromDeclaredInterior(int                   N,
+                                  const ThermoPackage&  thermo,
+                                  const sVector&        feedMol,
+                                  const sVector&        solvMol,
+                                  std::vector<sVector>& Emol,
+                                  std::vector<sVector>& Rmol,
+                                  int                   verbosity) const;
+
     inline static const std::string type_ = "extractor";
     std::vector<ProcessStream>       produced_;
     std::map<std::string, scalar>    kpis_;

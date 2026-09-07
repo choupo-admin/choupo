@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  THE INTERNAL STATE OF ONE UNIT, inside the state view that
+  holds its streams.  A state directory is a RESTARTABLE
+  SNAPSHOT: the streams are the boundary, this is what the
+  equipment holds between them.  One file per unit, one block
+  per kind of field (stageProfile, axialProfile,
+  sizeDistribution, swingTable), filed under `internalStates/`
+  so a unit and a stream sharing a name can never collide.
+
+  In `converged/` this file is REGENERATED WHOLE on every run
+  together with the streams beside it.  Do not edit it there --
+  an edit is destroyed by the next run without a word.
+
+  COPY it into the case's `0/internalStates/` at the
+  same address to DECLARE it as the interior the next
+  run starts from -- this unit reads stageProfile.  A
+  declared profile that does not satisfy the balances
+  is a SEED, not an answer.
+
+  It is a PROJECTION of the profile this unit publishes through
+  `UnitOperation::profile()` -- the same record the result JSON
+  carries under `profiles` and `profile.csv` carries in the
+  reports.  Nothing here was computed for this file.
+
+  Internal state is a field over a coordinate of the equipment
+  (position, stage, particle size) or its inventory (loadings
+  per component); a construction over a parameter sweep
+  (van Heerden, Merkel) is an analysis and stays in the reports.
+\*---------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "extractor01";
+equipment   extractor;
+
+stageProfile
+{
+    xAxis       stage;
+    nPoints     5;
+
+    columns
+    {
+        stage
+        (
+            1 2 3 4 5
+        );
+        F_extract
+        (
+            0.0359293973028 0.0361560836087 0.0361448210002 0.0360650515383 0.0355660630142
+        );
+        F_raffinate
+        (
+            0.0280050184609 0.027995715597 0.027910434535 0.0274103571408 0.0251772962492
+        );
+        xE_benzene
+        (
+            0.925543008864 0.925592916551 0.925881822357 0.927648139696 0.939989452219
+        );
+        xE_ethanol
+        (
+            0.068277518917 0.0682625439376 0.0679634668215 0.0662985286915 0.0547466999672
+        );
+        xE_water
+        (
+            0.00617947221867 0.00614453951182 0.00615471082141 0.00605333161255 0.00526384781352
+        );
+        xR_benzene
+        (
+            0.00749122032748 0.00748526282565 0.00737712169005 0.00643051525967 0.00314212864009
+        );
+        xR_ethanol
+        (
+            0.198959734551 0.198755813954 0.196728983963 0.184079401902 0.123095760707
+        );
+        xR_water
+        (
+            0.793549045122 0.79375892322 0.795893894347 0.809490082838 0.873762110653
+        );
+    }
+}

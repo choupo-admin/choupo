@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# choupo-init0 -- materialise a case's COMPLETE 0/ stream state by explicit
-# propagation from the authored inlets (+ any tear seeds).
+# choupo-init0 -- materialise a case's COMPLETE 0/ state by explicit
+# propagation from the authored inlets (+ any tear seeds): the STREAMS that
+# bound each unit, and the INTERIOR of every unit that starts from one.
 #
 #   choupo-init0 <caseDir> [--force]
 #
@@ -10,6 +11,14 @@
 # on disk.  It never overwrites an authored file; --force regenerates existing
 # internal/outlet estimates (never an inlet).  A stream inside an unseeded
 # recycle is a hard error asking for a tear seed, never a magic constant.
+#
+# THE INTERIOR HALF (2026-09-07).  A state directory is a RESTARTABLE
+# SNAPSHOT, so a unit that READS an interior gets one too, at
+# 0/internalStates/<SECTOR>/<unit>.  What is written is the unit's OWN seed --
+# the guess it would otherwise have made in silence, moved onto disk where it
+# can be read, edited and owned -- never a better one chosen for you (the
+# no-silent-crutch rule, 2026-05-30).  A unit that reads no interior gets NO
+# file: a declared field nobody reads is refused by the next run.
 #
 # `incomplete 0/ + choupoSolve` stays FATAL; this is the sanctioned way out.
 set -euo pipefail

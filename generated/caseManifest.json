@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 396,
+  "cases": 397,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -2467,6 +2467,20 @@
    "hasGolden": true
   },
   "tutorials/steady/absorption/extract01_ethanol_water_benzene": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "extractor"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/absorption/extract02_declared_interior": {
    "application": "choupoSolve",
    "unitTypes": [
     "extractor"
@@ -5959,6 +5973,7 @@
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/acetone05_luyben_absorber",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
+    "tutorials/steady/absorption/extract02_declared_interior",
     "tutorials/steady/absorption/extraction01_waterButanol",
     "tutorials/steady/absorption/stripper01_NH3_water",
     "tutorials/steady/crystallisation/crystalliser01_sugar",
@@ -6440,7 +6455,8 @@
     "tutorials/steady/thermoTest/model2_pitzer_evaporator"
    ],
    "extractor": [
-    "tutorials/steady/absorption/extract01_ethanol_water_benzene"
+    "tutorials/steady/absorption/extract01_ethanol_water_benzene",
+    "tutorials/steady/absorption/extract02_declared_interior"
    ],
    "fixedBedAdsorber": [
     "tutorials/batch/adsorber/batch13_breakthrough_co2",
@@ -6754,6 +6770,7 @@
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
+    "tutorials/steady/absorption/extract02_declared_interior",
     "tutorials/steady/distillation/acetone06_luyben_column_C1",
     "tutorials/steady/distillation/acetone07_luyben_column_C2",
     "tutorials/steady/distillation/column05_reactive_methylacetate",

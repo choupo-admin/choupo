@@ -214,8 +214,21 @@ case/
   DECLARE them, tracked, and the unit then STARTS there instead of from a
   seed it invents in code.  The completeness contract counts STREAMS and
   skips the `internalStates/` subtree by name.  The layout is CLOSED; what
-  changes it next is a student, not a reflection.  Record:
-  [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md) §9.
+  changes it next is a student, not a reflection.  **`bin/choupo-init0`
+  MATERIALISES the interior half too (2026-09-07), and what it writes is the
+  UNIT'S OWN seed** — published by the unit through the same function its
+  `solve()` starts from, so the file and the run can never be two different
+  guesses; a tool that quietly improves a seed hands back the crutch the
+  2026-05-30 rule forbids, and a unit that reads no interior gets no file.
+  A unit that reads one and finds none seeds itself and SAYS so (that rule
+  working, not a fault); but a case that DECLARES an interior tree must
+  declare one for every unit that reads one — a separate, separately named
+  check, because a snapshot that restores half a plant and re-invents the
+  rest is not a restart.  Making the missing half fatal in EVERY case is
+  RESERVED for Vítor: it is a corpus migration whose goldens all move.
+  Records:
+  [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md)
+  §9 (the layout) and §10 (the seed and the tool).
 * **The `.cho` marker file** is the openable entity in the GUI (the CLI is
   unaffected; `runCase`/`choupoSolve` take the folder path).  Intentionally
   empty for now; future GUI-only metadata lives here without polluting the

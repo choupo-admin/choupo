@@ -334,9 +334,19 @@ boundary — and each unit's interior is ONE file under the view's own root,
 `0/internalStates/` at the same address and the next run STARTS from it; a
 declared profile that does not satisfy the balances
 is a SEED, not an answer, and the unit announces which route it took either
-way.  Only units that DECLARE the kind they read accept one (today: the
-distillation column, `stageProfile`); anything else refuses by name.  Witness:
-`tutorials/steady/distillation/column16_declared_interior`.
+way.  Only units that DECLARE the kind they read accept one (today the
+distillation column and the counter-current LL extractor, both
+`stageProfile`); anything else refuses by name.  Witnesses:
+`tutorials/steady/distillation/column16_declared_interior` and
+`tutorials/steady/absorption/extract02_declared_interior`.
+
+**`bin/choupo-init0` materialises the interior half too** (2026-09-07): a unit
+that reads one gets its OWN seed written to `0/internalStates/…` — the guess it
+would otherwise have made in silence, on disk where you can own it, never a
+better one chosen for you.  A unit that reads none gets no file.  And once a
+case declares an interior tree, it must be COMPLETE for the units that read one:
+declaring half of them refuses by name, because a snapshot that restores half a
+plant and re-invents the other half is not a restart.
 
 ## 8. Reading a sectored plant's stream table
 

@@ -174,6 +174,32 @@ public:
         return it == declaredInterior_.end() ? nullptr : &it->second;
     }
 
+    //  THE SEED THIS UNIT WOULD USE IF THE CASE DECLARED NOTHING, published
+    //  so `choupo-init0` can MATERIALISE it as a `0/internalStates/` file.
+    //
+    //  WHAT IT MUST RETURN IS THE UNIT'S OWN SEED, never a better one
+    //  invented for the file (the 2026-05-30 rule: a solver aid is the
+    //  student's to own, and a tool that quietly improves it hands back a
+    //  crutch nobody chose).  The unit therefore builds it from the SAME
+    //  function its `solve()` starts from -- one home, or the file and the
+    //  run drift apart the first time either is touched.
+    //
+    //  `inputs` are the unit's inlet streams in the order the case wired
+    //  them, taken from the state `choupo-init0` has just propagated; the
+    //  dict is the unit's own block (its `operation` sub-dict is where a
+    //  stage count lives).  Keyed by kind, exactly like `declaredInterior`.
+    //  Default empty -- a unit that reads no interior materialises none, and
+    //  a unit that reads one and cannot build a seed from these inputs says
+    //  so by throwing (the tool announces the skip; it is never fatal).
+    virtual std::map<std::string, UnitProfile>
+    seedInterior(const DictPtr&                    unitDict,
+                 const std::vector<ProcessStream>& inputs,
+                 const ThermoPackage&              thermo) const
+    {
+        (void)unitDict; (void)inputs; (void)thermo;
+        return {};
+    }
+
     // Demand-driven INPUT flows the unit op computed during solve().
     // Used to push a utility stream's actual consumption back into the
     // Flowsheet's stream registry, so the Streams panel reflects what

@@ -146,6 +146,11 @@ const std::vector<std::string>& knownKinds()
     return kinds;
 }
 
+std::string fileOf(const std::string& unitName, const std::string& sector)
+{
+    return (fs::path(ROOT) / unitFileOf(unitName, sector)).generic_string();
+}
+
 std::string kindOf(const std::string& xAxis, bool& declared)
 {
     declared = true;
@@ -498,6 +503,148 @@ std::size_t write(const std::string&      viewRoot,
                       << fs::path(viewRoot).filename().string() << "/" << ROOT
                       << "/  (one file per unit; regenerated whole with the"
                          " streams; do not edit)\n";
+    }
+
+    return written;
+}
+
+
+// ---------------------------------------------------------------------------
+//  THE SEED WRITER -- `choupo-init0`'s half, and the only writer that ever
+//  touches `0/`.
+//
+//  `write` above renders a PHOTOGRAPH: what a unit held at the answer, into a
+//  view the engine rebuilds whole.  This renders a SEED: what a unit would
+//  start from if the case declared nothing, into the view the AUTHOR owns.
+//  The two are the same object in the same grammar -- the same `renderBlock`,
+//  so what this writes the reader accepts -- and they differ in exactly one
+//  place, the header sentence, because the two files answer different
+//  questions and a file that misdescribes itself is the defect that has now
+//  cost this module two commits.
+//
+//  IT WRITES THE UNIT'S OWN SEED, never a better one (the 2026-05-30 rule).
+//  The profiles arrive from `UnitOperation::seedInterior`, built by the same
+//  function the unit's `solve()` starts from; nothing is improved here, and
+//  nothing is invented for a unit that publishes none.
+// ---------------------------------------------------------------------------
+std::size_t writeSeeds(const std::string&           viewRoot,
+                       const std::vector<FlatUnit>& topology,
+                       const std::map<std::string,
+                                      std::map<std::string, UnitProfile>>& seeds,
+                       bool                         force,
+                       int                          verbosity,
+                       std::size_t&                 kept)
+{
+    kept = 0;
+    if (seeds.empty()) return 0;
+
+    const fs::path root = fs::path(viewRoot) / ROOT;
+    std::error_code ec;
+
+    std::map<std::string, const FlatUnit*> unitOf;
+    for (const auto& u : topology) unitOf[u.name] = &u;
+
+    std::size_t written = 0;
+    for (const auto& [uname, byKind] : seeds)
+    {
+        if (byKind.empty()) continue;
+
+        std::string sector, etype;
+        auto uit = unitOf.find(uname);
+        if (uit != unitOf.end())
+        {
+            sector = uit->second->sector;
+            etype  = uit->second->type;
+        }
+
+        const fs::path file = root / unitFileOf(uname, sector);
+
+        //  THE TOOL'S POSTURE, UNCHANGED: an existing file is the author's
+        //  and is never overwritten without `--force`.  A seed the student
+        //  has edited is exactly what this feature exists to let them own.
+        if (fs::exists(file) && !force)
+        {
+            if (verbosity >= 2)
+                std::cout << "  [init0] kept      " << file.generic_string()
+                          << "  (exists; --force regenerates)\n";
+            ++kept;
+            continue;
+        }
+
+        std::ostringstream o;
+        o << "/*--------------------------------*- Choupo -*-----------------"
+             "---------------*\\\n"
+             "  THE INTERNAL STATE OF ONE UNIT, inside the state view that\n"
+             "  holds its streams.  A state directory is a RESTARTABLE\n"
+             "  SNAPSHOT: the streams are the boundary, this is what the\n"
+             "  equipment holds between them.  One file per unit, one block\n"
+             "  per kind of field (stageProfile, axialProfile,\n"
+             "  sizeDistribution, swingTable), filed under `internalStates/`\n"
+             "  so a unit and a stream sharing a name can never collide.\n"
+             "\n"
+             "  In `0/` this file is the AUTHOR'S: it is the state the next\n"
+             "  run STARTS from, and no run ever rewrites it.  What is here\n"
+             "  is the seed the unit would have invented for itself,\n"
+             "  materialised by bin/choupo-init0 so it can be read, edited\n"
+             "  and owned -- never a better guess chosen on your behalf.\n"
+             "\n"
+             "  A DECLARED PROFILE THAT DOES NOT SATISFY THE BALANCES IS A\n"
+             "  SEED, NOT AN ANSWER: the iteration still decides.  Replace it\n"
+             "  with converged/internalStates/ from a run of THIS case to\n"
+             "  restart from the answer; the unit REFUSES by name a profile\n"
+             "  that does not describe it, and deleting the file puts the\n"
+             "  unit back on the seed it invents in code (announced).\n"
+             "\n"
+             "  Internal state is a field over a coordinate of the equipment\n"
+             "  (position, stage, particle size) or its inventory (loadings\n"
+             "  per component); a construction over a parameter sweep\n"
+             "  (van Heerden, Merkel) is an analysis and stays in the reports.\n"
+             "\\*-----------------------------------------------------------"
+             "----------------*/\n\n";
+
+        o << "recordType  internalState;\n\n";
+        o << "unit        " << quoted(uname) << ";\n";
+        if (!sector.empty())
+            o << "sector      " << sector << ";\n";
+        o << "equipment   " << (etype.empty() ? std::string("(not in topology)")
+                                              : etype) << ";\n";
+
+        for (const auto& [kind, prof] : byKind)
+        {
+            //  A SEED THIS MODULE'S OWN READER WOULD REFUSE IS NOT WRITTEN.
+            //  Both halves of the 2026-09-07 writer contract apply here too:
+            //  the block name must be the kind the axis derives (a unit that
+            //  keys its seed under another word is describing a different
+            //  field), and the axis must be a column of the profile.  Only a
+            //  unit's own source can reach either, so this is a contract on
+            //  unit authors and costs a student nothing.
+            bool declared = true;
+            const std::string derived = kindOf(prof.xAxis, declared);
+            if (derived != kind || !prof.columns.count(prof.xAxis))
+                throw std::runtime_error(
+                    "internal state: unit '" + uname + "' offers a seed block `"
+                    + kind + "` over axis `" + prof.xAxis + "`"
+                    + (derived == kind
+                         ? std::string(" and carries no column of that name")
+                         : " and that axis is the kind `" + derived + "`")
+                    + " -- a seed this module's own reader would refuse must"
+                      " not be written.");
+            o << "\n";
+            renderBlock(o, kind, prof, declared);
+        }
+
+        fs::create_directories(file.parent_path(), ec);
+        std::ofstream f(file.string(), std::ios::out | std::ios::trunc);
+        if (!f.is_open())
+            throw std::runtime_error("internal state: cannot open "
+                                     + file.string());
+        f << o.str();
+        f.close();
+
+        if (verbosity >= 1)
+            std::cout << "  [init0] wrote     " << file.generic_string()
+                      << "  (interior seed, " << etype << ")\n";
+        ++written;
     }
 
     return written;

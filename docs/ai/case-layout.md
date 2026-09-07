@@ -125,7 +125,11 @@ is in
 why it lives inside the state view, and what a case gains by DECLARING one in
 `0/`, is in
 [`../design/a-state-directory-is-a-restartable-snapshot.md`](../design/a-state-directory-is-a-restartable-snapshot.md).
-Witness: `tutorials/steady/distillation/column16_declared_interior`.
+Witnesses: `tutorials/steady/distillation/column16_declared_interior` and
+`tutorials/steady/absorption/extract02_declared_interior`.  `bin/choupo-init0`
+materialises the interior of every unit that reads one (its OWN seed — see
+below), and a case that declares an interior tree must declare one for EVERY
+unit that reads one: a snapshot that restores half a plant is not a restart.
 
 ## The `.cho` marker
 
@@ -476,6 +480,26 @@ bin/choupo-init0 <caseDir> --force    // regenerates existing internal/outlet es
 Rules: an inlet file is never touched; an unseeded recycle is a hard error
 naming the file to author; `incomplete 0/ + choupoSolve` stays FATAL — this
 tool is the sanctioned way out.
+
+**It materialises the INTERIOR half too** (2026-09-07). A state directory is a
+restartable snapshot, so a unit that *reads* an interior gets one written at
+`0/internalStates/<SECTOR>/<unit>` beside the stream files. What lands there is
+the unit's **own** seed — the guess it would otherwise have made in silence,
+moved onto disk where you can read it, edit it and own it — never a better one
+chosen for you. A unit that reads no interior gets **no** file, and the run
+reports the count either way — the line counts FILES, and says which zero it
+is, because the two zeros mean different things:
+
+```
+[init0] interiors: 1 written, 0 kept
+[init0] interiors: 0 written, 0 kept -- no unit here starts from a declared interior
+[init0] interiors: 0 written, 0 kept -- the unit(s) named above read one and
+        publish no seed yet
+```
+
+A unit type that reads an interior but has not published its seed yet is named
+on its own line rather than skipped in silence; it goes on seeding itself at
+run time, and says so.
 
 ## Validating a case without running it — `bin/choupo-lint`
 
