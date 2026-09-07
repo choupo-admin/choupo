@@ -51,6 +51,7 @@ Description
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -61,10 +62,26 @@ public:
 
     virtual const std::string& type() const = 0;
 
-    // Compute dimensions for `unitName`.  The caller supplies the matching
-    // KPIs (from result.kpis[unitName]) and a unit-specific sub-dict with
-    // the user-declared `designRules`.
-    virtual EquipmentSizing size(const std::string&             unitName,
+    //  Compute the PHYSICAL ITEMS `unitName` realises.  The caller supplies
+    //  the matching KPIs (from result.kpis[unitName]) and a unit-specific
+    //  sub-dict with the user-declared `designRules`.
+    //
+    //  A VECTOR, BECAUSE ONE UNIT MAY REALISE MANY ITEMS.  The constitution
+    //  has said so since the design sheets were built, and the sheet writer's
+    //  own header names the case in its own words: "the day a column yields
+    //  five, the directory gains siblings and nothing above it changes".
+    //  Every sizer but `ColumnSize` returns exactly one element with an EMPTY
+    //  `equipmentTag`, which is what keeps a one-item unit's every surface
+    //  character-for-character what it was before this signature changed.
+    //
+    //  ONE DOOR, not two.  A second virtual returning a single record --
+    //  with this one defaulting to wrapping it -- would give the same fact
+    //  two homes and let a sizer answer one and not the other.
+    //
+    //  An EMPTY vector is not a legal answer: a sizer that cannot size its
+    //  unit THROWS, naming the unit and the remedy, and `SizingPass` catches
+    //  it by name and lists the unit as not sized.
+    virtual std::vector<EquipmentSizing> size(const std::string& unitName,
         const SimulationResult&        result,
         const Material&                material,
         const DictPtr&                 designRules) const = 0;

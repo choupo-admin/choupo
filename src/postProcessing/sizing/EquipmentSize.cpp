@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EquipmentSize.H"
+#include "ColumnSize.H"
 #include "CrystalliserSize.H"
 #include "CycloneSize.H"
 #include "CompressorSize.H"
@@ -84,6 +85,10 @@ void EquipmentSize::registerBuiltins()
         []{ return std::make_unique<CompressorSize>(); });
     registerType("vessel",
         []{ return std::make_unique<VesselSize>(); });
+    //  THE ONLY SIZER THAT RETURNS MORE THAN ONE ITEM (2026-09-07): a column
+    //  is a shell, a tray stack, a condenser, a reboiler and a reflux drum.
+    registerType("distillationColumn",
+        []{ return std::make_unique<ColumnSize>(); });
 }
 
 } // namespace Choupo

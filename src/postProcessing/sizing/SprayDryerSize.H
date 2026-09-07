@@ -44,6 +44,8 @@ Description
 
 #include "EquipmentSize.H"
 
+#include <vector>
+
 namespace Choupo {
 
 class SprayDryerSize : public EquipmentSize
@@ -51,7 +53,7 @@ class SprayDryerSize : public EquipmentSize
 public:
     const std::string& type() const override { return type_; }
 
-    EquipmentSizing size(const std::string&     unitName,
+    std::vector<EquipmentSizing> size(const std::string& unitName,
         const SimulationResult& result,
         const Material&         material,
         const DictPtr&          designRules) const override;

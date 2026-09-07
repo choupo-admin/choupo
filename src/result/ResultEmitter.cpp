@@ -692,11 +692,21 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     {
         os << ",\n  \"equipment\": [";
         bool firstE = true;
-        for (const auto& [uname, sz] : r.sizings)
+        for (const auto& [itemKey, sz] : r.sizings)
         {
             os << (firstE ? "\n" : ",\n");
             firstE = false;
-            os << "    { \"unit\": " << esc(uname);
+            //  TWO IDENTITIES, TWO QUESTIONS.  `unit` is the flowsheet
+            //  operation and `item` is the physical object it realises; a
+            //  distillation column publishes five lines under one `unit`, and
+            //  a reader -- the golden `equipment` kind included -- resolves
+            //  them on `item`.  For every unit that realises a single item
+            //  the two are the same string, which is what keeps every case
+            //  that predates the column sizer matching exactly as before.
+            os << "    { \"unit\": " << esc(sz.unitName)
+               << ", \"item\": " << esc(itemKey);
+            if (!sz.equipmentTag.empty())
+                os << ", \"tag\": " << esc(sz.equipmentTag);
             if (!sz.sector.empty()) os << ", \"sector\": " << esc(sz.sector);
             os << ", \"type\": " << esc(sz.equipmentType)
                << ", \"material\": " << esc(sz.material);
@@ -710,7 +720,7 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 os << esc(k) << ": " << num(v);
             }
             os << " }";
-            auto ci = r.costs.find(uname);
+            auto ci = r.costs.find(itemKey);
             if (ci != r.costs.end())
             {
                 const auto& c = ci->second;

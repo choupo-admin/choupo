@@ -160,6 +160,35 @@ const EquipCoeffs& coeffsFor(const std::string& equipType)
     if (equipType == "sprayDryer")   return sprayDryerCoeffs;
     if (equipType == "cyclone")      return cycloneCoeffs;
     if (equipType == "compressor")   return compressorCoeffs;
+
+    //  THE TRAY STACK IS REFUSED BY NAME, AND THAT IS THE DECISION (2026-09-07).
+    //
+    //  A distillation column's shell, condenser, reboiler and reflux drum all
+    //  reach a coefficient set that is already in this file -- Turton prices a
+    //  tower as a vertical vessel and the two exchangers as what they are, so
+    //  the column sizer brought NO new data into the tree.  The trays did not,
+    //  and no set here fits them: they are bought by the tray, not by a
+    //  volume, an area or a shaft power.
+    //
+    //  Writing K1/K2/K3 for a sieve tray would be a CURATION act inside what
+    //  Vitor reserved (every coefficient in this file is Turton's), and an
+    //  invented set converts "uncosted" into "falsely costed" -- which no
+    //  reader and no gate can detect, while a refusal is visible on the first
+    //  run.  A visible gap is strictly better than an invisible falsehood.
+    if (equipType == "sieveTrays")
+        throw std::runtime_error("Guthrie: the TRAY STACK is not costed."
+            "\n  Choupo carries no purchased-cost correlation for trays, and"
+            " will not invent one: the eight sets in\n  `Guthrie.cpp` are"
+            " Turton's, and adding a ninth is a curation act, not a coding"
+            " one.\n  A set would need, from a primary source: the size"
+            " DRIVER (tray area or tower diameter, and the\n  number of"
+            " trays), its validity range, K1/K2/K3 or a cited anchor with an"
+            " exponent, the bare-module\n  factors B1/B2, and the tray TYPE"
+            " and MATERIAL the correlation was published for.\n  Until then"
+            " this column's capital cost is its shell, its two exchangers and"
+            " its drum -- and it is\n  INCOMPLETE by exactly the trays."
+            "  The `TOTALS (EUR) -- INCOMPLETE` line above says so.");
+
     throw std::runtime_error("Guthrie: no cost correlation for equipment '"
         + equipType + "'");
 }

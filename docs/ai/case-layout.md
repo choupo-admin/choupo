@@ -430,6 +430,40 @@ approach.  Exemplar: `tutorials/steady/heat/pinch01_four_stream_classic`.
 The `sizing`/`costing`/`economics` chain: `docs/ai/outer-drivers.md` §cost
 objectives and `tutorials/steady/flowsheets/process02_with_design`.
 
+**ONE UNIT MAY BE SEVERAL PIECES OF EQUIPMENT.**  A `distillationColumn` is one
+mathematical operation and FIVE physical objects -- a shell, a tray stack, a
+condenser, a reboiler and a reflux drum -- and it is sized and costed as all
+five, with one specification sheet each under `design/<unit>/<item>`.  Its
+`designRules {}`:
+
+```
+{
+    unitName    myColumn;
+    type        distillationColumn;
+    material    carbonSteel;
+    designRules
+    {
+        traySpacing     0.50;       // m -- the same one `hydraulics {}` declares
+        pressureDesign  2.0;        // bar
+
+        condenser  { U 500.0; LMTD 48.0; pressureDesign 2.0; }   // W/m2/K, K, bar
+        reboiler   { U 800.0; LMTD 17.0; pressureDesign 2.0; }
+        refluxDrum { residenceTime 300.0; pressureDesign 2.0; }  // s, bar
+    }
+}
+```
+
+The DIAMETER is the answer the unit's own `hydraulics {}` block computed, so a
+column that declares none is refused by name -- there is no separate diameter
+correlation.  U, the approach temperature and the drum residence time do NOT
+follow from a converged column and are yours; an item whose sub-block is absent
+is ANNOUNCED and simply not built, because a default U would be priced into the
+capital cost as though you had chosen it.  **The tray stack is sized and NOT
+costed** -- Choupo carries no purchased-cost correlation for trays and will not
+invent one -- so that item refuses by name and the capital total reads
+`TOTALS (EUR) -- INCOMPLETE`.  Worked case:
+`tutorials/steady/distillation/column09_tray_hydraulics`.
+
 ## Where a numerical option lives — the four homes are INTENTIONAL
 
 Settled 2026-08-04 (Vítor, option A of

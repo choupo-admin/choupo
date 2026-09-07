@@ -32,7 +32,7 @@ License
 
 namespace Choupo {
 
-EquipmentSizing EvaporatorSize::size(const std::string&     unitName,
+std::vector<EquipmentSizing> EvaporatorSize::size(const std::string& unitName,
     const SimulationResult& result,
     const Material&         material,
     const DictPtr&          designRules) const
@@ -65,7 +65,9 @@ EquipmentSizing EvaporatorSize::size(const std::string&     unitName,
     d.set("A",              A,           "m2");   // Guthrie sizeKey
     d.set("A_m2",           A,           "m2");
     d.set("pressureDesign", P_des,       "bar");
-    return d;
+    //  ONE ITEM: this unit realises a single piece of equipment, so the
+    //  tag is left empty and `itemId()` stays the unit's own name.
+    return { d };
 }
 
 } // namespace Choupo

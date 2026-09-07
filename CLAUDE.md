@@ -1370,6 +1370,53 @@ nothing.  Gate: `check_internal_states` arms (o)-(r) + the docs half of (k)
 sites, so the arm COUNTS).  Record:
 [`docs/design/a-size-distribution-with-no-size-axis.md`](docs/design/a-size-distribution-with-no-size-axis.md).
 
+**ONE UNIT, FIVE ITEMS: THE COLUMN GETS A SIZE, A COST AND A SHEET
+(2026-09-07).**  The distillation column was the only major unit with no sizer,
+no cost and no specification sheet, and `TrayHydraulics` had computed its
+hydraulics all along into a console print that nothing downstream could see --
+*a column cannot be SIZED from a printed table.*  The 2026-09-04 sheet writer
+chose `design/<SECTOR>/<unit>/<equipmentTag>` as 1:N with N = 1 and named this
+case in its own words; this is that day, and the promise held: **the directory
+gained siblings and nothing above it changed** except the one door's return type
+(`EquipmentSize::size()` now returns a VECTOR; every other sizer returns one
+element with an EMPTY tag).  Rule: **identity is `EquipmentSizing::itemId()`,
+the ONE home** -- the unit's own name where a unit realises one item, so every
+case that predates this keys, prints and pins exactly as before; a reader that
+wants the unit reads `unitName` and one that wants the item reads
+`equipmentTag`, and **nobody splits the id**.  NOT NEW PHYSICS: the diameter and
+the two SECTION diameters are the hydraulics' own rule applied per section, the
+duties are the column's own KPIs, `ShellTubeHX::sizeFromDuty` and
+`src/postProcessing/sizing/VesselMechanics.H` are the extracted one-homes for
+the exchanger rule and the ASME wall (the latter had been written out identically in two sizers and
+the column needed it twice more).  **Swaging is ECONOMIC, not thermodynamic:**
+the engine publishes both section diameters and their gap, states which way the
+15-20 % band points, builds the tower STRAIGHT at the wider section and prices
+no transition, because it has no correlation for one.  **The TRAYS refuse by
+name and the total says INCOMPLETE** -- `Guthrie`'s eight sets are all Turton's,
+trays fit none of them, and an invented set converts *uncosted* into *falsely
+costed*, which no reader and no gate can detect; a column costed by Choupo today
+is missing its tray cost and says so.  Four traps paid for: the sizer's first
+tray count was `nStages - 2` and was WRONG BY ONE (this solver's stage list
+carries the reboiler and not the condenser), so **the count comes from the pass
+that ENUMERATES trays** -- the fact, not a rule about the fact; the golden
+`equipment` kind resolved on the UNIT, so five items collapsed to one row per
+key and the checker answered every row from whichever line came first (it
+resolves on `"item"` now, and a one-item unit is unaffected); **`sizing.csv` was
+not a CSV** -- the `basis` column is a SENTENCE and the first one carrying a
+comma shifted every numeric column after it (RFC 4180 quoting, only where
+needed); and `check_design_sheet` **arm (j) had never been able to fire**,
+reading a header key the sheet does not write, which is the `check_true_ions`
+shape found again in the only arm anywhere that can see a size that is WRONG.
+A witness must declare the pass or nobody meets the capability
+(`column09_tray_hydraulics` is the first column case with a `system/postDict`).
+Gates: `check_design_sheet` arm (m) (7 sabotages -- and the first attempt proved
+NOTHING, because the arm re-runs the case and `design/` is regenerated whole:
+**the sabotage has to land BETWEEN the run and the check**) ·
+`check_equipment_pinned`.  RESERVED for Vitor: a tray cost correlation.  NOT
+DONE: the column schematic (task #134), deliberately after the cost rather than
+before it.  Record:
+[`docs/design/one-unit-five-items-the-column-gets-a-size.md`](docs/design/one-unit-five-items-the-column-gets-a-size.md).
+
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
 The doctrine says a check that cannot run must not PASS; the MIRROR is just as
 bad — **it must not FAIL either, it must REFUSE.**  `bin/drive-app` filed "no

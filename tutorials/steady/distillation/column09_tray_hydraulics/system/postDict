@@ -1,0 +1,116 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column09_tray_hydraulics -- post-processing chain: ONE UNIT, FIVE ITEMS.
+
+  This is the first case in the corpus where a single flowsheet unit is sized
+  as several physical objects.  A `distillationColumn` is one MATHEMATICAL
+  operation and, on the ground, five things somebody buys:
+
+      shell        the tower                    costed as a vertical vessel
+      trays        the tray stack               NOT COSTED -- see below
+      condenser    a shell-and-tube exchanger
+      reboiler     a shell-and-tube exchanger
+      refluxDrum   a drum for the condensate    costed as a vessel
+
+  Run the case and open `design/column09/` -- one specification sheet per item,
+  each with its inlets, its outlets, what was sized, the RULE that produced the
+  size, and what it costs.
+
+  WHERE THE DIAMETER COMES FROM.  Not from this file: it is the answer the
+  `hydraulics {}` block in `system/flowsheetDict` already computed, and the
+  sizing pass reads it off the column's own KPIs.  That is the whole point of
+  the ORDER -- the trays have to be able to pass the traffic before there is a
+  tower to cost.  The run also reports the two SECTION diameters: the
+  rectifying trays need 1.21 m and the stripping trays 1.32 m, which is 8 %
+  apart.  Below roughly 15-20 % the transition cone of a swaged tower costs
+  more than the plate a narrower section saves, so the tower is built STRAIGHT
+  at the larger diameter -- an ECONOMIC decision, not a thermodynamic one, and
+  Choupo reports both numbers rather than pretending to price the transition.
+
+  WHAT THIS FILE DECLARES, AND WHY IT MUST.  U, the approach temperature and
+  the drum's residence time are NOT consequences of a converged column: they
+  are choices about the SERVICE -- which coolant, which steam level, how much
+  surge the operator wants -- and they are the author's.  The engine refuses
+  the item by name rather than substituting a default U, because a default U
+  would be priced into the capital cost as though somebody had chosen it.
+  The values below are THIS CASE'S declaration and no curated datum:
+    * condenser  U 500 W/m2/K, LMTD 48 K   -- organic vapour condensing against
+      cooling water taken from 25 to 40 C, against a 81 C overhead.
+    * reboiler   U 800 W/m2/K, LMTD 17 K   -- LP steam against a 110 C bottoms.
+    * drum       5 minutes of condensate holdup, the usual operability figure.
+  Change them and every area, weight and cost below changes with them.
+
+  THE TRAY STACK IS SIZED AND NOT COSTED, AND THE RUN SAYS SO.  Choupo's
+  costing model holds eight coefficient sets and every coefficient in it is
+  Turton's; there is no tray set, and inventing one would turn "uncosted" into
+  "falsely costed", which no reader could detect.  So the trays refuse by name,
+  the totals line reads INCOMPLETE, and the capital cost of this column is its
+  shell, its two exchangers and its drum -- missing exactly the trays.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        {
+            unitName    column09;
+            type        distillationColumn;
+            material    carbonSteel;
+            designRules
+            {
+                //  The same spacing the unit's `hydraulics {}` block declares.
+                //  It is what turns a stage COUNT into a tower HEIGHT.
+                traySpacing     0.50;       // m
+                pressureDesign  2.0;        // bar (atmospheric column, x2 margin)
+                corrosionAllow  0.003;      // m
+                jointEfficiency 1.0;
+
+                //  The two end spaces are left UNDECLARED on purpose, so this
+                //  case shows what an engine default looks like when it is
+                //  announced: the run prints `[assumed] distillationColumn
+                //  'column09': disengagementHeight ...` and the shell's sheet
+                //  carries an `assumed ( ... )` line naming both.  Declare
+                //  `disengagementHeight` and `sumpHeight` here to own them.
+
+                condenser
+                {
+                    U               500.0;      // W/m2/K -- declared, see header
+                    LMTD            48.0;       // K
+                    pressureDesign  2.0;        // bar
+                }
+
+                reboiler
+                {
+                    U               800.0;      // W/m2/K -- declared, see header
+                    LMTD            17.0;       // K
+                    pressureDesign  2.0;        // bar
+                }
+
+                refluxDrum
+                {
+                    residenceTime   300.0;      // s -- 5 minutes of condensate
+                    pressureDesign  2.0;        // bar
+                    L_over_D        3.0;
+                    corrosionAllow  0.003;      // m
+                    jointEfficiency 1.0;
+                }
+            }
+        }
+    );
+}
+
+costing
+{
+    method      Turton;
+    year        2026;
+    cepci       820;        // target-year CEPCI
+    cepci2001   397;        // Turton base-year basis
+    usdToEur    0.92;
+}

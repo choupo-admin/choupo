@@ -13,6 +13,8 @@
 \*---------------------------------------------------------------------------*/
 
 #include "VesselSize.H"
+
+#include "VesselMechanics.H"
 #include "DesignDefaults.H"
 #include "core/Constants.H"
 #include "core/Advisory.H"
@@ -23,7 +25,7 @@
 
 namespace Choupo {
 
-EquipmentSizing VesselSize::size(const std::string&     unitName,
+std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
     const SimulationResult& result,
     const Material&         material,
     const DictPtr&          designRules) const
@@ -133,11 +135,13 @@ EquipmentSizing VesselSize::size(const std::string&     unitName,
 
     const scalar D = std::cbrt(4.0 * V / (constant::pi * L_over_D));   // m
     const scalar H = L_over_D * D;                                     // m
-    const scalar P_Pa     = pressureDesign * 1.0e5;
-    const scalar sigma_Pa = material.sigma_y * 1.0e6;
-    const scalar t_wall   = P_Pa * D / (2.0 * sigma_Pa * jointEff - 1.2 * P_Pa)
-                          + corrosionAllow;
-    const scalar weight = material.density * constant::pi * D * H * t_wall;
+    //  The ASME thin-wall shell, from the ONE home.  These two lines used to
+    //  be written out here AND identically in `StirredTank.cpp`; the column
+    //  sizer would have made four copies.  No number moved.
+    const auto mech = vesselMechanics::wall(D, H, pressureDesign, material,
+                                            jointEff, corrosionAllow);
+    const scalar t_wall = mech.t_wall;
+    const scalar weight = mech.weight;
 
     d.set("V_R",            V,              "m3");
     d.set("D",              D,              "m");
@@ -148,7 +152,9 @@ EquipmentSizing VesselSize::size(const std::string&     unitName,
     d.set("pressureDesign", pressureDesign, "bar");
     d.set("Q_gas",          Q_m3s,          "m3/s");
     d.basis                    = basis;
-    return d;
+    //  ONE ITEM: this unit realises a single piece of equipment, so the
+    //  tag is left empty and `itemId()` stays the unit's own name.
+    return { d };
 }
 
 } // namespace Choupo

@@ -90,6 +90,38 @@ struct EquipmentSizing
     std::string                                  equipmentType;
     std::string                                  material;
 
+    //  WHICH PHYSICAL ITEM OF THAT UNIT THIS IS (2026-09-07).  The
+    //  constitution is explicit that a flowsheet unit is a MATHEMATICAL
+    //  operation while design equipment is a PHYSICAL object, and that one
+    //  unit may realise MANY items: a distillation column is a shell, a tray
+    //  stack, a condenser, a reboiler and a reflux drum.  Until the column
+    //  gained a sizer every implemented unit realised exactly one, so the
+    //  unit's name identified the item and nothing needed this field.
+    //
+    //  EMPTY MEANS "THIS UNIT REALISES ONE ITEM", and that is not a
+    //  placeholder: it is what every sizer but `ColumnSize` reports, and it
+    //  keeps `itemId()` equal to the unit name, so every surface a one-item
+    //  unit reaches is character-for-character what it was before this field
+    //  existed.  A tag is written only where there is genuinely a choice to
+    //  record.
+    std::string                                  equipmentTag;
+
+    //  THE IDENTITY OF THE ITEM, and the ONE home for how it is formed.
+    //  `result.sizings` and `result.costs` are keyed on it, the result JSON
+    //  publishes it, and the golden `equipment` kind names it -- so the day a
+    //  unit yields five items, five rows can be told apart without any reader
+    //  inventing a rule of its own.
+    //
+    //  NOBODY SPLITS IT.  A reader that wants the owning unit reads
+    //  `unitName`, and a reader that wants the item reads `equipmentTag`;
+    //  both travel as data on this record.  Recovering either by cutting this
+    //  string at the separator would be the name identity this project bans
+    //  for the sector and bans here for the same reason.
+    std::string itemId() const
+    {
+        return equipmentTag.empty() ? unitName : unitName + "/" + equipmentTag;
+    }
+
     //  THE SIZE, AND THE UNIT IT IS IN.  Write through `set()`; never touch
     //  the two maps directly.
     //
@@ -211,6 +243,11 @@ struct EnergyWire
 struct CostBreakdown
 {
     std::string                                  unitName;
+
+    //  THE ITEM THIS PRICES, copied from the sizing that was priced -- never
+    //  re-derived here.  Empty for a unit that realises one item, exactly as
+    //  on `EquipmentSizing`, so a one-item unit's cost record is unchanged.
+    std::string                                  equipmentTag;
     scalar                                       purchasedCost   = 0.0;  // C_p   [€]
     scalar                                       bareModuleCost  = 0.0;  // C_BM  [€]
     scalar                                       totalModuleCost = 0.0;  // C_TM  [€]

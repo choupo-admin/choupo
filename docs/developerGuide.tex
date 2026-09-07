@@ -1704,10 +1704,10 @@ to the chain-builder in \file{PostProcessor.cpp}.
 \begin{lstlisting}[language=C++]
 class MyEquip : public EquipmentSize {
 public:
-    EquipmentSizing size(const std::string& unitName,
+    std::vector<EquipmentSizing> size(const std::string& unitName,
                          const SimulationResult& result,
                          const Material&  material,
-                         const DictPtr&   designRules) override;
+                         const DictPtr&   designRules) const override;
 };
 \end{lstlisting}
 
@@ -1724,8 +1724,31 @@ d.material       = material.name;
 d.set("V_R",    ..., "m3");    // canonical size
 d.set("t_wall", ..., "m");
 d.set("weight", ..., "kg");
-return d;
+return { d };                  // ONE item: leave d.equipmentTag empty
 \end{lstlisting}
+
+\textbf{A vector, because one unit may realise several physical items.}
+A flowsheet unit is a mathematical operation; design equipment is a
+physical object, and the two are not always one to one. A
+\code{distillationColumn} is a shell, a tray stack, a condenser, a
+reboiler and a reflux drum, and \code{ColumnSize} returns all five --- each
+with its own \code{equipmentTag} (\code{"shell"}, \code{"condenser"},
+\dots), its own \code{equipmentType} (which selects the cost correlation)
+and therefore its own specification sheet under
+\file{design/<SECTOR>/<unit>/<tag>}. Every other sizer returns one element
+and leaves the tag EMPTY, which keeps \code{EquipmentSizing::itemId()}
+equal to the unit name and every surface unchanged. Returning an empty
+vector is not a legal answer: a sizer that cannot size its unit
+\code{throw}s, naming the unit and the remedy, and \code{SizingPass}
+catches it by name.
+
+\begin{pitfall}
+\textbf{One missing item must not cost the others.} \code{SizingPass}
+catches per UNIT, so a \code{throw} from a five-item sizer loses all five.
+Throw only for what makes the unit unsizable at all; for an item whose
+design rules the case did not declare, ANNOUNCE it by name on
+\code{AdvisoryLog} with the remedy and return the others.
+\end{pitfall}
 
 \begin{pitfall}
 \textbf{Declare the unit; never write \code{d.values[...]} directly.}
@@ -1734,9 +1757,13 @@ A value written past it reaches the reader with no unit, and the design
 sheet writer refuses it by name.
 
 The unit is a \emph{named} unit --- \code{m3}, \code{kW}, \code{bar},
-\code{W/(m2.K)}, or \code{-} for a dimensionless ratio --- spelled exactly
+\code{W/m2/K}, or \code{-} for a dimensionless ratio --- spelled exactly
 as the dict grammar spells it, because it is printed into a file a student
-reads. It is not the \code{[M L T Theta N]} exponent vector: that form
+reads. That spelling is not cosmetic: \code{(} and \code{)} are not word
+characters, so \code{W/(m2.K)} does not survive the tokenizer and makes
+the whole sheet a file Choupo's own \code{Dictionary} refuses. It named
+the same unit at the same factor and shipped in every exchanger sheet for
+three days before the first reader of one found it. It is not the \code{[M L T Theta N]} exponent vector: that form
 exists in the grammar too, in a different slot, and would read as noise on
 a specification sheet.
 

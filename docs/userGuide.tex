@@ -2884,7 +2884,8 @@ costing
 \end{lstlisting}
 
 \code{type} selects an \code{EquipmentSize} model
-(\code{stirredTank}, \code{shellTubeHX}, and the \code{design \{\}}
+(\code{stirredTank}, \code{shellTubeHX}, \code{vessel},
+\code{distillationColumn}, and the \code{design \{\}}
 inversions such as the spray dryer's, \S\ref{sec:spray-design});
 materials come from \file{data/standards/assets/} (carbon steel,
 SS304, SS316, aluminium --- each with density, Guthrie material factor,
@@ -2893,6 +2894,20 @@ Turton-style purchased-cost correlations, the ASME wall-thickness
 pressure factor for vessels, then
 $C_{BM} = C_p (B_1 + B_2 F_M F_P)$ and $C_{TM} = 1.18\,C_{BM}$,
 printing a per-unit table:
+
+\textbf{One unit may be several pieces of equipment.} A
+\code{distillationColumn} is one mathematical operation and five physical
+objects --- a shell, a tray stack, a condenser, a reboiler and a reflux drum
+--- and it is sized and costed as all five, one specification sheet each under
+\file{design/<unit>/<item>}. Its diameter is the answer the
+\code{hydraulics \{\}} block already computed; \emph{U}, the approach
+temperature and the drum residence time are yours to declare, and an item
+whose rules you did not declare is named and NOT built rather than sized on a
+default nobody chose. \textbf{The tray stack is sized and not costed}: Choupo
+carries no purchased-cost correlation for trays and will not invent one, so
+that item refuses by name and the totals line reads
+\code{TOTALS (EUR) -- INCOMPLETE}. See
+\file{tutorials/steady/distillation/column09\_tray\_hydraulics}.
 
 \begin{lstlisting}
 ========================  Equipment Costing  =========================

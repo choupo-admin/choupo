@@ -344,6 +344,16 @@ export interface EquipmentCost {
 
 export interface EquipmentItem {
   unit: string;
+  /** THE PHYSICAL ITEM this row is, as the engine identifies it
+   *  (`EquipmentSizing::itemId()`): the unit name where a unit realises one
+   *  piece of equipment, `<unit>/<tag>` where it realises several.  It is the
+   *  identity the golden `equipment` kind resolves on, and the only thing that
+   *  tells a column condenser from its reboiler. */
+  item: string;
+  /** The item WITHIN the unit -- `shell`, `trays`, `condenser`, `reboiler`,
+   *  `refluxDrum`.  Absent where the unit realises one item, so its ABSENCE is
+   *  the positive statement "this unit is one piece of equipment". */
+  tag?: string;
   /** Absent for a flat case, which has no hierarchy to report. */
   sector?: string;
   type: string;

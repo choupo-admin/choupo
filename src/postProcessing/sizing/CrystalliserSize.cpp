@@ -32,7 +32,7 @@ License
 
 namespace Choupo {
 
-EquipmentSizing CrystalliserSize::size(const std::string&     unitName,
+std::vector<EquipmentSizing> CrystalliserSize::size(const std::string& unitName,
     const SimulationResult& result,
     const Material&         material,
     const DictPtr&          designRules) const
@@ -80,7 +80,9 @@ EquipmentSizing CrystalliserSize::size(const std::string&     unitName,
     d.set("liquorFlow",     lf->second,   "kmol/s");  // the MOLAR liquor flow -- NOT a volume rate
     d.set("residenceTime",  rt->second,   "s");
     d.set("pressureDesign", P_des,        "bar");
-    return d;
+    //  ONE ITEM: this unit realises a single piece of equipment, so the
+    //  tag is left empty and `itemId()` stays the unit's own name.
+    return { d };
 }
 
 } // namespace Choupo

@@ -17,7 +17,7 @@
 
 namespace Choupo {
 
-EquipmentSizing CompressorSize::size(const std::string&     unitName,
+std::vector<EquipmentSizing> CompressorSize::size(const std::string& unitName,
     const SimulationResult& result,
     const Material&         material,
     const DictPtr&          designRules) const
@@ -44,7 +44,9 @@ EquipmentSizing CompressorSize::size(const std::string&     unitName,
     // Carry the design pressure through (records only; compressors have F_P=1).
     d.set("pressureDesign",
           designRules->lookupScalarOrDefault("pressureDesign", 1.0), "bar");
-    return d;
+    //  ONE ITEM: this unit realises a single piece of equipment, so the
+    //  tag is left empty and `itemId()` stays the unit's own name.
+    return { d };
 }
 
 } // namespace Choupo

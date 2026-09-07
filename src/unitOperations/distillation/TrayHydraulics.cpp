@@ -93,7 +93,8 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
                                                 const std::vector<sVector>& y,
                                                 const std::vector<scalar>&  V,
                                                 const std::vector<scalar>&  L,
-                                                const Geometry&             geo)
+                                                const Geometry&             geo,
+                                                std::size_t                 feedStage)
 {
     const std::size_t N = T.size(), n = thermo.n();
     Result res;
@@ -172,6 +173,24 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
     if (res.designed)
         for (const auto& s : res.stages)
             res.diameter = std::max(res.diameter, s.diameterRequired);
+
+    //  THE SAME RULE, APPLIED TO EACH SECTION.  `diameterRequired` is
+    //  computed for every tray above whether the pass is designing or rating,
+    //  so the two section diameters are available in BOTH modes: in rating
+    //  mode they say what each section would have needed, beside the diameter
+    //  the author gave.
+    //
+    //  The rule lives HERE, once, rather than being re-applied by whoever
+    //  wants a section maximum: "the widest tray sets it" is one sentence and
+    //  it is this class's.
+    res.feedStage = feedStage;
+    if (feedStage > 0)
+        for (const auto& s : res.stages)
+        {
+            scalar& sect = (s.index < feedStage) ? res.diameterRectifying
+                                                 : res.diameterStripping;
+            sect = std::max(sect, s.diameterRequired);
+        }
 
     // ---- Pass 2: with a diameter, every head follows --------------------
     const scalar D    = res.diameter;
@@ -264,6 +283,41 @@ void TrayHydraulics::report(const Result& r, const Geometry& geo, int verbosity)
     if (r.designed)
         std::cout << "  sized so no tray passes " << geo.floodFraction * 100.0
                   << " % of its flooding velocity\n";
+
+    //  THE TWO SECTIONS, AND WHETHER THEY ARE FAR ENOUGH APART TO SWAGE.
+    //  Printed only when the caller named a feed stage AND both sections hold
+    //  a tray -- a column with all its trays on one side of the feed has one
+    //  section and nothing to compare.
+    if (r.diameterRectifying > 0.0 && r.diameterStripping > 0.0)
+    {
+        const scalar big = std::max(r.diameterRectifying, r.diameterStripping);
+        const scalar sml = std::min(r.diameterRectifying, r.diameterStripping);
+        const scalar gap = (big - sml) / big;
+        std::cout << std::setprecision(3)
+                  << "  by section: rectifying (above stage " << r.feedStage
+                  << ") needs " << r.diameterRectifying << " m,  stripping needs "
+                  << r.diameterStripping << " m"
+                  << std::setprecision(1)
+                  << "   (" << gap * 100.0 << " % apart)\n";
+        //  A JUDGEMENT THE ENGINE DOES NOT MAKE.  Whether to swage is an
+        //  ECONOMIC comparison -- the plate a narrower section saves against
+        //  the transition cone, its fabrication and its inspection -- and
+        //  this pass prices none of those.  It reports the gap against the
+        //  band that is quoted for the decision and says which way the band
+        //  points, never that the answer is optimal.
+        if (gap < 0.15)
+            std::cout << "  the two sections are within 15 % -- the usual"
+                         " practice is to build the tower STRAIGHT at "
+                      << std::setprecision(3) << big << " m rather than swage"
+                         " it (the transition costs more than the plate it"
+                         " saves).\n";
+        else
+            std::cout << "  the two sections differ by more than 15 % -- a"
+                         " SWAGED tower is worth pricing here, against a"
+                         " straight one at " << std::setprecision(3) << big
+                      << " m.  The comparison is economic; Choupo does not"
+                         " cost the transition.\n";
+    }
 
     if (verbosity >= 3)
     {

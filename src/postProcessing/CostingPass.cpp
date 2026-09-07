@@ -104,9 +104,12 @@ int CostingPass::run(SimulationResult& result)
     //  and ran into the equipment column on exactly the cases whose hierarchy
     //  these tables exist to show.  Floored at 14, so every case whose names
     //  already fit prints exactly what it printed before.
+    //  Wide enough for the ITEM id, which is the unit's own name whenever
+    //  the unit realises one item -- so every case that predates the column
+    //  sizer keeps exactly the width, and the columns, it had.
     std::size_t wName = 14;
-    for (const auto& [uname, dim] : result.sizings)
-    { (void)dim; wName = std::max(wName, uname.size() + 2); }
+    for (const auto& [item, dim] : result.sizings)
+    { (void)dim; wName = std::max(wName, item.size() + 2); }
 
     std::cout << "  " << std::left
               << std::setw(int(wName)) << "unit"
@@ -124,17 +127,24 @@ int CostingPass::run(SimulationResult& result)
     int    failures = 0;
     std::vector<std::string> notCosted;
 
-    for (const auto& [uname, dim] : result.sizings)
+    for (const auto& [item, dim] : result.sizings)
     {
         try {
             const auto& mat = MaterialRegistry::byName(dim.material);
             auto cb         = model->cost(dim, mat);
-            cb.unitName     = uname;
+            //  THE THREE IDENTITY FIELDS COME FROM THE SIZING THAT WAS
+            //  PRICED, never from the map key: the key is an item id and
+            //  splitting it back apart would be the name identity this
+            //  project bans for the sector.
+            cb.unitName     = dim.unitName;
+            cb.equipmentTag = dim.equipmentTag;
             cb.sector       = dim.sector;   // one origin: the flatten seam
 
             std::cout << "  " << std::left
-                      << std::setw(int(wName)) << uname
-                      << std::setw(16) << dim.equipmentType
+                      << std::setw(int(wName)) << dim.unitName
+                      << std::setw(16) << (dim.equipmentTag.empty()
+                                              ? dim.equipmentType
+                                              : dim.equipmentTag)
                       << std::setw(8)  << std::fixed << std::setprecision(2)
                       << cb.factors.at("F_M")
                       << std::setw(8)  << cb.factors.at("F_P")
@@ -147,13 +157,13 @@ int CostingPass::run(SimulationResult& result)
             totalPurchased += cb.purchasedCost;
             totalBareMod   += cb.bareModuleCost;
             totalModule    += cb.totalModuleCost;
-            result.costs[uname] = std::move(cb);
+            result.costs[item] = std::move(cb);
         }
         catch (const std::exception& e)
         {
-            std::cerr << "  " << uname << "  FAILED: " << e.what() << "\n";
+            std::cerr << "  " << item << "  FAILED: " << e.what() << "\n";
             ++failures;
-            notCosted.push_back(uname);
+            notCosted.push_back(item);
         }
     }
 
@@ -196,7 +206,7 @@ int CostingPass::run(SimulationResult& result)
         {
             std::cout << "\n  ---- capital by sector ----\n  " << std::left
                       << std::setw(24) << "sector"
-                      << std::setw(8)  << "units"
+                      << std::setw(8)  << "items"
                       << std::setw(14) << "purchased"
                       << std::setw(14) << "bare module"
                       << std::setw(14) << "total module"
@@ -288,8 +298,9 @@ int CostingPass::run(SimulationResult& result)
                   << std::setw(12) << "B1, B2"
                   << "F_M (material)\n  " << std::string(103 + wName - 14, '-') << "\n";
 
-        for (const auto& [uname, entry] : result.costs)
+        for (const auto& [item, entry] : result.costs)
         {
+            (void)item;
             //  A STRUCTURED BINDING CANNOT BE CAPTURED BY A LAMBDA IN C++17
             //  -- it became legal only in C++20.  g++ accepts it as an
             //  extension and emscripten's clang does not, so writing
@@ -330,8 +341,12 @@ int CostingPass::run(SimulationResult& result)
             fm << std::fixed << std::setprecision(2) << f("F_M")
                << " (" << cb.material << ")";
 
+            //  The unit and the ITEM, from the record, so two exchangers of
+            //  one column are told apart on the row that defends their price.
             std::cout << "  " << std::left
-                      << std::setw(int(wName)) << uname
+                      << std::setw(int(wName)) << (cb.equipmentTag.empty()
+                                    ? cb.unitName
+                                    : cb.unitName + "/" + cb.equipmentTag)
                       << std::setw(16) << cb.correlation
                       << std::setw(20) << sz.str()
                       << std::setw(26) << co.str()

@@ -167,6 +167,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
     the unit words THOSE two write; a sizer no witness exercises can still
     declare an unreadable one.
 """
+import csv
 import os
 import re
 import shutil
@@ -182,6 +183,13 @@ ROOT = Path(__file__).resolve().parents[2]
 
 FRACTAL = "tutorials/plant/ChemicalPlantTutorial"
 FLAT    = "tutorials/steady/flowsheets/process02_with_design"
+#  THE MULTI-ITEM WITNESS (2026-09-07).  The first case in the corpus where a
+#  single flowsheet unit is sized as SEVERAL physical objects: a distillation
+#  column is a shell, a tray stack, a condenser, a reboiler and a reflux drum.
+#  The other two witnesses cannot exercise the 1:N address at all -- every unit
+#  they carry realises exactly one item -- so without this one the sibling
+#  sheets would be written and checked by nothing.
+COLUMN  = "tutorials/steady/distillation/column09_tray_hydraulics"
 
 TOL = 1.0e-6      # relative, between two projections of the same number
 
@@ -201,12 +209,21 @@ def find_csv(rel: str, report: str, name: str):
 
 
 def csv_rows(path):
+    """A REAL CSV reader, because the `basis` column is a SENTENCE.
+
+    This split on "," until 2026-09-07, and the column sizer's own basis --
+    "straight tower at the wider section; D from the tray hydraulics, H = ..."
+    -- shifted every numeric column after it by one.  `DesignReport` now quotes
+    a field carrying a comma (RFC 4180, and ONLY when needed, so every CSV
+    already written is byte-for-byte what it was); this reads the quoting back
+    rather than a second hand-rolled splitter."""
     if path is None or not path.is_file():
         return None, []
-    lines = [l for l in path.read_text(errors="replace").splitlines() if l.strip()]
-    if not lines:
+    with path.open(newline="", errors="replace") as fh:
+        rows = [r for r in csv.reader(fh) if r and any(c.strip() for c in r)]
+    if not rows:
         return None, []
-    return lines[0].split(","), [l.split(",") for l in lines[1:]]
+    return rows[0], rows[1:]
 
 
 def parse_sheet(text: str):
@@ -220,7 +237,7 @@ def parse_sheet(text: str):
 
     out = {"header": {}, "sizing": {}, "cost": {}, "inlets": [], "outlets": []}
 
-    for k in ("recordType", "unit", "sector", "equipment", "material"):
+    for k in ("recordType", "unit", "sector", "equipment", "item", "material"):
         m = re.search(r'^\s*%s\s+"?([^";\n]+)"?\s*;' % k, t, re.M)
         if m:
             out["header"][k] = m.group(1).strip()
@@ -289,6 +306,10 @@ def check_case(rel, expect_sector, problems, notes, all_units):
     iu = head.index("unit")
     ity = head.index("equipmentType")
     isec = head.index("sector") if "sector" in head else None
+    #  THE SHEET IS NAMED BY THE ITEM where a unit realises more than one.
+    #  The column appears only on a case that has items to tell apart, so the
+    #  address rule below is the one it always was for every other case.
+    itag = head.index("equipmentTag") if "equipmentTag" in head else None
 
     chead, crows = csv_rows(find_csv(rel, "economics", "costs.csv"))
     costs = {}
@@ -318,6 +339,10 @@ def check_case(rel, expect_sector, problems, notes, all_units):
     checked = 0
     for r in rows:
         unit, etype = r[iu], r[ity]
+        tag = r[itag] if itag is not None and r[itag].strip() else ""
+        #  The ROW's own identity, and the name every message below uses: on a
+        #  multi-item unit `column09` alone names five different sheets.
+        ident = unit if not tag else unit + "/" + tag
         sector = r[isec] if isec is not None else ""
         if sector in ("(no sector)",):
             sector = ""
@@ -329,13 +354,13 @@ def check_case(rel, expect_sector, problems, notes, all_units):
             d = d / sector
             if leaf.startswith(sector + "."):
                 leaf = leaf[len(sector) + 1:]
-        path = d / leaf / etype
+        path = d / leaf / (tag if tag else etype)
         if not path.is_file():
             problems.append(
-                "%s: unit '%s' is in sizing.csv and has NO specification sheet "
+                "%s: item '%s' is in sizing.csv and has NO specification sheet "
                 "at design/%s -- published as sized, absent where a reader "
                 "audits."
-                % (rel, unit, path.relative_to(ROOT / rel / 'design')))
+                % (rel, ident, path.relative_to(ROOT / rel / 'design')))
             continue
 
         if not expect_sector:
@@ -356,7 +381,16 @@ def check_case(rel, expect_sector, problems, notes, all_units):
                 all_units.append((rel, unit, szKey, szUnit))
 
         if "V_magma" in sheet["sizing"]:
-            sheets.append((sheet["header"].get("equipmentType"), sheet["sizing"]["V_magma"][0]))
+            #  `equipment`, NOT `equipmentType`: that is the key the SHEET
+            #  writes, and this line asked for the CSV column's name instead.
+            #  So every tuple carried a None type, `check_crystalliser_volume`
+            #  filtered on `ty == "crystalliser"`, found nothing and returned
+            #  in silence -- arm (j), the load-bearing arm of the 2026-09-05
+            #  slice and the only one here that can see a WRONG number, had
+            #  never fired since the day it was written (found 2026-09-07).
+            #  A gate arm that cannot fire pins nothing, which is the
+            #  `check_true_ions` shape this project retired a gate over.
+            sheets.append((sheet["header"].get("equipment"), sheet["sizing"]["V_magma"][0]))
         checked += 1
 
         # ---------------------------------------------------------------- (h)
@@ -375,7 +409,8 @@ def check_case(rel, expect_sector, problems, notes, all_units):
 
         # ---------------------------------------------------------------- (b)
         for k in head:
-            if k in ("unit", "sector", "equipmentType", "material", "basis"):
+            if k in ("unit", "sector", "equipmentTag", "equipmentType",
+                     "material", "basis"):
                 continue
             cell = r[head.index(k)] if head.index(k) < len(r) else ""
             if not cell.strip():
@@ -400,16 +435,16 @@ def check_case(rel, expect_sector, problems, notes, all_units):
                     % (rel, unit, k, k))
 
         # ---------------------------------------------------------------- (c)
-        if unit in costs and sheet["cost"]:
+        if ident in costs and sheet["cost"]:
             for sheetKey, csvKey in (("purchased", "C_purchased"),
                                      ("bareModule", "C_bare_module"),
                                      ("totalModule", "C_total_module")):
-                if sheetKey in sheet["cost"] and csvKey in costs[unit]:
-                    if not close(sheet["cost"][sheetKey], costs[unit][csvKey], 1.0e-4):
+                if sheetKey in sheet["cost"] and csvKey in costs[ident]:
+                    if not close(sheet["cost"][sheetKey], costs[ident][csvKey], 1.0e-4):
                         problems.append(
                             "%s: %s's sheet says %s = %g, costs.csv says %g."
-                            % (rel, unit, sheetKey, sheet["cost"][sheetKey],
-                               costs[unit][csvKey]))
+                            % (rel, ident, sheetKey, sheet["cost"][sheetKey],
+                               costs[ident][csvKey]))
 
         # ---------------------------------------------------------------- (d)
         if unit in balance and sheet["inlets"] and sheet["outlets"]:
@@ -758,18 +793,258 @@ def check_ignored(problems):
             "away from being gone and this is the second lock.")
 
 
+# ---------------------------------------------------------------------------
+#  (m) ONE UNIT, FIVE ITEMS -- AND THREE OF THE NUMBERS RECOMPUTED
+# ---------------------------------------------------------------------------
+
+COLUMN_ITEMS = ("shell", "trays", "condenser", "reboiler", "refluxDrum")
+
+
+def check_column_items(problems, notes):
+    """(m) A unit that realises SEVERAL physical items writes one sheet per
+    item, each naming itself; the two exchanger areas and the tower height are
+    RECOMPUTED from the case's own declaration; and the tray stack is sized and
+    NOT costed.
+
+    WHY EACH HALF IS HERE.
+
+      * THE ADDRESS.  Arm (a) already holds every sizing.csv row to a sheet,
+        but on the other two witnesses every unit realises ONE item, so the
+        sibling address `design/<unit>/<tag>` is exercised by nothing there.
+        This names the five it expects, so a sizer that silently stopped
+        emitting one would be caught rather than merely producing a shorter
+        table.
+
+      * THE RECOMPUTATION, and it is arm (j)'s precedent.  A golden pins what
+        a run PRINTS, so a wrong area pins as happily as a right one; only a
+        recomputation from the DECLARATION can see a number that is wrong.
+        U and LMTD are read from the case postDict and Q from the run's own
+        KPI line, and A = |Q|/(U*LMTD) is redone here.  The tower height is
+        redone the same way from the tray count the hydraulics rated, the
+        author-declared spacing and the two end allowances -- which is what
+        caught this sizer computing `nStages - 2` trays where the hydraulics
+        rates 14, half a tray spacing short.
+
+      * THE SWAGE TEST.  The tower is built STRAIGHT at the larger section, so
+        `D` must equal max(D_rectifying, D_stripping) and `swageGap` must be
+        their relative difference.  A shell quietly sized on the NARROWER
+        section would flood, and no other arm anywhere could see it.
+
+      * THE TRAYS ARE NOT COSTED, AND THE RUN SAYS SO.  Choupo ships no tray
+        cost correlation and will not invent one; the danger is not the gap but
+        a gap that stops being announced, leaving a column total that reads
+        complete.  So: the trays sheet carries NO `cost {}` block, and the
+        console says INCOMPLETE and names the item.
+
+    SABOTAGE-VERIFIED, seven of them, BY HAND and never by patching a source
+    and rebuilding.  The first attempt proved NOTHING and is worth writing
+    down: this arm runs the case itself and `design/` is regenerated whole, so
+    every sheet edited beforehand was destroyed before it was read and all six
+    sabotages "survived" while the gate was working perfectly.  That is the
+    2026-09-05 trap in `check_internal_states`, met again one gate over -- the
+    sabotage has to land BETWEEN the run and the check, which was done by
+    wrapping `run_case` for the duration.  Fired then: (1) an item stops being
+    written; (2) a wrong exchanger area; (3) the shell built on the NARROWER
+    section; (4) the tray count back to `nStages - 2`; (5) the trays gain an
+    invented cost block; (6) a sheet stops naming its item; (7) `swageGap` is
+    not the difference of the two sections the sheet itself publishes.
+
+    NOT CHECKED HERE: whether U, LMTD or the residence time are sensible --
+    they are the author's declaration and this arm only proves they reached the
+    arithmetic.  Nor whether the DIAMETER is right: that is the tray
+    hydraulics' answer and `check_block_tridiagonal` is not its gate either;
+    this arm holds the sizer to the hydraulics, not the hydraulics to physics.
+    """
+    rc, out, err = run_case(COLUMN)
+    if rc != 0:
+        problems.append("check_design_sheet(m): %s failed (rc=%d).\n    %s"
+                        % (COLUMN, rc, err.strip()[:300]))
+        return
+
+    base = ROOT / COLUMN / "design" / "column09"
+    got = sorted(p.name for p in base.iterdir()) if base.is_dir() else []
+    if got != sorted(COLUMN_ITEMS):
+        problems.append(
+            "check_design_sheet(m): %s writes %s under design/column09/, not "
+            "the five items a distillation column realises (%s).  The 1:N "
+            "shape the sheet writer was built on has exactly one case in the "
+            "corpus and this is it."
+            % (COLUMN, got or "nothing", ", ".join(sorted(COLUMN_ITEMS))))
+        return
+
+    sheets = {}
+    for name in COLUMN_ITEMS:
+        s = parse_sheet((base / name).read_text(errors="replace"))
+        sheets[name] = s
+        if s["header"].get("item") != name:
+            problems.append(
+                "check_design_sheet(m): design/column09/%s declares `item %s;` "
+                "-- a sheet of a multi-item unit must name which item it is, "
+                "or five sheets under one unit are told apart only by their "
+                "filename." % (name, s["header"].get("item")))
+
+    #  ---- the two exchanger areas, from the CASE and the RUN ---------------
+    post = (ROOT / COLUMN / "system" / "postDict").read_text(errors="replace")
+    kpiLine = ""
+    for line in out.splitlines():
+        if '"column09": {' in line:
+            kpiLine = line
+            break
+    if not kpiLine:
+        problems.append("check_design_sheet(m): the run emits no KPI object "
+                        "for column09, so no area can be recomputed.")
+        return
+
+    def kpi(name):
+        m = re.search(r'"%s": *(-?[0-9][0-9.eE+-]*)' % name, kpiLine)
+        return float(m.group(1)) if m else None
+
+    for item, block, qkey in (("condenser", "condenser", "Q_condenser_kW"),
+                              ("reboiler",  "reboiler",  "Q_reboiler_kW")):
+        m = re.search(r'\b%s\s*\{(.*?)\}' % block, post, re.S)
+        if not m:
+            problems.append("check_design_sheet(m): the case declares no `%s "
+                            "{}` block, so this arm cannot recompute its area."
+                            % block)
+            continue
+        U = float(re.search(r'\bU\s+([0-9.eE+-]+)', m.group(1)).group(1))
+        LM = float(re.search(r'\bLMTD\s+([0-9.eE+-]+)', m.group(1)).group(1))
+        Q = kpi(qkey)
+        if Q is None:
+            problems.append("check_design_sheet(m): the run publishes no %s "
+                            "KPI." % qkey)
+            continue
+        want = abs(Q) * 1000.0 / (U * LM)
+        got_A = sheets[item]["sizing"].get("A", (None, ""))[0]
+        if got_A is None or not close(got_A, want, 1.0e-6):
+            problems.append(
+                "check_design_sheet(m): the %s sheet says A = %s m2, but "
+                "|%s|/(U*LMTD) with the case's own U = %g and LMTD = %g is "
+                "%.6f m2.  A golden pins what the run PRINTS; only this "
+                "recomputation can see an area that is wrong."
+                % (item, got_A, qkey, U, LM, want))
+        else:
+            notes.append("%s A = %.4f m2 recomputed from the declaration"
+                         % (item, want))
+
+    #  ---- the tower height, from the tray count the HYDRAULICS rated -------
+    nT = kpi("nTrays")
+    sh = sheets["shell"]["sizing"]
+    spacing = sh.get("traySpacing", (None, ""))[0]
+    if nT is None or spacing is None:
+        problems.append("check_design_sheet(m): no nTrays KPI or no declared "
+                        "traySpacing -- the height cannot be recomputed.")
+    else:
+        if not close(sh.get("nTrays", (0.0, ""))[0], nT, 1.0e-9):
+            problems.append(
+                "check_design_sheet(m): the shell sheet says nTrays = %s while "
+                "the hydraulics pass rated %g.  The stage count is NOT the tray "
+                "count -- this solver stage list carries the reboiler and not "
+                "the condenser, and `nStages - 2` was short by one."
+                % (sh.get("nTrays"), nT))
+        #  The two end allowances: whatever the case declares, else the engine
+        #  default READ FROM `DesignDefaults.cpp` -- never a literal here.
+        defs = (ROOT / "src/postProcessing/sizing/DesignDefaults.cpp"
+                ).read_text(errors="replace")
+        ends = 0.0
+        for key in ("disengagementHeight", "sumpHeight"):
+            m = re.search(r'^\s*%s\s+([0-9.eE+-]+)\s*;' % key, post, re.M)
+            if m:
+                ends += float(m.group(1))
+                continue
+            d = re.search(r'"%s",\s*([0-9.eE+-]+)\s*,' % key, defs)
+            if not d:
+                problems.append("check_design_sheet(m): neither the case nor "
+                                "DesignDefaults.cpp names %s -- this arm "
+                                "CANNOT RUN, and it must not pass." % key)
+                ends = None
+                break
+            ends += float(d.group(1))
+        if ends is not None:
+            want = (nT - 1.0) * spacing + ends
+            if not close(sh.get("H", (None, ""))[0], want, 1.0e-9):
+                problems.append(
+                    "check_design_sheet(m): the shell sheet says H = %s m; "
+                    "(nTrays-1)*traySpacing + the two end allowances is "
+                    "%.6f m."
+                    % (sh.get("H"), want))
+            else:
+                notes.append("tower H = %.3f m recomputed from %g trays" % (want, nT))
+
+    #  ---- the straight tower is the WIDER section --------------------------
+    dr = sh.get("D_rectifying", (None, ""))[0]
+    ds = sh.get("D_stripping", (None, ""))[0]
+    if dr is None or ds is None:
+        problems.append("check_design_sheet(m): the shell sheet publishes no "
+                        "per-section diameters, so the swage decision is on "
+                        "no surface a reader can audit.")
+    else:
+        big, sml = max(dr, ds), min(dr, ds)
+        #  ONLY IN DESIGN MODE.  With `diameter` declared the pass RATES the
+        #  trays against the author tower, which may be narrower than a
+        #  section needs -- `column10_flooding` declares 1.1 m and floods at
+        #  114 %.  The witness is a DESIGN case, so this arm holds; a rating
+        #  case would legitimately fail it, and the sizer says which it is in
+        #  its basis rather than leaving this arm to guess.
+        designed = kpi("diameterDesigned")
+        if designed is not None and designed == 0.0:
+            notes.append("column RATED at a declared diameter; the "
+                         "wider-section arm does not apply")
+        elif not close(sh.get("D", (None, ""))[0], big, 1.0e-12):
+            problems.append(
+                "check_design_sheet(m): the shell is sized at D = %s m while "
+                "its wider section needs %.6f m.  A tower built on the "
+                "NARROWER section floods, and nothing else here could see it."
+                % (sh.get("D"), big))
+        #  1e-5, not the 1e-12 the two diameters are compared at: the gap is
+        #  a DIFFERENCE of two nearly equal numbers, and both sides here are
+        #  8-significant-digit renderings off the sheet, so the subtraction
+        #  costs about four of those digits.  Tightening it would fail on
+        #  correct arithmetic.
+        if not close(sh.get("swageGap", (None, ""))[0], (big - sml) / big, 1.0e-5):
+            problems.append(
+                "check_design_sheet(m): the shell sheet swageGap is %s, not "
+                "the relative difference %.6f of the two sections it "
+                "publishes." % (sh.get("swageGap"), (big - sml) / big))
+        else:
+            notes.append("sections %.3f / %.3f m, gap %.1f %%, straight tower"
+                         % (dr, ds, 100.0 * (big - sml) / big))
+
+    #  ---- the trays are sized and NOT costed, and the run says so ----------
+    if sheets["trays"]["cost"]:
+        problems.append(
+            "check_design_sheet(m): the trays sheet carries a `cost {}` block. "
+            " Choupo ships no tray cost correlation and inventing one is a "
+            "CURATION act inside what is reserved -- an invented coefficient "
+            "set turns `uncosted` into `falsely costed`, which no reader and "
+            "no gate can detect.")
+    if "INCOMPLETE" not in out or "column09/trays" not in out:
+        problems.append(
+            "check_design_sheet(m): the costing console does not mark the "
+            "column total INCOMPLETE and name `column09/trays`.  A total that "
+            "omits an item and does not say so reads as complete, and every "
+            "FCI / NPV / IRR built on it inherits the omission in silence.")
+    else:
+        notes.append("trays sized, NOT costed, and the total says INCOMPLETE")
+
+
 def main() -> int:
     problems, notes = [], []
 
     all_units = []
     n1 = check_case(FRACTAL, True,  problems, notes, all_units)
     n2 = check_case(FLAT,    False, problems, notes, all_units)
+    n3 = check_case(COLUMN,  False, problems, notes, all_units)
 
     if n1 == 0:
         problems.append("%s: no sheet was checked at all -- the arms above "
                         "cannot fire." % FRACTAL)
     if n2 == 0:
         problems.append("%s: no sheet was checked at all." % FLAT)
+    if n3 == 0:
+        problems.append("%s: no sheet was checked at all -- the 1:N address "
+                        "is then exercised by nothing." % COLUMN)
+    check_column_items(problems, notes)
 
     check_ignored(problems)
     check_refusal(problems)
@@ -784,7 +1059,13 @@ def main() -> int:
         return 1
 
     print("check_design_sheet: OK -- %d specification sheet(s) on the fractal "
-          "witness and %d on the flat one, each at the address its own "
+          "witness, %d on the flat one and %d on the multi-item column "
+          "(one flowsheet unit, five physical items -- shell, trays, "
+          "condenser, reboiler, reflux drum -- whose two exchanger areas, "
+          "tower height, per-section diameters and swage gap are RECOMPUTED "
+          "here from the case declaration and the run KPIs, and whose tray "
+          "stack is sized, uncosted and named INCOMPLETE on the total), each "
+          "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
           "sector, NO extra level where it does not); every `sizing {}` entry "
           "reproduces that row's cell AND carries a declared unit, every "
@@ -814,9 +1095,9 @@ def main() -> int:
           "labelled m3 would have been caught), whether any stated basis is "
           "TRUE of its sizer (arm (i) only requires that every sizer states "
           "one), nesting deeper than one level (no corpus case nests twice), "
-          "and every case but these two.  The GUI's Case tree is recursive "
+          "and every case but these THREE.  The GUI's Case tree is recursive "
           "since 2026-09-05 and carries its own tests."
-          % (n1, n2, "; ".join(notes[:3]) if notes else "no balance rows read",
+          % (n1, n2, n3, "; ".join(notes[:3]) if notes else "no balance rows read",
              len(SHEET_UNIT_WORDS_UNPARSEABLE)))
     return 0
 

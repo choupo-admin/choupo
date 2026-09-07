@@ -98,6 +98,15 @@ extern const Assumption jointEfficiency;
 extern const Assumption stirredTankLoverD;    //  2.5  -- see the L/D note above
 extern const Assumption vesselLoverD;         //  3.0  -- and it is NOT 2.5
 
+//  THE TWO END SPACES OF A TRAY COLUMN (2026-09-07).  A tower is not as tall
+//  as its tray stack: there is vapour disengagement space above the top tray
+//  and a liquid sump below the bottom one, and neither follows from anything
+//  the MESH solution computes.  They are here rather than as literals inside
+//  `ColumnSize` for the reason this whole file exists -- a default that is
+//  USED must be announced, and the announcement lives in `valueOr`.
+extern const Assumption columnDisengagement;  //  m, above the top tray
+extern const Assumption columnSump;           //  m, below the bottom tray
+
 //  The declared value, or `a.value` ANNOUNCED.
 //
 //  On the default path it does three things and they are one act: it prints

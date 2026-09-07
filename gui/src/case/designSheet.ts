@@ -35,6 +35,11 @@ export interface DesignSheet {
    *  recovered by splitting `unit` on a dot. */
   sector: string;
   equipment: string;
+  /** WHICH PHYSICAL ITEM of its unit this sheet is -- `shell`, `trays`,
+   *  `condenser`, `reboiler`, `refluxDrum`.  EMPTY where the unit realises a
+   *  single item, which is every unit but a distillation column today, and
+   *  which is why `equipment` alone identified a sheet until 2026-09-07. */
+  item: string;
   material: string;
   /** The design argument the sizer stated, or `(not stated)` -- which the
    *  engine writes literally, and which this reader passes through unchanged
@@ -101,6 +106,7 @@ export function parseDesignSheet(text: string): DesignSheet | null {
     unit: word(j, "unit"),
     sector: word(j, "sector"),
     equipment: word(j, "equipment"),
+    item: word(j, "item"),
     material: word(j, "material"),
     basis: word(j, "basis"),
     sizing,
@@ -119,6 +125,14 @@ export interface DesignSheetLookup {
    *  attributed to a unit: a file that will not parse cannot say whose it is,
    *  and the path is not evidence (see below). */
   unreadable: number;
+  /** How many sheets of the SAME unit and the SAME equipment kind matched
+   *  (2026-09-07).  A distillation column realises TWO shell-and-tube
+   *  exchangers -- its condenser and its reboiler -- so (unit, equipment) no
+   *  longer identifies a sheet on its own.  More than one match with no `item`
+   *  named leaves `sheet` NULL and reports the count: picking whichever came
+   *  first would draw the reboiler on a page headed "condenser", and a reader
+   *  could not tell.  Zero or one is the ordinary case and reads as before. */
+  ambiguous: number;
 }
 
 /** The sheet the run wrote for THIS unit and THIS equipment kind.
@@ -139,19 +153,30 @@ export function lookupDesignSheet(
   designFiles: { [relPath: string]: string } | undefined,
   unitName: string,
   equipment: string,
+  item?: string,
 ): DesignSheetLookup {
   let unreadable = 0;
-  let found: DesignSheet | null = null;
+  const matches: DesignSheet[] = [];
   for (const [rel, text] of Object.entries(designFiles ?? {})) {
     if (!rel.startsWith("design/")) continue;
     const sheet = parseDesignSheet(text);
     if (!sheet) { unreadable++; continue; }
-    if (found || sheet.equipment !== equipment) continue;
+    if (sheet.equipment !== equipment) continue;
+    if (item !== undefined && sheet.item !== item) continue;
     if (sheet.unit === unitName
         || (sheet.sector !== "" && `${sheet.sector}.${unitName}` === sheet.unit))
-      found = sheet;
+      matches.push(sheet);
   }
-  return { sheet: found, unreadable };
+  //  MORE THAN ONE MATCH IS A REFUSAL, NOT A CHOICE.  This loop used to stop
+  //  at the first hit, which was exact while every unit realised one item and
+  //  became a silent coin-flip the day a column realised five.  A reader that
+  //  drew one of two exchangers under the other one's name would be wrong in a
+  //  way nothing on the page could reveal.
+  return {
+    sheet: matches.length === 1 ? (matches[0] ?? null) : null,
+    unreadable,
+    ambiguous: matches.length > 1 ? matches.length : 0,
+  };
 }
 
 /** The sheet alone, for a caller with nothing to say about an unreadable one. */
@@ -159,6 +184,7 @@ export function findDesignSheet(
   designFiles: { [relPath: string]: string } | undefined,
   unitName: string,
   equipment: string,
+  item?: string,
 ): DesignSheet | null {
-  return lookupDesignSheet(designFiles, unitName, equipment).sheet;
+  return lookupDesignSheet(designFiles, unitName, equipment, item).sheet;
 }

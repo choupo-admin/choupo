@@ -86,6 +86,15 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
     for (const auto& [unit, c] : ctx.result.costs)
     { (void)unit; if (!c.sector.empty()) { anySector = true; break; } }
 
+    //  THE ITEM COLUMN, on the same rule as the sector one: it appears only
+    //  where there are items to tell apart, so a case whose every unit
+    //  realises one piece of equipment gets exactly the file it got before a
+    //  column could realise five.  `sizing.csv` carries the same two columns,
+    //  written from the same two fields, so the two files JOIN.
+    bool anyTag = false;
+    for (const auto& [unit, c] : ctx.result.costs)
+    { (void)unit; if (!c.equipmentTag.empty()) { anyTag = true; break; } }
+
     //  Keyed by the MAP KEY, never by the `unitName` copy inside the record:
     //  the key is what `result.costs` is indexed on and what every other
     //  reader resolves against.
@@ -100,6 +109,7 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
 
     f << "unit";
     if (anySector) f << ",sector";
+    if (anyTag)    f << ",equipmentTag";
     f << ",purchased_" << currency
       << ",bareModule_" << currency
       << ",totalModule_" << currency
@@ -133,9 +143,16 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
             return it == c.factors.end() ? 0.0 : it->second;
         };
         const bool pw = (c.correlation == "power-law");
-        f << unit;
+        //  THE OWNING UNIT, from the record; the ITEM is the column beside
+        //  it.  The map key is the item id since a column realises five, and
+        //  it is never split back apart here.
+        (void)unit;
+        f << c.unitName;
         if (anySector)
             f << "," << (c.sector.empty() ? std::string("(no sector)") : c.sector);
+        if (anyTag)
+            f << "," << (c.equipmentTag.empty() ? std::string("(single item)")
+                                                : c.equipmentTag);
         f << "," << std::fixed << std::setprecision(2)
           << c.purchasedCost << "," << c.bareModuleCost
           << "," << c.totalModuleCost

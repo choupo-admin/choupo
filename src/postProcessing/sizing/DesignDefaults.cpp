@@ -79,6 +79,28 @@ const Assumption vesselLoverD
     " reconciled, and which is right for THIS vessel is the author's call"
 };
 
+//  ------------------------------------------------------------------------
+//  THE COLUMN'S TWO END SPACES.  Like the four above, neither is a curated
+//  datum: both are round allowances a designer picks, and the `why` says what
+//  accepting them commits the reader to rather than pretending to a source.
+//  ------------------------------------------------------------------------
+const Assumption columnDisengagement
+{
+    "disengagementHeight", 1.2, "m",
+    "the vapour space between the top tray and the tower head, where the"
+    " entrained droplets fall back.  It buys nothing in the MESH solution and"
+    " everything in a real tower; too little of it carries liquid into the"
+    " condenser"
+};
+
+const Assumption columnSump
+{
+    "sumpHeight", 1.5, "m",
+    "the liquid sump below the bottom tray, which sets the reboiler's"
+    " suction inventory and the surge the bottoms pump sees.  A short"
+    " residence time here is what makes a column's level control difficult"
+};
+
 scalar valueOr(const DictPtr&     designRules,
                const Assumption&  a,
                const std::string& equipment,

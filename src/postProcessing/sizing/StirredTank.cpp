@@ -27,6 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "StirredTank.H"
+
+#include "VesselMechanics.H"
 #include "DesignDefaults.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -38,7 +40,7 @@ License
 
 namespace Choupo {
 
-EquipmentSizing StirredTank::size(const std::string&     unitName,
+std::vector<EquipmentSizing> StirredTank::size(const std::string& unitName,
     const SimulationResult& result,
     const Material&         material,
     const DictPtr&          designRules) const
@@ -106,16 +108,15 @@ EquipmentSizing StirredTank::size(const std::string&     unitName,
     const scalar D = std::cbrt(4.0 * V_R / (constant::pi * L_over_D));    // m
     const scalar H = L_over_D * D;                                // m
 
-    // Wall thickness — ASME §VIII Div. 1 thin-wall (cylindrical, hoop):
-    //   t_w = P D / (2 σ E - 1.2 P) + c.a.
-    // Pressure in Pa, stress in Pa.
-    const scalar P_Pa     = pressureDesign * 1.0e5;
-    const scalar sigma_Pa = material.sigma_y * 1.0e6;
-    const scalar t_wall   = P_Pa * D / (2.0 * sigma_Pa * jointEff - 1.2 * P_Pa)
-                          + corrosionAllow;
-
-    // Weight (shell only; head contribution ~ +15% in practice — ignored here)
-    const scalar weight = material.density * constant::pi * D * H * t_wall;
+    // Wall thickness — ASME §VIII Div. 1 thin-wall (cylindrical, hoop) — and
+    // the shell weight (shell only; head contribution ~ +15% in practice —
+    // ignored here).  Both from the ONE home, `vesselMechanics::wall`: this
+    // arithmetic was written out identically here and in `VesselSize.cpp`,
+    // and the 2026-09-07 column sizer needed it twice more.  No number moved.
+    const auto mech = vesselMechanics::wall(D, H, pressureDesign, material,
+                                            jointEff, corrosionAllow);
+    const scalar t_wall = mech.t_wall;
+    const scalar weight = mech.weight;
 
     d.basis          = "V_R = declared operation.V_R (pass-through); D and H from L_over_D; t_wall ASME thin-wall";
     d.set("V_R",            V_R,            "m3");
@@ -125,7 +126,9 @@ EquipmentSizing StirredTank::size(const std::string&     unitName,
     d.set("t_wall",         t_wall,         "m");
     d.set("pressureDesign", pressureDesign, "bar");
     d.set("weight",         weight,         "kg");
-    return d;
+    //  ONE ITEM: this unit realises a single piece of equipment, so the
+    //  tag is left empty and `itemId()` stays the unit's own name.
+    return { d };
 }
 
 } // namespace Choupo

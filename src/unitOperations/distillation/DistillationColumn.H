@@ -197,6 +197,7 @@ private:
                         const std::vector<sVector>& y,
                         const std::vector<scalar>&  V,
                         const std::vector<scalar>&  L,
+                        std::size_t                 feedStage,
                         int                         verbosity);
 
     inline static const std::string type_ = "distillationColumn";

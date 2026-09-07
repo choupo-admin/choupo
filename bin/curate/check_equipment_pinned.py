@@ -102,7 +102,14 @@ def published(case: Path):
             inblk = False
         if not inblk:
             continue
-        m = re.search(r'"unit": "([^"]*)"', line)
+        #  THE ITEM, NOT THE UNIT (2026-09-07).  A distillation column emits
+        #  five equipment lines under one `"unit"`, so a key set built on the
+        #  unit name folds five items into one and this gate would then
+        #  require -- and accept -- a single row for keys five items publish.
+        #  `"item"` is the identity `EquipmentSizing::itemId()` forms and is
+        #  the unit's own name wherever a unit realises one piece of
+        #  equipment, so every existing golden is unaffected.
+        m = re.search(r'"item": "([^"]*)"', line)
         if not m:
             continue
         u = m.group(1)

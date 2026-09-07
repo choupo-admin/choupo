@@ -32,7 +32,7 @@ License
 
 namespace Choupo {
 
-EquipmentSizing CycloneSize::size(const std::string&     unitName,
+std::vector<EquipmentSizing> CycloneSize::size(const std::string& unitName,
     const SimulationResult& result,
     const Material&         material,
     const DictPtr&          designRules) const
@@ -64,7 +64,9 @@ EquipmentSizing CycloneSize::size(const std::string&     unitName,
     d.set("Q_gas",          Q_gas,       "m3/s");
     d.set("pressureDesign", P_des,       "bar");
     if (k.count("bodyDiameter")) d.set("bodyDiameter", k.at("bodyDiameter"), "m");
-    return d;
+    //  ONE ITEM: this unit realises a single piece of equipment, so the
+    //  tag is left empty and `itemId()` stays the unit's own name.
+    return { d };
 }
 
 } // namespace Choupo

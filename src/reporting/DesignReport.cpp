@@ -41,6 +41,31 @@ License
 
 namespace Choupo {
 
+namespace {
+
+//  A CSV FIELD THAT MAY CONTAIN A COMMA (2026-09-07).
+//
+//  The `basis` column is a SENTENCE, and this file is comma-separated: the
+//  column sizer's own basis reads "straight tower at the wider section; D from
+//  the tray hydraulics, H = ..." and split the row apart, shifting every
+//  numeric column after it by one.  Nothing noticed, because until a column
+//  could be sized no shipped basis happened to contain a comma -- a defect
+//  waiting on a sentence rather than on a change.
+//
+//  RFC 4180: quote only when the field carries a comma, a quote or a newline,
+//  and double an embedded quote.  Quoting ONLY WHEN NEEDED is deliberate --
+//  every CSV this project has already written stays byte-for-byte what it was.
+std::string csvField(const std::string& s)
+{
+    if (s.find_first_of(",\"\n\r") == std::string::npos) return s;
+    std::string out = "\"";
+    for (char ch : s) { if (ch == '"') out += '"'; out += ch; }
+    out += '"';
+    return out;
+}
+
+} // namespace
+
 void DesignReport::run(const DictPtr& dict, const ReportContext& ctx)
 {
     //  A REPORT DRAWS; IT DOES NOT RECOMPUTE.  This used to call
@@ -93,21 +118,30 @@ void DesignReport::run(const DictPtr& dict, const ReportContext& ctx)
     for (const auto& [unit, sz] : ctx.result.sizings)
     { (void)unit; if (!sz.sector.empty()) { anySector = true; break; } }
 
+    //  THE ITEM COLUMN APPEARS ONLY WHERE THERE ARE ITEMS TO TELL APART --
+    //  the same rule the sector column follows, and for the same reason: a
+    //  case whose every unit realises one piece of equipment gets the header
+    //  and the rows it got before this column existed.
+    bool anyTag = false;
+    for (const auto& [unit, sz] : ctx.result.sizings)
+    { (void)unit; if (!sz.equipmentTag.empty()) { anyTag = true; break; } }
+
     //  Rows ORDERED BY SECTOR when there is one, so the file reads as the
     //  plant is built.  `result.sizings` is a std::map, so a flat case is
     //  already unit-name ordered and stays exactly so.
-    //  Keyed by the MAP KEY, not by `sz.unitName`.  Every sizer sets both
-    //  and they agree, which is exactly why reading the copy would be the
-    //  arity sin: the key is what `result.sizings` is indexed on and what
-    //  every other reader resolves against.
-    std::vector<std::pair<const std::string*, const EquipmentSizing*>> rows;
+    //  THE `unit` COLUMN IS THE OWNING UNIT; the ITEM is the `equipmentTag`
+    //  column beside it (2026-09-07).  This used to read the map KEY and say
+    //  so, because the key WAS the unit name and `sz.unitName` was a
+    //  redundant copy of it.  Since a column realises five items the key is
+    //  the ITEM id, and `unitName` is the only home for the question this
+    //  column asks.  Nothing is split: both facts travel on the record.
+    std::vector<const EquipmentSizing*> rows;
     rows.reserve(ctx.result.sizings.size());
-    for (const auto& [unit, sz] : ctx.result.sizings) rows.emplace_back(&unit, &sz);
+    for (const auto& [item, sz] : ctx.result.sizings) { (void)item; rows.push_back(&sz); }
     if (anySector)
         std::stable_sort(rows.begin(), rows.end(),
-            [](const std::pair<const std::string*, const EquipmentSizing*>& a,
-               const std::pair<const std::string*, const EquipmentSizing*>& b)
-            { return a.second->sector < b.second->sector; });
+            [](const EquipmentSizing* a, const EquipmentSizing* b)
+            { return a->sector < b->sector; });
 
     //  THE BASIS TRAVELS WITH THE FILE, not only with the screen.  A volume
     //  is the same number whether a residence time, a space velocity or the
@@ -116,17 +150,20 @@ void DesignReport::run(const DictPtr& dict, const ReportContext& ctx)
     //  not here would be half the fix.
     f << "unit";
     if (anySector) f << ",sector";
+    if (anyTag)    f << ",equipmentTag";
     f << ",equipmentType,material,basis";
     for (const auto& k : keys) f << "," << k;
     f << "\n";
     for (const auto& row : rows)
     {
-        const EquipmentSizing& sz = *row.second;
-        f << *row.first;
+        const EquipmentSizing& sz = *row;
+        f << sz.unitName;
         if (anySector)
             f << "," << (sz.sector.empty() ? std::string("(no sector)") : sz.sector);
+        if (anyTag)
+            f << "," << (sz.equipmentTag.empty() ? sz.equipmentType : sz.equipmentTag);
         f << "," << sz.equipmentType << "," << sz.material << ","
-          << (sz.basis.empty() ? std::string("(not stated)") : sz.basis);
+          << csvField(sz.basis.empty() ? std::string("(not stated)") : sz.basis);
         for (const auto& k : keys)
         {
             f << ",";

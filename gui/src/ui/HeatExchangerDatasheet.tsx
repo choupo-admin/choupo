@@ -144,7 +144,20 @@ function schemeSvg(geom: { [k: string]: number }, nTubesDerived: boolean, kpis: 
  *  A sheet the reader could not PARSE is a run that DID size this unit, and
  *  reporting it as "the sizing pass did not run" would be the comfortable
  *  reading of a broken one. */
-function sizingAbsentRow(unitName: string, unreadable: number): string {
+function sizingAbsentRow(unitName: string, unreadable: number,
+                        ambiguous = 0): string {
+  //  A THIRD REASON, and it is not "no sheet" either (2026-09-07).  A unit
+  //  that realises SEVERAL items of the same equipment kind -- a distillation
+  //  column has two shell-and-tube exchangers -- has more than one sheet
+  //  matching (unit, equipment), and the reader refuses rather than drawing
+  //  whichever came first under the other one name.
+  if (ambiguous > 0)
+    return `The run wrote ${ambiguous} specification sheets for this unit that `
+      + `are all <code>${EQUIPMENT}</code>, so this page cannot say which one `
+      + `it is drawing.  A unit that realises several items of one kind -- a `
+      + `distillation column has a condenser AND a reboiler -- needs the item `
+      + `named, and nothing is drawn until it is.  The sheets themselves are `
+      + `under <code>design/</code> in the Case tab.`;
   if (unreadable > 0)
     return `The run wrote ${unreadable} equipment specification sheet(s) that `
       + `this reader could not parse, so it cannot say whether this unit was `
@@ -209,7 +222,7 @@ function buildDatasheetHtml(unit: UnitSpec, kpis: Kpis,
               + `CAVEATS block.  Declare it in <code>designRules {}</code> to `
               + `make it yours.`)
           : "")
-      : wide(sizingAbsentRow(unit.name, found.unreadable)));
+      : wide(sizingAbsentRow(unit.name, found.unreadable, found.ambiguous)));
 
   //  ---- RATING RESULT: what the unit published, a different question -------
   const thermal = sec("RATING RESULT  ·  the solved run", "#37536e", [

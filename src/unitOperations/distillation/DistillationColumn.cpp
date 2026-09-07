@@ -826,7 +826,7 @@ int DistillationColumn::solve(const DictPtr& dict,
             if (sy > 0.0) for (auto& v : yAll[j]) v /= sy;
         }
         Vs[N-1] = 0.0;                    // the reboiler is not a tray
-        hydraulicsPass(operDict, thermo, P, T, x, yAll, Vs, Ls, verbosity);
+        hydraulicsPass(operDict, thermo, P, T, x, yAll, Vs, Ls, NF, verbosity);
     }
 
     return converged ? 0 : 1;
@@ -1930,7 +1930,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         }
         std::vector<scalar> Vs = V, Ls = L;
         Vs[N-1] = 0.0;                     // the reboiler is not a tray
-        hydraulicsPass(operDict, thermo, P, T, x, yAll, Vs, Ls, verbosity);
+        hydraulicsPass(operDict, thermo, P, T, x, yAll, Vs, Ls, NF, verbosity);
     }
 
     return res.converged ? 0 : 1;
@@ -1944,23 +1944,100 @@ void DistillationColumn::hydraulicsPass(const DictPtr&              operDict,
                                         const std::vector<sVector>& y,
                                         const std::vector<scalar>&  V,
                                         const std::vector<scalar>&  L,
+                                        std::size_t                 feedStage,
                                         int                         verbosity)
 {
     if (!operDict->found("hydraulics")) return;
 
     const auto geo = TrayHydraulics::readGeometry(operDict->subDict("hydraulics"));
-    const auto res = TrayHydraulics::evaluate(thermo, P, T, x, y, V, L, geo);
+    const auto res =
+        TrayHydraulics::evaluate(thermo, P, T, x, y, V, L, geo, feedStage);
     if (res.stages.empty()) return;
 
     TrayHydraulics::report(res, geo, verbosity);
 
     kpis_["diameter"]          = res.diameter;
+    //  HOW MANY TRAYS THERE ACTUALLY ARE, from the pass that ENUMERATES them.
+    //  `nStages` counts equilibrium stages and the two conventions do not
+    //  agree: this solver's stage list carries the reboiler and not the
+    //  condenser, so `nStages - 2` is short by one and `nStages - 1` is right
+    //  only for a total condenser.  `TrayHydraulics` decides what is a tray by
+    //  asking whether the stage carries vapour traffic, which is the fact
+    //  itself rather than a rule about the fact -- so the count is published
+    //  from there and nothing downstream re-derives it.
+    kpis_["nTrays"]            = static_cast<scalar>(res.stages.size());
+    //  WHICH MODE THE PASS RAN IN, as a fact rather than something a reader
+    //  downstream infers by comparing numbers.  In DESIGN mode `diameter` is
+    //  the widest tray's requirement; in RATING mode it is the author's
+    //  declaration and may be NARROWER than a section needs -- `column10`
+    //  runs at 1.1 m and floods.  A sizer told only the number would print
+    //  the same basis sentence for both, and one of the two would be false.
+    kpis_["diameterDesigned"]  = res.designed ? 1.0 : 0.0;
+    //  THE TWO SECTIONS TRAVEL AS DATA (2026-09-07).  Until this line the
+    //  hydraulics' whole answer reached the reader as a console table and
+    //  died there: nothing downstream -- no KPI, no result block, no golden,
+    //  no sizer -- could see that the trays above and below the feed want
+    //  different diameters.  A column cannot be SIZED from a printed table.
+    //
+    //  Zero is not published: a column whose feed sits above every tray has
+    //  no rectifying section, and a KPI of 0.0 m would be a claim about a
+    //  diameter rather than the absence of one.
+    if (res.diameterRectifying > 0.0)
+        kpis_["diameter_rectifying"] = res.diameterRectifying;
+    if (res.diameterStripping > 0.0)
+        kpis_["diameter_stripping"]  = res.diameterStripping;
     kpis_["floodApproach_max"] = res.floodApproachMax;
     kpis_["floodStage"]        = static_cast<scalar>(res.floodStage);
     kpis_["dP_column_kPa"]     = res.dPColumn / 1000.0;
     kpis_["downcomerBackup_max_mm"] = res.backupMax;
     kpis_["downcomerFloodStages"]   = static_cast<scalar>(res.nDcFlood);
     if (res.weepChecked) kpis_["weepingStages"] = static_cast<scalar>(res.nWeeping);
+
+    //  THE OVERHEAD CONDENSATE, AS A VOLUME PER SECOND -- what a reflux drum
+    //  is sized on (2026-09-07).
+    //
+    //  WHY IT IS PUBLISHED HERE.  A drum holds LIQUID, and the only place in
+    //  this run that can price a liquid volume is where the thermo package
+    //  is: the sizing pass receives KPIs, a material and a dict, and no
+    //  package at all.  `VesselSize`, which the drum otherwise resembles,
+    //  builds an IDEAL-GAS volumetric flow (N R T / P) from a molar-flow KPI;
+    //  applied to a condensate that is wrong by about three orders of
+    //  magnitude, so the drum could not simply reuse it.
+    //
+    //  WHAT IT IS, EXACTLY.  V[0] is the vapour leaving the top tray, which
+    //  is the whole of what the condenser condenses; for a total condenser it
+    //  is the reflux plus the distillate.  Its composition is y[0] and it
+    //  arrives in the drum as a liquid of that composition.  The density is
+    //  taken at the TOP-TRAY temperature T[0], which is the nearest state
+    //  this pass holds -- the condensate's own bubble point is a degree or so
+    //  below it.  The sizer's basis sentence says so, so the state the number
+    //  was evaluated at travels with the number rather than being remembered.
+    //
+    //  A package that cannot supply a liquid density publishes NOTHING here
+    //  and the drum sizer refuses by name; the pass itself does not fail,
+    //  because the diameters above are a complete answer without it.
+    if (!V.empty() && V[0] > 0.0)
+    {
+        const std::size_t nc = thermo.n();
+        scalar MW_V = 0.0;
+        for (std::size_t i = 0; i < nc; ++i) MW_V += y[0][i] * thermo.comp(i).MW();
+        try
+        {
+            const scalar rho =
+                thermo.density(T[0], P, y[0], DensityPhase::Liquid);   // kg/m3
+            if (rho > 0.0)
+                //  V is kmol/s and MW kg/kmol, so the product is kg/s.
+                kpis_["Q_condensate_m3_s"] = V[0] * MW_V / rho;
+        }
+        catch (const std::exception&)
+        {
+            //  Silent HERE and named THERE: the drum sizer is the surface
+            //  that owes the reader a sentence, because it is the one whose
+            //  answer is missing.  Raising an advisory from this pass would
+            //  put a caveat on every column that declares hydraulics and
+            //  never asks to be sized.
+        }
+    }
 
     // The profile carries one row per stage; a non-tray stage (condenser,
     // reboiler) leaves zeros rather than pretending to have hydraulics.

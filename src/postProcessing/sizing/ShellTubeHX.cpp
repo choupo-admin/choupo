@@ -33,7 +33,7 @@ License
 
 namespace Choupo {
 
-EquipmentSizing ShellTubeHX::size(const std::string&     unitName,
+std::vector<EquipmentSizing> ShellTubeHX::size(const std::string& unitName,
     const SimulationResult& result,
     const Material&         material,
     const DictPtr&          designRules) const
@@ -49,7 +49,15 @@ EquipmentSizing ShellTubeHX::size(const std::string&     unitName,
         throw std::runtime_error("ShellTubeHX: unit '" + unitName
             + "' has no 'Q_kW' KPI — is it a Heater?");
 
-    const scalar Q_kW           = q_it->second;
+    return { sizeFromDuty(unitName, q_it->second, material, designRules) };
+}
+
+
+EquipmentSizing ShellTubeHX::sizeFromDuty(const std::string& unitName,
+    scalar                  Q_kW,
+    const Material&         material,
+    const DictPtr&          designRules)
+{
     const scalar U              = designRules->lookupScalar("U");        // W/(m²·K)
     const scalar LMTD           = designRules->lookupScalar("LMTD");      // K
     const scalar pressureDesign = designRules->lookupScalar("pressureDesign");
@@ -87,6 +95,10 @@ EquipmentSizing ShellTubeHX::size(const std::string&     unitName,
     d.set("A",              A,              "m2");
     d.set("pressureDesign", pressureDesign, "bar");
     d.set("weight",         weight,         "kg");
+    //  NO TAG HERE.  A heater realises one exchanger and leaves the tag
+    //  empty; `ColumnSize` stamps `condenser` / `reboiler` on the records it
+    //  gets back, because naming the item is the CALLER's fact and not this
+    //  rule's.
     return d;
 }
 

@@ -182,8 +182,12 @@ std::size_t write(const std::string&                       caseRoot,
     std::size_t written = 0;
     std::vector<std::string> refusals;
 
-    for (const auto& [uname, sz] : result.sizings)
+    for (const auto& [itemKey, sz] : result.sizings)
     {
+        //  THE OWNING UNIT, FROM THE RECORD.  The map key is the ITEM's id
+        //  since a column realises five of them; the unit is a field, never
+        //  the key with its tail cut off.
+        const std::string& uname = sz.unitName;
         //  THE DIRECTORY.  `design/<SECTOR>/<unit>/` where a sector exists,
         //  `design/<unit>/` where none does.  The sector is the one the
         //  flatten seam STAMPED on the sizing; it is never recovered by
@@ -208,11 +212,20 @@ std::size_t write(const std::string&                       caseRoot,
         dir /= leaf;
         fs::create_directories(dir, ec);
 
-        //  THE SHEET'S NAME is the equipment type.  With one item per unit
-        //  today that is unambiguous; when a unit realises several, each
-        //  gets its own tag and this directory gains siblings.
+        //  THE SHEET'S NAME is the item's TAG where the unit realises more
+        //  than one -- `shell`, `trays`, `condenser`, `reboiler`,
+        //  `refluxDrum` -- and the equipment TYPE where it realises one.  The
+        //  1:N shape this writer was built on has its first N > 1 (a
+        //  distillation column, 2026-09-07), and it took exactly this line:
+        //  the directory gains siblings and nothing above it changed.
+        //
+        //  Two of a column's five items are `shellTubeHX` and two are
+        //  `vessel`, so naming the file by the TYPE would put two pairs of
+        //  sheets at one path and lose one of each.
         const std::string tag =
-            sz.equipmentType.empty() ? std::string("equipment") : sz.equipmentType;
+            !sz.equipmentTag.empty() ? sz.equipmentTag
+          : sz.equipmentType.empty() ? std::string("equipment")
+                                     : sz.equipmentType;
 
         std::ostringstream o;
         o << "/*--------------------------------*- Choupo -*-----------------"
@@ -236,7 +249,13 @@ std::size_t write(const std::string&                       caseRoot,
         o << "unit        \"" << uname << "\";\n";
         if (!sz.sector.empty())
             o << "sector      " << sz.sector << ";\n";
-        o << "equipment   " << tag << ";\n";
+        o << "equipment   " << (sz.equipmentType.empty()
+                                    ? std::string("(not stated)")
+                                    : sz.equipmentType) << ";\n";
+        //  THE ITEM, when the unit realises more than one.  Written only then,
+        //  so a one-item sheet is character-for-character what it was.
+        if (!sz.equipmentTag.empty())
+            o << "item        " << sz.equipmentTag << ";\n";
         o << "material    " << (sz.material.empty() ? std::string("(not stated)")
                                                     : sz.material) << ";\n";
 
@@ -258,6 +277,22 @@ std::size_t write(const std::string&                       caseRoot,
         else
         {
             const FlatUnit& fu = *uit->second;
+            //  WHOSE PORTS THESE ARE, WHEN ONE UNIT REALISES SEVERAL ITEMS.
+            //  The ports below are the UNIT's boundary streams -- the ones the
+            //  flowsheet wires -- and they are the same on all five sheets of
+            //  a distillation column.  A condenser's own inlet is the overhead
+            //  vapour, which is INTERNAL to the unit and is not a stream this
+            //  flowsheet carries: the engine has no model of the connections
+            //  inside a unit, so claiming these are the item's own ports would
+            //  be inventing a topology.  Said, rather than left for a reader
+            //  to work out from five identical port blocks.
+            if (!sz.equipmentTag.empty())
+                o << "//  THE PORTS BELOW ARE THE UNIT'S, NOT THIS ITEM'S."
+                     "  `" << uname << "` realises several\n"
+                     "//  physical items and the flowsheet wires only the"
+                     " unit; the streams between the\n"
+                     "//  items are internal to it and this engine does not"
+                     " model them.\n";
             o << "inlets\n{\n";
             for (std::size_t i = 0; i < fu.ins.size(); ++i)
                 o << portBlock(i, fu.ins[i], PortRoles::of(roles, fu.ins[i]),
@@ -290,7 +325,8 @@ std::size_t write(const std::string&                       caseRoot,
             if (u.empty())
             {
                 refusal =
-                    "unit '" + uname + "' declares a sizing value '" + key
+                    "equipment item '" + itemKey + "' declares a sizing"
+                      " value '" + key
                     + "' with NO UNIT.\n"
                       "  Every sizing value must name the unit it is in, at the"
                       " point where it is computed:\n"
@@ -344,7 +380,7 @@ std::size_t write(const std::string&                       caseRoot,
         //  another file to learn what it costs.  `economics/` answers a
         //  different question -- capital by sector, cash flow, IRR -- and
         //  none of that fits on one item's page.
-        auto cit = result.costs.find(uname);
+        auto cit = result.costs.find(itemKey);
         if (cit != result.costs.end())
         {
             const CostBreakdown& cb = cit->second;

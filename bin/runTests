@@ -530,7 +530,16 @@ get_equipment() {
         /"equipment": \[/ { inblk = 1; next }
         inblk && /^  \]/  { inblk = 0 }
         !inblk { next }
-        index($0, "\"unit\": \"" u "\"") == 0 { next }
+        #  RESOLVED ON THE ITEM, NOT THE UNIT (2026-09-07).  A distillation
+        #  column emits FIVE lines under one `"unit"`, so matching that key
+        #  answered every row of the five from whichever came first -- and
+        #  `exit` below made the wrong answer silent.  `"item"` is the
+        #  identity `EquipmentSizing::itemId()` forms, and for every unit that
+        #  realises ONE piece of equipment it is that unit name, so every
+        #  golden written before this change still resolves.
+        #  (No apostrophes in this block: it lives inside a single-quoted awk
+        #  program and one would close it, which cost a run.)
+        index($0, "\"item\": \"" u "\"") == 0 { next }
         {
             line = $0
             #  Narrow to the sub-object the key names, so a name that exists in
@@ -1033,7 +1042,12 @@ auto_generate() {
             inblk && /^  \]/  { inblk = 0 }
             !inblk { next }
             {
-                if (!match($0, /"unit": "[^"]*"/)) next
+                #  NAMED BY THE ITEM.  See `get_equipment` above: five items
+                #  of one column share a `"unit"`, and rows named on it
+                #  collapse to one row per key -- pinning one item number
+                #  under a name that matches all five.  (No apostrophes here:
+                #  single-quoted awk program.)
+                if (!match($0, /"item": "[^"]*"/)) next
                 u = substr($0, RSTART+9, RLENGTH-10)
                 #  THE BASIS IS A SENTENCE, and a golden row is
                 #  whitespace-delimited -- `V = liquorFlow * residenceTime`

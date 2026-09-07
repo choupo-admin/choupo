@@ -208,6 +208,9 @@
   "ClosureInputs": [
    "src/reporting/ModelBoundaryLedger.H"
   ],
+  "ColumnSize": [
+   "src/postProcessing/sizing/ColumnSize.H"
+  ],
   "Component": [
    "src/thermo/Component.H"
   ],
@@ -1428,6 +1431,9 @@
   "VolumetricTerm": [
    "src/streams/ProcessStream.H"
   ],
+  "Wall": [
+   "src/postProcessing/sizing/VesselMechanics.H"
+  ],
   "Wegstein": [
    "src/solver/Wegstein.H"
   ],
@@ -1597,6 +1603,10 @@
    {
     "key": "vessel",
     "type": "VesselSize"
+   },
+   {
+    "key": "distillationColumn",
+    "type": "ColumnSize"
    }
   ],
   "src/propertyOps/ConstantEstimator.cpp": [
@@ -3220,6 +3230,33 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/postProcessing/sizing/ColumnSize.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/materials/Material.H",
+   "src/postProcessing/sizing/ColumnSize.H",
+   "src/postProcessing/sizing/DesignDefaults.H",
+   "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/ShellTubeHX.H",
+   "src/postProcessing/sizing/VesselMechanics.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
   "src/postProcessing/sizing/CompressorSize.cpp": [
    "src/core/Advisory.H",
    "src/core/Dictionary.H",
@@ -3309,6 +3346,7 @@
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/materials/Material.H",
+   "src/postProcessing/sizing/ColumnSize.H",
    "src/postProcessing/sizing/CompressorSize.H",
    "src/postProcessing/sizing/CrystalliserSize.H",
    "src/postProcessing/sizing/CycloneSize.H",
@@ -3412,6 +3450,7 @@
    "src/postProcessing/sizing/DesignDefaults.H",
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/StirredTank.H",
+   "src/postProcessing/sizing/VesselMechanics.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3420,6 +3459,12 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
+  ],
+  "src/postProcessing/sizing/VesselMechanics.cpp": [
+   "src/core/Constants.H",
+   "src/core/Types.H",
+   "src/materials/Material.H",
+   "src/postProcessing/sizing/VesselMechanics.H"
   ],
   "src/postProcessing/sizing/VesselSize.cpp": [
    "src/core/Advisory.H",
@@ -3436,6 +3481,7 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/DesignDefaults.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/VesselMechanics.H",
    "src/postProcessing/sizing/VesselSize.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -7477,6 +7523,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -7596,7 +7643,9 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/control/signal/Signals.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
@@ -7711,6 +7760,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -7992,6 +8042,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -8273,6 +8324,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -8337,6 +8389,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -8567,6 +8620,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -8787,6 +8841,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -8875,6 +8930,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -8940,6 +8996,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -9022,6 +9079,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -9031,6 +9089,7 @@
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -9352,6 +9411,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -9360,6 +9420,7 @@
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp"
@@ -9458,6 +9519,10 @@
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp"
   ],
+  "src/postProcessing/sizing/ColumnSize.H": [
+   "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/EquipmentSize.cpp"
+  ],
   "src/postProcessing/sizing/CompressorSize.H": [
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp"
@@ -9471,6 +9536,7 @@
    "src/postProcessing/sizing/EquipmentSize.cpp"
   ],
   "src/postProcessing/sizing/DesignDefaults.H": [
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp"
@@ -9478,6 +9544,7 @@
   "src/postProcessing/sizing/EquipmentSize.H": [
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -9493,6 +9560,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp"
   ],
   "src/postProcessing/sizing/ShellTubeHX.H": [
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp"
   ],
@@ -9503,6 +9571,12 @@
   "src/postProcessing/sizing/StirredTank.H": [
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp"
+  ],
+  "src/postProcessing/sizing/VesselMechanics.H": [
+   "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/VesselMechanics.cpp",
+   "src/postProcessing/sizing/VesselSize.cpp"
   ],
   "src/postProcessing/sizing/VesselSize.H": [
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -9880,6 +9954,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -9937,6 +10012,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -10054,6 +10130,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -10329,6 +10406,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -10509,6 +10587,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -10827,6 +10906,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -11057,6 +11137,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
@@ -11184,6 +11265,7 @@
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",

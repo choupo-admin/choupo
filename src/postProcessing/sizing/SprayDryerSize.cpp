@@ -33,7 +33,7 @@ License
 
 namespace Choupo {
 
-EquipmentSizing SprayDryerSize::size(const std::string&     unitName,
+std::vector<EquipmentSizing> SprayDryerSize::size(const std::string& unitName,
     const SimulationResult& result,
     const Material&         material,
     const DictPtr&          designRules) const
@@ -110,7 +110,9 @@ EquipmentSizing SprayDryerSize::size(const std::string&     unitName,
             d.set("design_chamberHeight_m",   Lch * dimScale, "m");
         }
     }
-    return d;
+    //  ONE ITEM: this unit realises a single piece of equipment, so the
+    //  tag is left empty and `itemId()` stays the unit's own name.
+    return { d };
 }
 
 } // namespace Choupo

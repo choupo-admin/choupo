@@ -446,18 +446,31 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
         for (const auto& [u, sz] : ctx.result.sizings)
             for (const auto& [k, v] : sz.values) { (void)v; keys.insert(k); }
 
+        //  THE ITEM COLUMN APPEARS ONLY WHERE THERE ARE ITEMS TO TELL APART.
+        //  A unit that realises one piece of equipment gets exactly the sheet
+        //  it got before a column could realise five; a column's five rows
+        //  carry `shell` / `trays` / `condenser` / `reboiler` / `refluxDrum`,
+        //  without which two of them would be indistinguishable `shellTubeHX`
+        //  rows under one name.
+        bool anyTag = false;
+        for (const auto& [u, sz] : ctx.result.sizings)
+        { (void)u; if (!sz.equipmentTag.empty()) { anyTag = true; break; } }
+
         ods.beginSheet("Design");
         ods.newRow();
         ods.textCell("Equipment sizing", OdsWriter::Title);
         ods.newRow();
         ods.textCell("unit", OdsWriter::Header);
+        if (anyTag) ods.textCell("item", OdsWriter::Header);
         ods.textCell("equipmentType", OdsWriter::Header);
         ods.textCell("material", OdsWriter::Header);
         for (const auto& k : keys) ods.textCell(k, OdsWriter::Header);
         for (const auto& [u, sz] : ctx.result.sizings)
         {
+            (void)u;
             ods.newRow();
-            ods.textCell(u);
+            ods.textCell(sz.unitName);
+            if (anyTag) ods.textCell(sz.equipmentTag);
             ods.textCell(sz.equipmentType);
             ods.textCell(sz.material);
             for (const auto& k : keys)
@@ -477,15 +490,22 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
         ods.newRow();
         ods.textCell("CAPEX (Guthrie/Turton, " + cur + ")", OdsWriter::Title);
         ods.newRow();
+        bool anyCostTag = false;
+        for (const auto& [u, c] : ctx.result.costs)
+        { (void)u; if (!c.equipmentTag.empty()) { anyCostTag = true; break; } }
+
         ods.textCell("unit", OdsWriter::Header);
+        if (anyCostTag) ods.textCell("item", OdsWriter::Header);
         ods.textCell("purchased", OdsWriter::Header);
         ods.textCell("bareModule", OdsWriter::Header);
         ods.textCell("totalModule", OdsWriter::Header);
         scalar tp = 0.0, tb = 0.0, tt = 0.0;
         for (const auto& [u, c] : ctx.result.costs)
         {
+            (void)u;
             ods.newRow();
-            ods.textCell(u);
+            ods.textCell(c.unitName);
+            if (anyCostTag) ods.textCell(c.equipmentTag);
             ods.numberCell(c.purchasedCost, 2);
             ods.numberCell(c.bareModuleCost, 2);
             ods.numberCell(c.totalModuleCost, 2);

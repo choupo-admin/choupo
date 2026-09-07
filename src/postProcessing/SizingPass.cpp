@@ -35,6 +35,11 @@ License
 #include <iomanip>
 #include <iostream>
 #include <map>
+//  `std::runtime_error` reached here through another header until this pass
+//  threw one of its own.  g++ lends it and emscripten's libc++ is not obliged
+//  to -- the 2026-08-27 failure mode that killed `make wasm` while the native
+//  build and the whole suite stayed green.  Caught by `check_std_includes`.
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -148,130 +153,167 @@ int SizingPass::run(SimulationResult& result)
         try {
             const auto& material = MaterialRegistry::byName(matName);
             auto sizer = EquipmentSize::New(utype);
-            auto dims  = sizer->size(uname, result, material, rulesDict);
-
-            //  Pick a canonical "size" to display, AND NAME ITS UNIT FROM
-            //  THE RECORD.  This block used to assert `V_R [m³]` and
-            //  `A [m²]` in string literals here, four call-frames from the
-            //  sizer that knows them -- a hand-written table for a fact the
-            //  engine already had, and the only place any sizing key's unit
-            //  was ever stated to a reader.  A sizer inventing a key this
-            //  table did not know printed it with no unit at all.
-            auto sized = [&](const char* key) -> std::string
+            //  ONE UNIT, N PHYSICAL ITEMS (2026-09-07).  Every sizer but
+            //  `ColumnSize` returns exactly one, with an empty tag, so the
+            //  loop below runs once and prints what it always printed.
+            auto itemList = sizer->size(uname, result, material, rulesDict);
+            if (itemList.empty())
+                throw std::runtime_error("sizer '" + utype + "' produced no"
+                    " equipment item for unit '" + uname + "'");
+            for (auto& dims : itemList)
             {
-                const std::string u = dims.unitOf(key);
-                //  A key with no declared unit is NAMED, not silently
-                //  printed bare: the sheet writer refuses it and the reader
-                //  should see the same gap on the screen.
-                return u.empty() ? std::string(key) + " [unit not declared]"
-                     : u == "-"  ? std::string(key)
-                                 : std::string(key) + " [" + u + "]";
-            };
-            std::string sizeKey;
-            scalar      sizeVal = 0.0;
-            if      (dims.values.count("V_R")) { sizeKey = sized("V_R"); sizeVal = dims.values.at("V_R"); }
-            else if (dims.values.count("A"))   { sizeKey = sized("A");   sizeVal = dims.values.at("A");   }
 
-            //  The wall column is printed in MILLIMETRES and the record
-            //  declares metres, so the conversion is stated against the
-            //  DECLARED unit rather than assumed.  A sizer that one day
-            //  reports `t_wall` already in mm would otherwise be multiplied
-            //  by a thousand again, silently.
-            scalar t_mm = 0.0;
-            if (dims.values.count("t_wall"))
-            {
-                const std::string tu = dims.unitOf("t_wall");
-                if      (tu == "m")  t_mm = dims.values.at("t_wall") * 1000.0;
-                else if (tu == "mm") t_mm = dims.values.at("t_wall");
-                else
-                    AdvisoryLog::instance().add("design", "warning",
-                        "sizing '" + uname + "'",
-                        "wall thickness declares unit '"
-                        + (tu.empty() ? std::string("(none)") : tu)
-                        + "', which this table cannot convert to mm -- the"
-                          " `wall (mm)` column is left at 0 rather than"
-                          " printing a number in an unknown unit");
-            }
-            const scalar w    = dims.values.count("weight") ? dims.values.at("weight") : 0.0;
-
-            std::cout << "  " << std::left
-                      << std::setw(int(wName)) << uname
-                      << std::setw(16) << utype
-                      << std::setw(12) << matName
-                      << std::setw(10) << sizeKey
-                      << std::setw(12) << std::fixed << std::setprecision(4) << sizeVal
-                      << std::setw(10) << std::fixed << std::setprecision(2) << t_mm
-                      << std::setw(12) << std::fixed << std::setprecision(1) << w
-                      << "\n";
-
-            //  THE RULE THAT PRODUCED THE SIZE.  A volume whose rule is
-            //  invisible can be reported and not defended: `V_R 7.6882` is
-            //  the same table entry whether it came from a residence time, a
-            //  space velocity, or the author typing it in, and those are
-            //  three different design arguments.  `VesselSize` computed this
-            //  string all along and discarded it.
-            if (!dims.basis.empty())
-            {
-                std::cout << "        basis: " << dims.basis;
-                //  AND SAY THAT Q IS IDEAL-GAS.  The volumetric flow driving
-                //  every residence-time and space-velocity size is
-                //  `N R T / P`, computed regardless of the thermo package the
-                //  case declared.  At a knockout drum's 1 bar that is exact
-                //  enough; at 50 bar a real Z of 0.8 undersizes the vessel by
-                //  a fifth, and nothing said so.  Announced, never judged --
-                //  the same posture as the extrapolated Antoine: the engine
-                //  cannot know whether it matters to this reader, and a
-                //  design correlation is entitled to its own approximations
-                //  so long as they are not silent.
-                if (dims.values.count("Q_gas"))
-                    //  SIGNIFICANT digits, not decimals.  Q spans orders of
-                    //  magnitude across the corpus (6e-4 m3/s for a bench
-                    //  flash, tens for a plant), so a FIXED precision that
-                    //  reproduces one is two significant figures on the
-                    //  other -- and a reader multiplying by tau then misses
-                    //  the printed volume.  Caught by the gate doing exactly
-                    //  that: the same defect the B1/B2 columns had, one field
-                    //  over, found because it was printed.
-                    std::cout << "   (Q = N R T / P, IDEAL GAS, "
-                              << std::defaultfloat << std::setprecision(6)
-                              << dims.values.at("Q_gas") << " "
-                              << dims.unitOf("Q_gas") << " -- not the"
-                                 " case's thermo package)";
-                std::cout << "\n";
-            }
-
-            //  AND WHICH INPUTS THE SIZER SUPPLIED ITSELF, beside the basis,
-            //  because they are the same question: the basis says what rule
-            //  produced the size, this says what the rule was fed that nobody
-            //  declared.  Printed only when something WAS assumed, so silence
-            //  keeps meaning "nothing was".  The values are in the `[assumed]`
-            //  lines above and in the end-of-run caveat block; repeating them
-            //  here would be a third printing of one fact.
-            if (!dims.assumed.empty())
-            {
-                std::cout << "        assumed:";
-                for (const auto& k : dims.assumed) std::cout << " " << k;
-                std::cout << "   (engine defaults -- declare them in"
-                             " `designRules {}` to own them)\n";
-            }
-
-            // DESIGN INVERSION output (from a `design {}` rule): the geometry the
-            // process targets require -- the rating model run BACKWARD.
-            bool anyDesign = false;
-            for (const auto& [key, val] : dims.values)
-                if (key.rfind("design_", 0) == 0)
+                //  Pick a canonical "size" to display, AND NAME ITS UNIT FROM
+                //  THE RECORD.  This block used to assert `V_R [m³]` and
+                //  `A [m²]` in string literals here, four call-frames from the
+                //  sizer that knows them -- a hand-written table for a fact the
+                //  engine already had, and the only place any sizing key's unit
+                //  was ever stated to a reader.  A sizer inventing a key this
+                //  table did not know printed it with no unit at all.
+                auto sized = [&](const char* key) -> std::string
                 {
-                    if (!anyDesign)
-                    { std::cout << "      --  design (targets -> geometry)  --\n"; anyDesign = true; }
-                    std::cout << "        " << std::left << std::setw(26) << key
-                              << std::fixed << std::setprecision(3) << val << "\n";
+                    const std::string u = dims.unitOf(key);
+                    //  A key with no declared unit is NAMED, not silently
+                    //  printed bare: the sheet writer refuses it and the reader
+                    //  should see the same gap on the screen.
+                    return u.empty() ? std::string(key) + " [unit not declared]"
+                         : u == "-"  ? std::string(key)
+                                     : std::string(key) + " [" + u + "]";
+                };
+                std::string sizeKey;
+                scalar      sizeVal = 0.0;
+                bool        haveSize = true;
+                if      (dims.values.count("V_R")) { sizeKey = sized("V_R"); sizeVal = dims.values.at("V_R"); }
+                else if (dims.values.count("A"))   { sizeKey = sized("A");   sizeVal = dims.values.at("A");   }
+                //  NO CANONICAL SIZE IS SAID, NOT PRINTED AS ZERO.  This column
+                //  used to fall through to an empty key and `0.0000`, and a zero
+                //  volume is a CLAIM -- the same reason a port with no state is
+                //  written without numbers rather than with them.
+                else                               { sizeKey = "(no V_R or A)"; haveSize = false; }
+
+                //  The wall column is printed in MILLIMETRES and the record
+                //  declares metres, so the conversion is stated against the
+                //  DECLARED unit rather than assumed.  A sizer that one day
+                //  reports `t_wall` already in mm would otherwise be multiplied
+                //  by a thousand again, silently.
+                scalar t_mm = 0.0;
+                if (dims.values.count("t_wall"))
+                {
+                    const std::string tu = dims.unitOf("t_wall");
+                    if      (tu == "m")  t_mm = dims.values.at("t_wall") * 1000.0;
+                    else if (tu == "mm") t_mm = dims.values.at("t_wall");
+                    else
+                        AdvisoryLog::instance().add("design", "warning",
+                            "sizing '" + uname + "'",
+                            "wall thickness declares unit '"
+                            + (tu.empty() ? std::string("(none)") : tu)
+                            + "', which this table cannot convert to mm -- the"
+                              " `wall (mm)` column is left at 0 rather than"
+                              " printing a number in an unknown unit");
+                }
+                const scalar w    = dims.values.count("weight") ? dims.values.at("weight") : 0.0;
+
+                std::cout << "  " << std::left
+                          << std::setw(int(wName)) << uname
+                          //  THE ITEM, where the unit realises more than one --
+                          //  a column's five rows are otherwise five identical
+                          //  `distillationColumn` cells under one name.  A
+                          //  one-item unit prints the declared type, as always.
+                          << std::setw(16) << (dims.equipmentTag.empty()
+                                                  ? utype : dims.equipmentTag)
+                          << std::setw(12) << matName
+                          << std::setw(10) << sizeKey
+                          << std::setw(12) << std::fixed << std::setprecision(4);
+                if (haveSize) std::cout << sizeVal; else std::cout << " ";
+                std::cout << std::setw(10) << std::fixed << std::setprecision(2) << t_mm
+                          << std::setw(12) << std::fixed << std::setprecision(1) << w
+                          << "\n";
+
+                //  WHICH PHYSICAL ITEM THIS ROW IS, and what it is sized and
+                //  costed AS.  A unit that realises one item leaves the tag empty
+                //  and prints nothing here, so its table is unchanged; a column
+                //  prints five rows under one name, two of them `vessel` and two
+                //  of them `shellTubeHX`, and without this line a reader could
+                //  not tell the condenser from the reboiler.
+                if (!dims.equipmentTag.empty())
+                    std::cout << "        item: " << dims.equipmentTag
+                              << "   (sized and costed as " << dims.equipmentType
+                              << "; sheet -> design/.../" << uname << "/"
+                              << dims.equipmentTag << ")\n";
+
+                //  THE RULE THAT PRODUCED THE SIZE.  A volume whose rule is
+                //  invisible can be reported and not defended: `V_R 7.6882` is
+                //  the same table entry whether it came from a residence time, a
+                //  space velocity, or the author typing it in, and those are
+                //  three different design arguments.  `VesselSize` computed this
+                //  string all along and discarded it.
+                if (!dims.basis.empty())
+                {
+                    std::cout << "        basis: " << dims.basis;
+                    //  AND SAY THAT Q IS IDEAL-GAS.  The volumetric flow driving
+                    //  every residence-time and space-velocity size is
+                    //  `N R T / P`, computed regardless of the thermo package the
+                    //  case declared.  At a knockout drum's 1 bar that is exact
+                    //  enough; at 50 bar a real Z of 0.8 undersizes the vessel by
+                    //  a fifth, and nothing said so.  Announced, never judged --
+                    //  the same posture as the extrapolated Antoine: the engine
+                    //  cannot know whether it matters to this reader, and a
+                    //  design correlation is entitled to its own approximations
+                    //  so long as they are not silent.
+                    if (dims.values.count("Q_gas"))
+                        //  SIGNIFICANT digits, not decimals.  Q spans orders of
+                        //  magnitude across the corpus (6e-4 m3/s for a bench
+                        //  flash, tens for a plant), so a FIXED precision that
+                        //  reproduces one is two significant figures on the
+                        //  other -- and a reader multiplying by tau then misses
+                        //  the printed volume.  Caught by the gate doing exactly
+                        //  that: the same defect the B1/B2 columns had, one field
+                        //  over, found because it was printed.
+                        std::cout << "   (Q = N R T / P, IDEAL GAS, "
+                                  << std::defaultfloat << std::setprecision(6)
+                                  << dims.values.at("Q_gas") << " "
+                                  << dims.unitOf("Q_gas") << " -- not the"
+                                     " case's thermo package)";
+                    std::cout << "\n";
                 }
 
-            {
-                auto sit = sectorOf.find(uname);
-                if (sit != sectorOf.end()) dims.sector = sit->second;
+                //  AND WHICH INPUTS THE SIZER SUPPLIED ITSELF, beside the basis,
+                //  because they are the same question: the basis says what rule
+                //  produced the size, this says what the rule was fed that nobody
+                //  declared.  Printed only when something WAS assumed, so silence
+                //  keeps meaning "nothing was".  The values are in the `[assumed]`
+                //  lines above and in the end-of-run caveat block; repeating them
+                //  here would be a third printing of one fact.
+                if (!dims.assumed.empty())
+                {
+                    std::cout << "        assumed:";
+                    for (const auto& k : dims.assumed) std::cout << " " << k;
+                    std::cout << "   (engine defaults -- declare them in"
+                                 " `designRules {}` to own them)\n";
+                }
+
+                // DESIGN INVERSION output (from a `design {}` rule): the geometry the
+                // process targets require -- the rating model run BACKWARD.
+                bool anyDesign = false;
+                for (const auto& [key, val] : dims.values)
+                    if (key.rfind("design_", 0) == 0)
+                    {
+                        if (!anyDesign)
+                        { std::cout << "      --  design (targets -> geometry)  --\n"; anyDesign = true; }
+                        std::cout << "        " << std::left << std::setw(26) << key
+                                  << std::fixed << std::setprecision(3) << val << "\n";
+                    }
+
+                {
+                    auto sit = sectorOf.find(uname);
+                    if (sit != sectorOf.end()) dims.sector = sit->second;
+                }
+                //  KEYED ON THE ITEM, NOT THE UNIT.  `itemId()` is the ONE home
+                //  for how that key is formed, and it is the unit's own name
+                //  whenever the unit realises a single item -- so every case that
+                //  existed before this change keys exactly as it did.
+                result.sizings[dims.itemId()] = std::move(dims);
             }
-            result.sizings[uname] = std::move(dims);
         }
         catch (const std::exception& e)
         {

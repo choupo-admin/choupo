@@ -146,6 +146,62 @@ describe("parseDesignSheet: the engine's sheet, read with the real dict parser",
   });
 });
 
+//  A UNIT THAT REALISES SEVERAL ITEMS (2026-09-07).  A distillation column is a
+//  shell, a tray stack, a condenser, a reboiler and a reflux drum -- so TWO of
+//  its sheets are `shellTubeHX` and (unit, equipment) stops identifying one.
+//  Trimmed to the header, which is all these two tests read.
+const COLUMN_CONDENSER = `recordType  designSheet;
+
+unit        "column09";
+equipment   shellTubeHX;
+item        condenser;
+material    carbonSteel;
+basis       "A = Q/(U*LMTD) with U and LMTD author-set";
+
+sizing
+{
+    A                     53.376812 m2;
+}
+`;
+
+const COLUMN_REBOILER = COLUMN_CONDENSER
+  .replace("item        condenser;", "item        reboiler;")
+  .replace("53.376812", "94.066529");
+
+describe("a unit that realises several items", () => {
+  it("reads the `item` word off the sheet", () => {
+    expect(parseDesignSheet(COLUMN_CONDENSER)!.item).toBe("condenser");
+    //  EMPTY, not undefined, where the unit realises ONE item -- the absence
+    //  is the positive statement, and every sheet written before 2026-09-07
+    //  is that case.
+    expect(parseDesignSheet(FLAT_HX)!.item).toBe("");
+  });
+
+  it("REFUSES when (unit, equipment) matches two sheets", () => {
+    const files = {
+      "design/column09/condenser": COLUMN_CONDENSER,
+      "design/column09/reboiler": COLUMN_REBOILER,
+    };
+    const got = lookupDesignSheet(files, "column09", "shellTubeHX");
+    //  Not the first match: drawing the reboiler on a page headed "condenser"
+    //  is wrong in a way nothing on that page could reveal.
+    expect(got.sheet).toBeNull();
+    expect(got.ambiguous).toBe(2);
+    expect(got.unreadable).toBe(0);
+  });
+
+  it("resolves once the item is named", () => {
+    const files = {
+      "design/column09/condenser": COLUMN_CONDENSER,
+      "design/column09/reboiler": COLUMN_REBOILER,
+    };
+    expect(findDesignSheet(files, "column09", "shellTubeHX", "reboiler")!
+      .sizing.find((v) => v.key === "A")!.value).toBeCloseTo(94.066529, 6);
+    expect(lookupDesignSheet(files, "column09", "shellTubeHX", "condenser")
+      .ambiguous).toBe(0);
+  });
+});
+
 describe("findDesignSheet: identity is (sector, name), never a name split", () => {
   const files = {
     "design/heater/shellTubeHX": FLAT_HX,

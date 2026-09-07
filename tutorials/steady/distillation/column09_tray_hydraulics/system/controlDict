@@ -9,3 +9,13 @@
 application   choupoSolve;
 description   "Sieve-tray hydraulics: the column that separates, sized so its trays do not flood";
 verbosity     3;
+
+//  THE DELIVERABLE.  `system/postDict` sizes and costs this column's FIVE
+//  physical items; these two report objects SERIALISE what that chain
+//  produced -- they size and cost nothing themselves.  The mass, element and
+//  energy balances run by default and are not listed here.
+reports
+{
+    design         { }     // serialises the sizing from system/postDict
+    economics      { }     // serialises the costing from system/postDict
+}

@@ -327,6 +327,35 @@ downcomer set the lower bound --- turndown below \textasciitilde50\% of
 flood weeps. \texttt{column01\_benzene\_toluene} reports diameter and
 the flood fraction; halve the feed and watch it shrink.
 
+\textbf{Why the top and the bottom of a column want different diameters.}
+The flooding diameter follows the \textbf{vapour VOLUMETRIC flow}, not the
+molar one, and the two sections differ in every term that turns one into the
+other: temperature, pressure, vapour molar mass and usually the vapour molar
+flow itself. Below the feed the liquid traffic is larger, which raises the flow
+parameter F\_LV = (L/V)\(\surd\)(\(\rho\)\_V/\(\rho\)\_L) and therefore
+LOWERS Fair's capacity parameter C\_sb --- so a stripping tray floods at a
+lower velocity than a rectifying one. Whether that makes the bottom the wider
+section is not a rule: the vapour volumetric flow may fall faster than the
+capacity does, and then the top governs. It is decided by whichever tray loses
+the argument, tray by tray, which is exactly what
+\texttt{column09\_tray\_hydraulics} prints. It reports \textbf{1.21 m} for
+its rectifying section against \textbf{1.32 m} for its stripping section, on
+the same trays and the same spacing.
+
+\textbf{Swaging is an ECONOMIC decision, not a thermodynamic one.} Having two
+diameters, you may build a \textbf{swaged} tower --- a narrow section, a
+transition cone and a wide section --- or one \textbf{straight} shell at the
+larger diameter. The straight shell buys plate you do not need; the swaged one
+buys a transition, its fabrication, its extra weld inspection and a second set
+of tray sizes to hold in stores. The usual rule of thumb: \textbf{swage only
+when the two sections differ by roughly 15--20\% in diameter}, and build
+straight below that, because under about 15\% the transition costs more than
+the plate it saves. Judge it on DIAMETER, not on area --- 20\% in diameter is
+already 44\% in cross-section. The 8\% gap in the case above is comfortably
+inside the band, so that tower is built straight at 1.32 m, and Choupo says so
+without deciding for you: it publishes both section diameters and their
+difference and prices no transition, because it has no correlation for one.
+
 \hypertarget{reflux-and-fug-sizing}{%
 \subsection{Reflux and FUG sizing}\label{reflux-and-fug-sizing}}
 

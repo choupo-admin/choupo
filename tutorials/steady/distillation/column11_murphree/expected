@@ -42,3 +42,8 @@ boundary global                 H_feeds_kW       1779.54082551    1e-4
 boundary global                 Q_boundary_kW    -3.28395309659   1e-4
 boundary global                 H_products_kW    1143.73103803    1e-4
 boundary global                 residual_kW      632.525834379    1e-4
+kpi     column11               Q_condensate_m3_s 0.0040353515471  1e-4
+kpi     column11               diameter_rectifying 1.21012254264    1e-4
+kpi     column11               diameter_stripping 1.30643718646    1e-4
+kpi     column11               nTrays           14               1e-4
+kpi     column11               diameterDesigned 1                1e-4

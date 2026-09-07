@@ -162,6 +162,30 @@ public:
     {
         std::vector<Stage> stages;
         scalar diameter        = 0.0;    // m (given, or designed)
+
+        //  THE TWO SECTIONS, SIZED SEPARATELY (2026-09-07).  `diameter` above
+        //  is the widest tray in the WHOLE column; these are the widest tray
+        //  ABOVE the feed and the widest tray AT OR BELOW it.  They need no
+        //  new physics -- `Stage::diameterRequired` already exists per tray
+        //  and only the global maximum used to survive.
+        //
+        //  WHY THEY DIFFER, and it is worth a student's attention: the
+        //  flooding diameter follows the VAPOUR VOLUMETRIC flow, and the two
+        //  sections differ in temperature, pressure, vapour molar mass and
+        //  usually in the vapour molar flow itself.
+        //
+        //  WHETHER TO BUILD TWO DIAMETERS IS AN ECONOMIC QUESTION, NOT A
+        //  THERMODYNAMIC ONE, and this pass does not answer it: it reports
+        //  both and the ratio.  Below roughly 15-20 % difference the extra
+        //  transition cone, its fabrication and its inspection cost more than
+        //  the plate a swage saves, so the tower is built straight at the
+        //  larger diameter.
+        //
+        //  Zero when the column has no tray in that section (both are zero
+        //  when no feed stage was supplied).
+        scalar diameterRectifying = 0.0; // m, widest tray above the feed
+        scalar diameterStripping  = 0.0; // m, widest tray at or below the feed
+        std::size_t feedStage     = 0;   // 1-based, as the stage indices are
         scalar floodApproachMax= 0.0;
         std::size_t floodStage = 0;
         scalar dPColumn        = 0.0;    // Pa
@@ -177,6 +201,12 @@ public:
 
     // T[j], x[j], y[j] per stage; V[j], L[j] in kmol/s.  Stage 0 is the
     // condenser and stage N-1 the reboiler: neither is a tray, both are skipped.
+    //  `feedStage` is 1-based on the SAME indexing as `Stage::index`, and
+    //  is what splits the rectifying section from the stripping one.  Pass 0
+    //  when the caller has no single feed stage to name: the section
+    //  diameters are then left at zero rather than guessed from where the
+    //  traffic happens to step, which would be reading a declaration out of a
+    //  profile.
     static Result evaluate(const ThermoPackage&         thermo,
                            scalar                       P,
                            const std::vector<scalar>&   T,
@@ -184,7 +214,8 @@ public:
                            const std::vector<sVector>&  y,
                            const std::vector<scalar>&   V,
                            const std::vector<scalar>&   L,
-                           const Geometry&              geo);
+                           const Geometry&              geo,
+                           std::size_t                  feedStage);
 
     static void report(const Result& r, const Geometry& geo, int verbosity);
 };

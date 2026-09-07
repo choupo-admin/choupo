@@ -435,9 +435,18 @@ function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
                   const leaf = sector && it.unit.startsWith(sector + ".")
                     ? it.unit.slice(sector.length + 1) : it.unit;
                   return (
-                    <Table.Tr key={it.unit}>
-                      <Table.Td pl={sector ? "lg" : undefined} title={it.unit}>{leaf}</Table.Td>
-                      <Table.Td>{it.type}</Table.Td>
+                    //  KEYED ON THE ITEM, not the unit: a distillation
+                    //  column emits five rows under one unit name and React
+                    //  would see five duplicate keys.
+                    <Table.Tr key={it.item}>
+                      <Table.Td pl={sector ? "lg" : undefined} title={it.item}>{leaf}</Table.Td>
+                      {/*  THE ITEM, where the unit realises several.  Two of a
+                           column five items are `shellTubeHX` and two are
+                           `vessel`, so the equipment KIND alone leaves the
+                           condenser and the reboiler indistinguishable.  The
+                           kind stays visible because it is what selects the
+                           cost correlation. */}
+                      <Table.Td>{it.tag ? `${it.tag} (${it.type})` : it.type}</Table.Td>
                       <Table.Td>{it.material}</Table.Td>
                       <Table.Td ta="right">
                         {h ? `${h.v.toPrecision(4)} ${h.k}` : "—"}
