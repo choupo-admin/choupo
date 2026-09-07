@@ -18,17 +18,39 @@ import { flowsheetToGraph } from "../src/case/toGraph.js";
 const LP = join(fileURLToPath(new URL(".", import.meta.url)), "..", "..",
   "tutorials", "plant", "lithiumBrinePlant");
 
-// The plant's committed root 0/ keyed as the tutorial registry stores it.
-function rootFiles(): { [rel: string]: string } {
+// A case's committed 0/ tree, keyed as the tutorial registry stores it.
+//
+// WALKED, NEVER WRITTEN.  Which level of the geography holds a given stream is
+// a fact the CASE declares, and a list of it here would be a second home for
+// it: this fixture used to name the five sectors it expected and went stale the
+// day the 2026-09-07 ownership rule moved the plant's files (a stream's state
+// lives at the LOWEST level whose subtree contains BOTH its endpoints, and
+// `MAIN/` is the domain's own level).  It then named two levels that no longer
+// exist and omitted the one holding `salarBrine` and `liquor` -- so the three
+// assertions that went red were testing the fixture, not the projection.  The
+// record measured 51 of 78 corpus streams one edge away from moving again, so
+// the list is derived from the tree at read time.
+//
+// The `internalStates/` subtree is skipped BY NAME, which is the engine's own
+// completeness contract (2026-09-06): a unit's interior may be homonymous with
+// a stream, identity there is (kind, sector, name), and this projection keys
+// the root 0/ by BASENAME alone -- so an interior file swept in here would be
+// offered to a drilled member as that stream's state.
+function walkZeroTree(root: string): { [rel: string]: string } {
   const f: { [rel: string]: string } = {};
-  for (const sec of ["BRINE", "EXTRACTION", "CARBONATION", "HOTAIR", "FINISHING"])
-    for (const s of ["salarBrine", "halite", "liquor", "organic", "emulsion",
-      "raffinate", "loadedOrganic", "carbLiquor", "slurry", "fuelAir", "hotAir",
-      "product", "cleanAir", "fines", "humidExhaust"]) {
-      try { f[`0/${sec}/${s}`] = readFileSync(join(LP, "0", sec, s), "utf8"); } catch { /**/ }
+  const walk = (dir: string, prefix: string) => {
+    for (const nm of readdirSync(dir)) {
+      if (nm === "internalStates") continue;
+      const p = join(dir, nm);
+      const rel = prefix ? `${prefix}/${nm}` : nm;
+      if (statSync(p).isDirectory()) walk(p, rel);
+      else f[`0/${rel}`] = readFileSync(p, "utf8");
     }
+  };
+  walk(join(root, "0"), "");
   return f;
 }
+const rootFiles = () => walkZeroTree(LP);
 const read = (rel: string) => readFileSync(join(LP, rel), "utf8");
 
 describe("projectRootStreamState: drilled member gets its stream state", () => {
@@ -72,24 +94,10 @@ describe("projectRootStreamState: drilled member gets its stream state", () => {
 // not (liquor stays liquor), which is why only this case exposed the bug.
 const CP = join(fileURLToPath(new URL(".", import.meta.url)), "..", "..",
   "tutorials", "plant", "ChemicalPlantTutorial");
-function walkZero(root: string): { [rel: string]: string } {
-  const f: { [rel: string]: string } = {};
-  const walk = (dir: string, prefix: string) => {
-    for (const nm of readdirSync(dir)) {
-      const p = join(dir, nm);
-      const rel = prefix ? `${prefix}/${nm}` : nm;
-      if (statSync(p).isDirectory()) walk(p, rel);
-      else f[`0/${rel}`] = readFileSync(p, "utf8");
-    }
-  };
-  walk(join(root, "0"), "");
-  return f;
-}
-
 // The case files the projection needs: the root 0/ + the ancestor flowsheetDicts
 // (root + sector) so the rename chain can be walked.
 function cpFiles(): { [rel: string]: string } {
-  const f = walkZero(CP);
+  const f = walkZeroTree(CP);
   f["system/flowsheetDict"] = readFileSync(join(CP, "system", "flowsheetDict"), "utf8");
   f["CONCENTRATION/system/flowsheetDict"] =
     readFileSync(join(CP, "CONCENTRATION", "system", "flowsheetDict"), "utf8");
