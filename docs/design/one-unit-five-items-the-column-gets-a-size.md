@@ -163,8 +163,10 @@ default looks like: `[assumed]` at its site, in the end-of-run caveat block, and
 ## NOT DONE, said plainly
 
 * **No tray cost.**  See above; it is a curation decision, not a coding one.
-* **No column SCHEMATIC** (task #134).  The order was deliberate: drawing first
-  would give a student a picture of a column whose cost still does not exist.
+* ~~**No column SCHEMATIC** (task #134).~~  SHIPPED the same day, once the cost
+  existed: the order was deliberate — drawing first would have given a student
+  a picture of a column whose cost did not exist yet.  See
+  [`the-column-draws-itself.md`](the-column-draws-itself.md).
 * **The sheets of one unit all carry the UNIT's ports.**  A condenser's own
   inlet is the overhead vapour, which is internal to the unit and is not a
   stream this flowsheet carries — the engine has no model of the connections

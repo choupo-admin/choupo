@@ -135,12 +135,25 @@ WHAT THIS CHECKS:
       `SHEET_UNIT_WORDS_UNPARSEABLE` with remedy and blocker, and
       the stale-pin half fails if either stops appearing.
 
-  (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The reader's unit
+  (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
-      the writer and holds the header words and every `sizing {}` triple in
-      `gui/tests/designSheet.test.ts` to what was just written -- the
-      `check_estimate_visible` precedent, for the same reason.
+      the writer and holds the header words, every `sizing {}` triple and every
+      port line in `gui/tests/designSheet.test.ts` and
+      `gui/tests/columnDatasheet.test.ts` to what was just written -- the
+      `check_estimate_visible` precedent, for the same reason.  Which TEST FILE
+      holds a fixture is part of the entry: a single hard-coded path would have
+      reported the column fixtures as checked while holding them to nothing.
+
+      SABOTAGES, by hand, 2026-09-07 (the arm regenerates `design/`, so each
+      lands on the FIXTURE between the run and the check):
+        S1  one port temperature drifts in ONE of three identical column
+            fixtures  -> SURVIVED the first version of this arm, which searched
+            the WHOLE test file for each line and found the drifted line in a
+            SIBLING fixture carrying the same port block.  Caught after the
+            match was made per template literal.
+        S2  a `sizing {}` value drifts (`swageGap`)  -> caught.
+        S3  the whole column fixture file is removed  -> caught by name.
 
 WHAT THIS DOES NOT CHECK, said plainly:
 
@@ -602,12 +615,17 @@ def check_unit_words_readable(all_units, problems, notes):
 #  (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT
 # ---------------------------------------------------------------------------
 
-GUI_TEST = ROOT / "gui/tests/designSheet.test.ts"
-
-#  (case, sheet path under design/) -> the sheets the GUI tests transcribe.
+#  (case, sheet path under design/, the test file that transcribes it).
+#  THE TEST FILE IS PART OF THE ENTRY (2026-09-07): the column schematic's
+#  fixtures live in their own test beside the reader they exercise, and a
+#  single hard-coded `GUI_TEST` would have held them to nothing while
+#  reporting that it had checked them.
 GUI_FIXTURES = (
-    (FLAT,    "heater/shellTubeHX"),
-    (FRACTAL, "FERMENTATION/Fermentor/stirredTank"),
+    (FLAT,    "heater/shellTubeHX",                 "gui/tests/designSheet.test.ts"),
+    (FRACTAL, "FERMENTATION/Fermentor/stirredTank", "gui/tests/designSheet.test.ts"),
+    (COLUMN,  "column09/shell",                     "gui/tests/columnDatasheet.test.ts"),
+    (COLUMN,  "column09/trays",                     "gui/tests/columnDatasheet.test.ts"),
+    (COLUMN,  "column09/refluxDrum",                "gui/tests/columnDatasheet.test.ts"),
 )
 
 
@@ -619,19 +637,45 @@ def check_gui_fixture(problems, notes):
     arm runs the writer and holds the fixture to what it wrote, which is the
     `check_estimate_visible` precedent for the same reason.
 
-    It compares the HEADER words and every `sizing {}` triple (key, value,
-    unit), whitespace-normalised.  NOT the ports or the cost block: the GUI
-    reader does not read those, and a fixture held to more than its reader uses
-    is a golden nobody asked for."""
-    if not GUI_TEST.is_file():
-        problems.append("check_design_sheet(l): %s is gone -- the reader that "
-                        "replaced this gate's structural arm has no tests."
-                        % GUI_TEST.relative_to(ROOT))
-        return
-    fixture = GUI_TEST.read_text(errors="replace")
+    It compares the HEADER words, every `sizing {}` triple (key, value, unit)
+    and -- since 2026-09-07 -- every line of the `inlets {}` and `outlets {}`
+    blocks, whitespace-normalised.  The ports were deliberately NOT held here
+    until that day, on the stated ground that the GUI reader did not read them
+    and a fixture held to more than its reader uses is a golden nobody asked
+    for.  The column schematic READS them: it colours each nozzle by the
+    temperature the run wrote.  So the reason expired the moment the reader
+    arrived, which is the rule about burying an absence you have just filled.
+    The cost block is still NOT held, because still nothing reads it back."""
     norm = lambda s: " ".join(s.split())
-    flat_fixture = norm(fixture)
-    for rel, tail in GUI_FIXTURES:
+    #  EACH FIXTURE IS ITS OWN TEMPLATE LITERAL, and the wanted lines must all
+    #  land in ONE of them (2026-09-07).  This arm used to search the WHOLE
+    #  test file for each line, which was exact while a file held one fixture
+    #  and became blind the day one held three: the column's shell, trays and
+    #  reflux-drum sheets carry the SAME three port blocks, so a drifted
+    #  temperature in one was still found -- in a sibling.  Verified by hand:
+    #  the sabotage that edits one fixture's `T 370 K` SURVIVED the first
+    #  version of this arm and fails this one.
+    fixtures = {}
+    for _, _, test_rel in GUI_FIXTURES:
+        if test_rel in fixtures:
+            continue
+        f = ROOT / test_rel
+        if not f.is_file():
+            problems.append("check_design_sheet(l): %s is gone -- the reader "
+                            "that replaced this gate's structural arm has no "
+                            "tests." % test_rel)
+            continue
+        #  Split on UNESCAPED backticks only.  A sheet's own header comment
+        #  contains backticks (it names `system/postDict` and `sizing {}`), so
+        #  a faithful transcription escapes them -- and splitting on those cut
+        #  every fixture in half, which made this arm accuse the correct
+        #  fixture of missing its own first line.
+        fixtures[test_rel] = [norm(c) for c in
+                              re.split(r"(?<!\\)`", f.read_text(errors="replace"))]
+    for rel, tail, test_rel in GUI_FIXTURES:
+        chunks = fixtures.get(test_rel)
+        if chunks is None:
+            continue
         p = ROOT / rel / "design" / tail
         if not p.is_file():
             problems.append("check_design_sheet(l): the run wrote no %s, so "
@@ -639,14 +683,24 @@ def check_gui_fixture(problems, notes):
             continue
         text = re.sub(r'/\*.*?\*/', '', p.read_text(errors="replace"), flags=re.S)
         want = []
-        for k in ("recordType", "unit", "sector", "equipment", "material", "basis"):
+        for k in ("recordType", "unit", "sector", "equipment", "item",
+                  "material", "basis"):
             m = re.search(r'^\s*%s\s+.*;' % k, text, re.M)
             if m:
                 want.append(m.group(0))
-        m = re.search(r'^sizing\s*\n\{(.*?)\n\}', text, re.S | re.M)
-        if m:
-            want += [l for l in m.group(1).splitlines() if l.strip()]
-        missing = [norm(w) for w in want if norm(w) not in flat_fixture]
+        for block in ("sizing", "inlets", "outlets"):
+            m = re.search(r'^%s\s*\n\{(.*?)\n\}' % block, text, re.S | re.M)
+            if m:
+                want += [l for l in m.group(1).splitlines() if l.strip()]
+        want = [norm(w) for w in want]
+        #  The best-matching chunk decides, so the message names what is
+        #  missing from the fixture that is CLOSEST to this sheet rather than
+        #  from an unrelated one.
+        best, missing = None, want
+        for c in chunks:
+            gap = [w for w in want if w not in c]
+            if best is None or len(gap) < len(missing):
+                best, missing = c, gap
         if missing:
             problems.append(
                 "check_design_sheet(l): the GUI fixture in %s no longer "
@@ -654,7 +708,7 @@ def check_gui_fixture(problems, notes):
                 "fixture: %s.  The GUI's reader tests are written on that "
                 "transcription, so a drift makes them pass against a sheet the "
                 "engine does not produce."
-                % (GUI_TEST.relative_to(ROOT), tail, "; ".join(missing[:4])))
+                % (test_rel, tail, "; ".join(missing[:4])))
         else:
             notes.append("GUI fixture matches design/%s" % tail)
 
@@ -1078,8 +1132,9 @@ def main() -> int:
           "SHEET_UNIT_WORDS_UNPARSEABLE (whose remedy MOVES a "
           "number and is reserved) -- the arm that closed this gate's own "
           "declared blind spot and found three on the day it was written; and "
-          "the GUI reader's transcribed fixture still matches the sheets the "
-          "run just wrote.  A "
+          "each GUI reader's transcribed fixture still matches the sheets the "
+          "run just wrote -- header words, sizing triples AND port lines, in "
+          "the test file that holds it.  A "
           "refusal for a value with no declared unit is still in the writer, "
           "and no sizer writes past `set()` (a SOURCE arm: a gate that "
           "rebuilds the engine is the 2026-08-18 shape, so the refusal was "

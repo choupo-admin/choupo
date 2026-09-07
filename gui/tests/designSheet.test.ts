@@ -79,6 +79,12 @@ sizing
 
 //  FRACTAL: a STAMPED sector and a qualified unit name, plus the bracket
 //  dimension form `[0 0 0 0 0]` a dimensionless value is written in.
+//
+//  ITS PORT BLOCKS WERE MISSING UNTIL 2026-09-07.  They were left out when
+//  nothing read a port back, and `check_design_sheet` arm (l) said so in its
+//  own words.  The column schematic reads them -- it colours each nozzle by
+//  the temperature the run wrote -- so the arm holds them now and the
+//  transcription had to become a full one.
 const SECTORED_TANK = `recordType  designSheet;
 
 unit        "FERMENTATION.Fermentor";
@@ -86,6 +92,34 @@ sector      FERMENTATION;
 equipment   stirredTank;
 material    SS316;
 basis       "V_R = declared operation.V_R (pass-through); D and H from L_over_D; t_wall ASME thin-wall";
+
+inlets
+{
+    port0
+    {
+        global      "FERMENTATION.Mixed";
+        bc          interior;
+        T           314.9494 K;
+        P           100000 Pa;
+        F           0.074074826 kmol/s;
+        mdot        1.9682212 kg/s;
+        vapourFraction 0;
+    }
+}
+
+outlets
+{
+    port0
+    {
+        global      "FERMENTATION.Out";
+        bc          interior;
+        T           310 K;
+        P           100000 Pa;
+        F           0.079011624 kmol/s;
+        mdot        1.9682245 kg/s;
+        vapourFraction 0;
+    }
+}
 
 sizing
 {

@@ -68,6 +68,7 @@ import { IconAlertTriangle, IconExternalLink, IconInfoCircle, IconX } from "@tab
 import { popOutFileHtml } from "./filePopOut.js";
 import { findRunStream, popOutSingleStream } from "./streamPopOut.js";
 import { HeatExchangerDatasheet } from "./HeatExchangerDatasheet.js";
+import { ColumnDatasheet } from "./ColumnDatasheet.js";
 import { theoryLink } from "../case/modelDocs.js";
 import { useMemo, useState } from "react";
 
@@ -391,6 +392,16 @@ function UnitDetails({
 
       {unit.type === "heatExchanger" && kpis && (
         <HeatExchangerDatasheet unit={unit} kpis={kpis} />
+      )}
+
+      {/*  THE DATASHEET FOLLOWS THE EQUIPMENT KIND, NOT THE UNIT TYPE -- which
+           is why a column's condenser and reboiler needed nothing new (they
+           are `shellTubeHX` items and the exchanger sheet draws that kind) and
+           the column's OWN equipment, the shell and the tray stack, needed
+           this.  The trigger renders nothing until the run has written the
+           sheets it reads.  */}
+      {unit.type === "distillationColumn" && kpis && (
+        <ColumnDatasheet unit={unit} kpis={kpis} />
       )}
 
       {missingRequired.length > 0 && (

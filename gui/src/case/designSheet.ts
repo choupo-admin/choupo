@@ -27,6 +27,33 @@ import { parse, toJson } from "../dict/index.js";
  *  and it is why a new sizing key needs no change in this file. */
 export interface DesignValue { key: string; value: number; unit: string; }
 
+/** ONE PORT of the sheet's `inlets {}` / `outlets {}` block.
+ *
+ *  THE SHEET HAS ALWAYS CARRIED THESE AND NOTHING READ THEM until the column
+ *  schematic did (2026-09-07): a drawing that colours a nozzle by whether it
+ *  is the hot or the cold end needs the temperature the run wrote, and taking
+ *  it from `runResult.streams` instead would be a SECOND route to a fact this
+ *  file already has -- the exact shape this module exists to end.
+ *
+ *  `global` is the stream as the FLOWSHEET names it.  The mass flow is the
+ *  engine's `StreamMass::F_massTotal` (fluid PLUS crystals), never
+ *  `F * Sigma z_i MW_i`; that distinction is why the writer takes a thermo
+ *  package at all, and re-deriving it here would throw it away. */
+export interface DesignPort {
+  /** Index within its block, as the sheet names it (`port0`, `port1`, ...). */
+  key: string;
+  /** The stream name the flowsheet uses, or "" when the sheet names none. */
+  global: string;
+  /** The port role word the engine wrote (`fixedValue`, `computed`,
+   *  `interior`) -- passed through, never interpreted here. */
+  bc: string;
+  T?: number;      // K
+  P?: number;      // Pa
+  F?: number;      // kmol/s
+  mdot?: number;   // kg/s
+  vapourFraction?: number;
+}
+
 export interface DesignSheet {
   /** The unit as the ENGINE names it -- qualified (`CONCENTRATION.Evap2`) on
    *  a fractal case, bare on a flat one. */
@@ -50,6 +77,13 @@ export interface DesignSheet {
    *  engine ONLY when a default was actually taken, so an EMPTY list is the
    *  positive statement "this sizer assumed nothing". */
   assumed: string[];
+  /** THE PORTS ARE THE UNIT'S, NOT THIS ITEM'S, and the sheet says so in its
+   *  own comment: a column realises five items and the flowsheet wires only
+   *  the unit, so every one of its five sheets carries the SAME three ports.
+   *  A reader that presented them as this item's nozzles would be drawing a
+   *  connection the engine does not model. */
+  inlets: DesignPort[];
+  outlets: DesignPort[];
 }
 
 /*  A scalar as `toJson` hands it over.  The dict grammar's named-unit form
@@ -75,6 +109,37 @@ const word = (j: { [k: string]: unknown }, k: string): string => {
   const v = j[k];
   return typeof v === "string" ? v : "";
 };
+
+/** Read one `inlets {}` / `outlets {}` block.  Each `portN {}` sub-dict is a
+ *  port; the order is the sheet's own, which is the order the engine wrote the
+ *  unit's streams in, and it is preserved rather than sorted.
+ *
+ *  A key the sheet does not carry stays UNDEFINED -- never zero.  Zero is a
+ *  temperature and a flow, and a nozzle drawn from a defaulted 0 K would be
+ *  coloured, labelled and wrong. */
+function readPorts(block: unknown): DesignPort[] {
+  if (!block || typeof block !== "object" || Array.isArray(block)) return [];
+  const ports: DesignPort[] = [];
+  for (const [key, raw] of Object.entries(block as { [k: string]: unknown })) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+    const p = raw as { [k: string]: unknown };
+    const num = (k: string): number | undefined => {
+      const s = splitValue(p[k]);
+      return s ? s.value : undefined;
+    };
+    ports.push({
+      key,
+      global: word(p, "global"),
+      bc: word(p, "bc"),
+      T: num("T"),
+      P: num("P"),
+      F: num("F"),
+      mdot: num("mdot"),
+      vapourFraction: num("vapourFraction"),
+    });
+  }
+  return ports;
+}
 
 /** Parse one `design/.../<equipmentTag>` file.  Returns null for anything that
  *  is not a specification sheet -- the record identifies ITSELF
@@ -111,6 +176,8 @@ export function parseDesignSheet(text: string): DesignSheet | null {
     basis: word(j, "basis"),
     sizing,
     assumed,
+    inlets: readPorts(j["inlets"]),
+    outlets: readPorts(j["outlets"]),
   };
 }
 
@@ -163,9 +230,7 @@ export function lookupDesignSheet(
     if (!sheet) { unreadable++; continue; }
     if (sheet.equipment !== equipment) continue;
     if (item !== undefined && sheet.item !== item) continue;
-    if (sheet.unit === unitName
-        || (sheet.sector !== "" && `${sheet.sector}.${unitName}` === sheet.unit))
-      matches.push(sheet);
+    if (belongsTo(sheet, unitName)) matches.push(sheet);
   }
   //  MORE THAN ONE MATCH IS A REFUSAL, NOT A CHOICE.  This loop used to stop
   //  at the first hit, which was exact while every unit realised one item and
@@ -177,6 +242,40 @@ export function lookupDesignSheet(
     unreadable,
     ambiguous: matches.length > 1 ? matches.length : 0,
   };
+}
+
+/** WHAT THE ITEM IDENTITY IS, in one place: a sheet belongs to `unitName` when
+ *  it says so itself, bare or rebuilt from its OWN stamped sector.  Split out
+ *  of `lookupDesignSheet` so the two callers -- the one that wants a single
+ *  item and the one that wants every item of a unit -- cannot drift into two
+ *  answers to the same question. */
+function belongsTo(sheet: DesignSheet, unitName: string): boolean {
+  return sheet.unit === unitName
+    || (sheet.sector !== "" && `${sheet.sector}.${unitName}` === sheet.unit);
+}
+
+/** EVERY sheet the run wrote for one unit, in the order the files arrived.
+ *
+ *  A distillation column realises FIVE physical items and its datasheet draws
+ *  the tower from two of them at once -- the `shell` and the `trays` -- so no
+ *  lookup keyed on one (unit, equipment) pair can serve it.  This is that
+ *  lookup: it says which items exist, and the caller decides what to do with
+ *  each, which is what keeps the drawing honest about an item a case did not
+ *  ask for (a column with no `refluxDrum {}` block simply has no drum sheet,
+ *  and no drum is drawn). */
+export function unitDesignSheets(
+  designFiles: { [relPath: string]: string } | undefined,
+  unitName: string,
+): { sheets: DesignSheet[]; unreadable: number } {
+  let unreadable = 0;
+  const sheets: DesignSheet[] = [];
+  for (const [rel, text] of Object.entries(designFiles ?? {})) {
+    if (!rel.startsWith("design/")) continue;
+    const sheet = parseDesignSheet(text);
+    if (!sheet) { unreadable++; continue; }
+    if (belongsTo(sheet, unitName)) sheets.push(sheet);
+  }
+  return { sheets, unreadable };
 }
 
 /** The sheet alone, for a caller with nothing to say about an unreadable one. */

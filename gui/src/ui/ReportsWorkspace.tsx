@@ -41,6 +41,8 @@ import { Box, Button, Group, ScrollArea, SimpleGrid, Stack, Table, Text } from "
 import { useStore } from "../state/store.js";
 import { massBalance } from "../case/balances.js";
 import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
+import { columnDatasheetHtml } from "./ColumnDatasheet.js";
+import { unitDesignSheets } from "../case/designSheet.js";
 import type { UnitSpec } from "../case/types.js";
 import type { EquipmentItem } from "../adapters/SolverAdapter.js";
 
@@ -62,18 +64,35 @@ export function ReportsWorkspace() {
   const flowUnits = useStore.getState().caseFiles.flowsheet?.["units"] as UnitSpec[] | undefined;
   const hxUnits = (flowUnits ?? []).filter(
     (u) => u?.type === "heatExchanger" && runResult.kpis?.[u.name]?.["U"] !== undefined);
-  const openHxSheet = (u: UnitSpec) => {
-    //  The engine's own specification sheet rides `designFiles`; the datasheet
-    //  READS it rather than rebuilding the design numbers from the KPIs.
-    const html = heatExchangerDatasheetHtml(u, runResult.kpis?.[u.name],
-      runResult.streams, runResult.designFiles);
-    if (!html) return;
+  //  THE COLUMNS THE RUN ACTUALLY SIZED.  A column with no `sizing {}` block in
+  //  its postDict has no specification sheet and therefore nothing to draw, so
+  //  it gets no row -- the same rule the exchanger list follows, and the reason
+  //  this workspace does not open on an apology.
+  //  Parsed ONCE per unit: the row below wants the item count and the filter
+  //  wants to know there is one, and asking twice reparses every sheet under
+  //  `design/` a second time on every render.
+  const columnUnits = (flowUnits ?? [])
+    .filter((u) => u?.type === "distillationColumn")
+    .map((u) => ({ u, n: unitDesignSheets(runResult.designFiles, u.name).sheets.length }))
+    .filter((c) => c.n > 0);
+  const openInTab = (html: string) => {
     const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
     const a = document.createElement("a");
     a.href = url; a.target = "_blank"; a.rel = "noopener";
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 10000);
   };
+  const openHxSheet = (u: UnitSpec) => {
+    //  The engine's own specification sheet rides `designFiles`; the datasheet
+    //  READS it rather than rebuilding the design numbers from the KPIs.
+    const html = heatExchangerDatasheetHtml(u, runResult.kpis?.[u.name],
+      runResult.streams, runResult.designFiles);
+    if (!html) return;
+    openInTab(html);
+  };
+  const openColumnSheet = (u: UnitSpec) =>
+    openInTab(columnDatasheetHtml(u, runResult.kpis?.[u.name],
+                                  runResult.designFiles));
   // Aggregate the per-duty rows by utility name.
   const byUtil = new Map<string, { tier: string; kW: number; kgh: number; MW: number; eurh: number }>();
   for (const r of ua) {
@@ -236,6 +255,31 @@ export function ReportsWorkspace() {
             </>
           )}
         </Section>
+
+        {/* ---- Column datasheets (the tower and its tray stack) ---------- */}
+        {columnUnits.length > 0 && (
+          <Section title="Column datasheets" subtitle="tray columns the sizing pass sized — the tower schematic + its five items">
+            <Stack gap={6}>
+              {columnUnits.map(({ u, n }) => {
+                const k = runResult.kpis?.[u.name] ?? {};
+                return (
+                  <Group key={u.name} justify="space-between" wrap="nowrap"
+                    style={{ borderBottom: "1px solid #2a2a2a", paddingBottom: 4 }}>
+                    <Text size="sm" ff="monospace">
+                      {u.name} — {Math.round(k["nTrays"] ?? 0)} trays, ⌀{k["diameter"]?.toFixed(3)} m
+                      {k["floodApproach_max"] !== undefined
+                        ? `, worst tray ${(k["floodApproach_max"] * 100).toFixed(1)} % of flood` : ""}
+                      {` · ${n} item${n === 1 ? "" : "s"}`}
+                    </Text>
+                    <Button size="compact-xs" variant="light" onClick={() => openColumnSheet(u)}>
+                      Open datasheet
+                    </Button>
+                  </Group>
+                );
+              })}
+            </Stack>
+          </Section>
+        )}
 
         {/* ---- Equipment datasheets (heat exchangers with a computed U) --- */}
         {hxUnits.length > 0 && (

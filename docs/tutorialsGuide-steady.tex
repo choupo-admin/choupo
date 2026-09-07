@@ -1243,7 +1243,9 @@ give `diameter` $\to$ RATING. How close to flood is each tray? omit `diameter` $
 
 Nothing here is guessed. The orifice coefficient C\_o is a chart in the literature (Liebson, Kelley \& Bullington 1957, against hole-area ratio and plate-thickness/hole-diameter); it is a DECLARED number you own, printed back at you. The weep-point constant K2 is a chart too -- leave it out and the column tells you the weep check was not performed rather than inventing it.
 
-Read the printed table. The flow parameter F\_LV climbs below the feed (more liquid, less vapour per unit mass), which lowers Fair's capacity parameter and therefore the flooding velocity -- yet the stripping trays are not the tight ones here, because the vapour volumetric flow falls faster than the capacity. The column is sized by whichever tray loses that argument.
+Read the printed table. The feed is a saturated liquid, so it joins the liquid traffic and leaves the vapour traffic alone: L doubles across the feed (0.0278 $\to$ 0.0556 kmol/s) while V does not move (0.0417 kmol/s). The flow parameter F\_LV therefore doubles too (0.0405 on tray 7, 0.0812 on tray 8), which lowers Fair's capacity parameter and with it the flooding velocity (1.545 $\to$ 1.435 m/s). The vapour velocity does NOT fall to compensate -- it rises, 1.044 $\to$ 1.092 m/s -- so the STRIPPING trays are the tight ones here: the flood approach climbs monotonically from 63.7 \% on the top tray to 80.0 \% on stage 14, and stage 14 is the tray that sets the 1.316 m tower.
+
+(This paragraph used to say the stripping trays were NOT the tight ones, "because the vapour volumetric flow falls faster than the capacity". The run's own table says otherwise on both counts, and it always did -- the vapour velocity rises across the feed and the flood approach never once falls. Corrected 2026-09-07, against the printed table rather than against the argument.)
 
 \end{tutnarrative}
 \begin{tutgolden}

@@ -1070,6 +1070,39 @@ report this writer does not produce, which is what caught the crystals).
 Record:
 [`docs/design/the-specification-sheet-a-project-is-audited-from.md`](docs/design/the-specification-sheet-a-project-is-audited-from.md).
 
+**THE DATASHEET FOLLOWS THE EQUIPMENT KIND, NOT THE UNIT TYPE (2026-09-07).**
+Of the column's five sheets the condenser and the reboiler needed no work at
+all — they are `shellTubeHX` items and the exchanger datasheet draws that kind
+— which is the rule stated as a consequence.  So the schematic is dispatched
+on the sheet's own `equipment` word, the SAME registered-type word the sizers
+use (`gui/src/case/equipmentSchematic.ts`, one entry per kind, no reader
+changes), and **a kind with no drawing gets a LABELLED BOX** with its ports and
+its sizing table: there is no generic outline that is nearly right for a
+crystalliser, a cyclone and a compressor, and **a labelled box beats a wrong
+picture**.  The TOWER is keyed on `sieveTrays` and NOT on `vessel` — `vessel`
+is the shell's own word AND the reflux drum's AND every flash drum's, so keying
+it there would put fourteen trays inside every drum in the corpus.  The
+substantive half is the provenance: **a number the CASE declared must not look
+like a number Choupo COMPUTED**, and a column is where that is easiest to get
+wrong (omit `hydraulics { diameter }` and the pass DESIGNS the tower; declare
+it and the pass RATES the trays against a tower the author chose), so the
+drawing reads the engine's own `diameterDesigned` KPI rather than inferring the
+mode, marks every dimension in TWO channels (ink AND the word — colour does not
+survive a greyscale print) and says *provenance not published* rather than
+guessing.  No transition cone is drawn in ANY case: `ColumnSize` sizes the
+shell STRAIGHT and publishes ONE `D`.  Three traps: **prose does not go in an
+SVG** (no reflow — two captions were rendered and silently cut mid-word); a
+connector's label is PLACED, never guessed from its midpoint; and a fixture
+search over a WHOLE test file goes blind the day one file holds three sheets
+with identical blocks (the sabotage SURVIVED, forcing a per-literal match).  A
+DEFERRAL EXPIRES THE DAY ITS REASON DOES: arm (l) deliberately did not hold the
+sheets' port blocks because no GUI reader read them, and the moment one did the
+stirred-tank fixture turned out to carry none.  NOT done: the mechanical /
+vendor-handoff block (task #142) and packed columns (no packing model exists
+anywhere in the engine — new physics, Vítor's).  Gate: `check_design_sheet`
+arm (l).  Record:
+[`docs/design/the-column-draws-itself.md`](docs/design/the-column-draws-itself.md).
+
 **EVERY SIZER STATES ITS BASIS, AND WRITING ONE FOUND A VOLUME IN KILOMOLES
 (2026-09-05).**  The Reports header promised a design basis for every item
 and one sizer in eight stated one.  Rule: a sizer states the rule that
