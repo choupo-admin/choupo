@@ -15,7 +15,9 @@
 
   Naming convention (see docs/ai/case-layout.md):
     SECTORS in CAPS         : MAIN, CONCENTRATION, DRYING, FERMENTATION
-    (a plant-level unit lives in a sector -- MAIN/ is the conventional one)
+    (MAIN/ is the DOMAIN'S OWN LEVEL, not a sector like the others: the
+    plant-level units live there, and so do the plant's own inlets and every
+    stream that crosses two sectors)
     Units in PascalCase     : Cryst, Evap1, Evap2
     Streams in PascalCase   : RawJuice, Magma, Powder, EvapVapour
     Components in lowercase : water, sucrose, N2

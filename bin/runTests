@@ -4702,13 +4702,15 @@ if [ "$#" -eq 0 ]; then
 
     # Internal-states gate (2026-09-06): a state directory is a RESTARTABLE
     # SNAPSHOT -- every unit that publishes a profile gets ONE dictionary at
-    # `converged/<SECTOR>/<unit>/<kind>` beside the streams, a PROJECTION of
-    # the JSON's `profiles` block held to it value by value; a `T_K`
-    # construction (van Heerden, Merkel) is an analysis and gets NO file; a
-    # flat case grows no sector level; the same file declared in `0/` seeds
-    # the column and is announced both ways; a wrong stage count and an orphan
-    # unit directory both REFUSE by name; no `internalStates/` view exists any
-    # more, in the tree or in a source line.
+    # `converged/internalStates/<SECTOR>/<unit>`, one BLOCK per kind, a
+    # PROJECTION of the JSON's `profiles` block held to it value by value; the
+    # axis a profile DECLARES is a column of it, everywhere it is published;
+    # a `T_K` construction (van Heerden, Merkel) is an analysis and gets NO
+    # file; a flat case grows no sector level; the same file declared in `0/`
+    # seeds the column and is announced both ways; the header sentence each
+    # file carries is CONDITIONED on whether that unit reads one; a wrong
+    # stage count and an orphan record both REFUSE by name; the retired
+    # top-level `internalStates/` view exists nowhere, tree, source or docs.
     if "$ROOT/bin/curate/check_internal_states.py" > /tmp/internalstates.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "internal-states-gate" "$(tail -1 /tmp/internalstates.$$)"
         pass=$((pass+1))

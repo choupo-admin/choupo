@@ -99,10 +99,16 @@ iterations      how the solver got there (numerical history, never physical time
 postProcessing  what we report       (with `reportsLayout postProcessing;`; else reports/)  [run output]
 ```
 
-`0/`, `converged/` and `design/` all carry
-`MAIN/ CONCENTRATION/ DRYING/ FERMENTATION/` — the same list the plant's
-`sectors ( … )` declares — so a student who has learned the geography once
-finds it in every view.  `system/` and `constant/` exist at every level of
+`0/` and `converged/` carry the plant's WHOLE geography —
+`MAIN/ CONCENTRATION/ DRYING/ FERMENTATION/`, the same list the plant's
+`sectors ( … )` declares — because every sector has streams.  A DERIVATIVE
+view carries only the levels it has something to say about, and says so by
+being absent: the flagship's `design/` has three (its `MAIN` holds one
+splitter, and a splitter realises no sized item), and `iterations/` repeats
+the geography INSIDE each instant (`iterations/000000/MAIN/`), not at its own
+root, where the levels are the instants.  So the geography a student learns
+once is the STATE views' — do not read a missing `design/MAIN/` as a defect,
+and do not create one.  `system/` and `constant/` exist at every level of
 the fractal (the plant's, a sector's, a unit's) and never inside the
 geography.  Record:
 [`../design/main-is-a-sector-and-the-views-repeat-the-plant.md`](../design/main-is-a-sector-and-the-views-repeat-the-plant.md).

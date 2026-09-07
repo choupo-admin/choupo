@@ -100,7 +100,12 @@ WHAT THIS CHECKS:
       `internalStates/` directory at its ROOT (only inside `0/`, `converged/`
       or an instant); the GUI's `RUN_OUTPUT_ROOTS` does not list it; the worker
       does not walk `/case/internalStates/`; no non-comment `.gitignore` line
-      names it (a top-level rule would take the AUTHORED half with it).
+      names it (a top-level rule would take the AUTHORED half with it).  AND,
+      since 2026-09-07, no page under `docs/` outside `docs/design/` teaches
+      the retired one-directory-per-unit SHAPE: arm (k) swept the retired
+      NAME through src/, bin/, gui/ and .gitignore and nothing looked in docs/
+      at all, while `bin/llmctx` ships `docs/ai/` to an assistant helping a
+      student author a case.
 
   (l) THE ENGINE'S HALF CANNOT BE COMMITTED, THE AUTHOR'S MUST BE.
       `git check-ignore` rejects `converged/internalStates/<unit>` and does NOT
@@ -122,6 +127,41 @@ WHAT THIS CHECKS:
   (n) SOURCE: the `T_K` exclusion, the boundary sentence, the column's
       declared kind and the base-class surface are where they were.
 
+  (o) THE AXIS A PROFILE DECLARES IS A COLUMN OF IT -- in the source, in every
+      interior record in the tree, and in the result JSON, DECLINED profiles
+      included.  Arm (c) could never see this: it compares the written block
+      against the JSON and the crystalliser was missing its size axis in BOTH,
+      equally, so two incomplete projections of one incomplete record agreed
+      and the gate passed while a crystal size distribution was published --
+      in the JSON, `profile.csv`, the spreadsheet and the GUI plot -- without
+      the size it is distributed over.
+
+  (p) THE ROUND TRIP ON A UNIT THAT READS NOTHING (a crystalliser).  Arm (g)
+      runs it on the ONE type that reads a kind, so nothing exercised the
+      reader against what the writer produces for every other type.  The
+      claim available here is exact: the written file PARSES, its axis is
+      present, and the refusal that follows a copy into `0/` is `NOTHING reads
+      it` and NOT `carries no column of that name`.  The second would be the
+      writer emitting a file its own reader rejects.
+
+  (q) THE HEADER SENTENCE IS TRUE OF THE UNIT IT IS ABOUT.  A file for a unit
+      that reads its kind carries the COPY instruction and names the kind; a
+      file for a unit that reads none carries the reads-nothing sentence and
+      NOT the COPY instruction.  Both branches must have a live case.  The
+      type -> kinds map is DERIVED from the engine's own source (the
+      `readsInteriorKinds()` overrides, joined to `registerBuiltins()`), never
+      tabulated here -- a table would be the second home this project spends
+      its slices closing.
+
+  (r) THE WRITER REFUSES A PROFILE WHOSE DECLARED AXIS IS ABSENT -- a SOURCE
+      arm, and it can only be one: nothing a CASE declares can make a unit
+      publish an axis it does not carry, so no fixture reaches the refusal.
+      Checked: the guard is at the seam that partitions the profiles, it
+      reaches `AdvisoryLog` (not only the console), it writes to stderr rather
+      than depending on verbosity, and it does NOT throw -- the call site turns
+      a throw into one warning and no interiors at all for the case, the
+      partial tree that lies by omission.
+
 WHAT THIS DOES NOT CHECK, said plainly:
 
   * WHETHER A DECLARED PROFILE IS RIGHT.  It is a SEED, not an answer; nothing
@@ -132,6 +172,20 @@ WHAT THIS DOES NOT CHECK, said plainly:
     `Dictionary::fromFile`, on ONE kind (`stageProfile`).  No other kind has a
     reader yet.
   * A UNIT WRITING TWO KINDS.  There is no such unit (see (f)).
+  * WHETHER AN AXIS COLUMN HOLDS THE RIGHT NUMBERS.  Arm (o) checks that the
+    axis a profile declares is PRESENT; nothing here checks that the values in
+    it are the coordinate they claim to be.
+  * WHICH FUNCTION AN AXIS ASSIGNMENT BELONGS TO.  Arm (o1) counts per FILE
+    and per axis, never per function: it proves a file assigns the axis at
+    least as often as it declares it, not that each declaration is paired
+    with its own assignment.  (o2) and (o3) read what actually came out,
+    which is why all three are needed.
+  * WHETHER THE READS-NOTHING SENTENCE IS THE BEST WORDING.  Arm (q) checks
+    which of the two sentences a file carries, never how well it reads.
+  * A STALE `converged/` LEFT BY AN EARLIER BINARY.  Arms (o2) and (q) read
+    only what THIS gate's runs produced and what git tracks, so an interior
+    file sitting in a case this gate does not run is outside their domain --
+    the source arm (o1) and the JSON arm (o3) are what cover the rest.
   * EVERY AXIS.  Four witnesses cover the size axes, `stage` with a marker,
     `T_K` (the exclusion) and `componentIndex`.  `V`, `z`, `z_m`, `position`
     and the two undeclared axes (`module`, `chainLength`) are exercised by the
@@ -229,6 +283,63 @@ rule).  Observed, verbatim:
           stream/unit homonym.  Identity is (kind, sector, name); a shared
           name is SAID, never refused and never silent."
 
+  ADDED 2026-09-07 with arms (o)-(r) and the docs half of (k).  All by hand,
+  between the run and the check; source SABOTAGES edit the TEXT the arm reads
+  and NOTHING was rebuilt (the 2026-08-18 rule), each reverted and the tree
+  verified clean with `git status` afterwards.
+
+  S14 deleted `prof.columns["L_micron"] = Lcol;` from the crystalliser's MSMPR
+      site (source text, not rebuilt) -- **THE FIRST DRAFT OF ARM (o1)
+      SURVIVED THIS**, and that is why the arm now COUNTS: the file has a
+      SECOND site on the same axis and a mere presence test was satisfied by
+      it.  Observed twice, before and after:
+      -> (presence test) "check_internal_states: OK ..."   [SURVIVED]
+      -> (counting)      "(o1): src/unitOperations/crystallisation/
+          Crystalliser.cpp declares `xAxis = \"L_micron\"` at 2 site(s) and
+          assigns `columns[\"L_micron\"]` at 1."
+  S15 changed the TRACKED witness `0/internalStates/column16` to declare
+      `xAxis stageIndex;`
+      -> "(o2): .../0/internalStates/column16 block `stageProfile` declares
+          `xAxis stageIndex;` and carries no column of that name (it has: T,
+          stage, x_benzene, x_toluene, y_benzene, y_toluene).  This file is
+          one the engine's own reader refuses -- copied into 0/ it gives
+          exit 2."
+  S16 replaced the COPY instruction in that same tracked witness with the
+      reads-nothing sentence
+      -> "(q): .../0/internalStates/column16 is for a 'distillationColumn',
+          which READS stageProfile, and does not carry the COPY instruction."
+  S17 disarmed the writer's guard (`if (false && prof.columns.empty())`)
+      -> "(r): src/io/InternalStateIO.cpp no longer guards a profile whose
+          declared axis is not one of its columns.  Without it the writer
+          emits `xAxis <name>;` with no such column -- a file its own reader
+          refuses."
+  S18 made the refusal `throw` instead of writing to stderr -- TWO arms fired:
+      -> "(r): the refusal THROWS.  The call site turns a throw into one
+          warning and no interiors AT ALL for the case -- the partial tree
+          that lies by omission." AND "(r): the refusal is not written to
+          stderr, so it depends on how loudly the run was asked to speak.  A
+          refusal is not a report."
+  S19 re-taught the retired shape in `docs/ai/stream-state.md` ("one DIRECTORY
+      per unit, one file per kind")
+      -> "(k/docs): the RETIRED one-directory-per-unit shape is still taught
+          at docs/ai/stream-state.md:282."
+  S20 renamed `readsInteriorKinds` to `readsInteriorKindsXX` in
+      `DistillationColumn.H` (source text, not rebuilt), so no class overrides
+      it and the derived type -> kinds map is empty
+      -> "(q): no registered type was found to read ANY interior kind -- the
+          derivation is broken and the arm would wave every COPY instruction
+          through."
+
+  ARM (p) HAS NO POST-FIX SABOTAGE, said plainly.  It runs the real binary, so
+  nothing short of rebuilding a broken engine reaches it -- and rebuilding is
+  the tree-poisoning shape only `check_gate_selftest` may take.  Its evidence
+  is the DEFECT ITSELF, observed on the shipped binary before the fix: a fresh
+  `crystalliser02_msmpr` run wrote `xAxis L_micron;` with columns
+  {mass_density, number_density}, and copying that file into
+  `0/internalStates/cryst` gave exit 2 with "declares `xAxis L_micron;` and
+  carries no column of that name -- the axis is the one column that must be
+  there."  That is precisely the state this arm forbids.
+
   NOT SABOTAGED, and said rather than implied: the two `[seed]` announcements
   and the `[names]` announcement themselves.  Suppressing one needs a source
   patch and a rebuild, which is the shape only `check_gate_selftest` may
@@ -251,6 +362,16 @@ FLAT    = "tutorials/steady/distillation/column09_tray_hydraulics"  # stageProfi
 SWEPT   = "tutorials/steady/heat/coolingTower01_merkel"             # T_K: NO file
 SWING   = "tutorials/steady/separation/psa01_h2_psa"                # componentIndex -> swingTable
 SEEDED  = "tutorials/steady/distillation/column16_declared_interior"  # ships 0/internalStates/column16
+CRYST   = "tutorials/steady/crystallisation/crystalliser02_msmpr"   # sizeDistribution, READS none
+
+#  THE CASES THIS GATE RUNS, and therefore the ONLY cases whose `converged/`
+#  it may read.  A `converged/` tree is a gitignored RUN OUTPUT: whatever
+#  happens to be on disk was written by whichever binary ran last, so an arm
+#  that sweeps every case under tutorials/ is reading a stale artefact and
+#  reporting it as today's engine.  The domain is: what these runs just wrote,
+#  plus every interior record TRACKED in git (the authored `0/` half, which is
+#  what a student opens in the repository).
+FRESH = (FRACTAL, FLAT, SWING, SWEPT, CRYST, SEEDED)
 
 VIEW  = "converged"
 IROOT = "internalStates"      # InternalStateIO::ROOT, recounted
@@ -864,8 +985,403 @@ def check_retired(problems, notes):
                         "No rule may: converged/ already covers the engine's half, "
                         "and a rule on the name takes the AUTHORED 0/ half with it."
                         % (hits, IROOT))
-    if not stale and IROOT not in roots and not hits:
-        notes.append("no top-level %s/ view in the tree, the GUI roots or .gitignore" % IROOT)
+    #  THE RETIRED SHAPE IN docs/, which no arm looked for.  Arm (k) swept
+    #  src/, bin/, gui/ and .gitignore for the retired NAME; nothing looked in
+    #  docs/ for the retired SHAPE, and `bin/llmctx` ships docs/ai/ to an
+    #  assistant helping a student author a case -- so a stale sentence there
+    #  is a wrong case authored tomorrow.  The phrases below described the
+    #  2026-09-06 MORNING layout (a DIRECTORY per unit, one file per kind),
+    #  which the engine now REFUSES BY NAME as MISFILED.  A design record may
+    #  quote them as history; nothing else may state them.
+    retired_shape = [
+        "DIRECTORY per unit",
+        "a DIRECTORY a unit's interior",
+        "a DIRECTORY is a unit",
+    ]
+    doc_hits = []
+    #  The RECORD homes are exempt, and only they: a design record and the
+    #  decision index exist to state what was decided AND what amended it, so
+    #  they quote the retired shape with its amendment in the same sentence.
+    #  Every TEACHING page is held.
+    for f in sorted((ROOT / "docs").rglob("*.md")) + sorted((ROOT / "docs").rglob("*.tex")):
+        rel = str(f.relative_to(ROOT))
+        if (rel.startswith("docs/design/") or "/archive/" in rel
+                or rel == "docs/architecture/decision-records.md"):
+            continue
+        body = f.read_text(errors="replace")
+        for n, line in enumerate(body.splitlines(), 1):
+            for phrase in retired_shape:
+                if phrase in line:
+                    doc_hits.append("%s:%d" % (f.relative_to(ROOT), n))
+    if doc_hits:
+        problems.append("check_internal_states(k/docs): the RETIRED "
+                        "one-directory-per-unit shape is still taught at %s.  A "
+                        "unit's interior is ONE file at "
+                        "<view>/internalStates/<SECTOR>/<unit> with one block per "
+                        "kind; the engine refuses the old shape as MISFILED, and "
+                        "bin/llmctx ships docs/ai/ to an assistant authoring cases."
+                        % ", ".join(doc_hits[:6]))
+    if not stale and IROOT not in roots and not hits and not doc_hits:
+        notes.append("no top-level %s/ view in the tree, the GUI roots, .gitignore "
+                     "or the docs, and no docs/ page teaches the retired "
+                     "one-directory-per-unit shape" % IROOT)
+
+
+# ---------------------------------------------------------------------------
+#  (o) THE AXIS A PROFILE DECLARES IS A COLUMN OF IT.
+# ---------------------------------------------------------------------------
+def check_axis_present(problems, notes):
+    """(o) A profile publishes `xAxis <name>` AND a column called <name>, on
+    every surface that carries it.
+
+    WHY THIS ARM EXISTS.  It did not, and that is exactly why the defect it
+    now catches survived: arm (c) compares the written block against the JSON
+    `profiles` block, and the crystalliser was missing its size axis in BOTH
+    -- equally -- so two wrong projections of one incomplete record agreed
+    perfectly and the gate passed.  The writer emitted `xAxis L_micron;` and
+    no `L_micron` column; the reader refuses exactly that file; and the JSON,
+    `profile.csv`, the spreadsheet and the GUI plot all look the axis up in
+    `columns` and silently draw nothing.  A crystal size distribution was
+    published everywhere without the size it is distributed over.
+
+    Three halves, because one alone would miss it:
+
+      (o1) SOURCE, and it COUNTS.  A file under `src/unitOperations/` that
+           assigns a literal `xAxis` at N sites must assign that axis column
+           at least N times (through `columns` or a reference bound to it).
+           The count is not decoration: a presence test alone was written
+           first and SURVIVED its own sabotage -- the crystalliser has TWO
+           profile sites on `L_micron`, and the second satisfied the test
+           after the first was removed.  Its LIMIT: a helper legitimately
+           filling two profiles from one assignment would be accused; none
+           does, and every pair in the corpus has margin.
+      (o2) CORPUS.  Every interior RECORD this gate's own runs produced, plus
+           every one TRACKED in git, declares an axis it carries -- the
+           reader's own precondition, swept.  The domain is deliberately NOT
+           "every case under tutorials/": a `converged/` tree is a gitignored
+           run output, so sweeping all of them reads whatever the last binary
+           to run left behind and reports it as today's engine.
+      (o3) JSON.  In the cases this gate runs, every published profile carries
+           its declared axis, INCLUDING the ones the writer declines (`T_K`):
+           a declined profile writes no file and still reaches the JSON, the
+           CSV, the spreadsheet and the plot.
+    """
+    # ---------------------------------------------------------------- (o1)
+    src = ROOT / "src" / "unitOperations"
+    sites = 0
+    for f in sorted(src.rglob("*.cpp")):
+        body = f.read_text(errors="replace")
+        #  A unit may subscript `columns` DIRECTLY or through a reference
+        #  bound to it (`auto& cols = profile_->columns;` -- SpiralWoundModule
+        #  and PSA both do).  Both are the same act, so the arm resolves the
+        #  aliases the file itself declares rather than reading only the long
+        #  form and accusing correct code.
+        holders = ["columns"] + re.findall(
+            r'auto\s*&\s*(\w+)\s*=\s*[\w>.\-]*\bcolumns\s*;', body)
+        axes = set(re.findall(r'xAxis\s*=\s*"([^"]+)"', body))
+        for ax in sorted(axes):
+            #  COUNT, do not merely look.  A file with TWO profile sites on one
+            #  axis satisfies a mere presence test with ONE of them -- measured:
+            #  removing the crystalliser's MSMPR axis assignment and leaving the
+            #  population-balance one left the first draft of this arm GREEN.
+            #  So a file declaring an axis at N sites must assign that axis
+            #  column at least N times.  Its LIMIT, stated: a helper that
+            #  legitimately filled two profiles from one assignment would be
+            #  accused.  None does -- every pair in the corpus has margin
+            #  (stage 3:2, V 4:2, T_K 2:1) -- and the day one appears the remedy
+            #  is to say so here, not to drop the count.
+            n_ax = len(re.findall(r'xAxis\s*=\s*"%s"' % re.escape(ax), body))
+            n_col = sum(len(re.findall(r'%s\["%s"\]' % (re.escape(h), re.escape(ax)),
+                                       body)) for h in holders)
+            sites += n_ax
+            if n_col < n_ax:
+                problems.append(
+                    "check_internal_states(o1): %s declares `xAxis = \"%s\"` at %d "
+                    "site(s) and assigns `columns[\"%s\"]` at %d.  The axis is the "
+                    "one column that must be there: the interior writer REFUSES "
+                    "the profile, and the JSON, profile.csv, the spreadsheet and "
+                    "the GUI plot each draw nothing where the axis should be."
+                    % (f.relative_to(ROOT), ax, n_ax, ax, n_col))
+    if sites == 0:
+        problems.append("check_internal_states(o1): no `xAxis = \"...\"` site found "
+                        "under src/unitOperations/ -- the arm cannot fire.")
+
+    # ---------------------------------------------------------------- (o2)
+    records = 0
+    for f in live_records():
+        records += 1
+        parsed = parse_file(f.read_text(errors="replace"))
+        for bname, blk in parsed["blocks"].items():
+            ax = blk["xAxis"]
+            if ax and ax not in blk["columns"]:
+                problems.append(
+                    "check_internal_states(o2): %s block `%s` declares `xAxis %s;` "
+                    "and carries no column of that name (it has: %s).  This file "
+                    "is one the engine's own reader refuses -- copied into 0/ it "
+                    "gives exit 2."
+                    % (f.relative_to(ROOT), bname, ax,
+                       ", ".join(sorted(blk["columns"])) or "nothing"))
+    notes.append("axis present in %d source site(s) and %d interior record(s)"
+                 % (sites, records))
+    if records == 0:
+        problems.append("check_internal_states(o2): no interior record was in "
+                        "reach -- the arm cannot fire.")
+
+
+def live_records():
+    """Every interior record this gate is entitled to read: the ones its own
+    runs just produced, plus every one tracked in git."""
+    out = []
+    for rel in FRESH:
+        view = ROOT / rel / VIEW / IROOT
+        if view.is_dir():
+            out += [f for f in sorted(view.rglob("*")) if f.is_file()]
+    try:
+        tracked = subprocess.run(["git", "ls-files", "tutorials"], cwd=str(ROOT),
+                                 capture_output=True, text=True, check=True).stdout
+    except Exception:
+        tracked = ""
+    for line in tracked.splitlines():
+        f = ROOT / line
+        if f.is_file() and is_interior_record(f):
+            out.append(f)
+    seen, uniq = set(), []
+    for f in out:
+        if f in seen or not is_interior_record(f):
+            continue
+        seen.add(f)
+        uniq.append(f)
+    return uniq
+
+
+def check_axis_in_json(rel, problems):
+    """(o3) on one case: every published profile carries its own axis."""
+    rc, out, err = run_case(ROOT / rel)
+    if rc != 0:
+        problems.append("check_internal_states(o3): %s failed (rc=%d)." % (rel, rc))
+        return
+    j = result_json(out) or {}
+    for unit, prof in (j.get("profiles", {}) or {}).items():
+        ax = prof.get("xAxis", "")
+        cols = prof.get("columns", {}) or {}
+        if ax and ax not in cols:
+            problems.append(
+                "check_internal_states(o3): %s publishes a profile for unit '%s' "
+                "declaring xAxis '%s' with no column of that name (it has: %s).  "
+                "The JSON, profile.csv, the spreadsheet and the GUI plot all read "
+                "the axis out of `columns`; a DECLINED profile (T_K) writes no "
+                "file and still reaches all four."
+                % (rel, unit, ax, ", ".join(sorted(cols)) or "nothing"))
+
+
+# ---------------------------------------------------------------------------
+#  (p) THE ROUND TRIP ON A UNIT THAT READS NOTHING.
+# ---------------------------------------------------------------------------
+def check_round_trip_crystalliser(problems, notes):
+    """(p) The round trip, taken on a CRYSTALLISER rather than on the column.
+
+    WHAT THE CLAIM IS, and what it is NOT.  Arm (g) runs the round trip on the
+    ONE unit type that reads a declared interior, so for eleven months of unit
+    types nothing exercised the reader against what the writer produced.  A
+    crystalliser reads NO kind, so its round trip cannot end in a seed -- what
+    it can and must show is that the file the writer produced is one the
+    reader ACCEPTS, and that the refusal which then follows is the RIGHT one:
+    `NOTHING reads it`, never `carries no column of that name`.  Those two
+    refusals are one keystroke apart in the output and a world apart in
+    meaning: the first is a correct statement about this unit type, the second
+    is the writer having emitted a file its own reader rejects.
+    """
+    tmp = Path(tempfile.mkdtemp(prefix="choupo_cryst_"))
+    try:
+        case = tmp / "cryst"
+        shutil.copytree(ROOT / CRYST, case)
+        shutil.rmtree(case / VIEW, ignore_errors=True)
+        rc, out, err = run_case(case)
+        if rc != 0:
+            problems.append("check_internal_states(p): %s failed (rc=%d)." % (CRYST, rc))
+            return
+        written = list((case / VIEW / IROOT).rglob("*"))
+        written = [w for w in written if w.is_file()]
+        if len(written) != 1:
+            problems.append("check_internal_states(p): %s wrote %d interior file(s), "
+                            "expected exactly one." % (CRYST, len(written)))
+            return
+        src = written[0]
+        blk = parse_file(src.read_text(errors="replace"))["blocks"]
+        if "sizeDistribution" not in blk:
+            problems.append("check_internal_states(p): %s wrote no sizeDistribution "
+                            "block (%s)." % (CRYST, sorted(blk)))
+            return
+        if blk["sizeDistribution"]["xAxis"] not in blk["sizeDistribution"]["columns"]:
+            problems.append("check_internal_states(p): %s wrote a sizeDistribution "
+                            "declaring `xAxis %s;` with no such column."
+                            % (CRYST, blk["sizeDistribution"]["xAxis"]))
+            return
+
+        dest = case / "0" / IROOT / src.relative_to(case / VIEW / IROOT)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(src, dest)
+        rc2, out2, err2 = run_case(case)
+        blob = out2 + err2
+        if rc2 == 0:
+            problems.append("check_internal_states(p): %s declared its OWN interior "
+                            "in 0/ and the run SUCCEEDED.  A crystalliser reads no "
+                            "kind; a declared field nobody reads must refuse."
+                            % CRYST)
+        elif "carries no column of that name" in blob:
+            problems.append("check_internal_states(p): %s refused its own written "
+                            "interior for the MISSING AXIS -- the writer emitted a "
+                            "file its own reader rejects:\n    %s"
+                            % (CRYST, blob.strip()[-300:]))
+        elif "NOTHING reads it" not in blob:
+            problems.append("check_internal_states(p): %s refused its own interior, "
+                            "but not as the kind nobody reads:\n    %s"
+                            % (CRYST, blob.strip()[-300:]))
+        else:
+            notes.append("round trip on a crystalliser: the written file PARSES "
+                         "(axis present) and refuses only as the kind nothing reads")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+# ---------------------------------------------------------------------------
+#  (q) THE HEADER SENTENCE IS CONDITIONED ON THE UNIT.
+# ---------------------------------------------------------------------------
+COPY_SENTENCE = "COPY it into the case's `0/internalStates/`"
+NOREAD_SENTENCE = "THIS UNIT READS NO DECLARED INTERIOR"
+
+
+def interior_readers():
+    """type key -> the kinds a unit of that type READS -- DERIVED from the
+    engine's own source, never tabulated here.  A table would be a second home
+    for `readsInteriorKinds()`, which is the defect this project spends its
+    slices closing; so: find every class that OVERRIDES it and the literals it
+    returns, then map each class to the type key `registerBuiltins()` gives it.
+    A type absent from the result reads nothing, which is exactly what
+    `UnitOperation::interiorKindsRead` returns for it."""
+    by_class = {}
+    for f in sorted((ROOT / "src/unitOperations").rglob("*.H")):
+        body = f.read_text(errors="replace")
+        m = re.search(r'readsInteriorKinds\(\)\s*const\s*override\s*\{?\s*'
+                      r'return\s*\{([^}]*)\}', body, re.S)
+        if not m:
+            continue
+        kinds = re.findall(r'"([^"]+)"', m.group(1))
+        for cm in re.finditer(r'^class\s+(\w+)', body, re.M):
+            by_class[cm.group(1)] = kinds
+    reg = (ROOT / "src/unitOperations/UnitOperation.cpp").read_text(errors="replace")
+    out = {}
+    for key, cls in re.findall(r'reg\("([^"]+)"\s*,\s*\[\]\{\s*return\s+'
+                               r'std::make_unique<(\w+)>', reg):
+        out[key] = by_class.get(cls, [])
+    return out
+
+
+def check_header_sentence(problems, notes):
+    """(q) The instruction a file carries must be TRUE OF THE UNIT it is about.
+
+    Every interior file used to carry `COPY it into the case's
+    0/internalStates/ ... to DECLARE it as the interior the next run starts
+    from`.  That is correct for `distillationColumn` and FATAL for every other
+    type: the copy is refused by name, exit 2, and both units that publish an
+    interior in the flagship plant are in the second group.  Same defect shape
+    as commit d4e173fb0 -- a pop-out telling every reader to edit a file the
+    run rewrites.
+
+    The writer holds the fact (`UnitOperation::interiorKindsRead`, handed in
+    as data), so: a file for a unit that READS its kind carries the COPY
+    instruction and names the kind; a file for a unit that reads NONE carries
+    the "reads no declared interior" sentence and NOT the COPY instruction.
+    """
+    readers = interior_readers()
+    if not any(readers.values()):
+        problems.append("check_internal_states(q): no registered type was found to "
+                        "read ANY interior kind -- the derivation is broken and the "
+                        "arm would wave every COPY instruction through.")
+        return
+    seen_copy = seen_noread = 0
+    for f in live_records():
+        txt = f.read_text(errors="replace")
+        has_copy = COPY_SENTENCE in txt
+        has_noread = NOREAD_SENTENCE in txt
+        if has_copy and has_noread:
+            problems.append("check_internal_states(q): %s carries BOTH the COPY "
+                            "instruction and the reads-nothing sentence."
+                            % f.relative_to(ROOT))
+            continue
+        if not has_copy and not has_noread:
+            problems.append("check_internal_states(q): %s carries NEITHER sentence "
+                            "-- a reader is told nothing about what the file is for."
+                            % f.relative_to(ROOT))
+            continue
+        m = re.search(r'^equipment\s+(\S+?);', strip_comments(txt), re.M)
+        etype = m.group(1) if m else ""
+        reads = readers.get(etype)
+        if reads is None:
+            problems.append("check_internal_states(q): %s names equipment '%s', which "
+                            "`registerBuiltins()` does not register -- the gate "
+                            "cannot say what that type reads."
+                            % (f.relative_to(ROOT), etype))
+            continue
+        blocks = set(parse_file(txt)["blocks"])
+        should_copy = bool(blocks & set(reads))
+        if should_copy and not has_copy:
+            problems.append("check_internal_states(q): %s is for a '%s', which READS "
+                            "%s, and does not carry the COPY instruction."
+                            % (f.relative_to(ROOT), etype, ", ".join(reads)))
+        if not should_copy and has_copy:
+            problems.append("check_internal_states(q): %s is for a '%s', which reads "
+                            "NOTHING this file carries, and tells its reader to COPY "
+                            "it into 0/ -- an instruction that ends the next run at "
+                            "exit 2." % (f.relative_to(ROOT), etype))
+        seen_copy += 1 if has_copy else 0
+        seen_noread += 1 if has_noread else 0
+    if seen_copy == 0 or seen_noread == 0:
+        problems.append("check_internal_states(q): the corpus shows %d file(s) with "
+                        "the COPY instruction and %d with the reads-nothing sentence "
+                        "-- both branches must have a live case or the arm proves "
+                        "only one of them." % (seen_copy, seen_noread))
+    else:
+        notes.append("header sentence: %d file(s) say COPY, %d say the unit reads "
+                     "none" % (seen_copy, seen_noread))
+
+
+# ---------------------------------------------------------------------------
+#  (r) THE WRITER REFUSES A PROFILE WHOSE DECLARED AXIS IS ABSENT.
+# ---------------------------------------------------------------------------
+def check_writer_refusal(problems, notes):
+    """(r) SOURCE, and it can only be a source arm: NOTHING a case declares can
+    make a unit publish an axis it does not carry -- only a unit's own C++ can
+    -- so no fixture reaches this refusal and there is nothing to run.  What is
+    checked is that the guard is at the seam that partitions the profiles, that
+    it does not throw (the call site has already ruled a writer failure said and
+    never fatal, and a throw in that loop would take every OTHER unit's interior
+    with it -- the 2026-09-04 partial-tree lesson), and that it reaches the
+    caveat surface rather than only the console."""
+    w = (ROOT / "src/io/InternalStateIO.cpp").read_text(errors="replace")
+    if "if (!prof.columns.count(prof.xAxis))" not in w:
+        problems.append("check_internal_states(r): src/io/InternalStateIO.cpp no "
+                        "longer guards a profile whose declared axis is not one of "
+                        "its columns.  Without it the writer emits `xAxis <name>;` "
+                        "with no such column -- a file its own reader refuses.")
+        return
+    guard = w.split("if (!prof.columns.count(prof.xAxis))", 1)[1][:2500]
+    if "AdvisoryLog::instance().add(" not in guard:
+        problems.append("check_internal_states(r): the refusal does not reach "
+                        "AdvisoryLog, so it is absent from the end-of-run caveat "
+                        "block and from the result JSON -- a slightly louder form "
+                        "of silence.")
+    if "throw" in guard:
+        problems.append("check_internal_states(r): the refusal THROWS.  The call "
+                        "site turns a throw into one warning and no interiors AT "
+                        "ALL for the case -- the partial tree that lies by "
+                        "omission.  Refuse the profile, keep the others.")
+    if "std::cerr" not in guard:
+        problems.append("check_internal_states(r): the refusal is not written to "
+                        "stderr, so it depends on how loudly the run was asked to "
+                        "speak.  A refusal is not a report.")
+    notes.append("the writer refuses an axis-less profile at the partition seam, "
+                 "without throwing")
 
 
 def check_ignored(problems):
@@ -1001,7 +1517,15 @@ def main() -> int:
         problems.append("%s: the PSA profile is not filed as a swingTable block (%s)."
                         % (SWING, sorted(k3)))
     check_swept(problems, notes)
+    #  (o3) FIRST, because it RUNS its cases: (o2) reads what is on disk, and
+    #  the crystalliser's `converged/` is only this run's if this run wrote it.
+    for rel in (FRACTAL, CRYST, SWEPT):
+        check_axis_in_json(rel, problems)
+    check_axis_present(problems, notes)
     check_round_trip(problems, notes)
+    check_round_trip_crystalliser(problems, notes)
+    check_header_sentence(problems, notes)
+    check_writer_refusal(problems, notes)
     check_no_retired_shape(problems, notes)
     check_retired(problems, notes)
     check_ignored(problems)
@@ -1023,18 +1547,40 @@ def main() -> int:
           "published profile value by value at 1e-9 (%s); no record answers to "
           "an unpublished profile; the T_K construction on the cooling tower "
           "produced no record and no internalStates/ and was announced; the swing "
-          "table is filed as internal state.  THE ROUND TRIP HOLDS: the witness "
+          "table is filed as internal state.  THE AXIS A PROFILE DECLARES IS A "
+          "COLUMN OF IT: every `xAxis` literal in src/unitOperations/ is assigned "
+          "as a column in its own file, every interior record under tutorials/ "
+          "carries the axis it declares (the records THIS run produced "
+          "plus every one git tracks -- a converged/ tree this gate did not "
+          "write is a stale artefact and is not read), and every profile the "
+          "fractal plant, the "
+          "crystalliser and the cooling tower publish carries its own axis in the "
+          "JSON -- the DECLINED T_K one included, because a declined profile "
+          "writes no file and still reaches profile.csv, the spreadsheet and the "
+          "GUI plot.  THE ROUND TRIP HOLDS: the witness "
           "ships the file converged/ wrote, announces `[seed] interior read from "
           "0/`, reproduces its own golden, and the same case with the declaration "
           "removed announces the other route (%s); a stage count wrong by one, an "
           "orphan file, the RETIRED one-directory-per-unit shape, a second block "
           "nobody reads and a block that is not a kind each REFUSE by name (a unit "
           "WRITING two kinds has no live case: the result record holds one profile "
-          "per unit).  THE HOMONYM: a stream and a unit both named column16 live "
+          "per unit).  AND IT HOLDS ON A UNIT THAT READS NOTHING: the "
+          "crystalliser's own written interior PARSES, its axis is present, and "
+          "copied into 0/ it refuses ONLY as the kind nothing reads -- never for "
+          "a missing axis.  EVERY FILE'S HEADER SENTENCE IS TRUE OF ITS UNIT: a "
+          "unit that reads its kind is told to COPY the file and which kind it "
+          "reads; a unit that reads none is told the copy would be refused, and "
+          "both branches have live cases (the type -> kinds map is derived from "
+          "the readsInteriorKinds() overrides joined to registerBuiltins(), not "
+          "tabulated).  THE WRITER REFUSES an axis-less profile at the partition "
+          "seam, to stderr and to AdvisoryLog, without throwing.  THE HOMONYM: a "
+          "stream and a unit both named column16 live "
           "at two paths, neither overwritten, and the run says so once.  No record "
           "sits outside internalStates/ in any state view under tutorials/; the "
           "retired top-level view is gone from the tree, the GUI roots and "
-          ".gitignore; what the run writes is gitignored, what the case declares "
+          ".gitignore, and no page under docs/ outside docs/design/ teaches the "
+          "retired one-directory-per-unit shape; what the run writes is "
+          "gitignored, what the case declares "
           "is not, docs/design/ stays committable, and the glob's second lock is "
           "on converged/.  THE RESOLVERS CARRY THE KIND: readStateDir skips "
           "internalStates/ by name, the interior reader walks it alone and "
@@ -1042,7 +1588,12 @@ def main() -> int:
           "discriminator and its keep-list reads the view.  NOT CHECKED: whether "
           "a declared profile is RIGHT (it is a SEED, not an answer), the engine's "
           "parser on any kind but stageProfile, a unit writing two kinds (none "
-          "exists), the V/z/z_m/position axes and the two undeclared ones beyond "
+          "exists), whether an axis column holds the RIGHT numbers or how well "
+          "the header sentence READS, WHICH FUNCTION an axis assignment belongs "
+          "to (arm (o1) counts per file and per axis, so it proves a file "
+          "assigns the axis at least as often as it declares it, not that each "
+          "declaration is paired with its own), the V/z/z_m/position axes and the two "
+          "undeclared ones beyond "
           "the suite running them, iterations/ and the dynamic instants (neither "
           "carries interiors), the ownership rule's sector (it reads the same "
           "STAMP since 2026-09-06 and check_sector_hierarchy arm (g) holds "

@@ -934,12 +934,12 @@ try
     //  componentFlows grammar, under converged/SECTOR/.../stream.  This is the
     //  disk truth a topological drill-in materialises a child 0/ from
     //  (docs/architecture/stream-state-architecture.md).  Only on convergence.
-    //  OWNERSHIP (arch doc 8.4): a stream lives FLAT under its owning SECTOR --
-    //  `<dir>/SECTOR/streamName` (no unit sub-path).  Internal / inter-sector /
-    //  external-outlet streams are owned by their PRODUCING sector; an external
-    //  inlet (a feed) by its CONSUMING sector.  Built from the flattened
-    //  topology: unit `SECTOR.op` -> its outputs owned by SECTOR; a feed (an
-    //  input produced by nobody) owned by the sector that consumes it.
+    //  OWNERSHIP (arch doc 2.4, 2026-09-07): a stream lives FLAT at the LOWEST
+    //  LEVEL of the case whose subtree contains EVERY ENDPOINT of it -- its own
+    //  sector when both ends are inside one, `MAIN/` when it crosses two or
+    //  when the domain boundary is one of its ends.  DO NOT RESTATE THE RULE
+    //  BELOW: this comment is prose and the answer comes from the one home,
+    //  `StreamOwnership::canonicalManifest`.
     auto sectorOwnedPaths = [](const SimulationResult& result)
         -> std::map<std::string, fs::path>
     {
@@ -1003,8 +1003,21 @@ try
         //  answer is already computed.  A `T_K` profile (van Heerden, Merkel)
         //  is an analysis over a swept parameter, not equipment state; the
         //  writer skips and announces it.
+        //  WHICH KINDS EACH TYPE READS, asked of the CLASS and handed to
+        //  the writer as data.  `applications/` is where the two sides may
+        //  meet: `io` must not include `unitOperations` (the reverse edge
+        //  exists and a cycle would close), and the writer must not keep a
+        //  table of its own -- the header sentence it prints in every file
+        //  depends on the answer, so a stale copy would be a wrong
+        //  instruction in every interior the run writes.
+        std::map<std::string, std::vector<std::string>> readsByType;
+        for (const auto& u : result.topology)
+            if (!readsByType.count(u.type))
+                readsByType[u.type] = UnitOperation::interiorKindsRead(u.type);
+
         try {
-            InternalStateIO::write(dir.string(), result, verbosity);
+            InternalStateIO::write(dir.string(), result, verbosity,
+                                   readsByType);
         } catch (const std::exception& e) {
             std::cerr << "\nWARNING: the unit interiors were not written into"
                          " converged/:\n  " << e.what() << "\n";

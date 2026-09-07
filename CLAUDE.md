@@ -189,8 +189,11 @@ case/
 * **In a FRACTAL case a CAPS folder is always a level of the plant's
   geography, and a plant-level unit lives in `MAIN/`** (2026-09-05; `MAIN/`
   is the DOMAIN'S OWN LEVEL rather than a sector like the others since
-  2026-09-07).  Every VIEW of the case (`0/`, `converged/`, `design/`)
-  repeats the one geography `MAIN · <SECTORS>`; `system/` (HOW) and
+  2026-09-07).  The STATE views (`0/`, `converged/`) repeat the one geography
+  `MAIN · <SECTORS>`; a DERIVATIVE view carries only the levels it has
+  something to say about, and its absence is a fact rather than a defect (a
+  `design/` has no level for a sector whose units realise no sized item, and
+  `iterations/` repeats the geography inside each INSTANT).  `system/` (HOW) and
   `constant/` (WITH WHAT) sit at every level of the fractal and never inside
   the geography.  A convention for humans, never inferred by the engine from
   capitals, never forced on a flat case (its units ARE the plant).  A stream's
@@ -1282,6 +1285,39 @@ in its own blind-spot list) · `check_caveat_surface` (arm e — its arm (d) is 
 SOURCE check and cannot see an enclosing `if`) · `check_v2_refusals` (the
 solid-phase arm).  Record:
 [`docs/design/three-silences-at-exit-zero.md`](docs/design/three-silences-at-exit-zero.md).
+
+**A SIZE DISTRIBUTION WITH NO SIZE AXIS, AND A HEADER THAT BROKE THE NEXT RUN
+(2026-09-07).**  Rule: **the axis a profile DECLARES is a column of it**, and
+the interior writer REFUSES one that is not — at the seam that partitions the
+profiles, to stderr and `AdvisoryLog`, and deliberately NOT by throwing (the
+call site has ruled a writer failure said-and-never-fatal, and a throw there
+takes every OTHER unit's interior with it).  What settled the refusal: no CASE
+can reach it — only a unit's own C++ can publish an axis it does not carry —
+so it is a contract on unit authors and costs a student nothing.  The
+crystalliser built its size grid and never stored it, so `xAxis L_micron` was
+published with no `L_micron` in the result JSON, `profile.csv`, the
+spreadsheet AND the GUI plot (all four resolve the axis through
+`columns[xAxis]`), and the interior file it wrote was one the engine's own
+reader refuses.  Second rule: **an instruction a file carries must be true of
+the unit it is about** — every interior header told its reader to COPY the
+file into `0/internalStates/`, which is right for `distillationColumn` and
+exit 2 for every other type; the sentence is CONDITIONED now, on a fact asked
+of the CLASS (`UnitOperation::interiorKindsRead`, the ONE home) and handed to
+the writer as DATA, because `io` may not include `unitOperations`.  Corrected
+with it: *every view repeats the geography* was measured FALSE (a DERIVATIVE
+view carries only the levels it has something to say about), and the retired
+one-directory-per-unit shape plus the retired PRODUCER ownership rule were
+still being taught in `docs/ai/`, which `bin/llmctx` ships to an assistant
+authoring cases.  Two durable traps: **two incomplete projections of one
+incomplete record agree perfectly** (the gate's value-by-value arm compared
+the written block against the JSON and both were missing the axis EQUALLY),
+and **a gate that sweeps `converged/` trees is reading a gitignored run
+output** — whatever binary ran last — not today's engine.  NOT done: no golden
+row kind reads a profile column, so a published profile column is pinned by
+nothing.  Gate: `check_internal_states` arms (o)-(r) + the docs half of (k)
+(7 sabotages, ONE survived: a presence test satisfied by the second of two
+sites, so the arm COUNTS).  Record:
+[`docs/design/a-size-distribution-with-no-size-axis.md`](docs/design/a-size-distribution-with-no-size-axis.md).
 
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
 The doctrine says a check that cannot run must not PASS; the MIRROR is just as

@@ -93,7 +93,9 @@ struct SimulationResult
     // Plant-boundary OUTLET aliases: a sector output (BRINE.halite) is COPIED
     // onto the domain boundary name (halite) for reporting/GUI, so `streams`
     // holds both.  The stream-state writer skips these -- the state model stores
-    // each stream ONCE, owned by its producing sector (arch doc 8.4).
+    // each stream ONCE, at the level `StreamOwnership` puts it at (arch doc
+    // 2.4).  An alias is a LABEL for a stream a sector already owns, never a
+    // second state file, which is why a plant OUTLET does not rise.
     std::set<std::string>                                         boundaryAliases;
     // alias/label -> the stream identity it copies (one physical stream,
     // two names; reports count the identity once, under the alias name)

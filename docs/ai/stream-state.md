@@ -277,7 +277,7 @@ neither convention's number.
 
 | Directory | Holds |
 |---|---|
-| `0/` | the COMPLETE initial state: one FILE per stream, plus (optionally) one DIRECTORY per unit holding the interior the case declares |
+| `0/` | the COMPLETE initial state: one FILE per stream, plus (optionally) `internalStates/<SECTOR>/<unit>` — ONE file per unit — holding the interior the case declares |
 | `converged/` | the steady solution, both halves |
 | `iterations/` | optional numerical history — NEVER physical time |
 | `0.01/` `0.02/` … | physical transient snapshots |

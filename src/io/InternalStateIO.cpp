@@ -30,6 +30,7 @@ License
 
 #include "core/Dictionary.H"
 
+#include "core/Advisory.H"
 #include "core/FlatUnit.H"
 #include "result/UnitProfile.H"
 
@@ -235,7 +236,9 @@ void renderBlock(std::ostringstream& o, const std::string& kind,
 
 std::size_t write(const std::string&      viewRoot,
                   const SimulationResult& result,
-                  int                     verbosity)
+                  int                     verbosity,
+                  const std::map<std::string, std::vector<std::string>>&
+                                          readsByType)
 {
     //  STALE FILES CANNOT LINGER, AND NOT BECAUSE THIS FUNCTION REMOVES THEM.
     //  The view root is `converged/`, which its own writer removes and
@@ -266,6 +269,7 @@ std::size_t write(const std::string&      viewRoot,
     std::map<std::string, bool>  declaredOf;   // "unit/kind" -> declared?
     std::vector<std::string>     skipped;      // T_K profiles, by unit
     std::vector<std::string>     undeclared;   // "unit (axis)" with no kind
+    std::vector<std::string>     axisless;     // refused: axis not a column
     for (const auto& [uname, prof] : result.profiles)
     {
         bool declared = true;
@@ -275,6 +279,53 @@ std::size_t write(const std::string&      viewRoot,
             skipped.push_back(uname);
             continue;
         }
+
+        //  THE AXIS A PROFILE DECLARES MUST BE A COLUMN OF IT, and this is
+        //  the seam that refuses it.  `renderBlock` emits `xAxis <name>;`
+        //  unconditionally while emitting the axis COLUMN only when the
+        //  profile carries one, so an axis-less profile becomes a file whose
+        //  first key `read` rejects by name -- and the same incomplete record
+        //  goes on to the result JSON, `profile.csv`, the spreadsheet and the
+        //  GUI plot, all four of which look the axis up in `columns` and draw
+        //  nothing when it is absent.  A writer whose output its own reader
+        //  refuses is a bug in BOTH; this is the writer's half.
+        //
+        //  It REFUSES rather than throwing, and both halves are deliberate.
+        //  It refuses because a file `0/` cannot accept must not be written.
+        //  It does not throw because the call site has already ruled that a
+        //  failure here is said and never fatal -- the answer is computed --
+        //  and because a throw in this loop would take every OTHER unit's
+        //  interior with it, the partial tree that lies by omission (the
+        //  2026-09-04 design-sheet lesson).  Nothing a case declares can
+        //  reach this: only a unit's own source can publish an axis it does
+        //  not carry, so the refusal is a contract on unit authors and costs
+        //  a student nothing.
+        if (!prof.columns.count(prof.xAxis))
+        {
+            std::string have;
+            for (const auto& [cname, cvals] : prof.columns)
+            {
+                (void)cvals;
+                have += (have.empty() ? "" : ", ") + cname;
+            }
+            const std::string msg =
+                "unit '" + uname + "' publishes a profile declaring `xAxis "
+                + prof.xAxis + "` and carries no column of that name (it has: "
+                + (have.empty() ? "nothing" : have) + ").  No `" + kind
+                + "` block is written for it: the axis is the one column that"
+                  " must be there, and a file declaring an axis it does not"
+                  " carry is one this module's own reader refuses.  The same"
+                  " incomplete record reaches the result JSON, profile.csv,"
+                  " the spreadsheet and the GUI plot, each of which draws"
+                  " nothing where the axis should be.  Fix the unit: store"
+                  " the axis it declares.";
+            std::cerr << "\nREFUSED interior: " << msg << "\n";
+            AdvisoryLog::instance().add(
+                "refusal", "warning", "internalState/" + uname, msg);
+            axisless.push_back(uname + " (" + prof.xAxis + ")");
+            continue;
+        }
+
         if (!declared) undeclared.push_back(uname + " (" + prof.xAxis + ")");
         blocksOf[uname].emplace_back(kind, &prof);
         declaredOf[uname + "/" + kind] = declared;
@@ -307,12 +358,70 @@ std::size_t write(const std::string&      viewRoot,
              "\n"
              "  In `converged/` this file is REGENERATED WHOLE on every run\n"
              "  together with the streams beside it.  Do not edit it there --\n"
-             "  an edit is destroyed by the next run without a word.  COPY it\n"
-             "  into the case's `0/internalStates/` at the same address to\n"
-             "  DECLARE it as the interior the next run starts from; a\n"
-             "  declared profile that does not satisfy the balances is a\n"
-             "  SEED, not an answer.\n"
-             "\n"
+             "  an edit is destroyed by the next run without a word.\n"
+             "\n";
+
+        //  WHAT THIS FILE IS FOR DEPENDS ON THE UNIT, so the sentence does
+        //  too.  Telling every reader to copy the file into `0/` was correct
+        //  for ONE unit type and FATAL for every other: a declared field
+        //  nobody reads is refused by name, exit 2, and both units that
+        //  publish an interior in the flagship plant are in the second group.
+        //  The same defect shape as commit d4e173fb0 -- a pop-out telling
+        //  every reader to edit a file the run rewrites -- and the same
+        //  remedy: condition the instruction on the fact the writer already
+        //  holds.  The fact is asked of the CLASS
+        //  (`UnitOperation::interiorKindsRead`) and handed in as data; no
+        //  type is named here, so the sentence cannot go stale the day a
+        //  second unit learns to read one.
+        {
+            std::vector<std::string> reads;
+            {
+                auto rit = readsByType.find(etype);
+                if (rit != readsByType.end()) reads = rit->second;
+            }
+            std::vector<std::string> seeds, ignored;
+            for (const auto& [kind, prof] : blocks)
+            {
+                (void)prof;
+                if (std::find(reads.begin(), reads.end(), kind) != reads.end())
+                    seeds.push_back(kind);
+                else
+                    ignored.push_back(kind);
+            }
+            auto list = [](const std::vector<std::string>& v)
+            {
+                std::string s;
+                for (const auto& k : v) s += (s.empty() ? "" : ", ") + k;
+                return s;
+            };
+
+            if (seeds.empty())
+                o << "  THIS UNIT READS NO DECLARED INTERIOR.  It seeds its\n"
+                     "  own and says so on every run, so copying this file\n"
+                     "  into the case's `0/internalStates/` seeds NOTHING --\n"
+                     "  the next run REFUSES it by name, because a declared\n"
+                     "  field nobody reads is a comment sitting in the state\n"
+                     "  directory.  What this file is for is READING: the\n"
+                     "  state the equipment held at the answer, beside the\n"
+                     "  streams that bound it.\n"
+                     "\n";
+            else
+            {
+                o << "  COPY it into the case's `0/internalStates/` at the\n"
+                     "  same address to DECLARE it as the interior the next\n"
+                     "  run starts from -- this unit reads " << list(seeds)
+                  << ".  A\n"
+                     "  declared profile that does not satisfy the balances\n"
+                     "  is a SEED, not an answer.\n";
+                if (!ignored.empty())
+                    o << "  It does NOT read " << list(ignored)
+                      << ": a copy carrying\n"
+                         "  that block is refused by name, not ignored.\n";
+                o << "\n";
+            }
+        }
+
+        o <<
              "  It is a PROJECTION of the profile this unit publishes through\n"
              "  `UnitOperation::profile()` -- the same record the result JSON\n"
              "  carries under `profiles` and `profile.csv` carries in the\n"
@@ -368,6 +477,10 @@ std::size_t write(const std::string&      viewRoot,
             std::cout << "  [interior] " << u
                       << ": axis has no declared kind -- written as a"
                          " `profile` block\n";
+        for (const auto& u : axisless)
+            std::cout << "  [interior] " << u
+                      << ": REFUSED -- the declared axis is not a column of"
+                         " the profile (said in full above)\n";
     }
 
     //  THE SUMMARY NAMES A DIRECTORY ONLY WHEN ONE EXISTS.  A run whose every

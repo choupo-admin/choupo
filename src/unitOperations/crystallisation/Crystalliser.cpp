@@ -553,6 +553,15 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
         magma.psd.massFrac.resize(NB);
         for (int kbin = 0; kbin < NB; ++kbin) magma.psd.massFrac[kbin] = binMass[kbin] / massSum;
     }
+    //  THE AXIS THE PROFILE DECLARES IS A COLUMN OF IT.  `prof.xAxis` says
+    //  `L_micron`, so `L_micron` must be here: every surface that draws this
+    //  record -- the result JSON, `profile.csv`, the spreadsheet, the GUI
+    //  plot and the `converged/` interior file -- looks the axis up in
+    //  `columns` and quietly draws NOTHING when it is missing.  A crystal
+    //  size distribution published without the size it is distributed over
+    //  is four wrong surfaces at once, and the interior file it writes is one
+    //  its own reader refuses.
+    prof.columns["L_micron"]        = Lcol;      // L  [µm]  -- the axis
     prof.columns["number_density"]  = ncol;     // n(L)  [#/m^4]
     prof.columns["mass_density"]    = masscol;  // ∝ m(L)
     profile_ = prof;
@@ -867,6 +876,7 @@ int Crystalliser::solveDiscretizedPBE(const DictPtr& dict,
         for (std::size_t kbin = 0; kbin < Nbins; ++kbin)
             magma.psd.massFrac[kbin] = binMass[kbin] / massSum;
     }
+    prof.columns["L_micron"]        = Lcol;     // the axis (see the MSMPR note)
     prof.columns["number_density"]  = ncol;
     prof.columns["mass_density"]    = masscol;
     prof.columns["growth_rate"]     = Gcol;

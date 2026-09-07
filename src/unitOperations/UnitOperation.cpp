@@ -120,6 +120,25 @@ std::vector<std::string> UnitOperation::availableTypes()
     return v;
 }
 
+//  WHICH KINDS A TYPE READS.  Asked of the class every time, never cached and
+//  never tabulated: the declaration lives in the unit's own
+//  `readsInteriorKinds()` override and this is only the door to it.  A type
+//  the registry does not know, or one whose constructor throws, reads
+//  nothing -- and saying nothing here is right, because the two callers judge
+//  an unknown type differently (the flowsheet has already refused it; the
+//  writer is describing a file for a unit that ran).
+std::vector<std::string> UnitOperation::interiorKindsRead(const std::string& type)
+{
+    try
+    {
+        return New(type)->readsInteriorKinds();
+    }
+    catch (const std::exception&)
+    {
+        return {};
+    }
+}
+
 void UnitOperation::registerBuiltins()
 {
     auto reg = [](const std::string& name, auto&& maker)

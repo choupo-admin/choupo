@@ -216,6 +216,15 @@ public:
     // Diagnostics: list registered type names.
     static std::vector<std::string> availableTypes();
 
+    //  WHICH KINDS A TYPE READS, asked of the CLASS -- the one home for the
+    //  question, so no caller keeps a table of its own.  Two callers want it
+    //  and neither may re-derive it: the flowsheet refuses a declared field
+    //  nobody reads, and the `converged/` interior writer conditions the
+    //  sentence it prints in every file's header on the answer.  An
+    //  unregistered or unconstructible type reads nothing -- the caller that
+    //  cares about the type being unknown says so itself.
+    static std::vector<std::string> interiorKindsRead(const std::string& type);
+
 private:
     std::vector<scalar>                    residuals_;
     std::map<std::string, UnitProfile>     declaredInterior_;

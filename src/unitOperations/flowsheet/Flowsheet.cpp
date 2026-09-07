@@ -2802,9 +2802,8 @@ int Flowsheet::solve(const DictPtr& dict,
             //  a second home for the same fact.
             std::string utype;
             for (const auto& fu : topology_) if (fu.name == uname) utype = fu.type;
-            std::vector<std::string> reads;
-            try { reads = UnitOperation::New(utype)->readsInteriorKinds(); }
-            catch (const std::exception&) { reads.clear(); }
+            const std::vector<std::string> reads =
+                UnitOperation::interiorKindsRead(utype);
 
             for (const auto& [kind, prof] : byKind)
             {

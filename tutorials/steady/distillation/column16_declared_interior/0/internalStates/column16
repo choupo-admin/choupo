@@ -9,11 +9,13 @@
 
   In `converged/` this file is REGENERATED WHOLE on every run
   together with the streams beside it.  Do not edit it there --
-  an edit is destroyed by the next run without a word.  COPY it
-  into the case's `0/internalStates/` at the same address to
-  DECLARE it as the interior the next run starts from; a
-  declared profile that does not satisfy the balances is a
-  SEED, not an answer.
+  an edit is destroyed by the next run without a word.
+
+  COPY it into the case's `0/internalStates/` at the
+  same address to DECLARE it as the interior the next
+  run starts from -- this unit reads stageProfile.  A
+  declared profile that does not satisfy the balances
+  is a SEED, not an answer.
 
   It is a PROJECTION of the profile this unit publishes through
   `UnitOperation::profile()` -- the same record the result JSON

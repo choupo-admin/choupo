@@ -165,12 +165,24 @@ const std::vector<std::string>& knownKinds();
 //  whole by the stream writer immediately before this runs, so nothing stale
 //  can survive.  A no-op when `result.profiles` is empty.
 //
+//  `readsByType` says, per unit TYPE, which kinds a unit of that type READS
+//  back from `0/` -- `UnitOperation::interiorKindsRead`, asked by the caller
+//  because the unit classes live above this layer and the reverse edge must
+//  not exist.  It is DATA the writer is handed, never a table kept here: the
+//  header sentence each file carries is conditioned on it, so a unit that
+//  reads nothing is told what this file IS instead of being told to copy it
+//  somewhere the next run refuses.  A type absent from the map reads nothing.
+//
 //  Returns the number of unit files written.  Throws only when a file cannot
 //  be opened; a profile this module declines (`T_K`) is counted and
-//  announced, never thrown on.
+//  announced, never thrown on, and a profile whose declared axis is not among
+//  its own columns is REFUSED -- no file, no block, said aloud, because
+//  emitting a header this module's own reader rejects is the bug in both.
 std::size_t write(const std::string&      viewRoot,
                   const SimulationResult& result,
-                  int                     verbosity);
+                  int                     verbosity,
+                  const std::map<std::string, std::vector<std::string>>&
+                                          readsByType);
 
 //  Read the DECLARED interiors out of a state view -- `0/`, in practice --
 //  keyed by the unit's qualified name and then by kind:

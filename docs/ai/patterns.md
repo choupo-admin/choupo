@@ -331,10 +331,13 @@ tutorials/plant/myPlant/
 │   └── flowsheetDict               PLANT: sectors (...) + named-edge connections
 ├── constant/
 │   └── thermoPhysPropDict          GLOBAL thermophysical system -- CASCADES DOWN
-├── 0/                              THE STATE: a FILE is a stream, a DIRECTORY a unit's interior
-│   ├── REACTION/tolueneIn          inlet: owned by its consuming sector
-│   ├── REACTION/reactorOut         internal: owned by its producer
-│   └── SEPARATION/product          outlet: owned by its producer
+├── 0/                              THE STATE: streams as FILES; each unit's interior
+│   │                               is ONE file under internalStates/
+│   ├── MAIN/tolueneIn              plant inlet: its other end IS the plant boundary
+│   ├── MAIN/reactorOut             REACTION -> SEPARATION: it belongs to neither
+│   ├── SEPARATION/product          internal to SEPARATION (the plant only LABELS it)
+│   └── internalStates/SEPARATION/column
+│                                   what that unit holds inside, one block per kind
 └── sectors/
     ├── REACTION/
     │   ├── system/flowsheetDict    units ( mix reactor ); + connections
@@ -378,9 +381,11 @@ connections                       // NAMED EDGES: the key IS the stream identity
 ```
 
 A connection's KEY is the stream ID — the same identity as its `0/` state
-file (at the ownership path: inlets under the consuming sector, everything
-else under its producer).  `from`/`to` are producer/consumer PORTS, never
-identities.
+file, at the ownership path: the LOWEST LEVEL of the case whose subtree
+contains EVERY ENDPOINT of the stream (2026-09-07), so a plant inlet and a
+sector crossing both sit at `MAIN/` and a stream internal to one sector sits
+in it.  `from`/`to` are producer/consumer PORTS, never identities.  Ask
+`choupoSolve --manifest <case>` rather than working it out.
 
 ### Run any level
 

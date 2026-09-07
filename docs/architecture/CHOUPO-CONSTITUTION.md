@@ -125,8 +125,9 @@ trial (see §6).
 
 * **`0/`** — the COMPLETE initial state (one file per graph stream), the committable
   INPUT.  **Completeness contract**: N graph streams == N files in `0/`; a
-  missing/orphan file is FATAL for `choupoSolve`.  Inter-sector streams are stored
-  ONCE (owned by the producing sector).  Materialised by `choupo-init0` (propagate
+  missing/orphan file is FATAL for `choupoSolve`.  Every stream is stored ONCE, at
+  the LOWEST LEVEL whose subtree contains all its endpoints (2026-09-07 — this
+  REPLACES the producing-sector rule).  Materialised by `choupo-init0` (propagate
   authored inlets + required cycle-breaking seeds); a tear carries its seed here.
 * **`converged/`** — the steady solution (solver output, not `final/`).
 * **`iterations/NNNNNN/`** — optional numerical history + `iterations/latest`; NEVER
