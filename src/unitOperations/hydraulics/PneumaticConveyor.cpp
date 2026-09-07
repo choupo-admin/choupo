@@ -28,6 +28,7 @@ License
 
 #include "PneumaticConveyor.H"
 #include "thermo/ThermoPackage.H"
+#include "core/RegistryRefusal.H"
 
 #include <algorithm>
 #include <cmath>
@@ -240,7 +241,17 @@ int PneumaticConveyor::solve(const DictPtr& dict,
     {
         for (const auto& b : geom->lookupDictList("bends"))
         {
+            //  THE ELSE IS NOT A CATCH-ALL (2026-09-07).  It used to be, so a
+            //  mistyped bend geometry silently priced a long-radius sweep
+            //  (0.75) -- and the run then PRINTED the mistyped word beside
+            //  that ratio, as though the word had been understood.  The check
+            //  runs whether or not `exitRatio` overrides the ratio: the word
+            //  is a claim about the geometry and reaches the log either way.
             const std::string bt = b->lookupWordOrDefault("type", "longRadius");
+            if (bt != "longRadius" && bt != "shortRadius" && bt != "blindTee")
+                throw std::runtime_error("PneumaticConveyor: "
+                    + registryRefusal::message("bend type", bt,
+                        {"longRadius", "shortRadius", "blindTee"}, "Accepted"));
             scalar ratio;
             if (b->found("exitRatio"))       ratio = b->lookupScalar("exitRatio");
             else if (bt == "blindTee")       ratio = 0.25;   // solids nearly stop

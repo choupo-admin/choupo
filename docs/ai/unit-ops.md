@@ -445,7 +445,7 @@ differ only in the numerical strategy:
   O(100–500) outer iterations, and it can step *through* an azeotrope
   non-physically.  Use it for **ideal / wide-boiling** systems (Raoult,
   ideal-γ); it is the pedagogical default because each step is inspectable.
-- `simultaneous`  (aliases `MESH`, `NaphtaliSandholm`).  Newton-ND on the
+- `simultaneous`  (aliases `MESH`, `NaphtaliSandholm`, `fullMESH`).  Newton-ND on the
   whole block at once — unknowns are the per-stage `(x_{1..n-1}, T_j)`,
   residuals the n−1 component balances plus the bubble-point
   `Σ Kᵢxᵢ − 1 = 0` per stage with `Kⱼ(Tⱼ)` live (Armijo backtracking).
@@ -755,10 +755,17 @@ every velocity, the suspended density and ΔP are results.  Needs a
 component's `solid { rho_p; }`.
 ```
 type      pneumaticConveyor;
-operation { geometry { D 0.1 m;  L 50 m;  dz 10 m; } }   // diameter, length, rise
+operation { geometry { D 0.1 m;  L 50 m;  dz 10 m;       // diameter, length, rise
+                       bends ( { RoverD 8; type longRadius; } ) } }
 // feed stream declares solids as solidFlows (mass) + a PSD:
 //   solids { solidFlows { silica 282 kg/h; } diameters (...); massFractions (...); }
 ```
+Each `bends` entry takes a `type` — `longRadius` (**default**, exit ratio
+0.75), `shortRadius` (0.50) or `blindTee` (0.25, the solids nearly stop: high
+dP, near-zero erosion) — or an explicit `exitRatio`.  An unrecognised `type`
+REFUSES, naming the three; the word is checked even when `exitRatio` overrides
+the ratio, because the run PRINTS it beside the bend's loss.
+
 KPIs: `deltaP` (+ the five-way breakdown), `u_gas`, `u_particle`,
 `u_terminal`, `u_saltation`, `solidsLoading`, `suspensionDensity`.
 
@@ -772,6 +779,20 @@ see the Crystallisation section.)_
 Hardware: wheel atomiser geometry + chamber.  Atomisation by
 Friedman, drying kinetics by Ranz-Marshall + Lewis falling rate,
 equilibrium by GAB sorption isotherm.
+
+Selectable chamber `model`s (an unrecognised word REFUSES, naming these):
+- `marshall` (**default**, alias `lumped`).  The inlet/outlet short-cut plus a
+  PSD (Marshall 1954).
+- `langrishKockel` (alias `distributed`).  The 1-D axial droplet trajectory —
+  profiles of gas humidity, particle moisture, diameter and temperature ALONG
+  the chamber — with the Characteristic Drying Curve (Langrish & Kockel 2001).
+- `chen`.  The same 1-D trajectory with the Reaction Engineering Approach
+  (Chen & Xie 1997 / Chen 2008): a smooth activation-energy rate, no
+  critical-moisture break.
+
+The KPIs of `marshall` and `langrishKockel` can agree to the byte on the same
+case — the difference is the axial `profile.csv` — so read the profile, not
+only the summary, when you change this word.
 
 ```
 inputs  (feed  dryingAir );
@@ -817,7 +838,7 @@ plain evaporation).
 ## Crystallisation
 
 ### `crystalliser`
-Two selectable `model`s:
+Three selectable `model`s (an unrecognised word REFUSES, naming these):
 - `equilibrium` (default).  Cooling crystalliser.  Mother
   liquor leaves saturated; yield = `solute_in − c_sat(T)·solvent`.
 - `MSMPR`.  Steady continuous, method of moments → the crystal-size

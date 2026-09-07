@@ -29,7 +29,8 @@ namespace registryRefusal {
 
 std::string message(const std::string&              what,
                     const std::string&              asked,
-                    const std::vector<std::string>& registered)
+                    const std::vector<std::string>& registered,
+                    const std::string&              listLabel)
 {
     std::string s = "unknown " + what + " '" + asked + "'.";
 
@@ -61,7 +62,7 @@ std::string message(const std::string&              what,
 
     if (!best.empty()) s += "  Did you mean '" + best + "'?";
 
-    s += "\n  Registered:";
+    s += "\n  " + listLabel + ":";
     for (const auto& k : registered) s += " " + k;
     s += "\n  The lookup is case-sensitive; copy one of the names above"
          " exactly.";

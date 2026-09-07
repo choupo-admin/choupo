@@ -43,10 +43,25 @@ Description
     second notion of "close enough" -- a student who writes NTRL for NRTL is
     making the same kind of slip whether the word sits in a key or a value.
 
+    IT ALSO SERVES AN IF-CHAIN (2026-09-07).  Not every model slot reaches a
+    factory: four unit operations read `model` and dispatch through a bare
+    `if`/`else if` chain whose ELSE IS A CATCH-ALL, so an unrecognised word
+    silently selected the default -- `model MSMRP;` on a crystalliser ran the
+    equilibrium yield instead of the population balance, at exit 0, with a
+    yield 42 % higher and all twelve population-balance KPIs gone.  Those
+    sites now refuse through this same function, passing the enumeration
+    written at the site as the candidate list.  A chain is not a registry, so
+    the list's LABEL is a parameter ("Accepted" rather than "Registered");
+    everything else about the sentence -- the order, the suggestion, the
+    case-sensitivity line -- is still decided here, once.
+
     What this is NOT: it does not decide whether a name SHOULD be registered,
     and it never invents a default.  A factory whose default names something
     it cannot build is a different defect (see the massTransfer `constant`
-    case) and this header cannot see it.
+    case) and this header cannot see it.  Nor does it verify that the list it
+    was handed is the list the site really accepts: for an if-chain that is a
+    hand-written enumeration beside the branches it enumerates, and only a
+    reader (or `check_model_default_registered`) can hold the two together.
 
 \*---------------------------------------------------------------------------*/
 
@@ -60,10 +75,13 @@ namespace registryRefusal {
 
 //- The message a factory throws when `asked` is not registered.  `what` names
 //  the KIND in the reader's words ("activity model", "unit operation type"),
-//  lower case, no trailing punctuation.
+//  lower case, no trailing punctuation.  `listLabel` names what the candidate
+//  list IS -- "Registered" for a factory registry, "Accepted" for the
+//  enumeration written into an if-chain.
 std::string message(const std::string&              what,
                     const std::string&              asked,
-                    const std::vector<std::string>& registered);
+                    const std::vector<std::string>& registered,
+                    const std::string&              listLabel = "Registered");
 
 //- The keys of any registry, in the registry's own order.  A template so no
 //  factory has to expose its Factory type to this header.

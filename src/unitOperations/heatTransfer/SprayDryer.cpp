@@ -29,6 +29,7 @@ License
 #include "SprayDryer.H"
 #include "atomizer/Atomizer.H"
 #include "core/Advisory.H"
+#include "core/RegistryRefusal.H"
 #include "solver/NewtonRaphson.H"
 #include "streams/StreamMass.H"
 
@@ -165,6 +166,17 @@ int SprayDryer::solve(const DictPtr& dict,
     const std::string dryerModel = dict->lookupWordOrDefault("model", "marshall");
     const bool rea = (dryerModel == "chen");
     const bool distributed = (dryerModel == "langrishKockel" || dryerModel == "distributed" || rea);
+    //  AND AN UNRECOGNISED WORD REFUSES (2026-09-07).  Both booleans above are
+    //  false for any word this list does not carry, so `model langrishKocke;`
+    //  -- one missing letter -- ran the LUMPED Marshall short-cut with EVERY
+    //  KPI byte-identical to the axial run, the difference visible only in
+    //  `profile.csv`, which stopped being an axial profile and became a size
+    //  distribution.  No golden can see that; a refusal can.
+    if (!distributed && dryerModel != "marshall" && dryerModel != "lumped")
+        throw std::runtime_error("SprayDryer: " + registryRefusal::message(
+            "spray-dryer chamber model", dryerModel,
+            {"marshall", "lumped", "langrishKockel", "distributed", "chen"},
+            "Accepted"));
 
     // -------------------------------------------------------------------
     //  Identify, in the FEED, the volatile solvent and the non-volatile

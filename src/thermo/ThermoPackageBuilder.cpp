@@ -285,6 +285,95 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
         phaseName = salts.front();
     }
 
+    //  A DECLARED SOLID PHASE MUST BE OWNED BY A RECORD (2026-09-07).  Both
+    //  consumers below -- the crystal properties (c2) and the saturation
+    //  anchor (f) -- were absence-tolerant, and NOTHING validated the phase
+    //  NAME against anything: `ChemistrySystem::read` checks the KEYS inside
+    //  `equilibria {}` and never the words inside `solidPhases ( ... )`.  So
+    //  `solidPhases ( sylvite );` on a NaCl brine -- a real mineral, but
+    //  potassium's -- ran to exit 0 with m_sat 1e-9, Ksp 0 and a crystalliser
+    //  yield of 0.999999999868 against the correct 0.18832, seal "verified",
+    //  and one line of trace that reads like physics: "Solubility c_sat(T_op)
+    //  = 0.000 kg NaCl / kg water".  A phase nobody owns now refuses by name,
+    //  the same posture the crystalliser already takes for a missing rho_p.
+    //
+    //  OWNERSHIP, NOT COMPLETENESS -- and the difference was MEASURED before
+    //  this was written.  Of the corpus cases declaring a solid phase, two
+    //  (flash16_calcite_precipitation, flash19_organic_and_precipitate) name
+    //  `calcite`, which CaCO3.dat owns with an `equilibrium { logK25 ... }`
+    //  Ksp and no `calorimetric` block at all.  That absence is legitimate:
+    //  the phase's equilibrium is expressed as a mass action, not as a
+    //  measured solubility, so refusing on a missing anchor would refuse a
+    //  correct case.  It is refused only when NO record owns the word.  An
+    //  owned phase whose anchor this adapter cannot find is ANNOUNCED below
+    //  instead, because at THIS adapter that still means solubility 0.
+    if (!phaseName.empty())
+    {
+        const bool ownedBySalt =
+            saltRec && saltRec->found("solidPhases")
+            && saltRec->subDict("solidPhases")->found(phaseName);
+        //  The legacy homes: no such directory exists in the shipped tree,
+        //  but an external case may still carry one (the builder reads them
+        //  below), so ownership must ask the same three places the consumers
+        //  ask -- a check narrower than its consumers refuses valid input.
+        const bool ownedByLegacy =
+            fs::exists(resolve("data/standards/phases/solid/"
+                               + phaseName + ".dat"))
+         || fs::exists(resolve("data/standards/chemistry/salts/"
+                               + phaseName + ".dat"));
+        if (!ownedBySalt && !ownedByLegacy)
+        {
+            std::string declared;
+            if (saltRec && saltRec->found("solidPhases"))
+                for (const auto& k : saltRec->subDict("solidPhases")->keys())
+                    declared += (declared.empty() ? "" : ", ") + k;
+            throw std::runtime_error("chemistryDict declares the solid phase '"
+                + phaseName + "', which no record owns.  The package's salt is"
+                " '" + saltName + "' and its `solidPhases {}` block declares "
+                + (declared.empty()
+                     ? std::string("NO solid phase at all")
+                     : declared)
+                + ".  Nothing else was found under"
+                  " data/standards/phases/solid/ or"
+                  " data/standards/chemistry/salts/ either.  Until now this"
+                  " was tolerated silently and the saturation anchor stayed"
+                  " ZERO, so the run reported a solubility of 0 and"
+                  " crystallised essentially the whole solute at exit 0."
+                  "  Remedy: name a phase '" + saltName + "' declares, or add"
+                  " the phase to that component's record.");
+        }
+        //  Owned, but this adapter's anchor (the `calorimetric` sub-block) is
+        //  absent: the solubility it will use is 0.  That is a real modelling
+        //  statement and not necessarily an error -- a phase carrying only a
+        //  mass-action Ksp is curated exactly that way -- so it is ANNOUNCED
+        //  and judged not, the posture the extrapolated Antoine and the
+        //  sub-band Davies already take.
+        if (ownedBySalt
+         && !saltRec->subDict("solidPhases")->subDict(phaseName)
+                    ->found("calorimetric")
+         && !ownedByLegacy)
+        {
+            //  Printed at its site as well as replayed in the end-of-run
+            //  block: `core/AdvisorySummary.H` says every line it replays was
+            //  already printed where it was raised, and a package that never
+            //  reaches the end of a run (this one refuses on a missing
+            //  vapour pressure two steps later) must still have said it.
+            std::cout << "[solid phase] '" << saltName << "' declares '"
+                      << phaseName << "' with no calorimetric solubility"
+                         " anchor -- the saturation molality this adapter"
+                         " uses is ZERO.\n";
+            AdvisoryLog::instance().add("validity", "warning",
+                "solid phase '" + phaseName + "'",
+                "'" + saltName + "' declares this phase but no `calorimetric"
+                " { solubility ... }` anchor, which is the only saturation"
+                " datum this single-salt electrolyte adapter reads -- so the"
+                " saturation molality it uses is ZERO and any unit asking for"
+                " a solubility here will report essentially complete"
+                " crystallisation.  Remedy: curate the anchor, or use a"
+                " formulation that reads the phase's mass-action Ksp.");
+        }
+    }
+
     // (c2) particulate-solid properties (rho_p, k_v) from phases/solid/<phase>.dat
     //      -- the MSMPR/PSD crystalliser reads them off the salt component.
     //      Absence-tolerant (no phase -> identity defaults, fine for non-PSD cases).

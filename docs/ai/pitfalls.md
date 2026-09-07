@@ -91,6 +91,15 @@ legacy key is `method`, not `model`, so an operation-level `model` there
 is unread (and flagged by the dict audit) while the column runs
 `WangHenke`.
 
+**A `model` word the unit does not recognise now REFUSES** (2026-09-07), naming
+the word, the closest match and every word the slot accepts.  Before that the
+last branch of each `if`-chain answered for every unrecognised word, so a
+single transposed letter swapped the physics at exit 0: `model MSMRP;` on a
+crystalliser ran the equilibrium yield instead of the population balance (42 %
+out), and `model langrishKocke;` on a spray dryer ran the lumped chamber with
+every KPI byte-identical.  The same now holds for a side draw's `phase` and a
+pneumatic conveyor's bend `type`.
+
 ### `reaction` / `crystallisation` / `dryingCurve` are STRING refs
 They point to a NAMED block in the corresponding `constant/<library>`
 file:

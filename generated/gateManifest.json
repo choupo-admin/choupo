@@ -103,7 +103,7 @@
     },
     "check_caveat_surface": {
       "exit": 0,
-      "claim": "check_caveat_surface: OK -- 3 named extrapolation(s) listed (solidDryer01_sugar); all 10 block item(s) present in the result JSON; clean run states 'none raised' explicitly; all 4 binaries CALL the summary (source check, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements.",
+      "claim": "check_caveat_surface: OK -- 3 named extrapolation(s) listed (solidDryer01_sugar); all 10 block item(s) present in the result JSON; clean run states 'none raised' explicitly; outer-driver run gibbs04_wgs_temperature_sweep prints the block and names its pass (the LAST pass only); outer-driver run compressor02_designspec_pout prints the block and names its pass (the REPRESENTATIVE pass); all 4 binaries CALL the summary (source check, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements.  DOMAIN: choupoSolve's own output on five corpus cases plus a source scan of the four binaries' main.cpp.  LIMITS: arm (d) is a source check and cannot see an enclosing `if` -- which is how the outerDict silence survived it -- and arm (e) requires the block to RUN under an outer driver and to name its pass, never that the pass it names is the right one to report (that is a stated decision, recorded in main.cpp and in docs/design/three-silences-at-exit-zero.md).",
       "seconds": 0.1
     },
     "check_charge_balance": {
@@ -893,7 +893,7 @@
     },
     "check_v2_refusals": {
       "exit": 0,
-      "claim": "v2 negative-parity gate: 16 refusals verified with their named messages",
+      "claim": "check_v2_refusals: OK -- 16 refusals verified with their named messages, plus the solid-phase arm (a chemistryDict phase no record owns REFUSES naming the phase and what the salt declares; the phase it does own is not refused; an owned phase with no calorimetric anchor is ANNOUNCED, not refused).  DOMAIN: the v2 grammar's own refusals, driven through choupoProps/choupoSolve on temp cases.  LIMITS: it proves each refusal FIRES with its message, never that the message is the right advice; the solid-phase arm covers the single-salt electrolyte adapter only -- the gammaPhi and reactive paths read the phase list elsewhere and are not tested here.",
       "seconds": 0.1
     },
     "check_validation_subset": {
@@ -963,8 +963,8 @@
     },
     "check_model_default_registered": {
       "exit": 0,
-      "claim": "check_model_default_registered: OK -- 13 factory call site(s) across 10 factory class(es) take a literal `model` default, and every one of those defaults is a name the class's own registerBuiltins registers (both sides recounted here, never transcribed).  The probe holds: the construct itself -- a default naming a model nobody registered -- is still reported, and the negative (a default that IS registered) is not.  Before this existed, SpiralWoundModule defaulted the `massTransfer {}` block's model to 'constant', pruned from the factory on 2026-08-23, so a block that merely forgot its `model` key died naming a model the engine had invented.  NOT COVERED: a default consumed by an if-chain rather than a factory (its else branch makes it reachable, but a MISTYPED name there still falls into it silently -- a different rule); a default built from a variable rather than a literal; and whether a registered default is the RIGHT one for the physics.",
-      "seconds": 0.4
+      "claim": "check_model_default_registered: OK -- 13 factory call site(s) across 10 factory class(es) take a literal `model` default, and every one of those defaults is a name the class's own registerBuiltins registers (both sides recounted here, never transcribed).  The probe holds: the construct itself -- a default naming a model nobody registered -- is still reported, and the negative (a default that IS registered) is not.  Before this existed, SpiralWoundModule defaulted the `massTransfer {}` block's model to 'constant', pruned from the factory on 2026-08-23, so a block that merely forgot its `model` key died naming a model the engine had invented.  AND THE CATCH-ALL ELSE IS GONE: 5 if-chain site(s) that read a declared word -- Crystalliser model, DistillationColumn model, SprayDryer chamber model, DistillationColumn side-draw phase, PneumaticConveyor bend type -- were each RUN twice from a scratch copy of a corpus case: a mistyped word refuses naming the word and listing what the site accepts, and an accepted alias does not.  DOMAIN: literal factory defaults across src/, plus those five if-chains.  LIMITS: a default built from a variable rather than a literal is invisible to arm (a); whether a registered default is the RIGHT one for the physics is judgement, not reachability; whether the list a site hands registryRefusal is the list its branches accept can only be read, not derived; and arm (d) covers five if-chains, not every one in the tree -- HeatExchanger (`epsNTU`) and BatchStill (`rayleigh`) read a word the same way and are NOT covered.",
+      "seconds": 0.5
     }
   }
 }

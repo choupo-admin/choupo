@@ -1217,6 +1217,35 @@ because no output can separate a re-read from a draw when both find the same
 number).  Record:
 [`docs/design/a-default-nobody-declared.md`](docs/design/a-default-nobody-declared.md).
 
+**THE ENGINE PROMISED TO REFUSE OR ANNOUNCE, AND IN THREE PLACES DID NEITHER
+(2026-09-07).**  Rule: **a DECLARED WORD the engine dispatches on must refuse a
+word it does not know** — a `model`/`phase`/`type` slot consumed by an if-chain
+whose ELSE IS A CATCH-ALL silently selects the default, and two of these were
+found by transposing ONE CHARACTER in a corpus case (`MSMRP` ran the
+equilibrium crystalliser; `langrishKocke` ran the lumped spray dryer with EVERY
+KPI BYTE-IDENTICAL, so **no golden could ever see it**).  All five sites refuse
+through `registryRefusal::message`, which gained one parameter — the list's
+LABEL, `Accepted` for an enumeration, `Registered` for a registry — so the
+sentence keeps ONE home.  Second: the end-of-run caveat block and the
+divergence banner both sat inside the `else` of `if (outerDict)`, so every case
+with an outer driver printed neither, which is the exact state
+`AdvisorySummary.H` forbids in its own words.  They RUN now and report **ONE
+NAMED PASS** (the representative pass where a driver has one, otherwise the
+LAST), never the union — the same header's *THE PATH IS NOT THE ANSWER* and *a
+PARTITION, NOT A DEDUPLICATION* both rule a union out.  Third: a `chemistryDict`
+solid phase **no record owns** REFUSES by name; the test is OWNERSHIP and not
+completeness, because it was MEASURED first and two corpus cases legitimately
+declare an owned phase with no calorimetric anchor (a mass-action Ksp), which
+is ANNOUNCED instead.  Traps paid for: a gate failure message that quoted one
+site's fact for all five, and a probe that could not reach exit 0 and so could
+not tell a silent acceptance from an unrelated refusal.  RESERVED for Vítor:
+whether a sweep writes `converged/` (task #77).  Gates EXTENDED, not
+multiplied: `check_model_default_registered` (arm d, closing the gap it named
+in its own blind-spot list) · `check_caveat_surface` (arm e — its arm (d) is a
+SOURCE check and cannot see an enclosing `if`) · `check_v2_refusals` (the
+solid-phase arm).  Record:
+[`docs/design/three-silences-at-exit-zero.md`](docs/design/three-silences-at-exit-zero.md).
+
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
 The doctrine says a check that cannot run must not PASS; the MIRROR is just as
 bad — **it must not FAIL either, it must REFUSE.**  `bin/drive-app` filed "no
@@ -1713,8 +1742,17 @@ physics on sealing).
 **THE PROBLEM SOLVED IS NOT ALWAYS THE PROBLEM POSED (ruled 2026-08-11).**  An
 ADVISORY says the answer is qualified; a DIVERGENCE says the answer is to a
 DIFFERENT QUESTION — `core/ProblemDivergence.H`, printed ABOVE the caveats,
-emitted ABOVE the KPIs, written to `converged/problemDivergence`, ALWAYS.  A
-substitution nobody authorised is REFUSED; a declared approximation is
+emitted ABOVE the KPIs, written to `converged/problemDivergence`.  **The word
+here used to be "ALWAYS" and the engine did not do it (corrected 2026-09-07):**
+the banner and the caveat block both sat inside the `else` of `if (outerDict)`,
+so a case with an outer driver printed NEITHER, and the corpus ships plenty
+of them.  The banner and the block RUN under an outer driver now, describing ONE
+named pass — the representative pass where the driver has one, otherwise the
+LAST — and never a union across passes.  The FILE is a different question and
+is Vítor's (task #77): a driver with no representative pass still writes no
+`converged/` and so no `converged/problemDivergence`, and whether a sweep
+should write one at all is his decision, not the engine's to take by
+accident.  A substitution nobody authorised is REFUSED; a declared approximation is
 RECORDED, never refused.  The authorisation lives ONCE at the TOP LEVEL of the
 thermophysical system, parsed ONCE at `buildV2Dispatch`; the decision has ONE
 home (`resolveIdealPairSubstitution`).  NOT covered: only `shortcutColumn` and

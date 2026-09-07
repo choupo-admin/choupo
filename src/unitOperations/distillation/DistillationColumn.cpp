@@ -28,6 +28,7 @@ License
 
 #include "core/InfeasibleTrial.H"
 #include "core/Advisory.H"
+#include "core/RegistryRefusal.H"
 #include "unitOperations/saturation/BubblePoint.H"
 #include "DistillationColumn.H"
 #include "TrayHydraulics.H"
@@ -348,6 +349,18 @@ int DistillationColumn::solve(const DictPtr& dict,
     if (method == "simultaneous" || method == "MESH"
         || method == "NaphtaliSandholm" || method == "fullMESH")
         return solveSimultaneous(dict, thermo, verbosity);
+
+    //  THE ELSE IS NOT A CATCH-ALL (2026-09-07).  Everything below this point
+    //  is Wang-Henke, so a word the chain above does not recognise used to
+    //  select it silently: `model simultaneou;` ran the bubble-point sweep
+    //  (79 outer iterations) where the author had asked for the MESH Newton
+    //  (5), at exit 0, publishing a different KPI set and slightly different
+    //  temperatures.  Refuse the word instead, naming what this slot takes.
+    if (method != "WangHenke")
+        throw std::runtime_error("DistillationColumn: "
+            + registryRefusal::message("distillation column model", method,
+                {"WangHenke", "simultaneous", "MESH", "NaphtaliSandholm",
+                 "fullMESH"}, "Accepted"));
 
     // Capability boundary, made LOUD (no silent crutch): multiple feeds and
     // side draws live only in the simultaneous MESH.  The Wang-Henke
@@ -1192,7 +1205,16 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             if (st < 1 || st > N)
                 throw std::runtime_error("DistillationColumn: a sideDraw `stage` is out of range.");
             const scalar rate = dr->lookupScalar("rate", Dims::molarFlow);
+            //  Same rule as the `model` slot above (2026-09-07): the else was
+            //  a catch-all, so `phase vapou;` drew LIQUID -- byte-identical to
+            //  a liquid draw, while the vapour draw it asked for moves the
+            //  reboiler duty by 10 %.  A declared word the site does not know
+            //  refuses.
             const std::string ph = dr->lookupWordOrDefault("phase", "liquid");
+            if (ph != "liquid" && ph != "vapor" && ph != "vapour" && ph != "V")
+                throw std::runtime_error("DistillationColumn: "
+                    + registryRefusal::message("side-draw phase", ph,
+                        {"liquid", "vapour", "vapor", "V"}, "Accepted"));
             if (ph == "vapor" || ph == "vapour" || ph == "V") Wdraw[st - 1] += rate;
             else                                              Udraw[st - 1] += rate;
             ++nDraws;

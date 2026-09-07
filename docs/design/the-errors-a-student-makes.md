@@ -349,6 +349,20 @@ as #63 and needs its own rule; it was measured and left, not fixed, because
 turning four silent fall-throughs into refusals is an engine behaviour change
 under a freeze.
 
+> **PARTLY CLOSED 2026-09-07** — and the half that closed is written here
+> because the paragraph above is the kind of sentence a later reader loads as
+> still true.  The crystalliser and the spray dryer now REFUSE an unrecognised
+> `model` word, as do the distillation column's `model` slot, its side draws'
+> `phase` and the pneumatic conveyor's bend `type` — five sites, through
+> `registryRefusal::message`, gated by arm (d) of this same gate.  What was
+> measured in the meantime is why it was worth doing: `MSMRP` on
+> `crystalliser02_msmpr` reported a yield 42 % out, and `langrishKocke` on
+> `sprayDryer04_profiles` reported EVERY KPI byte-identical while running a
+> different chamber model.  **`HeatExchanger` (`epsNTU`) and `BatchStill`
+> (`rayleigh`) are still open**, and `model geomtry;` on an exchanger still
+> runs eps-NTU silently.  Record:
+> [`three-silences-at-exit-zero.md`](three-silences-at-exit-zero.md).
+
 `#62` has **no gate**, deliberately: the only mechanical claim available is
 "no `phase` key inside a `standardThermochemistry` block", and writing it would
 pre-empt the reserved refuse-or-announce decision.  The two writers that were

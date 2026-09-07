@@ -34,11 +34,40 @@ because it does NOT merely assert that an announcement exists:
       about what the run announced would be a second home for one fact -- and
       the JSON is what a student never sees, so it is the one that rots.
 
+  (e) A CASE WITH AN OUTER DRIVER PRINTS IT TOO, and says WHICH PASS.  This
+      arm exists because arm (d) is a SOURCE check and could not see that the
+      one `printAdvisorySummary` call in choupoSolve sat inside the `else` of
+      `if (outerDict)`: the string was present, the gate was green, and 23
+      corpus cases printed no block at all.  `gibbs04_wgs_temperature_sweep`
+      carried four advisories saying the vapour pressures it returned were not
+      vapour pressures, and printed none of them.  So this arm RUNS two cases
+      -- a sweep (no representative pass) and a designSpec (one) -- and
+      requires the block, the scope line, and the right word for which pass
+      each is describing.  It does not check WHICH advisories a swept run
+      should report: that is a stated design decision (the last pass, never a
+      union), not something a gate can derive.
+
   (d) ALL FOUR BINARIES emit it.  A caveat surface present in one application
       and absent from three teaches the reader that its absence means "nothing
       to report".  `choupoProps` was in fact MISSED when the block was first
       wired, and the commit that wired the other three claimed all four -- this
       arm exists because that claim was false when it was made.
+
+SABOTAGES PERFORMED BY HAND on 2026-09-07 against arm (e), each restored and
+the engine rebuilt.  The lines are what the gate printed:
+
+  S3  the whole outer-driver block deleted from choupoSolve's main (the state
+      the engine was in until that day) -> "gibbs04_wgs_temperature_sweep
+      ships an outerDict and printed NO caveat-scope line. ..." and the same
+      for compressor02_designspec_pout.
+  S4  the block kept, but the phrase naming WHICH pass replaced by "what the
+      run announced" -> "gibbs04_wgs_temperature_sweep printed the caveat
+      block but does not say it describes 'the LAST pass only'. ..." and
+      "compressor02_designspec_pout ... 'the REPRESENTATIVE pass'."
+
+S4 is the arm that matters more than S3: a block that runs and does not say
+which of many passes it describes invites the reader to take it for all of
+them, which is a new way of being wrong rather than the old silence.
 
 WHAT IS NOT CHECKED: whether an advisory is JUSTIFIED -- whether a Cp really
 should have been extrapolated, whether a record really is unreviewed.  Those
@@ -94,6 +123,13 @@ LOUD = "tutorials/steady/drying/solidDryer01_sugar"
 #  the corpus offers: 12 of the 110 that raise no Cp advisory also print
 #  "none raised", and this is one of them.
 SILENT = "tutorials/steady/heat/heatExchanger01_water_water"
+
+#  (e) Two outer-driver cases, one of each kind.  SWEPT has no representative
+#  pass and raises real advisories (four vapour pressures above Tc); REPRESENT
+#  replays at its design point, so the block describes that pass.
+SWEPT     = "tutorials/steady/gibbs/gibbs04_wgs_temperature_sweep"
+REPRESENT = "tutorials/steady/rotating/compressor02_designspec_pout"
+SCOPE     = "[caveats] this run made"
 
 HEADER = "ASSUMPTIONS AND CAVEATS"
 NONE_LINE = "ASSUMPTIONS AND CAVEATS: none raised."
@@ -187,6 +223,34 @@ def main() -> int:
     else:
         checked.append("clean run states 'none raised' explicitly")
 
+    # ---- (e) an outer-driver run prints the block, and names its pass ---
+    for case, word in ((SWEPT, "the LAST pass only"),
+                       (REPRESENT, "the REPRESENTATIVE pass")):
+        rc, out = run(case)
+        name = Path(case).name
+        if rc != 0:
+            fail.append(f"{name} does not run (exit {rc})")
+            continue
+        if SCOPE not in out:
+            fail.append(
+                f"{name} ships an outerDict and printed NO caveat-scope line."
+                "  The block used to sit inside the `else` of"
+                " `if (outerDict)`, so every case with an outer driver printed"
+                " neither it nor the divergence banner -- which is exactly the"
+                " state AdvisorySummary.H forbids: silence must mean the"
+                " engine raised nothing, never that the block did not run.")
+        elif word not in out:
+            fail.append(
+                f"{name} printed the caveat block but does not say it"
+                f" describes {word!r}.  An outer driver runs the simulator"
+                " many times; a block that does not name the pass it is about"
+                " invites the reader to take it for all of them.")
+        elif HEADER not in out and NONE_LINE not in out:
+            fail.append(f"{name} printed the scope line but no block after it")
+        else:
+            checked.append(f"outer-driver run {name} prints the block and"
+                           f" names its pass ({word})")
+
     # ---- (d) every binary emits it -------------------------------------
     #  MATCH THE CALL, not the header name.  A first version looked for
     #  "AdvisorySummary" anywhere in the file -- which the call
@@ -220,7 +284,14 @@ def main() -> int:
             "agreeing with the JSON, present in every binary), never whether "
             "an advisory is JUSTIFIED -- that is curation, and "
             "check_cp_range_announced and check_review_status own those "
-            "judgements.")
+            "judgements.  DOMAIN: choupoSolve's own output on five corpus "
+            "cases plus a source scan of the four binaries' main.cpp.  "
+            "LIMITS: arm (d) is a source check and cannot see an enclosing "
+            "`if` -- which is how the outerDict silence survived it -- and "
+            "arm (e) requires the block to RUN under an outer driver and to "
+            "name its pass, never that the pass it names is the right one to "
+            "report (that is a stated decision, recorded in main.cpp and in "
+            "docs/design/three-silences-at-exit-zero.md).")
     return 0
 
 

@@ -783,8 +783,15 @@ try
               << "\n";
 
     // ---- Simulator functor reusable by outer driver --------------------
+    //  HOW MANY PASSES the run made.  Counted HERE, at the one door every
+    //  pass goes through, rather than added to `OuterDriver` -- the drivers
+    //  would each have to maintain it, which is five homes for one number.
+    //  The end-of-run caveat block quotes it so a reader of a swept run knows
+    //  the block describes ONE pass out of N (see the outerDict branch).
+    std::size_t nPasses = 0;
     auto simulate = [&](const DictPtr& flowDictForRun,
                         const StreamOverrides& overrides) {
+        ++nPasses;
         auto r = runSimulation(flowDictForRun, db, packageDict,
                                chemPtr, solverDict, reactionsDict, verbosity,
                                haveSolutionCtl ? &solutionCtl : nullptr,
@@ -1113,6 +1120,9 @@ try
         // replay at the optimum).  The driver already emitted the JSON
         // result; here we add the per-domain report tree +.ods.  Drivers
         // without a single representative pass (sweep, fit) skip this.
+        bool haveRepresentative = false;
+        std::vector<Advisory>          outerAdvisories;
+        std::vector<Divergence>        outerDivergences;
         if (driver->hasFinalResult())
         {
             SimulationResult r = driver->finalResult();
@@ -1120,6 +1130,12 @@ try
             if (!validate0(r)) finalRc = 1;
             writeConverged(r);
             writeDesignSheets(r);
+            //  Refresh after the reports/sizing, exactly as the direct path
+            //  does: a rating warning raised by a post-processing pass is
+            //  raised AFTER the pass that produced the result drained the log.
+            outerAdvisories  = AdvisoryLog::instance().entries();
+            outerDivergences = ProblemDivergence::instance().entries();
+            haveRepresentative = true;
         }
         else if (reportsDict && !reportsDict->keys().empty())
         {
@@ -1150,6 +1166,66 @@ try
             AdvisoryLog::instance().add("reporting", "warning",
                                         "outer driver", msg);
             std::cout << "\n  [reports] " << msg << "\n";
+        }
+
+        if (!haveRepresentative)
+        {
+            //  No representative pass: the sinks are cleared at the top of
+            //  every pass, so what they hold now is the LAST pass the driver
+            //  made.  That is what gets reported, and the header below says
+            //  so -- see WHICH PASS, immediately after this block.
+            outerAdvisories  = AdvisoryLog::instance().entries();
+            outerDivergences = ProblemDivergence::instance().entries();
+        }
+
+        //  THE END-OF-RUN CAVEAT BLOCK RUNS UNDER AN OUTER DRIVER TOO
+        //  (2026-09-07).  Until today the only `printAdvisorySummary` call
+        //  site in this file sat inside the `else` below, so every case that
+        //  ships an outerDict printed neither the divergence banner nor the
+        //  caveat block.  `core/AdvisorySummary.H` states the contract in its
+        //  own words -- "silence from this block must mean 'the engine raised
+        //  nothing', never 'the block did not run'" -- and under an outerDict
+        //  the block did not run.  gibbs04_wgs_temperature_sweep carried four
+        //  advisories saying its returned vapour pressures were not vapour
+        //  pressures, and said nothing on screen.  Its sibling defect, a
+        //  declared `reports {}` that silently did not run, was fixed on
+        //  2026-09-04 in the branch just above; its two neighbours were left.
+        //
+        //  WHICH PASS.  An outer driver runs the simulator many times, and
+        //  this block reports exactly ONE of those passes, named:
+        //
+        //    * a driver with a representative pass (optimisation, designSpec)
+        //      reports THAT pass -- it is the answer the run is about;
+        //    * a driver without one (sweep, grid, Pareto) reports its LAST
+        //      pass, because the advisory sink is cleared per pass by design
+        //      and that is the pass it holds.
+        //
+        //  It is NOT the union across passes.  Two reasons, both already
+        //  written down here: `AdvisorySummary.H` (THE PATH IS NOT THE
+        //  ANSWER, 2026-08-24) rejects enumerating advisories from states the
+        //  run visited and left, because ninety-nine near-identical sentences
+        //  are read by nobody -- a sweep's other design points are that class
+        //  at the outer level; and the same header states it is "a PARTITION,
+        //  NOT A DEDUPLICATION", while a union across passes could only be
+        //  read after deduplicating four identical sentences per point.  Each
+        //  pass's own advisories already ride in that pass's own result JSON,
+        //  where a reader who wants the whole sweep can read the whole sweep.
+        //  RESERVED for Vitor (task #77): whether a sweep should also write
+        //  `converged/` and `problemDivergence` at all.
+        if (verbosity >= 1)
+        {
+            std::cout << "\n  [caveats] this run made " << nPasses
+                      << " simulator pass" << (nPasses == 1 ? "" : "es")
+                      << " under the `" << driver->type() << "` outer driver."
+                         "  What follows describes "
+                      << (haveRepresentative
+                            ? "the REPRESENTATIVE pass (the replay at the"
+                              " driver's answer)"
+                            : "the LAST pass only")
+                      << "; every other pass's advisories ride in that pass's"
+                         " own result block.\n";
+            printProblemDivergence(outerDivergences);
+            printAdvisorySummary(outerAdvisories);
         }
     }
     else

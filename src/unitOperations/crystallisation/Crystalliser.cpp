@@ -30,6 +30,7 @@ License
 #include "unitOperations/crystallisation/CrystallisationSaturation.H"
 #include "CrystallisationHeat.H"
 #include "core/Advisory.H"
+#include "core/RegistryRefusal.H"
 #include "solver/NewtonRaphson.H"
 #include "thermo/ThermoPackage.H"
 
@@ -130,11 +131,23 @@ int Crystalliser::solve(const DictPtr& dict,
     // of moments; FVM is the discretised PBE on a size grid (finite-volume
     // --- carries no closure assumption on G(L), so it handles
     // size-dependent growth).
+    //  THE ELSE IS NOT A CATCH-ALL (2026-09-07).  It used to be: any word this
+    //  chain did not recognise fell into the equilibrium branch, so `model
+    //  MSMRP;` -- one transposed letter -- ran the equilibrium yield instead
+    //  of the population balance, at exit 0, reporting 39.6 % where the
+    //  population balance reports 27.8 % and dropping all twelve PBE KPIs.
+    //  A chain that dispatches on a declared word must refuse a word it does
+    //  not know, exactly as the cyclone's model FACTORY already does.
     const std::string model = dict->lookupWordOrDefault("model", "equilibrium");
     if (model == "MSMPR" || model == "msmpr" || model == "populationBalance")
         return solveMSMPR(dict, thermo, verbosity);
     if (model == "FVM" || model == "discretizedPBE" || model == "FVM-PBE")
         return solveDiscretizedPBE(dict, thermo, verbosity);
+    if (model != "equilibrium")
+        throw std::runtime_error("Crystalliser: " + registryRefusal::message(
+            "crystalliser model", model,
+            {"equilibrium", "MSMPR", "msmpr", "populationBalance",
+             "FVM", "FVM-PBE", "discretizedPBE"}, "Accepted"));
     return solveEquilibrium(dict, thermo, verbosity);
 }
 
