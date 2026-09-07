@@ -215,6 +215,15 @@ public:
     // identity ONCE, displayed under its boundary name)
     const std::map<std::string,std::string>& boundaryAliasOf() const
     { return boundaryAliasOf_; }
+    // stream IDENTITY -> the DOMAIN'S OWN OUTLET NAME for it, and only when
+    // the two differ.  The plant DECLARES its inlets (the identity IS the
+    // declared name) and only LABELS its outlets
+    // (`Powder { from DRYING/DryPowder; }`), so this map is exactly the set of
+    // streams that leave the domain, each under the name its author gave the
+    // boundary.  Reports draw the identity as the row and this as a COLUMN --
+    // a label is a label, never a second row for the same pipe.
+    const std::map<std::string,std::string>& boundaryOutletLabelOf() const
+    { return boundaryOutletLabelOf_; }
     const std::map<std::string, ProcessStream>& streams() const
     { return streams_; }
 
@@ -333,6 +342,7 @@ private:
     std::map<std::string, ProcessStream>                   streams_;
     std::set<std::string>                                  boundaryAliases_;  // plant-boundary outlet aliases (state writer skips)
     std::map<std::string,std::string>                      boundaryAliasOf_;  // alias -> source identity
+    std::map<std::string,std::string>                      boundaryOutletLabelOf_;  // identity -> the domain's own outlet name
     std::vector<ModelBoundaryFinding>                      modelBoundaries_;
     std::vector<FlatUnit>                                  topology_;
 

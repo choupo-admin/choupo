@@ -100,6 +100,15 @@ struct SimulationResult
     // alias/label -> the stream identity it copies (one physical stream,
     // two names; reports count the identity once, under the alias name)
     std::map<std::string,std::string>                              boundaryAliasOf;
+    // The same relation read from the STREAM's side, and restricted to the
+    // domain's OWN boundary: stream identity -> the outlet name the plant
+    // declared for it (`DRYING.DryPowder` -> `Powder`), present only where the
+    // two differ.  It is NOT `boundaryAliasOf` inverted: that map also carries
+    // the bare SECTOR labels the relabel pass mints (`Cond1`), which name no
+    // plant boundary at all.  A report draws the identity as its ROW and this
+    // as a COLUMN -- one row per physical stream, the author's boundary name
+    // beside it.  Empty on a case whose plant renames nothing.
+    std::map<std::string,std::string>                              boundaryOutletLabelOf;
     std::map<std::string, std::map<std::string, scalar>>           kpis;
     std::vector<FlatUnit>                                          topology;
 

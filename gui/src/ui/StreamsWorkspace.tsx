@@ -146,7 +146,7 @@ export function StreamsWorkspace() {
 
   const selectedStream =
     selectedQname && runResult
-      ? findRunStream(runResult.streams, selectedQname)
+      ? findRunStream(runResult.streams, selectedQname, runResult.streamAliases)
       : null;
 
   return (
@@ -391,7 +391,7 @@ function NavRow({
       </Stack>
     );
   }
-  const matched = runResult ? findRunStream(runResult.streams, node.qname) : undefined;
+  const matched = runResult ? findRunStream(runResult.streams, node.qname, runResult.streamAliases) : undefined;
   const phase: PhaseKind = matched ? classify(matched) : "liquid";
   const isSelected = selectedQname === node.qname;
   return (

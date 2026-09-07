@@ -85,6 +85,20 @@ WHAT THIS CHECKS:
       stream handed from a plant-level unit into a sector has no level below
       the domain's own that contains both ends.
 
+  (l) ONE ROW PER PHYSICAL STREAM.  `result.streams` is keyed by every NAME a
+      stream answers to -- identity, bare sector label, plant boundary label --
+      and until 2026-09-07 the table drew a row per KEY: 52 rows for 25 pipes
+      on the flagship, the duplicates rendering with a blank PFD number in the
+      app (a bare sector label is in no view's connection list and so belongs
+      to no numbering class).  The row set must be EXACTLY the canonical
+      manifest's keys -- the same set that gets a state file -- and the plant's
+      own name for an exported stream rides a `label` COLUMN, checked against
+      the AUTHORED root dict.  A labelled row must read `product`: `Topology`
+      files a renamed product under the LABEL, so asking it about the identity
+      answers `intermediate`, and nine of this plant's streams would have lost
+      their role the moment the label rows stopped being drawn.  A FLAT case
+      gains no column.
+
   (j) A FLAT CASE GAINS NOTHING.  Its units ARE the plant, so its state files
       stay flat -- no `MAIN/`, no folder at all.  The state-view form of the
       2026-09-04 ruling that empty is not a sector called "root".
@@ -208,6 +222,47 @@ needs a rebuild.  Observed, verbatim (truncated where a message is long):
       "`RawJuice` is a plant INLET (nobody in the case produces it) and its
        state file is at 0/MAIN/RawJuice.  Its other endpoint is the domain's
        own boundary, so it lives at the domain's own level 0/CONCENTRATION/."
+
+SABOTAGES for arm (l) (2026-09-07).  This gate RE-RUNS the case, so a table
+edited beforehand is simply rewritten -- every one of these was applied BETWEEN
+the run and the read, by inserting the mutation at the arm's own entry point in
+a COPY of this script, and nothing was rebuilt.  Observed, verbatim (truncated):
+
+  S1  a label row put back (`Cond1`, a bare sector label) --
+      "streamTable.csv draws 1 row(s) the canonical manifest does not name:
+       Cond1.  Those are LABELS -- other names for a pipe the table already
+       drew -- and drawing them makes the plant look bigger than it is."
+
+  S2  a real row dropped (`DRYING.Exhaust`) --
+      "1 stream(s) have a state file and no row in streamTable.csv:
+       DRYING.Exhaust.  The table and the state tree must count the same
+       streams."
+
+  S3  the `label` column removed --
+      "streamTable.csv carries no `label` column, so the plant's own name for
+       a stream it exports (`Powder`, `Stack`) appears nowhere -- and the row
+       is the qualified identity, which is not that name."
+
+  S4  a label the root dict never declared (`Powder` -> `Widget`) --
+      "`DRYING.DryPowder` is labelled `Widget`, which the root dict declares as
+       no boundary outlet.  A label is the name the AUTHOR gave the plant's
+       boundary, never one the report invented."
+
+  S5  a labelled row filed as `intermediate` -- the state the whole slice would
+      have left behind if `roleOf` had not been taught to read the label --
+      "`DRYING.DryPowder` carries the plant label `Powder` and is filed as
+       `intermediate`.  A stream the plant declared as an outlet is a product."
+
+  S6  the FLAT witness given a `label` column --
+      "a FLAT case's streamTable.csv carries a `label` column.  Its units ARE
+       the plant; it renames nothing at a boundary, so the column is a claim
+       about a structure that is not there."
+
+  FOUND BY RUNNING THEM: the first cut of this arm bound its declared-outlet
+  set to a local named `declared`, which is the name arm (a) holds the case's
+  SECTOR list in -- so the gate passed while its own OK line reported the nine
+  boundary outlets as the plant's four sectors.  A gate's claim is the line it
+  prints, and a shadowed local made that line false without failing anything.
 """
 import os
 import re
@@ -364,6 +419,15 @@ def find_csv(rel: str, report: str, name: str):
               ROOT / rel / "postProcessing" / report / "0" / name):
         if p.is_file():
             return p
+    return None
+
+
+def roleOfRow(head, rows, sid):
+    """The `role` cell of one stream-table row, by stream id."""
+    ri = head.index("role")
+    for r in rows:
+        if r[0] == sid:
+            return r[ri]
     return None
 
 
@@ -746,6 +810,98 @@ def main() -> int:
                     "-- arm (i) has no subject, and the fractal witness has "
                     "stopped being fractal." % FRACTAL)
 
+    # ---------------------------------------------------------------- (l)
+    #  ONE ROW PER PHYSICAL STREAM, and the plant's own name beside it.
+    #  `result.streams` is keyed by every NAME a stream answers to -- its
+    #  identity, the bare sector label the relabel pass mints, the plant's
+    #  boundary label -- and the table used to emit a row per KEY: 52 rows for
+    #  25 pipes on this plant, twenty-one of them two or three times with
+    #  byte-identical numbers, and the duplicates showed a blank PFD number in
+    #  the app.  The row set must now be EXACTLY the canonical manifest's keys,
+    #  which is the same set `StreamOwnership` gives a state file to -- so the
+    #  table and the `0/` tree cannot disagree about how many streams a plant
+    #  has.  The `label` column is checked against the AUTHORED root dict, not
+    #  against the engine's own conclusion: a plant DECLARES its outlets, and
+    #  a label naming anything else would be a boundary the case does not have.
+    nrows, nlabels = 0, 0
+    if stbl is not None and man is not None:
+        head, rows = csv_rows(stbl)
+        ids = [r[0] for r in rows]
+        nrows = len(ids)
+        dupes = sorted({i for i in ids if ids.count(i) > 1})
+        if dupes:
+            problems.append(
+                "%s: streamTable.csv repeats %d stream id(s): %s.  One physical "
+                "stream, one row." % (FRACTAL, len(dupes), ", ".join(dupes)))
+        extra   = sorted(set(ids) - set(man))
+        missing = sorted(set(man) - set(ids))
+        if extra:
+            problems.append(
+                "%s: streamTable.csv draws %d row(s) the canonical manifest "
+                "does not name: %s.  Those are LABELS -- other names for a pipe "
+                "the table already drew -- and drawing them makes the plant "
+                "look bigger than it is."
+                % (FRACTAL, len(extra), ", ".join(extra)))
+        if missing:
+            problems.append(
+                "%s: %d stream(s) have a state file and no row in "
+                "streamTable.csv: %s.  The table and the state tree must count "
+                "the same streams." % (FRACTAL, len(missing), ", ".join(missing)))
+        if "label" not in head:
+            problems.append(
+                "%s: streamTable.csv carries no `label` column, so the plant's "
+                "own name for a stream it exports (`Powder`, `Stack`) appears "
+                "nowhere -- and the row is the qualified identity, which is not "
+                "that name." % FRACTAL)
+        else:
+            li = head.index("label")
+            declaredOutlets = {n for n, frm, to in root_edges(
+                ROOT / FRACTAL / "system" / "flowsheetDict") if frm and not to}
+            labelled = {r[0]: r[li].strip() for r in rows if r[li].strip()}
+            nlabels = len(labelled)
+            if not labelled:
+                problems.append(
+                    "%s: the `label` column is empty on every row -- arm (l) "
+                    "has no subject, and a plant that exports nine products "
+                    "under its own names has stopped saying so." % FRACTAL)
+            for sid, lab in sorted(labelled.items()):
+                if lab not in declaredOutlets:
+                    problems.append(
+                        "%s: `%s` is labelled `%s`, which the root dict "
+                        "declares as no boundary outlet.  A label is the name "
+                        "the AUTHOR gave the plant's boundary, never one the "
+                        "report invented." % (FRACTAL, sid, lab))
+            for sid, lab in sorted(labelled.items()):
+                if roleOfRow(head, rows, sid) != "product":
+                    problems.append(
+                        "%s: `%s` carries the plant label `%s` and is filed as "
+                        "`%s`.  A stream the plant declared as an outlet is a "
+                        "product; the row used to read `intermediate` because "
+                        "`Topology` files a renamed product under the LABEL."
+                        % (FRACTAL, sid, lab,
+                           roleOfRow(head, rows, sid)))
+
+    #  ...AND THE FLAT WITNESS GAINS NO COLUMN.  A case whose plant renames
+    #  nothing has no boundary label to show, and a column of blanks would
+    #  claim a structure it does not have -- the same ruling the `sector`
+    #  pair already follows.
+    #  The two report layouts name the directory differently (`reports/streams`
+    #  vs the functionObject tree's `postProcessing/streamTable/0`), so ask for
+    #  both rather than assume the one the fractal witness happens to use.
+    ftbl = (find_csv(FLAT, "streamTable", "streamTable.csv")
+            or find_csv(FLAT, "streams", "streamTable.csv"))
+    if ftbl is None:
+        problems.append("%s: no streamTable.csv -- arm (l) cannot check that a "
+                        "flat case gains no `label` column." % FLAT)
+    else:
+        fh, _ = csv_rows(ftbl)
+        if "label" in fh:
+            problems.append(
+                "%s: a FLAT case's streamTable.csv carries a `label` column. "
+                "Its units ARE the plant; it renames nothing at a boundary, so "
+                "the column is a claim about a structure that is not there."
+                % FLAT)
+
     # ---------------------------------------------------------------- (j)
     #  A FLAT CASE GAINS NOTHING.  Its units ARE the plant, so the domain's own
     #  level is the view root and every state file is flat: no `MAIN/`, no
@@ -991,7 +1147,12 @@ def main() -> int:
           "agrees on the %d stream(s) it independently reports as crossing -- "
           "each in NEITHER endpoint's folder.  %s has no sectors and all %d of "
           "its state files stay flat.  A file left at the address the retired "
-          "rule gave is REFUSED and the move is %s.  NOT "
+          "rule gave is REFUSED and the move is %s.  ONE ROW PER PHYSICAL "
+          "STREAM: the fractal witness's streamTable draws %d row(s), exactly "
+          "the manifest's stream ids and no label among them, and the %d row(s) "
+          "the plant exports carry its OWN outlet name in a `label` column -- "
+          "each one a name the root dict declares, each row filed as a product "
+          "-- while the flat witness gains no such column.  NOT "
           "CHECKED: whether any cost is right; NESTING DEEPER THAN ONE LEVEL "
           "-- no corpus case puts a sector inside a sector, so nothing here "
           "distinguishes `A/B/` from `A/` for an internal stream, and nothing "
@@ -1004,7 +1165,8 @@ def main() -> int:
           % (FRACTAL, len(declared), sorted(declared), nsub,
              notes[0] if notes else "no shares read", FLAT,
              len(jsonSectors), len(equip), nread, nreads, nsupplies,
-             nstream, nhome, nstreams, ncross, FLAT, nflat, reloc))
+             nstream, nhome, nstreams, ncross, FLAT, nflat, reloc,
+             nrows, nlabels))
     return 0
 
 

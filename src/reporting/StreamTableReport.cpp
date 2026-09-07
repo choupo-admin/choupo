@@ -48,9 +48,52 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
 {
     const auto topo = reporting::readTopology(ctx.flowsheetDict, ctx.result);
 
+    //  ---- ONE ROW PER PHYSICAL STREAM -------------------------------------
+    //
+    //  `result.streams` holds every NAME a stream answers to: its identity
+    //  (`CONCENTRATION.Cond1`), the bare sector label the relabel pass mints
+    //  (`Cond1`), and the plant's own boundary label (`EvapCondensate1`).  The
+    //  table used to emit a row per KEY, so the flagship plant printed 52 rows
+    //  for 25 pipes, twenty-one of them two or three times with byte-identical
+    //  numbers.  A stream is one physical thing and gets one row.
+    //
+    //  THE ROW IS THE QUALIFIED IDENTITY, because it is the only candidate
+    //  that exists for every stream and collides for none: the plant label is
+    //  absent on the streams that never leave the plant, and the bare label
+    //  COLLIDES (`DRYING.Vapour` and `FERMENTATION.Vapour` are different
+    //  pipes sharing one word -- identity is (kind, sector, name), never name
+    //  alone, ruled 2026-09-06).  It is also the name the stream's state file
+    //  is at, so this table and the `0/` tree agree by construction.
+    //
+    //  WHICH NAMES ARE LABELS is not decided here: `result.boundaryAliases` is
+    //  the engine's own set, the same one `StreamOwnership::canonicalManifest`
+    //  skips when it decides which streams get a state file.  One home, two
+    //  readers, and they cannot disagree about how many streams a plant has.
+    auto isLabel = [&](const std::string& name) {
+        return ctx.result.boundaryAliases.count(name) != 0;
+    };
+
+    //  The DOMAIN'S OWN outlet name for a stream, where the plant gave it one.
+    //  A COLUMN, never a row.  Empty means this stream carries no
+    //  plant-boundary name -- a fact about the flowsheet, not a gap.
+    auto plantLabelOf = [&](const std::string& name) -> std::string {
+        auto it = ctx.result.boundaryOutletLabelOf.find(name);
+        return it == ctx.result.boundaryOutletLabelOf.end() ? std::string()
+                                                            : it->second;
+    };
+
+    //  ROLE follows the row.  `Topology` files a renamed product under the
+    //  BOUNDARY name -- the author's vocabulary, which is right for the
+    //  balance reports that print one line per boundary stream -- so asking it
+    //  about the identity of a renamed product answers `intermediate`, and the
+    //  flagship would have shown nine products as none.  A stream the plant
+    //  DECLARED as an outlet is a product; that declaration is what
+    //  `boundaryOutletLabelOf` records, so this reads the engine's answer
+    //  rather than re-deriving one.
     auto roleOf = [&](const std::string& name) -> std::string {
-        if (topo.feeds.count(name))    return "feed";
-        if (topo.products.count(name)) return "product";
+        if (topo.feeds.count(name))       return "feed";
+        if (topo.products.count(name))    return "product";
+        if (!plantLabelOf(name).empty())  return "product";
         return "intermediate";
     };
 
@@ -200,8 +243,25 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     }
     std::sort(species.begin(), species.end());
 
+    //  The rows, decided BEFORE the header: the `label` column exists only
+    //  when some stream actually carries a plant-boundary name, the same
+    //  posture the `sector`/`crossing` pair takes.  A case whose plant renames
+    //  nothing gets no column rather than a column of blanks claiming a
+    //  structure it does not have (the 2026-09-04 ruling, applied to a
+    //  boundary label instead of a sector).
+    std::vector<std::string> names;
+    for (const auto& [name, s] : ctx.result.streams)
+    {
+        (void)s;
+        if (isLabel(name)) continue;
+        names.push_back(name);
+    }
+    bool anyLabel = false;
+    for (const auto& n : names) if (!plantLabelOf(n).empty()) anyLabel = true;
+
     // Header
     f << "stream,role";
+    if (anyLabel)  f << ",label";
     if (anySector) f << ",sector,crossing";
     f << ",F_kmol_per_h,F_mass_kg_per_h,T_K,P_bar,vapourFraction,solids_kg_per_h,enthalpy_kW";
     for (const auto& c : comps) f << ",x_" << c;
@@ -220,8 +280,6 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         const std::string r = roleOf(n);
         return r == "feed" ? 0 : r == "intermediate" ? 1 : 2;
     };
-    std::vector<std::string> names;
-    for (const auto& [name, s] : ctx.result.streams) { (void)s; names.push_back(name); }
     std::sort(names.begin(), names.end(), [&](const std::string& a, const std::string& b) {
         const int ra = rank(a), rb = rank(b);
         return ra != rb ? ra < rb : a < b;
@@ -233,6 +291,8 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         const scalar F_kmol_h = s.F * 3600.0;                  // kmol/s -> kmol/h
         const scalar Fm_kg_h  = F_massTotal(s, ctx.thermo) * 3600.0; // kg/s  -> kg/h
         f << name << "," << roleOf(name);
+        if (anyLabel)
+            f << "," << plantLabelOf(name);
         if (anySector)
             f << "," << ownerSectorOf(name) << "," << crossingOf(name);
         f << "," << std::fixed << std::setprecision(6) << F_kmol_h

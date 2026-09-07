@@ -160,11 +160,12 @@ export class WasmAdapter implements SolverAdapter {
         settled = true;
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
-        const { displayLog, streams, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
+        const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
           utilityAllocation, globalEnergyBoundary, computed, timeline, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
+        if (streamAliases) result.streamAliases = streamAliases;
         if (Object.keys(kpis).length > 0) result.kpis = kpis;
         if (profiles && profiles.length > 0) result.profiles = profiles;
         if (txy) result.txy = txy;
@@ -338,6 +339,8 @@ export function extractStructured(log: string,
 ): {
   displayLog: string;
   streams: StreamResult[];
+  /** alias -> identity, for the names `streams` no longer carries a row for. */
+  streamAliases?: { [alias: string]: string };
   convergence: ConvergenceCurve[];
   profiles: UnitProfile[];
   txy?: TxyData;
@@ -399,6 +402,7 @@ export function extractStructured(log: string,
   }
 
   const streams = shapeStreams(parsed, caseFiles);
+  const streamAliases = shapeStreamAliases(parsed);
   const convergence = shapeConvergence(parsed);
   const profiles = shapeProfiles(parsed);
   const txy = shapeTxy(parsed);
@@ -557,6 +561,7 @@ export function extractStructured(log: string,
   return {
     displayLog,
     streams,
+    ...(streamAliases ? { streamAliases } : {}),
     convergence,
     profiles,
     kpis,
@@ -647,6 +652,15 @@ interface ResultPayload {
       F_mass?: number;
       F_solid_mass?: number;
       category?: string;
+      /** Set when this entry is one of the OTHER names a stream answers to:
+       *  the identity it copies.  The engine decides which names are labels
+       *  (`SimulationResult::boundaryAliases`); a reader drawing a table skips
+       *  these so one pipe gets one row. */
+      aliasOf?: string;
+      /** The DOMAIN'S OWN outlet name for this stream, when the plant gave it
+       *  one (`DRYING.DryPowder` -> `Powder`).  Present on the identity, never
+       *  on a label entry. */
+      boundaryLabel?: string;
       composition: { [comp: string]: number };
       solids?: { [comp: string]: number };
       psd?: { diameter: number[]; massFrac: number[] };
@@ -796,6 +810,14 @@ export function shapeStreams(payload: ResultPayload,
 
   const out: StreamResult[] = [];
   for (const [name, s] of Object.entries(payload.streams)) {
+    //  ONE ROW PER PHYSICAL STREAM.  The payload is keyed by every NAME a
+    //  stream answers to -- its identity, the bare sector label, the plant's
+    //  own boundary label -- so the flagship arrives as 52 entries for 25
+    //  pipes.  The extra names become `streamAliases`, a lookup for the
+    //  canvas and the pop-outs, and the list every surface tabulates or sums
+    //  keeps one entry per pipe.  Which names are labels is the ENGINE's
+    //  answer (`aliasOf`), never a similarity match made here.
+    if (s.aliasOf !== undefined) continue;
     const leaf = name.split(".").pop()!;
     const isTear = tearStreams.has(name) || tearLeafs.has(leaf);
     const isFeed = !isTear && (
@@ -804,8 +826,15 @@ export function shapeStreams(payload: ResultPayload,
       // inlet -- symmetric to a product.
       || (consumed.has(name) && !produced.has(name))
     );
+    //  A stream the PLANT declared as an outlet is a product, and the engine
+    //  says so by giving it a boundary label.  Without this the flagship's
+    //  nine products all read `intermediate` the moment the label rows stop
+    //  being drawn: the case file names them `Powder`, `Stack`, ... while the
+    //  row is the identity `DRYING.DryPowder`, and nothing in the root dict
+    //  mentions that name.  Reading the engine's answer, not re-deriving one.
     const isProduct = !isTear && (
-      boundaryOutlets.has(name)
+      s.boundaryLabel !== undefined
+      || boundaryOutlets.has(name)
       || (produced.has(name) && !consumed.has(name))
     );
     const role: StreamResult["role"] = isFeed
@@ -831,6 +860,8 @@ export function shapeStreams(payload: ResultPayload,
       F_mass: s.F_mass,
       F_solid_mass: s.F_solid_mass,
       category: s.category,
+      ...(s.aliasOf !== undefined ? { aliasOf: s.aliasOf } : {}),
+      ...(s.boundaryLabel !== undefined ? { boundaryLabel: s.boundaryLabel } : {}),
       composition: {...s.composition },
       solids: s.solids ? {...s.solids } : undefined,
       psd: s.psd
@@ -847,6 +878,21 @@ export function shapeStreams(payload: ResultPayload,
   const roleRank = { feed: 0, intermediate: 1, product: 2 } as const;
   out.sort((a, b) => roleRank[a.role] - roleRank[b.role] || a.name.localeCompare(b.name));
   return out;
+}
+
+/** The names `shapeStreams` dropped: alias -> the identity it copies.  A
+ *  canvas edge, a case file and a pop-out link all speak the author's
+ *  vocabulary, so a lookup BY NAME has to be able to get from `Stack` to
+ *  `DRYING.ExhaustClean`.  Undefined when the run has no labels at all -- an
+ *  empty object would claim a structure the case does not have. */
+export function shapeStreamAliases(
+  payload: ResultPayload,
+): { [alias: string]: string } | undefined {
+  if (!payload.streams) return undefined;
+  const map: { [alias: string]: string } = {};
+  for (const [name, s] of Object.entries(payload.streams))
+    if (s.aliasOf !== undefined) map[name] = s.aliasOf;
+  return Object.keys(map).length > 0 ? map : undefined;
 }
 
 function shapeConvergence(payload: ResultPayload): ConvergenceCurve[] {

@@ -205,6 +205,23 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 if (si != 0.0) anySolid = true;
                 F_solid += si * it->second;     // kmol/s * kg/kmol = kg/s
             }
+        //  WHICH NAMES ARE THE SAME PIPE.  `streams` is keyed by every name a
+        //  stream answers to -- its identity, the bare sector label, the
+        //  plant's boundary label -- because a golden, a case file and a
+        //  canvas edge each speak a different one of them and all three must
+        //  resolve.  A reader that draws a TABLE, though, must not print one
+        //  pipe three times, so the engine says here which entries are labels
+        //  and which name the plant gave the boundary.  The GUI applies these
+        //  fields; it does not work the equivalence out for itself, or the
+        //  rule would have two homes and the two surfaces could disagree
+        //  about how many streams a plant has.
+        std::string aliasOf, plantLabel;
+        {
+            auto a = r.boundaryAliasOf.find(name);
+            if (a != r.boundaryAliasOf.end()) aliasOf = a->second;
+            auto l = r.boundaryOutletLabelOf.find(name);
+            if (l != r.boundaryOutletLabelOf.end()) plantLabel = l->second;
+        }
         os << "    " << esc(name) << ": { "
            << "\"F\": " << num(F_overall)
            << ", \"T\": " << num(s.T)
@@ -244,6 +261,8 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             }
             os << "]";
         }
+        if (!aliasOf.empty())    os << ", \"aliasOf\": " << esc(aliasOf);
+        if (!plantLabel.empty()) os << ", \"boundaryLabel\": " << esc(plantLabel);
         if (haveMW) os << ", \"F_mass\": " << num(F_mass);
         os << ", \"F_solid_mass\": " << num(F_solid);
         // Utility category (populated by `utility <name>;` in a stream

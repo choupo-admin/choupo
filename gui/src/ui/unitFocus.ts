@@ -113,7 +113,17 @@ export function synthesizeUnitClone(
   // hold EXACTLY this clone's streams: the run's FROZEN value (canonical SI:
   // F kmol/s, T K, P Pa) when available, else the parent's own 0/<name>.
   const runStreams = (runResult?.streams ?? []) as StreamResult[];
-  const findS = (nm: string) => runStreams.find((s) => s.name === nm);
+  //  The unit names its ports in the AUTHOR's vocabulary and the run carries
+  //  one entry per PHYSICAL stream under its identity, so a port named
+  //  `Magma` has to reach `CONCENTRATION.Magma`.  Resolved through the
+  //  engine's own alias map -- exactly, never by matching leaves: the frozen
+  //  0/ this builds is the clone's whole state, and a near-miss would freeze
+  //  the wrong stream's numbers into it.
+  const streamAliases = runResult?.streamAliases ?? {};
+  const findS = (nm: string) => {
+    const id = streamAliases[nm] ?? nm;
+    return runStreams.find((s) => s.name === id);
+  };
   const parentExtra = caseFiles.extraFiles ?? {};
   const cloneStreams = Array.from(new Set([...inNames, ...outNames]));
   const zeroFiles: Record<string, string> = {};

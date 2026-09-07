@@ -103,8 +103,13 @@ function buildHtml(result: RunResult, prefs: DisplayPrefs): string {
 
   const perStream = computePerStream(result.streams, mws);
 
+  //  The plant's own name for the stream, mirroring the in-app Streams tab:
+  //  the row is the qualified identity, the author's boundary label is a
+  //  column beside it.  Present only when some stream carries one.
+  const hasLabel = result.streams.some((s) => s.boundaryLabel !== undefined);
+
   const headerCells: string[] = [
-    "Stream", "Role",
+    "Stream", ...(hasLabel ? ["Plant label"] : []), "Role",
     `F (${prefs.flow})`,
     `T (${temperatureLabel(prefs.temperature)})`,
     `P (${prefs.pressure})`,
@@ -118,6 +123,7 @@ function buildHtml(result: RunResult, prefs: DisplayPrefs): string {
     const F_si = massBasis ? ps.totMass : ps.totMol;
     const cells: string[] = [
       esc(s.name),
+      ...(hasLabel ? [esc(s.boundaryLabel ?? "")] : []),
       `<span class="role role-${s.role}">${s.role}</span>`,
       cellRight(massBasis && mws === undefined ? "—" : formatFlow(F_si, prefs.flow, 4)),
       cellRight(formatTemperature(s.T, prefs.temperature, 2)),
@@ -162,7 +168,7 @@ function buildHtml(result: RunResult, prefs: DisplayPrefs): string {
     </style>
     <h2>Streams (${result.streams.length})</h2>
     <table>
-      <thead><tr>${headerCells.map((h, i) => `<th${i >= 2 ? ' class="right"' : ''}>${esc(h)}</th>`).join("")}</tr></thead>
+      <thead><tr>${headerCells.map((h, i) => `<th${i >= (hasLabel ? 3 : 2) ? ' class="right"' : ''}>${esc(h)}</th>`).join("")}</tr></thead>
       <tbody>${rows.join("")}</tbody>
     </table>
   `;

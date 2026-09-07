@@ -350,23 +350,37 @@ plant and re-invents the other half is not a restart.
 
 ## 8. Reading a sectored plant's stream table
 
-`reports { streamTable; }` writes one row per stream.  On a case that HAS
-sectors it carries two extra columns, and they answer two different questions:
+`reports { streamTable; }` writes **one row per PHYSICAL stream** — one pipe,
+one row, under its QUALIFIED IDENTITY, which is exactly the set
+`choupoSolve --manifest` gives a state file to.  A stream answers to more
+names than that (the bare sector label the engine mints, the plant's own
+boundary label), and until 2026-09-07 each name got a row: the flagship plant
+printed 52 rows for 25 pipes.  The identity is the row because it is the only
+candidate that exists for every stream and collides for none — a plant label
+is absent on the streams that never leave the plant, and the bare label
+collides (`DRYING.Vapour` and `FERMENTATION.Vapour` are different pipes
+sharing one word).
+
+On a case that HAS sectors the table carries three extra columns, and they
+answer three different questions:
 
 | column | what it answers |
 |---|---|
+| `label` | **the plant's OWN name for this stream**, where the plant declared one (`Powder { from DRYING/DryPowder; }` → the row `DRYING.DryPowder` is labelled `Powder`).  Blank means the stream never leaves the plant under another name — a fact, not a gap.  A row with a label is a `product`. |
 | `sector` | **where the stream's state FILE is** — the level the ownership rule above put it at, so `MAIN` for a plant inlet or a crossing, the sector for a stream internal to one.  It is the same answer `choupoSolve --manifest` gives; the column asks that one home rather than restating it. |
 | `crossing` | `FROM->TO` for each sector boundary the stream is handed across, blank when it crosses none.  A stream with consumers in two foreign sectors gets one entry per sector, space-separated. |
 
 ```
-CONCENTRATION.Magma,intermediate,MAIN,CONCENTRATION->DRYING,...
-CONCENTRATION.Vap1,intermediate,CONCENTRATION,,...
+CONCENTRATION.Magma,intermediate,,MAIN,CONCENTRATION->DRYING,...
+CONCENTRATION.Vap1,intermediate,,CONCENTRATION,,...
+DRYING.DryPowder,product,Powder,DRYING,,...
 ```
 
 The wiring itself is in the root `connections {}` block (topology never lives
 in a state view) and the state is one folder per level, so these two columns are
-the only place the two are shown together.  A **FLAT case gets NEITHER column** —
-not two empty ones, which would claim a structure it does not have.  A stream
+the only place the two are shown together.  A **FLAT case gets NONE of the three** —
+not three empty ones, which would claim a structure it does not have; `label`
+likewise appears only when some stream actually carries one.  A stream
 the topology does not know at all gets an EMPTY `sector` cell, never
 `(no sector)`: that phrase is a fact about a UNIT at the plant root.
 

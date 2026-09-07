@@ -210,9 +210,25 @@ non-utility stream pairing) are stated in `PinchPass.H`.  Witness:
 `tutorials/steady/heat/pinch01_four_stream_classic` (107.5 kW / 40 kW /
 pinch 90 °C hot — hand-worked in the case header); gate `check_pinch_p1`.
 
-**Sector and crossing (steady, fractal plants only)** — on a case whose units
-carry a stamped sector, `streamTable.csv` carries two extra columns after
-`role`: `sector`, the folder the stream's state file actually lives in — the
+**One row per physical stream (steady)** — `streamTable.csv` draws one row per
+pipe, under its QUALIFIED IDENTITY, and that row set is exactly the canonical
+manifest's (`choupoSolve --manifest`) — the same set the state model gives a
+file to, so the table and the `0/` tree cannot disagree about how many streams
+a plant has.  `result.streams` is keyed by every NAME a stream answers to,
+because a golden, a case file and a canvas edge each speak a different one, and
+until 2026-09-07 the table emitted a row per KEY: 52 rows for 25 pipes on the
+flagship plant, twenty-one of them two or three times with byte-identical
+numbers.  The identity is the row because it is the only candidate present for
+every stream and colliding for none — a plant label is absent on a stream that
+never leaves the plant, and a bare sector label collides (`DRYING.Vapour` and
+`FERMENTATION.Vapour`).  Record:
+`docs/design/one-row-per-physical-stream.md`.
+
+**Label, sector and crossing (steady, fractal plants only)** — on a case whose
+units carry a stamped sector, `streamTable.csv` carries a `label` column after
+`role` — the plant's OWN outlet name for the stream (`DRYING.DryPowder` is
+labelled `Powder`), blank when the stream never leaves the plant, and present
+only when some stream carries one — then two more: `sector`, the folder the stream's state file actually lives in — the
 ownership rule's own answer, ASKED of `StreamOwnership::ownershipPath` rather
 than restated, so it is the LOWEST LEVEL of the case containing every endpoint
 of that stream (`MAIN` for a plant inlet or a sector crossing, the sector for
@@ -225,9 +241,11 @@ They exist because the wiring of a fractal plant is in the root
 `connections {}` block (topology, which never lives in a state view) while
 the state is scattered one folder per sector, so nothing showed the crossings
 together.  Both are fed by the STAMPED `FlatUnit::sector`, never by splitting
-a dotted unit name.  **A case with no sectors gets neither column** — an
+a dotted unit name.  **A case with no sectors gets none of the three** — an
 empty column would claim a structure that is not there (the 2026-09-04
-ruling; verified byte-identical).  A bare report label is resolved to the
+ruling; verified byte-identical — 78 of the 82 corpus cases that publish a
+stream table are byte-identical across their WHOLE run-output tree, and the
+two that differ are the two sectored plants).  A bare report label is resolved to the
 stream it names through the declared alias bridge, and a stream the flat
 topology does not know at all gets an empty cell rather than `(no sector)`,
 which is a fact about a unit at the plant root.  The author-facing home for

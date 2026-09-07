@@ -133,6 +133,15 @@ export function StreamsTable() {
   //  one; a stream without (an all-vapour line has no aqueous phase) reads
   //  as a dash, which is the honest mark, not a zero.
   const hasSpeciation = result.streams.some((s) => s.speciation?.pH !== undefined);
+  //  THE PLANT'S OWN NAME FOR A STREAM, as a COLUMN.  The row is the
+  //  qualified identity -- the only name that exists for every stream and
+  //  collides for none (`DRYING.Vapour` and `FERMENTATION.Vapour` are
+  //  different pipes sharing one word) -- so the author's boundary
+  //  vocabulary, which is what a plant's own drawing is labelled with, would
+  //  otherwise be off the screen entirely.  The column exists only when some
+  //  stream carries one; a blank cell means this pipe never leaves the plant,
+  //  which is a fact and not a gap.
+  const hasLabel = result.streams.some((s) => s.boundaryLabel !== undefined);
   const mws = result.componentMolarMass;
   // Mass fractions need MWs; fall back gracefully if the solver
   // didn't emit them (older binary, or a build without).
@@ -156,6 +165,7 @@ export function StreamsTable() {
   const rowVal = (s: (typeof result.streams)[number], key: string): number | string => {
     if (key === "#") return numberOf(s.name) ?? Number.POSITIVE_INFINITY;
     if (key === "name") return s.name;
+    if (key === "label") return s.boundaryLabel ?? "";
     if (key === "role") return s.role;
     if (key === "F") return Fsi(s);
     if (key === "T") return s.T;
@@ -184,7 +194,7 @@ export function StreamsTable() {
   // current sort order, so it opens ready to sort / filter / compute.
   const exportOds = () => {
     const headers = [
-      "#", "Stream", "Role", `F (${prefs.flow})`,
+      "#", "Stream", ...(hasLabel ? ["Plant label"] : []), "Role", `F (${prefs.flow})`,
       `T (${temperatureLabel(prefs.temperature)})`, `P (${prefs.pressure})`, "vf",
       ...(hasSpeciation ? ["pH"] : []),
       ...(hasSolids ? ["solids (kg/h)"] : []),
@@ -195,6 +205,7 @@ export function StreamsTable() {
       return [
         numberOf(s.name) ?? "",
         s.name,
+        ...(hasLabel ? [s.boundaryLabel ?? ""] : []),
         s.role,
         massBasis && mws === undefined ? "" : flowToDisplay(Fsi(s), prefs.flow),
         kToDisplay(s.T, prefs.temperature),
@@ -224,6 +235,15 @@ export function StreamsTable() {
           <Table.Tr>
             <Table.Th style={{ textAlign: "right", ...thSort }} title="PFD stream number (matches the flowsheet) — click to sort" onClick={() => toggleSort("#")}>#{arrow("#")}</Table.Th>
             <Table.Th style={thSort} onClick={() => toggleSort("name")}>Stream{arrow("name")}</Table.Th>
+            {hasLabel && (
+              <Table.Th
+                style={thSort}
+                title="the name the plant's own boundary gives this stream — blank when it never leaves the plant"
+                onClick={() => toggleSort("label")}
+              >
+                Plant label{arrow("label")}
+              </Table.Th>
+            )}
             <Table.Th style={thSort} onClick={() => toggleSort("role")}>Role{arrow("role")}</Table.Th>
             <Table.Th style={{ textAlign: "right", ...thSort }} onClick={() => toggleSort("F")}>F ({prefs.flow}){arrow("F")}</Table.Th>
             <Table.Th style={{ textAlign: "right", ...thSort }} onClick={() => toggleSort("T")}>
@@ -282,6 +302,13 @@ export function StreamsTable() {
                     {s.name}
                   </Text>
                 </Table.Td>
+                {hasLabel && (
+                  <Table.Td>
+                    <Text size="xs" ff="monospace" c="dimmed">
+                      {s.boundaryLabel ?? ""}
+                    </Text>
+                  </Table.Td>
+                )}
                 <Table.Td>
                   <Badge
                     size="xs"

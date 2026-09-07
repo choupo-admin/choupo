@@ -80,6 +80,21 @@ export interface StreamResult {
    *  to differentiate visually (dashed grey edge, chama/floco terminal
    *  icon) and to populate the utility-consumption report. */
   category?: string;
+  /** THE OTHER NAMES A STREAM ANSWERS TO.  The engine emits one entry per
+   *  NAME -- the qualified identity, the bare sector label the relabel pass
+   *  mints, the plant's own boundary label -- because a golden, a case file
+   *  and a canvas edge each speak a different one and all three must resolve.
+   *  On a label entry this carries the identity it copies; a surface that
+   *  draws a TABLE skips those, so one physical stream gets one row.  The
+   *  engine decides the equivalence (`SimulationResult::boundaryAliases`); the
+   *  GUI only applies it, or the rule would have two homes. */
+  aliasOf?: string;
+  /** The DOMAIN'S OWN outlet name for this stream, where the plant declared
+   *  one (`DRYING.DryPowder` -> `Powder`).  Set on the IDENTITY, so the table
+   *  can draw the author's boundary vocabulary as a column beside the row.
+   *  Absent means this stream carries no plant-boundary name -- a fact about
+   *  the flowsheet, not a gap. */
+  boundaryLabel?: string;
   /** OVERALL mole fractions -- the whole material inventory, a
    *  precipitated crystal's share included (flash19: the stream's CaCO3
    *  is dissolved + crystal, and this says so).  Sums to 1. */
@@ -363,7 +378,20 @@ export interface GlobalEnergyBoundary {
 export interface RunResult {
   status: "done" | "error";
   log: string;
+  /** ONE ENTRY PER PHYSICAL STREAM.  The engine's payload is keyed by every
+   *  NAME a stream answers to, so the flagship plant arrived as 52 entries for
+   *  25 pipes; the adapter keeps the identity and moves the other names into
+   *  `streamAliases`.  Every surface that TABULATES or SUMS streams therefore
+   *  counts each pipe once without a filter of its own -- the alternative was
+   *  the same de-duplication rule in eight places. */
   streams: StreamResult[];
+  /** The OTHER names, alias -> the identity in `streams` above.  A canvas edge
+   *  and a case file speak the author's vocabulary (`Stack`, `Magma`) while
+   *  the row is the identity (`DRYING.ExhaustClean`), so a lookup BY NAME
+   *  resolves through this.  The engine decides the equivalence
+   *  (`SimulationResult::boundaryAliases`); this is its transport, not a
+   *  second derivation.  Absent when the case has no labels. */
+  streamAliases?: { [alias: string]: string };
   convergence: ConvergenceCurve[];
   /** Per-unit KPIs from the structured JSON (yield, c_sat, supersaturation,
    *  Q_removed,...).  Keyed by unit name as written in flowsheetDict.

@@ -242,7 +242,8 @@ export function popOutStreamByName(name: string): void {
       | { streams?: { [k: string]: { F?: number; T?: number; P?: number; composition?: { [c: string]: number }; role?: string } } }
       | undefined;
     const declared = flowsheet?.streams?.[name];
-    const runStream = findRunStream(state.runResult?.streams, name);
+    const runStream = findRunStream(state.runResult?.streams, name,
+                                    state.runResult?.streamAliases);
     popOutSingleStream({
       name,
       role: declared?.role ?? runStream?.role,
@@ -276,8 +277,20 @@ export function popOutStreamByName(name: string): void {
 export function findRunStream(
   streams: StreamResult[] | undefined,
   name: string,
+  aliases?: { [alias: string]: string },
 ): StreamResult | undefined {
   if (!streams) return undefined;
+  // 0: THE ENGINE'S OWN ANSWER.  `streams` carries one row per physical
+  // stream, under its identity; a canvas edge and a case file speak the
+  // author's vocabulary (`Stack`, `EvapCondensate1`), and only the engine
+  // knows those are the same pipe.  Ask it before guessing -- the leaf match
+  // below would have taken `EthanolVapour` to whichever `*.Vapour` it met
+  // first, and there are two of them in the flagship plant.
+  const viaAlias = aliases?.[name] ?? aliases?.[name.replace(/\//g, ".")];
+  if (viaAlias !== undefined) {
+    const hit = streams.find((r) => r.name === viaAlias);
+    if (hit) return hit;
+  }
   // 1 + 2: exact + normalised
   const candidates = new Set<string>([
     name,

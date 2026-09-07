@@ -3578,6 +3578,14 @@ int Flowsheet::solve(const DictPtr& dict,
             streams_[alias] = streams_.at(src);
             boundaryAliases_.insert(alias);
             boundaryAliasOf_[alias] = src;
+            //  The same fact read the other way round, and it is the one a
+            //  REPORT needs: this stream leaves the domain, under the name its
+            //  author gave the boundary.  `boundaryAliasOf_` cannot answer it,
+            //  because the bare-label pass below fills the SAME map with
+            //  sector-level labels a plant never declared (`Cond1`, `Magma`),
+            //  and a table drawing those as plant names would invent a
+            //  boundary the case does not have.
+            boundaryOutletLabelOf_[src] = alias;
         }
 
     // ---- Reconcile named-edge LABELS with the streams that carry them ----

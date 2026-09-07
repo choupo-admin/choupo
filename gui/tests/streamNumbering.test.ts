@@ -31,8 +31,13 @@ function walkFiles(dir: string, base: string, out: Record<string, string>): void
   }
 }
 
-// The flattened stream names choupoSolve emits for ChemicalPlantTutorial
-// (plant.sector.unit dotted form, what the Streams table iterates).
+//  Qualified stream ENDPOINTS of the plant, in the dotted form the canvas and
+//  the pop-outs hand the resolver.  This list is NOT what choupoSolve emits as
+//  stream identities -- a comment here used to say it was, and it had gone
+//  false: the engine's identity for the crystalliser's magma is
+//  `CONCENTRATION.Magma`, not `CONCENTRATION.Cryst.Magma`.  Both resolve, and
+//  both must: the unit-qualified form is a real endpoint of the sector's own
+//  edge.  The identities the RESULT carries are pinned separately below.
 const RESULT_STREAMS = [
   "CONCENTRATION.Cryst.Magma", "CONCENTRATION.Evap1.Cond1",
   "CONCENTRATION.Evap1.Juice1", "CONCENTRATION.Evap1.Vap1",
@@ -46,6 +51,22 @@ const RESULT_STREAMS = [
   "FERMENTATION.Recycle", "FERMENTATION.Splitter.Purge",
   "MAIN.JuiceSplitter.ToConcentration", "MAIN.JuiceSplitter.ToFermentation",
   "PlantSteam", "Powder", "Purge", "RawJuice", "RecoveredDust", "Stack",
+];
+
+
+//  The 25 stream IDENTITIES of the flagship plant, as published by
+//  `choupoSolve --manifest tutorials/plant/ChemicalPlantTutorial` (measured
+//  2026-09-07).  One per pipe: the plant's own inlets under the names the
+//  boundary declares, everything else under its qualified identity.
+const MANIFEST_IDENTITIES = [
+  "BdAir", "CONCENTRATION.Cond1", "CONCENTRATION.Cond2",
+  "CONCENTRATION.Juice1", "CONCENTRATION.Magma", "CONCENTRATION.Syrup",
+  "CONCENTRATION.Vap1", "CONCENTRATION.Vap2", "DRYING.DryPowder",
+  "DRYING.Dust", "DRYING.Exhaust", "DRYING.ExhaustClean", "DRYING.Vapour",
+  "DRYING.WetPowder", "DryingAir", "FERMENTATION.Liquid",
+  "FERMENTATION.Mixed", "FERMENTATION.Out", "FERMENTATION.Purge",
+  "FERMENTATION.Recycle", "FERMENTATION.Vapour", "MAIN.ToConcentration",
+  "MAIN.ToFermentation", "PlantSteam", "RawJuice",
 ];
 
 describe("fractal plant stream numbering (ChemicalPlantTutorial)", () => {
@@ -71,5 +92,27 @@ describe("fractal plant stream numbering (ChemicalPlantTutorial)", () => {
     // ONE number across both names -- the absolute-numbering invariant.
     expect(resolve("", "CONCENTRATION.Evap2.Vap2"))
       .toBe(resolve("", "EvapVapour"));
+  });
+
+  //  THE ROWS THE STREAMS TABLE ACTUALLY DRAWS.  Since 2026-09-07 the table
+  //  draws one row per PHYSICAL stream, under the qualified identity, and the
+  //  identities are exactly the keys of the engine's canonical manifest
+  //  (`choupoSolve --manifest`, which is also what decides where each state
+  //  file goes -- so the table and the `0/` tree agree by construction).
+  //  Vitor's symptom was rows with no number: they were the BARE sector
+  //  labels (`Cond1`, `Magma`), which appear in no view's connection list and
+  //  so belong to no numbering class.  Those rows are gone; what is left must
+  //  be numbered to the last one.
+  it("every row the Streams table draws carries a number", () => {
+    const raw: Record<string, string> = {};
+    walkFiles(PLANT, PLANT, raw);
+    const rootFs = toJson(
+      parse(raw["system/flowsheetDict"]!, { sourceName: "root" }),
+    ) as JsonDict;
+    const resolve = globalStreamNumbering(rootFs, raw);
+
+    const missing = MANIFEST_IDENTITIES.filter((s) => resolve("", s) === undefined);
+    expect(missing).toEqual([]);
+    expect(MANIFEST_IDENTITIES).toHaveLength(25);
   });
 });

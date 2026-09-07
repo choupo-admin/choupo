@@ -1206,6 +1206,44 @@ both addresses and refuses until it is made.  Gates:
 `check_sector_hierarchy` (h)-(k) · `check_drill_in`.  Record:
 [`docs/design/a-stream-belongs-to-the-graph-that-contains-both-ends.md`](docs/design/a-stream-belongs-to-the-graph-that-contains-both-ends.md).
 
+**ONE PIPE, ONE ROW — the flagship's stream table printed 52 rows for 25
+streams (2026-09-07).**  `result.streams` is keyed by every NAME a stream
+answers to (its qualified identity, the bare sector label the relabel pass
+mints, the plant's own boundary label), because a golden, a case file and a
+canvas edge each speak a different one and all three must resolve; the table
+emitted a row per KEY.  Vítor saw it on the LIVE SITE as rows with no PFD
+number — measured, 15 of the 52 — and every one of them is a bare sector label
+no view's `connections {}` block mentions, so it belongs to no numbering class:
+*the numbering was right, the row list was wrong* (nothing in
+`streamNumbering.ts` was touched).  Rule: **the ROW is the QUALIFIED IDENTITY and the
+plant label is a COLUMN** — measured, it is the only candidate present for
+every stream (21 of 21) and colliding for none, where a plant label is absent
+on 12 and a bare label COLLIDES (`DRYING.Vapour` and `FERMENTATION.Vapour` are
+different pipes sharing one word).  The row set is then EXACTLY
+`choupoSolve --manifest`'s keys, so the table and the `0/` tree cannot
+disagree about how many streams a plant has.  ONE new fact was needed and
+`boundaryAliasOf` could not supply it: which alias is the PLANT'S own name
+(9 of 27; the other 18 are sector labels naming no boundary) —
+`boundaryOutletLabelOf`, identity -> the declared outlet name.  **THE ENGINE
+DECIDES, THE GUI DRAWS**: the result JSON marks each entry (`aliasOf` /
+`boundaryLabel`) and the adapter drops the label entries at ONE seam, so all
+eight surfaces that tabulate or sum streams count each pipe once without a
+filter of their own, and the dropped names become an alias MAP that
+`findRunStream` consults first (its leaf-match fallback would have sent
+`EthanolVapour` to whichever `*.Vapour` came first).  Traps paid for: a
+renamed product's ROLE lives on the LABEL in `reporting::Topology` — right for
+the balance reports, so nothing there moved — and the identity therefore had
+to learn that a declared outlet is a product, or nine products would have read
+`intermediate`; and the gate's first cut named a local `declared`, shadowing
+arm (a)'s SECTOR list, so it PASSED while its own OK line called the nine
+boundary outlets the plant's four sectors — *a gate's claim is the line it
+prints.*  NOT done, said plainly: `Topology`'s products set still holds the
+boundary NAME, so one stream is `DRYING.ExhaustClean` in the stream table and
+`Stack` in the balance reports (the `label` column is the join); and the
+CYCLONE recovering exactly zero dust is a separate finding RESERVED for Vítor.
+Gate: `check_sector_hierarchy` arm (l) (6 by-hand sabotages).  Record:
+[`docs/design/one-row-per-physical-stream.md`](docs/design/one-row-per-physical-stream.md).
+
 **A SECTOR IS READ FROM THE STAMP, NOT RECOVERED FROM A NAME — on the STREAM
 side too (2026-09-06).**  The 2026-09-04 hierarchy slice converted the four
 design/costing readers and left TWO copies of the rejected design alive where

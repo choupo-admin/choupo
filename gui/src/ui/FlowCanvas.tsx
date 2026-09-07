@@ -663,11 +663,11 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       return { color, phase, totalFlow };
     };
     const lookupPhase = (label: string): PhaseStyle | null => {
-      const s = findRunStream(runResult.streams, label);
+      const s = findRunStream(runResult.streams, label, runResult.streamAliases);
       return s ? styleFor(s) : null;
     };
     const lookupUtility = (label: string): string | null => {
-      const s = findRunStream(runResult.streams, label);
+      const s = findRunStream(runResult.streams, label, runResult.streamAliases);
       return s && s.category ? s.category : null;
     };
     // Resolved stream conditions (F, F_mass, T, P) from the converged run.
@@ -675,7 +675,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     // solver actually computed --- e.g. a utility stream whose T comes from
     // the catalogue (the dict has no T) reads its real temperature, not 0.
     const lookupResult = (label: string) => {
-      const s = findRunStream(runResult.streams, label);
+      const s = findRunStream(runResult.streams, label, runResult.streamAliases);
       if (!s) return null;
       // Solid molar flow: s.solids is per-component MASS [kg/s] (it pairs with
       // F_solid_mass -- NOT moles), so convert each via its molar mass to the
