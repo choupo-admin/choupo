@@ -63,7 +63,10 @@ export function ReportsWorkspace() {
   const hxUnits = (flowUnits ?? []).filter(
     (u) => u?.type === "heatExchanger" && runResult.kpis?.[u.name]?.["U"] !== undefined);
   const openHxSheet = (u: UnitSpec) => {
-    const html = heatExchangerDatasheetHtml(u, runResult.kpis?.[u.name], runResult.streams);
+    //  The engine's own specification sheet rides `designFiles`; the datasheet
+    //  READS it rather than rebuilding the design numbers from the KPIs.
+    const html = heatExchangerDatasheetHtml(u, runResult.kpis?.[u.name],
+      runResult.streams, runResult.designFiles);
     if (!html) return;
     const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
     const a = document.createElement("a");

@@ -1,0 +1,164 @@
+/*---------------------------------------------------------------------------*\
+  designSheet -- READ BACK the equipment specification sheet the RUN wrote.
+
+  `SizingPass` publishes one Choupo dictionary per physical item at
+  `design/<SECTOR>/<unit>/<equipmentTag>`, and since 2026-09-05 it arrives in
+  the browser on its own `RunResult.designFiles` channel.  Nothing in the GUI
+  read one back.  So ONE exchanger had TWO specification sheets on TWO input
+  paths: the engine's, and the printable datasheet's, which built its design
+  numbers from the rating unit's KPIs and the case's authored `geometry {}`.
+
+  They can disagree BY CONSTRUCTION, and on the corpus they do -- the rating's
+  area is the author's `operation.area`, while the sizer's `A` is Q/(U*LMTD)
+  with a DIFFERENT author-set U and LMTD from `postDict`'s `designRules {}`.
+  `src/core/PortRoles.H` names this shape in its own header: a second
+  implementation of one question, agreeing today, drifting the first time.
+
+  This module is the ONE reader.  It parses with the GUI's real dict parser,
+  not a regex -- `check_design_sheet` states in its own blind-spot list that
+  the day anything reads a sheet back, that reader is the check.  (It is still
+  not the ENGINE's parser: `Dictionary::fromFile` has never read one either.)
+\*---------------------------------------------------------------------------*/
+import { parse, toJson } from "../dict/index.js";
+
+/** One sizing entry, with the unit the SIZER declared where it computed the
+ *  value.  The unit is read off the sheet and never supplied here: that is the
+ *  whole point of `EquipmentSizing::set(key, value, unit)` being the one door,
+ *  and it is why a new sizing key needs no change in this file. */
+export interface DesignValue { key: string; value: number; unit: string; }
+
+export interface DesignSheet {
+  /** The unit as the ENGINE names it -- qualified (`CONCENTRATION.Evap2`) on
+   *  a fractal case, bare on a flat one. */
+  unit: string;
+  /** The sector the flatten seam STAMPED, empty on a flat case.  Read, never
+   *  recovered by splitting `unit` on a dot. */
+  sector: string;
+  equipment: string;
+  material: string;
+  /** The design argument the sizer stated, or `(not stated)` -- which the
+   *  engine writes literally, and which this reader passes through unchanged
+   *  so a forgotten basis stays visible rather than being defaulted away. */
+  basis: string;
+  sizing: DesignValue[];
+  /** Inputs the sizer was not given and supplied itself.  Written by the
+   *  engine ONLY when a default was actually taken, so an EMPTY list is the
+   *  positive statement "this sizer assumed nothing". */
+  assumed: string[];
+}
+
+/*  A scalar as `toJson` hands it over.  The dict grammar's named-unit form
+ *  crosses as the string "<number> <unit>" and its bracket-dimension form as
+ *  "[0 0 0 0 0] <number>"; a raw-SI scalar crosses as a number.  A sheet
+ *  writes the bracket form for a dimensionless value ON PURPOSE (2026-09-04):
+ *  omitting the unit would be indistinguishable from a forgotten one. */
+function splitValue(v: unknown): { value: number; unit: string } | null {
+  if (typeof v === "number") return Number.isFinite(v) ? { value: v, unit: "" } : null;
+  if (typeof v !== "string") return null;
+  const dim = /^\[[-0-9\s]+\]\s*(\S+)$/.exec(v);
+  if (dim) {
+    const n = Number(dim[1]);
+    return Number.isFinite(n) ? { value: n, unit: "-" } : null;
+  }
+  const m = /^(\S+)(?:\s+(.*\S))?\s*$/.exec(v);
+  if (!m) return null;
+  const n = Number(m[1]);
+  return Number.isFinite(n) ? { value: n, unit: (m[2] ?? "").trim() } : null;
+}
+
+const word = (j: { [k: string]: unknown }, k: string): string => {
+  const v = j[k];
+  return typeof v === "string" ? v : "";
+};
+
+/** Parse one `design/.../<equipmentTag>` file.  Returns null for anything that
+ *  is not a specification sheet -- the record identifies ITSELF
+ *  (`recordType designSheet;`), which is the same rule the interior-state
+ *  reader was given on 2026-09-06, and it is what keeps this reader from
+ *  drawing some other dictionary that happens to sit under `design/`. */
+export function parseDesignSheet(text: string): DesignSheet | null {
+  let j: { [k: string]: unknown };
+  try {
+    j = toJson(parse(text, { sourceName: "designSheet" })) as { [k: string]: unknown };
+  } catch {
+    return null;   // an unparseable sheet is not a sheet; the caller says so
+  }
+  if (word(j, "recordType") !== "designSheet") return null;
+
+  const sizing: DesignValue[] = [];
+  const sz = j["sizing"];
+  if (sz && typeof sz === "object" && !Array.isArray(sz))
+    for (const [key, raw] of Object.entries(sz as { [k: string]: unknown })) {
+      const s = splitValue(raw);
+      if (s) sizing.push({ key, value: s.value, unit: s.unit });
+    }
+
+  const asm = j["assumed"];
+  const assumed = Array.isArray(asm)
+    ? asm.filter((a): a is string => typeof a === "string") : [];
+
+  return {
+    unit: word(j, "unit"),
+    sector: word(j, "sector"),
+    equipment: word(j, "equipment"),
+    material: word(j, "material"),
+    basis: word(j, "basis"),
+    sizing,
+    assumed,
+  };
+}
+
+/** What the lookup found.  THREE STATES, NEVER TWO: a sheet, an ABSENCE, or a
+ *  sheet that is there and could not be READ.  Collapsing the last two would
+ *  report "the sizing pass did not run" about a run that sized the unit and
+ *  wrote a file -- which is the 2026-09-06 rule that a check unable to look
+ *  must not pass and must not fail either, but REFUSE by name. */
+export interface DesignSheetLookup {
+  sheet: DesignSheet | null;
+  /** Files under `design/` this reader could not parse at all.  Not
+   *  attributed to a unit: a file that will not parse cannot say whose it is,
+   *  and the path is not evidence (see below). */
+  unreadable: number;
+}
+
+/** The sheet the run wrote for THIS unit and THIS equipment kind.
+ *
+ *  IDENTITY IS (sector, name), NEVER A NAME SPLIT.  The GUI holds a unit's
+ *  LOCAL name; the engine names it qualified once it lives in a sector.  The
+ *  sheet carries both -- its own `unit` and its own stamped `sector` -- so the
+ *  qualified form is REBUILT from the stamp and compared, which is the
+ *  2026-09-06 rule (`FlatUnit.H::topLevelSector`) read from the other end.
+ *  Recovering the sector by splitting the last dot would be right on today's
+ *  corpus and wrong for the first unit whose name carries a dot for another
+ *  reason.
+ *
+ *  The PATH is not matched at all.  It encodes the same two facts the sheet
+ *  states about itself, and a reader that agreed with the directory instead of
+ *  the record would be checking the writer's filing rather than its answer. */
+export function lookupDesignSheet(
+  designFiles: { [relPath: string]: string } | undefined,
+  unitName: string,
+  equipment: string,
+): DesignSheetLookup {
+  let unreadable = 0;
+  let found: DesignSheet | null = null;
+  for (const [rel, text] of Object.entries(designFiles ?? {})) {
+    if (!rel.startsWith("design/")) continue;
+    const sheet = parseDesignSheet(text);
+    if (!sheet) { unreadable++; continue; }
+    if (found || sheet.equipment !== equipment) continue;
+    if (sheet.unit === unitName
+        || (sheet.sector !== "" && `${sheet.sector}.${unitName}` === sheet.unit))
+      found = sheet;
+  }
+  return { sheet: found, unreadable };
+}
+
+/** The sheet alone, for a caller with nothing to say about an unreadable one. */
+export function findDesignSheet(
+  designFiles: { [relPath: string]: string } | undefined,
+  unitName: string,
+  equipment: string,
+): DesignSheet | null {
+  return lookupDesignSheet(designFiles, unitName, equipment).sheet;
+}

@@ -59,17 +59,27 @@ Description
     output differ for a structure it does not have.
 
     IT IS A PHOTOGRAPH, NOT A SEAM.  The whole tree is removed and rewritten
-    on every run, exactly as `converged/` is.  Nothing reads it back today,
-    and that is not a defect: the value is that a human can open one file and
-    defend the number.  A machine-written file regenerated whole each run
+    on every run, exactly as `converged/` is.  The GUI's printable
+    heat-exchanger datasheet reads one back since 2026-09-07; everything else
+    that opens a sheet is a human, and that was the point: the value is that
+    somebody can open one file and defend the number.  A machine-written file regenerated whole each run
     cannot drift from what produced it, which is why this is not a second
     home for a derived fact -- the arity doctrine binds AUTHORED inputs, and
     the line it draws is authored versus machine-written.
 
     IT IS WRITTEN AS A DICTIONARY, not a CSV, and the grammar is Choupo's own
-    -- named units (`41.7 m3`), `keyword value;`, sub-dicts.  Nothing reads
-    it back yet; writing it in a readable grammar is what makes the day it IS
-    read cheap.  This is OpenFOAM's property: a field that is written is a
+    -- named units (`41.7 m3`), `keyword value;`, sub-dicts.  Writing it in a
+    readable grammar was meant to make the day it IS read cheap.  That day
+    came on 2026-09-07, and the grammar was NOT readable: `ShellTubeHX`
+    declared `W/(m2.K)`, and `(` is not a word character, so Choupo's own
+    `Dictionary` refused every exchanger sheet ever written -- under the
+    header three paragraphs down that calls this a Choupo dictionary.  Fixed
+    to `W/m2/K` (the same unit at the same factor; no number moved), and
+    `check_design_sheet` arm (k) now holds every sizer's declared unit word to
+    the tokenizer's own character set and to `core/Units.cpp`.  Two words in
+    `SprayDryerSize` (`um`, `rpm`) are still unreadable and are PINNED rather
+    than fixed, because the remedy converts a value and that class is
+    reserved.  A grammar nobody exercises is a grammar nobody has checked.  This is OpenFOAM's property: a field that is written is a
     field that can be read.
 
     THE FORM IS FIXED; THE CONTENT OF `sizing {}` IS THE EQUIPMENT TYPE'S OWN.

@@ -53,7 +53,10 @@ which nobody can fill in for a corpus where no case needs it yet.
 ### D2 — a photograph, not a seam
 
 The tree is removed and rewritten whole on every run, exactly as `converged/`
-is.  Nothing reads it back.
+is.  Nothing read it back until 2026-09-07, when the GUI's printable
+heat-exchanger datasheet became the first reader — and the first sheet it
+opened would not parse, because `ShellTubeHX` declared its `U` in a unit
+spelling the dict tokenizer cannot deliver.  See `check_design_sheet` arm (k).
 
 That is not a defect and it is not an arity violation.  The arity doctrine
 binds AUTHORED inputs; the line it draws is authored versus machine-written,

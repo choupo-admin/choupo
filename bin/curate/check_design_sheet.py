@@ -102,16 +102,55 @@ WHAT THIS CHECKS:
 
   (h) THE SHEET IS A DICTIONARY, structurally.  Balanced braces, every
       non-comment statement terminated, `recordType designSheet;` present.
-      See the blind spot below.
+
+  (k) EVERY SIZING UNIT WORD IS ONE THE PARSER CAN READ -- it survives
+      `Dictionary.cpp::isWordChar` and `core/Units.cpp` registers it.  Both
+      sets are READ from those sources, never listed here.
+
+      THIS ARM CLOSES THE BLIND SPOT THIS GATE DECLARED FOR ITSELF, and it
+      fired the moment it was written.  The old text said: "a writer whose
+      output the reader refuses is a bug in BOTH, and nothing here would catch
+      a grammar the C++ parser rejects ... the day anything READS a sheet back,
+      that reader is the check".  A reader was built on 2026-09-07 -- the GUI's
+      printable exchanger datasheet -- and the FIRST sheet it opened would not
+      parse.  Three unit words were unreadable: `W/(m2.K)` (`ShellTubeHX`;
+      `(` is not a word character, so the tokenizer hands the parser `W/` and
+      stops) and `um` + `rpm` (`SprayDryerSize`; `core/Units.cpp` has no name
+      for either).  Every exchanger and every spray-dryer sheet the engine had
+      ever written was a file its own `Dictionary` refuses, under a header
+      reading "It is a Choupo dictionary: every value carries the unit it is
+      in, named as the dict grammar names it".
+
+      Verified BY HAND against the engine rather than deduced from the
+      tokenizer -- a case dict carrying `U 600.0 W/(m2.K);` gives
+      `ERROR: system/postDict:45:41: unknown unit suffix 'W/' after scalar
+      value of 'U'` -- and NOT by patching a source and rebuilding, which is
+      the 2026-08-18 shape only `check_gate_selftest` may take.
+
+      `W/(m2.K)` is fixed to `W/m2/K`: the same unit at the same factor 1.0 in
+      the same table, so NO number moved, and `docs/ai/dict-syntax.md` already
+      called it "the one parseable spelling".  `um` and `rpm` are NOT fixed,
+      because the remedy converts a VALUE and the 2026-09-04 slice reserved
+      that class in its own words; they are pinned in
+      `SHEET_UNIT_WORDS_UNPARSEABLE` with remedy and blocker, and
+      the stale-pin half fails if either stops appearing.
+
+  (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The reader's unit
+      tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
+      gitignored and no committed file can be read from a test.  This arm runs
+      the writer and holds the header words and every `sizing {}` triple in
+      `gui/tests/designSheet.test.ts` to what was just written -- the
+      `check_estimate_visible` precedent, for the same reason.
 
 WHAT THIS DOES NOT CHECK, said plainly:
 
-  * THAT THE ENGINE'S OWN PARSER ACCEPTS IT.  Arm (h) is a structural check
-    written in Python, not a round trip through `Dictionary::fromFile`.  A
-    writer whose output the reader refuses is a bug in BOTH, and nothing here
-    would catch a grammar the C++ parser rejects for a subtler reason.  The
-    day anything READS a sheet back, that reader is the check and this arm
-    should be replaced by it rather than kept beside it.
+  * THAT THE ENGINE'S OWN PARSER ACCEPTS IT, IN FULL.  Arm (k) is still not a
+    round trip through `Dictionary::fromFile`: it checks the unit words, which
+    is where every failure found so far lived, and arm (h) checks the
+    structure.  A grammar the C++ parser rejects for a subtler reason -- a key
+    spelling, a nesting depth -- would still pass both.  The GUI's reader does
+    parse a whole sheet with a real dict parser, but it is the TypeScript one;
+    the two grammars are kept in step by hand.
   * WHETHER ANY NUMBER IS RIGHT.  A wrong area reproduces into a sheet as
     faithfully as a right one.  Arms (b) and (c) check AGREEMENT between
     surfaces; arm (d) checks a conservation law, which is the only arm here
@@ -124,7 +163,9 @@ WHAT THIS DOES NOT CHECK, said plainly:
     Making it a real tree is separate work and needs its own arm.
   * EVERY CASE.  Two witnesses, one fractal and one flat, chosen because
     between them they exercise both address shapes.  Only 9 of 233 steady
-    tutorials declare a `sizing {}` block at all.
+    tutorials declare a `sizing {}` block at all.  Arm (k) therefore sees only
+    the unit words THOSE two write; a sizer no witness exercises can still
+    declare an unreadable one.
 """
 import os
 import re
@@ -132,6 +173,10 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+#  THE WAIVERS LIVE IN ONE PLACE -- see `debt_registry.py`.
+from debt_registry import SHEET_UNIT_WORDS_UNPARSEABLE   # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -230,7 +275,7 @@ def close(a, b, tol=TOL):
     return abs(a - b) / d <= tol
 
 
-def check_case(rel, expect_sector, problems, notes):
+def check_case(rel, expect_sector, problems, notes, all_units):
     rc, _, err = run_case(rel)
     if rc != 0:
         problems.append("%s: the run failed (rc=%d) -- nothing to check.\n    %s"
@@ -303,6 +348,13 @@ def check_case(rel, expect_sector, problems, notes):
                     % (rel, path.relative_to(ROOT / rel)))
 
         sheet = parse_sheet(path.read_text(errors="replace"))
+        #  ---- (k) every unit word this sheet declares, for the readability
+        #  arm.  Taken from the SHEET, not from sizing.csv's columns: a key the
+        #  CSV does not carry is still a line the parser has to survive.
+        for szKey, (_v, szUnit) in sheet["sizing"].items():
+            if szUnit not in ("", "-"):
+                all_units.append((rel, unit, szKey, szUnit))
+
         if "V_magma" in sheet["sizing"]:
             sheets.append((sheet["header"].get("equipmentType"), sheet["sizing"]["V_magma"][0]))
         checked += 1
@@ -379,6 +431,197 @@ def check_case(rel, expect_sector, problems, notes):
 
     check_crystalliser_volume(rel, sheets, problems, notes)
     return checked
+
+
+# ---------------------------------------------------------------------------
+#  (k) A SHEET IS A DICTIONARY CHOUPO CAN ACTUALLY READ
+# ---------------------------------------------------------------------------
+
+def tokenizer_word_chars():
+    """The dict tokenizer's own word-character set, READ from
+    `core/Dictionary.cpp::isWordChar` rather than written down here.  A second
+    copy of the grammar in a gate would be the arity sin in the machinery built
+    to prevent it -- and it would go quietly false the day the tokenizer moves,
+    which is the failure mode this arm exists to catch in the first place."""
+    src = (ROOT / "src/core/Dictionary.cpp").read_text(errors="replace")
+    i = src.index("bool isWordChar")
+    body = src[i:src.index("}", i)]
+    return set(re.findall(r"c == '(.)'", body))
+
+
+def known_unit_names():
+    """Every unit name `core/Units.cpp` registers.  Also read, never listed."""
+    src = (ROOT / "src/core/Units.cpp").read_text(errors="replace")
+    return set(re.findall(r'\{\s*"([^"]+)"\s*,\s*UnitSpec', src))
+
+
+def declared_sizer_units():
+    """Every unit word a sizer DECLARES at its `d.set` site, over ALL sizers.
+
+    Read from the source, not from the sheets two witnesses happen to write:
+    only 9 of 233 steady tutorials size anything and the gate runs two of them,
+    so a sheet sweep alone would leave most sizers unexamined -- which is
+    exactly how `um` and `rpm` survived (`SprayDryerSize` is exercised by
+    `sprayDryer07_design`, a case this gate does not run)."""
+    out = []
+    for f in sorted((ROOT / "src/postProcessing/sizing").glob("*.cpp")):
+        src = f.read_text(errors="replace")
+        for m in re.finditer(r'\bset\(\s*"([A-Za-z_0-9]+)"\s*,.*?,\s*"([^"]*)"\s*\)',
+                             src, re.S):
+            out.append((f.relative_to(ROOT), m.group(1), m.group(2)))
+    return out
+
+
+def check_unit_words_readable(all_units, problems, notes):
+    """(k) EVERY SIZING UNIT WORD SURVIVES THE TOKENIZER AND IS A NAME THE
+    ENGINE KNOWS -- otherwise the sheet is a file Choupo's own `Dictionary`
+    REFUSES, under a header that calls it a Choupo dictionary.
+
+    This is the arm the docstring's own blind-spot list predicted: "a writer
+    whose output the reader refuses is a bug in BOTH, and nothing here would
+    catch a grammar the C++ parser rejects".  It was written the day the first
+    reader of a sheet was built (the GUI's printable exchanger datasheet), and
+    it fired immediately on THREE unit words.
+
+    VERIFIED BY HAND against the engine, not deduced from the tokenizer: a
+    case dict carrying `U 600.0 W/(m2.K);` under
+    `process02_with_design/system/postDict` produced
+
+        ERROR: system/postDict:45:41: unknown unit suffix 'W/' after scalar
+        value of 'U'.  Known units listed in core/Units.H.
+
+    and `ShellTubeHX.cpp` had been writing exactly that into every exchanger
+    sheet since the sheets shipped.  Fixed to `W/m2/K` -- the SAME unit at the
+    SAME factor in `core/Units.cpp`, so no number moved.
+
+    The other two (`um`, `rpm`, both `SprayDryerSize`) are NOT fixed here and
+    must not be: `core/Units.cpp` has no name for either, so the remedy
+    converts a VALUE, and the 2026-09-04 slice reserved that class in its own
+    words ("Nothing was converted: rebasing on SI moves numbers in every golden
+    that pins them").  They are in `SHEET_UNIT_WORDS_UNPARSEABLE`
+    with their remedy and blocker, and the STALE-PIN half below fails if one
+    stops being declared -- a waiver that outlives its violation silently
+    grants permission.
+
+    TWO SWEEPS, because neither alone is the claim.  The SOURCE sweep is
+    complete over the sizers and is what the pin is held against.  The SHEET
+    sweep re-checks the words that actually reached a written file, which is
+    the only half that could catch a unit arriving by some route other than
+    `d.set`."""
+    wordchars = tokenizer_word_chars()
+    known = known_unit_names()
+    declared = declared_sizer_units()
+    if not wordchars or not known or not declared:
+        problems.append(
+            "check_design_sheet(k): could not read the tokenizer's word-char "
+            "set, the unit table, or any `d.set` unit word out of src/ -- this "
+            "arm CANNOT RUN, and a check that cannot run must not pass.")
+        return
+
+    def deliverable(word):
+        return all(c.isalnum() or c in wordchars for c in word)
+
+    def judge(where, key, word, problems):
+        if word in ("", "-") or word in SHEET_UNIT_WORDS_UNPARSEABLE:
+            return
+        if not deliverable(word):
+            problems.append(
+                "%s: sizing value '%s' declares the unit '%s', which the dict "
+                "tokenizer CANNOT DELIVER -- it stops at the first character "
+                "outside `Dictionary.cpp::isWordChar`, so Choupo's own parser "
+                "refuses the WHOLE sheet.  Use a spelling made of word "
+                "characters (core/Units.cpp usually registers one at the same "
+                "factor: `W/m2/K` for `W/(m2.K)`), at the `d.set` site."
+                % (where, key, word))
+        elif word not in known:
+            problems.append(
+                "%s: sizing value '%s' declares the unit '%s', which "
+                "core/Units.cpp does not register -- the tokenizer delivers "
+                "the word and the parser then refuses the whole sheet with "
+                "`unknown unit suffix`.  Either register it or convert the "
+                "value at the `d.set` site (converting MOVES a number: see "
+                "SHEET_UNIT_WORDS_UNPARSEABLE)."
+                % (where, key, word))
+
+    for f, key, word in declared:
+        judge(str(f), key, word, problems)
+    for rel, unit, key, word in all_units:
+        judge("%s: %s's written sheet" % (rel, unit), key, word, problems)
+
+    #  STALE-PIN: a waiver whose violation has healed must go.
+    declaredWords = {w for (_f, _k, w) in declared}
+    for word in sorted(SHEET_UNIT_WORDS_UNPARSEABLE):
+        if word not in declaredWords:
+            problems.append(
+                "check_design_sheet(k): debt_registry pins the unreadable unit "
+                "word '%s' and no sizer declares it any more.  Either it was "
+                "fixed -- remove the pin -- or the `d.set` that carried it "
+                "went away, which is a different and worse thing." % word)
+    notes.append("%d `d.set` unit word(s) over %d sizer file(s), %d pinned "
+                 "unreadable" % (len(declaredWords),
+                                 len({f for (f, _k, _w) in declared}),
+                                 len(SHEET_UNIT_WORDS_UNPARSEABLE)))
+
+
+# ---------------------------------------------------------------------------
+#  (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT
+# ---------------------------------------------------------------------------
+
+GUI_TEST = ROOT / "gui/tests/designSheet.test.ts"
+
+#  (case, sheet path under design/) -> the sheets the GUI tests transcribe.
+GUI_FIXTURES = (
+    (FLAT,    "heater/shellTubeHX"),
+    (FRACTAL, "FERMENTATION/Fermentor/stirredTank"),
+)
+
+
+def check_gui_fixture(problems, notes):
+    """(l) The GUI's printable datasheet READS a specification sheet back, and
+    its unit tests run on a TRANSCRIPTION of one -- because `design/` is a run
+    output and arm (g) keeps it gitignored, so no committed file can be read
+    from a test.  A transcription drifts from its original in silence.  This
+    arm runs the writer and holds the fixture to what it wrote, which is the
+    `check_estimate_visible` precedent for the same reason.
+
+    It compares the HEADER words and every `sizing {}` triple (key, value,
+    unit), whitespace-normalised.  NOT the ports or the cost block: the GUI
+    reader does not read those, and a fixture held to more than its reader uses
+    is a golden nobody asked for."""
+    if not GUI_TEST.is_file():
+        problems.append("check_design_sheet(l): %s is gone -- the reader that "
+                        "replaced this gate's structural arm has no tests."
+                        % GUI_TEST.relative_to(ROOT))
+        return
+    fixture = GUI_TEST.read_text(errors="replace")
+    norm = lambda s: " ".join(s.split())
+    flat_fixture = norm(fixture)
+    for rel, tail in GUI_FIXTURES:
+        p = ROOT / rel / "design" / tail
+        if not p.is_file():
+            problems.append("check_design_sheet(l): the run wrote no %s, so "
+                            "the GUI fixture is held to nothing." % tail)
+            continue
+        text = re.sub(r'/\*.*?\*/', '', p.read_text(errors="replace"), flags=re.S)
+        want = []
+        for k in ("recordType", "unit", "sector", "equipment", "material", "basis"):
+            m = re.search(r'^\s*%s\s+.*;' % k, text, re.M)
+            if m:
+                want.append(m.group(0))
+        m = re.search(r'^sizing\s*\n\{(.*?)\n\}', text, re.S | re.M)
+        if m:
+            want += [l for l in m.group(1).splitlines() if l.strip()]
+        missing = [norm(w) for w in want if norm(w) not in flat_fixture]
+        if missing:
+            problems.append(
+                "check_design_sheet(l): the GUI fixture in %s no longer "
+                "matches design/%s, which the run just wrote.  Absent from the "
+                "fixture: %s.  The GUI's reader tests are written on that "
+                "transcription, so a drift makes them pass against a sheet the "
+                "engine does not produce."
+                % (GUI_TEST.relative_to(ROOT), tail, "; ".join(missing[:4])))
+        else:
+            notes.append("GUI fixture matches design/%s" % tail)
 
 
 def check_refusal(problems):
@@ -518,8 +761,9 @@ def check_ignored(problems):
 def main() -> int:
     problems, notes = [], []
 
-    n1 = check_case(FRACTAL, True,  problems, notes)
-    n2 = check_case(FLAT,    False, problems, notes)
+    all_units = []
+    n1 = check_case(FRACTAL, True,  problems, notes, all_units)
+    n2 = check_case(FLAT,    False, problems, notes, all_units)
 
     if n1 == 0:
         problems.append("%s: no sheet was checked at all -- the arms above "
@@ -530,6 +774,8 @@ def main() -> int:
     check_ignored(problems)
     check_refusal(problems)
     check_basis_stated(problems)
+    check_unit_words_readable(all_units, problems, notes)
+    check_gui_fixture(problems, notes)
 
     if problems:
         print("check_design_sheet: FAILED")
@@ -545,7 +791,14 @@ def main() -> int:
           "`cost {}` reproduces costs.csv, and each sheet's inlet and outlet "
           "mass flows sum to the unit's own row in massBalance_byUnit.csv "
           "(%s) -- a report this writer does not produce, which is the only "
-          "arm that could catch a port mass computed without the crystals.  A "
+          "arm that could catch a port mass computed without the crystals.  "
+          "EVERY sizing unit word survives the tokenizer's own word-char set "
+          "and is a name core/Units.cpp registers, except the %d pinned in "
+          "SHEET_UNIT_WORDS_UNPARSEABLE (whose remedy MOVES a "
+          "number and is reserved) -- the arm that closed this gate's own "
+          "declared blind spot and found three on the day it was written; and "
+          "the GUI reader's transcribed fixture still matches the sheets the "
+          "run just wrote.  A "
           "refusal for a value with no declared unit is still in the writer, "
           "and no sizer writes past `set()` (a SOURCE arm: a gate that "
           "rebuilds the engine is the 2026-08-18 shape, so the refusal was "
@@ -553,8 +806,9 @@ def main() -> int:
           "glob, and a NEW file under docs/design/ is NOT ignored -- both "
           "directions, because the obvious rule swallows this project's "
           "design records.  NOT CHECKED: that the engine's own parser accepts "
-          "a sheet (arm (h) is structural, written in Python; the day anything "
-          "reads one back, that reader replaces this arm), whether any number "
+          "a sheet IN FULL (arms (h) and (k) cover its structure and its unit "
+          "words, which is where every failure found so far lived, but neither "
+          "is a round trip through Dictionary::fromFile), whether any number "
           "is RIGHT beyond the crystalliser volume (arm (j) recomputes THAT "
           "from the declared operation.volume, which is how a kmol holdup "
           "labelled m3 would have been caught), whether any stated basis is "
@@ -562,7 +816,8 @@ def main() -> int:
           "one), nesting deeper than one level (no corpus case nests twice), "
           "and every case but these two.  The GUI's Case tree is recursive "
           "since 2026-09-05 and carries its own tests."
-          % (n1, n2, "; ".join(notes[:3]) if notes else "no balance rows read"))
+          % (n1, n2, "; ".join(notes[:3]) if notes else "no balance rows read",
+             len(SHEET_UNIT_WORDS_UNPARSEABLE)))
     return 0
 
 

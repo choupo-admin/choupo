@@ -70,7 +70,19 @@ EquipmentSizing ShellTubeHX::size(const std::string&     unitName,
     d.material       = material.name;
     d.basis          = "A = Q/(U*LMTD) with U and LMTD author-set";
     d.set("Q_kW",           Q_kW,           "kW");
-    d.set("U",              U,              "W/(m2.K)");
+    //  `W/m2/K`, NOT `W/(m2.K)` -- THE ONE SPELLING THE GRAMMAR CAN CARRY.
+    //  Both name the same unit in `core/Units.cpp` at the same factor 1.0, so
+    //  no number moves; but `(` and `)` are not word characters, so the
+    //  tokenizer hands the parser `W/` and stops.  Until 2026-09-07 every
+    //  heat-exchanger specification sheet therefore carried a `U` line that
+    //  Choupo's OWN `Dictionary` refuses -- under a header saying "It is a
+    //  Choupo dictionary: every value carries the unit it is in, named as the
+    //  dict grammar names it".  `docs/ai/dict-syntax.md` states the rule in
+    //  those words already ("the one parseable spelling -- forms like
+    //  W/(m2.K) never survive the tokenizer"); this file had not read it.
+    //  Found by the FIRST reader of a sheet, which is what
+    //  `check_design_sheet`'s own blind-spot list said would find it.
+    d.set("U",              U,              "W/m2/K");
     d.set("LMTD",           LMTD,           "K");
     d.set("A",              A,              "m2");
     d.set("pressureDesign", pressureDesign, "bar");

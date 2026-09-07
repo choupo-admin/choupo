@@ -264,6 +264,43 @@ TB_ANTOINE_PINNED = {}   # emptied 2026-08-23: all 13 records fixed from
 #  properly-licensed sources (Poling App. A / Landolt-Boernstein / curation
 #  fits to McGarry and Perry curves); H2S's Tb was the wrong half there.
 
+#  SPECIFICATION-SHEET UNIT WORDS CHOUPO'S OWN PARSER CANNOT READ (2026-09-07).
+#
+#  A design sheet's header says "It is a Choupo dictionary: every value carries
+#  the unit it is in, named as the dict grammar names it."  Three unit words in
+#  the sizers made that false, and they were found the day the FIRST reader of
+#  a sheet was written -- which is what `check_design_sheet` said in its own
+#  blind-spot list would find them: "a writer whose output the reader refuses
+#  is a bug in BOTH, and nothing here would catch a grammar the C++ parser
+#  rejects".  Verified by hand against the engine, not read off the tokenizer:
+#  a case dict carrying `U 600.0 W/(m2.K);` gives
+#      ERROR: system/postDict:45:41: unknown unit suffix 'W/' after scalar
+#      value of 'U'.  Known units listed in core/Units.H.
+#
+#  ONE OF THE THREE IS FIXED AND IS NOT HERE.  `ShellTubeHX` declared
+#  `W/(m2.K)`; `core/Units.cpp` names the SAME unit at the SAME factor 1.0 as
+#  `W/m2/K`, which the tokenizer can deliver, so the spelling changed and NO
+#  number moved.  `docs/ai/dict-syntax.md` already called that "the one
+#  parseable spelling".
+#
+#  THESE TWO REMAIN, and the reason is that fixing them MOVES A NUMBER.  The
+#  spray dryer reports a droplet size in micrometres and a wheel speed in rpm;
+#  neither word is in `core/Units.cpp` at all.  Remedy: convert the value to a
+#  named unit (`m`, and rev/s as a plain `[0 0 -1 0 0]` dimensioned scalar) at
+#  the `d.set` site.  Blocker: the 2026-09-04 design-sheet slice ruled exactly
+#  this class RESERVED -- "the values are not all canonical SI ... Nothing was
+#  converted: rebasing on SI moves numbers in every golden that pins them" --
+#  so which unit each becomes, and the goldens that follow, is Vitor's call.
+#  Read by check_design_sheet arm (k), whose stale-pin half fails if either
+#  word stops appearing (fixed, or the sheet quietly stopped carrying it).
+SHEET_UNIT_WORDS_UNPARSEABLE = {
+    "um":  "SprayDryerSize `design_targetSize_um` -- micrometres; not a name "
+           "core/Units.cpp knows, so the whole sheet is refused.",
+    "rpm": "SprayDryerSize atomiser wheel speed; not a name core/Units.cpp "
+           "knows, so the whole sheet is refused.",
+}
+
+
 #  Records whose header contradicts the values they ship.
 #
 #  EMPTY SINCE 2026-08-05: NF270's contradiction was resolved by removing the
