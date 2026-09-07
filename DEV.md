@@ -358,6 +358,57 @@ migration.
 
 ## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)
 
+> **2026-09-07 — EIGHT ITEMS ARE OPEN, and this list is the ONLY durable home
+> for them.**  They accumulated across the September audit campaign in a
+> session task list, which is a SESSION artefact: it dies with the container,
+> and every finding in it would have to be rediscovered from scratch.  A
+> finding nobody wrote down is a finding nobody made.  Each of the eight
+> below CHANGES WHAT THE ENGINE REFUSES, PRICES OR PUBLISHES, which is why
+> none of them is the assistant's to take under the 2026-08-08 delegation
+> ruling.  Nothing here blocks anything: the engine runs, the corpus passes,
+> and each item is a decision about which of two defensible behaviours is
+> the right one.
+>
+> * **R1 — NF270's water permeability is ~3x above published measurement.**
+>   Not the header (that was fixed 2026-08-05 by REMOVING a false kind of
+>   claim); this is the MODEL's own input.  Vítor delegated the primary-source
+>   search 2026-09-07.  Choosing a number is curation and is his.
+> * **R2 — a sweep writes no `converged/`, and therefore no design sheets.**
+>   `sugarPlantEconomicsSweep` is the case it costs: the flagship economics
+>   case ships no specification sheets at all, and `check_equipment_pinned`
+>   carries a standing excuse naming it.  THE QUESTION: should a driver with
+>   a representative pass write that pass's state view?  (The console banner
+>   and caveat block already report ONE NAMED PASS since 2026-09-07; the FILE
+>   is the half deliberately left to him.)
+> * **R3 — is the GUI download the CASE, or the CASE + the RUN?**
+>   Recommendation on file: two downloads, not one folder — a case a student
+>   hands in and a run they were graded on are different artefacts, and
+>   merging them makes the second unfalsifiable.
+> * **R4 — drawing the first law without a sign convention.**  Proposed
+>   2026-09-05: (B) a per-unit enthalpy waterfall straight off the engine's
+>   ledger, then (A) a control-volume Sankey with `h = u + P*v` drawn as two
+>   layers on each boundary stream.  (B) is safe and small; (A) commits the
+>   project to a drawn sign convention a student will read as doctrine.
+> * **R5 — an LVPP-native COSMO-SAC variant (CS25 or GMHB1808)** as a NEW
+>   `ActivityModel` with atom-typed profiles, validated against measured VLE.
+>   Authorise or park.  It is licence-clean (MIT) — the blocker is scope, not
+>   rights, and the 2026-09-06 sigma-profile record explains why an LVPP
+>   profile may NEVER wear a `variant "2002"` label.
+> * **R6 — should an UNREAD key inside a record REFUSE or ANNOUNCE?**  Blocks
+>   the `thermoPhysPropDict` audit, which was measured CLEAN — so the cost of
+>   refusing is zero today and unbounded tomorrow.
+> * **R7 — the costing banner prints "Method: Guthrie" on all eight cases,
+>   every one of which declares `method Turton;`.**  The registered key is
+>   `Guthrie` and every coefficient in the file is Turton's.  Renaming the
+>   model moves no number and touches every costing case's console; leaving
+>   it means the banner names a source the coefficients do not come from.
+> * **R8 — should a plant PRODUCT sit at the domain level, and does the
+>   plant's label become the file's name?**  The 2026-09-07 lowest-common-
+>   ancestor rule settled inlets and internal streams; a plant OUTLET is
+>   deliberately asymmetric (declared vs merely labelled) and this is the
+>   remaining question it leaves.
+
+
 > **2026-08-08 — THE QUEUE WAS CLEARED IN ONE PASS**
 > ([`queue-ruling-2026-08-08.md`](docs/design/queue-ruling-2026-08-08.md)):
 > C1 delegation mechanism ratified (amended: immediate ship, no silence
@@ -799,6 +850,148 @@ accepts today, and that is a policy call.
 > [`verifying-the-catalogue-against-a-book.md`](docs/design/verifying-the-catalogue-against-a-book.md).
 
 ## 5. Known debts (severity-ish)
+
+**2026-09-07 — THE OPEN QUEUE, written down.**  Thirty-one actionable
+findings from the September audit campaign, every one of them MEASURED
+against the tree and none of them fixed.  They lived in a session task list
+until today, which is to say they lived nowhere: a session artefact dies with
+its container, and `CLAUDE.md` §10's rule that this tree is the next
+session's memory applies to WORK as much as to facts.  Eight further items
+are decisions and sit in §4b, not here.
+
+Each line states the DEFECT, not the feature.  Where a general owns the area
+(§5b), the name is given.  Ordered by damage to a student, not by area.
+
+*Wrong answers or wrong prices, at exit 0:*
+
+ A1. **The active salt is chosen by the ORDER of `components ( … )`.**
+     `ThermoPackageBuilder` resolves its disambiguator through
+     `data/standards/chemistry/salts/<name>.dat` — a path that DOES NOT
+     EXIST (`chemistry/` has been flat since 2026-07-01), so
+     `activeSaltFormula` is always empty and the first component carrying
+     `dissociatesTo` wins.  Diagnosed to the line 2026-09-07.  [THERMO]
+ A2. **The spray dryer invents a particle density of 1500 kg/m3** where the
+     crystalliser REFUSES by name on the identical absence.  Two answers to
+     one question, and the silent one prices a sizing.  [UNITS]
+ A3. **Solver aids with no announcement path at all** — a 1e30 penalty inside
+     a Newton residual, silent clamps, a swallowed block-Thomas failure, and
+     a backtracking factor two printers drop.  Each is the 2026-05-30
+     no-silent-crutch rule broken in a different place.  [UNITS]
+ A4. **Two more if-chain `model` slots unfixed** (`HeatExchanger` epsNTU,
+     `BatchStill` rayleigh) after the 2026-09-07 sweep, and choupoCtrl's
+     caveat block never says WHICH pass it describes.  [UNITS]
+ A5. **The composite refusal advises a keyword the engine does not read**,
+     and a retired top-level form runs silently at exit 0.  [THERMO]
+ A6. **`bin/choupo-drill` fails on 2 of the flagship's 4 sectors** and blames
+     the parent for state it has — an inbound stream looked up by the
+     CONSUMING port's name instead of the declared identity.  [HARNESS]
+ A7. **ASTRA's distillation review: 8 findings** (external second opinion,
+     2026-09-07).  Two VERIFIED by reading the source: D06, the reverse-rate
+     branch has no mirror for an absent PRODUCT so `ar` stays 1.0 as if it
+     had unit activity; D08, `Absorber`/`Stripper` write both feeds into the
+     same array slot and at N = 1 the second overwrites the first (LATENT —
+     the corpus uses 6, 8 and 9 stages).  Six unread.  [UNITS]
+
+*The engine publishes something nothing checks:*
+
+ B1. **A published profile COLUMN is pinned by nothing.**  No golden row kind
+     can read one, so published-implies-pinned (2026-08-12) has a hole
+     exactly where the 2026-09-07 size-axis defect lived.  [HARNESS]
+ B2. **written implies read back** — three engine writers emit dict grammar
+     and ONE gate opens ONE kind of it with the project's own parser.  The
+     proposed sibling rule to published-implies-pinned.  [HARNESS]
+ B3. **`RegistryRefusal.H` says "no factory writes this sentence any more"**
+     — 10 of 41 sites are routed, and NOT ONE of the 41 is fired by any gate
+     or case.  A refusal nothing fires is a sentence, not a contract.
+ B4. **The gate the openfoam-study asks for:** FAIL on any unknown-name throw
+     that does not go through `registryRefusal` — 6 of 66 sites converted.
+ B5. **My own commit left three GUI tests red, and the full suite is
+     STRUCTURALLY incapable of seeing it:** `bin/runTests` typechecks the GUI
+     and never runs its tests.  [GUI/HARNESS]
+
+*The machinery that audits the machinery:*
+
+ C1. **50 gates mark no claim line**, and until they do `bin/runTests` reads
+     its PASS-row text by four different rules at 197 sites.  The 2026-09-06
+     `gate_claim.py` home exists; the campaign to adopt it does not.
+ C2. **The gate-claim fix landed in the code and never in the artefact** —
+     50 of 191 `generated/gateManifest.json` entries still hold the donated
+     first line, and its header is the OLD generator's text.
+ C3. **`generated/gateManifest.json` holds a stale claim** for
+     `check_sector_hierarchy` and `check_drill_in`; regeneration needs a
+     dedicated slow run.
+ C4. **`check_layering` cannot see a cycle of length >= 3** — its docstring
+     claims a DFS that does not exist, and I18 is RECORDED as covered by it.
+ C5. **`check_gate_selftest`'s stated LIMITS are false in the safe
+     direction** — it says data-level-only while three SOURCE sabotages
+     landed 2026-08-14.  A gate that understates its reach still misleads.
+ C6. **The tooling plane is joined at LINK time:** `libchoupo.so` exports
+     `curation/AqueousGraph` into choupoSolve, choupoBatch, choupoCtrl and
+     every user binary — the one rule `check_layering` cannot reach.
+ C7. **A second valid include spelling nothing forbids and nothing counts:**
+     `#include "src/thermo/X.H"` drops the layering edge silently.
+ C8. **`check_decision_index` carries hand-written counts** that every new
+     record moves; three generals hit it in one day.  Generate the count.
+ C9. **`bin/curate/case_manifest.py` has no `--help` and WRITES when asked
+     one.**  A tool that mutates the tree in answer to a question.
+
+*Documents that have gone quietly false:*
+
+ D1. **Level-1 documents carry facts the tree moved past**, and
+     `project-philosophy.md` §5 claims an enforcement that does not exist for
+     five decisions.  [DOCS]
+ D2. **The EconomicsPass campaign: 14 silent defaults an appraisal rests on**
+     (discount rate, project life, tax rate, stream factor, Lang factor…).
+     Measured and STOPPED 2026-09-06: fourteen announcements on one run is
+     the wall of text the caveat block exists to prevent, and what an
+     appraisal owes an undeclared discount rate is a decision nobody has
+     taken.  Related to §4b R7 but not the same item.  [DESIGN]
+
+*The student's screen:*
+
+ E1. **The GUI's `LogWorkspace` recovers a sector by splitting a qualified
+     name off the run log** — the LAST name-identity reader, live and
+     unfixed, named rather than fixed on 2026-09-06 because it genuinely has
+     only a name there.  Where a caller has no unit, say so at the call
+     site.  [GUI]
+ E2. **A failed run leaves the canvas asserting the previous result is
+     current**, and the Run button carries no state at all.  [GUI]
+ E3. **The Streams navigator is a live restatement of the PRODUCER ownership
+     rule this project REPLACED on 2026-09-07.**  A restatement of a rule
+     goes false the day the rule moves — the lesson of that very slice,
+     still standing in the GUI.  [GUI]
+ E4. **Streams: the sort exists and is invisible**, the pop-out ignores it,
+     and the balances band has no height limit.  [GUI]
+ E5. **The specification sheet built to be AUDITED per unit is reachable only
+     as raw file text**, and Reports is the one workspace with no rail.
+     [GUI]
+ E6. **Two specification sheets for one exchanger, on two input paths, and
+     nothing compares them.**  [DESIGN]
+ E7. **The specification sheet's process side, and the mechanical side NAMED
+     as the mechanical engineer's** — sourced from three real data sheets.
+     A scope, not a defect: what a sheet must carry before an examiner can
+     audit a project from it.  [DESIGN]
+
+*The harness itself:*
+
+ F1. **Suite tiers (task #84).**  Slice 1 — the declared fast set with the
+     four conservation gates — is IN FLIGHT 2026-09-07.  Slice 2, the
+     independent cases in parallel, is NOT started.  Measured: with the
+     gates serial the asymptote IS the gate time, and 4 workers already sits
+     ~29 % above it, so the second half of the wall clock is the GATE side
+     and needs its own decision (`check_gate_selftest` is destructive and
+     exclusive; several gates sweep `converged/` trees a parallel case walk
+     would be rewriting).
+
+**A NUMBER ABOUT THIS LIST THAT IS WORTH KEEPING, and one that is not.**
+Worth keeping: of one builder day measured 2026-09-07, roughly 55 % of the
+time was spent WAITING on validation, of which about half was on the wrong
+rung of the ladder — the defect F1 exists to close.  Not worth keeping: the
+wall-clock minutes.  Two COMPLETE runs of the same 598 items on the same day
+measured 42.5 and 31.3 min, a 26 % spread.  The stable quantity is the SPLIT
+(cases 54 %, gates 46 %, in both runs); never quote a suite minute as a
+constant.
+
 
 000. ~~**EDITORIAL: the theory guide treats DRYING twice.**~~ — **SETTLED
    2026-09-03 (the assistant's call, under the 2026-09-03 ruling that
