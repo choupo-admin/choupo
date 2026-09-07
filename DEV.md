@@ -869,7 +869,20 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      `data/standards/chemistry/salts/<name>.dat` — a path that DOES NOT
      EXIST (`chemistry/` has been flat since 2026-07-01), so
      `activeSaltFormula` is always empty and the first component carrying
-     `dissociatesTo` wins.  Diagnosed to the line 2026-09-07.  [THERMO]
+     `dissociatesTo` wins.  Diagnosed to the line 2026-09-07.  MEASURED the
+     same day: only 7 catalogue components declare `dissociatesTo` (CaCl2,
+     KCl, LiCl, NaCl, NaOH, calciumTartrate, dolomite) and only THREE corpus
+     cases name two or more of them -- so the ambiguity is narrow, but the
+     one that matters is the flagship: `lithiumBrinePlant/sectors/BRINE`
+     declares `components ( water NaCl LiCl )` under a Pitzer electrolyte
+     package, so the engine takes NaCl as the active salt in the sector whose
+     whole subject is lithium.  The other two are `flash15` (a refusal case)
+     and `membrane10_dspmde_divalent` (declares `gammaPhi`, not the
+     electrolyte formulation).  AND THE ENGINE NEVER SAYS WHICH IT PICKED --
+     `saltName` reaches the console only inside a solid-phase line and an ion
+     Cp line, never as the decision itself.  So the fix has two halves and the
+     second is the durable one: resolve the disambiguator against a path that
+     exists, and ANNOUNCE the choice.  [THERMO]
  A2. **The spray dryer invents a particle density of 1500 kg/m3** where the
      crystalliser REFUSES by name on the identical absence.  Two answers to
      one question, and the silent one prices a sizing.  [UNITS]
@@ -1449,6 +1462,34 @@ human procedures accumulated here for a failure class a tool can refuse.)
 
 
 ### The command doctrine (Vítor, 2026-08-15): one commander, seven generals
+
+**THE SEVEN GENERALS ARE NAMED BY THEIR TERRITORY (Vítor, 2026-09-07).**  A
+general is a subagent dispatched with a written brief; it owns the tree while
+it works and reports to the commander.  The roster:
+
+| general | territory |
+|---|---|
+| `THERMO`  | the thermophysical package, speciation, electrolytes |
+| `UNITS`   | unit operations — reactors, columns, membranes, dryers |
+| `DESIGN`  | sizing, costing, the specification sheets |
+| `GUI`     | the browser application |
+| `DATA`    | the catalogue, curation, licences |
+| `DOCS`    | the guides, the tutorials, the design records |
+| `HARNESS` | `bin/runTests`, the gates, validation |
+
+**The name IS the territory, and that was the ruling.**  A first draft gave
+them personal names from the discipline (GIBBS, DANCKWERTS, GUTHRIE, …) and
+Vítor replaced them within the hour — for the reason this project applies to
+its own code: a personal name needs a lookup table before anyone knows what it
+governs, which is a second home for a fact the name could carry itself.  It
+was paid for immediately: he asked *"de quem estás a falar?"* about a general
+named DEMING that existed only in one session's memory.  `HARNESS` needs no
+table.
+
+Two rules that go with the roster: **resume a general to BUILD, spawn a fresh
+one to AUDIT** (a builder that reviews its own work reviews its own
+assumptions), and **one general owns the tree at a time**.
+
 
 The assistant working this repository is the COMMANDER of a fleet of
 subagents, and is expected to USE it -- ordered after a session in which the
