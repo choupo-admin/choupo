@@ -30,8 +30,10 @@ License
 #include "BalanceMath.H"
 #include "Topology.H"
 #include "streams/StreamMass.H"
+#include "core/FlatUnit.H"   // topLevelSector -- the ONE home for a chain's head
 
 #include <algorithm>
+#include <map>
 #include <sstream>
 #include <fstream>
 #include <iomanip>
@@ -48,6 +50,109 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         if (topo.feeds.count(name))    return "feed";
         if (topo.products.count(name)) return "product";
         return "intermediate";
+    };
+
+    //  ---- WHERE A STREAM LIVES, AND WHERE IT CROSSES ----------------------
+    //
+    //  The wiring of a fractal plant is in the root `connections {}` block --
+    //  TOPOLOGY, which never lives in a state view -- and the state is
+    //  scattered across one folder per sector.  So nothing anywhere showed
+    //  the two together, and `0/MAIN/` holding three streams while the
+    //  inter-sector connections are declared in MAIN reads as a contradiction
+    //  it is not: a stream lives with the unit that PRODUCES it (which is
+    //  what makes drill-in work -- CONCENTRATION opened alone needs its own
+    //  `Magma` in its own `0/`), so `Magma` crosses CONCENTRATION -> DRYING
+    //  and is filed under CONCENTRATION.  Two columns say so here.
+    //
+    //  `sector` is the OWNERSHIP rule's answer, deliberately -- the producer's
+    //  sector, or the first consumer's for a stream nobody produces -- so the
+    //  column names the folder the stream's state file is actually in.  Its
+    //  value is the STAMPED `FlatUnit::sector`'s top-level segment, read
+    //  through the one home `topLevelSector`, never a substring of a name.
+    //
+    //  EMPTY IS NOT A SECTOR CALLED "root" (the 2026-09-04 ruling).  A case
+    //  whose units carry no sector gets NEITHER column -- not two empty ones,
+    //  which would be a format change claiming a structure that is not there.
+    //  Inside a plant that HAS sectors, a unit at the plant root is a
+    //  different matter and keeps the honest `(no sector)` the design and
+    //  economics CSVs already print for it.
+    std::map<std::string, std::string> producerOf;      // stream -> unit
+    std::map<std::string, std::vector<std::string>> consumersOf;
+    std::map<std::string, std::string> unitSector;      // unit -> top sector
+    bool anySector = false;
+    for (const auto& u : topo.units)
+    {
+        const std::string sec = topLevelSector(u.sector);
+        unitSector[u.name] = sec;
+        if (!sec.empty()) anySector = true;
+        for (const auto& o : u.outs) producerOf[o] = u.name;
+        for (const auto& i : u.ins)  consumersOf[i].push_back(u.name);
+    }
+    const char* NO_SECTOR = "(no sector)";
+    auto sectorOfUnit = [&](const std::string& unit) -> std::string {
+        auto it = unitSector.find(unit);
+        if (it == unitSector.end() || it->second.empty()) return NO_SECTOR;
+        return it->second;
+    };
+    //  A BARE LABEL IS THE SAME STREAM UNDER THE AUTHOR'S OWN NAME, and the
+    //  table lists it beside the qualified one.  It appears in no unit's ins
+    //  or outs, so asking the topology about it directly answers "nobody owns
+    //  this" -- which would have printed `(no sector)` against half this
+    //  plant's rows, including `Magma`, the very stream that raised the
+    //  question.  The label is resolved through the DECLARED bridge the
+    //  relabel pass recorded (`result.boundaryAliasOf`), never by matching the
+    //  bare name against the tail of a qualified one: that is the name
+    //  identity this whole slice exists to remove.
+    auto canonical = [&](const std::string& stream) -> std::string {
+        auto a = ctx.result.boundaryAliasOf.find(stream);
+        return a == ctx.result.boundaryAliasOf.end() ? stream : a->second;
+    };
+    //  A stream the flat topology does not know at all -- neither produced nor
+    //  consumed, and no declared alias for one that is -- has no owning unit,
+    //  so it has no sector to state.  That is an EMPTY cell, not `(no
+    //  sector)`: the latter is a fact about a unit at the plant root, and
+    //  saying it about a stream nobody owns would be an answer where there is
+    //  none.
+    auto known = [&](const std::string& stream) -> bool {
+        return producerOf.count(stream) || consumersOf.count(stream);
+    };
+    //  The owning sector: the producer's, else the FIRST consumer's -- the
+    //  same rule `StreamOwnership::ownershipPath` files the state file by, so
+    //  this column and that folder cannot disagree.
+    auto ownerSectorOf = [&](const std::string& raw) -> std::string {
+        const std::string stream = canonical(raw);
+        if (!known(stream)) return "";
+        auto p = producerOf.find(stream);
+        if (p != producerOf.end()) return sectorOfUnit(p->second);
+        auto c = consumersOf.find(stream);
+        if (c != consumersOf.end() && !c->second.empty())
+            return sectorOfUnit(c->second.front());
+        return NO_SECTOR;
+    };
+    //  `FROM->TO` for every sector this stream is handed ACROSS.  A stream
+    //  with no producer (a domain inlet) or no consumer (a product) crosses
+    //  nothing -- it enters or leaves the plant, which the `role` column
+    //  already says.  A stream with consumers in more than one foreign sector
+    //  gets one entry per sector, space-separated; the corpus has no such
+    //  stream today, and the plural is written down rather than assumed away.
+    auto crossingOf = [&](const std::string& raw) -> std::string {
+        const std::string stream = canonical(raw);
+        auto p = producerOf.find(stream);
+        if (p == producerOf.end()) return "";
+        const std::string from = sectorOfUnit(p->second);
+        std::vector<std::string> to;
+        auto c = consumersOf.find(stream);
+        if (c != consumersOf.end())
+            for (const auto& u : c->second)
+            {
+                const std::string s = sectorOfUnit(u);
+                if (s != from && std::find(to.begin(), to.end(), s) == to.end())
+                    to.push_back(s);
+            }
+        std::string out;
+        for (const auto& s : to)
+            out += (out.empty() ? "" : " ") + from + "->" + s;
+        return out;
     };
 
     const auto& comps = ctx.result.componentNames;
@@ -86,7 +191,9 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     std::sort(species.begin(), species.end());
 
     // Header
-    f << "stream,role,F_kmol_per_h,F_mass_kg_per_h,T_K,P_bar,vapourFraction,solids_kg_per_h,enthalpy_kW";
+    f << "stream,role";
+    if (anySector) f << ",sector,crossing";
+    f << ",F_kmol_per_h,F_mass_kg_per_h,T_K,P_bar,vapourFraction,solids_kg_per_h,enthalpy_kW";
     for (const auto& c : comps) f << ",x_" << c;
     if (anySpeciation)
     {
@@ -115,8 +222,10 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         const auto& s = ctx.result.streams.at(name);
         const scalar F_kmol_h = s.F * 3600.0;                  // kmol/s -> kmol/h
         const scalar Fm_kg_h  = F_massTotal(s, ctx.thermo) * 3600.0; // kg/s  -> kg/h
-        f << name << "," << roleOf(name)
-          << "," << std::fixed << std::setprecision(6) << F_kmol_h
+        f << name << "," << roleOf(name);
+        if (anySector)
+            f << "," << ownerSectorOf(name) << "," << crossingOf(name);
+        f << "," << std::fixed << std::setprecision(6) << F_kmol_h
           << "," << Fm_kg_h
           << "," << std::setprecision(3) << s.T
           << "," << std::setprecision(4) << (s.P / 1.0e5)

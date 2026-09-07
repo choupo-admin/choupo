@@ -1143,15 +1143,47 @@ file misfiled there becomes stream `internalStates.<x>`; a record must
 identify ITSELF (`recordType internalState;`); the GUI's keep-list read the
 KIND and would have listed `converged/internalStates/<unit>` as a file the
 student wrote — it reads the VIEW now (`caseTree.isRunOutput`); and
-`StreamOwnership::sectorOf` derives a stream's sector by SPLITTING the unit
-name where the interior uses the STAMP — two answers to one question, agreeing
-on today's one-level corpus, named and NOT fixed (a stream-ownership slice).
+`StreamOwnership::sectorOf` derived a stream's sector by SPLITTING the unit
+name where the interior uses the STAMP — two answers to one question, named
+and not fixed there, CLOSED the same day by the paragraph below.
 NOT done: the symmetric `streams/` form (a 299-case migration that reopens the
 2026-07-06 spine).  **The layout is CLOSED; what changes it next is a student,
 not a reflection.**  Gate: `check_internal_states` (same name, changed claim;
 arm (f) — two kinds on one unit — has NO live case, because
 `SimulationResult::profiles` carries one profile per unit).  Record:
 [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md).
+
+**A SECTOR IS READ FROM THE STAMP, NOT RECOVERED FROM A NAME — on the STREAM
+side too (2026-09-06).**  The 2026-09-04 hierarchy slice converted the four
+design/costing readers and left TWO copies of the rejected design alive where
+it costs more than a table heading: `StreamOwnership::sectorOf` decides WHICH
+SECTOR FOLDER a stream's state file lives in and `SolutionWriter::sectorOf`
+buckets the per-sector `converged/` views (and the instants).  Its gate arm
+could not see them — it looks for a LAST-dot substring and these split on the
+FIRST.  Rule: **`core/FlatUnit.H::topLevelSector` is the ONE home for reading
+a stamped chain's head**; `ownershipPath` takes a `SectorOfUnit` map and
+`runInit0` supplies it from the flattened dicts' own `sector` key.  Reading
+the CHAIN is not the banned act — the chain is the engine's own list of
+sector names, joined where it knew them; guessing a fact out of a NAME that
+never promised to carry it is.  Nothing moved, and that was the expectation
+(the two agree on every unit that exists today; the slice is about the day
+one does not).  A THIRD splitter is named rather than fixed:
+`gui/src/ui/LogWorkspace.tsx` parses the qualified name out of the run LOG
+and genuinely has only a name there — **where a caller has no unit, say so at
+the call site rather than splitting quietly.**  Riding with it:
+`streamTable.csv` gains `sector` and `crossing` (`FROM->TO`) on a SECTORED
+case only — the crossings had no home anywhere, because the wiring is in
+`connections {}` (topology, never in a state view) and the state is one
+folder per sector; a bare report label is resolved through the DECLARED alias
+bridge, never by matching its tail, and a stream the topology does not know
+gets an EMPTY cell rather than `(no sector)`, which is a fact about a UNIT at
+the plant root.  Trap paid for in the GATE: arm (g) holds three files in TWO
+ROLES (reads the head vs supplies the stamp) — requiring the CALL of the
+supplier failed the gate on correct code — and a `topLevelSector` named only
+in a BLOCK comment satisfied the "calls it" half until both comment forms
+were stripped: *prose is not a call.*  Gate: `check_sector_hierarchy` arm
+(g).  Record:
+[`docs/design/a-sector-recovered-by-splitting-a-name.md`](docs/design/a-sector-recovered-by-splitting-a-name.md).
 
 **A DEFAULT NOBODY DECLARED, AND A BANNER THAT WAS ACCIDENTALLY TRUE
 (2026-09-06).**  A specification sheet said `L_over_D 3;` whether the case

@@ -41,10 +41,21 @@ Namespace
         <stateDir>/<base>               when the owning unit is top-level (flat)
 
     * base   = the LAST dot-segment of the stream's flattened name;
-    * SECTOR = the FIRST dot-segment of the OWNING unit's flattened name --
-      a unit is NOT a subdomain, so nothing ever nests under a unit path;
+    * SECTOR = the TOP-LEVEL sector of the OWNING unit's STAMPED sector chain
+      (`FlatUnit::sector`, via `topLevelSector`) -- a unit is NOT a subdomain,
+      so nothing ever nests under a unit path;
     * the owning unit is the PRODUCER; a stream nobody produces (a domain
       inlet) is owned by its first CONSUMER.
+
+    THE SECTOR IS READ, NOT RECOVERED (2026-09-06).  Until this date the rule
+    took the first dot-segment of the owning unit's NAME, which is the name
+    identity the F2 contract bans and the very crossing the 2026-09-04 slice
+    rejected for the design and costing surfaces: right only while every unit
+    name happens to begin with its sector, and silently wrong for the first
+    unit whose name carries a dot for another reason -- a stream filed under a
+    sector that does not exist, with `converged/` written and nothing raised.
+    The flatten seam already stamps the fact (`FlatUnit::sector`); this rule
+    now takes it from there, so the caller must supply it.
 
     This is a decision about the resolved TOPOLOGY, not about serialisation --
     which is why it takes the producer/consumer maps and not a Flowsheet or a
@@ -71,20 +82,19 @@ namespace Choupo
 namespace StreamOwnership
 {
 
-// The first dot-segment of a flattened unit name -- its top-level SECTOR;
-// empty for a flat (top-level) unit.
-inline std::string sectorOf(const std::string& unitName)
-{
-    const auto d = unitName.find('.');
-    return d == std::string::npos ? std::string() : unitName.substr(0, d);
-}
+// unit name -> the sector chain the flatten seam STAMPED on it.  A unit the
+// map does not name has no sector -- which is the plant root, not a lookup
+// failure: a flat case supplies an empty map and every stream lands flat.
+using SectorOfUnit = std::map<std::string, std::string>;
 
 // The relative state path (under 0/, converged/, an instant dir, ...) of one
-// stream, given who produces and who first consumes it in the FLAT topology.
+// stream, given who produces and who first consumes it in the FLAT topology,
+// and the STAMPED sector of each unit.
 inline std::filesystem::path ownershipPath(
     const std::string&                        stream,
     const std::map<std::string, std::string>& producerOf,
-    const std::map<std::string, std::string>& firstConsumerOf)
+    const std::map<std::string, std::string>& firstConsumerOf,
+    const SectorOfUnit&                       sectorOfUnit)
 {
     const std::string base = stream.substr(stream.rfind('.') + 1);
 
@@ -94,7 +104,10 @@ inline std::filesystem::path ownershipPath(
         : (firstConsumerOf.count(stream) ? firstConsumerOf.at(stream)
                                          : std::string());
 
-    const std::string sector = sectorOf(owner);
+    auto sit = sectorOfUnit.find(owner);
+    const std::string sector =
+        (sit == sectorOfUnit.end()) ? std::string()
+                                    : topLevelSector(sit->second);
     return sector.empty() ? std::filesystem::path(base)
                           : std::filesystem::path(sector) / base;
 }
@@ -124,18 +137,22 @@ canonicalManifest(const std::vector<FlatUnit>& topology,
                   const std::set<std::string>& boundaryAliases)
 {
     std::map<std::string, std::string> producerOf, firstConsumerOf;
+    SectorOfUnit sectorOfUnit;
     for (const auto& u : topology)
         for (const auto& o : u.outs) producerOf[o] = u.name;
     for (const auto& u : topology)
         for (const auto& i : u.ins)
             if (!firstConsumerOf.count(i)) firstConsumerOf[i] = u.name;
+    for (const auto& u : topology)
+        if (!u.sector.empty()) sectorOfUnit[u.name] = u.sector;
 
     std::map<std::string, std::filesystem::path> manifest;
     std::map<std::string, std::string> idOfPath;   // collision naming
     for (const auto& name : streamNames)
     {
         if (boundaryAliases.count(name)) continue;   // an EXPLICIT label, no file
-        const auto p = ownershipPath(name, producerOf, firstConsumerOf);
+        const auto p = ownershipPath(name, producerOf, firstConsumerOf,
+                                     sectorOfUnit);
         const auto [it, fresh] = idOfPath.emplace(p.generic_string(), name);
         if (!fresh)
             throw std::runtime_error("StreamOwnership: streams '" + it->second

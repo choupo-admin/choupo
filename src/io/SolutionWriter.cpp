@@ -177,14 +177,14 @@ std::map<std::string, SolutionWriter::Bc> SolutionWriter::classifyStreams(
 }
 
 // ---------------------------------------------------------------------------
-//  The SECTOR a dotted unit belongs to: the first dotted segment of a
-//  multi-segment name.  A single-segment name (a plant-root leaf) has none.
+//  The SECTOR a unit belongs to: the TOP-LEVEL segment of its STAMPED sector
+//  chain.  A unit the flatten seam stamped nothing on (a plant-root leaf) has
+//  none.  `topLevelSector` is the ONE home for reading a chain's head, shared
+//  with the stream-ownership rule, so the views and the files cannot disagree.
 // ---------------------------------------------------------------------------
-std::string SolutionWriter::sectorOf(const std::string& dottedUnit)
+std::string SolutionWriter::sectorOf(const FlatUnit& unit)
 {
-    const auto dot = dottedUnit.find('.');
-    if (dot == std::string::npos) return "";   // plant-root leaf -> no sector
-    return dottedUnit.substr(0, dot);
+    return topLevelSector(unit.sector);
 }
 
 // ---------------------------------------------------------------------------
@@ -200,9 +200,9 @@ std::set<std::string> SolutionWriter::sectorsTouching(
     for (const auto& u : units)
     {
         for (const auto& out : u.outs)
-            if (out == stream) sectors.insert(sectorOf(u.name));
+            if (out == stream) sectors.insert(sectorOf(u));
         for (const auto& in : u.ins)
-            if (in == stream)  sectors.insert(sectorOf(u.name));
+            if (in == stream)  sectors.insert(sectorOf(u));
     }
     return sectors;
 }
@@ -520,7 +520,7 @@ void SolutionWriter::writeInstant(
     std::set<std::string>                         sectorKeys;   // non-plant views
 
     for (const auto& u : units)
-        viewUnits[sectorOf(u.name)].push_back(u);
+        viewUnits[sectorOf(u)].push_back(u);
 
     for (const auto& [name, s] : streams)
     {

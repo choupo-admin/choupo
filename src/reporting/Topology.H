@@ -60,6 +60,14 @@ struct UnitIO
     std::string              type;
     std::vector<std::string> ins;
     std::vector<std::string> outs;
+
+    //  The sector chain the flatten seam STAMPED on this unit, carried
+    //  through unchanged (`FlatUnit::sector`) -- empty at the plant root and
+    //  empty in the two fallback shapes below, which parse a dict that was
+    //  never flattened and so has no hierarchy to report.  A report that
+    //  wants the sector reads THIS; recovering it from the dotted name is the
+    //  name identity the F2 contract bans.
+    std::string              sector;
 };
 
 struct Topology
@@ -98,7 +106,7 @@ inline Topology readTopology(const DictPtr& flowsheetDict,
     {
         for (const auto& fu : result.topology)
         {
-            UnitIO io{ fu.name, fu.type, fu.ins, fu.outs };
+            UnitIO io{ fu.name, fu.type, fu.ins, fu.outs, fu.sector };
             for (const auto& s : io.ins)  topo.consumed.insert(s);
             for (const auto& s : io.outs) topo.produced.insert(s);
             topo.units.push_back(std::move(io));
@@ -206,7 +214,7 @@ inline std::vector<UnitIO> resolveUnits(const Topology& topo,
     std::vector<UnitIO> v;
     v.reserve(result.topology.size());
     for (const auto& fu : result.topology)
-        v.push_back(UnitIO{ fu.name, fu.type, fu.ins, fu.outs });
+        v.push_back(UnitIO{ fu.name, fu.type, fu.ins, fu.outs, fu.sector });
     return v;
 }
 

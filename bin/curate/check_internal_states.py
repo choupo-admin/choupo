@@ -138,9 +138,12 @@ WHAT THIS DOES NOT CHECK, said plainly:
     suite's cases running through the same writer, not by an arm here.
   * `iterations/` AND THE DYNAMIC INSTANTS.  Neither carries interiors today
     (the record says why); nothing here would notice if one started to.
-  * THE OWNERSHIP SPLIT.  `StreamOwnership::sectorOf` derives a stream's
-    sector by splitting the unit name where the interior uses the STAMP; the
-    two agree on today's one-level corpus.  Named in the record, not gated.
+  * THE OWNERSHIP SPLIT -- CLOSED 2026-09-06, kept here so the absence is not
+    read back as still open.  `StreamOwnership::sectorOf` used to derive a
+    stream's sector by splitting the unit name where the interior uses the
+    STAMP; the ownership rule now reads the stamp too, through the ONE home
+    `topLevelSector`, and `check_sector_hierarchy` arm (g) holds it at the
+    source.  Nothing here checks it.
   * THE GUI.  The Case tree is pure and carries its own tests; the harvest is
     one entry in `OUTPUT_ROOTS` and is not exercised outside a browser.
 
@@ -1041,8 +1044,9 @@ def main() -> int:
           "parser on any kind but stageProfile, a unit writing two kinds (none "
           "exists), the V/z/z_m/position axes and the two undeclared ones beyond "
           "the suite running them, iterations/ and the dynamic instants (neither "
-          "carries interiors), StreamOwnership::sectorOf's split-vs-stamp (named "
-          "in the record), and the browser harvest."
+          "carries interiors), the ownership rule's sector (it reads the same "
+          "STAMP since 2026-09-06 and check_sector_hierarchy arm (g) holds "
+          "it), and the browser harvest."
           % (n1, n2, n3, "; ".join(notes[:3]),
              next((n for n in notes if n.startswith("round trip")), "not measured")))
     return 0

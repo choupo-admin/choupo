@@ -3811,10 +3811,17 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
     };
 
     std::map<std::string, std::string> producerOf, firstConsumerOf;
+    //  The sector each unit was STAMPED with at the flatten seam, read off the
+    //  same flattened dicts `solve` reads it from -- so the pre-solve world
+    //  and the post-solve one file a stream under the same sector.  Nothing
+    //  here splits a unit NAME (2026-09-06).
+    StreamOwnership::SectorOfUnit sectorOfUnit;
     std::set<std::string> graphStreams;
     for (const auto& u : units)
     {
         const std::string uname = u->lookupWordOrDefault("name", "unit");
+        const std::string usec  = u->lookupWordOrDefault("sector", "");
+        if (!usec.empty()) sectorOfUnit[uname] = usec;
         for (const auto& si : inputsOf(u))
         {
             graphStreams.insert(si);
@@ -3832,7 +3839,8 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
     //  used to re-derive it and got it wrong on its first outing.
     auto pathOf = [&](const std::string& nm) -> fs::path {
         return fs::path("0")
-             / StreamOwnership::ownershipPath(nm, producerOf, firstConsumerOf);
+             / StreamOwnership::ownershipPath(nm, producerOf, firstConsumerOf,
+                                              sectorOfUnit);
     };
 
     // ---- Every INLET must be authored: it is a boundary spec, not a guess --

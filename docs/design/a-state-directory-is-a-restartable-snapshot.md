@@ -221,13 +221,13 @@ flowsheet asks each unit and refuses.
   branch plus a `byUnit/` projection, not one file per stream — so "a file is
   a stream, a directory is a unit" does not describe it, and a unit would end
   up with two directories in one instant (`<sector>/<unit>/` beside
-  `<sector>/byUnit/<unit>/`).  Worse, `SolutionWriter::sectorOf` derives the
-  instant's sector level by SPLITTING the dotted name while the interior's
-  comes from the stamped `FlatUnit::sector`: putting them in one directory
-  would place two answers to "which sector" next to each other, agreeing today
-  and disagreeing on the first unit whose name carries a dot for another
-  reason.  Closing that is a slice about the instant format, not about
-  interiors.
+  `<sector>/byUnit/<unit>/`).  A second objection stood here on the day this
+  was written — that `SolutionWriter::sectorOf` derived the instant's sector
+  level by SPLITTING the dotted name while the interior's came from the
+  stamped `FlatUnit::sector`, so one directory would hold two answers to
+  "which sector" — and it is **GONE since the same day**: task #106 made that
+  function read the stamp too.  The payload objection is what still stands.
+  Closing it is a slice about the instant format, not about interiors.
 * **choupoCtrl and choupoBatch instants carry none either — and CHECKED, not
   assumed:** no unit under `src/unitOperations/dynamic/` or
   `src/unitOperations/batch/` publishes a `UnitProfile` at all, so there is
@@ -356,7 +356,7 @@ returns a stream OR a unit was read:
 |---|---|---|
 | `StreamStateIO::readStateDir` | by grammar only, before this slice | **FIXED**: a stream-looking file misfiled under `internalStates/` would have become stream `internalStates.<x>` and been counted by the completeness contract.  It now skips the subtree by name.  Gate arm (m) greps for the skip so it cannot come back. |
 | `InternalStateIO::read` | yes — walks `internalStates/` only, and sweeps the rest of the view for MISFILED records | built this slice |
-| `StreamOwnership::canonicalManifest` / `ownershipPath` | yes — streams only, by id | but `sectorOf(unitName)` derives the OWNING SECTOR by splitting the unit name at its first dot, while the interior uses the STAMPED `FlatUnit::sector`.  Two answers to "which sector", agreeing on today's one-level corpus, diverging on the first nested sector.  NOT fixed: it is the ownership rule the writer, the validator and the reader share (forum #83), and moving it is a slice about stream ownership, not about interiors.  Named here; §7 already names the same split in `SolutionWriter::sectorOf` for the instants. |
+| `StreamOwnership::canonicalManifest` / `ownershipPath` | yes — streams only, by id | `sectorOf(unitName)` derived the OWNING SECTOR by splitting the unit name at its first dot, while the interior used the STAMPED `FlatUnit::sector` — two answers to "which sector", agreeing on today's one-level corpus.  It was NOT fixed here (it is the ownership rule the writer, the validator and the reader share, forum #83) and was **CLOSED the same day by task #106**: the rule takes the stamped chain's head through `topLevelSector`, the one home, and `check_sector_hierarchy` arm (g) holds it.  The same split in `SolutionWriter::sectorOf` (§7, the instants) went with it. |
 | `Flowsheet::validateSequentialPlan` | yes — unit names and stream producers as two sets | a DUPLICATE unit name refuses; a unit/stream homonym is announced (D10), not refused |
 | `Flowsheet` init0 `pathOf` | yes — graph streams only | clean |
 | `DesignSheetWriter` | yes — units only, own root `design/` | clean |
@@ -393,8 +393,13 @@ not a reflection.**
 * **NOT done: the symmetric form** (`<view>/streams/…`).  It is a separate
   299-case migration and reopens the 2026-07-06 spine; if Vítor orders it,
   it is its own slice.
-* **NOT done: `StreamOwnership::sectorOf`** (the split-vs-stamp finding
-  above).
+* **`StreamOwnership::sectorOf`** (the split-vs-stamp finding above) was NOT
+  done here and was **CLOSED the same day** by task #106: the ownership rule
+  reads the stamp through the one home `topLevelSector`, and
+  `check_sector_hierarchy` arm (g) holds it at the source.  Record:
+  [`a-sector-recovered-by-splitting-a-name.md`](a-sector-recovered-by-splitting-a-name.md).
+  Kept here rather than deleted so the sentence above is not read back as a
+  standing gap.
 * **NOT done: `iterations/`, the dynamic instants, every unit but the
   column** — §7 stands.
 

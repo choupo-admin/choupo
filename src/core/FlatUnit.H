@@ -91,4 +91,25 @@ struct FlatUnit
     std::string              sector;
 };
 
+//  THE TOP-LEVEL SECTOR of a stamped chain -- its FIRST segment, empty when
+//  the chain is empty.  ONE home, because two rules in this tree want the
+//  chain's head and neither may re-derive it: the stream-ownership rule files
+//  a state file FLAT under its owning top-level sector
+//  (`stream-state-architecture.md` 2.4 -- a unit is not a subdomain), and the
+//  converged/ writer buckets its per-sector views the same way.
+//
+//  READ THE CHAIN, NEVER THE NAME.  Both used to take the first dot-segment
+//  of the UNIT NAME instead, which is the name identity the F2 contract bans:
+//  it is right only while every unit's name happens to begin with its sector,
+//  and it silently misfiles the first unit whose name carries a dot for
+//  another reason.  Splitting THIS string is a different act -- the chain is
+//  the engine's own list of sector names, joined by the flatten seam at the
+//  moment it knew them, so reading its head recovers a value that was put
+//  there rather than guessing one that was never stored.
+inline std::string topLevelSector(const std::string& stampedSector)
+{
+    const auto d = stampedSector.find('.');
+    return d == std::string::npos ? stampedSector : stampedSector.substr(0, d);
+}
+
 } // namespace Choupo

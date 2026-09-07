@@ -307,12 +307,17 @@ private:
         const std::map<std::string, ProcessStream>& streams) const;
 
 
-    // The SECTOR a dotted unit name belongs to: the FIRST segment of a
-    // multi-segment name (`CONCENTRATION.Cryst` -> `CONCENTRATION`).  A
-    // single-segment name (a leaf listed in the plant's own `sectors`) is a
-    // plant-root resident and has
-    // NO sector --- returns "" (it lives in the plant `<n>/streamFaces`).
-    static std::string sectorOf(const std::string& dottedUnit);
+    // The SECTOR a unit belongs to: the TOP-LEVEL segment of the sector chain
+    // the flatten seam STAMPED on it (`CONCENTRATION` for a unit stamped
+    // `CONCENTRATION`, `A` for one stamped `A.B`).  A unit with no stamp --- a
+    // leaf listed in the plant's own `sectors` --- is a plant-root resident
+    // and has NO sector: returns "" (it lives in the plant `<n>/streamFaces`).
+    //
+    // It takes the UNIT, not its name, on purpose: this used to be the first
+    // dot-segment of the dotted NAME, which is the name identity the F2
+    // contract bans and which misfiles the first unit whose name carries a dot
+    // for another reason (2026-09-06).
+    static std::string sectorOf(const FlatUnit& unit);
 
     // The set of sectors a STREAM touches: the sector of its producer (if any)
     // plus the sector of every consumer.  A plant-root (single-segment) unit

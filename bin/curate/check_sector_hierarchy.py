@@ -50,6 +50,19 @@ WHAT THIS CHECKS:
       correct name split -- on this corpus both produce `CONCENTRATION` -- so
       the design decision itself has to be checked where it is written.
 
+  (g) NOR DOES THE STREAM SIDE.  The same rejected design had TWO further
+      copies, on the other side of the engine: `StreamOwnership::sectorOf`
+      decided which SECTOR FOLDER a stream's state file lives in, and
+      `SolutionWriter::sectorOf` bucketed the per-sector `converged/` views --
+      both by taking the FIRST dot-segment of the owning unit's NAME.  Arm (d)
+      could not see them: it looks for a LAST-dot substring, and these split on
+      the first.  Since 2026-09-06 both read `FlatUnit::sector` through the ONE
+      home `topLevelSector` (core/FlatUnit.H), and the three files that carry
+      the rule must each still call it and must not take a single-dot split of
+      any UNIT NAME.  The detector is proven able to fire on a PROBE holding
+      the three removed constructs verbatim, so a green arm is never a silent
+      one.
+
   (c) THE SUBTOTALS REPRODUCE THE TOTAL.  Recomputed here from `costs.csv`'s
       own per-unit rows: each SUBTOTAL row equals the sum of its sector's
       unit rows, the SUBTOTAL rows sum to the TOTAL row, and the console's
@@ -70,9 +83,49 @@ WHAT THIS DOES NOT CHECK, said plainly:
     chain (`A.B`), and the reports group on the whole string, so a doubly
     nested plant gets one heading per distinct chain rather than a nested
     rendering.  No corpus case nests twice, so nothing here exercises it.
+    The stream side deliberately keeps only the chain's HEAD
+    (`topLevelSector`), because a state file lives FLAT under its top-level
+    sector (`stream-state-architecture.md` 2.4) -- and nothing here exercises
+    THAT either, for the same reason.
+  * WHETHER A UNIT NAME AND ITS STAMP AGREE.  On this corpus they do, unit for
+    unit -- which is why arms (a)-(c) and (e)-(f) are blind to the whole
+    question and arms (d) and (g) read the source instead.
   * THE GUI.  The Plot menu is still a flat list; when it becomes a tree it
     must read `FlatUnit::sector` from the topology, and that will need its
-    own arm here or its own gate.
+    own arm here or its own gate.  `LogWorkspace.tsx` groups the log's jump
+    list by splitting the qualified name it parsed out of the run LOG -- it
+    genuinely has only a name there and no unit, and it is out of this gate's
+    reach for that reason (recorded 2026-09-06, not fixed).
+
+SABOTAGES for arm (g), all applied BY HAND to the source between the run and
+the check, restored immediately after; NOTHING was rebuilt (the 2026-08-18
+tree-poisoning rule -- this arm reads source, so no rebuild is needed for it
+to see the damage).  Observed, verbatim:
+
+  S1  `StreamOwnership::ownershipPath` goes back to `owner.find('.')`:
+      "src/streams/StreamOwnership.H: takes a single-dot split of `owner`.  A
+       stream's sector is its owning unit's STAMPED `FlatUnit::sector`, read
+       through `topLevelSector`; ..."
+      S1 SURVIVED its first form: the "calls `topLevelSector`" half stayed
+      green because the file's BLOCK comment names the function, and only
+      `//` comments were being stripped.  Both comment forms go now.
+
+  S2  `SolutionWriter::sectorOf` goes back to `unit.name.find('.')` -- two
+      refusals, the split and the lost home:
+      "src/io/SolutionWriter.cpp: takes a single-dot split of `unit.name`. ..."
+      "src/io/SolutionWriter.cpp: never calls `topLevelSector`. ..."
+
+  S3  the SUPPLIER re-derives instead of handing the stamp over (init0's
+      `sectorOfUnit` built from `uname.substr(0, dd)`):
+      "src/unitOperations/flowsheet/Flowsheet.cpp: takes a single-dot split of
+       `uname`. ..."
+      "src/unitOperations/flowsheet/Flowsheet.cpp: builds no
+       `StreamOwnership::SectorOfUnit`. ..."
+
+  S4  the DETECTOR itself disarmed (its subject vocabulary emptied):
+      "arm (g)'s detector no longer flags its own PROBE (found [] of the three
+       removed constructs).  A detector that cannot fire reports nothing when
+       the defect returns."
 """
 import os
 import re
@@ -408,6 +461,98 @@ def main() -> int:
                     "whose name carries a dot for another reason." % rel)
                 break
 
+    # ---------------------------------------------------------------- (g)
+    #  The STREAM side of the same rejected design.  Two more copies of it
+    #  lived here until 2026-09-06, and arm (d) was blind to both: they split
+    #  on the FIRST dot, and (d) looks for a LAST-dot substring.
+    #
+    #  What is refused is a SINGLE-DOT split whose subject is a unit NAME --
+    #  `unitName.find('.')`, `dottedUnit.find(".")`, `u.name.rfind('.')`.  A
+    #  split of a STREAM name (`stream.rfind('.')`, the file's own basename
+    #  rule) and a prefix test (`nm.rfind(".tmp_", 0)`) are different acts and
+    #  stay legal, which is why the literal must be a bare dot and the subject
+    #  must name a unit.
+    #  Two ROLES, and they are not the same requirement.  A file that READS
+    #  the chain's head must call the one home; the file that SUPPLIES the
+    #  stamp to the ownership rule must hand it over as data.  Requiring the
+    #  call of the supplier failed the gate on correct code -- the first draft
+    #  did exactly that.
+    STREAM_READERS = {
+        "src/streams/StreamOwnership.H":                 "reads",
+        "src/io/SolutionWriter.cpp":                     "reads",
+        "src/unitOperations/flowsheet/Flowsheet.cpp":    "supplies",
+    }
+    SPLIT = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)"
+                       r"\s*\.\s*(?:find|rfind|find_first_of|find_last_of)"
+                       r"\s*\(\s*(['\"])\.\2")
+    UNITISH = re.compile(r"(?i)(unit|name|owner|dotted)")
+
+    def unit_name_splits(src: str):
+        return sorted({m.group(1) for m in SPLIT.finditer(src)
+                       if UNITISH.search(m.group(1))})
+
+    #  THE PROBE.  A gate that cannot be shown to fire is a gate nobody can
+    #  trust; this is the construct that was removed, verbatim, and the
+    #  detector must still reject it.
+    PROBE = ("const auto d = unitName.find('.');\n"
+             "const auto e = dottedUnit.find(\".\");\n"
+             "sectors.insert(u.name.rfind('.'));\n")
+    probed = unit_name_splits(PROBE)
+    if len(probed) != 3:
+        problems.append(
+            "arm (g)'s detector no longer flags its own PROBE (found %s of the "
+            "three removed constructs).  A detector that cannot fire reports "
+            "nothing when the defect returns." % probed)
+
+    nstream = nreads = nsupplies = 0
+    for rel, role in sorted(STREAM_READERS.items()):
+        f = ROOT / rel
+        if not f.is_file():
+            problems.append("%s: reader is missing -- arm (g) has no subject."
+                            % rel)
+            continue
+        nstream += 1
+        if role == "reads":
+            nreads += 1
+        else:
+            nsupplies += 1
+        raw = f.read_text(errors="replace")
+        #  BOTH comment forms go, and the block form matters: these files
+        #  ARGUE about the rule in their headers, and a `topLevelSector`
+        #  mentioned only in prose would satisfy the "calls it" requirement
+        #  while the code had stopped calling it (observed while sabotaging).
+        src = re.sub(r'/\*.*?\*/', '', raw, flags=re.S)
+        src = re.sub(r'//[^\n]*', '', src)
+        bad = unit_name_splits(src)
+        if bad:
+            problems.append(
+                "%s: takes a single-dot split of %s.  A stream's sector is its "
+                "owning unit's STAMPED `FlatUnit::sector`, read through "
+                "`topLevelSector`; splitting the unit name is the name "
+                "identity the F2 contract bans, and it misfiles the state file "
+                "of the first unit whose name carries a dot for another reason."
+                % (rel, ", ".join("`%s`" % b for b in bad)))
+        if role == "reads" and "topLevelSector" not in src:
+            problems.append(
+                "%s: never calls `topLevelSector`.  The ONE home for reading a "
+                "stamped sector chain's head is core/FlatUnit.H; a reader that "
+                "stops calling it has either lost the rule or grown a second "
+                "copy of it." % rel)
+        if role == "supplies" and not re.search(
+                r'SectorOfUnit', src):
+            problems.append(
+                "%s: builds no `StreamOwnership::SectorOfUnit`.  The pre-solve "
+                "0/ path assembly gets the sector from the flattened dict's "
+                "own stamped `sector` key; without it every stream would be "
+                "filed flat and the sector would have to be guessed from a "
+                "name again." % rel)
+        if role == "supplies" and not re.search(
+                r'lookupWordOrDefault\(\s*"sector"', src):
+            problems.append(
+                "%s: never reads the flattened dict's stamped `sector` key, so "
+                "the map it hands the ownership rule cannot carry the stamp."
+                % rel)
+
     if problems:
         print("check_sector_hierarchy: FAILED")
         for p in problems:
@@ -425,13 +570,26 @@ def main() -> int:
           "`unitSectors` map (%d entr(ies)) agrees with sizing.csv unit for "
           "unit, the `equipment` array (%d item(s)) agrees with BOTH CSVs on "
           "sector and on cost, and none of the %d "
-          "reader(s) takes a last-dot substring of a unit name.  NOT "
+          "reader(s) takes a last-dot substring of a unit name.  THE STREAM "
+          "SIDE IS HELD THE SAME WAY, in the two roles it has: the %d file(s) "
+          "that READ a stamped chain's head (the ownership rule and the "
+          "converged/-view bucketing) do it through the ONE home "
+          "`topLevelSector`, the %d that SUPPLIES the stamp to the pre-solve "
+          "path assembly builds a `SectorOfUnit` from the flattened dict's own "
+          "`sector` key, none of the %d takes a single-dot split of a unit "
+          "name, and the detector saying so is proven to flag all three "
+          "removed constructs on its own probe. "
+          " NOT "
           "CHECKED: whether any cost is right, nesting deeper than one level "
-          "(no corpus case nests twice), and the GUI, which does not read the "
+          "(no corpus case nests twice, and the stream side keeps only the "
+          "chain's head by design), whether a unit name and its stamp agree "
+          "(on this corpus they do, which is why arms (d) and (g) read the "
+          "source), and the GUI, which does not read the "
           "sector yet."
           % (FRACTAL, len(declared), sorted(declared), nsub,
              notes[0] if notes else "no shares read", FLAT,
-             len(jsonSectors), len(equip), nread))
+             len(jsonSectors), len(equip), nread, nreads, nsupplies,
+             nstream))
     return 0
 
 

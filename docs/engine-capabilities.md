@@ -210,6 +210,24 @@ non-utility stream pairing) are stated in `PinchPass.H`.  Witness:
 `tutorials/steady/heat/pinch01_four_stream_classic` (107.5 kW / 40 kW /
 pinch 90 °C hot — hand-worked in the case header); gate `check_pinch_p1`.
 
+**Sector and crossing (steady, fractal plants only)** — on a case whose units
+carry a stamped sector, `streamTable.csv` carries two extra columns after
+`role`: `sector`, the folder the stream's state file actually lives in (the
+ownership rule's answer — the producing unit's sector, or the first
+consumer's for a stream nobody produces), and `crossing`, `FROM->TO` when the
+producing and consuming units sit in different sectors and empty otherwise.
+They exist because the wiring of a fractal plant is in the root
+`connections {}` block (topology, which never lives in a state view) while
+the state is scattered one folder per sector, so nothing showed the crossings
+together.  Both are fed by the STAMPED `FlatUnit::sector`, never by splitting
+a dotted unit name.  **A case with no sectors gets neither column** — an
+empty column would claim a structure that is not there (the 2026-09-04
+ruling; verified byte-identical).  A bare report label is resolved to the
+stream it names through the declared alias bridge, and a stream the flat
+topology does not know at all gets an empty cell rather than `(no sector)`,
+which is a fact about a unit at the plant root.  Record:
+`docs/design/a-sector-recovered-by-splitting-a-name.md`.
+
 **Phase split (steady)** — `streamTable` writes a second artefact,
 `phases.csv`, whenever a stream carries more than one phase: one row per
 (stream, phase, component) in kmol/h, phases named `aqueous` / `organic` /
