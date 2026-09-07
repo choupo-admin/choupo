@@ -17,11 +17,26 @@ species like a NaCl background still load) and its own thermo override:
                            sector's own overlay -- SELF-CONTAINED.
   * SECTOR/                the sector, untouched (its edges already correct).
   * 0/                     materialised from the parent's persisted state
-                           (converged/ by default), sector-owned.
+                           (converged/ by default), at the address the ENGINE
+                           gives for each stream in the CHILD domain.
+
+WHERE EACH STATE FILE GOES IS NOT THIS TOOL'S DECISION (2026-09-07).  It asks
+`choupoSolve --manifest` -- the ONE home of the ownership rule
+(src/streams/StreamOwnership.H) -- for the parent's manifest and the child's,
+and copies streamId by streamId.  A stream keeps its IDENTITY across the
+drill (the sector's own edges keep their `SECTOR.name`, a plant-level edge
+keeps its bare name), so the two manifests are joined on the id and no name
+is ever taken apart.  This tool used to look the parent's state up by the
+CONSUMING PORT'S basename, which is a second derivation of the rule and a
+wrong one: `PlantSteam { to CONCENTRATION/Steam; }` sent it looking for a file
+called `Steam`, so drilling CONCENTRATION and FERMENTATION failed on the
+flagship while DRYING worked by a coincidence of naming.
 
 Usage:  choupo-drill <plant-case> <SECTOR> <out-dir> [--from converged|<statedir>]
 """
-import os, re, shutil, sys
+import os, re, shutil, subprocess, sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def parse_named_edges(fs_text):
     m = re.search(r'\bconnections\s*\{', fs_text)
@@ -76,7 +91,10 @@ def main():
         if not touches: continue
         nf = fr if child_of(fr) == sector else ""     # producer left the domain -> feed
         nt = to if child_of(to) == sector else ""     # consumer left the domain -> outlet
-        kept.append([name, nf, nt])
+        #  The ORIGINAL endpoints ride along: the identity join below needs
+        #  the PARENT's `from` beside the CHILD's, and re-selecting the same
+        #  edges downstream would be the same filter written twice.
+        kept.append([name, nf, nt, fr, to])
     if not kept:
         sys.exit(f"choupo-drill: no root edge touches sector '{sector}'")
 
@@ -102,7 +120,7 @@ def main():
         #  `units (...)` list, a `members (...)` list, nor a `type`".  The tool
         #  produced output its own solver would not read.
         f.write(f"sectors\n(\n    {sector}\n);\n\nconnections\n{{\n")
-        for name, fr, to in kept:
+        for name, fr, to, _pf, _pt in kept:
             parts = (f"from {fr}; " if fr else "") + (f"to {to};" if to else "")
             f.write(f"    {name:14s} {{ {parts} }}\n")
         f.write("}\n")
@@ -117,52 +135,81 @@ def main():
         if os.path.exists(s): shutil.copy2(s, os.path.join(out, "system", opt))
 
     # --- materialise 0/ from the parent's persisted state ------------------
-    found = {}
-    for root, _d, files in os.walk(statedir):
-        for fn in files:
-            found.setdefault(fn, os.path.join(root, fn))
-    # The drilled domain's streams: the restricted-edge names (boundary) PLUS the
-    # sector's OWN internal edges (produced inside the sector).
-    sect_edges = parse_named_edges(open(os.path.join(sdir, "system", "flowsheetDict")).read())
+    #  ASK THE ENGINE, both sides.  `--manifest` prints `streamId TAB relative
+    #  state path` and stops BEFORE the 0/ completeness check, which is exactly
+    #  the state the child is in at this moment (its 0/ does not exist yet).
+    def manifest_of(case):
+        r = subprocess.run([os.path.join(ROOT, "choupoSolve"), "--manifest", case],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            sys.exit("choupo-drill: could not read the stream manifest of "
+                     f"{case} -- choupoSolve --manifest exited {r.returncode}.\n"
+                     + (r.stdout + r.stderr).strip()[-1200:])
+        out, keep = {}, False
+        for line in r.stdout.splitlines():
+            if line.strip() == "[manifest] begin": keep = True;  continue
+            if line.strip() == "[manifest] end":   keep = False; continue
+            if keep and "\t" in line:
+                sid, path = line.split("\t", 1)
+                out[sid] = path
+        if not out:
+            sys.exit(f"choupo-drill: {case} published an EMPTY stream manifest "
+                     "-- there is nothing to materialise, which is never right "
+                     "for a domain with units.")
+        return out
 
-    #  A NAMED EDGE IS AN ALIAS, AND THE STATE IS FILED UNDER ITS OWNER.
-    #  The plant writes `RecoveredDust { from DRYING/Dust; }`, and converged/
-    #  stores that stream ONCE, in the producing sector's folder
-    #  (converged/DRYING/Dust) -- the "inter-sector streams stored once, owned
-    #  by the producer" rule.  This looked the ALIAS up in a by-basename index
-    #  and reported the parent as missing state for streams it had, so drill-in
-    #  failed on every plant that names its edges, which is the fractal form
-    #  the architecture ratified.  Resolve through the port the edge declares.
-    def state_key(name, fr, to):
-        port = fr or to                     # whichever endpoint stayed/produced
-        return os.path.basename(port) if port else name
+    parent_manifest = manifest_of(plant)
+    child_manifest  = manifest_of(out)
 
-    wanted = {}                             # stream name in the child -> key in the parent state
-    for nm, fr, to in kept:
-        wanted[nm] = state_key(nm, fr, to)
-    for nm, fr, to in sect_edges:
-        if fr and to: wanted[nm] = state_key(nm, fr, to)
+    #  A STREAM KEEPS ITS IDENTITY ACROSS THE DRILL -- EXCEPT WHERE ITS
+    #  PRODUCER LEFT.  A sector's own edge is `SECTOR.name` in both domains and
+    #  a plant inlet is a bare plant-level name in both, so the manifests join
+    #  on the id directly.  The one exception is a CROSSING edge: in the plant
+    #  its identity comes from the producing port (`MAIN/ToConcentration` ->
+    #  `MAIN.ToConcentration`), and in the child the producer is outside the
+    #  domain, so the identity is the edge's own name.  That correspondence is
+    #  in the tool's own kept-edge list; what the tool does NOT do is decide
+    #  how a `<member>/<port>` reference is spelled as an identity -- the
+    #  flatten seam spells it `<member>.<port>` for a COMPOSITE member and
+    #  `<port>` for a LEAF one -- so it proposes both spellings and requires
+    #  the published manifest to confirm exactly ONE.  Two confirmations is a
+    #  real ambiguity (a case may legitimately carry both `A.feed` and `feed`)
+    #  and is refused by name rather than picked.
+    def identity_of(port, manifest, whose):
+        dotted = port.replace("/", ".")
+        bare   = port.rsplit("/", 1)[-1]
+        hits   = [x for x in dict.fromkeys((dotted, bare)) if x in manifest]
+        if len(hits) > 1:
+            sys.exit(f"choupo-drill: the port '{port}' matches TWO streams in "
+                     f"the {whose} manifest ({', '.join(hits)}) -- this tool "
+                     "cannot tell which one the edge means, and will not guess.")
+        return hits[0] if hits else None
+
+    parent_of_child = {}
+    for name, cf, _ct, pf, _pt in kept:
+        cid = identity_of(cf, child_manifest,  "child")  if cf else name
+        pid = identity_of(pf, parent_manifest, "parent") if pf else name
+        if cid and pid and cid != pid:
+            parent_of_child[cid] = pid
 
     missing, n = [], 0
-    for name in sorted(wanted):
-        key = wanted[name]
-        if key not in found:
-            missing.append(name if key == name else f"{name} (as {key})")
+    for sid in sorted(child_manifest):
+        psid = parent_of_child.get(sid, sid)
+        if psid not in parent_manifest:
+            missing.append(sid if psid == sid else f"{sid} (as {psid})")
             continue
-        #  Write under the name the CHILD graph uses -- the port's own name --
-        #  not the plant-level alias.  The alias belongs to the parent's
-        #  connections block; inside the sector the stream is `Vapour`, not
-        #  `DryerVapour`, and writing the alias produced a 0/ that was
-        #  simultaneously MISSING every real stream and ORPHANing every file
-        #  it had just written.
-        dest = os.path.join(out, "0", sector, key)
+        srcf = os.path.join(statedir, parent_manifest[psid])
+        if not os.path.isfile(srcf):
+            missing.append(f"{sid} (expected {src}/{parent_manifest[psid]})")
+            continue
+        dest = os.path.join(out, "0", child_manifest[sid])
         os.makedirs(os.path.dirname(dest), exist_ok=True)
-        shutil.copy2(found[key], dest)
+        shutil.copy2(srcf, dest)
         n += 1
     if missing:
         sys.exit(f"choupo-drill: parent {src}/ missing state for: {', '.join(missing)}")
 
-    inlets = [nm for nm, fr, to in kept if not fr and to]
+    inlets = [nm for nm, fr, to, _pf, _pt in kept if not fr and to]
     print(f"choupo-drill: {sector} -> {out}")
     print(f"  {n} stream(s) materialised into 0/ from {os.path.basename(plant)}/{src}/")
     print(f"  role flipped to INLET in this domain (internal in the plant): {', '.join(inlets)}")

@@ -197,6 +197,13 @@ public:
     // at the same seam -init0 uses, before anything is written or run.
     void setLintMode(bool on) { lint_ = on; }
 
+    // `choupoSolve --manifest`: PUBLISH the canonical manifest (streamId ->
+    // relative state path, the ONE home StreamOwnership::canonicalManifest)
+    // and stop, before the 0/ completeness check -- so a tool that has to
+    // PLACE a state file (bin/choupo-drill materialising a child 0/) asks the
+    // engine where it goes instead of growing a second copy of the rule.
+    void setManifestMode(bool on) { manifestMode_ = on; }
+
     // The pass's stream manipulations (forum #55 D4): handed in EXPLICITLY,
     // one immutable copy per pass, applied once to the fresh seeded state.
     void setStreamOverrides(const StreamOverrides& ov) { streamOverrides_ = ov; }
@@ -320,6 +327,7 @@ private:
     bool init0_      = false;
     bool init0Force_ = false;
     bool lint_       = false;
+    bool manifestMode_ = false;
     StreamOverrides streamOverrides_;
 
     std::map<std::string, ProcessStream>                   streams_;

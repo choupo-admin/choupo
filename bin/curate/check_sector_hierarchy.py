@@ -63,6 +63,39 @@ WHAT THIS CHECKS:
       the three removed constructs verbatim, so a green arm is never a silent
       one.
 
+  (h) WHERE A STREAM'S STATE FILE LIVES, recomputed from the AUTHORED root
+      dict.  The rule was REPLACED on 2026-09-07: a stream lives at the LOWEST
+      LEVEL of the case whose subtree contains EVERY ENDPOINT of it, not with
+      the unit that PRODUCES it.  The engine publishes its own answer
+      (`choupoSolve --manifest`, the ONE home `StreamOwnership::ownershipPath`)
+      and this arm derives the same answer from the case's `connections {}`
+      block -- an inlet and a sector-to-sector crossing at the domain's own
+      level `MAIN/`, a plant OUTLET LABEL leaving the file with the sector that
+      owns the identity, a stream no root edge mentions staying inside its
+      sector, and nothing loose at the view root.
+
+  (i) AND THE RUN'S OWN TABLE AGREES.  `streamTable.csv`'s `crossing` column
+      is computed by a different reader that asks the topology directly, so it
+      is an independent witness to which streams span two sectors; every one of
+      them must be in NEITHER endpoint's folder.  This is the arm that fires on
+      the defect that started the slice -- `Magma` (CONCENTRATION -> DRYING)
+      filed inside CONCENTRATION, where the maintainer could not find it.
+      `MAIN` is discounted as an endpoint here because the 2026-09-07 amendment
+      makes it the domain's OWN level rather than a sector like the others: a
+      stream handed from a plant-level unit into a sector has no level below
+      the domain's own that contains both ends.
+
+  (j) A FLAT CASE GAINS NOTHING.  Its units ARE the plant, so its state files
+      stay flat -- no `MAIN/`, no folder at all.  The state-view form of the
+      2026-09-04 ruling that empty is not a sector called "root".
+
+  (k) A RELOCATION IS ANNOUNCED, NEVER SILENT.  The level is a function of the
+      WHOLE topology, so an edit elsewhere in the plant can move a file that
+      was written correctly yesterday.  A file left at the address the retired
+      rule gave is REFUSED, and the refusal names the MOVE and both addresses
+      rather than reporting an unrelated MISSING and ORPHAN.  Fired on a COPY
+      in a temp directory; this gate never mutates the tree.
+
   (c) THE SUBTOTALS REPRODUCE THE TOTAL.  Recomputed here from `costs.csv`'s
       own per-unit rows: each SUBTOTAL row equals the sum of its sector's
       unit rows, the SUBTOTAL rows sum to the TOTAL row, and the console's
@@ -83,10 +116,15 @@ WHAT THIS DOES NOT CHECK, said plainly:
     chain (`A.B`), and the reports group on the whole string, so a doubly
     nested plant gets one heading per distinct chain rather than a nested
     rendering.  No corpus case nests twice, so nothing here exercises it.
-    The stream side deliberately keeps only the chain's HEAD
-    (`topLevelSector`), because a state file lives FLAT under its top-level
-    sector (`stream-state-architecture.md` 2.4) -- and nothing here exercises
-    THAT either, for the same reason.
+    The stream OWNERSHIP rule reads the chain WHOLE since 2026-09-07 (a stream
+    internal to `A.B` lives at `A/B/`), while the converged/ VIEWS and the
+    design sheets keep the chain's HEAD -- and nothing here exercises the
+    difference, for the same reason.  Nor does anything exercise a case where
+    the domain's own level and the folder `MAIN` stop coinciding with one tier.
+
+  * WHETHER A STREAM'S 0/ FILE HOLDS THE RIGHT NUMBERS.  Arms (h)-(k) are
+    about the ADDRESS.  A file at the right address with the wrong contents
+    passes them all, and the golden is what says otherwise.
   * WHETHER A UNIT NAME AND ITS STAMP AGREE.  On this corpus they do, unit for
     unit -- which is why arms (a)-(c) and (e)-(f) are blind to the whole
     question and arms (d) and (g) read the source instead.
@@ -126,12 +164,58 @@ to see the damage).  Observed, verbatim:
       "arm (g)'s detector no longer flags its own PROBE (found [] of the three
        removed constructs).  A detector that cannot fire reports nothing when
        the defect returns."
+
+SABOTAGES for arms (h)-(k) (2026-09-07), all BY HAND between the run and the
+check.  ONE of them touched a SOURCE file and rebuilt, and it ran under
+`destructive_session.py`'s journal because that is the only way to do it
+safely; the other five touch only this script or the state tree, and neither
+needs a rebuild.  Observed, verbatim (truncated where a message is long):
+
+  S1  THE DEFECT ITSELF, in the tree: `0/MAIN/Magma` moved back to
+      `0/CONCENTRATION/Magma`, where the retired rule filed it --
+      "tutorials/plant/ChemicalPlantTutorial does not run."
+      Recorded exactly as observed, because it says something important: on a
+      MIGRATED corpus the ENGINE refuses a misplaced file before any arm here
+      can speak, so arms (h)/(i) are not what catches a moved FILE -- they
+      catch a moved RULE.  Arm (k) is the one that reads that refusal.
+
+  S2  THE RULE ITSELF (source + rebuild, journalled): the DOMAIN BOUNDARY
+      stops being an endpoint, so a plant inlet sinks back into its consuming
+      sector --
+      "tutorials/plant/ChemicalPlantTutorial does not run."
+      Same shape, same reason, and it is the reason this file's arms are
+      backed by a second, independent statement of the rule at all.
+
+  S3  arm (h)'s edge resolver disarmed (`edge_identity` returns None) --
+      "the root edge `RawJuice` names no stream the manifest carries (tried
+       `RawJuice` and its port).  Either the edge is dead or the manifest lost
+       a stream."
+
+  S4  arm (i) made VACUOUS (every endpoint discarded, not only the domain
+      level) --
+      "not one stream in the table crosses a sector boundary -- arm (i) has no
+       subject, and the fractal witness has stopped being fractal."
+
+  S5  arm (j)'s flat witness pointed at a case that HAS sectors --
+      "tutorials/steady/flowsheets/process02_with_design has no sectors and its
+       state files are no longer flat: ['MAIN/Feed', 'MAIN/reactorOut',
+       'SEPARATION/liquid', 'SEPARATION/vapor']."
+
+  S6  arm (k) required to see an address the engine never prints --
+      "arm (k): the relocation was announced without naming BOTH addresses."
+
+  S7  arm (h)'s domain literal changed to a real sector name --
+      "`RawJuice` is a plant INLET (nobody in the case produces it) and its
+       state file is at 0/MAIN/RawJuice.  Its other endpoint is the domain's
+       own boundary, so it lives at the domain's own level 0/CONCENTRATION/."
 """
 import os
 import re
+import shutil
 import subprocess
 import sys
-from pathlib import Path
+import tempfile
+from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -188,6 +272,80 @@ def authored_sectors(rel: str):
     leaves = {x for x in members if is_leaf(x)}
     return members - leaves, leaves
 
+
+
+def manifest_of(rel: str):
+    """The ONE home's own answer: streamId -> relative state path, published by
+    `choupoSolve --manifest`.  Read rather than recomputed on purpose -- the
+    arms below check that answer against the case's AUTHORED dict, and a gate
+    that recomputed the rule to compare with itself would check nothing."""
+    proc = subprocess.run([str(ROOT / "choupoSolve"), "--manifest", str(ROOT / rel)],
+                          capture_output=True, text=True)
+    if proc.returncode != 0:
+        return None
+    out, keep = {}, False
+    for line in proc.stdout.splitlines():
+        if line.strip() == "[manifest] begin":
+            keep = True
+            continue
+        if line.strip() == "[manifest] end":
+            keep = False
+            continue
+        if keep and "\t" in line:
+            sid, path = line.split("\t", 1)
+            out[sid] = path
+    return out or None
+
+
+def root_edges(fd: Path):
+    """The root `connections {}` block as (edgeName, fromPort, toPort).  Read
+    from the AUTHORED dict -- the whole point of arm (h) is to recompute the
+    level from what the author wrote, not from what the engine concluded."""
+    if not fd.is_file():
+        return []
+    txt = fd.read_text(errors="replace")
+    m = re.search(r'\bconnections\s*\{', txt)
+    if not m:
+        return []
+    i = m.end() - 1
+    depth, j = 0, i
+    while j < len(txt):
+        if txt[j] == '{':
+            depth += 1
+        elif txt[j] == '}':
+            depth -= 1
+            if depth == 0:
+                break
+        j += 1
+    body = txt[i + 1:j]
+    edges = []
+    for em in re.finditer(r'(\w+)\s*\{([^}]*)\}', body):
+        inner = em.group(2)
+        fr = re.search(r'\bfrom\s+([^\s;]+)', inner)
+        to = re.search(r'\bto\s+([^\s;]+)', inner)
+        edges.append((em.group(1), fr.group(1) if fr else "",
+                      to.group(1) if to else ""))
+    return edges
+
+
+def sector_of_port(port: str) -> str:
+    """The member a `<member>/<port>` reference names; "" for a bare name."""
+    return port.split("/", 1)[0] if "/" in port else ""
+
+
+def edge_identity(name: str, frm: str, manifest):
+    """Which stream in the manifest a root edge names.  An edge with a producer
+    takes its identity from the producing PORT -- spelled `<member>.<port>` when
+    the member is a composite and `<port>` when it is a leaf, which is a fact of
+    the flatten seam and not this gate's to decide -- so both spellings are
+    proposed and the published manifest confirms one.  An edge with no producer
+    IS its own identity (a plant inlet is declared at the plant's level)."""
+    if not frm:
+        return name if name in manifest else None
+    for cand in (frm.replace("/", "."), frm.rsplit("/", 1)[-1]):
+        if cand in manifest:
+            return cand
+    return None
 
 def csv_rows(path: Path):
     if not path.is_file():
@@ -431,6 +589,229 @@ def main() -> int:
                             "of %s and the equipment array gives %s."
                             % (FRACTAL, r[0], r[ti], got))
 
+
+    # ---------------------------------------------------------------- (h)
+    #  WHERE A STREAM'S STATE FILE LIVES, recomputed from the case's own root
+    #  dict.  The rule (2026-09-07) is that a stream lives at the LOWEST LEVEL
+    #  whose subtree contains every one of its endpoints; the engine publishes
+    #  its answer with `choupoSolve --manifest`, and this arm derives the same
+    #  answer from the AUTHORED `connections {}` block, which the engine never
+    #  reads for this purpose.  Four statements, and together they pin every
+    #  stream of a fractal case:
+    #      an edge with a `to` and no `from`   -- a plant INLET -- lives at the
+    #          domain's own level, `MAIN/`;
+    #      an edge whose two ends are in DIFFERENT sectors -- a CROSSING --
+    #          lives at the domain's own level too;
+    #      an edge with a `from` and no `to`   -- the plant's LABEL for a
+    #          sector's product -- leaves the file in the producing sector;
+    #      a stream the root dict never mentions is internal to one sector and
+    #          must NOT rise.
+    #  What this does NOT reach: a case nesting a sector inside a sector, where
+    #  "the domain's own level" and "MAIN" stop coinciding with one tier.  No
+    #  corpus case nests, and the arm says so rather than implying coverage.
+    STREAM_HOMES = (FRACTAL, "tutorials/plant/lithiumBrinePlant")
+    DOMAIN = "MAIN"
+    nhome = nstreams = 0
+    for rel in STREAM_HOMES:
+        man = manifest_of(rel)
+        if man is None:
+            problems.append(
+                "%s: `choupoSolve --manifest` published no stream manifest, so "
+                "arm (h) has nothing to check.  The manifest is the ONE home's "
+                "own answer; without it the rule is unfalsifiable." % rel)
+            continue
+        fd = ROOT / rel / "system" / "flowsheetDict"
+        edges = root_edges(fd)
+        if not edges:
+            problems.append("%s: no root `connections {}` edges parsed -- arm "
+                            "(h) has no subject." % rel)
+            continue
+        nhome += 1
+        composites, _leaves = authored_sectors(rel)
+        named = set()
+        for name, frm, to in edges:
+            sid = edge_identity(name, frm, man)
+            if sid is None:
+                problems.append(
+                    "%s: the root edge `%s` names no stream the manifest "
+                    "carries (tried `%s` and its port).  Either the edge is "
+                    "dead or the manifest lost a stream."
+                    % (rel, name, frm.replace("/", ".") if frm else name))
+                continue
+            named.add(sid)
+            where = str(PurePosixPath(man[sid]).parent)
+            fs_, ts_ = sector_of_port(frm), sector_of_port(to)
+            if frm and to and fs_ != ts_:
+                if where != DOMAIN:
+                    problems.append(
+                        "%s: `%s` crosses %s -> %s and its state file is at "
+                        "0/%s.  A stream is an EDGE: an edge between two "
+                        "subgraphs belongs to neither, it belongs to the graph "
+                        "that contains both (expected 0/%s/)."
+                        % (rel, sid, fs_, ts_, man[sid], DOMAIN))
+            elif to and not frm:
+                if where != DOMAIN:
+                    problems.append(
+                        "%s: `%s` is a plant INLET (nobody in the case produces "
+                        "it) and its state file is at 0/%s.  Its other endpoint "
+                        "is the domain's own boundary, so it lives at the "
+                        "domain's own level 0/%s/."
+                        % (rel, sid, man[sid], DOMAIN))
+            elif frm and not to:
+                #  Only assertable when the producing member is a DECLARED
+                #  COMPOSITE sector.  A root-level LEAF member producing a
+                #  plant outlet has no sector at all, so its stream sits at the
+                #  domain's own level and `fs_` (the member's NAME) is not a
+                #  level to compare against.  No witness here has that shape;
+                #  the guard is so the arm cannot accuse one that does.
+                if fs_ in composites and where != fs_:
+                    problems.append(
+                        "%s: `%s` is the plant's LABEL for a stream %s owns "
+                        "(`%s`), and a boundary alias is a label, not a second "
+                        "state file -- the file stays with the sector that owns "
+                        "the identity.  It is at 0/%s."
+                        % (rel, sid, fs_, name, man[sid]))
+        for sid, p in sorted(man.items()):
+            nstreams += 1
+            if sid in named:
+                continue
+            if str(PurePosixPath(p).parent) == DOMAIN:
+                problems.append(
+                    "%s: `%s` is named by no root edge -- every endpoint it has "
+                    "is inside one sector -- yet its file rose to 0/%s/.  The "
+                    "level is the LOWEST one containing every endpoint, not the "
+                    "highest." % (rel, sid, DOMAIN))
+            if "/" not in p:
+                problems.append(
+                    "%s: `%s` has a state file at the view ROOT (0/%s), loose "
+                    "beside the sector folders.  That is the mixed level the "
+                    "2026-09-05 convention was adopted to remove: in a fractal "
+                    "case every file in a view sits inside a level of the "
+                    "plant's geography." % (rel, sid, p))
+
+    # ---------------------------------------------------------------- (i)
+    #  AND THE RUN'S OWN TABLE AGREES.  `streamTable.csv`'s `crossing` column
+    #  is computed by a different reader (`StreamTableReport::crossingOf`,
+    #  which asks the topology directly and never the ownership rule), so it
+    #  is an independent witness to which streams span two sectors.  Every one
+    #  of them must be filed in NEITHER endpoint's folder.  This is the arm
+    #  that fires on the defect that started the slice: `Magma` filed inside
+    #  CONCENTRATION, one of its two endpoints.
+    ncross = 0
+    stbl = find_csv(FRACTAL, "streamTable", "streamTable.csv")
+    man = manifest_of(FRACTAL)
+    if stbl is None:
+        problems.append("%s: no streamTable.csv -- arm (i) has no independent "
+                        "witness to which streams cross." % FRACTAL)
+    elif man is not None:
+        head, rows = csv_rows(stbl)
+        if "crossing" not in head or "sector" not in head:
+            problems.append(
+                "%s: streamTable.csv carries no `crossing`/`sector` column, so "
+                "nothing outside the ownership rule says which streams span "
+                "two sectors." % FRACTAL)
+        else:
+            ci, si2 = head.index("crossing"), head.index("sector")
+            for r in rows:
+                if not r[ci].strip():
+                    continue
+                ends = set()
+                for hop in r[ci].split():
+                    a, _, b = hop.partition("->")
+                    ends.add(a); ends.add(b)
+                #  `MAIN` IS THE DOMAIN'S OWN LEVEL, NOT A SECTOR LIKE THE
+                #  OTHERS (the 2026-09-07 amendment).  A stream handed from a
+                #  plant-level unit into a sector therefore has no level BELOW
+                #  the domain's own that contains both ends, and landing there
+                #  is the rule working, not the defect.  What this arm refuses
+                #  is a crossing filed inside one of two real SECTORS.
+                ends.discard(DOMAIN)
+                if not ends:
+                    continue
+                ncross += 1
+                if r[si2] in ends:
+                    problems.append(
+                        "%s: `%s` crosses %s and the table files it in `%s`, "
+                        "which is one of its own endpoints."
+                        % (FRACTAL, r[0], r[ci], r[si2]))
+                sid = r[0]
+                if sid in man and str(PurePosixPath(man[sid]).parent) in ends:
+                    problems.append(
+                        "%s: `%s` crosses %s and its state file is at 0/%s, "
+                        "inside one of its own endpoints."
+                        % (FRACTAL, sid, r[ci], man[sid]))
+            if ncross == 0:
+                problems.append(
+                    "%s: not one stream in the table crosses a sector boundary "
+                    "-- arm (i) has no subject, and the fractal witness has "
+                    "stopped being fractal." % FRACTAL)
+
+    # ---------------------------------------------------------------- (j)
+    #  A FLAT CASE GAINS NOTHING.  Its units ARE the plant, so the domain's own
+    #  level is the view root and every state file is flat: no `MAIN/`, no
+    #  folder of any kind.  Inventing one would make every flat case's state
+    #  tree differ for a structure it does not have -- the 2026-09-04 ruling
+    #  that empty is not a sector called "root", applied to the state view.
+    flatman = manifest_of(FLAT)
+    nflat = 0
+    if flatman is None:
+        problems.append("%s: publishes no manifest -- arm (j) has no subject."
+                        % FLAT)
+    else:
+        nflat = len(flatman)
+        deep = sorted(p for p in flatman.values() if "/" in p)
+        if deep:
+            problems.append(
+                "%s has no sectors and its state files are no longer flat: %s.  "
+                "A flat case's units are the plant." % (FLAT, deep))
+
+    # ---------------------------------------------------------------- (k)
+    #  A RELOCATION IS ANNOUNCED, NEVER SILENT.  The level is a function of the
+    #  WHOLE topology, so an edit elsewhere in the plant can move a file that
+    #  was written correctly yesterday.  The engine must never move it, ignore
+    #  it, or report it as two unrelated faults (a MISSING and an ORPHAN): it
+    #  names the move, both addresses, and the remedy.  Fired on a COPY of the
+    #  witness in a temp directory -- this gate never mutates the tree.
+    reloc = "not run"
+    tmp = tempfile.mkdtemp(prefix="choupo_streamhome_")
+    try:
+        dst = os.path.join(tmp, "case")
+        shutil.copytree(str(ROOT / FRACTAL), dst,
+                        ignore=shutil.ignore_patterns("converged", "iterations",
+                                                      "postProcessing", "design",
+                                                      "economics"))
+        src = os.path.join(dst, "0", "MAIN", "Magma")
+        dest_dir = os.path.join(dst, "0", "CONCENTRATION")
+        if not os.path.isfile(src):
+            problems.append(
+                "arm (k) could not stage its own subject: %s has no "
+                "0/MAIN/Magma to put back where the retired rule filed it."
+                % FRACTAL)
+        else:
+            shutil.move(src, os.path.join(dest_dir, "Magma"))
+            r = subprocess.run([str(ROOT / "choupoSolve"), dst],
+                               capture_output=True, text=True)
+            out = r.stdout + r.stderr
+            if r.returncode == 0:
+                problems.append(
+                    "arm (k): a state file at the address the RETIRED rule gave "
+                    "was accepted, exit 0.  A file the engine cannot place is "
+                    "never read in silence.")
+            elif "RELOCATED" not in out:
+                problems.append(
+                    "arm (k): the engine refused the moved file but did not "
+                    "ANNOUNCE it as a RELOCATION -- reported as an unrelated "
+                    "MISSING and ORPHAN, which is a puzzle rather than a "
+                    "remedy.  Output tail:\n%s" % out[-600:])
+            elif "0/CONCENTRATION/Magma" not in out or "0/MAIN/Magma" not in out:
+                problems.append(
+                    "arm (k): the relocation was announced without naming BOTH "
+                    "addresses.  Output tail:\n%s" % out[-600:])
+            else:
+                reloc = "announced with both addresses"
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
     # ---------------------------------------------------------------- (d)
     #  The rejected design, refused at the source.  A `rfind('.')` or
     #  `find_last_of` on a unit name inside these readers IS the name identity
@@ -477,9 +858,22 @@ def main() -> int:
     #  stamp to the ownership rule must hand it over as data.  Requiring the
     #  call of the supplier failed the gate on correct code -- the first draft
     #  did exactly that.
+    #  THREE ROLES SINCE 2026-09-07, because the stream rule changed shape.
+    #    reads-head  -- still wants the chain's HEAD (the converged/ per-sector
+    #                   views; the streamTable's `crossing` column), so it must
+    #                   go through the ONE home `topLevelSector`;
+    #    reads-chain -- the ownership rule itself, which now reads the chain
+    #                   WHOLE (a stream lives at the LOWEST level containing
+    #                   every endpoint, at any fractal depth), so it must
+    #                   consume the STAMPED chain and must not call the head
+    #                   accessor to get there;
+    #    supplies    -- hands the stamp over as data.
+    #  The no-split ban applies to all of them: whatever a file does with a
+    #  chain, it must never recover one from a unit NAME.
     STREAM_READERS = {
-        "src/streams/StreamOwnership.H":                 "reads",
-        "src/io/SolutionWriter.cpp":                     "reads",
+        "src/streams/StreamOwnership.H":                 "reads-chain",
+        "src/io/SolutionWriter.cpp":                     "reads-head",
+        "src/reporting/StreamTableReport.cpp":           "reads-head",
         "src/unitOperations/flowsheet/Flowsheet.cpp":    "supplies",
     }
     SPLIT = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)"
@@ -512,7 +906,7 @@ def main() -> int:
                             % rel)
             continue
         nstream += 1
-        if role == "reads":
+        if role.startswith("reads"):
             nreads += 1
         else:
             nsupplies += 1
@@ -532,12 +926,18 @@ def main() -> int:
                 "identity the F2 contract bans, and it misfiles the state file "
                 "of the first unit whose name carries a dot for another reason."
                 % (rel, ", ".join("`%s`" % b for b in bad)))
-        if role == "reads" and "topLevelSector" not in src:
+        if role == "reads-head" and "topLevelSector" not in src:
             problems.append(
                 "%s: never calls `topLevelSector`.  The ONE home for reading a "
                 "stamped sector chain's head is core/FlatUnit.H; a reader that "
                 "stops calling it has either lost the rule or grown a second "
                 "copy of it." % rel)
+        if role == "reads-chain" and "SectorOfUnit" not in src:
+            problems.append(
+                "%s: consumes no stamped sector chain (`SectorOfUnit`).  The "
+                "ownership rule reads the chain WHOLE -- a stream lives at the "
+                "lowest level containing every endpoint -- and a rule that has "
+                "stopped taking the stamp has gone back to guessing." % rel)
         if role == "supplies" and not re.search(
                 r'SectorOfUnit', src):
             problems.append(
@@ -569,27 +969,42 @@ def main() -> int:
           "own test (a member whose dict declares a `type`), the result JSON's "
           "`unitSectors` map (%d entr(ies)) agrees with sizing.csv unit for "
           "unit, the `equipment` array (%d item(s)) agrees with BOTH CSVs on "
-          "sector and on cost, and none of the %d "
-          "reader(s) takes a last-dot substring of a unit name.  THE STREAM "
-          "SIDE IS HELD THE SAME WAY, in the two roles it has: the %d file(s) "
-          "that READ a stamped chain's head (the ownership rule and the "
-          "converged/-view bucketing) do it through the ONE home "
-          "`topLevelSector`, the %d that SUPPLIES the stamp to the pre-solve "
-          "path assembly builds a `SectorOfUnit` from the flattened dict's own "
-          "`sector` key, none of the %d takes a single-dot split of a unit "
-          "name, and the detector saying so is proven to flag all three "
-          "removed constructs on its own probe. "
-          " NOT "
-          "CHECKED: whether any cost is right, nesting deeper than one level "
-          "(no corpus case nests twice, and the stream side keeps only the "
-          "chain's head by design), whether a unit name and its stamp agree "
+          "sector and on cost, and none of the %d reader(s) takes a last-dot "
+          "substring of a unit name.  THE STREAM SIDE IS HELD THE SAME WAY, in "
+          "the three roles it has: the %d file(s) that read a stamped chain's "
+          "HEAD (the converged/-view bucketing, the stream table's `crossing` "
+          "column) do it through the ONE home `topLevelSector`, the ownership "
+          "rule itself reads the chain WHOLE and consumes the stamp, the %d "
+          "that SUPPLIES the stamp to the pre-solve path assembly builds a "
+          "`SectorOfUnit` from the flattened dict's own `sector` key, none of "
+          "the %d takes a single-dot split of a unit name, and the detector "
+          "saying so is proven to flag all three removed constructs on its own "
+          "probe.  WHERE EACH STREAM'S STATE FILE LIVES (the 2026-09-07 rule: "
+          "the LOWEST level whose subtree contains every endpoint) is checked "
+          "for %d fractal case(s), %d stream(s) in all, by recomputing the "
+          "level from the AUTHORED root `connections {}` block and comparing "
+          "it with the engine's published `--manifest`: a plant inlet and a "
+          "sector-to-sector crossing at the domain's own level `MAIN/`, a "
+          "plant outlet LABEL leaving the file with the sector that owns the "
+          "identity, a stream no root edge mentions staying inside its sector, "
+          "and no file loose at the view root.  The run's own streamTable "
+          "agrees on the %d stream(s) it independently reports as crossing -- "
+          "each in NEITHER endpoint's folder.  %s has no sectors and all %d of "
+          "its state files stay flat.  A file left at the address the retired "
+          "rule gave is REFUSED and the move is %s.  NOT "
+          "CHECKED: whether any cost is right; NESTING DEEPER THAN ONE LEVEL "
+          "-- no corpus case puts a sector inside a sector, so nothing here "
+          "distinguishes `A/B/` from `A/` for an internal stream, and nothing "
+          "exercises the case where the domain's own level and `MAIN` stop "
+          "coinciding with one tier; whether a unit name and its stamp agree "
           "(on this corpus they do, which is why arms (d) and (g) read the "
-          "source), and the GUI, which does not read the "
-          "sector yet."
+          "source); whether a stream's OWN 0/ file holds the right numbers "
+          "(this arm is about the address, never the contents); and the GUI, "
+          "which does not read the sector yet."
           % (FRACTAL, len(declared), sorted(declared), nsub,
              notes[0] if notes else "no shares read", FLAT,
              len(jsonSectors), len(equip), nread, nreads, nsupplies,
-             nstream))
+             nstream, nhome, nstreams, ncross, FLAT, nflat, reloc))
     return 0
 
 

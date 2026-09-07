@@ -63,6 +63,19 @@ CASES = [
     # plant,                      sector,   layout note
     ("tutorials/plant/ChemicalPlantTutorial", "DRYING", "sector directly under the plant"),
     ("tutorials/plant/lithiumBrinePlant",     "BRINE",  "sector under sectors/ (electrolyte worlds)"),
+    #  THE TWO SECTORS THAT COULD NOT BE DRILLED (added 2026-09-07).  DRYING
+    #  worked by a COINCIDENCE OF NAMING -- the tool looked the parent's state
+    #  up by the CONSUMING PORT's basename, and DRYING's ports happen to be
+    #  spelled like the streams that feed them (`DryingAir { to
+    #  DRYING/DryingAir; }`).  CONCENTRATION and FERMENTATION do not
+    #  (`PlantSteam { to CONCENTRATION/Steam; }`, `ToFermentation { to
+    #  FERMENTATION/Must; }`), so the tool asked for a file called `Steam` and
+    #  blamed the parent for state it had.  A gate whose only witness satisfies
+    #  the rule by accident is a gate nothing tests.
+    ("tutorials/plant/ChemicalPlantTutorial", "CONCENTRATION",
+     "ports named differently from the streams that feed them"),
+    ("tutorials/plant/ChemicalPlantTutorial", "FERMENTATION",
+     "a plant-level edge renamed at the sector port (Must)"),
 ]
 
 fails = []
@@ -111,13 +124,27 @@ try:
             fail("%s/%s: no stream flipped to INLET -- drill-in that changes no"
                  " role has not restricted the domain" % (os.path.basename(rel), sector))
         else:
+            #  AT THE CHILD'S OWN LEVEL, which is the point of drilling in
+            #  (2026-09-07).  A stream that was a CROSSING in the plant is a
+            #  BOUNDARY here: nobody in this domain produces it, so the
+            #  ownership rule files it at the domain's own level, `0/MAIN/` --
+            #  not inside the sector, where it sat while this tool looked its
+            #  state up by the consuming port's basename and could not drill
+            #  CONCENTRATION or FERMENTATION at all.
             missing = [f for f in flipped
-                       if not os.path.exists(os.path.join(out, "0", sector, f))]
+                       if not os.path.exists(os.path.join(out, "0", "MAIN", f))]
             if missing:
-                fail("%s/%s: flipped to INLET but no state materialised: %s"
-                     % (os.path.basename(rel), sector, ", ".join(missing)))
+                stray = [f for f in missing
+                         if os.path.exists(os.path.join(out, "0", sector, f))]
+                fail("%s/%s: flipped to INLET but no state at the child's own "
+                     "level 0/MAIN/: %s%s"
+                     % (os.path.basename(rel), sector, ", ".join(missing),
+                        ("  (found inside 0/%s/ instead -- a boundary stream of "
+                         "THIS domain filed inside one of its sectors)" % sector)
+                        if stray else ""))
             else:
-                ok("%s/%s (%s): %d stream(s) flipped to INLET and each has state"
+                ok("%s/%s (%s): %d stream(s) flipped to INLET and each has state "
+                   "at the child's own level (0/MAIN/)"
                    % (os.path.basename(rel), sector, note, len(flipped)))
 
         # --- 2. it SOLVES ----------------------------------------------------

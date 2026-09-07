@@ -30,8 +30,10 @@ connections
     product { from FINISHING/product;                       }
 }
 ```
-`stream ID = liquor`; `state file = 0/BRINE/liquor`; producer port `BRINE/liquor`,
-consumer port `EXTRACTION/liquor` are merely endpoints — no competing identity.
+`stream ID = liquor`; `state file = 0/MAIN/liquor` (§2.4 — it crosses BRINE →
+EXTRACTION, so it belongs to the level that contains both); producer port
+`BRINE/liquor`, consumer port `EXTRACTION/liquor` are merely endpoints — no
+competing identity.
 
 **Role is inferred from the edge SHAPE in the current domain — `boundary{}` is
 DELETED (duplicate truth) from root, sectors and nested sub-flowsheets:**
@@ -111,7 +113,7 @@ lithiumBrinePlant/
 | `system/` | How the problem is organised and solved. |
 | `constant/` | Model and data that do not change during execution. |
 | `BRINE/`, `EXTRACTION/`, … | Process subdomains / sectors: a local subgraph + optional model overrides. |
-| `0/` | **Complete** initial state over the composed flowsheet: every stream (a FILE, flat under its sector) and, optionally, under `internalStates/`, what each unit holds inside it (ONE file per unit, one block per kind). AUTHORED — the engine never writes here. |
+| `0/` | **Complete** initial state over the composed flowsheet: every stream (a FILE, at the lowest level containing its endpoints — §2.4) and, optionally, under `internalStates/`, what each unit holds inside it (ONE file per unit, one block per kind). AUTHORED — the engine never writes here. |
 | `converged/` | Converged steady state, both halves, written whole on every converged run. |
 | `iterations/` | Optional numerical history. **Never** physical time. |
 | `0.01/`, `0.02/`, … | Physical transient-time snapshots. |
@@ -163,14 +165,65 @@ No `fixed true`, `guess true`, `coupled true`, or boundary-condition
 mini-language at this level. *(This supersedes the old
 `information-follows-streams` boundary flags for state; topology is the truth.)*
 
-### 2.4 Inter-sector streams are stored ONCE
+### 2.4 A stream lives at the LOWEST level that contains all its endpoints
+*(REPLACED 2026-09-07 — Vítor's proposal.  The rule below stood from
+2026-07-06 and read: an internal or inter-sector stream belongs to its
+PRODUCING sector, an external inlet to its CONSUMING sector, an external
+outlet to its PRODUCING sector.  It is REPLACED, not corrected.)*
+
+> **A stream's state file lives at the LOWEST LEVEL of the case whose subtree
+> contains EVERY ENDPOINT of that stream.**
+
 ```
 BRINE -- liRichBrine --> EXTRACTION
-   state file:  0/BRINE/liRichBrine          (NOT also 0/EXTRACTION/liRichBrine)
+   state file:  0/MAIN/liRichBrine    (NOT 0/BRINE/… and NOT 0/EXTRACTION/…)
+BRINE -- halite -->|                        (a product of BRINE alone)
+   state file:  0/BRINE/halite
 ```
-**Ownership:** an internal or inter-sector stream belongs to its PRODUCING
-sector; an external inlet belongs to its CONSUMING sector; an external outlet
-belongs to its PRODUCING sector.
+
+It is recursive and there is no case analysis.  Internal to a sector → that
+sector.  Crossing two sectors → their common parent.  A plant-boundary inlet →
+the plant's own level.  Shared by consumers in several sectors → their lowest
+common ancestor.  It applies unchanged at any fractal depth.
+
+**Why the producer rule was replaced.**  It picks ONE ENDPOINT OF AN EDGE and
+calls it the owner.  A unit is a NODE and belongs to a sector; a stream is an
+EDGE, and an edge between two subgraphs belongs to neither — it belongs to the
+graph that contains both.  The producer rule was chosen for drill-in
+convenience, and it produced a concrete failure: the maintainer could not find
+the inter-sector streams of his own flagship plant, because `Magma`
+(CONCENTRATION → DRYING) was filed inside one of its two endpoints.
+
+**`MAIN/` is the DOMAIN'S OWN LEVEL, not a sector like the others** (the
+architect's amendment to the proposal, 2026-09-07).  Plant-level UNITS live
+there (the 2026-09-05 convention, unchanged) and plant-level STREAMS live
+there too.  A FLAT case has no geography at all — its units ARE the plant — so
+its state files stay flat at the view root and nothing about it changes.
+
+**A plant OUTLET is not the mirror of a plant inlet, and the asymmetry is in
+this grammar rather than in the rule.**  An inlet is a stream the plant
+DECLARES (`PlantSteam { to CONCENTRATION/Steam; }` — the identity is
+`PlantSteam`, at the plant's own level), so the domain boundary is a genuine
+second endpoint and the file rises.  An outlet is a LABEL the plant puts on a
+stream the sector already owns (`Powder { from DRYING/DryPowder; }` — the
+identity is `DRYING.DryPowder`), and §2.4's own alias rule says a boundary
+alias is a label, not a second state file; so the product stays with the
+sector that owns the identity.  Read symmetrically instead, the flagship's
+`DRYING.Vapour` and `FERMENTATION.Vapour` would both resolve to
+`MAIN/Vapour` — one canonical file for two streams, which the manifest refuses
+by construction.
+
+**A RELOCATION IS ANNOUNCED, NEVER SILENT.**  The level is a function of the
+WHOLE topology, so wiring one new cross-sector consumer moves a file that was
+written correctly yesterday.  The engine never moves a state file and never
+ignores one: the 0/ completeness check names the MOVE and both addresses, and
+refuses until it is made.
+
+ONE HOME: `src/streams/StreamOwnership.H`.  `choupoSolve --manifest` publishes
+its answer (`streamId TAB relative path`) for any case, complete `0/` or not,
+so a tool that must PLACE a state file — `bin/choupo-drill` — asks rather than
+re-derives.  Record:
+[`../design/a-stream-belongs-to-the-graph-that-contains-both-ends.md`](../design/a-stream-belongs-to-the-graph-that-contains-both-ends.md).
 
 ### 2.5 `choupo-init0` is explicit (R1 — amended)
 The author supplies **domain inlets + any cycle-breaking seeds the graph
@@ -195,6 +248,18 @@ The role flips automatically because the producer (BRINE) LEFT the current
 domain. The child `0/` is materialised from an **explicit persisted parent
 state — `converged/` by default** (R3). The drilled sub-case is then
 reproducible from disk alone; Run reads its `0/`, Reset discards no truth.
+
+**And the file moves WITH the role, which is why §2.4's rule does not break
+drill-in but completes it (2026-09-07).**  A stream that was a CROSSING in the
+plant is a BOUNDARY in the child: nobody in the drilled domain produces it, so
+the child files it at the CHILD'S own level (`0/MAIN/`) while the parent filed
+it at the parent's.  `bin/choupo-drill` asks the engine for both manifests
+(`choupoSolve --manifest`) and copies stream by stream, joining on the stream's
+IDENTITY — it never takes a name apart.  Until that day it looked the parent's
+state up by the CONSUMING PORT'S basename, so `PlantSteam { to
+CONCENTRATION/Steam; }` sent it looking for a file called `Steam` and it could
+not drill CONCENTRATION or FERMENTATION at all; DRYING worked only because that
+sector's ports happen to be spelled like the streams that feed them.
 
 *This is the clean replacement for the volatile in-memory drill-in feed
 injection (inherited-result / `&feeds=` / run-time freeze). Those were

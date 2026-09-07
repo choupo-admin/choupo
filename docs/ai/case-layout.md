@@ -50,8 +50,10 @@ are the source of truth.
 │   └── report.ods           coloured spreadsheet (multi-sheet)
 ├── converged/               GENERATED: the solved state.  A state view is a
 │                              RESTARTABLE SNAPSHOT and carries BOTH halves:
-│   ├── <SECTOR>/<stream>       a stream -- ONE file, flat, the boundary of the
-│   │                          snapshot, owned by its producing sector
+│   ├── <LEVEL>/<stream>        a stream -- ONE file, flat, the boundary of the
+│   │                          snapshot, at the LOWEST level of the case that
+│   │                          contains every ENDPOINT of it (a sector, or the
+│   │                          plant's own level `MAIN/`; flat in a flat case)
 │   └── internalStates/<SECTOR>/<unit>   a unit's INTERIOR -- ONE file per
 │                              unit, what it holds between those boundaries,
 │                              one BLOCK per kind: `stageProfile {}`,
@@ -241,7 +243,9 @@ sectors     ( MAIN  CONCENTRATION  DRYING );  // members -- the buildings
 operation   { area 60 m2;  U 2200 W/m2/K; }   // hardware values
 
 // stream STATE is never in this dict: the domain inlet RawJuice is an
-// authored 0/MAIN/RawJuice file (componentMolarFlows + T + P)
+// authored 0/MAIN/RawJuice file (componentMolarFlows + T + P) -- at the
+// plant's own level, because a plant inlet's other endpoint is the
+// plant's own boundary
 
 connections {                                 // NAMED edges: key = stream id
     RawJuice  { to MAIN/RawJuice; }
@@ -250,17 +254,32 @@ connections {                                 // NAMED edges: key = stream id
 }
 ```
 
-**A plant-level unit lives in a sector — conventionally `MAIN/`** (2026-09-05).
-In a fractal case every folder in CAPS is a sector, so a unit that belongs to
-no specialised sector (the flagship's `JuiceSplitter`, which splits the raw
-juice between two lines) goes in `MAIN/` rather than beside the sectors at
-the root.  The plant's geography is then ONE list — `MAIN · CONCENTRATION ·
-DRYING · FERMENTATION` — and, because stream state is owned by the sector
-that produces it, `0/MAIN/` and `converged/MAIN/` follow with no further
-rule.  The convention is for humans: the engine never infers "sector" from
-capital letters (a member with a `type` is a leaf, whatever its name), and a
-FLAT case has no `MAIN/` — its units are the plant.  Record:
-[`../design/main-is-a-sector-and-the-views-repeat-the-plant.md`](../design/main-is-a-sector-and-the-views-repeat-the-plant.md).
+**A plant-level unit lives in a sector — conventionally `MAIN/`** (2026-09-05),
+and **`MAIN/` is the DOMAIN'S OWN LEVEL rather than a sector like the others**
+(amended 2026-09-07).  In a fractal case every folder in CAPS is a level of the
+plant's geography, so a unit that belongs to no specialised sector (the
+flagship's `JuiceSplitter`, which splits the raw juice between two lines) goes
+in `MAIN/` rather than beside the sectors at the root.  The plant's geography is
+then ONE list — `MAIN · CONCENTRATION · DRYING · FERMENTATION` — and every view
+repeats it.
+
+**Where each stream's state file goes follows from ONE rule: a stream lives at
+the LOWEST LEVEL whose subtree contains every one of its endpoints.**  A stream
+between two units of one sector lives in that sector; a stream CROSSING two
+sectors, and a plant-boundary inlet, live at the plant's own level, `0/MAIN/`
+and `converged/MAIN/`.  A stream is an EDGE, and an edge between two subgraphs
+belongs to neither — it belongs to the graph that contains both.  A plant
+OUTLET does not rise: `Powder { from DRYING/DryPowder; }` is the plant's LABEL
+for a stream DRYING owns, and a label never gets a file of its own.
+
+The convention is for humans: the engine never infers "sector" from capital
+letters (a member with a `type` is a leaf, whatever its name), and a FLAT case
+has no `MAIN/` — its units are the plant, so its state files stay flat.
+`choupoSolve --manifest <case>` prints where every stream's file goes; a file at
+the wrong address makes the run REFUSE, naming the move.  Records:
+[`../design/main-is-a-sector-and-the-views-repeat-the-plant.md`](../design/main-is-a-sector-and-the-views-repeat-the-plant.md)
+and
+[`../design/a-stream-belongs-to-the-graph-that-contains-both-ends.md`](../design/a-stream-belongs-to-the-graph-that-contains-both-ends.md).
 
 No special characters in identifiers: only letters, digits, and
 underscore.  Symbols like `@`, `&`, `#`, `?` break shell expansion,

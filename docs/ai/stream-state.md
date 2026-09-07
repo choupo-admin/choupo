@@ -284,11 +284,47 @@ neither convention's number.
 | `design/` | equipment realisation |
 | `economics/` | cost and value |
 
-Inter-sector streams are stored ONCE, owned by the producing sector.  Drilling
-into a sector changes the DOMAIN, not the stream: a producer leaving the domain
-flips a stream's role from internal to inlet, and the child `0/` is
-materialised from the parent's persisted state — `converged/` by default, never
-a silent "latest".
+**WHERE A STREAM'S FILE LIVES — one rule, recursive (2026-09-07).**
+
+> A stream's state file lives at the **LOWEST LEVEL of the case whose subtree
+> contains EVERY ENDPOINT of that stream.**
+
+Internal to a sector → that sector.  Crossing two sectors → their common
+parent.  A plant-boundary inlet → the plant's own level.  Shared by consumers
+in several sectors → their lowest common ancestor.  Every stream is stored
+ONCE, at exactly one address.
+
+```
+0/MAIN/RawJuice        a plant inlet: its other end is the plant's own boundary
+0/MAIN/PlantSteam      likewise -- even though only CONCENTRATION consumes it
+0/MAIN/Magma           CONCENTRATION -> DRYING: it belongs to neither
+0/CONCENTRATION/Vap1   Evap1 -> Evap2, both inside CONCENTRATION
+0/DRYING/DryPowder     DRYING's product; the plant only LABELS it `Powder`
+```
+
+`MAIN/` is **the domain's own level**, not a sector like the others: plant-level
+units live there and so do plant-level streams.  A **FLAT case has no `MAIN/`**
+— its units ARE the plant, so its files sit flat in `0/`.  A plant OUTLET does
+NOT rise: the plant's `Powder { from DRYING/DryPowder; }` is a LABEL for a
+stream DRYING already owns, and a boundary alias never gets a file of its own.
+
+Ask the engine rather than working it out — `choupoSolve --manifest <case>`
+prints `streamId TAB path` for every stream, and it works on an incomplete `0/`.
+If a file is at the wrong address the run REFUSES and names the move:
+
+```
+RELOCATED  0/CONCENTRATION/Magma  ->  0/MAIN/Magma   (the same file, at the
+           level that now contains every endpoint of its stream)
+```
+
+That happens legitimately: wire one new cross-sector consumer and the level
+rises.  Move the file with `mv`; its contents do not change.
+
+Drilling into a sector changes the DOMAIN, not the stream: a producer leaving
+the domain flips a stream's role from internal to inlet — and its file moves
+with the role, from the parent's level to the CHILD'S own `0/MAIN/`.  The child
+`0/` is materialised from the parent's persisted state — `converged/` by
+default, never a silent "latest".
 
 **A state view is a RESTARTABLE SNAPSHOT** (2026-09-06), the way an OpenFOAM
 time directory is: the streams are files, flat under their sectors — the
@@ -301,5 +337,29 @@ is a SEED, not an answer, and the unit announces which route it took either
 way.  Only units that DECLARE the kind they read accept one (today: the
 distillation column, `stageProfile`); anything else refuses by name.  Witness:
 `tutorials/steady/distillation/column16_declared_interior`.
+
+## 8. Reading a sectored plant's stream table
+
+`reports { streamTable; }` writes one row per stream.  On a case that HAS
+sectors it carries two extra columns, and they answer two different questions:
+
+| column | what it answers |
+|---|---|
+| `sector` | **where the stream's state FILE is** — the level the ownership rule above put it at, so `MAIN` for a plant inlet or a crossing, the sector for a stream internal to one.  It is the same answer `choupoSolve --manifest` gives; the column asks that one home rather than restating it. |
+| `crossing` | `FROM->TO` for each sector boundary the stream is handed across, blank when it crosses none.  A stream with consumers in two foreign sectors gets one entry per sector, space-separated. |
+
+```
+CONCENTRATION.Magma,intermediate,MAIN,CONCENTRATION->DRYING,...
+CONCENTRATION.Vap1,intermediate,CONCENTRATION,,...
+```
+
+The wiring itself is in the root `connections {}` block (topology never lives
+in a state view) and the state is one folder per level, so these two columns are
+the only place the two are shown together.  A **FLAT case gets NEITHER column** —
+not two empty ones, which would claim a structure it does not have.  A stream
+the topology does not know at all gets an EMPTY `sector` cell, never
+`(no sector)`: that phrase is a fact about a UNIT at the plant root.
+
+---
 
 Full contract: `docs/architecture/stream-state-architecture.md`.

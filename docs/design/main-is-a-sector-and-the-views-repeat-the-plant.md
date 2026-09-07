@@ -1,5 +1,9 @@
 # MAIN is a sector, and the views repeat the plant
 
+> **THE TITLE IS NOW PARTLY FALSE, and §9 says so.**  `MAIN/` is the DOMAIN'S
+> OWN LEVEL, not a sector like the others (amended 2026-09-07).  Everything
+> else this record rules still stands; read §9 before §2.
+>
 > **STATUS: CONVENTION + FINDING, executed 2026-09-05.**  Level 3 (deep
 > reference under the stream-state architecture); the governing document is
 > [`../architecture/stream-state-architecture.md`](../architecture/stream-state-architecture.md) §2.
@@ -112,3 +116,46 @@ retired top-level view removed and `0/` told what it now carries.
 
 Record:
 [`a-state-directory-is-a-restartable-snapshot.md`](a-state-directory-is-a-restartable-snapshot.md).
+
+---
+
+## 9.  AMENDED 2026-09-07 — `MAIN/` is the domain's own LEVEL, not a sector
+
+§2 above says *a folder in CAPS is always a SECTOR, and a plant-level unit
+lives in one — conventionally `MAIN/`*.  On 2026-09-07 Vítor proposed replacing
+the stream-ownership rule of 2026-07-06: **a stream's state file lives at the
+LOWEST LEVEL of the case whose subtree contains EVERY ENDPOINT of that stream**
+(record:
+[`a-stream-belongs-to-the-graph-that-contains-both-ends.md`](a-stream-belongs-to-the-graph-that-contains-both-ends.md)).
+His text put the streams that cross two sectors in `MAIN/`.
+
+Taken literally that would make `MAIN` mean TWO things at once — a sector
+holding units, and the plant level holding the edges BETWEEN sectors — which is
+the name-with-two-meanings defect this project hunts everywhere else.  **The
+resolution is the architect's, and it is recorded as an amendment rather than
+as part of the proposal: `MAIN/` IS THE DOMAIN'S OWN LEVEL.**  Plant-level
+UNITS live there, exactly as §2 ruled and with nothing changed about how they
+get there; plant-level STREAMS live there too, which is new.  One meaning: *the
+level of the plant itself*, and both kinds of thing that belong to the plant
+itself sit in it.
+
+**REJECTED, and it is worth saying why**: putting the crossing streams loose at
+the view ROOT, beside the sector folders.  That is precisely the mixed level §1
+describes and §2 was adopted to remove — four kinds of thing at one level — and
+the auditor found `sugarPlantEconomicsSweep` still in it, with `RawJuice`,
+`ToConcentration` and `ToFermentation` loose in `0/`.  Those three moved into
+`0/MAIN/` with the rest.
+
+**What §3 of this record predicted is now half retired, and the half that
+retired is the interesting one.**  §3 says the convention *fell out of the
+existing rule with no new rule*, because the engine owned stream state by the
+producing unit's sector.  That rule is the one replaced.  What falls out of the
+NEW rule is stronger and needs no coincidence: a plant-level unit's streams are
+at the plant level because that is where their endpoints are, and so are the
+plant's inlets and the sector crossings.  The geography a view repeats is
+unchanged — `MAIN · CONCENTRATION · DRYING · FERMENTATION` — and `MAIN/` is now
+the first name in it for a reason rather than by convention alone.
+
+§4's rejections all stand: no `MAIN/` is forced on a flat case (its units ARE
+the plant, and its state files stay flat at the view root), the engine still
+never infers "sector" from capital letters, and the GUI still draws the disk.

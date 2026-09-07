@@ -212,10 +212,15 @@ pinch 90 °C hot — hand-worked in the case header); gate `check_pinch_p1`.
 
 **Sector and crossing (steady, fractal plants only)** — on a case whose units
 carry a stamped sector, `streamTable.csv` carries two extra columns after
-`role`: `sector`, the folder the stream's state file actually lives in (the
-ownership rule's answer — the producing unit's sector, or the first
-consumer's for a stream nobody produces), and `crossing`, `FROM->TO` when the
-producing and consuming units sit in different sectors and empty otherwise.
+`role`: `sector`, the folder the stream's state file actually lives in — the
+ownership rule's own answer, ASKED of `StreamOwnership::ownershipPath` rather
+than restated, so it is the LOWEST LEVEL of the case containing every endpoint
+of that stream (`MAIN` for a plant inlet or a sector crossing, the sector for
+a stream internal to one) — and `crossing`, `FROM->TO` when the producing and
+consuming units sit in different sectors and empty otherwise.  Until
+2026-09-07 the column re-derived the retired producer rule under a comment
+saying it could not disagree with the folder; it disagreed the day the rule
+changed.
 They exist because the wiring of a fractal plant is in the root
 `connections {}` block (topology, which never lives in a state view) while
 the state is scattered one folder per sector, so nothing showed the crossings
@@ -225,8 +230,10 @@ empty column would claim a structure that is not there (the 2026-09-04
 ruling; verified byte-identical).  A bare report label is resolved to the
 stream it names through the declared alias bridge, and a stream the flat
 topology does not know at all gets an empty cell rather than `(no sector)`,
-which is a fact about a unit at the plant root.  Record:
-`docs/design/a-sector-recovered-by-splitting-a-name.md`.
+which is a fact about a unit at the plant root.  The author-facing home for
+these two columns is `docs/ai/stream-state.md` §8.  Records:
+`docs/design/a-sector-recovered-by-splitting-a-name.md` and
+`docs/design/a-stream-belongs-to-the-graph-that-contains-both-ends.md`.
 
 **Phase split (steady)** — `streamTable` writes a second artefact,
 `phases.csv`, whenever a stream carries more than one phase: one row per

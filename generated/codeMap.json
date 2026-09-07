@@ -4581,6 +4581,7 @@
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
    "src/streams/StreamMass.H",
+   "src/streams/StreamOwnership.H",
    "src/thermo/Component.H",
    "src/thermo/ElementComposition.H",
    "src/thermo/PackageAudit.H",
@@ -10446,6 +10447,7 @@
   ],
   "src/streams/StreamOwnership.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/reporting/StreamTableReport.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/streams/StreamStateIO.H": [

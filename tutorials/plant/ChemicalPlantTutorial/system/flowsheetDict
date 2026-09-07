@@ -41,10 +41,12 @@ boundary
 // continues to CONCENTRATION (= the old direct feed) and 50 kmol/h goes
 // to FERMENTATION (= the old `Must` feed), via MAIN's JuiceSplitter
 // (2/3 + 1/3 split).
-// Stream STATE lives in 0/ (one file per stream, sector-owned) -- materialised
-// by `bin/choupo-init0`, solved from by choupoSolve.  The topology below is all
+// Stream STATE lives in 0/ (one file per stream, at the LOWEST level that
+// contains every endpoint of that stream) -- materialised by
+// `bin/choupo-init0`, solved from by choupoSolve.  The topology below is all
 // this dict carries.  The plant utilities (PlantSteam / DryingAir / BdAir) are
-// authored inlet files: 0/CONCENTRATION/PlantSteam carries `category steamLP`.
+// authored inlet files at the plant's own level -- their other endpoint is the
+// plant boundary -- so 0/MAIN/PlantSteam carries `category steamLP`.
 
 // The cabling.  A connection OVERRIDES the destination's default feed with
 // the source corrente.  Boundary names (left/right ends) are this node's

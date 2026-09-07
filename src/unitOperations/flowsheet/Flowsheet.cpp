@@ -2539,7 +2539,11 @@ int Flowsheet::solve(const DictPtr& dict,
     //  no state file (MISSING) or a state file no graph stream owns (ORPHAN)
     //  is fatal -- except under choupo-init0, whose whole purpose is to
     //  materialise the missing files (it keeps its own accounting).
-    if (seededFrom0)
+    //  The manifest is a function of the TOPOLOGY alone, so it is built here
+    //  unconditionally -- an incomplete or absent 0/ is exactly the state
+    //  `choupo-init0` and `--manifest` are asked about, and they need the
+    //  answer before there is a file to read.
+    std::map<std::string, std::filesystem::path> canonicalPaths;
     {
         std::set<std::string> names;
         for (const auto& u : topology_)
@@ -2553,9 +2557,40 @@ int Flowsheet::solve(const DictPtr& dict,
         for (const auto& [src, alias] : outletAliases)
             if (src != alias) aliases.insert(alias);
 
-        const auto manifest =
+        canonicalPaths =
             StreamOwnership::canonicalManifest(topology_, names, aliases);
+    }
 
+    //  WHERE A STREAM'S STATE FILE GOES, for a message that has to name it.
+    //  Two refusals used to spell the path by DOTTING the qualified stream
+    //  name (`0/FERMENTATION.Recycle`), which is a second derivation of the
+    //  ownership rule and named a file that has never existed at that address.
+    //  They ask the manifest now, and fall back to the bare name only for a
+    //  stream the manifest does not carry (there is then nothing to name).
+    auto statePathOf = [&](const std::string& id) -> std::string
+    {
+        auto it = canonicalPaths.find(id);
+        return it == canonicalPaths.end() ? id : it->second.generic_string();
+    };
+
+    //  `--manifest`: PUBLISH the one home's answer and stop.  A tool that must
+    //  put a stream file somewhere (bin/choupo-drill) asks the engine instead
+    //  of re-deriving the rule -- the third replica of this rule was written
+    //  by exactly such a tool and got it wrong on its first outing.  Fenced so
+    //  a reader can find it in the banner, TAB-separated so a tool can parse
+    //  it without a grammar.
+    if (manifestMode_)
+    {
+        std::cout << "[manifest] begin\n";
+        for (const auto& [id, p] : canonicalPaths)
+            std::cout << id << "\t" << p.generic_string() << "\n";
+        std::cout << "[manifest] end\n";
+        return 0;
+    }
+
+    if (seededFrom0)
+    {
+        const auto& manifest = canonicalPaths;
         std::vector<std::string> missing, orphan;
         std::set<std::string> claimed;
         for (const auto& [id, p] : manifest)
@@ -2575,17 +2610,53 @@ int Flowsheet::solve(const DictPtr& dict,
 
         if ((!missing.empty() || !orphan.empty()) && !init0_)
         {
+            //  A RELOCATION IS ANNOUNCED, NEVER SILENT (2026-09-07).  The
+            //  ownership rule is a function of the WHOLE topology -- add a
+            //  consumer in another sector and the file's level rises -- so a
+            //  MISSING path whose file sits at a DIFFERENT path is not two
+            //  independent faults but ONE move, and saying so is the
+            //  difference between a remedy and a puzzle.  The pairing is by
+            //  FILE NAME, which is the one part the rule never changes; an
+            //  ambiguous name (two orphans, same base) is reported as the
+            //  plain MISSING/ORPHAN pair rather than guessed at.
+            std::map<std::string, std::vector<std::string>> orphanByBase;
+            for (const auto& o : orphan)
+                orphanByBase[o.substr(o.rfind('.') + 1)].push_back(o);
+            std::set<std::string> movedFrom;
+            std::vector<std::string> moves;
+            for (const auto& m : missing)
+            {
+                const std::string base = m.substr(m.rfind('/') + 1);
+                auto it = orphanByBase.find(base);
+                if (it == orphanByBase.end() || it->second.size() != 1) continue;
+                std::string from = it->second.front();
+                for (auto& c : from) if (c == '.') c = '/';
+                movedFrom.insert(it->second.front());
+                moves.push_back("  RELOCATED  0/" + from + "  ->  0/" + m
+                    + "  (the same file, at the level that now contains every "
+                      "endpoint of its stream)\n");
+            }
+
             std::string msg = "Flowsheet: 0/ COMPLETENESS violated BEFORE the "
                 "solve (graph stream IDs != 0/ state files):\n";
+            for (const auto& m : moves) msg += m;
             for (const auto& m : missing)
+            {
+                const std::string base = m.substr(m.rfind('/') + 1);
+                auto it = orphanByBase.find(base);
+                if (it != orphanByBase.end() && it->second.size() == 1)
+                    continue;                       // already named as a move
                 msg += "  MISSING  0/" + m + "  (graph stream, no state file)\n";
+            }
             for (auto o : orphan)
             {
+                if (movedFrom.count(o)) continue;   // already named as a move
                 for (auto& c : o) if (c == '.') c = '/';
                 msg += "  ORPHAN   0/" + o + "  (state file, no graph stream)\n";
             }
             msg += "An invalid 0/ must never contaminate the seeds -- fix the "
-                   "state tree (bin/choupo-init0 materialises missing files).";
+                   "state tree (bin/choupo-init0 materialises missing files; a "
+                   "RELOCATED file is moved with `mv`, its contents unchanged).";
             throw std::runtime_error(msg);
         }
         if (verbosity >= 2)
@@ -2631,7 +2702,8 @@ int Flowsheet::solve(const DictPtr& dict,
         if (!ct.hasInitial && !streams_.count(ct.qualifiedName))
             throw std::runtime_error("Flowsheet: tear stream '"
                 + ct.qualifiedName + "' has no initial guess -- no 0/ state "
-                "file supplies it (author 0/" + ct.qualifiedName + " or run "
+                "file supplies it (author 0/" + statePathOf(ct.qualifiedName)
+                + " or run "
                 "bin/choupo-init0)");
         if (ct.hasInitial && !streams_.count(ct.qualifiedName))
             streams_[ct.qualifiedName] = std::move(ct.initial);
@@ -2793,7 +2865,8 @@ int Flowsheet::solve(const DictPtr& dict,
             if (!tmpl || Ftot <= 0.0)
                 throw std::runtime_error("Flowsheet: tear stream '" + t +
                     "' has no initial guess and no feed to propagate from --"
-                    " author its initial guess as a 0/" + t + " state file.");
+                    " author its initial guess as a 0/" + statePathOf(t)
+                    + " state file.");
             ProcessStream seed = *tmpl;     // inherit P, vf, vector sizes, sane fields
             seed.name = t;
             seed.F = Ftot;
@@ -3810,7 +3883,8 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
                                    : std::vector<std::string>{};
     };
 
-    std::map<std::string, std::string> producerOf, firstConsumerOf;
+    std::map<std::string, std::string>              producerOf;
+    std::map<std::string, std::vector<std::string>> consumersOf;
     //  The sector each unit was STAMPED with at the flatten seam, read off the
     //  same flattened dicts `solve` reads it from -- so the pre-solve world
     //  and the post-solve one file a stream under the same sector.  Nothing
@@ -3825,7 +3899,7 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
         for (const auto& si : inputsOf(u))
         {
             graphStreams.insert(si);
-            if (!firstConsumerOf.count(si)) firstConsumerOf[si] = uname;
+            consumersOf[si].push_back(uname);
         }
         for (const auto& so : outputsOf(u))
         {
@@ -3833,14 +3907,15 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
             producerOf[so] = uname;
         }
     }
+    const bool caseHasSectors = !sectorOfUnit.empty();
 
     // ---- Where each stream's 0/ file lives: THE ownership rule, in its ONE
     //  home (StreamOwnership::ownershipPath -- D1, forum #55).  This replica
     //  used to re-derive it and got it wrong on its first outing.
     auto pathOf = [&](const std::string& nm) -> fs::path {
         return fs::path("0")
-             / StreamOwnership::ownershipPath(nm, producerOf, firstConsumerOf,
-                                              sectorOfUnit);
+             / StreamOwnership::ownershipPath(nm, producerOf, consumersOf,
+                                              sectorOfUnit, caseHasSectors);
     };
 
     // ---- Every INLET must be authored: it is a boundary spec, not a guess --
@@ -3978,7 +4053,7 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
         if (verbosity >= 1)
             std::cout << "  [init0] wrote     " << f.generic_string()
                       << "  (" << (isInlet ? "inlet"
-                                 : producerOf.count(nm) && !firstConsumerOf.count(nm)
+                                 : producerOf.count(nm) && !consumersOf.count(nm)
                                    ? "outlet estimate" : "internal estimate")
                       << ")\n";
         ++nWritten;

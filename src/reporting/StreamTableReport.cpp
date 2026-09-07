@@ -30,6 +30,8 @@ License
 #include "BalanceMath.H"
 #include "Topology.H"
 #include "streams/StreamMass.H"
+#include "streams/StreamOwnership.H"  // ownershipPath -- the ONE home for WHERE
+                                     //   a stream's state file lives
 #include "core/FlatUnit.H"   // topLevelSector -- the ONE home for a chain's head
 
 #include <algorithm>
@@ -64,11 +66,15 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     //  `Magma` in its own `0/`), so `Magma` crosses CONCENTRATION -> DRYING
     //  and is filed under CONCENTRATION.  Two columns say so here.
     //
-    //  `sector` is the OWNERSHIP rule's answer, deliberately -- the producer's
-    //  sector, or the first consumer's for a stream nobody produces -- so the
-    //  column names the folder the stream's state file is actually in.  Its
-    //  value is the STAMPED `FlatUnit::sector`'s top-level segment, read
-    //  through the one home `topLevelSector`, never a substring of a name.
+    //  `sector` is the OWNERSHIP rule's answer, deliberately -- so the column
+    //  names the folder the stream's state file is actually in.  It ASKS that
+    //  rule (`StreamOwnership::ownershipPath`) rather than restating it: until
+    //  2026-09-07 this lambda re-derived "the producer's sector, else the first
+    //  consumer's" and a comment claimed the two could not disagree.  The rule
+    //  changed that day -- a stream now lives at the LOWEST LEVEL containing
+    //  every endpoint -- and a restatement is exactly what goes quietly false
+    //  when the thing it restates moves: `BdAir`'s file went to `MAIN/` while
+    //  this column went on saying `DRYING`.
     //
     //  EMPTY IS NOT A SECTOR CALLED "root" (the 2026-09-04 ruling).  A case
     //  whose units carry no sector gets NEITHER column -- not two empty ones,
@@ -116,18 +122,22 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     auto known = [&](const std::string& stream) -> bool {
         return producerOf.count(stream) || consumersOf.count(stream);
     };
-    //  The owning sector: the producer's, else the FIRST consumer's -- the
-    //  same rule `StreamOwnership::ownershipPath` files the state file by, so
-    //  this column and that folder cannot disagree.
+    //  The LEVEL the stream's state file lives at, from the ONE home.  The
+    //  full stamped chain goes in (the rule reads it whole); what comes back
+    //  is the relative path, and the column is its DIRECTORY -- `MAIN` for a
+    //  stream at the domain's own level, the sector for one internal to a
+    //  sector.  These columns exist only when some unit carries a stamp, so a
+    //  flat case never reaches here and the directory is never empty.
+    StreamOwnership::SectorOfUnit stampedChain;
+    for (const auto& u : topo.units)
+        if (!u.sector.empty()) stampedChain[u.name] = u.sector;
     auto ownerSectorOf = [&](const std::string& raw) -> std::string {
         const std::string stream = canonical(raw);
         if (!known(stream)) return "";
-        auto p = producerOf.find(stream);
-        if (p != producerOf.end()) return sectorOfUnit(p->second);
-        auto c = consumersOf.find(stream);
-        if (c != consumersOf.end() && !c->second.empty())
-            return sectorOfUnit(c->second.front());
-        return NO_SECTOR;
+        const auto dir = StreamOwnership::ownershipPath(
+            stream, producerOf, consumersOf, stampedChain,
+            /*caseHasSectors=*/true).parent_path();
+        return dir.empty() ? std::string(NO_SECTOR) : dir.generic_string();
     };
     //  `FROM->TO` for every sector this stream is handed ACROSS.  A stream
     //  with no producer (a domain inlet) or no consumer (a product) crosses

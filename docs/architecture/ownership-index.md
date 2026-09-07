@@ -105,11 +105,11 @@ Legend: **Owner** = canonical home of the logic/representation ·
 ## Streams & state
 
 **S1 — Stream state I/O (0/ · converged/ · the `material{}` wrapper)**
-- Owner: `src/streams/StreamStateIO.cpp`
-- Prod → Cons: authored `0/<stream>` + solver results → `converged/<stream>`, GUI, reports
-- Never: stream values inside `flowsheetDict` (`streams{}` refused); two competing material forms on one inlet; a writer emitting a form the reader refuses
-- Contract: `docs/architecture/stream-state-architecture.md`
-- Witness: `recycleFlowsheet` · Gates: `check_material_wrapper`, `check_stream_transport_closure`
+- Owner: `src/streams/StreamStateIO.cpp`; WHERE each file goes: `src/streams/StreamOwnership.H` (published by `choupoSolve --manifest`)
+- Prod → Cons: authored `0/<stream>` + solver results → `converged/<stream>`, GUI, reports, `bin/choupo-drill`
+- Never: stream values inside `flowsheetDict` (`streams{}` refused); two competing material forms on one inlet; a writer emitting a form the reader refuses; a second derivation of where a state file lives (a stream sits at the LOWEST level containing every ENDPOINT of it — 2026-09-07); moving or ignoring a misplaced file in silence
+- Contract: `docs/architecture/stream-state-architecture.md`; `docs/design/a-stream-belongs-to-the-graph-that-contains-both-ends.md`
+- Witness: `recycleFlowsheet` · Gates: `check_material_wrapper`, `check_stream_transport_closure`, `check_sector_hierarchy`, `check_drill_in`
 
 **S2 — Speciation attachment (THE TWO BASES) & `phases{}` decomposition**
 - Owner: `src/streams/SpeciationBlock.cpp` (block); post-solve pass + `phases{}` reader

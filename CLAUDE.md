@@ -186,19 +186,22 @@ case/
 
 * **A single isolated unit is just a `flowsheetDict` of length 1.**  No
   "standalone" mode — one consistent case format for everything.
-* **In a FRACTAL case a CAPS folder is always a SECTOR, and a plant-level
-  unit lives in one — conventionally `MAIN/`** (2026-09-05).  Every VIEW of
-  the case (`0/`, `converged/`, `design/`) repeats the one
-  geography `MAIN · <SECTORS>`; `system/` (HOW) and `constant/` (WITH WHAT)
-  sit at every level of the fractal and never inside the geography.  A
-  convention for humans, never inferred by the engine from capitals, never
-  forced on a flat case (its units ARE the plant).  Record:
+* **In a FRACTAL case a CAPS folder is always a level of the plant's
+  geography, and a plant-level unit lives in `MAIN/`** (2026-09-05; `MAIN/`
+  is the DOMAIN'S OWN LEVEL rather than a sector like the others since
+  2026-09-07).  Every VIEW of the case (`0/`, `converged/`, `design/`)
+  repeats the one geography `MAIN · <SECTORS>`; `system/` (HOW) and
+  `constant/` (WITH WHAT) sit at every level of the fractal and never inside
+  the geography.  A convention for humans, never inferred by the engine from
+  capitals, never forced on a flat case (its units ARE the plant).  A stream's
+  file goes at the lowest level containing every ENDPOINT of it — see the
+  2026-09-07 paragraph in §6.  Record:
   [`docs/design/main-is-a-sector-and-the-views-repeat-the-plant.md`](docs/design/main-is-a-sector-and-the-views-repeat-the-plant.md).
 * **A STATE VIEW HOLDS BOTH HALVES: the streams as files, flat, and under
   `internalStates/` ONE file per unit** (2026-09-06, amended the same day).
   OpenFOAM's time directory carries a field's `internalField` AND its
   `boundaryField` in one file, which is what makes it restartable; a Choupo
-  state view carries the streams (the boundary) as `<view>/<SECTOR>/<stream>`
+  state view carries the streams (the boundary) as `<view>/<LEVEL>/<stream>`
   and each unit's interior as `<view>/internalStates/<SECTOR>/<unit>`, one
   block per kind (`stageProfile {}`, `axialProfile {}`, …).  The interior has
   its own root because a unit and a stream MAY share a name — **identity is
@@ -1152,6 +1155,40 @@ not a reflection.**  Gate: `check_internal_states` (same name, changed claim;
 arm (f) — two kinds on one unit — has NO live case, because
 `SimulationResult::profiles` carries one profile per unit).  Record:
 [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md).
+
+**A STREAM BELONGS TO THE GRAPH THAT CONTAINS BOTH ITS ENDS (2026-09-07,
+Vítor's rule; it REPLACES the producer rule of 2026-07-06 — do NOT restore
+that one).**  The old §2.4 read *an internal or inter-sector stream belongs to
+its PRODUCING sector; an external inlet to its CONSUMING sector* — four
+clauses, each picking ONE ENDPOINT OF AN EDGE and calling it the owner.  A unit
+is a NODE and belongs to a sector; a stream is an EDGE, and an edge between two
+subgraphs belongs to neither.  Rule, one sentence and recursive at any depth:
+**a stream's state file lives at the LOWEST LEVEL of the case whose subtree
+contains EVERY ENDPOINT of that stream.**  Internal to a sector → that sector;
+crossing two → their common parent; a plant-boundary INLET → the plant's own
+level.  **`MAIN/` IS THE DOMAIN'S OWN LEVEL, not a sector like the others**
+(the architect's amendment, recorded as one): plant-level units live there
+(2026-09-05, unchanged) and plant-level streams now do too, so the name keeps
+ONE meaning; a FLAT case has no geography and its files stay flat.  A plant
+OUTLET does NOT rise, and the asymmetry is in the grammar rather than in the
+rule: the plant DECLARES its inlets (`PlantSteam` is the identity) and only
+LABELS its outlets (`Powder { from DRYING/DryPowder; }`), and a boundary alias
+is a label, not a second state file — read symmetrically, the flagship's
+`DRYING.Vapour` and `FERMENTATION.Vapour` both resolve to one file, which the
+manifest refuses by construction.  ONE home stays
+`streams/StreamOwnership.H`, and `choupoSolve --manifest` PUBLISHES its answer
+(streamId TAB path, before the 0/ completeness check) so a tool that must PLACE
+a file asks instead of re-deriving — `bin/choupo-drill` does, and could not
+drill 2 of the flagship's 4 sectors until it did.  Two durable lessons: **a
+RESTATEMENT of a rule goes quietly false the day the rule moves** (the stream
+table's `sector` column re-derived the old rule under a comment saying the two
+could not disagree, and disagreed immediately); and **the level is a function
+of the WHOLE topology**, so one new cross-sector consumer moves a file written
+correctly yesterday — measured at 51 of 78 corpus streams one edge away, which
+is acceptable ONLY because the engine ANNOUNCES the relocation by name with
+both addresses and refuses until it is made.  Gates:
+`check_sector_hierarchy` (h)-(k) · `check_drill_in`.  Record:
+[`docs/design/a-stream-belongs-to-the-graph-that-contains-both-ends.md`](docs/design/a-stream-belongs-to-the-graph-that-contains-both-ends.md).
 
 **A SECTOR IS READ FROM THE STAMP, NOT RECOVERED FROM A NAME — on the STREAM
 side too (2026-09-06).**  The 2026-09-04 hierarchy slice converted the four

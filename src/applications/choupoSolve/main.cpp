@@ -146,7 +146,8 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     bool               init0 = false,
     bool               init0Force = false,
     const StreamOverrides& overrides = StreamOverrides{},
-    bool               lint = false)
+    bool               lint = false,
+    bool               manifest = false)
 {
     // Fresh advisory sink for this pass (so a sweep/optim gets per-pass
     // advisories, and the result carries this pass's).  Cleared BEFORE the
@@ -187,6 +188,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     flowsheet.setStreamOverrides(overrides);
     flowsheet.setInit0Mode    (init0, init0Force);
     flowsheet.setLintMode     (lint);
+    flowsheet.setManifestMode (manifest);
     flowsheet.setSolverDict   (solverDict);
     flowsheet.setReactionsDict(reactionsDict);
     flowsheet.setDatabase     (&db);          // per-unit thermo overrides
@@ -257,9 +259,9 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
 
     int rc = flowsheet.solve(flowsheetDict, thermo, verbosity);
 
-    // Lint: solve() returned at the validate-and-stop seam -- there is no
-    // simulation result to assemble (and no T-x-y sweep to run).
-    if (lint)
+    // Lint / --manifest: solve() returned at a validate-and-stop seam -- there
+    // is no simulation result to assemble (and no T-x-y sweep to run).
+    if (lint || manifest)
     {
         SimulationResult r;
         r.converged = (rc == 0);
@@ -469,6 +471,10 @@ try
         "                    solving; never overwrites without --force\n"
         "  --force           let -init0 regenerate existing estimates\n"
         "  -lint,  --lint    validate the case and stop, without solving\n"
+        "  --manifest        print the canonical stream manifest (streamId TAB\n"
+        "                    relative state path) and stop -- where each\n"
+        "                    stream's 0//converged/ file lives, per the ONE\n"
+        "                    ownership rule; works on an incomplete 0/\n"
         "  --version, -V     print the banner (which carries version and commit)\n"
         "  --help, -h        this text\n";
 
@@ -476,6 +482,7 @@ try
         return 0;
 
     bool init0Mode = false, init0Force = false, lintMode = false;
+    bool manifestMode = false;
     std::string caseDir = ".";
     for (int a = 1; a < argc; ++a)
     {
@@ -483,6 +490,7 @@ try
         if      (arg == "-init0" || arg == "--init0") init0Mode = true;
         else if (arg == "--force")                    init0Force = true;
         else if (arg == "-lint"  || arg == "--lint")  lintMode = true;
+        else if (arg == "--manifest")                 manifestMode = true;
         //  A FLAG IS NOT A FILENAME.  The catch-all this replaces turned any
         //  unrecognised argument into a case directory, so `--lnt myCase`
         //  ran the SOLVE with the lint silently dropped, at exit 0.
@@ -1081,6 +1089,19 @@ try
         auto r = runSimulation(flowsheetDict, db, packageDict,
                                chemPtr, solverDict, reactionsDict, verbosity,
                                nullptr, true, init0Force);
+        return r.converged ? 0 : 1;
+    }
+
+    // ---- --manifest: publish where every stream's state file lives and
+    //      leave.  Read-only, and deliberately BEFORE the 0/ completeness
+    //      check, because the tools that ask (choupo-drill materialising a
+    //      child 0/) ask precisely when the tree is not yet complete.
+    if (manifestMode)
+    {
+        auto r = runSimulation(flowsheetDict, db, packageDict,
+                               chemPtr, solverDict, reactionsDict, verbosity,
+                               nullptr, false, false, StreamOverrides{},
+                               /*lint=*/false, /*manifest=*/true);
         return r.converged ? 0 : 1;
     }
 

@@ -61,7 +61,9 @@ here before recording:
 The cause is the INLET: `0/REACTION/Feed` declares no `vf`, so it
 defaults to liquid, and the 50/50 acid/ethanol mixture at 360 K /
 1.013 bar **cannot be one** — the same log prints `g(V=0) = +0.2825`,
-which IS the test that says so.  808 kW ÷ 27.78 mol/s ÷ 0.807 =
+which IS the test that says so.  *(That file is at `0/MAIN/Feed` since
+2026-09-07 — a plant inlet lives at the domain's own level.  Nothing in the
+diagnosis changes.)*  808 kW ÷ 27.78 mol/s ÷ 0.807 =
 36.05 kJ/mol, a textbook mixture latent heat: the residual is exactly
 the vapour the label denies.
 
