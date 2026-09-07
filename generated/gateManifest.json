@@ -503,8 +503,8 @@
     },
     "check_mass_closure": {
       "exit": 0,
-      "claim": "check_mass_closure: OK -- 5 unit(s) across 5 solid-bearing case(s) close on MASS within 0.1 %, the per-unit and global surfaces agree (both count the crystal), and the non-closure warning is wired to stderr AND the durable advisory surface.  Observer arm: bubbleT01 reports n/a with its reason in massBalance.meta and raises NO warning and no element banner; closed-cycle arm: rankine02 reports n/a with the closedCycle reason while its four per-unit rows carry the verification; negative: flash01 stays numeric FULL.  NOT CHECKED: that the non-closure warning FIRES (not provokable from a case file; verified by hand once by reverting F_massTotal -> F_mass, which reproduced flash21 at 58.8 % WITH the warning), and whether a closing balance is right -- closure is conservation, never correctness.",
-      "seconds": 5.3
+      "claim": "check_mass_closure: OK -- 208 steady case(s) close their plant-boundary mass balance within 0.5 % of 100, read from the engine's own massBalance report and never recomputed here.  4 ran the report and state they have NO MATERIAL BOUNDARY (a closed cycle: their per-unit balances carry the verification), 1 are told ALOUD by the engine that their declared chain did not run under an outer driver (announced, so not silent), 6 exit non-zero and belong to the suite's exit-code check rather than this one, and 13 neither declare the report nor emit one.  Every one of those is LISTED rather than skipped, because an absence nobody counts is not a finding -- and a case that DECLARES the report and never gets it FAILS by name, which is how a 113 % closure shipped unseen until 2026-09-04.  NOT CHECKED: energy closure, and PER-UNIT closure (two units can cancel and this arm would not see it).",
+      "seconds": 236.1
     },
     "check_material_wrapper": {
       "exit": 0,
@@ -965,6 +965,11 @@
       "exit": 0,
       "claim": "check_model_default_registered: OK -- 13 factory call site(s) across 10 factory class(es) take a literal `model` default, and every one of those defaults is a name the class's own registerBuiltins registers (both sides recounted here, never transcribed).  The probe holds: the construct itself -- a default naming a model nobody registered -- is still reported, and the negative (a default that IS registered) is not.  Before this existed, SpiralWoundModule defaulted the `massTransfer {}` block's model to 'constant', pruned from the factory on 2026-08-23, so a block that merely forgot its `model` key died naming a model the engine had invented.  AND THE CATCH-ALL ELSE IS GONE: 5 if-chain site(s) that read a declared word -- Crystalliser model, DistillationColumn model, SprayDryer chamber model, DistillationColumn side-draw phase, PneumaticConveyor bend type -- were each RUN twice from a scratch copy of a corpus case: a mistyped word refuses naming the word and listing what the site accepts, and an accepted alias does not.  DOMAIN: literal factory defaults across src/, plus those five if-chains.  LIMITS: a default built from a variable rather than a literal is invisible to arm (a); whether a registered default is the RIGHT one for the physics is judgement, not reachability; whether the list a site hands registryRefusal is the list its branches accept can only be read, not derived; and arm (d) covers five if-chains, not every one in the tree -- HeatExchanger (`epsNTU`) and BatchStill (`rayleigh`) read a word the same way and are NOT covered.",
       "seconds": 0.5
+    },
+    "check_fastset": {
+      "exit": 0,
+      "claim": "check_fastset: OK -- 59 declared case(s) covering 56 of the 57 tutorial famil(ies) the suite walks, each an existing case the full sweep also walks, no case declared twice; the remaining 1 famil(ies) carry a DECLARED `# EXCLUDED` line with a reason (tutorials/plant/acetonePlant).  NOT COVERED: whether the declared cases are CHEAP (a measurement, and one that moved 26 % between two runs of the same tree -- it lives dated in FASTSET's header, not in a gate), whether they PASS (that is `bin/runTests --fast`), and whether a family's representative is REPRESENTATIVE of it (an author's judgement, made in review, exactly as check_witness_tier leaves representativeness to the architect).",
+      "seconds": 0.1
     }
   }
 }

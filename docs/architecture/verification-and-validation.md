@@ -138,12 +138,40 @@ Gate `check_witness_tier` keeps the declaration resolvable (existing case,
 golden present, classes and cases unique); representativeness is an
 architect's review call and deliberately not gated.
 
+**The FAST SET, a rung between the witnesses and the sweep (added 2026-09-07,
+task #84 slice 1).**  Twelve execution classes do not cover the corpus's
+SHAPE: an adsorber change, a psychrometrics change and a hydraulics change all
+pass `--witnesses` untouched, because none of those is an execution class.
+`tutorials/FASTSET` declares one representative case per tutorial FAMILY (the
+directory a case's siblings share; each plant is its own family), and
+`bin/runTests --fast` runs those 59 through the same per-case checks and then
+FOUR CONSERVATION gates — mass-closure, element-balance,
+closure-ledger-pinned, energy-boundary-pinned — scoped to that same pass.
+Measured 2026-09-07: **15.4 s**.  The conservation gates are there because a
+golden pins what a run PRINTS, so a stable wrong answer passes by
+construction; conservation is the class of defect no golden can see.  What it
+exists to reclaim was measured too: across one builder day nine full sweeps
+were run and FOUR of them were INTERMEDIATE — run to find out whether the work
+was going well, not to authorise a commit — about 140 min of a 571-min day
+spent on the wrong rung.  The list is DECLARED (a tracked file a human
+reviews) and its COMPLETENESS is GATED (`check_fastset` recomputes the family
+set from the tree and refuses when a walked family has no line): derived was
+rejected because "the cheapest case per family" is not stable — two complete
+runs of the same 598 items on one day measured 42.5 and 31.3 min — and
+hand-kept alone was rejected because a family added without a line does not
+fail, it just stops running.  `--fast` **authorises no commit** and says so in
+its own verdict line.
+
 **The ladder**:
 
 1. **While editing** — only the directly affected tests: the touched case,
    the relevant `check_*` contract/refusal gates.
 2. **A coherent change closed** — the witness of the affected class.
-3. **A bounded slice closed** — `runTests --witnesses` across all classes.
+3. **A bounded slice closed** — `runTests --witnesses` across all classes;
+   `runTests --fast` beside it when the slice's blast radius is a FAMILY of
+   the corpus rather than an execution class (an adsorber, a psychrometric, a
+   hydraulic change), and after any slice as the cheap "is anything dark?"
+   pass.
 4. **Campaign closure, a release TAG, or a genuinely cross-cutting change** —
    the full regression, once, and IN CHUNKS (`bin/runTests <directory>`
    expands a directory of cases).  **`main` advances on rung 3**, amended

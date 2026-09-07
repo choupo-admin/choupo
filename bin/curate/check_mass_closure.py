@@ -40,18 +40,18 @@ WHAT THIS DOES NOT CHECK, said plainly:
     this for as long as it did.  Those cases are LISTED by this gate, never
     silently skipped: an absence nobody counts is not a finding.
 """
-import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from suite_cache import SCOPED, scope_sentence, stdout_of   # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 
 #  Per cent, either side of 100.  See "WHY A BAND" above.
 BAND = 0.5
-
-_CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
 
 CLOSURE = re.compile(r"global closure\s+([0-9.]+)\s*%")
 
@@ -84,17 +84,24 @@ ANNOUNCED = re.compile(r"\[reports\] this case declares reports \{[^}]*\}"
                        r" and an outer driver")
 
 
+OUT_OF_SCOPE = object()
+
+
 def output(case: Path):
     """-> (text, ranOk).  `ranOk` is False when a LIVE run exits non-zero;
     a cached text carries no exit code, and the suite that filled the cache
-    has already accounted for exit codes itself."""
-    if _CACHE:
-        rel = case.resolve().relative_to(ROOT).as_posix().replace("/", "__")
-        f = Path(_CACHE) / (rel + ".out")
-        try:
-            return f.read_text(errors="replace"), True
-        except OSError:
-            pass
+    has already accounted for exit codes itself.
+
+    Under CHOUPO_SUITE_SCOPE (bin/runTests --fast) the cache is the SCOPE:
+    a case it does not hold was not run by the caller, and running it live
+    behind the caller's back would cost 222 s -- measured -- at a tier whose
+    whole budget is under 20 s.  It is returned OUT_OF_SCOPE, counted, and
+    named in the claim; it is never silently dropped."""
+    txt = stdout_of(case)
+    if txt is not None:
+        return txt, True
+    if SCOPED:
+        return OUT_OF_SCOPE, False
     p = subprocess.run([str(ROOT / "choupoSolve"), str(case)],
                        capture_output=True, text=True, timeout=900)
     return p.stdout + p.stderr, p.returncode == 0
@@ -116,9 +123,13 @@ def main() -> int:
     #                cannot run must not pass, and it is exactly how a 113 %
     #                closure shipped unseen.
     bad, checked, noBoundary, unrun, silent, announced = [], 0, [], [], [], []
+    outOfScope = []
     for case, declaresMB in steady_cases():
         rel = case.relative_to(ROOT).as_posix()
         txt, ranOk = output(case)
+        if txt is OUT_OF_SCOPE:
+            outOfScope.append(rel)
+            continue
         if not ranOk:
             unrun.append(rel)
             continue
@@ -154,9 +165,14 @@ def main() -> int:
 
     if not checked:
         print("check_mass_closure: FAILED\n"
-              "  no case reported a closure at all.  A gate with no subject "
-              "reports PASS forever -- fix the discovery, do not retire the "
-              "check.")
+              + ("  no case IN SCOPE reported a closure at all.  The scope is "
+                 "the caller's own case pass, so the fix is the fast set: it "
+                 "must contain at least one steady case with a material "
+                 "boundary, or this tier checks no conservation at all.\n"
+                 if SCOPED else
+                 "  no case reported a closure at all.  A gate with no "
+                 "subject reports PASS forever -- fix the discovery, do not "
+                 "retire the check.\n"))
         return 1
     if bad:
         print("check_mass_closure: FAILED")
@@ -177,9 +193,11 @@ def main() -> int:
           "a finding -- and a case that DECLARES the report and never gets it "
           "FAILS by name, which is how a 113 %% closure shipped unseen until "
           "2026-09-04.  NOT CHECKED: energy closure, and PER-UNIT closure (two "
-          "units can cancel and this arm would not see it)."
+          "units can cancel and this arm would not see it).%s"
           % (checked, BAND, len(noBoundary), len(announced), len(unrun),
-             len(silent)))
+             len(silent),
+             scope_sentence(checked + len(noBoundary) + len(announced)
+                            + len(unrun) + len(silent), len(outOfScope))))
     return 0
 
 

@@ -41,25 +41,18 @@ per-unit residuals the report "cannot attribute" are pinned by nothing here).
 """
 from __future__ import annotations
 
-import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+#  The single-pass cache, and (under --fast) the SCOPE it becomes.  One home:
+#  bin/curate/suite_cache.py.
+from suite_cache import SCOPED, scope_sentence, stdout_of   # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
-_CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
 TERMS = ("H_feeds_kW", "Q_boundary_kW", "H_products_kW")
-
-
-def cached_stdout(case: Path):
-    if not _CACHE:
-        return None
-    rel = case.resolve().relative_to(ROOT).as_posix().replace("/", "__")
-    try:
-        return (Path(_CACHE) / (rel + ".out")).read_text(errors="replace")
-    except OSError:
-        return None
 
 
 def app_of(case: Path) -> str:
@@ -67,7 +60,8 @@ def app_of(case: Path) -> str:
     return m.group(1) if m else "choupoSolve"
 
 
-NOT_RUN = object()   # the bare run could not be judged (see published())
+NOT_RUN = object()      # the bare run could not be judged (see published())
+OUT_OF_SCOPE = object() # the caller did not run this case at all (--fast)
 
 
 def published(case: Path):
@@ -77,7 +71,9 @@ def published(case: Path):
     binary is asked -- accusing its pinned rows of matching nothing would be a
     gate accusing the innocent (userOp02, first standalone run, 2026-09-05).
     Under the suite the cache carries the harness's own run and it IS judged."""
-    out = cached_stdout(case)
+    out = stdout_of(case)
+    if out is None and SCOPED:
+        return OUT_OF_SCOPE
     if out is None:
         binary = ROOT / app_of(case)
         if not binary.exists():
@@ -102,7 +98,7 @@ def pinned(case: Path):
 
 
 def main() -> int:
-    problems, npin, ncase, notrun = [], 0, 0, []
+    problems, npin, ncase, notrun, nskipped = [], 0, 0, [], 0
     for exp in sorted(ROOT.glob("tutorials/**/expected")):
         case = exp.parent
         if not (case / "system/controlDict").exists():
@@ -112,6 +108,9 @@ def main() -> int:
         pub = published(case)
         pin = pinned(case)
         rel = case.relative_to(ROOT).as_posix()
+        if pub is OUT_OF_SCOPE:
+            nskipped += 1
+            continue
         if pub is NOT_RUN:
             notrun.append(rel)
             continue
@@ -130,6 +129,13 @@ def main() -> int:
                 problems.append(f"{rel}: pins `boundary {name} {key}`, which the run does not emit.")
             else:
                 npin += 1
+    if SCOPED and ncase == 0 and not problems:
+        print("check_energy_boundary_pinned: FAILED\n"
+              "  no case IN SCOPE publishes a globalEnergyBoundary -- the "
+              "caller ran none that does, so this gate checked nothing.  "
+              "Remedy: the fast set must carry at least one steady case whose "
+              "golden pins `boundary global ...` rows.")
+        return 1
     if problems:
         print("check_energy_boundary_pinned: FAILED")
         for p in problems[:40]:
@@ -144,8 +150,9 @@ def main() -> int:
           f"for existence here.  "
           + (f"NOT JUDGED standalone: {len(notrun)} case(s) whose bare run fails here ({', '.join(notrun)}) "
              f"-- judged under the suite, whose cache carries the harness's own run.  " if notrun else "")
-          + f"NOT CHECKED: whether the engine's ledger is right, and the per-unit residuals the report "
-          f"cannot attribute.")
+          + "NOT CHECKED: whether the engine's ledger is right, and the per-unit residuals the report "
+          "cannot attribute."
+          + scope_sentence(ncase, nskipped))
     return 0
 
 

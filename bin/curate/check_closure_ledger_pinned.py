@@ -56,29 +56,19 @@ WHAT THIS DOES NOT CHECK, said plainly:
     today and the ledger's own rule string says none can, but the discovery
     above would not see one.  Arm (b) still covers any case already pinned.
 """
-import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 #  Single-pass cache (2026-08-24): under bin/runTests this sweep reads the
-#  suite's own case pass (env CHOUPO_SUITE_OUTPUTS; cache-present implies
-#  ran-clean); standalone it runs live; anything absent runs live.
-_CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
+#  suite's own case pass; standalone it runs live; anything absent runs live.
+#  Under CHOUPO_SUITE_SCOPE (--fast) the cache is the SCOPE instead -- see
+#  bin/curate/suite_cache.py, which is the one home for both rules.
+from suite_cache import SCOPED, scope_sentence, stdout_of   # noqa: E402
 
-
-def cached_stdout(case: Path):
-    if not _CACHE:
-        return None
-    rel = case.resolve().relative_to(ROOT).as_posix().replace("/", "__")
-    f = Path(_CACHE) / (rel + ".out")
-    try:
-        return f.read_text(errors="replace")
-    except OSError:
-        return None
+ROOT = Path(__file__).resolve().parents[2]
 FIELDS = ("raw_kW", "step_kW", "remaining_kW")
 
 
@@ -98,6 +88,9 @@ def candidates():
     return found
 
 
+OUT_OF_SCOPE = object()
+
+
 def published(case: Path):
     """{(unit, field)} the run emits for units whose status is not `none`."""
     app = "choupoSolve"
@@ -106,7 +99,9 @@ def published(case: Path):
         m = re.search(r'^\s*application\s+(\w+)', cd.read_text(errors="replace"), re.M)
         if m:
             app = m.group(1)
-    txt = cached_stdout(case)
+    txt = stdout_of(case)
+    if txt is None and SCOPED:
+        return OUT_OF_SCOPE, None
     if txt is None:
         proc = subprocess.run([str(ROOT / app), str(case)], capture_output=True, text=True)
         if proc.returncode != 0:
@@ -148,10 +143,13 @@ def main() -> int:
               " PASS forever -- fix the discovery, do not retire the check.")
         return 1
 
-    problems, npins, nsilent = [], 0, 0
+    problems, npins, nsilent, nskipped = [], 0, 0, 0
     for case, why in sorted(cases.items()):
         rel = case.relative_to(ROOT).as_posix()
         pub, err = published(case)
+        if pub is OUT_OF_SCOPE:
+            nskipped += 1
+            continue
         if pub is None:
             problems.append(f"{rel}: {err}")
             continue
@@ -185,8 +183,21 @@ def main() -> int:
             print("  " + p)
         return 1
 
+    #  A SCOPED RUN THAT REACHED NOTHING HAS CHECKED NOTHING, and must not
+    #  print a claim shaped like coverage.  Unscoped this cannot happen --
+    #  candidates() already refuses an empty discovery above.
+    if SCOPED and nskipped == len(cases):
+        print("check_closure_ledger_pinned: FAILED\n"
+              "  every one of the %d candidate case(s) is OUT OF SCOPE -- the "
+              "caller ran none of them, so this gate checked nothing.  Remedy: "
+              "the fast set must carry at least one case that declares a "
+              "per-unit `thermo {}` override or already pins `closure` rows."
+              % len(cases))
+        return 1
+
+    njudged = len(cases) - nskipped
     print(f"check_closure_ledger_pinned: OK -- {npins} model-boundary ledger "
-          f"quantit(ies) pinned across {len(cases)} candidate case(s), in both "
+          f"quantit(ies) pinned across {njudged} candidate case(s), in both "
           f"directions (published implies pinned, pinned implies published); "
           f"{nsilent} candidate(s) declare an override and publish no credited "
           "step, which is a legitimate outcome (a crossing refused across a "
@@ -195,7 +206,8 @@ def main() -> int:
           "WORDS (a golden row compares numbers; a status downgrade is caught "
           "indirectly, through step_kW and remaining_kW), and a boundary "
           "arising without a per-unit `thermo {}` block -- none exists and the "
-          "ledger says none can, but this discovery would not see one.")
+          "ledger says none can, but this discovery would not see one."
+          + scope_sentence(njudged, nskipped))
     return 0
 
 

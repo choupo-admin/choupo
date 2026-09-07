@@ -1566,7 +1566,14 @@ Full statement: `docs/architecture/verification-and-validation.md` §3a.
 2. **A coherent change closed** — the witness of the affected class
    (`bin/runTests <case>`; classes in `tutorials/WITNESSES`).
 3. **A bounded slice closed** — `bin/runTests --witnesses` (all 15 classes,
-   minutes).
+   minutes), and `bin/runTests --fast` (one case per tutorial FAMILY,
+   `tutorials/FASTSET`, plus four conservation gates scoped to that pass —
+   15.4 s measured 2026-09-07).  The two answer different questions: the
+   witnesses ask *does each execution class still traverse the architecture?*,
+   the fast set asks *has any FAMILY of the corpus gone dark?*  An adsorber,
+   psychrometrics or hydraulics change passes `--witnesses` untouched because
+   none of those is an execution class.  `--fast` authorises no commit and
+   says so in its own verdict line.
 4. **Campaign closure / release TAG / genuinely cross-cutting change** — the
    full `bin/runTests`, ONCE, and IN CHUNKS (`bin/runTests <directory>`).
    `main` advances on rung 3 — see the amendment below.

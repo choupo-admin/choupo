@@ -130,11 +130,21 @@
 #  drifted off the measurement would still have passed, with the header
 #  still claiming agreement.  A claim in prose goes stale silently.
 #
-#  Usage:
-#      runTests                       # every tutorial under tutorials/
-#      runTests tutorials/steady/flash01_benzene_toluene   # one case
+#  Usage -- FOUR RUNGS, and each says in its own verdict line what it did NOT
+#  check.  The ladder is docs/architecture/verification-and-validation.md 3a.
+#      runTests                       # THE SWEEP: every tutorial + every gate
+#      runTests tutorials/steady/flash # a CHUNK (a directory expands)
+#      runTests tutorials/steady/flash/flash01_benzene_toluene   # one case
+#      runTests --witnesses           # one case per EXECUTION CLASS
+#                                       (tutorials/WITNESSES)
+#      runTests --fast                # one case per tutorial FAMILY
+#                                       (tutorials/FASTSET) + 4 conservation
+#                                       gates scoped to that same pass
+#      runTests --gui                 # the gui/-ONLY path (no C++, no case)
 #      runTests --record <case>       # write/refresh that case's expected
 #                                       from the current run (golden master)
+#
+#  The three tier flags take NO cases and authorise NO commit on their own.
 #
 #  Exit code: 0 if all pass, 1 if any fail.
 # =============================================================================
@@ -731,6 +741,57 @@ if [ "${1:-}" = "--witnesses" ]; then
     set -- "${WLIST[@]}"
 fi
 
+#  --fast: THE FAST SET (2026-09-07, task #84 slice 1) -- one representative
+#  case per tutorial FAMILY, declared in `tutorials/FASTSET`, plus the four
+#  CONSERVATION gates.  The rung BETWEEN the two that existed.
+#
+#  `--witnesses` runs 15 cases, one per EXECUTION CLASS, and the full sweep
+#  runs ~590 items in 31-43 min.  Neither serves the question a builder asks
+#  after a slice: 12 architectural classes do not cover the corpus's SHAPE --
+#  an adsorber change, a psychrometrics change and a hydraulics change all
+#  pass `--witnesses` untouched, because none of those is an execution class.
+#  MEASURED on 2026-09-07, across one builder day: nine full sweeps were run
+#  and FOUR were INTERMEDIATE, run to find out whether the work was going well
+#  rather than to authorise a commit -- ~140 min of a 571-min day on the wrong
+#  rung.
+#
+#  Implemented on the `--witnesses` precedent: the declared list is expanded
+#  into the positional args, so every gate arm guarded by `$# -eq 0` is
+#  skipped exactly as for any explicit case selection.  What it adds beyond
+#  that precedent is the four conservation gates AFTER the walk -- because a
+#  golden pins what a run PRINTS, so a stable wrong answer passes by
+#  construction (the spray dryer of 2026-09-04 created 2948 kg/h of water on a
+#  case the suite PASSED).  They read the pass this run just made and judge
+#  nothing else; see CHOUPO_SUITE_SCOPE below.
+#
+#  THE LIST IS DECLARED AND ITS COMPLETENESS IS GATED (check_fastset).  Not
+#  derived: "the cheapest case per family" is not stable -- two complete runs
+#  of the same 598 items on one day measured 42.5 and 31.3 min -- so a derived
+#  list would reshuffle between runs and nobody could review what it covers.
+#  Not hand-kept alone: it would go stale the first time a family is added,
+#  silently, because a missing case does not fail -- it stops running.
+if [ "${1:-}" = "--fast" ]; then
+    shift
+    [ "$#" -eq 0 ] || { echo "usage: runTests --fast  (takes no cases; the list is tutorials/FASTSET)"; exit 2; }
+    #  `--record --fast` would RE-RECORD 59 goldens across every family of the
+    #  corpus in one command -- a recording decision taken by a flag whose
+    #  whole purpose is to CHECK.  Refused by name.  (The same hole exists for
+    #  `--record --witnesses`; it is named in this slice's report and not
+    #  changed here, because altering that flag's refusal posture is its
+    #  owner's call, not this one's.)
+    [ -z "$RECORD" ] || { echo "ERROR: --record and --fast are not combinable -- --fast is a CHECK tier, and re-recording one golden per family in a single command is a recording decision no flag should take by accident.  Record a case by name: runTests --record <case>"; exit 2; }
+    [ -f "$ROOT/tutorials/FASTSET" ] || { echo "ERROR: tutorials/FASTSET missing -- the fast set is a declared list, and it is gone"; exit 1; }
+    FLIST=()
+    while read -r fpath _; do
+        case "$fpath" in ''|\#*) continue;; esac
+        FLIST+=("$ROOT/$fpath")
+    done < "$ROOT/tutorials/FASTSET"
+    [ "${#FLIST[@]}" -gt 0 ] || { echo "ERROR: tutorials/FASTSET declares no cases"; exit 1; }
+    FAST=1
+    echo "[fast set] ${#FLIST[@]} family representative(s) from tutorials/FASTSET, then 4 conservation gates over this same pass"
+    set -- "${FLIST[@]}"
+fi
+
 #  --gui: THE GUI-ONLY PATH (2026-09-04, Vitor: "precisas de correr a suite
 #  toda quando so muda a gui?!").  No.
 #
@@ -913,7 +974,12 @@ fi
 #  cache (run-only plant showcases, a case that exited non-zero) is run
 #  live by the gate -- never silently skipped.
 SUITE_OUT_DIR=""
-if [ "$#" -eq 0 ] && [ -z "$RECORD" ]; then
+#  --fast fills the cache too, and then hands it over as the SCOPE rather than
+#  as a cache (CHOUPO_SUITE_SCOPE, below): the conservation gates must judge
+#  the pass this run made and nothing else, or check_mass_closure alone would
+#  run the 200-odd steady cases the tier deliberately skipped -- 222 s,
+#  measured, against a tier whose whole budget is under 20 s.
+if { [ "$#" -eq 0 ] || [ -n "${FAST:-}" ]; } && [ -z "$RECORD" ]; then
     SUITE_OUT_DIR="$ROOT/build/suiteOutputs"
     rm -rf "$SUITE_OUT_DIR"; mkdir -p "$SUITE_OUT_DIR"
 fi
@@ -1407,6 +1473,23 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/witness.$$
+
+    #  The FAST tier's declared list stays resolvable AND COMPLETE
+    #  (2026-09-07): every line an existing case the sweep also walks, no
+    #  duplicates, and -- the arm the witness gate deliberately lacks -- every
+    #  tutorial FAMILY the sweep walks either carries a representative or a
+    #  declared `# EXCLUDED` line.  A family added without a line would not
+    #  fail; it would just stop being covered, silently, which is the whole
+    #  reason this gate exists.  The tier itself is `runTests --fast`.
+    if "$ROOT/bin/curate/check_fastset.py" > /tmp/fastset.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "fastset-gate" "$(head -1 /tmp/fastset.$$ | cut -c1-150)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_fastset.py)\n" "fastset-gate"
+        cat /tmp/fastset.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/fastset.$$
 
     #  The OPERATIONAL MEMORY stays live (2026-08-10, Vitor's ruling): the
     #  ownership index resolves (paths/gates/witness classes exist), and the
@@ -4948,6 +5031,46 @@ if [ "$#" -eq 0 ]; then
     fi
 fi
 
+# --- the FAST tier's conservation gates ------------------------------------
+#  WHY FOUR, AND WHY THESE FOUR.  A golden pins what a run PRINTS, so a stable
+#  wrong answer passes by construction: the spray dryer of 2026-09-04 created
+#  2948 kg/h of water on a case the suite PASSED, because nothing in this
+#  harness looked at closure at all.  Conservation is the class of defect no
+#  golden can see, and on a run that already holds the case outputs it costs
+#  about a second.  `charge-balance` (2.45 s) and `stream-transport` (13.1 s)
+#  are not free at this tier and stay out; they are the full sweep's.
+#
+#  THE CACHE IS HANDED OVER AS THE SCOPE.  Three of the four sweep the corpus
+#  when invoked standalone -- 222 s for check_mass_closure, 51 s for
+#  check_closure_ledger_pinned, measured 2026-09-07 -- and running the cases
+#  this tier deliberately skipped would defeat the tier.  CHOUPO_SUITE_SCOPE
+#  says a case the cache does not hold was NOT RUN by this invocation and is
+#  out of reach: each gate skips it, COUNTS it, and appends a sentence to its
+#  own claim saying so, so a scoped claim can never read as corpus coverage.
+#  One home for both rules: bin/curate/suite_cache.py.
+if [ -n "${FAST:-}" ]; then
+    [ -n "$SUITE_OUT_DIR" ] && export CHOUPO_SUITE_OUTPUTS="$SUITE_OUT_DIR" \
+                            && export CHOUPO_SUITE_SCOPE=1
+    echo
+    for fg in check_mass_closure check_element_balance \
+              check_closure_ledger_pinned check_energy_boundary_pinned; do
+        if "$ROOT/bin/curate/$fg.py" > /tmp/fastgate.$$ 2>&1; then
+            #  NOT TRUNCATED, unlike most PASS rows in this file: a scoped
+            #  gate appends the sentence that says what it could NOT reach,
+            #  and cutting the claim at 150 characters would drop exactly
+            #  that -- leaving a narrowed claim reading like a corpus one.
+            printf "PASS  %-40s  (%s)\n" "${fg#check_}" \
+                "$("$ROOT/bin/curate/gate_claim.py" "$fg" < /tmp/fastgate.$$)"
+            pass=$((pass+1))
+        else
+            printf "FAIL  %-40s  (run bin/curate/%s.py)\n" "${fg#check_}" "$fg"
+            cat /tmp/fastgate.$$
+            fail=$((fail+1))
+        fi
+        rm -f /tmp/fastgate.$$
+    done
+fi
+
 echo "--------------------------------------------------------------------"
 # The known-broken and expected-fail cases are NAMED, not just counted -- the
 # breakage stays visible in the summary, never masked as green.
@@ -4970,6 +5093,17 @@ echo "  ^ verification + regression.  A PASS means the answer has not moved from
 echo "    a self-recorded golden -- NOT that it is right.  The validation subset"
 echo "    (agreement with independent published results) is small and named in"
 echo "    docs/architecture/verification-and-validation.md"
+#  THE FAST TIER STATES ITS OWN DOMAIN.  A rung that does not say what it did
+#  NOT check is a rung people mistake for the sweep -- so it says it here,
+#  rather than leaving a reader to remember it (the `--gui` posture).
+if [ -n "${FAST:-}" ]; then
+    echo '  ^ AND THIS WAS --fast, WHICH AUTHORISES NO COMMIT.  It ran ONE case'
+    echo "    per tutorial family (tutorials/FASTSET) with the same per-case checks"
+    echo "    as the sweep, then four conservation gates SCOPED to that same pass."
+    echo "    It ran NO other gate, no golden-manifest check, no build-freshness"
+    echo "    check and no --record anything, and it says nothing whatever about"
+    echo "    the cases it did not run.  Campaign closure is bin/runTests -- not this."
+fi
 # The suite is GREEN iff nothing FAILS.  Known-broken + expected-fail are
 # tracked, visible, and non-gating -- the honest middle ground.
 [ "$fail" -eq 0 ]

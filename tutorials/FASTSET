@@ -1,0 +1,143 @@
+# The FAST SET -- one representative case per tutorial FAMILY (declared
+# 2026-09-07, task #84 slice 1).
+#
+# WHAT THIS IS.  `bin/runTests --fast` runs exactly these cases through the
+# SAME per-case checks as the full sweep (NaN/inf guard, golden-master KPIs,
+# anchor rows) and then four CONSERVATION gates, and answers, in seconds:
+#
+#     is any FAMILY of the corpus going dark?
+#
+# It is the rung BETWEEN the two that already existed.  `--witnesses` runs 15
+# cases, one per EXECUTION CLASS, and answers "does each class still traverse
+# the architecture?"; the full sweep runs ~590 items in 31-43 min and answers
+# "did we break any historical case, and does every gate still hold?".
+# Neither serves the question a builder actually asks after a slice.  Twelve
+# architectural classes do not cover the corpus's SHAPE: an adsorber change, a
+# psychrometrics change and a hydraulics change all pass `--witnesses`
+# untouched, because none of those is an execution class.
+#
+# WHY IT EXISTS, measured.  On 2026-09-07, across one builder day, NINE full
+# sweeps were run and FOUR of them were INTERMEDIATE -- run to find out
+# whether the work was going well, not to authorise a commit.  That is ~140
+# min of a 571-min day spent on the wrong rung of the ladder.
+#
+# THE DERIVATION.  A FAMILY is the directory a case's siblings share -- the
+# case's own parent directory -- EXCEPT under `tutorials/plant/`, where each
+# PLANT is a family (its sub-cases belong to it), because two plants share
+# nothing but the folder they sit in.  So `tutorials/steady/flash` is one
+# family, the flat `tutorials/ctrl` is ONE family of 20 case directories
+# serving one binary, and `tutorials/plant/lithiumBrinePlant` is a family of
+# its own.  Measured against the tree on 2026-09-07 by check_fastset:
+#
+#     families holding >= 1 case the suite walks                 57
+#       - 1   plant/acetonePlant, EXCLUDED below and named there
+#       + 2   ctrl/ contributes 3 representatives, not 1
+#       + 1   electrochem/ contributes 2 representatives, not 1
+#       ---
+#        59   lines in this file
+#
+# ctrl/ and electrochem/ are flat categories whose cases are one family by the
+# rule above but several PHYSICS by any other reading, so each is given a few
+# of its cheapest rather than one.  That is a judgement, made here, in review
+# -- exactly as `tutorials/WITNESSES` makes its representativeness judgement.
+#
+# THE LIST IS DECLARED, AND ITS COMPLETENESS IS GATED.  Not derived ("the
+# cheapest case per family" is not stable -- two complete runs of the same 598
+# items on the same day measured 42.5 and 31.3 min, a 26 % spread, so a
+# derived list would reshuffle between runs and nobody could review it or
+# reason about what it covers).  Not hand-kept alone either: a hand-kept list
+# goes stale SILENTLY the first time a family is added, and a missing case
+# does not fail -- it just stops running, which is the check_true_ions failure
+# shape.  So `bin/curate/check_fastset.py` recomputes the family set from the
+# tree the same way bin/runTests gathers cases and REFUSES when a walked
+# family has no line here.
+#
+# THE ONE FAMILY WITH NO REPRESENTATIVE, declared rather than silent:
+#
+# EXCLUDED  tutorials/plant/acetonePlant  39.97 s -- over the 3 s per-case cap this list is built to; the tier is checked by the full sweep instead
+#
+# THE FOUR CONSERVATION GATES, and why those four.  A golden pins what a run
+# PRINTS, so a stable wrong answer passes by construction: the spray dryer of
+# 2026-09-04 created 2948 kg/h of water on a case the suite PASSED.
+# Conservation is the class of defect no golden can see, so `--fast` runs
+# mass-closure, element-balance, closure-ledger-pinned and energy-boundary-
+# pinned over the cases it just ran -- measured at 0.97 s together on a run
+# that has the case outputs in hand, which is free.  `charge-balance` (2.45 s)
+# and `stream-transport` (13.1 s) are NOT free at this tier and stay out; they
+# are the full sweep's.
+#
+# THIS IS NOT A SUBSTITUTE FOR THE FULL SWEEP and authorises no commit; the
+# flag says so in its own verdict line rather than leaving a reader to
+# remember it.  It runs NO other gate, no golden-manifest check, no build-
+# freshness check and no `--record` anything.
+#
+# EACH LINE: one case path, relative to the repository root.  The FAMILY is
+# NOT written here -- it is the path's own parent, and writing it would be a
+# second home for a fact the path already carries.  Gate: check_fastset
+# (existence, walked, uniqueness, and the completeness arm check_witness_tier
+# deliberately does not have).
+
+tutorials/batch/adsorber/batch12_adsorber_refused_P
+tutorials/batch/combustion/ignition01_h2o2_rk4
+tutorials/batch/crystallisation/batch13_nacl_pitzer
+tutorials/batch/drying/dryer01_sucrose_tray
+tutorials/batch/membrane/diafilter01_nf_desalting
+tutorials/batch/reactor/batch03_consecutive
+tutorials/batch/recipes/recipe04_charge_enthalpy
+tutorials/batch/still/still01_benzene_toluene
+
+tutorials/ctrl/ctrl02_disturbance_rejection
+tutorials/ctrl/ctrl03_startup_transient
+tutorials/ctrl/ctrl07_lhhw_inhibition
+
+tutorials/electrochem/ed01_nacl_desalination
+tutorials/electrochem/ed02_over_limiting_current
+
+tutorials/plant/ChemicalPlantTutorial
+tutorials/plant/esterification2sector
+tutorials/plant/hda
+tutorials/plant/lithiumBrinePlant
+tutorials/plant/polycaprolactonePlant/properties
+tutorials/plant/tartaricAcid
+
+tutorials/props/adsorption/isotherm03_fit_refusals
+tutorials/props/compare/compare_psat_ambrose_walton
+tutorials/props/curation/curate01_water_evidence_partition
+tutorials/props/electrolyte/pitzer02_cacl2
+tutorials/props/estimate/yang2020_Tg_pvc
+tutorials/props/fit/psat01_antoine_recovery
+tutorials/props/gibbs/nh3_equilibrium_map
+tutorials/props/heat/psychro01_n2_water
+tutorials/props/hydraulics/moody01_friction_correlations
+tutorials/props/kinetics/rate01_arrhenius_recovery
+tutorials/props/molecular/nrtl01_ethanol_water_package
+tutorials/props/reactor/thiele01_sphere_first_order
+tutorials/props/scan/binary01_lle_water_nbutanol
+tutorials/props/steam/steam01_if97_verification
+tutorials/props/thermo/temperature01_gas_thermometer
+tutorials/props/thermoTest/atoms01_formula_parser
+tutorials/props/transport/transport01_gas_bench
+
+tutorials/steady/absorption/extraction01_waterButanol
+tutorials/steady/crystallisation/crystalliser01_sugar
+tutorials/steady/distillation/shortcut01_benzene_toluene
+tutorials/steady/drying/evapDryer02_energy_limited
+tutorials/steady/economics/economics01_esterification_dcf
+tutorials/steady/evaporation/evaporator01_brine
+tutorials/steady/flash/flash15_refused_salt_basis_rank
+tutorials/steady/flowsheets/plant01_two_sectors
+tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd
+tutorials/steady/gibbs/gibbs10_ammonia_fugacity
+tutorials/steady/heat/hx01_heater
+tutorials/steady/hydraulics/pipe01_water_line
+tutorials/steady/membranes/membrane01_RO_NaCl_seawater
+tutorials/steady/optimisation/fitNRTL01_ethanol_water
+tutorials/steady/power/rankine01_water
+tutorials/steady/reactors/conversion02_parallel_selectivity
+tutorials/steady/rotating/turbine01_air
+tutorials/steady/separation/tsa02_refused_capacity
+tutorials/steady/solids/pneumaticConveyor01_sand
+tutorials/steady/thermo/air01_heater_expand
+tutorials/steady/thermoTest/model5_nrtl_flash
+tutorials/steady/userops/userOp01_yield_reactor
+tutorials/steady/utilities/utility02_hitec_csp_heater
