@@ -31,12 +31,14 @@ License
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "materials/MaterialRegistry.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/ThermoAnnounce.H"
 #include "core/Advisory.H"
 
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 
@@ -616,13 +618,47 @@ int HeatExchanger::solve(const DictPtr& dict,
 
     // eps-NTU, with each Cp re-evaluated at its stream's MEAN temperature
     // (2 passes) --- matters when Cp(T) varies appreciably over the duty.
-    // Note: Q_hot = Q_cold here by construction (the eps-NTU split), so
-    // the unit conserves energy exactly.  A small residual can still show
-    // in the energyBalance report, which uses the elements datum (h_ig −
-    // ΔHvap): its implicit liquid Cp (Cp_ig − dΔHvap/dT) differs slightly
-    // from cpLiquid when a component's two Cp datasets aren't perfectly
-    // mutually consistent.  That is a property-data artefact, not a unit
-    // imbalance.
+    //  THIS MODEL CONSERVES Q.  IT DOES NOT CONSERVE H, AND H IS WHAT EVERY
+    //  BALANCE IN CHOUPO USES (corrected 2026-09-08).
+    //
+    //  What stood here used to say the unit "conserves energy exactly" and
+    //  put any report residual down to a liquid-Cp / dHvap data artefact.
+    //  The first half is true of Q and false of H; the second half describes
+    //  a DIFFERENT mechanism, on the LIQUID leg, and was being used to
+    //  explain away a residual that is neither liquid nor a data artefact.
+    //  A comment that names the wrong cause sends the next reader away from
+    //  the defect, which is what happened: ammonia02's -9190 kW was chased
+    //  through the reactor and the report before anyone read this loop.
+    //
+    //  The mechanism, measured on ammonia02 (200 bar, SRK):
+    //    * `streamCp` returns cpIdealGas for any stream with vf >= 0.5 -- no
+    //      pressure, no departure function.  eps-NTU forms C = n*Cp_ig, takes
+    //      Q = eps*Cmin*dT_max, and WRITES T_out = T_in -+ Q/C.
+    //    * the TEMPERATURE is what lands on the stream; its ENTHALPY is then
+    //      priced by the package, which is SRK.  H(T_out) - H(T_in) is not Q,
+    //      because a different Cp produced T_out.
+    //    * waterCooler hot side, 479 -> 298 K: Cp_model 29.908 vs Cp from the
+    //      published enthalpy 32.309 J/mol/K, 8.03 % apart, Q 57 091 kW vs
+    //      dH -61 673 kW -- a 4582 kW gap.  FEHE hot side, 843 -> 479 K:
+    //      31.336 vs 32.083, 2.39 %, 2872 kW.  The deviation is LARGER in the
+    //      cooler though both sit at 200 bar, because the cooler works low
+    //      where the gas is dense: the signature of a real-gas departure, not
+    //      of arithmetic.
+    //
+    //  AND A THIRD ONE THE Cp STORY DOES NOT COVER: the outlet below copies
+    //  the inlet's `vf` unchanged, so an exchanger may drive a stream ACROSS
+    //  its dew point and still label it all-vapour, charging exactly zero
+    //  latent heat.  ammonia02's chilledEffluent leaves at 298 K / 200 bar
+    //  labelled vf = 1 where its own equilibrium is V/F = 0.9722.  A "real"
+    //  Cp would not fix that; only closing on H would.
+    //
+    //  NOT FIXED HERE, and it is a decision with a large blast radius (every
+    //  exchanger golden moves): the honest form is to invert the ENTHALPY --
+    //  having Q, solve T_out from H(T_out, P, z) = H(T_in, P, z) -+ Q/n with
+    //  the package's own H, a 1-D Newton per side -- which closes by
+    //  construction under any equation of state AND across a phase boundary.
+    //  Until that is taken, the unit MEASURES its own gap and says so.
+    scalar hGapKW = 0.0;      // published as `H_closure_gap_kW`; see below
     scalar Q = 0, Th_out = Th_in, Tc_out = Tc_in;
     scalar NTU = 0, eps = 0, Cr = 0, Ch = 0, Cc = 0;
     scalar Tm0 = s0.T, Tm1 = s1.T;
@@ -687,6 +723,65 @@ int HeatExchanger::solve(const DictPtr& dict,
     produced_.push_back(o0);
     produced_.push_back(o1);
 
+    //  ---- THE GAP THIS MODEL LEAVES, MEASURED AND ANNOUNCED -------------
+    //  The unit owes the statement, not the report: it holds both numbers.
+    //  `H_stream_formation` is the SAME entry the stream stamping and the
+    //  energy balance read, so this is the package's own H, not a third
+    //  convention.  Announced once per unit per run, never fatal -- eps-NTU
+    //  with an ideal-gas Cp is a legitimate teaching model, and I4 makes the
+    //  approximation the student's to own.  Silence would make it mine.
+    try
+    {
+        const scalar dHhot  = s0.F * (thermo.H_stream_formation(T0_out, s0.P, s0.vf, s0.z)
+                                    - thermo.H_stream_formation(s0.T,   s0.P, s0.vf, s0.z));
+        const scalar dHcold = s1.F * (thermo.H_stream_formation(T1_out, s1.P, s1.vf, s1.z)
+                                    - thermo.H_stream_formation(s1.T,   s1.P, s1.vf, s1.z));
+        const scalar gap    = dHhot + dHcold;              // kW; zero if H closes
+        const scalar Q_kW   = Q / 1000.0;
+        //  PUBLISHED whatever its size, so a reader can see a ZERO as a fact
+        //  rather than as an absence, and so the converged value is machine
+        //  readable: KPIs are overwritten every recycle pass, so what the
+        //  result carries is the answer, never an iterate.
+        hGapKW = gap;
+        //  Relative to the duty the model transferred: a 1 kW gap on a 1 kW
+        //  exchanger matters and on a 100 MW one does not.
+        if (std::abs(Q_kW) > 1.0e-9
+            && std::abs(gap) > 0.005 * std::abs(Q_kW)
+            && std::abs(gap) > 1.0)
+        {
+            std::ostringstream m;
+            m << "closes in Q but not in H: the eps-NTU split transferred "
+              << Q_kW << " kW by construction, while the enthalpy the package"
+                 " prices for the two outlet temperatures it wrote differs by "
+              << gap << " kW (" << (100.0 * gap / Q_kW) << " % of the duty)."
+                 "  The duty was formed from a heat capacity (ideal-gas above"
+                 " vf = 0.5, liquid below) that is not the derivative of the"
+                 " enthalpy the balances then use -- a real-gas departure at"
+                 " pressure, a phase change this model cannot carry, or both."
+                 "  Every balance in Choupo reads H, so this gap IS the"
+                 " unit's contribution to the first-law residual";
+            //  ONCE PER EXCHANGER, not once per distinct message: under a
+            //  recycle the numbers drift a little each pass, so a message
+            //  latch prints the iterate history (six lines on ammonia02).
+            //  What this costs, said rather than implied: the line quotes
+            //  the FIRST pass that exceeded the band, not the converged one.
+            //  The KPI `H_closure_gap_kW` beside it IS the converged value --
+            //  read it, not the sentence, when the case has a recycle.
+            if (announceOnce("hxHgap:" + s0.name + "+" + s1.name)
+                && AdvisoryLog::instance().add("balance", "warning",
+                                            "heatExchanger on ('" + s0.name
+                                                + "' + '" + s1.name + "')",
+                                            m.str()))
+                std::cerr << "[hx] (" << s0.name << " + " << s1.name
+                          << ") " << m.str() << ".\n";
+        }
+    }
+    catch (const std::exception&)
+    {
+        //  A package that cannot price these states declines, exactly as the
+        //  report's own checks do.  Never a crash, never a silent number.
+    }
+
     // ---- KPIs ----------------------------------------------------------
     kpis_.clear();
     kpis_["area"]          = A;
@@ -703,6 +798,11 @@ int HeatExchanger::solve(const DictPtr& dict,
     kpis_["T_cold_in"]     = Tc_in;
     kpis_["T_cold_out"]    = Tc_out;
     kpis_["C_hot"]         = Ch;
+    //  What this model does NOT conserve.  Q is closed by construction; this
+    //  is the enthalpy the package prices for the outlet temperatures the
+    //  eps-NTU wrote, minus the enthalpy of the inlets -- the unit's own
+    //  contribution to the first-law residual, in the same units as the duty.
+    kpis_["H_closure_gap_kW"] = hGapKW;
     kpis_["C_cold"]        = Cc;
     // Geometry-mode KPIs (Re/Pr/Nu/h per side, the resistance split, the
     // controlling-resistance code).  Empty in the epsNTU default path, so the
