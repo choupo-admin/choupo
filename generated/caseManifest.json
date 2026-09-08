@@ -1126,6 +1126,14 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/plant/ammonia02_full_plant": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/plant/esterification2sector": {
    "application": "choupoSolve",
    "thermo": {
@@ -3967,14 +3975,6 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/steady/flowsheets/ammonia02_full_plant": {
-   "application": "choupoSolve",
-   "thermo": {
-    "formulation": "diluteSolution"
-   },
-   "roles": [],
-   "hasGolden": true
-  },
   "tutorials/steady/flowsheets/cavett01_recycle_train": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5960,6 +5960,7 @@
     "tutorials/electrochem/ed02_over_limiting_current",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/acetonePlant",
+    "tutorials/plant/ammonia02_full_plant",
     "tutorials/plant/esterification2sector",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",
@@ -6070,7 +6071,6 @@
     "tutorials/steady/flash/vlle03_audit_artificial",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
-    "tutorials/steady/flowsheets/ammonia02_full_plant",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
     "tutorials/steady/flowsheets/composite01_two_flashes",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",

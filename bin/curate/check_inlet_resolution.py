@@ -237,7 +237,7 @@ def main() -> int:
         # (f2) + (g) the phase pass, on the case that proved it disarmed.
         am = tmp / "ammonia02"
         shutil.copytree(
-            ROOT / "tutorials/steady/flowsheets/ammonia02_full_plant", am)
+            ROOT / "tutorials/plant/ammonia02_full_plant", am)
         rc, log = run(am)
         if rc != 0:
             fail.append("ammonia02 did not run -- arms (f)/(g) cannot judge")

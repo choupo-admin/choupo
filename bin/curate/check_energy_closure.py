@@ -123,7 +123,7 @@ KNOWN_OPEN = {
     "tutorials/steady/distillation/stripper01_sour_water": 10.3730,
     "tutorials/steady/distillation/stripper02_sour_water_h2s": 13.5730,
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section": 33.3080,
-    "tutorials/steady/flowsheets/ammonia02_full_plant": 15.0000,
+    "tutorials/plant/ammonia02_full_plant": 15.0000,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/credo01_valve_heater_drum": 2.0940,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 118.1200,

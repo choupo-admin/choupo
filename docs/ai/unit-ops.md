@@ -994,7 +994,7 @@ priced over: 1 when every component has a molar volume on that rung, less
 when a dissolved supercritical gas does not (announced, and the holdup MASS
 still counts every component).
 
-Worked example: `tutorials/steady/flowsheets/ammonia02_full_plant` carries
+Worked example: `tutorials/plant/ammonia02_full_plant` carries
 both a raw-material tank (T101, syngas, 0.5 h) and a product tank (T201,
 liquid ammonia, 48 h).
 
