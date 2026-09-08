@@ -356,6 +356,37 @@ migration.
    transients (transient Ergun), flow reversal.  Close those + A6 to
    complete the programme.
 
+**AUTHORISED 2026-09-08 (Vitor: "Sim.  Faz no sabado") -- WHAT MAKES A FOLDER
+A LEVEL OF A CASE HAS TWO ANSWERS, AND ONLY ONE OF THEM IS DECLARED.**  The
+engine reads `sectors ( ... )` / `units ( ... )` from the parent's
+flowsheetDict; the GUI indexes a sub-node ONLY when the folder carries its own
+`.cho` (`subNodesFor`: `if (!rel.endsWith(".cho")) continue`), and
+`drillableSub` then asks `tutorialByName` for it.  A case can therefore be
+CORRECT for the engine and MUTE for the GUI, with nothing anywhere saying so:
+`greenAmmoniaIndustrialN2` shipped with the root marker alone, and its 4
+sectors and 19 unit folders were unreachable by double click while
+`bin/runTests`, `--fast` and `--gui` were all green (fixed 2026-09-08 by adding
+the 23 markers -- the symptom, not the cause).
+
+Vitor's instinct was "create the `.cho` automatically".  MEASURED, that is the
+weak form of the right idea, for two reasons: the marker is no longer empty (it
+carries the canvas LAYOUT snapshot, `FlowCanvas.tsx` -- and a drilled sector
+becomes its own case, so its marker acquires its own layout), so it cannot
+simply be dropped; and whichever TOOL creates it, a case authored by hand and
+never passed through that tool stays mute -- the same defect moved, and still
+two readers with two answers.
+
+THE SHAPE TO BUILD: the GUI index stops REQUIRING the file to consider a folder
+drillable -- it derives membership from the parent's DECLARATION, which is the
+one home -- and the `.cho` is written when there is a layout to store, which is
+the only thing it stores.  Then the file cannot be missing, because it is no
+longer the condition of existence, and a student never has to know it exists.
+Plus the gate nothing asserts today: a folder the engine flattens as a member
+is openable in the GUI.  Cost, stated: `subNodesFor` gets its list free from
+the file map today; deriving means reading each level's `sectors`/`units`
+recursively (the GUI has the parser).  The 23 markers already committed stay
+correct under either design.
+
 ## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)
 
 > **2026-09-07 — EIGHT ITEMS ARE OPEN, and this list is the ONLY durable home
