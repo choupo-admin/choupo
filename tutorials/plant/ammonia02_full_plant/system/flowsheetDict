@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  ammonia02_full_plant -- the complete Haber-Bosch plant, ~50 t/h NH3
+  ammonia02_full_plant -- the complete Haber-Bosch plant, ~59 t/h NH3
   =================================================================
   makeup 25 bar ─[makeupComp 25->200]─┐
                                       ▼
@@ -15,10 +15,10 @@
                                               │ mixed (cool)
                                               ▼ cold side
                                         [FEHE] ◄══ hot effluent (heat recovery)
-                                              │ preheatedFeed (~600 K)
+                                              │ preheatedFeed (~683 K)
                                               ▼
                           [converter] gibbsReactor  mode ADIABATIC
-                          N2+3H2<->2NH3 exothermic -> self-heats to ~720 K
+                          N2+3H2<->2NH3 exothermic -> self-heats to ~840 K
                                               │ hotEffluent
                                               ▼ hot side of FEHE -> cooledEffluent
                                         [waterCooler] (cooling water)
@@ -33,13 +33,13 @@
 
   THE REACTOR HEAT.  N2+3H2->2NH3 is EXOTHERMIC -- there is NO external reactor
   heating.  The converter runs ADIABATIC: the exotherm raises the gas T (feed
-  ~705 K in, ~848 K out), and the feed-effluent exchanger (FEHE) recovers that
+  683 K in, 840 K out), and the feed-effluent exchanger (FEHE) recovers that
   heat to preheat the incoming feed to catalyst light-off.  Self-sustaining once
   lit.  The compressors set the 200-bar synthesis pressure; the water cooler
   (cooling-water utility) + refrigerated flash condense the NH3.  Every machine
   is explicit and its duty/work is reported.
 
-  CAPACITY ~59 t/h NH3 (~1400 t/day) at 98.9% product purity -- a world-scale
+  CAPACITY ~59 t/h NH3 (~1400 t/day) at 98.6% product purity -- a world-scale
   single train.
 
   DISSOLVED GASES BY HENRY'S LAW.  H2 and N2 are supercritical at the separator
@@ -66,7 +66,7 @@
      in solverDict tearStreams; the solver announces every iteration.
   3. LET THE EXOTHERM DO THE HEATING: the converter is ADIABATIC (mode
      adiabatic; T is a guess, not a spec) -- the reaction self-heats
-     705 -> 848 K and the FEHE recycles that heat to light off the feed.  No
+     683 -> 840 K and the FEHE recycles that heat to light off the feed.  No
      phantom reactor heater exists anywhere.
   4. MAKE EVERY MACHINE EXPLICIT so it can be SIZED AND COSTED: compressors by
      shaft power, exchangers by area, the converter + drums by vessel design
@@ -79,7 +79,7 @@
      measured), the balances against 100% element closure.
 
   HONEST SIMPLIFICATIONS.  (1) The converter is a SINGLE adiabatic bed, so it
-  runs hotter (~575 C) than a real multi-bed converter with interbed quench
+  runs hotter (~567 C) than a real multi-bed converter with interbed quench
   cooling (which stays near the 400-500 C equilibrium sweet spot for more NH3
   per pass).  (2) The makeup compressor is one stage (real: multi-stage with
   intercooling), so its discharge is hot.  (3) The let-down gas and the loop
