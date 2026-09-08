@@ -168,17 +168,35 @@ int GibbsReactor::solve(const DictPtr& dict,
         return [this](int, scalar nf, scalar){ recordResidual(nf); };
     };
 
-    // Enthalpy of an equilibrium (gas + liquid; liquid carries -ΔHvap).
+    //  ---- ENTHALPY ON THE PACKAGE'S OWN SURFACE -------------------------
+    //
+    //  This used to sum `h_pure_ig` per component -- ideal gas -- while the
+    //  streams this reactor produces are priced by the package, which may be
+    //  a cubic EoS.  The adiabatic mode then solved `H_out,ig = H_in,ig + Q`
+    //  and wrote a temperature at which the PUBLISHED enthalpies differ by
+    //  exactly the residual functions: `R_out - R_in`, -938.21 kW on
+    //  ammonia02's converter at 200 bar, on a unit whose correct residual is
+    //  zero.  The ISOTHERMAL mode of this same unit already used
+    //  `H_stream_formation` (below), so one unit ran two enthalpy surfaces
+    //  depending on its mode.  Now both use the package's.
+    //
+    //  SCOPE, unchanged and stated: the balance is over the reactor's OWN
+    //  declared species (`compIdx`).  A feed component outside that list is
+    //  not in `nIn` and is not in this balance -- as before.
     auto enthalpy = [&](const GibbsEquilibrium& eq, scalar T) -> scalar {
-        scalar H = 0.0;
+        scalar Ng = 0.0, Nl = 0.0;
         for (std::size_t i = 0; i < N; ++i)
         {
-            const auto& c = thermo.comp(compIdx[i]);
-            H += eq.nGas[i] * c.h_pure_ig(T);
-            if (!eq.nLiq.empty() && eq.nLiq[i] > 0.0)
-                H += eq.nLiq[i] * (c.h_pure_ig(T) - c.Hvap_latent(T));
+            Ng += eq.nGas[i];
+            if (!eq.nLiq.empty()) Nl += eq.nLiq[i];
         }
-        return H;
+        const scalar Ntot = Ng + Nl;
+        if (!(Ntot > 0.0)) return 0.0;
+        sVector zz(thermo.n(), 0.0);
+        for (std::size_t i = 0; i < N; ++i)
+            zz[compIdx[i]] = (eq.nGas[i]
+                            + (eq.nLiq.empty() ? 0.0 : eq.nLiq[i])) / Ntot;
+        return Ntot * thermo.H_stream_formation(T, P, Ng / Ntot, zz);
     };
 
     // -- Mode dispatch ------------------------------------------------------
@@ -188,9 +206,21 @@ int GibbsReactor::solve(const DictPtr& dict,
     if (mode == "adiabatic")
     {
         const scalar T_in = feedDict->lookupScalar("T", Dims::temperature);
-        scalar H_in = 0.0;
+        //  THE INLET ON THE SAME SURFACE.  Anything else reintroduces the
+        //  defect on the other side of the equation.
+        sVector zIn(thermo.n(), 0.0);
+        scalar  Nin = 0.0;
+        for (std::size_t i = 0; i < N; ++i) Nin += nIn[i];
         for (std::size_t i = 0; i < N; ++i)
-            H_in += nIn[i] * thermo.comp(compIdx[i]).h_pure_ig(T_in);
+            zIn[compIdx[i]] = (Nin > 0.0) ? nIn[i] / Nin : 0.0;
+        //  AT THE FEED'S OWN PRESSURE, not the reactor's.  ammonia02's
+        //  preheatedFeed arrives at 232.3 bar and the converter operates at
+        //  200: evaluating the inlet at the operating pressure charges the
+        //  reactor a departure-function step that belongs to the pipe.
+        const scalar P_in = feedDict->found("P")
+                          ? feedDict->lookupScalar("P", Dims::pressure) : P;
+        const scalar H_in = (Nin > 0.0)
+            ? Nin * thermo.H_stream_formation(T_in, P_in, 1.0, zIn) : 0.0;
         const scalar Q_J_s = Q_kJ_per_kmol * F_mol_s;
 
         auto fT = [&](scalar Tt) -> scalar {

@@ -132,6 +132,54 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
         return std::nullopt;
     }
     if (!fs.converged) return std::nullopt;
+
+    //  ---- A LIQUID CANNOT EXIST ABOVE EVERY COMPONENT'S Tc ---------------
+    //
+    //  MEASURED, 2026-09-08: ammonia02's converter outlet -- 842.9 K, 200 bar,
+    //  N2/H2/NH3/Ar -- resolves to V/F = 0.2589.  74 % LIQUID in a mixture
+    //  whose highest pure critical temperature is ammonia's 405.5 K.  The
+    //  K-values say why: K_H2 = 0.5396 and K_N2 = 0.7713, both below 1,
+    //  because their Henry pairs are being read ~500 K past the windows their
+    //  own records declare and van't Hoff carried that far collapses H(T) to
+    //  5 % of the fitted value.  A correlation asked far outside its data can
+    //  return a root that violates no equation and is physically impossible.
+    //
+    //  Nothing downstream could tell: the report priced the converter outlet
+    //  on that split and misattributed 22 376 kW between the reactor and the
+    //  feed-effluent exchanger, at exit 0.
+    //
+    //  The test is the strongest one available without a mixture critical
+    //  locus: above the HIGHEST pure Tc among the components actually present
+    //  there is no liquid.  A mixture's critical temperature can exceed a
+    //  single component's, but it is bounded well below this -- the case that
+    //  forced this rule sits 437 K past the maximum, not a few degrees.  A
+    //  component with no declared Tc does not vote (absence is not evidence),
+    //  and if NO present component declares one the test does not run.
+    //
+    //  What happens then: the SPLIT is discarded and the caller prices the
+    //  state the stream carries, announced -- never a silent substitution.
+    if (fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9)
+    {
+        scalar TcMax = 0.0;
+        for (std::size_t i = 0; i < z.size() && i < thermo.n(); ++i)
+            if (z[i] > 1.0e-12 && thermo.comp(i).Tc() > TcMax)
+                TcMax = thermo.comp(i).Tc();
+        if (TcMax > 0.0 && T > TcMax)
+        {
+            const std::string msg =
+                "resolved TWO-PHASE at T = " + std::to_string(T)
+                + " K, which is above the highest critical temperature of any"
+                  " component present (" + std::to_string(TcMax) + " K): no"
+                  " liquid can exist there, so the split is DISCARDED and this"
+                  " stream is priced on the state it carries.  A root like"
+                  " this comes from a correlation evaluated far outside its"
+                  " declared window -- read the [henry] and [psat]"
+                  " extrapolation lines for this run";
+            if (deferTo) *deferTo = msg;
+            else AdvisoryLog::instance().add(category, "warning", locus, msg);
+            return std::nullopt;
+        }
+    }
     return fs;
 }
 

@@ -33,6 +33,8 @@ License
 #include "thermo/ThermoPackage.H"
 #include "thermo/ThermoAnnounce.H"
 #include "core/Advisory.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
+#include <limits>
 
 #include <cmath>
 #include <iomanip>
@@ -699,9 +701,140 @@ int HeatExchanger::solve(const DictPtr& dict,
         Tm1 = 0.5 * (s1.T + (zeroHot ? Tc_out : Th_out));
     }
 
+    //  ---- THE OUTLET STATE IS INVERTED FROM THE ENTHALPY ----------------
+    //
+    //  The eps-NTU above decides Q -- that is the TRANSFER model and it stays.
+    //  What must NOT be taken from it is the outlet TEMPERATURE.  `T = T_in -+
+    //  Q/C` is exact only if C is the derivative of the enthalpy the rest of
+    //  Choupo uses, and `streamCp` returns `cpIdealGas` for any vapour: no
+    //  pressure, no departure function, no latent term at all.  So the model
+    //  conserved Q and not H, and H is what every balance here reads.
+    //
+    //  Now: having Q, solve the outlet STATE from
+    //      H(state_out) = H(state_in) -+ Q/n
+    //  with the package's OWN enthalpy -- `flashState::equilibriumAt` resolves
+    //  the state at each trial (T, P, z) and `hOfState` prices it, the same
+    //  pair `Heater` has used since 2026-08-09 and the same pair the energy
+    //  report reads.  Two consequences, and the second is why a "real Cp"
+    //  would not have been enough:
+    //
+    //    * it closes by construction under ANY equation of state -- the SRK
+    //      departure is inside H, so it cannot be left out of the balance;
+    //    * it crosses a PHASE BOUNDARY correctly.  The outlet used to copy the
+    //      inlet's `vf` whatever temperature it reached, so an exchanger could
+    //      drive a stream past its dew point and charge zero latent heat --
+    //      ammonia02's `chilledEffluent` left at 298 K/200 bar labelled all
+    //      vapour where its own equilibrium is V/F = 0.9722, and the separator
+    //      downstream then re-equilibrated it and disagreed by 4415.74 kW.
+    //      `vf` is a RESULT of this inversion now, read back at the answer.
+    //
+    //  H(T) is monotone increasing (Cp > 0), so a bracket plus bisection is
+    //  unconditionally convergent and needs no derivative across the latent
+    //  jump -- the place a Newton on this function is least trustworthy.  The
+    //  eps-NTU temperature is the initial guess, which is a good one.
+    std::string resolveRefusal;
+    auto Hmol = [&](const Stream& s, scalar T, scalar* vfOut) -> scalar
+    {
+      //  THE WHOLE READING, not only its fall-back, is guarded: `hOfState`
+      //  reaches the formation datum too, so a package that lacks one threw
+      //  from INSIDE the resolved branch and killed a case that used to run.
+      try
+      {
+        auto fs = flashState::equilibriumAt(T, s.P, s.z, false, s.vf, thermo,
+                                            "heatExchanger (Q -> outlet state)",
+                                            "duty", &resolveRefusal);
+        if (fs)
+        {
+            if (vfOut)
+                *vfOut = (fs->V_over_F <= 1.0e-9)       ? 0.0
+                       : (fs->V_over_F >= 1.0 - 1.0e-9) ? 1.0
+                                                        : fs->V_over_F;
+            return flashState::hOfState(*fs, T, s.P, s.z, thermo);
+        }
+        if (vfOut) *vfOut = s.vf;
+        //  A PACKAGE THAT CANNOT PRICE THIS STATE MUST NOT KILL A CASE THAT
+        //  USED TO RUN.  The eps-NTU path needed only a heat capacity;
+        //  `H_stream_formation` needs the formation datum, and a molten-salt
+        //  heat-transfer fluid legitimately has none (`utility02_hitec_csp
+        //  _heater` aborted at exit 2 the moment this inversion was
+        //  installed).  NaN here means "no enthalpy surface", and `invert`
+        //  falls back to the eps-NTU temperature ALOUD -- the old behaviour,
+        //  said rather than silently restored.
+        return thermo.H_stream_formation(T, s.P, s.vf, s.z);
+      }
+      catch (const std::exception&)
+      {
+        if (vfOut) *vfOut = s.vf;
+        return std::numeric_limits<scalar>::quiet_NaN();
+      }
+    };
+
+    //  Returns the outlet T for a side that must absorb `dH_per_mol`, and
+    //  writes back the resolved vapour fraction.  Falls back to the eps-NTU
+    //  temperature -- ANNOUNCED, never silently -- if the package cannot be
+    //  bracketed, so a world this inversion cannot serve degrades to exactly
+    //  the previous behaviour instead of refusing a case that used to run.
+    auto invert = [&](const Stream& s, scalar dH_per_mol, scalar Tguess,
+                      scalar& vfOut) -> scalar
+    {
+        scalar dummy = 0.0;
+        const scalar Hin = Hmol(s, s.T, &dummy);
+        if (!std::isfinite(Hin))
+        {
+            if (announceOnce("hxNoDatum:" + s.name))
+                std::cerr << "[hx] " << s.name << ": this package cannot price"
+                             " the stream on the elements datum (a component"
+                             " has no standardThermochemistry block), so the"
+                             " outlet temperature comes from the eps-NTU heat"
+                             " capacity as before.  This side closes in Q, not"
+                             " in H.\n";
+            Hmol(s, Tguess, &vfOut);
+            return Tguess;
+        }
+        const scalar Htarget = Hin + dH_per_mol;
+        auto f = [&](scalar T) { return Hmol(s, T, nullptr) - Htarget; };
+
+        scalar lo = Tguess, hi = Tguess, flo = f(lo), fhi = flo;
+        const scalar span = std::max<scalar>(1.0, 0.05 * std::abs(Tguess - s.T));
+        for (int k = 0; k < 60 && flo * fhi > 0.0; ++k)
+        {
+            lo = std::max<scalar>(50.0, lo - span * (1 << std::min(k, 12)));
+            hi = hi + span * (1 << std::min(k, 12));
+            flo = f(lo); fhi = f(hi);
+        }
+        if (!(flo * fhi <= 0.0) || !std::isfinite(flo) || !std::isfinite(fhi))
+        {
+            if (announceOnce("hxInvert:" + s.name))
+                std::cerr << "[hx] " << s.name << ": could not bracket the"
+                             " outlet enthalpy; falling back to the eps-NTU"
+                             " temperature (" << Tguess << " K).  This side's"
+                             " energy balance closes in Q, not in H.\n";
+            Hmol(s, Tguess, &vfOut);
+            return Tguess;
+        }
+        for (int k = 0; k < 200 && (hi - lo) > 1.0e-10 * std::max<scalar>(1.0, hi); ++k)
+        {
+            const scalar mid = 0.5 * (lo + hi), fm = f(mid);
+            if (flo * fm <= 0.0) { hi = mid; }
+            else                 { lo = mid; flo = fm; }
+        }
+        const scalar Tans = 0.5 * (lo + hi);
+        Hmol(s, Tans, &vfOut);      // the vf AT the answer, never at a trial
+        return Tans;
+    };
+
+    scalar vfHotOut = 0.0, vfColdOut = 0.0;
+    const Stream& sHot  = zeroHot ? s0 : s1;
+    const Stream& sCold = zeroHot ? s1 : s0;
+    //  Q [W] over n [mol/s]; F is kmol/s.
+    Th_out = invert(sHot,  -Q / (sHot.F  * 1000.0), Th_out, vfHotOut);
+    Tc_out = invert(sCold, +Q / (sCold.F * 1000.0), Tc_out, vfColdOut);
+
     // Map back to the input streams (outlet order matches input order).
     const scalar T0_out = zeroHot ? Th_out : Tc_out;
     const scalar T1_out = zeroHot ? Tc_out : Th_out;
+    const scalar vf0_out = zeroHot ? vfHotOut : vfColdOut;
+    const scalar vf1_out = zeroHot ? vfColdOut : vfHotOut;
 
     // ---- LMTD (a posteriori, for verification / sizing) ----------------
     const scalar dT1 = counter ? (Th_in - Tc_out) : (Th_in - Tc_in);
@@ -711,12 +844,12 @@ int HeatExchanger::solve(const DictPtr& dict,
     else if (dT1 > 0.0 && dT2 > 0.0)  LMTD = (dT1 - dT2) / std::log(dT1 / dT2);
     else                              LMTD = 0.0;
 
-    // ---- Outlet streams (sensible only: F, z, P unchanged; T updated) --
+    // ---- Outlet streams: F, z, P unchanged; T AND vf are the answer ----
     produced_.clear();
     ProcessStream o0; o0.name = "hotOut";
-    o0.F = s0.F; o0.T = T0_out; o0.P = s0.P; o0.z = s0.z; o0.vf = s0.vf;
+    o0.F = s0.F; o0.T = T0_out; o0.P = s0.P; o0.z = s0.z; o0.vf = vf0_out;
     ProcessStream o1; o1.name = "coldOut";
-    o1.F = s1.F; o1.T = T1_out; o1.P = s1.P; o1.z = s1.z; o1.vf = s1.vf;
+    o1.F = s1.F; o1.T = T1_out; o1.P = s1.P; o1.z = s1.z; o1.vf = vf1_out;
     // Name them by their real role for the report/streams panel.
     o0.name = zeroHot ? "hotOut" : "coldOut";
     o1.name = zeroHot ? "coldOut" : "hotOut";
@@ -732,10 +865,15 @@ int HeatExchanger::solve(const DictPtr& dict,
     //  approximation the student's to own.  Silence would make it mine.
     try
     {
-        const scalar dHhot  = s0.F * (thermo.H_stream_formation(T0_out, s0.P, s0.vf, s0.z)
-                                    - thermo.H_stream_formation(s0.T,   s0.P, s0.vf, s0.z));
-        const scalar dHcold = s1.F * (thermo.H_stream_formation(T1_out, s1.P, s1.vf, s1.z)
-                                    - thermo.H_stream_formation(s1.T,   s1.P, s1.vf, s1.z));
+        //  THROUGH THE SAME DOOR THE INVERSION USED.  This measured the
+        //  outlet with the INLET's `vf` for one commit, which made it read
+        //  20 759 kW on a side that closes to 1e-6 -- the outlet's phase is a
+        //  RESULT now, and a gap measured against the wrong phase is exactly
+        //  the latent heat this slice exists to stop dropping.
+        const scalar dHhot  = s0.F * (Hmol(s0, T0_out, nullptr)
+                                    - Hmol(s0, s0.T,   nullptr));
+        const scalar dHcold = s1.F * (Hmol(s1, T1_out, nullptr)
+                                    - Hmol(s1, s1.T,   nullptr));
         const scalar gap    = dHhot + dHcold;              // kW; zero if H closes
         const scalar Q_kW   = Q / 1000.0;
         //  PUBLISHED whatever its size, so a reader can see a ZERO as a fact

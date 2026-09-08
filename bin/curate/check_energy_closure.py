@@ -56,14 +56,28 @@ WHAT THIS DOES NOT CHECK, said plainly:
   * ANY CASE OUTSIDE THE SCOPE IT WAS RUN IN.  Under `--fast` the scope is one
     case per family; the claim says so and names the count.
 
-SABOTAGE STATUS AT THE MOMENT THIS LANDED: NOT YET VERIFIED, and that is
-said here rather than left to be assumed.  Three sabotages were running when
-this was committed -- (S1) lower a pin below its measured residual, so a
-declared debt has grown; (S2) delete a pin from a case that does not close;
-(S3) pin a case that does close -- each of which must make this gate FAIL with
-its own message.  Until that result is recorded in this docstring, treat the
-gate as a measurement rather than as a guarantee: it passes today, and nobody
-has proved it would notice if it stopped being right.
+SABOTAGE-VERIFIED 2026-09-08, all three, each failing with its own message:
+
+  S1  lower a pin below the measured residual (ammonia02 pinned at 15.0 while
+      it measures 16.137) -> "first-law residual grew from the pinned
+      15.0000 % to 16.1370 % (> 0.20 pp).  A declared debt may not grow
+      quietly."
+  S2  delete a pin from a case that does not close (column01) -> "global
+      first-law residual 24.6820 % ... outside the 1.0 % band, and NOT pinned."
+  S3  pin a case that closes -> "combined01_brayton_rankine now closes at
+      0.0000 % ... but is still PINNED at 11.8660 %.  Remove it from
+      KNOWN_OPEN: a stale pin is a claim about the engine that stopped being
+      true."
+
+S3 returned a real finding as well as its verdict: the exchanger
+enthalpy-inversion of the same day CLOSED `combined01_brayton_rankine`, pinned
+at 11.87 %.  A stale-pin arm earns its keep the first time the engine
+improves.
+
+THE PIN LIST IS STALE AS THIS LANDS, and deliberately not re-seeded here: the
+same commit closes ammonia02 (16.14 % -> 0.0023 %) and combined01, and moving
+the goldens those cases carry is Vitor's decision, not this gate's.  Re-seed
+with `--seed` in the same act that re-records them.
 
 SEEDING.  `--seed` prints the KNOWN_OPEN block for the cases in scope, so the
 list is MEASURED and never typed from memory.  The list below was seeded from
