@@ -844,6 +844,44 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
   PROPS BENCH).
 
+**A SUITE'S PASS COVERS WHAT ITS GATES ASSERT, AND NOTHING ELSE (2026-09-08).**
+Vítor asked how it was possible to keep reporting a green suite while energy
+balances were violated, and the answer was structural rather than "too few
+tests": **conservation of energy had no gate that refused.**  A golden pins
+what a run PRINTS, so a stable wrong residual passes by construction (the
+2026-09-04 dryer lesson, written down and not applied here);
+`check_energy_boundary_pinned` requires the residual to be PUBLISHED and
+PINNED, never SMALL, so a 16 % violation satisfies it for ever; the per-unit
+alarm returns exit 0; and `energy-T1/T2:plant` held the RIGHT rule (global
+residual < 1 %) on ONE case — the same shape as `check_element_balance`,
+which asserts atom closure on one case.  `check_mass_closure` had NAMED the
+energy gap in its own "WHAT THIS DOES NOT CHECK" four days earlier: **an
+absence that is named and not scheduled is an absence.**  So: before quoting a
+PASS as reassurance about a class of defect, NAME the gate that would have
+failed; if you cannot name it, the PASS says nothing about it.
+`check_energy_closure` is T2's rule over every steady case — the residual READ
+from the engine's own report, a MEASURED pin list (`--seed`, never typed) that
+RATCHETS (a debt that grows fails, one that starts closing fails asking for
+its pin back, one neither closing nor pinned fails).  It found **32 of the 89
+cases that have a global first law do not satisfy it**.  Three defects were
+introduced the same day by the fix itself and are the durable half: **the
+numerical FLOOR is not a scale** (a plant with no declared duty published a
+real −6162.5 kW residual as −6.16e14 %; absent a scale the kW stands and the
+ratio is UNAVAILABLE everywhere); **a comment that describes an arithmetic the
+code does not do** (the scale summed duties ALGEBRAICALLY beside a sentence
+promising MAGNITUDES, recording a column that boils 1279 kW and condenses
+1281 kW as exchanging 1.74 kW); and **a basis changed without finding who
+reads it** (moving the denominator took the flagship from 0.163 % to 3.17 % on
+an unchanged residual and turned `energy-T2:plant` red unnoticed).  The
+physics underneath is ONE family: **a unit solves its energy equation on one
+enthalpy surface while its streams are priced on another** — ε-NTU on
+`cpIdealGas` against SRK-priced streams, the adiabatic `gibbsReactor` on
+`h_pure_ig` while the ISOTHERMAL mode of the same unit uses
+`H_stream_formation`, and `column01` losing 631.96 kW (24.68 %).  NOT FIXED,
+all of it: only the exchanger MEASURES its own gap (`H_closure_gap_kW`), every
+remedy moves goldens, and the list goes to Vítor first.  Record:
+[`docs/design/what-a-passing-suite-does-not-say.md`](docs/design/what-a-passing-suite-does-not-say.md).
+
 **A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED (2026-08-12).**
 An unreadable block does not fail — it just stops being checked, silently,
 with the suite green; so when you add a top-level result block carrying a
