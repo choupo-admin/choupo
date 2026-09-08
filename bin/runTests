@@ -4885,6 +4885,24 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/massclos.$$
 
+    #  THE FIRST LAW, corpus-wide (2026-09-08).  `energy-T1/T2:plant` above
+    #  already held the right rule -- the global boundary residual under 1 % --
+    #  and held it on ONE case out of the whole steady corpus, which is how a
+    #  16 % violation on ammonia02 and a 24.68 % one on column01 shipped.  This
+    #  is that rule over every steady case, with a MEASURED pin list for the
+    #  plants that do not close today and a ratchet so a declared debt cannot
+    #  grow quietly.  Beside the mass gate because the two answer the same
+    #  question about two different conserved quantities.
+    if "$ROOT/bin/curate/check_energy_closure.py" > /tmp/energyclos.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "energy-closure-gate" "$(tail -1 /tmp/energyclos.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_energy_closure.py)\n" "energy-closure-gate"
+        cat /tmp/energyclos.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/energyclos.$$
+
     # WASM-dialect gate (2026-08-27): what g++ lends as an extension,
     # emscripten's clang refuses.  A lambda capturing a structured binding is
     # illegal in C++17, silent under g++ -Wall -Wextra -Wpedantic, and fatal
@@ -5052,7 +5070,7 @@ if [ -n "${FAST:-}" ]; then
     [ -n "$SUITE_OUT_DIR" ] && export CHOUPO_SUITE_OUTPUTS="$SUITE_OUT_DIR" \
                             && export CHOUPO_SUITE_SCOPE=1
     echo
-    for fg in check_mass_closure check_element_balance \
+    for fg in check_mass_closure check_energy_closure check_element_balance \
               check_closure_ledger_pinned check_energy_boundary_pinned; do
         if "$ROOT/bin/curate/$fg.py" > /tmp/fastgate.$$ 2>&1; then
             #  NOT TRUNCATED, unlike most PASS rows in this file: a scoped
