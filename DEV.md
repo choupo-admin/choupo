@@ -397,11 +397,20 @@ migration.
 > * **R6 — should an UNREAD key inside a record REFUSE or ANNOUNCE?**  Blocks
 >   the `thermoPhysPropDict` audit, which was measured CLEAN — so the cost of
 >   refusing is zero today and unbounded tomorrow.
-> * **R7 — the costing banner prints "Method: Guthrie" on all eight cases,
->   every one of which declares `method Turton;`.**  The registered key is
->   `Guthrie` and every coefficient in the file is Turton's.  Renaming the
->   model moves no number and touches every costing case's console; leaving
->   it means the banner names a source the coefficients do not come from.
+> * ~~**R7 — the costing banner names a source the coefficients do not come
+>   from.**~~  **CLOSED 2026-09-08**, and HALF OF IT WAS ALREADY CLOSED WHEN
+>   THIS ENTRY WAS WRITTEN — which is the entry's own lesson.  The factory had
+>   registered `Turton` as the proper name with `Guthrie` accepted as an
+>   ANNOUNCED alias, and the comment at that site argued the case in the same
+>   words this entry used, as though it were new: *a document that records a
+>   limitation must be verified against the engine before it is written down,*
+>   not only before it is repeated (CLAUDE.md §10).  What was REAL: the banner
+>   did not read the registered name at all — `Guthrie::type()` returned a
+>   hard-coded class literal, one reader (`CostingPass.cpp`), pinned by NO
+>   golden — so a case declaring `Turton` was answered `Guthrie` on screen.
+>   The class keeps its name (the bare-module FORM is Guthrie's, 1969); the
+>   METHOD it reports is `Turton` (whose coefficients these are, App. A), and
+>   the two are different questions.  No number moved.
 > * **R8 — should a plant PRODUCT sit at the domain level, and does the
 >   plant's label become the file's name?**  The 2026-09-07 lowest-common-
 >   ancestor rule settled inlets and internal streams; a plant OUTLET is

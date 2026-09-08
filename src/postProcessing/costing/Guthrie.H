@@ -83,7 +83,16 @@ public:
     std::map<std::string, scalar> pricingFactors() const override;
 
 private:
-    inline static const std::string type_ = "Guthrie";
+    //  THE CLASS is named for Guthrie (1969), whose bare-module FORM the
+    //  correlations sit in.  THE METHOD a run reports is `Turton` -- the
+    //  registered factory name, the word every corpus case declares, and the
+    //  source of every coefficient in the .cpp (Turton et al., App. A).  A
+    //  student cites the numbers, and this string is what the costing banner
+    //  prints, so it must be the name they would write down.  The two are
+    //  DIFFERENT questions (which form? whose numbers?) and this field answers
+    //  the second.  `method Guthrie;` stays accepted as an announced alias --
+    //  see `CostingModel::registerBuiltins`.
+    inline static const std::string type_ = "Turton";
 
     //  THE IN-CLASS INITIALISERS ARE GONE, and their absence is the point.
     //  They used to read `= 2026.0`, `= 820.0`, `= 397.0`, `= 0.92` -- the
