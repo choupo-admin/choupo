@@ -29,6 +29,7 @@ License
 #include "EnergyBalanceReport.H"
 #include "BalanceAlarm.H"
 #include "core/Advisory.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 #include "BalanceMath.H"
 #include "ModelBoundaryLedger.H"
 #include "thermo/EnthalpyDatum.H"
@@ -470,6 +471,21 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                 //  handle instead of refusing -- fixed there too, and asked
                 //  properly here rather than left to a throw in a hot loop.
                 if (!ctx.thermo.hasEos()) continue;
+                //  NO DEW POINT ABOVE EVERY CRITICAL TEMPERATURE, so no
+                //  statement about being below one (2026-09-08, Vitor:
+                //  ammonia02's converter outlet at 839.6 K was accused of
+                //  being below its dew point in a mixture whose highest pure
+                //  Tc is ammonia's 405.5 K -- 434 K below).  The g(V=1) that
+                //  produced the accusation is built from a Psat extrapolated
+                //  far above Tc, where the saturation curve does not exist:
+                //  the K-values are meaningless there, not the stream's
+                //  label.  A gate that accuses the innocent teaches the
+                //  reader to ignore it, and the innocent here was a correctly
+                //  labelled supercritical vapour.  ONE home for the
+                //  criterion, shared with the resolver that discards the
+                //  matching impossible two-phase root.
+                if (flashState::aboveEveryCriticalT(sp->T, sp->z, ctx.thermo))
+                    continue;
                 try {
                     const sVector K = ctx.thermo.Kvec(sp->T, sp->P, sp->z, sp->z);
                     if (K.size() != sp->z.size()) continue;

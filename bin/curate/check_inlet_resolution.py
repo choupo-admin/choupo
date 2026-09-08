@@ -32,16 +32,30 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
   (d) THE PIN IS HONOURED AND ANNOUNCED: a COPY of flash19 whose authored
       0/feed gains `phase liquid;` runs, prices the declared phase (its Q
       leaves the near-zero band), and says so in the log;
-  (f) THE PHASE PASS RUNS ON A UNIT THAT DECLARES NOTHING (2026-09-08).
-      ammonia02's converter is ADIABATIC and its feed-effluent exchanger's
-      closure reads a perfect 100 % because its own declared duty was
-      computed FROM the enthalpy in question -- so while the incipient test
-      lived inside `if (declares && out of band)` it could not fire on
-      either, and 22 376 kW of a physically impossible 74 %-liquid-at-843 K
-      split went unreported at exit 0.  This arm requires the run to name
-      `hotEffluent` -- the ADIABATIC unit's outlet, reachable by no
-      declaring unit -- and requires the finding to reach the result JSON,
-      not only stderr.
+  (f) THE PHASE PASS IS NOT GATED ON THE CONSUMER, and it does not accuse a
+      SUPERCRITICAL vapour.  Two halves, and the second replaced the first
+      arm's witness the same day it was written.
+
+      (f1) SOURCE: the pass must not be enclosed in a condition on
+           `r.declares`.  It was, and ammonia02 disarms that condition twice
+           over -- its converter is ADIABATIC (declares no energy item) and
+           its feed-effluent exchanger's closure reads a perfect 100 %
+           because its own declared duty was computed FROM the enthalpy in
+           question.  22 376 kW went unreported at exit 0.  A source arm is
+           weaker than an output arm and is used here because the corpus
+           witness this arm HAD turned out to be the defect below.
+
+      (f2) OUTPUT: ammonia02 must NOT accuse `hotEffluent`.  That stream was
+           this arm's original witness -- and Vitor read the accusation and
+           rejected it: at 839.6 K the highest pure critical temperature
+           present is ammonia's 405.5 K, so the mixture is 434 K above any
+           dew point and the label VAPOUR is the only one it can hold.  The
+           `g(V=1) = -0.46` behind the accusation is built from a Psat
+           extrapolated far above Tc, where the saturation curve does not
+           exist.  The check was accusing the innocent, which is the thing a
+           check must never do, and the run's own [psat] line said so three
+           screens earlier.  So this arm now pins the SILENCE, plus the
+           run still closing its first law.
   (g) IT DOES NOT ACCUSE A CONVERGED FLASH OUTLET.  `unreactedGas` and
       `recycle` leave ammonia02's separator ON their dew point, g = -2.07e-06,
       and the pass named both the moment it was allowed to run everywhere.
@@ -204,7 +218,23 @@ def main() -> int:
                             "declared constraint that costs energy may not be "
                             "silent (R-E2)")
 
-        # (f) + (g) the phase pass, on the case that proved it disarmed.
+        # (f1) SOURCE: the pass is not gated on the consumer.
+        src = (ROOT / "src/reporting/EnergyBalanceReport.cpp").read_text()
+        m = re.search(r"\n(\s*)\{\n\s*std::string found;", src)
+        if not m:
+            fail.append("(f1) the phase pass's opening block moved -- "
+                        "resynthesize this arm against the new shape")
+        else:
+            before = src[max(0, m.start() - 400):m.start()]
+            if re.search(r"if\s*\([^)]*\br\.declares\b", before):
+                fail.append(
+                    "(f1) the phase pass is enclosed in a condition on "
+                    "`r.declares` again.  A unit that declares no energy item "
+                    "-- an ADIABATIC reactor -- can then never be reached, and "
+                    "that is precisely how 22 376 kW went unreported on "
+                    "ammonia02 at exit 0.")
+
+        # (f2) + (g) the phase pass, on the case that proved it disarmed.
         am = tmp / "ammonia02"
         shutil.copytree(
             ROOT / "tutorials/steady/flowsheets/ammonia02_full_plant", am)
@@ -214,22 +244,22 @@ def main() -> int:
         else:
             #  (f) the ADIABATIC unit's outlet is named, and it is ANNOUNCED
             #  (the result JSON), not merely printed.
-            #  The line, not the NAME: `hotEffluent` appears all over a run
-            #  log (stream tables, converged listings), and "cannot hold that
-            #  label" is satisfied by the OTHER finding in the same case.  The
-            #  first draft of this arm tested both loosely and its own
-            #  sabotage passed it -- a presence test satisfied by something
-            #  else is a test of nothing.
-            if not re.search(r"\[phase\] stream 'hotEffluent'", log):
+            #  (f2) THE SILENCE IS THE CLAIM NOW.  `hotEffluent` at 839.6 K
+            #  is 434 K above the highest pure Tc present, so no statement
+            #  about its dew point is available and the pass must say
+            #  nothing about it.
+            if re.search(r"\[phase\] stream 'hotEffluent'", log):
                 fail.append(
-                    "(f) ammonia02's `hotEffluent` -- the ADIABATIC "
-                    "converter's outlet, which resolves to 74 % liquid at "
-                    "843 K -- was not reported as an impossible phase.  The "
-                    "pass is gated on the consumer again, and no declaring "
-                    "unit can reach that stream.")
-            elif not [ln for ln in log.splitlines()
-                       if "\"locus\": \"stream 'hotEffluent'\"" in ln
-                       and "cannot hold that label" in ln]:
+                    "(f2) ammonia02's `hotEffluent` was ACCUSED of an "
+                    "impossible phase at 839.6 K, where the highest pure "
+                    "critical temperature among the components present is "
+                    "ammonia's 405.5 K.  There is no dew point 434 K above "
+                    "every Tc, so there is no statement to make: the g(V=1) "
+                    "behind the accusation comes from a Psat extrapolated "
+                    "above Tc, where the saturation curve does not exist.  A "
+                    "check that accuses the innocent teaches the reader to "
+                    "ignore it.")
+            elif False:
                 #  BOTH, on ONE line.  The locus alone is not evidence: the
                 #  balance report ALREADY announces under `stream '<name>'`
                 #  when it re-resolves a state (`flashState::equilibriumAt`
@@ -280,10 +310,11 @@ def main() -> int:
           "R-E1), flash19's unit duty and balance report agree at 100 +- 0.5 % "
           "(R-E5), a feed pinned `phase liquid;` is priced as declared AND "
           "announced (R-E2), and the vacuum-flash control keeps its genuine "
-          "pressure-drop duty.  THE PHASE PASS REACHES A UNIT THAT DECLARES "
-          "NOTHING: ammonia02's ADIABATIC converter outlet is named as an "
-          "impossible vapour AND carried into the result JSON, while the two "
-          "saturated separator outlets beside it are NOT accused.  NOT "
+          "pressure-drop duty.  THE PHASE PASS IS NOT GATED ON THE CONSUMER "
+          "(source) and DOES NOT ACCUSE a supercritical vapour: ammonia02's "
+          "converter outlet at 839.6 K -- 434 K above the highest pure Tc "
+          "present -- draws no accusation, and neither do the two saturated "
+          "separator outlets.  NOT "
           "CHECKED: whether a NON-zero duty is right (only the identity has a "
           "closed form); the multi-condition cases' duties, which ride their "
           "goldens; whether the 1e-3 incipient band is the right number (it "

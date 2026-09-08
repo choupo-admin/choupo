@@ -90,6 +90,33 @@ namespace flashState {
 //  A CONVERGED SINGLE-PHASE answer is returned, not discarded: the caller
 //  that must decide a stream's vapour fraction needs to know the resolution
 //  said "all liquid" rather than "could not tell".
+//  IS THERE A SATURATION STATE TO SPEAK OF AT ALL?
+//
+//  Above the highest pure critical temperature among the components PRESENT
+//  there is no liquid and no dew point, so any statement of the form "this
+//  stream is below its dew point" is not false -- it is not a statement.  Two
+//  readers need this and they must not each invent it: the resolver below
+//  (which discards an impossible two-phase root) and the energy report's
+//  incipient-phase test (which would otherwise ACCUSE a correctly labelled
+//  supercritical vapour, 2026-09-08 -- Vitor caught exactly that on
+//  ammonia02's converter outlet at 839.6 K, where the highest Tc present is
+//  ammonia's 405.5 K).
+//
+//  A component with no declared Tc does not vote: absence is not evidence.
+//  If nothing present declares one, the answer is false and the caller
+//  proceeds -- this rule never fires on ignorance.
+inline bool aboveEveryCriticalT(scalar T, const sVector& z,
+                                const ThermoPackage& thermo,
+                                scalar* TcMaxOut = nullptr)
+{
+    scalar TcMax = 0.0;
+    for (std::size_t i = 0; i < z.size() && i < thermo.n(); ++i)
+        if (z[i] > 1.0e-12 && thermo.comp(i).Tc() > TcMax)
+            TcMax = thermo.comp(i).Tc();
+    if (TcMaxOut) *TcMaxOut = TcMax;
+    return (TcMax > 0.0 && T > TcMax);
+}
+
 inline std::optional<FlashSolution> equilibriumAt(scalar               T,
                                                   scalar               P,
                                                   const sVector&       z,
@@ -161,10 +188,7 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
     if (fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9)
     {
         scalar TcMax = 0.0;
-        for (std::size_t i = 0; i < z.size() && i < thermo.n(); ++i)
-            if (z[i] > 1.0e-12 && thermo.comp(i).Tc() > TcMax)
-                TcMax = thermo.comp(i).Tc();
-        if (TcMax > 0.0 && T > TcMax)
+        if (aboveEveryCriticalT(T, z, thermo, &TcMax))
         {
             const std::string msg =
                 "resolved TWO-PHASE at T = " + std::to_string(T)
