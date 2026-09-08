@@ -132,6 +132,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         int         kind = 0;              // 0 normal, 1 curation gap, 2 n/a
         scalar      hIn = 0.0, hOut = 0.0, dH = 0.0, items = 0.0;
         scalar      closure = 0.0;         // the RAW closure, as always
+        bool        hasClosure = false;    // false -> the field is written EMPTY
         scalar      sumExternal = 0.0;
         //  The heat GENUINELY supplied across the unit's boundary.  Kept
         //  APART from `items` on purpose: when a unit declares no duty,
@@ -248,22 +249,42 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             && ((nItems > 0) || (std::abs(e.qBoundary) > 1.0e-9));
 
         // When the unit DECLARES boundary heat, closure reconciles the process
-        // enthalpy rise against it: 100 % when dH == supplied.  When it declares
-        // NONE (adiabatic mixer, fermentor, dryer running on its own air), the
-        // dH IS its implied net duty by definition -> closure is trivially
-        // 100 % (there is nothing external to reconcile against).
+        // enthalpy rise against it: 100 % when dH == supplied.
+        //
+        // WHEN IT DECLARES NONE, THERE IS NO CLOSURE TO REPORT, AND SAYING
+        // 100 % WAS THE DEFECT (2026-09-08, found by Vitor on ammonia02).
+        // `items` is set to dH there -- the unit's IMPLIED net duty, which is
+        // informative -- and the old code then divided dH by itself and
+        // published the answer as a verdict.  So the SAME ROW read:
+        //
+        //   FEHE  dH -21632.4405  items -21632.4405  closure 100.00
+        //                                            raw_imbalance -21632.4405
+        //
+        // A closure of 100 % beside a raw imbalance of -21 632 kW: not an
+        // optimistic column, a column asserting the opposite of the one next
+        // to it -- and the closure is the one a student reads.
+        //
+        // A quantity with nothing to reconcile against has no closure.  It is
+        // reported as ABSENT (an empty CSV field, the `(not stated)` posture
+        // of the 2026-09-05 design-basis rule), never as a number, and
+        // `raw_imbalance_kW` carries what is actually known.  `items` keeps
+        // the implied duty, which is a fact about the unit rather than a
+        // claim about agreement.
         scalar closure, items;
+        bool   hasClosure;
         if (declares)
         {
             closure = (std::abs(supplied) > 1.0e-9)
                 ? 100.0 * dH / supplied
                 : (std::abs(dH) < 1.0e-6 ? 100.0 : 0.0);
-            items   = supplied;
+            items      = supplied;
+            hasClosure = true;
         }
         else
         {
-            closure = 100.0;   // net duty = dH by definition
-            items   = dH;
+            closure    = 0.0;      // never written -- see hasClosure
+            items      = dH;       // the IMPLIED net duty, not a declaration
+            hasClosure = false;
         }
 
         UnitRow r;
@@ -272,6 +293,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         r.hIn = e.hIn; r.hOut = e.hOut; r.dH = dH; r.items = items;
         r.supplied = supplied;
         r.closure = closure; r.declares = declares;
+        r.hasClosure = hasClosure;
         r.nItems = nItems;  r.sumExternal = sumExternal;
         r.ins  = lookup(u.ins);
         r.outs = lookup(u.outs);
@@ -384,15 +406,22 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                 ? 100.0 * adjDH / r.items
                 : (std::abs(adjDH) < 1.0e-6 ? 100.0 : 0.0);
 
+        //  An ABSENT closure is an EMPTY field, never a number.  Same for the
+        //  adjusted one: an adjustment to a closure that does not exist is
+        //  also nothing.  Every reader that parses this column as a float
+        //  must therefore tolerate an empty cell -- which is the point: a
+        //  reader that cannot is a reader that was being told 100 %.
         f << r.name << "," << std::fixed << std::setprecision(4)
           << r.hIn << "," << r.hOut << "," << r.dH << ","
-          << r.items << "," << std::setprecision(2) << r.closure << ","
-          << kEnthalpyDatum << ",";
+          << r.items << ",";
+        if (r.hasClosure) f << std::setprecision(2) << r.closure;
+        f << "," << kEnthalpyDatum << ",";
         if (le)
             f << std::fixed << std::setprecision(4)
               << le->raw_kW << "," << le->step_kW << ","
-              << le->remaining_kW << "," << std::setprecision(2)
-              << adjClosure << "," << le->status << "\n";
+              << le->remaining_kW << ",";
+        if (le && r.hasClosure) f << std::setprecision(2) << adjClosure;
+        if (le) f << "," << le->status << "\n";
         else
             f << "n/a,n/a,n/a,n/a,n/a\n";
 
