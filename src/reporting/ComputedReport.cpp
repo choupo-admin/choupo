@@ -59,32 +59,57 @@ void ComputedReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         auto cit = result.computed.find(id);
         if (cit != result.computed.end()) return cit->second;
 
-        const auto dot = id.find('.');
-        if (dot != std::string::npos)
+        //  A QUALIFIED NAME IS NOT SPLIT AT A GUESSED POSITION (2026-09-08).
+        //  This split the FIRST dot, which is right only while every unit and
+        //  stream key is a bare word.  In a SECTORED plant the engine keys
+        //  `result.kpis` and `result.streams` by the QUALIFIED name
+        //  ("ANEL.Converter", "PRODUTO.ProductNH3"), so `PRODUTO.ProductNH3.F`
+        //  was read as unit `PRODUTO` + KPI `ProductNH3.F` and EVERY computed
+        //  expression in every sectored case failed by name.
+        //
+        //  Splitting at the LAST dot instead would fix that and quietly assume
+        //  no KPI name and no stream field ever contains a dot -- true today,
+        //  and an assumption about NAMES, which is the crossing this project
+        //  bans.  So try every split, LONGEST HEAD FIRST: the most specific
+        //  owner that actually exists wins, and nothing is assumed about how
+        //  either half is spelled.  A flat case resolves at its only dot and
+        //  is unchanged.
+        if (id.find('.') != std::string::npos)
         {
-            const std::string head = id.substr(0, dot);
-            const std::string tail = id.substr(dot + 1);
+            std::string lastHead, lastTail;          // for the refusal message
+            for (auto dot = id.rfind('.');
+                 dot != std::string::npos;
+                 dot = (dot == 0 ? std::string::npos : id.rfind('.', dot - 1)))
+            {
+                const std::string head = id.substr(0, dot);
+                const std::string tail = id.substr(dot + 1);
+                if (lastHead.empty()) { lastHead = head; lastTail = tail; }
 
-            auto kit = result.kpis.find(head);
-            if (kit != result.kpis.end())
-            {
-                auto vit = kit->second.find(tail);
-                if (vit != kit->second.end()) return vit->second;
-            }
-            auto sit = result.streams.find(head);
-            if (sit != result.streams.end())
-            {
-                const ProcessStream& s = sit->second;
-                if (tail == "T")  return s.T;
-                if (tail == "P")  return s.P;
-                if (tail == "F")  return s.F;
-                if (tail == "vf") return s.vf;
-                throw std::runtime_error("computed: stream '" + head
-                    + "' has no field '" + tail + "' (use T | P | F | vf)");
+                auto kit = result.kpis.find(head);
+                if (kit != result.kpis.end())
+                {
+                    auto vit = kit->second.find(tail);
+                    if (vit != kit->second.end()) return vit->second;
+                }
+                auto sit = result.streams.find(head);
+                if (sit != result.streams.end())
+                {
+                    const ProcessStream& s = sit->second;
+                    if (tail == "T")  return s.T;
+                    if (tail == "P")  return s.P;
+                    if (tail == "F")  return s.F;
+                    if (tail == "vf") return s.vf;
+                    throw std::runtime_error("computed: stream '" + head
+                        + "' has no field '" + tail + "' (use T | P | F | vf)");
+                }
+                if (dot == 0) break;
             }
             throw std::runtime_error("computed: cannot resolve '" + id
-                + "' --- no KPI '" + tail + "' on unit '" + head
-                + "' and no stream named '" + head + "'");
+                + "' --- no split of it names a unit with that KPI or a stream"
+                  " with that field.  The most specific split tried was unit or"
+                  " stream '" + lastHead + "' with '" + lastTail + "'.  In a"
+                  " SECTORED plant a unit is keyed by its QUALIFIED name"
+                  " (SECTOR.unit).");
         }
 
         if (vars->found(id))                     // a plain $variable

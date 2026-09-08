@@ -29,6 +29,7 @@ License
 #include "UtilityAllocationReport.H"
 #include <stdexcept>
 #include "thermo/utility/UtilityCatalogue.H"
+#include "core/Advisory.H"
 
 #include <algorithm>
 #include <cmath>
@@ -115,6 +116,21 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
                         carrier[uname] = "its own process streams (" + ty + ")";
                 }
             }
+
+        //  AND THE SAME RULE OVER THE FLATTENED TOPOLOGY, which is the only
+        //  list that holds a SECTORED plant's units (the loop above walks the
+        //  root dict, and a sectored root lists sector names, not units).  The
+        //  classification reads the DECLARED TYPE and nothing else, so it is
+        //  the same rule stated once more over a list that reaches further --
+        //  not a second rule.  A unit the loop above already carried keeps
+        //  that carrier: a utility STREAM is more specific than "its own
+        //  process streams", and this pass never overwrites one.
+        for (const auto& fu : result.topology)
+        {
+            if (fu.name.empty() || carrier.count(fu.name)) continue;
+            if (fu.type == "heatExchanger" || fu.type == "multiStreamHX")
+                carrier[fu.name] = "its own process streams (" + fu.type + ")";
+        }
     }
 
     // ---- explicit per-port utility (column condenser/reboiler block) ------
@@ -161,14 +177,45 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
     //   unit (its shaft port is the `from` of some energyInput).  The latter
     //   is the combined-cycle compressor: its load is summed into the gas
     //   turbine's generator, so charging it again to the grid double-counts.
+    //  THE UNIT TYPE COMES FROM THE ENGINE'S OWN FLATTENED TOPOLOGY, never
+    //  from the root dict (2026-09-08).  A SECTORED plant lists only sector
+    //  NAMES at its root -- each sector's units live in
+    //  `sectors/<S>/system/flowsheetDict`, composed by `Flowsheet` at load --
+    //  so `flowsheet->lookupDictList("units")` is EMPTY there and every unit
+    //  lost its type in silence.  Consequences, measured by Vitor on a plant
+    //  he built twice (nh3verde01 flat vs nh3verde02 sectored, same physics to
+    //  the sixth figure): three compressors vanished from the electrical tier
+    //  (C_UT 7 587 953 -> 1 582 EUR/yr, 9.3 MEUR/yr, 5 % of COM_d, with NO
+    //  warning), and every process-process exchanger fell from
+    //  "(carried: its own process streams)" to "(unit T unknown)".
+    //
+    //  `result.topology` is that same list, flat, with each unit's name
+    //  QUALIFIED exactly as `result.kpis` keys them, and it is already handed
+    //  to this function.  This file was ALREADY reading it for its carriers
+    //  (see "carriers from topology" above) and then re-deriving types from
+    //  the root -- two homes for one fact, in one file, and only the second
+    //  broke.  Same shape as the 2026-09-04 hierarchy slice.
     std::map<std::string, std::string> unitType;
+    for (const auto& fu : result.topology)
+        if (!fu.name.empty()) unitType[fu.name] = fu.type;
+
+    //  WHAT THE TOPOLOGY CANNOT SERVE, said rather than left silent.
+    //  `FlatUnit` carries name/type/ins/outs/sector by design -- it is
+    //  topology, not the unit's own parameters -- so the three blocks that
+    //  need a unit's DICT (its `energyInputs` wires, its `operation`'s
+    //  per-port utility) still read the root list, and on a sectored plant
+    //  they find nothing.  That degradation is ANNOUNCED below rather than
+    //  reported as an absence of wires.  Closing it needs the composed
+    //  per-unit dicts published to reporting, which is a seam this slice does
+    //  not build.
     std::set<std::string> workCoupled;
     if (flowsheet && flowsheet->hasDictList("units"))
         for (const auto& ud : flowsheet->lookupDictList("units"))
         {
             const std::string uname = ud->lookupWordOrDefault("name", "");
             if (uname.empty()) continue;
-            unitType[uname] = ud->lookupWordOrDefault("type", "");
+            //  (the type is NOT read here any more -- `unitType` is filled
+            //   from `result.topology` above, its one home)
             if (ud->found("energyInputs"))
                 for (const auto& ein : ud->lookupDictList("energyInputs"))
                 {
@@ -180,6 +227,31 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
                         workCoupled.insert(from.substr(0, dot));    // source exports work
                 }
         }
+
+    //  THE DEGRADATION IS ANNOUNCED, NEVER A ZERO.  Three blocks above need a
+    //  unit's own DICT and can only reach the root list.  On a sectored plant
+    //  that list is empty, so they find no work wires and no per-port utility
+    //  -- an ABSENCE that reads exactly like "this plant has none".  Say which
+    //  it is.  The condition is the honest one: the root dict offered no units
+    //  while the engine's topology has some.
+    if (!result.topology.empty()
+        && !(flowsheet && flowsheet->hasDictList("units")))
+    {
+        const std::string msg =
+            "utility allocation read " + std::to_string(result.topology.size())
+            + " unit(s) from the flattened topology, but the root flowsheetDict"
+              " lists no `units` -- this is a SECTORED plant, whose units live"
+              " in each sector's own flowsheetDict.  Unit TYPES are correct"
+              " (they come from the topology).  NOT READ, because they need"
+              " each unit's dict: `energyInputs` work wires (a shaft-driven"
+              " unit may therefore be billed to the grid) and `operation`'s"
+              " per-port `utility` (a column condenser/reboiler may fall to the"
+              " automatic pick).  Absence of those here is NOT evidence the"
+              " plant has none.";
+        AdvisoryLog::instance().add("utilityAllocation", "warning",
+                                    "sectored plant", msg);
+        std::cerr << "WARNING: utilityAllocation: " << msg << "\n";
+    }
 
     // ---- one row per duty -------------------------------------------------
     std::vector<UtilityAllocation> rows;
