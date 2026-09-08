@@ -109,9 +109,20 @@ export function StreamsSummary({
 
   const massOk = mb.closureErr < MASS_TOL;
   const closurePct = (mb.closureErr * 100).toFixed(mb.closureErr < 1e-4 ? 4 : 2);
-  const energyErr = gb ? Math.abs(gb.residual_pct) / 100 : NaN;
-  const energyOk = !!gb && gb.n_gap === 0 && (gb.noBoundary || energyErr < ENERGY_TOL);
-  const energyPct = gb ? (energyErr * 100).toFixed(energyErr < 1e-4 ? 4 : 2) : "—";
+  //  A PERCENTAGE THE ENGINE COULD NOT FORM IS NOT DRAWN.  `residual_pct` is
+  //  null when the plant declares no duty and carries no boundary heat, so
+  //  there is no exchanged-energy scale (2026-09-08).  The residual in kW is
+  //  still a fact and still shown; the ratio, and any verdict resting on it,
+  //  are withheld rather than computed from a floor.  `!== false` keeps an
+  //  older result, which carries neither field, reading exactly as before.
+  const energyScaled = !!gb && gb.residual_pct !== null
+                    && gb.residual_pct_available !== false;
+  const energyErr = energyScaled ? Math.abs(gb!.residual_pct as number) / 100 : NaN;
+  const energyOk = !!gb && gb.n_gap === 0
+                && (gb.noBoundary || (energyScaled && energyErr < ENERGY_TOL));
+  const energyPct = energyScaled
+    ? (energyErr * 100).toFixed(energyErr < 1e-4 ? 4 : 2)
+    : "—";
 
   // Per-component rows, biggest first; closure-% per component.
   const compRows = mb.visibleComponents

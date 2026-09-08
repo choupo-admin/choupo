@@ -294,6 +294,15 @@ struct SimulationResult
         scalar H_products_kW = 0.0;
         scalar residual_kW   = 0.0;
         scalar residual_pct  = 0.0;
+        //  A PERCENTAGE NEEDS A SCALE, AND SOME PLANTS DO NOT SUPPLY ONE
+        //  (2026-09-08).  When the denominator collapses to the numerical
+        //  floor the ratio is not a small number, it is not a number: the
+        //  triple-effect evaporator published -6.16e14 % from a -6162.5 kW
+        //  residual over a 1e-9 kW "scale".  `residual_pct_available` false
+        //  means every reader must print the ABSOLUTE residual and say the
+        //  percentage is unavailable -- never draw the ratio anyway.  Same
+        //  rule as the by-unit closure column: an absent number is an empty
+        //  field, never a number.
         //  WHAT residual_pct IS A PERCENTAGE OF.  Published so a reader DRAWS
         //  the basis instead of restating it: the GUI used to spell the
         //  formula out in its own prose, which goes quietly false the day the
@@ -303,6 +312,7 @@ struct SimulationResult
         int    n_feeds       = 0;
         int    n_products    = 0;
         int    n_gap         = 0;     // boundary streams with no enthalpy datum (skipped, announced)
+        bool   residual_pct_available = true;
         bool   noBoundary    = false; // a fully closed loop: the first law is vacuous here
         std::string datum;            // the enthalpy reference every term is on ("elements")
     };

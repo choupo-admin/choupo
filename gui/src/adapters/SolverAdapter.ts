@@ -373,7 +373,13 @@ export interface GlobalEnergyBoundary {
   Q_boundary_kW: number;
   H_products_kW: number;
   residual_kW: number;
-  residual_pct: number;
+  //  NULL when the plant supplies no exchanged-energy scale: a percentage
+  //  of nothing is not a percentage, and the engine says so rather than
+  //  dividing by its numerical floor (2026-09-08 -- the triple-effect
+  //  evaporator published -6.16e14 %).  Read `residual_pct_available`
+  //  BEFORE this: an older result carries neither and its number stands.
+  residual_pct: number | null;
+  residual_pct_available?: boolean;
   //  WHAT residual_pct IS A PERCENTAGE OF, published by the engine so no
   //  reader restates it.  Optional: a result from an older engine has
   //  neither, and the panel says so rather than inventing a formula.

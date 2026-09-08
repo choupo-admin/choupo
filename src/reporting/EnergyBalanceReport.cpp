@@ -109,15 +109,36 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     // already counted as the steam/condensate enthalpy drop in `qBoundary`, so
     // summing the KPI too is the old double-count.  A bare Q_kW / reboiler /
     // condenser duty has no stream medium and IS a boundary item.
-    auto externalItemsSum = [&](const std::string& unit, int& n) -> scalar {
-        scalar s = 0.0; n = 0;
+    //  TWO SUMS, AND THEY ANSWER DIFFERENT QUESTIONS (2026-09-08).
+    //
+    //  `s`   -- the ALGEBRAIC sum, the NET energy crossing this unit's
+    //           boundary.  The closure reconciles dH against this, and that
+    //           is right: a column that boils 1279.30 kW and condenses
+    //           1281.04 kW nets -1.74 kW, and its dH must equal that.
+    //  `mag` -- the sum of MAGNITUDES, the energy this unit EXCHANGES.
+    //
+    //  The plant-scale denominator wants the second and was given the first.
+    //  On column01 the two are 2560.35 kW and -1.74 kW, so a real 631.96 kW
+    //  first-law violation was published as 36 346.89 % -- a number that
+    //  looks like a reporting bug and is in fact a reporting bug sitting on
+    //  top of a genuine one.  The comment at the accumulator SAID
+    //  "MAGNITUDES (so a duty in and a duty out do not cancel)" while taking
+    //  the absolute value of the SUM, which is the cancellation it claimed
+    //  to prevent: a comment describing an arithmetic the code does not do,
+    //  written the same morning by the same hand that has spent the day
+    //  finding that shape in other people's code.
+    auto externalItems = [&](const std::string& unit, int& n,
+                             scalar& mag) -> scalar {
+        scalar s = 0.0; n = 0; mag = 0.0;
         auto it = ctx.result.kpis.find(unit);
         if (it != ctx.result.kpis.end())
             for (const auto& [k, v] : it->second)
                 if (reporting::isEnergyItemKpi(k)
-                    && !reporting::isInternalMediumDutyKpi(k)) { s += v; ++n; }
+                    && !reporting::isInternalMediumDutyKpi(k))
+                { s += v; mag += std::abs(v); ++n; }
         return s;
     };
+
 
     const auto units = reporting::resolveUnits(topo, ctx.result);
     int naCount = 0, gapCount = 0;
@@ -170,7 +191,8 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         // datum -- it only reads the KPIs), so a unit whose stream-enthalpy
         // datum is MISSING (a gap) still has its real boundary duty counted.
         int nItems = 0;
-        const scalar sumExternal = externalItemsSum(u.name, nItems);
+        scalar       magExternal = 0.0;
+        const scalar sumExternal = externalItems(u.name, nItems, magExternal);
 
         reporting::UnitEnergy e;
         try {
@@ -250,7 +272,12 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         //  The ENERGY THE PLANT EXCHANGES -- magnitudes, so a duty in and a
         //  duty out do not cancel.  This is the scale the residual is judged
         //  against (see the denominator below).
-        globalExchanged += std::abs(supplied);
+        //  MAGNITUDES PER ITEM, which is what the sentence beside it always
+        //  claimed: |Q_reboiler| + |Q_condenser|, not |Q_reboiler + Q_condenser|.
+        //  `qBoundary` is the utility medium's own enthalpy drop and is a
+        //  single signed quantity, so its magnitude is all there is.
+        globalExchanged += internalExchanger
+                         ? 0.0 : (magExternal + std::abs(e.qBoundary));
         const bool   declares = !internalExchanger
             && ((nItems > 0) || (std::abs(e.qBoundary) > 1.0e-9));
 
@@ -871,17 +898,45 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         //  of energy -- boiler, condenser, turbine -- so its denominator is
         //  large and honest.  The vacuous case (nothing crosses AND nothing
         //  is exchanged) still reports 0 %, below.
-        const scalar denom    = std::max({globalExchanged, std::abs(Qext),
-                                          1.0e-9});
+        //  THE FLOOR IS NOT A SCALE (2026-09-08, found by ASTRA's audit in
+        //  the triple-effect evaporator, and it is a defect of the basis
+        //  change above rather than of the plant).  evaporator02 receives its
+        //  energy as MATERIAL steam and condensate: it declares no duty, so
+        //  `globalExchanged` is 0, and it carries no boundary heat, so Qext is
+        //  0 -- while it has feeds and products, so `noBoundary` below is
+        //  false.  The old code then divided a real -6162.5 kW residual by the
+        //  1e-9 kW floor and published -6.16e14 %.
+        //
+        //  A percentage of nothing is not a large percentage; it is not a
+        //  percentage.  So the SCALE is a separate question from the residual:
+        //  when there is none, the residual is still published in kW (it is
+        //  the physical fact) and the ratio is marked UNAVAILABLE for every
+        //  reader, which is the same rule the by-unit closure column follows.
+        //  The floor stays only to keep the division defined.
+        const scalar scale    = std::max(globalExchanged, std::abs(Qext));
+        const bool   hasScale = (scale > 1.0e-6);       // kW; below this it is noise
+        const scalar denom    = std::max(scale, 1.0e-9);
         // A fully CLOSED loop (no boundary feeds AND no products -- rankine02's
         // recycle) has nothing crossing the boundary: feeds, products and Qext
         // are all ~0 and the first law is vacuous.  Report 0 % rather than
         // dividing a floating-point-noise residual by the 1e-9 floor (the
         // phantom 21 %).  Any OPEN plant has a real denom and is unaffected.
         const bool   noBoundary = (nFeed == 0 && nProd == 0 && denom <= 1.0e-6);
+        //  THE BASIS STRING DESCRIBES THE ARITHMETIC THAT RAN, not a
+        //  neighbouring one.  It used to say "sum of |duties| + |Q boundary|"
+        //  where the code takes a MAX of the two -- named in the same audit,
+        //  and exactly the class of quiet falsehood the 2026-09-05 rule
+        //  exists to stop: a reader who reproduces the stated formula gets a
+        //  different denominator.
         const std::string residualBasis =
-            "energy exchanged (sum of |declared duties and work| + |Q boundary|)";
-        const scalar relPct   = noBoundary ? 0.0 : 100.0 * residual / denom;
+            hasScale
+            ? "energy exchanged (the larger of: sum of |declared duties and "
+              "work|, and |Q boundary|)"
+            : "UNAVAILABLE -- this plant declares no duty and carries no "
+              "boundary heat, so there is no exchanged-energy scale to "
+              "express the residual as a fraction of; read residual_kW";
+        const scalar relPct   = (noBoundary || !hasScale)
+                              ? 0.0 : 100.0 * residual / denom;
 
         //  The ledger travels on the result, so the GUI draws THIS and never a
         //  sum of its own (2026-09-05 -- see SimulationResult.H).
@@ -893,6 +948,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             gb.H_products_kW = Hprods;
             gb.residual_kW   = residual;
             gb.residual_pct  = relPct;
+            gb.residual_pct_available = hasScale && !noBoundary;
             gb.residual_denom_kW = denom;
             gb.residual_basis    = residualBasis;
             gb.n_feeds       = nFeed;
@@ -913,17 +969,33 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
               << "inputs,"         << (Hfeeds + Qext) << "\n"
               << "outputs,"        << Hprods   << "\n"
               << "residual,"       << residual << "\n"
-              << "residual_pct,"   << std::setprecision(4) << relPct << "\n"
-              << "residual_denom_kW," << std::setprecision(4) << denom << "\n"
+              << "residual_pct,";
+            //  EMPTY, never a number, when there is no scale.  A reader that
+            //  parses this column as a float must tolerate an empty cell --
+            //  which is the point: a reader that cannot was being handed
+            //  -6.16e14.
+            if (hasScale && !noBoundary) g << std::setprecision(4) << relPct;
+            g << "\n"
+              << "residual_denom_kW,";
+            if (hasScale) g << std::setprecision(4) << denom;
+            g << "\n"
               << "residual_basis," << residualBasis << "\n"
               << "n_feeds,"        << nFeed    << "\n"
               << "n_products,"     << nProd    << "\n"
               << "n_gap,"          << nGap     << "\n";
             g.close();
             if (ctx.verbosity >= 2)
-                std::cout << "  [report] globalEnergyBoundary -> " << gpath.string()
-                          << "  (|in-out|/in = " << std::setprecision(3)
-                          << std::abs(relPct) << " %)\n";
+            {
+                std::cout << "  [report] globalEnergyBoundary -> " << gpath.string();
+                if (hasScale && !noBoundary)
+                    std::cout << "  (|in-out|/in = " << std::setprecision(3)
+                              << std::abs(relPct) << " %)";
+                else
+                    std::cout << "  (residual " << std::setprecision(4)
+                              << residual << " kW; NO EXCHANGED-ENERGY SCALE"
+                                 " -- percentage unavailable)";
+                std::cout << "\n";
+            }
         }
     }
 

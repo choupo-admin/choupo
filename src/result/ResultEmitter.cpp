@@ -993,8 +993,21 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
            << ", \"Q_boundary_kW\": " << num(gb.Q_boundary_kW)
            << ", \"H_products_kW\": " << num(gb.H_products_kW)
            << ", \"residual_kW\": "   << num(gb.residual_kW)
-           << ", \"residual_pct\": "  << num(gb.residual_pct)
-           << ", \"residual_denom_kW\": " << num(gb.residual_denom_kW)
+           //  A percentage with no scale behind it is not published as a
+           //  number: `residual_pct_available` false means the reader must
+           //  draw the ABSOLUTE residual and say the ratio is unavailable
+           //  (2026-09-08 -- the triple-effect evaporator was emitting
+           //  -6.16e14 % from a 1e-9 kW floor).  `null` rather than an
+           //  omitted key, so an old reader sees the change instead of
+           //  silently defaulting to 0.
+           << ", \"residual_pct\": "
+           << (gb.residual_pct_available ? num(gb.residual_pct)
+                                         : std::string("null"))
+           << ", \"residual_pct_available\": "
+           << (gb.residual_pct_available ? "true" : "false")
+           << ", \"residual_denom_kW\": "
+           << (gb.residual_pct_available ? num(gb.residual_denom_kW)
+                                         : std::string("null"))
            << ", \"residual_basis\": \"" << gb.residual_basis << "\""
            << ", \"n_feeds\": "       << gb.n_feeds
            << ", \"n_products\": "    << gb.n_products
