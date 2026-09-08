@@ -314,6 +314,18 @@ Check `reports/balances/massBalance.csv`: if `closure_pct` ≠ 100%
 for a species, the reaction is at fault.  (Declare
 `reports { massBalance { enabled false; } }` only to opt out.)
 
+### A closure that passes by DILUTION
+`closure_pct` is a RATIO, so a stream far larger than the process swamps it.
+A plant that models its cooling water as ordinary process streams can carry
+99 % of its balance mass in that water: a 1 % loss of the actual process
+material then moves the reported closure by 0.008 %, which is invisible at the
+four decimals the report prints — the balance passes and says nothing.  If a
+boundary pair is an auxiliary circuit (in and out unchanged, serving one unit),
+DECLARE it — `utilities ( { name; service; supply; return; } )` in the
+flowsheetDict, see `case-layout.md` — and the report publishes a PROCESS
+closure beside the total one.  Nothing is removed from any physical check by
+doing so; only the plant-level summary gains a second scope.
+
 ### Reversible reaction without `standardThermochemistry` on every species
 For `reversible true;`, the reverse rate is `k_fwd / K_eq(T)` with
 `K_eq = exp(-Σνᵢ gᵢ°(T)/RT)`.  This needs each species to carry a

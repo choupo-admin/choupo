@@ -31,6 +31,8 @@ License
 #include "thermo/utility/UtilityCatalogue.H"
 #include "core/Advisory.H"
 
+#include "streams/UtilityCircuit.H"
+
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -116,6 +118,21 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
                         carrier[uname] = "its own process streams (" + ty + ")";
                 }
             }
+
+        //  A DECLARED UTILITY CIRCUIT IS A CARRIER, AND A NAMED ONE
+        //  (2026-09-08).  Cooling water modelled as an explicit stream pair
+        //  was invisible here: `cw` carries no `category`, so the served
+        //  exchanger fell to the rule below and was reported as carried by
+        //  "its own process streams" -- true of a process-process exchanger
+        //  and false of this one, which is served by a plant utility.  With
+        //  the circuit DECLARED there is one home for "what utilities does
+        //  this plant use", and it names the service the case declared rather
+        //  than a service this pass would have picked.
+        for (const auto& [uname, circ] :
+             utilityCircuits::servedUnits(
+                 utilityCircuits::read(flowsheet), result.topology))
+            carrier[uname] = "declared utility circuit " + circ.name
+                           + " (" + circ.service + ")";
 
         //  AND THE SAME RULE OVER THE FLATTENED TOPOLOGY, which is the only
         //  list that holds a SECTORED plant's units (the loop above walks the

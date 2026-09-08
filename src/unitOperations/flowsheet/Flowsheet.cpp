@@ -38,6 +38,7 @@ License
 #include "streams/SpeciationBlock.H"
 #include "streams/StreamOverrides.H"
 #include "streams/StreamOwnership.H"
+#include "streams/UtilityCircuit.H"
 #include "io/InternalStateIO.H"
 #include "streams/StreamStateIO.H"
 #include <fstream>
@@ -2743,6 +2744,32 @@ int Flowsheet::solve(const DictPtr& dict,
         throw std::runtime_error(msg);
     }
 
+    // ---- Declared UTILITY CIRCUITS (2026-09-08) -------------------------
+    //  A case may DECLARE that a pair of boundary streams is an auxiliary
+    //  circuit -- cooling water, a hot-oil loop -- so the plant's material
+    //  SUMMARY can be presented on process matter as well as on everything.
+    //  THE SEPARATION IS PRESENTATION, NEVER VALIDATION SCOPE: nothing here
+    //  removes a stream from any physical check.
+    //
+    //  The STRUCTURAL half runs here, where the flattened topology is final
+    //  and before any state work, so a false declaration refuses before a
+    //  solve rather than after it.  The CONSERVATION half needs an answer and
+    //  runs below, once the plan has converged.
+    std::vector<UtilityCircuit> utilityCircuitDecls;
+    if (!init0_)
+    {
+        utilityCircuitDecls = utilityCircuits::read(dict);
+        utilityCircuits::validateTopology(utilityCircuitDecls, topology_);
+        if (verbosity >= 2)
+            for (const auto& c : utilityCircuitDecls)
+                std::cout << "  [utilities] circuit '" << c.name
+                          << "' declared: " << c.supply << " -> " << c.ret
+                          << " (service " << c.service << ")"
+                          << (c.note.empty() ? std::string()
+                                             : "  -- " + c.note)
+                          << "\n";
+    }
+
     // ---- The DECLARED INTERIORS (0/internalStates/<SECTOR>/<unit>) --------
     //  A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT: `0/` carries one file per
     //  stream (the boundary) and, under `internalStates/`, one file per unit
@@ -3642,6 +3669,20 @@ int Flowsheet::solve(const DictPtr& dict,
             boundaryAliasOf_[bare] = m.first;
         }
     }
+
+    // ---- Declared utility circuits: the CONSERVATION half ---------------
+    //  Component-wise conservation across the declared pair is NECESSARY and
+    //  NOT SUFFICIENT, and it is not a law of utilities -- a cooling tower
+    //  with makeup, evaporation, drift and blowdown does not conserve across
+    //  two streams and is a real plant.  What a failure contradicts is the
+    //  two-stream DECLARATION, and the refusal says so (UtilityCircuit.cpp).
+    //
+    //  Checked against the CONVERGED state only: a non-converged registry is
+    //  not an answer, and refusing a declaration on the strength of one would
+    //  accuse the case of something the solver has not finished saying.
+    if (!utilityCircuitDecls.empty() && planConverged)
+        utilityCircuits::validateConservation(utilityCircuitDecls, streams_,
+                                              thermo);
 
     // ---- Summary -------------------------------------------------------
     std::cout << "\n================  Flowsheet summary  ================\n";

@@ -41,6 +41,7 @@ Description
 #include "thermo/ElementComposition.H"
 #include "core/Advisory.H"
 #include "streams/ProcessStream.H"
+#include "streams/StreamMass.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/flash/IsothermalFlash.H"   // solveCore: two-phase split enthalpy
 #include "unitOperations/flash/StreamEquilibrium.H" // the ONE resolve-and-price home
@@ -55,23 +56,14 @@ Description
 namespace Choupo {
 namespace reporting {
 
-// Per-component mass flow [kg/h] of a stream: F[kmol/s]*z_i*MW_i*3600.
-inline std::vector<scalar> componentMassFlow(const ProcessStream& s,
-                                             const ThermoPackage& thermo)
-{
-    const std::size_t n = thermo.n();
-    std::vector<scalar> m(n, 0.0);
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        const scalar zi = (i < s.z.size()) ? s.z[i] : 0.0;
-        m[i] = s.F * zi * thermo.comp(i).MW() * 3600.0;
-        // Solid phase: the particulate carried in s[i] adds to the
-        // component mass flow so balances close over the solid too.
-        if (i < s.s.size())
-            m[i] += s.s[i] * thermo.comp(i).MW() * 3600.0;
-    }
-    return m;
-}
+// Per-component mass flow [kg/h] of a stream: F[kmol/s]*z_i*MW_i*3600, plus
+// the crystals in s[i].  THE FUNCTION MOVED DOWN to `streams/StreamMass.H`
+// (2026-09-08), beside the two total-mass views it belongs with, so a reader
+// BELOW `reporting` can call it instead of writing the loop again -- the
+// declared-utility circuit check compares two streams component by component
+// from band 3.  This alias keeps the `reporting::componentMassFlow` spelling
+// every balance surface already uses, pointing at the one home.
+using Choupo::componentMassFlow;
 
 // The plant-boundary ELEMENT aggregation -- ONE routine shared by the
 // elementBalance report and the spreadsheet sheet (never duplicated).

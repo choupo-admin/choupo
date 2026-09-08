@@ -144,3 +144,34 @@ units
     { name T201;  type storageTank;  in productNH3;  outputs ( productStored );
       operation { residenceTime 48 h; } }
 );
+
+//  THE COOLING WATER IS A DECLARED CIRCUIT, NOT PROCESS MATERIAL.
+//  `cw` enters the plant, takes the condenser duty at `waterCooler`, and
+//  leaves as `cwOut` -- the same 9007.5 t/h of water, unchanged in
+//  composition.  Modelled as an ordinary pair of process streams it is
+//  99.222 % of the mass in this plant's own material balance, so the
+//  100.0000 % closure the report used to print was passing by DILUTION: the
+//  real process material is 70 637 kg/h, a factor of 128 smaller, and a 1 %
+//  loss of syngas would have moved that total by 0.008 % -- invisible at the
+//  four decimals the report prints.
+//
+//  Declaring it here does NOT remove it from any physical check: the
+//  per-unit balances, the element balance and the energy balance still count
+//  every stream, and the engine refuses this declaration if the pair is not
+//  a boundary inlet/outlet of one unit or does not conserve component-wise.
+//  What it buys is a SECOND scope in the plant summary -- the process
+//  closure, computed on the 70 637 kg/h that the plant is actually for.
+//
+//  The plant's other three utilities (steamLP, electricity, refrigerationNH3)
+//  are ALLOCATED duties and were never in this balance at all; before this
+//  block, one plant carried two conventions and the noisier one won.
+utilities
+(
+    {
+        name     CW1;
+        service  coolingWater;
+        supply   cw;
+        return   cwOut;
+        note     "closed cooling-water circuit: tower supply at 25 C, return at 35 C";
+    }
+);

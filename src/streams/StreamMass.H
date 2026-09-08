@@ -48,6 +48,8 @@ Description
 #include "ProcessStream.H"
 #include "thermo/ThermoPackage.H"
 
+#include <vector>
+
 namespace Choupo {
 
 // Σ z_i · MW_i  (mole-fraction-weighted molar mass)   [kg/kmol]
@@ -94,6 +96,36 @@ inline scalar F_massTotal(const ProcessStream& s, const ThermoPackage& thermo)
     scalar m = F_mass(s, thermo);
     for (std::size_t i = 0; i < s.s.size() && i < thermo.n(); ++i)
         if (s.s[i] > 0.0) m += s.s[i] * thermo.comp(i).MW();
+    return m;
+}
+
+//  PER-COMPONENT mass flow [kg/h] -- fluid F*z_i*MW_i PLUS the crystals
+//  carried in s[i], on the same "one stream, one semantics" rule
+//  `F_massTotal` states above: a balance surface that dropped the solid
+//  reported flash21's freezer at 58.8 % closure.
+//
+//  IT LIVES HERE, beside the two total-mass views, because it is the same
+//  kind of thing: a mass-basis view of a ProcessStream.  It was written in
+//  `reporting/BalanceMath.H` (band 1), where the balance reports could reach
+//  it and nothing below could -- so the declared-utility circuit check, which
+//  must compare two streams component by component from `streams` (band 3),
+//  would have had to write the loop a second time.  `reporting` keeps its
+//  `reporting::componentMassFlow` spelling as an alias, so every existing
+//  caller reads exactly the same function.
+inline std::vector<scalar> componentMassFlow(const ProcessStream& s,
+                                             const ThermoPackage& thermo)
+{
+    const std::size_t n = thermo.n();
+    std::vector<scalar> m(n, 0.0);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        const scalar zi = (i < s.z.size()) ? s.z[i] : 0.0;
+        m[i] = s.F * zi * thermo.comp(i).MW() * 3600.0;
+        // Solid phase: the particulate carried in s[i] adds to the
+        // component mass flow so balances close over the solid too.
+        if (i < s.s.size())
+            m[i] += s.s[i] * thermo.comp(i).MW() * 3600.0;
+    }
     return m;
 }
 

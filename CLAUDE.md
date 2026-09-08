@@ -1029,6 +1029,51 @@ that CALLS `verdictOf` to publish one — `heatCapacityFit` has no witness and
 only that arm catches it) · `check_verdict_parity`.  Record:
 [`docs/design/the-verdict-that-reached-everyone-except-the-machine.md`](docs/design/the-verdict-that-reached-everyone-except-the-machine.md).
 
+**A PLANT THAT CLOSED ON ITS COOLING WATER (2026-09-08).**  A case may DECLARE
+that a pair of boundary streams is an auxiliary circuit -- `utilities ( { name;
+service; supply; return; note } )` in `system/flowsheetDict` -- and the plant
+material summary then publishes TWO closures, the TOTAL one it always did and a
+PROCESS one with the declared circuits left out.  It is TOPOLOGY (which EDGES
+form the circuit), so it is not in `0/<stream>` (state, rewritten by
+`converged/`) and not on a port (the producer rule replaced 2026-09-07).  **THE
+SEPARATION IS PRESENTATION, NEVER VALIDATION SCOPE** -- the per-unit balances,
+the element balance, the energy balance and every modelled boundary keep
+counting every stream, and that sentence heads both the header and the code
+that computes the scopes.  The criterion is *"transfers matter across the
+process boundary"*, never *"contacts the process"*: the first is checkable and
+the engine checks it (boundary inlet / boundary outlet / one served unit /
+component-wise conservation), which is also why there is NO mandatory `reason`
+-- the Hermia analogy is FALSE, that key states a mechanism nothing can verify,
+and mandatory prose where verification exists is friction rather than rigour.
+A pair that fails to conserve refuses the DECLARATION and not the plant: a
+cooling tower with makeup, evaporation, drift and blowdown is legitimate and
+simply has more than two boundary streams.  Traps paid for: a result handed out
+as POINTERS INTO A TEMPORARY crashed the flagship in `basic_string::_M_create`
+(the 2026-08-04 ActivityResult lesson, one band down); and an EMPTY registry is
+not evidence about a name -- run from a case directory with no `CHOUPO_HOME`
+every directory-scan registry loads nothing, so the first version refused a
+service that exists, and an unloaded catalogue now ANNOUNCES the word as
+unchecked (2026-09-06's rule, mirrored).  Published implies pinned with no new
+row kind: `boundary`'s `name` column stopped being the fixed word `global` and
+now SELECTS the ledger (`global` energy, `mass` material), so every row
+recorded before resolves unchanged -- and the same move had to reach
+`check_energy_boundary_pinned`, which read EVERY `boundary` row as a first-law
+row and would have failed the day someone recorded a mass one: **widening a
+shared vocabulary means finding every reader that assumed it was narrow.**
+NOT done: a branched header (one circuit is one supply, one return, ONE served
+unit -- anything else refuses by name),
+any second scope elsewhere, the `category` overlap (an aggregation LABEL, named
+in `docs/ai/dict-syntax.md`, not closed), and no GUI reader -- which is worth
+knowing rather than filing as a gap, because `gui/src/case/balances.ts` sums
+the material boundary ITSELF, the same second home the first law was taken out
+of on 2026-09-05, so the GUI draws the DILUTED total on a plant that declares
+a circuit.  Gate:
+`check_mass_closure` (extended, not multiplied -- it reads the process closure
+where one is published; 7 sabotages, one of which lands only through the
+MESSAGE because a later guard catches the same probe, and one of which proved a
+gate can go on PASSING while its own claim goes false).  Record:
+[`docs/design/a-plant-that-closed-on-its-cooling-water.md`](docs/design/a-plant-that-closed-on-its-cooling-water.md).
+
 **A DRYER THAT ENDED WETTER THAN IT STARTED (2026-09-04).**  Vítor opened the
 flagship plant on the LIVE SITE and saw mass not conserved; a spray dryer was
 inventing water because its residual-moisture model is a RATIO carried by the

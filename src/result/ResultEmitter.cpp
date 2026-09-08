@@ -1016,6 +1016,39 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
            << ", \"datum\": "         << esc(gb.datum)
            << " }";
     }
+    //  THE PLANT-BOUNDARY MATERIAL SUMMARY, IN TWO SCOPES, ONE LINE -- so the
+    //  golden extractor and the GUI read the same object, exactly as the first
+    //  law above does.  Emitted ONLY when the case DECLARED a utility circuit:
+    //  the object's PRESENCE is the answer to "was anything declared here?",
+    //  and a case with no `utilities` block therefore writes byte-for-byte
+    //  what it wrote before this existed.  A reader that does not find it
+    //  reads the massBalance report's single TOTAL scope, which is the whole
+    //  balance for that case.
+    if (r.globalMassBoundary.present && r.globalMassBoundary.declared)
+    {
+        const auto& gm = r.globalMassBoundary;
+        os << ",\n  \"globalMassBoundary\": { "
+           << "\"declared\": "          << (gm.declared ? "true" : "false")
+           << ", \"n_circuits\": "      << gm.n_circuits
+           << ", \"total_in_kg_per_h\": "  << num(gm.total_in_kg_per_h)
+           << ", \"total_out_kg_per_h\": " << num(gm.total_out_kg_per_h)
+           //  A closure needs a boundary: `null` rather than a 0.0000 that
+           //  reads as the gravest violation possible, about nothing (the
+           //  report's own `n/a` rule, and the 2026-09-08 percentage-with-no-
+           //  scale rule one balance over).
+           << ", \"total_closure_pct\": "
+           << (gm.total_closure_available ? num(gm.total_closure_pct)
+                                          : std::string("null"))
+           << ", \"process_in_kg_per_h\": "  << num(gm.process_in_kg_per_h)
+           << ", \"process_out_kg_per_h\": " << num(gm.process_out_kg_per_h)
+           << ", \"process_closure_pct\": "
+           << (gm.process_closure_available ? num(gm.process_closure_pct)
+                                            : std::string("null"))
+           << ", \"utility_excluded_kg_per_h\": "
+           << num(gm.utility_excluded_kg_per_h)
+           << ", \"utility_fraction_pct\": " << num(gm.utility_fraction_pct)
+           << " }";
+    }
     if (r.economics.present)
     {
         const auto& e = r.economics;

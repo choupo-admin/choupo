@@ -693,6 +693,33 @@ utility loop is written as ordinary streams in `0/`, with `category` tying
 them to the service.  See `tutorials/steady/utilities/utility01_dowtherm_preheat`
 for the worked shape.
 
+## `utilities ( ... )` — declaring a CIRCUIT in the flowsheetDict
+
+A top-level block beside `units ( ... )`, one entry per auxiliary circuit:
+
+```
+utilities
+(
+    { name CW1; service coolingWater; supply cw; return cwOut;
+      note "closed cooling-water circuit"; }     // `note` is OPTIONAL
+);
+```
+
+It declares that `cw`/`cwOut` are the two ends of a circuit that serves the
+plant without transferring matter across the process boundary — so the
+plant-level material SUMMARY can be presented on process matter beside the
+total.  It is TOPOLOGY (which edges form the circuit), which is why it is here
+and not in `0/<stream>`.  The full contract, the refusals and what it does NOT
+change are in [`case-layout.md`](case-layout.md).
+
+**How it differs from `category`, above.**  They answer two questions and
+neither replaces the other: `category` is an AGGREGATION LABEL on a stream's
+state file — *how much of this service does the plant draw?*, summed into
+`reports/utilities/consumption.csv` — while a `utilities` entry is a
+declaration about the plant's BOUNDARY — *does this pair carry process matter
+in or out?*.  A case may carry both; `category` on its own changes no balance,
+and a `utilities` entry on its own does not aggregate a consumption total.
+
 ## Tear seeds, and the convergence aids a stream does NOT carry
 
 **A stream has no `bounds {}` block.**  A cage on a tear iterate (absolute or

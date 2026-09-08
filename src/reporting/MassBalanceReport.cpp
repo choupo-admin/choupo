@@ -31,10 +31,12 @@ License
 #include "BalanceMath.H"
 #include "Topology.H"
 #include "streams/StreamMass.H"
+#include "streams/UtilityCircuit.H"
 
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 
@@ -57,20 +59,49 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     // only by observer units (topo.observedFeeds) is a state being examined,
     // not matter being processed, and counting it made bubbleT01 publish
     // closure 0 % about a correct saturation case.
+    //  THE SECOND SCOPE (2026-09-08).  A case may DECLARE that a pair of
+    //  boundary streams is an auxiliary circuit; the TOTAL scope below is
+    //  unchanged by that declaration, and a PROCESS scope is presented beside
+    //  it with those streams left out.  THE SEPARATION IS PRESENTATION,
+    //  NEVER VALIDATION SCOPE -- the per-unit balances further down, the
+    //  element balance and the energy balance all keep counting every stream.
+    //  The declaration itself is read, and every refusal it can earn is
+    //  raised, by `streams/UtilityCircuit` at the flowsheet seam; here it is
+    //  only a set of names to present apart.
+    const auto circuits = utilityCircuits::read(ctx.flowsheetDict);
+    const auto excluded = utilityCircuits::excludedStreams(circuits);
+
     std::vector<scalar> in(n, 0.0), out(n, 0.0);
+    std::vector<scalar> inProc(n, 0.0), outProc(n, 0.0);
+    //  What the declaration takes out, kg/h, counted on the SUPPLY side only:
+    //  the return side carries the same matter (the engine refuses a declared
+    //  pair that does not conserve component-wise), so adding both would
+    //  report twice the mass that was set aside.
+    scalar utilityMass = 0.0;
     for (const auto& name : topo.balanceFeeds)
     {
         auto it = ctx.result.streams.find(name);
         if (it == ctx.result.streams.end()) continue;
         const auto m = componentMassFlow(it->second, ctx.thermo);
-        for (std::size_t i = 0; i < n; ++i) in[i] += m[i];
+        const bool util = excluded.count(name) > 0;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            in[i] += m[i];
+            if (util) utilityMass += m[i];
+            else      inProc[i]   += m[i];
+        }
     }
     for (const auto& name : topo.products)
     {
         auto it = ctx.result.streams.find(name);
         if (it == ctx.result.streams.end()) continue;
         const auto m = componentMassFlow(it->second, ctx.thermo);
-        for (std::size_t i = 0; i < n; ++i) out[i] += m[i];
+        const bool util = excluded.count(name) > 0;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            out[i] += m[i];
+            if (!util) outProc[i] += m[i];
+        }
     }
 
     {
@@ -98,6 +129,43 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         else
             f << "closure_pct,,," << std::setprecision(4)
               << closurePct(totIn, totOut) << "\n";
+
+        //  THE PROCESS SCOPE IS APPENDED, AND NOTHING ABOVE MOVES.  `TOTAL`
+        //  and `closure_pct` are the same rows in the same places they have
+        //  always been -- they remain the TOTAL scope, over every boundary
+        //  stream -- and a case that declares no circuit writes a
+        //  byte-identical file.  The rows below follow the file's own
+        //  convention: a named row carries in/out/net, and a closure row
+        //  carries only the fourth column.
+        scalar procIn = 0.0, procOut = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            procIn  += inProc[i];
+            procOut += outProc[i];
+        }
+        const bool noProcBoundary = (procIn == 0.0 && procOut == 0.0);
+        if (!circuits.empty())
+        {
+            for (const auto& c : circuits)
+            {
+                scalar cs = 0.0, cr = 0.0;
+                auto si = ctx.result.streams.find(c.supply);
+                auto ri = ctx.result.streams.find(c.ret);
+                if (si != ctx.result.streams.end())
+                    for (const auto v : componentMassFlow(si->second, ctx.thermo)) cs += v;
+                if (ri != ctx.result.streams.end())
+                    for (const auto v : componentMassFlow(ri->second, ctx.thermo)) cr += v;
+                f << "utility." << c.name << "," << std::fixed << std::setprecision(4)
+                  << cs << "," << cr << "," << (cr - cs) << "\n";
+            }
+            f << "PROCESS_TOTAL," << std::fixed << std::setprecision(4)
+              << procIn << "," << procOut << "," << (procOut - procIn) << "\n";
+            if (noProcBoundary)
+                f << "process_closure_pct,,,n/a\n";
+            else
+                f << "process_closure_pct,,," << std::setprecision(4)
+                  << closurePct(procIn, procOut) << "\n";
+        }
         f.close();
 
         // Data/metadata separation (the elementBalance.meta contract): the
@@ -138,6 +206,58 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
                 std::cout << "   (global closure "
                           << std::fixed << std::setprecision(3)
                           << closurePct(totIn, totOut) << " %)\n";
+        }
+
+        //  THE PLANT-BOUNDARY MATERIAL SUMMARY TRAVELS ON THE RESULT, in two
+        //  scopes, so the GUI DRAWS the engine's arithmetic instead of summing
+        //  streams itself -- the 2026-09-05 first-law rule, applied to matter.
+        {
+            auto& gm = ctx.result.globalMassBoundary;
+            gm.present            = true;
+            gm.declared           = !circuits.empty();
+            gm.n_circuits         = static_cast<int>(circuits.size());
+            gm.total_in_kg_per_h  = totIn;
+            gm.total_out_kg_per_h = totOut;
+            gm.total_closure_pct  = closurePct(totIn, totOut);
+            gm.total_closure_available = !noBoundary;
+            //  With NO declaration the process scope IS the total one: the
+            //  fields are equal because the two questions have one answer,
+            //  never because a number was invented for a scope that does not
+            //  exist.
+            gm.process_in_kg_per_h  = procIn;
+            gm.process_out_kg_per_h = procOut;
+            gm.process_closure_pct  = closurePct(procIn, procOut);
+            gm.process_closure_available = !noProcBoundary;
+            gm.utility_excluded_kg_per_h = utilityMass;
+            gm.utility_fraction_pct = (totIn > 0.0) ? 100.0 * utilityMass / totIn
+                                                    : 0.0;
+        }
+
+        //  ANNOUNCED, never discovered.  A student must SEE that a scope was
+        //  narrowed and by how much: on ammonia02 the declared cooling water
+        //  is 99.2 % of the mass in the balance, which is the whole reason
+        //  its 100.0000 % total closure said nothing about the process.
+        if (!circuits.empty())
+        {
+            std::ostringstream msg;
+            msg.setf(std::ios::fixed);
+            msg.precision(3);
+            msg << "excluded " << utilityMass << " kg/h declared as utility ("
+                << ((totIn > 0.0) ? 100.0 * utilityMass / totIn : 0.0)
+                << " % of the total) across " << circuits.size()
+                << " declared circuit(s); ";
+            if (noProcBoundary)
+                msg << "the process scope has no material boundary left, so "
+                       "there is no process closure to state";
+            else
+                msg << "process closure " << closurePct(procIn, procOut)
+                    << " % computed on " << procIn << " kg/h.  The TOTAL "
+                       "scope above is unchanged and still counts every "
+                       "boundary stream";
+            AdvisoryLog::instance().add("massBalance", "info",
+                                        "declared utility circuits", msg.str());
+            if (ctx.verbosity >= 2)
+                std::cout << "  [utilities] " << msg.str() << "\n";
         }
     }
 

@@ -555,6 +555,63 @@ can confirm the graph says what you think it says before spending a solve.
 A case shipping its own `code/` gets a warning, not a refusal, for types
 only `bin/buildCode`'s case-local binary registers.
 
+## Declaring a UTILITY CIRCUIT (`utilities` in the flowsheetDict)
+
+A plant that models its cooling water as an explicit pair of streams puts that
+water into its own material balance — and a cooling-water flow is typically
+one or two orders of magnitude larger than the process material, so the
+plant-level closure stops being a statement about the process.  Measured on
+`tutorials/plant/ammonia02_full_plant`: the cooling water is **99.2 % of the
+mass in the balance**, so a 1 % loss of syngas would move the reported closure
+by 0.008 % — invisible at the four decimals the report prints.
+
+A case may therefore DECLARE that a pair of boundary streams is an auxiliary
+circuit.  The block is TOPOLOGY, so it lives in `system/flowsheetDict` beside
+`units ( ... )` — not in `0/<stream>` (that is state, and it is rewritten in
+`converged/`) and not on a unit port (a stream is an EDGE; declaring its role
+at one endpoint is the producer rule replaced on 2026-09-07):
+
+```
+utilities
+(
+    {
+        name     CW1;                              // this circuit's name
+        service  coolingWater;                     // data/standards/utilities/<service>.dat
+        supply   cw;                               // the stream entering the plant
+        return   cwOut;                            // the stream leaving it
+        note     "closed cooling-water circuit";   // OPTIONAL, free text
+    }
+);
+```
+
+What it changes, and what it does NOT:
+
+* `reports/balances/massBalance.csv` gains rows — one per circuit, a
+  `PROCESS_TOTAL` and a `process_closure_pct`.  `TOTAL` and `closure_pct` do
+  not move: they are still the TOTAL scope, over every boundary stream.
+* the run ANNOUNCES how much mass was excluded and what share of the total it
+  was, so the narrowing is seen and never discovered.
+* **nothing else.**  The separation is PRESENTATION, never validation scope:
+  the per-unit balances, the element balance, the energy balance and every
+  explicitly modelled boundary keep covering all streams, utilities included.
+
+Absent the block, a case behaves exactly as before.
+
+The criterion is *"transfers matter across the process boundary"*, never
+*"contacts the process"* — and the engine checks it rather than taking your
+word: the declaration REFUSES by name when `supply` and `return` are the same
+stream, when a stream is claimed by two circuits, when `service` is not a
+record in the utility catalogue, when `supply` is not a plant boundary inlet
+or `return` not a plant boundary outlet, when the two ends are not one unit's
+utility side, and when the pair does not conserve component-wise.
+
+That last refusal is about the DECLARATION, not about your plant.  A cooling
+tower with makeup, evaporation, drift and blowdown is perfectly legitimate and
+simply does not conserve across two streams: model those streams explicitly
+and they stay in the process material balance, where they belong.  There is no
+`reason` key — the claim is verifiable, and the engine verifies it, so prose
+would be friction rather than rigour; `note` is offered and never required.
+
 ## The sequential-plan contract (tears + declaration order)
 
 The solver executes the units **in the order you declare them** — it never

@@ -27,8 +27,21 @@ directions:
       cancellation noise -- the column13 lesson), and that threshold has ONE
       home, in `bin/runTests`' generator.  This gate does not repeat it: it
       requires the three terms and checks any residual row it finds under (b).
-  (b) PINNED IS PUBLISHED: every `boundary` row names a field the run still
-      emits.  A row matching nothing reads as coverage it does not give.
+  (b) PINNED IS PUBLISHED: every `boundary global` row names a field the run
+      still emits.  A row matching nothing reads as coverage it does not give.
+
+THE `boundary` KIND NAMES A LEDGER (2026-09-08).  Its `name` column used to be
+the fixed word `global`, because there was one boundary ledger; it now SELECTS
+one -- `global` is the first law, `mass` is the plant material summary in its
+two scopes (`globalMassBoundary`).  This gate is about the FIRST LAW, so it
+reads the `global` rows and COUNTS the rest rather than accusing them.
+MEASURED rather than supposed, by adding one `boundary mass
+process_closure_pct` row to a corpus golden by hand: with the old ledger-blind
+read this gate FAILED -- "pins `boundary mass process_closure_pct`, which the
+run does not emit" -- so recording the mass rows would have broken a gate about
+energy.  With the ledger-aware read it passes and says how many rows belong to
+the other ledger.  What checks a `mass` row is the row itself (the golden
+compares it) plus `check_mass_closure`, which holds the closure it carries.
 
 Reads the suite's single-pass cache (CHOUPO_SUITE_OUTPUTS) when present and
 runs the case otherwise.  A case that exits non-zero, or emits no block
@@ -89,16 +102,25 @@ def published(case: Path):
 
 
 def pinned(case: Path):
-    rows = []
+    """-> (this gate's `global` rows, count of rows naming ANOTHER ledger).
+
+    The second number is returned and reported rather than dropped: a gate
+    that silently ignores rows of its own KIND is hiding the fact that another
+    ledger exists at all."""
+    rows, other = [], 0
     for line in (case / "expected").read_text(errors="replace").splitlines():
         parts = line.split()
         if parts[:1] == ["boundary"] and len(parts) >= 4:
-            rows.append((parts[1], parts[2]))
-    return rows
+            if parts[1] == "global":
+                rows.append((parts[1], parts[2]))
+            else:
+                other += 1
+    return rows, other
 
 
 def main() -> int:
     problems, npin, ncase, notrun, nskipped = [], 0, 0, [], 0
+    nother = 0      # `boundary` rows naming a ledger other than the first law
     for exp in sorted(ROOT.glob("tutorials/**/expected")):
         case = exp.parent
         if not (case / "system/controlDict").exists():
@@ -106,7 +128,8 @@ def main() -> int:
         if (case / ".known-broken").exists() or (case / ".expect-nonconvergence").exists():
             continue
         pub = published(case)
-        pin = pinned(case)
+        pin, nOtherLedger = pinned(case)
+        nother += nOtherLedger
         rel = case.relative_to(ROOT).as_posix()
         if pub is OUT_OF_SCOPE:
             nskipped += 1
@@ -148,6 +171,10 @@ def main() -> int:
           f"directions (published implies pinned for the three terms; every pinned row is still "
           f"emitted).  The residual row follows the generator's own >= 1 W rule and is checked only "
           f"for existence here.  "
+          + (f"{nother} `boundary` row(s) name ANOTHER ledger (today: `mass`, the "
+             f"plant material summary) and are outside this gate's subject -- counted "
+             f"here rather than dropped, and held by the golden itself and by "
+             f"check_mass_closure.  " if nother else "")
           + (f"NOT JUDGED standalone: {len(notrun)} case(s) whose bare run fails here ({', '.join(notrun)}) "
              f"-- judged under the suite, whose cache carries the harness's own run.  " if notrun else "")
           + "NOT CHECKED: whether the engine's ledger is right, and the per-unit residuals the report "

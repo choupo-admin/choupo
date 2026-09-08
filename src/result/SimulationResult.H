@@ -317,6 +317,53 @@ struct SimulationResult
         std::string datum;            // the enthalpy reference every term is on ("elements")
     };
     GlobalEnergyBoundary                                          globalEnergyBoundary;
+    //  THE PLANT-BOUNDARY MATERIAL SUMMARY, IN TWO SCOPES (2026-09-08).
+    //  Stamped by the massBalance report -- the ONE home of that arithmetic,
+    //  on the same rule `globalEnergyBoundary` was put under on 2026-09-05:
+    //  the engine decides and the GUI draws.
+    //
+    //  The TOTAL scope is what the report has always published: every
+    //  boundary stream, utilities included.  The PROCESS scope appears only
+    //  when the case DECLARES a utility circuit (`utilities ( ... )` in the
+    //  flowsheetDict), and is the same balance with the declared circuits'
+    //  supply and return left out.  Both travel, because the second is a
+    //  presentation of the first and a reader must be able to see both:
+    //  ammonia02's cooling water is 99.2 % of the mass in its own balance, so
+    //  its 100.0000 % closure passed by DILUTION -- a 1 % loss of syngas
+    //  would have read as 0.008 %.
+    //
+    //  THE SEPARATION IS PRESENTATION, NEVER VALIDATION SCOPE: the per-unit
+    //  balances, the element balance and the energy balance keep covering
+    //  every stream.  `present` is false until the report runs; `declared`
+    //  false means no circuit was declared and the process scope IS the total
+    //  one (the fields are then equal, never invented).
+    //
+    //  The JSON block is emitted only when `declared` -- so a case with no
+    //  `utilities` block writes byte-for-byte what it wrote before this
+    //  existed, and the block's PRESENCE answers "was anything declared".
+    struct GlobalMassBoundary
+    {
+        bool   present            = false;
+        bool   declared           = false;   // a `utilities` block was read
+        int    n_circuits         = 0;
+        scalar total_in_kg_per_h  = 0.0;
+        scalar total_out_kg_per_h = 0.0;
+        scalar total_closure_pct  = 0.0;
+        scalar process_in_kg_per_h  = 0.0;
+        scalar process_out_kg_per_h = 0.0;
+        scalar process_closure_pct  = 0.0;
+        //  What the declaration removed from the presented summary, and what
+        //  share of the total it was -- the number that says whether the
+        //  total closure was a statement about the process at all.
+        scalar utility_excluded_kg_per_h = 0.0;
+        scalar utility_fraction_pct      = 0.0;
+        //  A closure needs a boundary.  Both flags follow the report's own
+        //  `n/a` rule: nothing crossing means there is no closure to state,
+        //  and 0/0 printed as 0.0000 reads as the gravest violation possible.
+        bool   total_closure_available   = true;
+        bool   process_closure_available = true;
+    };
+    GlobalMassBoundary                                            globalMassBoundary;
     // Economic appraisal: the headline scalars + the full year-by-year DCF
     // table, populated by EconomicsPass.  `present` is false until the pass
     // runs.  The .ods / .csv cash-flow spreadsheet is built from this.

@@ -594,13 +594,27 @@ get_equipment() {
         }'
 }
 
-#  boundary global <field> -- one number of the plant-boundary first law the
-#  energyBalance report decided (`globalEnergyBoundary`, ONE object on ONE
-#  line, emitted 2026-09-05 so the GUI draws the engine's ledger instead of a
-#  sum of its own).  `name` is the fixed word `global`: there is one boundary.
+#  boundary <ledger> <field> -- one number of a plant-boundary ledger the
+#  engine decided, each ONE object on ONE line so this reader and the GUI see
+#  the same thing.  `name` selects WHICH ledger, and it is a fixed vocabulary:
+#
+#     global   the first law (`globalEnergyBoundary`, 2026-09-05)
+#     mass     the material summary in its two scopes (`globalMassBoundary`,
+#              2026-09-08) -- emitted only by a case that DECLARES a utility
+#              circuit, whose PROCESS closure is a number a reader acts on and
+#              so must be pinnable (published implies pinned).
+#
+#  `global` keeps its spelling and its object, so every row recorded before
+#  today resolves exactly as it did.  An unknown ledger word yields empty ->
+#  the row reports MISSING, never a silent pass.
 get_boundary() {
-    local out="$1" key="$3"
-    printf '%s\n' "$out" | grep -m1 '"globalEnergyBoundary": {' \
+    local out="$1" name="$2" key="$3" obj=""
+    case "$name" in
+        global) obj="globalEnergyBoundary" ;;
+        mass)   obj="globalMassBoundary" ;;
+        *)      return 0 ;;
+    esac
+    printf '%s\n' "$out" | grep -m1 "\"$obj\": {" \
         | grep -oE "\"$key\": *-?[0-9][0-9.eE+-]*" | sed -E 's/^"[^"]*": *//'
 }
 
@@ -1169,6 +1183,22 @@ auto_generate() {
             if [ -n "$gv" ] && awk -v v="$gv" 'BEGIN{ if (v<0) v=-v; exit (v >= 1e-3) ? 0 : 1 }'; then
                 printf 'boundary %-20s %-16s %-18s %s\n' global residual_kW "$gv" "$reltol"
             fi
+        fi
+        #  the plant-boundary MATERIAL summary, in its two scopes (2026-09-08).
+        #  Emitted only by a case that DECLARES a utility circuit -- and what
+        #  such a case needs pinned is the PROCESS scope, because that is the
+        #  number the declaration produced and the one a reader acts on: the
+        #  TOTAL closure on such a plant is diluted by the circuit's own mass
+        #  (99.2 % of it on the ammonia plant) and would pass whatever the
+        #  process did.  The excluded mass is pinned beside it, so a
+        #  declaration that silently stops excluding anything is visible.
+        gmb=$(printf '%s\n' "$out" | grep -m1 '"globalMassBoundary": {')
+        if [ -n "$gmb" ]; then
+            for gk in process_in_kg_per_h process_out_kg_per_h \
+                      process_closure_pct utility_excluded_kg_per_h; do
+                gv=$(printf '%s\n' "$gmb" | grep -oE "\"$gk\": *-?[0-9][0-9.eE+-]*" | sed -E 's/^"[^"]*": *//')
+                [ -n "$gv" ] && printf 'boundary %-20s %-16s %-18s %s\n' mass "$gk" "$gv" "$reltol"
+            done
         fi
         #  overlay AADs: how far each model sits from the MEASURED dataset.
         #  These are the numbers a `compare_*` case exists to publish, and
