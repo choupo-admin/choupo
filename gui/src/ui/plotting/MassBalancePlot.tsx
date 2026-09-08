@@ -49,10 +49,21 @@ License
 
   The chart's title shows the closure error |IN - OUT| / IN; a
   well-converged steady-state run closes to << 0.1 %.
+
+  IT DRAWS THE PROCESS SCOPE (2026-09-08).  A case may DECLARE that a pair of
+  boundary streams is an auxiliary circuit -- cooling water, a hot-oil loop.
+  On the ammonia plant the declared cooling water is 99.2 % of the mass
+  crossing the boundary, so every process component was a sliver of pixel
+  against it and the chart said nothing about the process at all (Vitor, on
+  the live site).  The bars are therefore the process scope; what was set
+  aside is NAMED under the title with its share, never silently dropped, and
+  never put on the same axis -- an axis that must hold 9 007 500 kg/h beside
+  70 637 shows one bar.  The engine decides which stream belongs to which
+  circuit and stamps it; this file only groups by that stamp.
 \*---------------------------------------------------------------------------*/
 
 import type { StreamResult } from "../../adapters/SolverAdapter.js";
-import { massPerComponent } from "../../case/balances.js";
+import { massBalance } from "../../case/balances.js";
 import {
   flowBasis,
   type FlowUnit,
@@ -78,50 +89,18 @@ export function MassBalancePlot({
     ? flowUnit
   : flowUnit.endsWith("/h") ? "kg/h" : "kg/s";
 
-  // Collect every component that shows up in any stream's
-  // composition or solids block.
-  const componentSet = new Set<string>();
-  for (const s of streams) {
-    for (const c of Object.keys(s.composition)) componentSet.add(c);
-    if (s.solids) for (const c of Object.keys(s.solids)) componentSet.add(c);
-  }
-  const components = [...componentSet];
-
-  //  Per-stream per-component mass flow [kg/s] -- from the ONE home,
-  //  `case/balances.massPerComponent`.  This plot used to carry its own
-  //  copy of that arithmetic, and the copy is exactly why the chart went
-  //  on showing out > in after the shared function was corrected: two
-  //  homes for one computation, and the fix reached only one of them
-  //  (2026-08-10, found by Vitor on flash21 AFTER a pull and a rebuild --
-  //  the second sighting of the same wrong bars).  A chart must not own
+  //  THE BALANCE IS NOT COMPUTED HERE.  `case/balances.massBalance` is the
+  //  ONE home -- the same object the Streams summary band and the Reports
+  //  table read -- so the three surfaces cannot quote a student three
+  //  different totals.  This plot used to carry its own grouping beside the
+  //  shared per-component conversion, which is exactly how it went on showing
+  //  out > in after the shared function was corrected (2026-08-10, found by
+  //  Vitor on flash21 after a pull and a rebuild).  A chart must not own
   //  physics; it draws what the balance says.
-  const massPerComp = (s: StreamResult) =>
-    massPerComponent(s, components, componentMolarMass);
-
-  const feeds    = streams.filter((s) => s.role === "feed");
-  const products = streams.filter((s) => s.role === "product");
-
-  const totals = (group: StreamResult[]): { [c: string]: number } => {
-    const acc: { [c: string]: number } = {};
-    for (const c of components) acc[c] = 0;
-    for (const s of group) {
-      const m = massPerComp(s);
-      for (const c of components) acc[c] = (acc[c] ?? 0) + (m[c] ?? 0);
-    }
-    return acc;
-  };
-
-  const inTotals  = totals(feeds);
-  const outTotals = totals(products);
-
-  // One Plotly bar trace per component.  Each trace contributes its
-  // value to the IN bar and the OUT bar; barmode 'stack' assembles
-  // them visually.  Skip components that are 0 on both sides --
-  // common when only a subset of standards-catalogue species is in
-  // the case.
-  const visibleComponents = components.filter(
-    (c) => inTotals[c]! > 1e-15 || outTotals[c]! > 1e-15,
-  );
+  const mb = massBalance(streams, componentMolarMass);
+  const inTotals = mb.inPerComp;
+  const outTotals = mb.outPerComp;
+  const visibleComponents = mb.visibleComponents;
 
   // Convert kg/s -> user unit.  formatFlow returns a string, so we
   // compute the numeric factor here for the y values.
@@ -159,7 +138,22 @@ export function MassBalancePlot({
   // The in/out/closure numbers now live in the Streams-workspace summary
   // band (case/balances.ts is the shared source); this plot's title is just
   // the label so the figure isn't a wall of text.
-  const title = `Mass balance — plant boundary (${yUnit})`;
+  //
+  //  WHAT WAS SET ASIDE IS NAMED, WITH ITS SHARE.  Silence here would leave a
+  //  reader unable to tell a plant with no cooling water from one whose
+  //  cooling water was declared: the second line appears only when the case
+  //  DECLARES a circuit, and its absence therefore keeps meaning "nothing was
+  //  declared" (the 2026-09-06 default-announcement rule).
+  const setAside = mb.utilityCircuits.length > 0
+    ? `<br><span style="font-size:11px">process scope — declared utility `
+      + `circuit${mb.utilityCircuits.length > 1 ? "s" : ""} `
+      + mb.utilityCircuits
+          .map((k) => `${k} ${fmt((mb.utilityPerCircuit[k] ?? 0) * factor)} ${yUnit}`)
+          .join(", ")
+      + ` set aside (${(100 * mb.utilitySum / (mb.utilitySum + mb.inSum)).toFixed(1)} % `
+      + `of the boundary total)</span>`
+    : "";
+  const title = `Mass balance — plant boundary (${yUnit})${setAside}`;
 
   // Empty state: no boundary streams classified.  Should not happen
   // for a valid flowsheet, but easy to surface.

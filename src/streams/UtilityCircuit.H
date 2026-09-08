@@ -149,8 +149,18 @@ void validateConservation(const std::vector<UtilityCircuit>&       circuits,
                           const std::map<std::string, ProcessStream>& streams,
                           const ThermoPackage&                     thermo);
 
+//- Which declared circuit each utility stream belongs to, keyed by stream
+//  name.  This is the ONE home of that attribution: the result stamps it on
+//  every stream it emits, so a reader that must PRESENT the two scopes
+//  separately -- the GUI's plant material balance is the first -- groups by
+//  what the engine decided instead of re-reading the `utilities` block and
+//  matching names for itself.  Empty when nothing is declared.
+std::map<std::string, std::string>
+circuitOfStream(const std::vector<UtilityCircuit>& circuits);
+
 //- The stream names a PRESENTED process balance leaves out.  Nothing else
-//  may use this to skip a stream -- see the invariant at the top.
+//  may use this to skip a stream -- see the invariant at the top.  Derived
+//  from `circuitOfStream` so the two answers cannot drift apart.
 std::set<std::string> excludedStreams(const std::vector<UtilityCircuit>& circuits);
 
 //- Which declared circuit a unit's utility side belongs to, keyed by unit

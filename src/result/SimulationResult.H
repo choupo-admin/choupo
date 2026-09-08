@@ -109,6 +109,15 @@ struct SimulationResult
     // as a COLUMN -- one row per physical stream, the author's boundary name
     // beside it.  Empty on a case whose plant renames nothing.
     std::map<std::string,std::string>                              boundaryOutletLabelOf;
+    //  stream name -> the DECLARED utility circuit it belongs to, stamped by
+    //  the massBalance report from `streams/UtilityCircuit` -- the ONE home of
+    //  that attribution.  A reader that must present the process scope apart
+    //  from the utilities (the GUI's material-balance plot is the first, where
+    //  ammonia02's cooling water is 99.2 % of the mass and hides everything
+    //  else) GROUPS BY THIS instead of re-reading the `utilities` block and
+    //  matching stream names for itself -- the second home the first law was
+    //  taken out of on 2026-09-05.  Empty unless the case declares a circuit.
+    std::map<std::string,std::string>                              utilityCircuitOf;
     std::map<std::string, std::map<std::string, scalar>>           kpis;
     std::vector<FlatUnit>                                          topology;
 

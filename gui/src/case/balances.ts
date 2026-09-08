@@ -47,16 +47,30 @@ import type { StreamResult } from "../adapters/SolverAdapter.js";
 export interface MassBalance {
   /** Every component seen in any stream's composition / solids. */
   components: string[];
-  /** Components with nonzero mass on either side (worth showing). */
+  /** Components with nonzero mass on either side (worth showing) --
+   *  in the PROCESS scope, so a declared circuit's water does not put a
+   *  component on the axis that no process stream carries. */
   visibleComponents: string[];
-  /** kg/s in / out, per component. */
+  /** kg/s in / out, per component -- the PROCESS scope (see below). */
   inPerComp: Record<string, number>;
   outPerComp: Record<string, number>;
-  /** kg/s totals. */
+  /** kg/s totals, PROCESS scope. */
   inSum: number;
   outSum: number;
-  /** |in - out| / in. */
+  /** |in - out| / in, PROCESS scope. */
   closureErr: number;
+  /** kg/s totals over EVERY boundary stream, declared circuits included --
+   *  what this function returned before the two scopes existed. */
+  totalInSum: number;
+  totalOutSum: number;
+  totalClosureErr: number;
+  /** The declared circuits present among the boundary streams, and what each
+   *  set aside [kg/s], counted on the SUPPLY side only (the return side is
+   *  the same matter; the engine refuses a declared pair that does not
+   *  conserve component-wise, so adding both would double it). */
+  utilityCircuits: string[];
+  utilityPerCircuit: Record<string, number>;
+  utilitySum: number;
 }
 
 /** Per-component mass flow of one stream [kg/s]: F·x·MW.
@@ -102,6 +116,25 @@ export function massBalance(
   const feeds = streams.filter((s) => s.role === "feed" && !s.observed);
   const products = streams.filter((s) => s.role === "product");
 
+  //  TWO SCOPES, AND THE ENGINE DECIDED WHICH STREAM IS WHICH (2026-09-08).
+  //  A case may DECLARE that a pair of boundary streams is an auxiliary
+  //  circuit; `utilityCircuit` is the engine's own stamp for that, carried
+  //  per stream exactly like `aliasOf`.  Nothing here reads the `utilities`
+  //  block or matches names -- that would be the second home the first law
+  //  was taken out of on 2026-09-05, one balance over.
+  //
+  //  WHY THE PROCESS SCOPE IS THE ONE DRAWN.  On the ammonia plant the
+  //  declared cooling water is 99.2 % of the mass crossing the boundary:
+  //  every process component is a sliver against it, and the closure it
+  //  yields is a statement about the cooling tower.  THE SEPARATION IS
+  //  PRESENTATION, NEVER VALIDATION SCOPE -- the engine's per-unit, element
+  //  and energy balances keep counting every stream, utilities included, and
+  //  the total scope stays here beside the process one rather than vanishing.
+  const isUtility = (s: StreamResult): boolean =>
+    s.utilityCircuit !== undefined && s.utilityCircuit !== "";
+  const procFeeds = feeds.filter((s) => !isUtility(s));
+  const procProducts = products.filter((s) => !isUtility(s));
+
   const totals = (group: StreamResult[]): Record<string, number> => {
     const acc: Record<string, number> = {};
     for (const c of components) acc[c] = 0;
@@ -112,16 +145,49 @@ export function massBalance(
     return acc;
   };
 
-  const inPerComp = totals(feeds);
-  const outPerComp = totals(products);
+  const sum = (r: Record<string, number>): number =>
+    Object.values(r).reduce((a, b) => a + b, 0);
+  const closure = (i: number, o: number): number =>
+    i > 0 ? Math.abs(i - o) / i : 0;
+
+  const inPerComp = totals(procFeeds);
+  const outPerComp = totals(procProducts);
   const visibleComponents = components.filter(
     (c) => inPerComp[c]! > 1e-15 || outPerComp[c]! > 1e-15,
   );
-  const inSum = Object.values(inPerComp).reduce((a, b) => a + b, 0);
-  const outSum = Object.values(outPerComp).reduce((a, b) => a + b, 0);
-  const closureErr = inSum > 0 ? Math.abs(inSum - outSum) / inSum : 0;
+  const inSum = sum(inPerComp);
+  const outSum = sum(outPerComp);
 
-  return { components, visibleComponents, inPerComp, outPerComp, inSum, outSum, closureErr };
+  const totalInSum = sum(totals(feeds));
+  const totalOutSum = sum(totals(products));
+
+  //  The supply side of each circuit, by the circuit's own name.  A circuit
+  //  whose streams are not boundary streams contributes nothing and does not
+  //  appear -- an absence that is a fact about the flowsheet, not a gap.
+  const utilityPerCircuit: Record<string, number> = {};
+  for (const s of feeds) {
+    if (!isUtility(s)) continue;
+    const k = s.utilityCircuit!;
+    utilityPerCircuit[k] =
+      (utilityPerCircuit[k] ?? 0) + sum(massPerComponent(s, components, mw));
+  }
+  const utilityCircuits = Object.keys(utilityPerCircuit).sort();
+
+  return {
+    components,
+    visibleComponents,
+    inPerComp,
+    outPerComp,
+    inSum,
+    outSum,
+    closureErr: closure(inSum, outSum),
+    totalInSum,
+    totalOutSum,
+    totalClosureErr: closure(totalInSum, totalOutSum),
+    utilityCircuits,
+    utilityPerCircuit,
+    utilitySum: sum(utilityPerCircuit),
+  };
 }
 
 //  THE FIRST LAW IS NOT COMPUTED HERE (2026-09-05).  This file used to carry

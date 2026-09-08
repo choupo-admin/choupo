@@ -63,6 +63,7 @@ import type { JsonDict } from "../dict/index.js";
 import type { PairOrigin, ValidityDomain, PromotionOverride,
   EquipmentItem,
   GlobalEnergyBoundary,
+  GlobalMassBoundary,
 } from "./SolverAdapter.js";
 import type {
   AadRecord,
@@ -161,7 +162,7 @@ export class WasmAdapter implements SolverAdapter {
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
         const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
-          utilityAllocation, globalEnergyBoundary, computed, timeline, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
+          utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
@@ -174,6 +175,7 @@ export class WasmAdapter implements SolverAdapter {
         if (equipment && equipment.length > 0) result.equipment = equipment;
         if (utilityAllocation && utilityAllocation.length > 0) result.utilityAllocation = utilityAllocation;
         if (globalEnergyBoundary) result.globalEnergyBoundary = globalEnergyBoundary;
+        if (globalMassBoundary) result.globalMassBoundary = globalMassBoundary;
         if (computed && Object.keys(computed).length > 0) result.computed = computed;
         if (timeline && timeline.length > 0) result.timeline = timeline;
         if (advisories && advisories.length > 0) result.advisories = advisories;
@@ -353,6 +355,7 @@ export function extractStructured(log: string,
   /** Per-duty utility allocation rows (which utility, kg/s, MW, EUR/h). */
   utilityAllocation?: UtilityAllocationRow[];
   globalEnergyBoundary?: GlobalEnergyBoundary;
+  globalMassBoundary?: GlobalMassBoundary;
   /** Post-processing computed expressions (variables{} `compute` entries:
    *  W_net, eta_thermal,...), evaluated by the solver after the run. */
   computed?: { [name: string]: number };
@@ -581,6 +584,9 @@ export function extractStructured(log: string,
 ...(parsed.globalEnergyBoundary
       ? { globalEnergyBoundary: parsed.globalEnergyBoundary }
     : {}),
+...(parsed.globalMassBoundary
+      ? { globalMassBoundary: parsed.globalMassBoundary }
+    : {}),
 ...(computed ? { computed } : {}),
 ...(parsed.timeline && parsed.timeline.length > 0
       ? { timeline: parsed.timeline }
@@ -661,6 +667,9 @@ interface ResultPayload {
        *  one (`DRYING.DryPowder` -> `Powder`).  Present on the identity, never
        *  on a label entry. */
       boundaryLabel?: string;
+      /** The DECLARED utility circuit this stream belongs to, when the case
+       *  declares one.  The engine decides; the GUI groups by it. */
+      utilityCircuit?: string;
       composition: { [comp: string]: number };
       solids?: { [comp: string]: number };
       psd?: { diameter: number[]; massFrac: number[] };
@@ -700,6 +709,7 @@ interface ResultPayload {
   };
   utilityAllocation?: UtilityAllocationRow[];
   globalEnergyBoundary?: GlobalEnergyBoundary;
+  globalMassBoundary?: GlobalMassBoundary;
   //  DERIVED FROM THE CONTRACT, never re-spelled.  This used to list the row's
   //  fields a SECOND time -- so the shape lived in three places (the
   //  `OperationResult` interface, this parsed shape, and the rebuild below)
@@ -862,6 +872,7 @@ export function shapeStreams(payload: ResultPayload,
       category: s.category,
       ...(s.aliasOf !== undefined ? { aliasOf: s.aliasOf } : {}),
       ...(s.boundaryLabel !== undefined ? { boundaryLabel: s.boundaryLabel } : {}),
+      ...(s.utilityCircuit !== undefined ? { utilityCircuit: s.utilityCircuit } : {}),
       composition: {...s.composition },
       solids: s.solids ? {...s.solids } : undefined,
       psd: s.psd

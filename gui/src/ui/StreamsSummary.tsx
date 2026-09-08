@@ -277,6 +277,17 @@ export function StreamsSummary({
           <Text size="xs" c={massOk ? "teal.4" : "yellow.5"} ff="monospace">
             imbalance {closurePct} %
           </Text>
+          {/*  WHICH SCOPE THESE NUMBERS ARE.  A declared utility circuit is
+               left out of the presented process material (the engine's own
+               two scopes, 2026-09-08) -- so the band SAYS it was, with the
+               circuit's own name.  Absent unless the case declares one, which
+               keeps the silence meaning "nothing was declared". */}
+          {mb.utilityCircuits.length > 0 && (
+            <Text size="xs" c="dimmed" ff="monospace">
+              process scope · {mb.utilityCircuits.join(", ")} set aside
+              {" "}({formatFlow(mb.utilitySum, u)} {u})
+            </Text>
+          )}
         </Stack>
 
         {/* Energy balance -- the FULL first law (streams + duties + work).  It

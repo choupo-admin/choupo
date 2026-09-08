@@ -95,6 +95,13 @@ export interface StreamResult {
    *  Absent means this stream carries no plant-boundary name -- a fact about
    *  the flowsheet, not a gap. */
   boundaryLabel?: string;
+  /** The DECLARED utility circuit this stream belongs to (`utilities ( ... )`
+   *  in the flowsheetDict), decided by the engine and only carried here.
+   *  A surface that must present the PROCESS material apart from the
+   *  auxiliary circuits groups by this -- ammonia02's cooling water is 99.2 %
+   *  of the mass crossing its boundary, so a plot drawn on the total scope
+   *  shows nothing else.  Absent on every stream of a case declaring none. */
+  utilityCircuit?: string;
   /** OVERALL mole fractions -- the whole material inventory, a
    *  precipitated crystal's share included (flash19: the stream's CaCO3
    *  is dissolved + crystal, and this says so).  Sums to 1. */
@@ -396,6 +403,25 @@ export interface GlobalEnergyBoundary {
   datum?: string;
 }
 
+/** One object, one line in the result JSON (`globalMassBoundary`).  Emitted
+ *  ONLY when the case declares a utility circuit: its PRESENCE is the answer
+ *  to "was anything declared here?", and a reader that does not find it reads
+ *  the single TOTAL scope, which is then the whole balance.  Field names are
+ *  the engine's; the closure fields are null when nothing crosses (a closure
+ *  needs a boundary, and 0.0000 reads as the gravest violation possible). */
+export interface GlobalMassBoundary {
+  declared: boolean;
+  n_circuits: number;
+  total_in_kg_per_h: number;
+  total_out_kg_per_h: number;
+  total_closure_pct: number | null;
+  process_in_kg_per_h: number;
+  process_out_kg_per_h: number;
+  process_closure_pct: number | null;
+  utility_excluded_kg_per_h: number;
+  utility_fraction_pct: number;
+}
+
 export interface RunResult {
   status: "done" | "error";
   log: string;
@@ -495,6 +521,7 @@ export interface RunResult {
    *  two cooling duties no utility served were absent from its sum.  Absent
    *  when the report did not run (or refused): say so, never recompute. */
   globalEnergyBoundary?: GlobalEnergyBoundary;
+  globalMassBoundary?: GlobalMassBoundary;
   /** Batch campaign timeline: every recipe action that FIRED (with the
    *  trigger that fired it -- the scheduled time or the tripped `when`
    *  condition, verbatim) plus unit status events (a rectifier hitting

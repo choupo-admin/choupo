@@ -263,6 +263,15 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         }
         if (!aliasOf.empty())    os << ", \"aliasOf\": " << esc(aliasOf);
         if (!plantLabel.empty()) os << ", \"boundaryLabel\": " << esc(plantLabel);
+        //  The DECLARED utility circuit this stream belongs to, decided by
+        //  the massBalance report through `streams/UtilityCircuit` and only
+        //  carried here.  Absent on every stream of every case that declares
+        //  no circuit, so a non-declaring case's JSON is byte-identical.
+        {
+            auto u = r.utilityCircuitOf.find(name);
+            if (u != r.utilityCircuitOf.end() && !u->second.empty())
+                os << ", \"utilityCircuit\": " << esc(u->second);
+        }
         if (haveMW) os << ", \"F_mass\": " << num(F_mass);
         os << ", \"F_solid_mass\": " << num(F_solid);
         // Utility category (populated by `utility <name>;` in a stream

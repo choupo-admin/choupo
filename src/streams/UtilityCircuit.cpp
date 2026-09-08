@@ -315,10 +315,23 @@ void validateConservation(const std::vector<UtilityCircuit>&          circuits,
 }
 
 
+std::map<std::string, std::string>
+circuitOfStream(const std::vector<UtilityCircuit>& circuits)
+{
+    std::map<std::string, std::string> out;
+    for (const auto& c : circuits)
+    {
+        out[c.supply] = c.name;
+        out[c.ret]    = c.name;
+    }
+    return out;
+}
+
+
 std::set<std::string> excludedStreams(const std::vector<UtilityCircuit>& circuits)
 {
     std::set<std::string> out;
-    for (const auto& c : circuits) { out.insert(c.supply); out.insert(c.ret); }
+    for (const auto& kv : circuitOfStream(circuits)) out.insert(kv.first);
     return out;
 }
 

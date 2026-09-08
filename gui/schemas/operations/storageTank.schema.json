@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/storageTank.schema.json",
+  "title": "storageTank operation",
+  "description": "A BUFFER: the outlet IS the inlet — same F, z, T, P and vapour fraction — so mass and energy close over it by construction. What it adds is the HOLDUP the declared residence time implies (V = Q_volumetric * residenceTime, m = V * rho, V_vessel = V / fillFraction), per component as well as in total, so the inventory a plant immobilises at start-up can be VALUED: the ammonia in the product tank and the syngas in the feed tank are not worth the same per tonne. The phase is READ from the stream's own vapour fraction, not guessed; a TWO-PHASE feed is refused by name, because a buffer holding a boiling mixture has a level, a vapour space and a duty, and none of those are modelled here.",
+  "type": "object",
+  "properties": {
+    "residenceTime": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Residence time",
+      "description": "How long the material sits in the tank. REQUIRED and never defaulted: a holdup nobody declared is not a holdup, and inventing one would put working capital on a balance sheet that no engineer chose.",
+      "unit": "s"
+    },
+    "fillFraction": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Working fill fraction",
+      "description": "Working volume over geometric volume, used only to size the vessel around the holdup. Defaults to 0.80, and the default is ANNOUNCED at its site whenever it is used; a declared value announces nothing, so silence keeps meaning that nothing was assumed.",
+      "unit": "-"
+    }
+  },
+  "required": [
+    "residenceTime"
+  ],
+  "additionalProperties": false
+}

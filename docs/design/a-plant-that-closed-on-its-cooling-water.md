@@ -270,19 +270,12 @@ moves no pinned number.
   record carries `components ( water )`, so the check is available — and it
   would accuse a legitimate hot-oil loop modelled with a pseudo-component
   whose name differs from the record's.  Named rather than half-built.
-* **NO GUI DRAWING — and the GUI is a SECOND HOME for this balance, which is a
-  finding rather than a gap.**  `globalMassBoundary` travels and nothing in
-  `gui/` reads it; what the Streams summary and the Mass Balance plot draw
-  today is `gui/src/case/balances.ts::massBalance`, which sums the streams
-  ITSELF from feed/product roles.  That is exactly the shape the first-law
-  slice closed on 2026-09-05, one balance over: the GUI computed a boundary
-  sum of its own and disagreed with the engine's ledger by an order of
-  magnitude.  It has not (yet) been caught disagreeing here — the GUI already
-  honours `observed` feeds, so the two agree on today's corpus — but it will
-  now show the DILUTED total on a plant that declares a circuit, because it
-  cannot know a declaration exists.  Wiring it to draw `globalMassBoundary`
-  (both scopes) is the natural next slice and is deliberately not taken here:
-  it is GUI work with its own tests, and this slice's subject is the engine.
+* **THE GUI DRAWING — deferred here, CLOSED the same day (§9 below).**  This
+  slice left `gui/src/case/balances.ts::massBalance` summing the streams
+  itself, which would have shown the DILUTED total on a plant that declares a
+  circuit.  Vítor saw exactly that on the live site within the hour; §9 is
+  what closed it, and the fix needed one engine fact this slice had not
+  published.
 * **`bin/choupo-init0` DOES NOT VALIDATE THE BLOCK.**  `choupoSolve` and
   `choupo-lint` both refuse a false declaration; the `-init0` path skips it,
   because it exists to MATERIALISE a `0/` tree and bails before the topology
@@ -369,3 +362,60 @@ taken.
   what the report has always published and is the honest number for a case
   that declares nothing; and a scope that silently changed meaning would be
   worse than the dilution it fixed.
+
+
+---
+
+## 9. The GUI half, the same day — and the fact the engine had not published
+
+Vítor opened the ammonia plant's global material balance on the live site and
+said the utility water dominated everything.  It did: the axis had to hold
+9 007 500 kg/h of declared cooling water beside 70 637 kg/h of process
+material, so every process component was a sliver of a pixel and the closure
+on screen was a statement about the cooling tower.
+
+**The engine's two SCOPE TOTALS could not fix it.**  `globalMassBoundary`
+carries `process_*`, `total_*` and `utility_excluded_kg_per_h`, which is
+enough to draw a *number* and not enough to draw a *stacked bar per
+component*: a chart that must place each component in the right scope needs to
+know, stream by stream, which side of the declaration it is on.  The GUI could
+have worked that out — read the `utilities` block, match `supply`/`return`
+against the stream names — and that is precisely the second home this project
+keeps closing.  So the ENGINE says it:
+
+* `utilityCircuits::circuitOfStream` is the ONE home of the attribution
+  (stream name -> circuit name), and `excludedStreams` is now DERIVED from it,
+  so the two answers cannot drift apart.
+* the massBalance report stamps `SimulationResult::utilityCircuitOf`;
+* `ResultEmitter` writes `"utilityCircuit": "CW1"` on each stream it names,
+  and on no stream of a case that declares nothing — so a non-declaring case's
+  JSON is byte-identical.
+
+The GUI then GROUPS BY THE STAMP, exactly as it applies `aliasOf` rather than
+working the equivalence out for itself.  `massBalance` returns the PROCESS
+scope in its existing fields, the TOTAL scope beside it (`totalInSum`,
+`totalOutSum`, `totalClosureErr`), and the circuits by name with what each set
+aside.
+
+**Two presentation rules came out of it.**
+
+*What was set aside is NAMED, never silently dropped.*  The plot writes it
+under the title with its share of the boundary total; the Streams summary band
+writes `process scope · CW1 set aside`; the Reports table states the total
+scope's own in/out/closure beside the process one.  A reader who sees nothing
+is looking at a case that declared nothing — the 2026-09-06 rule that a
+default which is USED is announced, applied to a scope.
+
+*It does NOT go on the same axis.*  A third bar of 9 007 500 kg/h flattens the
+process bars exactly as before; the separation only helps if the two scales
+are not asked to share a scale.
+
+**Found on the way:** `MassBalancePlot` still owned its own feed/product
+grouping beside the shared per-component conversion — a partial second home,
+the same shape as the 2026-08-10 flash21 defect one level down — and it did
+not honour `observed` feeds, which `massBalance` has since that fix.  It now
+reads the shared object and both go away.
+
+Test: `gui/tests/massBalanceUtilityScope.test.ts` (four arms, the last of
+which pins that a case declaring nothing gets process == total and no circuit
+named — an absence must keep meaning what it meant).

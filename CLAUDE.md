@@ -1063,11 +1063,25 @@ shared vocabulary means finding every reader that assumed it was narrow.**
 NOT done: a branched header (one circuit is one supply, one return, ONE served
 unit -- anything else refuses by name),
 any second scope elsewhere, the `category` overlap (an aggregation LABEL, named
-in `docs/ai/dict-syntax.md`, not closed), and no GUI reader -- which is worth
-knowing rather than filing as a gap, because `gui/src/case/balances.ts` sums
-the material boundary ITSELF, the same second home the first law was taken out
-of on 2026-09-05, so the GUI draws the DILUTED total on a plant that declares
-a circuit.  Gate:
+in `docs/ai/dict-syntax.md`, not closed).  **THE GUI READER LANDED THE SAME DAY,
+and it needed ONE more engine fact.**  `gui/src/case/balances.ts` summed the
+material boundary itself -- the second home the first law was taken out of on
+2026-09-05 -- and Vitor saw the consequence on the LIVE SITE: the plot's axis
+held 9 007 500 kg/h of declared cooling water and every process component was a
+sliver.  The engine's two SCOPE TOTALS could not fix a per-component chart, so
+each stream now carries the circuit it belongs to (`utilityCircuitOf` ->
+`"utilityCircuit"` in the result JSON, stamped by the massBalance report from
+`utilityCircuits::circuitOfStream`, the ONE home from which `excludedStreams` is
+now derived).  **The GUI GROUPS BY THAT STAMP and reads no `utilities` block**,
+exactly as it applies `aliasOf` rather than working the equivalence out.  The
+bars are the PROCESS scope, what was set aside is NAMED with its share under the
+title, and the TOTAL scope stays beside it in Reports -- never on the same axis,
+because an axis holding 9 007 500 beside 70 637 shows one bar.  A case declaring
+no circuit emits byte-identical JSON and draws byte-identical bars, so the
+silence keeps meaning "nothing was declared"; and the plot lost its own private
+grouping (it had kept one beside the shared per-component conversion -- the 
+2026-08-10 flash21 shape), gaining the observed-feed filter it had been missing.
+Gate:
 `check_mass_closure` (extended, not multiplied -- it reads the process closure
 where one is published; 7 sabotages, one of which lands only through the
 MESSAGE because a later guard catches the same probe, and one of which proved a

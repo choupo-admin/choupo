@@ -207,6 +207,19 @@ export function ReportsWorkspace() {
           <Text size="xs" c="dimmed" mt={4}>
             Imbalance |in−out|/in = {(mb.closureErr * 100).toFixed(3)}% — a converged steady state stays ≪0.1%.
           </Text>
+          {/*  The table is the PROCESS scope when the case declares a utility
+               circuit.  The TOTAL scope is stated beside it rather than
+               replaced: the separation is presentation, never validation
+               scope, and a reader must be able to see both. */}
+          {mb.utilityCircuits.length > 0 && (
+            <Text size="xs" c="dimmed" mt={2}>
+              Process scope: declared utility circuit{mb.utilityCircuits.length > 1 ? "s" : ""}{" "}
+              {mb.utilityCircuits.join(", ")} set aside ({kgh(mb.utilitySum).toFixed(1)} kg/h).
+              Over every boundary stream the balance reads {kgh(mb.totalInSum).toFixed(1)} in /
+              {" "}{kgh(mb.totalOutSum).toFixed(1)} out, closing to{" "}
+              {(mb.totalClosureErr * 100).toFixed(3)}%.
+            </Text>
+          )}
         </Section>
 
         {/* ---- Global energy balance ------------------------------------ */}
