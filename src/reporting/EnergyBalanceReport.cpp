@@ -28,6 +28,7 @@ License
 
 #include "EnergyBalanceReport.H"
 #include "BalanceAlarm.H"
+#include "core/Advisory.H"
 #include "BalanceMath.H"
 #include "ModelBoundaryLedger.H"
 #include "thermo/EnthalpyDatum.H"
@@ -381,6 +382,10 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         }
     }
 
+    //  What the phase pass below found, per unit: ONE home for the verdict,
+    //  written where every unit is seen and read where the banner prints.
+    std::map<std::string, std::string> impossibleOf;
+
     for (const auto& r : rows)
     {
         if (r.kind == 1) { f << r.name << ",n/a,n/a,n/a,n/a,n/a,gap,"
@@ -392,6 +397,135 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                 f << std::fixed << std::setprecision(4) << r.sumExternal;
             f << ",n/a,n/a,n/a,n/a,n/a,n/a,n/a\n";
             continue;
+        }
+
+
+        //  THE LABEL A STREAM CARRIES IS A FACT ABOUT THE STREAM, NOT ABOUT
+        //  WHETHER ITS CONSUMER DECLARES A DUTY (2026-09-08).
+        //
+        //  This test used to live inside `if (r.declares && closure out of
+        //  band)`, which disarms it in exactly the two places it is needed,
+        //  and ammonia02 is both of them at once:
+        //
+        //    * the converter is ADIABATIC, so it declares no energy item and
+        //      the branch never ran on it;
+        //    * the feed-effluent exchanger's closure reads a perfect 100 %
+        //      because its own declared duty was computed FROM the same
+        //      enthalpy the test would have condemned -- circular, so the
+        //      alarm that would have exposed it was silenced by it.
+        //
+        //  Measured cost of that silence: the converter outlet, at 842.9 K
+        //  and 200 bar, resolves to V/F = 0.2589 -- 74 % liquid in a mixture
+        //  whose every component is hundreds of kelvin above its critical
+        //  temperature, because two Henry pairs are being read ~500 K past
+        //  their declared windows.  22 376 kW misattributed, at exit 0, with
+        //  this check installed and unable to fire.
+        //
+        //  So the pass runs for EVERY unit and rides `AdvisoryLog`, which is
+        //  the durable surface: the caveat block, the result JSON, the GUI.
+        //  The out-of-band banner then QUOTES what this pass found rather
+        //  than recomputing it -- one home for the verdict.
+        //
+        //  NOT widened beyond that, said rather than implied: it is still the
+        //  incipient test in the REPORT's world, so a unit computing in its
+        //  own `thermo {}` may legitimately hold the same stream to be a
+        //  different phase, and a package that cannot answer still declines.
+        {
+            std::string found;
+            for (const ProcessStream* sp : r.ins)
+            {
+                if (!sp || sp->z.empty()) continue;
+                if (sp->vf > 1.0e-9 && sp->vf < 1.0 - 1.0e-9) continue; // two-phase: nothing claimed
+                //  The incipient test is a VAPOUR-LIQUID one, so it has nothing
+                //  to say about a package that declares no vapour phase (the SLE
+                //  shape: one liquid + one crystallising solid).  Asking anyway
+                //  is how this pass found that `Kvec` dereferenced a null EoS
+                //  handle instead of refusing -- fixed there too, and asked
+                //  properly here rather than left to a throw in a hot loop.
+                if (!ctx.thermo.hasEos()) continue;
+                try {
+                    const sVector K = ctx.thermo.Kvec(sp->T, sp->P, sp->z, sp->z);
+                    if (K.size() != sp->z.size()) continue;
+                    scalar g = 0.0;
+                    const bool asLiquid = (sp->vf <= 1.0e-9);
+                    for (std::size_t i = 0; i < K.size(); ++i)
+                    {
+                        if (!(K[i] > 0.0) || !std::isfinite(K[i])) { g = 0.0; break; }
+                        g += asLiquid ? sp->z[i] * (K[i] - 1.0)
+                                      : sp->z[i] * (1.0 - 1.0 / K[i]);
+                    }
+                    //  THE BAND IS A CHOICE, AND IT IS STATED (2026-09-08).
+                    //
+                    //  A stream that LEAVES an equilibrium flash sits ON its dew
+                    //  or bubble point by construction, so its g is the solver's
+                    //  own round-off -- ammonia02's `unreactedGas` and `recycle`
+                    //  measure -2.07e-06, and at the old absolute 1e-6 this pass
+                    //  accused both of them the moment it was allowed to run on
+                    //  every unit.  A gate that accuses the innocent teaches the
+                    //  reader to ignore it (2026-09-04), so the band has to
+                    //  separate round-off from a real mislabelling.
+                    //
+                    //  1e-3 is where it is set, and the reason is the sentence
+                    //  the message itself makes: the consequence claimed is a
+                    //  residual of LATENT-HEAT size, which needs an incipient
+                    //  phase of some size to carry it.  Below 1e-3 there is
+                    //  effectively no phase to change, and above it there is --
+                    //  the two real findings here measure 0.24 and 0.49, two to
+                    //  five hundred times the band.  It is NOT a tolerance
+                    //  derived from anything, and a stream sitting genuinely
+                    //  between 1e-6 and 1e-3 off its saturation point now goes
+                    //  unreported -- the price of not crying wolf at every
+                    //  converged flash outlet.  MEASURED before it was chosen,
+                    //  rather than assumed: across `bin/runTests --fast` (one
+                    //  case per tutorial family, 58 cases) NO inlet anywhere
+                    //  falls in that window, so widening the band silenced
+                    //  nothing that was being reported.  That is a statement
+                    //  about those 58 cases, not about the whole corpus.
+                    const scalar incipientBand = 1.0e-3;
+                    const bool bad = asLiquid ? (g >  incipientBand)
+                                              : (g < -incipientBand);
+                    if (bad)
+                    {
+                        std::ostringstream o;
+                        o << "  IMPOSSIBLE INLET PHASE, found by this report rather than guessed: stream '"
+                          << sp->name << "' is priced as "
+                          << (asLiquid ? "LIQUID (vf = 0)" : "VAPOUR (vf = 1)")
+                          << " at T = " << sp->T << " K, P = " << (sp->P * 1.0e-5)
+                          << " bar, but its own Rachford-Rice residual there is g("
+                          << (asLiquid ? "V=0" : "V=1") << ") = " << g
+                          << ", i.e. the fluid is "
+                          << (asLiquid ? "ABOVE its bubble point" : "BELOW its dew point")
+                          << " and cannot hold that label.  The enthalpy this report "
+                             "charged for it is missing (or inventing) that phase change, "
+                             "which is a residual of latent-heat size.  Fix the STREAM "
+                             "(declare its real `vaporFraction`/`phase` in 0/, or feed it "
+                             "at a state where the label is true), not this unit.\n";
+                        found += o.str();
+
+                        //  ON `AdvisoryLog`, unconditionally.  See the block
+                        //  comment above this pass for why.
+                        std::ostringstream one;
+                        one << "is priced as "
+                            << (asLiquid ? "LIQUID (vf = 0)" : "VAPOUR (vf = 1)")
+                            << " at T = " << sp->T << " K, P = "
+                            << (sp->P * 1.0e-5) << " bar, but its own"
+                               " Rachford-Rice residual there is g("
+                            << (asLiquid ? "V=0" : "V=1") << ") = " << g
+                            << ", i.e. it is "
+                            << (asLiquid ? "ABOVE its bubble point"
+                                         : "BELOW its dew point")
+                            << " and cannot hold that label; the enthalpy priced"
+                               " for it is missing (or inventing) that phase change";
+                        if (AdvisoryLog::instance().add(
+                                "validity", "warning",
+                                "stream '" + sp->name + "'", one.str()))
+                            std::cerr << "[phase] stream '" << sp->name << "' "
+                                      << one.str() << ".\n";
+                    }
+                } catch (const std::exception&) { /* package cannot answer here */ }
+            }
+
+            impossibleOf[r.name] = found;
         }
 
         const EnergyClosureRecord* le = nullptr;
@@ -471,43 +605,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             //  fluid cannot hold.  A package that cannot answer (a
             //  reactive or electrolyte surface at a trial state) simply
             //  declines -- the guess-free remedy still prints.
-            std::string impossible;
-            for (const ProcessStream* sp : r.ins)
-            {
-                if (!sp || sp->z.empty()) continue;
-                if (sp->vf > 1.0e-9 && sp->vf < 1.0 - 1.0e-9) continue; // two-phase: nothing claimed
-                try {
-                    const sVector K = ctx.thermo.Kvec(sp->T, sp->P, sp->z, sp->z);
-                    if (K.size() != sp->z.size()) continue;
-                    scalar g = 0.0;
-                    const bool asLiquid = (sp->vf <= 1.0e-9);
-                    for (std::size_t i = 0; i < K.size(); ++i)
-                    {
-                        if (!(K[i] > 0.0) || !std::isfinite(K[i])) { g = 0.0; break; }
-                        g += asLiquid ? sp->z[i] * (K[i] - 1.0)
-                                      : sp->z[i] * (1.0 - 1.0 / K[i]);
-                    }
-                    const bool bad = asLiquid ? (g > 1.0e-6) : (g < -1.0e-6);
-                    if (bad)
-                    {
-                        std::ostringstream o;
-                        o << "  IMPOSSIBLE INLET PHASE, found by this report rather than guessed: stream '"
-                          << sp->name << "' is priced as "
-                          << (asLiquid ? "LIQUID (vf = 0)" : "VAPOUR (vf = 1)")
-                          << " at T = " << sp->T << " K, P = " << (sp->P * 1.0e-5)
-                          << " bar, but its own Rachford-Rice residual there is g("
-                          << (asLiquid ? "V=0" : "V=1") << ") = " << g
-                          << ", i.e. the fluid is "
-                          << (asLiquid ? "ABOVE its bubble point" : "BELOW its dew point")
-                          << " and cannot hold that label.  The enthalpy this report "
-                             "charged for it is missing (or inventing) that phase change, "
-                             "which is a residual of latent-heat size.  Fix the STREAM "
-                             "(declare its real `vaporFraction`/`phase` in 0/, or feed it "
-                             "at a state where the label is true), not this unit.\n";
-                        impossible += o.str();
-                    }
-                } catch (const std::exception&) { /* package cannot answer here */ }
-            }
+            const std::string& impossible = impossibleOf[r.name];
 
             std::string remedy =
                 impossible.empty()

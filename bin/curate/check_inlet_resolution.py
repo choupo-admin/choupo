@@ -32,12 +32,52 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
   (d) THE PIN IS HONOURED AND ANNOUNCED: a COPY of flash19 whose authored
       0/feed gains `phase liquid;` runs, prices the declared phase (its Q
       leaves the near-zero band), and says so in the log;
+  (f) THE PHASE PASS RUNS ON A UNIT THAT DECLARES NOTHING (2026-09-08).
+      ammonia02's converter is ADIABATIC and its feed-effluent exchanger's
+      closure reads a perfect 100 % because its own declared duty was
+      computed FROM the enthalpy in question -- so while the incipient test
+      lived inside `if (declares && out of band)` it could not fire on
+      either, and 22 376 kW of a physically impossible 74 %-liquid-at-843 K
+      split went unreported at exit 0.  This arm requires the run to name
+      `hotEffluent` -- the ADIABATIC unit's outlet, reachable by no
+      declaring unit -- and requires the finding to reach the result JSON,
+      not only stderr.
+  (g) IT DOES NOT ACCUSE A CONVERGED FLASH OUTLET.  `unreactedGas` and
+      `recycle` leave ammonia02's separator ON their dew point, g = -2.07e-06,
+      and the pass named both the moment it was allowed to run everywhere.
+      This arm requires them ABSENT: a check that accuses the innocent
+      teaches the reader to ignore it (2026-09-04).
   (e) flash13_acetic_ethanol_vacuum_flash keeps a LARGE duty -- the
       negative control.  Its feed is at 1 atm and it operates at 0.65 atm,
       so its 669 kW is genuine pressure-drop work; a gate that drove every
       flash duty to zero would be measuring its own wish.  This arm exists
       because the first blast-radius sweep DID predict flash13 would move
       (it compared temperature and forgot pressure).
+
+SABOTAGE-VERIFIED 2026-09-08 for (f)/(g), by hand, on the engine source.
+Three sabotages, and TWO of them survived their arm's first version -- both
+because a presence test was satisfied by something other than its subject:
+
+  S1  restore the `if (r.declares)` gate around the phase pass.  Arm (f)
+      fails, naming the adiabatic converter.  SURVIVED FIRST: the arm asked
+      only whether the string "hotEffluent" appeared in the log, and it
+      appears in every stream table; tightened to the `[phase] stream '...'`
+      line.
+  S2  drop the incipient band back to the old absolute 1e-6.  Arm (g) fails
+      on BOTH saturated separator outlets.
+  S3  delete the `AdvisoryLog` call, keep the stderr line.  Arm (f)'s JSON
+      half fails.  SURVIVED TWICE, for two different reasons, and the second
+      is the one worth carrying forward:
+        - the report ALREADY announces under the locus `stream '<name>'`
+          from `flashState::equilibriumAt`, so keying on the locus alone
+          matched an advisory that predates this pass entirely.  The arm now
+          requires the locus AND this finding's own words on ONE line.
+        - the second attempt "survived" because the sabotage NEVER LANDED:
+          it was applied by string replacement against source that had been
+          re-indented since the pattern was written, and `str.replace` with
+          no match is a silent no-op.  A SABOTAGE THAT DOES NOT LAND PROVES
+          THE GATE IS FINE, which is the opposite of what it was run to
+          find out.  Assert the edit applied before believing its verdict.
 
 SABOTAGE-VERIFIED 2026-08-09: reverting the R-E1 gate (unpinned feeds no
 longer re-flashed -- the pre-slice behaviour) reproduced the original
@@ -51,7 +91,15 @@ WHAT THIS DOES NOT CHECK, said plainly:
     case's golden and, where one exists, its published anchor.
   * The multi-condition cases (cavett01, ammonia02, ...).  Their feeds are
     multiphase at their own states, so the correct duty is not zero and
-    there is no closed form to assert -- they ride their goldens.
+    there is no closed form to assert -- they ride their goldens.  Arms (f)
+    and (g) read ammonia02 for its PHASE LABELS only, never for a duty.
+  * Whether the incipient band of 1e-3 is the right number.  It is a stated
+    choice, not a derived tolerance, and a stream genuinely between 1e-6 and
+    1e-3 off saturation is reported by nothing.
+  * Any package with NO vapour phase: the test is vapour-liquid and skips
+    those by `hasEos()`.  That skip exists because asking anyway segfaulted
+    (`ThermoPackage::Kvec` dereferenced a null EoS handle); the refusal that
+    replaced the crash is not fired by this gate.
 """
 import pathlib
 import re
@@ -156,6 +204,59 @@ def main() -> int:
                             "declared constraint that costs energy may not be "
                             "silent (R-E2)")
 
+        # (f) + (g) the phase pass, on the case that proved it disarmed.
+        am = tmp / "ammonia02"
+        shutil.copytree(
+            ROOT / "tutorials/steady/flowsheets/ammonia02_full_plant", am)
+        rc, log = run(am)
+        if rc != 0:
+            fail.append("ammonia02 did not run -- arms (f)/(g) cannot judge")
+        else:
+            #  (f) the ADIABATIC unit's outlet is named, and it is ANNOUNCED
+            #  (the result JSON), not merely printed.
+            #  The line, not the NAME: `hotEffluent` appears all over a run
+            #  log (stream tables, converged listings), and "cannot hold that
+            #  label" is satisfied by the OTHER finding in the same case.  The
+            #  first draft of this arm tested both loosely and its own
+            #  sabotage passed it -- a presence test satisfied by something
+            #  else is a test of nothing.
+            if not re.search(r"\[phase\] stream 'hotEffluent'", log):
+                fail.append(
+                    "(f) ammonia02's `hotEffluent` -- the ADIABATIC "
+                    "converter's outlet, which resolves to 74 % liquid at "
+                    "843 K -- was not reported as an impossible phase.  The "
+                    "pass is gated on the consumer again, and no declaring "
+                    "unit can reach that stream.")
+            elif not [ln for ln in log.splitlines()
+                       if "\"locus\": \"stream 'hotEffluent'\"" in ln
+                       and "cannot hold that label" in ln]:
+                #  BOTH, on ONE line.  The locus alone is not evidence: the
+                #  balance report ALREADY announces under `stream '<name>'`
+                #  when it re-resolves a state (`flashState::equilibriumAt`
+                #  is handed exactly that locus in BalanceMath.H), so an
+                #  arm keyed on the locus is satisfied by an advisory that
+                #  predates this pass entirely.  Measured, not supposed:
+                #  sabotage S3 -- delete the AdvisoryLog call, keep the
+                #  stderr line -- SURVIVED this arm's first version for
+                #  precisely that reason.
+                fail.append(
+                    "(f) `hotEffluent` was PRINTED but its impossible-phase "
+                    "finding did not reach the result JSON -- it no longer "
+                    "rides AdvisoryLog, so it reaches neither the end-of-run "
+                    "caveat block, the JSON, nor the GUI; a line on stderr "
+                    "at log line 108 of 1200 is the slightly-louder form of "
+                    "silence this project has a caveat block to end")
+            #  (g) the separator's own saturated outlets are NOT accused.
+            for innocent in ("unreactedGas", "recycle"):
+                if re.search(r"\[phase\] stream '" + innocent + r"'", log):
+                    fail.append(
+                        f"(g) `{innocent}` was accused of an impossible "
+                        "phase.  It LEAVES an equilibrium flash, so it sits "
+                        "on its dew point by construction (g = -2.07e-06) -- "
+                        "the incipient band has collapsed back onto solver "
+                        "round-off and the pass is now crying wolf at every "
+                        "converged flash outlet in the corpus.")
+
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
         shutil.copytree(ROOT / CONTROL, ctrl)
@@ -179,9 +280,15 @@ def main() -> int:
           "R-E1), flash19's unit duty and balance report agree at 100 +- 0.5 % "
           "(R-E5), a feed pinned `phase liquid;` is priced as declared AND "
           "announced (R-E2), and the vacuum-flash control keeps its genuine "
-          "pressure-drop duty.  NOT CHECKED: whether a NON-zero duty is right "
-          "(only the identity has a closed form), and the multi-condition "
-          "cases, which ride their goldens.")
+          "pressure-drop duty.  THE PHASE PASS REACHES A UNIT THAT DECLARES "
+          "NOTHING: ammonia02's ADIABATIC converter outlet is named as an "
+          "impossible vapour AND carried into the result JSON, while the two "
+          "saturated separator outlets beside it are NOT accused.  NOT "
+          "CHECKED: whether a NON-zero duty is right (only the identity has a "
+          "closed form); the multi-condition cases' duties, which ride their "
+          "goldens; whether the 1e-3 incipient band is the right number (it "
+          "is a stated choice); and any vapourless package, which the test "
+          "skips by hasEos().")
     return 0
 
 

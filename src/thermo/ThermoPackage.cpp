@@ -715,6 +715,36 @@ scalar ThermoPackage::K(std::size_t i, scalar T, scalar P,
 sVector ThermoPackage::Kvec(scalar T, scalar P,
                             const sVector& x, const sVector& y) const
 {
+    //  A VAPOUR-LIQUID K-VALUE NEEDS A VAPOUR PHASE, AND A PACKAGE WITHOUT
+    //  ONE MUST SAY SO RATHER THAN SEGFAULT (2026-09-08).
+    //
+    //  `eos_` is a CONVENIENCE HANDLE on the first vapour phase (see the
+    //  header, line 57), so it is null in a package that declares none --
+    //  the SLE shape one liquid + one crystallising solid, which
+    //  `flash21_freeze_concentration` is the witness for.  Every other site
+    //  that reads it guards with `hasEos()`; this one dereferenced it, and
+    //  `H_residual`/`S_residual` two hundred lines away already carry the
+    //  `eos_ ? ... : 0.0` that shows the handle was always known to be
+    //  nullable here.
+    //
+    //  Nothing had ever asked, which is why it stood: the energy report's
+    //  incipient-phase test was the first caller to reach a vapourless
+    //  package, and it arrived by being allowed to run on every unit rather
+    //  than only on units that declare a duty.  The caller now asks
+    //  `hasEos()` first -- but a null dereference behind a public method is
+    //  a crash the next caller inherits in silence, and a SIGSEGV cannot be
+    //  caught by the `catch (const std::exception&)` that surrounds most
+    //  callers of this function.  So it refuses by name, here, once.
+    if (!eos_)
+        throw std::runtime_error(
+            "ThermoPackage::Kvec: this package declares NO vapour phase, so"
+            " there is no vapour-liquid K-value to compute.  A K-value is the"
+            " ratio of a component's fugacity in the vapour to its fugacity in"
+            " the liquid; with no vapour phase the numerator does not exist."
+            "  If two condensed phases were meant, ask for the pair"
+            " explicitly (Kvec_phases); if a vapour was meant, declare one in"
+            " the case's thermoPhysPropDict.");
+
     // World 2 (phi-phi): K_i = phi_i^L(x)/phi_i^V(y), the SAME cubic both
     // phases -- one Gibbs surface, two roots.  Composition dependence is
     // handled by the flash's own outer iteration (it re-calls Kvec at the
