@@ -101,6 +101,14 @@ public:
     scalar T_max() const { return T_max_; }
 
 private:
+    //  Announce (once per side, on AdvisoryLog) that this pair was asked
+    //  for a temperature its declared window does not cover.
+    void announceOutsideWindow(scalar T) const;
+
+    //  The van't Hoff correlation with no reporting -- the ONE home of
+    //  the form that `H()` and the excursion report both read.
+    scalar vantHoff(scalar T) const;
+
     std::string solute_;
     std::string solvent_;
     std::string model_ = "vantHoff";

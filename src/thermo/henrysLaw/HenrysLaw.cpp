@@ -27,8 +27,10 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "HenrysLaw.H"
+#include "core/Advisory.H"
 #include "thermo/ThermoAnnounce.H"
 #include <iostream>
+#include <sstream>
 #include "core/Constants.H"
 
 #include <cmath>
@@ -60,20 +62,87 @@ void HenrysLaw::readFromDict(const DictPtr& d)
     }
 }
 
+//  ONE excursion report PER PAIR PER SIDE, on `AdvisoryLog`.
+//
+//  Round-4 (professor) taught this record's `Trange` to be consumed rather than
+//  stored and discarded.  Two things were still wrong with the report, and both
+//  were MEASURED on ammonia02 (2026-09-08) rather than supposed.
+//
+//  (1) IT WENT TO `std::cerr` ALONE.  A `[henry]` line at log line 108 of 1200
+//      is the slightly-louder form of silence that `core/AdvisorySummary.H`
+//      exists to end: it never reached the end-of-run caveat block, the result
+//      JSON or the GUI, so nothing downstream could know the model had left its
+//      data.  It rides `AdvisoryLog` now, like every other validity warning.
+//
+//  (2) IT LATCHED ON THE PAIR ALONE, so BELOW-window and ABOVE-window -- two
+//      physically different situations -- shared one report, and whichever
+//      came first silenced the other.  ammonia02 asks H2-NH3 (fitted
+//      288-333 K) for the separator at 250 K AND for the synthesis loop
+//      hundreds of kelvin above it.  The old latch announced 250 K -- 38 K
+//      under the window, unremarkable -- and was then silent about the
+//      excursion above, which is the one that matters: van't Hoff carried that
+//      far drives H down (measured on ammonia02: to 5.0 % of the fitted H_ref
+//      for H2-NH3) until K < 1, so a flash at 843 K finds hydrogen and
+//      nitrogen preferring a LIQUID at 843 K and returns a physically
+//      impossible two-phase split.  The energy balance then priced the
+//      converter outlet on that split and misattributed 22 376 kW between the
+//      reactor and the feed-effluent exchanger.
+//
+//      The latch is per (pair, SIDE) now.  What that does NOT do, said rather
+//      than implied: WITHIN a side it still reports the FIRST excursion, not
+//      the worst -- ammonia02 names 656 K above the window where the run also
+//      reaches 843 K.  Reporting the worst needs a report taken at the END of
+//      a run rather than at the call, which is a different slice.  The same
+//      blind spot is written out in `VaporPressureModel.cpp`'s own comment,
+//      and is NOT closed there by this change either: that model has a
+//      separate supercritical branch and its latch is a different object.
+//
+//  Still NEVER a refusal: the van't Hoff form extrapolates smoothly, a sweep
+//  may legitimately walk outside the fit, and I4 says extrapolation is a
+//  choice the student is entitled to make -- with their eyes open.
+void HenrysLaw::announceOutsideWindow(scalar T) const
+{
+    const bool   above = (T > T_max_);
+    const scalar edge  = above ? T_max_ : T_min_;
+    const std::string pair = solute_ + "-" + solvent_;
+
+    if (!announceOnce("henryTrange:" + pair + (above ? ":above" : ":below")))
+        return;
+
+    //  A COMPUTED consequence, not an adjective: how far the van't Hoff form
+    //  has carried the constant away from the value that was actually fitted.
+    //  Read from `vantHoff`, the ONE home of the correlation -- calling H(T)
+    //  here would re-enter this reporter, and copying the exponential would
+    //  give the formula a second home.
+    const scalar ratio = vantHoff(T) / H_ref_;
+
+    std::ostringstream m;
+    m << "evaluated at T = " << T << " K, " << (above ? "ABOVE" : "BELOW") << " "
+      << (hasTrange_ ? "the fitted Trange (" : "the DEFAULT window (")
+      << T_min_ << " " << T_max_ << ")"
+      << (hasTrange_ ? "" : ", no Trange declared in the pair file")
+      << " by " << std::abs(T - edge) << " K -- van't Hoff extrapolation,"
+         " still returned; H(T) is " << ratio << "x the fitted H_ref, and every"
+         " K-value computed from it inherits that";
+
+    if (!AdvisoryLog::instance().add("validity", "warning",
+                                     "Henry pair '" + pair + "'", m.str()))
+        return;
+
+    std::cerr << "[henry] " << pair << ": " << m.str() << ".\n";
+}
+
 scalar HenrysLaw::H(scalar T) const
 {
-    // Round-4 (professor): Trange was stored but never consumed -- silent
-    // extrapolation.  Announce it once per pair per run; never refuse (the
-    // van't Hoff form extrapolates smoothly and refusing would break sweeps),
-    // but the student SEES the model leave its data.
     if (T < T_min_ || T > T_max_)
-        if (announceOnce("henryTrange:" + solute_ + "-" + solvent_))
-            std::cerr << "[henry] " << solute_ << "-" << solvent_
-                      << ": T = " << T << " K is outside "
-                      << (hasTrange_ ? "the fitted Trange [" : "the DEFAULT window [")
-                      << T_min_ << ", " << T_max_ << "]"
-                      << (hasTrange_ ? "" : " (no Trange declared in the pair file)")
-                      << " -- van't Hoff EXTRAPOLATION, treat with caution.\n";
+        announceOutsideWindow(T);
+    return vantHoff(T);
+}
+
+//  The correlation itself, with NO reporting: the ONE home of the van't Hoff
+//  form, so `H()` and the excursion report cannot drift apart.
+scalar HenrysLaw::vantHoff(scalar T) const
+{
     // van't Hoff:  H(T) = H_ref * exp[ +dHdiss/R * (1/T - 1/T_ref) ]
     //
     // Sign: from d(ln K_sol)/dT = dHdiss/(R T^2) with K_sol = 1/H, so
