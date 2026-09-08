@@ -1154,7 +1154,7 @@
         "key": "utilities",
         "name": "Plant utility services",
         "source": "data/standards/utilities/",
-        "count": 9
+        "count": 10
       },
       {
         "key": "groupEstimative",

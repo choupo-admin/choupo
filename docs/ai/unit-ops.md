@@ -949,6 +949,55 @@ in  feed;  outputs (throttled );
 operation { P  1.0 bar; }          // the downstream pressure (the only knob)
 ```
 
+## Storage and inventory
+
+### `storageTank`
+A BUFFER, and deliberately almost nothing: the outlet IS the inlet --- same
+`F`, `z`, `T`, `P` and vapour fraction --- so mass and energy close over it by
+construction.  Adding a tank to a flowsheet moves NO process number; what it
+adds is the HOLDUP the plant's working capital rests on, and which no unit
+could report before.
+
+```
+V_holdup = Q_volumetric * residenceTime          [m^3]
+m_holdup = V_holdup * rho                        [kg]
+V_vessel = V_holdup / fillFraction               [m^3]
+```
+
+`residenceTime` is **REQUIRED and has no default** --- a holdup nobody
+declared is not a holdup, and a default would put working capital on a
+student's balance sheet that no engineer chose.  `fillFraction` DOES default
+(0.80: the working volume of a tank is not its geometric volume) and is
+ANNOUNCED whenever the default is used.
+
+The phase is READ from the feed's own `vf`, not guessed.  A TWO-PHASE feed is
+refused by name: a buffer holding a boiling mixture has a level, a vapour
+space and a duty, and none of those are modelled here.
+
+```
+{ name T201;  type storageTank;  in productNH3;  outputs ( productStored );
+  operation {
+    residenceTime  48 h;      // REQUIRED, no default
+    fillFraction   0.85;      // optional; default 0.80, announced when used
+  }
+}
+```
+KPIs: `residenceTime_s`, `fillFraction`, `density_kg_m3`,
+`densityPricedFraction`, `massFlow_kg_s`, `volumetricFlow_m3_s`,
+`holdupVolume_m3`, `holdupMass_kg`, `vesselVolume_m3`, and
+`holdupMass_<component>_kg` for every component --- because the ammonia in a
+product tank and the syngas in a feed tank are not worth the same per tonne,
+and a single total would hide that.
+
+`densityPricedFraction` is the share of the stream the density was actually
+priced over: 1 when every component has a molar volume on that rung, less
+when a dissolved supercritical gas does not (announced, and the holdup MASS
+still counts every component).
+
+Worked example: `tutorials/steady/flowsheets/ammonia02_full_plant` carries
+both a raw-material tank (T101, syngas, 0.5 h) and a product tank (T201,
+liquid ammonia, 48 h).
+
 ## Hydraulics
 
 ### `pipe`

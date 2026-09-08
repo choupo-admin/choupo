@@ -89,7 +89,19 @@
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units
 (
-    { name makeupComp;  type compressor;  in makeup;   outputs ( compMakeup );
+    //  RAW-MATERIAL INVENTORY.  The syngas the plant has bought and is
+    //  holding before the process touches it.  A storageTank changes NOTHING
+    //  about the stream -- same F, z, T, P, vf -- so mass and energy close
+    //  over it by construction; what it adds is the HOLDUP the plant's
+    //  working capital rests on, and which no unit could report until now.
+    //  Half an hour is a surge volume, not a stock: a gas at 25 bar is a poor
+    //  thing to store, and the number this tank publishes (4037 m^3 for 35 t)
+    //  is exactly why real plants buy their nitrogen and hydrogen as a
+    //  pipeline supply rather than an inventory.
+    { name T101;  type storageTank;  in makeup;  outputs ( makeupStored );
+      operation { residenceTime 0.5 h; } }
+
+    { name makeupComp;  type compressor;  in makeupStored;   outputs ( compMakeup );
       operation { W_shaft 24000 kW;  eta 0.78; } }
 
     { name recycleComp; type compressor;  in recycle;  outputs ( compRecycle );
@@ -122,4 +134,13 @@ units
 
     { name purgeSplit;  type splitter;  in unreactedGas;  outputs ( purge  recycle );
       operation { fractions ( 0.03  0.97 ); } }
+
+    //  PRODUCT INVENTORY.  Two days of production held for shipping -- the
+    //  dominant working-capital item on a plant like this, and the one the
+    //  student is asked to value: ~2900 t of liquid ammonia in ~3870 m^3,
+    //  in a vessel that must be built for ~4830 m^3 at the 0.80 working-volume
+    //  convention.  Compare it with T101 and the lesson is immediate: the same
+    //  plant holds 80x the MASS in the product tank and less volume.
+    { name T201;  type storageTank;  in productNH3;  outputs ( productStored );
+      operation { residenceTime 48 h; } }
 );

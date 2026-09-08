@@ -74,7 +74,19 @@ def declared_types(dict_name):
         body = open(os.path.join(base, dict_name), errors="replace").read()
         body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)
         body = re.sub(r"//[^\n]*", "", body)
-        for m in re.finditer(r"(?m)^\s*type\s+(\w+)\s*;", body):
+        #  A PATTERN ANCHORED WHERE ITS SUBJECT DOES NOT LIVE IS A CHECK THAT
+        #  CANNOT FIRE (the check_dossier_grammar lesson, 2026-09-03, met
+        #  again here 2026-09-08).  This required `type` at the START OF A
+        #  LINE, and the corpus writes units BOTH ways -- one unit per line
+        #  (`{ name T101;  type storageTank;  in makeup; ... }`) as well as
+        #  block form.  Measured on the day it was widened: the line-anchored
+        #  pattern saw 64 type words, keyword position sees 68, and the four
+        #  it could not see (longRadius, sharpSplitColumn, stoichReactor,
+        #  storageTank) are declared in the corpus ONLY inline.  Three of them
+        #  cost nothing because coverage is keyed by CLASS and a sibling name
+        #  reached the same class; the fourth was a class the gate reported
+        #  unreachable while a shipped tutorial builds it twice.
+        for m in re.finditer(r"(?m)(?:^|[{;])\s*type\s+(\w+)\s*;", body):
             used[m.group(1)].add(os.path.relpath(base, ROOT))
     return used
 

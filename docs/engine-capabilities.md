@@ -399,7 +399,7 @@ authority on the lineup; the kinds and what each record carries:
   bed properties the fixed-bed and TSA cases run on.
 - **`ionExchangeResin`** — SAC_Na, the strong-acid resin of the softener.
 
-### `data/standards/utilities/` (9)
+### `data/standards/utilities/` (10)
 
 Plant utilities — a curated catalogue of heating + cooling + **power** services.
 Each `.dat` entry carries `tier` (heating / cooling / **power**), `mechanism`
@@ -410,7 +410,10 @@ optional `driveEfficiency` (the power tier's motor/generator efficiency).
 Default lineup: **steamLP / steamMP / steamHP** (saturated water vapour at
 2.5 / 11 / 41 bar), **coolingWater** (25→35 °C), **chilledWater** (7→12 °C),
 **dowthermA** (sensible hot-oil loop 350→270 °C), **hitecSalt** (sensible
-molten-salt loop 500→400 °C), **refrigerationPG** (PG-30 brine 0→5 °C), and
+molten-salt loop 500→400 °C), **refrigerationPG** (PG-30 brine 0→5 °C),
+**refrigerationNH3** (boiling ammonia at its normal boiling point, −33.3 °C
+— an evaporation service, so `T_out` equals `T_in`; it is what reaches the
+250 K flash of an ammonia synthesis loop, where no brine can), and
 **electricity** (grid power, ~0.10 €/kWh).  The `utilityAllocation` report
 tallies the power tier too: pump/compressor MOTORS draw grid electricity
 (`W_shaft / driveEfficiency`), a turbine GENERATOR (`electricLoad`) feeds it

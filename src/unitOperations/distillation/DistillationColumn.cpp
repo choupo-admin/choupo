@@ -1490,7 +1490,13 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  so two columns in one flowsheet are told apart; the type is the
     //  honest fallback when nothing named it.
     AdvisoryFrame walk(
-        "column '" + dict->lookupWordOrDefault("name", type()) + "' MESH search");
+        //  The augmented dict carries the unit's name as the DICTIONARY'S OWN
+        //  name and strips the `name` entry: lookupWordOrDefault("name") took
+        //  the fallback every time, so every column in the corpus framed its
+        //  MESH search as "column 'distillationColumn'" -- the type, naming
+        //  none of them.  ShortcutColumn.cpp records the same finding.
+        "column '" + (dict->name().empty() ? type() : dict->name())
+        + "' MESH search");
 
     auto res = solver::newtonND(residual, u0, opts);   // phase 1: reaction OFF (robust)
     if (reactive)

@@ -76,6 +76,7 @@ License
 #include "separation/Extractor.H"
 #include "electrochem/ElectrodialysisStack.H"
 #include "valve/Valve.H"
+#include "storage/StorageTank.H"
 
 #include <map>
 #include <memory>
@@ -177,6 +178,9 @@ void UnitOperation::registerBuiltins()
     reg("mixer",              []{ return std::make_unique<Mixer>();              });
     reg("splitter",           []{ return std::make_unique<Splitter>();           });
     reg("valve",              []{ return std::make_unique<Valve>();              });
+    //  A BUFFER: it holds material and changes nothing about it.  Added
+    //  2026-09-08 so a plant can report the inventory its economics rest on.
+    reg("storageTank",        []{ return std::make_unique<StorageTank>();        });
     reg("pipe",               []{ return std::make_unique<Pipe>();               });
     reg("pneumaticConveyor",  []{ return std::make_unique<PneumaticConveyor>();  });
     reg("distillationColumn", []{ return std::make_unique<DistillationColumn>(); });
