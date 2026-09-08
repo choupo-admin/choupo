@@ -242,7 +242,17 @@ export function ReportsWorkspace() {
                 </Table.Tbody>
               </Table>
               <Text size="xs" c={Math.abs(gb.residual_pct) <= 0.1 ? "teal.4" : "yellow.5"} mt={4}>
-                Imbalance |H in + Q + W − H out| / max(|H in|, |H out|, |Q + W|) = {Math.abs(gb.residual_pct).toFixed(4)}% — the engine's
+                {/*  THE ENGINE PUBLISHES THE BASIS AND THIS DRAWS IT.  This line
+                    used to spell the formula out itself, and on 2026-09-08 the
+                    basis moved (from the stream enthalpy scale, which cooling
+                    water dominates, to the energy the plant exchanges) and the
+                    prose here would have gone quietly false.  A restatement of
+                    a rule goes false the day the rule moves.  */}
+                Imbalance |H in + Q + W − H out| = {Math.abs(gb.residual_pct).toFixed(4)}% of{" "}
+                {gb.residual_basis ?? "a basis this run did not publish"}
+                {gb.residual_denom_kW !== undefined
+                  ? ` (${gb.residual_denom_kW.toFixed(1)} kW)`
+                  : ""} — the engine's
                 globalEnergyBoundary ledger ({gb.n_feeds} feed(s), {gb.n_products} product(s)).
               </Text>
               <Text size="xs" c="dimmed" mt={2}>

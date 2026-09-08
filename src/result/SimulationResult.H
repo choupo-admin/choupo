@@ -294,6 +294,12 @@ struct SimulationResult
         scalar H_products_kW = 0.0;
         scalar residual_kW   = 0.0;
         scalar residual_pct  = 0.0;
+        //  WHAT residual_pct IS A PERCENTAGE OF.  Published so a reader DRAWS
+        //  the basis instead of restating it: the GUI used to spell the
+        //  formula out in its own prose, which goes quietly false the day the
+        //  basis moves -- and it moved on 2026-09-08.
+        scalar      residual_denom_kW = 0.0;
+        std::string residual_basis;      // e.g. "energy exchanged (sum|duties| + |Q|)"
         int    n_feeds       = 0;
         int    n_products    = 0;
         int    n_gap         = 0;     // boundary streams with no enthalpy datum (skipped, announced)

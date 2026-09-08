@@ -374,6 +374,11 @@ export interface GlobalEnergyBoundary {
   H_products_kW: number;
   residual_kW: number;
   residual_pct: number;
+  //  WHAT residual_pct IS A PERCENTAGE OF, published by the engine so no
+  //  reader restates it.  Optional: a result from an older engine has
+  //  neither, and the panel says so rather than inventing a formula.
+  residual_denom_kW?: number;
+  residual_basis?: string;
   n_feeds: number;
   n_products: number;
   /** boundary streams with no enthalpy datum -- skipped and announced by the engine */

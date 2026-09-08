@@ -951,7 +951,9 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      `curation/AqueousGraph` into choupoSolve, choupoBatch, choupoCtrl and
      every user binary — the one rule `check_layering` cannot reach.
  C7. **A second valid include spelling nothing forbids and nothing counts:**
-     `#include "src/thermo/X.H"` drops the layering edge silently.
+     an include spelled with a leading `src/` (the path as written from the
+     repository root, rather than from the include root) drops the layering edge
+     silently -- the gate that counts edges never sees it.
  C8. **`check_decision_index` carries hand-written counts** that every new
      record moves; three generals hit it in one day.  Generate the count.
  C9. **`bin/curate/case_manifest.py` has no `--help` and WRITES when asked

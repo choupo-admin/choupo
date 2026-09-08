@@ -994,6 +994,8 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
            << ", \"H_products_kW\": " << num(gb.H_products_kW)
            << ", \"residual_kW\": "   << num(gb.residual_kW)
            << ", \"residual_pct\": "  << num(gb.residual_pct)
+           << ", \"residual_denom_kW\": " << num(gb.residual_denom_kW)
+           << ", \"residual_basis\": \"" << gb.residual_basis << "\""
            << ", \"n_feeds\": "       << gb.n_feeds
            << ", \"n_products\": "    << gb.n_products
            << ", \"n_gap\": "         << gb.n_gap

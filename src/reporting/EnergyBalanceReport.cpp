@@ -155,6 +155,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     // shaft work already left the streams at the turbine) is skipped entirely.
     // This is the global plant boundary's Q_boundary -- see the block below.
     scalar globalQext = 0.0;
+    scalar globalExchanged = 0.0;
     for (const auto& u : units)
     {
         // ONE datum (elements): a present species with no elements/formation
@@ -245,6 +246,10 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         // exchangers (the HRSG) contribute 0; no-process-stream sinks (the
         // electricLoad generator) never reach this branch and are skipped.
         if (!internalExchanger) globalQext += sumExternal;
+        //  The ENERGY THE PLANT EXCHANGES -- magnitudes, so a duty in and a
+        //  duty out do not cancel.  This is the scale the residual is judged
+        //  against (see the denominator below).
+        globalExchanged += std::abs(supplied);
         const bool   declares = !internalExchanger
             && ((nItems > 0) || (std::abs(e.qBoundary) > 1.0e-9));
 
@@ -743,14 +748,41 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         // next to the headline closure.  Using max(|feeds|,|products|,|Qext|)
         // gives an honest small percentage when the loop balances, and leaves
         // every open plant (|Hfeeds| dominates) unchanged.
-        const scalar denom    = std::max({std::abs(Hfeeds), std::abs(Hprods),
-                                          std::abs(Qext), 1.0e-9});
+        //  THE RESIDUAL IS JUDGED AGAINST THE ENERGY THE PLANT EXCHANGES, NOT
+        //  AGAINST THE ENTHALPY THAT FLOWS THROUGH IT (2026-09-08, Vitor).
+        //
+        //  A stream's H is an ABSOLUTE enthalpy on the formation datum, so
+        //  |Hfeeds| is set by whatever has the most moles crossing the
+        //  boundary.  On ammonia02 that is COOLING WATER: the denominator was
+        //  39 777 909 kW, the 9190.64 kW residual read 0.0231 %, and HALVING
+        //  THE WATER FLOW WOULD HAVE DOUBLED THE PERCENTAGE with nothing
+        //  changed in the process.  A number that moves when an inert carrier
+        //  moves is not measuring the process.
+        //
+        //  What the first law is actually about here is the energy the plant
+        //  EXCHANGES -- the compression work, the reboiler and condenser
+        //  duties, the reaction heat.  `globalExchanged` sums their
+        //  MAGNITUDES (so a duty in and a duty out do not cancel) and |Qext|
+        //  covers boundary heat carried by no declared item.  Same case:
+        //  57 873 kW, and the residual reads 15.88 % -- which is what it is.
+        //
+        //  The old max(|feeds|,|products|,|Qext|) guard against a CLOSED loop
+        //  (rankine02: no boundary feeds, so |Hfeeds| would collapse to the
+        //  floor and invent a 21 % hole) is not needed on this basis and is
+        //  better served by it: a closed Rankine loop exchanges a great deal
+        //  of energy -- boiler, condenser, turbine -- so its denominator is
+        //  large and honest.  The vacuous case (nothing crosses AND nothing
+        //  is exchanged) still reports 0 %, below.
+        const scalar denom    = std::max({globalExchanged, std::abs(Qext),
+                                          1.0e-9});
         // A fully CLOSED loop (no boundary feeds AND no products -- rankine02's
         // recycle) has nothing crossing the boundary: feeds, products and Qext
         // are all ~0 and the first law is vacuous.  Report 0 % rather than
         // dividing a floating-point-noise residual by the 1e-9 floor (the
         // phantom 21 %).  Any OPEN plant has a real denom and is unaffected.
         const bool   noBoundary = (nFeed == 0 && nProd == 0 && denom <= 1.0e-6);
+        const std::string residualBasis =
+            "energy exchanged (sum of |declared duties and work| + |Q boundary|)";
         const scalar relPct   = noBoundary ? 0.0 : 100.0 * residual / denom;
 
         //  The ledger travels on the result, so the GUI draws THIS and never a
@@ -763,6 +795,8 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             gb.H_products_kW = Hprods;
             gb.residual_kW   = residual;
             gb.residual_pct  = relPct;
+            gb.residual_denom_kW = denom;
+            gb.residual_basis    = residualBasis;
             gb.n_feeds       = nFeed;
             gb.n_products    = nProd;
             gb.n_gap         = nGap;
@@ -782,6 +816,8 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
               << "outputs,"        << Hprods   << "\n"
               << "residual,"       << residual << "\n"
               << "residual_pct,"   << std::setprecision(4) << relPct << "\n"
+              << "residual_denom_kW," << std::setprecision(4) << denom << "\n"
+              << "residual_basis," << residualBasis << "\n"
               << "n_feeds,"        << nFeed    << "\n"
               << "n_products,"     << nProd    << "\n"
               << "n_gap,"          << nGap     << "\n";
