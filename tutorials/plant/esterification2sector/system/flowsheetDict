@@ -38,3 +38,16 @@ connections
 
     liquid      { from SEPARATION/liquid; }
 }
+
+//  THE QUALIFIED-NAME WITNESS.  Both identifiers below carry a SECTOR prefix,
+//  which is what the corpus had never tested: the resolver split at the FIRST
+//  dot, read `SEPARATION` as the unit and `flash.T` as the KPI, and refused.
+//  It now tries every split, longest head first.  `flashT_C` reads a FIELD off
+//  a sectored STREAM and does arithmetic on it -- the path Vitor's own report
+//  showed failing (`PRODUTO.ProductNH3.F`).  The KPI path (SECTOR.unit.kpi) is
+//  the same resolver and the same loop; it is exercised by hand, not here, and
+//  saying so is cheaper than a second row that pins the same code twice.
+variables
+{
+    flashT_C   { compute "SEPARATION.flash.T - 273.15"; }
+}

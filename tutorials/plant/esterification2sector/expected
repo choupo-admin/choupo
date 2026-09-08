@@ -20,3 +20,14 @@ boundary global                 H_feeds_kW       -10052.3479466   1e-4
 boundary global                 Q_boundary_kW    -472.571050557   1e-4
 boundary global                 H_products_kW    -9716.9194945    1e-4
 boundary global                 residual_kW      -807.999502666   1e-4
+equipment REACTION.reactor       basis            V_R_=_declared_operation.V_R_(pass-through);_D_and_H_from_L_over_D;_t_wall_ASME_thin-wall exact
+equipment REACTION.reactor       values.D         0.633840576755   1e-4
+equipment REACTION.reactor       values.H         1.58460144189    1e-4
+equipment REACTION.reactor       values.L_over_D  2.5              1e-4
+equipment REACTION.reactor       values.V_R       0.5              1e-4
+equipment REACTION.reactor       values.pressureDesign 3                1e-4
+equipment REACTION.reactor       values.t_wall    0.00368985696208 1e-4
+equipment REACTION.reactor       values.weight    93.142839948     1e-4
+equipment REACTION.reactor       cost.purchased   4476.4290636     1e-4
+equipment REACTION.reactor       cost.bareModule  34920.6231251    1e-4
+equipment REACTION.reactor       cost.totalModule 41206.3352877    1e-4

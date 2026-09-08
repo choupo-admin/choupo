@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  esterification2sector -- post-processing chain
+
+  THE FIRST SECTORED CASE IN THE CORPUS TO CARRY ONE (2026-09-08).  Until this
+  file existed, no case under tutorials/plant/ shipped a `system/postDict`, so
+  the whole sizing -> costing -> economics -> utilities chain had NEVER run
+  over a plant with sectors; the regression covered it on FLAT cases only.
+
+  That is not a hypothetical gap.  Vitor found it by building the same
+  green-ammonia plant twice, flat and sectored, and comparing: the sectored run
+  lost every unit's TYPE (its root flowsheetDict lists sector NAMES, not units)
+  and with it 9.3 MEUR/yr of compressor electricity, at exit 0, with no
+  warning.  Fixed in the same commit as this case.  This file is what stops it
+  coming back.
+
+  THE POINT OF THE CASE IS THE QUALIFIED NAME.  `unitName` here is
+  `REACTION.reactor`, not `reactor`: in a sectored plant a unit is addressed by
+  SECTOR.unit everywhere -- the KPI keys, the design sheets, the cost rows and
+  the `variables {}` expressions in flowsheetDict.  A student reading this
+  learns the addressing by seeing it work.
+
+  The design rules are the ordinary ones and no number here is a claim about
+  this chemistry: they are declared so that nothing is silently defaulted, per
+  the 2026-09-06 rule (a default that is USED is announced).
+\*---------------------------------------------------------------------------*/
+sizing
+{
+    units
+    (
+        {
+            unitName    REACTION.reactor;
+            type        stirredTank;
+            material    SS316;
+            designRules
+            {
+                L_over_D        2.5;
+                pressureDesign  3.0;        // bar (operating x 2 safety)
+                corrosionAllow  0.003;      // m
+                jointEfficiency 1.0;
+            }
+        }
+    );
+}
+
+costing
+{
+    method      Turton;
+    year        2026;
+    cepci       820;        // target-year CEPCI
+    cepci2001   397;        // Turton base-year basis
+    usdToEur    0.92;
+}

@@ -10,3 +10,12 @@ application   choupoSolve;
 tier         showcase;
 description   "Esterification plant -- two sectors (REACTION + SEPARATION) sharing components; per-sector constant/ data (S1 kinetics, S2 NRTL pair); ethanol-water pair inherited from the standard library";
 verbosity     3;
+
+//  `computed {}` evaluates the `variables {}` block of flowsheetDict.  It is
+//  here because a SECTORED case is the only place the resolver's qualified
+//  form (SECTOR.unit.kpi / SECTOR.stream.field) is exercised at all -- it had
+//  never been, and every such expression failed by name until 2026-09-08.
+reports
+{
+    computed {}
+}
