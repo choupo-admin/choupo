@@ -1,0 +1,96 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: ammonia refrigeration, DIRECT EXPANSION at atmospheric pressure.
+
+  Sources: derived here from records in this tree -- see COST below.  The
+    duty is thermodynamic and exact; the PRICE is an ESTIMATE and says so.
+
+  When to use:
+    For process duties needing a cold side below about -25 C, where
+    `refrigerationPG` stops applying.  That boundary is not this record's
+    opinion: refrigerationPG.dat states it itself -- "below -25 C the
+    secondary loop becomes unattractive -- switch to direct refrigerant" --
+    and until this file existed the catalogue named that switch and offered
+    nothing to switch TO.  A duty at -23 C was refused with "(none
+    adequate)", correctly, and left out of C_UT entirely.
+
+    In an ammonia plant this is the natural cold utility rather than an
+    imported one: NH3 is bled from the synthesis loop, expanded, evaporated
+    against the loop gas and recompressed.  The refrigerant is the product,
+    so a leak from the cold side into the process is not a contamination.
+    -33 C is also the atmospheric storage condition, so the plant already
+    holds this level.
+
+  WHY THE MARGIN IS TIGHT, and what breaks it:
+    `pickForDuty` requires T_in <= T_process - dTmin.  At the 250 K duty
+    this record was written for, the margin is 250 - 239.82 = 10.18 K
+    against a default dTmin of 10 K.  RAISING dTmin above 10.18 K, or
+    raising the process temperature, drops the allocation back to "(none
+    adequate)" -- which is the honest answer, but a reader who has not read
+    this paragraph will not know why it moved.
+
+  MECHANISM, and a fact worth knowing before trusting the word:
+    This is the FIRST record in the tree with a phase change on the COLD
+    side (the three existing cooling utilities are all `sensible`).  The
+    word is validated by `UtilityCatalogue` and then only PRINTED, into a
+    column of reports/utilities/utilities.csv -- nothing in the allocation
+    branches on it.  `dutyPerKg` carries the whole physics whatever the
+    mechanism, so an evaporation record works exactly as a sensible one
+    does.  Stated because the enum accepting the word is NOT evidence that
+    the path is exercised, and this is the first record that exercises it.
+
+  T_out EQUALS T_in, because a boiling refrigerant changes phase and does
+    not rise in temperature.  Safe: `Utility::T_out` is parsed and read by
+    nothing in the allocation (the `T_out` in UtilityAllocationReport is the
+    PROCESS unit's KPI, a different quantity sharing a name).
+\*---------------------------------------------------------------------------*/
+
+utility     refrigerationNH3;
+tier        cooling;
+mechanism   evaporation;               // boiling refrigerant; no temperature rise
+
+components  ( NH3 );
+state       saturatedLiquid;
+P           1.013 bar;                 // atmospheric; sets the level
+T_in        239.82 K;                  // -33.33 C -- NH3 normal boiling point
+T_out       239.82 K;                  // evaporation: same temperature
+
+// Energy absorbed per kg = the latent heat at Tb, from the component's own
+// record: NH3.dat HvapTb 23330 J/mol / MW 17.030 kg/kmol.
+// The tree stores no derivative, but a utility record's dutyPerKg is the
+// utility's OWN primary datum in the form every sibling uses (Cp x dT there,
+// Hvap here), so it is written, with the arithmetic shown.
+dutyPerKg   1369935.0;                 // J/kg  (23330 / 0.017030)
+
+// COST -- AN ESTIMATE, DERIVED IN THE OPEN, NOT A CITED PRICE.
+//   No published table for a -33 C level was available to the curator, and
+//   inventing a citation would convert `unsourced` into `falsely sourced`,
+//   which no reader and no gate can detect.  So it is derived from records
+//   in this same directory, and every input is named:
+//
+//     COP_Carnot = T_c/(T_h - T_c) = 239.82/(308.15 - 239.82) = 3.5097
+//       T_c = this record's T_in
+//       T_h = coolingWater.dat T_out (308.15 K), the heat sink declared here
+//     COP_real   = 3.5097 x 0.50 = 1.7549
+//       0.50 = second-law efficiency.  A DECLARED ASSUMPTION, not a cited
+//       one; it is the only number here with no record behind it.
+//     electricity per GJ of cooling = 1/1.7549 = 0.5698 GJ
+//     cost = 0.5698 x 27.8 = 15.84 EUR/GJ
+//       27.8 = electricity.dat cost, EUR/GJ, costYear 2022
+//
+//   The value is a LOWER BOUND: a real condenser condenses above the
+//   cooling-water RETURN, so the true T_h is higher, the true COP lower and
+//   the true cost higher.
+//
+//   INTERNAL CROSS-CHECK (not a validation): the catalogue's cooling prices
+//   rise monotonically as the level drops -- 0.4 (25 C) < 4.0 (7 C) <
+//   6.0 (0 C) < 15.84 (-33 C) -- which is the Carnot penalty
+//   refrigerationPG.dat's own note predicts.
+//
+//   THIS VALUE IS NOT CURATED.  Promotion to a cited price is the owner's
+//   review, and a `reviewStatus` key is deliberately NOT written here: no
+//   utility record carries one and `UtilityCatalogue` does not read it, so
+//   it would be a field the engine cannot see -- a comment in the wrong
+//   place.  The status is prose because prose is where this form puts it.
+cost        15.84;                     // €/GJ removed -- DERIVED, see above
+costYear    2022;                      // inherited from its electricity input
+description "Ammonia direct-expansion refrigeration (-33 C, atmospheric)";

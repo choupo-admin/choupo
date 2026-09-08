@@ -18,7 +18,6 @@ utility column07               heating.steamLP.duty_kW 9374.37429576      1e-4
 utility column07               heating.steamLP.T 296.58946842       1e-4
 utility column07               heating.steamLP.kg_s 4.28836884527      1e-4
 utility column07               heating.steamLP.eur_h 404.972969577      1e-4
-utility column07               cooling.condenser.unserved 1                  1e-4
 stream  bottoms                F                0.333333333333   1e-4
 stream  bottoms                T                296.58946842     1e-4
 stream  distillate             F                0.0833333333333  1e-4
@@ -28,3 +27,7 @@ boundary global                 H_feeds_kW       -70924.1244871   1e-4
 boundary global                 Q_boundary_kW    1291.76222026    1e-4
 boundary global                 H_products_kW    -69632.413627    1e-4
 boundary global                 residual_kW      0.0513601575221  1e-4
+utility column07               cooling.refrigerationNH3.duty_kW -8082.6120755    1e-4
+utility column07               cooling.refrigerationNH3.T 272.663334648    1e-4
+utility column07               cooling.refrigerationNH3.kg_s 5.89999677029    1e-4
+utility column07               cooling.refrigerationNH3.eur_h 460.902870993    1e-4

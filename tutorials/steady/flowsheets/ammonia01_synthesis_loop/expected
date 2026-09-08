@@ -60,7 +60,6 @@ utility letdown                heating.steamLP.duty_kW 0.00231832608132   1e-4
 utility letdown                heating.steamLP.T 250                1e-4
 utility letdown                heating.steamLP.kg_s 1.06053343153e-06  1e-4
 utility letdown                heating.steamLP.eur_h 0.000100151686713  1e-4
-utility separator              cooling.-.unserved 1                  1e-4
 stream  letdownGas             T                250              1e-4
 stream  makeup                 T                300              1e-4
 stream  mixed                  T                274.381582954    1e-4
@@ -73,3 +72,7 @@ stream  unreactedGas           T                250              1e-4
 boundary global                 H_feeds_kW       0.0131074108111  1e-4
 boundary global                 Q_boundary_kW    -9.07481066607   1e-4
 boundary global                 H_products_kW    -9.0617033404    1e-4
+utility separator              cooling.refrigerationNH3.duty_kW -9.26788671373   1e-4
+utility separator              cooling.refrigerationNH3.T 250              1e-4
+utility separator              cooling.refrigerationNH3.kg_s 0.00676520178967 1e-4
+utility separator              cooling.refrigerationNH3.eur_h 0.528491971964   1e-4

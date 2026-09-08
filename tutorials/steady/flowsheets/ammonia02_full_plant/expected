@@ -135,7 +135,6 @@ utility letdown                heating.steamLP.duty_kW 16.3869325359    1e-4
 utility letdown                heating.steamLP.T 250              1e-4
 utility letdown                heating.steamLP.kg_s 0.00749630948578 1e-4
 utility letdown                heating.steamLP.eur_h 0.707915485552   1e-4
-utility separator              cooling.-.unserved 1                1e-4
 utility makeupComp             power.electricity.duty_kW 25263.1578947    1e-4
 utility makeupComp             power.electricity.T -1               1e-4
 utility makeupComp             power.electricity.kg_s 0                1e-4
@@ -238,3 +237,7 @@ boundary global                 H_feeds_kW       -39777909.9013   1e-4
 boundary global                 Q_boundary_kW    -920.209270367   1e-4
 boundary global                 H_products_kW    -39788020.7486   1e-4
 boundary global                 residual_kW      9190.63804429    1e-4
+utility separator              cooling.refrigerationNH3.duty_kW -28936.5962029   1e-4
+utility separator              cooling.refrigerationNH3.T 250              1e-4
+utility separator              cooling.refrigerationNH3.kg_s 21.1226052352    1e-4
+utility separator              cooling.refrigerationNH3.eur_h 1650.08046187    1e-4
