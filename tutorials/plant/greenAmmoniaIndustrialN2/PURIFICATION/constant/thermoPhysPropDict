@@ -1,0 +1,74 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  PROPERTY SYSTEM OF THE PURIFICATION SECTOR -- and the reason it exists.
+
+  `constant/` lives at EVERY level of a fractal case, because what we KNOW is
+  not the same everywhere in a plant.  This sector is the proof.
+
+  The plant's own package (../constant/thermoPhysPropDict) declares AMMONIA as
+  the solvent: in the synthesis loop the liquid phase is liquid ammonia with
+  dissolved H2, N2 and Ar, and the Henry pairs are fitted for that solvent.
+  Correct in LOOP and in PRODUCT.
+
+  In THIS sector there is no ammonia at all.  The only liquid that ever appears
+  is the condensate dropping out of the knock-out drum, and it is essentially
+  pure WATER -- the water the deoxo made out of the oxygen the industrial
+  nitrogen brought in.  Asking an ammonia package to describe it would put the
+  dissolved gases on the wrong Henry rung (gases are about ten times LESS
+  soluble in water than in ammonia).
+
+  So the sector declares its own world: same components, same SRK vapour, but
+  WATER as the solvent and the *-water pairs from the catalogue.
+
+  HOW MUCH DOES IT CHANGE?  Very little -- the drum only carries ~4.5 kmol/h of
+  liquid, so the correction moves a few ppm of the feed.  It is here because it
+  is RIGHT, not because it is large, and because it is the mechanism the purge
+  scrubber will need, where the solvent really is water and the amount really
+  does matter.
+
+  THE STREAM THAT LEAVES THIS SECTOR CROSSES A MODEL BOUNDARY.  `Makeup` goes
+  from this world into the plant's; (T, P, z) are held and each side recomputes
+  its own enthalpy, so H STEPS at the boundary.  The run prints that step in
+  the first-law ledger.  It is the two models disagreeing on H(T,P,z) -- it is
+  information, not a bug.  H is the conserved truth; T is the model-dependent
+  readout.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( N2  H2  NH3  Ar  water  O2 );
+
+equilibrium
+{
+    formulation diluteSolution;
+
+    liquid
+    {
+        solvent
+        {
+            component     water;
+            standardState pureLiquid;          // the Raoult rung
+        }
+        solutes
+        {
+            components    ( N2 H2 Ar O2 );
+            standardState infiniteDilution;    // the Henry rung
+            solutionModel henryDilute;
+            binaryParameters
+            {
+                N2-water { source "data/standards/parameters/Henry/N2-water.dat"; }
+                H2-water { source "data/standards/parameters/Henry/H2-water.dat"; }
+                Ar-water { source "data/standards/parameters/Henry/Ar-water.dat"; }
+                O2-water { source "data/standards/parameters/Henry/O2-water.dat"; }
+            }
+        }
+    }
+
+    vapour
+    {
+        fugacityModel SRK;
+    }
+}

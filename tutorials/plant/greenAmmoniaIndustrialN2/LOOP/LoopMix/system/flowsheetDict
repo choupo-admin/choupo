@@ -1,0 +1,5 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+type      mixer;
+boundary  { inlets ( Makeup  Recycle );  outlets ( Out ); }

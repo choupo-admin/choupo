@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  PURGE -- the design variable of this case.
+
+  Industrial nitrogen brings in 20 times more argon than 99.999 % nitrogen
+  does, and argon is inert: it either leaves in the purge or accumulates in the
+  loop.  But the purge takes hydrogen with it.  0.002 = 0.2 % of the
+  unreacted gas.  Sweep it and watch y_Ar_converter and H2_specific_kg_t move in
+  opposite directions -- that trade-off is the heart of green ammonia.
+\*---------------------------------------------------------------------------*/
+type      splitter;
+operation { fractions ( 0.002  0.998 ); }
+boundary  { inlets ( Feed );  outlets ( Purge  Recycle ); }

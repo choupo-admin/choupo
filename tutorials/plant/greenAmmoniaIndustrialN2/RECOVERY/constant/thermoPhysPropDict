@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  PROPERTY SYSTEM OF THE RECOVERY SECTOR -- the THIRD one in this plant.
+
+  Three sectors, three thermodynamic worlds, and each one is right where it is:
+
+    PURIFICATION   solvent WATER    trace gases in deoxo condensate
+    LOOP, PRODUCT  solvent AMMONIA  H2, N2, Ar dissolved in liquid NH3
+    RECOVERY       solvent WATER    ammonia absorbed OUT of a gas INTO water
+
+  This is the strongest argument the case makes for `constant/` living at every
+  level of a fractal plant: one package could not describe all three.
+
+  THE HONEST LIMIT OF THIS ONE.  Henry is a convention for SPARINGLY SOLUBLE
+  solutes.  Ammonia in water is not sparingly soluble -- H_ref is 0.99 bar at
+  298 K, four orders of magnitude below nitrogen's -- so this package is only
+  valid while the rich liquid stays DILUTE.  The scrubber's water rate is set
+  to hold it near 3 % (m/m) for exactly that reason.  Push the solution to the
+  15-25 % a real purge scrubber makes, and this package stops being defensible:
+  it needs an activity or electrolyte model over the whole composition range.
+
+  WHY NOT AN ELECTROLYTE PACKAGE HERE, TODAY.  It was tried, and the physics
+  says no.  At 2.78 % (m/m) only 0.33 % of the ammonia is ionised
+  (NH3 + H2O <-> NH4+ + OH-, [OH-] = 5.5 mmol/kg, pH 11.7), so the speciation
+  buys almost nothing -- while `formulation electrolyteGammaPhi` REFUSES an SRK
+  vapour ("the reactive electrolyte path serves vapour idealGas in this slice")
+  and would force ideal gas on a 30 bar hydrogen-rich stream.  That trades a
+  negligible liquid-phase refinement for a much larger vapour-phase error.
+  Henry is the right model at this dilution.
+    Cut the wash water to the 2 kmol/h a real design uses, though, and the rich
+  liquid goes to ~15 % (m/m): then the speciation matters, Henry does not hold,
+  and this package has to change.  The records for that are already in the case, and NOT in this folder: the
+  speciation set follows the COMPONENT, not the sector.  `NH3.dat` carries
+  `aqueousSpeciation ammonia;` as an identity fact, so the importer pulls
+  chemistry/NH3aq-formation.dat, chemistry/water-dissociation.dat and the
+  species NH4 / OH / H into every context that declares NH3 -- which is the
+  plant root.  Do not hand-copy them here; let bin/choupo-import place them.
+
+  Streams crossing into this sector (Purge, from LOOP) cross a MODEL BOUNDARY:
+  (T, P, z) are held and each side recomputes its own enthalpy, so H steps
+  there.  Read it in the first-law ledger -- it is information, not a bug.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( N2  H2  NH3  Ar  water  O2 );
+
+equilibrium
+{
+    formulation diluteSolution;
+
+    liquid
+    {
+        solvent
+        {
+            component     water;
+            standardState pureLiquid;
+        }
+        solutes
+        {
+            components    ( NH3 N2 H2 Ar O2 );
+            standardState infiniteDilution;
+            solutionModel henryDilute;
+            binaryParameters
+            {
+                NH3-water { source "data/standards/parameters/Henry/NH3-water.dat"; }
+                N2-water  { source "data/standards/parameters/Henry/N2-water.dat"; }
+                H2-water  { source "data/standards/parameters/Henry/H2-water.dat"; }
+                Ar-water  { source "data/standards/parameters/Henry/Ar-water.dat"; }
+                O2-water  { source "data/standards/parameters/Henry/O2-water.dat"; }
+            }
+        }
+    }
+
+    vapour
+    {
+        fugacityModel SRK;
+    }
+}

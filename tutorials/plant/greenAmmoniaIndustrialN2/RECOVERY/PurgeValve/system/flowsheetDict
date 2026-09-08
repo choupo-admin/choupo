@@ -1,0 +1,9 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+// Lets the purge down from the loop's 200 bar to 30 bar.  Isenthalpic: T_out
+// is a RESULT (on a hydrogen-rich gas the Joule-Thomson coefficient is
+// negative, so it comes out slightly WARMER, not colder).
+type      valve;
+operation { P 30 bar; }
+boundary  { inlets ( Feed );  outlets ( Out ); }

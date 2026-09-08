@@ -1,0 +1,4 @@
+componentMolarFlows { H2 17.2 kmol/h;  N2 5.2 kmol/h;  Ar 0.35 kmol/h;  NH3 0.36 kmol/h; }
+T 300 K;
+P 30 bar;
+phase gas;

@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  T-301 -- PURGE SCRUBBER.  Counter-current packed column: the purge enters at
+  the bottom, demineralised water at the top.
+
+  WHY IT IS HERE, in one line: you cannot vent 50 t/year of ammonia.  It is a
+  permit item, not an economic one -- the ammonia it recovers is worth about
+  40 k EUR/year, which never pays for a column.  What it also does, and what
+  IS worth money, is deliver ammonia-free gas: polymeric H2-recovery membranes
+  do not survive NH3, so this column is the gatekeeper for the ~1.1 M EUR/year
+  of hydrogen sitting in the purge.
+
+  ON THE WATER RATE.  It is a modelling decision as much as a design one.  The
+  package here is Henry (infinite dilution), which is only honest while the
+  solution stays dilute, so the water rate is set to keep the rich liquid near
+  3 % (m/m) ammonia.  A real design would use far LESS water, make a 15-25 %
+  solution and distil it in a stripping column -- and would then need an
+  activity or electrolyte model over the full composition range, not Henry.
+  The records for that are already in the case and unused:
+  constant/chemistry/NH3aq-formation.dat, water-dissociation.dat and the
+  species NH4 / OH / H.
+\*---------------------------------------------------------------------------*/
+type      absorber;
+operation { stages 6; }
+boundary  { inlets ( Gas  Water );  outlets ( CleanGas  RichLiquid ); }

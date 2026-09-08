@@ -1,0 +1,8 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+// Feed/effluent exchanger: the hot converter effluent preheats the feed.
+// This is the loop's ENERGY cut (tear stream HotEffluent).
+type      heatExchanger;
+operation { area 530 m2;  U 550 W/m2/K;  flow counter; }
+boundary  { inlets ( Hot  Cold );  outlets ( HotOut  ColdOut ); }

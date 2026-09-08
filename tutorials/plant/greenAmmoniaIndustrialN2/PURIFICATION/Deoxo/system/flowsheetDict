@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  DEOXO -- catalytic removal of the oxygen the industrial nitrogen brings in.
+
+      O2 + 2 H2 -> 2 H2O        over Pd/Al2O3
+
+  O2 is the LIMITING reactant (hydrogen is in ~700-fold excess), so
+  `conversion 1.0` means "all the oxygen reacts" -- which is the real
+  specification of a deoxo bed (outlet O2 below 1 ppm).
+
+  Isothermal here, so the exotherm is reported as Q_kW (~349 kW).  A real bed
+  is adiabatic and heats up by about 17 K -- the hydrogen dilutes the heat.
+\*---------------------------------------------------------------------------*/
+type      conversionReactor;
+operation { conversion 1.0; }
+reaction  deoxoReaction;                 // constant/reactions
+boundary  { inlets ( Feed );  outlets ( Out ); }

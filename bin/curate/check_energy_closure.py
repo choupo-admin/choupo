@@ -74,10 +74,14 @@ enthalpy-inversion of the same day CLOSED `combined01_brayton_rankine`, pinned
 at 11.87 %.  A stale-pin arm earns its keep the first time the engine
 improves.
 
-THE PIN LIST IS STALE AS THIS LANDS, and deliberately not re-seeded here: the
-same commit closes ammonia02 (16.14 % -> 0.0023 %) and combined01, and moving
-the goldens those cases carry is Vitor's decision, not this gate's.  Re-seed
-with `--seed` in the same act that re-records them.
+THE PIN LIST WAS STALE WHEN THIS LANDED, and the two stale entries were
+CLEARED on 2026-09-08 -- ammonia02 (pinned 15.00 %, measured 0.0020 %) and
+combined01_brayton_rankine (pinned 11.87 %, measured 0.0000 %) -- because a
+stale pin is a claim about the engine that stopped being true and it HIDES the
+next regression on that case.  Clearing one is not re-recording a golden: it
+removes a debt entry, moves no number, and the arm that measured 0.0020 % is
+the same arm that will fail the day either case regresses.  The GOLDEN rows
+those two cases carry are a separate question and remain Vitor's.
 
 SEEDING.  `--seed` prints the KNOWN_OPEN block for the cases in scope, so the
 list is MEASURED and never typed from memory.  The list below was seeded from
@@ -123,7 +127,6 @@ KNOWN_OPEN = {
     "tutorials/steady/distillation/stripper01_sour_water": 10.3730,
     "tutorials/steady/distillation/stripper02_sour_water_h2s": 13.5730,
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section": 33.3080,
-    "tutorials/plant/ammonia02_full_plant": 15.0000,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/credo01_valve_heater_drum": 2.0940,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 118.1200,
@@ -134,7 +137,6 @@ KNOWN_OPEN = {
     "tutorials/steady/heat/phasechange01_partial_condenser": 142.5260,
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas": 118.0420,
     "tutorials/steady/optimisation/optim01_column_reflux": 18.5010,
-    "tutorials/steady/power/combined01_brayton_rankine": 11.8660,
     "tutorials/steady/reactors/acetone02_luyben_reactor": 25.1790,
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate": 37.9820,
     "tutorials/steady/reactors/pfr_polyesterification": 18.3420,

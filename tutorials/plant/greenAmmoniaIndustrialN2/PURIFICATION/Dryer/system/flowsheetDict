@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  DRYER -- twin-bed 4A molecular sieve (one bed adsorbs while the other
+  regenerates).  Takes the ~315 ppm the knock-out drum leaves down below 1 ppm.
+
+  Why that deep?  Because the iron catalyst in the converter tolerates less
+  than ~5 ppm of oxygen compounds -- and the simulator does NOT see poisoning:
+  delete this block and the case still runs, with the water travelling through
+  the loop and into the product.  The dryer is here because the catalyst data
+  sheet says so; the case shows you HOW MUCH water it removes.
+
+  `mAdsPerColumn` is a SIZING decision, not a datum: the model refuses the
+  feed if the cycle's working capacity is not enough.  Read
+  `capacity_utilisation_water` in the report.
+\*---------------------------------------------------------------------------*/
+type      tsaTwinBed;
+operation
+{
+    adsorbent      molSieve4A;           // constant/adsorbents/
+    mAdsPerColumn  1500 kg;
+    tCycle         43200 s;              // 12 h of adsorption per bed
+    T_ads          279 K;
+    T_regen        553 K;                // 280 C
+    lightKey       H2;
+    purgeRatio     0.005;
+}
+boundary  { inlets ( Feed );  outlets ( Dry  Regen ); }

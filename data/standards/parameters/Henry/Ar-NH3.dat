@@ -1,0 +1,89 @@
+/*---------------------------------------------------------------------------*\
+  ARGON dissolved in liquid AMMONIA -- full Krichevsky-Kasarnovsky form.
+  ===================================================================
+  The same rigorous formulation as the H2-NH3 and N2-NH3 records in the
+  catalogue:
+      y phi_V P  =  x gamma2* H(T) exp[ v_inf (P - Ps_NH3) / RT ].
+
+  WHY THIS FILE EXISTS.  With no Henry pair, argon falls onto the Raoult rung
+  and its "vapour pressure" at 250 K comes from an Antoine extrapolation ABOVE
+  its critical temperature (Tc = 150.86 K).  In the synthesis loop's separator
+  that gave K_Ar = 1.7 against K_N2 = 124 -- argon ~70x more soluble in liquid
+  ammonia than nitrogen -- and 88 % of the argon left dissolved in the product
+  instead of accumulating in the loop.  The purge, which is the heart of this
+  case, was left without physical meaning.
+
+  SOURCE DATA: IUPAC-NIST Solubility Data Series Vol. 4 (Argon), H. L. Clever
+  (ed.), 1980, pp. 314-318 -- critical evaluation by C. L. Young (July 1978),
+  who classifies the four available sets as TENTATIVE:
+
+    Kaminishi, G., Kogyo Kagaku Zasshi 68 (1965) 419 [Int. Chem. Eng. 5 (1965)
+      749, English translation] -- x_Ar at 273.15 / 298.15 / 323.15 K, 50.8 to
+      199.9 bar.  The anchor set: it covers exactly the loop pressure.
+    Matous, J.; Sobr, J.; Novak, J. P., Coll. Czech. Chem. Comm. 35 (1970)
+      3757 -- x_Ar at 243.15-303.15 K, 27.7 and 47.1 bar.  The ONLY set that
+      reaches below 273 K, i.e. that covers the separator at 250 K.
+    Michels, A.; Dumoulin, E.; Van Dijk, J. J. Th., Physica 27 (1961) 886 --
+      x_Ar AND y_Ar at 298.48-373.75 K up to 825 bar.  HELD OUT of the fit and
+      used as independent validation.
+
+  A CORRECTION APPLIED TO THE MATOUS DATA -- declared, not silent.
+  As printed in the compilation (SDS-4 p. 317) the Matous values are 10x larger
+  than Kaminishi's at the single overlap point (273.15 K: x = 0.0533 at 47.1
+  bar against 0.00561 at 50.8 bar), which contradicts the critical evaluation's
+  own statement ("good agreement in the overlapping ranges of these three
+  latter studies").  Divided by ten, the overlap point reproduces Kaminishi's
+  KK line to -1.8 % and all seven temperatures fall within +-4 % of the van't
+  Hoff line between 273 and 303 K.  Reading them as 10^1 x_Ar is therefore the
+  only reading consistent with the evaluation and with the other data set, and
+  it is the one adopted here.  TO BE CONFIRMED against the original Matous
+  1970 paper -- until then, this pair carries that inference.
+
+  FIT (KK line, ln(f_Ar/x_Ar) vs P-Ps; f_Ar = y_Ar phi_Ar P with phi_Ar from
+  SRK; y_Ar from the ammonia vapour enhancement factor calibrated on the y_Ar
+  MEASURED by Michels at 298.48 K).  Maximum KK-line residuals: 0.6 %, 0.5 %
+  and 3.6 % on Kaminishi's three isotherms -- the KK line describes the data up
+  to 200 bar within the declared experimental error (+-1 % in x).
+      273.15 K -> H = 7.35e8 Pa,  v_inf = 24.7 cm3/mol
+      298.15 K -> H = 5.08e8 Pa,  v_inf = 18.2 cm3/mol
+      323.15 K -> H = 3.18e8 Pa,  v_inf = 25.1 cm3/mol
+  van't Hoff over the TEN points (Kaminishi 273-323 K + Matous/10 243-303 K):
+      dH_diss = +9495 J/mol,  H_ref(298.15 K) = 4.87e8 Pa,  rms(ln H) = 6 %.
+
+  INDEPENDENT VALIDATION (held out of the fit): Michels 1961 at 298.48 K,
+  25-305 bar, a different laboratory and method, with y_Ar measured ->
+  H = 4.56e8 Pa, i.e. -6 % from the adopted value.
+
+  CONSISTENCY WITH THE FAMILY:  v_inf = 23 cm3/mol against 23 (N2) and 24 (H2)
+  in the same solvent; dH_diss > 0 as for both of them (these gases are MORE
+  soluble in hot ammonia).  H_ref(Ar)/H_ref(N2) = 0.57 in ammonia against 0.46
+  in water (the catalogue's Ar-water / N2-water records): argon is ~1.8x more
+  soluble than nitrogen in liquid ammonia -- the same order, not 70x.
+
+  PROMOTED to the standard catalogue 2026-09-08 on Vitor's decision, from the
+  case it was curated in.  Reproduce the whole fit with
+  tutorials/plant/greenAmmoniaIndustrialN2/curation/Ar-NH3/fit-Ar-NH3.py.
+
+  TWO COPIES EXIST TODAY, and the reason is stated rather than left to be
+  discovered: that case is SEALED (`sealed true;`), which FORBIDS the runtime
+  every catalogue fallback, so it must carry the record inside its own
+  constant/ tree -- and it carries this one as an AUTHORED file its
+  propertyManifest does not yet claim, because the pair did not exist in the
+  catalogue when the case was imported.  Until `bin/choupo-import` is re-run
+  on that case, the manifest neither verifies nor forbids its copy and the two
+  are kept in step BY HAND.  That re-import is the remedy, and it is named
+  here rather than assumed done.
+\*---------------------------------------------------------------------------*/
+solute      Ar;
+solvent     NH3;
+
+gasSpecies        Ar;
+dissolvedSpecies  Ar;
+convention        Sander-Hxp-v1;
+model       vantHoff;
+H_ref       4.87e8 Pa;            // infinite-dilution reference fugacity, 298.15 K
+T_ref       298.15 K;
+enthalpy    9495 J/mol;           // dH_diss > 0: more soluble hot
+v_inf       2.3e-5;               // m^3/mol -- KK Poynting (22.7 cm3/mol fitted)
+margulesA   0.0;                  // J/mol -- gamma2* (x_Ar < 3 % in the data; ~0.1 % in the loop)
+Trange      ( 243  323 );   // data 243.15-323.15 K -- the 250 K separator is INSIDE

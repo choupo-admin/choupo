@@ -1,0 +1,9 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+// Cold separator at 250 K / 200 bar: the ammonia condenses, the rest recycles.
+// Dissolved H2, N2 and ARGON leave in the liquid through measured Henry
+// constants -- see constant/parameters/Henry/ and curation/Ar-NH3/.
+type      isothermalFlash;
+operation { T 250 K;  P 200 bar; }
+boundary  { inlets ( Feed );  outlets ( Liquid  Vapour ); }

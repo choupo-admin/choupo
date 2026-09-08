@@ -56,10 +56,9 @@ std::map<std::string, HenrysLaw>& registry()
 
 void HenrysLawRegistry::loadFrom(const std::string& dataRoot)
 {
-    auto scan = [](const fs::path& dir)
+    auto scan = [](const fs::path& dir, records::ScanGuard& guard)
     {
         if (!fs::exists(dir)) return;
-        records::ScanGuard guard("HenrysLawRegistry", "Henry pair");
         for (auto& e : fs::directory_iterator(dir))
         {
             if (!e.is_regular_file()) continue;
@@ -82,10 +81,22 @@ void HenrysLawRegistry::loadFrom(const std::string& dataRoot)
     // catalogue is forbidden); loadFrom runs after the binary enters the
     // case directory, so the cwd walk sees the case.
     if (!records::sealedStrict())
-        scan(fs::path(dataRoot) / "standards" / "parameters" / "Henry");
-    bool legacy = false;
-    const fs::path local = records::localScanDir("parameters/Henry", legacy);
-    if (!local.empty()) scan(local);
+    {
+        records::ScanGuard guard("HenrysLawRegistry", "Henry pair");
+        scan(fs::path(dataRoot) / "standards" / "parameters" / "Henry", guard);
+    }
+    {
+        //  ONE guard over EVERY case-local directory (2026-09-08): the
+        //  nearest one walking up AND each `constant/parameters/Henry` a
+        //  level of this case's own geography carries.  A pair is identified
+        //  by (solute, solvent) across the whole case, so two sectors
+        //  claiming it REFUSE naming both files -- same tier, no defensible
+        //  winner.  The standards scan above is a different tier and keeps
+        //  its own guard, so a case-local pair still overrides it, aloud.
+        records::ScanGuard guard("HenrysLawRegistry", "Henry pair");
+        for (const auto& d : records::localScanDirs("parameters/Henry"))
+            scan(d, guard);
+    }
 }
 
 bool HenrysLawRegistry::has(const std::string& solute,

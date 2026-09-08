@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  PEQ 2026-27 -- Green ammonia, Sines           |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Sectored case, industrial-grade nitrogen     |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoSolve;
+description  "Green ammonia, 500 t/day (Sines), with INDUSTRIAL-GRADE nitrogen (99.5 % N2 / 0.40 % O2 / 0.10 % Ar), laid out in three sectors: PURIFICATION (nitrogen booster, 3:1 mixing, Pd deoxo, chilling to 279 K, knock-out drum, 4A molecular-sieve dryer and the synthesis compressor), LOOP (Haber-Bosch loop with feed/effluent exchanger, adiabatic converter, cooling, cold separation at 250 K, purge and recycle) and PRODUCT (let-down to 20 bar). Both recycle cuts -- material (Recycle) and energy (HotEffluent) -- are INTERNAL to the LOOP sector. SRK vapour; H2, N2 and Ar dissolved in liquid ammonia through measured Henry constants. The purification sector carries its own property package, with water as the solvent.";
+verbosity    3;
+
+reports
+{
+    streamTable   {}
+    massBalance   {}
+    energyBalance {}
+    computed      {}
+    spreadsheet   {}
+}

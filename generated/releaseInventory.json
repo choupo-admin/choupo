@@ -8,7 +8,7 @@
     "nrtlPairs": 2,
     "wilsonPairs": 0,
     "uniquacPairs": 3,
-    "henryPairs": 205,
+    "henryPairs": 206,
     "pitzerPairs": 55,
     "enrtlPairs": 3,
     "materials": 4,
@@ -21,15 +21,15 @@
     "engines": 4
   },
   "tutorials": {
-    "runnableCases": 397,
-    "regressionChecks": 387,
+    "runnableCases": 398,
+    "regressionChecks": 388,
     "byTier": {
-      "witness": 364,
+      "witness": 365,
       "tutorial": 25,
       "showcase": 8
     }
   },
   "totals": {
-    "mixtureParameterRecords": 268
+    "mixtureParameterRecords": 269
   }
 }

@@ -1,0 +1,7 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+// 3:1 make-up gas.  Its outlet still carries the O2 that came with the
+// industrial nitrogen, plus the moisture that came with the hydrogen.
+type      mixer;
+boundary  { inlets ( H2  N2 );  outlets ( Out ); }

@@ -1,0 +1,8 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+// Let-down from 200 to 20 bar: releases the dissolved gases and takes the
+// product from ~99.4 % to ~99.9 % NH3.  Note how much ARGON leaves here.
+type      isothermalFlash;
+operation { T 250 K;  P 20 bar; }
+boundary  { inlets ( Feed );  outlets ( Liquid  Vapour ); }

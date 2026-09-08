@@ -1,0 +1,6 @@
+// Ammonia-free gas.  Today it leaves the plant; it is the feed a future
+// H2-recovery membrane or PSA would take.
+componentMolarFlows { H2 17.2 kmol/h;  N2 5.2 kmol/h;  Ar 0.35 kmol/h;  NH3 0.002 kmol/h; }
+T 300 K;
+P 30 bar;
+phase gas;

@@ -1,0 +1,97 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, Sines          |
+|      \\|//   H eat-transfer |  SECTORED case, industrial-grade nitrogen     |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  PLANT (the COMPOSITE node) -- geography and the piping between sectors, only.
+
+    H2, N2 --> [ PURIFICATION ] --Makeup--> [ LOOP ] --RawLiquid--> [ PRODUCT ] --> NH3
+                     |                        |
+            KoWater, RegenGas               Purge
+            CwAOut, ChwOut                    |
+                                              v
+                            WashWater --> [ RECOVERY ] --> ScrubbedGas (H2, N2, Ar)
+                                                      --> AqueousNH3
+
+  WHAT MAKES THIS CASE: ONE line of the input data.
+  The nitrogen is INDUSTRIAL grade -- N2 99.5 % / O2 0.40 % / Ar 0.10 % --
+  instead of the 99.999 % of the original data sheet, which is analytical-grade
+  gas that nobody supplies at 17 t/h.  Consequence: this plant needs a whole
+  PURIFICATION sector -- deoxo reactor, chiller, knock-out drum, dryer -- where
+  one fed on 99.999 % nitrogen would only need compression.
+
+  Naming convention (docs/ai/case-layout.md):
+    SECTORS in CAPITALS       : PURIFICATION, LOOP, PRODUCT
+    Units in PascalCase       : N2Boost, Deoxo, Dryer, Converter
+    Streams in PascalCase     : Makeup, DryGas, RawLiquid, ProductNH3
+    Components as they come   : N2, H2, NH3, Ar, water, O2
+
+  Where each stream's state file lives: ONE rule -- at the LOWEST level whose
+  subtree contains ALL of its ends.  A stream crossing two sectors, and a plant
+  inlet, live in 0/MAIN/.  Check it with `choupoSolve --manifest .`
+
+  THREE PROPERTY PACKAGES, one per thermodynamic world:
+    plant constant/          AMMONIA solvent   the loop and the product
+    PURIFICATION/constant/   WATER solvent     trace gases in deoxo condensate
+    RECOVERY/constant/       WATER solvent     ammonia absorbed into water
+  `Makeup` and `Purge` therefore cross MODEL BOUNDARIES, and their enthalpy
+  STEPS there -- read the first-law ledger.  That step is two models
+  disagreeing on H(T,P,z): information, not a bug.
+\*---------------------------------------------------------------------------*/
+
+sectors    ( PURIFICATION  LOOP  PRODUCT  RECOVERY );
+
+boundary
+{
+    inlets   ( H2Feed  N2Feed  Cw  CwA  Chw  WashWater );
+    outlets  ( ProductNH3  LetdownGas  ScrubbedGas  AqueousNH3  CwOut  CwAOut  ChwOut  KoWater  RegenGas );
+}
+
+connections
+{
+    H2Feed      { to PURIFICATION/H2Feed; }
+    N2Feed      { to PURIFICATION/N2Feed; }
+    CwA         { to PURIFICATION/CwA; }
+    Chw         { to PURIFICATION/Chw; }
+    Cw          { to LOOP/Cw; }
+
+    Makeup      { from PURIFICATION/Makeup;   to LOOP/Makeup; }
+    RawLiquid   { from LOOP/RawLiquid;       to PRODUCT/RawLiquid; }
+
+    ProductNH3  { from PRODUCT/ProductNH3; }
+    LetdownGas  { from PRODUCT/LetdownGas; }
+    Purge       { from LOOP/Purge;           to RECOVERY/Purge; }
+    WashWater   { to RECOVERY/WashWater; }
+    ScrubbedGas { from RECOVERY/ScrubbedGas; }
+    AqueousNH3  { from RECOVERY/AqueousNH3; }
+    CwOut       { from LOOP/CwOut; }
+    CwAOut      { from PURIFICATION/CwAOut; }
+    ChwOut      { from PURIFICATION/ChwOut; }
+    KoWater     { from PURIFICATION/KoWater; }
+    RegenGas    { from PURIFICATION/RegenGas; }
+}
+
+/*--- Project KPIs: identifiers QUALIFIED by sector ---*/
+variables
+{
+    NH3_t_h         { compute "PRODUCT.ProductNH3.F * 17.0305 * 3.6"; }
+    NH3_t_day       { compute "NH3_t_h * 24"; }
+    W_total_kW      { compute "PURIFICATION.N2Boost.W_shaft_kW + PURIFICATION.SynComp.W_shaft_kW + LOOP.RecycleComp.W_shaft_kW"; }
+    W_specific_kWh_t     { compute "W_total_kW / NH3_t_h"; }
+    H2_specific_kg_t     { compute "H2Feed.F * 2.01588 * 3.6 * 1000 / NH3_t_h"; }
+    y_NH3_converter { compute "LOOP.Converter.y_NH3"; }
+    T_converter_K   { compute "LOOP.Converter.T"; }
+    T_makeup_K      { compute "PURIFICATION.Makeup.T"; }
+
+    // --- the KPIs that exist only because the nitrogen is industrial grade ---
+    y_Ar_converter       { compute "LOOP.Converter.y_Ar"; }
+    purge_kmol_h         { compute "Purge.F * 3600"; }
+    O2_removed_kmol_h   { compute "PURIFICATION.Deoxo.extent_kmol_h"; }
+    Q_deoxo_kW           { compute "PURIFICATION.Deoxo.Q_kW"; }
+    Q_chilling_kW     { compute "PURIFICATION.GasChiller.Q_kW"; }
+    H2O_condensed_kg_h  { compute "KoWater.F * 3600 * 18.0153"; }
+    dryer_working_capacity_mol_kg { compute "PURIFICATION.Dryer.Dq_water"; }
+    dryer_utilisation   { compute "PURIFICATION.Dryer.capacity_utilisation_water"; }
+    Q_regeneration_kW     { compute "PURIFICATION.Dryer.Q_regeneration_kW"; }
+}

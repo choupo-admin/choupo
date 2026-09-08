@@ -417,6 +417,79 @@ inline fs::path localScanDir(const std::string& sub, bool& legacy)
     return {};
 }
 
+// EVERY case-local directory a registry scan must read: the nearest one
+// walking UP (the answer `localScanDir` has always given -- unchanged for a
+// flat case) PLUS every `constant/<sub>` that a LEVEL of this case's own
+// geography carries below the run directory.
+//
+// WHY THE DOWNWARD HALF EXISTS (2026-09-08, found by Vitor building a green
+// ammonia case for PEQ).  `constant/` is documented as existing at EVERY level
+// of a sectored case, and the thermophysical system and the reactions library
+// honour that -- they are read PER NODE while the flowsheet is flattened.  The
+// directory-scan registries are not: they load ONCE at start-up from the run
+// directory, so `PURIFICATION/constant/assets/molSieve4A.dat` was invisible
+// and the run said `unknown adsorbent 'molSieve4A'.  Loaded: (none)` about a
+// record sitting in the sector that owns the dryer.  It is not an adsorbent
+// defect: all five registries (materials, membranes, adsorbents, Henry pairs,
+// utilities -- and catalysts) share the one call, so all five were blind in
+// the same way, and only the adsorbent happened to be tried first.
+//
+// A LEVEL IS RECOGNISED BY WHAT IT HOLDS, not by its name: a directory is a
+// case level when it carries `system/` or `constant/` of its own.  That admits
+// sectors and unit folders and excludes -- by construction, with no list to
+// keep -- the state views (`0/`, `converged/`, an instant), the derivative
+// views (`design/`, `economics/`, `reports/`) and anything a student leaves
+// beside the case.  `constant/` and `system/` are never descended into.
+//
+// THE REGISTRY STAYS GLOBAL, and that is the point: a name is a record's
+// identity across the whole case, so the caller reads every directory this
+// returns under ONE `records::ScanGuard`.  Two sectors declaring the same
+// adsorbent then REFUSE, naming both files -- they are the same tier and
+// there is no defensible winner, exactly as two files in one directory.  The
+// standards catalogue is a DIFFERENT tier and keeps its own guard, so a
+// case-local record still overrides it, announced.
+inline std::vector<fs::path> localScanDirs(const std::string& sub)
+{
+    std::vector<fs::path> out;
+    bool legacy = false;
+    const fs::path up = localScanDir(sub, legacy);
+    if (!up.empty()) out.push_back(up);
+
+    const auto isLevel = [](const fs::path& d)
+    {
+        return fs::is_directory(d / "system") || fs::is_directory(d / "constant");
+    };
+
+    //  Breadth-first through the case's own geography, bounded: plant ->
+    //  sector -> unit -> sub-unit is the deepest shape the layout describes.
+    std::vector<fs::path> level{ fs::current_path() };
+    for (int depth = 0; depth < 4 && !level.empty(); ++depth)
+    {
+        std::vector<fs::path> next;
+        for (const auto& dir : level)
+        {
+            std::error_code ec;
+            for (const auto& e : fs::directory_iterator(dir, ec))
+            {
+                if (ec) break;
+                if (!e.is_directory()) continue;
+                const fs::path child = e.path();
+                const std::string leaf = child.filename().string();
+                if (leaf == "constant" || leaf == "system") continue;
+                if (!isLevel(child)) continue;      // not a level of the case
+                next.push_back(child);
+                const fs::path cand = child / "constant" / sub;
+                if (fs::is_directory(cand)
+                    && std::find(out.begin(), out.end(), cand) == out.end())
+                    out.push_back(cand);
+            }
+        }
+        std::sort(next.begin(), next.end());
+        level.swap(next);
+    }
+    return out;
+}
+
 // Directory-scan resolution (chemistry/, parameters/Henry/):
 //   * legacy propertyData/<sub> dir present -> that dir ALONE (the v1
 //     snapshot semantics, unchanged for the two remaining v1 cases);

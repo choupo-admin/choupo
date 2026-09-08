@@ -1,0 +1,7 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+// Recycle compressor: makes up the loop pressure drop (200 -> ~231 bar).
+type      compressor;
+operation { W_shaft 1400 kW;  eta 0.80; }
+boundary  { inlets ( Feed );  outlets ( Out ); }

@@ -1,0 +1,7 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+// Synthesis compressor: 30 -> ~231 bar.  Only once the gas is DRY.
+type      compressor;
+operation { W_shaft 6700 kW;  eta 0.78; }
+boundary  { inlets ( Feed );  outlets ( Out ); }

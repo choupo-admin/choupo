@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  constant/economics -- precos do projeto PEQ 2026-27 (amonia verde, Sines).
+  CENARIO BASE.  Os cenarios de sensibilidade obrigatorios fazem-se mudando
+  o preco do H2 (2 / 4 / 6 EUR/kg) e o da amonia (0.60 / 0.90 EUR/kg).
+\*---------------------------------------------------------------------------*/
+products
+(
+    {
+        stream    productNH3;
+        price     0.60;                 // EUR/kg  (600 EUR/t -- cenario base do enunciado)
+        costYear  2026;
+        provenance
+        {
+            origin  "Enunciado PEQ 2026-27, 2.2: base 600 EUR/t, alto 900 EUR/t";
+            method  "preco de contrato, amonia verde com premio CBAM/RFNBO";
+        }
+    }
+);
+rawMaterials
+(
+    {
+        stream    h2Feed;
+        price     4.00;                 // EUR/kg H2  (cenarios: 2 / 4 / 6)
+        costYear  2026;
+        provenance
+        {
+            origin  "Enunciado PEQ 2026-27, 2.3: H2 verde entregue a 30 bar";
+            method  "cenarios de custo nivelado de eletrolise PEM";
+        }
+    }
+    {
+        stream    n2Feed;
+        price     0.06;                 // EUR/kg N2 da ASU criogenica (package)
+        costYear  2026;
+        provenance
+        {
+            origin  "custo de N2 de ASU criogenica de grande escala (figura de ensino)";
+            method  "~0.10 kWh/Nm3 a ~80 EUR/MWh + amortizacao do package";
+        }
+    }
+);
+labourRate      42.0;
+labourRateYear  2026;
+usdToEur        0.92;
+taxRate         0.21;

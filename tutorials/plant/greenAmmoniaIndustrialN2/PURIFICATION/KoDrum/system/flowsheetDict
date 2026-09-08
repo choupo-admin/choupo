@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Knock-out drum at 30 bar: removes ~86 % of the water formed in the deoxo.
+
+  This is the ONLY unit in the plant that ever holds a liquid phase which is
+  not ammonia: the condensate here is essentially pure WATER, the water the
+  deoxo made out of the oxygen the industrial nitrogen brought in.
+
+  That is why this whole sector carries its OWN property package, in
+  PURIFICATION/constant/thermoPhysPropDict -- water as the solvent instead of
+  ammonia.  Read that file: it is the clearest example in the case of why
+  `constant/` exists at every level of a fractal plant.
+\*---------------------------------------------------------------------------*/
+type      isothermalFlash;
+operation { P 30 bar; }
+boundary  { inlets ( Feed );  outlets ( Liquid  Vapour ); }

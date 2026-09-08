@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Adsorbent for dryer D-101 A/B -- 4A molecular sieve (Na-LTA zeolite).
+
+  CASE-LOCAL NUMERICAL ANCHOR, not curated data: rho_bulk and cpSolid are
+  representative material-class values for a commercial 4A sieve in 3 mm beads.
+  Do not promote to data/standards.
+\*---------------------------------------------------------------------------*/
+adsorbent
+{
+    name        molSieve4A;
+    type        "4A molecular sieve (Na-LTA zeolite), gas drying";
+    rho_bulk    700 kg/m3;
+    cpSolid     [0 2 -2 -1 0] 920;   // J/(kg.K)
+}
+
+provenance
+{
+    identity
+    {
+        origin assumed;
+        method "material class (Ruthven, Principles of Adsorption, Wiley 1984, tab. 1.2); teaching anchor for the PEQ 2026-27 case, not design data";
+    }
+}

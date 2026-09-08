@@ -1,0 +1,7 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+// Nitrogen booster: 8 bar (ASU battery limit) -> ~30 bar (the H2 pressure).
+type      compressor;
+operation { W_shaft 908 kW;  eta 0.78; }
+boundary  { inlets ( Feed );  outlets ( Out ); }

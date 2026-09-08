@@ -48,6 +48,7 @@ import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join, sep, relative, basename } from "node:path";
 import { existsSync, writeFileSync, mkdirSync, readFileSync, readdirSync, statSync, rmSync, watch as fsWatch } from "node:fs";
+import { slugifyName, adoptExistingCase } from "./caseSlug.mjs";
 import { homedir, tmpdir } from "node:os";
 
 import { createArtifactWatcher, readArtifactText } from "./artifactChannel.mjs";
@@ -374,22 +375,10 @@ ${desc}
 // A case name is a single folder slug (no path separators, no escape).
 const NAME_RE = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 
-// Turn an ARBITRARY name (a browser folder name / zip stem like "my case
-// (final)") into a safe single-folder slug satisfying NAME_RE: lowercase,
-// every illegal run -> '-', collapse repeats, strip leading non-alnum (so the
-// first char is alnum), tidy a trailing separator; empty -> "case".  Unlike the
-// user-typed NAME the New dialog validates, an imported name is not under the
-// student's control, so we slugify rather than reject.
-function slugifyName(raw) {
-  const s = String(raw || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9_-]+/g, "-")   // any illegal run -> single '-'
-    .replace(/-{2,}/g, "-")           // collapse repeats
-    .replace(/^[^a-z0-9]+/, "")       // leading char must be alnum
-    .replace(/[-_]+$/, "");           // tidy a trailing separator
-  return s || "case";
-}
-
+// A case's IDENTITY in the workspace -- `slugifyName` and `adoptExistingCase`
+// -- lives in ./caseSlug.mjs, imported above.  It was extracted on 2026-09-08
+// so a test can RUN it: this module opens a server the moment it is imported,
+// so its rules could only ever be checked by reading the source.
 // Resolve `rel` UNDER `dir`, refusing any escape (a `..` segment or an absolute
 // path that lands outside the case folder).  Returns the absolute path, or null
 // when it would escape -- so a hostile zip with `../` entries cannot write
@@ -744,7 +733,34 @@ function handleRest(req, res) {
       // acidoacetico-2 / -3 / -4.)  A folder already under this slug IS the
       // student's case; reopening keeps the path -- and thus the Claude session
       // -- stable.  If a student genuinely wants a second case, they rename it.
-      const name = slug;
+      //  A FOLDER THAT SLUGIFIES TO THIS SLUG *IS* THIS CASE (2026-09-08).
+      //  The rule above is right and its test was not: it compared the SLUG
+      //  against a folder NAME, and `slugifyName` lowercases -- so a folder
+      //  the authoring guide itself asks for (`PascalCase` on a case root,
+      //  decided 2026-05-27) can never equal its own slug, the reopen branch
+      //  never fired, and the import materialised a lowercase COPY beside it.
+      //  The student then edited the copy while the folder they opened stood
+      //  still.  Found by Vitor twice in a row building the PEQ green-ammonia
+      //  case (GreenAmmoniaIndustrialN2, greenNH3_04_industrialN2_sectored).
+      //
+      //  So the slug is compared against what each sibling slugifies TO, and
+      //  an existing case that answers to it is ADOPTED under its own name --
+      //  the folder on disk keeps the name the student gave it, which is the
+      //  half a rename must not lose.  An exact-slug folder still wins over a
+      //  slugifying one (it is the more specific match, and it is what every
+      //  case imported before this resolved to, so nothing already on disk
+      //  moves).  Two DIFFERENT siblings collapsing to one slug is a question
+      //  with no defensible answer, so it is refused by name rather than
+      //  guessed -- the third option of the report that found this.
+      let siblings = [];
+      try {
+        siblings = readdirSync(WORKSPACE, { withFileTypes: true })
+          .filter((e) => e.isDirectory() && isCaseDir(join(WORKSPACE, e.name)))
+          .map((e) => e.name);
+      } catch { /* no workspace yet -- nothing to adopt */ }
+      const adopted = adoptExistingCase(slug, siblings);
+      if (adopted && adopted.error) { sendJson(res, 409, { error: adopted.error }); return; }
+      const name = adopted ? adopted.name : slug;
       const caseDir = join(WORKSPACE, name);
       if (existsSync(caseDir) && isCaseDir(caseDir)) {
         ensureCaseTeaching(caseDir, name);   // keep teaching current

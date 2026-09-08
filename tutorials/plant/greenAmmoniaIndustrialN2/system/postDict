@@ -1,0 +1,71 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  postDict -- cadeia dimensionamento -> custeio -> economia da unidade de
+  amonia verde de 500 t/dia.  Tudo o que aqui esta e uma DECISAO DE PROJETO
+  do grupo: os U, os LMTD de dimensionamento, as pressoes de projeto, o volume
+  de catalisador e os tempos de residencia.  Mudem-nos e leiam o efeito no FCI.
+
+  ATENCAO (limites de bateria): o parque de eletrolisadores e a ASU ficam FORA.
+  O FCI que sai daqui e o do ANEL DE SINTESE + compressao, nao o da fabrica toda.
+\*---------------------------------------------------------------------------*/
+sizing
+{
+    units
+    (
+        { unitName n2Boost;     type compressor;  material carbonSteel;
+          designRules { pressureDesign 35.0; } }
+        { unitName synComp;     type compressor;  material SS316;
+          designRules { pressureDesign 250.0; } }
+        { unitName recycleComp; type compressor;  material SS316;
+          designRules { pressureDesign 250.0; } }
+
+        { unitName n2Cooler;    type shellTubeHX;  material carbonSteel;
+          designRules { U 500.0;  LMTD 60.0;   pressureDesign 35.0; } }
+        { unitName FEHE;        type shellTubeHX;  material SS316;
+          designRules { U 550.0;  LMTD 150.0;  pressureDesign 240.0; } }
+        { unitName waterCooler; type shellTubeHX;  material carbonSteel;
+          designRules { U 700.0;  LMTD 60.0;   pressureDesign 220.0; } }
+
+        // CONVERSOR: vaso de catalisador de alta pressao.  28 m3 de catalisador
+        // + internos, de uma velocidade espacial ~20000 Nm3/m3/h a este caudal.
+        { unitName converter;   type vessel;  material SS316;
+          designRules { volume 28.0;  L_over_D 6.0;  pressureDesign 240.0;
+                        corrosionAllow 0.004;  jointEfficiency 1.0; } }
+
+        // SEPARADOR de alta pressao: tambor com ~45 s de retencao de vapor.
+        { unitName separator;   type vessel;  material SS316;
+          designRules { residenceTime 45.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;  pressureDesign 240.0;
+                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+
+        // Tambor de LETDOWN a 20 bar.
+        { unitName letdown;     type vessel;  material carbonSteel;
+          designRules { residenceTime 60.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;  pressureDesign 25.0;
+                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+    );
+}
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;
+    cepci2001 397;
+    usdToEur  0.92;
+}
+economics
+{
+    method              discountedCashFlow;
+    projectLife         20;
+    constructionPeriod  2;
+    discountRate        0.08;
+    taxRate             0.21;
+    depreciation        straightLine;
+    depreciableLife     10;
+    salvageFraction     0.0;
+    workingCapital      0.15;
+    streamFactor        0.913;      // 8000 h/ano, como no enunciado
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    estimateClass       4;
+    refuseOnMissingPrice 1;
+}

@@ -1,0 +1,7 @@
+// Demineralised wash water for the purge scrubber.  The rate is a DESIGN
+// DECISION and a MODELLING one at the same time: enough water to keep the rich
+// liquid near 3 % (m/m) ammonia, which is what keeps the Henry package honest.
+componentMolarFlows { water 12 kmol/h; }
+T 298.15 K;
+P 30 bar;
+phase liquid;

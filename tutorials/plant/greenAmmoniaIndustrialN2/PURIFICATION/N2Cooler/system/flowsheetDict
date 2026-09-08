@@ -1,0 +1,7 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+// Cools the compressed nitrogen against cooling water.
+type      heatExchanger;
+operation { area 40 m2;  U 500 W/m2/K;  flow counter; }
+boundary  { inlets ( Hot  Cold );  outlets ( HotOut  ColdOut ); }

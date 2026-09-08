@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Haber-Bosch converter, single adiabatic bed: N2 + 3 H2 <-> 2 NH3.
+  In `mode adiabatic` the block temperature is a RESULT -- the 720 K is only
+  the Newton starting estimate.
+
+  There is NO oxygen among the elements: the Deoxo removed the O2 and the
+  Dryer removed the water.  Delete the dryer and the gibbsReactor REFUSES with
+  "element 'O' has zero or negative balance" -- that refusal is the simulator
+  confirming the purification section did its job.  To study that case, add O
+  to the elements and { name water; atoms ( 0 2 0 1 ); } to the species (and
+  give every other species four numbers).
+\*---------------------------------------------------------------------------*/
+type      gibbsReactor;
+operation
+{
+    mode adiabatic;  P 200 bar;  T 720 K;
+    elements ( N  H  Ar );
+    species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
+              { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
+}
+boundary  { inlets ( Feed );  outlets ( Out ); }

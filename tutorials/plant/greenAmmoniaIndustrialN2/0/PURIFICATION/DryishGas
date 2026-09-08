@@ -1,0 +1,15 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    N2    622.0272163 kmol/h;
+    H2    1866.165468 kmol/h;
+    Ar    0.6251949436 kmol/h;
+    water    0.7846045337 kmol/h;
+}
+
+T               277.4450252 K;
+P               3000000 Pa;
+phase           gas;

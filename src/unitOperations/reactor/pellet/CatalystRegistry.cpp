@@ -53,10 +53,9 @@ std::map<std::string, Catalyst>& registry()
 
 void CatalystRegistry::loadFrom(const std::string& dataRoot)
 {
-    auto scan = [&](const fs::path& dir)
+    auto scan = [&](const fs::path& dir, records::ScanGuard& guard)
     {
         if (!fs::exists(dir)) return;
-        records::ScanGuard guard("CatalystRegistry", "catalyst");
         for (auto& e : fs::directory_iterator(dir))
         {
             if (!e.is_regular_file()) continue;
@@ -73,10 +72,21 @@ void CatalystRegistry::loadFrom(const std::string& dataRoot)
     //  The standards scan is fs::exists-guarded, so a SEALED case run with the
     //  catalogue hidden reads its own constant/assets/ alone -- the same
     //  posture as AdsorbentRegistry.
-    scan(fs::path(dataRoot) / "standards" / "assets");
-    bool legacy = false;
-    const fs::path local = records::localScanDir("assets", legacy);
-    if (!local.empty()) scan(local);
+    {
+        records::ScanGuard guard("CatalystRegistry", "catalyst");
+        scan(fs::path(dataRoot) / "standards" / "assets", guard);
+    }
+    {
+        //  ONE guard over EVERY case-local directory (2026-09-08): the
+        //  nearest one walking up AND each `constant/assets` a level of this
+        //  case's own geography carries.  A name is a record's identity
+        //  across the whole case, so two sectors claiming it REFUSE naming
+        //  both files -- they are the same tier and there is no defensible
+        //  winner.  The standards scan above is a different tier and keeps
+        //  its own guard, so a case-local record still overrides it, aloud.
+        records::ScanGuard guard("CatalystRegistry", "catalyst");
+        for (const auto& d : records::localScanDirs("assets")) scan(d, guard);
+    }
 }
 
 const Catalyst& CatalystRegistry::byName(const std::string& name)

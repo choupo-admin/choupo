@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  greenNH3_04 -- the case's named-reaction library.
+
+  ONE reaction: the catalytic removal of the oxygen that industrial-grade
+  nitrogen brings in.  Over Pd/Al2O3, at ambient temperature and with hydrogen
+  in large excess, the oxygen is converted to water essentially completely:
+
+        O2  +  2 H2  ->  2 H2O          dH = -2 x 242 kJ/mol (gas basis)
+
+  O2 is the limiting reactant (hydrogen is in ~700-fold excess), so
+  `conversion 1.0` in the conversionReactor means "all the oxygen reacts" --
+  the real specification of a deoxo bed (outlet O2 below 1 ppm).
+
+  The water it makes is the next problem, and that is why the chiller, the
+  knock-out drum and the dryer exist downstream.
+\*---------------------------------------------------------------------------*/
+
+deoxoReaction
+{
+    stoichiometry
+    (
+        { component O2;    nu -1; }
+        { component H2;    nu -2; }
+        { component water; nu  2; }
+    );
+    limitingReactant  O2;
+}

@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  SECTOR PRODUCT -- finishing.  The let-down drum drops from 200 to 20 bar and
+  releases the dissolved H2/N2/Ar; it is the step that takes the product from
+  99.4 % to 99.9 %.  Note how much ARGON leaves here: a third of what enters
+  the plant.
+\*---------------------------------------------------------------------------*/
+sectors    ( Letdown );
+
+boundary
+{
+    inlets   ( RawLiquid );
+    outlets  ( ProductNH3  LetdownGas );
+}
+
+connections
+{
+    RawLiquid   { to Letdown/Feed; }
+    ProductNH3  { from Letdown/Liquid; }
+    LetdownGas  { from Letdown/Vapour; }
+}

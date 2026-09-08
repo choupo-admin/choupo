@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  SECTOR PURIFICATION -- from the battery limits to dry syngas at 231 bar.
+
+  THIS SECTOR IS WHAT MAKES THIS CASE.  A plant fed on 99.999 % nitrogen needs
+  only compression here -- four blocks.  This one holds eight, because the nitrogen is INDUSTRIAL grade (99.5 % N2 / 0.40 % O2 / 0.10 % Ar)
+  instead of the 99.999 % of the original data sheet -- and the oxygen has to
+  leave before the loop.
+
+   N2Feed 8 bar --[N2Boost]--[N2Cooler]--+
+                                         +--[SynMix]--[Deoxo]--[GasChiller]--[KoDrum]
+   H2Feed 30 bar ------------------------+     3:1     O2->H2O     279 K        |
+                                                                                |
+                                Makeup <--[SynComp]<--[Dryer]<------------------+
+                                231 bar    30->231     4A, < 1 ppm
+
+  THE FOUR-STEP WATER CHAIN, and why it takes four steps:
+    Deoxo        turns the O2 into water           -> 2118 ppm in the gas
+    GasChiller   cools to 279 K so it can condense
+    KoDrum       drops the condensate (86 % of it) ->  315 ppm
+    Dryer        adsorbs the rest                  ->  < 1 ppm
+  Without the GasChiller nothing condenses at all (at 310 K and 30 bar the gas
+  is not even saturated) and the dryer would have to be seven times larger.
+  Without the Dryer the converter catalyst -- which tolerates < 5 ppm of oxygen
+  compounds -- would die on start-up.
+
+  THIS SECTOR HAS ITS OWN PROPERTY PACKAGE (constant/thermoPhysPropDict): there
+  is no ammonia anywhere in it, so the solvent is water, not ammonia.  Read
+  that file -- it is the clearest example in the case of why `constant/` exists
+  at every level of a fractal plant.
+
+  No recycle here: the sector is purely sequential and reads top to bottom.
+\*---------------------------------------------------------------------------*/
+sectors    ( N2Boost  N2Cooler  SynMix  Deoxo  GasChiller  KoDrum  Dryer  SynComp );
+
+boundary
+{
+    inlets   ( H2Feed  N2Feed  CwA  Chw );
+    outlets  ( Makeup  CwAOut  ChwOut  KoWater  RegenGas );
+}
+
+connections
+{
+    N2Feed         { to N2Boost/Feed; }
+    N2Compressed   { from N2Boost/Out;         to N2Cooler/Hot; }
+    CwA            { to N2Cooler/Cold; }
+    CwAOut         { from N2Cooler/ColdOut; }
+    N2Cooled       { from N2Cooler/HotOut;     to SynMix/N2; }
+    H2Feed         { to SynMix/H2; }
+
+    MakeupWet      { from SynMix/Out;          to Deoxo/Feed; }        // leva O2
+    DeoxoOut       { from Deoxo/Out;           to GasChiller/Hot; }    // leva agua
+    Chw            { to GasChiller/Cold; }
+    ChwOut         { from GasChiller/ColdOut; }
+    ChilledMakeup  { from GasChiller/HotOut;   to KoDrum/Feed; }
+    KoWater        { from KoDrum/Liquid; }                             // ~81 kg/h
+    DryishGas      { from KoDrum/Vapour;       to Dryer/Feed; }        // ~315 ppm
+    DryGas         { from Dryer/Dry;           to SynComp/Feed; }      // < 1 ppm
+    RegenGas       { from Dryer/Regen; }
+
+    Makeup         { from SynComp/Out; }
+}

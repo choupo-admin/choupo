@@ -97,10 +97,9 @@ void AdsorbentRegistry::loadFrom(const std::string& dataRoot)
     // must be mirrored (bin/choupo-import's hidden validation proves it).
     const fs::path eqStd = fs::path(dataRoot) / "standards" / "parameters"
                          / "adsorption" / "equilibria";
-    auto scan = [&](const fs::path& dir)
+    auto scan = [&](const fs::path& dir, records::ScanGuard& guard)
     {
         if (!fs::exists(dir)) return;
-        records::ScanGuard guard("AdsorbentRegistry", "adsorbent");
         for (auto& e : fs::directory_iterator(dir))
         {
             if (!e.is_regular_file()) continue;
@@ -117,10 +116,21 @@ void AdsorbentRegistry::loadFrom(const std::string& dataRoot)
             registry()[a.name()] = std::move(a);
         }
     };
-    scan(fs::path(dataRoot) / "standards" / "assets");
-    bool legacy = false;
-    const fs::path local = records::localScanDir("assets", legacy);
-    if (!local.empty()) scan(local);
+    {
+        records::ScanGuard guard("AdsorbentRegistry", "adsorbent");
+        scan(fs::path(dataRoot) / "standards" / "assets", guard);
+    }
+    {
+        //  ONE guard over EVERY case-local directory (2026-09-08): the
+        //  nearest one walking up AND each `constant/assets` a level of this
+        //  case's own geography carries.  A name is a record's identity
+        //  across the whole case, so two sectors claiming it REFUSE naming
+        //  both files -- they are the same tier and there is no defensible
+        //  winner.  The standards scan above is a different tier and keeps
+        //  its own guard, so a case-local record still overrides it, aloud.
+        records::ScanGuard guard("AdsorbentRegistry", "adsorbent");
+        for (const auto& d : records::localScanDirs("assets")) scan(d, guard);
+    }
 }
 
 const Adsorbent& AdsorbentRegistry::byName(const std::string& name)
@@ -137,10 +147,17 @@ const Adsorbent& AdsorbentRegistry::byName(const std::string& name)
         auto cit = caseRegistry.find(name);
         if (cit != caseRegistry.end()) return cit->second;
 
-        fs::path p = fs::current_path();
-        for (int up = 0; up < 6; ++up)
+        //  The LEGACY per-name home, `constant/adsorbents/<name>.dat`, read
+        //  through the SAME one home as the flat `assets/` scan (2026-09-08)
+        //  so both spellings reach a record at EVERY level of a sectored
+        //  case.  Before this it walked only UP from the run directory, so a
+        //  dryer's sieve declared in `PURIFICATION/constant/adsorbents/`
+        //  was invisible while the identical record in `assets/` was found:
+        //  one home reachable, its twin not, with nothing said.
+        for (const fs::path& dir : records::localScanDirs("adsorbents"))
         {
-            const fs::path cand = p / "constant" / "adsorbents" / (name + ".dat");
+            const fs::path p = dir.parent_path().parent_path();  // the LEVEL
+            const fs::path cand = dir / (name + ".dat");
             if (fs::exists(cand))
             {
                 IsothermModel::registerBuiltins();   // explicit, idempotent
@@ -166,8 +183,6 @@ const Adsorbent& AdsorbentRegistry::byName(const std::string& name)
                 }
                 return caseRegistry.emplace(name, std::move(a)).first->second;
             }
-            if (!p.has_parent_path()) break;
-            p = p.parent_path();
         }
     }
 

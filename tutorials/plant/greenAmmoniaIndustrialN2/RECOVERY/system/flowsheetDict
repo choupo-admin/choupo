@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  SECTOR RECOVERY -- what happens to the purge.
+
+   Purge (250 K, 200 bar) --[PurgeValve]--[PurgeHeater]--+
+                               -> 30 bar     -> ~300 K   |
+                                                         v
+                             WashWater ------------->[Scrubber]
+                                                      |       |
+                                            ScrubbedGas       AqueousNH3
+                                          (H2, N2, Ar)        (~3 % NH3)
+
+  WHY THIS IS A SECTOR OF ITS OWN.  It cannot live in LOOP: everything here
+  runs at 30 bar, and the loop is at 200.  It cannot live in PURIFICATION
+  either: that is the front of the plant, this is the back.  And it needs its
+  own property package (water as the solvent), which is a sector-level thing.
+
+  WHAT IS NOT HERE YET, and the reason it is not.  A membrane or PSA behind
+  the scrubber would send the recovered hydrogen -- about 1.1 M EUR/year --
+  back to the synthesis compressor suction, in PURIFICATION.  That closes a
+  recycle running LOOP -> RECOVERY -> PURIFICATION -> LOOP, i.e. through ALL
+  THREE sectors.  The rule this plant's geography was drawn on is "cut where
+  the recycle does not pass", so such a tear belongs to no sector: it would
+  have to be declared at the PLANT root, which is a composite node like any
+  other and may declare one.
+    There is also a data obstacle, and it is worth knowing before you try: the
+  `psa` unit needs an adsorption isotherm per species, and the catalogue's
+  zeolite5A has H2, N2, CH4, CO2 and CO -- but NOT argon.  A species with no
+  isotherm is treated as NON-adsorbing and reports to the raffinate, so the
+  argon would ride back into the loop with the recovered hydrogen and the
+  purge would stop doing its job entirely.  Authoring an Ar/zeolite5A isotherm
+  is the prerequisite.
+
+  The water circuit of a real unit (column bottoms back to the column top) is
+  a recycle INTERNAL to this sector, so this sector would own that tear -- one
+  more sign the grouping is right.
+\*---------------------------------------------------------------------------*/
+sectors    ( PurgeValve  PurgeHeater  Scrubber );
+
+boundary
+{
+    inlets   ( Purge  WashWater );
+    outlets  ( ScrubbedGas  AqueousNH3 );
+}
+
+connections
+{
+    Purge        { to PurgeValve/Feed; }
+    PurgeLP      { from PurgeValve/Out;    to PurgeHeater/Feed; }
+    PurgeWarm    { from PurgeHeater/Out;   to Scrubber/Gas; }
+    WashWater    { to Scrubber/Water; }
+    ScrubbedGas  { from Scrubber/CleanGas; }
+    AqueousNH3   { from Scrubber/RichLiquid; }
+}

@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  SECTOR LOOP -- the Haber-Bosch synthesis loop.  Nitrogen purity does not
+  change the loop's geography; it changes what circulates inside it (twenty
+  times more argon, and therefore a purge that finally does something).
+
+     Makeup --+
+              v
+   Recycle --[RecycleComp]-->[LoopMix]-->[FEHE]cold side-->[Converter]
+                                          ^                     |
+                                          +--- HotEffluent -----+   (energy cut)
+                                          |
+                                          v CooledEffluent
+                                     [WaterCooler]-->[Separator]--+--> RawLiquid
+                                                                  +->[PurgeSplit]--+--> Purge
+                                                                                   +--> Recycle (material cut)
+
+  BOTH CUTS ARE INTERNAL TO THIS SECTOR -- which is why this grouping works.
+  The engine closes a tear at the COMPOSITE node that declares it; a recycle
+  crossing two sectors would have no owner.  That was the criterion for drawing
+  the geography: CUT THE PLANT WHERE THE RECYCLE DOES NOT PASS.
+\*---------------------------------------------------------------------------*/
+sectors    ( RecycleComp  LoopMix  FEHE  Converter  WaterCooler  Separator  PurgeSplit );
+
+boundary
+{
+    inlets   ( Makeup  Cw );
+    outlets  ( RawLiquid  Purge  CwOut );
+}
+
+tearStreams    ( Recycle  HotEffluent );
+recycleSolver  Newton;
+recycleTol     1e-5;
+recycleMaxIter 300;
+
+connections
+{
+    Recycle         { from PurgeSplit/Recycle;      to RecycleComp/Feed; }   // corte material
+    CompRecycle     { from RecycleComp/Out;         to LoopMix/Recycle; }
+    Makeup          { to LoopMix/Makeup; }
+    Mixed           { from LoopMix/Out;             to FEHE/Cold; }
+    HotEffluent     { from Converter/Out;           to FEHE/Hot; }           // corte energetico
+    PreheatedFeed   { from FEHE/ColdOut;            to Converter/Feed; }
+    CooledEffluent  { from FEHE/HotOut;             to WaterCooler/Hot; }
+    Cw              { to WaterCooler/Cold; }
+    ChilledEffluent { from WaterCooler/HotOut;      to Separator/Feed; }
+    CwOut           { from WaterCooler/ColdOut; }
+    RawLiquid       { from Separator/Liquid; }
+    UnreactedGas    { from Separator/Vapour;        to PurgeSplit/Feed; }
+    Purge           { from PurgeSplit/Purge; }
+}

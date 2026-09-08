@@ -99,10 +99,9 @@ void UtilityCatalogue::loadFrom(const std::string& dataRoot)
     //  failed a RE-seal (found by the batch01b witness; the utility row
     //  kind of 2026-08-12 never taught the importer its record home -- the
     //  Edwards lesson, one catalogue over).
-    auto scan = [](const fs::path& dir)
+    auto scan = [](const fs::path& dir, records::ScanGuard& guard)
     {
         if (!fs::exists(dir)) return;
-        records::ScanGuard guard("UtilityCatalogue", "utility");
         for (auto& e : fs::directory_iterator(dir))
         {
             if (!e.is_regular_file()) continue;
@@ -112,10 +111,21 @@ void UtilityCatalogue::loadFrom(const std::string& dataRoot)
             registry()[u.name] = u;
         }
     };
-    scan(fs::path(dataRoot) / "standards" / "utilities");
-    bool legacy = false;
-    const fs::path local = records::localScanDir("utilities", legacy);
-    if (!local.empty()) scan(local);
+    {
+        records::ScanGuard guard("UtilityCatalogue", "utility");
+        scan(fs::path(dataRoot) / "standards" / "utilities", guard);
+    }
+    {
+        //  ONE guard over EVERY case-local directory (2026-09-08): the
+        //  nearest one walking up AND each `constant/utilities` a level of this
+        //  case's own geography carries.  A name is a record's identity
+        //  across the whole case, so two sectors claiming it REFUSE naming
+        //  both files -- they are the same tier and there is no defensible
+        //  winner.  The standards scan above is a different tier and keeps
+        //  its own guard, so a case-local record still overrides it, aloud.
+        records::ScanGuard guard("UtilityCatalogue", "utility");
+        for (const auto& d : records::localScanDirs("utilities")) scan(d, guard);
+    }
 }
 
 const Utility& UtilityCatalogue::byName(const std::string& name)

@@ -54,6 +54,12 @@
 #
 # THE ONE FAMILY WITH NO REPRESENTATIVE, declared rather than silent:
 #
+# EXCLUDED  tutorials/plant/ammonia02_full_plant  its golden carries 126 rows the
+#           first-law work of 2026-09-07 moved and Vitor has not re-recorded;
+#           walking it here would make --fast red on a KNOWN DEBT instead of on
+#           a regression, which is how a tier teaches people to ignore it.  The
+#           full sweep meets the case and reports the same rows.  This line
+#           EXPIRES the day those goldens are re-recorded -- put the case back.
 # EXCLUDED  tutorials/plant/acetonePlant  39.97 s -- over the 3 s per-case cap this list is built to; the tier is checked by the full sweep instead
 #
 # THE FOUR CONSERVATION GATES, and why those four.  A golden pins what a run
@@ -95,6 +101,7 @@ tutorials/electrochem/ed02_over_limiting_current
 
 tutorials/plant/ChemicalPlantTutorial
 tutorials/plant/esterification2sector
+tutorials/plant/greenAmmoniaIndustrialN2
 tutorials/plant/hda
 tutorials/plant/lithiumBrinePlant
 tutorials/plant/polycaprolactonePlant/properties

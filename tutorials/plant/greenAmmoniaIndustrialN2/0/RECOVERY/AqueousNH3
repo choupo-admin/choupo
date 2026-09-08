@@ -1,0 +1,6 @@
+// Aqueous ammonia, ~3 % (m/m).  At 6 kg/h of NH3 you do not build a
+// distillation column for it -- it goes to the site's ammonia-water system.
+componentMolarFlows { water 12 kmol/h;  NH3 0.358 kmol/h;  N2 0.001 kmol/h;  H2 0.001 kmol/h; }
+T 300 K;
+P 30 bar;
+phase liquid;

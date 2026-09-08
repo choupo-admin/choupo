@@ -73,10 +73,9 @@ void MaterialRegistry::loadFrom(const std::string& dataRoot)
     // fs::exists-guarded, so a SEALED case run with the catalogue HIDDEN (empty
     // dataRoot / relocated) reads its own constant/assets/ ALONE -- and the seal
     // is proven complete by bin/choupo-import's hidden-catalogue validation.
-    auto scan = [](const fs::path& dir)
+    auto scan = [](const fs::path& dir, records::ScanGuard& guard)
     {
         if (!fs::exists(dir)) return;
-        records::ScanGuard guard("MaterialRegistry", "material");
         for (auto& e : fs::directory_iterator(dir))
         {
             if (!e.is_regular_file()) continue;
@@ -89,10 +88,21 @@ void MaterialRegistry::loadFrom(const std::string& dataRoot)
             registry()[m.name] = m;
         }
     };
-    scan(fs::path(dataRoot) / "standards" / "assets");
-    bool legacy = false;
-    const fs::path local = records::localScanDir("assets", legacy);
-    if (!local.empty()) scan(local);
+    {
+        records::ScanGuard guard("MaterialRegistry", "material");
+        scan(fs::path(dataRoot) / "standards" / "assets", guard);
+    }
+    {
+        //  ONE guard over EVERY case-local directory (2026-09-08): the
+        //  nearest one walking up AND each `constant/assets` a level of this
+        //  case's own geography carries.  A name is a record's identity
+        //  across the whole case, so two sectors claiming it REFUSE naming
+        //  both files -- they are the same tier and there is no defensible
+        //  winner.  The standards scan above is a different tier and keeps
+        //  its own guard, so a case-local record still overrides it, aloud.
+        records::ScanGuard guard("MaterialRegistry", "material");
+        for (const auto& d : records::localScanDirs("assets")) scan(d, guard);
+    }
 }
 
 const Material& MaterialRegistry::byName(const std::string& name)

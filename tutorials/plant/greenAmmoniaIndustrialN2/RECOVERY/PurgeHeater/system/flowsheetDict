@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Warms the purge before it meets the wash water.
+
+  Not decoration: the purge leaves the separator at 250 K, and you cannot
+  scrub a 250 K gas with water -- the water would freeze on the packing.  In a
+  real plant this is done against cooling water, which at 298 K is the HOT side
+  here; a single-stream heater keeps the case simple.  Q is the spec, T_out is
+  the result.
+\*---------------------------------------------------------------------------*/
+type      heater;
+operation { Q 9500 W; }
+boundary  { inlets ( Feed );  outlets ( Out ); }

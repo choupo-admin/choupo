@@ -1,0 +1,14 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, industrial N2  |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Cools the gas to ~279 K against chilled water from the NH3 refrigeration cycle.
+
+  THIS is the unit that makes the deoxo water condense.  Above ~310 K at 30 bar
+  the gas is not even saturated: cooling with cooling water alone condenses
+  NOTHING.  Cut the area down and run again -- it is the most instructive
+  single experiment in this case.
+\*---------------------------------------------------------------------------*/
+type      heatExchanger;
+operation { area 300 m2;  U 500 W/m2/K;  flow counter; }
+boundary  { inlets ( Hot  Cold );  outlets ( HotOut  ColdOut ); }
