@@ -1,44 +1,52 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  postDict -- cadeia dimensionamento -> custeio -> economia da unidade de
-  amonia verde de 500 t/dia.  Tudo o que aqui esta e uma DECISAO DE PROJETO
-  do grupo: os U, os LMTD de dimensionamento, as pressoes de projeto, o volume
-  de catalisador e os tempos de residencia.  Mudem-nos e leiam o efeito no FCI.
+  postDict -- the sizing -> costing -> economics chain of the 500 t/day green
+  ammonia unit.  EVERYTHING in this file is a DESIGN DECISION of the group:
+  the U values, the design LMTDs, the design pressures, the catalyst volume
+  and the residence times.  Change them and read the effect on the FCI.
 
-  ATENCAO (limites de bateria): o parque de eletrolisadores e a ASU ficam FORA.
-  O FCI que sai daqui e o do ANEL DE SINTESE + compressao, nao o da fabrica toda.
+  BATTERY LIMITS: the electrolyser park and the ASU are OUTSIDE.  The FCI that
+  comes out of here is the SYNTHESIS LOOP + compression, not the whole plant.
 \*---------------------------------------------------------------------------*/
 sizing
 {
+    //  A `unitName` IS THE FLATTENED NAME OF THE UNIT, and in a case with
+    //  sectors that name is QUALIFIED: `LOOP.Converter`, never `converter`.
+    //  The KPIs the sizing pass reads are the result's, and the result uses
+    //  the qualified identity.  With an unqualified name the sizing FAILS
+    //  ("has no KPIs in the simulation result"), the costing then has nothing
+    //  to price and the economics nothing to discount -- the whole chain dies
+    //  quietly, at exit 0.  The engine says so unit by unit; the lesson is
+    //  that the name must be the ENGINE's and not the author's.
     units
     (
-        { unitName n2Boost;     type compressor;  material carbonSteel;
+        { unitName PURIFICATION.N2Boost;   type compressor;  material carbonSteel;
           designRules { pressureDesign 35.0; } }
-        { unitName synComp;     type compressor;  material SS316;
+        { unitName PURIFICATION.SynComp;   type compressor;  material SS316;
           designRules { pressureDesign 250.0; } }
-        { unitName recycleComp; type compressor;  material SS316;
+        { unitName LOOP.RecycleComp;       type compressor;  material SS316;
           designRules { pressureDesign 250.0; } }
 
-        { unitName n2Cooler;    type shellTubeHX;  material carbonSteel;
+        { unitName PURIFICATION.N2Cooler;  type shellTubeHX;  material carbonSteel;
           designRules { U 500.0;  LMTD 60.0;   pressureDesign 35.0; } }
-        { unitName FEHE;        type shellTubeHX;  material SS316;
+        { unitName LOOP.FEHE;              type shellTubeHX;  material SS316;
           designRules { U 550.0;  LMTD 150.0;  pressureDesign 240.0; } }
-        { unitName waterCooler; type shellTubeHX;  material carbonSteel;
+        { unitName LOOP.WaterCooler;       type shellTubeHX;  material carbonSteel;
           designRules { U 700.0;  LMTD 60.0;   pressureDesign 220.0; } }
 
-        // CONVERSOR: vaso de catalisador de alta pressao.  28 m3 de catalisador
-        // + internos, de uma velocidade espacial ~20000 Nm3/m3/h a este caudal.
-        { unitName converter;   type vessel;  material SS316;
+        // CONVERTER: high-pressure catalyst vessel.  28 m3 of catalyst plus
+        // internals, from a space velocity of ~20000 Nm3/m3/h at this flow.
+        { unitName LOOP.Converter;         type vessel;  material SS316;
           designRules { volume 28.0;  L_over_D 6.0;  pressureDesign 240.0;
                         corrosionAllow 0.004;  jointEfficiency 1.0; } }
 
-        // SEPARADOR de alta pressao: tambor com ~45 s de retencao de vapor.
-        { unitName separator;   type vessel;  material SS316;
+        // High-pressure SEPARATOR: a drum with ~45 s of vapour holdup.
+        { unitName LOOP.Separator;         type vessel;  material SS316;
           designRules { residenceTime 45.0;  flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3.0;  pressureDesign 240.0;
                         corrosionAllow 0.003;  jointEfficiency 1.0; } }
 
-        // Tambor de LETDOWN a 20 bar.
-        { unitName letdown;     type vessel;  material carbonSteel;
+        // LETDOWN drum at 20 bar.
+        { unitName PRODUCT.Letdown;        type vessel;  material carbonSteel;
           designRules { residenceTime 60.0;  flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3.0;  pressureDesign 25.0;
                         corrosionAllow 0.003;  jointEfficiency 1.0; } }
@@ -63,7 +71,7 @@ economics
     depreciableLife     10;
     salvageFraction     0.0;
     workingCapital      0.15;
-    streamFactor        0.913;      // 8000 h/ano, como no enunciado
+    streamFactor        0.913;      // 8000 h/year, as in the project brief
     siteFactor          0.50;
     contingencyFee      1.18;
     estimateClass       4;

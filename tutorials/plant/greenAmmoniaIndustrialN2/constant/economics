@@ -1,41 +1,50 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  constant/economics -- precos do projeto PEQ 2026-27 (amonia verde, Sines).
-  CENARIO BASE.  Os cenarios de sensibilidade obrigatorios fazem-se mudando
-  o preco do H2 (2 / 4 / 6 EUR/kg) e o da amonia (0.60 / 0.90 EUR/kg).
+  constant/economics -- prices for the PEQ 2026-27 project (green ammonia,
+  Sines).  BASE SCENARIO.  The required sensitivity scenarios are run by
+  changing the H2 price (2 / 4 / 6 EUR/kg) and the ammonia price
+  (0.60 / 0.90 EUR/kg).
 \*---------------------------------------------------------------------------*/
+//  A `stream` HERE IS THE ENGINE'S IDENTITY, not the name the author has in
+//  mind: the inlets and outlets are the ones declared in system/flowsheetDict
+//  as `boundary { inlets ( H2Feed N2Feed ... ); outlets ( ProductNH3 ... ); }`.
+//  Given a name that does not exist, EconomicsPass REFUSES by name and there
+//  is no appraisal at all -- which is the right behaviour (a price attached to
+//  a stream that does not exist would be invented revenue), but whoever writes
+//  this file has to know where to read the name from.
+
 products
 (
     {
-        stream    productNH3;
-        price     0.60;                 // EUR/kg  (600 EUR/t -- cenario base do enunciado)
+        stream    ProductNH3;
+        price     0.60;                 // EUR/kg  (600 EUR/t -- brief's base scenario)
         costYear  2026;
         provenance
         {
-            origin  "Enunciado PEQ 2026-27, 2.2: base 600 EUR/t, alto 900 EUR/t";
-            method  "preco de contrato, amonia verde com premio CBAM/RFNBO";
+            origin  "PEQ 2026-27 project brief, 2.2: base 600 EUR/t, high 900 EUR/t";
+            method  "contract price, green ammonia with a CBAM/RFNBO premium";
         }
     }
 );
 rawMaterials
 (
     {
-        stream    h2Feed;
-        price     4.00;                 // EUR/kg H2  (cenarios: 2 / 4 / 6)
+        stream    H2Feed;
+        price     4.00;                 // EUR/kg H2  (scenarios: 2 / 4 / 6)
         costYear  2026;
         provenance
         {
-            origin  "Enunciado PEQ 2026-27, 2.3: H2 verde entregue a 30 bar";
-            method  "cenarios de custo nivelado de eletrolise PEM";
+            origin  "PEQ 2026-27 project brief, 2.3: green H2 delivered at 30 bar";
+            method  "levelised cost scenarios for PEM electrolysis";
         }
     }
     {
-        stream    n2Feed;
-        price     0.06;                 // EUR/kg N2 da ASU criogenica (package)
+        stream    N2Feed;
+        price     0.06;                 // EUR/kg N2 from the cryogenic ASU (package)
         costYear  2026;
         provenance
         {
-            origin  "custo de N2 de ASU criogenica de grande escala (figura de ensino)";
-            method  "~0.10 kWh/Nm3 a ~80 EUR/MWh + amortizacao do package";
+            origin  "cost of N2 from a large-scale cryogenic ASU (teaching figure)";
+            method  "~0.10 kWh/Nm3 at ~80 EUR/MWh + amortisation of the package";
         }
     }
 );

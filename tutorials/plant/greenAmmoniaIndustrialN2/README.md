@@ -3,7 +3,7 @@
 A fractal (sectored) Choupo case: read it as **PLANT → SECTOR → UNIT**.
 
 ```bash
-source /home/vitor/Choupo/etc/bashrc
+source /path/to/Choupo/etc/bashrc
 runCase -f .
 ```
 
