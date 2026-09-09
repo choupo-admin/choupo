@@ -49,6 +49,47 @@ WHAT THIS GATE CHECKS.
       curated N2-H2 pair ever lands and this case picks it up, the case is
       measuring something else and must say so.
 
+  (e) NEITHER KNOB IN THIS TREE FIXES IT.  The case claims that the residual
+      is the cubic's own volumetric error rather than a missing parameter,
+      and that claim is CHECKED, not asserted, on throwaway copies of the
+      case (the shipped one is never touched):
+
+        * substituting hydrogen's QUANTUM-CORRECTED effective critical
+          constants -- the standard remedy for H2 in a cubic -- must make the
+          density WORSE, not better;
+        * no kij across a wide bracket may bring the AAD below a floor that
+          is well above what a real fix would reach.
+
+      Both were MEASURED on 2026-09-09 and both are negative results: the
+      effective constants took the AAD from 1.045 % to 1.564 %, and the best
+      kij in [-0.10, +0.20] reached 1.003 %.  The reason is visible in the
+      per-composition means: a kij moves the equimolar mixture and barely
+      touches x(N2) = 0.95, where the fluid is nearly pure nitrogen and the
+      error is largest.  An error that a MIXTURE parameter cannot reach is
+      not a mixture problem.
+
+      This arm exists because the negative result is the pedagogically
+      valuable half, and it is the half that rots: someone adds a curated
+      N2-H2 pair or a better H2 record, the case's prose still says "no
+      parameter fixes this", and nothing notices.  If either sabotage stops
+      failing, the tree has gained something and the case must be rewritten
+      to say what.
+
+  (f) THE TUTORIAL'S OWN TABLE IS TRUE.  The README prints all three AAD
+      figures, because a student needs to SEE the negative result and not be
+      told it happened.  That makes them published numbers, and published
+      implies pinned: this arm reads them back out of the README and requires
+      each to match what it just measured.  A table nobody re-measures is the
+      transcription this gate exists to avoid, moved one file along.
+
+      A TRAP PAID FOR HERE, and it is about sabotage rather than about the
+      engine.  Arm (e)'s first sabotage -- making the probe use the catalogue
+      constants, so the two AADs coincide -- appeared to SURVIVE.  It had not:
+      the `sed` that was meant to apply it never matched, because the
+      substitution string carries backslash escapes.  The gate was correct and
+      the evidence was not.  A SABOTAGE THAT DOES NOT LAND PROVES NOTHING, and
+      the way to know is to read the file back, never to trust the edit.
+
   (d) THE CITATION IS PRESENT.  The evidence file declares its DOI, and the
       case header carries the composition caveat.  Sixteen values with their
       primary source is a citation; the same sixteen with the source stripped
@@ -59,6 +100,11 @@ NOT CHECKED, and said plainly:
   * WHETHER SRK IS ADEQUATE.  This gate measures the disagreement; whether
     1 % on density is good enough for a synthesis loop is an engineering
     judgement no gate can take.
+  * WHETHER VOLUME TRANSLATION WOULD FIX IT.  Arm (e) shows that the two
+    knobs this tree HAS do not.  A Peneloux-type volume shift, or a reference
+    Helmholtz equation, is the lever the literature uses and neither exists
+    here -- so the case names that as the remedy and nothing verifies the
+    claim, because there is nothing to run it against.
   * ANY OTHER PROPERTY.  Density only.  The loop's condenser depends on the
     ammonia dew point, which this dataset does not touch and no case here
     tests.
@@ -70,7 +116,9 @@ NOT CHECKED, and said plainly:
 """
 import json
 import re
+import shutil
 import subprocess
+import tempfile
 import sys
 from pathlib import Path
 
@@ -193,6 +241,107 @@ def main() -> int:
                     "(no measured point between x(N2) 0.19 and 0.31) -- the "
                     "case would then claim more reach than it has")
 
+    #  (e) neither knob fixes it -- on THROWAWAY COPIES, never the shipped case.
+    #  KIJ_FLOOR is set below the 1.003 % the best kij reached and well above
+    #  where a real fix lands, so it fails if a kij ever becomes the answer.
+    KIJ_FLOOR = 0.95
+    eff = best = None
+    with tempfile.TemporaryDirectory() as tmp:
+        def aad_of(case_dir):
+            q = subprocess.run([str(PROPS), str(case_dir)], capture_output=True,
+                               text=True, timeout=600)
+            b = (q.stdout + q.stderr).split("<<<Choupo:result-end>>>")[0]
+            if "\n{\n" not in b:
+                return None
+            dd = {o["name"]: o.get("diagnostics", {})
+                  for o in json.loads(b[b.rindex("\n{\n"):])["operationResults"]}
+            acc = []
+            for T, P, x, rho in rows:
+                nm = f"p_{T:.0f}K_{P / 100.0:.0f}bar_xN2_{x:.5f}".replace(".", "p")
+                v = dd.get(nm, {}).get("v_molar")
+                if not v:
+                    return None
+                acc.append(abs((x * mw["N2"] + (1.0 - x) * mw["H2"]) / v - rho)
+                           / rho * 100.0)
+            return sum(acc) / len(acc)
+
+        base = Path(tmp) / "eff"
+        shutil.copytree(CASE, base)
+        (base / "constant/components").mkdir(parents=True, exist_ok=True)
+        #  Quantum-corrected effective constants for hydrogen (Gunn, Chueh &
+        #  Prausnitz's correction, in the fixed form process simulators use).
+        #  A case-local record OVERLAYS the standard entry field by field.
+        (base / "constant/components/H2.dat").write_text(
+            "name H2;\nformula H2;\nMW 2.016;\n"
+            "Tc 41.67;\nPc 20.77;\nomega 0.0;\n")
+        eff = aad_of(base)
+        if eff is None:
+            fail.append("the effective-constants probe did not run, so this "
+                        "gate cannot check its own negative result")
+        elif eff <= aad:
+            fail.append(
+                f"substituting hydrogen's quantum-corrected effective critical "
+                f"constants gives AAD {eff:.3f} %, no worse than the "
+                f"catalogue record's {aad:.3f} % -- when this slice was built "
+                "the substitution made it WORSE (1.564 % against 1.045 %), "
+                "which is why the case says the residual is not a "
+                "pure-component problem.  Something changed; re-measure and "
+                "rewrite the case rather than widening this arm")
+
+        floor_case = Path(tmp) / "kij"
+        shutil.copytree(CASE, floor_case)
+        (floor_case / "constant/parameters/SRK").mkdir(parents=True, exist_ok=True)
+        tp = floor_case / "constant/thermoPhysPropDict"
+        tp.write_text(tp.read_text().replace(
+            "        mixingRule vanDerWaalsOneFluid;",
+            "        mixingRule vanDerWaalsOneFluid;\n"
+            "        binaryInteractions\n        {\n"
+            "            N2-H2 { source "
+            "\"constant/parameters/SRK/N2-H2.dat\"; }\n        }"))
+        rec = floor_case / "constant/parameters/SRK/N2-H2.dat"
+        for k in (-0.10, 0.0, 0.05, 0.10, 0.20):
+            rec.write_text("recordType eosBinaryInteraction;\nschemaVersion 1;\n"
+                           f"i N2;\nj H2;\nkij {k};\neos SRK;\n")
+            got = aad_of(floor_case)
+            if got is None:
+                fail.append(f"the kij probe refused at kij = {k}, so this "
+                            "gate cannot check that no kij is the answer")
+                best = None
+                break
+            best = got if best is None else min(best, got)
+        if best is not None and best < KIJ_FLOOR:
+            fail.append(
+                f"a binary interaction parameter now reaches AAD {best:.3f} %, "
+                f"below the {KIJ_FLOOR} % floor -- when this slice was built "
+                "the best kij in that bracket reached only 1.003 % against "
+                "1.045 % at kij = 0, because a MIXTURE parameter cannot reach "
+                "the x(N2) = 0.95 points where the error is largest.  If a kij "
+                "is now the answer, the case's central claim is false and it "
+                "must be rewritten")
+
+    #  (f) the README's own table, read back and re-measured.
+    readme = (CASE / "README.md").read_text()
+    for label, got, pat in (
+        ("the catalogue records at kij = 0", aad,
+         r"catalogue records.*?\*\*([0-9.]+) %\*\*"),
+        ("the effective hydrogen constants", eff,
+         r"effective H2 constants.*?\|\s*([0-9.]+) %"),
+        ("the best kij", best,
+         r"best kij in.*?\|\s*([0-9.]+) %"),
+    ):
+        if got is None:
+            continue
+        m = re.search(pat, readme.replace("\u2082", "2"), re.S)
+        if not m:
+            fail.append(f"the README no longer states the AAD for {label} in "
+                        "the shape this arm reads -- either the table went, or "
+                        "it was reformatted; a number a student reads must be "
+                        "re-measurable, so restore it or drop the claim")
+        elif abs(float(m.group(1)) - got) > 0.02:
+            fail.append(f"the README says {float(m.group(1)):.3f} % for {label} "
+                        f"and this run measures {got:.3f} % -- the tutorial is "
+                        "teaching a number the engine no longer produces")
+
     if fail:
         print("check_srk_h2n2_aad: FAILED")
         for f in fail:
@@ -208,7 +357,12 @@ def main() -> int:
           "molar masses -- no agreement statistic is transcribed anywhere in "
           "the tree.  The run still announces kij = 0, so the prediction is "
           "untuned, and the evidence file still carries its DOI and its "
-          "composition caveat.  SCOPE: density only, one binary, "
+          "composition caveat.  The case's NEGATIVE result is re-measured too, "
+          "on throwaway copies: hydrogen's quantum-corrected effective critical "
+          f"constants make it WORSE ({eff:.3f} %), and the best kij in "
+          f"[-0.10, +0.20] reaches only {best:.3f} % -- so neither knob this "
+          "tree has is the answer, and the README's own table of all three is "
+          "read back and required to match.  SCOPE: density only, one binary, "
           "240-350 K and 50-200 bar at x(N2) 0.50-0.95.  NOT CHECKED: whether "
           "that agreement is ADEQUATE for a synthesis loop (an engineering "
           "judgement), any other property (the loop's condenser turns on the "
