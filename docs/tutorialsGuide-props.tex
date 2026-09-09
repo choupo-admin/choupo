@@ -2656,7 +2656,7 @@ IS SRK GOOD ENOUGH FOR THE AMMONIA SYNTHESIS LOOP?
 
 Vitor's question, 2026-09-09: "dadas as pressoes extremas a que isto funciona, achas que os modelos termodinamicos que estamos a usar sao razoaveis e estao backed up por dados experimentais?" This case is the answer in numbers rather than in an opinion.
 
-WHAT IT DOES. Sixteen `propertyPoint` operations, one per MEASURED state of the nitrogen + hydrogen binary, at exactly the (T, P, x) the experimenters reported. The engine computes the molar volume with the SAME declaration the green ammonia plant carries -- SRK, van der Waals one-fluid, kij = 0 -- and prints it. The measurement sits beside it in `constant/evidence/N2-H2-density-jced-7b00694.dat`, cited to its primary publication.
+WHAT IT DOES. Sixteen `propertyPoint` operations, one per MEASURED state of the nitrogen + hydrogen binary, at exactly the (T, P, x) the experimenters reported. The engine computes the molar volume with the SAME declaration the green ammonia plant carries -- SRK, van der Waals one-fluid, kij = 0 -- and prints it. The measurement sits beside it in `constant/experiments/N2-H2-density-jced-7b00694.dat`, cited to its primary publication.
 
 HOW TO READ THE ANSWER. Each operation reports `v\_molar` in m3/mol. The mass density the experimenters measured is
 
@@ -2672,7 +2672,7 @@ WHAT THIS CASE DOES NOT SAY. It does not say SRK is wrong, and it does not say a
 \tutreadme{The green ammonia plant in tutorials/plant/greenAmmoniaIndustrialN2 runs its synthesis loop at around 200 bar and condenses its product near 250 K, and it prices every stream with a Soave--Redlich--Kwong equation of state whose only inputs are each component's critical temperature, critical pressure and acentric factor. Two questions follow, and only the second one has an answer a student can check:}
 \tutreadme{1. Is that reasonable? --- an engineering judgement. 2. How far from measurement is it? --- a number.}
 \tutreadme{Sixteen propertyPoint operations, one per measured state of the nitrogen + hydrogen binary, at exactly the temperature, pressure and composition the experimenters reported. The engine computes the molar volume with the plant's own declaration --- SRK, van der Waals one-fluid mixing, and kij = 0, which the run announces rather than assuming in silence:}
-\tutreadme{The measurement sits beside it in constant/evidence/, cited to its primary publication:}
+\tutreadme{The measurement sits beside it in constant/experiments/, cited to its primary publication:}
 \tutreadme{> R. Hern?ndez-G?mez, D. Tuma, A. G?mez-Hern?ndez, C. R. Chamorro, > $\ast$Accurate Experimental (p, ?, T) Data for the Introduction of Hydrogen into > the Natural Gas Grid: Thermodynamic Characterization of the Nitrogen--Hydrogen > Binary System from 240 to 350 K and Pressures up to 20 MPa$\ast$, > J. Chem. Eng. Data (2017). [doi:10.1021/acs.jced.7b00694](https://doi.org/10.1021/acs.jced.7b00694)}
 \tutreadme{Each operation reports v\_molar in m$^3$/mol. Turn it into a mass density with}
 \begin{tutgolden}

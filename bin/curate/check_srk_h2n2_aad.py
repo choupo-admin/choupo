@@ -125,7 +125,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 CASE = ROOT / "tutorials/props/molecular/srk01_h2n2_density"
-EVID = CASE / "constant/evidence/N2-H2-density-jced-7b00694.dat"
+EVID = CASE / "constant/experiments/N2-H2-density-jced-7b00694.dat"
 
 #  RATCHETS around the 2026-09-09 measurement (AAD 1.045 %, worst 2.24 %).
 AAD_MAX, AAD_MIN = 1.30, 0.70

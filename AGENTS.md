@@ -23,6 +23,7 @@ when one or two focused files answer the question.
 | `unit-ops.md`     | The catalogue.  Per unit op: required + optional fields, an example. |
 | `components.md`   | The shipped component / material / membrane / Henry inventory. |
 | `curation-protocol.md` | When a compound LACKS data a model needs.  Build the case WITH the student: read the gap report, advise, offer bounded choices, invoke deterministic estimators, NEVER invent numbers. |
+| `validating-against-data.md` | How to bring MEASURED data into a case (`bin/choupo-thermoml`, case-local records, what may be redistributed) and how to diagnose WHICH declaration a disagreement belongs to -- pure component, mixing rule, or the model itself.  Read before claiming a model is adequate. |
 | `patterns.md`     | Recipes (recycle, sweep, DesignSpec, FitParameters, batch recipe,...). |
 | `pitfalls.md`     | Common mistakes -- read before answering a question that smells like one. |
 | `gui-credo.md`    | Before proposing any GUI change.  Single source of truth for Choupo GUI design: identity, founding principles, deliberate adaptations vs ParaView, consolidated patterns, anti-patterns, vocabulary, roadmap.  Replaces the older `gui-mental-model.md`. |

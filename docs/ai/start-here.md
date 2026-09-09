@@ -102,6 +102,10 @@ fraction, and energy closure.  The dictionaries remain the source of truth.
 - Dictionary grammar and units: [`dict-syntax.md`](dict-syntax.md)
 - Property models: [`thermo.md`](thermo.md)
 - Unit operation fields: [`unit-ops.md`](unit-ops.md)
+- Bringing MEASURED data in, and finding out WHICH declaration is wrong:
+  [`validating-against-data.md`](validating-against-data.md) -- read this before
+  answering "is this model good enough?", and before reaching for a better
+  component record
 - Recycle, sweeps, batch, and fitting: [`patterns.md`](patterns.md)
 - Failure modes: [`pitfalls.md`](pitfalls.md)
 

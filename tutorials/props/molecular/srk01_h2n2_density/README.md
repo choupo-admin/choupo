@@ -30,7 +30,7 @@ SRK: no binaryInteractions declared -- all 1 binary pair(s) run kij = 0
      parameters/SRK/ ...)
 ```
 
-The measurement sits beside it in `constant/evidence/`, cited to its primary
+The measurement sits beside it in `constant/experiments/`, cited to its primary
 publication:
 
 > R. Hernández-Gómez, D. Tuma, A. Gómez-Hernández, C. R. Chamorro,

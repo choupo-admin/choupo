@@ -92,8 +92,10 @@ fi
 
 # Reading order: orientation first, then syntax, then layout (where the
 # files go), then thermo (how to pick models), then unit-ops (the catalogue
-# the user actually picks from), then components (what ships), then patterns
-# (recipes the user copies), then pitfalls (things that bite).
+# the user actually picks from), then components (what ships), then how to
+# VALIDATE a case against measured data and diagnose which declaration is
+# at fault, then patterns (recipes the user copies), then pitfalls (things
+# that bite).
 ORDER=(
     start-here
     overview
@@ -107,6 +109,7 @@ ORDER=(
     components
     data-doctrine
     curation-protocol
+    validating-against-data
     patterns
     pitfalls
     consistency
@@ -140,6 +143,7 @@ CORE=(
     case-layout
     thermo
     unit-ops
+    validating-against-data
     patterns
     pitfalls
 )
