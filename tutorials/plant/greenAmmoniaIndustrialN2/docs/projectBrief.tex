@@ -129,10 +129,20 @@ Dryer capacity used & \texttt{dryer\_utilisation} & \measured{52.7\,\%} \\
 \bottomrule
 \end{longtable}}
 
-The plant closes its energy balance to \measured{728.9\,kW}, which is
-\measured{0.074\,\%} of the \measured{983.9\,MW} it exchanges. Choupo publishes
-that residual; do not take it on trust, read it in the run's own
-\texttt{energyBalance} report.
+The plant closes its energy balance to \measured{$-$12.70\,kW}, which is
+\measured{0.057\,\%} of the \measured{22.4\,MW} it exchanges. Choupo publishes
+both the residual and the scale it is judged against; do not take either on
+trust, read them in the run's own \texttt{energyBalance} report.
+
+\begin{caveat}
+Those two numbers used to read 728.9\,kW and 0.074\,\% of 983.9\,MW, and the
+second pair was the more misleading of the two. A chilled-water supply stream
+carried a \texttt{category} tag that its return did not, so 60\,kg/s of water's
+formation-datum enthalpy was booked as a 960\,MW ``duty'' --- which both
+inflated the scale forty-fold and double-counted 741.6\,kW of chiller heat into
+the plant's boundary term. \textbf{That double count WAS the residual.} Found
+by reading the panel and asking whether it looked right; fixed 2026-09-09.
+\end{caveat}
 
 \section{The economics --- and the price you have to defend}
 

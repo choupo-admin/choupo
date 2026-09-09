@@ -4933,6 +4933,27 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/energyclos.$$
 
+    #  A UTILITY CIRCUIT DECLARED ON ONE END ONLY (2026-09-09).  The energy
+    #  report subtracts a utility medium's supply and return enthalpies so its
+    #  formation datum cancels and only the heat it carried remains -- and
+    #  NOTHING IN THE CORPUS TAGS A RETURN, so that cancellation had never
+    #  happened.  On the green-ammonia plant it filed 60 kg/s of chilled
+    #  water's datum as a 960 712 kW duty for a 741.56 kW chiller, and
+    #  double-counted that chiller's heat into the plant boundary: the double
+    #  count WAS the plant's 728.86 kW first-law residual (it closes at
+    #  -12.70 kW now).  The tag is applied only symmetrically, the run
+    #  ANNOUNCES where it was ignored, and this holds both halves.  Found by
+    #  Vitor, reading the panel and asking whether it looked right.
+    if "$ROOT/bin/curate/check_utility_tag_symmetry.py" > /tmp/utilsym.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "utility-tag-symmetry-gate" "$(tail -1 /tmp/utilsym.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_utility_tag_symmetry.py)\n" "utility-tag-symmetry-gate"
+        cat /tmp/utilsym.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/utilsym.$$
+
     # WASM-dialect gate (2026-08-27): what g++ lends as an extension,
     # emscripten's clang refuses.  A lambda capturing a structured binding is
     # illegal in C++17, silent under g++ -Wall -Wextra -Wpedantic, and fatal

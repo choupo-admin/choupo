@@ -222,6 +222,38 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             continue;
         }
 
+        //  A UTILITY CIRCUIT DECLARED ON ONE END ONLY -- ANNOUNCED, NEVER
+        //  ACTED ON IN SILENCE (2026-09-09).  `unitEnergyBalance` has already
+        //  ignored the tag and counted the medium as material passing through,
+        //  which is the only reading whose datum offsets cancel; saying so is
+        //  the other half.  It rides `AdvisoryLog` so it reaches the end-of-run
+        //  caveat block and the result JSON, not only this line -- the fix is
+        //  the CASE's (tag the return too, or declare the pair in
+        //  `system/flowsheetDict`'s `utilities {}` block), and the reader has
+        //  to be told which units it touched.
+        if (!e.utilityTagIgnored.empty())
+        {
+            std::ostringstream un;
+            for (std::size_t i = 0; i < e.utilityTagIgnored.size(); ++i)
+                un << (i ? ", " : "") << "'" << e.utilityTagIgnored[i] << "'";
+            std::ostringstream msg;
+            msg << "unit '" << u.name << "': utility stream(s) " << un.str()
+                << " carry a `category` but the circuit is tagged on ONE SIDE "
+                   "only, so the medium's formation-datum enthalpy cannot "
+                   "cancel between supply and return.  The tag was IGNORED for "
+                   "this unit and the stream(s) counted as material passing "
+                   "through -- which is what an untagged circuit already gets, "
+                   "and it nets its own datum exactly.  To have the medium "
+                   "report its DUTY instead, tag both ends of the circuit (or "
+                   "declare the pair in system/flowsheetDict's `utilities {}` "
+                   "block).";
+            if (AdvisoryLog::instance().add(
+                    "validity", "warning",
+                    "unit '" + u.name + "' half-tagged utility circuit",
+                    msg.str()))
+                std::cerr << "[utility] " << msg.str() << "\n";
+        }
+
         if (e.ref == reporting::EnergyRef::None)
         {
             // No stream-enthalpy datum, but the unit may still declare a duty.

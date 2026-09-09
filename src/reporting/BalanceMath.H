@@ -217,6 +217,13 @@ struct UnitEnergy
     int       nProcIn   = 0;     // # process (non-utility) inlets
     int       nProcOut  = 0;     // # process (non-utility) outlets
     EnergyRef ref       = EnergyRef::None;
+    //  A UTILITY CIRCUIT DECLARED ON ONE END ONLY (2026-09-09, found by Vitor
+    //  on the green-ammonia global energy panel).  See `unitEnergyBalance`:
+    //  the tag was IGNORED for this unit and every stream counted as process
+    //  material.  Set so the report can ANNOUNCE it -- a half-declared circuit
+    //  is the author's to close, and silence here is what let a 960 MW datum
+    //  offset be filed as a duty.  Empty when the unit has no such stream.
+    std::vector<std::string> utilityTagIgnored;   // the tagged stream names
 };
 
 // A genuinely two-phase stream (0<vf<1) carries the enthalpy of its equilibrium
@@ -317,27 +324,77 @@ inline scalar streamH_elements(const ProcessStream& s,
 // entries in ins/outs are skipped.  `None` only when the unit resolves to no
 // streams at all (a pure energy node); any present species lacking elements
 // data throws (it is NOT papered over by a sensible fallback any more).
+//
+// THE SUBTRACTION IS THE WHOLE POINT, AND IT NEEDS BOTH ENDS (2026-09-09).
+// `qBoundary = H(supply) - H(return)` cancels the medium's formation datum and
+// leaves the heat it carried.  With the tag on ONE end only the cancellation
+// never happens: the supply's whole datum offset lands in qBoundary as a
+// "duty" and the return lands in hOut as process material.  Measured on
+// `greenAmmoniaIndustrialN2`, where `0/MAIN/Chw` carries
+// `category chilledWater;` and the ChwOut the run produces carries none:
+// 60.05 kg/s of chilled water reported a 960 712 kW duty for a chiller whose
+// real duty is 741.56 kW -- and, because that unit then failed the
+// `internalExchanger` test in EnergyBalanceReport, its 741.56 kW was ALSO
+// added to the plant's Q_boundary while its heat was already carried out by
+// the ChwOut stream counted in Sum H(products).  The double count WAS the
+// plant's 728.86 kW first-law residual.
+//
+// Nothing in the corpus tags a return: ten cases tag a supply, zero tag the
+// other end (utility03's brineSupply/brineReturn, evaporator03's
+// liveSteam/cond1..3, ...).  So the cancellation this function is built on
+// has never once happened.
+//
+// RULE: the tag is applied only when the unit has a tagged stream on BOTH
+// sides.  Otherwise the circuit is half-declared, the offsets cannot cancel,
+// and the honest reading is the one the untagged circuits already get --
+// count the medium as material passing through, which nets its own datum
+// exactly and leaves the unit's dH to be reconciled against its declared
+// duty.  The names are reported so the run can ANNOUNCE it; this function
+// never decides in silence, and it never throws (a report that kills the run
+// over a case's declaration is worse than one that says what it did).
 inline UnitEnergy unitEnergyBalance(const std::vector<const ProcessStream*>& ins,
     const std::vector<const ProcessStream*>& outs,
     const ThermoPackage& thermo, scalar /*Tref*/)
 {
     UnitEnergy u;
     bool any = false;
+
+    //  Is the circuit declared on both sides of THIS unit?  Decided before a
+    //  single enthalpy is accumulated, because the answer changes what every
+    //  tagged stream below is.
+    const auto tagged = [](const std::vector<const ProcessStream*>& v)
+    {
+        int n = 0;
+        for (const auto* s : v) if (s && !s->category.empty()) ++n;
+        return n;
+    };
+    const int nTagIn  = tagged(ins);
+    const int nTagOut = tagged(outs);
+    const bool applyTag = (nTagIn > 0 && nTagOut > 0);
+
     for (const auto* s : ins)
     {
         if (!s) continue;
         any = true;
         const scalar h = streamH_elements(*s, thermo);
-        if (s->category.empty()) { u.hIn += h; ++u.nProcIn; }
-        else                       u.qBoundary += h;   // utility supplies heat in
+        if (s->category.empty() || !applyTag)
+        {
+            u.hIn += h; ++u.nProcIn;
+            if (!s->category.empty()) u.utilityTagIgnored.push_back(s->name);
+        }
+        else u.qBoundary += h;   // utility supplies heat in
     }
     for (const auto* s : outs)
     {
         if (!s) continue;
         any = true;
         const scalar h = streamH_elements(*s, thermo);
-        if (s->category.empty()) { u.hOut += h; ++u.nProcOut; }
-        else                       u.qBoundary -= h;    // utility carries heat out
+        if (s->category.empty() || !applyTag)
+        {
+            u.hOut += h; ++u.nProcOut;
+            if (!s->category.empty()) u.utilityTagIgnored.push_back(s->name);
+        }
+        else u.qBoundary -= h;    // utility carries heat out
     }
     u.ref = any ? EnergyRef::Elements : EnergyRef::None;
     return u;

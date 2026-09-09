@@ -72,9 +72,9 @@ stream  UnreactedGas           T                250                1e-4
 stream  WashWater              F                0.00333333333333   1e-4
 stream  WashWater              T                298.15             1e-4
 boundary global               H_feeds_kW       -15520194.33       1e-4
-boundary global               Q_boundary_kW    -3608.62510435     1e-4
+boundary global               Q_boundary_kW    -4350.18235115     1e-4
 boundary global               H_products_kW    -15524531.8131     1e-4
-boundary global               residual_kW      728.858024253      1e-4
+boundary global               residual_kW      -12.6992225517     1e-4
 utility LOOP.FEHE              heating.-.carried 1                  1e-4
 utility LOOP.Separator         cooling.refrigerationNH3.duty_kW -13023.5272137     1e-4
 utility LOOP.Separator         cooling.refrigerationNH3.T 250                1e-4
