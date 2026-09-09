@@ -1180,7 +1180,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{kpi}{column07}{nStages}{20}
 \goldrow{kpi}{column07}{x\_B\_HK}{0.416665691626}
 \goldrow{kpi}{column07}{x\_D\_LK}{0.999874145869}
-\goldmore{14}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -3963,7 +3963,7 @@ A CAVEAT THIS CASE ANNOUNCES AND DOES NOT HIDE: the energy report tries to re-re
 \goldrow{kpi}{freezer01}{aEq\_water}{0.857434120855}
 \goldrow{kpi}{freezer01}{a\_water}{0.857434120931}
 \goldrow{kpi}{freezer01}{phaseSet}{0}
-\goldmore{8}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage
@@ -4345,73 +4345,7 @@ HONEST SIMPLIFICATIONS. (1) The loop is isobaric at 200 bar; the makeup compress
 \goldrow{kpi}{converter}{N\_in\_mol\_s}{0.562684679632}
 \goldrow{kpi}{converter}{N\_out\_mol\_s}{0.432717777908}
 \goldrow{kpi}{converter}{P}{20000000}
-\goldmore{58}
-\end{tutgolden}
-
-\clearpage
-\tutentry{ammonia02\_full\_plant}{tutorials/steady/flowsheets/ammonia02\_full\_plant}
-\begin{tutscheme}
-\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (makeupComp) at (0.0,-0.0) {\textbf{makeupComp}\\[-1pt]{\tiny compressor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (recycleComp) at (159.5,-0.0) {\textbf{recycleComp}\\[-1pt]{\tiny compressor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (162.4,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (FEHE) at (165.3,-0.0) {\textbf{FEHE}\\[-1pt]{\tiny heatExchanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (168.2,-0.0) {\textbf{converter}\\[-1pt]{\tiny gibbsReactor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (waterCooler) at (168.2,-1.7) {\textbf{waterCooler}\\[-1pt]{\tiny heatExchanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (171.1,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (174.0,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (174.0,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
-  \draw[->] ($(makeupComp.west)+(-1.05,0.00)$) -- ($(makeupComp.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
-  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (recycleComp.south) node[midway, below, font=\tiny] {recycle};
-  \draw[->] (makeupComp) -- (mixer) node[midway, above, font=\tiny] {compMakeup};
-  \draw[->] (recycleComp) -- (mixer) node[midway, above, font=\tiny] {compRecycle};
-  \draw[->, dashed] (converter.south) .. controls +(0,-1.0) and +(0,-1.0) .. (FEHE.south) node[midway, below, font=\tiny] {hotEffluent};
-  \draw[->] (mixer) -- (FEHE) node[midway, above, font=\tiny] {mixed};
-  \draw[->] (FEHE) -- (converter) node[midway, above, font=\tiny] {preheatedFeed};
-  \draw[->] (FEHE) -- (waterCooler) node[midway, above, font=\tiny] {cooledEffluent};
-  \draw[->] ($(waterCooler.west)+(-1.05,0.00)$) -- ($(waterCooler.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {cw};
-  \draw[->] (waterCooler) -- (separator) node[midway, above, font=\tiny] {chilledEffluent};
-  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
-  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
-  \draw[->] ($(waterCooler.east)+(0,0.00)$) -- ($(waterCooler.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {cwOut};
-  \draw[->] ($(letdown.east)+(0,-0.17)$) -- ($(letdown.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {productNH3};
-  \draw[->] ($(letdown.east)+(0,0.17)$) -- ($(letdown.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
-  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
-\end{tikzpicture}
-\end{tutscheme}
-\tutwhat{Full-scale ammonia plant (\textasciitilde{}59 t/h NH3, 1400 t/day): explicit syngas + recycle COMPRESSORS, feed-effluent HEAT EXCHANGER, ADIABATIC converter (the reaction heats itself -- exothermic), water cooler + refrigerated separator, product let-down, and the recycle + purge. SRK fugacity throughout; dissolved H2/N2 by measured Henry constants (Wiebe 1934, Larson-Black 1925 via IUPAC SDS 5/6).}
-\begin{tutnarrative}
-the complete Haber-Bosch plant, \textasciitilde{}50 t/h NH3
-
-makeup 25 bar  [makeupComp 25$\to$200]     recycle  [recycleComp]  [mixer]   mixed (cool)   cold side [FEHE]     hot effluent (heat recovery)   preheatedFeed (\textasciitilde{}600 K)   [converter] gibbsReactor mode ADIABATIC N2+3H2<$\to$2NH3 exothermic $\to$ self-heats to \textasciitilde{}720 K   hotEffluent   hot side of FEHE $\to$ cooledEffluent [waterCooler] (cooling water)   \textasciitilde{}310 K [separator] flash 250 K/200 bar (refrig.)     rawLiquid unreactedGas     [letdown] [purgeSplit]         productNH3 gas purge recycle     (tear)
-
-THE REACTOR HEAT. N2+3H2$\to$2NH3 is EXOTHERMIC -- there is NO external reactor heating. The converter runs ADIABATIC: the exotherm raises the gas T (feed \textasciitilde{}705 K in, \textasciitilde{}848 K out), and the feed-effluent exchanger (FEHE) recovers that heat to preheat the incoming feed to catalyst light-off. Self-sustaining once lit. The compressors set the 200-bar synthesis pressure; the water cooler (cooling-water utility) + refrigerated flash condense the NH3. Every machine is explicit and its duty/work is reported.
-
-CAPACITY \textasciitilde{}59 t/h NH3 (\textasciitilde{}1400 t/day) at 98.9\% product purity -- a world-scale single train.
-
-DISSOLVED GASES BY HENRY'S LAW. H2 and N2 are supercritical at the separator (no physical Psat), so their dissolved amounts follow MEASURED Henry constants (pairs H2-NH3 from Wiebe 1934, N2-NH3 from Larson \& Black 1925 as evaluated in IUPAC SDS Vol 5/6), with the SRK vapour fugacity at 200 bar: K = H(T)/(phi\_V P). The raw liquid carries \textasciitilde{}0.5\% H2 + 0.2\% N2 -- physical, vs the \textasciitilde{}13\% a Psat extrapolated above Tc used to fake. KNOWN RESIDUAL: Ar has no measured Ar-NH3 Henry pair yet, so its dissolved \textasciitilde{}1\% is a Raoult-extrapolation artefact (\textasciitilde{}7x over by analogy with N2) -- the product's main impurity is overstated.
-
-THE SIMULATION STRATEGY (how you build a plant like this). 1. PICK THE THERMO BY THE PHYSICS, per phase ("the two worlds"): the 200-bar GAS side needs real-gas fugacity $\to$ a cubic EoS (SRK) declared once in the package; the reactor folds phi into its equilibrium automatically. The DISSOLVED gases are supercritical solutes in a condensable solvent $\to$ the unsymmetric convention (Henry / Krichevsky-Kasarnovsky), NOT Raoult: pair files H2-NH3 + N2-NH3 fitted to measured solubility, `solvent NH3;` in the package, `role solute;` overlays on H2/N2 in this case's constant/. 2. TEAR THE LOOP WHERE INFORMATION FLOWS BACKWARD: one MASS tear (recycle, guessed then Newton-converged) and one ENERGY tear (hotEffluent -- the FEHE preheats the feed with the reactor's own product heat, so the converter's outlet is needed upstream of the converter). Both declared in solverDict tearStreams; the solver announces every iteration. 3. LET THE EXOTHERM DO THE HEATING: the converter is ADIABATIC (mode adiabatic; T is a guess, not a spec) -- the reaction self-heats 705 $\to$ 848 K and the FEHE recycles that heat to light off the feed. No phantom reactor heater exists anywhere. 4. MAKE EVERY MACHINE EXPLICIT so it can be SIZED AND COSTED: compressors by shaft power, exchangers by area, the converter + drums by vessel design bases (space velocity / residence time) in system/postDict $\to$ Guthrie costs $\to$ the DCF economics in constant/economics. Every unit operation carries its own sizing -- the doctrine. 5. VALIDATE AGAINST MEASUREMENT AT EVERY JOINT: the reactor equilibrium against the ideal-vs-SRK shift (gibbs10), the dissolved gas against Wiebe 1934 / Larson-Black 1925 (x\_H2 at 400 atm: 0.0287 computed vs 0.0282 measured), the balances against 100\% element closure.
-
-HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs hotter (\textasciitilde{}575 C) than a real multi-bed converter with interbed quench cooling (which stays near the 400-500 C equilibrium sweet spot for more NH3 per pass). (2) The makeup compressor is one stage (real: multi-stage with intercooling), so its discharge is hot. (3) The let-down gas and the loop pressure drops are as in ammonia01. (4) `water` is in the package ONLY as the cooling-water utility fluid (it is not a reaction species).
-
-\end{tutnarrative}
-\begin{tutgolden}
-\goldrow{stream}{chilledEffluent}{F}{10.5545178888}
-\goldrow{stream}{compMakeup}{F}{2.22222222222}
-\goldrow{stream}{compRecycle}{F}{9.29181627432}
-\goldrow{stream}{cooledEffluent}{F}{10.5545178888}
-\goldrow{stream}{cw}{F}{138.888888889}
-\goldrow{stream}{cwOut}{F}{138.888888889}
-\goldrow{stream}{hotEffluent}{F}{10.554505292}
-\goldrow{stream}{letdownGas}{F}{0.00745588546829}
-\goldrow{stream}{makeup}{F}{2.22222222222}
-\goldrow{stream}{mixed}{F}{11.5140384965}
-\goldrow{stream}{preheatedFeed}{F}{11.5140384965}
-\goldrow{stream}{productNH3}{F}{0.967859425136}
-\goldrow{stream}{purge}{F}{0.287376077346}
-\goldrow{stream}{rawLiquid}{F}{0.975315310604}
-\goldmore{223}
+\goldmore{61}
 \end{tutgolden}
 
 \clearpage

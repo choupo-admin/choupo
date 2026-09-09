@@ -3039,6 +3039,26 @@ PYEOF
     fi
     rm -f /tmp/transportc.$$
 
+    # srk-h2n2-aad gate (2026-09-09).  Vitor asked whether the thermodynamic
+    # models the green ammonia plant runs on are backed by measurement at its
+    # pressures.  tutorials/props/molecular/srk01_h2n2_density evaluates the
+    # plant's own SRK declaration (kij = 0) at sixteen published (T, P, x, rho)
+    # states of the nitrogen + hydrogen binary, cited to their primary paper.
+    # The agreement statistic is written NOWHERE -- this gate recomputes it
+    # from the run's own v_molar, the case's own evidence file and the
+    # components' own molar masses, and ratchets it both ways (a sudden
+    # IMPROVEMENT fails too: the case declares that nothing is fitted).  Five
+    # by-hand sabotages, all on data.
+    if "$ROOT/bin/curate/check_srk_h2n2_aad.py" > /tmp/srkaad.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "srk-h2n2-aad-gate" "$(head -1 /tmp/srkaad.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_srk_h2n2_aad.py)\n" "srk-h2n2-aad-gate"
+        cat /tmp/srkaad.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/srkaad.$$
+
     # chemsep-transport gate (2026-08-26).  Three model families -- chemsepCp16
     # on both Cp rungs, chemsepEq101 (liquid viscosity), chemsepEq16 (liquid
     # thermal conductivity) -- shipped across three days with no gate at all.

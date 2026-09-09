@@ -132,6 +132,76 @@ DEPARTURES FROM HIS FIGURE 1, each argued rather than absorbed
 \end{tutgolden}
 
 \clearpage
+\tutentry{ammonia02\_full\_plant}{tutorials/plant/ammonia02\_full\_plant}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T101) at (0.0,-0.0) {\textbf{T101}\\[-1pt]{\tiny storageTank}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (makeupComp) at (2.9,-0.0) {\textbf{makeupComp}\\[-1pt]{\tiny compressor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (recycleComp) at (194.3,-0.0) {\textbf{recycleComp}\\[-1pt]{\tiny compressor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (197.2,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (FEHE) at (200.1,-0.0) {\textbf{FEHE}\\[-1pt]{\tiny heatExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (203.0,-0.0) {\textbf{converter}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (waterCooler) at (203.0,-1.7) {\textbf{waterCooler}\\[-1pt]{\tiny heatExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (205.9,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (208.8,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (208.8,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T201) at (211.7,-0.0) {\textbf{T201}\\[-1pt]{\tiny storageTank}};
+  \draw[->] ($(T101.west)+(-1.05,0.00)$) -- ($(T101.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->] (T101) -- (makeupComp) node[midway, above, font=\tiny] {makeupStored};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (recycleComp.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (makeupComp) -- (mixer) node[midway, above, font=\tiny] {compMakeup};
+  \draw[->] (recycleComp) -- (mixer) node[midway, above, font=\tiny] {compRecycle};
+  \draw[->, dashed] (converter.south) .. controls +(0,-1.0) and +(0,-1.0) .. (FEHE.south) node[midway, below, font=\tiny] {hotEffluent};
+  \draw[->] (mixer) -- (FEHE) node[midway, above, font=\tiny] {mixed};
+  \draw[->] (FEHE) -- (converter) node[midway, above, font=\tiny] {preheatedFeed};
+  \draw[->] (FEHE) -- (waterCooler) node[midway, above, font=\tiny] {cooledEffluent};
+  \draw[->] ($(waterCooler.west)+(-1.05,0.00)$) -- ($(waterCooler.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {cw};
+  \draw[->] (waterCooler) -- (separator) node[midway, above, font=\tiny] {chilledEffluent};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] (letdown) -- (T201) node[midway, above, font=\tiny] {productNH3};
+  \draw[->] ($(waterCooler.east)+(0,0.00)$) -- ($(waterCooler.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {cwOut};
+  \draw[->] ($(letdown.east)+(0,0.00)$) -- ($(letdown.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+  \draw[->] ($(T201.east)+(0,0.00)$) -- ($(T201.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {productStored};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Full-scale ammonia plant (\textasciitilde{}59 t/h NH3, 1400 t/day): explicit syngas + recycle COMPRESSORS, feed-effluent HEAT EXCHANGER, ADIABATIC converter (the reaction heats itself -- exothermic), water cooler + refrigerated separator, product let-down, and the recycle + purge. SRK fugacity throughout; dissolved H2/N2 by measured Henry constants (Wiebe 1934, Larson-Black 1925 via IUPAC SDS 5/6).}
+\begin{tutnarrative}
+the complete Haber-Bosch plant, \textasciitilde{}59 t/h NH3
+
+makeup 25 bar  [makeupComp 25$\to$200]     recycle  [recycleComp]  [mixer]   mixed (cool)   cold side [FEHE]     hot effluent (heat recovery)   preheatedFeed (\textasciitilde{}683 K)   [converter] gibbsReactor mode ADIABATIC N2+3H2<$\to$2NH3 exothermic $\to$ self-heats to \textasciitilde{}840 K   hotEffluent   hot side of FEHE $\to$ cooledEffluent [waterCooler] (cooling water)   \textasciitilde{}310 K [separator] flash 250 K/200 bar (refrig.)     rawLiquid unreactedGas     [letdown] [purgeSplit]         productNH3 gas purge recycle     (tear)
+
+THE REACTOR HEAT. N2+3H2$\to$2NH3 is EXOTHERMIC -- there is NO external reactor heating. The converter runs ADIABATIC: the exotherm raises the gas T (feed 683 K in, 840 K out), and the feed-effluent exchanger (FEHE) recovers that heat to preheat the incoming feed to catalyst light-off. Self-sustaining once lit. The compressors set the 200-bar synthesis pressure; the water cooler (cooling-water utility) + refrigerated flash condense the NH3. Every machine is explicit and its duty/work is reported.
+
+CAPACITY \textasciitilde{}59 t/h NH3 (\textasciitilde{}1400 t/day) at 98.6\% product purity -- a world-scale single train.
+
+DISSOLVED GASES BY HENRY'S LAW. H2 and N2 are supercritical at the separator (no physical Psat), so their dissolved amounts follow MEASURED Henry constants (pairs H2-NH3 from Wiebe 1934, N2-NH3 from Larson \& Black 1925 as evaluated in IUPAC SDS Vol 5/6), with the SRK vapour fugacity at 200 bar: K = H(T)/(phi\_V P). The raw liquid carries \textasciitilde{}0.5\% H2 + 0.2\% N2 -- physical, vs the \textasciitilde{}13\% a Psat extrapolated above Tc used to fake. KNOWN RESIDUAL: Ar has no measured Ar-NH3 Henry pair yet, so its dissolved \textasciitilde{}1\% is a Raoult-extrapolation artefact (\textasciitilde{}7x over by analogy with N2) -- the product's main impurity is overstated.
+
+THE SIMULATION STRATEGY (how you build a plant like this). 1. PICK THE THERMO BY THE PHYSICS, per phase ("the two worlds"): the 200-bar GAS side needs real-gas fugacity $\to$ a cubic EoS (SRK) declared once in the package; the reactor folds phi into its equilibrium automatically. The DISSOLVED gases are supercritical solutes in a condensable solvent $\to$ the unsymmetric convention (Henry / Krichevsky-Kasarnovsky), NOT Raoult: pair files H2-NH3 + N2-NH3 fitted to measured solubility, `solvent NH3;` in the package, `role solute;` overlays on H2/N2 in this case's constant/. 2. TEAR THE LOOP WHERE INFORMATION FLOWS BACKWARD: one MASS tear (recycle, guessed then Newton-converged) and one ENERGY tear (hotEffluent -- the FEHE preheats the feed with the reactor's own product heat, so the converter's outlet is needed upstream of the converter). Both declared in solverDict tearStreams; the solver announces every iteration. 3. LET THE EXOTHERM DO THE HEATING: the converter is ADIABATIC (mode adiabatic; T is a guess, not a spec) -- the reaction self-heats 683 $\to$ 840 K and the FEHE recycles that heat to light off the feed. No phantom reactor heater exists anywhere. 4. MAKE EVERY MACHINE EXPLICIT so it can be SIZED AND COSTED: compressors by shaft power, exchangers by area, the converter + drums by vessel design bases (space velocity / residence time) in system/postDict $\to$ Guthrie costs $\to$ the DCF economics in constant/economics. Every unit operation carries its own sizing -- the doctrine. 5. VALIDATE AGAINST MEASUREMENT AT EVERY JOINT: the reactor equilibrium against the ideal-vs-SRK shift (gibbs10), the dissolved gas against Wiebe 1934 / Larson-Black 1925 (x\_H2 at 400 atm: 0.0287 computed vs 0.0282 measured), the balances against 100\% element closure.
+
+HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs hotter (\textasciitilde{}567 C) than a real multi-bed converter with interbed quench cooling (which stays near the 400-500 C equilibrium sweet spot for more NH3 per pass). (2) The makeup compressor is one stage (real: multi-stage with intercooling), so its discharge is hot. (3) The let-down gas and the loop pressure drops are as in ammonia01. (4) `water` is in the package ONLY as the cooling-water utility fluid (it is not a reaction species).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{chilledEffluent}{F}{10.5545178888}
+\goldrow{stream}{compMakeup}{F}{2.22222222222}
+\goldrow{stream}{compRecycle}{F}{9.29181627432}
+\goldrow{stream}{cooledEffluent}{F}{10.5545178888}
+\goldrow{stream}{cw}{F}{138.888888889}
+\goldrow{stream}{cwOut}{F}{138.888888889}
+\goldrow{stream}{hotEffluent}{F}{10.554505292}
+\goldrow{stream}{letdownGas}{F}{0.00745588546829}
+\goldrow{stream}{makeup}{F}{2.22222222222}
+\goldrow{stream}{mixed}{F}{11.5140384965}
+\goldrow{stream}{preheatedFeed}{F}{11.5140384965}
+\goldrow{stream}{productNH3}{F}{0.967859425136}
+\goldrow{stream}{purge}{F}{0.287376077346}
+\goldrow{stream}{rawLiquid}{F}{0.975315310604}
+\goldmore{226}
+\end{tutgolden}
+
+\clearpage
 \tutentry{esterification2sector}{tutorials/plant/esterification2sector}
 \tutwhat{Esterification plant -- two sectors (REACTION + SEPARATION) sharing components; per-sector constant/ data (S1 kinetics, S2 NRTL pair); ethanol-water pair inherited from the standard library}
 \tutreadme{A two-sector plant that exists to prove one thing: data lives with the sector that owns it, and a whole-plant run finds it there.}
@@ -155,8 +225,64 @@ DEPARTURES FROM HIS FIGURE 1, each argued rather than absorbed
 \goldrow{stream}{vapor}{T}{355}
 \goldrow{closure}{SEPARATION.flash}{raw\_kW}{807.999502666}
 \goldrow{closure}{SEPARATION.flash}{step\_kW}{807.999435904}
-\goldmore{5}
+\goldmore{16}
 \end{tutgolden}
+
+\subsection{greenAmmoniaIndustrialN2}
+\grouptheory{greenAmmoniaIndustrialN2}
+\clearpage
+\tutentry{LOOP}{tutorials/plant/greenAmmoniaIndustrialN2/LOOP}
+\begin{tutnarrative}
+SECTOR LOOP -- the Haber-Bosch synthesis loop. Nitrogen purity does not change the loop's geography; it changes what circulates inside it (twenty times more argon, and therefore a purge that finally does something).
+
+Makeup --+ v Recycle --[RecycleComp]-$\to$[LoopMix]-$\to$[FEHE]cold side-$\to$[Converter] \textasciicircum{} | +--- HotEffluent -----+ (energy cut)
+
+v CooledEffluent [WaterCooler]-$\to$[Separator]--+-$\to$ RawLiquid +$\to$[PurgeSplit]--+-$\to$ Purge +-$\to$ Recycle (material cut)
+
+BOTH CUTS ARE INTERNAL TO THIS SECTOR -- which is why this grouping works. The engine closes a tear at the COMPOSITE node that declares it; a recycle crossing two sectors would have no owner. That was the criterion for drawing the geography: CUT THE PLANT WHERE THE RECYCLE DOES NOT PASS.
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{PRODUCT}{tutorials/plant/greenAmmoniaIndustrialN2/PRODUCT}
+\begin{tutnarrative}
+SECTOR PRODUCT -- finishing. The let-down drum drops from 200 to 20 bar and releases the dissolved H2/N2/Ar; it is the step that takes the product from 99.4 \% to 99.9 \%. Note how much ARGON leaves here: a third of what enters the plant.
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{PURIFICATION}{tutorials/plant/greenAmmoniaIndustrialN2/PURIFICATION}
+\begin{tutnarrative}
+SECTOR PURIFICATION -- from the battery limits to dry syngas at 231 bar.
+
+THIS SECTOR IS WHAT MAKES THIS CASE. A plant fed on 99.999 \% nitrogen needs only compression here -- four blocks. This one holds eight, because the nitrogen is INDUSTRIAL grade (99.5 \% N2 / 0.40 \% O2 / 0.10 \% Ar) instead of the 99.999 \% of the original data sheet -- and the oxygen has to leave before the loop.
+
+N2Feed 8 bar --[N2Boost]--[N2Cooler]--+ +--[SynMix]--[Deoxo]--[GasChiller]--[KoDrum] H2Feed 30 bar ------------------------+ 3:1 O2$\to$H2O 279 K |
+
+Makeup <--[SynComp]<--[Dryer]<------------------+ 231 bar 30$\to$231 4A, < 1 ppm
+
+THE FOUR-STEP WATER CHAIN, and why it takes four steps: Deoxo turns the O2 into water $\to$ 2118 ppm in the gas GasChiller cools to 279 K so it can condense KoDrum drops the condensate (86 \% of it) $\to$ 315 ppm Dryer adsorbs the rest $\to$ < 1 ppm Without the GasChiller nothing condenses at all (at 310 K and 30 bar the gas is not even saturated) and the dryer would have to be seven times larger. Without the Dryer the converter catalyst -- which tolerates < 5 ppm of oxygen compounds -- would die on start-up.
+
+THIS SECTOR HAS ITS OWN PROPERTY PACKAGE (constant/thermoPhysPropDict): there is no ammonia anywhere in it, so the solvent is water, not ammonia. Read that file -- it is the clearest example in the case of why `constant/` exists at every level of a fractal plant.
+
+No recycle here: the sector is purely sequential and reads top to bottom.
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{RECOVERY}{tutorials/plant/greenAmmoniaIndustrialN2/RECOVERY}
+\begin{tutnarrative}
+SECTOR RECOVERY -- what happens to the purge.
+
+Purge (250 K, 200 bar) --[PurgeValve]--[PurgeHeater]--+ $\to$ 30 bar $\to$ \textasciitilde{}300 K | v WashWater ------------$\to$[Scrubber] | | ScrubbedGas AqueousNH3 (H2, N2, Ar) (\textasciitilde{}3 \% NH3)
+
+WHY THIS IS A SECTOR OF ITS OWN. It cannot live in LOOP: everything here runs at 30 bar, and the loop is at 200. It cannot live in PURIFICATION either: that is the front of the plant, this is the back. And it needs its own property package (water as the solvent), which is a sector-level thing.
+
+WHAT IS NOT HERE YET, and the reason it is not. A membrane or PSA behind the scrubber would send the recovered hydrogen -- about 1.1 M EUR/year -- back to the synthesis compressor suction, in PURIFICATION. That closes a recycle running LOOP $\to$ RECOVERY $\to$ PURIFICATION $\to$ LOOP, i.e. through ALL THREE sectors. The rule this plant's geography was drawn on is "cut where the recycle does not pass", so such a tear belongs to no sector: it would have to be declared at the PLANT root, which is a composite node like any other and may declare one. There is also a data obstacle, and it is worth knowing before you try: the `psa` unit needs an adsorption isotherm per species, and the catalogue's zeolite5A has H2, N2, CH4, CO2 and CO -- but NOT argon. A species with no isotherm is treated as NON-adsorbing and reports to the raffinate, so the argon would ride back into the loop with the recovered hydrogen and the purge would stop doing its job entirely. Authoring an Ar/zeolite5A isotherm is the prerequisite.
+
+The water circuit of a real unit (column bottoms back to the column top) is a recycle INTERNAL to this sector, so this sector would own that tear -- one more sign the grouping is right.
+
+\end{tutnarrative}
 
 \clearpage
 \tutentry{hda}{tutorials/plant/hda}

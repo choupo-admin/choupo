@@ -258,23 +258,81 @@ UNIT_MAP = {"kg/m3": "kg/m3", "K": "K", "kPa": "kPa", "MPa": "MPa",
             "Pa": "Pa", "J/K/mol": "J/mol/K", "J/mol/K": "J/mol/K"}
 
 
-def extract_published(root, path):
-    """(property -> {unit, xUnit, points[(T, value)]}) from one archive file."""
+def extract_published(root, path, compounds=None):
+    """(property -> {unit, vars[], points[]}) from one archive file.
+
+    EVERY DECLARED VARIABLE IS A COLUMN (2026-09-09).  This function used to
+    end with
+
+        xnum, xval = next(iter(xs.items()))
+
+    -- ONE variable per point, whichever the dict happened to yield first --
+    and the block comment under `extract_binary_bubble` had NAMED that as the
+    reason a second reader exists: "a binary bubble point has TWO variables,
+    so reusing that path would silently keep whichever came first and emit
+    plausible-looking garbage.  A parser that guesses is worse than no
+    parser."  The rule was written down and then applied to exactly one
+    dataset shape.
+
+    WHAT IT COST, found by Vitor asking for better data for the green-ammonia
+    loop.  `10.1021/acs.jced.7b00694` is 399 accurate (p, rho, T, x) points on
+    the NITROGEN + HYDROGEN binary from 240 to 350 K and up to 20 MPa -- the
+    synthesis loop's separator conditions exactly, and the only measured test
+    of SRK with kij = 0 at those conditions that exists in the archive.  Its
+    XML declares THREE variables: Temperature, Pressure, Mole fraction.  This
+    reader wrote (T, rho) and threw the other two away, so the file carried
+    five different densities at 240.046 K with nothing to tell them apart.
+    Evidence that cannot be told apart is not evidence.
+
+    The project had already ruled the principle on 2026-08-25 for the fitting
+    side -- "A BUBBLE POINT IS (x, P, T), AND THE FIT NOW READS ALL THREE",
+    `EvidencePoint` gaining a per-point pressure.  The CONSUMER learned it;
+    the WRITER never did.
+
+    Points are now dicts keyed by column name, and `vars` carries the ordered
+    (name, unit) of every declared variable.  A composition variable is named
+    by the COMPONENT it belongs to (`nOrgNum` into the file's own compound
+    list), never by position.
+    """
     out = {}
+    comp_names = [c.get("name") or f"component{i+1}"
+                  for i, c in enumerate(compounds or [])]
     for pom in find_all(root, "PureOrMixtureData"):
-        props, varunits = {}, {}
+        props = {}
         for p in find_all(pom, "Property"):
             num = find_text(p, "nPropNumber")
             name = find_text(p, "ePropName")
             if num and name:
                 props[num] = name
+        #  ORDERED, and named from the DECLARED type -- never from position
+        #  in the file and never from the order a dict happens to iterate.
+        varinfo = {}
         for v in find_all(pom, "Variable"):
             num = find_text(v, "nVarNumber")
-            for e in v.iter():
-                t = local(e.tag)
-                if t.startswith("e") and e.text and "," in e.text:
-                    varunits[num] = e.text.strip()
-                    break
+            kind, unit, org = _var_kind(v)
+            if kind == "temperature":
+                cname = "T"
+            elif kind == "pressure":
+                cname = "P"
+            elif kind == "composition":
+                who = ""
+                try:
+                    who = comp_names[int(org) - 1] if org else ""
+                except (ValueError, IndexError):
+                    who = ""
+                cname = ("x_" + who.replace(" ", "_")) if who else f"x{num}"
+            else:
+                cname = f"var{num}"
+            #  A DIMENSIONLESS variable declares no unit, because ThermoML
+            #  carries the unit after a comma and a mole fraction has none.
+            #  `split_unit` REFUSES an empty string -- rightly, for a
+            #  PROPERTY, where guessing kPa versus Pa is the difference
+            #  between a boiling point and a vacuum -- so the dimensionless
+            #  case is named here rather than pushed through a guard whose
+            #  subject is a different question.
+            u = split_unit(unit)[1] if (unit and "," in unit) else "-"
+            varinfo[num] = (cname, u or "-")
+        order = sorted(varinfo)
         for nv in find_all(pom, "NumValues"):
             xs = {find_text(x, "nVarNumber"): find_text(x, "nVarValue")
                   for x in find_all(nv, "VariableValue")}
@@ -286,13 +344,39 @@ def extract_published(root, path):
                 key = classify(props[pn])
                 if key is None:
                     continue
-                xnum, xval = next(iter(xs.items()))
                 _, punit = split_unit(props[pn])
-                _, xunit = split_unit(varunits.get(xnum, "Temperature, K"))
-                rec = out.setdefault(key, {"unit": punit, "xUnit": xunit,
-                                           "declaredAs": props[pn],
-                                           "points": []})
-                rec["points"].append((float(xval), float(val)))
+                cols = [varinfo[n] for n in order if n in varinfo]
+                #  THE SHAPE IS PART OF THE KEY.  One archive file may carry
+                #  SEVERAL `PureOrMixtureData` blocks, and they need not
+                #  declare the same variables -- `10.1007/s10765-011-1120-x`
+                #  reports the two PURE fluids (T, P) beside nothing else,
+                #  where the binary study declares (T, P, x).  Keyed on the
+                #  property alone, the first block would fix the column list
+                #  and every later row would be appended under headings that
+                #  do not describe it: a table whose columns are a claim about
+                #  the numbers under them, made false by a block the reader
+                #  never saw.  Distinct shapes become distinct records, and
+                #  the writer names them apart.
+                rec = out.setdefault((key, tuple(c[0] for c in cols)),
+                                     {"unit": punit,
+                                      "property": key,
+                                      "vars": cols,
+                                      "declaredAs": props[pn],
+                                      "points": []})
+                row = []
+                ok = True
+                for n in order:
+                    if n not in xs or xs[n] is None:
+                        ok = False
+                        break
+                    try:
+                        row.append(float(xs[n]))
+                    except (TypeError, ValueError):
+                        ok = False
+                        break
+                if not ok:
+                    continue
+                rec["points"].append(tuple(row) + (float(val),))
     return out
 
 
@@ -654,13 +738,21 @@ def cmd_extract(a):
                             "fit); the header will name the system"))
             continue
         try:
-            found = extract_published(root, src)
+            found = extract_published(root, src, compounds_published(root))
         except ValueError as exc:
             skipped.append((src.name, str(exc)))
             continue
-        for prop, rec in found.items():
+        shapes = {}
+        for (prop, _sig) in found:
+            shapes[prop] = shapes.get(prop, 0) + 1
+        nth = {}
+        for (prop, _sig), rec in found.items():
             if not rec["points"]:
                 continue
+            #  A SUFFIX ONLY WHERE ONE IS EARNED: a property that yielded a
+            #  single shape keeps the name every earlier extraction wrote.
+            nth[prop] = nth.get(prop, 0) + 1
+            shape_tag = f"-{nth[prop]}" if shapes[prop] > 1 else ""
             #  THE SOURCE STEM IS PART OF THE NAME, and it is not cosmetic.
             #  Naming by <compound>-<property>alone made two INDEPENDENT
             #  datasets for the same property collide, and the second silently
@@ -668,7 +760,8 @@ def cmd_extract(a):
             #  held-out evidence would have had one file twice.  A collision
             #  that destroys the very independence the contract rests on must
             #  not be possible by construction.
-            name = f"{h['compound']}-{prop}-{src.stem}".replace(" ", "_")
+            name = (f"{h['compound']}-{prop}-{src.stem}{shape_tag}"
+                    .replace(" ", "_"))
             out = dest / f"{name}.dat"
             sha = hashlib.sha256(src.read_bytes()).hexdigest()
             lines = [
@@ -710,12 +803,20 @@ def cmd_extract(a):
                 "system       ( " + " ".join(c.replace(" ", "_") for c in comps)
                 + " );",
                 "", "columns", "(",
-                f"    {{ name T;     unit {UNIT_MAP.get(rec['xUnit'], rec['xUnit'])}; }}",
-                f"    {{ name {'Psat' if prop == 'vapourPressure' else ('rho' if prop == 'liquidDensity' else 'Cp')};  unit {UNIT_MAP.get(rec['unit'], rec['unit'])}; }}",
-                ");", "", "data", "(",
             ]
-            for x, y in sorted(rec["points"]):
-                lines.append(f"    {x:12.4f}  {y:.10g}")
+            #  ONE COLUMN PER DECLARED VARIABLE, then the property.  Not a
+            #  fixed (T, y) pair: see extract_published's docstring for the
+            #  399-point dataset that pair silently destroyed.
+            for cname, cunit in rec["vars"]:
+                lines.append(f"    {{ name {cname};  "
+                             f"unit {UNIT_MAP.get(cunit, cunit)}; }}")
+            yname = ("Psat" if prop == "vapourPressure"
+                     else "rho" if prop == "liquidDensity" else "Cp")
+            lines.append(f"    {{ name {yname};  "
+                         f"unit {UNIT_MAP.get(rec['unit'], rec['unit'])}; }}")
+            lines += [");", "", "data", "("]
+            for row in sorted(rec["points"]):
+                lines.append("    " + "  ".join(f"{v:.10g}" for v in row))
             lines += [");", ""]
             out.write_text("\n".join(lines))
             written.append((str(out), len(rec["points"])))

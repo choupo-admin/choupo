@@ -1,0 +1,74 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  MEASURED densities of the nitrogen + hydrogen binary --- SIXTEEN CITED POINTS.
+
+  PRIMARY SOURCE, and the only thing to cite:
+
+      R. Hernandez-Gomez, D. Tuma, A. Gomez-Hernandez, C. R. Chamorro,
+      "Accurate Experimental (p, rho, T) Data for the Introduction of Hydrogen
+      into the Natural Gas Grid: Thermodynamic Characterization of the
+      Nitrogen-Hydrogen Binary System from 240 to 350 K and Pressures up to
+      20 MPa", J. Chem. Eng. Data (2017).
+      doi:10.1021/acs.jced.7b00694
+
+  WHAT IS HERE AND WHAT IS NOT.  The published study reports 399 points.  This
+  file carries SIXTEEN of them, chosen to span the pressure ladder at 250 K on
+  each of the three measured compositions plus the two temperature extremes.
+  Sixteen values quoted with their source is a CITATION; the 399-point table is
+  the authors' arrangement and is not reproduced here.  If you want the whole
+  set, obtain the ThermoML archive yourself and run
+
+      bin/choupo-thermoml extract nitrogen --allow-mixture --into data/local/evidence
+
+  WHY THESE AND NOT OTHERS.  The green ammonia synthesis loop in
+  tutorials/plant/greenAmmoniaIndustrialN2 runs its separator near 250 K and
+  its loop near 200 bar, which is exactly the corner of this study.
+
+  THE COMPOSITION CAVEAT, WHICH THIS CASE STATES RATHER THAN HIDES.  The
+  measured mixtures are NITROGEN-RICH: x(N2) = 0.50, 0.90, 0.95.  A
+  stoichiometric synthesis gas is x(N2) ~ 0.25.  There is NOT ONE measured
+  point between x(N2) = 0.19 and 0.31 in this dataset, so what this case tests
+  is SRK's volumetric behaviour on this binary at loop T and P -- never its
+  behaviour at loop COMPOSITION.  Read the verdict accordingly.
+\*---------------------------------------------------------------------------*/
+
+recordType   experimentalEvidence;
+property     density;
+system       ( N2 H2 );
+doi          "10.1021/acs.jced.7b00694";
+
+columns
+(
+    { name T;     unit K;      }
+    { name P;     unit kPa;    }
+    { name x_N2;  unit -;      }
+    { name rho;   unit kg/m3;  }
+);
+
+data
+(
+      240.083    19066.0    0.50008     131.423
+      250.035     4998.0    0.50008      35.626
+      250.038     9999.0    0.50008      69.753
+      250.041    15005.0    0.50008     101.724
+      250.044    19934.0    0.50008     130.700
+      349.939    19885.0    0.50008      92.681
+      250.043     4998.0    0.90001      62.325
+      250.043     9995.0    0.90001     124.895
+      250.045    15008.0    0.90001     184.307
+      250.045    19653.0    0.90001     234.021
+      240.046    19977.0    0.95000     266.493
+      250.018     4999.0    0.95000      65.908
+      250.018     9998.0    0.95000     132.641
+      250.020    15009.0    0.95000     196.059
+      250.023    19863.0    0.95000     251.120
+      349.935    19940.0    0.95000     168.761
+);

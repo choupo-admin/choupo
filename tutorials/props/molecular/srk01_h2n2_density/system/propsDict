@@ -1,0 +1,147 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  srk01_h2n2_density --- IS SRK GOOD ENOUGH FOR THE AMMONIA SYNTHESIS LOOP?
+
+  Vitor's question, 2026-09-09: "dadas as pressoes extremas a que isto
+  funciona, achas que os modelos termodinamicos que estamos a usar sao
+  razoaveis e estao backed up por dados experimentais?"  This case is the
+  answer in numbers rather than in an opinion.
+
+  WHAT IT DOES.  Sixteen `propertyPoint` operations, one per MEASURED state of
+  the nitrogen + hydrogen binary, at exactly the (T, P, x) the experimenters
+  reported.  The engine computes the molar volume with the SAME declaration
+  the green ammonia plant carries -- SRK, van der Waals one-fluid, kij = 0 --
+  and prints it.  The measurement sits beside it in
+  `constant/evidence/N2-H2-density-jced-7b00694.dat`, cited to its primary
+  publication.
+
+  HOW TO READ THE ANSWER.  Each operation reports `v_molar` in m3/mol.  The
+  mass density the experimenters measured is
+
+      rho = MW_mix / v_molar ,   MW_mix = x*MW(N2) + (1-x)*MW(H2)
+
+  and the two molar masses are in the components' own records
+  (28.013 and 2.016 kg/kmol).  Do that division for the four points at
+  x(N2) = 0.50008 and 250 K and you have SRK's error climbing with pressure,
+  which is the whole lesson: a cubic equation of state fitted to critical
+  constants is a correlation, and 200 bar is far outside where its two
+  parameters were determined.
+
+  `bin/curate/check_srk_h2n2_aad.py` does exactly that arithmetic, from THIS
+  run's own output and THIS case's own evidence file, and refuses if either
+  moves.  The number is not written down anywhere -- it is recomputed, because
+  a transcribed agreement statistic is a second home for a fact the run owns.
+
+  WHAT THIS CASE DOES NOT SAY.  It does not say SRK is wrong, and it does not
+  say a better model exists in this tree -- none does for this binary today.
+  It does not test the loop's COMPOSITION: see the caveat in the evidence
+  file's own header.  And it says nothing about ammonia, which is the strongly
+  associating component the loop actually has to condense.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        p_240K_191bar_xN2_0p50008;
+        type        propertyPoint;
+        state       { T 240.083 K;  P 190.6600 bar;
+                      composition { N2 0.50008;  H2 0.49992; } }
+    }
+    {
+        name        p_250K_50bar_xN2_0p50008;
+        type        propertyPoint;
+        state       { T 250.035 K;  P 49.9800 bar;
+                      composition { N2 0.50008;  H2 0.49992; } }
+    }
+    {
+        name        p_250K_100bar_xN2_0p50008;
+        type        propertyPoint;
+        state       { T 250.038 K;  P 99.9900 bar;
+                      composition { N2 0.50008;  H2 0.49992; } }
+    }
+    {
+        name        p_250K_150bar_xN2_0p50008;
+        type        propertyPoint;
+        state       { T 250.041 K;  P 150.0500 bar;
+                      composition { N2 0.50008;  H2 0.49992; } }
+    }
+    {
+        name        p_250K_199bar_xN2_0p50008;
+        type        propertyPoint;
+        state       { T 250.044 K;  P 199.3400 bar;
+                      composition { N2 0.50008;  H2 0.49992; } }
+    }
+    {
+        name        p_350K_199bar_xN2_0p50008;
+        type        propertyPoint;
+        state       { T 349.939 K;  P 198.8500 bar;
+                      composition { N2 0.50008;  H2 0.49992; } }
+    }
+    {
+        name        p_250K_50bar_xN2_0p90001;
+        type        propertyPoint;
+        state       { T 250.043 K;  P 49.9800 bar;
+                      composition { N2 0.90001;  H2 0.09999; } }
+    }
+    {
+        name        p_250K_100bar_xN2_0p90001;
+        type        propertyPoint;
+        state       { T 250.043 K;  P 99.9500 bar;
+                      composition { N2 0.90001;  H2 0.09999; } }
+    }
+    {
+        name        p_250K_150bar_xN2_0p90001;
+        type        propertyPoint;
+        state       { T 250.045 K;  P 150.0800 bar;
+                      composition { N2 0.90001;  H2 0.09999; } }
+    }
+    {
+        name        p_250K_197bar_xN2_0p90001;
+        type        propertyPoint;
+        state       { T 250.045 K;  P 196.5300 bar;
+                      composition { N2 0.90001;  H2 0.09999; } }
+    }
+    {
+        name        p_240K_200bar_xN2_0p95000;
+        type        propertyPoint;
+        state       { T 240.046 K;  P 199.7700 bar;
+                      composition { N2 0.95000;  H2 0.05000; } }
+    }
+    {
+        name        p_250K_50bar_xN2_0p95000;
+        type        propertyPoint;
+        state       { T 250.018 K;  P 49.9900 bar;
+                      composition { N2 0.95000;  H2 0.05000; } }
+    }
+    {
+        name        p_250K_100bar_xN2_0p95000;
+        type        propertyPoint;
+        state       { T 250.018 K;  P 99.9800 bar;
+                      composition { N2 0.95000;  H2 0.05000; } }
+    }
+    {
+        name        p_250K_150bar_xN2_0p95000;
+        type        propertyPoint;
+        state       { T 250.020 K;  P 150.0900 bar;
+                      composition { N2 0.95000;  H2 0.05000; } }
+    }
+    {
+        name        p_250K_199bar_xN2_0p95000;
+        type        propertyPoint;
+        state       { T 250.023 K;  P 198.6300 bar;
+                      composition { N2 0.95000;  H2 0.05000; } }
+    }
+    {
+        name        p_350K_199bar_xN2_0p95000;
+        type        propertyPoint;
+        state       { T 349.935 K;  P 199.4000 bar;
+                      composition { N2 0.95000;  H2 0.05000; } }
+    }
+);

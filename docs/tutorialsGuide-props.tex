@@ -2632,6 +2632,67 @@ The two ops publish the standard vapour-root family (Z, v\_molar) plus the label
 \goldmore{6}
 \end{tutgolden}
 
+\clearpage
+\tutentry{srk01\_h2n2\_density}{tutorials/props/molecular/srk01\_h2n2\_density}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{p\_240K\_191bar\_xN2\_0p50008}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{p\_250K\_50bar\_xN2\_0p50008}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{p\_250K\_100bar\_xN2\_0p50008}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{p\_250K\_150bar\_xN2\_0p50008}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{p\_250K\_199bar\_xN2\_0p50008}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{p\_350K\_199bar\_xN2\_0p50008}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{p\_250K\_50bar\_xN2\_0p90001}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{p\_250K\_100bar\_xN2\_0p90001}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{p\_250K\_150bar\_xN2\_0p90001}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{p\_250K\_197bar\_xN2\_0p90001}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{p\_240K\_200bar\_xN2\_0p95000}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{p\_250K\_50bar\_xN2\_0p95000}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Does SRK describe the ammonia synthesis loop's gas? Sixteen MEASURED (T, P, x, rho) points on the nitrogen + hydrogen binary -- Hernandez-Gomez, Tuma, Gomez-Hernandez and Chamorro, J. Chem. Eng. Data (2017), doi:10.1021/acs.jced.7b00694 -- evaluated with the same SRK the green-ammonia plant runs on, and with kij = 0 because the catalogue carries no N2-H2 pair. The engine computes the molar volume; the case's own evidence file carries the measurement; the comparison is the lesson.}
+\begin{tutnarrative}
+IS SRK GOOD ENOUGH FOR THE AMMONIA SYNTHESIS LOOP?
+
+Vitor's question, 2026-09-09: "dadas as pressoes extremas a que isto funciona, achas que os modelos termodinamicos que estamos a usar sao razoaveis e estao backed up por dados experimentais?" This case is the answer in numbers rather than in an opinion.
+
+WHAT IT DOES. Sixteen `propertyPoint` operations, one per MEASURED state of the nitrogen + hydrogen binary, at exactly the (T, P, x) the experimenters reported. The engine computes the molar volume with the SAME declaration the green ammonia plant carries -- SRK, van der Waals one-fluid, kij = 0 -- and prints it. The measurement sits beside it in `constant/evidence/N2-H2-density-jced-7b00694.dat`, cited to its primary publication.
+
+HOW TO READ THE ANSWER. Each operation reports `v\_molar` in m3/mol. The mass density the experimenters measured is
+
+rho = MW\_mix / v\_molar , MW\_mix = x$\ast$MW(N2) + (1-x)$\ast$MW(H2)
+
+and the two molar masses are in the components' own records (28.013 and 2.016 kg/kmol). Do that division for the four points at x(N2) = 0.50008 and 250 K and you have SRK's error climbing with pressure, which is the whole lesson: a cubic equation of state fitted to critical constants is a correlation, and 200 bar is far outside where its two parameters were determined.
+
+`bin/curate/check\_srk\_h2n2\_aad.py` does exactly that arithmetic, from THIS run's own output and THIS case's own evidence file, and refuses if either moves. The number is not written down anywhere -- it is recomputed, because a transcribed agreement statistic is a second home for a fact the run owns.
+
+WHAT THIS CASE DOES NOT SAY. It does not say SRK is wrong, and it does not say a better model exists in this tree -- none does for this binary today. It does not test the loop's COMPOSITION: see the caveat in the evidence file's own header. And it says nothing about ammonia, which is the strongly associating component the loop actually has to condense.
+
+\end{tutnarrative}
+\tutreadme{The green ammonia plant in tutorials/plant/greenAmmoniaIndustrialN2 runs its synthesis loop at around 200 bar and condenses its product near 250 K, and it prices every stream with a Soave--Redlich--Kwong equation of state whose only inputs are each component's critical temperature, critical pressure and acentric factor. Two questions follow, and only the second one has an answer a student can check:}
+\tutreadme{1. Is that reasonable? --- an engineering judgement. 2. How far from measurement is it? --- a number.}
+\tutreadme{Sixteen propertyPoint operations, one per measured state of the nitrogen + hydrogen binary, at exactly the temperature, pressure and composition the experimenters reported. The engine computes the molar volume with the plant's own declaration --- SRK, van der Waals one-fluid mixing, and kij = 0, which the run announces rather than assuming in silence:}
+\tutreadme{The measurement sits beside it in constant/evidence/, cited to its primary publication:}
+\tutreadme{> R. Hern?ndez-G?mez, D. Tuma, A. G?mez-Hern?ndez, C. R. Chamorro, > $\ast$Accurate Experimental (p, ?, T) Data for the Introduction of Hydrogen into > the Natural Gas Grid: Thermodynamic Characterization of the Nitrogen--Hydrogen > Binary System from 240 to 350 K and Pressures up to 20 MPa$\ast$, > J. Chem. Eng. Data (2017). [doi:10.1021/acs.jced.7b00694](https://doi.org/10.1021/acs.jced.7b00694)}
+\tutreadme{Each operation reports v\_molar in m$^3$/mol. Turn it into a mass density with}
+\begin{tutgolden}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{Cp\_ig}{28.9758015655}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{H\_R}{-456.193455635}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{H\_ig}{-1683.90872502}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{H\_real}{-2140.10218065}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{P}{19066000}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{S\_R}{-2.3117177058}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{S\_ig}{116.976587739}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{S\_real}{114.664870033}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{T}{240.083}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{Z}{1.08683166645}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{gamma}{1.40241644741}
+\goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{v\_molar}{0.000113788478235}
+\goldrow{diag}{p\_250K\_50bar\_xN2\_0p50008}{Cp\_ig}{28.9824821078}
+\goldrow{diag}{p\_250K\_50bar\_xN2\_0p50008}{H\_R}{-156.040876541}
+\goldmore{178}
+\end{tutgolden}
+
 \subsection{reactor}
 \grouptheory{reactor}
 \clearpage
