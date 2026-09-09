@@ -95,6 +95,14 @@ const CASE_FILES = import.meta.glob(
     // them (they bloat the tree and bake in one machine's run state; the browser
     // regenerates the transient in MEMFS when the case is run).
     "!../../../tutorials/**/[1-9]*/**",
+    // Case DOCUMENTS (a project brief, a thermodynamic-basis note): LaTeX
+    // sources and the PDFs built from them, for the human reading the case,
+    // never inputs the solver reads.  A PDF matched by this eager `?raw` glob
+    // becomes several hundred kilobytes of binary inlined as a JavaScript
+    // string in the shipped bundle -- the `ai/**` failure one file type worse,
+    // because the string is not even readable.  The case's README.md is what
+    // the GUI shows as its lesson, and that stays.
+    "!../../../tutorials/**/docs/**",
     // Agent-teaching artefacts: an in-GUI / local console may scaffold these
     // into a case (born-taught), but they are NOT case inputs the solver reads,
     // and ai/choupo-authoring.md is ~113 KB -- inlining one per tutorial would

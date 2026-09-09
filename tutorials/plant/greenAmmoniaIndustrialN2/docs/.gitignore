@@ -1,0 +1,8 @@
+#  LaTeX intermediates.  The PDFs themselves ARE tracked: they are the
+#  deliverable a student opens, and `make` here rebuilds them from the .tex
+#  beside them, so they are not sourceless binaries.
+*.aux
+*.out
+*.toc
+*.fls
+*.fdb_latexmk

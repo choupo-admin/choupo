@@ -1,0 +1,360 @@
+\documentclass[11pt,a4paper]{article}
+\newcommand{\casedocshort}{Thermodynamic basis}
+\input{preamble.tex}
+
+\begin{document}
+
+\casetitle{Thermodynamic basis --- parameters and models, part by part}
+          {Green ammonia, 500\,t/day, Sines. Companion document:
+           \emph{Project brief} (\texttt{projectBrief.pdf}).}
+
+\section*{What this document is}
+
+Every number and every model name below was read off the case's own files or
+off a Choupo run of it. Nothing here is a summary written from memory: each
+section names the file the fact lives in, so you can open it and disagree.
+
+That matters because this case runs \textbf{three different thermodynamic
+worlds at once}, and a stream that crosses between them is re-priced on the
+other side. If you do not know which world a unit computes in, you cannot read
+its energy balance.
+
+\section{Three property packages, one per world}
+
+A Choupo case declares its thermophysical system in
+\texttt{constant/thermoPhysPropDict}, and in a sectored case that file exists at
+every level: a sector's own declaration \emph{replaces} the plant's for the
+units inside it.
+
+{\small\begin{longtable}{@{}L{0.20\linewidth}L{0.15\linewidth}L{0.24\linewidth}L{0.31\linewidth}@{}}
+\toprule
+\textbf{Where} & \textbf{Solvent} & \textbf{Solutes (Henry)} & \textbf{Why} \\
+\midrule
+\endhead
+\texttt{constant/} (plant) & NH$_3$, pure-liquid rung &
+  N$_2$, H$_2$, Ar &
+  The loop and the product: the condensed phase is liquid ammonia. \\
+\texttt{PURIFICATION/\allowbreak{}constant/} & water, pure-liquid rung &
+  N$_2$, H$_2$, Ar, O$_2$ &
+  The only liquid here is the condensate the deoxo reaction makes. \\
+\texttt{RECOVERY/\allowbreak{}constant/} & water, pure-liquid rung &
+  NH$_3$, N$_2$, H$_2$, Ar, O$_2$ &
+  The scrubber dissolves ammonia into water. \\
+\bottomrule
+\end{longtable}}
+
+All three declare \texttt{formulation diluteSolution}, all three carry the same
+six components (\texttt{N2 H2 NH3 Ar water O2}), and all three price the vapour
+with \textbf{SRK} (\texttt{vapour \{ fugacityModel SRK; \}}). The liquid is
+where they differ.
+
+\subsection{What \texttt{diluteSolution} means here}
+
+Two reference rungs in one liquid phase, chosen per component and declared:
+
+\begin{itemize}[leftmargin=*]
+\item the \textbf{solvent} sits on the \texttt{pureLiquid} rung --- the Raoult
+      reference, activity $\to 1$ as $x \to 1$;
+\item every \textbf{solute} sits on the \texttt{infiniteDilution} rung ---
+      the Henry reference, with \texttt{solutionModel henryDilute}.
+\end{itemize}
+
+This is a \emph{declared} choice with a stated domain of validity, not a
+default. It holds while the solutes stay dilute. The \texttt{RECOVERY} package
+says so in its own header: when the scrubber liquid reaches roughly 15\,\%
+ammonia by mass the speciation starts to matter, Henry stops holding, and the
+package has to change. \textbf{The records for that are already in the case}
+--- \texttt{NH3.dat} declares \texttt{aqueousSpeciation ammonia;} as an
+identity fact, which pulls \texttt{chemistry/NH3aq-formation.dat},
+\texttt{chemistry/water-dissociation.dat} and the species NH$_4^+$, OH$^-$,
+H$^+$ into the case --- so switching formulation is a declaration change, not a
+data hunt.
+
+\subsection{Model boundaries, and what they do to enthalpy}
+
+Two streams cross between worlds: \texttt{Makeup} (\texttt{PURIFICATION}
+$\to$ \texttt{LOOP}) and \texttt{Purge} (\texttt{LOOP} $\to$
+\texttt{RECOVERY}).
+
+\begin{caveat}
+At a model boundary Choupo holds $(T, P, z)$ and lets each side compute its own
+enthalpy. \textbf{$H$ is the conserved truth; $T$ is the model-dependent
+readout.} The step you see in the first-law ledger at those two streams is two
+models disagreeing about $H(T,P,z)$ --- it is information, not a solver
+failure, and Choupo prints it rather than hiding it in a silent temperature
+nudge.
+\end{caveat}
+
+\section{The vapour phase: SRK}
+
+Soave--Redlich--Kwong, one equation of state for the vapour in all three
+packages, with $k_{ij} = 0$ (announced by the run). It needs three constants
+per component, and this case's records declare them as follows.
+
+{\small\begin{longtable}{@{}lrrrrL{0.34\linewidth}@{}}
+\toprule
+\textbf{Component} & \textbf{MW} & \textbf{$T_c$ [K]} & \textbf{$P_c$ [bar]} &
+  \textbf{$\omega$} & \textbf{Record} \\
+\midrule
+\endhead
+NH$_3$  & 17.030 & 405.40 & 113.59 & \phantom{$-$}0.252  & \texttt{constant/components/NH3.dat} \\
+N$_2$   & 28.013 & 126.20 &  33.98 & \phantom{$-$}0.039  & \texttt{constant/components/N2.dat} \\
+H$_2$   &  2.016 &  33.18 &  13.13 & $-$0.220 & \texttt{constant/components/H2.dat} \\
+Ar      & 39.948 & 150.86 &  48.98 & $-$0.002 & \texttt{constant/components/Ar.dat} \\
+water   & 18.015 & 647.14 & 220.64 & \phantom{$-$}0.3449 & \texttt{constant/components/water.dat} \\
+O$_2$   & 31.999 & 154.58 &  50.43 & \phantom{$-$}0.022  & \texttt{constant/components/O2.dat} \\
+\bottomrule
+\end{longtable}}
+
+Every component also declares an \textbf{Antoine} vapour-pressure correlation
+and a \textbf{polynomial} ideal-gas heat capacity, each with its own validity
+window. Choupo announces every extrapolation outside a declared window at the
+end of the run --- the base case reports \measured{32} of them --- so the
+caveat block is where you find out whether a correlation was used where its
+author intended.
+
+\begin{caveat}
+Hydrogen at $\omega = -0.220$ and a critical temperature of 33\,K is being
+priced by a cubic equation of state at 200\,bar and 840\,K. That is a long way
+outside where SRK was fitted, and it is a legitimate thing to say in your
+report. Choupo does not stop you; it tells you.
+\end{caveat}
+
+\section{The liquid phase: the Henry pairs}
+
+The dilute rung needs one parameter set per (solute, solvent) pair. Choupo
+stores them as records under \texttt{parameters/Henry/}, each declaring its
+convention (\texttt{Sander-Hxp-v1}), its model (\texttt{vantHoff}), its
+reference fugacity, its enthalpy of dissolution, its partial molar volume where
+one was fitted, and \textbf{its temperature window}.
+
+{\small\begin{longtable}{@{}L{0.16\linewidth}L{0.13\linewidth}rrL{0.11\linewidth}L{0.18\linewidth}@{}}
+\toprule
+\textbf{Pair} & \textbf{Model} & \textbf{$H_{\mathrm{ref}}$ [Pa]} &
+  \textbf{$\Delta H_{\mathrm{diss}}$} & \textbf{$T$ range [K]} &
+  \textbf{Origin} \\
+ & & \textbf{(298.15 K)} & \textbf{[J/mol]} & & \\
+\midrule
+\endhead
+N$_2$--NH$_3$  & van 't Hoff & $8.50\times10^{8}$ & $+11\,040$ & 238--305 & standards \\
+H$_2$--NH$_3$  & van 't Hoff & $1.18\times10^{9}$ & $+13\,600$ & 288--333 & standards \\
+Ar--NH$_3$     & van 't Hoff & $4.87\times10^{8}$ & $+9\,495$  & 243--323 & \textbf{fitted for this project} \\
+NH$_3$--water  & van 't Hoff & $9.9\times10^{4}$  & $-33\,700$ & 273--373 & standards \\
+N$_2$--water   & van 't Hoff & $8.65\times10^{9}$ & $-11\,868$ & 273--373 & standards \\
+H$_2$--water   & van 't Hoff & $7.11\times10^{9}$ & $-4\,659$  & 273--373 & standards \\
+Ar--water      & van 't Hoff & $3.96\times10^{9}$ & $-13\,473$ & 273--373 & standards \\
+O$_2$--water   & van 't Hoff & --- & --- & 273--373 & standards \\
+\bottomrule
+\end{longtable}}
+
+The three ammonia-solvent pairs also carry a Krichevsky--Kasarnovsky Poynting
+volume, $v_\infty \approx 2.3$--$2.4\times10^{-5}$\,m$^3$/mol, and a Margules
+$A = 0$ (the dilute-ideal activity holds across the data). \textbf{The sign of
+$\Delta H_{\mathrm{diss}}$ flips between the two solvents}: the permanent gases
+are \emph{more} soluble in hot ammonia and \emph{less} soluble in hot water.
+That is not a typing error, and a student who notices it has understood
+something.
+
+\subsection{The one pair this project had to fit: Ar--NH$_3$}
+
+The catalogue had no argon-in-ammonia pair, and \textbf{the absence was not
+neutral}. With no Henry pair, argon falls onto the Raoult rung, and its
+``vapour pressure'' at the 250\,K separator then comes from an Antoine
+extrapolation \emph{above its own critical temperature}
+($T_c = 150.86$\,K). That gave $K_{\mathrm{Ar}} = 1.7$ against
+$K_{\mathrm{N_2}} = 124$ --- argon roughly seventy times more soluble in liquid
+ammonia than nitrogen --- so 88\,\% of the argon left dissolved in the product
+instead of accumulating in the loop, and the purge, which is the heart of this
+case, was left with no physical meaning. Exit code 0 throughout.
+
+\begin{caveat}
+\textbf{This is the most useful single lesson in the case.} A missing
+parameter did not produce an error. It produced a plausible number, from a
+correlation used far outside the window its author declared, and it quietly
+removed the phenomenon the whole flowsheet exists to manage.
+\end{caveat}
+
+The pair was therefore fitted for this project, and the whole derivation is
+reproducible: \texttt{curation/Ar-NH3/fit-Ar-NH3.py}.
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Primary data}, all three sets classified TENTATIVE by
+      C.\,L.\ Young's critical evaluation in IUPAC--NIST Solubility Data
+      Series Vol.~4 (\emph{Argon}), H.\,L.\ Clever (ed.), 1980, pp.~314--318:
+      Kaminishi, G., \emph{Kogyo Kagaku Zasshi} \textbf{68} (1965) 419
+      [\emph{Int.\ Chem.\ Eng.}\ \textbf{5} (1965) 749, English translation]
+      --- $x_{\mathrm{Ar}}$ at 273.15 / 298.15 / 323.15\,K, 50.8 to
+      199.9\,bar, the anchor set because it covers exactly the loop pressure;
+      Matou\v{s}, Sobr \& Nov\'ak, \emph{Coll.\ Czech.\ Chem.\ Comm.}\
+      \textbf{35} (1970) 3757 (243--303\,K --- the only set reaching below
+      273\,K, i.e.\ covering the 250\,K separator); and Michels, Dumoulin
+      \& Van Dijk, \emph{Physica} \textbf{27} (1961) 886.
+\item \textbf{A correction was applied, and it is declared rather than
+      silent.} As printed in the compilation, the Matou\v{s} values are ten
+      times Kaminishi's at the single overlapping point, which contradicts the
+      critical evaluation's own statement that the studies agree. Read as
+      $10^{1}x_{\mathrm{Ar}}$ they fall within $\pm4$\,\% of the van 't Hoff
+      line at every temperature. That reading is adopted and marked \emph{to be
+      confirmed against the original 1970 paper}.
+\item \textbf{Independent validation, held out of the fit.} Michels 1961 ---
+      a different laboratory, a different method, with $y_{\mathrm{Ar}}$
+      measured --- gives $H = 4.56\times10^{8}$\,Pa, $-6$\,\% from the adopted
+      value.
+\item \textbf{Family consistency.} $v_\infty = 23$\,cm$^3$/mol against 23
+      (N$_2$) and 24 (H$_2$) in the same solvent; argon is 1.8 times more
+      soluble than nitrogen in liquid ammonia, against 2.2 times in water.
+      The same order of magnitude, not seventy times.
+\end{itemize}
+
+This pair is the case's one piece of original curation, and it is the model for
+what Choupo asks of any parameter you add: primary sources, a stated
+correction, a held-out validation set, a declared window, and a script that
+reproduces the fit.
+
+\section{The reaction: the deoxo bed}
+
+Declared in \texttt{PURIFICATION/constant/reactions}:
+\[
+  \mathrm{O_2} + 2\,\mathrm{H_2} \;\longrightarrow\; 2\,\mathrm{H_2O}
+\]
+with \texttt{limitingReactant O2} and \texttt{conversion 1.0} in
+\texttt{PURIFICATION/Deoxo} --- hydrogen is in roughly 700-fold excess, so
+complete conversion of the oxygen is the real specification of a deoxo bed
+(outlet O$_2$ below 1\,ppm).
+
+\begin{caveat}
+\textbf{The heat of reaction is not declared anywhere and must not be.} Choupo
+computes it as $\Delta H_{\mathrm{rxn}}(T) = \sum_i \nu_i h_i(T)$ from each
+species' own formation enthalpy in its \texttt{standardThermochemistry} block.
+A \texttt{dH\_rxn} key in a reactions dict is an announced, cross-checked
+\emph{override} for toy systems that lack formation data --- never a primary
+input. One enthalpy datum, one place.
+\end{caveat}
+
+Measured on the base case: \measured{2.594\,kmol/h} of oxygen removed, releasing
+\measured{348.7\,kW}, and making \measured{81.05\,kg/h} of water --- which is
+the entire reason the chiller, the knock-out drum and the dryer exist
+downstream.
+
+\section{The converter: Gibbs equilibrium, not kinetics}
+
+\texttt{LOOP/Converter} is a \texttt{gibbsReactor} in \texttt{mode adiabatic}
+at 200\,bar. It minimises Gibbs energy over the declared species
+(N$_2$, H$_2$, NH$_3$, Ar) subject to the declared element balances
+(N, H, Ar), and finds the outlet temperature that closes the energy balance.
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{There is no rate law and no catalyst in this model.} The result
+      is the equilibrium the bed would reach given infinite contact time. A
+      real converter approaches it; how closely is a catalyst question this
+      case does not ask.
+\item Argon is carried as an inert species: it takes part in no reaction but
+      occupies volume and dilutes the reactants, which is exactly its role in
+      the real loop.
+\item Measured: outlet at \measured{839.0\,K} carrying
+      \measured{11.01\,mol\,\%} ammonia.
+\end{itemize}
+
+\begin{caveat}
+\textbf{An open item in Choupo, stated here rather than discovered by you.}
+The adiabatic Gibbs reactor solves its energy balance on the ideal-gas
+enthalpy surface while its streams are priced with the SRK departure. At
+200\,bar those are not the same surface, and the difference lands in the
+first-law ledger. This is a known engine-level issue, not a defect in your
+case.
+\end{caveat}
+
+\section{The dryer: adsorption equilibrium}
+
+\texttt{PURIFICATION/Dryer} is a \texttt{tsaTwinBed}: 1500\,kg of 4A molecular
+sieve per column, 12\,h of adsorption per bed, regenerated at 553\,K with
+0.5\,\% of the product gas as purge. Its equilibrium comes from
+\texttt{PURIFICATION/constant/parameters/adsorption/equilibria/molSieve4A}.
+
+The adsorbent's bulk density (700\,kg/m$^3$) and solid heat capacity
+(920\,J/kg\,K) are declared in \texttt{PURIFICATION/constant/adsorbents/} and
+\textbf{marked, in the record itself, as a case-local teaching anchor rather
+than curated data}: representative material-class values for a commercial 4A
+sieve in 3\,mm beads, not design data, and explicitly not to be promoted to the
+standards catalogue. Measured: the bed runs at \measured{52.7\,\%} of its
+working capacity, which is a design margin you may argue with.
+
+\section{Sizing and costing parameters}
+
+Declared in \texttt{system/postDict}. \textbf{Every one of these is a design
+decision, not a physical constant} --- they are the numbers your report has to
+defend.
+
+{\small\begin{longtable}{@{}L{0.35\linewidth}L{0.15\linewidth}L{0.28\linewidth}L{0.14\linewidth}@{}}
+\toprule
+\textbf{Item} & \textbf{Model} & \textbf{Declared} & \textbf{Material} \\
+\midrule
+\endhead
+\texttt{PURIFICATION.N2Boost}  & compressor  & $P_{\mathrm{des}}$ 35\,bar & carbonSteel \\
+\texttt{PURIFICATION.SynComp}  & compressor  & $P_{\mathrm{des}}$ 250\,bar & SS316 \\
+\texttt{LOOP.RecycleComp}      & compressor  & $P_{\mathrm{des}}$ 250\,bar & SS316 \\
+\texttt{PURIFICATION.N2Cooler} & shellTubeHX & $U$ 500, LMTD 60 & carbonSteel \\
+\texttt{LOOP.FEHE}             & shellTubeHX & $U$ 550, LMTD 150 & SS316 \\
+\texttt{LOOP.WaterCooler}      & shellTubeHX & $U$ 700, LMTD 60 & carbonSteel \\
+\texttt{LOOP.Converter}        & vessel      & $V$ 28\,m$^3$, $L/D$ 6 & SS316 \\
+\texttt{LOOP.Separator}        & vessel      & $\tau$ 45\,s, $L/D$ 3 & SS316 \\
+\texttt{PRODUCT.Letdown}       & vessel      & $\tau$ 60\,s, $L/D$ 3 & carbonSteel \\
+\bottomrule
+\end{longtable}}
+
+$U$ in W/(m$^2\cdot$K), LMTD in K. Exchanger area follows
+$A = Q/(U\,\mathrm{LMTD})$ with $Q$ taken from the unit's own solved duty;
+vessel volume follows $V = Q_{\mathrm{gas}}\tau$ except for the Converter,
+whose volume is declared outright. \textbf{Choupo states the basis of every
+size it computes}, on the console and in each specification sheet, so a declared
+size never looks like a computed one.
+
+Costing: Turton correlations, CEPCI 820 (2026) against 397 (2001),
+USD/EUR 0.92, contingency and fee $1.18\times C_{\mathrm{BM}}$, site factor
+0.50. Economics: discounted cash flow, 20-year life, 8\,\% discount rate,
+21\,\% tax, straight-line depreciation over 10 years, working capital 15\,\% of
+FCI, stream factor 0.913.
+
+\subsection{What the run says about its own sizing}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{The gas volumetric flow in the vessel sizer is $NRT/P$}, ideal
+      gas --- printed in the sizer's own basis line, next to the number.
+      At 200\,bar in the loop this is the one place in the chain where the
+      stated basis and the case's thermodynamic package disagree.
+\item \textbf{SS316 is rated 100\,bar} in \texttt{constant/assets/SS316.dat}
+      and the Converter and Separator are designed at 240\,bar. Warned per
+      vessel, priced anyway.
+\item \textbf{\texttt{PRODUCT.Letdown} at $V_R = 0.125$\,m$^3$} falls below the
+      Turton correlation's range $[0.3, 520]$; its cost is extrapolated and
+      says so.
+\end{itemize}
+
+\section{Where every fact in this document lives}
+
+{\small\begin{longtable}{@{}L{0.38\linewidth}L{0.56\linewidth}@{}}
+\toprule
+\textbf{Fact} & \textbf{File} \\
+\midrule
+\endhead
+Package, per world & \texttt{[<SECTOR>/]constant/thermoPhysPropDict} \\
+Critical constants, Antoine, $c_p$ & \texttt{constant/components/*.dat} \\
+Henry pairs (case-local) & \texttt{constant/parameters/Henry/*.dat} \\
+Ar--NH$_3$ fit, reproducible & \texttt{curation/Ar-NH3/} \\
+Aqueous chemistry (unused at base) & \texttt{constant/chemistry/}, \texttt{constant/species/} \\
+Reaction & \texttt{PURIFICATION/constant/reactions} \\
+Adsorbent & \texttt{PURIFICATION/constant/adsorbents/} \\
+Topology and units & \texttt{[<path>/]system/flowsheetDict} \\
+Initial state, per stream & \texttt{0/<LEVEL>/<stream>} \\
+Sizing, costing, economics & \texttt{system/postDict}, \texttt{constant/economics} \\
+Materials & \texttt{constant/assets/*.dat} \\
+\bottomrule
+\end{longtable}}
+
+Run the case and read \texttt{converged/} for the solved state,
+\texttt{design/} for one specification sheet per physical item, and
+\texttt{reports/balances/} for the mass, element and energy ledgers. The
+end-of-run caveat block lists every extrapolation, every unverified record and
+every assumed default the run actually used.
+
+\end{document}

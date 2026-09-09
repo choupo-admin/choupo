@@ -1,0 +1,293 @@
+\documentclass[11pt,a4paper]{article}
+\newcommand{\casedocshort}{Project brief}
+\input{preamble.tex}
+
+\begin{document}
+
+\casetitle{Green ammonia at Sines --- 500\,t/day synthesis loop}
+          {PEQ 2026--27 project brief, revised edition. Companion document:
+           \emph{Thermodynamic basis} (\texttt{thermoBasis.pdf}).}
+
+\section*{Why this edition exists}
+
+The first edition of this brief asked you to appraise the plant with hydrogen
+bought at 4.00\,EUR/kg and ammonia sold at 0.60\,EUR/kg. Run that pair through
+the case and the answer is a net present value of
+\measured{$-680$ million EUR}: the plant loses more than its entire fixed
+capital investment every year, and no decision you can take inside the battery
+limits changes that: the Converter is the most expensive item in the plant and
+its whole total-module cost is \measured{8.4 million EUR}, against a hole of
+680.
+
+That is not a defect of the flowsheet. It is arithmetic, and it is worth seeing
+in one line. The case consumes \measured{181.1\,kg of hydrogen per tonne of
+ammonia} (measured; the stoichiometric minimum is 177.6, the extra 2.0\,\% is
+the loop purge). At 4.00\,EUR/kg that is \measured{725\,EUR of hydrogen inside
+each tonne of ammonia}, sold for 600. You lose 0.12\,EUR on every kilogram
+before touching capital, utilities, labour or catalyst.
+
+The lesson is real and it is the most important thing this project can teach
+you --- \textbf{but it is a lesson about a price pair, not about a design}, and
+a brief that hides it behind a fixed price list teaches the wrong reflex. This
+edition therefore makes the hydrogen price an \emph{object of the study}
+instead of a given, and asks you to defend the number you choose.
+
+\section{What you are designing --- and what you are not}
+
+\begin{caveat}
+\textbf{Battery limits.} The electrolyser park and the air separation unit are
+\textbf{outside}. Hydrogen and nitrogen arrive at the fence as purchased raw
+materials. Everything this case sizes, costs and appraises is the
+\textbf{synthesis loop plus its compression and purification}.
+\end{caveat}
+
+This matters more than it looks. The fixed capital investment the case computes
+is \measured{29.9 million EUR}; the raw-material bill at the first edition's
+prices is \measured{129.3 million EUR per year}. The capital you are designing
+is worth about three months of the hydrogen you are buying. \textbf{The
+investment decision for a green ammonia plant lives in the electricity-to-hydrogen
+step, which is outside your fence} --- and one of the deliverables below is to
+show that quantitatively rather than to be told it.
+
+\subsection*{The four sectors}
+
+{\small\begin{longtable}{@{}lL{0.66\linewidth}@{}}
+\toprule
+\textbf{Sector} & \textbf{What it does} \\
+\midrule
+\texttt{PURIFICATION} & Compresses and cools the nitrogen, mixes it with
+hydrogen, burns out the oxygen the industrial-grade nitrogen brings
+(\texttt{Deoxo}), chills and knocks out the water that reaction makes, dries
+the gas over a 4A sieve, and compresses the make-up to loop pressure. \\
+\texttt{LOOP} & Recycle compressor, mixer, feed--effluent exchanger, adiabatic
+Gibbs converter, water cooler, cold separator, purge splitter. \\
+\texttt{PRODUCT} & Lets the raw liquid ammonia down to 20\,bar and flashes off
+the dissolved gases. \\
+\texttt{RECOVERY} & Lets the purge down, warms it and scrubs the ammonia out of
+it with water. \\
+\bottomrule
+\end{longtable}}
+
+\section{Design basis (the declared inputs)}
+
+These are the numbers the case \emph{declares}. They are yours to change ---
+that is the point of the project --- but change them deliberately and say so.
+
+{\small\begin{longtable}{@{}L{0.30\linewidth}L{0.30\linewidth}L{0.34\linewidth}@{}}
+\toprule
+\textbf{Quantity} & \textbf{Value} & \textbf{Where it is declared} \\
+\midrule
+\endhead
+Ammonia production (target) & 500\,t/day & the design target \\
+Nitrogen quality & 99.50\,\% N$_2$, 0.40\,\% O$_2$, 0.10\,\% Ar &
+  \texttt{0/MAIN/N2Feed} \\
+Hydrogen delivery pressure & 30\,bar & \texttt{0/MAIN/H2Feed} \\
+Loop pressure & 200\,bar & \texttt{LOOP/Converter}, \texttt{LOOP/Separator} \\
+Converter & adiabatic Gibbs equilibrium & \texttt{LOOP/Converter} \\
+Separator temperature & 250\,K & \texttt{LOOP/Separator} \\
+Purge fraction & 0.2\,\% of the recycle & \texttt{LOOP/PurgeSplit} \\
+Deoxo conversion & 1.0 on O$_2$ (limiting) & \texttt{PURIFICATION/Deoxo} \\
+Dryer & 4A sieve, 1500\,kg/bed, 12\,h cycle & \texttt{PURIFICATION/Dryer} \\
+Shaft power installed & 908 / 6700 / 1400\,kW & the three compressors \\
+Operating hours & 7998\,h/yr (stream factor 0.913) &
+  \texttt{system/postDict} \\
+Discount rate, project life & 8\,\%, 20 years & \texttt{system/postDict} \\
+\bottomrule
+\end{longtable}}
+
+\textbf{The nitrogen is the interesting declaration.} Analytical-grade nitrogen
+at 99.999\,\% is what you buy in a cylinder to feed a chromatograph. This plant
+consumes 17\,t/h of it: at that rate you take what the air separation column
+gives you, which is 99.5 to 99.9\,\%, with oxygen as the dominant impurity.
+Three units in \texttt{PURIFICATION} exist only because of that one line, and
+the argon in it builds up in the loop to \measured{1.38\,mol\,\%} at the
+converter --- which is what sets the purge, which is what sets the hydrogen
+you throw away.
+
+\section{What the plant does (measured)}
+
+Every figure below is read off a Choupo run of this case. Reproduce them with
+\texttt{runCase -f .} in the case directory.
+
+{\small\begin{longtable}{@{}L{0.42\linewidth}L{0.32\linewidth}r@{}}
+\toprule
+\textbf{Quantity} & \textbf{Symbol} & \textbf{Value} \\
+\midrule
+\endhead
+Ammonia produced & \texttt{NH3\_t\_day} & \measured{499.85\,t/day} \\
+Hydrogen consumed & \texttt{H2\_specific\_kg\_t} & \measured{181.15\,kg/t\,NH$_3$} \\
+Total shaft power & \texttt{W\_total\_kW} & \measured{9008\,kW} \\
+Specific compression power & \texttt{W\_specific\_kWh\_t} & \measured{432.5\,kWh/t\,NH$_3$} \\
+Ammonia at the converter outlet & \texttt{y\_NH3\_converter} & \measured{11.01\,mol\,\%} \\
+Converter outlet temperature & \texttt{T\_converter\_K} & \measured{839.0\,K} \\
+Argon at the converter & \texttt{y\_Ar\_converter} & \measured{1.38\,mol\,\%} \\
+Purge & \texttt{purge\_kmol\_h} & \measured{23.05\,kmol/h} \\
+Oxygen removed in the deoxo & \texttt{O2\_removed\_kmol\_h} & \measured{2.594\,kmol/h} \\
+Water knocked out & \texttt{H2O\_condensed\_kg\_h} & \measured{81.05\,kg/h} \\
+Chilling duty & \texttt{Q\_chilling\_kW} & \measured{741.6\,kW} \\
+Dryer capacity used & \texttt{dryer\_utilisation} & \measured{52.7\,\%} \\
+\bottomrule
+\end{longtable}}
+
+The plant closes its energy balance to \measured{728.9\,kW}, which is
+\measured{0.074\,\%} of the \measured{983.9\,MW} it exchanges. Choupo publishes
+that residual; do not take it on trust, read it in the run's own
+\texttt{energyBalance} report.
+
+\section{The economics --- and the price you have to defend}
+
+\subsection{Two ways to get hydrogen, and they are not the same question}
+
+\textbf{Scenario M (merchant).} You buy hydrogen over the fence at a quoted
+price $p_{\mathrm{H_2}}$ [EUR/kg]. This is the case as it ships, and it is the
+right model for a plant that sits next to somebody else's electrolyser.
+
+\textbf{Scenario I (integrated).} The project owns the electrolysers. There is
+then no market price --- there is an electricity price and a conversion
+efficiency:
+\begin{equation}
+  p_{\mathrm{H_2}} \;=\; \frac{e \, p_e}{1000} \;+\; c_{\mathrm{el}},
+  \label{eq:pH2}
+\end{equation}
+where $e$ is the specific consumption of the electrolyser [kWh per kg\,H$_2$],
+$p_e$ the delivered electricity price [EUR/MWh] and $c_{\mathrm{el}}$ the
+share of the electrolyser's own capital and maintenance carried by each
+kilogram [EUR/kg]. \textbf{Both $e$ and $c_{\mathrm{el}}$ are yours to
+justify}, with a source; they are not Choupo data and this brief does not
+supply them.
+
+\subsection{The break-even, measured}
+
+Running the case across the price grid gives a strictly linear response
+(revenue is linear in the ammonia price, the raw-material bill linear in the
+hydrogen price), so the break-even is exact and can be quoted:
+
+{\small\begin{longtable}{@{}lrr@{}}
+\toprule
+\textbf{Ammonia price} & \textbf{Break-even $p_{\mathrm{H_2}}$} &
+  \textbf{Hydrogen bill at break-even} \\
+\midrule
+0.60\,EUR/kg & \measured{1.64\,EUR/kg} & \measured{297\,EUR/t\,NH$_3$} (49.5\,\% of revenue) \\
+0.90\,EUR/kg & \measured{2.99\,EUR/kg} & \measured{542\,EUR/t\,NH$_3$} (60.2\,\% of revenue) \\
+\bottomrule
+\end{longtable}}
+
+Break-even here means NPV $=0$ at 8\,\% over 20 years, with this case's own
+capital, labour and utility model. Verified by running the case at those two
+prices, not interpolated.
+
+\subsection{What that means in electricity}
+
+Substituting the break-even hydrogen price into equation~\eqref{eq:pH2} with
+$c_{\mathrm{el}} = 0$ --- that is, giving the electrolyser away for free ---
+puts a hard ceiling on the electricity price the project can pay:
+
+{\small\begin{longtable}{@{}lrr@{}}
+\toprule
+& \textbf{$e = 50$\,kWh/kg} & \textbf{$e = 55$\,kWh/kg} \\
+\midrule
+Ceiling on $p_e$ at NH$_3$ 0.60\,EUR/kg & 32.8\,EUR/MWh & 29.8\,EUR/MWh \\
+Ceiling on $p_e$ at NH$_3$ 0.90\,EUR/kg & 59.8\,EUR/MWh & 54.4\,EUR/MWh \\
+Electrolysis power per tonne NH$_3$ & 9057\,kWh/t & 9963\,kWh/t \\
+\emph{versus} compression, measured & \multicolumn{2}{c}{\measured{432.5\,kWh/t}} \\
+\bottomrule
+\end{longtable}}
+
+\begin{caveat}
+The two values of $e$ in that table are round numbers chosen to bracket a
+plausible range. \textbf{They are not Choupo data and this brief does not cite
+a source for them} --- supplying one is part of your work. Everything marked
+\measured{bold} elsewhere in this document \emph{is} a Choupo output and can be
+reproduced by running the case.
+\end{caveat}
+
+The last two rows are the whole argument. \textbf{The electrolysis consumes
+about twenty times the power of everything you are designing.} A student who
+spends the semester optimising the recycle ratio is polishing the third digit
+of a 4\,\% term.
+
+\section{Deliverables}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Reproduce the base case} and present the stream table, the
+      per-unit and plant energy balances, and the mass closure. State the
+      residuals; do not round them away.
+\item \textbf{The design study.} Change the design decisions that are yours ---
+      loop pressure, separator temperature, purge fraction, exchanger areas,
+      the design pressures and residence times in \texttt{system/postDict} ---
+      and report their effect on the fixed capital investment and on the
+      specific power. At least one of your changes must make things
+      \emph{worse}, and you must explain why.
+\item \textbf{The hydrogen price study.} Report NPV against $p_{\mathrm{H_2}}$
+      over the range 1.0 to 4.0\,EUR/kg, at both ammonia prices, and mark the
+      break-even. Reproduce the two break-even values in this brief or explain
+      your disagreement.
+\item \textbf{Scenario I.} Choose $e$ and $c_{\mathrm{el}}$, cite your sources,
+      and state the delivered electricity price at which this plant breaks
+      even. Then say plainly whether that price is reachable at Sines and on
+      what evidence.
+\item \textbf{The honest limitations section.} Read the run's own caveat block
+      --- Choupo prints every extrapolation, every unverified record and every
+      assumed default at the end of the run --- and turn it into a section of
+      your report. Two of them are named in \S6 below to start you off; the run
+      lists \measured{32}.
+\end{enumerate}
+
+\section{What this case does not model}
+
+Stated here so you do not have to discover it in a viva.
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{No credit is taken for anything the plant gives away.} The loop
+      rejects \measured{18.3\,MW} at the water cooler and moves
+      \measured{42.1\,MW} through the feed--effluent exchanger; a real plant
+      exports part of that as steam. The oxygen by-product of electrolysis is
+      outside the fence and is not sold. Both omissions push the appraisal
+      \emph{down}.
+\item \textbf{The utility bill is a declared lower bound.} The utility cost
+      comes out at \measured{13.53 million EUR/yr}, and \measured{four}
+      heat duties in this flowsheet reach no catalogue utility at all, so they
+      are \emph{not} in it. Every figure derived from it --- COM$_d$, NPV,
+      IRR --- inherits that bound, and the run says so by name.
+\item \textbf{No regulatory or contractual framework} --- RFNBO, CBAM,
+      contracts for difference, capital grants. None of it is thermodynamics
+      and none of it belongs in \texttt{constant/economics}. If your appraisal
+      depends on it, say so explicitly.
+\item \textbf{The vessel sizer computes gas volumetric flow as $NRT/P$}, ideal
+      gas, and states that in its own basis line. At 200\,bar in the synthesis
+      loop that is the one place in the sizing chain where the stated basis and
+      the case's thermodynamic package genuinely disagree. Quantifying the
+      error is a legitimate --- and welcome --- finding for your report.
+\item \textbf{SS316 is rated 100\,bar in the material record} and the Converter
+      and Separator are designed at 240\,bar. Choupo warns per vessel and
+      prices them anyway. Decide what to do about it and defend the decision.
+\item \textbf{Two boundary streams carry a phase label the energy report's own
+      equilibrium check disputes} --- \texttt{PURIFICATION.DryishGas}
+      ($g(V{=}1) = -0.00138$, i.e.\ marginally below its dew point, which is
+      what a flash's own vapour outlet is by construction) and
+      \texttt{WashWater}. The report says so by name rather than absorbing it.
+      Read the message; do not assume it names a defect in \emph{your} case.
+\item \textbf{Construction is modelled as one year} even though
+      \texttt{constructionPeriod 2} is declared; the whole investment is placed
+      at $t=0$. Announced by the run, not silent.
+\end{itemize}
+
+\section{Running it}
+
+\begin{verbatim}
+source /path/to/Choupo/etc/bashrc
+cd tutorials/plant/greenAmmoniaIndustrialN2
+runCase -f .                 # solve, size, cost, appraise
+choupoSolve --manifest .     # where each stream's state file belongs
+\end{verbatim}
+
+Outputs to read: \texttt{converged/} (the solved state, one file per stream),
+\texttt{design/\allowbreak{}<SECTOR>/\allowbreak{}<unit>/\allowbreak{}<item>} (one specification sheet per physical
+item), \texttt{reports/} (the balances, the utility allocation, the costing
+tables). The sizing, costing and economics chain is driven by
+\texttt{system/postDict} and priced by \texttt{constant/economics}; in both,
+a unit or a stream must be named by its \textbf{engine} identity ---
+\texttt{LOOP.Converter}, not \texttt{converter}; \texttt{ProductNH3}, not
+\texttt{productNH3}.
+
+\end{document}

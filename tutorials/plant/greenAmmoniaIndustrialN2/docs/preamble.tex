@@ -1,0 +1,74 @@
+%---------------------------------------------------------------------------
+%  Shared preamble for the case documents of
+%  tutorials/plant/greenAmmoniaIndustrialN2.
+%
+%  SELF-CONTAINED ON PURPOSE.  It does NOT \input docs/preamble.tex at the
+%  repository root: that file carries \manualauthors, the macro that decides
+%  the authorship line of the GUIDES (CLAUDE.md section 10), and these are case
+%  documents, not manuals.  Borrowing it would put a guide's authorship line on
+%  a coursework brief.
+%
+%  Licence: the prose here is CC BY-SA 4.0 with the rest of docs/; the dict
+%  excerpts and every Choupo file it quotes stay GPL-3.0-or-later.
+%---------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=25mm]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+%  Ragged-right p-columns: a table cell holding a file path has no hyphenation
+%  points, so a justified p-column overruns the margin instead of breaking.
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{choupoGreen}{RGB}{31,94,54}
+\definecolor{choupoGrey}{RGB}{90,90,90}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{choupoGrey}\casedocshort}
+\fancyhead[R]{\small\color{choupoGrey}Choupo\,---\,greenAmmoniaIndustrialN2}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{3em}
+
+%  Flush the tables with the text block.  longtable centres by default, which
+%  leaves a narrow table floating off the left margin the prose sits on.
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{\fill}
+
+%  Long identifiers (LOOP.Converter, PURIFICATION/constant/...) may break after
+%  a dot, a slash or an underscore rather than run past the margin.
+\newcommand{\ident}[1]{\texttt{\breakable{#1}}}
+\newcommand{\breakable}[1]{#1}
+
+%  A MEASURED value: something this document read off a Choupo run or a Choupo
+%  file, and that can be reproduced by running the case.  Everything NOT marked
+%  this way is either a declared input or an assumption the reader must defend.
+\newcommand{\measured}[1]{\textbf{#1}}
+
+%  A box for the statements this document refuses to dress up.
+\newenvironment{caveat}
+  {\par\medskip\noindent\begin{tabular}{@{}p{2.5mm}@{\hspace{3mm}}p{\dimexpr\linewidth-8mm\relax}@{}}
+   \cellcolor{choupoGreen}\rule{0pt}{2ex} &}
+  {\end{tabular}\par\medskip}
+
+\newcommand{\casetitle}[2]{%
+  {\color{choupoGreen}\hrule height 1.5pt}
+  \vspace{4mm}
+  {\Large\bfseries #1\par}
+  \vspace{1mm}
+  {\large\color{choupoGrey}\raggedright #2\par}
+  \vspace{2mm}
+  {\color{choupoGreen}\hrule height 0.5pt}
+  \vspace{6mm}}
