@@ -619,6 +619,40 @@ def cmd_extract(a):
                             f"extraction is implemented for the published "
                             f"dialect (the archive's) only"))
             continue
+        #  WHAT SYSTEM IS THIS FILE ABOUT?  The index hit carries the compound
+        #  the CALLER asked for; the file carries the compounds it MEASURED,
+        #  and until 2026-09-09 only the first reached the written header.
+        #
+        #  FOUND BY VITOR asking for better ammonia data.  `extract ammonia`
+        #  wrote TWELVE files each headed `compound ammonia / property
+        #  vapourPressure`, with a DOI and a sha256 -- and every one was a
+        #  MIXTURE study: ammonia + HFO-1234yf, ammonia + LiNO3 + water, and
+        #  "Experimental Investigation of the Solubility of Ammonia in
+        #  Methanol".  The total pressure over a mixture is not the pure
+        #  compound's saturation pressure.  Fit an Antoine to one and you get a
+        #  WRONG RECORD CARRYING A TRUE PRIMARY CITATION -- unsourced turned
+        #  into falsely sourced, which philosophy section 4 names as the one
+        #  thing worse than a visible gap, and which no gate downstream can
+        #  detect.  Measured: the shipped ammonia Antoine reads AAD 32 % and
+        #  1762 % against two of them, both meaningless numbers a student
+        #  would act on.
+        #
+        #  Every property this tool reads (vapourPressure, liquidDensity,
+        #  heatCapacity) is a PURE-COMPONENT property as it writes them, so
+        #  the rule is one line: more than one compound, and it refuses by
+        #  name.  `--allow-mixture` is the curator's deliberate act, and the
+        #  header then says what the file really is.
+        comps = [c.get("name") or "(unnamed)" for c in compounds_published(root)]
+        system = " + ".join(comps) if comps else "(no compound declared)"
+        if len(comps) > 1 and not a.allow_mixture:
+            skipped.append((src.name, f"MULTI-COMPONENT file ({system}) -- its "
+                            f"'{h['compound']}' rows are a property of that "
+                            f"MIXTURE, not of pure {h['compound']}; writing "
+                            "them under a pure-component header would attach a "
+                            "true DOI to a false claim.  Pass --allow-mixture "
+                            "if you want the mixture data (for a Henry or VLE "
+                            "fit); the header will name the system"))
+            continue
         try:
             found = extract_published(root, src)
         except ValueError as exc:
@@ -642,6 +676,10 @@ def cmd_extract(a):
                 f"  EXPERIMENTAL EVIDENCE extracted from a local ThermoML archive file.",
                 "",
                 f"  compound     {h['compound']}",
+                f"  system       {system}"
+                + ("   <-- MIXTURE: the values below are a property of THIS "
+                   "SYSTEM,\n               not of the compound alone"
+                   if len(comps) > 1 else "   (single-component study)"),
                 f"  property     {prop}   (declared as '{rec['declaredAs']}')",
                 f"  points       {len(rec['points'])}",
                 f"  DOI          {h['doi'] or '(none declared in the file)'}",
@@ -666,6 +704,11 @@ def cmd_extract(a):
                 #  water` as a property.
                 f"property     {prop};",
                 f"compound     {h['compound']};",
+                #  DECLARED, so a consumer never has to trust the header prose
+                #  or the filename for the one fact that decides whether these
+                #  numbers are a pure-component property at all.
+                "system       ( " + " ".join(c.replace(" ", "_") for c in comps)
+                + " );",
                 "", "columns", "(",
                 f"    {{ name T;     unit {UNIT_MAP.get(rec['xUnit'], rec['xUnit'])}; }}",
                 f"    {{ name {'Psat' if prop == 'vapourPressure' else ('rho' if prop == 'liquidDensity' else 'Cp')};  unit {UNIT_MAP.get(rec['unit'], rec['unit'])}; }}",
@@ -1230,6 +1273,11 @@ def main():
     e = sub.add_parser("extract", help="write Choupo datasets for a compound")
     e.add_argument("query")
     e.add_argument("--into", default="constant/experiments")
+    e.add_argument("--allow-mixture", action="store_true",
+                   help="write datasets from MULTI-COMPONENT files too.  Off by "
+                        "default: a pure-component property read off a mixture "
+                        "study is a different physical quantity, and the file "
+                        "would carry a real DOI for it (see cmd_extract)")
     a = ap.parse_args()
     if a.cmd == "search" and (getattr(a, "online", False)
                               or getattr(a, "raw_query", "")):
