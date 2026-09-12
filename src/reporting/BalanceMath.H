@@ -293,16 +293,18 @@ inline std::optional<FlashSolution> streamSplit(const ProcessStream& s,
     //
     //  The RESOLUTION itself moved to `unitOperations/flash/StreamEquilibrium.H`
     //  (2026-08-09) when a third surface -- the heater's Q -> T_out inversion --
-    //  was found pricing states on a fourth convention.  What stays here is the
-    //  report's own reading of the answer: a converged SINGLE-PHASE resolution
-    //  is not a split, so this report keeps pricing that stream on the state it
-    //  carries, exactly as before.
-    auto fs = flashState::equilibriumAt(s.T, s.P, s.z, s.phasePinned, s.vf,
-                                        thermo, "stream '" + s.name + "'",
-                                        "energyBalance");
-    if (fs && fs->V_over_F > 1.0e-9 && fs->V_over_F < 1.0 - 1.0e-9)
-        return fs;
-    return std::nullopt;
+    //  was found pricing states on a fourth convention.
+    //
+    //  AND SO DID THE READING OF THE ANSWER (2026-09-12).  "A converged
+    //  single-phase resolution is not a split" used to be written out HERE,
+    //  and a fourth surface then needed the same sentence: the distillation
+    //  column, which must price its feed exactly as this report prices it or
+    //  the two disagree by the feed's latent half.  `unitOperations` may not
+    //  include `reporting`, so the sentence would have had to be copied --
+    //  the arity sin, in the machinery built to audit it.  It is one call now.
+    return flashState::twoPhaseSplit(s.T, s.P, s.z, s.phasePinned, s.vf,
+                                     thermo, "stream '" + s.name + "'",
+                                     "energyBalance");
 }
 
 // Enthalpy [kW] carried by the CRYSTALLINE phase (the per-component molar

@@ -2417,6 +2417,32 @@ PYEOF
     fi
     rm -f /tmp/pellet.$$
 
+    # feed-thermal-state gate (2026-09-12).  `operation.feedQuality` was a
+    # SECOND HOME for a fact the feed stream already carries, and the
+    # single-feed solver paths never reconciled the two: column01_benzene_
+    # toluene declared a 69.7 % vapour feed AND a saturated liquid, the column
+    # read the dict, the first-law report read the stream, and the flagship
+    # distillation tutorial lost 630.861080 kW -- 24.68 % of its exchanged
+    # energy -- at exit 0 with this suite green.  A golden pins what a run
+    # PRINTS, and it printed the same wrong number every time.
+    # The column resolves the state from the stream now and REFUSES a
+    # contradicting feedQuality, naming both numbers and both remedies.
+    # Nine sabotages, all caught; the discriminating one narrows the rule to
+    # the DECLARED vaporFraction field, which arm (a) still passes and only
+    # arm (d) catches -- that narrow rule is exactly the one that leaves
+    # stripper01 and stripper02 broken while looking complete.  Arm (e) found
+    # a THIRD reader while the fix was being written (the distillateRecovery
+    # wrapper, printing a q the column no longer used).
+    if "$ROOT/bin/curate/check_feed_thermal_state.py" > /tmp/feedstate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "feed-thermal-state-gate" "$(gate_claim check_feed_thermal_state /tmp/feedstate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_feed_thermal_state.py)\n" "feed-thermal-state-gate"
+        cat /tmp/feedstate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/feedstate.$$
+
     # thiele-pellet gate (2026-08-19).  The owner's own number-one request:
     # the Thiele modulus with the intraparticle CONCENTRATION FIELD.  The
     # engine solves the pellet BVP by central differences on NewtonND and

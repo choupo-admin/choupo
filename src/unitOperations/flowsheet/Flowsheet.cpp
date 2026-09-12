@@ -1082,6 +1082,12 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
         //  (R-E2): a duty may price a declared constraint, never an inferred
         //  one.  Carried as a scalar because the feed dict is scalar-valued.
         feed->insert("phasePinned", s.phasePinned ? 1.0 : 0.0);
+        //  WHICH stream this is.  A refusal that says "your dict contradicts
+        //  the feed" and cannot say WHICH feed sends the reader hunting; the
+        //  unit dict drops `in` when it is composed (it is a wire, not a
+        //  parameter), so the name would otherwise be unreachable from inside
+        //  a unit op.  Read only to write messages -- no physics depends on it.
+        feed->insert("streamName", s.name);
 
         auto comp = std::make_shared<Dictionary>("composition");
         for (std::size_t i = 0; i < thermo.n(); ++i)

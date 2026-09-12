@@ -111,6 +111,15 @@ one enthalpy surface while its streams are priced on another.**
   condenser −1281.04 kW, net −1.74 kW declared, against a dH of −633.69 kW.
   **631.96 kW unaccounted, 24.68 % of the energy the column exchanges.**  The
   whole family follows.  Cause not yet established.
+  **DIAGNOSED AND CLOSED 2026-09-12** — and not by the surface-unification this
+  section was written to motivate.  Both sides of that arithmetic were already
+  on `H_stream_formation`; what disagreed was WHICH STATE each side priced, and
+  it decomposed exactly into three (feed 630.861080 kW, distillate 1.095541 kW,
+  a report-side re-flash whisker −0.000473 kW) with a fourth latent at
+  5.509232 kW.  `column01` now closes at 0.000000 kW, and so does every other
+  distillation case in the corpus except `column04` and `column08`, which are
+  still undiagnosed.  Record:
+  [`the-state-a-unit-computes-with.md`](the-state-a-unit-computes-with.md).
 
 The instrument that separates "the model does not close in H" from "a duty is
 not being counted" is the same in every case: **the unit measures its own gap

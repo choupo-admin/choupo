@@ -245,5 +245,40 @@ inline scalar hOfState(const FlashSolution& fs,
     return h;
 }
 
+//  IS THIS STREAM'S EFFECTIVE STATE A TWO-PHASE SPLIT?  (2026-09-12)
+//
+//  `equilibriumAt` answers "what is the equilibrium", which is a different
+//  question from "does this stream have a split to price".  A CONVERGED
+//  single-phase answer is deliberately returned by the former (a caller
+//  deciding a vapour fraction needs to know the resolution said "all liquid"
+//  rather than "could not tell") and is deliberately NOT a split.
+//
+//  The distinction had ONE reader, `reporting/BalanceMath.H::streamSplit`, and
+//  it was about to get a second: the distillation column must price its feed
+//  the way the balance report prices it, or the two disagree by exactly the
+//  latent heat of the feed's vapour half -- 630.861080 kW on `column01`, 24.68 %
+//  of that plant's exchanged energy, for four months, at exit 0.
+//
+//  So the rule lives HERE, where both bands can reach it, rather than being
+//  transcribed into `unitOperations` from a header in `reporting` that
+//  `unitOperations` may not include.  Two readers of one sentence, not two
+//  sentences that happen to agree today.
+inline std::optional<FlashSolution> twoPhaseSplit(scalar               T,
+                                                  scalar               P,
+                                                  const sVector&       z,
+                                                  bool                 pinned,
+                                                  scalar               vfCarried,
+                                                  const ThermoPackage& thermo,
+                                                  const std::string&   locus,
+                                                  const char*          category,
+                                                  std::string*         deferTo = nullptr)
+{
+    auto fs = equilibriumAt(T, P, z, pinned, vfCarried, thermo,
+                            locus, category, deferTo);
+    if (fs && fs->V_over_F > 1.0e-9 && fs->V_over_F < 1.0 - 1.0e-9)
+        return fs;
+    return std::nullopt;
+}
+
 } // namespace flashState
 } // namespace Choupo

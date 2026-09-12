@@ -53,7 +53,6 @@ units
             feedStage      2;
             refluxRatio    0.5;
             distillateRate 5.0 kmol/h;
-            feedQuality    1.0;
             P              1.01325 bar;
         }
     }

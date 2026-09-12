@@ -862,8 +862,9 @@ failed; if you cannot name it, the PASS says nothing about it.
 `check_energy_closure` is T2's rule over every steady case — the residual READ
 from the engine's own report, a MEASURED pin list (`--seed`, never typed) that
 RATCHETS (a debt that grows fails, one that starts closing fails asking for
-its pin back, one neither closing nor pinned fails).  It found **32 of the 89
-cases that have a global first law do not satisfy it**.  Three defects were
+its pin back, one neither closing nor pinned fails).  On the day it was built
+it found **32 of the 89 cases that have a global first law did not satisfy
+it** -- read the gate's own claim line for today's count, never this sentence.  Three defects were
 introduced the same day by the fix itself and are the durable half: **the
 numerical FLOOR is not a scale** (a plant with no declared duty published a
 real −6162.5 kW residual as −6.16e14 %; absent a scale the kW stands and the
@@ -884,7 +885,8 @@ fix is Vítor's own `1298dc0d5` at 09:34:15 the same morning, and git says the
 first is the ancestor of the second.  Today all four enthalpy sites in
 `GibbsReactor.cpp` are on the package's own surface, `LOOP.Converter` in the
 green-ammonia plant closes at `dH = -0.0000 kW`, and the `ammonia02` FEHE at
-+0.0505 kW.  **`column01` is the one still open.**  This is §10's rule about
++0.0505 kW.  **`column01` was the one still open, and it is CLOSED — see the
+paragraph below.**  This is §10's rule about
 this file being the next session's memory, caught doing exactly the damage it
 predicts: a general was sent to diagnose a seam that had been closed for four
 days, and the first half of its brief was spent proving the constitution
@@ -898,26 +900,68 @@ engine: `ammonia02_full_plant` (126 rows), `proxy01_gas_loop` (62),
 A deferred re-record is a debt, and an undated debt is indistinguishable from
 a regression.
 **AND THE FAMILY WAS NAMED ONE RUNG TOO LOW (2026-09-12).**  The heading above
-is a CLOSED SUBSET, not the family.  `column01` was filed under it without
-being diagnosed and does not belong there at all: both sides price on
-`H_stream_formation`, and its 631.96 kW is an ARITY defect — the feed's
-thermal state has TWO HOMES, `operation.feedQuality` (which
-`DistillationColumn.cpp:402` reads, defaulting to 1.0) and the stream's own
-`vaporFraction 0.6972418857`, and nothing reconciles them.  The right answer
-is in the same file on the other branch: the `simultaneous` path at `:1156`
-derives `qf = 1.0 - vfStream` from the STREAM and REFUSES a declaration that
-disagrees; Wang-Henke, the DEFAULT, does neither.
-The family is therefore: **THE STATE A UNIT COMPUTES WITH IS NOT THE STATE ITS
-STREAMS CARRY** — and the second home may be a dict key (`feedQuality`,
-629 kW), a fixed correction applied to the stream and not to the duty
-(`makeDistillate` vs `:805`, 2.8 kW), or an internal re-flash that ignores the
-carried label (`HeatExchanger.cpp:743` passes `pinned = false` always, 403 kW).
+is a CLOSED SUBSET, not the family.  `column01` was filed under it and does not
+belong there at all: both sides price on `H_stream_formation`.  The family is:
+**THE STATE A UNIT COMPUTES WITH IS NOT THE STATE ITS STREAMS CARRY** — and the
+second home may be a dict key, a fixed correction applied to the stream and not
+to the duty, or an internal re-flash that ignores the carried label
+(`HeatExchanger.cpp:743` passes `pinned = false` always).
 WHAT PROVES THE HIGHER CUT, and it is a negative result: closing the
 exchanger's own enthalpy gap on 2026-09-08 made `combined02`'s plant residual
 WORSE, from -0.394 kW to +620.91 kW.  A surface-unification campaign predicts
 monotone improvement; unifying the surface while leaving two homes for the
 STATE merely moves which pair disagrees.  Record:
 [`docs/design/what-a-passing-suite-does-not-say.md`](docs/design/what-a-passing-suite-does-not-say.md).
+
+**AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED
+(2026-09-12, same day).**  `column01`'s 631.956148 kW decomposed EXACTLY into
+three state mismatches, none of them a surface mismatch and none of them CMO —
+run under `model fullMESH`, which DROPS the CMO assumption, the residual was
+632.127272 kW, so CMO is 0.027 % of it and points the wrong way.  (It could not
+have been: `Q_reboiler = dH - Q_cond` is a PLUG that closes the column's own
+balance by construction, so a CMO column cannot emit a boundary residual at
+all.)  The three: the FEED priced as a saturated liquid against a stream
+carrying 69.7 % vapour (630.861080 kW); the DISTILLATE priced in the duty at
+the top tray's T while `makeDistillate` publishes it at its BUBBLE POINT
+(1.095541 kW, and it was live on every non-reactive column in the corpus); and
+the report's own re-flash of a bubble-point stream finding V/F = 1e-6 and
+pricing a vapour whisker (-0.000473 kW).  A FOURTH was latent and worth
+5.509232 kW the moment the first was fixed: the duty priced a two-phase feed
+with `H_stream_formation(T,P,vf,z)`, which blends BOTH legs at the OVERALL
+composition z — a quality blend, exact for a pure fluid and not the enthalpy of
+a two-phase mixture, while the report had always used the equilibrium x and y.
+**THE THIRD HOME IS THE DURABLE HALF.**  The feed's thermal state was thought to
+have two homes, `operation.feedQuality` and the stream's declared
+`vaporFraction`.  It has three: an UNPINNED (T, P, z) MEANS its own equilibrium
+(R-E2), so a stream that declares NOTHING still has a state, and the report
+resolves it.  `stripper01_sour_water` and `stripper02_sour_water_h2s` declare no
+`vaporFraction`, say `feedQuality 1.0`, and resolve two-phase — 12.794585 kW
+(10.4 %) and 17.480393 kW (13.6 %), the WHOLE of each plant's first law, with
+nothing in either case's text contradicting anything.  **A rule that reconciles
+a dict key against a DECLARED field passes both and looks complete**; the engine
+resolves instead, through `flashState::twoPhaseSplit` — the same call
+`reporting/BalanceMath.H` makes, promoted to `unitOperations/flash/` so both
+bands reach ONE sentence — and REFUSES a contradicting `feedQuality` naming both
+numbers and both remedies with their values filled in.  Thirteen cases refused;
+eleven had the stream right and lost the dict key, two had only ever said it in
+the dict and now say it in the stream.  Every distillation case in the corpus
+closes its first law at 0.000000 kW except the two that are UNDIAGNOSED and
+stay pinned: `column04_multifeed_sidedraw` (-78.693876 kW) and
+`column08_radfrac_multidraw` (-891.980060 kW), both multi-feed with side draws,
+of which the fixes here explain only 1.6 and 2.1 kW.  Also NOT done, named
+rather than implied: the `simultaneous` MULTI-feed branch still reads each
+feed's DECLARED vf without resolving it (not live on today's corpus, and the
+two cases it would move are the two undiagnosed ones), and the WIDE route for
+the quality blend — making `H_stream_formation` itself flash, which is the true
+one-home fix and whose blast radius nobody has measured.  412 golden rows moved
+across 28 cases, 0 added, 0 removed; nine entries left `check_energy_closure`'s
+KNOWN_OPEN.  Gate: `check_feed_thermal_state` (9 sabotages, all caught — and
+the discriminating one is S2, which narrows the rule to the declared field and
+leaves arm (a) PASSING, so only the arm whose fixture declares no vapour
+fraction can tell the two rules apart; arm (e) also found a THIRD reader while
+the fix was being written, `solveForRecovery` printing a `q` the column no
+longer used, which is the 2026-08-04 banner trap again).  Record:
+[`docs/design/the-state-a-unit-computes-with.md`](docs/design/the-state-a-unit-computes-with.md).
 
 **A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED (2026-08-12).**
 An unreadable block does not fail — it just stops being checked, silently,

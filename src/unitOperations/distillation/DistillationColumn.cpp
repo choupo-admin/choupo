@@ -29,6 +29,7 @@ License
 #include "core/InfeasibleTrial.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
+#include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
 #include "unitOperations/saturation/BubblePoint.H"
 #include "DistillationColumn.H"
 #include "TrayHydraulics.H"
@@ -44,6 +45,8 @@ License
 #include <memory>
 #include <limits>
 #include <map>
+#include <optional>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 #include "thermo/activityCoefficient/ActivityModel.H"
@@ -129,6 +132,28 @@ ProcessStream makeDistillate(const ThermoPackage& thermo,
     if (bub.converged)
     {
         d.T = bub.T;
+        //  A TOTAL CONDENSER DECLARES ITS OUTLET'S PHASE (2026-09-12).  This
+        //  stream is not a guess about a state: the condenser condenses ALL of
+        //  the overhead and this very function has just solved for the
+        //  temperature at which that composition is a saturated liquid.  That
+        //  is a declaration in exactly the sense R-E2 means, so it is PINNED
+        //  and no reader re-solves it.
+        //
+        //  What that was costing: a bubble-point stream left unpinned gets
+        //  re-flashed by `reporting/BalanceMath.H`, whose flash returns
+        //  V/F ~ 1e-6 -- numerical zero, but above the 1e-9 threshold that
+        //  decides "two-phase" -- so the report priced a vapour whisker the
+        //  column never made.  Measured AFTER every other defect in this slice
+        //  was fixed, it was the whole of what remained: 3.4107 W on
+        //  column15_klemola_ideal_trays against a residual of 0.003411 kW, and
+        //  1.6957 W on column14 against 0.001696 kW.
+        //
+        //  ONLY ON THIS ROUTE.  The two routes below publish `T_topTray`, which
+        //  is the composition's DEW point and is the wrong temperature for a
+        //  liquid -- both say so.  Pinning a state we have just called wrong
+        //  would convert an announced approximation into a declaration, and a
+        //  consumer would price a superheated liquid instead of re-resolving.
+        d.phasePinned = true;
         return d;
     }
 
@@ -149,6 +174,154 @@ ProcessStream makeDistillate(const ThermoPackage& thermo,
         " than it leaves, and anything downstream that prices it inherits"
         " that.");
     return d;
+}
+
+
+//  THE FEED'S THERMAL STATE LIVES IN THE STREAM  (2026-09-12)
+//  ========================================================
+//
+//  `operation.feedQuality` was a SECOND HOME for a fact the stream already
+//  carries, and the two were never reconciled on the single-feed paths.  What
+//  that cost, measured on `column01_benzene_toluene`, this project's flagship
+//  distillation tutorial, which students run:
+//
+//      0/feed          T 370 K;  vaporFraction 0.6972418857;   (=> q = 0.3028)
+//      flowsheetDict   feedQuality 1.0;                        (=> saturated liquid)
+//
+//  The engine's own flash puts that feed at V/F = 0.697242, so the stream was
+//  right and the dict was wrong.  The column read the dict, the first-law
+//  report read the stream, and the plant lost 630.861080 kW -- 24.68 % of its
+//  exchanged energy -- with the suite green, because a golden pins what a run
+//  PRINTS and this run printed the same wrong number every time.
+//
+//  The fix is not a reconciliation rule; it is deleting the second home.  The
+//  thermal state is RESOLVED here, once, from the stream -- and the resolution
+//  is `flashState::twoPhaseSplit`, the SAME call `reporting/BalanceMath.H`
+//  makes, so the state the column computes with and the state the balance
+//  prices are one object rather than two conventions that agree by luck.
+//
+//  WHY RESOLVE RATHER THAN READ THE DECLARED FIELD.  A stream that declares no
+//  `vaporFraction` is not thereby a liquid: it is unpinned, and an unpinned
+//  (T, P, z) MEANS its own equilibrium (R-E2).  `stripper01_sour_water` and
+//  `stripper02_sour_water_h2s` declare none, say `feedQuality 1.0`, and resolve
+//  two-phase -- 12.794585 kW and 17.480393 kW, 10.4 % and 13.6 % of exchanged
+//  energy, the WHOLE of each plant's first-law residual.  A rule that read only
+//  the declared field would have left both untouched and looked complete.
+//
+//  This function is the one home for the whole question, because the column has
+//  TWO solver paths that each used to answer it for themselves -- the same
+//  reason `makeDistillate` above exists.
+struct FeedThermalState
+{
+    scalar                       vf = 0.0;   //  the vapour fraction actually used
+    std::optional<FlashSolution> split;      //  the resolution, when it is two-phase
+    std::string                  origin;     //  how `vf` was arrived at, for the log
+};
+
+FeedThermalState resolveFeedThermalState(const DictPtr&       feedDict,
+                                         scalar               T,
+                                         scalar               P,
+                                         const sVector&       z,
+                                         const ThermoPackage& thermo,
+                                         const std::string&   unitName)
+{
+    FeedThermalState st;
+    const scalar vfCarried = feedDict->lookupScalarOrDefault("vf", 0.0);
+    const bool   pinned    =
+        feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const std::string sName =
+        feedDict->lookupWordOrDefault("streamName", "the feed");
+
+    st.split = flashState::twoPhaseSplit(
+        T, P, z, pinned, vfCarried, thermo,
+        "distillationColumn '" + unitName + "' feed '" + sName + "'", "model");
+
+    if (st.split)
+    {
+        st.vf     = st.split->V_over_F;
+        st.origin = "resolved at its own (T, P, z)";
+    }
+    else
+    {
+        //  Not a split: either the author PINNED a single phase (a declaration
+        //  is never re-solved) or the resolution said single-phase / could not
+        //  tell.  Price what the stream carries -- which is what the balance
+        //  report does in the same state, by the same rule.
+        st.vf     = vfCarried;
+        st.origin = pinned ? "declared by the feed stream"
+                           : "carried by the feed stream (single phase)";
+    }
+    return st;
+}
+
+//  Price a feed on the state that was RESOLVED for it, by the rule
+//  `reporting/BalanceMath.H::streamH_elements` uses on the very same stream:
+//  a two-phase split is priced at the equilibrium compositions (x, y), and
+//  anything else on the state the stream carries.
+//
+//  WHY THE SPLIT MATTERS AND A VAPOUR FRACTION DOES NOT SUFFICE.
+//  `ThermoPackage::H_stream_formation(T, P, vf, z)` returns
+//  (1-vf)*H_liquid_formation(T, z) + vf*H_real(T, P, z) -- BOTH legs at the
+//  OVERALL composition z.  That is a quality blend: exact for a pure fluid,
+//  and for a mixture it is not the enthalpy of the two-phase state, whose
+//  phases have different compositions.  Measured on `column01` with its feed
+//  state corrected: the blend says 1785.050057 kW where the equilibrium says
+//  1779.540826 kW, a 5.509232 kW phantom that would have been left behind by a
+//  fix that corrected only the vapour fraction.
+scalar feedEnthalpy(const FeedThermalState& st,
+                    scalar                  F,
+                    scalar                  T,
+                    scalar                  P,
+                    const sVector&          z,
+                    const ThermoPackage&    thermo,
+                    bool                    elem)
+{
+    if (!elem)    return F * thermo.Hliquid(T, z);
+    if (st.split) return F * flashState::hOfState(*st.split, T, P, z, thermo);
+    return F * thermo.H_stream_formation(T, P, st.vf, z);
+}
+
+//  The refusal.  A `feedQuality` that disagrees with the stream is not a
+//  parameter the engine may prefer one way or the other: the case says two
+//  things and only its author knows which is true.
+//
+//  The message names BOTH numbers and BOTH remedies with the values filled in,
+//  deliberately.  Eleven shipped tutorials reached a converged answer through
+//  this contradiction, so anyone holding a case of their own is likely to meet
+//  this refusal cold -- and a refusal that states a rule without stating the
+//  edit is the shape invariant I5 exists to stop.
+void refuseContradictoryFeedQuality(const DictPtr&     operDict,
+                                    const DictPtr&     feedDict,
+                                    const FeedThermalState& st,
+                                    scalar             T,
+                                    const std::string& unitName)
+{
+    if (!operDict->found("feedQuality")) return;
+
+    const scalar qDecl = operDict->lookupScalar("feedQuality");
+    const scalar qRes  = 1.0 - st.vf;
+    if (std::abs(qDecl - qRes) <= 1.0e-3) return;
+
+    const std::string sName =
+        feedDict->lookupWordOrDefault("streamName", "the feed");
+    std::ostringstream os;
+    os.setf(std::ios::fixed);
+    os << std::setprecision(6);
+    os << "DistillationColumn '" << unitName << "': operation.feedQuality = "
+       << qDecl << " contradicts the feed stream '" << sName << "', whose"
+          " thermal state at T = " << T << " K is vapour fraction " << st.vf
+       << " (" << st.origin << ")  =>  q = " << qRes << ".\n"
+          "  A feed's thermal state lives in the STREAM, not in the column --"
+          " so this case says two different things and the engine will not"
+          " choose between them.  Pick the one that is TRUE of your feed:\n"
+          "    * the stream is right  -> DELETE `feedQuality` from the unit's"
+          " `operation {}` block; the column will use q = " << qRes << ".\n"
+          "    * the dict is right    -> set the feed stream's state file so it"
+          " says so: `vaporFraction " << (1.0 - qDecl) << ";` (and a T at which"
+          " that is true -- at " << T << " K it is not).\n"
+          "  Deleting the key is the recommended fix: it leaves ONE home for"
+          " the feed's thermal state and this contradiction cannot recur.";
+    throw std::runtime_error(os.str());
 }
 
 } // anonymous namespace
@@ -399,7 +572,15 @@ int DistillationColumn::solve(const DictPtr& dict,
     const std::size_t NF  = static_cast<std::size_t>(NFint);   // 1-based
     const scalar R        = operDict->lookupScalar("refluxRatio");
     const scalar D        = operDict->lookupScalar("distillateRate", Dims::molarFlow);
-    const scalar q        = operDict->lookupScalarOrDefault("feedQuality", 1.0);
+    //  THE FEED'S THERMAL STATE COMES FROM THE STREAM (2026-09-12).  It used
+    //  to be `operDict->lookupScalarOrDefault("feedQuality", 1.0)` -- a second
+    //  home, defaulted, never reconciled.  See `resolveFeedThermalState` above
+    //  for what that cost.  `feedQuality` is now a CROSS-CHECK only: present
+    //  and agreeing, it is silent; present and disagreeing, it refuses.
+    const FeedThermalState feedState =
+        resolveFeedThermalState(feedDict, Tf, P, z, thermo, dict->name());
+    refuseContradictoryFeedQuality(operDict, feedDict, feedState, Tf, dict->name());
+    const scalar q        = 1.0 - feedState.vf;
 
     // Strictly INSIDE the cascade: NF == N (feed onto the bottom stage)
     // walked the Wang-Henke arrays out of bounds and SEGFAULTED (found live
@@ -721,6 +902,10 @@ int DistillationColumn::solve(const DictPtr& dict,
     bStream.P    = P;
     bStream.z    = x[N-1];
     bStream.vf   = 0.0;
+    //  The reboiler is an EQUILIBRIUM STAGE, so its liquid leaves at that
+    //  stage's own bubble point -- a declaration, for the same reason the
+    //  distillate's is one.  See `makeDistillate`.
+    bStream.phasePinned = true;
     produced_.push_back(bStream);
 
     // ---- KPIs --------------------------------------------------------
@@ -801,8 +986,21 @@ int DistillationColumn::solve(const DictPtr& dict,
             return elem ? Fx * thermo.H_stream_formation(Tx, P, vfx, zx)
                       : Fx * thermo.Hliquid(Tx, zx);
         };
-        const scalar dH = (H(D, T[0], 0.0, xD) + H(B, T[N-1], 0.0, x[N-1]))
-                        -  H(F, Tf, 1.0 - q, z);
+        //  THE DUTY PRICES THE STATES THE STREAMS CARRY (2026-09-12).
+        //  Two of these three terms used to price a state this unit does not
+        //  publish:
+        //    * the DISTILLATE was priced at the top tray's T[0] while
+        //      `makeDistillate` publishes it at its own BUBBLE POINT -- a
+        //      correction applied to the stream and not to the duty
+        //      (1.095541 kW on column01, and live on every non-reactive
+        //      column in the corpus);
+        //    * the FEED was priced at `1 - feedQuality` on a quality blend --
+        //      see `resolveFeedThermalState` and `feedEnthalpy` above.
+        //  `dStream` is built above, so its temperature is the one this
+        //  column actually hands downstream.  Nobody recomputes it here: a
+        //  second bubble point would be a second home for the same answer.
+        const scalar dH = (H(D, dStream.T, 0.0, xD) + H(B, T[N-1], 0.0, x[N-1]))
+                        -  feedEnthalpy(feedState, F, Tf, P, z, thermo, elem);
         kpis_["Q_condenser_kW"] = Q_cond;
         kpis_["Q_reboiler_kW"]  = dH - Q_cond;                          // closes the balance
     }
@@ -892,7 +1090,6 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
     const int nFd = static_cast<int>(operDict->lookupScalar("feedStage"));
     const scalar RR = operDict->lookupScalar("refluxRatio");
     const scalar Pc = operDict->lookupScalarOrDefault("P", 0.0, Dims::pressure);
-    const scalar qF = operDict->lookupScalarOrDefault("feedQuality", 1.0);
     if (nFd < 2 || nFd > nSt)
         throw std::runtime_error("DistillationColumn: feedStage " +
             std::to_string(nFd) + " is outside 2.." + std::to_string(nSt) +
@@ -921,6 +1118,32 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
         zsum += v;
         if (thermo.indexOf(key) == ic) zc = v;
     }
+    //  ---- THE FEED'S THERMAL STATE, on the CASE'S OWN DICT ---------------
+    //  `feedQuality` used to be read a few lines above with a default, purely
+    //  so `check_unread_keys` would see the key touched (the inner solves all
+    //  run on a `deepCopy`).  After 2026-09-12 the column does not compute
+    //  with that number at all -- and the recovery banner went on PRINTING it
+    //  as "q = ...", which is a banner describing a model that is not running:
+    //  the same defect the speciation banner was caught in on 2026-08-04.
+    //
+    //  So the state is RESOLVED here, from this case's own feed, and the
+    //  banner prints THAT.  Cross-checking here as well as inside each inner
+    //  solve is not a second home for the rule -- it is the same function,
+    //  called where the case's own dict lives, so a contradiction is refused
+    //  once and up front instead of dozens of MESH solves later.
+    sVector zFeed(thermo.n(), 0.0);
+    for (const auto& key : compDict->keys())
+        zFeed[thermo.indexOf(key)] = compDict->lookupScalar(key);
+    if (zsum > 0.0) for (auto& v : zFeed) v /= zsum;
+    const scalar Tf0 = feedDict->lookupScalar("T", Dims::temperature);
+    const scalar Pf0 = (Pc > 0.0) ? Pc
+                                  : feedDict->lookupScalar("P", Dims::pressure);
+    const FeedThermalState recoveryFeed =
+        resolveFeedThermalState(feedDict, Tf0, Pf0, zFeed, thermo, dict->name());
+    refuseContradictoryFeedQuality(operDict, feedDict, recoveryFeed,
+                                   Tf0, dict->name());
+    const scalar qF = 1.0 - recoveryFeed.vf;
+
     const scalar feedOfComp = (zsum > 0.0) ? Ff * zc / zsum : 0.0;
     if (feedOfComp <= 0.0)
         throw std::runtime_error("DistillationColumn: distillateRecovery names "
@@ -1125,6 +1348,19 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     std::size_t  NF = 0;
     sVector      z(n, 0.0);
 
+    //  The legacy single-feed branch resolves its feed's thermal state from
+    //  the STREAM (2026-09-12) and carries the resolution here so the duty
+    //  block below can price it at the equilibrium compositions.  The
+    //  multi-feed branch is NOT changed: it already reads each feed's state
+    //  from its own stream and already refuses a contradicting `quality`.
+    //  What it does NOT yet do is RESOLVE an unpinned feed or price a
+    //  two-phase one at (x, y) -- a named, measured gap, not live on today's
+    //  corpus (every multi-feed case declares single-phase feeds) and
+    //  deliberately not fixed blind, because the two cases it would move are
+    //  the two whose residuals are undiagnosed (column04, column08).
+    FeedThermalState primaryFeedState;
+    std::size_t      primaryFeedStage = static_cast<std::size_t>(-1);
+
     if (multiFeed)   // ---- feeds are flowsheet streams, mapped to stages ----------
     {
         std::map<std::string, DictPtr> byName;
@@ -1175,11 +1411,19 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     {
         Tf = feedDict->lookupScalar("T", Dims::temperature);
         NF = static_cast<std::size_t>(operDict->lookupScalar("feedStage"));
-        q  = operDict->lookupScalarOrDefault("feedQuality", 1.0);
         if (NF < 2 || NF > N)
             throw std::runtime_error("DistillationColumn(simultaneous): feedStage "
                 "must be 2..nStages (feed at the top not supported by this method)");
         z = readComp(compDict);
+        //  SAME RULE AS WANG-HENKE, and the same one home reached from both --
+        //  this branch used to read `feedQuality` with its own default, which
+        //  is how one defect came to have two transcriptions.
+        primaryFeedState =
+            resolveFeedThermalState(feedDict, Tf, P, z, thermo, dict->name());
+        refuseContradictoryFeedQuality(operDict, feedDict, primaryFeedState,
+                                       Tf, dict->name());
+        q = 1.0 - primaryFeedState.vf;
+        primaryFeedStage = NF - 1;
         addFeed(NF - 1, feedDict->lookupScalar("F", Dims::molarFlow), q, Tf, z);
 
         // legacy INLINE extra feeds (a side channel -- NOT on the flowsheet graph,
@@ -1194,6 +1438,14 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 const scalar qf = fe->lookupScalarOrDefault("quality", 1.0);
                 const scalar Tfe = fe->lookupScalarOrDefault("T", Tf, Dims::temperature);
                 addFeed(st - 1, Ff, qf, Tfe, readComp(fe->subDict("composition")));
+                //  An inline feed MERGED onto the primary feed's stage makes
+                //  that stage's material a mixture of two declarations, and
+                //  the primary's resolved split no longer describes it.  Drop
+                //  the split rather than apply it to material it is not about;
+                //  the stage falls back to the blend, which is what this
+                //  branch has always done.  No corpus case does this.
+                if (st - 1 == primaryFeedStage)
+                    primaryFeedStage = static_cast<std::size_t>(-1);
             }
     }
     // side draws:  sideDraws ( { stage k; phase liquid|vapor; rate ..; } ... )
@@ -1687,6 +1939,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     ProcessStream bStream;
     bStream.name = "bottoms"; bStream.F = Bf; bStream.T = T[N-1]; bStream.P = P;
     bStream.z = x[N-1]; bStream.vf = 0.0;
+    bStream.phasePinned = true;          // equilibrium stage -- see makeDistillate
     produced_.push_back(bStream);
     // side draws (in stage order): a liquid draw leaves at x[j], a vapour draw at y[j].
     for (std::size_t j = 0; j < N; ++j)
@@ -1806,7 +2059,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                       : Fx * thermo.Hliquid(Tx, zx);
         };
         // products out (distillate + bottoms + every side draw) minus feeds in.
-        scalar Hout = H(D, T[0], 0.0, xD) + H(Bf, T[N-1], 0.0, x[N-1]);
+        //  The DISTILLATE at the temperature this column PUBLISHES it at --
+        //  `makeDistillate`'s bubble point, not the top tray's dew point.  See
+        //  the twin comment on the Wang-Henke duty block; one defect, two
+        //  transcriptions, and a fix applied to either alone would have been
+        //  right on half the corpus.
+        scalar Hout = H(D, dStream.T, 0.0, xD) + H(Bf, T[N-1], 0.0, x[N-1]);
         for (std::size_t j = 0; j < N; ++j)
         {
             if (Udraw[j] > 0.0) Hout += H(Udraw[j], T[j], 0.0, x[j]);
@@ -1821,7 +2079,18 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         }
         scalar Hin = 0.0;
         for (std::size_t j = 0; j < N; ++j)
-            if (Ffeed[j] > 0.0) Hin += H(Ffeed[j], feedT[j], 1.0 - qfeed[j], zfeed[j]);
+        {
+            if (Ffeed[j] <= 0.0) continue;
+            //  Where the feed's state was RESOLVED (the legacy single-feed
+            //  branch), price it at the equilibrium compositions -- the rule
+            //  `reporting/BalanceMath.H` prices the same stream by.  Every
+            //  other stage keeps the blend it has always used.
+            if (j == primaryFeedStage)
+                Hin += feedEnthalpy(primaryFeedState, Ffeed[j], feedT[j], P,
+                                    zfeed[j], thermo, elem);
+            else
+                Hin += H(Ffeed[j], feedT[j], 1.0 - qfeed[j], zfeed[j]);
+        }
         const scalar dH = Hout - Hin;
         kpis_["Q_condenser_kW"] = Q_cond;
         kpis_["Q_reboiler_kW"]  = dH - Q_cond;

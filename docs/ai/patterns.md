@@ -460,7 +460,7 @@ units
     { name column01;  type distillationColumn;
       in feed;  outputs (distillate  bottoms );
       operation { nStages 15; feedStage 8; refluxRatio 2.0;
-                  distillateRate 50 kmol/h; feedQuality 1.0; P 1.01325 bar; } }
+                  distillateRate 50 kmol/h; P 1.01325 bar; } }
 
     { name preheater; type heater;
       in coldProcess;  outputs (warmedProcess );

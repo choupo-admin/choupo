@@ -15,3 +15,18 @@ componentMolarFlows
 
 T               360.0 K;
 P               101325 Pa;
+
+//  THE FEED'S THERMAL STATE, DECLARED (2026-09-12).  It used to be stated only
+//  as `feedQuality 1.0;` in the column's operation block -- a second home for a
+//  fact the stream owns, which the first-law report never saw: the report
+//  resolved this unpinned (T, P, z) to its own equilibrium, found it two-phase,
+//  and priced it there while the column priced a liquid.  That disagreement WAS
+//  this plant's entire energy residual.  The declaration now lives here, once.
+//
+//  READ THIS BEFORE CHANGING IT.  A declared vapour fraction is a PIN: the
+//  engine honours it and does not re-solve the state (R-E2).  This feed's own
+//  equilibrium at 360 K and 1 atm is NOT single-phase -- see the case README --
+//  so what is declared here is the author's saturated-liquid charge, not the
+//  flash of it.  If you want the column fed by the equilibrium instead, delete
+//  this line and the engine will resolve it; the answer will move.
+vaporFraction   0.0;

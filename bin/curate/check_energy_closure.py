@@ -321,18 +321,17 @@ def ratchet_kW(pin: float) -> float:
 #  MEASURED, never typed.  case -> residual % at the moment of pinning.
 #  Regenerate with `--seed`.  EVERY ENTRY IS A PLANT THAT DOES NOT CONSERVE
 #  ENERGY -- this is a ledger of work owed, not a list of exemptions.
+#  NINE ENTRIES LEFT THIS LIST ON 2026-09-12 AND THAT IS THE POINT OF IT.
+#  column01/09/10/11/16, stripper01/02, heatlink01 and optim01 were all one
+#  family -- the feed's thermal state had a second home in `operation.feedQuality`
+#  and the column's duty priced states its own streams did not carry.  They now
+#  close at 0.0000 %.  The debt is PAID, not waived; the record is
+#  docs/design/the-state-a-unit-computes-with.md.
 KNOWN_OPEN = {
     "tutorials/plant/ChemicalPlantTutorial": 3.1710,
     "tutorials/plant/esterification2sector": 170.9790,
     "tutorials/plant/hda": 4.2460,
     "tutorials/plant/polycaprolactonePlant": 20.0100,
-    "tutorials/steady/distillation/column01_benzene_toluene": 24.6820,
-    "tutorials/steady/distillation/column09_tray_hydraulics": 24.6820,
-    "tutorials/steady/distillation/column10_flooding": 24.6820,
-    "tutorials/steady/distillation/column11_murphree": 24.6570,
-    "tutorials/steady/distillation/column16_declared_interior": 24.6820,
-    "tutorials/steady/distillation/stripper01_sour_water": 10.3730,
-    "tutorials/steady/distillation/stripper02_sour_water_h2s": 13.5730,
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section": 33.3080,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/credo01_valve_heater_drum": 2.0940,
@@ -340,10 +339,8 @@ KNOWN_OPEN = {
     "tutorials/steady/gibbs/gibbs07_wgs_cooled": 150.7280,
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash": 150.7280,
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": 150.6790,
-    "tutorials/steady/heat/heatlink01_condenser_to_heater": 16.4510,
     "tutorials/steady/heat/phasechange01_partial_condenser": 142.5260,
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas": 118.0420,
-    "tutorials/steady/optimisation/optim01_column_reflux": 18.5010,
     "tutorials/steady/reactors/acetone02_luyben_reactor": 25.1790,
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate": 37.9820,
     "tutorials/steady/reactors/pfr_polyesterification": 18.3420,

@@ -27,10 +27,10 @@ kpi     reactor                X_limiting       0.840379472541   1e-4
 kpi     reactor                k                0.0580597793433  1e-4
 kpi     reactor                tau_s            90.6799585737    1e-4
 kpi     reactor                xi_mol_per_s     0.271797696355   1e-4
-utility column                 heating.steamLP.duty_kW 7.49421486126    1e-4
+utility column                 heating.steamLP.duty_kW 7.35942608894    1e-4
 utility column                 heating.steamLP.T 364.544713604    1e-4
-utility column                 heating.steamLP.kg_s 0.00342827761266 1e-4
-utility column                 heating.steamLP.eur_h 0.323750082007   1e-4
+utility column                 heating.steamLP.kg_s 0.00336661760702 1e-4
+utility column                 heating.steamLP.eur_h 0.317927207042   1e-4
 utility column                 cooling.coolingWater.duty_kW -5.29619207542   1e-4
 utility column                 cooling.coolingWater.T 349.6579691      1e-4
 utility column                 cooling.coolingWater.kg_s 0.126703159699   1e-4
@@ -41,7 +41,7 @@ stream  mixed                  T                324.806875262    1e-4
 stream  reactorOut             T                324.806875262    1e-4
 stream  recycle                T                340.225100206    1e-4
 kpi     column                 Q_condenser_kW   -5.29619207542   1e-4
-kpi     column                 Q_reboiler_kW    7.49421486126    1e-4
+kpi     column                 Q_reboiler_kW    7.35942608894    1e-4
 kpi     mixer                  F_out            0.000363888888889 1e-4
 kpi     mixer                  P_out            500000           1e-4
 kpi     mixer                  T_out            324.806875262    1e-4
@@ -50,6 +50,6 @@ kpi     mixer                  vf               0                1e-4
 kpi     reactor                Q_kW             4.54350908223    1e-4
 kpi     reactor                minus_r_neoPentane 67.9494240888    1e-4
 boundary global                 H_feeds_kW       -51.7413268856   1e-4
-boundary global                 Q_boundary_kW    6.74153186808    1e-4
+boundary global                 Q_boundary_kW    6.60674309575    1e-4
 boundary global                 H_products_kW    -45.1345837886   1e-4
-boundary global                 residual_kW      0.134788771118   1e-4
+boundary global                 residual_kW      -1.20624576994e-09 1e-4

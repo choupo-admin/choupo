@@ -9,7 +9,7 @@ kpi     column01               D                0.0138888888889  1e-4
 kpi     column01               L_rect           0.0208333333333  1e-4
 kpi     column01               L_strip          0.298611111111   1e-4
 kpi     column01               Q_condenser_kW   -1067.88365467   1e-4
-kpi     column01               Q_reboiler_kW    1846.42629755    1e-4
+kpi     column01               Q_reboiler_kW    1844.9395063     1e-4
 kpi     column01               R                1.5              1e-4
 kpi     column01               T_bottom         365.99791143     1e-4
 kpi     column01               T_top            354.558892551    1e-4
@@ -27,10 +27,10 @@ kpi     preheater              Q_per_mol        3844.38115681    1e-4
 kpi     preheater              T_in             320              1e-4
 kpi     preheater              T_out            346.29535675     1e-4
 kpi     preheater              dT               26.2953567497    1e-4
-utility column01               heating.steamLP.duty_kW 1846.42629755    1e-4
+utility column01               heating.steamLP.duty_kW 1844.9395063     1e-4
 utility column01               heating.steamLP.T 365.99791143     1e-4
-utility column01               heating.steamLP.kg_s 0.844659788448   1e-4
-utility column01               heating.steamLP.eur_h 79.765616054     1e-4
+utility column01               heating.steamLP.kg_s 0.843979646067   1e-4
+utility column01               heating.steamLP.eur_h 79.7013866723    1e-4
 stream  bottoms                T                365.99791143     1e-4
 stream  coldFeed               T                320              1e-4
 stream  distillate             T                353.771511565    1e-4
@@ -39,6 +39,6 @@ kpi     preheater              vf_out           0                1e-4
 utility column01               cooling.condenser.carried 1                1e-4
 utility preheater              heating.-.carried 1                1e-4
 boundary global                 H_feeds_kW       9456.24190295    1e-4
-boundary global                 Q_boundary_kW    1846.42629755    1e-4
-boundary global                 H_products_kW    11301.1814122    1e-4
-boundary global                 residual_kW      1.48678830579    1e-4
+boundary global                 Q_boundary_kW    1844.9395063     1e-4
+boundary global                 H_products_kW    11301.1814093    1e-4
+boundary global                 residual_kW      -3.40151018463e-10 1e-4

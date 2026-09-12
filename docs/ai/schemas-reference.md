@@ -158,7 +158,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
 | `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
-| `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
+| `feedQuality` |   | number | — | CROSS-CHECK ONLY (2026-09-12).  The feed's thermal condition comes from the feed STREAM -- its declared `vaporFraction`, or, where it declares none, its own resolved equilibrium at (T, P, z).  Declaring `feedQuality` is optional; if it disagrees with the stream the column REFUSES and names both numbers.  q = 1 saturated liquid, q = 0 saturated vapour. |
 | `method` |   | string | — | WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotro… |
 | `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
 | `sideDraws` |   | array[object] | — | Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a … |
@@ -275,7 +275,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
 | `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
-| `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
+| `feedQuality` |   | number | — | CROSS-CHECK ONLY (2026-09-12).  The feed's thermal condition comes from the feed STREAM -- its declared `vaporFraction`, or, where it declares none, its own resolved equilibrium at (T, P, z).  Declaring `feedQuality` is optional; if it disagrees with the stream the column REFUSES and names both numbers.  q = 1 saturated liquid, q = 0 saturated vapour. |
 | `method` |   | string | — | WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotro… |
 | `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
 | `sideDraws` |   | array[object] | — | Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a … |
