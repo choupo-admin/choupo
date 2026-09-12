@@ -145,51 +145,82 @@ export function FlashPlot({ csv, compA, compB, P }: {
   ];
 
   if (twoPhase) {
-    // the TIE-LINE: horizontal chord at the equilibrium level from (x_liq, y_vap)
-    // to (y_vap, y_vap) — the equilibrium ties the liquid x_liq to the vapour
-    // y_vap at the same flash condition.  Drawn at y = y_vap so the chord lands
-    // on the curve at x_liq and on the diagonal at y_vap.
-    const yv = sol.yVap;
+    //  THE FLASH OPERATING LINE -- the construction this diagram exists for,
+    //  and the one it did not draw until 2026-09-12 (Vitor, on the live app:
+    //  "aqui aparece a recta operatoria famosa de um flash!  Nao e a regra da
+    //  alavanca!").  What stood here instead were the LEVER-RULE arms on a
+    //  horizontal tie-line.  The two are not alternatives of equal standing:
+    //
+    //    the OPERATING LINE SOLVES the flash -- an overall balance
+    //    F z = L x + V y, drawn as a straight line, whose INTERSECTION with
+    //    y*(x) IS the answer.  Give a student z and V/F and this construction
+    //    hands them x and y with a ruler;
+    //
+    //    the lever arms MEASURE the split once x and y are already known.
+    //
+    //  So the line is drawn and the arms are not.  The lever arithmetic is NOT
+    //  lost: it stays in the caption below, stated as
+    //  V/F = (z - x)/(y - x) over the numbers the plot is showing.  One
+    //  construction on the canvas, saying one thing.
+    //
+    //  From F z = L x + V y with L = F(1 - VF) and V = F VF:
+    //        y = z/VF - x (1 - VF)/VF
+    //  Two identities make this self-checking, and both are worth knowing:
+    //  at x = z it gives y = z, so the line ALWAYS passes through the feed
+    //  point on the 45-degree diagonal; and it passes through (xLiq, yVap)
+    //  because that pair is what the flash solved.  A line that misses either
+    //  is a line drawn from the wrong numbers.
+    const VF = Math.min(Math.max(sol.VF, 1e-9), 1 - 1e-9);
+    const m = -(1 - VF) / VF;          // slope: -L/V
+    const b = z / VF;                  // intercept: (F/V) z
+
+    //  CLIP TO THE UNIT SQUARE rather than let Plotly autorange: a mole
+    //  fraction axis may not show a value it cannot have, and at VF -> 0 the
+    //  slope runs to -infinity.  Collect where the line crosses the four
+    //  sides, keep the points inside the box, and take the two extremes.
+    const inBox = (v: number) => v >= -1e-9 && v <= 1 + 1e-9;
+    const pts: Array<[number, number]> = [];
+    for (const x of [0, 1]) { const y = b + m * x; if (inBox(y)) pts.push([x, y]); }
+    for (const y of [0, 1]) { const x = (y - b) / m; if (inBox(x)) pts.push([x, y]); }
+    pts.sort((p, q) => p[0] - q[0]);
+    const lo = pts[0], hi = pts[pts.length - 1];
+    //  The fallback is the VERTICAL line x = z, which is what the operating
+    //  line BECOMES at the bubble point (V/F -> 0, slope -> -infinity): a
+    //  degenerate case drawn honestly rather than dropped.
+    const opX = (lo && hi && pts.length >= 2) ? [lo[0], hi[0]] : [z, z];
+    const opY = (lo && hi && pts.length >= 2) ? [lo[1], hi[1]] : [0, 1];
+
     traces.push(
       {
-        type: "scatter", mode: "lines", name: "tie-line",
-        x: [sol.xLiq, sol.yVap], y: [yv, yv],
-        line: { color: PLOT_COLORS.warm, width: 2 },
-        hovertemplate: `tie-line<extra></extra>`,
+        type: "scatter", mode: "lines",
+        name: `operating line (slope −L/V = ${m.toFixed(3)})`,
+        x: opX, y: opY,
+        line: { color: PLOT_COLORS.warm, width: 2.5 },
+        hovertemplate: `operating line: y = ${b.toFixed(3)} − ${Math.abs(m).toFixed(3)} x<extra></extra>`,
       },
-      // the LEVER-RULE arms split at the feed pivot z: liquidArm (z→x_liq, ∝ V)
-      // and vapourArm (z→y_vap, ∝ L), drawn as two coloured segments + labels.
+      //  THE ANSWER IS THE INTERSECTION, so it is marked ON the curve and
+      //  nowhere else -- one point, not a row of three.
       {
-        type: "scatter", mode: "lines", name: "liquid arm (∝ V)",
-        x: [sol.xLiq, z], y: [yv, yv],
-        line: { color: PLOT_COLORS.series[4], width: 6 },
-        opacity: 0.7, hoverinfo: "skip",
-      },
-      {
-        type: "scatter", mode: "lines", name: "vapour arm (∝ L)",
-        x: [z, sol.yVap], y: [yv, yv],
-        line: { color: PLOT_COLORS.series[5], width: 6 },
-        opacity: 0.7, hoverinfo: "skip",
-      },
-      // the three knot points: liquid on the curve, feed pivot, vapour on the diagonal
-      {
-        type: "scatter", mode: "markers+text",
-        x: [sol.xLiq, z, sol.yVap], y: [yv, yv, yv],
-        text: [`x=${sol.xLiq.toFixed(3)}`, "", `y=${sol.yVap.toFixed(3)}`],
-        textposition: "top center",
-        marker: {
-          color: [PLOT_COLORS.accent, PLOT_COLORS.warm2, PLOT_COLORS.warm],
-          size: [9, 7, 9], symbol: ["circle", "x", "square"],
-        },
+        type: "scatter", mode: "markers+text", name: "flash point (x, y)",
+        x: [sol.xLiq], y: [sol.yVap],
+        text: [`x=${sol.xLiq.toFixed(3)}, y=${sol.yVap.toFixed(3)}`],
+        textposition: "top left",
+        marker: { color: PLOT_COLORS.accent, size: 11, symbol: "circle",
+                  line: { color: PLOT_COLORS.warm, width: 1.5 } },
         textfont: { size: 11 },
-        showlegend: false,
-        hovertemplate: `%{x:.3f}<extra></extra>`,
+        hovertemplate: `x=%{x:.3f}<br>y=%{y:.3f}<extra>flash</extra>`,
       },
-      // a dotted drop from the vapour knot on the diagonal down to the x-axis
-      // (so y_vap is read on the SAME x-axis the liquid is) — pedagogical.
+      //  Drops to BOTH axes: x is read below, y is read at the left, off the
+      //  same point.  Without them a reader has to eyeball the ordinate.
       {
         type: "scatter", mode: "lines",
-        x: [sol.xLiq, sol.xLiq], y: [0, yv],
+        x: [sol.xLiq, sol.xLiq], y: [0, sol.yVap],
+        line: { color: PLOT_COLORS.accent, width: 1, dash: "dot" },
+        showlegend: false, hoverinfo: "skip",
+      },
+      {
+        type: "scatter", mode: "lines",
+        x: [0, sol.xLiq], y: [sol.yVap, sol.yVap],
         line: { color: PLOT_COLORS.accent, width: 1, dash: "dot" },
         showlegend: false, hoverinfo: "skip",
       },
