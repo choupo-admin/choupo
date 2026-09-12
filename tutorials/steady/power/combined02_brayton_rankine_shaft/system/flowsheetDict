@@ -1,28 +1,101 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  combined02_brayton_rankine_shaft  --  combined cycle, FULL Brayton with a
-  SHAFT-SPLIT node.
+  combined02_brayton_rankine_shaft  --  a FULL Brayton cycle with a
+  SHAFT-SPLIT node, and a DRY steam bottoming loop.
   =================================================================
 
-  Upgrades combined01: a real COMPRESSOR now sits on the gas-turbine shaft.
-  The gas turbine's gross work drives the compressor AND the net goes to the
-  generator -- a SHAFT NODE that SUMS work inputs:
+  WHAT THIS CASE IS ABOUT: the SHAFT NODE.  combined01 wires one turbine to
+  one generator.  Here a real compressor sits on the gas-turbine shaft, and a
+  single `electricLoad` SUMS two work inputs:
 
       gasGenerator.W = gasTurbine.shaft (+gross)  +  compressor.shaft (-load)
 
   (Both rotating units publish a `shaft` port with expression "-W_shaft";
    the turbine's W_shaft<0 -> +, the compressor's W_shaft>0 -> -, so the
-   generator nets to the delivered power.)
+   generator nets to the delivered power: 1500 - 900 = 600 kW of shaft,
+   582 kW of electricity at eta 0.97.)
 
-      airFuelFeed (1 bar) -> compressor (-> ~8 bar) -> gibbsCombustor (1300 K)
+      airFuelFeed (1 bar) -> compressor (-> ~8.3 bar) -> gibbsCombustor (1300 K)
         -> gasTurbine -> exhaust -> HRSG hot side -> flue
                  |  \                                   |
               (shaft) (shaft)                       (counter)
                  |     \                                |
-            compressor  gasGenerator(net)          steamFeed -> heatedSteam
+            compressor  gasGenerator(net)      steamFeed (DRY, 5 bar 500 K)
+                                                    -> heatedSteam
                                                     -> steamTurbine -> steamGenerator
                                                     -> steamCooler -> condensate
 
-  Bottom Rankine stays gas-only (phase-change boiler is the next step).
+  -- WHAT THIS CASE DOES NOT MODEL, and it is not a detail -----------------
+
+  THERE IS NO PHASE CHANGE ANYWHERE IN THIS PLANT.  The bottoming loop is fed
+  SUPERHEATED STEAM (5 bar, 500 K -- 77 K above the 422.7 K saturation
+  temperature this package's own vapour-pressure curve gives at 5 bar), not
+  boiler feedwater.  So there is no economiser, no evaporator, no condenser
+  and no feed pump: the "HRSG" here is a SUPERHEATER, and the loop is open,
+  not a closed Rankine cycle.  Every stream in the plant is a gas and every
+  `phase gas;` label in 0/ is true of the state it labels.
+
+  WHY, and the numbers are measured on this flowsheet rather than argued.
+  `heatExchanger` is an eps-NTU RATING model for SENSIBLE heat -- its own
+  header says "sensible heat only, no phase change" -- so its cold-side
+  capacity rate for a liquid feed is the LIQUID one, C = n.Cp_liq.  The most
+  it can then deliver, at effectiveness 1, is
+
+      Q/n  =  Cp_liq . (T_hot_in - T_cold_in)
+           =  75.5 . (871.77 - 400)  =  35 561 J/mol        [measured: 355.61 kW / 10 mol/s]
+
+  while water entering as liquid at 400 K / 5 bar needs
+
+      h_g(Tsat) - h_l(400 K)  =  41 138 J/mol               [measured from this package]
+
+  to reach the far side of the dome.  It is 5 577 J/mol SHORT, so the water
+  stops INSIDE the dome, where this model has no two-phase outlet to write --
+  it lands on the saturated-vapour line and 55.77 kW of latent heat is
+  charged to nobody.  The exchanger says so in its own words ("closes in Q
+  but not in H") and publishes the number as `H_closure_gap_kW`; declaring
+  the feed as the liquid it would really be leaves this plant missing its
+  first law by 13.5 % of its boundary energy.
+
+  It is not a pressure that can be chosen better.  The eps-NTU duty above is
+  355.61 kW at 3, 10 AND 20 bar -- identical, because it is set by the liquid
+  capacity rate and the two inlet temperatures and by nothing else -- while
+  the dome gets MORE expensive with pressure (42 068 J/mol at 10 bar,
+  measured).  At 20 bar the exchanger stops on the LIQUID side of the dome
+  instead and the plant misses by 12.0 %.  At 3 bar it stops on the
+  saturation line at 405.1 K, the steam turbine's fixed 50 kW then discharges
+  at 257.7 K, and the sensible-only `steamCooler` cannot take its declared
+  45 kW out of that: the run stops at exit 2, `failed to converge`.  For this
+  hardware the gas-turbine exhaust would have to reach about 946 K; the
+  compressor on the shaft takes 900 kW out of the cycle and it leaves at
+  871.8 K.
+
+  WHERE THE PHASE CHANGE LIVES, then:
+    * rankine02_water          -- a CLOSED Rankine on IAPWS-IF97: pump,
+                                  dome-crossing `boiler`, turbine,
+                                  dome-crossing `condenser`, tear stream.
+                                  This is the steam-table truth.
+    * combined01_brayton_rankine -- its HRSG DOES evaporate its feedwater
+                                  (400 K liquid -> 803.3 K superheated
+                                  vapour, 550.73 kW, first law closed to
+                                  4e-8 kW), because its gas turbine leaves at
+                                  1130.6 K and clears the dome with room to
+                                  spare.  Its OWN header still calls that
+                                  loop "gas-only, no phase change"; that
+                                  sentence predates the 2026-09-08 exchanger
+                                  enthalpy-inversion and is stale.  Believe
+                                  the run, not the prose -- and the same
+                                  warning applies to this paragraph.
+
+  HISTORY, kept because it is the lesson.  0/steamFeed used to declare
+  `T 400 K; phase gas;` -- at 5 bar that fluid is 23 K BELOW its dew point, a
+  liquid wearing a vapour label.  The plant then violated the first law by
+  21.07 % of its boundary energy, at exit 0, with a golden master pinning the
+  answer: the latent heat of a phase change nobody had declared and nothing
+  could charge.  No golden could have found it -- a golden pins what a run
+  PRINTS, and a stable wrong answer passes one by construction.  What found
+  it was `check_energy_closure`, which reads the residual instead.
+
+  Global first-law residual, this run: -0.00021 kW (-7.3e-6 % of boundary
+  energy exchanged) -- the plant closes.
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

@@ -15,6 +15,13 @@ componentMolarFlows
     water    36 kmol/h;
 }
 
-T               400 K;
+//  SUPERHEATED, and the label is TRUE here.  This loop is fed DRY steam:
+//  Tsat at 5 bar on this package's own vapour-pressure curve is 422.7 K, so
+//  500 K is 77 K of superheat and `phase gas;` is a fact rather than a wish.
+//  It used to read 400 K, where the same curve puts the fluid 23 K BELOW its
+//  dew point -- a liquid wearing a vapour label.  The plant then missed its
+//  first law by 21.07 % of its boundary energy.  See the flowsheetDict
+//  header for why this loop cannot be fed as boiler feedwater instead.
+T               500 K;
 P               500000 Pa;
 phase           gas;
