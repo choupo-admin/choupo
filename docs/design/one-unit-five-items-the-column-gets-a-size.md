@@ -86,13 +86,32 @@ name.
 
 The flooding diameter follows the vapour VOLUMETRIC flow, and the two sections
 differ in temperature, pressure, vapour molar mass and usually in the vapour
-molar flow itself.  On the witness the rectifying trays need **1.210 m** and the
-stripping trays **1.316 m** — 8.1 % apart.
+molar flow itself.  On the witness the rectifying trays need **1.222 m** and the
+stripping trays **0.9695 m** — 20.67 % apart, `swageGap` on the sheet.
+
+**THE WITNESS INVERTED ON 2026-09-12, and the record is corrected rather than
+quietly renumbered.**  It used to read rectifying 1.210 m against stripping
+1.316 m, 8.1 % apart — the STRIPPING section the wider one.  That geometry was
+a consequence of a case that contradicted itself: `operation.feedQuality`
+declared a saturated LIQUID feed while the stream declared
+`vaporFraction 0.6972418857`, and the column read the dict key (commit
+`d6a984701`).  A liquid feed runs down through every stripping tray and each
+one must carry it; a mostly-vapour feed enters above the feed tray and leaves
+the stripping section alone.  So rectifying barely moved (+1.0 %) while
+stripping fell by a quarter (−26.3 %), and the reboiler duty is the same fact
+in energy: 1279.3 → 647.1 kW, very nearly halved, because the feed no longer
+has to be boiled.  **The phase of the feed decides which half of a column is
+the wide one** — a lesson this witness could not teach while it was lying
+about its own feed.
 
 **Whether to swage is ECONOMIC, not thermodynamic**, and the engine does not
 decide it.  Below roughly 15–20 % difference the transition cone, its
 fabrication and its inspection cost more than the plate a narrower section
-saves, so the tower is built straight at the larger diameter.  Choupo publishes
+saves, so the tower is built straight at the larger diameter.  **At 20.67 %
+this witness is now ABOVE that band** — the first geometry in the corpus where
+a real designer would price a swaged tower — and Choupo still builds straight
+and prices no transition, because it has no correlation for one.  What was an
+academic limitation on this case is a visible one.  Choupo publishes
 both diameters and their difference, states which way the band points, and
 prices no transition — because it has no correlation for one.  Both numbers are
 on the specification sheet (`D_rectifying`, `D_stripping`, `swageGap`) and both

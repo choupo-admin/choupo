@@ -23,11 +23,41 @@
 
   WHAT THE WITNESS IS.  A benzene/toluene column, 15 stages, feed on stage 8,
   the hydraulics in DESIGN mode (the case declares no `diameter`, so the pass
-  designs one).  The rectifying trays need 1.2095 m and the stripping trays
-  1.3158 m -- 8.08 % apart, inside the 15-20 % band where a swage transition
-  costs more than the plate it saves -- so the tower is built STRAIGHT at
-  1.3158 m and Choupo prices no transition cone.  The worst tray is stage 14,
-  at 80.0 % of flood.
+  designs one).  The rectifying trays need 1.22206 m and the stripping trays
+  0.96948111 m -- 20.67 % apart -- so the tower is built STRAIGHT at
+  1.22206 m, the WIDER of the two, and Choupo prices no transition cone.  The
+  worst tray is stage 7, at 80.0 % of flood.
+
+  THE TOWER INVERTED ON 2026-09-12, AND WHICH HALF IS THE WIDE ONE IS THE
+  LESSON.  Everything in the paragraph above used to read the other way round:
+  rectifying 1.2095 m against stripping 1.3158 m, the STRIPPING section wider,
+  8.08 % apart.  Nothing in this file or in the drawing changed.  What changed
+  is that `d6a984701` stopped the column reading its feed's thermal state from
+  the wrong home: `operation.feedQuality` defaulted to 1.0, saturated liquid,
+  while the feed stream itself declares `vaporFraction 0.6972418857`.  The
+  sheets below carry that number on every port block -- the feed arrives 69.7 %
+  VAPOUR.
+
+  A vapour feed enters ABOVE the feed tray and leaves the stripping section
+  alone; a liquid feed runs down through it and every stripping tray has to
+  carry it.  So correcting the phase moved the traffic upward, and the
+  geometry followed: the rectifying diameter barely moved (1.2095 -> 1.22206 m,
+  up 1.0 %) while the stripping diameter fell by a quarter (1.3158 ->
+  0.96948111 m, down 26.3 %).  The reboiler duty is the same fact in energy:
+  1279.3 -> 647.1 kW, very nearly halved, because the feed no longer has to be
+  boiled.  A student who takes one thing from this file should take that: THE
+  PHASE OF THE FEED DECIDES WHICH HALF OF A COLUMN IS THE WIDE ONE.
+
+  AND THE GAP CROSSED ITS OWN RULE OF THUMB.  Whether to swage is ECONOMIC and
+  Choupo does not decide it: below roughly 15-20 % difference the transition
+  cone costs more than the plate a narrower section saves, and the old 8.08 %
+  was comfortably below that.  Today's 20.67 % is ABOVE it -- the first
+  geometry in this corpus where a real designer would actually price a swaged
+  tower -- and Choupo STILL builds straight and prices no cone, because it has
+  no correlation for one (`ColumnSize` says so at the site, and
+  `equipmentSchematic.ts:180-196` says why the drawing never shows one).  What
+  was an academic limitation on this witness is now a visible one.  That is a
+  finding about the corpus, not a defect in the drawing.
 \*---------------------------------------------------------------------------*/
 import { describe, expect, it } from "vitest";
 import { parseDesignSheet, unitDesignSheets } from "../src/case/designSheet.js";
@@ -84,37 +114,37 @@ outlets
     {
         global      "distillate";
         bc          computed;
-        T           353.63007 K;
+        T           354.2479 K;
         P           101325 Pa;
         F           0.013888889 kmol/s;
-        mdot        1.0885705 kg/s;
+        mdot        1.0944595 kg/s;
         vapourFraction 0;
     }
     port1
     {
         global      "bottoms";
         bc          computed;
-        T           382.89353 K;
+        T           381.5141 K;
         P           101325 Pa;
         F           0.013888889 kmol/s;
-        mdot        1.2760823 kg/s;
+        mdot        1.2701933 kg/s;
         vapourFraction 0;
     }
 }
 
 sizing
 {
-    D                     1.3157812 m;
-    D_rectifying          1.2095176 m;
-    D_stripping           1.3157812 m;
+    D                     1.22206 m;
+    D_rectifying          1.22206 m;
+    D_stripping           0.96948111 m;
     H                     9.2 m;
-    V_R                   12.509648 m3;
+    V_R                   10.791027 m3;
     nTrays                [0 0 0 0 0] 14;
     pressureDesign        2 bar;
-    swageGap              [0 0 0 0 0] 0.080760906;
-    t_wall                0.00394065 m;
+    swageGap              [0 0 0 0 0] 0.2066829;
+    t_wall                0.0038736489 m;
     traySpacing           0.5 m;
-    weight                1176.4106 kg;
+    weight                1074.0392 kg;
 }
 
 //  Inputs this sizer was not given and supplied itself.  Each was announced at
@@ -127,21 +157,21 @@ cost
     currency        EUR;
     sizeKey         V_R;
     correlation     log-quadratic;
-    purchased       24982.131;
-    bareModule      101677.27;
-    totalModule     119979.18;
+    purchased       22602.637;
+    bareModule      91992.734;
+    totalModule     108551.43;
     factors
     {
         B1                  2.25;
         B2                  1.82;
         C_TM_over_C_BM      1.18;
-        Cp_2001             13146.747;
+        Cp_2001             11894.548;
         F_M                 1;
         F_P                 1;
         K1                  3.4974;
         K2                  0.4485;
         K3                  0.1074;
-        S                   12.509648;
+        S                   10.791027;
         cepci               820;
         cepci2001           397;
         usdToEur            0.92;
@@ -195,28 +225,28 @@ outlets
     {
         global      "distillate";
         bc          computed;
-        T           353.63007 K;
+        T           354.2479 K;
         P           101325 Pa;
         F           0.013888889 kmol/s;
-        mdot        1.0885705 kg/s;
+        mdot        1.0944595 kg/s;
         vapourFraction 0;
     }
     port1
     {
         global      "bottoms";
         bc          computed;
-        T           382.89353 K;
+        T           381.5141 K;
         P           101325 Pa;
         F           0.013888889 kmol/s;
-        mdot        1.2760823 kg/s;
+        mdot        1.2701933 kg/s;
         vapourFraction 0;
     }
 }
 
 sizing
 {
-    A                     1.3597444 m2;
-    D                     1.3157812 m;
+    A                     1.1729377 m2;
+    D                     1.22206 m;
     nTrays                [0 0 0 0 0] 14;
     traySpacing           0.5 m;
 }`;
@@ -267,35 +297,35 @@ outlets
     {
         global      "distillate";
         bc          computed;
-        T           353.63007 K;
+        T           354.2479 K;
         P           101325 Pa;
         F           0.013888889 kmol/s;
-        mdot        1.0885705 kg/s;
+        mdot        1.0944595 kg/s;
         vapourFraction 0;
     }
     port1
     {
         global      "bottoms";
         bc          computed;
-        T           382.89353 K;
+        T           381.5141 K;
         P           101325 Pa;
         F           0.013888889 kmol/s;
-        mdot        1.2760823 kg/s;
+        mdot        1.2701933 kg/s;
         vapourFraction 0;
     }
 }
 
 sizing
 {
-    D                     0.79906954 m;
-    H                     2.3972086 m;
+    D                     0.8011089 m;
+    H                     2.4033267 m;
     L_over_D              [0 0 0 0 0] 3;
-    Q_condensate          0.0040072239 m3/s;
-    V_R                   1.2021672 m3;
+    Q_condensate          0.0040379837 m3/s;
+    V_R                   1.2113951 m3;
     pressureDesign        2 bar;
     residenceTime         300 s;
-    t_wall                0.0035712536 m;
-    weight                168.70604 kg;
+    t_wall                0.0035727115 m;
+    weight                169.6375 kg;
 }
 
 cost
@@ -303,21 +333,21 @@ cost
     currency        EUR;
     sizeKey         V_R;
     correlation     log-quadratic;
-    purchased       6497.7376;
-    bareModule      26445.792;
-    totalModule     31206.035;
+    purchased       6520.9346;
+    bareModule      26540.204;
+    totalModule     31317.44;
     factors
     {
         B1                  2.25;
         B2                  1.82;
         C_TM_over_C_BM      1.18;
-        Cp_2001             3419.4086;
+        Cp_2001             3431.6159;
         F_M                 1;
         F_P                 1;
         K1                  3.4974;
         K2                  0.4485;
         K3                  0.1074;
-        S                   1.2021672;
+        S                   1.2113951;
         cepci               820;
         cepci2001           397;
         usdToEur            0.92;
@@ -339,7 +369,7 @@ material    carbonSteel;
 basis       "A = Q/(U*LMTD) with U and LMTD author-set";
 
 inlets  { port0 { global "feed"; bc fixedValue; T 370 K; mdot 2.3646528 kg/s; } }
-outlets { port0 { global "distillate"; bc computed; T 353.63007 K; mdot 1.0885705 kg/s; } }
+outlets { port0 { global "distillate"; bc computed; T 354.2479 K; mdot 1.0944595 kg/s; } }
 
 sizing
 {
@@ -352,8 +382,11 @@ const FILES: { [rel: string]: string } = {
   "design/column09/shell": SHELL,
   "design/column09/trays": TRAYS,
   "design/column09/refluxDrum": DRUM,
-  "design/column09/condenser": HX("condenser", -1281.0435, 53.376812),
-  "design/column09/reboiler": HX("reboiler", 1279.3048, 94.066529),
+  //  Kept current with the run even though no gate holds them: a stand-in
+  //  that carries last month's duties still tells a reader a number, and the
+  //  reboiler's is the most legible consequence of the 2026-09-12 feed fix.
+  "design/column09/condenser": HX("condenser", -1282.9154, 53.454809),
+  "design/column09/reboiler": HX("reboiler", 647.13807, 47.583682),
 };
 
 /*  The KPIs the witness publishes, as its `expected` golden records them.
@@ -362,12 +395,12 @@ const FILES: { [rel: string]: string } = {
  *  engine's own answer to who chose the diameter. */
 const KPIS: { [k: string]: number } = {
   nStages: 15, feedStage: 8, nTrays: 14,
-  diameter: 1.31578124983, diameter_rectifying: 1.20951756373,
-  diameter_stripping: 1.31578124983, diameterDesigned: 1,
-  floodApproach_max: 0.8, floodStage: 14,
-  downcomerBackup_max_mm: 215.120070644, downcomerFloodStages: 0,
-  weepingStages: 0, dP_column_kPa: 13.4543748178,
-  Q_condenser_kW: -1281.04348002, Q_reboiler_kW: 1279.30480005,
+  diameter: 1.22206001598, diameter_rectifying: 1.22206001598,
+  diameter_stripping: 0.969481110388, diameterDesigned: 1,
+  floodApproach_max: 0.8, floodStage: 7,
+  downcomerBackup_max_mm: 199.917404254, downcomerFloodStages: 0,
+  weepingStages: 0, dP_column_kPa: 12.5887948054,
+  Q_condenser_kW: -1282.91541137, Q_reboiler_kW: 647.138073182,
 };
 
 /*  The unit as the case declares it -- DESIGN mode: no `diameter` in the
@@ -419,8 +452,8 @@ describe("the sheet reader carries the ports the sheet has always written", () =
     expect(s.inlets.map((p) => p.global)).toEqual(["feed"]);
     expect(s.outlets.map((p) => p.global)).toEqual(["distillate", "bottoms"]);
     expect(s.inlets[0]!.T).toBeCloseTo(370, 6);
-    expect(s.outlets[0]!.T).toBeCloseTo(353.63007, 4);
-    expect(s.outlets[1]!.T).toBeCloseTo(382.89353, 4);
+    expect(s.outlets[0]!.T).toBeCloseTo(354.2479, 4);
+    expect(s.outlets[1]!.T).toBeCloseTo(381.5141, 4);
     //  The mass flow is the engine's own total, not F * Sigma z_i MW_i.
     expect(s.inlets[0]!.mdot).toBeCloseTo(2.3646528, 6);
   });
@@ -485,28 +518,38 @@ describe("the tower is drawn from the sheets and nothing else", () => {
     const d = drawing();
     expect(d.nTrays).toBe(14);
     expect(d.traysDrawn).toBe(14);
-    //  H 9.2 m over D 1.3158 m is 6.99 -- inside the band where a true-scale
-    //  tower is still legible, so the drawing IS to scale and says so.
+    //  H 9.2 m over D 1.22206 m is 7.53 -- inside the 1.5-12 band where a
+    //  true-scale tower is still legible (equipmentSchematic.ts:217), so the
+    //  drawing IS to scale and says so.  The narrower tower is a taller-looking
+    //  one: this ratio was 6.99 before the feed fix.
     expect(d.toScale).toBe(true);
   });
 
   it("labels both section diameters and the swage gap, and draws no cone", () => {
     const d = drawing();
     const notes = d.notes.map((n) => n.text).join(" | ");
-    expect(notes).toContain("the rectifying trays need ⌀1.21 m");
-    expect(notes).toContain("the stripping trays need ⌀1.316 m");
-    expect(notes).toMatch(/8\.08 % apart/);
+    //  RECTIFYING is now the WIDER section -- see the header.  The labels are
+    //  `fmt` at 4 significant figures (equipmentSchematic.ts:86), so 1.22206
+    //  renders 1.222 and 0.96948111 renders 0.9695.
+    expect(notes).toContain("the rectifying trays need ⌀1.222 m");
+    expect(notes).toContain("the stripping trays need ⌀0.9695 m");
+    //  The gap is the ENGINE's: `swageGap = (big - sml) / big` at
+    //  ColumnSize.cpp:228, published on the sheet, and the caption only
+    //  multiplies it by 100 (equipmentSchematic.ts:470).  0.2066829 -> 20.67.
+    expect(notes).toMatch(/20\.67 % apart/);
     expect(notes).toMatch(/sizes the shell STRAIGHT/);
-    //  8.08 % is inside the 15-20 % band, so the tower is NOT swaged.  Choupo
-    //  prices no transition cone in ANY case, which is why no drawing here
-    //  ever shows one -- the dashed outline is what a section would need, and
-    //  the note says so in as many words.
+    //  20.67 % is ABOVE the 15-20 % rule of thumb, where a real designer would
+    //  price a swaged tower -- and the tower is STILL not swaged, because
+    //  Choupo prices no transition cone in ANY case.  That is why no drawing
+    //  here ever shows one, and why this assertion did not have to change when
+    //  the gap crossed the band: the dashed outline is what a section would
+    //  need, and the note says so in as many words.
     expect(notes).toMatch(/not a wall anybody would build/);
     expect(d.svg).not.toMatch(/swage transition|transition cone drawn/);
     //  Both section diameters are on the DRAWING too: the narrower one beside
     //  the dashed outline, the built one on the diameter line.
-    expect(d.svg).toContain("⌀1.21 m");
-    expect(d.svg).toContain("D 1.316 m");
+    expect(d.svg).toContain("⌀0.9695 m");
+    expect(d.svg).toContain("D 1.222 m");
   });
 
   it("marks the feed tray, and marks it as the AUTHOR's stage", () => {
@@ -519,7 +562,7 @@ describe("the tower is drawn from the sheets and nothing else", () => {
   it("names the flood approach and WHICH tray reaches it", () => {
     const d = drawing();
     expect(d.notes.map((n) => n.text).join(" | "))
-      .toContain("the worst tray runs at 80.0 % of flood, and it is stage 14");
+      .toContain("the worst tray runs at 80.0 % of flood, and it is stage 7");
     //  And it is MARKED AT THE TRAY, not only reported as a number a reader
     //  would have to count tray lines to locate.
     expect(d.svg).toContain("worst tray 80.0 % of flood (Choupo)");
@@ -597,15 +640,15 @@ sizing
 
 describe("a number the case declared does not look like a number Choupo computed", () => {
   it("DESIGN mode: the diameter is marked as Choupo's, on the drawing", () => {
-    expect(drawing().svg).toContain("D 1.316 m (Choupo)");
+    expect(drawing().svg).toContain("D 1.222 m (Choupo)");
   });
 
   it("RATING mode: the SAME label flips to the author's", () => {
     const shell = parseDesignSheet(SHELL)!, trays = parseDesignSheet(TRAYS)!;
     const svg = columnTowerSvg({ shell, trays, hasCondenser: true,
       hasReboiler: true, hasRefluxDrum: true, kpis: RATED_KPIS }).svg;
-    expect(svg).toContain("D 1.316 m (declared)");
-    expect(svg).not.toContain("D 1.316 m (Choupo)");
+    expect(svg).toContain("D 1.222 m (declared)");
+    expect(svg).not.toContain("D 1.222 m (Choupo)");
   });
 
   it("refuses to claim either when the run did not publish diameterDesigned", () => {
@@ -614,11 +657,11 @@ describe("a number the case declared does not look like a number Choupo computed
     void diameterDesigned;
     const svg = columnTowerSvg({ shell, trays, hasCondenser: true,
       hasReboiler: true, hasRefluxDrum: true, kpis: rest }).svg;
-    expect(svg).toContain("D 1.316 m (provenance not published)");
+    expect(svg).toContain("D 1.222 m (provenance not published)");
     //  The DIAMETER loses its provenance mark; the height and the section
     //  diameters keep theirs, because the run did publish who computed those.
-    expect(svg).not.toContain("D 1.316 m (Choupo)");
-    expect(svg).not.toContain("D 1.316 m (declared)");
+    expect(svg).not.toContain("D 1.222 m (Choupo)");
+    expect(svg).not.toContain("D 1.222 m (declared)");
   });
 
   it("the tray spacing is the AUTHOR's and the tray COUNT is Choupo's", () => {
@@ -632,7 +675,7 @@ describe("a number the case declared does not look like a number Choupo computed
     //  EVERY note either states a provenance or is prose about the drawing.
     //  A dimension with no provenance is the state this page exists to end.
     expect(notes.filter((n) => n.who === null).map((n) => n.text))
-      .toEqual([expect.stringContaining("8.08 % apart")]);
+      .toEqual([expect.stringContaining("20.67 % apart")]);
   });
 });
 
@@ -676,11 +719,23 @@ describe("the printable page", () => {
   });
 
   it("says the sizing pass did not run rather than drawing anything", () => {
+    //  A NEGATIVE NEEDS A POSITIVE CONTROL, or it goes vacuous the day its
+    //  subject changes value and nothing says so.  This arm used to forbid
+    //  "1.316", the tower's built diameter until 2026-09-12; the feed fix made
+    //  that string absent from every rendering of this page, so the assertion
+    //  would have gone on passing while checking nothing at all.  It now names
+    //  today's diameter AND proves the page really does print it when the
+    //  sheets are there.
+    const drawn = columnDatasheetHtml(UNIT, KPIS, FILES);
+    expect(drawn, "the control: with the sheets present the page DOES print "
+      + "the diameter, so the absence below is a real absence")
+      .toContain("1.222");
+
     const html = columnDatasheetHtml(UNIT, KPIS, {});
     expect(html).toContain("The sizing pass did not run for this column");
     expect(html).not.toContain("SIZED BY CHOUPO  ·  design/…/shell");
     //  Nothing is computed in its place -- the 2026-09-05 rule.
-    expect(html).not.toContain("1.316");
+    expect(html).not.toContain("1.222");
   });
 
   it("distinguishes an UNREADABLE sheet from an absent one", () => {
