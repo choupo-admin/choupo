@@ -873,8 +873,8 @@ promising MAGNITUDES, recording a column that boils 1279 kW and condenses
 1281 kW as exchanging 1.74 kW); and **a basis changed without finding who
 reads it** (moving the denominator took the flagship from 0.163 % to 3.17 % on
 an unchanged residual and turned `energy-T2:plant` red unnoticed).  The
-physics underneath is ONE family: **a unit solves its energy equation on one
-enthalpy surface while its streams are priced on another** — ε-NTU on
+physics underneath was called ONE family: **a unit solves its energy equation
+on one enthalpy surface while its streams are priced on another** — ε-NTU on
 `cpIdealGas` against SRK-priced streams, the adiabatic `gibbsReactor` on
 `h_pure_ig`, and `column01` losing 631.96 kW (24.68 %).
 **TWO OF THOSE THREE WERE FIXED TEN MINUTES AFTER THIS PARAGRAPH WAS WRITTEN,
@@ -896,7 +896,27 @@ happened — so four cases FAIL their goldens at HEAD today for a CORRECT
 engine: `ammonia02_full_plant` (126 rows), `proxy01_gas_loop` (62),
 `combined01_brayton_rankine` (22), `combined02_brayton_rankine_shaft` (24).
 A deferred re-record is a debt, and an undated debt is indistinguishable from
-a regression.  Record:
+a regression.
+**AND THE FAMILY WAS NAMED ONE RUNG TOO LOW (2026-09-12).**  The heading above
+is a CLOSED SUBSET, not the family.  `column01` was filed under it without
+being diagnosed and does not belong there at all: both sides price on
+`H_stream_formation`, and its 631.96 kW is an ARITY defect — the feed's
+thermal state has TWO HOMES, `operation.feedQuality` (which
+`DistillationColumn.cpp:402` reads, defaulting to 1.0) and the stream's own
+`vaporFraction 0.6972418857`, and nothing reconciles them.  The right answer
+is in the same file on the other branch: the `simultaneous` path at `:1156`
+derives `qf = 1.0 - vfStream` from the STREAM and REFUSES a declaration that
+disagrees; Wang-Henke, the DEFAULT, does neither.
+The family is therefore: **THE STATE A UNIT COMPUTES WITH IS NOT THE STATE ITS
+STREAMS CARRY** — and the second home may be a dict key (`feedQuality`,
+629 kW), a fixed correction applied to the stream and not to the duty
+(`makeDistillate` vs `:805`, 2.8 kW), or an internal re-flash that ignores the
+carried label (`HeatExchanger.cpp:743` passes `pinned = false` always, 403 kW).
+WHAT PROVES THE HIGHER CUT, and it is a negative result: closing the
+exchanger's own enthalpy gap on 2026-09-08 made `combined02`'s plant residual
+WORSE, from -0.394 kW to +620.91 kW.  A surface-unification campaign predicts
+monotone improvement; unifying the surface while leaving two homes for the
+STATE merely moves which pair disagrees.  Record:
 [`docs/design/what-a-passing-suite-does-not-say.md`](docs/design/what-a-passing-suite-does-not-say.md).
 
 **A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED (2026-08-12).**
