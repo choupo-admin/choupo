@@ -8,10 +8,11 @@
     "Separations & phase equilibria",
     "Heat transfer & energy",
     "Reaction engineering",
-    "Hydraulics & control"
+    "Hydraulics & control",
+    "Flowsheeting & numerics"
   ],
-  "liveTools": 34,
-  "registryTools": 34,
+  "liveTools": 37,
+  "registryTools": 37,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -250,6 +251,27 @@
       "discipline": "Hydraulics & control",
       "teaches": "Whether a loop will be stable BEFORE it is switched on, and how much room is left: the engine sweeps a real tank one frequency per run and publishes the measured amplitude ratio and phase lag, the first-order closed form is laid over those points as the test, and then gain, lag, integrator, dead time and the PID terms are stacked into an open loop whose two crossover frequencies give the gain and phase margins.  The page states which half Choupo computes and which half it does not.",
       "href": "/app/?workspace=methods&tool=bode"
+    },
+    {
+      "id": "tear-streams",
+      "label": "Tear streams (where to cut a recycle)",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "A recycle has no first unit, so one stream must be assumed -- and WHICH one is decided by the order you declared the units in, not by how many loops you can see.  Move a unit and watch the streams flip from forward to backward, watch the tear count fall when a reorder lets one cut open two cycles, and then read Choupo's own refusal when the declaration is withdrawn: it finds the cycle, names every unit on it, and still will not choose the cut for you.",
+      "href": "/app/?workspace=methods&tool=tear-streams"
+    },
+    {
+      "id": "wegstein",
+      "label": "Wegstein acceleration (closing a recycle)",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "How one accelerator serves a tear vector holding a molar flow, a set of mole fractions and a temperature at once: it never compares them.  Each variable gets its OWN secant slope and its own coefficient, both dimensionless, both unchanged if you re-express the variable -- and the page lets you check that on screen.  The price is drawn beside it: n scalar secants are blind to the coupling Newton's Jacobian sees, and the convergence TEST, unlike the step, is not scale-free.",
+      "href": "/app/?workspace=methods&tool=wegstein"
+    },
+    {
+      "id": "active-set-qp",
+      "label": "Quadratic programming with constraints (active set)",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "The hard part of a constrained quadratic is not the algebra -- it is guessing which constraints the answer is pressed against.  Watch the working set change: a constraint ADDED when a step runs into it, DROPPED when its multiplier goes negative, on the very problem Choupo asserts to 1e-9 before every constrained optimisation.  Then meet it for real, reconciling a laboratory water analysis that does not balance on charge, where each law's Lagrange multiplier IS the number of standard deviations it moved each measurement.",
+      "href": "/app/?workspace=methods&tool=active-set-qp"
     }
   ]
 }

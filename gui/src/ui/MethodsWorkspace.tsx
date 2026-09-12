@@ -247,6 +247,15 @@ const BjerrumTool = lazy(() =>
   import("./methods/BjerrumTool.js").then((m) => ({ default: m.BjerrumTool })));
 const BodeTool = lazy(() =>
   import("./methods/BodeTool.js").then((m) => ({ default: m.BodeTool })));
+const TearStreamsTool = lazy(() =>
+  import("./methods/TearStreamsTool.js")
+    .then((m) => ({ default: m.TearStreamsTool })));
+const WegsteinTool = lazy(() =>
+  import("./methods/WegsteinTool.js")
+    .then((m) => ({ default: m.WegsteinTool })));
+const ActiveSetQpTool = lazy(() =>
+  import("./methods/ActiveSetQpTool.js")
+    .then((m) => ({ default: m.ActiveSetQpTool })));
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -437,6 +446,9 @@ export function MethodsWorkspace() {
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
             : tool === "bode" ? <BodeTool />
+            : tool === "tear-streams" ? <TearStreamsTool />
+            : tool === "wegstein" ? <WegsteinTool />
+            : tool === "active-set-qp" ? <ActiveSetQpTool />
             : <UnmountedTool tool={active} />}
         </Suspense>
       </Box>

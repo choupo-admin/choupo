@@ -64,7 +64,8 @@ export type MethodToolId =
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
-  | "sour-water" | "rules-of-thumb" | "bode";
+  | "sour-water" | "rules-of-thumb" | "bode"
+  | "tear-streams" | "wegstein" | "active-set-qp";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -102,6 +103,15 @@ export const METHOD_DISCIPLINES = [
   "Heat transfer & energy",
   "Reaction engineering",
   "Hydraulics & control",
+  //  THE SHELF THE NUMERICS LIVE ON (2026-09-12).  Three tools arrived at
+  //  once -- choosing a tear, closing it with Wegstein, and the constrained
+  //  QP inside every SQP step -- and not one of them is hydraulics, control,
+  //  separations or thermodynamics.  Filing them under an existing heading to
+  //  avoid adding one is the criterion bent by the first case that does not
+  //  fit it, which is how a boundary stops meaning anything.  It sits LAST
+  //  because it is the shelf a student reaches once the physics is settled
+  //  and the question has become how the simulator arrives at an answer.
+  "Flowsheeting & numerics",
 ] as const;
 
 export type MethodDiscipline = typeof METHOD_DISCIPLINES[number];
@@ -709,6 +719,62 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "phase margins.  The page states which half Choupo computes and which "
       + "half it does not.",
     theory: "ch:pid",
+  },
+  //  THE THREE NUMERICS PAGES (2026-09-12, Vitor: "falta o EduTools sobre
+  //  como escolher Tear Streams.  E sobre o metodo de usar o Wegstein para
+  //  fazer convergir a simulacao ... Tambem era engracado ter um EduTool
+  //  sobre programacao quadratica com constrangimentos, usando o metodo mais
+  //  famoso").  All three are `construction`: each draws a classical
+  //  construction -- a cut set over a directed graph, a secant fixed point,
+  //  an active set over a feasible region -- and each lays it over a real
+  //  engine answer, which is the ep-NTU shape.
+  //
+  //  Each names a REAL destination in docs/theoryGuide.tex, and in these
+  //  three cases the guide genuinely has the chapter (unlike `bode`, whose
+  //  anchor is an honest mismatch its own limits block declares):
+  //  ch:newton-tears, ch:wegstein and ch:active-set-qp all exist.
+  {
+    id: "tear-streams", label: "Tear streams (where to cut a recycle)",
+    discipline: "Flowsheeting & numerics", kind: "construction",
+    status: "live",
+    teaches: "A recycle has no first unit, so one stream must be assumed -- "
+      + "and WHICH one is decided by the order you declared the units in, "
+      + "not by how many loops you can see.  Move a unit and watch the "
+      + "streams flip from forward to backward, watch the tear count fall "
+      + "when a reorder lets one cut open two cycles, and then read Choupo's "
+      + "own refusal when the declaration is withdrawn: it finds the cycle, "
+      + "names every unit on it, and still will not choose the cut for you.",
+    theory: "ch:newton-tears",
+  },
+  {
+    id: "wegstein", label: "Wegstein acceleration (closing a recycle)",
+    discipline: "Flowsheeting & numerics", kind: "construction",
+    status: "live",
+    teaches: "How one accelerator serves a tear vector holding a molar flow, "
+      + "a set of mole fractions and a temperature at once: it never compares "
+      + "them.  Each variable gets its OWN secant slope and its own "
+      + "coefficient, both dimensionless, both unchanged if you re-express "
+      + "the variable -- and the page lets you check that on screen.  The "
+      + "price is drawn beside it: n scalar secants are blind to the coupling "
+      + "Newton's Jacobian sees, and the convergence TEST, unlike the step, "
+      + "is not scale-free.",
+    theory: "ch:wegstein",
+  },
+  {
+    id: "active-set-qp",
+    label: "Quadratic programming with constraints (active set)",
+    discipline: "Flowsheeting & numerics", kind: "construction",
+    status: "live",
+    teaches: "The hard part of a constrained quadratic is not the algebra -- "
+      + "it is guessing which constraints the answer is pressed against.  "
+      + "Watch the working set change: a constraint ADDED when a step runs "
+      + "into it, DROPPED when its multiplier goes negative, on the very "
+      + "problem Choupo asserts to 1e-9 before every constrained "
+      + "optimisation.  Then meet it for real, reconciling a laboratory water "
+      + "analysis that does not balance on charge, where each law's Lagrange "
+      + "multiplier IS the number of standard deviations it moved each "
+      + "measurement.",
+    theory: "ch:active-set-qp",
   },
 ];
 

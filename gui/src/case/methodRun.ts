@@ -210,22 +210,37 @@ export function methodCase(
  *  Explorer's useEngineCsv but returns the FULL RunResult (KPIs, profiles,
  *  csvFiles, trajectory) -- the method tools read those, not one CSV.
  *  `overridesKey` must change when the overrides change (JSON string of the
- *  knob values is fine); a newer spec aborts the in-flight run. */
+ *  knob values is fine); a newer spec aborts the in-flight run.
+ *
+ *  `log` IS A SEPARATE FIELD, AND ONLY BECAUSE OF THE FAILING RUN (2026-09-12).
+ *  On a run that finishes, `result.log` already carries everything; on a run
+ *  that does NOT, `result` is null by design (there is no answer to draw) and
+ *  the log was dropped with it, leaving `err` -- ONE line, picked by a reverse
+ *  search for the words error/fatal/refused/failed.  That is the right summary
+ *  for a tool whose subject is the answer, and it is the wrong one for a tool
+ *  whose subject is the REFUSAL: Choupo's sequential-plan refusal names the
+ *  cycle it found, the declaration that would close it and a valid unit order
+ *  to paste, and every one of those lines is below the line that matches.  A
+ *  page that teaches what the engine refuses must be able to show what the
+ *  engine SAID.  Carrying the log costs nothing and invents nothing -- it is
+ *  the run's own output, kept instead of discarded. */
 export function useMethodRun(
   witness: string | null,
   overrides: readonly DictOverride[],
   overridesKey: string,
   binary: "choupoSolve" | "choupoBatch" | "choupoCtrl" | "choupoProps",
-): { result: RunResult | null; err: string | null; busy: boolean } {
+): { result: RunResult | null; err: string | null; busy: boolean;
+     log: string | null } {
   const [result, setResult] = useState<RunResult | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [log, setLog] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const runSeq = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   useEffect(() => {
     if (!witness) {
       abortRef.current?.abort();
-      setResult(null); setErr(null); setBusy(false);
+      setResult(null); setErr(null); setLog(null); setBusy(false);
       return;
     }
     const t = setTimeout(() => {
@@ -233,7 +248,7 @@ export function useMethodRun(
       const ctrl = new AbortController();
       abortRef.current = ctrl;
       const seq = ++runSeq.current;
-      setBusy(true); setErr(null);
+      setBusy(true); setErr(null); setLog(null);
       void (async () => {
         try {
           const files = methodCase(witness, overrides);
@@ -247,8 +262,10 @@ export function useMethodRun(
           }
           const r = await resolved.adapter.run(files, () => {}, ctrl.signal, binary);
           if (seq !== runSeq.current) return;
+          setLog(r.log);
           if (r.status === "done") { setResult(r); setErr(null); }
           else {
+            setResult(null);
             const detail = r.log.split("\n").map((l) => l.trim()).reverse()
               .find((l) => /(?:error|fatal|refused|failed)/i.test(l));
             setErr(`${binary} did not finish${detail ? `: ${detail}` : "."}`);
@@ -267,5 +284,5 @@ export function useMethodRun(
     // callers may build it inline.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [witness, overridesKey, binary]);
-  return { result, err, busy };
+  return { result, err, busy, log };
 }
