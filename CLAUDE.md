@@ -876,10 +876,27 @@ an unchanged residual and turned `energy-T2:plant` red unnoticed).  The
 physics underneath is ONE family: **a unit solves its energy equation on one
 enthalpy surface while its streams are priced on another** — ε-NTU on
 `cpIdealGas` against SRK-priced streams, the adiabatic `gibbsReactor` on
-`h_pure_ig` while the ISOTHERMAL mode of the same unit uses
-`H_stream_formation`, and `column01` losing 631.96 kW (24.68 %).  NOT FIXED,
-all of it: only the exchanger MEASURES its own gap (`H_closure_gap_kW`), every
-remedy moves goldens, and the list goes to Vítor first.  Record:
+`h_pure_ig`, and `column01` losing 631.96 kW (24.68 %).
+**TWO OF THOSE THREE WERE FIXED TEN MINUTES AFTER THIS PARAGRAPH WAS WRITTEN,
+AND IT WENT ON SAYING "NOT FIXED" FOR FOUR DAYS AND EIGHTEEN COMMITS
+(corrected 2026-09-12).**  The doc commit is `8b0630e27` at 09:24:52 UTC; the
+fix is Vítor's own `1298dc0d5` at 09:34:15 the same morning, and git says the
+first is the ancestor of the second.  Today all four enthalpy sites in
+`GibbsReactor.cpp` are on the package's own surface, `LOOP.Converter` in the
+green-ammonia plant closes at `dH = -0.0000 kW`, and the `ammonia02` FEHE at
++0.0505 kW.  **`column01` is the one still open.**  This is §10's rule about
+this file being the next session's memory, caught doing exactly the damage it
+predicts: a general was sent to diagnose a seam that had been closed for four
+days, and the first half of its brief was spent proving the constitution
+wrong.  WHEN YOU FIX A THING THIS FILE CALLS BROKEN, FIX THE SENTENCE IN THE
+SAME COMMIT.
+**WHAT IS OWED, and it is the live half:** that fix deliberately re-recorded
+NOTHING ("per Vitor's standing instruction"), and the re-record never
+happened — so four cases FAIL their goldens at HEAD today for a CORRECT
+engine: `ammonia02_full_plant` (126 rows), `proxy01_gas_loop` (62),
+`combined01_brayton_rankine` (22), `combined02_brayton_rankine_shaft` (24).
+A deferred re-record is a debt, and an undated debt is indistinguishable from
+a regression.  Record:
 [`docs/design/what-a-passing-suite-does-not-say.md`](docs/design/what-a-passing-suite-does-not-say.md).
 
 **A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED (2026-08-12).**

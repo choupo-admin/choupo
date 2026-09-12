@@ -89,6 +89,24 @@ one enthalpy surface while its streams are priced on another.**
   unit whose correct residual is zero.  The ISOTHERMAL mode of the same unit
   uses `H_stream_formation`, so one unit runs two enthalpy surfaces depending
   on its mode.
+
+  **CLOSED the same morning, and this bullet went on claiming otherwise for
+  four days (corrected 2026-09-12).**  Vítor's `1298dc0d5` (09:34:15 UTC) put
+  all four sites on `H_stream_formation`, ten minutes after the commit that
+  wrote this page.  Measured at HEAD today: `LOOP.Converter` and `converter`
+  both report `dH = -0.0000 kW`.  What the fix did NOT do, by its own explicit
+  statement, was re-record: `ammonia02_full_plant` still fails 126 golden rows,
+  `proxy01_gas_loop` 62, `combined01` 22, `combined02` 24 — for a correct
+  engine.
+  **A SECOND SEAM IN THE SAME UNIT IS OPEN, found while checking this page.**
+  The ISOTHERMAL branch hardcodes `vf = 1.0` at its feed and reads the
+  REACTOR's pressure rather than the feed's, so a two-phase feed is priced as
+  dry vapour: `gibbs07_wgs_cooled` closes at −50.73 % with a 6.69 kW
+  imbalance, and its wrong duty (`kpi.wgs.Q_kW = -4.439`) is PINNED in the
+  golden.  It is the R-E5 contract (`flash/StreamEquilibrium.H`) broken by a
+  third reader — that header's own warning is "a rule enforced by repetition
+  is a rule with an arity of three".  Remedy measured, not guessed: the R-E5
+  pair takes it to 99.86 % and moves 9 rows across 3 cases.
 * **`DistillationColumn`.**  `column01_benzene_toluene`: reboiler +1279.30 kW,
   condenser −1281.04 kW, net −1.74 kW declared, against a dH of −633.69 kW.
   **631.96 kW unaccounted, 24.68 % of the energy the column exchanges.**  The
@@ -136,9 +154,11 @@ the flattery.
 
 ## 6. What was NOT done
 
-No physics was fixed.  The exchanger still closes in Q, the Gibbs reactor
-still solves in ideal gas, the column still loses 631.96 kW, `DRYING.SD` still
-carries −70.85 kW unexplained.  Each of those moves goldens, and the list goes
+No physics was fixed ON THE DAY THIS WAS WRITTEN, and that is the only
+reading of this sentence that stayed true: the exchanger and the Gibbs
+reactor were both fixed ten minutes later by `1298dc0d5` (see the bullets
+above, corrected 2026-09-12).  What remains open is the column's 631.96 kW,
+`DRYING.SD`'s −70.85 kW, and the isothermal-feed seam found on 2026-09-12.  Each of those moves goldens, and the list goes
 to Vítor before any of them moves.
 
 `DRYING.SD` publishes `duty = 342 831` in WATTS under the key `duty`, which is
