@@ -3351,7 +3351,13 @@ int Flowsheet::solve(const DictPtr& dict,
                     if (d > eRel) eRel = d;
                     if (d > tearTol) eConv = false;
                 }
-                scalar Ftear = 0.0; for (const auto& t : tears) Ftear += streams_[t].F;
+                //  `ProcessStream::F` is kmol/s and the column below is
+                //  labelled kmol/h -- printed raw, this table was out by a
+                //  factor of 3600 for every reader of a converging recycle.
+                //  Every other kmol/h print in this file converts (see the
+                //  stream table and the plan banner); this one did not.
+                scalar Ftear = 0.0;
+                for (const auto& t : tears) Ftear += streams_[t].F * 3600.0;
                 std::cout << "  " << std::setw(4) << outerIt
                           << "  " << std::scientific << std::setprecision(3) << std::setw(11) << lastDelta
                           << "  " << std::fixed << std::setprecision(4) << std::setw(10) << Ftear << "  kmol/h";

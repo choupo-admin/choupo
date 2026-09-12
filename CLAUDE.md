@@ -940,7 +940,7 @@ resolves it.  `stripper01_sour_water` and `stripper02_sour_water_h2s` declare no
 nothing in either case's text contradicting anything.  **A rule that reconciles
 a dict key against a DECLARED field passes both and looks complete**; the engine
 resolves instead, through `flashState::twoPhaseSplit` — the same call
-`reporting/BalanceMath.H` makes, promoted to `unitOperations/flash/` so both
+`src/reporting/BalanceMath.H` makes, promoted to `unitOperations/flash/` so both
 bands reach ONE sentence — and REFUSES a contradicting `feedQuality` naming both
 numbers and both remedies with their values filled in.  Thirteen cases refused;
 eleven had the stream right and lost the dict key, two had only ever said it in
@@ -2265,9 +2265,10 @@ the flatten seam in `Flowsheet::validateSequentialPlan` (shared by choupoSolve
 + choupo-lint; `-init0` keeps its own UNREACHED accounting): **every material
 input = domain inlet ∨ EARLIER unit's output ∨ declared tear; every declared
 tear = a backward edge closing a REAL cycle.**  This SUBSUMES "graph−tears is
-acyclic" and validates the order itself.  Six named refusals (MISSING TEAR
+acyclic" and validates the order itself.  SEVEN named refusals (MISSING TEAR
 with the cycle chain · INVALID ORDER with a paste-ready valid order · FORWARD
-/ OFF-CYCLE / UNKNOWN / INLET tear), findings collected, remedy-bearing; a
+/ OFF-CYCLE / UNKNOWN / INLET / UNCONSUMED tear), findings collected,
+remedy-bearing; a
 valid recycle plan ANNOUNCES its cuts (`[plan]`, verbosity ≥ 2).  Cycle
 *detection* is the engine's job; tear *choice* stays the author's (energy
 heat-link feedback stays auto-detected — the asymmetry material/energy is in

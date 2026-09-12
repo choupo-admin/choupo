@@ -197,7 +197,7 @@ export const SOURWATER_TABLE = [
   { q: "m_HCO3  [mol/kg]", top: "0.14620364", bottom: "5.6325275e-06" },
   { q: "m_HS  [mol/kg]", top: "0.27828666", bottom: "0.28854884" },
   { q: "m_H2Saq  [mol/kg]", top: "0", bottom: "0.008247863" },
-  { q: "T  [K]", top: "356.430868411", bottom: "372.031545214" },
+  { q: "T  [K]", top: "356.430868413", bottom: "372.031545213" },
 ] as const;
 
 export function SourWaterTool(): JSX.Element {
