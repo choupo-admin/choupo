@@ -8,7 +8,7 @@ stream  hotShell               F                1.66527777778    1e-4
 kpi     hx                     C_cold           167630.972222    1e-4
 kpi     hx                     C_hot            125728.472222    1e-4
 kpi     hx                     C_r              0.750031277368   1e-4
-kpi     hx                     LMTD             15.5339177262    1e-4
+kpi     hx                     LMTD             15.4921080564    1e-4
 kpi     hx                     NTU              1.26058061182    1e-4
 kpi     hx                     Nu_shell         171.621364606    1e-4
 kpi     hx                     Nu_tube          287.732215939    1e-4
@@ -22,9 +22,9 @@ kpi     hx                     R_wall           3.26515488161e-05 1e-4
 kpi     hx                     Re_shell         36846.9260866    1e-4
 kpi     hx                     Re_tube          46602.6324222    1e-4
 kpi     hx                     T_cold_in        300              1e-4
-kpi     hx                     T_cold_out       312.322331568    1e-4
+kpi     hx                     T_cold_out       312.357739991    1e-4
 kpi     hx                     T_hot_in         330              1e-4
-kpi     hx                     T_hot_out        313.57090972     1e-4
+kpi     hx                     T_hot_out        313.524184462    1e-4
 kpi     hx                     U                3400.64253957    1e-4
 kpi     hx                     UA               158490.874436    1e-4
 kpi     hx                     area             46.6061553345    1e-4
@@ -37,12 +37,12 @@ kpi     hx                     f_tube           0.00537680738626 1e-4
 kpi     hx                     h_inner          10959.8375488    1e-4
 kpi     hx                     h_outer          6533.369397      1e-4
 kpi     hx                     nBaffles         15               1e-4
-stream  coldOut                T                312.322331568    1e-4
+stream  coldOut                T                312.357739991    1e-4
 stream  coldTube               T                300              1e-4
-stream  hotOut                 T                313.57090972     1e-4
+stream  hotOut                 T                313.524184462    1e-4
 stream  hotShell               T                330              1e-4
 utility hx                     heating.-.carried 1                1e-4
 boundary global                 H_feeds_kW       11660.2416512    1e-4
 boundary global                 Q_boundary_kW    0                1e-4
-boundary global                 H_products_kW    11660.180959     1e-4
-boundary global                 residual_kW      0.0606921659346  1e-4
+boundary global                 H_products_kW    11660.2416546    1e-4
+kpi     hx                     H_closure_gap_kW 3.40482074535e-06 1e-4
