@@ -50,7 +50,13 @@ percentage shape, so every case printing the second one fell through into
 boundary streams" -- FALSE of all 74 of them, which have feeds, products and a
 real residual.  MEASURED 2026-09-12: 23 of those 74 carry |residual| above
 1 kW, the worst being `evaporator02_triple_effect_sugar` at -6162.5019 kW --
-the very number CLAUDE.md quotes when it states the rule.  A gate built to
+the very number CLAUDE.md quotes when it states the rule.  (LATER THE SAME
+DAY that -6162.5019 kW was diagnosed and fixed -- the case's chest steam
+declared no phase, so the plant's whole energy input was priced as liquid
+water; see `docs/design/the-word-that-was-not-there.md`.  It reads +134.1741
+kW now and the worst entry in the kW ledger is `column08_radfrac_multidraw`
+at -891.9801.  The paragraph above is the measurement that JUSTIFIED this
+gate and is left as it was taken; read KNOWN_OPEN_KW for today's numbers.)  A gate built to
 refuse an unpinned first-law violation was reading only the channel the rule
 had removed, and said OK.
 
@@ -300,8 +306,13 @@ RATCHET = 0.2
 BAND_KW = 1.0
 
 #  The kW ratchet, in TWO parts, because one number cannot serve a list
-#  spanning 1.03 kW to 6162.50 kW -- a flat 0.2 kW is 19.5 % of the smallest
-#  pin and 0.0032 % of the largest.  MEASURED against the arm that already
+#  spanning 1.03 kW to 891.98 kW -- a flat 0.2 kW is 19.5 % of the smallest
+#  pin and 0.022 % of the largest.  (The span was 1.03 to 6162.50 kW until
+#  2026-09-12, when the evaporator family's chest steam stopped being priced
+#  as liquid water: evaporator02 went from -6162.5019 to +134.1741 kW and the
+#  five single-effect cases from ~-485/-821 to ~+18.  The two-part shape is
+#  unchanged and so are both constants -- the ARGUMENT for them is the parity
+#  with the percentage arm below, not the width of the list.)  MEASURED against the arm that already
 #  exists: across KNOWN_OPEN the 0.2 pp ratchet is between 18 % (tsa01, pinned
 #  1.112 %) and 0.117 % (esterification2sector, pinned 170.979 %) of the pin it
 #  guards.  So the relative floor here is 0.1 % -- the tightest relative grip
@@ -339,8 +350,7 @@ KNOWN_OPEN = {
     "tutorials/steady/gibbs/gibbs07_wgs_cooled": 150.7280,
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash": 150.7280,
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": 150.6790,
-    "tutorials/steady/heat/phasechange01_partial_condenser": 142.5260,
-    "tutorials/steady/optimisation/designSpec01_triple_equal_areas": 118.0420,
+    "tutorials/steady/optimisation/designSpec01_triple_equal_areas": 2.3240,
     "tutorials/steady/reactors/acetone02_luyben_reactor": 25.1790,
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate": 37.9820,
     "tutorials/steady/reactors/pfr_polyesterification": 18.3420,
@@ -372,14 +382,14 @@ KNOWN_OPEN_KW = {
     "tutorials/steady/drying/sprayDryer05_whey": -18.3191,
     "tutorials/steady/drying/sprayDryer06_rea": -2.6584,
     "tutorials/steady/drying/sprayDryer07_design": -2.6584,
-    "tutorials/steady/evaporation/evaporator02_triple_effect_sugar": -6162.5019,
-    "tutorials/steady/evaporation/evaporator06_nacl_pitzer": -485.6942,
-    "tutorials/steady/evaporation/evaporator07_nacl_enrtl": -485.9664,
-    "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat": -821.3462,
-    "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine": -485.1832,
+    "tutorials/steady/evaporation/evaporator02_triple_effect_sugar": 134.1741,
+    "tutorials/steady/evaporation/evaporator06_nacl_pitzer": 17.8991,
+    "tutorials/steady/evaporation/evaporator07_nacl_enrtl": 17.6269,
+    "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat": 17.9760,
+    "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine": 18.4102,
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 42.8610,
     "tutorials/steady/heat/coolingTower01_merkel": -14.5302,
-    "tutorials/steady/thermoTest/model2_pitzer_evaporator": -485.6942,
+    "tutorials/steady/thermoTest/model2_pitzer_evaporator": 17.8991,
     "tutorials/steady/userops/userOp01_yield_reactor": -3.7126,
 }
 

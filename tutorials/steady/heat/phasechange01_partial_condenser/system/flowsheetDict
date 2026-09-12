@@ -23,6 +23,18 @@
 
   Same outlet vocabulary as rankine02_water's IF97 boiler/condenser, on the
   GENERIC (Antoine + Raoult) backend.
+
+  A NOTE THIS CASE EARNED THE HARD WAY (2026-09-12).  The line above has said
+  "feedVapour (superheated, 1 bar, 390 K, vf = 1)" since the case was written,
+  and `0/feedVapour` did not say it -- the file declared T and P and no phase.
+  Prose is not a channel the engine reads.  So `phaseChanger` took vf = 0, and
+  a unit whose entire subject is condensation published Q_latent_kW = +370.98:
+  a POSITIVE latent term, with the sensible term carrying -1001.49 to make the
+  total duty come out right.  The total was right, both halves were wrong, and
+  the plant's first law was out by -898.64 kW at exit 0 -- pinned at 142.526 %
+  in `check_energy_closure` and looked at by nobody.  `0/feedVapour` now
+  carries `phase gas;`, the run closes at 0.0000 kW, and that pin is GONE
+  rather than re-measured.  Record: docs/design/the-word-that-was-not-there.md
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

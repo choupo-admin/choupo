@@ -28,6 +28,7 @@ License
 
 #include "Evaporator.H"
 #include "solver/NewtonRaphson.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 #include "streams/StreamMass.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/electrolyte/ElectrolyteModel.H"
@@ -39,6 +40,7 @@ License
 #include <iomanip>
 #include <numeric>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
@@ -82,8 +84,90 @@ int Evaporator::solve(const DictPtr& dict,
         if (zsum > 0.0) for (auto& v : z) v /= zsum;
     }
 
-    // ---- Heating steam: T (F is ignored here; computed below) ----
+    // ---- Heating steam: T (F is read below, with the duty it sets) ----
     const scalar T_steam = steamDict->lookupScalar("T", Dims::temperature);
+    const scalar P_chest = steamDict->lookupScalarOrDefault("P", 0.0);
+
+    //  ---- THE CHEST MUST ARRIVE AS VAPOUR, AND UNTIL NOW NOBODY ASKED ----
+    //
+    //  This unit's duty is `Q = F_chest * dHvap(T_steam)` (below).  That single
+    //  line ASSERTS a complete condensation, saturated vapour -> saturated
+    //  liquid, and the unit read only `T` and `F` off the chest stream: `vf`
+    //  appeared nowhere in this file except on the three outlets.  So a chest
+    //  stream carrying LIQUID water was accepted in silence, the unit delivered
+    //  its full latent heat to the process, and the plant boundary -- which
+    //  prices the same stream on what it carries -- credited none of it.
+    //
+    //  Measured 2026-09-12 on the six evaporator cases whose chest file omits
+    //  the word: `H(chest inlet)` and `H(condensate outlet)` came out EQUAL TO
+    //  THE LAST PRINTED DIGIT, so the chest leg contributed exactly 0.000000 kW
+    //  where the unit had just spent 487.49 kW of it.  `evaporator06` published
+    //  a first-law residual of -485.694246 kW -- 99.6 % of its own duty -- at
+    //  exit 0, and five more read the same number because they read the same
+    //  file.
+    //
+    //  WHY THE CASES LOOKED RIGHT.  A saturated steam supply sits exactly ON
+    //  the saturation curve, and that is the one place where (T, P) cannot say
+    //  which side of it you are on: `0/saturatedSteam130C` declares
+    //  T = 401.6288333 K and P = 270000 Pa, and the case's own Antoine returns
+    //  Psat(401.6288333) = 270000.72 Pa.  The state is correct and incomplete,
+    //  and the default for the missing word is LIQUID.
+    //
+    //  The rule and its posture are `DistillationColumn`'s, from the same week
+    //  and the same family (`resolveStreamThermalState`, one home in
+    //  `flash/StreamEquilibrium.H`): resolve the stream at its own (T, P, z)
+    //  unless the author PINNED it, then refuse a disagreement by name and
+    //  name the edit.  The engine may not choose which of the two is true.
+    {
+        auto steamComp = steamDict->subDict("composition");
+        sVector zSteam(n, 0.0);
+        scalar  zsSum = 0.0;
+        for (const auto& key : steamComp->keys())
+        {
+            const std::size_t i = thermo.indexOf(key);
+            zSteam[i] = steamComp->lookupScalar(key);
+            zsSum    += zSteam[i];
+        }
+        if (zsSum > 0.0) for (auto& v : zSteam) v /= zsSum;
+
+        const std::string sName =
+            steamDict->lookupWordOrDefault("streamName", "the heating steam");
+        const std::string uName = dict->name();
+        const auto chest = flashState::resolveStreamThermalState(
+            steamDict, T_steam, P_chest, zSteam, thermo,
+            "evaporator '" + uName + "' heating steam '" + sName + "'");
+
+        if (chest.vf < 1.0 - 1.0e-6)
+        {
+            std::ostringstream os;
+            os.setf(std::ios::fixed);
+            os << std::setprecision(6);
+            os << "Evaporator '" << uName << "': the heating stream '" << sName
+               << "' is not vapour -- its thermal state at T = " << T_steam
+               << " K, P = " << P_chest << " Pa is vapour fraction "
+               << chest.vf << " (" << chest.origin << ").\n"
+                  "  This unit's duty is Q = F_chest * dHvap(T_steam), which"
+                  " ASSERTS that the chest stream condenses completely from"
+                  " saturated vapour to saturated liquid.  A chest that arrives"
+                  " as liquid carries none of that heat across the plant"
+                  " boundary, so the unit would spend energy the first law"
+                  " never sees -- and the engine will not choose between the"
+                  " model and the stream.  Pick the one that is TRUE of your"
+                  " chest:\n"
+                  "    * it IS steam -> add `phase gas;` to the stream's"
+                  " state file `0/" << sName << "`.  The word is needed even"
+                  " when the state looks unmistakable: a SATURATED supply sits"
+                  " exactly ON the saturation curve, the one place where"
+                  " (T, P) cannot say which side it is on, and a SUPERHEATED"
+                  " one resolves single-phase -- which this engine reports as"
+                  " `no split` rather than as `vapour`, so the carried default"
+                  " stands.  That default is LIQUID.\n"
+                  "    * it is NOT steam -> this unit is the wrong model for"
+                  " it; an evaporator heated by a sensible-heat medium needs a"
+                  " duty that is not a latent heat.";
+            throw std::runtime_error(os.str());
+        }
+    }
 
     // ---- Operation: HARDWARE parameters only (Mode 2) ----
     //  Per the credo, the operation block carries only hardware /
@@ -503,6 +587,27 @@ int Evaporator::solve(const DictPtr& dict,
     conc.P    = P_op;
     conc.z    = x_L;
     conc.vf   = 0.0;
+    //  ---- THESE THREE STATES ARE DECLARATIONS, NOT GUESSES ---------------
+    //  R-E2: an unpinned (T, P, z) MEANS its own equilibrium, so every reader
+    //  downstream -- the balance report, the next unit's own chest check --
+    //  re-solves an outlet this unit left unpinned.  For an evaporator that
+    //  re-solve is not idempotent and not even well posed: the liquor leaves
+    //  AT its boiling point and the vapour and condensate leave ON the
+    //  saturation curve, where a pure-component flash has no answer at all
+    //  (K == 1 identically, so Rachford-Rice is satisfied for every V/F).
+    //
+    //  Measured on `evaporator02_triple_effect_sugar`: `cond1` and the chest
+    //  steam are the same pure water at the same (392.1781136 K, 200000 Pa),
+    //  and the flash returned the bisection midpoint V/F = 0.500000000 for
+    //  BOTH -- half a latent heat invented on each, 2796.44 kW apiece, which
+    //  cancelled exactly and so showed up as a chest that delivered nothing.
+    //  `L3` re-solved to V/F = 0.302676 and double-counted 703.80 kW of
+    //  evaporation this unit had already separated into `V3`.
+    //
+    //  So the unit says what it means.  The liquor is boiling liquid, the
+    //  solvent vapour is vapour, the condensate is the spent chest.  Each is a
+    //  statement this model makes, and a declaration is never re-solved.
+    conc.phasePinned = true;
     produced_.push_back(conc);
 
     ProcessStream vap;
@@ -512,15 +617,27 @@ int Evaporator::solve(const DictPtr& dict,
     vap.P    = P_op;
     vap.z    = y_V;
     vap.vf   = 1.0;
+    vap.phasePinned = true;                 // see `conc.phasePinned` above
     produced_.push_back(vap);
 
     ProcessStream cond;
     cond.name = "condensate";
     cond.F    = F_steam_kmols;
     cond.T    = T_steam;
-    cond.P    = 0.0;
+    //  THE CONDENSATE LEAVES THE CHEST, SO IT LEAVES AT THE CHEST'S PRESSURE.
+    //  It used to be written as 0.0 and filled in by `Flowsheet.cpp`'s
+    //  `if (s.P <= 0.0) s.P = P_inherit`, where `P_inherit` is the FIRST
+    //  input's pressure -- the PROCESS FEED, not the steam chest.  On
+    //  `evaporator06` that put a 128.48 C condensate at 1 bar, a state whose
+    //  own Psat is 2.7 bar: superheated vapour by a factor of 2.7, labelled
+    //  vf = 0.  Nothing caught it because the electrolyte packages register no
+    //  "vapor"-typed phase and never re-solve anything -- a trap waiting for
+    //  the day they do.  A pressure taken from the wrong inlet is the same
+    //  arity defect as a phase taken from nowhere.
+    cond.P    = (P_chest > 0.0) ? P_chest : 0.0;
     cond.z    = y_cond;
     cond.vf   = 0.0;
+    cond.phasePinned = true;                // see `conc.phasePinned` above
     // The condensate IS the heating utility's RETURN LEG -- the same physical
     // carrier that entered as the steam utility, leaving spent.  It inherits
     // the utility category so the GUI renders both legs in the utility

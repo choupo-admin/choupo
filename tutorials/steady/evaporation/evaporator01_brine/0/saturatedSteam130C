@@ -17,3 +17,21 @@ componentMolarFlows
 
 T               401.6288333 K;
 P               270000 Pa;
+
+//  WHY THIS ONE WORD IS LOAD-BEARING.
+//  `phase gas;` is not decoration here: without it the engine reads this stream
+//  as LIQUID water, and an evaporator chest full of liquid carries none of the
+//  latent heat its unit is about to spend.  The plant's first law then reports
+//  a hole exactly the size of the duty -- 1083.31 kW here, this case's whole duty -- at exit 0.
+//
+//  The trap is that the state above is CORRECT and INCOMPLETE.  A saturated
+//  supply sits exactly ON the saturation curve, and that is the one place where
+//  (T, P) cannot say which side of it you are on: this case's own Antoine for
+//  water returns Psat(401.6288333 K) = 270000.72 Pa against the P declared above.
+//  Both phases are possible at that point, the author knows which one and the
+//  file did not say, and the default for the missing word is liquid.
+//
+//  Since 2026-09-12 the `evaporator` REFUSES a chest that is not vapour rather
+//  than spending heat the boundary never sees.  Record:
+//  docs/design/the-word-that-was-not-there.md
+phase           gas;

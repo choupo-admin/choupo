@@ -64,6 +64,7 @@ Description
 #pragma once
 
 #include "core/Advisory.H"
+#include "core/Dictionary.H"
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/flash/IsothermalFlash.H"
@@ -278,6 +279,63 @@ inline std::optional<FlashSolution> twoPhaseSplit(scalar               T,
     if (fs && fs->V_over_F > 1.0e-9 && fs->V_over_F < 1.0 - 1.0e-9)
         return fs;
     return std::nullopt;
+}
+
+//  ---- THE SAME QUESTION, ASKED OF A STREAM DICT ----------------------------
+//
+//  A unit does not hold a `ProcessStream`; the flowsheet hands it a dictionary
+//  (`Flowsheet::streamToDict` / the `feed {}` block), so a unit that must know
+//  which phase its inlet is in has to read `vf` + `phasePinned` off that dict
+//  and then apply exactly the rule above.  That was written out once inside
+//  `DistillationColumn.cpp` (2026-09-12, the feed-quality slice) and a second
+//  unit needed it the same week -- the evaporator, whose chest steam it never
+//  read at all.  Two copies of a rule about second homes is the joke this
+//  project has already paid for twice, so the rule lives here, beside the
+//  primitive it calls.
+//
+//  WHY RESOLVE RATHER THAN READ THE DECLARED FIELD.  A stream that declares no
+//  `vaporFraction` is not thereby a liquid: it is unpinned, and an unpinned
+//  (T, P, z) MEANS its own equilibrium (R-E2).  `origin` records which of the
+//  three routes answered, so a refusal or a banner can say HOW it knows.
+struct StreamThermalState
+{
+    scalar                       vf = 0.0;   //  the vapour fraction actually used
+    std::optional<FlashSolution> split;      //  the resolution, when it is two-phase
+    std::string                  origin;     //  how `vf` was arrived at, for the log
+};
+
+inline StreamThermalState resolveStreamThermalState(const DictPtr&       streamDict,
+                                                    scalar               T,
+                                                    scalar               P,
+                                                    const sVector&       z,
+                                                    const ThermoPackage& thermo,
+                                                    const std::string&   locus,
+                                                    const char*          category = "model")
+{
+    StreamThermalState st;
+    const scalar vfCarried = streamDict->lookupScalarOrDefault("vf", 0.0);
+    const bool   pinned    =
+        streamDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+
+    st.split = twoPhaseSplit(T, P, z, pinned, vfCarried, thermo,
+                             locus, category);
+
+    if (st.split)
+    {
+        st.vf     = st.split->V_over_F;
+        st.origin = "resolved at its own (T, P, z)";
+    }
+    else
+    {
+        //  Not a split: either the author PINNED a single phase (a declaration
+        //  is never re-solved) or the resolution said single-phase / could not
+        //  tell.  Price what the stream carries -- which is what the balance
+        //  report does in the same state, by the same rule.
+        st.vf     = vfCarried;
+        st.origin = pinned ? "declared by the stream"
+                           : "carried by the stream (single phase)";
+    }
+    return st;
 }
 
 } // namespace flashState

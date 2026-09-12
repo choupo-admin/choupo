@@ -18,3 +18,21 @@ componentMolarFlows
 
 T               390 K;
 P               100000 Pa;
+
+//  WHY THIS ONE WORD IS LOAD-BEARING, AND IT IS NOT THE SATURATION-CURVE TRAP.
+//  A 50/50 benzene-toluene mixture at 390 K and 1 bar is UNAMBIGUOUSLY vapour:
+//  it is well above its dew point and no equation is in doubt.  The engine
+//  still read it as liquid, because a stream that declares no phase is priced
+//  on the `vf` it carries (default 0) unless the resolution comes back as a
+//  genuine TWO-PHASE split -- and a converged SINGLE-PHASE answer is not a
+//  split, so `flashState::twoPhaseSplit` returns nothing and the default
+//  stands.  "Unmistakable" is not a channel the engine reads.
+//
+//  The cost was not confined to a report.  `phaseChanger` DOES read this
+//  stream's `vf` (PhaseChanger.cpp:183), so the omission corrupted the ANSWER:
+//  the condenser published Q_latent_kW = +370.98 -- a POSITIVE latent term on a
+//  unit whose whole purpose is condensation -- and the plant's first law was
+//  out by -898.64 kW.  With the word present the run closes at 0.0000 kW and
+//  the split reads Q_latent -556.47 / Q_sensible -74.04.
+//  Record: docs/design/the-word-that-was-not-there.md
+phase           gas;

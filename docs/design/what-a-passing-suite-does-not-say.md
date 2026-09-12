@@ -136,7 +136,13 @@ Recorded because the pattern is the lesson, not the code.
   FLOOR for a plant that declares no duty and carries no boundary heat, and
   the `noBoundary` guard does not catch it because such a plant HAS feeds and
   products.  `evaporator02_triple_effect_sugar` published a real −6162.5 kW
-  residual as **−6.16e14 %**.  A percentage of nothing is not a large
+  residual as **−6.16e14 %**.  (That −6162.5 kW was itself a defect, and it
+  was diagnosed and fixed on 2026-09-12: the case's chest steam declared no
+  phase, so the plant's whole energy input was priced as liquid water — see
+  `the-word-that-was-not-there.md`.  It publishes +134.17 kW today.  The
+  lesson in this bullet is about the DENOMINATOR and is unaffected: a plant
+  that receives its energy as material steam still has no exchanged-energy
+  scale, and the ratio is still UNAVAILABLE.)  A percentage of nothing is not a large
   percentage; it is not a percentage.  Absent a scale, the kW stands and the
   ratio is UNAVAILABLE — empty CSV cell, `null` in the JSON, withheld in the
   GUI.

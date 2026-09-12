@@ -2443,6 +2443,33 @@ PYEOF
     fi
     rm -f /tmp/feedstate.$$
 
+    # evaporator chest-phase gate (2026-09-12).  The same family as the one
+    # above, and the first member where the second home is a MISSING WORD
+    # rather than a conflicting one.  An evaporator's duty is
+    # Q = F_chest * dHvap(T_steam), which ASSERTS a complete condensation, and
+    # the unit read only T and F off the chest stream.  Six shipped cases
+    # declared a chest on the saturation curve and no phase -- the one place
+    # where (T, P) cannot say which side of it you are on -- so the engine's
+    # default made it liquid, H(chest in) and H(condensate out) came out equal
+    # to the last digit, and the plant boundary credited exactly 0.00 kW of a
+    # 487.49 kW duty.  -485.694246 kW on evaporator06, -6162.501950 kW on
+    # evaporator02, at exit 0.  The unit REFUSES a non-vapour chest now and
+    # DECLARES its three outlet states, and the refusal caught a case nobody
+    # had flagged on its first run: evaporator05's tear seeds started the
+    # Wegstein loop from a liquid chest.  Seven sabotages; two results did not
+    # match the prediction and are recorded in the gate's own docstring --
+    # S3 is caught structurally and NOT behaviourally, and a presence-based
+    # arm (e) was measured to survive S4 at exit 0.
+    if "$ROOT/bin/curate/check_evaporator_chest_phase.py" > /tmp/chestphase.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "evaporator-chest-phase-gate" "$(gate_claim check_evaporator_chest_phase /tmp/chestphase.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_evaporator_chest_phase.py)\n" "evaporator-chest-phase-gate"
+        cat /tmp/chestphase.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/chestphase.$$
+
     # thiele-pellet gate (2026-08-19).  The owner's own number-one request:
     # the Thiele modulus with the intraparticle CONCENTRATION FIELD.  The
     # engine solves the pellet BVP by central differences on NewtonND and

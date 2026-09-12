@@ -224,6 +224,15 @@ DictPtr streamToDict(const ProcessStream& s, const ThermoPackage& thermo)
     // the same utility (e.g. the evaporator condensate).
     if (!s.category.empty()) out->insert("category", s.category);
     out->insert("vf", s.vf);
+    //  THE SAME TWO FACTS THE SINGLE-INLET `feed {}` BLOCK ALREADY CARRIES
+    //  (see buildAugmentedDict below).  A MULTI-inlet unit got neither, so it
+    //  could not tell an AUTHORED pin from an upstream answer (R-E2: a duty
+    //  may price a declared constraint, never an inferred one) and a refusal
+    //  it raised could not say WHICH of its inlets was at fault.  Measured on
+    //  the evaporator, whose chest steam is inlet 2 of 2.  Read only by units
+    //  that ask; a unit cannot be harmed by a key it does not read.
+    out->insert("phasePinned", s.phasePinned ? 1.0 : 0.0);
+    out->insert("streamName", s.name);
     auto cd = std::make_shared<Dictionary>("composition");
     for (std::size_t i = 0; i < thermo.n(); ++i)
         cd->insert(thermo.comp(i).name(), s.z[i]);

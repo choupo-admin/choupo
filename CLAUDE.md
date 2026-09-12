@@ -905,7 +905,10 @@ belong there at all: both sides price on `H_stream_formation`.  The family is:
 **THE STATE A UNIT COMPUTES WITH IS NOT THE STATE ITS STREAMS CARRY** — and the
 second home may be a dict key, a fixed correction applied to the stream and not
 to the duty, or an internal re-flash that ignores the carried label
-(`HeatExchanger.cpp:743` passes `pinned = false` always).
+(`HeatExchanger.cpp:743` passes `pinned = false` always) — **or there may be NO
+home at all, and a DEFAULT supplies the answer** (the evaporator paragraph
+below; that shape is the hardest of the four to see, because a contradiction
+gives you two numbers to compare and an absence gives you none).
 WHAT PROVES THE HIGHER CUT, and it is a negative result: closing the
 exchanger's own enthalpy gap on 2026-09-08 made `combined02`'s plant residual
 WORSE, from -0.394 kW to +620.91 kW.  A surface-unification campaign predicts
@@ -962,6 +965,44 @@ fraction can tell the two rules apart; arm (e) also found a THIRD reader while
 the fix was being written, `solveForRecovery` printing a `q` the column no
 longer used, which is the 2026-08-04 banner trap again).  Record:
 [`docs/design/the-state-a-unit-computes-with.md`](docs/design/the-state-a-unit-computes-with.md).
+
+**AND THE EVAPORATOR HALF, WHERE THE SECOND HOME WAS A MISSING WORD
+(2026-09-12, same day).**  Rule: **a unit whose duty ASSERTS a phase must READ
+that phase off the stream and refuse a disagreement** — `Q = F_chest ·
+ΔHvap(T_steam)` asserts a complete condensation, and the evaporator read only
+`T` and `F`.  Six cases declared a chest with no phase, the engine's default
+made it liquid, `H(chest in)` and `H(condensate out)` came out equal to the
+last printed digit, and the boundary credited **exactly 0.00 kW** of a
+487.49 kW duty.  **The trap is that those files are CORRECT and INCOMPLETE:** a
+saturated supply sits exactly ON the saturation curve — the case's own Antoine
+returns Psat(401.6288333 K) = 270000.72 Pa against a declared 270000 — and that
+is the one place where (T, P) cannot say which side of it you are on.  Three
+things this slice paid for, each a trap in its own right.  **A pure-component
+flash asked a question on the saturation curve has no answer**: K ≡ 1, so
+Rachford-Rice is satisfied for every V/F and the bisection returned its own
+midpoint, `V/F = 0.500000000`, on BOTH ends of one chest — *two wrong numbers
+that cancel are invisible*, and `fs.converged` was true.  **"Unmistakable" is
+not a channel the engine reads**: a converged SINGLE-phase resolution is not a
+split, so `twoPhaseSplit` returns nothing and the carried default stands — which
+is why `phasechange01_partial_condenser`, whose 50/50 benzene-toluene feed the
+engine's own resolution finds single-phase vapour at 390 K and 1 bar, was
+priced as a LIQUID and published a POSITIVE latent heat on a condenser; it closes at 0.0000 kW now and its pin is **out** of
+`check_energy_closure`, not re-measured.  And **a tear seed is an inlet on the
+first pass** — the new refusal caught `evaporator05`'s `0/V1`/`0/V2` starting a
+counter-current Wegstein loop from a liquid chest, in a case nobody had
+flagged, with its golden unmoved.  Also fixed: the condensate took its pressure
+from `Flowsheet.cpp`'s `P_inherit`, which is the FIRST input's — the process
+feed, not the chest.  ONE home for the reading
+(`flashState::resolveStreamThermalState`, moved beside `twoPhaseSplit` because
+the column had written it four days earlier).  **NOT fixed, and RESERVED for
+Vítor:** the +17.6…+18.4 kW that remains on five plants (and +134 on the triple
+effect) is the unit's Watson `Hvap_latent` against `H_stream_formation`, 3.30 %
+apart on water at 401.63 K — **no pin was removed by it, the debt merely shrank
+27×**.  Gate: `check_evaporator_chest_phase` (7 sabotages; two results did not
+match the prediction and are recorded as measured — S3 is caught STRUCTURALLY
+and not behaviourally, and a presence-based arm (e) was measured to survive S4
+at exit 0).  Record:
+[`docs/design/the-word-that-was-not-there.md`](docs/design/the-word-that-was-not-there.md).
 
 **A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED (2026-08-12).**
 An unreadable block does not fail — it just stops being checked, silently,

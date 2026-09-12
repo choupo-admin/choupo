@@ -211,12 +211,16 @@ ProcessStream makeDistillate(const ThermoPackage& thermo,
 //  This function is the one home for the whole question, because the column has
 //  TWO solver paths that each used to answer it for themselves -- the same
 //  reason `makeDistillate` above exists.
-struct FeedThermalState
-{
-    scalar                       vf = 0.0;   //  the vapour fraction actually used
-    std::optional<FlashSolution> split;      //  the resolution, when it is two-phase
-    std::string                  origin;     //  how `vf` was arrived at, for the log
-};
+//  MOVED, 2026-09-12 (the evaporator chest-steam slice).  The struct and the
+//  three-route resolution below it are now
+//  `flashState::StreamThermalState` / `resolveStreamThermalState` in
+//  `unitOperations/flash/StreamEquilibrium.H`, beside the `twoPhaseSplit`
+//  primitive they call -- because a SECOND unit needed exactly this sentence
+//  (the evaporator, which never read its chest steam's phase at all) and two
+//  copies of a rule about second homes is the joke this file has already paid
+//  for.  The alias keeps this file's own vocabulary: a column's inlet is a
+//  FEED, and the reader here should not have to translate.
+using FeedThermalState = flashState::StreamThermalState;
 
 FeedThermalState resolveFeedThermalState(const DictPtr&       feedDict,
                                          scalar               T,
@@ -225,33 +229,11 @@ FeedThermalState resolveFeedThermalState(const DictPtr&       feedDict,
                                          const ThermoPackage& thermo,
                                          const std::string&   unitName)
 {
-    FeedThermalState st;
-    const scalar vfCarried = feedDict->lookupScalarOrDefault("vf", 0.0);
-    const bool   pinned    =
-        feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
     const std::string sName =
         feedDict->lookupWordOrDefault("streamName", "the feed");
-
-    st.split = flashState::twoPhaseSplit(
-        T, P, z, pinned, vfCarried, thermo,
+    return flashState::resolveStreamThermalState(
+        feedDict, T, P, z, thermo,
         "distillationColumn '" + unitName + "' feed '" + sName + "'", "model");
-
-    if (st.split)
-    {
-        st.vf     = st.split->V_over_F;
-        st.origin = "resolved at its own (T, P, z)";
-    }
-    else
-    {
-        //  Not a split: either the author PINNED a single phase (a declaration
-        //  is never re-solved) or the resolution said single-phase / could not
-        //  tell.  Price what the stream carries -- which is what the balance
-        //  report does in the same state, by the same rule.
-        st.vf     = vfCarried;
-        st.origin = pinned ? "declared by the feed stream"
-                           : "carried by the feed stream (single phase)";
-    }
-    return st;
 }
 
 //  Price a feed on the state that was RESOLVED for it, by the rule
