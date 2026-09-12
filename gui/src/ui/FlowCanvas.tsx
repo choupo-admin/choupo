@@ -1079,7 +1079,31 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                 Stop
               </Button>
             ) : (
-              <Button size="xs" color="accent" variant="filled"
+              /*  THE BUTTON SAYS WHETHER PRESSING IT WOULD CHANGE WHAT YOU
+                  ARE LOOKING AT (2026-09-12).  It was `accent filled` in
+                  every state, so after a successful run it went on shouting
+                  the primary action beside a badge saying the result was
+                  already loaded -- two surfaces, one fact, disagreeing.
+                  Three states now, and each reads as what it is:
+
+                    no result yet      accent filled   -- this IS the thing to do
+                    result, current    default         -- done; re-running is
+                                                          available, not urgent
+                    result, stale      orange filled   -- needed again, and
+                                                          ORANGE because that is
+                                                          already the colour of
+                                                          the `Result is stale`
+                                                          badge two elements to
+                                                          the left.  One fact,
+                                                          one colour.
+
+                  No new state: `runResult` and `stale` are both already in
+                  scope and are the same two the badge above reads.  The
+                  variant carries the weight and the LABEL already carries the
+                  reason, so nothing here depends on colour alone.  */
+              <Button size="xs"
+                color={stale.stale ? "orange" : "accent"}
+                variant={runResult && !stale.stale ? "default" : "filled"}
                 leftSection={<IconPlayerPlay size={14} />}
                 onClick={() => window.dispatchEvent(new CustomEvent("choupo:run"))}
                 title={stale.stale
