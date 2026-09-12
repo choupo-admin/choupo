@@ -245,6 +245,8 @@ const FlashOperatingLineTool = lazy(() =>
     .then((m) => ({ default: m.FlashOperatingLineTool })));
 const BjerrumTool = lazy(() =>
   import("./methods/BjerrumTool.js").then((m) => ({ default: m.BjerrumTool })));
+const BodeTool = lazy(() =>
+  import("./methods/BodeTool.js").then((m) => ({ default: m.BodeTool })));
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -434,6 +436,7 @@ export function MethodsWorkspace() {
             : tool === "ponchon-savarit" ? <PonchonSavaritTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
+            : tool === "bode" ? <BodeTool />
             : <UnmountedTool tool={active} />}
         </Suspense>
       </Box>

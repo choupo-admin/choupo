@@ -10,8 +10,8 @@
     "Reaction engineering",
     "Hydraulics & control"
   ],
-  "liveTools": 33,
-  "registryTools": 33,
+  "liveTools": 34,
+  "registryTools": 34,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -243,6 +243,13 @@
       "discipline": "Hydraulics & control",
       "teaches": "Five valves, five inventories, two left for composition: the cross-section shows which measurement drives which valve, the cited authorities disagree in the open, and the sensor tray is computed from the column's own profile — the slope criterion and the sensitivity criterion, which pick different trays.",
       "href": "/app/?workspace=methods&tool=column-control"
+    },
+    {
+      "id": "bode",
+      "label": "Frequency response (Bode diagram)",
+      "discipline": "Hydraulics & control",
+      "teaches": "Whether a loop will be stable BEFORE it is switched on, and how much room is left: the engine sweeps a real tank one frequency per run and publishes the measured amplitude ratio and phase lag, the first-order closed form is laid over those points as the test, and then gain, lag, integrator, dead time and the PID terms are stacked into an open loop whose two crossover frequencies give the gain and phase margins.  The page states which half Choupo computes and which half it does not.",
+      "href": "/app/?workspace=methods&tool=bode"
     }
   ]
 }

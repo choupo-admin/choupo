@@ -39,8 +39,8 @@ bin/choupo-thermoml sync                      # fetch the archive (once)
 bin/choupo-thermoml index                     # build the local index
 bin/choupo-thermoml search ammonia            # what is there for a compound
 bin/choupo-thermoml search nitrogen --online  # search the remote catalogue
-bin/choupo-thermoml extract nitrogen --into data/local/evidence
-bin/choupo-thermoml extract nitrogen --allow-mixture --into data/local/evidence
+bin/choupo-thermoml extract nitrogen --into data/local
+bin/choupo-thermoml extract nitrogen --allow-mixture --into data/local
 bin/choupo-thermoml extract-vle <query> --block N
 ```
 

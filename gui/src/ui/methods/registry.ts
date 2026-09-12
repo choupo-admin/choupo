@@ -64,7 +64,7 @@ export type MethodToolId =
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
-  | "sour-water" | "rules-of-thumb";
+  | "sour-water" | "rules-of-thumb" | "bode";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -679,6 +679,36 @@ export const METHOD_TOOLS: MethodTool[] = [
     kind: "selection", status: "live",
     teaches: "Five valves, five inventories, two left for composition: the cross-section shows which measurement drives which valve, the cited authorities disagree in the open, and the sensor tray is computed from the column's own profile — the slope criterion and the sensitivity criterion, which pick different trays.",
     theory: "sec:column-control",
+  },
+  //  THE FREQUENCY-DOMAIN PAGE (2026-09-12, Vitor: "nas EduTools ficaria bem
+  //  em controlo uma explicacao do diagrama de Bode com exemplos interativos
+  //  educativos").  It is a `construction` and not `notes` because there IS a
+  //  classical construction on it -- two crossovers read off two curves, and
+  //  a margin measured between a curve and a line -- and because its measured
+  //  half is an engine answer the construction is laid over, which is the
+  //  ep-NTU shape exactly.
+  //
+  //  THE THEORY ANCHOR IS AN HONEST MISMATCH AND THE PAGE SAYS SO.  Every
+  //  live tool must name a real \label{} in docs/theoryGuide.tex, and that
+  //  guide has NO frequency-response section (searched 2026-09-12 for bode /
+  //  frequency response / amplitude ratio: one passing mention of a sinusoid
+  //  inside the PRBS paragraph, no section).  `ch:pid` is the nearest true
+  //  destination -- it derives the controller whose three terms the page
+  //  draws -- and BODE_LIMITS carries the gap in its own words rather than
+  //  leaving a reader to find it by following the link.  Writing the guide
+  //  section is the remedy and it is not a gui/ change.
+  {
+    id: "bode", label: "Frequency response (Bode diagram)",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    teaches: "Whether a loop will be stable BEFORE it is switched on, and how "
+      + "much room is left: the engine sweeps a real tank one frequency per "
+      + "run and publishes the measured amplitude ratio and phase lag, the "
+      + "first-order closed form is laid over those points as the test, and "
+      + "then gain, lag, integrator, dead time and the PID terms are stacked "
+      + "into an open loop whose two crossover frequencies give the gain and "
+      + "phase margins.  The page states which half Choupo computes and which "
+      + "half it does not.",
+    theory: "ch:pid",
   },
 ];
 
