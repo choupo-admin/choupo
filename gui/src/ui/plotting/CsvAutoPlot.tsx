@@ -1331,8 +1331,12 @@ function buildPlot(mode: TxyMode,
         font: {...darkLayout.font, size: 14 },
       },
       xaxis: compAxis(`liquid mole fraction   x_${comp}`),
+      // darkLayout.YAXIS: this read `darkLayout.xaxis` — the two objects happen
+      // to be identical today, so nothing on screen was wrong, but an axis
+      // styled from the other axis's declaration goes silently wrong the day
+      // they differ.
       yaxis: {
-...darkLayout.xaxis,
+...darkLayout.yaxis,
         title: { text: `vapour mole fraction   y_${comp}` },
         range: [0, 1],
         autorange: false,

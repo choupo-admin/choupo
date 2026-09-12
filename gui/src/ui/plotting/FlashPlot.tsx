@@ -60,6 +60,8 @@ import {
 
 export function FlashPlot({ csv, compA, compB, P }: {
   csv: string;
+  /** The two components of the binary, as a PAIR — the order is not read.
+   *  Which of them the axes carry is the CSV's own statement (see below). */
   compA: string;
   compB: string;
   P: number;        // case pressure (Pa) — the curve is frozen at this P
@@ -71,8 +73,8 @@ export function FlashPlot({ csv, compA, compB, P }: {
 
   const curve = useMemo(() => eqCurveFromTxyCsv(csv), [csv]);
 
-  // The feed composition z (mole fraction of compA = the curve's indexed
-  // component).  A knob the student drags along the diagonal.
+  // The feed composition z (mole fraction of the curve's indexed component —
+  // `axisComp` below).  A knob the student drags along the diagonal.
   const [z, setZ] = useState(0.5);
   // spec mode: T (default — read V/F) or V/F (read T).  Duhem: pick 2 of {T,P,VF}.
   const [spec, setSpec] = useState<"T" | "VF">("T");
@@ -90,6 +92,17 @@ export function FlashPlot({ csv, compA, compB, P }: {
       </Alert>
     );
   }
+
+  //  WHICH COMPONENT THE AXES CARRY IS THE CSV'S OWN STATEMENT.  The engine
+  //  sweeps x of the MORE VOLATILE component of the pair
+  //  (methodFeeds.binaryVleSpec reorders by Tb so y*(x) sits above the
+  //  diagonal), and `eqCurveFromTxyCsv` reads that name straight off the header
+  //  `x[<comp>]`.  So the pair arrives here as a SET and the axis component is
+  //  read, never inferred from the argument order: a caller that listed the
+  //  pair the other way round previously labelled BOTH axes, both badges and
+  //  the feed guide for the component that is not on them.
+  const axisComp = curve.comp;
+  const partnerComp = compA === axisComp ? compB : compA;
 
   const Tlo = Math.min(env.Tbubble, env.Tdew);
   const Thi = Math.max(env.Tbubble, env.Tdew);
@@ -117,7 +130,7 @@ export function FlashPlot({ csv, compA, compB, P }: {
     // feed z: a vertical guide on x = z up to the diagonal (where the feed
     // point sits, z on both coordinates) — the lever pivots here.
     {
-      type: "scatter", mode: "lines", name: `feed z (${compA})`,
+      type: "scatter", mode: "lines", name: `feed z (${axisComp})`,
       x: [z, z], y: [0, z],
       line: { color: PLOT_COLORS.warm2, width: 1, dash: "dash" },
       hoverinfo: "skip",
@@ -193,8 +206,8 @@ export function FlashPlot({ csv, compA, compB, P }: {
       {/* live readout badges */}
       <Group gap="xs" wrap="wrap">
         <Badge size="lg" variant="filled" color="accent" tt="none">V/F = {sol.VF.toFixed(3)}</Badge>
-        <Badge size="lg" variant="light" color="cyan" tt="none">x ({compA}) = {sol.xLiq.toFixed(3)}</Badge>
-        <Badge size="lg" variant="light" color="orange" tt="none">y ({compA}) = {sol.yVap.toFixed(3)}</Badge>
+        <Badge size="lg" variant="light" color="cyan" tt="none">x ({axisComp}) = {sol.xLiq.toFixed(3)}</Badge>
+        <Badge size="lg" variant="light" color="orange" tt="none">y ({axisComp}) = {sol.yVap.toFixed(3)}</Badge>
         <Badge size="lg" variant="light" color="grape" tt="none">
           T = {formatSig(tConv(sol.T))} {tUnit}{spec === "VF" ? " (result)" : ""}
         </Badge>
@@ -256,11 +269,11 @@ export function FlashPlot({ csv, compA, compB, P }: {
         layout={{
           ...darkLayout,
           title: {
-            text: `Binary flash  ·  ${compA} / ${compB}  ·  P = ${formatSig(paToDisplay(P, Pu))} ${pressureLabel(Pu)}`,
+            text: `Binary flash  ·  ${axisComp} / ${partnerComp}  ·  P = ${formatSig(paToDisplay(P, Pu))} ${pressureLabel(Pu)}`,
             font: { ...darkLayout.font, size: 14 },
           },
-          xaxis: { ...darkLayout.xaxis, title: { text: `x of ${compA} (liquid)` }, range: [0, 1] },
-          yaxis: { ...darkLayout.yaxis, title: { text: `y of ${compA} (vapour)` }, range: [0, 1], scaleanchor: "x", scaleratio: 1 },
+          xaxis: { ...darkLayout.xaxis, title: { text: `x of ${axisComp} (liquid)` }, range: [0, 1] },
+          yaxis: { ...darkLayout.yaxis, title: { text: `y of ${axisComp} (vapour)` }, range: [0, 1], scaleanchor: "x", scaleratio: 1 },
           legend: { ...darkLayout.legend, x: 0.02, y: 0.98 },
           showlegend: true,
         }}

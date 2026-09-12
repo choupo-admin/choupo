@@ -50,6 +50,9 @@ import { PurePhaseDiagram } from "./plotting/PurePhaseDiagram.js";
 import { BinaryLlePlot } from "./plotting/BinaryLlePlot.js";
 import { FlashPlot } from "./plotting/FlashPlot.js";
 import { dropCsvColumn } from "./plotting/csvShape.js";
+import {
+  shapeSteamCsv, steamViewKey, steamViews, type SteamMode,
+} from "./plotting/steamViews.js";
 import { CompoundBrowser } from "./explore/CompoundBrowser.js";
 import { componentsInSearch } from "./explore/selectionLink.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
@@ -59,7 +62,7 @@ import {
   panelBoxProps, usePanel, usePanelShortcut, type PanelHandle,
 } from "./panelContract.js";
 import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
-import { binaryVleSpec } from "../case/methodFeeds.js";
+import { binaryVleSpec, orderBinaryByVolatility } from "../case/methodFeeds.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
 import { type PlotKind, viewsFor } from "../case/exploreViews.js";
 import { theoryUrl } from "../case/exploreTheory.js";
@@ -244,45 +247,9 @@ function parseFormulaAtoms(formula: string): { [el: string]: number } {
 // column I [mol/kg] is dropped there so it reads out as text, not on the SI
 // axis; the T-x-y family drops the liquid_stable probe column the same way.)
 
-// Steam tables (IF97): which CSV columns each property pick shows, and the
-// rename that keeps the plot's unit heuristic HONEST.  The steam CSVs are
-// MASS-basis SI (J/kg, J/(kg·K), m³/kg) while the generic plot maps the bare
-// tokens h/s/v/cp to MOLAR units — so the kept columns are renamed to steam-
-// specific names (hf, hg, …, hmass, …) the unit map labels correctly.  Pure
-// column selection/renaming on the engine's CSV — zero physics in TS.
-const STEAM_SAT_VIEWS: Record<string, { label: string; keep: string[]; rename: Record<string, string> }> = {
-  h:    { label: "h (h_f, h_g, h_fg)", keep: ["h_f", "h_g", "h_fg"],
-          rename: { h_f: "hf", h_g: "hg", h_fg: "hfg" } },
-  s:    { label: "s (s_f, s_g)", keep: ["s_f", "s_g"], rename: { s_f: "sf", s_g: "sg" } },
-  v:    { label: "v (v_f, v_g)", keep: ["v_f", "v_g"], rename: { v_f: "vf", v_g: "vg" } },
-  psat: { label: "psat", keep: ["psat"], rename: {} },
-};
-const STEAM_ISO_VIEWS: Record<string, { label: string; keep: string[]; rename: Record<string, string> }> = {
-  h:  { label: "h", keep: ["h"], rename: { h: "hmass" } },
-  s:  { label: "s", keep: ["s"], rename: { s: "smass" } },
-  v:  { label: "v", keep: ["v"], rename: { v: "vmass" } },
-  cp: { label: "cp", keep: ["cp"], rename: { cp: "cpmass" } },
-};
-
-/** Keep T + the chosen property columns of a steam CSV (renamed per the view).
- *  The mixed-magnitude full table (psat ~1e7 Pa beside v_f ~1e-3 m³/kg) is
- *  unreadable on one axis — one property family at a time reads best. */
-function shapeSteamCsv(csv: string, mode: "saturation" | "isobar", prop: string): string {
-  const view = (mode === "saturation" ? STEAM_SAT_VIEWS : STEAM_ISO_VIEWS)[prop];
-  if (!view) return csv;
-  const lines = csv.trim().split(/\r?\n/);
-  if (lines.length === 0) return csv;
-  const header = lines[0]!.split(",").map((s) => s.trim());
-  const keep = header.map((h, i) => ({ h, i })).filter(({ h }) => h === "T" || view.keep.includes(h));
-  if (keep.length < 2) return csv;   // stale CSV from another mode — pass through
-  return [
-    keep.map(({ h }) => view.rename[h] ?? h).join(","),
-    ...lines.slice(1).map((l) => {
-      const cells = l.split(",");
-      return keep.map(({ i }) => cells[i] ?? "").join(",");
-    }),
-  ].join("\n");
-}
+// (The IF97 view tables + shapeSteamCsv moved to plotting/steamViews.ts — the
+// "which property view is in force" decision had a copy here and a copy in the
+// toolbar, and after a mode switch they disagreed.  One home, unit-tested.)
 
 /** First and last value of a named CSV column (the scan end-points). */
 function csvColumnEnds(csv: string, name: string): { first: number; last: number } | null {
@@ -439,7 +406,7 @@ export function ExploreWorkspace() {
   // Steam tables (IF97): mode + per-mode T range (canonical SI, K) + isobar P.
   // Saturation defaults span the region-1/2-on-the-line validity (0.01–350 °C);
   // the isobar defaults match the tutorial's 1 bar / 20–300 °C scan.
-  const [steamMode, setSteamMode] = useState<"saturation" | "isobar">("saturation");
+  const [steamMode, setSteamMode] = useState<SteamMode>("saturation");
   const [steamProp, setSteamProp] = useState("h");   // display-side column pick
   const [satFrom, setSatFrom] = useState(273.16);    // K (0.01 °C)
   const [satTo, setSatTo] = useState(623.15);        // K (350 °C)
@@ -550,6 +517,20 @@ export function ExploreWorkspace() {
 
   const isVle = plotType === "txy" || plotType === "gamma" || plotType === "flash";
   const isTernary = plotType === "ternary" || plotType === "ternaryLle";
+  //  THE LABEL MUST NAME THE PAIR THE SPEC RAN, not the order they were picked
+  //  in.  `binaryVleSpec` puts the MORE VOLATILE component on the x axis
+  //  (orderBinaryByVolatility, so y*(x) sits above the diagonal), so the
+  //  engine's CSV is `x[<volatile>] , T_bubble , y_eq_<volatile>` whichever way
+  //  the reader chose the two.  Labelling from `selected` instead drew the
+  //  T-x-y title as "ethanol / ethanol" and labelled the flash's x AND y axes
+  //  for the component that is NOT on them (picking water first, then ethanol).
+  //  MethodsWorkspace already reorders here for exactly this reason; this is
+  //  the same read of the same ONE home, not a second rule.
+  const vlePair = useMemo<[string, string] | null>(
+    () => (selected.length === 2
+      ? orderBinaryByVolatility([selected[0]!, selected[1]!], catalogue)
+      : null),
+    [selected, catalogue]);
   // Scan mode is DERIVED from the property (correct-by-construction): a
   // per-component property is a pure-component comparison; anything else is a
   // mixture scalar.  No manual toggle that could pick a physically-wrong combo.
@@ -1658,14 +1639,16 @@ export function ExploreWorkspace() {
             const sTo = steamMode === "saturation" ? satTo : isoTo;
             const setSFrom = steamMode === "saturation" ? setSatFrom : setIsoFrom;
             const setSTo = steamMode === "saturation" ? setSatTo : setIsoTo;
-            const views = steamMode === "saturation" ? STEAM_SAT_VIEWS : STEAM_ISO_VIEWS;
-            const propPick = views[steamProp] ? steamProp : "h";
+            const views = steamViews(steamMode);
+            // ONE home (plotting/steamViews.ts): the SAME resolution the plot
+            // applies, so the label here and the columns drawn cannot diverge.
+            const propPick = steamViewKey(steamMode, steamProp);
             return (
               <>
                 <Tooltip label="saturation curve: the region-4 line with the f/g property pairs (regions 1/2 evaluated on the line, valid 0.01–350 °C).  isobar: h, s, v, cp vs T at fixed P — crossing Tsat jumps the properties." multiline w={280} withArrow>
                   <Box>
                     <SegmentedControl size="xs" color="accent" value={steamMode}
-                      onChange={(v) => setSteamMode((v as "saturation" | "isobar") ?? "saturation")}
+                      onChange={(v) => setSteamMode((v as SteamMode) ?? "saturation")}
                       data={[
                         { value: "saturation", label: "saturation" },
                         { value: "isobar", label: "isobar" },
@@ -1844,7 +1827,8 @@ export function ExploreWorkspace() {
                 // tie-line through the feed z; T/P knobs move the split, the
                 // lever rule gives V/F — pure TS, no WASM re-solve.
                 <FlashPlot csv={dropCsvColumn(csv, "liquid_stable")}
-                  compA={selected[0] ?? ""} compB={selected[1] ?? ""} P={fixedP} />
+                  compA={vlePair?.[0] ?? selected[0] ?? ""}
+                  compB={vlePair?.[1] ?? selected[1] ?? ""} P={fixedP} />
               ) : plotType === "bjerrum" && spec.bjerrum ? (
                 // Its own renderer, not CsvAutoPlot: the generic 1-D scan can
                 // draw these curves but cannot say on the axis that its x is an
@@ -1877,7 +1861,7 @@ export function ExploreWorkspace() {
                   filename={EXPLORE_OUTPUT}
                   referenceLines={plotType === "scaling" ? SI_REFERENCE : undefined}
                   secondaryColumn={plotType === "scaling" ? "pH" : undefined}
-                  txyPartner={plotType === "txy" ? selected[1] : undefined}
+                  txyPartner={plotType === "txy" ? (vlePair?.[1] ?? selected[1]) : undefined}
                   txyP={plotType === "txy" ? fixedP : undefined}
                   ternaryLabels={selected.length === 3
                     ? [selected[0]!, selected[1]!, selected[2]!] : undefined} />
