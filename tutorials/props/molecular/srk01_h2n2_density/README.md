@@ -64,9 +64,23 @@ in this tree, and the case ships the proof that neither is the answer.
 **Knob 1 — a better hydrogen.** The catalogue's `H2.dat` carries hydrogen's
 *true* critical constants (T_c = 33.18 K, ω = −0.220). The standard remedy for
 hydrogen in a cubic equation of state is to substitute **quantum-corrected
-effective constants** (T_c = 41.67 K, P_c = 20.77 bar, ω = 0). Drop them into
-`constant/components/H2.dat` — a case-local record overlays the standard entry
-field by field — and re-run.
+effective constants** (T_c = 41.67 K, P_c = 20.77 bar, ω = 0).
+
+This case is **sealed**, so it already ships its own copy of the hydrogen
+record at `constant/components/H2.dat`, and a sealed case is forbidden the
+installation catalogue. **Edit the three constants in that file** — do not
+replace it with a short one, which would leave hydrogen with no vapour
+pressure and no Cp, and the run refuses by name. Then re-run.
+
+Two things will happen, and both are the engine working rather than failing:
+
+* the run prints a `[seal]` line naming `constant/components/H2.dat` as
+  changed, because the manifest's claim that this case reproduces
+  Choupo-2608 is now stale — it **announces and continues**, since the case
+  belongs to its author;
+* `bin/runTests` on this case will report a **KPI mismatch**, because the
+  answer really did move. That is the golden master doing its job. Restore the
+  file (`git checkout`) to get back to a passing case.
 
 **Knob 2 — the missing binary interaction parameter.** `data/standards/parameters/SRK/`
 holds no N₂–H₂ pair, so the run announces `kij = 0`. Write one case-locally and

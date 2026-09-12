@@ -265,8 +265,24 @@ def main() -> int:
                            / rho * 100.0)
             return sum(acc) / len(acc)
 
-        base = Path(tmp) / "eff"
-        shutil.copytree(CASE, base)
+        #  A PROBE COPY IS UNSEALED, and that is not a shortcut.  The case
+        #  is SEALED, so its `constant/` mirrors the catalogue records and the
+        #  runtime is FORBIDDEN the installation catalogue.  A six-line
+        #  overlay dropped in there would therefore be the WHOLE hydrogen
+        #  record -- no Cp, no vapour pressure -- and the run refuses; and
+        #  editing the mirrored record instead trips the seal's own sha256,
+        #  which is the seal working.  Both are correct behaviour, and
+        #  neither is the experiment.  So each throwaway copy drops the
+        #  manifest and resolves against the live catalogue, which is exactly
+        #  the state this case was measured in before it was sealed.
+        def unsealed_copy(name):
+            d = Path(tmp) / name
+            shutil.copytree(CASE, d)
+            (d / "constant/propertyManifest").unlink(missing_ok=True)
+            shutil.rmtree(d / "constant/components", ignore_errors=True)
+            return d
+
+        base = unsealed_copy("eff")
         (base / "constant/components").mkdir(parents=True, exist_ok=True)
         #  Quantum-corrected effective constants for hydrogen (Gunn, Chueh &
         #  Prausnitz's correction, in the fixed form process simulators use).
@@ -288,8 +304,7 @@ def main() -> int:
                 "pure-component problem.  Something changed; re-measure and "
                 "rewrite the case rather than widening this arm")
 
-        floor_case = Path(tmp) / "kij"
-        shutil.copytree(CASE, floor_case)
+        floor_case = unsealed_copy("kij")
         (floor_case / "constant/parameters/SRK").mkdir(parents=True, exist_ok=True)
         tp = floor_case / "constant/thermoPhysPropDict"
         tp.write_text(tp.read_text().replace(

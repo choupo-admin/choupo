@@ -1,0 +1,47 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-09-12";
+    importerVersion    "3";
+    records
+    {
+        "components/H2.dat"
+        {
+            type          imported;
+            sha256        "e07f084f1938f56999daf89bd8b139b23341e7194f33568b34406fea36aa1992";
+            computationalSha256 "a1dfad6211458c5c2cf05b7abd38fa7e7ef1604f53ef8fcc94128090979e6707";
+            origin        "data/standards/components/H2.dat";
+            originSha256  "6da8e880ce158c1362acdea2dd3821ed1712f7c58a8f6751025bc59c4c62cac5";
+            release       Choupo-2608;
+        }
+        "components/N2.dat"
+        {
+            type          imported;
+            sha256        "d746fd08ec3dbc71cb5ec1b8aa163d170d3f600ac855ff1a6fc844f4a5581bea";
+            computationalSha256 "8a10295e2eb81dece508460c79cc11bc597110e4bb447b800bb273c32411a91b";
+            origin        "data/standards/components/N2.dat";
+            originSha256  "ab6c11329dcfe0b5cf71a1600a9b17aa924a952e3b93aa42c13defb2bfb5c1dd";
+            release       Choupo-2608;
+        }
+    }
+}

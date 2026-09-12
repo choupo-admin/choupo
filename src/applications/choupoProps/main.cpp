@@ -63,6 +63,7 @@ Description
 #include "propertyOps/PropertyOperation.H"
 #include "propertyOps/ConstantEstimator.H"
 #include "thermo/Database.H"
+#include "thermo/SealCheck.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/PropertyContext.H"
@@ -419,6 +420,18 @@ try
 
     auto controlDict = Dictionary::fromFile(resolveUp("system/controlDict"));
     const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
+
+    //  THE FOURTH BINARY.  choupoSolve, choupoBatch and choupoCtrl have each
+    //  called this since the runtime seal check was built; choupoProps never
+    //  did, so 93 sealed cases -- the whole props corpus, which is exactly
+    //  where records are curated, fitted and edited -- ran with the manifest
+    //  claiming a provenance nothing verified.  Reproduced 2026-09-12 by
+    //  changing Tc, Pc and omega in a sealed case's own mirrored H2 record:
+    //  exit 0, the answer moved, and not one line was printed.  The comment
+    //  at choupoSolve's call site describes that failure exactly; it had been
+    //  fixed in three places out of four.
+    records::verifySeal(verbosity);
+
     thermoAnnounceLevel() = verbosity;   // gate the load-phase thermo chorus too
     //  A whole FILE nobody reads is the unread-key defect one level up
     //  (scoping: docs/design/solverdict-consolidation-scope.md; Vitor's
