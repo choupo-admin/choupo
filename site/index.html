@@ -25,8 +25,20 @@
     --night: #101614;
     --night-soft: #1b2421;
     --line: #cfd7d2;
-    --line-dark: #35413d;
+    --line-dark: #5a6a64;
     --teal: #008f83;
+    /*  ONE TOKEN CANNOT SERVE TWO BACKGROUNDS (2026-09-12).  `--teal` was used
+        as a FOREGROUND on the paper/white sections AND as a foreground on the
+        near-black `.dark` ones, and no single value passes both: #008f83 reads
+        3.65:1 on --paper and 3.99:1 on white (below the 4.5:1 body minimum)
+        while any value dark enough to fix that collapses on --night.  So the
+        two roles are now two tokens -- `--teal-ink` for text on a LIGHT
+        surface (7.28:1 on --paper, 7.97:1 on white) and `--teal-bright` for
+        text on a DARK one (8.61:1 on --night) -- and `--teal` keeps only its
+        BACKGROUND and BORDER roles, where its own contrast is not the
+        question.  #0c5b52 is not a new colour: site/releases.html already
+        ships exactly this value as its own `--teal`. */
+    --teal-ink: #0c5b52;
     --teal-bright: #16c7b5;
     --yellow: #e2b84d;
     --coral: #df725d;
@@ -48,7 +60,7 @@
   .wrap { width: min(1160px, calc(100% - 48px)); margin: 0 auto; }
   .eyebrow {
     margin: 0 0 12px;
-    color: var(--teal);
+    color: var(--teal-ink);
     font-size: 13px;
     font-weight: 800;
     text-transform: uppercase;
@@ -61,6 +73,17 @@
   .section-head { margin-bottom: 42px; }
   .dark { color: var(--white); background: var(--night); }
   .dark .lede { color: #b8c5c0; }
+  /*  The eyebrow's LIGHT-surface colour cannot be read on --night, so the dark
+      sections take the bright teal -- 8.61:1 -- exactly as `.hero .eyebrow`
+      already did.  Without this rule `--teal-ink` would land at 2.30:1 here. */
+  /*  The containers that paint --night are `.dark`, `.hero` (and `.trace` /
+      `.commands` / `footer`, which carry no accent text).  Anything tinted
+      inside them takes the BRIGHT teal; the first version of this rule listed
+      `.dark` alone and the rendered audit immediately found the hero's own
+      release link still at 2.30:1 -- which is why the selector list is checked
+      against the page rather than reasoned about. */
+  .dark .eyebrow, .hero .eyebrow { color: var(--teal-bright); }
+  .dark .text-link, .hero .text-link { color: var(--teal-bright); }
 
   .nav {
     position: sticky;
@@ -81,8 +104,14 @@
   .brand img { width: 30px; height: 36px; object-fit: contain; }
   .brand span { font-size: 18px; }
   .nav-links { display: flex; align-items: center; gap: 24px; }
-  .nav-links a { color: #c1cdc8; font-size: 14px; font-weight: 650; text-decoration: none; }
-  .nav-links a:hover, .nav-links a:focus-visible { color: var(--white); }
+  /*  `:not(.button)` IS THE FIX, not a tidy-up.  `.nav-links a` (0,2,0) beats
+      `.button` (0,1,0), so the primary call to action in the header was
+      painted #c1cdc8 -- the nav LINK grey -- on the bright teal fill instead
+      of the near-black the button declares: 1.30:1, measured in the rendered
+      page, the worst pair on the site.  A grep could not find it; only a
+      cascade could.  The same idiom is already used by the 620px rule below. */
+  .nav-links a:not(.button) { color: #c1cdc8; font-size: 14px; font-weight: 650; text-decoration: none; }
+  .nav-links a:not(.button):hover, .nav-links a:not(.button):focus-visible { color: var(--white); }
 
   .button {
     display: inline-flex;
@@ -172,7 +201,7 @@
   .capability:nth-child(4) .number { color: #7fc3e5; }
   .capability p { margin: 10px 0 0; color: #b8c5c0; }
   .capability ul { margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 7px; list-style: none; }
-  .capability li { border: 1px solid #43514c; border-radius: 4px; padding: 5px 8px; color: #d7e0dc; font-size: 12px; }
+  .capability li { border: 1px solid #60706a; border-radius: 4px; padding: 5px 8px; color: #d7e0dc; font-size: 12px; }
 
   .workflow-list { border-top: 1px solid var(--line); }
   .workflow {
@@ -183,7 +212,7 @@
     padding: 28px 0;
     border-bottom: 1px solid var(--line);
   }
-  .workflow .type { color: var(--teal); font-size: 13px; font-weight: 850; text-transform: uppercase; }
+  .workflow .type { color: var(--teal-ink); font-size: 13px; font-weight: 850; text-transform: uppercase; }
   .workflow p { margin: 0; color: var(--muted); }
 
   .evidence-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 54px; align-items: start; }
@@ -196,7 +225,11 @@
   .evidence-copy p { color: #b8c5c0; }
   .evidence-copy .caution { border-left: 3px solid var(--yellow); padding-left: 16px; color: #e4dac0; }
 
-  .start-band { color: var(--white); background: var(--teal); }
+  /*  The band's own BACKGROUND was the problem: at --teal #008f83 its eyebrow
+      read 3.36:1 and its body copy 3.78:1.  Deepening the band to --teal-ink
+      lifts all three pairs at once (6.70 / 7.54 / 7.97:1) and changes no
+      foreground. */
+  .start-band { color: var(--white); background: var(--teal-ink); }
   .start-grid { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center; }
   .start-band .eyebrow { color: #baf7ef; }
   .start-band p { max-width: 760px; margin: 12px 0 0; color: #e0fffa; font-size: 18px; }
@@ -212,7 +245,7 @@
   .resource:nth-child(2) { border-color: var(--yellow); }
   .resource:nth-child(3) { border-color: var(--coral); }
   .resource p { min-height: 66px; color: var(--muted); }
-  .text-link { color: var(--teal); font-weight: 800; }
+  .text-link { color: var(--teal-ink); font-weight: 800; }
 
   .citation { display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; border: 1px solid var(--line); border-left: 5px solid var(--teal); padding: 26px; background: var(--white); }
   .citation p { margin: 0; color: var(--muted); }
@@ -239,12 +272,12 @@
     background: var(--line); border: 1px solid var(--line); }
   .edutool-shelf { grid-column: 1 / -1; margin: 0; padding: 12px 20px 10px;
     background: var(--white); font-size: 13px; font-weight: 800;
-    letter-spacing: .06em; text-transform: uppercase; color: var(--teal); }
+    letter-spacing: .06em; text-transform: uppercase; color: var(--teal-ink); }
   .edutool { display: block; padding: 22px 20px; background: var(--white); text-decoration: none; }
   .edutool:hover, .edutool:focus-visible { background: #eef8f5; }
   .edutool h3 { margin: 0 0 8px; font-size: 17px; }
   .edutool p { margin: 0; color: var(--muted); font-size: 14px; }
-  .edutool-go { display: inline-block; margin-top: 14px; color: var(--teal); font-size: 13px; font-weight: 800; }
+  .edutool-go { display: inline-block; margin-top: 14px; color: var(--teal-ink); font-size: 13px; font-weight: 800; }
   .edutool-note { margin: 22px 0 0; color: var(--muted); font-size: 14px; }
   .edutool-msg { grid-column: 1 / -1; margin: 0; padding: 30px 20px; color: var(--muted); background: var(--white); }
 
