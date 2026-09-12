@@ -232,13 +232,43 @@ passes with 205 cases out of reach and accuses none of their pins; (c) the
 standalone run, which cannot build a `code/` case, files userOp01 under
 `unrun` and does not accuse its pin either.
 
-A FINDING THE FULL-CORPUS SEED RETURNED, recorded and NOT acted on:
-`proxy01_gas_loop` is pinned at 118.1200 % and now measures 51.9550 %.  The
-percentage ratchet is one-directional -- it catches a debt that GROWS and the
-stale-pin arm catches one that reaches the band -- so a debt that HALVES moves
-in silence.  The pin is a claim about the engine that is half true.  Whether a
-two-sided ratchet is wanted is the architect's call; re-pinning it is not this
-commit's business.
+THE RATCHET IS TWO-SIDED (2026-09-12), AND THE ARGUMENT IS NOT A POLICY --
+IT IS THAT THIS GATE ALREADY HELD THE RULE AND APPLIED IT ONLY IN THE LIMIT.
+The stale-pin arm fails a pinned case the moment its residual reaches the
+band: a debt that shrank all the way to nothing must be re-measured, and
+saying so was never controversial.  But the growth arm was one-directional,
+so a debt that shrank PART of the way passed in silence.  The two together
+gave the gate a discontinuous rule -- a case falling from 1.2 % to 0.9 %
+FAILED while one falling from 118 % to 52 % did not -- and that is not a
+judgement anybody took, it is the shape two arms happened to leave between
+them.  A pin is a MEASUREMENT, and a measurement that moved in either
+direction is a claim about the engine that stopped being true.  So the shrink
+arm now fails with the same words as the growth arm and a different reason
+attached: this is GOOD NEWS, re-measure and re-pin.  The band arm is its
+limiting case, and the rule is continuous again.
+
+The second reason is not sentiment about ledger hygiene.  A pin left high
+after the engine improved is HEADROOM: a later regression can climb all the
+way back to the stale number without any arm seeing it.  Silence about an
+improvement buys silence about the regression that undoes it.
+
+MEASURED THE SAME DAY, over the full steady corpus: exactly ONE pin had
+drifted, and it had drifted DOWNWARD -- `proxy01_gas_loop`, pinned at
+118.1200 % and measuring 51.9550 %.  It is re-pinned here at the measured
+value.  Every other entry in both ledgers reproduced its pin, which is what
+makes this arm safe to arm today rather than a corpus-wide re-pinning.
+
+WHAT THIS GATE STILL CANNOT DO, and it is the next slice rather than a
+blind spot to leave unnamed: it cannot rank its own ledger.  The percentage
+arm judges a ratio whose DENOMINATOR is the plant's own exchanged energy, so
+`pump01_water` at 65.0000 % (a residual of order 1 kW -- the unit alarm on
+that case reads dH = 0.700 kW against declared items 2.000 kW) sorts above
+`column01_benzene_toluene` at 24.6820 %, which CLAUDE.md records as 631.96 kW.
+A reader of this ledger cannot tell a defect that matters from one that does
+not.  The remedy is in the ENGINE, not here -- the boundary report's console
+line prints the ratio without its scale -- and a gate that recomputed the kW
+for itself would be the second home the balance was taken out of on
+2026-09-05.
 """
 import re
 import subprocess
@@ -257,9 +287,10 @@ ROOT = Path(__file__).resolve().parents[2]
 #  gate's 0.5 % rather than a looser one chosen to make the corpus pass.
 BAND = 1.0
 
-#  How much worse a PINNED residual may get before it is a regression, in
-#  percentage points.  Small: a pin records a measurement, and a measurement
-#  that moves is either a fix or a new defect, both of which want a human.
+#  How far a PINNED residual may MOVE -- in EITHER direction -- before the pin
+#  stops describing the engine, in percentage points.  Small: a pin records a
+#  measurement, and a measurement that moves is either a fix or a new defect,
+#  both of which want a human.
 RATCHET = 0.2
 
 #  ABSOLUTE kW, for the cases the engine can give no percentage.  A DECLARED
@@ -305,7 +336,7 @@ KNOWN_OPEN = {
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section": 33.3080,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/credo01_valve_heater_drum": 2.0940,
-    "tutorials/steady/flowsheets/proxy01_gas_loop": 118.1200,
+    "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/gibbs/gibbs07_wgs_cooled": 150.7280,
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash": 150.7280,
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": 150.6790,
@@ -409,10 +440,11 @@ def whole_line(txt: str, at: int) -> str:
 
 
 def judge_kW(rel: str, kW: float, measuredKW: dict, bad: list) -> int:
-    """The kW arm: the same three verdicts the percentage arm gives, taken on
-    the MAGNITUDE of an absolute residual, plus a fourth for a residual that
-    changed SIGN without changing size.  Returns 1 when the case closes and is
-    not pinned, so the caller can count it exactly as it counts the other arm.
+    """The kW arm: the same four verdicts the percentage arm gives (closed,
+    unpinned, grown, shrunk), taken on the MAGNITUDE of an absolute residual,
+    plus a fifth for a residual that changed SIGN without changing size.
+    Returns 1 when the case closes and is not pinned, so the caller can count
+    it exactly as it counts the other arm.
     """
     measuredKW[rel] = kW
     pin = KNOWN_OPEN_KW.get(rel)
@@ -447,6 +479,14 @@ def judge_kW(rel: str, kW: float, measuredKW: dict, bad: list) -> int:
             "%s: first-law residual grew from the pinned %+.4f kW to %+.4f kW "
             "(> %.4f kW, the ratchet for a pin that size).  A declared debt "
             "may not grow quietly."
+            % (rel, pin, kW, ratchet_kW(pin)))
+    elif a < abs(pin) - ratchet_kW(pin):
+        bad.append(
+            "%s: first-law residual SHRANK from the pinned %+.4f kW to "
+            "%+.4f kW (> %.4f kW, the ratchet for a pin that size).  This is "
+            "good news and it is still a failure, for the same reason the "
+            "growth arm is one: the pin is a MEASUREMENT.  Re-measure it with "
+            "`--seed` and re-pin."
             % (rel, pin, kW, ratchet_kW(pin)))
     elif (kW < 0) != (pin < 0):
         bad.append(
@@ -558,6 +598,16 @@ def main() -> int:
                 "%s: first-law residual grew from the pinned %.4f %% to %.4f %% "
                 "(> %.2f pp).  A declared debt may not grow quietly."
                 % (rel, pin, pct, RATCHET))
+        elif pct < pin - RATCHET:
+            bad.append(
+                "%s: first-law residual SHRANK from the pinned %.4f %% to "
+                "%.4f %% (> %.2f pp).  This is good news and it is still a "
+                "failure: the pin is a MEASUREMENT, and a measurement that "
+                "moved is a claim about the engine that stopped being true.  "
+                "Re-measure it with `bin/curate/check_energy_closure.py "
+                "--seed` and re-pin.  Leaving it high would also hand the "
+                "next regression %.4f pp of room to grow back in silence."
+                % (rel, pin, pct, RATCHET, pin - pct))
 
     #  A PIN NOTHING ANSWERS TO.  Found by sabotage S7, which restored the
     #  one-shape reader this commit exists to replace and the gate PASSED: the
