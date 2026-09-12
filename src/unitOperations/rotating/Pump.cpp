@@ -28,6 +28,7 @@ License
 
 #include "Pump.H"
 #include "solver/NewtonRaphson.H"
+#include "core/Advisory.H"
 
 #include <cmath>
 #include <iomanip>
@@ -184,6 +185,68 @@ int Pump::solve(const DictPtr& dict,
             ? (w_real - w_isen) / Cp_liq
           : 0.0;
         T_out = T_in + dT_rise;
+
+        //  NO SILENT CRUTCH (2026-05-30), applied to an ENERGY term rather
+        //  than to a solver aid.  On this surface the liquid enthalpy is
+        //  h(T) with NO pressure argument (`ThermoPackage::Hliquid(T, x)`),
+        //  so of the shaft work only the LOSS has somewhere to go: it raises
+        //  T above.  The USEFUL part, w_isen = eta * w_real = v*dP, is the
+        //  term this surface cannot express -- for an incompressible liquid
+        //  dh = Cp dT + v dP and the second term has no home here -- so the
+        //  outlet stream does not carry it and the unit's own first law
+        //  closes to (1 - eta) W_shaft.  The residual is then EXACTLY the
+        //  pump's declared efficiency: `pump01_water` declares eta 0.65 and
+        //  its plant-boundary residual is pinned at 65.0000 %.
+        //
+        //  The engine cannot decide whether that matters to this reader, so
+        //  it ANNOUNCES and judges nothing -- the CatalystPellet posture.
+        //  The remedy is a DECLARATION, not a flag: a pure-fluid method
+        //  (`pureFluids { <component> { method ...; } }`) puts the pressure
+        //  term back on the surface, and the pure route above then solves
+        //  H_real(T_out, P_out) = H_real(T_in, P_in) + w_real, which makes
+        //  dH equal W_shaft to machine precision.  `rankine02_water` takes
+        //  that route and is in neither energy-debt ledger.
+        {
+            std::size_t dom = 0;
+            for (std::size_t i = 1; i < n; ++i) if (x[i] > x[dom]) dom = i;
+            //  THE NUMBER IS NOT IN THE SENTENCE: it already has a home.
+            //  This unit publishes it as `W_hydraulic` and prints it on its
+            //  own banner below, so repeating it here would be a second home
+            //  for a value the first one owns -- and a value that ITERATES,
+            //  since a pump inside an operating-point search is solved again
+            //  at every trial.  The sentence states the RELATION and points
+            //  at the published number.
+            //
+            //  MEASURED, and it corrects a guess made while writing this:
+            //  taking the number out does NOT make the site line appear once
+            //  under an outer driver.  `pumpSystem01_operating_point` prints
+            //  it 13 times either way -- because that case runs 13 PASSES and
+            //  each pass is a fresh functor with a fresh AdvisoryLog, so
+            //  `isNew` is true again every time.  Its own `[driver]` line
+            //  repeats exactly 13 times beside it.  One line per pass is this
+            //  house's cadence, not a defect in this announcement; the
+            //  end-of-run caveat block still reports ONE named pass
+            //  (2026-09-07).
+            const std::string message =
+                "the liquid enthalpy on this thermophysical surface is h(T)"
+                " with no pressure term, so the useful shaft work v*dP"
+                " (= eta * W_shaft, this unit's `W_hydraulic` KPI) is"
+                " NOT carried by the outlet stream -- only the loss"
+                " (1 - eta) W_shaft raises its temperature.  This unit's"
+                " first law therefore closes to (1 - eta) W_shaft and the"
+                " plant-boundary residual it produces is exactly eta."
+                "  Declare a pure-fluid method for '"
+                + thermo.comp(dom).name() + "' (`pureFluids { "
+                + thermo.comp(dom).name() + " { method <m>; } }`) to put the"
+                " pressure term on the surface; the pump then solves for the"
+                " discharge state whose ABSOLUTE enthalpy rose by the full"
+                " shaft work.";
+
+            const bool isNew = AdvisoryLog::instance().add(
+                "model", "info", "pump (incompressible liquid route)", message);
+            if (isNew && verbosity >= 2)
+                std::cout << "  [pump] " << message << "\n";
+        }
     }
 
     const scalar W_isen_kW = (W_shaft * eta) / 1000.0;
