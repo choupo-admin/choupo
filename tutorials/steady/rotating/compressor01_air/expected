@@ -26,3 +26,4 @@ stream  out                    T                633.374206884    1e-4
 boundary global                 H_feeds_kW       0                1e-4
 boundary global                 Q_boundary_kW    10               1e-4
 boundary global                 H_products_kW    10.0000018136    1e-4
+boundary global                 W_shaft_kW       10               1e-4

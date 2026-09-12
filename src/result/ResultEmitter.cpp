@@ -1000,6 +1000,14 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << ",\n  \"globalEnergyBoundary\": { "
            << "\"H_feeds_kW\": "    << num(gb.H_feeds_kW)
            << ", \"Q_boundary_kW\": " << num(gb.Q_boundary_kW)
+           //  The same number, told apart: heat down a temperature
+           //  difference vs work through a shaft.  They sum back to
+           //  Q_boundary_kW exactly (the report derives the heat by
+           //  subtraction), so a reader may draw  dH = Q - W  without
+           //  computing anything of its own.  Sign: + is energy ADDED to
+           //  the process streams, so the textbook W is -W_shaft_kW.
+           << ", \"Q_heat_kW\": "     << num(gb.Q_heat_kW)
+           << ", \"W_shaft_kW\": "    << num(gb.W_shaft_kW)
            << ", \"H_products_kW\": " << num(gb.H_products_kW)
            << ", \"residual_kW\": "   << num(gb.residual_kW)
            //  A percentage with no scale behind it is not published as a

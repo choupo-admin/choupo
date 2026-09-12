@@ -250,6 +250,23 @@ export function ReportsWorkspace() {
                 <Table.Tbody>
                   <Table.Tr><Table.Td>Stream enthalpy IN (Σ H feeds)</Table.Td><Table.Td ta="right">{gb.H_feeds_kW.toFixed(1)} kW</Table.Td></Table.Tr>
                   {Math.abs(gb.Q_boundary_kW) > 0.05 && <Table.Tr><Table.Td>Boundary heat + work into process</Table.Td><Table.Td ta="right">{gb.Q_boundary_kW.toFixed(1)} kW</Table.Td></Table.Tr>}
+                  {/*  THE SAME NUMBER, TOLD APART (2026-09-12).  The row above is
+                      their SUM, which is what the ledger used to carry -- and on a
+                      plant like rankine02 that sum is 2e-10 kW while the two terms
+                      are +8.84 and -8.84 kW, so the total alone says "nothing
+                      crosses the boundary" about a plant that takes heat in and
+                      puts work out.  Drawn ONLY when the engine published the
+                      split: an older result carries neither field and this panel
+                      adds no arithmetic of its own.  Indented under the sum so a
+                      reader sees a decomposition, never two more independent
+                      terms to add.  */}
+                  {gb.Q_heat_kW !== undefined && gb.W_shaft_kW !== undefined
+                   && Math.abs(gb.W_shaft_kW) > 0.05 && (
+                    <>
+                      <Table.Tr><Table.Td pl="lg" c="dimmed">— of which heat, Q</Table.Td><Table.Td ta="right" c="dimmed">{gb.Q_heat_kW.toFixed(1)} kW</Table.Td></Table.Tr>
+                      <Table.Tr><Table.Td pl="lg" c="dimmed">— of which shaft work (+ = into the fluid, so −W)</Table.Td><Table.Td ta="right" c="dimmed">{gb.W_shaft_kW.toFixed(1)} kW</Table.Td></Table.Tr>
+                    </>
+                  )}
                   <Table.Tr><Table.Td>Stream enthalpy OUT (Σ H products)</Table.Td><Table.Td ta="right">{gb.H_products_kW.toFixed(1)} kW</Table.Td></Table.Tr>
                   <Table.Tr><Table.Td><strong>First-law residual</strong></Table.Td><Table.Td ta="right"><strong>{gb.residual_kW.toFixed(3)} kW</strong></Table.Td></Table.Tr>
                 </Table.Tbody>

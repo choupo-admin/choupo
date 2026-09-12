@@ -300,6 +300,25 @@ struct SimulationResult
         bool   present       = false;
         scalar H_feeds_kW    = 0.0;
         scalar Q_boundary_kW = 0.0;
+        //  Q_boundary_kW, TOLD APART (2026-09-12).  The steady-flow energy
+        //  equation is  dH = Q - W, and until now the ledger carried only
+        //  the sum of its right-hand side -- so no reader could draw the
+        //  equation, only its total.  These two are an ADDITIVE
+        //  decomposition and `Q_heat_kW + W_shaft_kW == Q_boundary_kW`
+        //  EXACTLY, by construction: the report accumulates the work items
+        //  and DERIVES the heat by subtraction (the `phases {}` rule --- one
+        //  side stored, the other derived, so two roundings cannot drift
+        //  apart).  `Q_boundary_kW` keeps its meaning and its value to the
+        //  last bit, so every golden recorded before this exists is
+        //  unaffected.
+        //
+        //  SIGN: both keep the convention of every energy item in this
+        //  engine --- POSITIVE = energy ADDED to the process streams.  A
+        //  turbine's shaft work is therefore NEGATIVE here, and the textbook
+        //  W (work done BY the fluid) is  -W_shaft_kW.  One convention,
+        //  stated; a reader that wants the other negates.
+        scalar Q_heat_kW     = 0.0;
+        scalar W_shaft_kW    = 0.0;
         scalar H_products_kW = 0.0;
         scalar residual_kW   = 0.0;
         scalar residual_pct  = 0.0;

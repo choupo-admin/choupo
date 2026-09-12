@@ -133,3 +133,4 @@ boundary global                 H_feeds_kW       -2526.4022985    1e-4
 boundary global                 Q_boundary_kW    -242.630185734   1e-4
 boundary global                 H_products_kW    -2769.03227042   1e-4
 kpi     hrsg                   H_closure_gap_kW -5.92605431393e-08 1e-4
+boundary global                 W_shaft_kW       -650             1e-4

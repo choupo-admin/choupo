@@ -164,20 +164,65 @@ inline scalar closurePct(scalar in, scalar out)
     return (std::abs(in) > 1.0e-30) ? 100.0 * out / in : 0.0;
 }
 
+//  WHICH SIDE OF THE FIRST LAW AN ENERGY ITEM IS ON (2026-09-12).
+//
+//  The steady-flow energy equation a student writes is  dH = Q - W, and the
+//  two terms on the right are not interchangeable: heat crosses a boundary
+//  down a temperature difference, work leaves through a shaft.  The engine
+//  published only their SUM (`Q_boundary_kW`), so nothing downstream could
+//  draw the equation -- and a figure that cannot separate Q from W cannot be
+//  the first law, it can only be its total.
+//
+//  `Heat` and `Work` are the whole vocabulary, deliberately.  There is NO
+//  catch-all: the map below IS the set of energy items (see
+//  `isEnergyItemKpi`), so a KPI cannot become an energy item without a human
+//  saying which side of the equation it is on.  An item that is genuinely
+//  neither is a decision for a maintainer, not a default bucket that
+//  quietly absorbs it -- the shape the 2026-08-05 arity slice found in the
+//  reaction `order` (five readers, five defaults, a silent zero).
+enum class EnergyItemKind { Heat, Work };
+
 // Curated set of KPI names that are genuine energy-balance ITEMS (heat
 // supplied/removed, shaft work), signed as energy ADDED to the process
 // streams (+ in, - out).  Used to list a unit's energy items on the balance
 // sheet and to close the energy balance against the stream enthalpy change.
 // Deliberately EXCLUDES diagnostics (e.g. W_isen_kW) so nothing double-
 // counts; a unit adds itself here by exposing one of these KPIs.
+//
+//  ONE HOME for both facts: membership AND kind.  `isEnergyItemKpi` reads
+//  this map's keys, so the two can never disagree about what an energy item
+//  is.  NOT VERIFIED HERE, and said rather than implied: `W_hydraulic_kW`
+//  and `Q_removed_kW` are declared but published by no unit in the tree
+//  today (the pump emits `W_hydraulic`, without the `_kW`), so their kind is
+//  a contract for a future publisher rather than a fact about a current run.
+inline const std::map<std::string, EnergyItemKind>& energyItemKpis()
+{
+    static const std::map<std::string, EnergyItemKind> items = {
+        {"Q_kW",                    EnergyItemKind::Heat},
+        {"duty_kW",                 EnergyItemKind::Heat},
+        {"Q_reboiler_kW",           EnergyItemKind::Heat},
+        {"Q_condenser_kW",          EnergyItemKind::Heat},
+        {"Q_removed_kW",            EnergyItemKind::Heat},
+        {"Q_regeneration_kW",       EnergyItemKind::Heat},
+        {"Q_adsorption_cooling_kW", EnergyItemKind::Heat},
+        {"W_shaft_kW",              EnergyItemKind::Work},
+        {"W_hydraulic_kW",          EnergyItemKind::Work},
+    };
+    return items;
+}
+
 inline bool isEnergyItemKpi(const std::string& k)
 {
-    static const std::set<std::string> items = {
-        "Q_kW", "duty_kW", "Q_reboiler_kW", "Q_condenser_kW",
-        "W_shaft_kW", "W_hydraulic_kW", "Q_removed_kW",
-        "Q_regeneration_kW", "Q_adsorption_cooling_kW"
-    };
-    return items.count(k) > 0;
+    return energyItemKpis().count(k) > 0;
+}
+
+//  Is this item SHAFT WORK?  Asked by the plant-boundary accumulator so the
+//  published ledger can carry Q and W apart.  A name this map does not know
+//  is not an energy item at all and never reaches here.
+inline bool isWorkItemKpi(const std::string& k)
+{
+    const auto it = energyItemKpis().find(k);
+    return it != energyItemKpis().end() && it->second == EnergyItemKind::Work;
 }
 
 // A duty KPI whose heat is delivered to the process THROUGH the unit's own

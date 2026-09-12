@@ -1183,6 +1183,28 @@ auto_generate() {
             if [ -n "$gv" ] && awk -v v="$gv" 'BEGIN{ if (v<0) v=-v; exit (v >= 1e-3) ? 0 : 1 }'; then
                 printf 'boundary %-20s %-16s %-18s %s\n' global residual_kW "$gv" "$reltol"
             fi
+            #  Q AND W, TOLD APART (2026-09-12).  `Q_boundary_kW` above is
+            #  their SUM and keeps its value to the last digit; the ledger
+            #  now also publishes the shaft-work half, and the heat half is
+            #  `Q_boundary_kW - W_shaft_kW` exactly (the engine derives it by
+            #  subtraction, so the three close by construction).
+            #
+            #  Only `W_shaft_kW` is generated, and only when it is >= 1 W in
+            #  magnitude -- the SAME floor, in the SAME one home, as the
+            #  residual above, for the same reason: below it the split is not
+            #  a fact about the plant.  `Q_heat_kW` is deliberately NOT
+            #  generated: two rows already pin it exactly (Q_boundary and
+            #  W_shaft), and a third would be a second home for a number
+            #  those two fix -- the arity sin, in a golden.
+            #
+            #  MEASURED, not assumed: 12 corpus cases publish work above that
+            #  floor, and on two of them the sum hides the physics entirely
+            #  (rankine02 nets 2e-10 kW out of +8.84 kW heat and -8.84 kW
+            #  shaft work; ammonia02 nets -9633 kW out of -37633 and +28000).
+            gv=$(printf '%s\n' "$gbl" | grep -oE '"W_shaft_kW": *-?[0-9][0-9.eE+-]*' | sed -E 's/^"[^"]*": *//')
+            if [ -n "$gv" ] && awk -v v="$gv" 'BEGIN{ if (v<0) v=-v; exit (v >= 1e-3) ? 0 : 1 }'; then
+                printf 'boundary %-20s %-16s %-18s %s\n' global W_shaft_kW "$gv" "$reltol"
+            fi
         fi
         #  the plant-boundary MATERIAL summary, in its two scopes (2026-09-08).
         #  Emitted only by a case that DECLARES a utility circuit -- and what

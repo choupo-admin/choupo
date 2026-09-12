@@ -379,6 +379,21 @@ export interface GlobalEnergyBoundary {
   H_feeds_kW: number;
   Q_boundary_kW: number;
   H_products_kW: number;
+  //  Q_boundary_kW TOLD APART (2026-09-12), so a reader can draw the first law
+  //  as the equation a student writes -- dH = Q - W -- and not only as its
+  //  total.  `Q_heat_kW + W_shaft_kW === Q_boundary_kW` exactly: the engine
+  //  accumulates the work and derives the heat by subtraction, so the two
+  //  cannot drift from the number they decompose.
+  //
+  //  OPTIONAL, and the FirstLawPlot says so rather than filling the gap: a
+  //  result from an engine before this existed carries neither, and deriving
+  //  them here from per-unit KPIs would be the second home the 2026-09-05
+  //  slice removed, one level down.
+  //
+  //  SIGN: + is energy ADDED to the process streams, so the textbook W (work
+  //  done BY the fluid) is `-W_shaft_kW` and a turbine's is negative.
+  Q_heat_kW?: number;
+  W_shaft_kW?: number;
   residual_kW: number;
   //  NULL when the plant supplies no exchanged-energy scale: a percentage
   //  of nothing is not a percentage, and the engine says so rather than

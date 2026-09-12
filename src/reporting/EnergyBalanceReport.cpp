@@ -128,15 +128,26 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     //  to prevent: a comment describing an arithmetic the code does not do,
     //  written the same morning by the same hand that has spent the day
     //  finding that shape in other people's code.
+    //
+    //  `work` -- the SHAFT-WORK part of that same algebraic sum (2026-09-12).
+    //           Accumulated in the SAME loop, under the SAME two predicates,
+    //           so it can never be a sum over a different set of items than
+    //           the total it decomposes.  The heat part is never accumulated:
+    //           it is DERIVED by subtraction at the plant boundary, which is
+    //           how a decomposition closes by construction rather than to
+    //           within two roundings (the `phases {}` rule, 2026-07-30).
     auto externalItems = [&](const std::string& unit, int& n,
-                             scalar& mag) -> scalar {
-        scalar s = 0.0; n = 0; mag = 0.0;
+                             scalar& mag, scalar& work) -> scalar {
+        scalar s = 0.0; n = 0; mag = 0.0; work = 0.0;
         auto it = ctx.result.kpis.find(unit);
         if (it != ctx.result.kpis.end())
             for (const auto& [k, v] : it->second)
                 if (reporting::isEnergyItemKpi(k)
                     && !reporting::isInternalMediumDutyKpi(k))
-                { s += v; mag += std::abs(v); ++n; }
+                {
+                    s += v; mag += std::abs(v); ++n;
+                    if (reporting::isWorkItemKpi(k)) work += v;
+                }
         return s;
     };
 
@@ -179,6 +190,12 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     // This is the global plant boundary's Q_boundary -- see the block below.
     scalar globalQext = 0.0;
     scalar globalExchanged = 0.0;
+    //  The SHAFT-WORK half of `globalQext`, accumulated at EXACTLY the same
+    //  sites and under exactly the same conditions -- so `globalQext` keeps
+    //  its value to the last bit and the heat half is what remains when this
+    //  is taken out of it.  See the plant-boundary block for why the split is
+    //  published at all and why heat is the derived one.
+    scalar globalWshaft = 0.0;
     for (const auto& u : units)
     {
         // ONE datum (elements): a present species with no elements/formation
@@ -192,8 +209,10 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         // datum -- it only reads the KPIs), so a unit whose stream-enthalpy
         // datum is MISSING (a gap) still has its real boundary duty counted.
         int nItems = 0;
-        scalar       magExternal = 0.0;
-        const scalar sumExternal = externalItems(u.name, nItems, magExternal);
+        scalar       magExternal  = 0.0;
+        scalar       workExternal = 0.0;
+        const scalar sumExternal =
+            externalItems(u.name, nItems, magExternal, workExternal);
 
         reporting::UnitEnergy e;
         try {
@@ -218,7 +237,8 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             // not the topology), so its real boundary duty crosses the boundary
             // -- keep it in the plant-boundary sum, matching the pre-refactor
             // blind KPI sweep (the old behaviour on curation-gap cases).
-            globalQext += sumExternal;
+            globalQext   += sumExternal;
+            globalWshaft += workExternal;
             continue;
         }
 
@@ -301,7 +321,8 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         // count it (the old evaporator trap).  Internal process-to-process
         // exchangers (the HRSG) contribute 0; no-process-stream sinks (the
         // electricLoad generator) never reach this branch and are skipped.
-        if (!internalExchanger) globalQext += sumExternal;
+        if (!internalExchanger) { globalQext   += sumExternal;
+                                  globalWshaft += workExternal; }
         //  The ENERGY THE PLANT EXCHANGES -- magnitudes, so a duty in and a
         //  duty out do not cancel.  This is the scale the residual is judged
         //  against (see the denominator below).
@@ -787,6 +808,31 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     {
         scalar Hfeeds = 0.0, Hprods = 0.0;
         const scalar Qext = globalQext;
+        //  Q AND W, TOLD APART -- AND THE DECOMPOSITION CLOSES BY
+        //  CONSTRUCTION (2026-09-12, Vitor's first-law figure).
+        //
+        //  `Qext` is the net energy crossing the boundary as anything other
+        //  than material: heat AND shaft work, and its own comment has said
+        //  so since a turbine first appeared here ("a turbine's shaft work IS
+        //  counted").  One net number is all a reader could have, so nothing
+        //  downstream could draw  dH = Q - W  -- only  dH = (Q - W).
+        //
+        //  The split is ADDITIVE and `Qext` is untouched: `Wshaft` is the
+        //  work items' own sum, accumulated at the same sites, and the heat
+        //  is what REMAINS.  Deriving one side by SUBTRACTION rather than
+        //  summing both is the `phases {}` rule (2026-07-30): one side
+        //  stored, the other derived, so two roundings cannot drift apart and
+        //  `Q_heat + W_shaft == Q_boundary` is an identity rather than a
+        //  tolerance.  Every value already recorded stays what it was.
+        //
+        //  SIGNS.  Both keep the convention every energy item here uses:
+        //  POSITIVE = energy ADDED to the process streams.  So a turbine's
+        //  `W_shaft_kW` is negative, and the textbook  dH = Q - W  (with W
+        //  the work done BY the fluid) reads  W = -W_shaft_kW.  A reader that
+        //  wants the textbook sign negates; the ledger does not carry two
+        //  conventions.
+        const scalar Wshaft = globalWshaft;
+        const scalar Qheat  = Qext - Wshaft;
         int    nFeed = 0, nProd = 0, nGap = 0;
         // No-silent-crutch: a boundary stream that genuinely CARRIES a species
         // with no elements-datum enthalpy (z_i > 0 but no standardThermochemistry / no
@@ -993,6 +1039,8 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             gb.present       = true;
             gb.H_feeds_kW    = Hfeeds;
             gb.Q_boundary_kW = Qext;
+            gb.Q_heat_kW     = Qheat;
+            gb.W_shaft_kW    = Wshaft;
             gb.H_products_kW = Hprods;
             gb.residual_kW   = residual;
             gb.residual_pct  = relPct;
@@ -1013,6 +1061,14 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             g << "quantity,value_kW\n" << std::fixed << std::setprecision(6)
               << "H_feeds,"        << Hfeeds   << "\n"
               << "Q_boundary,"     << Qext     << "\n"
+              //  Q_boundary, told apart.  Both rows are NEW and every row
+              //  above and below keeps its name and its value -- the two
+              //  readers of this file (bin/runTests' energy-T2 and
+              //  check_default_reports) select rows BY NAME, so a row added
+              //  in the middle reaches them unchanged.  Q_heat is
+              //  Q_boundary - W_shaft exactly, by construction.
+              << "Q_heat,"         << Qheat    << "\n"
+              << "W_shaft,"        << Wshaft   << "\n"
               << "H_products,"     << Hprods   << "\n"
               << "inputs,"         << (Hfeeds + Qext) << "\n"
               << "outputs,"        << Hprods   << "\n"
@@ -1034,15 +1090,34 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             g.close();
             if (ctx.verbosity >= 2)
             {
-                std::cout << "  [report] globalEnergyBoundary -> " << gpath.string();
+                //  THE MAGNITUDE ALWAYS, THE RATIO AS WELL WHEN THERE IS ONE
+                //  (2026-09-12).  This line used to print the PERCENTAGE
+                //  when a scale existed and the kW only when none did, which
+                //  is the 2026-09-08 rule -- THE NUMERICAL FLOOR IS NOT A
+                //  SCALE -- biting from the other end.  Measured on the
+                //  corpus: column01 printed "24.682 %" for 631.96 kW and
+                //  pump01 printed "65.000 %" for 1.3 kW, so the line RANKED
+                //  the pump as nearly three times the worse offender while
+                //  being three orders of magnitude smaller.  A ratio without
+                //  its scale misleads exactly as badly as a scale without its
+                //  ratio.  Nothing new is derived: `residual` is the number
+                //  this block already computed and already writes to the CSV
+                //  and the result JSON.
+                //
+                //  The NO-SCALE form is byte-identical to what it was, so the
+                //  reader that parses it (check_energy_closure's LINE_KW)
+                //  sees no change there; the with-scale form gains the kW
+                //  BEFORE the ratio it already carried.
+                std::cout << "  [report] globalEnergyBoundary -> " << gpath.string()
+                          << "  (residual " << std::setprecision(4) << residual
+                          << " kW";
                 if (hasScale && !noBoundary)
-                    std::cout << "  (|in-out|/in = " << std::setprecision(3)
-                              << std::abs(relPct) << " %)";
+                    std::cout << "; |in-out|/in = " << std::setprecision(3)
+                              << std::abs(relPct) << " %";
                 else
-                    std::cout << "  (residual " << std::setprecision(4)
-                              << residual << " kW; NO EXCHANGED-ENERGY SCALE"
-                                 " -- percentage unavailable)";
-                std::cout << "\n";
+                    std::cout << "; NO EXCHANGED-ENERGY SCALE"
+                                 " -- percentage unavailable";
+                std::cout << ")\n";
             }
         }
     }

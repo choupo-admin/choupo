@@ -276,3 +276,4 @@ boundary mass                   process_in_kg_per_h 70636.62         1e-4
 boundary mass                   process_out_kg_per_h 70634.8863408    1e-4
 boundary mass                   process_closure_pct 99.9975456651    1e-4
 boundary mass                   utility_excluded_kg_per_h 9007500          1e-4
+boundary global                 W_shaft_kW       28000            1e-4

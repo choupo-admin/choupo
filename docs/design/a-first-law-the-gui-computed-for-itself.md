@@ -121,6 +121,14 @@ not, and the three terms pin it indirectly to 1e-4 of 1.3 MW.
   plot from the utility allocation.  That split is the sum this slice
   deleted; the plot now draws the ledger's one net boundary Q on the side
   its sign puts it.
+  **Not to be confused with the split that DID arrive, 2026-09-12**: the
+  ledger now publishes `Q_heat_kW` and `W_shaft_kW` beside `Q_boundary_kW`.
+  What was rejected here is a GUI-side split computed from the utility
+  allocation; what shipped is an ENGINE-side one, additive, summing back to
+  `Q_boundary_kW` exactly, drawn by a GUI that still computes nothing.  The
+  rule is unchanged — the engine decides, the GUI draws — and the reason for
+  the new one is that heat and work are different terms of the first law:
+  see [`the-first-law-drawn-as-the-equation.md`](the-first-law-drawn-as-the-equation.md).
 
 ## 8. Not done, named
 

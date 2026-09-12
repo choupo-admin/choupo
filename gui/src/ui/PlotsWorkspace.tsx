@@ -69,6 +69,7 @@ import { useStore } from "../state/store.js";
 import { popOutCurrentPlot } from "./plotPopOut.js";
 import { ConvergencePlot } from "./plotting/ConvergencePlot.js";
 import { EnergyBalancePlot } from "./plotting/EnergyBalancePlot.js";
+import { FirstLawPlot } from "./plotting/FirstLawPlot.js";
 import { MassBalancePlot } from "./plotting/MassBalancePlot.js";
 import { CampaignBalancePlot } from "./plotting/CampaignBalancePlot.js";
 import { DynamicBalancePlot } from "./plotting/DynamicBalancePlot.js";
@@ -95,6 +96,7 @@ type PlotKey =
   | "elementBalance"
   | "massBalance"
   | "energyBalance"
+  | "firstLaw"
   | "txy"
   | "profile"
   | "convergence"
@@ -200,6 +202,11 @@ export function PlotsWorkspace() {
       || result?.csvFiles?.["balanceTrajectory.meta"] !== undefined;
     const hasElemBalance = Object.keys(result?.csvFiles ?? {}).some(
       (k) => k.endsWith("elementBalance.csv") || k.endsWith("elementBalance.meta"));
+    //  PRESENCE of the engine's own ledger, never of streams: the first-law
+    //  view draws that block and nothing else, so a run without it has no
+    //  figure to offer -- and the row stays DIMMED with the hint rather than
+    //  vanishing, because "the report did not run" is a fact about this run.
+    const hasEnergyLedger = result?.globalEnergyBoundary !== undefined;
     return [
       {
         label: "Balance",
@@ -215,7 +222,13 @@ export function PlotsWorkspace() {
           { key: "massBalance",   label: "Mass balance",   available: hasStreams,
             hint: "Plant-boundary INPUTS vs OUTPUTS in mass basis (kg/h), stacked by component.  Title shows the closure error." },
           { key: "energyBalance", label: "Energy balance", available: hasStreams,
-            hint: "Plant-boundary INPUTS vs OUTPUTS in enthalpy flow (kW), stacked per stream.  Closure delta = net heat from utilities + heat of reaction." },
+            hint: "Plant-boundary INPUTS vs OUTPUTS in enthalpy flow (kW), stacked per stream: what each stream CARRIES.  For whether the first law holds, and by how much it fails, see First law." },
+          //  A SECOND VIEW, not a replacement (2026-09-12).  The row above is
+          //  the boundary's stream INVENTORY; this one is the BALANCE -- the
+          //  equation dH = Q - W drawn so the identity, and its violation, are
+          //  read off the picture.  Different questions, both kept.
+          { key: "firstLaw", label: "First law", available: hasEnergyLedger,
+            hint: "The first law as the equation a student writes: dH = Q - W.  Left column the enthalpy the streams gained, right column the heat and shaft work that crossed the boundary; the two levels must coincide and the gap between them IS the engine's published residual." },
         ],
       },
       {
@@ -391,6 +404,9 @@ export function PlotsWorkspace() {
       //  The boundary heat+work bar is the ENGINE's Q_boundary (its energy
       //  report's ledger), never a sum of utility-allocated duties -- that sum
       //  missed every cooling duty no utility served (2026-09-05).
+      //  Draws the engine's ledger and computes nothing of its own; when the
+      //  block is absent the plot SAYS the report did not run.
+      case "firstLaw": return <FirstLawPlot boundary={result.globalEnergyBoundary} />;
       case "energyBalance": return <EnergyBalancePlot streams={result.streams}
         added={result.globalEnergyBoundary
           ? { qBoundaryKw: result.globalEnergyBoundary.Q_boundary_kW }

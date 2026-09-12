@@ -106,3 +106,4 @@ boundary global                 Q_boundary_kW    -1.98075744538   1e-4
 boundary global                 H_products_kW    -4820.6906001    1e-4
 boundary global                 residual_kW      1.02910189567    1e-4
 kpi     HX1                    H_closure_gap_kW -1.22917498402e-09 1e-4
+boundary global                 W_shaft_kW       -0.4             1e-4
