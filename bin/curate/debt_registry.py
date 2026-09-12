@@ -346,7 +346,13 @@ SELF_CONTRADICTING_RECORDS = {}
 IMPOSSIBLE_PHASE_CASES = {
     "phasechange01_partial_condenser":   898.64,
     "acetone03_luyben_reaction_section": 390.606,
-    "combined01_brayton_rankine":        132.782,
+    #  PAID 2026-09-08 by the exchanger enthalpy-inversion (1298dc0d5) and
+    #  the pin outlived it by four days.  MEASURED 2026-09-12: the case
+    #  prints IMPOSSIBLE INLET PHASE exactly ZERO times, and the gate's
+    #  own stale-pin arm is what found it -- the machinery working.  Its
+    #  sibling ENERGY pins for the same case were cleared that day; this
+    #  one was missed, which is the shape to watch for: a fix that pays
+    #  several debts at once pays them in several ledgers.
     "stripper02_sour_water_h2s":          17.4804,
     "stripper01_sour_water":              12.7946,
     "tsa01_co2_twin_bed":                  0.023239,
