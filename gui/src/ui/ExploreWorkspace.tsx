@@ -523,6 +523,13 @@ export function ExploreWorkspace() {
     return readComponentRecord(local ?? rawRecordFor(inspecting) ?? "");
   }, [inspecting, localComponentFiles]);
 
+  //  WHICH LENSES DRAW THEIR OWN HEADER.  `flash` opens with five result
+  //  badges, the Duhem sentence and its two sliders; the workspace's caption
+  //  ribbon is drawn ABSOLUTELY over the top-left of the figure area, so on
+  //  this lens alone the two collide.  Named here, beside the other lens
+  //  predicates, so the next lens that grows a header is one word away from
+  //  being handled rather than one screenshot away from being reported.
+  const ownsHeader = plotType === "flash";
   const isVle = plotType === "txy" || plotType === "gamma" || plotType === "flash";
   const isTernary = plotType === "ternary" || plotType === "ternaryLle";
   //  THE LABEL MUST NAME THE PAIR THE SPEC RAN, not the order they were picked
@@ -1803,13 +1810,28 @@ export function ExploreWorkspace() {
         <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 16, paddingTop: 12, display: "flex", flexDirection: "column" }}>
         <Stack gap="sm" style={{ flex: 1, minHeight: 0 }}>
           {csv ? (
-            <Box style={{ flex: 1, minHeight: 360, position: "relative" }}>
-              {/* on-plot overlays (top-left): SET pill (load-bearing when the
-                  rail is collapsed) + the PURE/MIXTURE badge + the caption.
-                  Absolutely positioned so they never push the figure down. */}
-              <Box style={{ position: "absolute", top: 4, left: 8, zIndex: 4,
-                display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start",
-                pointerEvents: "none", maxWidth: "70%" }}>
+            <Box style={{ flex: 1, minHeight: 360, position: "relative",
+              ...(ownsHeader ? { display: "flex", flexDirection: "column" } : {}) }}>
+              {/*  ON-PLOT OVERLAY, *UNLESS* THE LENS BRINGS ITS OWN HEADER
+                  (2026-09-12).  The SET pill (load-bearing when the rail is
+                  collapsed), the PURE/MIXTURE badge and the caption ride
+                  top-left, absolutely positioned "so they never push the
+                  figure down" -- which silently assumes the FIGURE starts at
+                  the top of this box.  `flash` does not: FlashPlot opens with
+                  five badges, the Duhem sentence and two sliders, so the
+                  overlay landed ON them and Vitor got the SET pill written
+                  across `x (acetone) = 0.284` and two paragraphs of prose
+                  superimposed.  An absolute overlay is a claim about what is
+                  underneath it.
+                  So a lens that owns its header gets the same three pieces in
+                  NORMAL FLOW above the figure -- nothing is dropped, and the
+                  pill stays reachable with the rail closed. */}
+              <Box style={ownsHeader
+                ? { padding: "0 0 6px 2px", display: "flex", flexDirection: "column",
+                    gap: 4, alignItems: "flex-start", maxWidth: "100%" }
+                : { position: "absolute", top: 4, left: 8, zIndex: 4,
+                    display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start",
+                    pointerEvents: "none", maxWidth: "70%" }}>
                 <Group gap={6} align="center" style={{ pointerEvents: "auto" }}>
                   <Badge size="sm" variant="outline" color="gray" tt="none"
                     style={{ background: "light-dark(rgba(255,255,255,0.7), rgba(0,0,0,0.5))" }}>
