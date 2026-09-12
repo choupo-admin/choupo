@@ -97,7 +97,7 @@ const PLOT_TYPES: PlotType[] = [
   { id: "phase", label: "Pure phase diagram (P-T)", min: 1, max: 1, vle: true,
     why: "needs exactly 1 VLE-able component (Tc + vapour pressure)" },
   { id: "txy",   label: "Binary boiling envelope (T-x-y)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
-  { id: "gamma", label: "γ(x)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
+  { id: "gamma", label: "Activity coefficients γ(x)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
   // (McCabe-Thiele — a METHOD CONSTRUCTION over the same y_eq(x) run — moved
   // to the Methods workspace 2026-08-15; the psychrometric chart went with it.)
   // Binary flash: the same y*(x) curve, read as an equilibrium tie-line through
@@ -151,7 +151,15 @@ const PLOT_TYPES: PlotType[] = [
 // tooltip).  Keeps the one toolbar row from wrapping while the long names stay
 // discoverable on hover.
 const LENS_SHORT: Record<PlotKind, string> = {
-  scan: "scan", phase: "P-T", txy: "T-x-y", flash: "flash", gamma: "γ(x)",
+  scan: "scan", phase: "P-T", txy: "T-x-y", flash: "flash",
+  //  NOT "γ(x)".  In this sans-serif face a lowercase gamma and a lowercase y
+  //  are the same glyph, and this is the one place the symbol stands alone
+  //  with no word beside it to disambiguate.  Next to `T-x-y` and `flash`, a
+  //  reader looking for the equilibrium curve y(x) -- the most familiar
+  //  diagram in VLE, a function of the same x, drawn against the same axis --
+  //  clicks this and gets activity coefficients.  Reported three times before
+  //  anyone looked at the SCREEN rather than the code.  The word carries it.
+  gamma: "activity γ",
   binaryLle: "LLE", ternary: "ternary", ternaryLle: "tern.LLE",
   scaling: "scaling", steam: "steam", gibbsmap: "gibbsmap", bjerrum: "Bjerrum",
   solubility: "delta",

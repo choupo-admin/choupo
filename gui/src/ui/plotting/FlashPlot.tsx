@@ -272,7 +272,17 @@ export function FlashPlot({ csv, compA, compB, P }: {
             text: `Binary flash  ·  ${axisComp} / ${partnerComp}  ·  P = ${formatSig(paToDisplay(P, Pu))} ${pressureLabel(Pu)}`,
             font: { ...darkLayout.font, size: 14 },
           },
-          xaxis: { ...darkLayout.xaxis, title: { text: `x of ${axisComp} (liquid)` }, range: [0, 1] },
+          //  `constrain: "domain"` IS LOAD-BEARING, not tidiness.  The y axis below
+          //  carries `scaleanchor: "x"` so the 45-degree diagonal is drawn at 45
+          //  degrees -- correct, and required of an x-y equilibrium diagram.  But
+          //  Plotly satisfies that ratio by default by WIDENING THE RANGE of the
+          //  anchored axis, not by shrinking the drawing area: in a box four times
+          //  wider than tall the declared [0, 1] was silently stretched to about
+          //  [-1.5, 2.5], so a MOLE FRACTION axis showed negative values and values
+          //  above one, with the equilibrium curve squeezed into the middle third.
+          //  "domain" moves the give to the plot area instead.  Measured on the
+          //  rendered page, not reasoned about.
+          xaxis: { ...darkLayout.xaxis, title: { text: `x of ${axisComp} (liquid)` }, range: [0, 1], constrain: "domain" },
           yaxis: { ...darkLayout.yaxis, title: { text: `y of ${axisComp} (vapour)` }, range: [0, 1], scaleanchor: "x", scaleratio: 1 },
           legend: { ...darkLayout.legend, x: 0.02, y: 0.98 },
           showlegend: true,

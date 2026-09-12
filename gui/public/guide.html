@@ -49,13 +49,41 @@
 <title>Choupo — Guide</title>
 <link rel="stylesheet" href="pdfjs/pdf_viewer.css">
 <style>
+  /*  THREE THEME STATES, NOT TWO (2026-09-12).  This page is opened FROM the
+      app, and the app's colour scheme has three states: an explicit Light, an
+      explicit Dark, and the default "system", which stamps nothing and is
+      decided by `prefers-color-scheme` alone.  This block used to carry only
+      the media query, so a reader who had chosen Dark in the app and whose OS
+      is light opened Help into a white page -- and the reverse.  The script at
+      the foot of this file stamps `data-theme` from the app's own
+      localStorage key, and the two [data-theme] blocks below let that choice
+      win in BOTH directions.
+
+      The complete LIGHT palette is defined on bare :root; the dark blocks
+      redefine only the tokens.  Every colour on this page has a definition in
+      every state -- see --error, which did not and is the reason this comment
+      exists.  */
   :root {
     --bg: #f6f7f9; --fg: #1a1b1e; --chrome: #ffffff; --line: #dee2e6;
-    --accent: #1c7ed6; --muted: #5c5f66;
+    /*  #1c7ed6 measured 4.20:1 on --chrome, under the 4.5:1 body minimum.
+        One step darker in the same hue: 5.29:1 on --chrome, 4.94:1 on --bg. */
+    --accent: #1a6dbd; --muted: #5c5f66;
+    /*  --error HAD NO TOKEN AT ALL: `#status.error` declared #e03131 once,
+        outside both branches, so one value served a near-white and a near-
+        black ground and satisfied neither (4.21:1 light, 3.82:1 dark).  Two
+        definitions, one per ground: 5.09:1 light, 7.44:1 dark -- both measured
+        against --bg, which is where #status is painted. */
+    --error: #c92a2a;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #1a1b1e; --fg: #e9ecef; --chrome: #25262b; --line: #373a40;
-            --accent: #4dabf7; --muted: #909296; }
+    :root:not([data-theme="light"]) {
+      --bg: #1a1b1e; --fg: #e9ecef; --chrome: #25262b; --line: #373a40;
+      --accent: #4dabf7; --muted: #909296; --error: #ff8787;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1a1b1e; --fg: #e9ecef; --chrome: #25262b; --line: #373a40;
+    --accent: #4dabf7; --muted: #909296; --error: #ff8787;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--fg);
@@ -83,9 +111,21 @@
   @media (max-width: 640px) { #viewerContainer { inset: 78px 0 0 0; } }
 
   #status { padding: 24px; color: var(--muted); }
-  #status.error { color: #e03131; }
+  #status.error { color: var(--error); }
   #status code { font-family: ui-monospace, monospace; }
 </style>
+<script>
+  /*  BEFORE FIRST PAINT, and deliberately not a module: this must run before
+      the body is painted or the reader sees a flash of the wrong theme.  The
+      app stores its three-way choice under the SAME key on the SAME origin
+      (src/App.tsx, localStorageColorSchemeManager); "auto" -- and a blocked or
+      empty localStorage -- stamps nothing, which is correct: the media query
+      then decides, exactly as it did before this page knew about the app.  */
+  try {
+    var c = localStorage.getItem("choupo-color-scheme");
+    if (c === "dark" || c === "light") document.documentElement.setAttribute("data-theme", c);
+  } catch (e) { /* storage blocked: fall through to prefers-color-scheme */ }
+</script>
 </head>
 <body>
 

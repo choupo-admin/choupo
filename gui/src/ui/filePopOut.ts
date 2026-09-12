@@ -45,9 +45,28 @@ export interface PopoutColors {
   text: string; textStrong: string; dim: string; accent: string;
   blue: string; orange: string; red: string; liquidTint: string; vapourTint: string;
 }
+/*  MEASURED AGAINST EVERY GROUND IN THIS SAME OBJECT (2026-09-12), because a
+ *  pop-out is a STANDALONE document: it carries its own palette, nothing in
+ *  the app's theme reaches it, and no CSS variable will catch a bad pair for
+ *  it later.  Two values moved, both upward, neither affecting the light set:
+ *
+ *    dim     #909296 -> #b4b5b9.  `dim` is the ink of every table header and
+ *            every row label, and the stream pop-out draws those ON the phase
+ *            tints, not on --bg: it measured 5.53:1 on bg but 4.36:1 on cell,
+ *            3.76:1 on unitTint and 3.19:1 on liquidTint -- below the 4.5:1
+ *            body minimum on three of the six grounds it actually lands on.
+ *            Now 8.41 / 6.63 / 5.72 / 4.85 respectively; worst ground 4.85:1.
+ *    border  #373a40 -> #636770.  1.51:1 on --bg: the table grid of a stream
+ *            pop-out was very nearly not drawn at all.  Now 3.04:1 on --bg,
+ *            which is the WCAG 1.4.11 non-text minimum, and 2.66:1 on --panel,
+ *            which is NOT -- stated rather than rounded up, because a rule
+ *            bright enough to clear 3:1 on the panel too would be heavier than
+ *            a table grid should be, and that is a judgement, not a
+ *            measurement.  One line to revert either way.
+ */
 const POPOUT_DARK: PopoutColors = {
-  bg: "#1a1b1e", panel: "#25262b", cell: "#2c2e33", unitTint: "#2c3a42", border: "#373a40",
-  text: "#c1c2c5", textStrong: "#d0d1d3", dim: "#909296", accent: "#4dd0c0",
+  bg: "#1a1b1e", panel: "#25262b", cell: "#2c2e33", unitTint: "#2c3a42", border: "#636770",
+  text: "#c1c2c5", textStrong: "#d0d1d3", dim: "#b4b5b9", accent: "#4dd0c0",
   blue: "#74c0fc", orange: "#ffa94d", red: "#ff8a80", liquidTint: "#1a4859", vapourTint: "#5c3826",
 };
 const POPOUT_LIGHT: PopoutColors = {
