@@ -832,6 +832,14 @@ fi
 #  the full sweep is the check, and this flag refuses to pretend otherwise --
 #  it says so in its own verdict line rather than leaving the reader to
 #  remember.
+#
+#  AND THAT SENTENCE BECAME TRUE ON 2026-09-14, having been written before it
+#  was.  Until then `npm test` ran HERE and nowhere else, so the full sweep --
+#  the thing this header sends the reader to -- typechecked the GUI and never
+#  executed one of its tests.  The full path now runs them too (search
+#  `gui-tests` below the gate walk), which is what makes the promise above
+#  something a reader can rely on rather than something the harness merely
+#  asserts about itself.
 if [ "${1:-}" = "--gui" ]; then
     shift
     [ "$#" -eq 0 ] || { echo "usage: runTests --gui  (takes no cases -- it is the gui/-only path)"; exit 2; }
@@ -1573,6 +1581,43 @@ if [ "$#" -eq 0 ]; then
         fi
         rm -f /tmp/opmem.$$
     done
+
+    #  GUI TESTS IN THE FULL PATH (2026-09-14).  Until today `npm test` ran
+    #  ONLY under `--gui`, so the FULL sweep never executed a single GUI unit
+    #  test -- it typechecked them and stopped there.  Two promises that do
+    #  not meet: the `--gui` header says "the moment a commit also moves C++,
+    #  a dict or a record, the full sweep is the check", and the full sweep
+    #  was exactly what did not check them.  That is the #100 shape -- a rule
+    #  with the right name and no declared scope -- inside the harness itself.
+    #
+    #  IT IS NOT A HYPOTHETICAL.  `8816c47c3`, the stream-ownership slice,
+    #  moved a plant's `0/` files and left THREE GUI tests red; the full
+    #  suite reported green over it, and a general handed the doubt up
+    #  by accident days later.  A dict change CAN break a GUI test, because
+    #  the GUI's tests read the corpus.
+    #
+    #  AND IT IS NOT A GATE TRADED FOR SPEED, which Vitor's 2026-09-04 ruling
+    #  forbids -- it is coverage that was never here.  The permitted
+    #  direction is FASTER gates, never FEWER, and this adds one: measured
+    #  142 s against a ~30 min sweep, under 8 %.
+    #
+    #  A CHECK THAT CANNOT RUN MUST NOT PASS: with no gui/node_modules (a
+    #  C++-only checkout, which is legitimate) it reports SKIPPED and counts
+    #  as NEITHER pass nor fail, exactly as the typecheck arm below does.
+    if [ -d "$ROOT/gui/node_modules" ]; then
+        if (cd "$ROOT/gui" && npm test --silent) > /tmp/guitest.$$ 2>&1; then
+            printf "PASS  %-40s  (%s)\n" "gui-tests" \
+                "$(grep -Eo 'Tests +[0-9]+ passed \([0-9]+\)' /tmp/guitest.$$ | tail -1)"
+            pass=$((pass+1))
+        else
+            printf "FAIL  %-40s  (cd gui && npm test)\n" "gui-tests"
+            tail -25 /tmp/guitest.$$
+            fail=$((fail+1))
+        fi
+        rm -f /tmp/guitest.$$
+    else
+        printf "SKIP  %-40s  (gui/node_modules absent -- run npm install in gui/ to cover the app's own tests; NOT counted as a pass)\n" "gui-tests"
+    fi
 
     #  GUI TYPECHECK -- because a green suite did not mean the site would
     #  BUILD (2026-08-10).  vitest does not typecheck: a test file importing
