@@ -376,6 +376,177 @@ export function bestOrder(g: TeachGraph): BestOrder {
 /** The engine's own way of naming a cycle in a refusal, reproduced so the
  *  construction and the run beside it read in one vocabulary
  *  (src/unitOperations/flowsheet/Flowsheet.cpp:4402-4411). */
+// ---- Judging a DECLARATION: an order, and the tears the reader chose --------
+
+/*  WHY THIS EXISTS BESIDE `judgePlan`, and why it is not the same function.
+ *
+ *  `judgePlan` answers "which tears does this ORDER force?".  It is a fact
+ *  about the graph, and the page has always drawn it.  What a student
+ *  actually has to do is the other half: WRITE a `tearStreams ( ... );` list
+ *  and find out whether it is right -- and get it wrong, which is where the
+ *  learning is.  The engine has seven named refusals for that, each carrying
+ *  its own remedy, and until now the only way to meet ONE of them on this
+ *  page was the single button that withdraws the witness case's declaration.
+ *
+ *  So this is a TRANSCRIPTION of `Flowsheet::validateSequentialPlan`
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:4339-4502), in the same two
+ *  passes and the same order: the ordered walk first (:4414-4446), then the
+ *  declared-tear pass (:4448-4501).  It is the same posture `wegsteinStep`
+ *  takes toward `Wegstein::step` -- the arithmetic is the engine's, the toy
+ *  it runs on is this file's own, and neither invents a rule.
+ *
+ *  IT DOES NOT RE-DERIVE WHAT A CYCLE IS.  The engine asks `pathBetween`
+ *  whether the consumer reaches the producer; here that same question is
+ *  already answered, once, by `cyclesOf` -- an edge lies on a cycle exactly
+ *  when some enumerated cycle contains it -- and both this function and
+ *  `judgePlan` ask it that way.  A second traversal would be a second home
+ *  for the one fact the whole page turns on.
+ *
+ *  THE MESSAGES ARE THE ENGINE'S OWN SENTENCES with this graph's names
+ *  substituted, not paraphrases: they carry the cycle that was found and the
+ *  remedy that closes it, and a page that rewrote them in friendlier words
+ *  would be teaching a refusal the reader will never actually see.
+ *
+ *  ONE REFUSAL IS NOT REACHABLE HERE, and it is named rather than faked:
+ *  UNKNOWN TEAR (:4462) fires on a name that is not a stream of the graph at
+ *  all -- a spelling mistake in the dict.  Every name a reader can click on
+ *  this page IS a stream, so the class is implemented (a declaration naming
+ *  no edge still returns it) and simply has no button.  */
+export type TearFault =
+  | "MISSING TEAR" | "INVALID ORDER" | "UNKNOWN TEAR" | "INLET TEAR"
+  | "UNCONSUMED TEAR" | "FORWARD TEAR" | "OFF-CYCLE TEAR";
+
+export interface TearFinding {
+  kind: TearFault;
+  /** The stream the refusal is about. */
+  stream: string;
+  /** The engine's own sentence, this graph's names in it. */
+  message: string;
+}
+
+/** What the drawing should say about one stream under this declaration. */
+export type StreamMark = "tear" | "forward" | TearFault;
+
+export interface DeclarationVerdict {
+  findings: TearFinding[];
+  /** Declared tears the engine would accept. */
+  accepted: string[];
+  /** Every stream of the graph, marked. */
+  marks: { [stream: string]: StreamMark };
+  /** True when the engine would run this plan. */
+  ok: boolean;
+}
+
+export function judgeDeclaration(
+  g: TeachGraph, order: readonly number[], declared: readonly string[],
+): DeclarationVerdict {
+  const pos = positions(order);
+  const cycles = cyclesOf(g);
+  const cycleOf = (name: string): Cycle | null =>
+    cycles.find((y) => y.edges.includes(name)) ?? null;
+  const tearSet = new Set(declared);
+  const findings: TearFinding[] = [];
+  const marks: { [stream: string]: StreamMark } = {};
+  for (const e of g.edges) marks[e.name] = "forward";
+
+  //  PASS ONE -- the ordered walk (:4414-4446).  Every input that is not
+  //  declared a tear must already have been produced by an earlier unit, or
+  //  be a domain inlet.  Anything else is a backward edge nobody cut.
+  const produced = new Set<string>();
+  for (const u of order) {
+    for (const e of g.edges) {
+      if (e.to !== u || !isInternal(e)) continue;
+      if (tearSet.has(e.name)) continue;          // judged in pass two
+      if (produced.has(e.name)) continue;         // an earlier unit's output
+      const cyc = cycleOf(e.name);
+      const producer = g.units[e.from as number]!.name;
+      const consumer = g.units[e.to as number]!.name;
+      if (cyc) {
+        marks[e.name] = "MISSING TEAR";
+        findings.push({ kind: "MISSING TEAR", stream: e.name,
+          message: `MISSING TEAR: stream '${e.name}' closes the material `
+            + `cycle  ${cycleString(cyc, e.name)}  but is not declared a `
+            + `tear.  Declare it (solverDict: tearStreams ( ${e.name} );) `
+            + `and give it a 0/ seed (bin/choupo-init0 derives one).` });
+      } else {
+        marks[e.name] = "INVALID ORDER";
+        findings.push({ kind: "INVALID ORDER", stream: e.name,
+          message: `INVALID ORDER: unit '${consumer}' consumes stream `
+            + `'${e.name}' but is declared BEFORE its producer `
+            + `'${producer}', and the edge lies on no cycle -- it would `
+            + `silently read the 0/ seed instead of the computed stream.  `
+            + `This is a declaration-order mistake, not a recycle.` });
+      }
+    }
+    for (const e of g.edges) if (e.from === u) produced.add(e.name);
+  }
+
+  //  PASS TWO -- the declared-tear pass (:4448-4501).  Each declared tear
+  //  must be a backward edge lying on a real cycle; the four ways it can
+  //  fail are four different mistakes with four different remedies.
+  const accepted: string[] = [];
+  for (const t of declared) {
+    //  A stream may have ONE producer and SEVERAL consumers, and in that
+    //  case it is several `TeachEdge` rows sharing a name -- so the producer
+    //  is the row that HAS one, never simply the first row found.  Today's
+    //  three teaching graphs have no such stream; writing it the other way
+    //  would work on all three and break on the first graph that does.
+    const known = g.edges.some((e) => e.name === t);
+    const edge = g.edges.find((e) => e.name === t && e.from !== null);
+    const consumers = g.edges.filter((e) => e.name === t && e.to !== null);
+    if (!known || !edge || edge.from === null) {
+      const kind: TearFault = !known ? "UNKNOWN TEAR" : "INLET TEAR";
+      marks[t] = kind;
+      findings.push({ kind, stream: t,
+        message: kind === "UNKNOWN TEAR"
+          ? `UNKNOWN TEAR: '${t}' is declared a tear but is not a stream of `
+            + `this graph (nothing produces or consumes it) -- check the `
+            + `spelling in tearStreams.`
+          : `INLET TEAR: '${t}' is declared a tear but has no producer -- `
+            + `it is a domain INLET, not a recycle; remove it from `
+            + `tearStreams.` });
+      continue;
+    }
+    if (consumers.length === 0) {
+      marks[t] = "UNCONSUMED TEAR";
+      findings.push({ kind: "UNCONSUMED TEAR", stream: t,
+        message: `UNCONSUMED TEAR: '${t}' is declared a tear but no unit `
+          + `consumes it -- an outlet needs no cut; remove it from `
+          + `tearStreams.` });
+      continue;
+    }
+    const producer = g.units[edge.from]!.name;
+    //  `<=` and not `<`: a unit consuming its own output is a genuine
+    //  one-unit cycle, and the engine counts it backward for that reason
+    //  (:4477-4480).
+    const pProd = pos.get(edge.from) ?? 0;
+    const backward = consumers.filter((c) => (pos.get(c.to!) ?? 0) <= pProd);
+    if (backward.length === 0) {
+      marks[t] = "FORWARD TEAR";
+      findings.push({ kind: "FORWARD TEAR", stream: t,
+        message: `FORWARD TEAR: '${t}' (producer '${producer}') is only `
+          + `consumed AFTER its producer -- a forward stream needs no cut; `
+          + `remove it from tearStreams.  (Deliberate lagging of a forward `
+          + `stream would be a separate, explicit feature, never a tear.)` });
+      continue;
+    }
+    if (!cycleOf(t)) {
+      marks[t] = "OFF-CYCLE TEAR";
+      findings.push({ kind: "OFF-CYCLE TEAR", stream: t,
+        message: `OFF-CYCLE TEAR: '${t}' points backwards (producer `
+          + `'${producer}' is declared after consumer `
+          + `'${g.units[backward[0]!.to!]!.name}') but lies on NO material cycle -- a `
+          + `declaration-order mistake compensated by an artificial `
+          + `iteration.  Fix the unit order instead of declaring a tear.` });
+      continue;
+    }
+    marks[t] = "tear";
+    accepted.push(t);
+  }
+
+  return { findings, accepted, marks, ok: findings.length === 0 };
+}
+
 export function cycleString(c: Cycle, tearStream: string): string {
   return `${c.units.join(" -> ")} --${tearStream}--> ${c.units[0] ?? ""}`;
 }

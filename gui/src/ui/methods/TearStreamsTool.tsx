@@ -53,9 +53,9 @@ import { PanelNote } from "./knobPanel.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import {
   TEACH_GRAPHS, TEAR_DECLARED, TEAR_WITNESS,
-  bestOrder, cycleString, cyclesOf, isInternal, judgePlan, planAnnouncements,
-  planFindings, withdrawTearOverrides,
-  type TeachGraph,
+  bestOrder, cycleString, cyclesOf, isInternal, judgeDeclaration, judgePlan,
+  planAnnouncements, planFindings, withdrawTearOverrides,
+  type StreamMark, type TeachGraph,
 } from "./tearMath.js";
 
 const GRID = "var(--mantine-color-default-border)";
@@ -69,21 +69,40 @@ const BOX_W = 104, BOX_H = 34, GAP = 34;
 const TOP = 92, BOT = 96;
 
 /** The flowsheet as the solver reads it: a LIST, with every stream drawn as
- *  an arc over or under it. */
-function OrderDiagram({ g, order }: {
+ *  an arc over or under it — and every stream CLICKABLE, because writing the
+ *  `tearStreams ( ... );` list is the act this page is about.
+ *
+ *  The colour comes from `marks`, which the caller gets from
+ *  `judgeDeclaration`: the engine's verdict on the reader's OWN declaration,
+ *  not from whether the edge happens to point backwards.  The two differ
+ *  exactly where the lesson is — a backward edge nobody declared is a
+ *  MISSING TEAR, and a forward edge somebody did declare is a FORWARD TEAR,
+ *  and the drawing has to be able to say both. */
+function OrderDiagram({ g, order, marks, onToggle }: {
   g: TeachGraph; order: readonly number[];
+  marks: { [stream: string]: StreamMark };
+  onToggle: (stream: string) => void;
 }): JSX.Element {
   const pos = new Map<number, number>();
   order.forEach((u, i) => pos.set(u, i));
   const n = order.length;
-  const w = n * BOX_W + (n - 1) * GAP + 120;
+  //  260 and not 120: a boundary stub's label is drawn OUTWARD into this
+  //  margin, and it now carries a refusal word beside the stream name
+  //  ("freshFeed  (INLET TEAR)"), which does not fit in 60 px a side.
+  const w = n * BOX_W + (n - 1) * GAP + 260;
   const h = TOP + BOX_H + BOT;
-  const cx = (u: number) => 60 + (pos.get(u) ?? 0) * (BOX_W + GAP) + BOX_W / 2;
+  const cx = (u: number) => 130 + (pos.get(u) ?? 0) * (BOX_W + GAP) + BOX_W / 2;
   const yTop = TOP;
 
-  const verdict = judgePlan(g, order);
-  const backwardNames = new Set(verdict.backward.map((b) => b.name));
-  const tearNames = new Set(verdict.tears);
+  //  A mark decides the ink; the arc's DIRECTION is still geometry.
+  const inkOf = (name: string): string => {
+    const m = marks[name] ?? "forward";
+    return m === "tear" ? TEAR : m === "forward" ? FORWARD : MISTAKE;
+  };
+  const faultOf = (name: string): string => {
+    const m = marks[name] ?? "forward";
+    return m === "tear" || m === "forward" ? "" : m;
+  };
 
   let laneUp = 0, laneDown = 0;
   return (
@@ -114,33 +133,83 @@ function OrderDiagram({ g, order }: {
             const inlet = e.from === null;
             const x = cx(u) + (inlet ? -BOX_W / 2 - 26 : BOX_W / 2 + 26);
             const y = yTop + BOX_H / 2;
+            const ink = inkOf(e.name);
+            const fault = faultOf(e.name);
+            //  WHICH WAY THE LABEL RUNS.  Outward, into the page margin,
+            //  wherever there IS a margin: to the left for an inlet, to the
+            //  right for the last unit's outlet.  A middle unit's outlet has
+            //  only the 34 px gap before the next box, which no label fits
+            //  in, so it keeps the inward anchor it has always had and sits
+            //  over its own unit -- a pre-existing crowding this slice does
+            //  not make worse and does not pretend to fix.
+            const outward = inlet
+              || (pos.get(u) ?? 0) === order.length - 1;
+            const anchor = outward === inlet ? "end" : "start";
             return (
-              <g key={e.name}>
+              <g key={e.name} style={{ cursor: "pointer" }}
+                onClick={() => onToggle(e.name)}
+                role="button" tabIndex={0}
+                aria-label={`declare or withdraw a tear on stream ${e.name}`}
+                onKeyDown={(ev) => {
+                  if (ev.key === "Enter" || ev.key === " ") onToggle(e.name);
+                }}>
+                {/* a wide transparent hit path: an 8-point label and a
+                    1.2-pixel line are not something a finger can hit */}
+                <line x1={inlet ? x - 6 : cx(u) + BOX_W / 2}
+                  x2={inlet ? cx(u) - BOX_W / 2 : x + 6} y1={y} y2={y}
+                  stroke="transparent" strokeWidth={18} />
                 <line x1={inlet ? x : cx(u) + BOX_W / 2}
                   x2={inlet ? cx(u) - BOX_W / 2 : x} y1={y} y2={y}
-                  stroke={FORWARD} strokeWidth={1.2} />
-                <text x={x} y={y - 5} textAnchor={inlet ? "start" : "end"}
-                  fontSize={8.5} fill={INK}>{e.name}</text>
+                  stroke={ink} strokeWidth={fault ? 2 : 1.2}
+                  strokeDasharray={fault ? "5 3" : ""} />
+                {/*  AWAY from the box.  An inlet's stub sits to the LEFT of
+                     its unit, so its label must be anchored at its right end
+                     and run leftwards into the margin; an outlet is the
+                     mirror.  Written the other way round -- which is how it
+                     was -- every label ran straight across the unit it
+                     belongs to, and the moment a refusal word was appended
+                     the collision was unreadable.  */}
+                <text x={x} y={y - 5} textAnchor={anchor}
+                  fontSize={8.5} fill={fault ? ink : INK}>{e.name}</text>
+                {/*  The refusal word goes on its OWN line rather than beside
+                     the name.  A stub has only the page margin to write in,
+                     and "freshFeed  (UNCONSUMED TEAR)" on one line is wider
+                     than any margin that leaves the boxes readable.  */}
+                {fault && (
+                  <text x={x} y={y + 10} textAnchor={anchor}
+                    fontSize={8.5} fill={ink}>{fault}</text>
+                )}
               </g>
             );
           }
           const a = cx(e.from as number), b = cx(e.to as number);
-          const back = backwardNames.has(e.name);
-          const tear = tearNames.has(e.name);
-          const colour = back ? (tear ? TEAR : MISTAKE) : FORWARD;
+          const back = (pos.get(e.to as number) ?? 0)
+            <= (pos.get(e.from as number) ?? 0);
+          const mark = marks[e.name] ?? "forward";
+          const colour = inkOf(e.name);
+          const fault = faultOf(e.name);
           const lane = back ? ++laneDown : ++laneUp;
           const depth = 18 + (lane % 3) * 20;
           const y0 = back ? yTop + BOX_H : yTop;
           const y1 = back ? y0 + depth : y0 - depth;
           const mid = (a + b) / 2;
+          const d = `M ${a} ${y0} C ${a} ${y1}, ${b} ${y1}, ${b} ${y0}`;
           return (
-            <g key={e.name}>
-              <path d={`M ${a} ${y0} C ${a} ${y1}, ${b} ${y1}, ${b} ${y0}`}
-                fill="none" stroke={colour} strokeWidth={back ? 2 : 1.2}
-                strokeDasharray={back ? "5 3" : ""} />
+            <g key={e.name} style={{ cursor: "pointer" }}
+              onClick={() => onToggle(e.name)}
+              role="button" tabIndex={0}
+              aria-label={`declare or withdraw a tear on stream ${e.name}`}
+              onKeyDown={(ev) => {
+                if (ev.key === "Enter" || ev.key === " ") onToggle(e.name);
+              }}>
+              <path d={d} fill="none" stroke="transparent" strokeWidth={18} />
+              <path d={d} fill="none" stroke={colour}
+                strokeWidth={mark === "forward" ? 1.2 : 2}
+                strokeDasharray={mark === "forward" ? "" : "5 3"} />
               <text x={mid} y={back ? y1 + 10 : y1 - 3} textAnchor="middle"
                 fontSize={8.5} fill={colour}>
-                {e.name}{tear ? "  (TEAR)" : back ? "  (ORDER MISTAKE)" : ""}
+                {e.name}
+                {mark === "tear" ? "  (TEAR)" : fault ? `  (${fault})` : ""}
               </text>
             </g>
           );
@@ -172,7 +241,31 @@ export function TearStreamsTool(): JSX.Element {
     Object.fromEntries(TEACH_GRAPHS.map((x) => [x.id, [...x.declaredOrder]])));
   const order = orders[g.id] ?? [...g.declaredOrder];
 
+  /*  THE READER'S OWN DECLARATION, per graph.  It opens on the tears the
+   *  declared order forces -- a correct plan, so the page starts from
+   *  something that runs -- and from then on it is the reader's.  It is NOT
+   *  resynchronised when a unit moves: that is the whole instrument.  Move a
+   *  unit and the declaration you wrote goes stale exactly as a solverDict
+   *  would, and the engine's own MISSING TEAR appears to say so.  */
+  const [declaredBy, setDeclaredBy] = useState<{ [id: string]: string[] }>(
+    () => Object.fromEntries(TEACH_GRAPHS.map(
+      (x) => [x.id, judgePlan(x, x.declaredOrder).tears])));
+  const declared = declaredBy[g.id] ?? [];
+
   const verdict = useMemo(() => judgePlan(g, order), [g, order]);
+  const call = useMemo(
+    () => judgeDeclaration(g, order, declared), [g, order, declared]);
+
+  const toggleTear = (name: string): void => setDeclaredBy((d) => {
+    const cur = d[g.id] ?? [];
+    return { ...d, [g.id]: cur.includes(name)
+      ? cur.filter((x) => x !== name)
+      //  Keep the DECLARED order of the graph's own edges, so the list a
+      //  reader reads back is the order they would write it in a dict.
+      : g.edges.map((e) => e.name)
+          .filter((n, i, a) => a.indexOf(n) === i)
+          .filter((n) => n === name || cur.includes(n)) };
+  });
   const best = useMemo(() => bestOrder(g), [g]);
   const cycles = useMemo(() => cyclesOf(g), [g]);
 
@@ -215,7 +308,9 @@ export function TearStreamsTool(): JSX.Element {
 
         {/* ---------------- THE CONSTRUCTION ---------------- */}
         <Box style={{ borderLeft: `3px solid ${TEAR}`, paddingLeft: 12 }}>
-          <Title order={4}>Move a unit, and watch the tears change</Title>
+          <Title order={4}>
+            Write the declaration yourself, and get it wrong on purpose
+          </Title>
           <Text size="sm" mt={4}>
             Everything below this line is graph theory drawn in your browser
             over three TEACHING FLOWSHEETS — named boxes and named arrows
@@ -226,6 +321,19 @@ export function TearStreamsTool(): JSX.Element {
             ABOVE the row runs forward and needs no cut; an arc BELOW it
             arrives at a unit that has already run, and needs one.
           </Text>
+          <Text size="sm" mt={8}>
+            CLICK ANY STREAM to put it in the{" "}
+            <Text span ff="monospace" size="xs">tearStreams ( … );</Text> list
+            or take it out, and move the units with the arrows. The panel then
+            judges your declaration the way the engine does — the same two
+            passes, in the same order, with the same seven refusals in{" "}
+            <Text span fs="italic">Choupo&apos;s own words</Text>, carrying the
+            cycle it found and the remedy that closes it. Declare nothing and
+            you meet MISSING TEAR; cut a forward stream and you meet FORWARD
+            TEAR; cut the feed and you meet INLET TEAR. Getting it wrong here
+            costs nothing, which is the only reason a page is a better place
+            to get it wrong than a case.
+          </Text>
         </Box>
 
         <SegmentedControl size="xs" fullWidth value={graphId}
@@ -233,7 +341,8 @@ export function TearStreamsTool(): JSX.Element {
           data={TEACH_GRAPHS.map((x) => ({ value: x.id, label: x.label }))} />
         <Text size="sm">{g.blurb}</Text>
 
-        <OrderDiagram g={g} order={order} />
+        <OrderDiagram g={g} order={order} marks={call.marks}
+          onToggle={toggleTear} />
 
         <Box style={{ display: "grid", gap: 16,
           gridTemplateColumns: rail }}>
@@ -268,6 +377,28 @@ export function TearStreamsTool(): JSX.Element {
                 fewest tears
               </Button>
             </Group>
+            <Text size="xs" fw={600} tt="uppercase" c="dimmed" mt={8}>
+              tearStreams ( … );
+            </Text>
+            <Box style={{
+              border: `1px solid ${GRID}`, borderRadius: 4, padding: "6px 8px",
+            }}>
+              <Text size="xs" ff="monospace" style={{ wordBreak: "break-all" }}>
+                tearStreams ({declared.length ? " " + declared.join(" ") + " " : " "});
+              </Text>
+            </Box>
+            <Text size="xs" c="dimmed">
+              Click a stream on the drawing to put it in this list or take it
+              out. This IS the line you would write in the case&apos;s{" "}
+              <Text span ff="monospace">system/solverDict</Text>.
+            </Text>
+            <Button size="xs" variant="default"
+              disabled={declared.length === verdict.tears.length
+                && verdict.tears.every((t) => declared.includes(t))}
+              onClick={() => setDeclaredBy((d) =>
+                ({ ...d, [g.id]: verdict.tears }))}>
+              declare what this order needs
+            </Button>
             <PanelNote>
               {best.fewest === 1
                 ? "One tear is enough for this flowsheet, in at least one "
@@ -282,24 +413,40 @@ export function TearStreamsTool(): JSX.Element {
           </Stack>
 
           <Stack gap={10}>
-            {!verdict.valid && (
-              <Alert color="red" title="This order is not a valid plan">
-                {verdict.orderMistakes.map((m) => (
-                  <Text size="sm" key={m.name}>
-                    <Text span ff="monospace">{m.consumer}</Text> consumes{" "}
-                    <Text span ff="monospace">{m.name}</Text> before its
-                    producer <Text span ff="monospace">{m.producer}</Text> has
-                    run, and that edge lies on no cycle. This is a
-                    declaration-order mistake, not a recycle — move the unit
-                    rather than declaring a tear. Choupo refuses it as INVALID
-                    ORDER and prints a valid order to paste.
+            {/*  THE ENGINE'S OWN SENTENCES, not a paraphrase of them.  This
+                 block used to restate ONE of the seven refusals in friendlier
+                 words; a reader who met the real thing would not recognise
+                 it, and the other six had no home on the page at all.  */}
+            {call.findings.length > 0 && (
+              <Alert color="red"
+                title={`Choupo would refuse this plan — ${call.findings.length} `
+                  + `finding${call.findings.length === 1 ? "" : "s"}`}>
+                <Stack gap={6}>
+                  {call.findings.map((f) => (
+                    <Text size="xs" ff="monospace" key={f.kind + f.stream}
+                      style={{ whiteSpace: "pre-wrap" }}>
+                      {f.message}
+                    </Text>
+                  ))}
+                </Stack>
+              </Alert>
+            )}
+            {call.ok && (
+              <Alert color="teal" title="Choupo would run this plan">
+                <Text size="sm">
+                  Every backward edge is declared, every declared tear is a
+                  real cut, and the order can be walked. The engine announces
+                  the cut rather than taking it silently:{" "}
+                  <Text span ff="monospace" size="xs">
+                    [plan] material recycle: tear &apos;
+                    {call.accepted[0] ?? "—"}&apos; cuts …
                   </Text>
-                ))}
+                </Text>
               </Alert>
             )}
             <Group gap="xs" wrap="wrap">
-              <Badge variant="light" color={verdict.valid ? "teal" : "red"}>
-                {verdict.valid ? "valid plan" : "refused"}
+              <Badge variant="light" color={call.ok ? "teal" : "red"}>
+                {call.ok ? "valid plan" : "refused"}
               </Badge>
               <Badge variant="light" color="orange">
                 {verdict.tears.length} tear

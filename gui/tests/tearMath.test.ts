@@ -52,8 +52,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   TEACH_GRAPHS, TEAR_DECLARED, TEAR_SOLVER_DICT, TEAR_WITNESS,
-  bestOrder, cycleString, cyclesOf, isInternal, judgePlan, planAnnouncements,
-  planFindings, withdrawTearOverrides,
+  bestOrder, cycleString, cyclesOf, isInternal, judgeDeclaration, judgePlan,
+  planAnnouncements, planFindings, withdrawTearOverrides,
 } from "../src/ui/methods/tearMath.js";
 import { applyKeyRename, methodCase } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
@@ -297,5 +297,102 @@ describe("the withdrawal lands on the shipped case", () => {
 
   it("methodCase assembles the withdrawn case", () => {
     expect(methodCase(TEAR_WITNESS, withdrawTearOverrides())).toBeTruthy();
+  });
+});
+
+/*  THE SEVEN REFUSALS, one test each.
+ *
+ *  `judgeDeclaration` transcribes `Flowsheet::validateSequentialPlan`, and a
+ *  transcription is only worth anything if every branch of it is reached by
+ *  something.  Six of the seven are reached by a declaration a reader can
+ *  make by clicking; the seventh, UNKNOWN TEAR, is a spelling mistake in a
+ *  dict, so it is fired here by a name that is not a stream at all -- the
+ *  only place it CAN be fired, which is why it is tested and not merely
+ *  implemented.  */
+describe("judgeDeclaration: the engine's seven refusals over a teaching graph", () => {
+  const rsr = TEACH_GRAPHS.find((g) => g.id === "rsr")!;
+  const indep = TEACH_GRAPHS.find((g) => g.id === "independent")!;
+
+  it("the forced tear, declared, is accepted and nothing refuses", () => {
+    const v = judgeDeclaration(rsr, rsr.declaredOrder, ["recycle"]);
+    expect(v.ok).toBe(true);
+    expect(v.findings).toEqual([]);
+    expect(v.accepted).toEqual(["recycle"]);
+    expect(v.marks["recycle"]).toBe("tear");
+    //  Everything else is a forward edge, and says so.
+    expect(v.marks["mixed"]).toBe("forward");
+  });
+
+  it("declaring nothing refuses MISSING TEAR and names the cycle", () => {
+    const v = judgeDeclaration(rsr, rsr.declaredOrder, []);
+    expect(v.ok).toBe(false);
+    expect(v.findings.map((f) => f.kind)).toEqual(["MISSING TEAR"]);
+    const m = v.findings[0]!.message;
+    expect(m).toContain("MISSING TEAR: stream 'recycle'");
+    //  The cycle chain, in the engine's own arrow notation.
+    expect(m).toContain("--recycle-->");
+    //  And the remedy, with the dict line the reader would actually write.
+    expect(m).toContain("tearStreams ( recycle )");
+  });
+
+  it("a forward stream declared a tear refuses FORWARD TEAR, by name", () => {
+    const v = judgeDeclaration(rsr, rsr.declaredOrder, ["recycle", "mixed"]);
+    expect(v.findings.map((f) => f.kind)).toEqual(["FORWARD TEAR"]);
+    expect(v.findings[0]!.message).toContain("producer 'mixer01'");
+    expect(v.marks["mixed"]).toBe("FORWARD TEAR");
+    //  The valid tear beside it is still accepted: a refusal is about the
+    //  stream it names, not about the whole declaration.
+    expect(v.accepted).toEqual(["recycle"]);
+  });
+
+  it("a domain inlet declared a tear refuses INLET TEAR", () => {
+    const v = judgeDeclaration(rsr, rsr.declaredOrder, ["recycle", "freshFeed"]);
+    expect(v.findings.map((f) => f.kind)).toEqual(["INLET TEAR"]);
+    expect(v.findings[0]!.message).toContain("has no producer");
+  });
+
+  it("a domain outlet declared a tear refuses UNCONSUMED TEAR", () => {
+    const v = judgeDeclaration(rsr, rsr.declaredOrder, ["recycle", "vapProd"]);
+    expect(v.findings.map((f) => f.kind)).toEqual(["UNCONSUMED TEAR"]);
+    expect(v.findings[0]!.message).toContain("no unit consumes it");
+  });
+
+  it("a name that is not a stream refuses UNKNOWN TEAR", () => {
+    const v = judgeDeclaration(rsr, rsr.declaredOrder, ["recycle", "recylce"]);
+    expect(v.findings.map((f) => f.kind)).toEqual(["UNKNOWN TEAR"]);
+    expect(v.findings[0]!.message).toContain("check the spelling");
+  });
+
+  it("a backward edge on NO cycle: undeclared it is INVALID ORDER, declared it is OFF-CYCLE TEAR", () => {
+    //  Put the second loop's mixer BEFORE the first loop's separator, so the
+    //  edge joining the two loops points backwards while lying on neither.
+    const order = [3, 4, 5, 0, 1, 2];
+    const undeclared = judgeDeclaration(indep, order, ["recycleA", "recycleB"]);
+    const invalid = undeclared.findings.filter((f) => f.kind === "INVALID ORDER");
+    expect(invalid.map((f) => f.stream)).toEqual(["inter"]);
+    expect(invalid[0]!.message).toContain("declaration-order mistake, not a recycle");
+
+    const declared = judgeDeclaration(indep, order,
+      ["recycleA", "recycleB", "inter"]);
+    const off = declared.findings.filter((f) => f.kind === "OFF-CYCLE TEAR");
+    expect(off.map((f) => f.stream)).toEqual(["inter"]);
+    expect(off[0]!.message).toContain("lies on NO material cycle");
+    //  Declaring it SILENCES the INVALID ORDER finding and raises the other
+    //  one instead -- which is the whole point of the pair: the engine will
+    //  not let a reader convert an ordering mistake into an iteration.
+    expect(declared.findings.some((f) => f.kind === "INVALID ORDER")).toBe(false);
+  });
+
+  it("agrees with judgePlan about which tears an order forces", () => {
+    //  The two functions answer different questions and must not disagree
+    //  about the one fact they share.  Checked over every graph and every
+    //  declaration of the graph's own order.
+    for (const g of TEACH_GRAPHS) {
+      const plan = judgePlan(g, g.declaredOrder);
+      const v = judgeDeclaration(g, g.declaredOrder, plan.tears);
+      expect(v.ok, `${g.id} should accept exactly the tears its order forces`)
+        .toBe(true);
+      expect(v.accepted.slice().sort()).toEqual(plan.tears.slice().sort());
+    }
   });
 });
