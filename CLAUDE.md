@@ -892,13 +892,18 @@ predicts: a general was sent to diagnose a seam that had been closed for four
 days, and the first half of its brief was spent proving the constitution
 wrong.  WHEN YOU FIX A THING THIS FILE CALLS BROKEN, FIX THE SENTENCE IN THE
 SAME COMMIT.
-**WHAT IS OWED, and it is the live half:** that fix deliberately re-recorded
-NOTHING ("per Vitor's standing instruction"), and the re-record never
-happened — so four cases FAIL their goldens at HEAD today for a CORRECT
-engine: `ammonia02_full_plant` (126 rows), `proxy01_gas_loop` (62),
-`combined01_brayton_rankine` (22), `combined02_brayton_rankine_shaft` (24).
-A deferred re-record is a debt, and an undated debt is indistinguishable from
-a regression.
+**THE DEBT THAT WAS OWED IS PAID, and this sentence is the third time this
+month that fact had to be chased (corrected 2026-09-14).**  That fix
+deliberately re-recorded NOTHING ("per Vitor's standing instruction"), and
+this paragraph then recorded four cases as FAILING their goldens at HEAD for
+a correct engine.  `b9a61948a` — "the 2026-09-08 debt is paid" — re-recorded
+EIGHT goldens, the four named among them, and all four pass today (verified
+by running them, not by reading this file).  **A deferred re-record is a
+debt, and an undated debt is indistinguishable from a regression**: that
+rule is why the paragraph was written and it still holds.  What did not
+hold is the paragraph, which went on naming a paid debt — so a reader is
+told to fix something already fixed, which is the SAME failure the
+paragraph above this one describes about itself, one rung up.
 **AND THE FAMILY WAS NAMED ONE RUNG TOO LOW (2026-09-12).**  The heading above
 is a CLOSED SUBSET, not the family.  `column01` was filed under it and does not
 belong there at all: both sides price on `H_stream_formation`.  The family is:
