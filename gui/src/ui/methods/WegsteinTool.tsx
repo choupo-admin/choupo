@@ -48,11 +48,12 @@
 
 import { useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Switch, Table,
-  Text, Title,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Slider, Stack, Switch,
+  Table, Text, Title,
 } from "@mantine/core";
 
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { WegsteinCobweb } from "./WegsteinCobweb.js";
 import { useNarrowViewport } from "./methodsChrome.js";
 import { WEGSTEIN_LIMITS, WEGSTEIN_STEPS } from "./wegsteinLesson.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
@@ -296,6 +297,12 @@ export function WegsteinTool(): JSX.Element {
   const [qMax, setQMax] = useState(RECYCLE_QMAX_DEFAULT);
   const [unitId, setUnitId] = useState<string>(SI_UNITS.id);
   const [showNewton, setShowNewton] = useState(true);
+  /** Which variable the cobweb opens on, and which step's secant it draws.
+   *  Both are CLAMPED at render rather than corrected by an effect: the
+   *  trajectory shortens whenever a knob moves, and a stored index that
+   *  outlives its trace would silently draw the wrong sweep. */
+  const [cobVar, setCobVar] = useState<0 | 1>(0);
+  const [cobK, setCobK] = useState(1);
 
   const units: DisplayUnits =
     DISPLAY_UNITS.find((u) => u.id === unitId) ?? SI_UNITS;
@@ -314,6 +321,13 @@ export function WegsteinTool(): JSX.Element {
     () => driveNewton(map, { ...opts, qMin, qMax }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [map, units]);
+
+  /** The cobweb's two indices, resolved against the trace that EXISTS now.
+   *  `cobMaxK` is the last sweep that has a predecessor; below 1 there is no
+   *  secant to draw and the section says so instead of drawing one. */
+  const cobMaxK = weg.iterates.length - 1;
+  const cobShownK = Math.min(Math.max(cobK, 1), Math.max(cobMaxK, 1));
+  const cobStep = weg.iterates[cobShownK]?.vars[cobVar] ?? null;
 
   const rho = toySpectralRadius(map);
   const eig = toyEigenvalues(map);
@@ -509,6 +523,83 @@ export function WegsteinTool(): JSX.Element {
               <Text span ff="monospace">{fmtExp(invariance.displayNorm)}</Text>{" "}
               in the selected units. One of those two numbers is a property of
               the method; the other is a property of the bookkeeping.
+            </Text>
+          )}
+        </Box>
+
+        {/* ---- The picture of the coefficient ---- */}
+        <Box>
+          <Title order={5}>
+            Where q lives: the secant crosses the diagonal at the next iterate
+          </Title>
+          <Text size="sm" mt={4} mb={8}>
+            The table above gives{" "}
+            <Text span ff="monospace" size="xs">s</Text> and{" "}
+            <Text span ff="monospace" size="xs">q</Text> as numbers. They are
+            also a place on a drawing, and the drawing is exact rather than
+            suggestive: draw the straight line through the last two points the
+            sweep visited, and where that line meets{" "}
+            <Text span ff="monospace" size="xs">g = x</Text> is precisely where
+            Wegstein goes next. Substituting{" "}
+            <Text span ff="monospace" size="xs">q = s/(s−1)</Text> into{" "}
+            <Text span ff="monospace" size="xs">x&apos; = q·x + (1−q)·g</Text>{" "}
+            gives <Text span ff="monospace" size="xs">(g − s·x)/(1 − s)</Text>,
+            which is the crossing. Direct substitution would instead go
+            straight to <Text span ff="monospace" size="xs">g</Text>; the gap
+            between the two on the picture is the acceleration.
+          </Text>
+          {cobMaxK >= 1 ? (
+            <>
+              <Group gap="md" align="flex-end" wrap="wrap" mb={6}>
+                <Box>
+                  <Text size="xs" fw={600} mb={4}>variable</Text>
+                  <SegmentedControl size="xs" value={String(cobVar)}
+                    onChange={(v) => setCobVar(v === "1" ? 1 : 0)}
+                    data={[
+                      { value: "0", label: `F [${units.names[0]}]` },
+                      { value: "1", label: `T [${units.names[1]}]` },
+                    ]} />
+                </Box>
+                <Box style={{ flex: 1, minWidth: 180 }}>
+                  <Text size="xs" fw={600} mb={4}>
+                    open the secant on sweep {cobShownK}
+                  </Text>
+                  <Slider size="xs" min={1} max={cobMaxK} step={1}
+                    value={cobShownK} onChange={setCobK}
+                    marks={cobMaxK <= 12
+                      ? Array.from({ length: cobMaxK }, (_, i) => ({
+                          value: i + 1, label: String(i + 1) }))
+                      : undefined} />
+                </Box>
+              </Group>
+              <WegsteinCobweb iterates={weg.iterates} varIndex={cobVar}
+                units={units} map={map} k={cobShownK} />
+              {cobStep && (
+                <Text size="sm" mt={6}>
+                  On sweep {cobShownK}, {cobVar === 0 ? "F" : "T"} has secant
+                  slope{" "}
+                  <Text span ff="monospace">
+                    {cobStep.s === null ? "none" : fmt(cobStep.s, 5)}
+                  </Text>{" "}
+                  and uses{" "}
+                  <Text span ff="monospace">q = {fmt(cobStep.q, 5)}</Text>
+                  {cobStep.why === "clamped" && cobStep.qRaw !== null && (
+                    <> — the secant asked for{" "}
+                      <Text span ff="monospace">{fmt(cobStep.qRaw, 5)}</Text>{" "}
+                      and <Text span ff="monospace">qmin</Text>/
+                      <Text span ff="monospace">qmax</Text> refused it, which
+                      is why the crossing and the point the iteration took are
+                      two different marks</>
+                  )}
+                  {cobStep.why !== "clamped" && <> ({cobStep.why})</>}.
+                </Text>
+              )}
+            </>
+          ) : (
+            <Text size="sm" c="dimmed">
+              This run reached its tolerance in a single sweep, so there is no
+              pair of visited points to draw a secant through. Lower a loop
+              gain or raise the coupling and the picture returns.
             </Text>
           )}
         </Box>
