@@ -283,7 +283,9 @@ export function ExploreWorkspace() {
   //  THE SET COMES FROM THE ADDRESS (2026-09-03).  The Compounds tab chooses
   //  and hands over by link (`?workspace=properties&components=water,ethanol`;
   //  `?workspace=explore` with a set reaches here too -- the first build's
-  //  spelling, kept working in store.bootWorkspace);
+  //  spelling, honoured in state/workspaceUrl.ts and REWRITTEN to the
+  //  canonical word at boot, so the address a student copies out names the
+  //  screen it shows);
   //  one-tab-one-thing forbids a tab that depends on state its own address
   //  does not name, so there is no shared store and no localStorage here.
   //  An EMPTY address is the normal case and not a lesser one -- this tab is a

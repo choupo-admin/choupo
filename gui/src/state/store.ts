@@ -32,6 +32,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { create } from "zustand";
+import { resolveWorkspaceSearch } from "./workspaceUrl.js";
 
 import { tutorialByName } from "../cases/tutorials.js";
 import { readCaseAt } from "../cases/workspace.js";
@@ -543,29 +544,22 @@ function bootShowIntro(): boolean {
 // asking to plot them, so routing it to the landing would drop the request
 // the URL is carrying.
 function bootWorkspace(): WorkspaceKey | null {
-  if (typeof window !== "undefined") {
-    const params = new URLSearchParams(window.location.search);
-    const w = params.get("workspace");
-    //  The internal key `explore` is the PLOTS (the surface that module has
-    //  always been); `compounds` is the landing.  The URL words moved, the
-    //  component names did not.
-    if (w === "properties") return "explore";
-    if (w === "explore") return params.has("components") ? "explore" : "compounds";
-    if (w === "compounds") return "compounds";
-    // The Methods workspace (2026-08-15) deep-links as
-    // ?workspace=methods&tool=<id>; the tool id is read by MethodsWorkspace.
-    if (w === "methods") return "methods";
-    // LEGACY: ?explore=mccabe WITHOUT a &key= stash was the Explorer's McCabe
-    // lens; the tool moved to Methods, so the old URL now opens Methods/mccabe
-    // (a redirect, never a broken link).  WITH &key= it is the McCabe analyzer
-    // pop-out tab, which AppShell routes before boot state matters.
-    if (params.get("explore") === "mccabe" && !params.has("key")) return "methods";
-    // The landing hero deep-links the Control Room on a ctrl case
-    // (?case=ctrl02_disturbance_rejection&view=control).
-    const v = params.get("view");
-    if (v === "control" || w === "control") return "control";
+  if (typeof window === "undefined") return null;
+  //  ONE URL WORD PER SCREEN (2026-09-14).  The decision lives in
+  //  state/workspaceUrl.ts, pure and tested; this only applies it.  A legacy
+  //  spelling (`?workspace=explore&components=…`, the first build's address
+  //  for the plots) is honoured AND the bar is rewritten to the canonical
+  //  word, so the link a student copies out names the screen it shows.
+  //  replaceState, never pushState: a translation is not a navigation.
+  const { key, canonical } = resolveWorkspaceSearch(window.location.search);
+  if (canonical && typeof window.history?.replaceState === "function") {
+    try {
+      const url = new URL(window.location.href);
+      url.search = canonical;
+      window.history.replaceState(window.history.state, "", url.toString());
+    } catch { /* opaque URL / blocked history -- the screen is still right */ }
   }
-  return null;
+  return key;
 }
 
 // The empty boot state: no case open.  `name === ""` is the blank sentinel the

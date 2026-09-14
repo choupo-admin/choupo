@@ -89,8 +89,9 @@ export function componentsInSearch(search: string): string[] {
  *  `?workspace=properties`, not `?workspace=explore`: since 2026-09-03 the
  *  latter is the explorer's LANDING (where compounds are chosen), on the
  *  owner's clarification.  `?workspace=explore&components=…` still reaches the
- *  surfaces -- see bootWorkspace -- so the links this file emitted before the
- *  change keep working. */
+ *  surfaces -- state/workspaceUrl.ts honours it and rewrites the address bar
+ *  to this word -- so the links this file emitted before the change keep
+ *  working, and no longer leave a stale word in the bar. */
 export function propertiesLink(names: readonly string[]): string {
   const clean = cleanNames(names);
   return clean.length
