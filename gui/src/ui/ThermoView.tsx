@@ -43,6 +43,8 @@ License
 
 import { Badge, Box, Group, ScrollArea, Stack, Table, Text, Title } from "@mantine/core";
 
+import { caseThermo, thermoSentence,
+  type ThermoReading } from "../case/caseThermo.js";
 import { useStore } from "../state/store.js";
 import type { JsonDict, JsonValue } from "../dict/json.js";
 import type { ComponentCoverage } from "../adapters/SolverAdapter.js";
@@ -98,6 +100,41 @@ function ComponentCoverageTable({ rows }: { rows: ComponentCoverage[] }) {
   );
 }
 
+/** ONE renderer for one slot, so the four states are phrased identically
+ *  wherever they are drawn.  A DECLARED value is stated flatly and says WHERE
+ *  in the grammar it was found; anything else says what it is, and never
+ *  names a default the case may never have taken. */
+function ThermoSlot({ r, phase, formulation, reason }: {
+  r: ThermoReading; phase: "liquid" | "vapour";
+  formulation: string | null; reason: string | null;
+}) {
+  if (r.state === "unreadable")
+    return (
+      <Text c="dimmed" size="sm">
+        not readable — {reason ?? "this file is not a v2 thermophysical system"}
+      </Text>
+    );
+  if (r.state !== "declared")
+    return (
+      <Text c="dimmed" size="sm">{thermoSentence(r, phase, formulation)}</Text>
+    );
+  return (
+    <>
+      <Group gap="xs" wrap="wrap">
+        {(r.perPhase.length > 1 ? r.perPhase : [r.model ?? ""]).map((m) => (
+          <Badge key={m} variant="light" color="cyan" size="md" radius="sm"
+            styles={{ root: { textTransform: "none" } }}>{m}</Badge>
+        ))}
+      </Group>
+      {r.where && (
+        <Text size="xs" c="dimmed" mt={2}>
+          declared at <Text span ff="monospace">{r.where}</Text>
+        </Text>
+      )}
+    </>
+  );
+}
+
 export function ThermoView() {
   const tp = useStore((s) => s.caseFiles.thermoPackage);
   const propsDict = useStore((s) => s.caseFiles.propsDict);
@@ -132,8 +169,12 @@ export function ThermoView() {
   }
 
   const components = stringList(tp["components"]);
-  const activity = tp["activityModel"] as JsonDict | undefined;
-  const eos = tp["equationOfState"] as JsonDict | undefined;
+  //  ONE HOME.  This panel used to look for a TOP-LEVEL `activityModel` /
+  //  `equationOfState` -- the flat v1 form, retired 2026-07-17 -- find
+  //  nothing BY CONSTRUCTION, and then assert that the case had declared
+  //  nothing.  It now asks `caseThermo`, which reads the LIVE v2 grammar and
+  //  keeps "declared" apart from "I cannot read this file".
+  const ct = caseThermo(tp);
   const transport = tp["transport"] as JsonDict | undefined;
   const liquidViscosity = tp["liquidViscosity"] as JsonDict | undefined;
 
@@ -167,7 +208,12 @@ export function ThermoView() {
 
         {/* Activity model */}
         <Box>
-          <SectionTitle text="Activity model" />
+          {/*  "Liquid phase", not "Activity model": the liquid's model word is
+              `activityModel` in a gammaPhi world and `solutionModel` in a
+              dilute-solution one, and the heading must not name one grammar
+              while the line under it quotes the other.  It pairs with
+              "Vapour phase" below.  */}
+          <SectionTitle text="Liquid phase" />
           {ppName && (
             <Text size="sm" mb={4}>
               property package: <Text span ff="monospace" c="accent">{ppName}</Text>
@@ -177,8 +223,8 @@ export function ThermoView() {
               (its thermo now lives inline in constant/thermoPhysPropDict).</Text>
             </Text>
           )}
-          {activity ? <ModelBlock dict={activity} /> : !ppName &&
-            <Text c="dimmed" size="sm">(not declared — defaults to ideal)</Text>}
+          {!ppName && <ThermoSlot r={ct.liquid} phase="liquid"
+            formulation={ct.formulation} reason={ct.unreadableReason} />}
           {opEngines.size > 0 && (
             <Text size="sm" mt={4}>
               per-operation engines (propsDict):{" "}
@@ -201,9 +247,9 @@ export function ThermoView() {
 
         {/* Equation of state */}
         <Box>
-          <SectionTitle text="Equation of state" />
-          {eos ? <ModelBlock dict={eos} /> :
-            <Text c="dimmed" size="sm">(not declared — defaults to ideal gas)</Text>}
+          <SectionTitle text="Vapour phase" />
+          <ThermoSlot r={ct.vapour} phase="vapour"
+            formulation={ct.formulation} reason={ct.unreadableReason} />
         </Box>
 
         {/* Transport */}

@@ -52,6 +52,7 @@ import { Badge, Box, Button, Group, Paper, SimpleGrid, Stack, Text, Title } from
 import { IconArrowLeft, IconFolderCode, IconPlayerPlay, IconRobot, IconRoute, IconTerminal2 } from "@tabler/icons-react";
 
 import { useStore } from "../state/store.js";
+import { caseThermo } from "../case/caseThermo.js";
 import { Lesson } from "./Lesson.js";
 import { isRunOutput } from "./caseTree";
 
@@ -134,10 +135,6 @@ const GUIDE: { [id: string]: { model: string; sequence: string; trace: string } 
 function asString(v: unknown): string | undefined {
   return typeof v === "string" ? v : undefined;
 }
-function modelOf(block: unknown): string | undefined {
-  return asString((block as { model?: unknown } | undefined)?.model);
-}
-
 // The case's REAL file tree (the simulation files only -- not teaching/agent
 // artefacts), so the student sees Choupo is a folder of plain-text dicts.
 function caseTree(rawFiles: { [p: string]: string }, caseName: string): string {
@@ -233,8 +230,14 @@ export function CaseIntro() {
   const description = asString(cd["description"]) ?? fileId;
   const application = asString(cd["application"]) ?? "choupoSolve";
   const appLabel = APP_LABEL[application] ?? application;
-  const activity = modelOf(tp["activityModel"]);
-  const eos = modelOf(tp["equationOfState"]);
+  //  ONE HOME (2026-09-14).  These two lines read the FLAT v1 keys, retired
+  //  by the v2 contract of 2026-07-17, so on every shipped case they found
+  //  nothing -- and the intro, which is the FIRST screen a student sees,
+  //  then described the case's model path as unknown.  `caseThermo` reads
+  //  the live grammar and distinguishes an absence from an unreadable file.
+  const ct = caseThermo(tp);
+  const activity = ct.liquid.state === "declared" ? ct.liquid.model : null;
+  const eos = ct.vapour.state === "declared" ? ct.vapour.model : null;
   const isProps = application === "choupoProps" || (!caseFiles.flowsheet && !!caseFiles.propsDict);
 
   const tree = caseTree(raw, fileId);
@@ -255,7 +258,12 @@ export function CaseIntro() {
   const modelPath = guide
     ? guide.model
     : (activity || eos
-        ? `activity: ${activity ?? "—"},  EoS: ${eos ?? "—"}`
+        //  The formulation is the ONE KNOB that settles the activity model,
+        //  the standard states and the Henry treatment together, so it leads
+        //  when the case declares one.
+        ? [ct.formulation ? `formulation: ${ct.formulation}` : null,
+           activity ? `liquid: ${activity}` : null,
+           eos ? `vapour: ${eos}` : null].filter(Boolean).join(",  ")
         : "the thermodynamic models declared in constant/thermoPhysPropDict");
   const trace = guide
     ? guide.trace

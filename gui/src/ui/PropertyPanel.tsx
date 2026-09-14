@@ -69,6 +69,8 @@ import { popOutFileHtml } from "./filePopOut.js";
 import { findRunStream, popOutSingleStream } from "./streamPopOut.js";
 import { HeatExchangerDatasheet } from "./HeatExchangerDatasheet.js";
 import { ColumnDatasheet } from "./ColumnDatasheet.js";
+import { caseThermo, thermoSentence,
+  type ThermoReading } from "../case/caseThermo.js";
 import { theoryLink } from "../case/modelDocs.js";
 import { useMemo, useState } from "react";
 
@@ -1447,6 +1449,35 @@ function listFilesUnder(cf: import("../case/types.js").CaseFiles,
 //   docs/ai/gui-mental-model.md.
 // ---------------------------------------------------------------------------
 
+/** A FILLED badge means DECLARED and nothing else.  Every other state is
+ *  dimmed prose, so a reader can never mistake what the engine would fall
+ *  back to for what the author chose. */
+function InlineSlot({ label, r, phase, formulation, reason }: {
+  label: string; r: ThermoReading; phase: "liquid" | "vapour";
+  formulation: string | null; reason: string | null;
+}) {
+  if (r.state !== "declared")
+    return (
+      <Group gap="xs" wrap="wrap">
+        <Text size="xs">{label}:</Text>
+        <Text size="xs" c="dimmed">
+          {r.state === "unreadable"
+            ? `not readable — ${reason ?? "not a v2 thermophysical system"}`
+            : thermoSentence(r, phase, formulation)}
+        </Text>
+      </Group>
+    );
+  return (
+    <Group gap="xs" wrap="wrap">
+      <Text size="xs">{label}:</Text>
+      {(r.perPhase.length > 1 ? r.perPhase : [r.model ?? ""]).map((m) => (
+        <Badge key={m} variant="filled" color="teal" size="sm" radius="sm"
+          styles={{ root: { textTransform: "none" } }}>{m}</Badge>
+      ))}
+    </Group>
+  );
+}
+
 function ThermoSummaryInline() {
   const tp = useStore((s) => s.caseFiles.thermoPackage);
   if (!tp) return <Text size="sm" c="dimmed">No thermoPackage loaded.</Text>;
@@ -1454,11 +1485,14 @@ function ThermoSummaryInline() {
   const components = Array.isArray(tp["components"])
     ? (tp["components"] as JsonValue[]).filter((x): x is string => typeof x === "string")
     : [];
-  const activity = tp["activityModel"] as JsonDict | undefined;
-  const eos = tp["equationOfState"] as JsonDict | undefined;
   const transport = tp["transport"] as JsonDict | undefined;
-  const activityModel = typeof activity?.["model"] === "string" ? (activity["model"] as string) : null;
-  const eosModel = typeof eos?.["model"] === "string" ? (eos["model"] as string) : null;
+  //  ONE HOME (2026-09-14).  These reads were keyed on the FLAT v1
+  //  `activityModel` / `equationOfState`, retired 2026-07-17, and then
+  //  rendered `?? "ideal"` / `?? "idealGas"` in a FILLED badge -- a default
+  //  drawn exactly like a declaration, which is the one thing a glass box
+  //  must never do.
+  const ct = caseThermo(tp);
+  const activity = tp["activityModel"] as JsonDict | undefined;
   const nrtlPairs = Array.isArray(activity?.["pairs"]) ? (activity!["pairs"] as JsonDict[]) : [];
 
   return (
@@ -1485,20 +1519,19 @@ function ThermoSummaryInline() {
         <Text size="xs" c="dimmed" tt="uppercase" style={{ letterSpacing: "0.05em" }}>
           Models
         </Text>
-        <Group gap="xs" wrap="wrap">
-          <Text size="xs">activity:</Text>
-          <Badge variant="filled" color="teal" size="sm" radius="sm"
-            styles={{ root: { textTransform: "none" } }}>
-            {activityModel ?? "ideal"}
-          </Badge>
-        </Group>
-        <Group gap="xs" wrap="wrap">
-          <Text size="xs">EoS:</Text>
-          <Badge variant="filled" color="teal" size="sm" radius="sm"
-            styles={{ root: { textTransform: "none" } }}>
-            {eosModel ?? "idealGas"}
-          </Badge>
-        </Group>
+        {ct.formulation && (
+          <Group gap="xs" wrap="wrap">
+            <Text size="xs">formulation:</Text>
+            <Badge variant="filled" color="teal" size="sm" radius="sm"
+              styles={{ root: { textTransform: "none" } }}>
+              {ct.formulation}
+            </Badge>
+          </Group>
+        )}
+        <InlineSlot label="liquid" r={ct.liquid} phase="liquid"
+          formulation={ct.formulation} reason={ct.unreadableReason} />
+        <InlineSlot label="vapour" r={ct.vapour} phase="vapour"
+          formulation={ct.formulation} reason={ct.unreadableReason} />
         {transport && Object.keys(transport).filter((k) => k !== "model").length > 0 && (
           <Group gap="xs" wrap="wrap">
             <Text size="xs">transport:</Text>
