@@ -93,6 +93,7 @@ import { WaypointEdge } from "./WaypointEdge.js";
 import { UnitNode } from "./UnitNode.js";
 import { loadLayout, saveLayout, layoutFromChoText, layoutToChoText, mergeLayouts,
   type XY, type HandlePos, type CaseLayout } from "../state/layout.js";
+import { runControl } from "../case/runControl.js";
 import { writeCaseFile } from "../cases/workspace.js";
 import { notifications } from "@mantine/notifications";
 
@@ -231,6 +232,18 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   const runResult = useStore((s) => s.runResult);
   const stale = useStaleResult();
   const runStatus = useStore((s) => s.runStatus);
+  /*  THE RUN CONTROL AND THE RESULT BADGE ARE ONE FACT, derived once.  They
+      were computed separately and disagreed after a FAILED run: the badge's
+      condition was satisfied by the PREVIOUS result, which is still loaded on
+      purpose, and it said "Latest run loaded" about a run the student had
+      already replaced.  case/runControl.ts is the one home; its header
+      carries the five states and why `failed` outranks `stale`.  */
+  const rc = runControl({
+    phase: runStatus,
+    haveResult: runResult?.status === "done",
+    stale: stale.stale,
+    pendingEdits: stale.pendingEdits,
+  });
   const resetRun = useStore((s) => s.resetRun);
   const scrubIdx = useStore((s) => s.scrubIdx);
   const colorScheme = useStore((s) => s.displayPrefs.colorScheme);
@@ -1052,13 +1065,19 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             listens for (no global toolbar Run anymore). */}
         <Panel position="top-right">
           <Group gap={6}>
-            {runStatus !== "running" && runResult?.status === "done" && (
-              stale.stale
-                ? <Badge size="sm" color="orange" variant="light"
-                    title="The case has changed since this result was computed -- the dimmed numbers answer the previous question">
-                    Result is stale
-                  </Badge>
-                : <Badge size="sm" color="teal" variant="light">Latest run loaded</Badge>
+            {/*  ONE HOME (2026-09-14).  This condition was
+                 `runStatus !== "running" && runResult?.status === "done"`,
+                 which is TRUE AFTER A FAILED RUN -- `failRun` leaves the
+                 previous result in place, and the previous result still says
+                 "done" -- so a run that FAILED drew the teal "Latest run
+                 loaded" badge about a run the student had already replaced.
+                 The badge and the button are two views of ONE fact and were
+                 computed separately, which is how they came to disagree.  */}
+            {rc.badge && (
+              <Badge size="sm" color={rc.badge.color} variant="light"
+                title={rc.badge.title}>
+                {rc.badge.text}
+              </Badge>
             )}
             {/* Reset: clear the converged results back to the unrun state.  A
                 run REPLACES results with the new solve; Reset is the explicit
@@ -1072,50 +1091,23 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                 Reset
               </Button>
             )}
-            {runStatus === "running" ? (
-              <Button size="xs" color="red" variant="filled"
+            {rc.state === "running" ? (
+              <Button size="xs" color={rc.color} variant={rc.variant}
                 leftSection={<IconPlayerStop size={14} />}
+                title={rc.title}
                 onClick={() => window.dispatchEvent(new CustomEvent("choupo:stop"))}>
-                Stop
+                {rc.label}
               </Button>
             ) : (
               /*  THE BUTTON SAYS WHETHER PRESSING IT WOULD CHANGE WHAT YOU
-                  ARE LOOKING AT (2026-09-12).  It was `accent filled` in
-                  every state, so after a successful run it went on shouting
-                  the primary action beside a badge saying the result was
-                  already loaded -- two surfaces, one fact, disagreeing.
-                  Three states now, and each reads as what it is:
-
-                    no result yet      accent filled   -- this IS the thing to do
-                    result, current    default         -- done; re-running is
-                                                          available, not urgent
-                    result, stale      orange filled   -- needed again, and
-                                                          ORANGE because that is
-                                                          already the colour of
-                                                          the `Result is stale`
-                                                          badge two elements to
-                                                          the left.  One fact,
-                                                          one colour.
-
-                  No new state: `runResult` and `stale` are both already in
-                  scope and are the same two the badge above reads.  The
-                  variant carries the weight and the LABEL already carries the
-                  reason, so nothing here depends on colour alone.  */
-              <Button size="xs"
-                color={stale.stale ? "orange" : "accent"}
-                variant={runResult && !stale.stale ? "default" : "filled"}
+                  ARE LOOKING AT, and the five words it can say live in
+                  case/runControl.ts beside the badge's -- see that header for
+                  why `failed` outranks `stale` and why no state is green. */
+              <Button size="xs" color={rc.color} variant={rc.variant}
                 leftSection={<IconPlayerPlay size={14} />}
-                onClick={() => window.dispatchEvent(new CustomEvent("choupo:run"))}
-                title={stale.stale
-                  ? "The drawn result does not include what is declared now -- run to bring it up to date"
-                  : "Run the flowsheet simulation (choupoSolve)"}>
-                {/*  The COUNT is of pending EDITS, never of stale numbers: this
-                     knows what a student moved, not which results it touched. */}
-                {stale.stale
-                  ? (stale.pendingEdits > 0
-                      ? `Run flowsheet (${stale.pendingEdits} pending edit${stale.pendingEdits === 1 ? "" : "s"})`
-                      : "Run flowsheet (case changed)")
-                  : "Run flowsheet"}
+                title={rc.title}
+                onClick={() => window.dispatchEvent(new CustomEvent("choupo:run"))}>
+                {rc.label}
               </Button>
             )}
           </Group>
