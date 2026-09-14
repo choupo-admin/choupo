@@ -222,6 +222,16 @@ export const CASE_FILES_PANEL: PanelChrome = {
   contentMin: RAIL_CONTENT_MIN, shortcut: "[",
 };
 
+/** THE REPORTS MAP (2026-09-14).  Every other content workspace had a rail;
+ *  Reports -- six stacked subjects -- had none.  It lists the sections that
+ *  RENDERED, derived from the same conditions that gate them (one home for
+ *  "which reports exist"), so a case that declared no `sizing {}` shows no
+ *  equipment entry rather than an apology. */
+export const REPORTS_NAV_PANEL: PanelChrome = {
+  prefs: PANELS.reportsRail, edge: "left", label: "report sections",
+  contentMin: RAIL_CONTENT_MIN, shortcut: "[",
+};
+
 /** THE EDUTOOLS SETUP PANEL — every method tool's knobs, docked left of its
  *  construction (ui/methods/knobPanel.tsx).
  *

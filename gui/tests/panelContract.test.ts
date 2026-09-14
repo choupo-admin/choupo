@@ -50,7 +50,8 @@ import {
   BOTTOM_DOCK_PANEL, CASE_FILES_PANEL, CATALOGUE_BROWSER_PANEL,
   CONTROL_RAIL_PANEL, EXPLORE_SET_PANEL,
   HANDLE_HIT_PX, HANDLE_KEY_STEP_PX, HANDLE_SEAM_PX, LOG_JUMP_PANEL,
-  METHOD_KNOBS_PANEL, PLOTS_NAV_PANEL, STREAMS_NAV_PANEL, panelBoxStyle,
+  METHOD_KNOBS_PANEL, PLOTS_NAV_PANEL, REPORTS_NAV_PANEL, STREAMS_NAV_PANEL,
+  panelBoxStyle,
   autoCollapseDefault, collapseTooltip, expandTooltip, nudgeSize, shortcutHint,
   swallowsShortcut,
   type PanelChrome,
@@ -64,6 +65,9 @@ const ALL: [string, PanelChrome][] = [
   ["plots navigator", PLOTS_NAV_PANEL],
   ["streams navigator", STREAMS_NAV_PANEL],
   ["case file list", CASE_FILES_PANEL],
+  // Reports gained its rail on 2026-09-14 -- the last workspace without one.
+  // Same shape as the streams navigator: a left rail that folds.
+  ["reports navigator", REPORTS_NAV_PANEL],
   // The EduTools setup panel joined the contract on 2026-08-18, when the
   // twelve tools' horizontal knob strips became one docked left panel.  It is
   // in this table for the same reason the other six are: the table IS the

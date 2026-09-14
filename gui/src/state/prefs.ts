@@ -323,6 +323,15 @@ export const PANELS = {
     collapsedKey: "choupo.panel.streamsRail.collapsed",
   }),
 
+  /** The Reports workspace's section map (2026-09-14).  Reports was the one
+   *  content workspace with six subjects and no rail; the map lists the
+   *  sections that actually rendered, never the ones a case did not earn. */
+  reportsRail: panel("reportsRail", {
+    sizeKey: "choupo.panel.reportsRail.size",
+    size: { min: 200, max: 460, default: 240 },
+    collapsedKey: "choupo.panel.reportsRail.collapsed",
+  }),
+
   /** The Case workspace's file list. */
   caseFilesRail: panel("caseFilesRail", {
     sizeKey: "choupo.panel.caseFilesRail.size",
