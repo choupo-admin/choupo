@@ -117,6 +117,7 @@ tutorials/props/gibbs/nh3_equilibrium_map
 tutorials/props/heat/psychro01_n2_water
 tutorials/props/hydraulics/moody01_friction_correlations
 tutorials/props/kinetics/rate01_arrhenius_recovery
+tutorials/props/membrane/polarisation01_geraldes_afonso_table1
 tutorials/props/molecular/nrtl01_ethanol_water_package
 tutorials/props/reactor/thiele01_sphere_first_order
 tutorials/props/scan/binary01_lle_water_nbutanol

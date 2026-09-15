@@ -37,7 +37,9 @@ License
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <functional>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 #include <vector>
 
@@ -160,17 +162,26 @@ struct Inner
 {
     std::vector<scalar> c_m, c_p;
     scalar              psi;
+    scalar              xi;          // interface field [V/m], 0 when uncoupled
+    bool                coupledWall;
     bool                converged;
     int                 iterations;
     scalar              residual;
 };
 
-Inner solveInner(scalar Jw, const std::vector<scalar>& c_b, scalar k_film,
+//  The wall for a trial permeate: ONE home (membrane::Polarisation).  Returns
+//  false when the interface balance has no positive wall for that trial, so
+//  the Newton backs away from it instead of integrating a wall that is not
+//  one.
+using WallOf = std::function<bool(const std::vector<scalar>& cp,
+                                  std::vector<scalar>& cm, scalar& xi,
+                                  bool& coupled)>;
+
+Inner solveInner(scalar Jw, const std::vector<scalar>& c_b, const WallOf& wallOf,
                  const std::vector<scalar>& P, const std::vector<int>& z,
                  const std::vector<scalar>& seed, int nSteps)
 {
     const std::size_t n = c_b.size();
-    const scalar E = std::exp(Jw / k_film);           // film factor, per ion
 
     scalar cScale = 0.0, zScale = 0.0;
     std::size_t drop = 0; scalar dropW = -1.0;
@@ -184,21 +195,18 @@ Inner solveInner(scalar Jw, const std::vector<scalar>& c_b, scalar k_film,
     cScale = std::max(cScale, 1e-30);
     zScale = std::max(zScale, 1e-30);
 
-    //  c_m from the film model at this c_p: J_w (c_m - c_p) = k (c_m - c_b)
-    //  => c_m = c_p + (c_b - c_p) E.  The wall follows the permeate guess.
-    auto wallOf = [&](const std::vector<scalar>& cp, std::vector<scalar>& cm)
-    {
-        for (std::size_t i = 0; i < n; ++i)
-            cm[i] = cp[i] + (c_b[i] - cp[i]) * E;
-    };
+    //  The wall follows the permeate guess: c_m = wall(c_p) from the shared
+    //  polarisation kernel (the film model per ion by default; the Geraldes
+    //  & Afonso interface field when the case couples the ions).
     std::vector<scalar> j(n), cm(n);
+    scalar xiWall = 0.0; bool coupledWall = false;
     auto residual = [&](const std::vector<scalar>& cp, std::vector<scalar>& F,
                         scalar& psiOut)
     {
-        wallOf(cp, cm);
+        F.assign(n, std::numeric_limits<scalar>::infinity());
+        if (!wallOf(cp, cm, xiWall, coupledWall)) { psiOut = 0.0; return; }
         for (std::size_t i = 0; i < n; ++i) j[i] = Jw * cp[i];
         const Shot sh = shoot(cp, j, P, z, nSteps, /*backward=*/true);
-        F.assign(n, 0.0);
         for (std::size_t i = 0; i < n; ++i)
             F[i] = (i == drop) ? 0.0 : (sh.c1[i] - cm[i]) / cScale;
         scalar q = 0.0;
@@ -217,7 +225,8 @@ Inner solveInner(scalar Jw, const std::vector<scalar>& c_b, scalar k_film,
     out.c_p = seed;
     for (scalar& v : out.c_p) if (!(v > 0.0) || !std::isfinite(v)) v = 1e-9 * cScale;
     out.c_m.assign(n, 0.0);
-    out.psi = 0.0; out.converged = false; out.iterations = 0; out.residual = 0.0;
+    out.psi = 0.0; out.xi = 0.0; out.coupledWall = false;
+    out.converged = false; out.iterations = 0; out.residual = 0.0;
 
     std::vector<scalar> F(n), Fp(n), Ft(n), dx(n), cpTry(n);
     std::vector<std::vector<scalar>> J(n, std::vector<scalar>(n, 0.0));
@@ -266,7 +275,11 @@ Inner solveInner(scalar Jw, const std::vector<scalar>& c_b, scalar k_film,
         if (!accepted) { out.iterations = it + 1; break; }
         out.c_p = cpTry; F = Ft; fmax = fTry; psi = psiTry;
     }
-    wallOf(out.c_p, out.c_m);
+    if (wallOf(out.c_p, cm, xiWall, coupledWall))
+    {
+        out.c_m = cm; out.xi = xiWall; out.coupledWall = coupledWall;
+    }
+    else out.converged = false;
     return out;
 }
 
@@ -333,13 +346,30 @@ void SDEM::resolveOnce(const TransportContext& ctx) const
         std::cout << "  " << thermo.comp(ctx.soluteIdx[s]).name()
                   << " z=" << (z_[s] > 0 ? "+" : "") << z_[s] << b;
     }
-    std::cout << "\n  [SDEM] polarisation film computed PER ION with no field"
-                 " in the film (the diffusion potential exists there too):"
-                 " an approximation of this version, announced\n";
-    AdvisoryLog::instance().add("approximation", "warning",
-        "spiralWoundModule transport SDEM",
-        "polarisation film computed per ion with no electric field in the"
-        " film; the zero-current coupling acts across the active layer only");
+    //  THE FILM: what the shared Polarisation object was told.  Field-free
+    //  per ion is an approximation of THIS LAW's picture (the diffusion
+    //  potential exists in the film too) and is announced as such; with
+    //  `ionCoupling electroneutral;` the film carries the interface field of
+    //  Geraldes & Afonso (2007) and the announcement says so instead.
+    if (ctx.polarisation.coupled())
+        std::cout << "\n  [SDEM] polarisation film: the Geraldes & Afonso"
+                     " (J. Membr. Sci. 300 (2007) 20) interface model --"
+                     " per-ion k_c,i, one interface potential gradient xi"
+                     " (published as xi_V_per_m), electroneutral wall\n";
+    else
+    {
+        std::cout << "\n  [SDEM] polarisation film computed PER ION with no field"
+                     " in the film (the diffusion potential exists there too):"
+                     " an approximation of this version, announced;"
+                     " `polarisation { ionCoupling electroneutral; }` couples"
+                     " the film\n";
+        AdvisoryLog::instance().add("approximation", "warning",
+            "spiralWoundModule transport SDEM",
+            "polarisation film computed per ion with no electric field in the"
+            " film; the zero-current coupling acts across the active layer"
+            " only (declare `polarisation { ionCoupling electroneutral; }`"
+            " for the Geraldes & Afonso 2007 interface field)");
+    }
     resolved_ = true;
 }
 
@@ -351,7 +381,8 @@ TransportSolution SDEM::localFluxes(const TransportContext& ctx) const
     const std::vector<std::size_t>& soluteIdx = ctx.soluteIdx;
     const std::vector<scalar>&      P         = ctx.B_s;
     const scalar                    A_w       = ctx.A_w;
-    const scalar                    k_film    = ctx.k_film;
+    const Polarisation&             polar     = ctx.polarisation;
+    const MassTransferContext&      hyd       = ctx.hydraulics;
     const scalar                    T_K       = ctx.T_K;
     const OsmoticModel&             osm       = ctx.osm;
     const std::vector<scalar>&      c_b       = ctx.c_b;
@@ -401,17 +432,22 @@ TransportSolution SDEM::localFluxes(const TransportContext& ctx) const
     //  outer Newton converged (tracked), else the previous station's, else
     //  the uncoupled solution-diffusion answer at the given flux.
     std::vector<scalar> cpTrack;
+    scalar Jw_of_call = 0.0;       // the flux the wall lambda below is asked at
     auto sdSeed = [&](scalar Jw) -> std::vector<scalar>
     {
-        std::vector<scalar> cp(Ns);
-        const scalar E = std::exp(Jw / k_film);
-        for (std::size_t s = 0; s < Ns; ++s)
-        {
-            const scalar phi = Jw + P[s];
-            const scalar cm  = E * c_b[s] / (1.0 + P[s] * (E - 1.0) / phi);
-            cp[s] = P[s] / phi * cm;
-        }
+        std::vector<scalar> cp;
+        const WallSolution w = polar.wallWithSolutionDiffusion(hyd, Jw, c_b, P, cp);
+        requireOk(w, "transport SDEM (seed)");
         return cp;
+    };
+    //  The wall for a trial permeate, from the one home.
+    const WallOf wallOf = [&](const std::vector<scalar>& cp, std::vector<scalar>& cm,
+                              scalar& xi, bool& coupled) -> bool
+    {
+        const WallSolution w = polar.wall(hyd, Jw_of_call, c_b, cp);
+        if (!w.ok) return false;
+        cm = w.c_m; xi = w.xi; coupled = w.coupled;
+        return true;
     };
     auto usable = [&](const std::vector<scalar>& v)
     {
@@ -431,7 +467,8 @@ TransportSolution SDEM::localFluxes(const TransportContext& ctx) const
     //  differences and its next iterate start from it).
     auto innerAt = [&](scalar Jw) -> Inner
     {
-        Inner in = solveInner(Jw, c_b, k_film, P, z_, seedFor(Jw), nSteps);
+        Jw_of_call = Jw;
+        Inner in = solveInner(Jw, c_b, wallOf, P, z_, seedFor(Jw), nSteps);
         if (in.converged) cpTrack = in.c_p;
         return in;
     };
@@ -488,6 +525,7 @@ TransportSolution SDEM::localFluxes(const TransportContext& ctx) const
     for (std::size_t s = 0; s < Ns; ++s) sol.J_s[s] = sol.J_w * in.c_p[s];
     sol.psi = in.psi;
     sol.hasPsi = true;
+    if (in.coupledWall) { sol.xi = in.xi; sol.hasXi = true; }
     return sol;
 }
 

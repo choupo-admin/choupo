@@ -41,9 +41,10 @@ Description
     used.  Built-ins:
 
         solutionDiffusion  --  the classical solution-diffusion law with
-                               film-model concentration polarisation and a
-                               van't-Hoff / Pitzer osmotic back-pressure.  An
-                               inner Newton-1D in J_w resolves the coupled
+                               concentration polarisation from the shared
+                               Polarisation object and a van't-Hoff /
+                               Pitzer osmotic back-pressure.  An inner
+                               Newton-1D in J_w resolves the coupled
                                flux–polarisation–osmotic non-linearity.
 
         DSPM-DE            --  the charged-pore Donnan-steric model with
@@ -66,6 +67,7 @@ Description
 
 #include "core/Dictionary.H"
 #include "core/Types.H"
+#include "../massTransfer/Polarisation.H"
 
 #include <cstddef>
 #include <functional>
@@ -99,6 +101,13 @@ struct TransportSolution
     //  the column only when a law produced it.
     scalar              psi    = 0.0;
     bool                hasPsi = false;
+    //  The electrical potential gradient at the feed-solution/membrane
+    //  INTERFACE [V/m] -- the polarisation film's own field (Geraldes &
+    //  Afonso 2007), distinct from psi, which is the drop ACROSS the
+    //  membrane.  Set by every law when `ionCoupling electroneutral;` is
+    //  declared; `hasXi` stays false otherwise.
+    scalar              xi     = 0.0;
+    bool                hasXi  = false;
 };
 
 // ---- The inputs to the local problem at one z station ----------------------
@@ -110,15 +119,20 @@ struct TransportSolution
 //  forward-looking hooks for a future charged-NP / DSPM-DE model).
 //
 //  Pressures are in Pa; temperature in K; concentrations in kmol/m^3.
-//  `c_b` is the local BULK (feed-side) solute concentration vector; the film
-//  model raises it to the wall concentration c_m internally.
+//  `c_b` is the local BULK (feed-side) solute concentration vector; the
+//  wall concentration c_m comes from ONE home, `polarisation` (the film's
+//  declared policy, each solute's charge and diffusivity, and the k_c,i
+//  supplier), evaluated at the station's `hydraulics` (crossflow velocity,
+//  hydraulic diameter, mu, rho -- the D slot is filled per solute).  No law
+//  raises c_b to the wall itself.
 struct TransportContext
 {
     const ThermoPackage&            thermo;     // global component package
     const std::vector<std::size_t>& soluteIdx;  // solute slots in thermo
     const std::vector<scalar>&      B_s;        // per-solute permeability
     scalar                          A_w;        // water permeability [m/(s.Pa)]
-    scalar                          k_film;     // film coefficient [m/s]
+    const Polarisation&             polarisation; // the wall, one home
+    MassTransferContext             hydraulics; // local channel state for k_c,i
     scalar                          P_feed_Pa;  // feed-side pressure [Pa]
     scalar                          P_perm_Pa;  // permeate pressure  [Pa]
     scalar                          T_K;        // temperature [K]

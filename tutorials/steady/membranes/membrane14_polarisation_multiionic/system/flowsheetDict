@@ -1,0 +1,69 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane14_polarisation_multiionic -- membrane12's feed and law (NF270, NaCl
+  0.01 M with NO3-/NH4+ traces, `transport SDEM;`) on a REAL spacer channel
+  instead of an intrinsic film: the film coefficient is priced PER ION from
+  the Schock-Miquel correlation on each ion's own diffusivity, corrected for
+  suction (Geraldes & Afonso 2006), and the four ions are COUPLED at the
+  interface by electroneutrality -- the multi-ionic polarisation model of
+  Geraldes & Afonso, J. Membr. Sci. 300 (2007) 20-27, with no film thickness
+  and no parameter the intrinsic twin does not have.  See the README.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        NF;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+        operation
+        {
+            membrane         NF270_sdem_NaCl;   // constant/assets/, the paper's Table 1 row
+            transport        SDEM;
+            //  One nominal 4-inch element (7.9 m2, 1.016 m): with the 4 m3/h
+            //  feed the crossflow is ~0.45 m/s in the spacer channel, a
+            //  realistic velocity, and the recovery stays modest.
+            moduleDiameter   4 in;
+            nModules         1;
+            P_permeate       1.0 bar;
+            nNodes           20;
+
+            //  THE FILM IS COMPUTED, NOT DECLARED.  Schock & Miquel's spacer
+            //  correlation Sh = 0.065 Re^0.875 Sc^0.25 on the local crossflow,
+            //  evaluated PER ION on the ion's own D0 (Sc_i = nu/D_i), so the
+            //  faster Cl- gets a larger k than Na+ and the run publishes one
+            //  k_film_<ion> column per ion.  The viscosity is declared here;
+            //  the ions' D come from their species records (NO3/NH4 carry a
+            //  case-local transport block, see constant/species/).
+            massTransfer
+            {
+                model          SchockMiquel;
+                channelHeight  0.7 mm;
+                spacerPorosity 0.9;
+                viscosity      1.0e-3;            // Pa.s, water at 20 C
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;      // dP/dz = lambda rho u^2 / 2 d_h
+            }
+
+            //  THE POLICY OF THE FILM (Geraldes & Afonso 2007): the 2006
+            //  suction correction on every k_c,i, and the ions coupled by the
+            //  interface potential gradient xi that electroneutrality at the
+            //  wall fixes.  Set `ionCoupling none;` to see each ion polarise
+            //  alone (the gate's negative twin).
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        electroneutral;
+            }
+        }
+    }
+);

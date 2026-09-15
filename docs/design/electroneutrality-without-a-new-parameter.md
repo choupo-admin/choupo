@@ -161,8 +161,14 @@ made to do by deleting a line.
 ## 6. Not done, named
 
 * The DSPM-DE `X_d = 0` branch and its silent midpoint (task #165).
-* A polarisation film with a field (the diffusion potential exists there
-  too); this version's film is per ion and announced as such.
+* ~~A polarisation film with a field (the diffusion potential exists there
+  too); this version's film is per ion and announced as such.~~  DONE the
+  same day: `polarisation { ionCoupling electroneutral; }` applies the
+  Geraldes & Afonso (2007) interface model — one potential gradient at the
+  wall, per-ion k on each ion's own D0, no film thickness — through the one
+  home every transport law now asks for its wall; the default stays field-free
+  and is announced.  Record:
+  [`polarisation-of-a-multi-ionic-solution.md`](polarisation-of-a-multi-ionic-solution.md).
 * Concentration-dependent permeances (outside the model).
 * `batchDiafilter` accepts `transport SDEM;` through the same factory and
   was not exercised.

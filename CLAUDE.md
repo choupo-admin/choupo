@@ -2054,10 +2054,22 @@ correction the authors' analytical fit neglects and their text names.  Two
 findings about the SOURCE are pinned rather than tuned: NH4⁺'s ">60" line is
 met only at ~1000 µm/s, and Fig 2a's MgCl2 line is not Eq. (1) with the
 table's own P_s (arm (j) asks for its pin back the day that closes).
-NOT done, named: the DSPM-DE `X_d = 0` branch that skips ψ_p (task #165); a
-film with a field; the batch vessel under SDEM; the measured SYMBOLS
-themselves (compared by nobody — the model is held to the authors' fit, not
-to their residual).  Gate: `check_sdem` (the negative arm runs the SAME feed
+NOT done, named: the DSPM-DE `X_d = 0` branch that skips ψ_p (task #165);
+the batch vessel under SDEM; the measured SYMBOLS themselves (compared by
+nobody — the model is held to the authors' fit, not to their residual).
+**THE FILM WITH A FIELD IS DONE (2026-09-15, same day):** the wall
+concentration has ONE home for all three laws
+(`membrane/massTransfer/Polarisation`), the multi-ionic model of Geraldes &
+Afonso, J. Membr. Sci. 300 (2007) 20 — per-ion k on each ion's own D0,
+suction-corrected, ions coupled by one interface potential fixed by
+electroneutrality at the wall, no film thickness, no parameter — declared
+`polarisation { suctionCorrection GeraldesAfonso2006|filmTheory|none;
+ionCoupling electroneutral|none; }` in the unit's operation (defaults
+`filmTheory`/`none` = the old film to round-off, announced when used on an
+ion-declared feed).  Witnesses `membrane14_polarisation_multiionic` and the
+props bench `polarisation01_geraldes_afonso_table1` (the paper's Table 1);
+gate `check_polarisation_coupling`; record
+[`docs/design/polarisation-of-a-multi-ionic-solution.md`](docs/design/polarisation-of-a-multi-ionic-solution.md).  Gate: `check_sdem` (the negative arm runs the SAME feed
 under the uncoupled law and requires a CHARGED permeate; arms (h)–(j) hold
 the trace-limit lines, the not-a-trace ratio and the Fig 2a pin) ·
 `gen_sdem_validation --check` (the Tutorials Guide's validation section,

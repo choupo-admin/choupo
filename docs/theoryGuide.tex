@@ -17870,6 +17870,130 @@ closed form,
 exactly the expression \code{localFluxes} evaluates (with $\varphi =
 J_w + B_s$).
 
+\subsection{Polarisation of a multi-ionic solution: one field at the
+interface}\label{sec:polarisation-multiionic}
+
+The film model above has one coefficient $k$ and therefore one
+diffusivity.  A solution declared ion by ion --- $\mathrm{Na^+}$,
+$\mathrm{Cl^-}$, a trivalent dye --- has several, and ions of different
+mobility cannot pile up at the wall independently: the fast one would run
+ahead, charge would separate, and the resulting field would pull the slow
+one along.  Two answers exist.  One integrates the extended Nernst--Planck
+equations across a film of assumed thickness $\delta$, and the thickness is
+the trouble: it is not measured, and Bowen and Mohammad had to assign it
+from the slowest ion.  The other, due to Geraldes and Afonso
+\cite{GeraldesAfonso2007}, keeps the conventional mass-transfer
+correlation of the module and adds \emph{one} unknown, the electrical
+potential gradient $\xi$ at the feed-solution/membrane interface.  It is
+the model Choupo computes the wall from, in one place
+(\code{membrane/massTransfer/Polarisation}), for every transport law.
+
+At the interface the total flux of ion $i$, which the permeate carries
+away as $J_v C_{i,p}$ (Eq.~1 of the paper), is the sum of back-diffusion,
+convection and migration:
+\begin{equation}
+   J_v\,C_{i,p} \;=\; -\,k^{*}_{c,i}\,(C_{i,m}-C_{i,b}) \;+\; J_v\,C_{i,m}
+   \;-\; z_i\,C_{i,m}\,D_i\,\frac{F}{R_g T}\,\xi ,
+   \label{eq:polar-interface}
+\end{equation}
+with $k^{*}_{c,i}=k_{c,i}\,\Xi_i$ the mass-transfer coefficient of ion $i$
+corrected for the suction of the permeation (Eqs.~2--4, 7), and
+electroneutrality of the wall closing the system (Eq.~8):
+\begin{equation}
+   \sum_i z_i\,C_{i,m} = 0 .
+   \label{eq:polar-electroneutral}
+\end{equation}
+Each $k_{c,i}$ comes from the module's own correlation, $Sh_i = a\,Re^b\,Sc_i^c$,
+evaluated on the ion's \emph{own} diffusivity ($Sc_i=\nu/D_i$) --- the
+main assumption of the model is that the coefficient of one ion does not
+depend on the others.  Two correction factors are available:
+\begin{align}
+   \Xi_i &= \varphi_i + \bigl(1 + 0.26\,\varphi_i^{1.4}\bigr)^{-1.7},
+          \qquad \varphi_i \equiv \frac{J_v}{k_{c,i}},\quad \varphi_i<20,
+          \label{eq:polar-xi-2006}\\
+   \Xi_i &= \varphi_i + \frac{\varphi_i}{e^{\varphi_i}-1},
+          \label{eq:polar-xi-film}
+\end{align}
+the first the semi-empirical correlation of Geraldes and Afonso
+\cite{GeraldesAfonso2006} (independent of flow regime and geometry), the
+second the film theory's, which the paper reports usable at low fluxes
+($\varphi_i\le 1$).  In the case dictionary they are
+\code{suctionCorrection GeraldesAfonso2006} and \code{filmTheory}
+(\code{none} keeps the uncorrected impermeable-wall coefficient), and the
+coupling is \code{ionCoupling electroneutral} or \code{none}, declared in
+a \code{polarisation \{\}} block of the unit's operation.
+
+\paragraph{Solving it.}  For a given $\xi' \equiv F\xi/(R_g T)$ every wall
+concentration is explicit,
+\begin{equation}
+   C_{i,m} \;=\; \frac{k^{*}_{c,i}\,C_{i,b} - J_v\,C_{i,p}}
+                      {k^{*}_{c,i} - J_v + z_i D_i\,\xi'} ,
+   \label{eq:polar-explicit}
+\end{equation}
+and $k^{*}_{c,i}-J_v = k_{c,i}(\Xi_i-\varphi_i)>0$ for both corrections.
+Electroneutrality \eqref{eq:polar-electroneutral} is then one scalar
+equation $g(\xi')=0$; on the interval where every denominator keeps its
+sign, bounded below by the cations and above by the anions, $g$ falls
+monotonically from $+\infty$ to $-\infty$, so the root is bracketed,
+bisected and polished by Newton.  If no such interval leaves every
+$C_{i,m}$ positive the wall is refused by name --- a wall concentration
+\emph{below} the bulk is legitimate (the paper's own Table~1 has
+$\mathrm{Cl^-}$ with negative rejection and negative $\Gamma$), a negative
+one is not.  What is published per ion is the polarisation index
+$\Gamma_i \equiv (C_{i,m}-C_{i,b})/C_{i,b}$ and, when coupled, $\xi$ in
+V/m.
+
+\paragraph{The reduction that keeps the film model.}  With the film-theory
+correction \eqref{eq:polar-xi-film} and $z_i=0$ (or $\xi=0$),
+$k^{*}-J_v = J_v/(e^{\varphi}-1)$ and $k^{*}C_b - J_vC_p =
+J_v\bigl(e^{\varphi}C_b/(e^{\varphi}-1) - C_p\bigr)$, so
+\eqref{eq:polar-explicit} collapses to
+$c_m = c_p + (c_b-c_p)\,e^{J_v/k}$ --- exactly \eqref{eq:film}.  The
+defaults (\code{filmTheory}, \code{none}) are therefore the film model of
+the previous subsection to round-off, which is how every membrane case
+recorded before the model existed keeps its answer.
+
+\paragraph{The single-salt identity.}  For one salt $\mathrm{A^{z_1}B^{z_2}}$
+the two wall concentrations are tied by electroneutrality and the coupled
+solution has the closed form (the paper's Eq.~20)
+\begin{equation}
+   \Gamma = \frac{R}{\eta\,\Xi_1/\varphi_1 + (1-\eta)\,\Xi_2/\varphi_2 - R},
+   \qquad \eta = \frac{1}{1 + (z_1/|z_2|)(D_1/D_2)},
+   \label{eq:polar-single-salt}
+\end{equation}
+with $R$ the intrinsic rejection and $\varphi_1,\varphi_2$ related to the
+salt's $\varphi=J_v/k_c$ (on the salt diffusivity
+$D_S = D_1D_2(z_1+|z_2|)/(z_1D_1+|z_2|D_2)$) by
+$\varphi_1 = [\eta(1+z_1/|z_2|)]^{1-c}\varphi$ and
+$\varphi_2 = [(1-\eta)(1+|z_2|/z_1)]^{1-c}\varphi$ (Eqs.~19, 23, 24).
+Against the exact single-salt solution the paper finds the approximation
+within $10\,\%$ for $0.16<D_1/D_2<5.5$ and $\varphi<3$, the deviation
+growing at high fluxes.  The gate \code{check\_polarisation\_coupling}
+holds the engine to \eqref{eq:polar-single-salt} to $10^{-10}$ and to an
+independent solve of Eqs.~\eqref{eq:polar-interface}--\eqref{eq:polar-electroneutral}
+to $10^{-8}$.
+
+\paragraph{The case study.}  The paper applies the model to the
+nanofiltration of $\mathrm{Na^+}$/$\mathrm{Cl^-}$/dye$^{3-}$ solutions in
+a stirred cell (data of Bowen and Mohammad; $r=2.4$~cm, $\omega=41.9$~rad/s,
+$Re=26\,907$, $Sh_i = 0.23\,Re^{0.567}Sc_i^{0.33}$): four algebraic
+equations per operating point, no film thickness.  The
+\code{polarisationIndex} bench of tutorial
+\code{props/membrane/polarisation01\_geraldes\_afonso\_table1} runs that
+table and prints, per row, $k_{c,i}$, $\varphi_i$, $\Xi_i$, $C_{i,m}$,
+$\Gamma_i$ and $\xi$: the dye, slowest and most rejected, polarises most;
+$\mathrm{Na^+}$ is dragged after it by the field; $\mathrm{Cl^-}$, less
+rejected than the dye and pulled by the same field, sits \emph{below} its
+bulk concentration.  In a module the same object prices one $k_{c,i}$ per
+ion from the spacer correlation (tutorial
+\code{membrane14\_polarisation\_multiionic}, which publishes one
+\code{k\_film\_<ion>} column per ion, \code{Gamma\_<ion>} and
+\code{xi\_V\_per\_m} beside the membrane's own $\psi$).  What the model does
+not contain: any film thickness, any diffusion potential \emph{inside} a
+film (the interface is a plane between the electrical double layer and the
+bulk, and the solution is assumed dilute), and concentration-dependent
+diffusivities.
+
 \subsection{The coupling, and why it needs an inner Newton}
 
 \begin{figure}[ht]
@@ -18396,7 +18520,9 @@ the field is an algebraic consequence of the two with nothing to fit:
    \label{eq:sdem-field}
 \end{equation}
 The boundary conditions are the wall concentrations $c_i(0)=c_{m,i}$
-(the film model of \S\ref{ch:membrane}, applied per ion) and the
+(the polarisation object of \S\ref{ch:membrane}: the film model applied per
+ion by default, the coupled interface model of
+\S\ref{sec:polarisation-multiionic} when the case declares it) and the
 convective closure at the permeate, $j_i = J_v\,c_{p,i}$ with
 $c_i(1)=c_{p,i}$, where $J_v$ is the volume flux.  A neutral solute
 ($z_i=0$) drops out of \eqref{eq:sdem-field} and follows the plain law
@@ -18552,8 +18678,10 @@ electroneutral (the law's own premise --- reconcile the analysis first,
 \code{aqueousAnalysis \{\}} does it); fewer than two ions.
 \textbf{Announced:} the model and its assumptions once per run, and the
 polarisation film, which is computed per ion \emph{without} a field in
-the film --- the diffusion potential exists there too, and this version
-does not carry it.  \textbf{Published:} the potential drop per station
+the film unless \code{ionCoupling electroneutral;} is declared, which
+applies the interface model of \S\ref{sec:polarisation-multiionic} (the
+diffusion potential exists in the film too; the coupled film carries the
+interface's, never one inside the film).  \textbf{Published:} the potential drop per station
 (\code{psi\_mV} in the profile) and its average
 (\code{membranePotential\_mV\_avg}), because the pedagogical point of
 the law is that the student \emph{sees} the field that makes chloride
@@ -18600,7 +18728,9 @@ partition and no dielectric exclusion --- whatever of those NF270 has is
 \emph{inside} the fitted permeances, which is also why the source fits
 a different permeance set for each dominant salt and each witness case
 carries the record of its own salt.  The film is
-per ion and field-free.  The virtual solutions are ideal and dilute.
+per ion and field-free unless \code{ionCoupling electroneutral;} is
+declared, which applies the model of \S\ref{sec:polarisation-multiionic}.
+The virtual solutions are ideal and dilute.
 And two of the source's permeances are \emph{bounds} (``$>60$'',
 ``$>0.8$''), so the runs that use them are conditional on a value the
 source did not fix.  Between the two charge-aware laws the choice is a
@@ -23035,6 +23165,23 @@ in liquid-filled pores'', \emph{AIChE J.}, 33(9), 1409--1425 (1987).
 The hydrodynamic hindrance factors $K_d$ (diffusive) and $K_c$
 (convective) as functions of $\lambda=r_i/r_p$
 (Eqs.~\ref{eq:dspmde-Kd}--\ref{eq:dspmde-Kc}).
+
+\bibitem{GeraldesAfonso2007} Geraldes, V., \& Afonso, M. D., ``Prediction
+of the concentration polarization in the nanofiltration/reverse osmosis of
+dilute multi-ionic solutions'', \emph{J.\ Membr.\ Sci.}, 300, 20--27
+(2007), DOI 10.1016/j.memsci.2007.04.025.  The multi-ionic polarisation
+model of \S\ref{sec:polarisation-multiionic}: the interface balance
+(Eq.~\ref{eq:polar-interface}), electroneutrality at the wall
+(Eq.~\ref{eq:polar-electroneutral}), the explicit wall
+(Eq.~\ref{eq:polar-explicit}), the single-salt closed form
+(Eq.~\ref{eq:polar-single-salt}), and the stirred-cell case study of
+tutorial \code{polarisation01}.
+
+\bibitem{GeraldesAfonso2006} Geraldes, V., \& Afonso, M. D., ``Generalized
+mass-transfer correction factor for nanofiltration and reverse osmosis'',
+\emph{AIChE J.}, 52(10), 3353--3362 (2006), DOI 10.1002/aic.10968.  The
+suction correction $\Xi_i$ of Eq.~\ref{eq:polar-xi-2006}
+(\code{suctionCorrection GeraldesAfonso2006}), valid for $\varphi_i<20$.
 
 \bibitem{Yaroshchuk2013} Yaroshchuk, A., Bruening, M. L., \& Lic\'on
 Bernal, E. E., ``Solution-diffusion--electro-migration model and its uses

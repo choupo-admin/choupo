@@ -149,7 +149,7 @@ namespace Choupo {
 
 class Membrane;
 class OsmoticModel;
-namespace membrane { class TransportModel; }
+namespace membrane { class TransportModel; class Polarisation; }
 
 class BatchDiafilter : public BatchUnitOperation
 {
@@ -219,6 +219,11 @@ private:
 
     std::unique_ptr<membrane::TransportModel> transport_;
     std::unique_ptr<OsmoticModel>             osmotic_;
+    //  The wall, ONE home (unitOperations/membrane/massTransfer/
+    //  Polarisation.H): the declared `polarisation {}` policy over the
+    //  constant k_film this unit requires.  Built in initialise once the
+    //  solute set is known; the transport law asks it for c_m.
+    std::unique_ptr<membrane::Polarisation>   polarisation_;
     const Membrane*      membrane_ = nullptr;
     std::string          membraneName_;
 

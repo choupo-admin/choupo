@@ -52,10 +52,23 @@ Description
                           Guillen-Hoek) are the same form with different
                           coefficients.
 
+        StirredCell   --  Sh = a (omega r^2/nu)^b Sc^c, k = Sh D / r, for a
+                          stirred (Amicon-type) cell; omega and r are
+                          PARAMETERS of the model, not fields of the
+                          context (StirredCell.H says why).  Defaults
+                          0.23 / 0.567 / 0.33 (Bowen et al. 1997, as used
+                          by Geraldes & Afonso 2007).
+
     The unit op owns the geometry: it computes the crossflow velocity u and
     the hydraulic diameter d_h and passes them (with the fluid properties)
     in the context; the model is a thin "given the hydraulics, what is
     k_film".
+
+    SINCE 2026-09-15 THE MODEL IS EVALUATED PER SOLUTE, on that solute's own
+    diffusivity (an ion's species-record D0 through its declared bridge; a
+    neutral solute's the unit's single value) by membrane::Polarisation,
+    the ONE home of the wall concentration -- see Polarisation.H.  The
+    context's D slot is filled there; a model reads it as before.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

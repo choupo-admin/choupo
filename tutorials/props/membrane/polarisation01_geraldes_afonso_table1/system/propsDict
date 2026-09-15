@@ -1,0 +1,86 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  polarisation01 -- THE CONCENTRATION POLARISATION OF A MULTI-IONIC SOLUTION,
+  computed the way Geraldes & Afonso did it (J. Membr. Sci. 300 (2007) 20-27,
+  doi:10.1016/j.memsci.2007.04.025) for the case study of their Section 2.2:
+  nanofiltration of Na+ / Cl- / dye3- solutions in a stirred cell
+  (experimental data of Bowen & Mohammad, AIChE J. 44 (1998) 1799).
+
+  THE QUESTION.  How much does each ion pile up at the membrane wall when
+  three ions of different diffusivities and charges are rejected to
+  different degrees?  The classical film model cannot answer it: it needs
+  ONE effective diffusivity for the solution, and a mixture of ions has
+  none.  The extended Nernst-Planck approach answers it only after choosing
+  a film thickness, which nobody measures.
+
+  THE MODEL.  At the feed-solution/membrane interface, for every ion, the
+  flux J_v C_p equals back-diffusion plus convection plus MIGRATION in the
+  electrical potential gradient xi that the ions' different mobilities set
+  up (Eqs. 2-7); electroneutrality at the interface (Eq. 8) fixes xi.  The
+  mass-transfer coefficient of each ion comes from the cell's conventional
+  correlation on the ion's OWN diffusivity, Sh_i = 0.23 Re^0.567 Sc_i^0.33
+  (Bowen et al. 1997), corrected for the suction effect of the permeation
+  by Xi_i = phi_i + (1 + 0.26 phi_i^1.4)^-1.7 (Geraldes & Afonso 2006).
+  Four algebraic equations per operating point (Eqs. 25-28), NO film
+  thickness, NO new parameter.
+
+  WHAT TO READ IN THE OUTPUT.  The polarisation index Gamma_i = (C_m -
+  C_b)/C_b per ion and per row -- the open symbols of the paper's Fig. 7.
+  The dye (slowest, most rejected) polarises most; Na+ is dragged along by
+  the field; Cl-, less rejected than the dye and pulled by the same field,
+  shows a NEGATIVE Gamma at the low Cl- feeds -- its wall concentration is
+  BELOW the bulk, which the film model applied ion by ion cannot produce.
+  The residual sum z_i C_m,i / sum |z_i| C_m,i printed under each row is
+  the electroneutrality the field enforces.
+
+  WHAT IS AND IS NOT MEASURED.  C_b, C_p and J_v are the table's; Na+ is
+  derived from electroneutrality as the table's own footnote says.  The
+  Gamma are PREDICTIONS of the model from those inputs and the ions' D --
+  nothing is fitted.  The paper compares them with an extended
+  Nernst-Planck integration in the dye's film (its Fig. 7, filled
+  symbols), which this case does not reproduce.
+
+  The gate check_polarisation_coupling recomputes the same four equations
+  in Python from this case's own data file and holds every Gamma to 1e-8.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name     table1;
+        type     polarisationIndex;
+        T        298.15 K;                    // 25 C
+
+        //  The Amicon 8200 stirred cell of the source (Table 1 footnote):
+        //  r = 2.4 cm, omega = 41.9 rad/s, nu = 8.97e-7 m2/s (Re = 26907).
+        //  nu enters as mu / rho; both are the case's own numbers.
+        massTransfer
+        {
+            model      StirredCell;           // Sh_i = a (omega r^2/nu)^b Sc_i^c
+            omega      41.9;                  // rad/s
+            radius     2.4 cm;
+            viscosity  8.97e-4;               // Pa.s   -> nu = 8.97e-7 m2/s
+            density    1000;                  // kg/m3
+            // a 0.23;  b 0.567;  c 0.33;     // the defaults (Bowen et al. 1997)
+        }
+
+        //  The film's policy: the 2006 suction correction, and the ions
+        //  coupled by the interface potential (Eqs. 2-8 of the 2007 paper).
+        polarisation
+        {
+            suctionCorrection  GeraldesAfonso2006;
+            ionCoupling        electroneutral;
+        }
+
+        ions     ( dye Cl Na );               // components; z and D from their species records
+        closeBy  Na;                          // Na+ bulk and permeate from electroneutrality, as the table did
+        dataset  "constant/experimental/bowen1998_table1";
+    }
+);

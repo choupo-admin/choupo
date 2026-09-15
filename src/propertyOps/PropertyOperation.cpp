@@ -54,6 +54,7 @@ License
 #include "IsothermEval.H"
 #include "FreezingPoint.H"
 #include "PitzerActivity.H"
+#include "PolarisationIndex.H"
 #include "ENRTLMixedSolventOp.H"
 #include "ENRTLMultiSaltOp.H"
 #include "GibbsMapOp.H"
@@ -201,6 +202,7 @@ void PropertyOperation::registerBuiltins()
     reg("solubilityParameter", []{ return std::make_unique<SolubilityParameter>(); });
     reg("estimateComponent", []{ return std::make_unique<EstimateComponent>(); });
     reg("elementalComposition", []{ return std::make_unique<ElementCompositionOp>(); });
+    reg("polarisationIndex", []{ return std::make_unique<PolarisationIndex>(); });
 }
 
 } // namespace Choupo

@@ -28,6 +28,7 @@ License
 
 #include "MassTransferModel.H"
 #include "SchockMiquel.H"
+#include "StirredCell.H"
 
 #include "core/RegistryRefusal.H"
 
@@ -69,6 +70,7 @@ std::vector<std::string> MassTransferModel::availableTypes()
 void MassTransferModel::registerBuiltins()
 {
     registerType("SchockMiquel", []{ return std::make_unique<SchockMiquel>();  });
+    registerType("StirredCell",  []{ return std::make_unique<StirredCell>();   });
 }
 
 } // namespace Choupo

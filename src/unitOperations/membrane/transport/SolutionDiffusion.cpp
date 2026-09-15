@@ -41,26 +41,33 @@ namespace membrane {
 // ---------------------------------------------------------------------------
 //  Local flux problem at a single z station
 //
-//  Closed-form for c_m,i given J_w (from film model + solution-diffusion):
-//      Let φ_i = J_w + B_s,i,  E = exp(J_w / k_film).  Then
-//          c_m,i = E · c_b,i / ( 1 + B_s,i · (E − 1) / φ_i )
-//      c_p,i = (B_s,i / φ_i) · c_m,i
+//  Given J_w, the wall and the permeate come from ONE home: the shared
+//  Polarisation object solves the interface balance of Geraldes & Afonso
+//  (2007) jointly with this law's own permeate closure
+//      c_p,i = (B_s,i / φ_i) · c_m,i,   φ_i = J_w + B_s,i.
+//  With the defaults (film-theory correction, no ion coupling) that joint
+//  solution IS the old closed form
+//      E = exp(J_w / k),  c_m,i = E · c_b,i / ( 1 + B_s,i · (E − 1) / φ_i ),
+//  reproduced to round-off (the kernel's seed is that closed form and its
+//  residual is affine, so the Newton returns before forming a Jacobian).
+//  With `ionCoupling electroneutral;` the ions share one interface field
+//  and the kernel's small Newton on c_p resolves it.
 //
-//  The non-linearity is in J_w via Δπ:
+//  The non-linearity in J_w is via Δπ:
 //      F(J_w) = J_w − A_w · (P_b − P_p − Δπ(J_w))   →   0
-//  We solve by simple Newton-1D with damping, starting from the
-//  no-osmotic guess  J_w₀ = A_w · (P_b − P_p).
+//  solved by Newton-1D with damping, starting from the no-osmotic guess
+//  J_w₀ = A_w · (P_b − P_p).
 // ---------------------------------------------------------------------------
 TransportSolution SolutionDiffusion::localFluxes(const TransportContext& ctx) const
 {
     // Unpack the context into the local names the law is written in.  The
-    // membrane handle + speciation hook are unused by solution-diffusion
-    // (they are forward-looking for a charged-NP / DSPM-DE model).
+    // membrane handle + speciation hook are unused by solution-diffusion.
     const ThermoPackage&            thermo    = ctx.thermo;
     const std::vector<std::size_t>& soluteIdx = ctx.soluteIdx;
     const std::vector<scalar>&      B_s       = ctx.B_s;
     const scalar                    A_w       = ctx.A_w;
-    const scalar                    k_film    = ctx.k_film;
+    const Polarisation&             polar     = ctx.polarisation;
+    const MassTransferContext&      hyd       = ctx.hydraulics;
     const scalar                    P_feed_Pa = ctx.P_feed_Pa;
     const scalar                    P_perm_Pa = ctx.P_perm_Pa;
     const scalar                    T_K       = ctx.T_K;
@@ -82,27 +89,25 @@ TransportSolution SolutionDiffusion::localFluxes(const TransportContext& ctx) co
     }
 
     // Lambda: given J_w, evaluate c_m, c_p, Δπ and the residual
-    // F(J_w) = J_w − A_w · (dP − Δπ).
+    // F(J_w) = J_w − A_w · (dP − Δπ).  The wall and the permeate come from
+    // the polarisation object (one home); a wall it refuses at an ACCEPTED
+    // J_w is refused by name below, never clamped.
+    WallSolution lastWall;
     auto eval = [&](scalar Jw, std::vector<scalar>& cm,
                     std::vector<scalar>& cp, scalar& dpi)
     {
-        const scalar E = std::exp(Jw / k_film);
+        lastWall = polar.wallWithSolutionDiffusion(hyd, Jw, c_b, B_s, cp);
+        if (!lastWall.ok) requireOk(lastWall, "transport solutionDiffusion");
+        cm = lastWall.c_m;
         dpi = 0.0;
         for (std::size_t s = 0; s < Ns; ++s)
         {
             const std::size_t i = soluteIdx[s];
             const scalar nu = thermo.comp(i).dissociation();
-            const scalar phi = Jw + B_s[s];
-            // Closed-form c_m, c_p
-            const scalar denom = 1.0 + B_s[s] * (E - 1.0) / std::max(phi, 1e-30);
-            const scalar cmi = E * c_b[s] / denom;
-            const scalar cpi = (B_s[s] / std::max(phi, 1e-30)) * cmi;
-            cm[s] = cmi;
-            cp[s] = cpi;
             // Osmotic pressure difference across the membrane [Pa], from the
             // selected model (van't Hoff: nu R T c; Pitzer: phi(I) nu R T c).
-            dpi += osm.osmoticPressure({cmi, nu, T_K})
-                 - osm.osmoticPressure({cpi, nu, T_K});
+            dpi += osm.osmoticPressure({cm[s], nu, T_K})
+                 - osm.osmoticPressure({cp[s], nu, T_K});
         }
     };
 
@@ -139,12 +144,14 @@ TransportSolution SolutionDiffusion::localFluxes(const TransportContext& ctx) co
     }
 
     eval(Jw, cm, cp, dpi);
+    requireOk(lastWall, "transport solutionDiffusion");
     sol.J_w = std::max(Jw, 0.0);
     sol.c_m = cm;
     sol.c_p = cp;
     sol.J_s.assign(Ns, 0.0);
     for (std::size_t s = 0; s < Ns; ++s)
         sol.J_s[s] = B_s[s] * (cm[s] - cp[s]);
+    if (lastWall.coupled) { sol.xi = lastWall.xi; sol.hasXi = true; }
     return sol;
 }
 

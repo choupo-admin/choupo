@@ -154,7 +154,8 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     const ThermoPackage& thermo = ctx.thermo;
     const auto&  soluteIdx = ctx.soluteIdx;
     const scalar A_w       = ctx.A_w;
-    const scalar k_film    = ctx.k_film;
+    const Polarisation&        polar = ctx.polarisation;
+    const MassTransferContext& hyd   = ctx.hydraulics;
     const scalar dP        = ctx.P_feed_Pa - ctx.P_perm_Pa;
     const scalar T         = ctx.T_K;
     const auto&  c_b       = ctx.c_b;            // bulk salt conc [kmol/m^3]
@@ -279,13 +280,37 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     //  This avoids an inner RK4 while preserving the charge coupling.
     // ===================================================================
 
-    // Wall ion conc with the film polarisation at the current J_v (closed form,
-    // identical to SolutionDiffusion's c_m for the parent salt, applied to the
-    // ion via its stoichiometric share).  E = exp(J_v / k_film).
+    // Wall ion conc with the polarisation at the current J_v: the shared
+    // Polarisation kernel (ONE home for the wall) on THIS law's ion list --
+    // each ion with its own charge and free-solution D0 (already resolved
+    // above for the hindrance factors), k_c,i priced per ion on that D when
+    // the unit declares a correlation, and the solution-diffusion permeate
+    // closure with the parent salt's B_s (the same closure the
+    // solutionDiffusion seed uses, so the wall buildup matches it at the
+    // same J_v).  Under the default policy this is byte-for-byte the old
+    // per-ion closed form E c_b / (1 + B (E - 1) / phi); under
+    // `ionCoupling electroneutral;` the ions share one interface field.
+    scalar lastXi = 0.0; bool lastCoupled = false;
+    std::vector<scalar> ionD(Ni), ionB(Ni), ionCb(Ni);
+    std::vector<int>    ionZ(Ni);
+    std::vector<std::string> ionName(Ni);
+    for (std::size_t i = 0; i < Ni; ++i)
+    {
+        ionD[i]    = ions[i].D;
+        ionB[i]    = B_s[ions[i].salt];
+        ionCb[i]   = ions[i].c_bulk;
+        ionZ[i]    = ions[i].z;
+        ionName[i] = ions[i].name.key;
+    }
     auto wallIons = [&](scalar Jv, std::vector<scalar>& cwall,
                         std::vector<scalar>& gwall, scalar& Iwall)
     {
-        const scalar E = std::exp(Jv / std::max(k_film, 1e-12));
+        std::vector<scalar> kIon(Ni);
+        for (std::size_t i = 0; i < Ni; ++i) kIon[i] = polar.kFilmForD(hyd, ionD[i]);
+        std::vector<scalar> cpClosure;
+        const WallSolution w = wallWithSolutionDiffusion(
+            polar.policy(), Jv, kIon, ionD, ionZ, ionCb, ionB, T, ionName, cpClosure);
+        requireOk(w, "transport DSPM-DE");
         // First pass: ionic strength from bulk to get gammas, then polarise.
         Iwall = 0.0;
         for (std::size_t i = 0; i < Ni; ++i)
@@ -293,15 +318,11 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         const scalar Iwall_molL = Iwall / 1000.0;
         for (std::size_t i = 0; i < Ni; ++i)
         {
-            // Polarise the parent salt's ion: use a representative B for the
-            // salt (the host B_s of that salt) so the wall buildup matches the
-            // solution-diffusion seed at the same J_v.
-            const scalar Bs = B_s[ions[i].salt];
-            const scalar phi = Jv + Bs;
-            const scalar denom = 1.0 + Bs * (E - 1.0) / std::max(phi, 1e-30);
-            cwall[i] = E * ions[i].c_bulk / denom;
+            cwall[i] = w.c_m[i];
             gwall[i] = daviesGammaConc(ions[i].z, Iwall_molL, A_davies);
         }
+        lastXi = w.coupled ? w.xi : 0.0;
+        lastCoupled = w.coupled;
     };
 
     // Solve the feed-face Donnan potential dphi (in RT/F units, "psi") so that
@@ -480,6 +501,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         out.c_p[s] = salt_perm * 1.0e-3;
         out.J_s[s] = out.J_w * out.c_p[s];               // kmol/(m^2 s): convective
     }
+    if (lastCoupled) { out.xi = lastXi; out.hasXi = true; }
     return out;
 }
 

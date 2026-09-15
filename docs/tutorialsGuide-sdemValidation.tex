@@ -59,12 +59,17 @@ from single-salt tests.
 What the implementation does \emph{not} contain, so that the comparison is
 read for what it is: no fixed membrane charge (no Donnan partition, no
 dielectric exclusion --- those effects are inside the permeances the authors
-fitted); ideal dilute virtual solutions; constant permeances; and a
-concentration-polarisation film that is computed per ion \emph{without} a
-field (the engine announces this every run).  All runs below use a film
-coefficient of 1~m/s, so the wall equals the bulk to better than $0.01\,\%$
-and the rejections are intrinsic --- which is what the paper's CP-corrected
-rejections are.  Numerically, each station solves a Newton problem in the
+fitted); ideal dilute virtual solutions; constant permeances; and, in
+these runs, a concentration-polarisation film that is computed per ion
+\emph{without} a field (the default, which the engine announces every
+run).  A coupled film --- the interface model of Geraldes and Afonso
+(2007), one potential gradient at the wall fixed by electroneutrality,
+declared by \code{polarisation \{ ionCoupling electroneutral; \}} ---
+exists in the engine and is deliberately \emph{not} used here: all runs
+below use a film coefficient of 1~m/s, so the wall equals the bulk to
+better than $0.01\,\%$ and the rejections are intrinsic --- which is what
+the paper's CP-corrected rejections are, and a film that does not matter
+has no field to carry.  Numerically, each station solves a Newton problem in the
 permeate composition whose residual is a fourth-order Runge--Kutta shot of
 the profile \emph{from the permeate face back to the wall} (320 steps); the
 osmotic back-pressure closes an outer Newton in $J_v$.  The source is
@@ -277,7 +282,9 @@ It does not validate the model against the measured \emph{symbols}: the
 symbols scatter about the authors' lines by the authors' own fit residual
 (up to about $15\,\%$ in $f$ on the last point of Fig.~1a), and a
 re-implementation cannot be held to a residual its source accepted.  It
-does not test a polarisation film with a field, concentration-dependent
+does not exercise the coupled polarisation film (the runs are intrinsic;
+that film is the subject of tutorial \code{membrane14} and of the gate
+\code{check\_polarisation\_coupling}), concentration-dependent
 permeances, fixed charge, or any membrane but NF270 at $0.01$~M.  It
 inherits the digitisation's reading error, stated above and per point in
 the CSV.

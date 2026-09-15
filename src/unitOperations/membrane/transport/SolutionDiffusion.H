@@ -34,14 +34,21 @@ Description
 
         J_w   = A_w (P_b - P_p - Delta_pi)                    water flux [m/s]
         J_s,i = B_s,i (c_m,i - c_p,i)                solute flux [kmol/(m2.s)]
-        c_m,i / c_b,i  from the film-model concentration polarisation
+        c_m,i          from the shared Polarisation object (ONE home for
+                       the wall: massTransfer/Polarisation.H)
         c_p,i = (B_s,i / phi_i) c_m,i,   phi_i = J_w + B_s,i
         Delta_pi = pi(c_m) - pi(c_p)               from the osmotic model
 
-    Closed-form for c_m,i given J_w (film model + solution-diffusion):
+    The wall and the permeate closure are solved jointly by
+    Polarisation::wallWithSolutionDiffusion.  With the default policy
+    (`suctionCorrection filmTheory; ionCoupling none;`) that is EXACTLY
+    the classical closed form
         Let phi_i = J_w + B_s,i,  E = exp(J_w / k_film).  Then
             c_m,i = E c_b,i / ( 1 + B_s,i (E - 1) / phi_i )
         c_p,i = (B_s,i / phi_i) c_m,i
+    reproduced to round-off; with `ionCoupling electroneutral;` the ions
+    share one interface field (Geraldes & Afonso 2007) and the law
+    publishes it (`xi`).
 
     The non-linearity is in J_w via Delta_pi; an inner Newton-1D with damping
     resolves it, starting from the no-osmotic guess J_w0 = A_w (P_b - P_p).

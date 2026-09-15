@@ -691,19 +691,60 @@ operation
     // Selectable sub-models (factory pattern):
     massTransfer
     {
-        model         SchockMiquel;  // the only registered model; for a constant
-                                     // coefficient OMIT this block and give `k_film`
+        model         SchockMiquel;  // spacer channel (or `StirredCell`, below);
+                                     // for a constant coefficient OMIT this block
+                                     // and give `k_film`
         channelHeight 0.7 mm;
         spacerPorosity 0.9;
-        diffusivity   1.6e-9;        // solute D, m²/s (SI; no named m2/s unit)
+        diffusivity   1.6e-9;        // D of a NEUTRAL/lumped solute, m²/s (SI);
+                                     // an ION's k is priced on its own species D0
         viscosity     1.0e-3 Pa.s;
     }
     pressureDrop  { model SchockMiquel; }   // in-block default SchockMiquel; omit the
                                             // block for the constant dP_feed_total
     osmotic       { model Pitzer; }         // or `vanHoff` (default)
     transport     solutionDiffusion;        // default | DSPM-DE | SDEM (below)
+
+    // The FILM'S POLICY -- one block whichever way k arrives (a correlation
+    // or a bare `k_film`); NOT inside massTransfer {} (refused there).
+    polarisation
+    {
+        suctionCorrection  GeraldesAfonso2006;  // | filmTheory (default) | none
+        ionCoupling        electroneutral;      // | none (default)
+    }
 }
 ```
+
+**Concentration polarisation** has ONE home for every transport law
+(`massTransfer/Polarisation`): the wall concentration `c_m` per solute.
+`suctionCorrection` picks the correction of the film coefficient for the
+permeation — `GeraldesAfonso2006` (Ξ = φ + (1 + 0.26 φ^1.4)^−1.7, φ = J_v/k,
+valid φ < 20, announced beyond), `filmTheory` (Ξ = φ + φ/(e^φ − 1), the
+classical film model — the DEFAULT, so an undeclared case keeps its answer),
+or `none` (Ξ = 1, the uncorrected impermeable-wall coefficient).
+`ionCoupling electroneutral` applies the multi-ionic model of Geraldes &
+Afonso, *J. Membr. Sci.* 300 (2007) 20: each ion's k priced on its OWN
+diffusivity (the species record's `D0`, through the component's
+`aqueousMapping`; an ion without one refuses by name), the ions coupled by
+ONE interface potential gradient ξ fixed by electroneutrality at the wall —
+no film thickness, no new parameter.  Needs ≥ 2 charged solutes.  The
+default `none` polarises each ion alone and field-free, and on an
+ion-declared feed the engine ANNOUNCES that default naming the remedy.
+Published: `Gamma_<solute>_avg` (the polarisation index (c_m − c_b)/c_b,
+channel average) and profile columns `Gamma_<solute>`; with a correlation
+on an ion-declared feed `k_film_<solute>` per ion (else the single
+`k_film`); when coupled `xi_V_per_m_avg` and the column `xi_V_per_m`.  A
+wall concentration below the bulk is legitimate (a lightly rejected anion
+pulled by the field); a negative one is refused, never clamped.
+Witnesses: `membrane14_polarisation_multiionic` (module) and the props
+bench `polarisation01_geraldes_afonso_table1` (below).
+
+**`massTransfer` models:** `SchockMiquel` (spacer channel, Sh = a Re^b Sc^c
+on the local crossflow, defaults 0.065/0.875/0.25) and `StirredCell`
+(Sh = a (ω r²/ν)^b Sc^c, k = Sh D/r, for an Amicon-type stirred cell;
+`omega` [rad/s] and `radius` are REQUIRED parameters of the block, defaults
+a 0.23, b 0.567, c 0.33 — Bowen et al. 1997, as used by Geraldes & Afonso
+2007).  Both are evaluated per solute on the solute's own D.
 
 Inputs (`feed`), outputs (`retentate permeate`).  KPIs: `J_w_avg`,
 `R_obs_<solute>`, `water_recovery`, `dP_feed`, etc.
@@ -733,8 +774,21 @@ each channel node):
   calibrated from single-salt tests.  Witnesses:
   `membrane12_sdem_nf270_nacl_traces`, `membrane13_sdem_nf270_mgso4_traces`
   (NF270 permeances from Fernández de Labastida & Yaroshchuk 2021, CC BY).
-  The polarisation film is per ion and field-free in this version
-  (announced).
+  The polarisation film is per ion and field-free by default (announced);
+  `polarisation { ionCoupling electroneutral; }` couples it by the
+  Geraldes & Afonso 2007 interface field (`membrane14_polarisation_multiionic`).
+
+**Props bench `polarisationIndex`** (choupoProps) — the glass-box surface of
+the multi-ionic polarisation model: given `massTransfer { model StirredCell;
+omega; radius; viscosity; density; }`, a `polarisation {}` policy, `ions ( … )`
+(components with an aqueous bridge; z and D from their species records), an
+optional `closeBy <ion>;` (that ion's bulk AND permeate derived from
+electroneutrality) and a `dataset "<path>"` in the experiments grammar
+(columns `C_b_<ion>`, `C_p_<ion>` in mol/m3 and `J_v` in m/s), it prints per
+row k_c,i, φ_i, Ξ_i, C_m,i, Γ_i, ξ and the wall-electroneutrality residual.
+Diagnostics `Gamma_<ion>_r<n>`, `xi_r<n>`, `k_<ion>`, `Re`, `n_rows`,
+`chargeResidual_max`.  Witness `polarisation01_geraldes_afonso_table1`
+(the paper's Table 1, data of Bowen & Mohammad 1998).
 
 ## Solids separators
 

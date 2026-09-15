@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Component: the trivalent dye anion (dye3-) -- CASE-LOCAL ionic component
+  of the Geraldes & Afonso (2007) case study (data of Bowen & Mohammad
+  1998).  Declared as a flowsheet component so the polarisationIndex bench
+  reads its charge and diffusivity through the aqueous bridge below, from
+  constant/species/dye.dat.  The sources do not identify the compound: no
+  formula and no molar mass are known, and the MW here is a NOMINAL
+  PLACEHOLDER the grammar requires, read by nothing in this case.
+  nonvolatile: an ion never enters the vapour.
+  dissociation 1: already an ion.
+\*---------------------------------------------------------------------------*/
+name           dye;
+formula        "dye3-";
+MW             1000;            // NOMINAL PLACEHOLDER -- the sources give no MW; not read by the bench
+role           nonvolatile;
+reviewStatus   unreviewed;
+dissociation   1;
+aqueousMapping ( { species dye; nu 1; } );

@@ -43,6 +43,7 @@ Description
 #include "thermo/membrane/MembraneRegistry.H"
 #include "streams/Composition.H"
 #include "unitOperations/membrane/BulkConversion.H"
+#include "unitOperations/membrane/massTransfer/Polarisation.H"
 #include "unitOperations/membrane/osmotic/OsmoticModel.H"
 #include "unitOperations/membrane/transport/TransportModel.H"
 
@@ -50,6 +51,7 @@ Description
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <sstream>
 #include <stdexcept>
@@ -242,6 +244,19 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
     state_.T  = init->lookupScalar("T");
     state_.P  = init->lookupScalar("P");
     state_.vf = 0.0;                              // a retentate is a liquid
+
+    //  THE WALL, from the one home.  No correlation here (the case declares
+    //  k_film, see above), so every solute sees the constant; the
+    //  `polarisation {}` policy is read all the same, so a vessel fed ion by
+    //  ion can couple its film by `ionCoupling electroneutral;`.  A neutral
+    //  solute's diffusivity is not needed on a constant k and is passed as
+    //  NaN; an ion's is resolved from its species record only if the
+    //  coupling asks for it.
+    polarisation_ = std::make_unique<membrane::Polarisation>(
+        membrane::buildPolarisation(op, thermo, soluteIdx_, nullptr, kFilm_,
+                                    std::numeric_limits<scalar>::quiet_NaN(),
+                                    state_.T, "batchDiafilter '" + name() + "'",
+                                    verbosity_));
     const scalar nTot = init->lookupScalar("totalMoles");
     const sVector x   =
         readComposition(init, thermo, "batchDiafilter '" + name() + "' init");
@@ -360,7 +375,8 @@ BatchDiafilter::Fluxes BatchDiafilter::evaluate(const sVector& n) const
     for (std::size_t s = 0; s < Ns; ++s) f.c_b[s] = bulk.c[soluteIdx_[s]];
 
     membrane::TransportContext ctx{ *thermo_, soluteIdx_, B_s_,
-                                    effectivePermeance(Vperm_), kFilm_,
+                                    effectivePermeance(Vperm_), *polarisation_,
+                                    MassTransferContext{},
                                     P_feed_, P_perm_, state_.T, f.c_b,
                                     *osmotic_, membrane_, nullptr };
     const auto sol = transport_->localFluxes(ctx);

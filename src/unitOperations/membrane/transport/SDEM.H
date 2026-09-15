@@ -81,9 +81,15 @@ Description
     Goldman integration -- the two differ, and only this one gives the exact
     single-salt limit above); NO fixed charge (a charged active layer is
     DSPM-DE's subject); ideal dilute solutions (activities = concentrations);
-    and a polarisation film computed PER ION with the module's film
-    coefficient and no field in the film -- the diffusion potential exists
-    there too and is a named, announced limitation of this version.
+    and a polarisation film that is FIELD-FREE UNLESS the case declares
+    `polarisation { ionCoupling electroneutral; }` -- by default each ion
+    polarises alone with the unit's film coefficient (the diffusion
+    potential exists in the film too; announced as an approximation), and
+    with the declaration the wall comes from the Geraldes & Afonso (2007)
+    interface model (massTransfer/Polarisation.H: per-ion k_c,i, one
+    interface potential gradient, electroneutral wall, no film thickness).
+    The wall is never computed here: the law asks the shared Polarisation
+    object for it at every trial permeate.
 
     WHAT IT REFUSES, by name: a solute with no declared aqueous bridge (the
     law needs each solute's charge, read through `aqueousMapping`, never a
@@ -97,8 +103,8 @@ Description
     NUMERICS.  Per z station an OUTER Newton-1D in J_w (the osmotic
     back-pressure, as in solutionDiffusion) wraps an INNER Newton in the
     permeate composition c_p: each residual evaluation integrates (1)-(2)
-    from the wall (film model, per ion) to the permeate face with a
-    fixed-step RK4 and requires c(1) = c_p for all but one ion, plus (3)
+    from the wall (the shared polarisation object, per ion) to the permeate
+    face with a fixed-step RK4 and requires c(1) = c_p for all but one ion, plus (3)
     written as permeate electroneutrality.  The Jacobian is finite
     differences; the problem has at most a handful of ions.  The potential
     drop is integrated alongside and published (`psi`, RT/F units; the

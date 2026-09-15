@@ -86,9 +86,12 @@ Arm (h) compares the engine with the authors' FITTED LINES, never with the
 measured symbols: the symbols scatter about the lines by the authors' own
 fit residual (up to ~15 % in f on Fig 1a's last point), and the model cannot
 be held to a residual its own source accepted.  The symbols are in the CSV
-for a reader; no arm pins them.  The polarisation film is per ion and field-free (the law
-announces it) and nothing here tests a film with a field.  Concentration
-dependence of the permeances is outside the model.  The batch vessel
+for a reader; no arm pins them.  The polarisation film on both witnesses is per
+ion and field-free (the default, which the law and the module announce);
+the film WITH a field -- the Geraldes & Afonso 2007 interface model, declared
+by `polarisation { ionCoupling electroneutral; }` -- is membrane14's and is
+gated by check_polarisation_coupling, not here.  Concentration dependence of
+the permeances is outside the model.  The batch vessel
 (`batchDiafilter`) accepts the same factory word and is NOT exercised here.
 
 SABOTAGE-VERIFIED 2026-09-15 (results recorded in the design record
@@ -467,8 +470,9 @@ def main():
           "disagrees with Eq. (1) (pinned as the source's own inconsistency).  NOT CHECKED: the "
           "measured SYMBOLS themselves (in the CSV, compared by nobody -- the model is held to "
           "the authors' fit, not to their fit residual), NH4 under NaCl and Na2SO4 (permeances the "
-          "paper leaves as bounds), a polarisation film with a field, concentration-dependent "
-          "permeances, the batch vessel under SDEM.")
+          "paper leaves as bounds), the coupled polarisation film (membrane14, gated by "
+          "check_polarisation_coupling), concentration-dependent permeances, the batch vessel "
+          "under SDEM.")
     return 0
 
 

@@ -3054,6 +3054,27 @@ PYEOF
     fi
     rm -f /tmp/sdem.$$
 
+    # Polarisation-coupling gate (2026-09-15).  The multi-ionic
+    # concentration-polarisation model of Geraldes & Afonso (2007) -- per-ion
+    # k on each ion's own D, suction-corrected, ions coupled by ONE interface
+    # potential fixed by electroneutrality at the wall, no film thickness --
+    # is the ONE home of the wall concentration for every transport law.  The
+    # gate recomputes the paper's case study (Table 1) in Python from the
+    # witness's own data file, holds the single-salt closed form Eq. (20), the
+    # film-theory reduction the corpus goldens rest on, four refusals, the
+    # announced default on membrane12 (and its silence on membrane14), and
+    # the module witness's published wall electroneutrality -- with the
+    # `ionCoupling none` twin as the negative that shows the coupling acts.
+    if "$ROOT/bin/curate/check_polarisation_coupling.py" > /tmp/polar.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "polarisation-coupling-gate" "$(grep -m1 '^check_polarisation_coupling: OK' /tmp/polar.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_polarisation_coupling.py)\n" "polarisation-coupling-gate"
+        cat /tmp/polar.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/polar.$$
+
     # block-tridiagonal gate (2026-08-25).  The MESH declares its Jacobian
     # structure; the declaration is audited on the first iteration and the
     # colored evaluation count must equal the CPR formula recomputed by the

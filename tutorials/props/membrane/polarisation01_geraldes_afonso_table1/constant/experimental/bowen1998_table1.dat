@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Table 1 of Geraldes & Afonso, J. Membr. Sci. 300 (2007) 20-27
+  (doi:10.1016/j.memsci.2007.04.025): NF experimental data of aqueous
+  solutions containing Na+, Cl- and a dye3-, taken from Figs. 9 and 11 of
+  Bowen & Mohammad, AIChE J. 44(8) (1998) 1799-1812 -- an Amicon 8200
+  stirred cell at 25 C and 5e5 Pa.
+
+  The columns are the table's: feed (bulk) and permeate concentrations of
+  the dye and of Cl- in mol/m3, and the permeation flux J_v in m/s.  Na+
+  is NOT a column: the table's footnote (a) states that the bulk Na+ was
+  calculated through electroneutrality, and (b) that the permeate Cl- and
+  Na+ were calculated from the plotted observed rejections with the
+  permeate electroneutral -- so the bench derives Na+ the same way
+  (`closeBy Na;`).  The dye permeate concentration is the table's, from
+  an average observed rejection of 98.5 %.
+
+  Transcribed as measured facts with both citations; nothing here is
+  adjusted.  The rows are in the table's order: five at a dye feed of
+  4 mol/m3, five at 37 mol/m3, Cl- feed rising within each block.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source   "Geraldes & Afonso, J. Membr. Sci. 300 (2007) 20-27, Table 1; data of Bowen & Mohammad, AIChE J. 44(8) (1998) 1799-1812, Figs. 9 and 11";
+    citation "NF of Na+/Cl-/dye3- solutions in an Amicon 8200 stirred cell (r = 2.4 cm, omega = 41.9 rad/s, Re = 26907), 25 C, 5e5 Pa.  Na+ from electroneutrality; permeate Cl-/Na+ from the observed rejections; dye permeate from an average observed rejection of 98.5 %.";
+}
+
+columns
+(
+    { name C_b_dye;  unit mol/m3; }      // dye3- feed (bulk) concentration
+    { name C_b_Cl;   unit mol/m3; }      // Cl- feed (bulk) concentration
+    { name C_p_dye;  unit mol/m3; }      // dye3- permeate concentration
+    { name C_p_Cl;   unit mol/m3; }      // Cl- permeate concentration
+    { name J_v;      unit m/s;    }      // permeation flux
+);
+
+data
+(
+     4    5.20   0.060    6.27   9.87e-6
+     4   10.52   0.060   11.21   9.86e-6
+     4   25.79   0.060   24.92   9.66e-6
+     4   52.55   0.060   48.12   9.22e-6
+     4  103.14   0.060   93.97   8.85e-6
+    37    4.51   0.555   14.14   4.31e-6
+    37    9.26   0.555   21.54   4.47e-6
+    37   22.00   0.555   38.69   4.90e-6
+    37   43.00   0.555   63.29   5.29e-6
+    37   87.26   0.555  107.10   5.33e-6
+);

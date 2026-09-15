@@ -391,6 +391,16 @@ authority on the lineup; the kinds and what each record carries:
   NF270_dspmde (loose-NF, the second carrying the DSPM-DE parameterisation).
   Two CASE-LOCAL NF270 records (membrane12/13) carry the per-ion permeances of
   Fernández de Labastida & Yaroshchuk 2021 (CC BY) for the `SDEM` transport law.
+* **Concentration polarisation of a multi-ionic solution** (2026-09-15):
+  the wall concentration has ONE home (`membrane/massTransfer/Polarisation`)
+  for all three transport laws — per-ion k on each ion's own D0,
+  suction-corrected (`GeraldesAfonso2006` | `filmTheory` | `none`), ions
+  coupled by one interface potential fixed by electroneutrality at the wall
+  (`polarisation { ionCoupling electroneutral; }`, Geraldes & Afonso, J.
+  Membr. Sci. 300 (2007) 20 — no film thickness, no new parameter); the
+  `StirredCell` mass-transfer model and the `polarisationIndex` props bench
+  (`props/membrane/polarisation01_geraldes_afonso_table1`, the paper's own
+  case study); module witness `membrane14_polarisation_multiionic`.
   A_w (water permeability, m/(s·bar)) + a
   `permeabilities { <solute> <B_s>;... }` sub-dict with the per-solute
   solution-diffusion permeability B_s (m/s) + ratings (P_max, T_max, pH range,

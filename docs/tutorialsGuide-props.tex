@@ -2214,6 +2214,53 @@ Why the case exists: `kinetics1D` had NO case and no gate. Its sibling vaporPres
 \goldrow{diag}{rate\_arrhenius}{order}{2}
 \end{tutgolden}
 
+\subsection{membrane}
+\grouptheory{membrane}
+\clearpage
+\tutentry{polarisation01\_geraldes\_afonso\_table1}{tutorials/props/membrane/polarisation01\_geraldes\_afonso\_table1}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{table1}\\[-1pt]{\tiny polarisationIndex}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Concentration polarisation of a Na+/Cl-/dye3- solution (Geraldes \& Afonso 2007, Table 1): per-ion k, one interface field, Gamma per ion -- no film thickness}
+\begin{tutnarrative}
+polarisation01 -- THE CONCENTRATION POLARISATION OF A MULTI-IONIC SOLUTION, computed the way Geraldes \& Afonso did it (J. Membr. Sci. 300 (2007) 20-27, doi:10.1016/j.memsci.2007.04.025) for the case study of their Section 2.2: nanofiltration of Na+ / Cl- / dye3- solutions in a stirred cell (experimental data of Bowen \& Mohammad, AIChE J. 44 (1998) 1799).
+
+THE QUESTION. How much does each ion pile up at the membrane wall when three ions of different diffusivities and charges are rejected to different degrees? The classical film model cannot answer it: it needs ONE effective diffusivity for the solution, and a mixture of ions has none. The extended Nernst-Planck approach answers it only after choosing a film thickness, which nobody measures.
+
+THE MODEL. At the feed-solution/membrane interface, for every ion, the flux J\_v C\_p equals back-diffusion plus convection plus MIGRATION in the electrical potential gradient xi that the ions' different mobilities set up (Eqs. 2-7); electroneutrality at the interface (Eq. 8) fixes xi. The mass-transfer coefficient of each ion comes from the cell's conventional correlation on the ion's OWN diffusivity, Sh\_i = 0.23 Re\textasciicircum{}0.567 Sc\_i\textasciicircum{}0.33 (Bowen et al. 1997), corrected for the suction effect of the permeation by Xi\_i = phi\_i + (1 + 0.26 phi\_i\textasciicircum{}1.4)\textasciicircum{}-1.7 (Geraldes \& Afonso 2006). Four algebraic equations per operating point (Eqs. 25-28), NO film thickness, NO new parameter.
+
+WHAT TO READ IN THE OUTPUT. The polarisation index Gamma\_i = (C\_m - C\_b)/C\_b per ion and per row -- the open symbols of the paper's Fig. 7. The dye (slowest, most rejected) polarises most; Na+ is dragged along by the field; Cl-, less rejected than the dye and pulled by the same field, shows a NEGATIVE Gamma at the low Cl- feeds -- its wall concentration is BELOW the bulk, which the film model applied ion by ion cannot produce. The residual sum z\_i C\_m,i / sum |z\_i| C\_m,i printed under each row is the electroneutrality the field enforces.
+
+WHAT IS AND IS NOT MEASURED. C\_b, C\_p and J\_v are the table's; Na+ is derived from electroneutrality as the table's own footnote says. The Gamma are PREDICTIONS of the model from those inputs and the ions' D -- nothing is fitted. The paper compares them with an extended Nernst-Planck integration in the dye's film (its Fig. 7, filled symbols), which this case does not reproduce.
+
+The gate check\_polarisation\_coupling recomputes the same four equations in Python from this case's own data file and holds every Gamma to 1e-8.
+
+\end{tutnarrative}
+\tutreadme{The question. Three ions -- Na+, Cl- and a trivalent dye -- are nanofiltered in a stirred cell. The dye is rejected almost completely, the chloride barely. How much does each pile up at the membrane wall?}
+\tutreadme{The lesson. Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20-27 (doi:10.1016/j.memsci.2007.04.025), answer it with four algebraic equations per operating point and NO film thickness: the cell's conventional correlation Sh\_i = 0.23 Re\textasciicircum{}0.567 Sc\_i\textasciicircum{}0.33 on each ion's OWN diffusivity, the suction correction Xi\_i = phi\_i + (1 + 0.26 phi\_i\textasciicircum{}1.4)\textasciicircum{}-1.7, and one electrical potential gradient at the interface fixed by electroneutrality at the wall. The polarisationIndex bench prints, for each of the ten rows of the paper's Table 1 (data of Bowen \& Mohammad, AIChE J. 44 (1998) 1799), the per-ion k, phi, Xi, wall concentration, polarisation index Gamma\_i = (C\_m - C\_b)/C\_b and the field xi -- the open symbols of the paper's Fig. 7. The dye (slowest, most rejected) polarises most; Na+ is dragged after it by the field; Cl- sits BELOW its bulk concentration (negative Gamma), which the film model applied ion by ion cannot produce.}
+\tutreadme{Headline numbers (Gamma): row 1 (dye 4, Cl 5.2 mol/m3) dye +0.504, Na +0.310, Cl -0.137; row 10 (dye 37, Cl 87.3) dye +0.273, Na +0.120, Cl -0.074. Re = 26906 against the paper's 26907.}
+\tutreadme{What is measured and what is not. C\_b, C\_p and J\_v are the table's; Na+ is derived by electroneutrality as the table's footnote says (closeBy Na;). Every Gamma is a PREDICTION from those inputs, the ions' D and the correlation; nothing is fitted. The paper's filled symbols (an extended Nernst-Planck integration in the dye's film) are not reproduced. The dye is a case-local species (constant/species/dye.dat, z = -3, D = 0.36e-9 from the paper's footnote); the sources do not identify the compound, so its MW is a flagged nominal placeholder that nothing here reads.}
+\tutreadme{The gate. check\_polarisation\_coupling re-solves Eqs. 25-28 in Python from this case's own data file and holds every Gamma AND xi to 1e-8, holds a single salt to the paper's closed form Eq. 20, and holds the filmTheory + none policy to the classical film model to round-off.}
+\begin{tutgolden}
+\goldrow{diag}{table1}{D\_Cl}{2.03e-09}
+\goldrow{diag}{table1}{D\_Na}{1.33e-09}
+\goldrow{diag}{table1}{D\_dye}{3.6e-10}
+\goldrow{diag}{table1}{Gamma\_Cl\_r1}{-0.136799297507}
+\goldrow{diag}{table1}{Gamma\_Cl\_r10}{-0.0737363093742}
+\goldrow{diag}{table1}{Gamma\_Cl\_r2}{-0.095324747833}
+\goldrow{diag}{table1}{Gamma\_Cl\_r3}{-0.0498126163785}
+\goldrow{diag}{table1}{Gamma\_Cl\_r4}{-0.0178510515183}
+\goldrow{diag}{table1}{Gamma\_Cl\_r5}{-0.00198770276507}
+\goldrow{diag}{table1}{Gamma\_Cl\_r6}{-0.24271484424}
+\goldrow{diag}{table1}{Gamma\_Cl\_r7}{-0.176886232679}
+\goldrow{diag}{table1}{Gamma\_Cl\_r8}{-0.13368256672}
+\goldrow{diag}{table1}{Gamma\_Cl\_r9}{-0.10815205541}
+\goldrow{diag}{table1}{Gamma\_Na\_r1}{0.310336981862}
+\goldmore{35}
+\end{tutgolden}
+
 \subsection{molecular}
 \grouptheory{molecular}
 \clearpage

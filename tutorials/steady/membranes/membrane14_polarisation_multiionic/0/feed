@@ -1,0 +1,25 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases). ---*/
+//  4 m3/h of solution: dominant salt 0.01 mol/L, trace salts 2e-4 mol/L
+//  (membrane12's composition, the paper's feeds), written ION BY ION and
+//  electroneutral by construction -- the SDEM law refuses a feed that is
+//  not.  Four times membrane12's flow, so the crossflow in the 4-inch
+//  element's spacer channel is ~0.45 m/s.
+componentMolarFlows
+{
+    water   222.032 kmol/h;
+    Na      0.0408 kmol/h;
+    Cl      0.0408 kmol/h;
+    NO3     0.0008 kmol/h;
+    NH4     0.0008 kmol/h;
+}
+T               293.15 K;      // 20 C, the paper's feed temperature
+P               400000 Pa;

@@ -7010,6 +7010,46 @@ one NF270 element under the SOLUTION-DIFFUSION-ELECTROMIGRATION law (`transport 
 \goldmore{3}
 \end{tutgolden}
 
+\clearpage
+\tutentry{membrane14\_polarisation\_multiionic}{tutorials/steady/membranes/membrane14\_polarisation\_multiionic}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(NF.east)+(0,-0.34)$) -- ($(NF.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.00)$) -- ($(NF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+  \draw[->] ($(NF.east)+(0,0.34)$) -- ($(NF.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{NF270 + SDEM on a real spacer channel: per-ion film, one interface field (Geraldes \& Afonso 2007) -- Gamma per ion, the trace anion below the bulk}
+\begin{tutnarrative}
+membrane12's feed and law (NF270, NaCl 0.01 M with NO3-/NH4+ traces, `transport SDEM;`) on a REAL spacer channel instead of an intrinsic film: the film coefficient is priced PER ION from the Schock-Miquel correlation on each ion's own diffusivity, corrected for suction (Geraldes \& Afonso 2006), and the four ions are COUPLED at the interface by electroneutrality -- the multi-ionic polarisation model of Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20-27, with no film thickness and no parameter the intrinsic twin does not have. See the README.
+
+\end{tutnarrative}
+\tutreadme{The question. membrane12 keeps its film out of the way (k\_film 1e-2, wall = bulk) so the SDEM rejections are intrinsic. In a module the wall is NOT the bulk: what does concentration polarisation look like when the feed is four ions of different mobility and charge, and how do they pile up?}
+\tutreadme{The lesson. The film model needs ONE diffusivity and a mixture of ions has none; applied ion by ion it lets each ion polarise alone, so a fast anion runs ahead and charge separates. Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20-27, keep the module's own mass-transfer correlation, evaluate it PER ION on the ion's own D (k\_film\_<ion> columns, Cl- above Na+), correct it for the suction of the permeation (the 2006 factor), and add ONE unknown -- the electrical potential gradient at the interface, fixed by electroneutrality at the wall. No film thickness, no new parameter. This case declares it:}
+\tutreadme{massTransfer \{ model SchockMiquel; channelHeight 0.7 mm; spacerPorosity 0.9; viscosity 1e-3; \} pressureDrop \{ model SchockMiquel; \} polarisation \{ suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; \}}
+\tutreadme{What a student sees: the polarisation index Gamma = (c\_m - c\_b)/c\_b differs BY ION (Gamma\_<ion>\_avg: Na+ 0.163, Cl- 0.163, NO3- 0.064, NH4+ 0.118 -- the dominant pair driven together by the field, the traces each on their own rejection); the interface field xi\_V\_per\_m\_avg (\textasciitilde{}34 V/m) beside the membrane's own potential membranePotential\_mV\_avg (\textasciitilde{}31 mV) -- two fields, one in the solution and one across the active layer; R\_obs BELOW the intrinsic witness (Cl- 68.9 \% here against membrane12's 77.5 \%), because the wall is richer than the bulk. Set ionCoupling none; and each ion polarises alone: Na+ 0.187, Cl- 0.135, NO3- 0.043, NH4+ 0.143 -- the coupling moves the trace anion's Gamma by half. (The README that briefed this case said the trace anion's Gamma might go negative; on this feed it does not, and the number above is what the run says.)}
+\tutreadme{Geometry. One nominal 4-inch element (7.9 m2, 1.016 m) fed at 4 m3/h, so the spacer-channel crossflow is \textasciitilde{}0.45 m/s (a realistic velocity) and the recovery \textasciitilde{}16 \%. Membrane12's composition (NaCl 0.01 M, traces 2e-4 M) and its NF270 permeance record, unchanged.}
+\tutreadme{Source of the numbers. Permeances: Fernandez de Labastida \& Yaroshchuk, Membranes 11 (2021) 272, Table 1 (CC BY 4.0), as in membrane12. Ion diffusivities: the species records' D0 -- Na+/Cl- from the standards; NO3-/NH4+ from case-local copies under constant/species/ that add a Nernst-Einstein D0 from lambda0 (Robinson \& Stokes 1959, App. 6.1), cited in the record and not promoted. Correlation: Schock \& Miquel 1987.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0616986666667}
+\goldrow{stream}{feed}{T}{293.15}
+\goldrow{stream}{permeate}{F}{0.00968699313221}
+\goldrow{stream}{permeate}{T}{293.15}
+\goldrow{stream}{retentate}{F}{0.0520116877291}
+\goldrow{stream}{retentate}{T}{293.15}
+\goldrow{kpi}{NF}{Gamma\_Cl\_avg}{0.163468003066}
+\goldrow{kpi}{NF}{Gamma\_NH4\_avg}{0.117877831113}
+\goldrow{kpi}{NF}{Gamma\_NO3\_avg}{0.0644399170552}
+\goldrow{kpi}{NF}{Gamma\_Na\_avg}{0.162501924206}
+\goldrow{kpi}{NF}{J\_w\_avg}{2.20917642546e-05}
+\goldrow{kpi}{NF}{R\_obs\_Cl}{0.688728174162}
+\goldrow{kpi}{NF}{R\_obs\_NH4}{0.712406513733}
+\goldrow{kpi}{NF}{R\_obs\_NO3}{0.18387812115}
+\goldmore{6}
+\end{tutgolden}
+
 \subsection{optimisation}
 \grouptheory{optimisation}
 \clearpage

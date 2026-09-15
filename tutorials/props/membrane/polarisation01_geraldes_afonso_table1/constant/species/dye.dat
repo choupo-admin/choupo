@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  species/dye.dat -- CASE-LOCAL model species: the trivalent dye anion of
+  the case study of Geraldes & Afonso, J. Membr. Sci. 300 (2007) 20-27,
+  Section 2.2 (experimental data of Bowen & Mohammad, AIChE J. 44(8)
+  (1998) 1799-1812).  The sources identify it only as "dye3-": a
+  charge-3 anion whose diffusivity in dilute aqueous solution the paper
+  states in the footnote to its Table 1.  It is not a catalogue species
+  and is not promoted; this record exists so the polarisationIndex bench
+  can read the charge and the diffusivity through the declared bridge,
+  the way every ion is read (never off a name).
+\*---------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name     dye;
+formula  "dye3-";          // the sources give no molecular formula
+charge   -3;
+//  MW: the sources do not identify the compound, so no molar mass is
+//  known.  The bench reads z and D0 only; this NOMINAL value is required by
+//  the record grammar and is NOT a datum -- it is flagged as such.
+MW { value 1000; unit g/mol; }   // NOMINAL PLACEHOLDER, not a measurement (see above)
+reviewStatus unreviewed;
+
+transport
+{
+    //  D_dye = 0.36e-9 m2/s: Geraldes & Afonso (2007), Table 1 footnote,
+    //  "the physical properties used in the computations"; the same value
+    //  Bowen & Mohammad (1998) used.
+    D0 { value 0.36e-09; unit m2/s; }
+    source "Geraldes & Afonso, J. Membr. Sci. 300 (2007) 20-27, Table 1 footnote, doi:10.1016/j.memsci.2007.04.025; data of Bowen & Mohammad, AIChE J. 44(8) (1998) 1799-1812";
+}

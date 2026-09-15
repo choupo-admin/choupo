@@ -33,6 +33,7 @@ License
 #include "core/Constants.H"
 #include "core/Units.H"
 #include "massTransfer/MassTransferModel.H"
+#include "massTransfer/Polarisation.H"
 #include "osmotic/OsmoticModel.H"
 #include "pressureDrop/PressureDropModel.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
@@ -271,10 +272,17 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 " transport { liquid { viscosity { model ...; } } } to price"
                 " it from the package, or set it in the sub-block");
     }
+    //  D_solute is read by the film model for a NEUTRAL / lumped solute
+    //  only: an ion's k_c,i is priced on the ion's own species-record D0
+    //  (2026-09-15, membrane::Polarisation), and a constant k_film reads no
+    //  D at all.  So the pricing happens here, but the ANNOUNCEMENT is
+    //  deferred until the polarisation object knows whether any solute is
+    //  neutral -- an announced default that nothing reads would be a
+    //  sentence about a model that is not running (the 2026-08-04 banner
+    //  trap).  `announceDsolute` is called once below, when it applies.
+    std::string dSoluteAdvisory, dSoluteSeverity;
     if (!DDeclared && opDict->found("massTransfer"))
     {
-        //  Only the film model reads D_solute; a case with a constant k_film
-        //  never touches it, so nothing is announced there.
         if (thermo.hasLiquidDiffusivity() && thermo.hasLiquidViscosity())
         {
             //  One solute diffusivity serves the film model; price it for the
@@ -285,24 +293,26 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             if (iSol < Ncomp)
             {
                 D_solute = thermo.diffusivityLiquid(T_in, iSol, iW);
-                AdvisoryLog::instance().add("model", "info",
-                    "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
+                dSoluteSeverity = "info";
+                dSoluteAdvisory =
                     "solute diffusivity " + std::to_string(D_solute) + " m2/s"
                     " priced for '" + thermo.comp(iSol).name() + "' in water"
                     " from the case's declared liquidDiffusivity transport"
                     " model at the feed T (no `diffusivity` in the"
-                    " massTransfer sub-block)");
+                    " massTransfer sub-block)";
             }
         }
         else
-            AdvisoryLog::instance().add("model", "warning",
-                "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
+        {
+            dSoluteSeverity = "warning";
+            dSoluteAdvisory =
                 "[legacy] D_solute 1.6e-9 m2/s ASSUMED (NaCl in water, roughly)"
                 " for the film model -- no `diffusivity` in the massTransfer"
                 " sub-block and no liquidDiffusivity (+ liquidViscosity)"
                 " transport model declared; declare transport { liquid {"
                 " diffusivity { model WilkeChang; } viscosity { model ...; } } }"
-                " to price it from the package, or set it in the sub-block");
+                " to price it from the package, or set it in the sub-block";
+        }
     }
     const scalar W_ch      = A_membrane / (2.0 * L);   // leaf width (2-sided)
     const scalar A_channel = W_ch * h_ch * eps;
@@ -464,6 +474,22 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 "membrane '" + membraneName + "'", msg);
         }
     }
+
+    // ---- The wall: ONE home ------------------------------------------------
+    //  Built once per run from the `polarisation {}` policy, each solute's
+    //  charge (through its declared bridge) and diffusivity (an ion's own
+    //  D0 when a correlation or the coupling needs it, else D_solute), and
+    //  the k supplier (the correlation per solute, or the constant).  Every
+    //  transport law asks this object for c_m; none computes a film of its
+    //  own.  Defaults that are used are announced inside the builder.
+    const membrane::Polarisation polar = membrane::buildPolarisation(
+        opDict, thermo, soluteIdx, mtModel.get(), k_film_const, D_solute, T_in,
+        "membrane '" + membraneName + "'", verbosity);
+    const bool perSoluteK = polar.perSoluteK();
+    if (!dSoluteAdvisory.empty() && polar.nIons() < polar.solutes().size())
+        AdvisoryLog::instance().add("model", dSoluteSeverity,
+            "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
+            dSoluteAdvisory);
 
     // ---- Discretise the channel length -----------------------------------
     // Effective width W chosen such that  W · L = A_membrane.
@@ -758,21 +784,37 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     cols["J_w"] = {};
     cols["Q_b"] = {};
     cols["P_b"] = {};
-    cols["k_film"] = {};
+    //  k_film: ONE column when every solute sees the same coefficient (a
+    //  constant, or a correlation on one diffusivity -- every case recorded
+    //  before 2026-09-15); one column PER SOLUTE when the correlation prices
+    //  a different k on each solute's own D (an ion-declared feed).
+    if (perSoluteK)
+        for (std::size_t s = 0; s < Ns; ++s)
+            cols["k_film_" + thermo.comp(soluteIdx[s]).name()] = {};
+    else
+        cols["k_film"] = {};
     for (std::size_t s = 0; s < Ns; ++s)
         cols["c_b_" + thermo.comp(soluteIdx[s]).name()] = {};
+    //  The polarisation index Gamma_i = (c_m - c_b)/c_b per solute -- the
+    //  quantity of Geraldes & Afonso (2007), and what a student compares
+    //  between ions.
+    for (std::size_t s = 0; s < Ns; ++s)
+        cols["Gamma_" + thermo.comp(soluteIdx[s]).name()] = {};
     std::vector<scalar> zGrid;
     zGrid.reserve(nNodes + 1);
+    std::vector<scalar> gammaSum(Ns, 0.0);
+    scalar xiSum = 0.0; int nXi = 0; int nRecorded = 0;
 
-    // Local film coefficient: from the selected model (computed from the
-    // local crossflow velocity u = Q_b / A_channel) or the legacy constant.
-    auto kFilmAt = [&](scalar Qlocal) -> scalar
+    // Local channel hydraulics for the film coefficient: the crossflow
+    // velocity u = Q_b / A_channel, the hydraulic diameter and the fluid
+    // properties; the polarisation object prices k_c,i per solute from it
+    // (or hands back the constant k_film when no correlation is declared).
+    auto hydraulicsAt = [&](scalar Qlocal) -> MassTransferContext
     {
-        if (!mtModel) return k_film_const;
         MassTransferContext c;
         c.d_h = d_h; c.D = D_solute; c.mu = mu_feed; c.rho = rho;
         c.u   = (A_channel > 0.0) ? Qlocal / A_channel : 0.0;
-        return mtModel->kFilm(c);
+        return c;
     };
 
     // Local axial pressure gradient dP/dz [Pa/m]: from the selected model
@@ -807,7 +849,31 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         cols["J_w"].push_back(Jw);
         cols["Q_b"].push_back(Q_b);
         cols["P_b"].push_back(P_b);
-        cols["k_film"].push_back(kFilmAt(Q_b));
+        {
+            const MassTransferContext hyd = hydraulicsAt(Q_b);
+            if (perSoluteK)
+                for (std::size_t s = 0; s < Ns; ++s)
+                    cols["k_film_" + thermo.comp(soluteIdx[s]).name()]
+                        .push_back(polar.kFilm(hyd, s));
+            else
+                cols["k_film"].push_back(polar.kFilm(hyd, 0));
+        }
+        for (std::size_t s = 0; s < Ns; ++s)
+        {
+            const scalar g = (c_b[s] > 0.0 && st.c_m.size() == Ns)
+                           ? (st.c_m[s] - c_b[s]) / c_b[s] : 0.0;
+            cols["Gamma_" + thermo.comp(soluteIdx[s]).name()].push_back(g);
+            gammaSum[s] += g;
+        }
+        ++nRecorded;
+        //  The interface potential gradient of the coupled film (Geraldes &
+        //  Afonso 2007), V/m -- published only when a coupled wall produced
+        //  it, beside the membrane's own psi below.
+        if (st.hasXi)
+        {
+            cols["xi_V_per_m"].push_back(st.xi);
+            xiSum += st.xi; ++nXi;
+        }
         //  The electric potential drop across the active layer, when the
         //  transport law computes one (SDEM).  RT/F units -> mV, so a reader
         //  compares it with a membrane-potential measurement directly.  A law
@@ -832,13 +898,13 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     };
 
     // Initial node
-    auto makeCtx = [&](scalar k_film_local) -> membrane::TransportContext
+    auto makeCtx = [&](scalar Qlocal) -> membrane::TransportContext
     {
         return membrane::TransportContext{ thermo, soluteIdx, B_s, mem.A_w(),
-                                 k_film_local, P_b, P_perm, T_in, c_b,
-                                 *osmModel, &mem, specSolver };
+                                 polar, hydraulicsAt(Qlocal), P_b, P_perm,
+                                 T_in, c_b, *osmModel, &mem, specSolver };
     };
-    auto sol = transportModel->localFluxes(makeCtx(kFilmAt(Q_b)));
+    auto sol = transportModel->localFluxes(makeCtx(Q_b));
     recordNode(0, 0.0, sol);
 
     const scalar Q_feed = Q_b;          // for per-element recovery
@@ -881,7 +947,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             P_b -= dPdzAt(Q_b) * dz_e;
 
             if (Q_b <= 0.0) { dry = true; break; }
-            sol = transportModel->localFluxes(makeCtx(kFilmAt(Q_b)));
+            sol = transportModel->localFluxes(makeCtx(Q_b));
             recordNode(++globalNode, z0 + (k + 1) * dz_e, sol);
         }
 
@@ -1149,7 +1215,12 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         const scalar c_perm  = (Q_perm > 0) ? F_perm_solute[s] / Q_perm : 0.0;
         const scalar R_obs   = (c_feed > 0) ? 1.0 - c_perm / c_feed : 1.0;
         kpis_["R_obs_" + nm] = R_obs;
+        //  The channel-average polarisation index per solute (Geraldes &
+        //  Afonso 2007's Gamma), so a golden can pin what the film did.
+        if (nRecorded > 0) kpis_["Gamma_" + nm + "_avg"] = gammaSum[s] / nRecorded;
     }
+    //  The interface potential gradient, averaged, when the film was coupled.
+    if (nXi > 0) kpis_["xi_V_per_m_avg"] = xiSum / nXi;
 
     if (verbosity >= 2)
     {
@@ -1182,8 +1253,18 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             std::cout << "  R_obs(" << nm << "):"
                       << std::string(std::max<int>(0, 10 - (int)nm.size()), ' ')
                       << std::fixed << std::setprecision(3)
-                      << 100.0 * kpis_["R_obs_" + nm] << " %\n";
+                      << 100.0 * kpis_["R_obs_" + nm] << " %";
+            if (kpis_.count("Gamma_" + nm + "_avg"))
+                std::cout << "   Gamma_avg " << std::showpos << std::fixed
+                          << std::setprecision(4) << kpis_["Gamma_" + nm + "_avg"]
+                          << std::noshowpos;
+            std::cout << "\n";
         }
+        if (nXi > 0)
+            std::cout << "  Interface field: xi_avg = " << std::scientific
+                      << std::setprecision(3) << kpis_["xi_V_per_m_avg"]
+                      << " V/m  (Geraldes & Afonso 2007, ionCoupling"
+                         " electroneutral)\n";
         if (doScaling)
         {
             // Per-module SI table (the glass-box view of the audit).

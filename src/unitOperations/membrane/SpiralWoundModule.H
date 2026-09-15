@@ -43,8 +43,11 @@ Description
 
         J_w  =  A_w · (P_b − P_p  −  Δπ )                   water flux [m/s]
         J_s,i = B_s,i · (c_m,i − c_p,i )                    solute flux [kmol/(m²·s)]
-        c_m,i / c_b,i   from film-model concentration polarisation
-                        with mass-transfer coefficient k_film
+        c_m,i           from membrane::Polarisation, the ONE home of the
+                        wall (massTransfer/Polarisation.H): the film model
+                        per solute by default, the Geraldes & Afonso 2007
+                        interface model when `polarisation { ionCoupling
+                        electroneutral; }` is declared; k_c,i per solute
         c_p,i = J_s,i / J_w                                   permeate composition
         Δπ   = R T  Σ_i  ν_i · (c_m,i − c_p,i)               van't Hoff
 
