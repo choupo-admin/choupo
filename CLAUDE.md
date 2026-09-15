@@ -2059,7 +2059,10 @@ film with a field; the batch vessel under SDEM; the measured SYMBOLS
 themselves (compared by nobody — the model is held to the authors' fit, not
 to their residual).  Gate: `check_sdem` (the negative arm runs the SAME feed
 under the uncoupled law and requires a CHARGED permeate; arms (h)–(j) hold
-the trace-limit lines, the not-a-trace ratio and the Fig 2a pin).  Record:
+the trace-limit lines, the not-a-trace ratio and the Fig 2a pin) ·
+`gen_sdem_validation --check` (the Tutorials Guide's validation section,
+written for the paper's authors, its tables GENERATED from the engine).
+Record:
 [`docs/design/electroneutrality-without-a-new-parameter.md`](docs/design/electroneutrality-without-a-new-parameter.md) (§7).
 
 **AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  An advisory

@@ -20,9 +20,8 @@ negative over the whole flux range (-151 % to -5 %).  `check_sdem` holds the
 signs the text states at this run's flux, the permeate electroneutral, and
 the MgSO4 rejection to the single-salt ambipolar law.
 
-**Against the paper's Figure 4** (digitised into
-`../membrane12_sdem_nf270_nacl_traces/constant/experimental/fdl2021_figures.csv`): in the TRACE
-LIMIT the engine reproduces the authors' SDEM lines for Na+, Cl- and NO3-
+**Against the paper's Figure 4** (digitised into the NaCl witness's
+`constant/experimental/fdl2021_figures.csv`): in the TRACE LIMIT the engine reproduces the authors' SDEM lines for Na+, Cl- and NO3-
 within 2-9 %; at this case's 2e-4 M it does not, and that is the lesson --
 here 2e-4 M of NO3- at 41.9 um/s carries more anion current than 0.01 M of
 SO4 at 0.13 um/s, the field relaxes, NO3- is rejected LESS negatively

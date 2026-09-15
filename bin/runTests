@@ -3832,6 +3832,21 @@ PYEOF
     fi
     rm -f /tmp/tutg.$$
 
+    # The Tutorials Guide's SDEM validation tables (2026-09-15) are GENERATED
+    # from the engine and the digitised figures -- a table that drifts from
+    # the engine is the derived artefact with no freshness check the comment
+    # above describes, one guide section inward.  ~1 min: 106 figure points,
+    # two probes each.
+    if "$ROOT/bin/curate/gen_sdem_validation.py" --check > /tmp/sdemt.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "sdem-tables-gate" "$(grep -m1 '^gen_sdem_validation: OK' /tmp/sdemt.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/gen_sdem_validation.py, then commit)\n" "sdem-tables-gate"
+        cat /tmp/sdemt.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sdemt.$$
+
     # The manuals are the one artefact with NO compiler behind them: a guide
     # can send a reader to a file deleted two hundred commits ago and nothing
     # notices.  It had.  (Retired driver still offered as an example to read;

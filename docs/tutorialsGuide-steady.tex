@@ -848,7 +848,7 @@ IT WAS RUN THE OTHER WAY FIRST, and the run is the reason this paragraph exists 
 \goldrow{kpi}{C1}{B}{0.0112717083333}
 \goldrow{kpi}{C1}{D}{0.00895833333333}
 \goldrow{kpi}{C1}{Q\_condenser\_kW}{-997.746586798}
-\goldrow{kpi}{C1}{Q\_reboiler\_kW}{1030.49217736}
+\goldrow{kpi}{C1}{Q\_reboiler\_kW}{1030.491458}
 \goldrow{kpi}{C1}{R}{2.78}
 \goldrow{kpi}{C1}{T\_bottom}{353.606283382}
 \goldrow{kpi}{C1}{T\_top}{329.375698025}
@@ -895,7 +895,7 @@ THE DISTILLATE RATE IS HIS, 5.88 kmol/h, and that matters here in a way it did n
 \goldrow{kpi}{C2}{B}{0.00963336111111}
 \goldrow{kpi}{C2}{D}{0.00163333333333}
 \goldrow{kpi}{C2}{Q\_condenser\_kW}{-120.936005804}
-\goldrow{kpi}{C2}{Q\_reboiler\_kW}{114.900183788}
+\goldrow{kpi}{C2}{Q\_reboiler\_kW}{114.890215769}
 \goldrow{kpi}{C2}{R}{0.849}
 \goldrow{kpi}{C2}{T\_bottom}{366.174785539}
 \goldrow{kpi}{C2}{T\_top}{355.876498071}
@@ -926,20 +926,20 @@ Benzene/toluene distillation --- classical textbook problem with Raoult, no azeo
 \tutreadme{1. The specification is the column, not the split. Compare with shortcut01: there you declared the recoveries and got N; here you declare N, the feed stage, R and D --- and the purity is the $\ast$answer$\ast$. Both cases separate the same feed; only the question differs. 2. Watch it converge. The Log tab prints Outer iter max T\_top T\_bottom for all 108 bubble-point iterations, the final max = 9.3e-8. Wang--Henke is slow and steady; column02\_simultaneous solves the identical column by a Newton on all the MESH equations in a handful of iterations --- run both and count. 3. The profile is printed stage by stage. T and x for every tray, the feed tray marked, the reboiler last: 354.21 K and 95.3 \% benzene on tray 1, 382.89 K and 98.1 \% toluene in the reboiler. That table is the McCabe--Thiele diagram in numbers. 4. Two duties, two utilities, priced from the catalogue. The reboiler is served by low-pressure steam (0.585 kg/s, 55.3 ?/h at the catalogue price) and the condenser by cooling water (30.6 kg/s, 1.84 ?/h) --- the same picker every steady report uses, and the ?/h is a catalogue number, not a market one. 5. Read the caveats. Both Antoine fits are asked slightly outside their declared windows on the way to the answer (benzene at 365 K, toluene at 380.7 K), announced and still returned.}
 \tutreadme{Raise refluxRatio to 3: purities climb, both duties climb with them --- the trade-off every column design turns on. Then try feedStage 4: the same reflux buys less separation when the feed lands in the wrong place.}
 \begin{tutgolden}
-\goldrow{kpi}{column01}{T\_top}{354.21089412}
-\goldrow{kpi}{column01}{T\_bottom}{382.893530951}
-\goldrow{kpi}{column01}{x\_D\_LK}{0.981245045999}
-\goldrow{kpi}{column01}{x\_B\_HK}{0.981245183716}
-\goldrow{utility}{column01}{heating.steamLP.duty\_kW}{1279.30480005}
-\goldrow{utility}{column01}{heating.steamLP.T}{382.893530951}
-\goldrow{utility}{column01}{heating.steamLP.kg\_s}{0.585226349518}
-\goldrow{utility}{column01}{heating.steamLP.eur\_h}{55.265967362}
-\goldrow{utility}{column01}{cooling.coolingWater.duty\_kW}{-1281.04348002}
-\goldrow{utility}{column01}{cooling.coolingWater.T}{354.21089412}
-\goldrow{utility}{column01}{cooling.coolingWater.kg\_s}{30.6469732063}
-\goldrow{utility}{column01}{cooling.coolingWater.eur\_h}{1.84470261124}
+\goldrow{kpi}{column01}{T\_top}{355.689113032}
+\goldrow{kpi}{column01}{T\_bottom}{381.514101}
+\goldrow{kpi}{column01}{x\_D\_LK}{0.951017281058}
+\goldrow{kpi}{column01}{x\_B\_HK}{0.951017331313}
+\goldrow{utility}{column01}{heating.steamLP.duty\_kW}{647.138073182}
+\goldrow{utility}{column01}{heating.steamLP.T}{381.514101}
+\goldrow{utility}{column01}{heating.steamLP.kg\_s}{0.296037544914}
+\goldrow{utility}{column01}{heating.steamLP.eur\_h}{27.9563647615}
+\goldrow{utility}{column01}{cooling.coolingWater.duty\_kW}{-1282.91541137}
+\goldrow{utility}{column01}{cooling.coolingWater.T}{355.689113032}
+\goldrow{utility}{column01}{cooling.coolingWater.kg\_s}{30.6917562528}
+\goldrow{utility}{column01}{cooling.coolingWater.eur\_h}{1.84739819237}
 \goldrow{stream}{bottoms}{F}{0.0138888888889}
-\goldrow{stream}{bottoms}{T}{382.893530951}
+\goldrow{stream}{bottoms}{T}{381.514101}
 \goldmore{19}
 \end{tutgolden}
 
@@ -976,7 +976,7 @@ Expected (identical to column01): T\_top $\approx$ 354.2 K, T\_bottom $\approx$ 
 \goldrow{kpi}{column01}{nStages}{15}
 \goldrow{kpi}{column01}{x\_B\_HK}{0.981245125322}
 \goldrow{kpi}{column01}{x\_D\_LK}{0.981245125322}
-\goldrow{utility}{column01}{heating.steamLP.duty\_kW}{1299.61040477}
+\goldrow{utility}{column01}{heating.steamLP.duty\_kW}{1298.51486835}
 \goldrow{utility}{column01}{heating.steamLP.T}{382.893527916}
 \goldmore{17}
 \end{tutgolden}
@@ -996,7 +996,7 @@ Expected (identical to column01): T\_top $\approx$ 354.2 K, T\_bottom $\approx$ 
 \begin{tutnarrative}
 Ethanol/water (NRTL) distillation by the rigorous SIMULTANEOUS (MESH Newton) method. This is the payoff of the v0.48 solver: ethanol/water forms an azeotrope at x\_eth \textasciitilde{} 0.894 (1 atm), and the sequential bubble-point (Wang-Henke) is unstable here -- on this very case it does NOT converge (200 outer iters). The MESH Newton converges in \textasciitilde{}5 iterations to a PHYSICAL distillate (x\_eth \textasciitilde{} 0.80, below the azeotrope).
 
-Feed: 100 kmol/h, 30/70 ethanol/water, 1 atm, T = 363 K. The column's feed enthalpy comes from the STREAM (2026-09-12): the engine resolves this feed at its own (T, P, z) and gets vapour fraction 0.000000, so q = 1 and the declared \texttt{feedQuality 1.0} agrees with it and is a silent cross-check. This paragraph used to say the opposite --- that the MESH model read \texttt{feedQuality} and not the stream --- which was true of the engine until that date and is the arity defect the whole family was named for. It also stated a 30/70 bubble point of \textasciitilde{}355.5 K, which this package does not reproduce: at 363 K it resolves no vapour at all. That discrepancy is recorded, not resolved, and belongs to the case's thermo rather than to its column. Column: 16 stages, feed at 8, R = 2.5, D = 25 kmol/h, method simultaneous.
+Feed: 100 kmol/h, 30/70 ethanol/water, 1 atm. The column feed enthalpy is set by feedQuality = 1.0 (saturated liquid), NOT by the stream T: the stated T = 363 K is \textasciitilde{}7 K above the 30/70 bubble point (\textasciitilde{}355.5 K at 1 atm), so the stream itself is slightly superheated --- the MESH model uses feedQuality, so this does not affect the column solution. Column: 16 stages, feed at 8, R = 2.5, D = 25 kmol/h, method simultaneous.
 
 Expected: converged; x\_D(ethanol) \textasciitilde{} 0.80 (< 0.894 azeotrope -- physical); T\_top \textasciitilde{} 351.4 K (the azeotropic temperature); mass closes 100\%.
 
@@ -1016,7 +1016,7 @@ NOTE: asking for a distillate ABOVE the azeotrope (x\_eth > 0.894) is physically
 \goldrow{kpi}{column}{nStages}{16}
 \goldrow{kpi}{column}{x\_B\_HK}{0.868205515093}
 \goldrow{kpi}{column}{x\_D\_LK}{0.804616545279}
-\goldrow{utility}{column}{heating.steamLP.duty\_kW}{935.650111764}
+\goldrow{utility}{column}{heating.steamLP.duty\_kW}{935.614596093}
 \goldrow{utility}{column}{heating.steamLP.T}{357.713408957}
 \goldmore{17}
 \end{tutgolden}
@@ -1052,7 +1052,7 @@ Multiple feeds as FLOWSHEET STREAMS (`inputs ( feed feed2 )`) + a liquid side dr
 \goldrow{kpi}{radfracLite}{B}{0.0286111111111}
 \goldrow{kpi}{radfracLite}{D}{0.0116666666667}
 \goldrow{kpi}{radfracLite}{Q\_condenser\_kW}{-1435.80274013}
-\goldrow{kpi}{radfracLite}{Q\_reboiler\_kW}{1516.14164522}
+\goldrow{kpi}{radfracLite}{Q\_reboiler\_kW}{1514.4966161}
 \goldrow{kpi}{radfracLite}{R}{3}
 \goldrow{kpi}{radfracLite}{T\_bottom}{395.926996928}
 \goldrow{kpi}{radfracLite}{T\_top}{354.978489481}
@@ -1092,7 +1092,7 @@ Both feeds are FLOWSHEET STREAMS (`inputs ( feed acidFeed )`) -- so the plant-bo
 \goldrow{kpi}{rdColumn}{B}{9.13888888889e-06}
 \goldrow{kpi}{rdColumn}{D}{8.36111111111e-06}
 \goldrow{kpi}{rdColumn}{Q\_condenser\_kW}{-0.790521316742}
-\goldrow{kpi}{rdColumn}{Q\_reboiler\_kW}{0.626813788646}
+\goldrow{kpi}{rdColumn}{Q\_reboiler\_kW}{0.626731120425}
 \goldrow{kpi}{rdColumn}{R}{2.1}
 \goldrow{kpi}{rdColumn}{T\_bottom}{363.229492539}
 \goldrow{kpi}{rdColumn}{T\_top}{330.062558898}
@@ -1136,7 +1136,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{kpi}{column06}{B}{0.0138888888889}
 \goldrow{kpi}{column06}{D}{0.0138888888889}
 \goldrow{kpi}{column06}{Q\_condenser\_kW}{-1281.19539111}
-\goldrow{kpi}{column06}{Q\_reboiler\_kW}{1299.72437334}
+\goldrow{kpi}{column06}{Q\_reboiler\_kW}{1298.48426282}
 \goldrow{kpi}{column06}{R}{2}
 \goldrow{kpi}{column06}{T\_bottom}{382.774927808}
 \goldrow{kpi}{column06}{T\_top}{354.339103085}
@@ -1170,7 +1170,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{kpi}{column07}{B}{0.333333333333}
 \goldrow{kpi}{column07}{D}{0.0833333333333}
 \goldrow{kpi}{column07}{Q\_condenser\_kW}{-8082.6120755}
-\goldrow{kpi}{column07}{Q\_reboiler\_kW}{9374.37429576}
+\goldrow{kpi}{column07}{Q\_reboiler\_kW}{9374.3229356}
 \goldrow{kpi}{column07}{R}{3.3223}
 \goldrow{kpi}{column07}{T\_bottom}{296.58946842}
 \goldrow{kpi}{column07}{T\_top}{272.663334648}
@@ -1212,7 +1212,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{kpi}{radfrac}{B}{0.0125}
 \goldrow{kpi}{radfrac}{D}{0.0125}
 \goldrow{kpi}{radfrac}{Q\_condenser\_kW}{-804.58622364}
-\goldrow{kpi}{radfrac}{Q\_reboiler\_kW}{1698.71150765}
+\goldrow{kpi}{radfrac}{Q\_reboiler\_kW}{1696.56628407}
 \goldrow{kpi}{radfrac}{R}{4}
 \goldrow{kpi}{radfrac}{T\_bottom}{454.498489397}
 \goldrow{kpi}{radfrac}{T\_top}{321.647346922}
@@ -1255,14 +1255,14 @@ Read the printed table. The feed is a saturated liquid, so it joins the liquid t
 \goldrow{kpi}{column09}{B}{0.0138888888889}
 \goldrow{kpi}{column09}{D}{0.0138888888889}
 \goldrow{kpi}{column09}{L\_rect}{0.0277777777778}
-\goldrow{kpi}{column09}{L\_strip}{0.0555555555556}
-\goldrow{kpi}{column09}{Q\_condenser\_kW}{-1281.04348002}
-\goldrow{kpi}{column09}{Q\_reboiler\_kW}{1279.30480005}
+\goldrow{kpi}{column09}{L\_strip}{0.0361877253979}
+\goldrow{kpi}{column09}{Q\_condenser\_kW}{-1282.91541137}
+\goldrow{kpi}{column09}{Q\_reboiler\_kW}{647.138073182}
 \goldrow{kpi}{column09}{R}{2}
-\goldrow{kpi}{column09}{T\_bottom}{382.893530951}
-\goldrow{kpi}{column09}{T\_top}{354.21089412}
+\goldrow{kpi}{column09}{T\_bottom}{381.514101}
+\goldrow{kpi}{column09}{T\_top}{355.689113032}
 \goldrow{kpi}{column09}{V\_rect}{0.0416666666667}
-\goldrow{kpi}{column09}{V\_strip}{0.0416666666667}
+\goldrow{kpi}{column09}{V\_strip}{0.022298836509}
 \goldmore{84}
 \end{tutgolden}
 
@@ -1297,14 +1297,14 @@ Note the downcomer, too: the backup reaches 268.5 mm against a 275 mm limit. Nar
 \goldrow{kpi}{column10}{B}{0.0138888888889}
 \goldrow{kpi}{column10}{D}{0.0138888888889}
 \goldrow{kpi}{column10}{L\_rect}{0.0277777777778}
-\goldrow{kpi}{column10}{L\_strip}{0.0555555555556}
-\goldrow{kpi}{column10}{Q\_condenser\_kW}{-1281.04348002}
-\goldrow{kpi}{column10}{Q\_reboiler\_kW}{1279.30480005}
+\goldrow{kpi}{column10}{L\_strip}{0.0361877253979}
+\goldrow{kpi}{column10}{Q\_condenser\_kW}{-1282.91541137}
+\goldrow{kpi}{column10}{Q\_reboiler\_kW}{647.138073182}
 \goldrow{kpi}{column10}{R}{2}
-\goldrow{kpi}{column10}{T\_bottom}{382.893530951}
-\goldrow{kpi}{column10}{T\_top}{354.21089412}
+\goldrow{kpi}{column10}{T\_bottom}{381.514101}
+\goldrow{kpi}{column10}{T\_top}{355.689113032}
 \goldrow{kpi}{column10}{V\_rect}{0.0416666666667}
-\goldrow{kpi}{column10}{V\_strip}{0.0416666666667}
+\goldrow{kpi}{column10}{V\_strip}{0.022298836509}
 \goldmore{31}
 \end{tutgolden}
 
@@ -1351,14 +1351,14 @@ NOTE: the efficiency is folded into an effective K, with the vapour from the tra
 \goldrow{kpi}{column11}{B}{0.0138888888889}
 \goldrow{kpi}{column11}{D}{0.0138888888889}
 \goldrow{kpi}{column11}{L\_rect}{0.0277777777778}
-\goldrow{kpi}{column11}{L\_strip}{0.0555555555556}
-\goldrow{kpi}{column11}{Q\_condenser\_kW}{-1284.29753602}
-\goldrow{kpi}{column11}{Q\_reboiler\_kW}{1281.01358292}
+\goldrow{kpi}{column11}{L\_strip}{0.0361877253979}
+\goldrow{kpi}{column11}{Q\_condenser\_kW}{-1287.17773259}
+\goldrow{kpi}{column11}{Q\_reboiler\_kW}{649.299667779}
 \goldrow{kpi}{column11}{R}{2}
-\goldrow{kpi}{column11}{T\_bottom}{381.492133108}
-\goldrow{kpi}{column11}{T\_top}{355.136328304}
+\goldrow{kpi}{column11}{T\_bottom}{380.054235151}
+\goldrow{kpi}{column11}{T\_top}{356.362522942}
 \goldrow{kpi}{column11}{V\_rect}{0.0416666666667}
-\goldrow{kpi}{column11}{V\_strip}{0.0416666666667}
+\goldrow{kpi}{column11}{V\_strip}{0.022298836509}
 \goldmore{32}
 \end{tutgolden}
 
@@ -1687,14 +1687,14 @@ That shape is worth more than a single number. At 74 trays and R = 11.4 this col
 \goldrow{kpi}{splitter}{B}{0.0863020558333}
 \goldrow{kpi}{splitter}{D}{0.0394509877778}
 \goldrow{kpi}{splitter}{L\_rect}{0.45133097767}
-\goldrow{kpi}{splitter}{L\_strip}{0.565397370357}
-\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8654.33073632}
-\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8467.13778877}
+\goldrow{kpi}{splitter}{L\_strip}{0.565397368633}
+\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8654.33073633}
+\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8458.51946812}
 \goldrow{kpi}{splitter}{R}{11.440296}
 \goldrow{kpi}{splitter}{T\_bottom}{329.436820919}
 \goldrow{kpi}{splitter}{T\_top}{314.249966433}
 \goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
-\goldrow{kpi}{splitter}{V\_strip}{0.479095314524}
+\goldrow{kpi}{splitter}{V\_strip}{0.479095312799}
 \goldmore{20}
 \end{tutgolden}
 
@@ -1755,14 +1755,14 @@ ONE MORE OBSERVATION, and it is about the ENGINE rather than the column. These t
 \goldrow{kpi}{splitter}{B}{0.0863020558333}
 \goldrow{kpi}{splitter}{D}{0.0394509877778}
 \goldrow{kpi}{splitter}{L\_rect}{0.45133097767}
-\goldrow{kpi}{splitter}{L\_strip}{0.565397370357}
+\goldrow{kpi}{splitter}{L\_strip}{0.565397368633}
 \goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8659.56425253}
-\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8471.59434507}
+\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8463.75005209}
 \goldrow{kpi}{splitter}{R}{11.440296}
 \goldrow{kpi}{splitter}{T\_bottom}{329.435279168}
 \goldrow{kpi}{splitter}{T\_top}{314.116313789}
 \goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
-\goldrow{kpi}{splitter}{V\_strip}{0.479095314524}
+\goldrow{kpi}{splitter}{V\_strip}{0.479095312799}
 \goldmore{19}
 \end{tutgolden}
 
@@ -1806,19 +1806,19 @@ WHAT THE STUDENT SHOULD DO WITH IT. Run the case and read the `iterations` KPI; 
 \tutreadme{What $\ast$is$\ast$ checked is that the declaration describes this column: the stage count against nStages, the component set against the case's, every value finite. A mismatch refuses by name and says how to fix it. A seed silently ignored would be exactly the silence this case exists to end.}
 \begin{tutgolden}
 \goldrow{stream}{bottoms}{F}{0.0138888888889}
-\goldrow{stream}{bottoms}{T}{382.89353034}
+\goldrow{stream}{bottoms}{T}{381.514099427}
 \goldrow{stream}{distillate}{F}{0.0138888888889}
-\goldrow{stream}{distillate}{T}{353.630069357}
+\goldrow{stream}{distillate}{T}{354.247898707}
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{stream}{feed}{T}{370}
 \goldrow{kpi}{column16}{B}{0.0138888888889}
 \goldrow{kpi}{column16}{D}{0.0138888888889}
 \goldrow{kpi}{column16}{L\_rect}{0.0277777777778}
-\goldrow{kpi}{column16}{L\_strip}{0.0555555555556}
-\goldrow{kpi}{column16}{Q\_condenser\_kW}{-1281.04347952}
-\goldrow{kpi}{column16}{Q\_reboiler\_kW}{1279.30480464}
+\goldrow{kpi}{column16}{L\_strip}{0.0361877253979}
+\goldrow{kpi}{column16}{Q\_condenser\_kW}{-1282.91540714}
+\goldrow{kpi}{column16}{Q\_reboiler\_kW}{647.138109131}
 \goldrow{kpi}{column16}{R}{2}
-\goldrow{kpi}{column16}{T\_bottom}{382.89353034}
+\goldrow{kpi}{column16}{T\_bottom}{381.514099427}
 \goldmore{19}
 \end{tutgolden}
 
@@ -1952,11 +1952,11 @@ DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/ and sha
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{kpi}{tower}{B}{0.0263888888889}
 \goldrow{kpi}{tower}{D}{0.00138888888889}
-\goldrow{kpi}{tower}{Q\_condenser\_kW}{-52.339216667}
-\goldrow{kpi}{tower}{Q\_reboiler\_kW}{76.4475297294}
+\goldrow{kpi}{tower}{Q\_condenser\_kW}{-52.3392166856}
+\goldrow{kpi}{tower}{Q\_reboiler\_kW}{76.4475298438}
 \goldrow{kpi}{tower}{R}{0.5}
-\goldrow{kpi}{tower}{T\_bottom}{372.031545214}
-\goldrow{kpi}{tower}{T\_top}{356.430868411}
+\goldrow{kpi}{tower}{T\_bottom}{372.031545213}
+\goldrow{kpi}{tower}{T\_top}{356.430868413}
 \goldrow{kpi}{tower}{feedStage}{2}
 \goldrow{kpi}{tower}{nFeeds}{1}
 \goldrow{kpi}{tower}{nSideDraws}{0}
@@ -2789,17 +2789,17 @@ Constraints: productConc.F\_mass = 0.3125 kg/s (40 wt\%) effect3.P = 13.5 kPa (t
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{concentrated}{F}{0.0200845615144}
+\goldrow{stream}{concentrated}{F}{0.020084561515}
 \goldrow{stream}{condensate}{F}{0.0125}
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{stream}{saturatedSteam130C}{F}{0.0125}
-\goldrow{stream}{vapour}{F}{0.00769321626341}
+\goldrow{stream}{vapour}{F}{0.00769321626283}
 \goldrow{kpi}{evap}{A}{20}
 \goldrow{kpi}{evap}{A\_m2}{20}
-\goldrow{kpi}{evap}{BPE}{3.86220786107}
-\goldrow{kpi}{evap}{F\_conc}{0.0200845615144}
-\goldrow{kpi}{evap}{F\_conc\_kmol\_h}{72.3044214517}
-\goldrow{kpi}{evap}{F\_conc\_mass}{0.417969209015}
+\goldrow{kpi}{evap}{BPE}{3.86220786113}
+\goldrow{kpi}{evap}{F\_conc}{0.020084561515}
+\goldrow{kpi}{evap}{F\_conc\_kmol\_h}{72.3044214538}
+\goldrow{kpi}{evap}{F\_conc\_mass}{0.417969209025}
 \goldrow{kpi}{evap}{F\_cond}{0.2251875}
 \goldrow{kpi}{evap}{F\_cond\_kg\_h}{810.675}
 \goldrow{kpi}{evap}{F\_in}{0.0277777777778}
@@ -4834,20 +4834,20 @@ feed      M1 mixer     recycle1 (hot)                              recycle2 (col
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{CW}{F}{0.0166666666667}
-\goldrow{stream}{cooledGas}{F}{0.000375486726088}
-\goldrow{stream}{dryGas}{F}{0.000325696494167}
-\goldrow{stream}{expandedProduct}{F}{0.000227987545917}
+\goldrow{stream}{cooledGas}{F}{0.000389139226554}
+\goldrow{stream}{dryGas}{F}{0.000371204829226}
+\goldrow{stream}{expandedProduct}{F}{0.000259843380458}
 \goldrow{stream}{feed}{F}{0.000277777777778}
-\goldrow{stream}{mixed}{F}{0.000536409608696}
-\goldrow{stream}{productGas}{F}{0.000227987545917}
-\goldrow{stream}{productWater}{F}{4.97902319203e-05}
-\goldrow{stream}{reacted}{F}{0.000536409608697}
-\goldrow{stream}{recycle1}{F}{0.000160922882609}
-\goldrow{stream}{recycle2}{F}{9.77089482502e-05}
-\goldrow{stream}{toFlash}{F}{0.000375486726088}
+\goldrow{stream}{mixed}{F}{0.000555913180791}
+\goldrow{stream}{productGas}{F}{0.000259843380458}
+\goldrow{stream}{productWater}{F}{1.79343973278e-05}
+\goldrow{stream}{reacted}{F}{0.000555913180791}
+\goldrow{stream}{recycle1}{F}{0.000166773954237}
+\goldrow{stream}{recycle2}{F}{0.000111361448768}
+\goldrow{stream}{toFlash}{F}{0.000389139226554}
 \goldrow{stream}{warmCW}{F}{0.0166666666667}
-\goldrow{kpi}{F1}{F\_alpha}{4.97902319203e-05}
-\goldmore{90}
+\goldrow{kpi}{F1}{F\_alpha}{1.79343973278e-05}
+\goldmore{92}
 \end{tutgolden}
 
 \clearpage
@@ -5535,7 +5535,7 @@ TWO LESSONS THIS CASE TEACHES: 1. THE RADICALS' WORK: endothermic dissociation (
 \goldrow{kpi}{flame}{lambda\_O}{-344071.838893}
 \goldrow{kpi}{flame}{outerIterations}{3}
 \goldrow{kpi}{flame}{y\_H}{0.00181958387904}
-\goldmore{11}
+\goldmore{14}
 \end{tutgolden}
 
 \clearpage
@@ -5890,7 +5890,7 @@ Expected order of magnitude (clean water-water): U \textasciitilde{} 2000-3000 W
 \goldrow{kpi}{hx}{C\_cold}{167630.972222}
 \goldrow{kpi}{hx}{C\_hot}{125728.472222}
 \goldrow{kpi}{hx}{C\_r}{0.750031277368}
-\goldrow{kpi}{hx}{LMTD}{15.5339177262}
+\goldrow{kpi}{hx}{LMTD}{15.4921080564}
 \goldrow{kpi}{hx}{NTU}{1.26058061182}
 \goldrow{kpi}{hx}{Nu\_shell}{171.621364606}
 \goldrow{kpi}{hx}{Nu\_tube}{287.732215939}
@@ -5930,12 +5930,12 @@ The preheater is heated by the column's rejected condenser duty (\textasciitilde
 \goldrow{kpi}{column01}{B}{0.0138888888889}
 \goldrow{kpi}{column01}{D}{0.0138888888889}
 \goldrow{kpi}{column01}{L\_rect}{0.0277777777778}
-\goldrow{kpi}{column01}{L\_strip}{0.0555555555556}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1281.04348002}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1279.30480005}
+\goldrow{kpi}{column01}{L\_strip}{0.0361877253979}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1282.91541137}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{647.138073182}
 \goldrow{kpi}{column01}{R}{2}
-\goldrow{kpi}{column01}{T\_bottom}{382.893530951}
-\goldrow{kpi}{column01}{T\_top}{354.21089412}
+\goldrow{kpi}{column01}{T\_bottom}{381.514101}
+\goldrow{kpi}{column01}{T\_top}{355.689113032}
 \goldmore{30}
 \end{tutgolden}
 
@@ -5971,7 +5971,7 @@ The preheater (UPSTREAM of the column) is heated by the column's CONDENSER duty 
 \goldrow{kpi}{column01}{L\_rect}{0.0208333333333}
 \goldrow{kpi}{column01}{L\_strip}{0.298611111111}
 \goldrow{kpi}{column01}{Q\_condenser\_kW}{-1067.88365467}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1846.42629755}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1844.9395063}
 \goldrow{kpi}{column01}{R}{1.5}
 \goldrow{kpi}{column01}{T\_bottom}{365.99791143}
 \goldrow{kpi}{column01}{T\_top}{354.558892551}
@@ -6065,7 +6065,7 @@ Water-water, clean service, 2-pass U-tube (the general arrangement). Expect: \te
 \goldrow{kpi}{hx}{C\_cold}{167630.972222}
 \goldrow{kpi}{hx}{C\_hot}{125728.472222}
 \goldrow{kpi}{hx}{C\_r}{0.750031277368}
-\goldrow{kpi}{hx}{LMTD}{16.7868881533}
+\goldrow{kpi}{hx}{LMTD}{16.7490788864}
 \goldrow{kpi}{hx}{NTU}{1.0053658663}
 \goldrow{kpi}{hx}{Nu\_shell}{195.331265319}
 \goldrow{kpi}{hx}{Nu\_tube}{416.603846461}
@@ -6110,7 +6110,7 @@ Numbers are RESULTS pinned by --record. Same clean water-water service, same Gni
 \goldrow{kpi}{hx}{C\_cold}{167630.972222}
 \goldrow{kpi}{hx}{C\_hot}{125728.472222}
 \goldrow{kpi}{hx}{C\_r}{0.750031277368}
-\goldrow{kpi}{hx}{LMTD}{16.7876807682}
+\goldrow{kpi}{hx}{LMTD}{16.7498740107}
 \goldrow{kpi}{hx}{NTU}{1.00522927337}
 \goldrow{kpi}{hx}{Nu\_shell}{195.283521062}
 \goldrow{kpi}{hx}{Nu\_tube}{416.603846461}
@@ -6183,6 +6183,8 @@ A superheated benzene/toluene vapour enters a condenser that is asked to land it
 feedVapour (superheated, 1 bar, 390 K, vf = 1) $\to$ condenser (outletQuality 0.4) $\to$ wetOut (two-phase, 0 < vf < 1)
 
 Same outlet vocabulary as rankine02\_water's IF97 boiler/condenser, on the GENERIC (Antoine + Raoult) backend.
+
+A NOTE THIS CASE EARNED THE HARD WAY (2026-09-12). The line above has said "feedVapour (superheated, 1 bar, 390 K, vf = 1)" since the case was written, and `0/feedVapour` did not say it -- the file declared T and P and no phase. Prose is not a channel the engine reads. So `phaseChanger` took vf = 0, and a unit whose entire subject is condensation published Q\_latent\_kW = +370.98: a POSITIVE latent term, with the sensible term carrying -1001.49 to make the total duty come out right. The total was right, both halves were wrong, and the plant's first law was out by -898.64 kW at exit 0 -- pinned at 142.526 \% in `check\_energy\_closure` and looked at by nobody. `0/feedVapour` now carries `phase gas;`, the run closes at 0.0000 kW, and that pin is GONE rather than re-measured. Record: docs/design/the-word-that-was-not-there.md
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -6931,6 +6933,83 @@ This is the pedagogical core of DSPM-"DE": the DE (dielectric exclusion) is what
 \goldmore{8}
 \end{tutgolden}
 
+\clearpage
+\tutentry{membrane12\_sdem\_nf270\_nacl\_traces}{tutorials/steady/membranes/membrane12\_sdem\_nf270\_nacl\_traces}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(NF.east)+(0,-0.34)$) -- ($(NF.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.00)$) -- ($(NF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+  \draw[->] ($(NF.east)+(0,0.34)$) -- ($(NF.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{SDEM on NF270: dominant NaCl 0.01 M + NaNO3/NH4Cl traces -- NO3- slips through, the field says why}
+\begin{tutnarrative}
+one NF270 element under the SOLUTION-DIFFUSION-ELECTROMIGRATION law (`transport SDEM;`): per-ion permeances, ONE electric field, ZERO current, and therefore an electroneutral permeate with no parameter the uncoupled law does not already have. See the case README for the lesson and the paper the permeances come from.
+
+\end{tutnarrative}
+\tutreadme{The question. Why does nitrate slip through a nanofiltration membrane that rejects chloride, when the two ions have almost the same hydrated size?}
+\tutreadme{The lesson. Under transport SDEM; every ion keeps its own permeance, but the ions share ONE electric field, fixed by zero current. NF270 is less permeable to Cl- than to Na+ (the record: 3.9 against 113 um/s), so a field arises that slows the cation and speeds the anions -- and a trace anion more permeable than Cl- (NO3-, 13.8 um/s) is pushed through faster than the dominant salt: its rejection sits BELOW the salt's and, at small fluxes, goes negative. The run publishes the field (membranePotential\_mV\_avg, and psi\_mV along the channel) so the mechanism is a number, not a sentence.}
+\tutreadme{Source of the numbers. Fernandez de Labastida \& Yaroshchuk, Membranes 11 (2021) 272, CC BY 4.0, Table 1 (row NaCl) -- ion permeances the authors fitted with the SDEM model to CP-corrected rejections on NF270 at 0.01 M NaCl + 2e-4 M traces, 20 C. What the paper reports for this case: NaCl and NH4+ rejected 40-80 \%, NO3- below 50 \% and lightly negative at small fluxes. This run is intrinsic (large k\_film) at one operating point; the gate check\_sdem holds the permeate electroneutral to machine precision and the dominant-salt rejection to the single-salt law R = J\_v/(J\_v + P\_s) with the AMBIPOLAR P\_s, recomputed independently.}
+\tutreadme{The figures, digitised. constant/experimental/fdl2021\_figures.csv holds the 106 measured points and the authors' fitted lines of the paper's Figures 1-4, read off the published panels by bin/curate/digitise\_fdl2021.py (the reading error is declared per point; the images are not in the tree). check\_sdem drives the engine to each figure's flux and holds it, in the trace limit the authors' lines assume, to those lines within a stated band per series -- and pins that at the paper's own 2e-4 M the traces are NOT traces (under a sulfate they carry the anion current and relax the field).}
+\tutreadme{What is NOT validated here. The measured SYMBOLS are compared by nobody: the model is held to the authors' FIT, and the symbols scatter about it by a residual that is theirs to explain. NH4+ here is a bound in the paper ('>60 um/s, the fit became insensitive'); the engine meets that line only near 1000 um/s and the record keeps the bound.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0154246666667}
+\goldrow{stream}{feed}{T}{293.15}
+\goldrow{stream}{permeate}{F}{0.000143506830367}
+\goldrow{stream}{permeate}{T}{293.15}
+\goldrow{stream}{retentate}{F}{0.0152811598484}
+\goldrow{stream}{retentate}{T}{293.15}
+\goldrow{kpi}{NF}{J\_w\_avg}{2.58542546558e-05}
+\goldrow{kpi}{NF}{R\_obs\_Cl}{0.774930206622}
+\goldrow{kpi}{NF}{R\_obs\_NH4}{0.783943147317}
+\goldrow{kpi}{NF}{R\_obs\_NO3}{0.307702586566}
+\goldrow{kpi}{NF}{R\_obs\_Na}{0.765592156411}
+\goldrow{kpi}{NF}{dP\_feed}{5000}
+\goldrow{kpi}{NF}{mass\_closure\_rel}{7.98890233342e-16}
+\goldrow{kpi}{NF}{membranePotential\_mV\_avg}{34.2157491014}
+\goldmore{1}
+\end{tutgolden}
+
+\clearpage
+\tutentry{membrane13\_sdem\_nf270\_mgso4\_traces}{tutorials/steady/membranes/membrane13\_sdem\_nf270\_mgso4\_traces}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(NF.east)+(0,-0.34)$) -- ($(NF.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.00)$) -- ($(NF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+  \draw[->] ($(NF.east)+(0,0.34)$) -- ($(NF.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{SDEM on NF270: dominant MgSO4 0.01 M + NaNO3/NH4Cl traces -- both trace anions negatively rejected}
+\begin{tutnarrative}
+one NF270 element under the SOLUTION-DIFFUSION-ELECTROMIGRATION law (`transport SDEM;`): per-ion permeances, ONE electric field, ZERO current, and therefore an electroneutral permeate with no parameter the uncoupled law does not already have. See the case README for the lesson and the paper the permeances come from.
+
+\end{tutnarrative}
+\tutreadme{The question. A membrane that rejects MgSO4 almost completely -- how can it let MORE nitrate into the permeate than there is in the feed?}
+\tutreadme{The lesson. SO4(2-) is the least permeable ion here (0.13 um/s against 0.9 for Mg2+ and 16-80 for the traces). Zero current forces the sulfate and the magnesium fluxes to match, so a strong field arises already at small fluxes; every trace ANION is dragged through it and every trace CATION is held back. Cl- and NO3- come out with NEGATIVE rejections -- concentrated in the permeate -- while Na+ and NH4+ are rejected. Same permeances as the record, no parameter for the effect: it is what the field does.}
+\tutreadme{Source of the numbers. Fernandez de Labastida \& Yaroshchuk, Membranes 11 (2021) 272, CC BY 4.0, Table 1 (row MgSO4), NF270 at 0.01 M MgSO4 + 2e-4 M traces, 20 C. What the paper reports: the dominant salt highly rejected, trace cations rejected, Cl- from -70 \% at small flux up to +60 \%, NO3- negative over the whole flux range (-151 \% to -5 \%). check\_sdem holds the signs the text states at this run's flux, the permeate electroneutral, and the MgSO4 rejection to the single-salt ambipolar law.}
+\tutreadme{Against the paper's Figure 4 (digitised into the NaCl witness's constant/experimental/fdl2021\_figures.csv): in the TRACE LIMIT the engine reproduces the authors' SDEM lines for Na+, Cl- and NO3- within 2-9 \%; at this case's 2e-4 M it does not, and that is the lesson -- here 2e-4 M of NO3- at 41.9 um/s carries more anion current than 0.01 M of SO4 at 0.13 um/s, the field relaxes, NO3- is rejected LESS negatively (f 1.37x the trace-limit value at 34.7 um/s) and the trace cations less (0.45x). The authors' analytical fit assumes the traces do not touch the field; their text says they do.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0154246666667}
+\goldrow{stream}{feed}{T}{293.15}
+\goldrow{stream}{permeate}{F}{0.000137923803682}
+\goldrow{stream}{permeate}{T}{293.15}
+\goldrow{stream}{retentate}{F}{0.0152867429149}
+\goldrow{stream}{retentate}{T}{293.15}
+\goldrow{kpi}{NF}{J\_w\_avg}{2.48474629942e-05}
+\goldrow{kpi}{NF}{R\_obs\_Cl}{0.400430661135}
+\goldrow{kpi}{NF}{R\_obs\_Mg}{0.981477848116}
+\goldrow{kpi}{NF}{R\_obs\_NH4}{0.665213383817}
+\goldrow{kpi}{NF}{R\_obs\_NO3}{-0.152388078224}
+\goldrow{kpi}{NF}{R\_obs\_Na}{0.665547359434}
+\goldrow{kpi}{NF}{R\_obs\_SO4}{0.99230502972}
+\goldrow{kpi}{NF}{dP\_feed}{5000}
+\goldmore{3}
+\end{tutgolden}
+
 \subsection{optimisation}
 \grouptheory{optimisation}
 \clearpage
@@ -7117,12 +7196,12 @@ Benzene/toluene distillation, used by the optimisation driver. Same column as se
 \goldrow{kpi}{column01}{B}{0.0138888888889}
 \goldrow{kpi}{column01}{D}{0.0138888888889}
 \goldrow{kpi}{column01}{L\_rect}{0.0416666666667}
-\goldrow{kpi}{column01}{L\_strip}{0.0694444444444}
+\goldrow{kpi}{column01}{L\_strip}{0.0500766142867}
 \goldrow{kpi}{column01}{R}{3}
-\goldrow{kpi}{column01}{T\_bottom}{383.299688974}
-\goldrow{kpi}{column01}{T\_top}{353.770171691}
+\goldrow{kpi}{column01}{T\_bottom}{383.044566338}
+\goldrow{kpi}{column01}{T\_top}{354.047336848}
 \goldrow{kpi}{column01}{V\_rect}{0.0555555555556}
-\goldrow{kpi}{column01}{V\_strip}{0.0555555555556}
+\goldrow{kpi}{column01}{V\_strip}{0.0361877253979}
 \goldrow{kpi}{column01}{feedStage}{9}
 \goldrow{kpi}{column01}{nStages}{15}
 \goldmore{15}
@@ -7322,15 +7401,15 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{kpi}{column01}{B}{0.0138888888889}
 \goldrow{kpi}{column01}{D}{0.0138888888889}
-\goldrow{kpi}{column01}{L\_rect}{0.0313732166828}
-\goldrow{kpi}{column01}{L\_strip}{0.0591509944605}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1391.66557074}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1389.90800504}
-\goldrow{kpi}{column01}{R}{2.25887160116}
-\goldrow{kpi}{column01}{T\_bottom}{382.835800828}
-\goldrow{kpi}{column01}{T\_top}{354.273383646}
-\goldrow{kpi}{column01}{V\_rect}{0.0452621055716}
-\goldrow{kpi}{column01}{V\_strip}{0.0452621055716}
+\goldrow{kpi}{column01}{L\_rect}{0.0402695960533}
+\goldrow{kpi}{column01}{L\_strip}{0.0486795436734}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1665.20088835}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1031.41618351}
+\goldrow{kpi}{column01}{R}{2.89941091584}
+\goldrow{kpi}{column01}{T\_bottom}{382.835807084}
+\goldrow{kpi}{column01}{T\_top}{354.273377176}
+\goldrow{kpi}{column01}{V\_rect}{0.0541584849422}
+\goldrow{kpi}{column01}{V\_strip}{0.0347906547845}
 \goldmore{18}
 \end{tutgolden}
 
@@ -7356,15 +7435,15 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{kpi}{column01}{B}{0.0138888888889}
 \goldrow{kpi}{column01}{D}{0.0138888888889}
-\goldrow{kpi}{column01}{L\_rect}{0.052352377807}
-\goldrow{kpi}{column01}{L\_strip}{0.0801301555848}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-2035.41756863}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{2033.86732819}
-\goldrow{kpi}{column01}{R}{3.7693712021}
-\goldrow{kpi}{column01}{T\_bottom}{383.489767144}
-\goldrow{kpi}{column01}{T\_top}{353.562992445}
-\goldrow{kpi}{column01}{V\_rect}{0.0662412666959}
-\goldrow{kpi}{column01}{V\_strip}{0.0662412666959}
+\goldrow{kpi}{column01}{L\_rect}{0.0618502921554}
+\goldrow{kpi}{column01}{L\_strip}{0.0702602397755}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-2327.26316419}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1694.49433945}
+\goldrow{kpi}{column01}{R}{4.45322103519}
+\goldrow{kpi}{column01}{T\_bottom}{383.489764433}
+\goldrow{kpi}{column01}{T\_top}{353.562993954}
+\goldrow{kpi}{column01}{V\_rect}{0.0757391810443}
+\goldrow{kpi}{column01}{V\_strip}{0.0563713508866}
 \goldmore{18}
 \end{tutgolden}
 
@@ -7391,14 +7470,14 @@ the column01 benzene/toluene column (classical Raoult textbook problem, no azeot
 \goldrow{kpi}{column01}{B}{0.0138888888889}
 \goldrow{kpi}{column01}{D}{0.0138888888889}
 \goldrow{kpi}{column01}{L\_rect}{0.0424382716049}
-\goldrow{kpi}{column01}{L\_strip}{0.0702160493827}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1730.95769425}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1729.37389301}
+\goldrow{kpi}{column01}{L\_strip}{0.050848219225}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1731.32761546}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1098.04453341}
 \goldrow{kpi}{column01}{R}{3.05555555556}
-\goldrow{kpi}{column01}{T\_bottom}{383.383107764}
-\goldrow{kpi}{column01}{T\_top}{353.679332066}
+\goldrow{kpi}{column01}{T\_bottom}{383.160271067}
+\goldrow{kpi}{column01}{T\_top}{353.921786829}
 \goldrow{kpi}{column01}{V\_rect}{0.0563271604938}
-\goldrow{kpi}{column01}{V\_strip}{0.0563271604938}
+\goldrow{kpi}{column01}{V\_strip}{0.0369593303361}
 \goldmore{15}
 \end{tutgolden}
 
@@ -7425,14 +7504,14 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \goldrow{kpi}{column01}{B}{0.0138888888889}
 \goldrow{kpi}{column01}{D}{0.0138888888889}
 \goldrow{kpi}{column01}{L\_rect}{0.0424382716049}
-\goldrow{kpi}{column01}{L\_strip}{0.0702160493827}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1730.95769425}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1729.37389301}
+\goldrow{kpi}{column01}{L\_strip}{0.050848219225}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1731.32761546}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1098.04453341}
 \goldrow{kpi}{column01}{R}{3.05555555556}
-\goldrow{kpi}{column01}{T\_bottom}{383.383107764}
-\goldrow{kpi}{column01}{T\_top}{353.679332066}
+\goldrow{kpi}{column01}{T\_bottom}{383.160271067}
+\goldrow{kpi}{column01}{T\_top}{353.921786829}
 \goldrow{kpi}{column01}{V\_rect}{0.0563271604938}
-\goldrow{kpi}{column01}{V\_strip}{0.0563271604938}
+\goldrow{kpi}{column01}{V\_strip}{0.0369593303361}
 \goldmore{18}
 \end{tutgolden}
 
@@ -7515,7 +7594,7 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
 \goldrow{kpi}{gasGenerator}{W\_shaft}{600000}
 \goldrow{kpi}{gasGenerator}{W\_shaft\_kW}{600}
 \goldrow{kpi}{gasGenerator}{eta\_generator}{0.97}
-\goldmore{102}
+\goldmore{103}
 \end{tutgolden}
 
 \clearpage
@@ -7557,7 +7636,7 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
 \goldrow{kpi}{compressor}{P\_out}{828817.033759}
 \goldrow{kpi}{compressor}{T\_in}{300}
 \goldrow{kpi}{compressor}{T\_out}{592.090873473}
-\goldmore{119}
+\goldmore{120}
 \end{tutgolden}
 
 \clearpage
@@ -7588,7 +7667,7 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
 \goldrow{kpi}{generator}{W\_electric}{9700}
 \goldrow{kpi}{generator}{W\_electric\_kW}{9.7}
 \goldrow{kpi}{generator}{W\_losses}{300}
-\goldmore{33}
+\goldmore{34}
 \end{tutgolden}
 
 \clearpage
@@ -7638,7 +7717,7 @@ Contrast: rankine01\_water runs the SAME architecture on the ideal gas, in the g
 \goldrow{utility}{boiler}{heating.-.unserved}{1}
 \goldrow{utility}{condenser}{cooling.coolingWater.duty\_kW}{-39.0172479639}
 \goldrow{utility}{condenser}{cooling.coolingWater.T}{446.515894355}
-\goldmore{58}
+\goldmore{59}
 \end{tutgolden}
 
 \subsection{reactors}
@@ -8341,7 +8420,7 @@ Hand check (ideal gas, Cp \textasciitilde{} 29.2 J/(mol$\ast$K), gamma \textasci
 \goldrow{kpi}{compressor01}{W\_shaft\_kW}{10}
 \goldrow{kpi}{compressor01}{dS\_gen}{4.22615345389}
 \goldrow{kpi}{compressor01}{dT}{335.224206884}
-\goldmore{12}
+\goldmore{13}
 \end{tutgolden}
 
 \clearpage
@@ -8470,7 +8549,7 @@ Hand check (water: v \textasciitilde{} 1.8e-5 m3/mol, Cp\_liq \textasciitilde{} 
 \goldrow{kpi}{pump01}{dT}{0.927152317881}
 \goldrow{kpi}{pump01}{eta}{0.65}
 \goldrow{kpi}{pump01}{head\_m}{735.848502288}
-\goldmore{11}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -8513,7 +8592,7 @@ Hand check (water: v \textasciitilde{} 1.8e-5 m3/mol): F = 36 kmol/h = 10 mol/s 
 \goldrow{kpi}{pump02}{dT}{0.373735099338}
 \goldrow{kpi}{pump02}{eta}{0.65}
 \goldrow{kpi}{pump02}{head\_m}{296.620531272}
-\goldmore{11}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -8553,7 +8632,7 @@ Per the credo, P\_out is a RESULT. If the turbine must exhaust at a fixed back-p
 \goldrow{kpi}{turbine01}{dS\_gen}{3.19034018436}
 \goldrow{kpi}{turbine01}{dT}{-317.064793523}
 \goldrow{kpi}{turbine01}{dT\_isen}{-375.536146266}
-\goldmore{8}
+\goldmore{9}
 \end{tutgolden}
 
 \subsection{separation}
@@ -8860,7 +8939,7 @@ Pedagogical caveat: the stream that crosses from the turbine (SRK) into the flas
 \goldrow{kpi}{flash}{Q\_kW}{-413.177313739}
 \goldrow{kpi}{flash}{T}{353}
 \goldrow{kpi}{flash}{V\_over\_F}{0.384521828832}
-\goldmore{34}
+\goldmore{35}
 \end{tutgolden}
 
 \subsection{thermoTest}
@@ -8920,17 +8999,17 @@ BPE NOTE (2026-07-02, a story in three acts): (1) frozen 25 C surface $\to$ BPE 
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{concentrated}{F}{0.0203403273092}
+\goldrow{stream}{concentrated}{F}{0.0203403273098}
 \goldrow{stream}{condensate}{F}{0.0125}
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{stream}{saturatedSteam130C}{F}{0.0125}
-\goldrow{stream}{vapour}{F}{0.00743745046862}
+\goldrow{stream}{vapour}{F}{0.00743745046799}
 \goldrow{kpi}{evap}{A}{20}
 \goldrow{kpi}{evap}{A\_m2}{20}
-\goldrow{kpi}{evap}{BPE}{5.0621680882}
-\goldrow{kpi}{evap}{F\_conc}{0.0203403273092}
-\goldrow{kpi}{evap}{F\_conc\_kmol\_h}{73.225178313}
-\goldrow{kpi}{evap}{F\_conc\_mass}{0.422576829808}
+\goldrow{kpi}{evap}{BPE}{5.06216808829}
+\goldrow{kpi}{evap}{F\_conc}{0.0203403273098}
+\goldrow{kpi}{evap}{F\_conc\_kmol\_h}{73.2251783152}
+\goldrow{kpi}{evap}{F\_conc\_mass}{0.422576829819}
 \goldrow{kpi}{evap}{F\_cond}{0.2251875}
 \goldrow{kpi}{evap}{F\_cond\_kg\_h}{810.675}
 \goldrow{kpi}{evap}{F\_in}{0.0277777777778}
@@ -9114,12 +9193,12 @@ The op is a SHORTCUT separator: a per-component recovery to the overhead. Here a
 \goldrow{kpi}{preheater}{C\_cold}{2992.03981719}
 \goldrow{kpi}{preheater}{C\_hot}{17325.8215856}
 \goldrow{kpi}{preheater}{C\_r}{0.17269252153}
-\goldrow{kpi}{preheater}{LMTD}{59.6763812217}
+\goldrow{kpi}{preheater}{LMTD}{64.7267220716}
 \goldrow{kpi}{preheater}{NTU}{5.01330226751}
 \goldrow{kpi}{preheater}{Q}{895145.718325}
 \goldrow{kpi}{preheater}{Q\_kW}{895.145718325}
 \goldrow{kpi}{preheater}{T\_cold\_in}{320}
-\goldrow{kpi}{preheater}{T\_cold\_out}{619.175737295}
+\goldrow{kpi}{preheater}{T\_cold\_out}{617.514294852}
 \goldrow{kpi}{preheater}{T\_hot\_in}{623.15}
 \goldmore{10}
 \end{tutgolden}

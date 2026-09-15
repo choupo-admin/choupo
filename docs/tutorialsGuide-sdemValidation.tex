@@ -1,0 +1,283 @@
+% ---------------------------------------------------------------------------
+%  Validation study: the SDEM transport law against Fernandez de Labastida &
+%  Yaroshchuk, Membranes 11 (2021) 272.  HAND-WRITTEN prose; every table is
+%  \input{} from a GENERATED file (bin/curate/gen_sdem_validation.py), so no
+%  number below was typed.  Written 2026-09-15 to be read by the paper's
+%  authors.
+% ---------------------------------------------------------------------------
+
+\clearpage
+\section*{Validation study: ion rejection in nanofiltration against Fern\'andez de Labastida \& Yaroshchuk (2021)}\addcontentsline{toc}{section}{Validation study: NF ion rejection (SDEM) against Fern\'andez de Labastida \& Yaroshchuk 2021}\markboth{Validation: SDEM}{Validation: SDEM}
+
+This section compares one transport law of Choupo's membrane module, the
+solution-diffusion-electromigration (SDEM) law, against one published data
+set: M.~Fern\'andez de Labastida and A.~Yaroshchuk, \emph{Nanofiltration of
+Multi-Ion Solutions: Quantitative Control of Concentration Polarization and
+Interpretation by Solution-Diffusion-Electro-Migration Model}, Membranes 11
+(2021) 272, doi:10.3390/membranes11040272, published under CC~BY~4.0.  It is
+written so that the authors of that paper can check it.  Every number in the
+tables is produced by the engine or read from the published figures by a
+script; none is typed.  The section ends with the commands that regenerate
+it and with the points on which we would value the authors' reading.
+
+\subsection*{The model as Choupo implements it}
+
+The active layer is a slab of dimensionless thickness $x \in [0,1]$.  Each
+ion $i$ has a membrane permeance $P_i$ (m/s), which already contains its
+partition coefficient (the solution-diffusion definition $P = DK/\delta$), a
+charge $z_i$, and a \emph{virtual} concentration $c_i(x)$: the concentration
+of the solution that would be in local equilibrium with the membrane at $x$.
+The flux of each ion is Nernst--Planck on the virtual solution,
+\[
+  j_i \;=\; -P_i\left(\frac{\mathrm{d}c_i}{\mathrm{d}x} + z_i\,c_i\,\frac{\mathrm{d}\psi}{\mathrm{d}x}\right),
+  \qquad \psi = \frac{F\,\varphi}{RT},
+\]
+the virtual solution is electroneutral at every $x$, $\sum_i z_i c_i(x) = 0$,
+and no current flows, $\sum_i z_i j_i = 0$.  The last two conditions fix the
+one electric field the ions share,
+\[
+  \frac{\mathrm{d}\psi}{\mathrm{d}x} \;=\; -\,\frac{\sum_i z_i\, j_i / P_i}{\sum_i z_i^2\, c_i},
+\]
+so there is exactly one state variable beyond the uncoupled solution-diffusion
+law, the potential drop $\Delta\psi$ across the layer, and no new parameter.
+The boundary conditions are the wall concentrations $c_i(0) = c_{m,i}$
+(from the film model, per ion) and the permeate condition $j_i = J_v\,c_{p,i}$
+with $c_i(1) = c_{p,i}$, where $J_v$ is the transmembrane volume flux.  This
+is the formulation of Yaroshchuk, Bruening and Lic\'on Bernal, J.\ Membr.\
+Sci.\ 447 (2013) 463, and it has a property the engine checks rather than
+assumes: for a single salt it reduces \emph{exactly} to
+\[
+  R_s \;=\; \frac{J_v}{J_v + P_s}, \qquad
+  P_s \;=\; \frac{(z_+ + |z_-|)\,P_+\,P_-}{z_+ P_+ + |z_-|\,P_-},
+\]
+the ambipolar permeance, which is what makes per-ion permeances calibratable
+from single-salt tests.
+
+What the implementation does \emph{not} contain, so that the comparison is
+read for what it is: no fixed membrane charge (no Donnan partition, no
+dielectric exclusion --- those effects are inside the permeances the authors
+fitted); ideal dilute virtual solutions; constant permeances; and a
+concentration-polarisation film that is computed per ion \emph{without} a
+field (the engine announces this every run).  All runs below use a film
+coefficient of 1~m/s, so the wall equals the bulk to better than $0.01\,\%$
+and the rejections are intrinsic --- which is what the paper's CP-corrected
+rejections are.  Numerically, each station solves a Newton problem in the
+permeate composition whose residual is a fourth-order Runge--Kutta shot of
+the profile \emph{from the permeate face back to the wall} (320 steps); the
+osmotic back-pressure closes an outer Newton in $J_v$.  The source is
+\file{src/unitOperations/membrane/transport/SDEM.cpp}.
+
+\subsection*{What was taken from the paper}
+
+\textbf{The permeances.}  Table~1 of the paper gives, for each dominant
+salt, the membrane permeance to the salt $P_s$ fitted with Eq.~(1) and the
+ion permeances fitted with the SDEM trace solution (Eq.~(3)), all in
+$\mu$m/s.  Choupo uses the ion values as they stand.  Where the paper gives
+a \emph{bound} or a \emph{range} the value used is stated in the case
+record: Na$^+$ under NaCl ``20--113'' is taken at 113, the end that
+reproduces $P_s = 7.5$ through the ambipolar identity; NH$_4^+$ ``$>60$''
+(NaCl), ``$>700$'' (MgCl$_2$), ``$>100$'' (Na$_2$SO$_4$), Na$^+$
+``$>250$'' (MgCl$_2$) and ``$>0.8$'' (Na$_2$SO$_4$) are taken at the
+bound.  The consequences of the bounds are measured below rather than
+assumed away.
+
+\textbf{The feeds.}  Dominant salt $0.01$~mol/L, the two trace salts
+NaNO$_3$ and NH$_4$Cl at $2\times10^{-4}$~mol/L each, $20\,^\circ$C, on a
+flat NF270 disc in the rotating-disk cell, transmembrane pressure 2--14~bar.
+
+\textbf{The figures.}  Figures~1--4 plot, for each dominant salt, the
+reciprocal intrinsic transmission $f = 1/(1-R)$ of the salt (panel~a) and of
+the trace ions (panel~b) against $J_v$.  The \emph{symbols} are the
+measurements after the authors' CP correction; the \emph{lines} are the
+authors' fits --- Eq.~(1) for the salt, the analytical trace-limit solution
+Eq.~(3) for a trace --- with the Table~1 permeances.  The publisher's
+full-resolution panels were digitised by
+\file{bin/curate/digitise\_fdl2021.py}: the axes are calibrated from the
+axis lines and verified against the tick labels (they map back to
+$0, 10, 20, \dots$ within a few hundredths of a $\mu$m/s), markers are
+separated from lines by a morphological opening and located at the centre
+of their bounding box, the drawn line is read under each marker, and the
+three arrows of Fig.~3b are blanked as annotations.  The reading error is
+about $\pm 0.07\,\mu$m/s in $J_v$ and $\pm 0.3\,\%$ of the axis span in
+$f$; a marker partly hidden under another series' symbol carries a larger
+error and is marked $\dagger$ in the tables.  The 106 points live, with
+their reading errors, in the NaCl witness case:\par\noindent
+{\footnotesize\path{tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces/constant/experimental/fdl2021_figures.csv}}\par\noindent
+The images are not redistributed.  One reading
+we ask the authors to confirm: the right-hand axis of Fig.~3b (Cl$^-$ and
+NO$_3^-$ under Na$_2$SO$_4$) is labelled 0 to 8 but carries nine equal tick
+intervals; it was read as 0 to 18.
+
+\subsection*{How Choupo was driven}
+
+For each digitised point the engine is run on a one-element NF270 case built
+from the shipped NaCl witness (\file{membrane12\_sdem\_nf270\_nacl\_traces})
+with the salt's Table~1 row as the membrane record, and the feed pressure is
+adjusted until the engine's $J_v$ equals the figure's to $0.5\,\%$.  Two
+feeds are used for every salt.  \textbf{Trace limit}: the trace salts at
+$2\times10^{-7}$~mol/L, one thousandth of the paper's, which is the limit
+the analytical Eq.~(3) assumes (a trace that does not feed back on the
+field).  \textbf{Paper's feed}: the trace salts at $2\times10^{-4}$~mol/L,
+the concentration actually used in the experiments.  The comparison that
+tests the \emph{implementation} is therefore Choupo-in-the-trace-limit
+against the authors' \emph{lines} (same model, same parameters, one answer);
+the comparison that tests the \emph{model} is Choupo-at-the-paper's-feed
+against the \emph{symbols}, and it inherits the authors' own fit residual.
+
+\subsection*{Table 1 against the ambipolar identity}
+
+The first check needs no run: the ion permeances of Table~1 must reproduce
+the salt permeances of the same table through the ambipolar identity.  They
+do, to the table's rounding.
+
+\input{tutorialsGuide-sdem-ambipolar}
+\noindent Permeances in $\mu$m/s.  This is arm (b) of the gate
+\file{bin/curate/check\_sdem.py}, recomputed in Python independently of the
+engine.
+
+\subsection*{Dominant NaCl (Figure 1)}
+
+\input{tutorialsGuide-sdem-NaCl}
+
+For the salt, Choupo's dominant anion follows the paper's line to within
+$1.5\,\%$ over the whole flux range (Cl$^-$ at $2\times10^{-4}$~M: the salt
+rejection is set by the ambipolar permeance, and the traces perturb it
+little here).  For NO$_3^-$ the trace-limit engine sits within $8\,\%$ of
+the line, closest where the line is flattest; at the two lowest fluxes the
+engine gives a slightly \emph{negative} rejection where the drawn line is
+slightly positive --- and the measured symbols there are negative, as the
+paper's text says (``lightly negative values at small transmembrane
+fluxes'').  NH$_4^+$ is the case where the permeance is a bound: at
+$60\,\mu$m/s the engine's $f$ is 8--24\,\% above the line, and the
+sensitivity table further down shows the line is met only near
+$1000\,\mu$m/s; the authors report that their fit ``became insensitive to the
+value of ionic permeance as this increased'', which is consistent with a
+fit that had already saturated.
+
+\subsection*{Dominant MgCl$_2$ (Figure 2)}
+
+\input{tutorialsGuide-sdem-MgCl2}
+
+The three trace lines are reproduced in the trace limit within 1--8\,\%
+(NO$_3^-$ $+2$ to $+8\,\%$, Na$^+$ $-1$ to $-3\,\%$, NH$_4^+$ $-5$ to
+$+12\,\%$), with the negative rejections of both trace cations coming out
+of the same permeances and no parameter for the effect.  The salt panel is
+different, and it is a point for the authors: the drawn line of Fig.~2a
+reads $f_s = 6.1$ at $52.5\,\mu$m/s and $5.5$ at $44.4\,\mu$m/s, whereas
+Eq.~(1) with the Table~1 value $P_s = 6.1\,\mu$m/s gives $9.6$ and $8.3$
+(off the top of the plotted axis); the measured points follow the drawn
+line, and read on their own they imply an apparent salt permeance rising
+from about 7 to 10~$\mu$m/s across the range.  Choupo, which solves the
+same equations as Eq.~(1) for the dominant ions, agrees with Eq.~(1) and
+the ambipolar identity (both dominant ions, up to the trace coupling
+discussed below) and therefore \emph{not} with the drawn line.  We have
+not tried to reconcile the two and would welcome the authors' reading of
+which curve Fig.~2a shows.
+
+\subsection*{Dominant Na$_2$SO$_4$ (Figure 3)}
+
+\input{tutorialsGuide-sdem-Na2SO4}
+
+Here the traces are, in the authors' words, not authentic traces: sulfate
+passes at $0.06\,\mu$m/s, the trace anions at 3.4 and 9.8, so the anion
+current is carried by the traces.  In the trace limit Choupo reproduces
+the Cl$^-$ line within $+1$ to $+8\,\%$ and the NO$_3^-$ line within
+$-2$ to $-8\,\%$ from $10\,\mu$m/s upward ($-18\,\%$ at the lowest point,
+where $f \approx 0.5$ and the drawn line is thick) (the reversal from negative to
+positive rejection of NO$_3^-$ falls at about $16\,\mu$m/s in both); at the
+paper's own feed the engine's $f$ for the trace anions is 8--24\,\% above
+the lines and its $f$ for the dominant Na$^+$ well below that of
+SO$_4^{2-}$ --- the effect the paper's text predicts (``the reciprocal
+transmission of the more permeable ion (such as Na$^+$ in Na$_2$SO$_4$)
+could be basically lower than that for SO$_4^{2-}$'').  NH$_4^+$ is not a
+test of the implementation: its own permeance is a bound and, as the
+sensitivity table shows, its rejection is set mostly by the Na$^+$
+permeance, which the paper calls ``just orientative''.
+
+\subsection*{Dominant MgSO$_4$ (Figure 4)}
+
+\input{tutorialsGuide-sdem-MgSO4}
+
+This is the case where the paper's fit determines every permeance, and in
+the trace limit the engine reproduces all four trace lines within 2--9\,\%
+(Na$^+$ $+4$ to $+5\,\%$; Cl$^-$ $-2$ to $-7\,\%$; NO$_3^-$ $-2$ to
+$-9\,\%$; NH$_4^+$, whose line lies on Na$^+$'s, $+3\,\%$ on the points
+visible under the Na$^+$ diamonds).  At the paper's own feed the engine
+departs from the lines by 20--55\,\%, all in one direction: the trace
+cations are rejected less and the trace anions less negatively.  Both are
+the signature of a \emph{weaker} field, and the next subsection measures
+why.
+
+\subsection*{A trace is not a trace when the dominant anion is a hundred times slower}
+
+The authors' Eq.~(3) is the analytical solution for a trace ion in the
+field set by the dominant salt alone.  At $2\times10^{-4}$~mol/L against
+$0.01$~mol/L that assumption holds within $3\,\%$ for NaCl and within
+$15\,\%$ for MgCl$_2$; under a sulfate it fails, because $2\times10^{-4}$~mol/L of NO$_3^-$ at
+$42\,\mu$m/s carries more anion current than $0.01$~mol/L of SO$_4^{2-}$
+at $0.13\,\mu$m/s.  The traces then relieve the field, and every rejection
+moves toward its uncoupled value.  The table gives, for each salt at its
+fifth measured flux, the ratio of the engine's $f$ at the paper's feed to
+its $f$ in the trace limit, per trace ion.
+
+\input{tutorialsGuide-sdem-notatrace}
+\noindent A ratio of 1 means the trace does not feed back on the field; a
+dash means the ion is a dominant ion of that salt.  The paper's own text
+names the effect (``trace ions cannot be accounted as authentic traces due
+to the very high rejections of SO$_4^{2-}$''); the table is its size.  For a
+student it is the lesson of these two cases, and it is why the shipped
+MgSO$_4$ witness, run at the paper's concentrations, does not reproduce
+the paper's lines while the trace-limit run does.
+
+\subsection*{The two permeances the paper leaves as bounds}
+
+\input{tutorialsGuide-sdem-sensitivity}
+\noindent Under NaCl the NH$_4^+$ line is met when its permeance is of the
+order of $1000\,\mu$m/s, an order of magnitude above the stated bound of
+60; under Na$_2$SO$_4$ the NH$_4^+$ reciprocal transmission is a strong
+function of the Na$^+$ permeance (0.8 $\to$ 30~$\mu$m/s moves it from 64 to
+149 at $27\,\mu$m/s), so a value for NH$_4^+$ cannot be read off that
+figure without one for Na$^+$.  Neither series is held by the regression
+gate, which says so in its own claim.
+
+\subsection*{Points on which we would value the authors' reading}
+
+\begin{enumerate}[nosep]
+\item Which curve Fig.~2a shows: Eq.~(1) with $P_s = 6.1\,\mu$m/s does not
+      pass through the drawn line or the measured points (previous
+      subsection on MgCl$_2$).
+\item The right-hand axis of Fig.~3b, read here as 0--18 from its tick
+      marks while its labels stop at 8.
+\item Whether the lines of the (b) panels were computed from Eq.~(3) (the
+      trace limit) or from a full multi-ion solution at $2\times10^{-4}$~M;
+      the tables are consistent with the former, and the difference is the
+      size of the ``not a trace'' table.
+\item The NH$_4^+$ permeance under NaCl: an effective value near
+      $1000\,\mu$m/s reproduces the line, the stated bound of 60 does not.
+\end{enumerate}
+
+\subsection*{What this study does not establish}
+
+It does not validate the model against the measured \emph{symbols}: the
+symbols scatter about the authors' lines by the authors' own fit residual
+(up to about $15\,\%$ in $f$ on the last point of Fig.~1a), and a
+re-implementation cannot be held to a residual its source accepted.  It
+does not test a polarisation film with a field, concentration-dependent
+permeances, fixed charge, or any membrane but NF270 at $0.01$~M.  It
+inherits the digitisation's reading error, stated above and per point in
+the CSV.
+
+\subsection*{Reproducing this section}
+
+The design record of the law and of this comparison is
+\file{docs/design/electroneutrality-without-a-new-parameter.md}; the
+commands below regenerate every number above.
+
+\Needspace*{8\baselineskip}
+\begin{lstlisting}
+runCase tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces   # NaCl witness
+runCase tutorials/steady/membranes/membrane13_sdem_nf270_mgso4_traces  # MgSO4 witness
+bin/curate/digitise_fdl2021.py --download   # the figures -> the CSV (images stay local)
+bin/curate/gen_sdem_validation.py           # every table of this section, from the engine
+bin/curate/check_sdem.py                    # the regression gate (arms (h)-(j) hold the lines)
+\end{lstlisting}
