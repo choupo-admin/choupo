@@ -62,7 +62,8 @@ struct Shot
 };
 
 Shot shoot(const std::vector<scalar>& c0, const std::vector<scalar>& j,
-           const std::vector<scalar>& P, const std::vector<int>& z, int nSteps)
+           const std::vector<scalar>& P, const std::vector<int>& z, int nSteps,
+           bool backward = false)
 {
     const std::size_t n = c0.size();
     auto rhs = [&](const std::vector<scalar>& c, std::vector<scalar>& dc) -> scalar
@@ -79,7 +80,10 @@ Shot shoot(const std::vector<scalar>& c0, const std::vector<scalar>& j,
         return dpsi;
     };
 
-    const scalar h = 1.0 / nSteps;
+    //  x runs from the wall (0) to the permeate face (1).  A BACKWARD shot
+    //  starts at the permeate face and steps toward the wall (h < 0); psi is
+    //  reported as psi(1) - psi(0) either way.
+    const scalar h = (backward ? -1.0 : 1.0) / nSteps;
     std::vector<scalar> c = c0, k1(n), k2(n), k3(n), k4(n), tmp(n);
     scalar psi = 0.0;
     for (int s = 0; s < nSteps; ++s)
@@ -95,7 +99,7 @@ Shot shoot(const std::vector<scalar>& c0, const std::vector<scalar>& j,
             c[i] += h / 6.0 * (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i]);
         psi += h / 6.0 * (p1 + 2.0 * p2 + 2.0 * p3 + p4);
     }
-    return { c, psi };
+    return { c, backward ? -psi : psi };
 }
 
 //  Dense Gauss elimination with partial pivoting, for the inner Newton's
@@ -130,12 +134,28 @@ bool solveDense(std::vector<std::vector<scalar>> A, std::vector<scalar> b,
 }
 
 //  The inner problem at ONE station and ONE water flux: the permeate
-//  composition c_p such that the shot from the wall lands on it, with the
-//  permeate electroneutral.  Unknowns: the n values c_p,i.  Equations: the n-1
-//  landing residuals c_i(1) = c_p,i for every ion but `drop`, plus
-//  sum z_i c_p,i = 0.  The dropped residual is implied by the others when the
-//  wall is electroneutral (the shot conserves charge exactly), so dropping the
-//  ion carrying the most charge keeps the system square and well posed.
+//  composition c_p such that the Nernst-Planck profile through the active
+//  layer joins the wall to the permeate, with the permeate electroneutral.
+//
+//  THE SHOT IS TAKEN FROM THE PERMEATE FACE, BACKWARD TO THE WALL.  The
+//  unknown c_p IS the state at x = 1 -- the ionic strength there is known
+//  exactly, so the field dpsi/dx = -(sum z j/P)/(sum z^2 c) never divides by
+//  a vanishing virtual concentration -- and the concentrations GROW toward
+//  the wall, which is the stable direction for a shot: an error at the start
+//  is compared against the large wall values, not against a well-rejected
+//  salt's tiny permeate value.  The first version shot from the wall toward
+//  the permeate and lost the paper's Na2SO4 feed at every flux and its MgCl2
+//  and MgSO4 feeds over most of the 2-14 bar range (measured 2026-09-15;
+//  the forward shot is the same ODE, so where both converge they agree).
+//
+//  Unknowns: the n values c_p,i.  Equations: the n-1 arrival residuals
+//  c_i(0) = c_m,i for every ion but `drop`, plus sum z_i c_p,i = 0.  The
+//  dropped residual is implied by the others (the shot conserves charge
+//  exactly, and the wall is electroneutral), so dropping the ion carrying
+//  the most charge keeps the system square and well posed.  The Newton step
+//  is halved until every concentration stays positive, then BACKTRACKED on
+//  the residual norm (Armijo) -- a step that keeps the sign but grows the
+//  residual is not accepted.
 struct Inner
 {
     std::vector<scalar> c_m, c_p;
@@ -177,31 +197,38 @@ Inner solveInner(scalar Jw, const std::vector<scalar>& c_b, scalar k_film,
     {
         wallOf(cp, cm);
         for (std::size_t i = 0; i < n; ++i) j[i] = Jw * cp[i];
-        const Shot sh = shoot(cm, j, P, z, nSteps);
+        const Shot sh = shoot(cp, j, P, z, nSteps, /*backward=*/true);
         F.assign(n, 0.0);
         for (std::size_t i = 0; i < n; ++i)
-            F[i] = (i == drop) ? 0.0 : (sh.c1[i] - cp[i]) / cScale;
+            F[i] = (i == drop) ? 0.0 : (sh.c1[i] - cm[i]) / cScale;
         scalar q = 0.0;
         for (std::size_t i = 0; i < n; ++i) q += scalar(z[i]) * cp[i];
         F[drop] = q / zScale;
         psiOut = sh.psi;
     };
+    auto normOf = [](const std::vector<scalar>& F)
+    {
+        scalar m = 0.0;
+        for (scalar v : F) m = std::max(m, std::abs(v));
+        return m;
+    };
 
     Inner out;
     out.c_p = seed;
+    for (scalar& v : out.c_p) if (!(v > 0.0) || !std::isfinite(v)) v = 1e-9 * cScale;
     out.c_m.assign(n, 0.0);
     out.psi = 0.0; out.converged = false; out.iterations = 0; out.residual = 0.0;
 
-    std::vector<scalar> F(n), Fp(n), dx(n), cpTry(n);
+    std::vector<scalar> F(n), Fp(n), Ft(n), dx(n), cpTry(n);
     std::vector<std::vector<scalar>> J(n, std::vector<scalar>(n, 0.0));
     scalar psi = 0.0;
     residual(out.c_p, F, psi);
+    scalar fmax = normOf(F);
     for (int it = 0; it < 60; ++it)
     {
-        scalar fmax = 0.0;
-        for (scalar v : F) fmax = std::max(fmax, std::abs(v));
         out.residual = fmax; out.iterations = it; out.psi = psi;
         if (fmax < 1e-11) { out.converged = true; break; }
+        if (!std::isfinite(fmax)) break;
 
         //  Forward-difference Jacobian, one shot per ion.
         for (std::size_t k = 0; k < n; ++k)
@@ -216,22 +243,28 @@ Inner solveInner(scalar Jw, const std::vector<scalar>& c_b, scalar k_film,
         for (std::size_t i = 0; i < n; ++i) rhs[i] = -F[i];
         if (!solveDense(J, rhs, dx)) break;
 
-        //  Damped update: a permeate concentration is never negative.
+        //  A permeate concentration is never negative: halve until positive.
         scalar lambda = 1.0;
-        for (int back = 0; back < 30; ++back)
+        for (int back = 0; back < 40; ++back)
         {
             bool ok = true;
             for (std::size_t i = 0; i < n; ++i)
-            {
-                cpTry[i] = out.c_p[i] + lambda * dx[i];
-                if (cpTry[i] < 0.0) { ok = false; break; }
-            }
+                if (out.c_p[i] + lambda * dx[i] <= 0.0) { ok = false; break; }
             if (ok) break;
             lambda *= 0.5;
         }
-        for (std::size_t i = 0; i < n; ++i)
-            out.c_p[i] = std::max(out.c_p[i] + lambda * dx[i], 0.0);
-        residual(out.c_p, F, psi);
+        //  Armijo backtracking on the residual norm.
+        bool accepted = false; scalar fTry = fmax, psiTry = psi;
+        for (int back = 0; back < 20; ++back)
+        {
+            for (std::size_t i = 0; i < n; ++i) cpTry[i] = out.c_p[i] + lambda * dx[i];
+            residual(cpTry, Ft, psiTry);
+            fTry = normOf(Ft);
+            if (std::isfinite(fTry) && fTry <= (1.0 - 1e-4 * lambda) * fmax) { accepted = true; break; }
+            lambda *= 0.5;
+        }
+        if (!accepted) { out.iterations = it + 1; break; }
+        out.c_p = cpTry; F = Ft; fmax = fTry; psi = psiTry;
     }
     wallOf(out.c_p, out.c_m);
     return out;
@@ -324,7 +357,14 @@ TransportSolution SDEM::localFluxes(const TransportContext& ctx) const
     const std::vector<scalar>&      c_b       = ctx.c_b;
     const std::size_t               Ns        = soluteIdx.size();
     const scalar dP = ctx.P_feed_Pa - ctx.P_perm_Pa;
-    constexpr int nSteps = 40;
+    //  RK4 steps across the active layer.  MEASURED 2026-09-15 on the
+    //  membrane13 point (MgSO4, J_w 2.5e-5 m/s, the sharpest profile in the
+    //  corpus: NO3 negatively rejected): 40 steps put R_NO3 3.4e-4 off the
+    //  converged value (2.4e-3 relative, above the golden's 1e-4), 160 steps
+    //  4e-7 off, 320 steps 1.4e-7 -- forward and backward shots agree to the
+    //  last digit there.  A shot costs microseconds; the profile is not
+    //  where the run's time goes.
+    constexpr int nSteps = 320;
 
     TransportSolution sol;
     sol.c_m.assign(Ns, 0.0);
@@ -357,16 +397,12 @@ TransportSolution SDEM::localFluxes(const TransportContext& ctx) const
         }
     }
 
-    //  The seed for the inner Newton: the previous station's permeate, else
-    //  the uncoupled solution-diffusion answer at the no-osmotic flux.
-    auto seedFor = [&](scalar Jw) -> std::vector<scalar>
+    //  The seed for the inner Newton: the last permeate this station's
+    //  outer Newton converged (tracked), else the previous station's, else
+    //  the uncoupled solution-diffusion answer at the given flux.
+    std::vector<scalar> cpTrack;
+    auto sdSeed = [&](scalar Jw) -> std::vector<scalar>
     {
-        if (cpPrev_.size() == Ns)
-        {
-            bool ok = true;
-            for (scalar v : cpPrev_) if (!(v >= 0.0) || !std::isfinite(v)) ok = false;
-            if (ok) return cpPrev_;
-        }
         std::vector<scalar> cp(Ns);
         const scalar E = std::exp(Jw / k_film);
         for (std::size_t s = 0; s < Ns; ++s)
@@ -377,12 +413,34 @@ TransportSolution SDEM::localFluxes(const TransportContext& ctx) const
         }
         return cp;
     };
+    auto usable = [&](const std::vector<scalar>& v)
+    {
+        if (v.size() != Ns) return false;
+        for (scalar x : v) if (!(x > 0.0) || !std::isfinite(x)) return false;
+        return true;
+    };
+    auto seedFor = [&](scalar Jw) -> std::vector<scalar>
+    {
+        if (usable(cpTrack)) return cpTrack;
+        if (usable(cpPrev_)) return cpPrev_;
+        return sdSeed(Jw);
+    };
+
+    //  The inner solve at J_w; a converged answer becomes the seed of the
+    //  next inner solve at this station (the outer Newton's finite
+    //  differences and its next iterate start from it).
+    auto innerAt = [&](scalar Jw) -> Inner
+    {
+        Inner in = solveInner(Jw, c_b, k_film, P, z_, seedFor(Jw), nSteps);
+        if (in.converged) cpTrack = in.c_p;
+        return in;
+    };
 
     //  Given J_w: the inner solve and the osmotic difference across the
     //  membrane (per ion, the module's osmotic model, nu = 1 for an ion).
     auto eval = [&](scalar Jw, Inner& in, scalar& dpi) -> bool
     {
-        in = solveInner(Jw, c_b, k_film, P, z_, seedFor(Jw), nSteps);
+        in = innerAt(Jw);
         dpi = 0.0;
         for (std::size_t s = 0; s < Ns; ++s)
         {

@@ -2033,11 +2033,34 @@ two ions.  Announced: the per-ion, field-free polarisation film (a
 limitation of this version).  Witnesses `membrane12`/`membrane13` (NF270,
 Fernández de Labastida & Yaroshchuk 2021, CC BY — its Table 1 ion
 permeances; NO₃⁻ negatively rejected under dominant MgSO₄ with the same
-permeances and no parameter for the effect).  NOT done, named: the DSPM-DE
-`X_d = 0` branch that skips ψ_p (task #165); a film with a field; the batch
-vessel under SDEM.  Gate: `check_sdem` (the negative arm runs the SAME feed
-under the uncoupled law and requires a CHARGED permeate).  Record:
-[`docs/design/electroneutrality-without-a-new-parameter.md`](docs/design/electroneutrality-without-a-new-parameter.md).
+permeances and no parameter for the effect).  **THE FIGURES WERE DIGITISED THE SAME DAY, AND THE SWEEP FOUND WHAT THE
+WITNESSES COULD NOT (2026-09-15).**  `bin/curate/digitise_fdl2021.py` reads
+the paper's eight panels (calibration VERIFIED against the tick labels,
+reading error per point, the images kept out of the tree) into
+membrane12's `constant/experimental/fdl2021_figures.csv`.  Driving the engine to each
+figure's flux: **the inner Newton converged at the two witnesses' operating
+points and almost nowhere else** — a witness at one operating point is not a
+sweep.  Rule: **SHOOT FROM THE FACE WHERE THE UNKNOWN IS.**  The shot ran
+from the wall toward the permeate, landing on values a hundred times smaller
+than it started from while dividing by an ionic strength that is smallest
+exactly there; from the permeate face the state is the unknown, the field is
+finite, and the profile GROWS toward the wall (28/28 (feed, flux) pairs, 3–7
+iterations).  Also paid for: 40 RK4 steps put a 1e-3 discretisation error
+under a 1e-4 golden (320 now; membrane13 moves four rows).  The lesson for a
+student: **in the trace limit the engine reproduces the authors' SDEM lines
+(2–8 %); at the paper's OWN 2e-4 M it does not, because a trace anion at
+42 µm/s carries more current than 0.01 M of sulfate at 0.13 µm/s** — the
+correction the authors' analytical fit neglects and their text names.  Two
+findings about the SOURCE are pinned rather than tuned: NH4⁺'s ">60" line is
+met only at ~1000 µm/s, and Fig 2a's MgCl2 line is not Eq. (1) with the
+table's own P_s (arm (j) asks for its pin back the day that closes).
+NOT done, named: the DSPM-DE `X_d = 0` branch that skips ψ_p (task #165); a
+film with a field; the batch vessel under SDEM; the measured SYMBOLS
+themselves (compared by nobody — the model is held to the authors' fit, not
+to their residual).  Gate: `check_sdem` (the negative arm runs the SAME feed
+under the uncoupled law and requires a CHARGED permeate; arms (h)–(j) hold
+the trace-limit lines, the not-a-trace ratio and the Fig 2a pin).  Record:
+[`docs/design/electroneutrality-without-a-new-parameter.md`](docs/design/electroneutrality-without-a-new-parameter.md) (§7).
 
 **AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  An advisory
 carries `where` (the innermost open `AdvisoryFrame`) and `status` (`accepted`

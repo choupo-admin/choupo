@@ -19,3 +19,13 @@ trace cations rejected, Cl- from -70 % at small flux up to +60 %, NO3-
 negative over the whole flux range (-151 % to -5 %).  `check_sdem` holds the
 signs the text states at this run's flux, the permeate electroneutral, and
 the MgSO4 rejection to the single-salt ambipolar law.
+
+**Against the paper's Figure 4** (digitised into
+`../membrane12_sdem_nf270_nacl_traces/constant/experimental/fdl2021_figures.csv`): in the TRACE
+LIMIT the engine reproduces the authors' SDEM lines for Na+, Cl- and NO3-
+within 2-9 %; at this case's 2e-4 M it does not, and that is the lesson --
+here 2e-4 M of NO3- at 41.9 um/s carries more anion current than 0.01 M of
+SO4 at 0.13 um/s, the field relaxes, NO3- is rejected LESS negatively
+(f 1.37x the trace-limit value at 34.7 um/s) and the trace cations less
+(0.45x).  The authors' analytical fit assumes the traces do not touch the
+field; their text says they do.

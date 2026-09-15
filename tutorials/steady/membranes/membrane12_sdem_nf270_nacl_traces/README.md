@@ -22,6 +22,17 @@ This run is intrinsic (large k_film) at one operating point; the gate
 dominant-salt rejection to the single-salt law R = J_v/(J_v + P_s) with the
 AMBIPOLAR P_s, recomputed independently.
 
-**What is NOT validated here.** The paper's per-point rejections live in its
-figures, not its text; the anchors are the four Table 1 salt permeances (the
-ambipolar identity) and the qualitative trace behaviour the text states.
+**The figures, digitised.** `constant/experimental/fdl2021_figures.csv` holds
+the 106 measured points and the authors' fitted lines of the paper's Figures
+1-4, read off the published panels by `bin/curate/digitise_fdl2021.py` (the
+reading error is declared per point; the images are not in the tree).
+`check_sdem` drives the engine to each figure's flux and holds it, in the
+trace limit the authors' lines assume, to those lines within a stated band
+per series -- and pins that at the paper's own 2e-4 M the traces are NOT
+traces (under a sulfate they carry the anion current and relax the field).
+
+**What is NOT validated here.** The measured SYMBOLS are compared by
+nobody: the model is held to the authors' FIT, and the symbols scatter about
+it by a residual that is theirs to explain.  NH4+ here is a bound in the
+paper ('>60 um/s, the fit became insensitive'); the engine meets that line
+only near 1000 um/s and the record keeps the bound.
