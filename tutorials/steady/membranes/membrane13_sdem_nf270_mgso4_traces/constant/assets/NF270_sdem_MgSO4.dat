@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: NF270 with PER-ION permeances for the SDEM transport law,
+  the row "MgSO4" of Table 1 of
+
+      M. Fernandez de Labastida, A. Yaroshchuk, "Nanofiltration of
+      Multi-Ion Solutions: Quantitative Control of Concentration
+      Polarization and Interpretation by Solution-Diffusion-Electro-
+      Migration Model", Membranes 11 (2021) 272,
+      doi:10.3390/membranes11040272 -- CC BY 4.0.
+
+  WHAT THESE NUMBERS ARE.  Ion permeances the authors FITTED with the SDEM
+  model to their own CP-corrected (intrinsic) rejections on a flat NF270
+  disc in a rotating-disk cell: dominant salt MgSO4 at 0.01 mol/L, trace
+  salts (NaNO3, NH4Cl) at 2e-4 mol/L, 20 C, 2-14 bar.  The permeances
+  DEPEND ON THE DOMINANT SALT (the paper's point: Donnan and dielectric
+  exclusion set the interphase potential, and with it every ion's
+  permeance), which is why this record names the salt it belongs to and a
+  sibling record carries the MgSO4 row.  A value the paper gives as a bound
+  or a range is marked below with the value taken and why.
+
+  THE CHECK THE RECORD CARRIES.  Under zero current a single salt passes
+  with the AMBIPOLAR permeance P_s = (z+ + |z-|) P+ P- / (z+ P+ + |z-| P-);
+  the table's own salt permeance for MgSO4 is 0.23 um/s, and the per-ion
+  values below reproduce it to the table's rounding (check_sdem recomputes
+  this in Python, independently of the engine).
+
+  A_w: the standard NF270 record's value (data/standards/assets/NF270.dat),
+  NOT measured in the paper -- the rejections the witness compares are
+  functions of the flux the run produces, so A_w only places the operating
+  point on the paper's 2-14 bar range.
+\*---------------------------------------------------------------------------*/
+name           NF270_sdem_MgSO4;
+kind           NF;
+manufacturer   "DuPont FilmTec";
+A_w            1.0e-5  m/s/bar;     // data/standards/assets/NF270.dat
+//  PROVENANCE, machine-readable: the values are a PRIMARY SOURCE's own fit
+//  (the paper's Table 1), not a fit to any Choupo case.  The citation and
+//  the licence that lets a CC BY table be transcribed here:
+provenance     primarySource;
+source         "Fernandez de Labastida & Yaroshchuk, Membranes 11 (2021) 272, Table 1; doi:10.3390/membranes11040272";
+licence        CC-BY-4.0;
+permeabilities
+{
+    Mg      9.000e-07  m/s;
+    SO4     1.300e-07  m/s;
+    Na      7.940e-05  m/s;
+    NH4     8.000e-05  m/s;
+    Cl      1.570e-05  m/s;
+    NO3     4.190e-05  m/s;
+}
+P_max          41.4;            // bar (600 psi)
+T_max          318;             // K (45 C)
+pH_min         3;
+pH_max         10;
+MWCO           200;             // Da (loose NF)

@@ -437,6 +437,34 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     }
     const std::size_t Ns = soluteIdx.size();
 
+    //  AN ION-DECLARED FEED UNDER THE UNCOUPLED LAW IS SAID SO, WHATEVER ELSE
+    //  THE CASE DECLARES.  This sentence used to live inside the scaling{}
+    //  audit, so an ionic case with no audit block ran silent -- an
+    //  announcement inside a conditional that is not the condition of the
+    //  fact (the 2026-09-07 shape).  The fact is the LAW and the FEED: per-ion
+    //  solution-diffusion couples nothing, so the permeate carries whatever
+    //  net charge the per-ion permeances happen to produce (measured on
+    //  membrane07: -0.82 % of the cation equivalents).  `transport SDEM;`
+    //  couples the ions by the zero-current field with the SAME permeances.
+    {
+        std::size_t nIonic = 0;
+        for (std::size_t s = 0; s < Ns; ++s)
+            if (thermo.comp(soluteIdx[s]).hasAqueousMapping()) ++nIonic;
+        if (nIonic >= 2 && transportModel->type() == "solutionDiffusion")
+        {
+            const std::string msg =
+                "per-ion solution-diffusion without charge coupling: "
+                + std::to_string(nIonic) + " ionic solute(s) each with its own"
+                " B_s and nothing enforcing permeate electroneutrality;"
+                " declare `transport SDEM;` to couple them by the zero-current"
+                " field (same permeances, no new parameter)";
+            if (verbosity >= 1)
+                std::cout << "  [transport] " << msg << "\n";
+            AdvisoryLog::instance().add("approximation", "warning",
+                "membrane '" + membraneName + "'", msg);
+        }
+    }
+
     // ---- Discretise the channel length -----------------------------------
     // Effective width W chosen such that  W · L = A_membrane.
     const scalar W  = A_membrane / L;
@@ -555,10 +583,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         }
 
         if (verbosity >= 1)
-            std::cout << "  [scaling] per-ion solution-diffusion without "
-                         "charge coupling -- permeate electroneutrality not "
-                         "enforced (v1)\n"
-                      << "  [scaling] molalities from kmol/m3 at rho = " << rho
+            std::cout << "  [scaling] molalities from kmol/m3 at rho = " << rho
                       << " kg/m3 (dilute aqueous closure)\n";
 
         // THE AQUEOUS ACTIVITY MODEL IS THE CASE'S, NOT THIS UNIT'S.  A unit op
@@ -775,13 +800,21 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         std::cout << "\n";
     }
 
-    auto recordNode = [&](int k, scalar z, scalar Jw)
+    auto recordNode = [&](int k, scalar z, const membrane::TransportSolution& st)
     {
+        const scalar Jw = st.J_w;
         zGrid.push_back(z);
         cols["J_w"].push_back(Jw);
         cols["Q_b"].push_back(Q_b);
         cols["P_b"].push_back(P_b);
         cols["k_film"].push_back(kFilmAt(Q_b));
+        //  The electric potential drop across the active layer, when the
+        //  transport law computes one (SDEM).  RT/F units -> mV, so a reader
+        //  compares it with a membrane-potential measurement directly.  A law
+        //  that computes none publishes no column: absence keeps meaning
+        //  "not modelled", never "zero".
+        if (st.hasPsi)
+            cols["psi_mV"].push_back(st.psi * constant::R * T_in / constant::F * 1.0e3);
         for (std::size_t s = 0; s < Ns; ++s)
             cols["c_b_" + thermo.comp(soluteIdx[s]).name()].push_back(c_b[s]);
 
@@ -806,7 +839,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                                  *osmModel, &mem, specSolver };
     };
     auto sol = transportModel->localFluxes(makeCtx(kFilmAt(Q_b)));
-    recordNode(0, 0.0, sol.J_w);
+    recordNode(0, 0.0, sol);
 
     const scalar Q_feed = Q_b;          // for per-element recovery
     int   globalNode = 0;
@@ -849,7 +882,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
 
             if (Q_b <= 0.0) { dry = true; break; }
             sol = transportModel->localFluxes(makeCtx(kFilmAt(Q_b)));
-            recordNode(++globalNode, z0 + (k + 1) * dz_e, sol.J_w);
+            recordNode(++globalNode, z0 + (k + 1) * dz_e, sol);
         }
 
         // Per-element diagnostics: cumulative recovery through element e+1,
@@ -1067,6 +1100,14 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     // throws if it ever exceeds 1e-9): a permanent, visible witness that the
     // module conserves mass.
     if (!dry) kpis_["mass_closure_rel"] = mass_closure_rel;
+    //  Membrane potential (SDEM only): the channel average of the per-node
+    //  potential drop, the one number that says the field was there.
+    if (cols.count("psi_mV") && !cols["psi_mV"].empty())
+    {
+        scalar sum = 0.0;
+        for (scalar v : cols["psi_mV"]) sum += v;
+        kpis_["membranePotential_mV_avg"] = sum / cols["psi_mV"].size();
+    }
     // Scaling-audit KPIs: max wall SI per mineral, the module where the wall
     // first crosses SI = 0 (-1 = never) and the cumulative recovery there.
     if (doScaling)

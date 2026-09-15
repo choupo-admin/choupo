@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane12_sdem_nf270_nacl_traces -- one NF270 element under the SOLUTION-DIFFUSION-ELECTROMIGRATION
+  law (`transport SDEM;`): per-ion permeances, ONE electric field, ZERO
+  current, and therefore an electroneutral permeate with no parameter the
+  uncoupled law does not already have.  See the case README for the lesson
+  and the paper the permeances come from.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        NF;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+        operation
+        {
+            membrane         NF270_sdem_NaCl;   // constant/assets/, the paper's Table 1 row
+            transport        SDEM;
+            area             0.10;         // m2 -- small, so recovery stays ~1 %
+            length           1.0;          // m
+            P_permeate       1.0 bar;
+            //  A LARGE film coefficient makes the run INTRINSIC (wall = bulk
+            //  to 0.3 %), which is what the paper's CP-corrected rejections
+            //  are.  Declared, not defaulted: SDEM's film is per ion and
+            //  field-free (announced), so the honest comparison is one where
+            //  the film does not matter.
+            k_film           1.0e-2;       // m/s
+            dP_feed_total    0.05 bar;
+            nNodes           20;
+        }
+    }
+);

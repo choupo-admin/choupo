@@ -389,6 +389,8 @@ authority on the lineup; the kinds and what each record carries:
   (Guthrie), σ_y, maxT, maxP.
 - **`RO`** / **`NF`** — SW30HR (the seawater-RO archetype), NF270 and
   NF270_dspmde (loose-NF, the second carrying the DSPM-DE parameterisation).
+  Two CASE-LOCAL NF270 records (membrane12/13) carry the per-ion permeances of
+  Fernández de Labastida & Yaroshchuk 2021 (CC BY) for the `SDEM` transport law.
   A_w (water permeability, m/(s·bar)) + a
   `permeabilities { <solute> <B_s>;... }` sub-dict with the per-solute
   solution-diffusion permeability B_s (m/s) + ratings (P_max, T_max, pH range,

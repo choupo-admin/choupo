@@ -2005,6 +2005,40 @@ guard nothing tests.*  The gate now BUILDS the offending cases (reason stripped,
 `standard` requested, a law nobody implemented) and requires each to refuse AND
 name why.  8 sabotages total, two of which survived first contact.
 
+**ELECTRONEUTRALITY WITHOUT A NEW PARAMETER — the `SDEM` transport law
+(2026-09-15, Vítor: "não se pode andar a aumentar o número de parâmetros
+porque o modelo fica melhor mas depois não há dados").**  `solutionDiffusion`
+on an ION-declared feed gives every ion its own `B_s` and couples nothing, so
+the permeate carries a net charge (measured on membrane07: −0.82 % of the
+cation equivalents; the engine SAID so only inside `scaling{}` — the
+2026-09-07 shape, an announcement inside a conditional that is not the
+condition of the fact; it is said on the law + the feed now).  Rule: **an
+ion-declared feed is coupled by ONE STATE VARIABLE, the electric potential
+across the active layer, fixed by ZERO CURRENT — never by a parameter.**
+`transport SDEM;` (solution-diffusion-electromigration, Yaroshchuk, Bruening
+& Licón Bernal 2013) integrates Nernst-Planck on virtual concentrations with
+virtual-solution electroneutrality — NOT a constant-field Goldman
+integration, and the difference is checkable: only this formulation reduces
+a single salt EXACTLY to `R = J_v/(J_v + P_s)` with the AMBIPOLAR
+`P_s = (z₊+|z₋|)P₊P₋/(z₊P₊+|z₋|P₋)`, which is what makes per-ion permeances
+CALIBRATABLE FROM SINGLE-SALT TESTS — the measurement manufacturers publish —
+and the four salt permeances of the source table reproduce from its own ion
+values to their rounding.  The partition coefficient is INSIDE `B` (the
+solution-diffusion definition `B = DK/δ`), so none is declared; a separate
+`K` is needed only under fixed charge (DSPM-DE) or under electroneutrality
+INSIDE the membrane (TMS), neither of which this law assumes.  Refuses by
+name: a solute with no aqueous bridge, an ion with no permeance, a feed that
+is not electroneutral (the FilmTec protocol's own precondition), fewer than
+two ions.  Announced: the per-ion, field-free polarisation film (a
+limitation of this version).  Witnesses `membrane12`/`membrane13` (NF270,
+Fernández de Labastida & Yaroshchuk 2021, CC BY — its Table 1 ion
+permeances; NO₃⁻ negatively rejected under dominant MgSO₄ with the same
+permeances and no parameter for the effect).  NOT done, named: the DSPM-DE
+`X_d = 0` branch that skips ψ_p (task #165); a film with a field; the batch
+vessel under SDEM.  Gate: `check_sdem` (the negative arm runs the SAME feed
+under the uncoupled law and requires a CHARGED permeate).  Record:
+[`docs/design/electroneutrality-without-a-new-parameter.md`](docs/design/electroneutrality-without-a-new-parameter.md).
+
 **AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  An advisory
 carries `where` (the innermost open `AdvisoryFrame`) and `status` (`accepted`
 | `trial`), both stamped by the SINK, not by the sites that raise them; THE

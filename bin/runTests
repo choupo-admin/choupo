@@ -3035,6 +3035,25 @@ PYEOF
     fi
     rm -f /tmp/diafil.$$
 
+    # SDEM gate (2026-09-15).  The solution-diffusion-electromigration law
+    # couples an ION-declared feed by the zero-current field with NO new
+    # parameter: the permeate must be electroneutral to machine level, the
+    # dominant salt must obey the single-salt law with the AMBIPOLAR
+    # permeance (recomputed here from the record's ions and checked against
+    # the paper's own salt permeances), the trace-ion signs the paper states
+    # must hold, and the UNCOUPLED law on the same feed must announce itself
+    # and must NOT produce a neutral permeate -- the negative that proves the
+    # coupling is what the new law adds.
+    if "$ROOT/bin/curate/check_sdem.py" > /tmp/sdem.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "sdem-gate" "$(grep -m1 '^check_sdem: OK' /tmp/sdem.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_sdem.py)\n" "sdem-gate"
+        cat /tmp/sdem.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sdem.$$
+
     # block-tridiagonal gate (2026-08-25).  The MESH declares its Jacobian
     # structure; the declaration is audited on the first iteration and the
     # colored evaluation count must equal the CPR formula recomputed by the

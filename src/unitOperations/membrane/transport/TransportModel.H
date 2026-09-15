@@ -46,10 +46,20 @@ Description
                                inner Newton-1D in J_w resolves the coupled
                                flux–polarisation–osmotic non-linearity.
 
-    The interface is kept clean so a charged transport law (Donnan-steric pore
-    model, DSPM-DE) can drop in later as a sibling: the membrane handle and an
-    activity/speciation hook already ride in the context, unused by the
-    solution-diffusion baseline.
+        DSPM-DE            --  the charged-pore Donnan-steric model with
+                               dielectric exclusion (Bowen-Welfoot), ion by
+                               ion, for a membrane record carrying a
+                               poreModel{} tier.
+
+        SDEM               --  solution-diffusion-electromigration
+                               (Yaroshchuk): per-ion solution-diffusion
+                               coupled by the zero-current electric field,
+                               so an ION-declared feed yields an
+                               electroneutral permeate with NO parameter
+                               beyond the record's per-ion permeances.
+
+    The membrane handle and an activity/speciation hook ride in the context
+    for the laws that need them; solution-diffusion reads neither.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -83,6 +93,12 @@ struct TransportSolution
     std::vector<scalar> c_m;        // membrane-wall concentration [kmol/m^3]
     std::vector<scalar> c_p;        // permeate-side concentration [kmol/m^3]
     std::vector<scalar> J_s;        // solute flux [kmol/(m^2.s)]
+    //  The dimensionless electric potential drop across the active layer
+    //  (RT/F units), published by a charge-coupled law (SDEM); `hasPsi`
+    //  stays false for a law that computes none, so the module publishes
+    //  the column only when a law produced it.
+    scalar              psi    = 0.0;
+    bool                hasPsi = false;
 };
 
 // ---- The inputs to the local problem at one z station ----------------------

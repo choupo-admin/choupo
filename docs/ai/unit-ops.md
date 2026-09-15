@@ -701,11 +701,40 @@ operation
     pressureDrop  { model SchockMiquel; }   // in-block default SchockMiquel; omit the
                                             // block for the constant dP_feed_total
     osmotic       { model Pitzer; }         // or `vanHoff` (default)
+    transport     solutionDiffusion;        // default | DSPM-DE | SDEM (below)
 }
 ```
 
 Inputs (`feed`), outputs (`retentate permeate`).  KPIs: `J_w_avg`,
 `R_obs_<solute>`, `water_recovery`, `dP_feed`, etc.
+
+**Transport laws** (`transport <word>;`, the local J_w–c_m–c_p problem at
+each channel node):
+
+* `solutionDiffusion` (default) — per-solute `J_s = B_s (c_m − c_p)`, film
+  polarisation, van't Hoff/Pitzer osmotic back-pressure.  On an
+  **ion-declared feed** (Ca Mg Na K Cl SO4 HCO3 + water, each ion a
+  component with an `aqueousMapping`) every ion gets its own `B_s` and
+  NOTHING couples them, so the permeate carries a net charge; the engine
+  announces it (`per-ion solution-diffusion without charge coupling`).
+* `DSPM-DE` — the charged-pore Donnan-steric model with dielectric
+  exclusion; needs a membrane record with a `poreModel {}` tier and SALT
+  components carrying `electrolyte { cation; anion; }`.
+* `SDEM` — **solution-diffusion-electromigration** (Yaroshchuk 2013): the
+  SAME per-ion `B_s` as above, coupled by the electric field that zero
+  current imposes — the permeate is electroneutral **by construction, with
+  no new parameter**.  Needs an ion-declared feed (≥ 2 charged solutes, each
+  with an aqueous bridge and a permeance in the record) and an
+  electroneutral analysis (an unbalanced one is refused — reconcile it with
+  `aqueousAnalysis {}` first).  Publishes the membrane potential
+  (`membranePotential_mV_avg`, profile column `psi_mV`).  A single salt
+  reduces exactly to `R = J_v/(J_v + P_s)` with the AMBIPOLAR
+  `P_s = (z₊+|z₋|)P₊P₋/(z₊P₊+|z₋|P₋)`, which is how per-ion permeances are
+  calibrated from single-salt tests.  Witnesses:
+  `membrane12_sdem_nf270_nacl_traces`, `membrane13_sdem_nf270_mgso4_traces`
+  (NF270 permeances from Fernández de Labastida & Yaroshchuk 2021, CC BY).
+  The polarisation film is per ion and field-free in this version
+  (announced).
 
 ## Solids separators
 
