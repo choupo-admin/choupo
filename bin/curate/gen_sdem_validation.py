@@ -18,6 +18,14 @@ docs/tutorialsGuide-sdemValidation.tex \\input{}s):
   tutorialsGuide-sdem-notatrace.tex   the not-a-trace ratio per salt
   tutorialsGuide-sdem-sensitivity.tex the two permeances the paper leaves as
                                       bounds, swept
+  tutorialsGuide-sdem-figure.tex      ONE figure, four panels (one per dominant
+                                      salt): the same points as the per-salt
+                                      tables drawn as f vs J_v on a log axis --
+                                      measured markers with their reading
+                                      error, the paper's fitted line (dashed),
+                                      Choupo in the trace limit (solid) and at
+                                      the paper's feed (dotted).  pgfplots,
+                                      data inline, no image file.
 
 HOW THE ENGINE IS DRIVEN.  The probes are the ones check_sdem builds (its
 build_probe / run_at_flux are imported, so the table and the gate cannot
@@ -56,6 +64,55 @@ def pct(a, b):
     return "--" if (a is None or b is None) else f"{(a / b - 1) * 100:+.1f}"
 
 
+#  Okabe-Ito, one colour per ION across all four panels, so a reader can
+#  follow nitrate from panel to panel.
+ION_COLOR = {"Na": "0072B2", "Mg": "E69F00", "NH4": "009E73", "Cl": "D55E00", "NO3": "CC79A7", "SO4": "000000"}
+PANEL = {"NaCl": "(a) dominant NaCl -- Fig.~1", "MgCl2": "(b) dominant MgCl$_2$ -- Fig.~2",
+         "Na2SO4": "(c) dominant Na$_2$SO$_4$ -- Fig.~3", "MgSO4": "(d) dominant MgSO$_4$ -- Fig.~4"}
+
+
+def figure_tex(figpts):
+    """One figure environment: four pgfplots axes, one per dominant salt,
+    f = 1/(1-R) against J_v on a log axis.  Per series: measured markers
+    with the reading error as a bar, the paper's fitted line dashed, Choupo
+    trace-limit solid, Choupo at the paper's feed dotted; a grey line at
+    f = 1 marks R = 0, below which a rejection is negative."""
+    def coords(pts, k):
+        return " ".join(f"({p[0]:.2f},{p[k]:.4f})" for p in pts if p[k] is not None)
+    s = ["\\begin{figure}[htbp]\n\\centering"]
+    for ion, hexc in ION_COLOR.items():
+        s.append(f"\\definecolor{{sdem{ion}}}{{HTML}}{{{hexc}}}")
+    s.append("\\pgfplotsset{sdempanel/.style={width=0.5\\textwidth, height=0.4\\textwidth,"
+             " log ticks with fixed point, xlabel={$J_v$ ($\\mu$m/s)}, ylabel={$f = 1/(1-R)$}, xmin=0,"
+             " grid=major, grid style={gray!20}, tick label style={font=\\scriptsize},"
+             " label style={font=\\scriptsize}, title style={font=\\footnotesize},"
+             " legend style={font=\\scriptsize, at={(0.5,-0.24)}, anchor=north, draw=none, legend columns=3,"
+             " /tikz/every even column/.append style={column sep=6pt}}, legend cell align=left}}")
+    for n, (salt, series) in enumerate(figpts.items()):
+        xmax = max(p[0] for pts in series.values() for p in pts) * 1.06
+        s.append(f"\\begin{{tikzpicture}}\\begin{{semilogyaxis}}[sdempanel, xmax={xmax:.1f}, title={{{PANEL[salt]}}}]")
+        for sname, pts in series.items():
+            ion = G.TABLE1[salt]["cation"][0] if sname == salt else sname
+            col = f"sdem{ion}"
+            label = (SALT_LABEL[salt] + " (dominant)") if sname == salt else (ION_LABEL[ion] + " (trace)")
+            meas = " ".join(f"({p[0]:.2f},{p[1]:.4f}) +- (0,{p[2]:.4f})" for p in pts)
+            s.append(f"\\addplot[{col}, only marks, mark=*, mark size=1.3pt, error bars/.cd, y dir=both, y explicit]"
+                     f" coordinates {{{meas}}}; \\addlegendentry{{{label}}}")
+            s.append(f"\\addplot[{col}, dashed, thin, forget plot] coordinates {{{coords(pts, 3)}}};")
+            s.append(f"\\addplot[{col}, solid, thick, forget plot] coordinates {{{coords(pts, 4)}}};")
+            s.append(f"\\addplot[{col}, dotted, thick, forget plot] coordinates {{{coords(pts, 5)}}};")
+        s.append(f"\\addplot[gray!70, densely dashed, thin, forget plot] coordinates {{(0,1) ({xmax:.1f},1)}};")
+        s.append("\\end{semilogyaxis}\\end{tikzpicture}" + ("\\\\[18pt]" if n == 1 else ("\\hfill" if n % 2 == 0 else "")))
+    s.append("\\caption{Choupo against the paper, every digitised point of Figures 1--4.  $f = 1/(1-R)$ on a log"
+             " axis; below the grey line ($f = 1$) a rejection is negative.  Markers: the measured points, the bar"
+             " being the reading error of the digitisation; dashed: the paper's fitted line (Eq.~(1) for the salt,"
+             " Eq.~(3) for a trace); solid: Choupo at the same flux in the trace limit (trace salts at"
+             " $2\\times10^{-7}$~mol/L); dotted: Choupo at the paper's feed ($2\\times10^{-4}$~mol/L).  The dominant"
+             " salt is drawn through its cation; in the trace limit its two ions coincide exactly.  One colour per"
+             " ion across the four panels.}\n\\label{fig:sdem-validation}\n\\end{figure}")
+    return "\n".join(s) + "\n"
+
+
 def main():
     check = "--check" in sys.argv
     figs = G.read_figures()
@@ -69,6 +126,7 @@ def main():
         rows.append(f"{SALT_LABEL[salt]} & {ION_LABEL[cat]} & {Pp:g} & {ION_LABEL[an]} & {Pm:g} & {row['Ps']:g} & {Ps:.2f} & {pct(Ps, row['Ps'])} \\\\")
     out["ambipolar"] = "\n".join(rows) + "\n"
 
+    figpts = {}
     with tempfile.TemporaryDirectory() as tmp:
         probes = {}
         for salt in G.TABLE1:
@@ -80,6 +138,7 @@ def main():
             tl, re_ = probes[salt]
             lines = []
             series = [salt] + [s for s in ("NH4", "Na", "Cl", "NO3") if s in G.TRACES[salt]]
+            figpts[salt] = {}
             for sname in series:
                 pts = sorted((r for r in figs if r["salt"] == salt and r["series"] == sname), key=lambda r: r["x"])
                 ions = [cat, an] if sname == salt else [sname]
@@ -88,6 +147,12 @@ def main():
                     for i, r in enumerate(pts):
                         ktl = G.run_at_flux(tl, r["x"]); kre = G.run_at_flux(re_, r["x"])
                         f_tl = 1.0 / (1.0 - ktl["R_obs_" + ion]); f_re = 1.0 / (1.0 - kre["R_obs_" + ion])
+                        #  The figure draws the dominant salt through its
+                        #  CATION (the two ions coincide exactly in the trace
+                        #  limit; the caption says so) and each trace ion once.
+                        if ion == ions[0]:
+                            figpts[salt].setdefault(sname, []).append(
+                                (r["x"], r["f_exp"], r["df"], r["f_line"], f_tl, f_re))
                         lab = (ION_LABEL[ion] + (" (dominant)" if sname == salt else " (trace)")) if first else ""
                         first = False
                         dag = "$^\\dagger$" if r["quality"] == "occluded" else ""
@@ -132,6 +197,8 @@ def main():
             rows.append(f"Na$_2$SO$_4$ & Na$^+$ (sets NH$_4^+$) & {P:g} & {line_nh4_na2so4['x']:.1f} & {ff(f)} & {ff(line_nh4_na2so4['f_line'])} & {pct(f, line_nh4_na2so4['f_line'])} \\\\")
         out["sensitivity"] = "\n".join(rows) + "\n"
 
+    out["figure"] = figure_tex(figpts)
+
     #  Each file is a COMPLETE table environment: an \input{} inside a tabular
     #  trips the LaTeX file hooks (a \relax lands before \bottomrule --
     #  "Misplaced \noalign"), so the environment travels with its body.
@@ -159,7 +226,7 @@ def main():
             return ("\\begin{center}\\footnotesize\n\\begin{tabular}{@{}llrrrrr@{}}\\toprule\n"
                     "salt & permeance swept & value ($\\mu$m/s) & $J_v$ ($\\mu$m/s) & $f$ (Choupo, trace limit) & $f$ (paper's line) & dev.\\ (\\%) \\\\ \\midrule\n"
                     + body + "\\bottomrule\n\\end{tabular}\n\\end{center}\n")
-        return body
+        return body   # "figure": already a complete environment
     header = ("% GENERATED by bin/curate/gen_sdem_validation.py from the engine and\n"
               "% tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces/constant/experimental/fdl2021_figures.csv\n"
               "% -- do not edit; regenerate.  Checked for drift by the same script with --check.\n")
@@ -176,9 +243,9 @@ def main():
         if stale:
             print("gen_sdem_validation: STALE -- " + ", ".join(stale) + " differ from what the engine and the digitised CSV give today; run bin/curate/gen_sdem_validation.py and commit")
             return 1
-        print(f"gen_sdem_validation: OK -- {len(out)} generated table file(s) of the Tutorials Guide's SDEM validation section match the engine and the digitised CSV (106 figure points, trace limit and 2e-4 M, two permeance sweeps).  NOT CHECKED: the hand-written prose around them.")
+        print(f"gen_sdem_validation: OK -- {len(out) - 1} generated table file(s) and 1 figure of the Tutorials Guide's SDEM validation section match the engine and the digitised CSV (106 figure points, trace limit and 2e-4 M, two permeance sweeps).  NOT CHECKED: the hand-written prose around them.")
         return 0
-    print(f"wrote {len(out)} table file(s) under docs/")
+    print(f"wrote {len(out) - 1} table file(s) and 1 figure file under docs/")
     return 0
 
 
