@@ -17785,9 +17785,12 @@ catalogue's NF270) is \emph{in} that transition: solution-diffusion with a
 fitted $(A_w, B_s)$ still describes its water flux and partial rejection,
 but charge effects and convective coupling grow underneath --- which is why
 the catalogue also carries \file{NF270\_dspmde} (the Donnan-steric,
-charge-aware sibling) and why the two give different answers for
-multivalent ions.  Choosing between them IS a modelling decision the case
-author owns.
+charge-aware sibling, \S\ref{ch:dspmde}) and why the two give different
+answers for multivalent ions; and why a feed declared ion by ion has a
+third law, \code{transport SDEM;} (\S\ref{ch:sdem}), which keeps the
+per-ion permeances and adds only the electric field that makes the
+permeate electroneutral.  Choosing between them IS a modelling decision
+the case author owns.
 \end{intuition}
 
 \subsection{Concentration polarisation: the film model}
@@ -18316,6 +18319,305 @@ one membrane. \\
 \file{tutorials/steady/membranes/membrane11\_dspmde\_born\_toggle} ---
 the same case with the Born (dielectric) term toggled on/off to isolate
 its contribution.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
+%  Engine: src/unitOperations/membrane/transport/SDEM.{H,cpp} (the law, its
+%  refusals, the banner, the numerics).  Numbers: the goldens of
+%  membrane12_sdem_nf270_nacl_traces and membrane13_sdem_nf270_mgso4_traces,
+%  and two trace-limit runs described in the example box.  The comparison
+%  against measured rejections is the Tutorials Guide's validation section.
+%  Added 2026-09-15, the day the law and its validation shipped.
+\section{Nanofiltration without a fixed charge: solution-diffusion with
+one electric field (SDEM)}\label{ch:sdem}
+
+\begin{whatyoulllearn}
+Solution-diffusion (\S\ref{ch:membrane}) gives every solute its own
+permeability and couples nothing.  Applied to a feed declared \emph{ion
+by ion} --- $\mathrm{Na^+}$, $\mathrm{Cl^-}$, $\mathrm{Mg^{2+}}$,
+$\mathrm{SO_4^{2-}}$ --- it lets each ion cross at its own rate, and the
+permeate comes out carrying a net electric charge, which no permeate
+does.  DSPM-DE (\S\ref{ch:dspmde}) answers with a pore, a fixed wall
+charge and three partition penalties.  This chapter derives the other
+answer, the one that adds \emph{no parameter}: the ions keep their own
+permeances but share \emph{one} electric field, fixed by the condition
+that no current flows.  The single-salt case collapses exactly to the
+classical rejection law with an \emph{ambipolar} permeance, which is why
+per-ion permeances can be calibrated from the single-salt tests that
+manufacturers actually publish; a trace ion in a dominant salt can be
+pushed \emph{through} the membrane by that field, and rejected
+negatively.  Selected by \code{transport SDEM;}.
+\end{whatyoulllearn}
+
+\subsection{The silence of the uncoupled law}
+
+Write a brackish feed as the water analysis gives it --- seven ions and
+water --- and run it through \code{transport solutionDiffusion;}.  Each
+ion obeys \eqref{eq:cp} with its own $B_s$, so a fast anion crosses
+faster than a slow cation and the permeate carries a net charge.
+Measured on \file{membrane07} the imbalance was $-0.82\,\%$ of the
+cation equivalents against the $-0.35\,\%$ the analysis itself carries:
+small, physically impossible, and until 2026-09-15 said only inside the
+scaling block.  The engine now announces \emph{per-ion solution-diffusion
+without charge coupling} on every such feed and names the remedy.
+
+The remedy is not a new coefficient.  A membrane that lets
+$\mathrm{Na^+}$ through faster than $\mathrm{Cl^-}$ builds up, within
+nanoseconds, an electric potential across its active layer that holds
+the cation back and pulls the anion forward until the two cross at one
+common rate --- the diffusion potential of every electrochemistry
+course.  Adding that potential as one state variable per station, and
+zero net current as the one equation that fixes it, is the whole model.
+
+\subsection{One field, zero current: the equations}
+
+The active layer is a slab of dimensionless thickness $x\in[0,1]$, the
+wall at $x=0$ and the permeate face at $x=1$.  Each ion $i$ carries a
+signed charge $z_i$, a membrane permeance $P_i$ (m/s) and a
+\emph{virtual} concentration $c_i(x)$: the concentration of the bulk
+solution that would be in equilibrium with the membrane at $x$
+\cite{Yaroshchuk2013}.  The flux is Nernst--Planck on the virtual
+solution, with $\psi = F\varphi/\Rgas T$ the dimensionless potential:
+\begin{equation}
+   j_i \;=\; -P_i\Bigl(\frac{dc_i}{dx} + z_i\,c_i\,\frac{d\psi}{dx}\Bigr).
+   \label{eq:sdem-np}
+\end{equation}
+Two constraints close it.  The virtual solution is electroneutral at
+every $x$, and no current flows:
+\begin{equation}
+   \sum_i z_i\,c_i(x) = 0, \qquad \sum_i z_i\,j_i = 0.
+   \label{eq:sdem-constraints}
+\end{equation}
+Differentiate the first along $x$, substitute \eqref{eq:sdem-np}, and
+the field is an algebraic consequence of the two with nothing to fit:
+\begin{equation}
+   \boxed{\;\frac{d\psi}{dx} \;=\;
+   -\,\frac{\sum_i z_i\,j_i/P_i}{\sum_i z_i^2\,c_i}\;}
+   \label{eq:sdem-field}
+\end{equation}
+The boundary conditions are the wall concentrations $c_i(0)=c_{m,i}$
+(the film model of \S\ref{ch:membrane}, applied per ion) and the
+convective closure at the permeate, $j_i = J_v\,c_{p,i}$ with
+$c_i(1)=c_{p,i}$, where $J_v$ is the volume flux.  A neutral solute
+($z_i=0$) drops out of \eqref{eq:sdem-field} and follows the plain law
+\eqref{eq:cp} unchanged.
+
+\paragraph{Where the partition coefficient went.}  Nowhere new.  The
+permeance is the solution-diffusion composite $P_i = D_i K_i/\delta$ ---
+diffusivity, partition coefficient, thickness --- exactly as $B_s$ is in
+\eqref{eq:sd-solute} and $A_w$ in \S\ref{ch:membrane}; because
+\eqref{eq:sdem-np} is written on \emph{virtual} concentrations the
+partition is already inside $P_i$ and nothing is declared for it.  A
+separate $K$ is needed only when something makes the two faces
+different: a fixed charge (the Donnan jump of DSPM-DE) or
+electroneutrality imposed \emph{inside} the membrane rather than on the
+virtual solution.  SDEM assumes neither, and the formulation is not the
+constant-field (Goldman) integration it can be mistaken for --- the two
+differ, and the difference is checkable, because only this one gives the
+exact single-salt limit that follows.
+
+\subsection{The single-salt limit: an ambipolar permeance, derived}
+
+Take one salt $\mathrm{M}_{\nu_+}\mathrm{X}_{\nu_-}$ at virtual
+concentration $c(x)$, so $c_+ = \nu_+ c$, $c_- = \nu_- c$ and
+$z_+\nu_+ = |z_-|\nu_- \equiv e$ (equivalents per formula unit).  The
+salt flux $j_s$ carries $j_+=\nu_+ j_s$ and $j_-=\nu_- j_s$, which
+satisfies zero current identically.  The field \eqref{eq:sdem-field}
+becomes
+\[
+   \frac{d\psi}{dx} = -\,\frac{j_s\,e\,(1/P_+ - 1/P_-)}{c\,e\,(z_+ + |z_-|)}
+   = -\,\frac{j_s}{c}\,\frac{1/P_+ - 1/P_-}{z_+ + |z_-|},
+\]
+and substituting it into the cation's own equation
+$j_s = -P_+(dc/dx + z_+ c\,d\psi/dx)$ gives, after one line of algebra,
+\begin{equation}
+   j_s = -P_s\,\frac{dc}{dx}, \qquad
+   \boxed{\;P_s \;=\; \frac{(z_+ + |z_-|)\,P_+\,P_-}{z_+P_+ + |z_-|\,P_-}\;}
+   \label{eq:sdem-ambipolar}
+\end{equation}
+The salt diffuses with a single \emph{ambipolar} permeance, the
+harmonic-type mean of the two ion permeances weighted by charge, and
+the profile is linear.  With $j_s = P_s(c_m - c_p)$ and $j_s = J_v c_p$,
+\begin{equation}
+   c_p = \frac{P_s}{J_v + P_s}\,c_m, \qquad
+   R = \frac{J_v}{J_v + P_s},
+   \label{eq:sdem-single}
+\end{equation}
+which is \eqref{eq:cp} with $B_s \to P_s$: the classical law, recovered
+exactly.  The potential across the layer also has a closed form.
+Integrating the field over the linear profile,
+$\int_0^1 dx/c = \ln(c_m/c_p)/(c_m-c_p)$, so
+\begin{equation}
+   \Delta\psi \;=\; \psi(1)-\psi(0) \;=\;
+   \frac{P_+ - P_-}{z_+P_+ + |z_-|\,P_-}\;\ln\frac{c_m}{c_p},
+   \qquad \frac{c_m}{c_p} = 1 + \frac{J_v}{P_s}.
+   \label{eq:sdem-psi}
+\end{equation}
+Its sign is the physics: when the cation is the faster ion the permeate
+side goes \emph{positive} relative to the wall, which is the field that
+holds the cation back and pulls the anion along.
+
+\begin{keyidea}
+\textbf{Calibratable from what is actually measured.}
+\eqref{eq:sdem-ambipolar} is the reason this law costs no data.  A
+manufacturer's datasheet and most of the literature report
+\emph{single-salt} rejections, never per-ion permeate analyses.  Each
+single-salt test gives one $P_s$, i.e.\ one equation in two ion
+permeances; $n$ ions and $n$ salts close the system and an extra salt
+over-determines it and checks.  The NF270 permeances the witness cases
+carry \cite{FdL2021} were fitted that way, and their Table~1 salt
+permeances reproduce from their own ion columns through
+\eqref{eq:sdem-ambipolar} to the table's rounding --- an identity the
+gate \code{check\_sdem} recomputes in Python, independently of the
+engine, on all four rows.
+\end{keyidea}
+
+\subsection{A trace ion in a dominant salt: negative rejection}
+
+Add a trace ion at a concentration far below the dominant salt.  Its
+own term in the denominator of \eqref{eq:sdem-field} vanishes, so it
+does not shape the field: it \emph{rides} the field the dominant pair
+sets, and \eqref{eq:sdem-np} for the trace is linear in $c_i$ with a
+known coefficient.  (That linear problem integrates in closed form; the
+2013 paper gives the solution and the authors of \cite{FdL2021} use it
+as the lines through their data.)  The consequence is asymmetric by
+sign.  Under NaCl on NF270 the sodium is far more permeable than the
+chloride, so the field is positive toward the permeate: a trace
+\emph{anion} is pulled through and rejected less than the chloride
+even at equal permeance --- and nitrate, three and a half times more
+permeable than chloride, is lightly \emph{negatively} rejected at low flux ---
+while a trace \emph{cation} is held back and rejected more than its
+own permeance would say.  Under $\mathrm{MgSO_4}$ both dominant ions
+are slow, the magnesium seven times faster than the sulfate, and the
+same field acting on a nitrate that is three hundred times more
+permeable than the sulfate pushes more nitrate into the permeate than
+the water carries: the permeate is \emph{richer} in nitrate than the
+feed, $R<0$, with no parameter for the effect.
+
+\begin{pitfall}
+\textbf{A trace is not a trace when the dominant anion is a hundred
+times slower.}  The closed forms above hold in the \emph{limit} of
+vanishing trace concentration.  At the concentrations the validation
+source actually used --- dominant salt 0.01~mol/L, traces
+$2\times10^{-4}$~mol/L --- a trace anion at 42~$\mu$m/s carries more
+current than 0.01~mol/L of sulfate at 0.13~$\mu$m/s, so the traces
+relax the field the sulfate would otherwise impose.  The engine
+integrates the full system and needs no such limit; the analytical
+lines do.  The example below measures the gap on the witness cases,
+and the Tutorials Guide's validation section measures it against the
+published figures.
+\end{pitfall}
+
+\subsection{Numerics: shoot from the face where the unknown is}
+
+Per channel station the module solves an outer Newton in $J_w$ (the
+osmotic back-pressure, exactly as in \S\ref{ch:membrane}) around an
+inner Newton in the permeate composition $c_p$.  Each inner residual
+evaluation integrates \eqref{eq:sdem-np} with \eqref{eq:sdem-field} by a
+fixed-step RK4 across the layer at the fluxes $j_i=J_v c_{p,i}$ the
+trial $c_p$ implies, and requires the profile to arrive at the wall
+concentrations the film model gives for that same $c_p$.  The unknowns
+are the $n$ permeate concentrations; the equations are $n-1$ arrival
+residuals plus permeate electroneutrality --- the arrival residual of the
+ion carrying the most charge is dropped, because the shot conserves
+charge exactly and the wall is electroneutral, so it is implied by the
+others.  The Jacobian is finite differences (one shot per ion; the
+largest ionic feed in the corpus has seven), the step is halved until
+every concentration stays positive and then backtracked on the residual
+norm.
+
+The direction of the shot decides whether this converges.  The first
+version integrated from the wall \emph{toward} the permeate and
+converged at the two witnesses' operating points and almost nowhere
+else across the validation source's 2--14~bar range: a well-rejected
+salt arrives at a permeate value a hundred times smaller than it
+started from, and the field \eqref{eq:sdem-field} divides by an ionic
+strength that is smallest exactly there.  From the \emph{permeate} face
+the state at the start of the shot \emph{is} the unknown, the ionic
+strength there is known exactly, and the profile grows toward the
+wall --- an error at the start is compared against the large wall
+values, which is the stable direction.  Where both converge they agree
+to the last digit (it is one ODE); after the change every (feed, flux)
+pair the source publishes converges in three to seven iterations.  The
+step count is a measurement too: 40 steps put the sharpest profile in
+the corpus (nitrate under $\mathrm{MgSO_4}$) $2\times10^{-3}$ off its
+converged rejection, above the goldens' $10^{-4}$; the engine takes
+320, and says so in the source beside the number.
+
+\paragraph{Refused by name.}  A solute with no declared aqueous bridge
+(the charge is read through \code{aqueousMapping}, never off a name);
+an ion the membrane record gives no permeance (an impermeable ion
+cannot sit in a zero-current balance); a feed that is not
+electroneutral (the law's own premise --- reconcile the analysis first,
+\code{aqueousAnalysis \{\}} does it); fewer than two ions.
+\textbf{Announced:} the model and its assumptions once per run, and the
+polarisation film, which is computed per ion \emph{without} a field in
+the film --- the diffusion potential exists there too, and this version
+does not carry it.  \textbf{Published:} the potential drop per station
+(\code{psi\_mV} in the profile) and its average
+(\code{membranePotential\_mV\_avg}), because the pedagogical point of
+the law is that the student \emph{sees} the field that makes chloride
+wait for sodium.
+
+\begin{example}[Two witnesses and the closed form]
+\file{membrane12\_sdem\_nf270\_nacl\_traces} is the NaCl witness:
+0.01~mol/L of NaCl with
+$2\times10^{-4}$~mol/L each of $\mathrm{NO_3^-}$ and $\mathrm{NH_4^+}$,
+20~$^\circ$C, the NF270 permeances of \cite{FdL2021}.  At
+$J_v=25.9~\mu$m/s the run gives $R(\mathrm{Cl^-})=0.775$,
+$R(\mathrm{Na^+})=0.766$, $R(\mathrm{NO_3^-})=0.31$,
+$R(\mathrm{NH_4^+})=0.78$ and a potential of 34.2~mV.  The single-salt
+law \eqref{eq:sdem-single} with the ambipolar $P_s = 7.54~\mu$m/s
+predicts $R=0.774$, and \eqref{eq:sdem-psi} predicts 35.1~mV.
+
+\file{membrane13\_sdem\_nf270\_mgso4\_traces} is the $\mathrm{MgSO_4}$
+witness: 0.01~mol/L of $\mathrm{MgSO_4}$ with four traces.  At $24.8~\mu$m/s:
+$R(\mathrm{SO_4^{2-}})=0.992$, $R(\mathrm{Mg^{2+}})=0.981$,
+$R(\mathrm{Cl^-})=0.40$, $R(\mathrm{NO_3^-})=\mathbf{-0.15}$, 24.2~mV;
+the closed form predicts $R=0.991$ and 44.4~mV.
+
+The two potentials disagree by under 3\,\% on NaCl and by a factor of two on
+$\mathrm{MgSO_4}$, and the difference is the pitfall above, measured.
+Divide the four trace flows in \file{0/feed} by a thousand and run
+again: the engine reports 35.2~mV against 35.2 from \eqref{eq:sdem-psi}
+on NaCl, and 44.4 against 44.4 on $\mathrm{MgSO_4}$ --- the closed form
+recovered to 0.1~mV on both --- while nitrate under $\mathrm{MgSO_4}$
+drops to $R=-0.64$.  At the paper's own trace level the fast traces
+carry a share of the current and halve the field the slow sulfate
+would impose; the rejections published in that paper's figures are
+compared against both readings, trace limit and actual feed, in the
+Tutorials Guide.
+\end{example}
+
+\paragraph{Power and limit.}  The power is that the electroneutral
+permeate, the single-salt law, the calibration from single-salt tests
+and the negative rejection of a fast trace anion all follow from one
+constraint and no new datum.  The limits are named in the run banner
+and worth repeating.  The permeances are constants: no dependence on
+concentration, so the concentration polarisation of a fitted permeance
+is whatever the fit absorbed.  There is no fixed charge, no Donnan
+partition and no dielectric exclusion --- whatever of those NF270 has is
+\emph{inside} the fitted permeances, which is also why the source fits
+a different permeance set for each dominant salt and each witness case
+carries the record of its own salt.  The film is
+per ion and field-free.  The virtual solutions are ideal and dilute.
+And two of the source's permeances are \emph{bounds} (``$>60$'',
+``$>0.8$''), so the runs that use them are conditional on a value the
+source did not fix.  Between the two charge-aware laws the choice is a
+modelling decision the case author owns: DSPM-DE predicts the
+rejection \emph{ordering} from pore geometry and charge with no
+per-salt fit; SDEM reproduces measured single-salt permeances exactly
+and predicts what a \emph{mixture} of those salts does.
+
+\begin{tutoriallink}
+\file{tutorials/steady/membranes/membrane12\_sdem\_nf270\_nacl\_traces}
+--- NaCl with nitrate and ammonium traces; the single-salt identity and
+the 34~mV field. \\
+\file{tutorials/steady/membranes/membrane13\_sdem\_nf270\_mgso4\_traces}
+--- $\mathrm{MgSO_4}$ with four traces; nitrate negatively rejected. \\
+The Tutorials Guide's \emph{Validation study: ion rejection in
+nanofiltration} compares the law against the digitised figures of
+\cite{FdL2021}, table by table, regenerated from the engine.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -22733,6 +23035,27 @@ in liquid-filled pores'', \emph{AIChE J.}, 33(9), 1409--1425 (1987).
 The hydrodynamic hindrance factors $K_d$ (diffusive) and $K_c$
 (convective) as functions of $\lambda=r_i/r_p$
 (Eqs.~\ref{eq:dspmde-Kd}--\ref{eq:dspmde-Kc}).
+
+\bibitem{Yaroshchuk2013} Yaroshchuk, A., Bruening, M. L., \& Lic\'on
+Bernal, E. E., ``Solution-diffusion--electro-migration model and its uses
+for analysis of nanofiltration, pressure-retarded osmosis and forward
+osmosis in multi-ionic solutions'', \emph{J.\ Membr.\ Sci.}, 447,
+463--476 (2013), DOI 10.1016/j.memsci.2013.07.047.  The SDEM law of
+\S\ref{ch:sdem}: Nernst--Planck on virtual concentrations
+(Eq.~\ref{eq:sdem-np}), virtual-solution electroneutrality and zero
+current (Eq.~\ref{eq:sdem-constraints}), the ambipolar single-salt
+limit (Eq.~\ref{eq:sdem-ambipolar}).  The analytical trace-ion solution
+is Yaroshchuk \& Bruening, \emph{J.\ Membr.\ Sci.}, 523, 361--372
+(2017), DOI 10.1016/j.memsci.2016.09.046.
+
+\bibitem{FdL2021} Fern\'andez de Labastida, M., \& Yaroshchuk, A.,
+``Nanofiltration of Multi-Ion Solutions: Quantitative Control of
+Concentration Polarization and Interpretation by
+Solution-Diffusion-Electro-Migration Model'', \emph{Membranes}, 11(4),
+272 (2021), DOI 10.3390/membranes11040272, CC~BY~4.0.  NF270 ion
+permeances per dominant salt (its Table~1, carried by the SDEM witness
+cases) and the rejection figures the Tutorials Guide's validation
+section digitises and compares against.
 
 \bibitem{CowanBrown1959} Cowan, D. A., \& Brown, J. H., ``Effect of
 Turbulence on Limiting Current in Electrodialysis Cells'', \emph{Ind.\
