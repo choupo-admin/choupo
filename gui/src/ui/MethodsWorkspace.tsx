@@ -256,6 +256,9 @@ const WegsteinTool = lazy(() =>
 const ActiveSetQpTool = lazy(() =>
   import("./methods/ActiveSetQpTool.js")
     .then((m) => ({ default: m.ActiveSetQpTool })));
+const LubScaleupTool = lazy(() =>
+  import("./methods/LubScaleupTool.js")
+    .then((m) => ({ default: m.LubScaleupTool })));
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -449,6 +452,7 @@ export function MethodsWorkspace() {
             : tool === "tear-streams" ? <TearStreamsTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
+            : tool === "lub-scaleup" ? <LubScaleupTool />
             : <UnmountedTool tool={active} />}
         </Suspense>
       </Box>

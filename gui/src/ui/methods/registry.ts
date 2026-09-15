@@ -65,7 +65,7 @@ export type MethodToolId =
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
   | "sour-water" | "rules-of-thumb" | "bode"
-  | "tear-streams" | "wegstein" | "active-set-qp";
+  | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -633,6 +633,22 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "breakthrough", label: "Adsorption breakthrough",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     teaches: "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
+    theory: "ch:adsorption",
+  },
+  //  THE DESIGN METHOD BESIDE THE CURVE (2026-09-15, Vítor: an EduTool on
+  //  breakthrough curves that explains how experimental data are used to
+  //  size a column).  `breakthrough` teaches what the S-curve IS; this one
+  //  starts from a curve and sizes the plant bed by the length-of-unused-bed
+  //  method -- the two times read off the data, the capacity checked against
+  //  the isotherm through the engine's own R_f, the unused length carried to
+  //  full scale at the same velocity.  Same witness, same engine knobs, same
+  //  activation predicate, all IMPORTED from BreakthroughTool (one home).
+  //  Arrives live AND mounted in one change, as every tool after hunter-nash
+  //  must.
+  {
+    id: "lub-scaleup", label: "Sizing a bed from a breakthrough curve (LUB)",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    teaches: "How a laboratory breakthrough curve sizes a plant bed: t_b and t_st read off the data, the capacity they imply checked against the isotherm, LUB = L(1 − t_b/t_st) carried to full scale at the same velocity — L_full = L_es + LUB, the diameter from the design flow, and why a longer bed wastes a smaller fraction.",
     theory: "ch:adsorption",
   },
   //  MOUNTED 2026-08-19.  This entry arrived deliberately `planned` with the

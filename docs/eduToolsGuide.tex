@@ -205,8 +205,12 @@ honest empty state is a diagnosis; read it before changing the tool.
 % =====================================================================
 \section{The constructions}\label{sec:edu-tools}
 
-Six constructions are documented in full below.  The remaining six live
-tools are listed in \S\ref{sec:edu-stubs} with what is missing from each,
+%  No count here either (the same rule as \S\ref{sec:edu-stubs}): this
+%  sentence used to say "Six constructions are documented in full below",
+%  against a section that had grown past that by the time anyone read it
+%  back.  The registry is the authority on what ships.
+The constructions documented in full follow.  Several further live tools
+are listed in \S\ref{sec:edu-stubs} with what is missing from each,
 because a thin lesson is worse than an admitted gap.
 
 The six were chosen to span the three transfer subjects a course actually
@@ -1131,6 +1135,136 @@ That single row is the clearest lesson the tool gives: the number is a
 measure of \emph{how much} energy holds a liquid together, and says
 nothing about \emph{what kind}.
 \end{tryit}
+
+% ---------------------------------------------------------------------
+\subsection{Adsorption: sizing a bed from a breakthrough curve (LUB)}\label{sec:edu-lub-scaleup}
+
+\declaredanchor{ch:adsorption}
+
+\noindent\textit{\small Tool:} \code{tool=lub-scaleup}.  \textit{\small
+Witness:} \file{tutorials/batch/adsorber/batch13\_breakthrough\_co2}, the
+same laboratory column the \code{breakthrough} tool integrates.
+
+\subsubsection*{The question}
+
+\emph{I have a breakthrough curve from a short laboratory column: outlet
+over feed concentration against time, at a known length, velocity, feed
+and packing.  The plant needs a bed that holds a given feed flow for a
+given service time before the outlet goes off specification.  How long,
+what diameter, and how much adsorbent?}
+
+\subsubsection*{What to vary, what to watch}
+
+The construction is the length-of-unused-bed method, performed on the
+screen in the order a student performs it on paper, with the engine's own
+numbers printed beside each step.  Two times are read off the curve: the
+breakthrough time $t_b$ at the declared criterion, and the stoichiometric
+time $t_{st}$ as the trapezoid area above the curve.  The unused length
+$\mathrm{LUB} = L_{\mathrm{lab}}(1 - t_b/t_{st})$ is carried to full scale
+unchanged, the equilibrium section is the laboratory column scaled by
+$t_{\mathrm{req}}/t_{st}$, and the diameter follows from the design flow
+at the \emph{same} superficial velocity.  Two families of knobs sit beside
+the plot, and the page says which is which: the laboratory column's
+velocity, length, temperature, pressure and horizon re-run the engine in
+the browser; the criterion, the service time and the design flow are
+post-processing and re-draw only, because none of them changes the curve
+the column produced.
+
+\begin{tryit}
+Start from the witness.  Read the first table: the trapezoid $t_{st}$ and
+the engine's own analytic $t_{st}$ (its pre-run claim
+$(L/u)\,R_f$) agree to about seven digits, and the tool says the gap is
+the mesh plus the dropped tail.  Now shorten the horizon knob to
+$3200$~s: the outlet has not reached the feed value, the page flags the
+data as \emph{incomplete}, and every length in the last table turns into
+a lower bound.  Put the horizon back.  Move the criterion from $0.05$ to
+$0.02$ and watch $t_b$ slide left while $t_{st}$ does not move: the
+unused length grows, because a stricter specification switches earlier.
+Finally raise $t_{\mathrm{req}}$ from $10\,000$~s to $40\,000$~s and
+watch $\eta_{\mathrm{bed}}$ climb toward one --- the same few centimetres
+of unused bed, added once to a bed four times longer.
+\end{tryit}
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Breakthrough criterion} --- a specification, not a property
+        of the bed.  It moves $t_b$ and therefore LUB; it never moves
+        $t_{st}$.
+  \item \textbf{Required service time $t_{\mathrm{req}}$} --- the knob that
+        sets the equilibrium length, linearly.  Watch the utilisation
+        $\eta_{\mathrm{bed}} = L_{es}/L_{\mathrm{full}}$ rise with it.
+  \item \textbf{Design feed flow $Q$} --- sets the diameter alone,
+        $D = \sqrt{4Q/(\pi u)}$, and through it the adsorbent mass.
+  \item \textbf{Bed length $L$} (engine knob) --- both times move, the band
+        between them does not: LUB is a property of the conditions, and the
+        plot makes that visible.
+  \item \textbf{Velocity $u$} (engine knob) --- the one knob that changes
+        LUB itself, which is exactly why the scale-up holds $u$ fixed.
+\end{itemize}
+
+\subsubsection*{The misconception the construction exposes}
+
+\begin{pitfall}
+\textbf{That the plant bed is the laboratory column scaled by length.}  A
+student who has measured a column that wastes five per cent of itself
+expects a plant bed to waste five per cent too, and sizes it as
+$L_{\mathrm{lab}}\,t_{\mathrm{req}}/t_{st}$ with a five per cent margin.
+The unused length is not a fraction; it is a \emph{length}, set by the
+width of the mass-transfer zone, and under constant pattern it is the same
+length in every bed run at these conditions.  It is added once.  A
+half-metre column that throws away $2.5$~cm looks poor; a three-metre bed
+with the same $2.5$~cm unused wastes under one per cent.  Laboratory
+columns look terrible and plant beds do not, and the page's last table is
+that sentence as numbers.
+\end{pitfall}
+
+A second confusion, the one that costs a plant:
+
+\begin{itemize}[leftmargin=*,nosep,topsep=4pt]
+  \item \textbf{That a curve stopped early is a curve.}  The stoichiometric
+        time is an \emph{area}, and an area cut before the outlet reached
+        the feed value is too small --- so the equilibrium capacity implied
+        by the curve falls short of the isotherm's, and every length sized
+        from it is short.  The capacity check in the third step exists for
+        this: the curve's own balance against the engine's retention
+        factor, and a disagreement points at the data, never at the
+        isotherm.
+\end{itemize}
+
+\subsubsection*{What the picture does not say}
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Constant pattern is assumed.}  A favourable isotherm and a
+        column longer than the zone buy it; a linear or unfavourable
+        isotherm, or a column the zone never fits in, gives a curve the
+        method sizes from wrongly with no warning on the page.
+  \item \textbf{Same velocity, temperature and particle size.}  LUB is
+        transferred, never scaled.  A plant bed at other conditions needs a
+        curve measured at those conditions.
+  \item \textbf{Isothermal, single adsorbate, one loading step.}  The
+        witness is declared isothermal, feeds one adsorbing species, and
+        starts clean; regeneration and the cycle are other cases' subject
+        (\file{batch21\_tsa\_hot\_purge}, \file{batch23\_tsa\_cycles}), named
+        on the page and not taught by it.
+  \item \textbf{The engine's curve is a model.}  By default the plot is the
+        engine's integration of the witness, mesh spreading included.  A
+        measurement enters through the open case: a
+        \file{constant/experimental/breakthrough.csv} with a
+        \code{t\_s,c\_over\_c0} header is drawn as markers beside the
+        engine's curve and put through the same arithmetic, labelled
+        measured.  No tutorial ships one today, and the tool says so rather
+        than inventing a curve.
+\end{itemize}
+
+\subsubsection*{Where the derivation lives}
+
+\derivation{Theory Guide, \emph{Adsorption: isotherms, LDF uptake, and the
+fixed bed} (\theorydest{ch:adsorption}):
+the two equations the bed integrates, the retention factor
+$R_f = \varepsilon + \rho_b q^{*}(c_{in})/c_{in}$ and the stoichiometric
+time $t_{st} = (L/u)\,R_f$ the unit announces before it runs, and the
+mass-transfer zone whose width the unused length measures.  The trapezoid,
+the crossing and the scale-up on this page are the hand method itself,
+labelled as such, and judged against those engine numbers.}
 
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 

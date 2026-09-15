@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 37,
-  "registryTools": 37,
+  "liveTools": 38,
+  "registryTools": 38,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -223,6 +223,13 @@
       "discipline": "Separations & phase equilibria",
       "teaches": "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
       "href": "/app/?workspace=methods&tool=breakthrough"
+    },
+    {
+      "id": "lub-scaleup",
+      "label": "Sizing a bed from a breakthrough curve (LUB)",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "How a laboratory breakthrough curve sizes a plant bed: t_b and t_st read off the data, the capacity they imply checked against the isotherm, LUB = L(1 − t_b/t_st) carried to full scale at the same velocity — L_full = L_es + LUB, the diameter from the design flow, and why a longer bed wastes a smaller fraction.",
+      "href": "/app/?workspace=methods&tool=lub-scaleup"
     },
     {
       "id": "hunter-nash",
