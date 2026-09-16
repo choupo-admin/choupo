@@ -151,6 +151,12 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                                    : opDict->lookupWord("membrane");
 
     // ---- Module hardware spec ----------------------------------------------
+    // THE THIRD FORM is `module <name>;`, resolved ABOVE: the record supplies
+    // the area and the leaf length, and `area`, `length`, `moduleDiameter` and
+    // `nModules` have already REFUSED beside it (`elements` has not -- a spiral
+    // element record still describes ONE element, and a train of them is a
+    // legitimate thing to ask for; a flat cell refuses it, being one coupon).
+    // The two forms below are what a case with NO record declares instead:
     // EITHER  `area` + `length` (+ `elements`)  -- explicit area (legacy spec,
     //         numerically untouched)
     // OR      `moduleDiameter` + `nModules`     -- nominal 40-inch standard

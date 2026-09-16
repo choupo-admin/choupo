@@ -22,8 +22,11 @@ would be wrong for every species but one.
 
 ### 1. The pellet is an ASSET, `kind catalyst;`
 
-`data/standards/assets/` is flat with a `kind` field, and today carries
-`constructionMaterial`, `RO`, `NF`, `IEM`, `adsorbent`, `ionExchangeResin`.  A
+`data/standards/assets/` is flat with a `kind` field.  (Which kinds it carries
+is a fact about the tree, not about this record: read
+`data/standards/assets/README.md`, or `grep kind data/standards/assets/*.dat`.
+The list this paragraph used to hand-carry went stale the day `membraneModule`
+and `edStack` landed.)  A
 catalyst is the same kind of thing as an adsorbent — a purchased solid with a
 geometry, a density and a porosity — and `Adsorbent` + `AdsorbentRegistry` is
 the pattern to mirror, down to `dParticle()` and `sphericity()`, which already

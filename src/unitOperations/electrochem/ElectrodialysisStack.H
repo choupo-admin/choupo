@@ -46,10 +46,29 @@ Description
         (Davies via the reused electrolyte stack, speciated ONCE per pass):
             E_mem = sum over the two membranes of (R T / z F) ln(a_conc/a_dil)
 
-      * Limiting current density (Cowan-Brown):
-            i_lim = z F k c_dil / (t_cu - t_co)
-        PRINTED; a LOUD warning (never a silent clamp) when i > i_lim --
-        operation in the over-limiting (water-splitting) regime.
+      * Limiting current density -- TWO models since 2026-09-16, dispatched in
+        `unitOperations/electrochem/LimitingCurrent.{H,cpp}` and selected
+        `limitingCurrent { model GeraldesAfonso2010 | CowanBrown; }`:
+
+            GeraldesAfonso2010 -- the PREDICTION (J. Membr. Sci. 360 (2010)
+              499-508).  NO transport number is declared: the linearised
+              Nernst-Planck film gives the limiting transport numbers from
+              the ion diffusivities and the diluate composition (Eqs. 12/13)
+              and i_lim in closed form (Eq. 15), per membrane, the lowest
+              absolute value applying.  It needs the stack's OWN Sherwood
+              correlation, so it is reachable only under a `stack` record.
+              The membrane record's declared t_cu is ANNOUNCED beside it.
+
+            CowanBrown -- the LEGACY single-salt working form on the membrane
+              record's DECLARED t_cu, with k from a Leveque-type estimate:
+                  i_lim = z F k c_dil / (t_cu - t_co)
+
+        The DEFAULT is announced either way: GeraldesAfonso2010 where a stack
+        record supplies the correlation AND every diluate ion resolves a
+        diffusivity AND both signs are present, CowanBrown otherwise, naming
+        which of those was missing.  Either way i_lim is PRINTED and a LOUD
+        warning (never a silent clamp) fires when i > i_lim -- operation in
+        the over-limiting (water-splitting) regime.
 
       * Ohmic potential (per cell pair):
             E_ohmic = i * (R_CEM + R_AEM + R_dil + R_conc)
@@ -72,20 +91,39 @@ Description
     exactly like the ionExchanger -- the case carries an ionic water analysis.
 
     OPERATION keys:
-        N_cellpairs   (int)            number of cell pairs
+        stack         <name>           a `kind edStack` record in assets/ that
+                                       SUPPLIES the hardware below (see THE
+                                       STACK RECORD)
         current       I [A]            applied stack current        \  give
         targetDemin   (fraction)       OR solve I for this demin ratio  /  one
         xi            current efficiency [-]   (default 0.9, announced)
-        channelThickness  [m]          diluate/concentrate spacer gap
-        membraneArea  [m2]             active area per membrane
-        linearVelocity [m/s]           cross-flow velocity (for k)
         E_electrodes  [V]              lumped electrode overpotential (default 0)
-        membrane      <name>           IEM .dat pair (default CMX_AMX)
+        limitingCurrent { model ...; } which i_lim model (see above)
+        membrane      <name>           IEM .dat pair (default CMX_AMX) -- but
+                                       see the refusal below
+      the HARDWARE, typed inline only when the case names NO stack record:
+        N_cellpairs   (int)            number of cell pairs
+        channelThickness  [m]          diluate/concentrate spacer gap
+        membraneArea  [m2]             active area per cell pair
+        channelLength [m]              flow path length (CowanBrown k)
+        linearVelocity [m/s]           cross-flow velocity (CowanBrown k)
 
-    Sub-models: there is exactly ONE limiting-current correlation in v1
-    (Cowan-Brown) and ONE mass-transfer estimate -- so they are INLINE with a
-    clear comment, not a factory-for-one (the settled "no factory for a single
-    model" rule).
+    THE STACK RECORD (2026-09-16).  `stack <name>;` names a `kind edStack`
+    record in data/standards/assets/ and the record supplies the membrane
+    pair, the cell pairs, the active area, the channel and spacer, the
+    hydraulic passes and the stack's OWN Sherwood correlation.  ONE home: any
+    of `N_cellpairs`, `membraneArea`, `channelThickness`, `channelLength`,
+    `linearVelocity`, `hydraulicPasses` or `spacerPorosity` declared BESIDE a
+    stack record REFUSES by name, and so does `membrane` where the record's
+    own source names a pair (where it does not -- an industrial frame taking
+    any pair -- the CASE must declare one, and is told so).
+
+    THE CROSSFLOW VELOCITY IS DERIVED, never declared: the diluate flow
+    arrives on the inlet stream, so u = Q/((cellPairs/passes) W h) is a
+    consequence of that flow and the channel section the record describes.
+    It is printed with its arithmetic, and SUPERFICIAL because that is the
+    basis the record's own correlation declares.  `linearVelocity` survives
+    ONLY as a legacy key of the no-record form (default 0.05 m/s, announced).
 \*---------------------------------------------------------------------------*/
 
 #pragma once

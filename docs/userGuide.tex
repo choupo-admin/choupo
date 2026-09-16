@@ -1365,9 +1365,9 @@ The complete catalogue of steady-state unit operations --- what each
 \code{extractor} \textit{(alias \code{extract})} & Counter-current staged LL extraction (Gibbs-split stages) & \code{stages} \\
 \midrule
 \multicolumn{3}{@{}l}{\emph{Membranes and sorption separations (\S\ref{sec:membranes})}} \\
-\code{spiralWoundModule} \textit{(alias \code{membraneSW})} & NF/RO element or train (solution-diffusion + film model) & \code{membrane}, \code{area}, \code{P\_perm} \\
+\code{spiralWoundModule} \textit{(alias \code{membraneSW})} & NF/RO element or train (solution-diffusion + film model) & \code{module}, or \code{membrane} + \code{area}; \code{P\_perm} \\
 \code{ionExchanger}    & Cation-exchange softener (Gaines--Thomas) & \code{resin}, \code{CEC} \\
-\code{electrodialysisStack} & N cell pairs; Faraday transfer, Nernst + ohmic voltage & \code{N\_cellpairs}, \code{current}, geometry \\
+\code{electrodialysisStack} & N cell pairs; Faraday transfer, Nernst + ohmic voltage & \code{stack}, or \code{N\_cellpairs} + geometry; \code{current} \\
 \code{psa}             & Pressure-swing adsorption (equilibrium-theory shortcut) & adsorbent isotherms, \code{bedCapacity}, \code{eta} \\
 \midrule
 \multicolumn{3}{@{}l}{\emph{Solids (\S\ref{sec:solids})}} \\
@@ -2164,10 +2164,10 @@ Tutorials: \file{absorber01\_NH3\_water},
 \subsection{Membranes and electrochemical separations}\label{sec:membranes}
 
 \paragraph{\code{spiralWoundModule} (alias \code{membraneSW}).}  The
-NF/RO element: solution-diffusion permeation + film-model concentration
+NF/RO element: solution-diffusion permeation + concentration
 polarisation, with selectable sub-models for feed-channel mass transfer
-(\code{SchockMiquel} or \code{constant}), pressure drop, and osmotic
-pressure (\code{vanHoff} or \code{Pitzer}):
+(\code{SchockMiquel}, \code{StirredCell} or \code{constant}), pressure
+drop, and osmotic pressure (\code{vanHoff} or \code{Pitzer}):
 
 \begin{lstlisting}[language=dict]
 operation
@@ -2189,7 +2189,23 @@ Inputs \code{( feed )}, outputs \code{( retentate permeate )}.  KPIs:
 \code{dP\_feed}.  Four membranes ship in the catalogue (a seawater-RO
 archetype, a loose-NF archetype, a pore-model NF, and an ion-exchange
 pair); the solutes carry \code{nonvolatile true;} and a van~'t~Hoff
-\code{dissociation} factor.  A \code{scaling \{ minerals (calcite
+\code{dissociation} factor.
+
+Two things the example types by hand may instead be \emph{named}.
+\code{module NF270-4040;} resolves a \code{kind membraneModule} record
+in \file{data/standards/assets/} (two commercial elements and a
+laboratory flat cell ship today) which supplies the active area, the
+channel height, the spacer porosity and the leaf length, carries the
+manufacturer's \code{limits \{\}} --- checked against the run and
+\emph{announced} when exceeded, never refused --- and its own
+\code{ratedTest \{\}}; typing any of that geometry beside \code{module}
+refuses by name.  And the film's policy is one \code{polarisation
+\{ suctionCorrection \dots; ionCoupling \dots; \}} block: with
+\code{ionCoupling electroneutral;} the wall concentrations of an
+ion-declared feed are solved \emph{coupled}, each ion's $k$ on its own
+diffusivity and one interface potential gradient fixed by
+electroneutrality at the wall (no film thickness, no new parameter).
+The default is the per-ion field-free film, and the run says so.  A \code{scaling \{ minerals (calcite
 gypsum); \}} block runs the aqueous speciation solver per module at the
 bulk \emph{and at the wall}, so you see concentration polarisation as
 the scaling driver (\file{membrane07\_scaling\_si}).  Start with
@@ -2211,8 +2227,8 @@ the RO train, the scaling driver removed at the source.
 cation/anion-exchange membranes: an applied current drives ions out of
 the diluate channel into the concentrate.  Glass-box electrochemistry,
 all printed: Faraday transfer per cell pair ($\dot n_i = \xi I / z_i F$),
-Nernst membrane potential from real ion activities, the Cowan--Brown
-limiting current density (a loud warning --- never a clamp --- when
+Nernst membrane potential from real ion activities, the limiting
+current density (a loud warning --- never a clamp --- when
 $i > i_{\lim}$), ohmic drops from the membrane and channel resistances,
 and the stack power published on an energy wire.
 
@@ -2230,9 +2246,33 @@ and the stack power published on an energy wire.
   energyOutputs ( { name power; kind work; expression "W_electric"; unit W; } ) }
 \end{lstlisting}
 
+As with the NF/RO element, the hardware may be \emph{named} instead of
+typed: \code{stack EUR2C-7P18;} resolves a \code{kind edStack} record in
+\file{data/standards/assets/} which supplies the membrane pair, the cell
+pairs, the active area, the channel and spacer, the hydraulic passes,
+the stack's own Sherwood correlation and its limits.  Declaring any of
+those beside \code{stack} refuses by name --- \code{linearVelocity}
+included, because the crossflow velocity is not an operating knob: the
+diluate flow arrives on the inlet stream, so
+$u = Q/((N/\text{passes})\,W h)$ is a \emph{consequence}, derived and
+printed with its arithmetic.
+
+There are two limiting-current models, selected
+\code{limitingCurrent \{ model \dots; \}}.  \code{CowanBrown} is the
+legacy single-salt working form on the membrane record's \emph{declared}
+transport number.  \code{GeraldesAfonso2010} \emph{predicts} the
+limiting transport numbers from the ion diffusivities and the diluate
+composition, so no transport number is read at all; it needs the stack
+record's own correlation, and is the default wherever one is named and
+every diluate ion resolves a diffusivity.  The run announces which model
+ran, and why.
+
 Tutorials: \file{tutorials/electrochem/ed01\_nacl\_desalination} and
 \file{ed02\_over\_limiting\_current} (what the $i_{\lim}$ warning looks
-like when you cross it).
+like when you cross it), then \file{ed03\_stack\_record} (the same bench
+stack as a record), \file{ed04\_limiting\_current\_multiionic} (the
+prediction against six measured anchors) and
+\file{ed05\_industrial\_stack}.
 
 \paragraph{\code{psa}.}  Pressure-swing adsorption as a steady
 flowsheet unit --- the equilibrium-theory (local-equilibrium) shortcut:

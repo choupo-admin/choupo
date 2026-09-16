@@ -103,9 +103,14 @@ Description
     NUMERICS.  Per z station an OUTER Newton-1D in J_w (the osmotic
     back-pressure, as in solutionDiffusion) wraps an INNER Newton in the
     permeate composition c_p: each residual evaluation integrates (1)-(2)
-    from the wall (the shared polarisation object, per ion) to the permeate
-    face with a fixed-step RK4 and requires c(1) = c_p for all but one ion, plus (3)
-    written as permeate electroneutrality.  The Jacobian is finite
+    BACKWARD, from the permeate face toward the wall, with a fixed-step RK4,
+    and requires the profile to ARRIVE at the wall concentrations the shared
+    polarisation object gives for that same c_p (per ion by default, coupled
+    by the interface field when the case declares it), for all but one ion,
+    plus (3) written as permeate electroneutrality.  The direction is not a
+    detail: shoot from the face where the unknown IS, or the integration
+    lands on values orders of magnitude from where it started while dividing
+    by an ionic strength that is smallest exactly there.  The Jacobian is finite
     differences; the problem has at most a handful of ions.  The potential
     drop is integrated alongside and published (`psi`, RT/F units; the
     module converts to mV) -- the pedagogical point of the law is that the

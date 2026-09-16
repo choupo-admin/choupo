@@ -2,39 +2,63 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/electrodialysisStack.schema.json",
   "title": "electrodialysisStack operation",
-  "description": "Electrodialysis stack: N cell pairs of alternating cation/anion-exchange membranes moving salt from the diluate to the concentrate under a DC current. Give `current` to impose the amperage, or `targetDemin` to ask for a demineralisation fraction and let the current be solved. The run checks the applied current against the LIMITING current from the film model and announces the margin — above i_lim the diluate boundary layer is ion-depleted and water splitting takes over, which is a regime, not a bigger number. The DC power (P = U·I) is published on an energy wire as W_electric, mirroring the shaft-wire convention, so a rectifier (`electricLoad`) absorbs it.",
+  "description": "Electrodialysis stack: N cell pairs of alternating cation/anion-exchange membranes moving salt from the diluate to the concentrate under a DC current. Name the hardware as a record (`stack <name>;`, kind edStack) or type its geometry inline -- one home, and the two refuse side by side. Give `current` to impose the amperage, or `targetDemin` to ask for a demineralisation fraction and let the current be solved. The run checks the applied current against the LIMITING current -- predicted from the ion diffusivities under a stack record, or the legacy Cowan-Brown form on a declared transport number -- and announces the margin: above i_lim the diluate boundary layer is ion-depleted and water splitting takes over, which is a regime, not a bigger number. The DC power (P = U·I) is published on an energy wire as W_electric, mirroring the shaft-wire convention, so a rectifier (`electricLoad`) absorbs it.",
   "type": "object",
   "properties": {
+    "stack": {
+      "type": "string",
+      "title": "Stack record",
+      "description": "The stack named as a RECORD (assets catalogue or the case's constant/assets/, kind edStack): it supplies the cell pairs, the active area (THE CELL-PAIR AREA of the whole stack), the channel and spacer, the hydraulic passes, the stack's own Sherwood correlation and its limits {}, which are checked against the run and announced. Declaring `N_cellpairs`, `membraneArea`, `channelThickness`, `channelLength`, `linearVelocity`, `hydraulicPasses` or `spacerPorosity` beside it refuses by name (one home), and so does `membrane` where the record's own source names a pair. The crossflow velocity is DERIVED from the diluate flow and the channel section and printed with its arithmetic. Every value the record marks `origin estimate` is announced on every run."
+    },
+    "limitingCurrent": {
+      "type": "object",
+      "title": "Limiting-current model",
+      "description": "Which i_lim model runs. `GeraldesAfonso2010` PREDICTS the limiting transport numbers from the ion diffusivities and the diluate composition (J. Membr. Sci. 360 (2010) 499-508, Eqs. 12/13/15) and reads no declared transport number; it needs the stack record's own Sherwood correlation, so it is reachable only under `stack`, and a case that declares it without one refuses by name. `CowanBrown` is the legacy single-salt working form on the membrane record's declared t_cu. Omitted, the engine takes GeraldesAfonso2010 where a stack record supplies the correlation AND every diluate ion resolves a diffusivity AND both signs are present, CowanBrown otherwise -- announcing which, and why.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Model",
+          "enum": [
+            "GeraldesAfonso2010",
+            "CowanBrown"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "N_cellpairs": {
       "type": "integer",
       "minimum": 1,
       "title": "Cell pairs",
-      "unit": "-"
+      "unit": "-",
+      "description": "Typed INLINE; required only when the case names no `stack` record, and REFUSED beside one."
     },
     "membraneArea": {
       "type": "number",
       "exclusiveMinimum": 0,
-      "title": "Area per membrane",
-      "unit": "m2"
+      "title": "Area per cell pair",
+      "unit": "m2",
+      "description": "Typed INLINE; required only when the case names no `stack` record, and REFUSED beside one. The area ONE CELL PAIR presents to the current, which is what the current density is taken on; a stack record declares the whole stack's cell-pair area instead and this is derived from it."
     },
     "channelThickness": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Spacer gap",
-      "unit": "m"
+      "unit": "m",
+      "description": "Typed INLINE; required only when the case names no `stack` record, and REFUSED beside one."
     },
     "channelLength": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Flow-path length",
-      "description": "Used by the Leveque film correlation; defaults to 0.5 m.",
+      "description": "Used by the Leveque film correlation of the CowanBrown route; defaults to 0.5 m. Typed INLINE; required only when the case names no `stack` record, and REFUSED beside one.",
       "unit": "m"
     },
     "linearVelocity": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Cross-flow velocity",
-      "description": "Defaults to 0.05 m/s.",
+      "description": "The crossflow velocity of the no-record form only; defaults to 0.05 m/s, announced. Under a `stack` record it is REFUSED, because it is the diluate flow on the inlet stream divided by the channel section the record describes -- derived and printed with its arithmetic.",
       "unit": "m/s"
     },
     "current": {
@@ -70,14 +94,9 @@
     "membrane": {
       "type": "string",
       "title": "Ion-exchange membrane pair",
-      "description": "Resolved by name (kind IEM), e.g. CMX_AMX; supplies the area resistances and counter-ion transport numbers."
+      "description": "Resolved by name (kind IEM), e.g. CMX_AMX; supplies the area resistances and counter-ion transport numbers. A stack record whose own source names a pair supplies it and REFUSES this key; a record whose source names none requires it here."
     }
   },
-  "required": [
-    "N_cellpairs",
-    "membraneArea",
-    "channelThickness",
-    "membrane"
-  ],
+  "required": [],
   "additionalProperties": false
 }

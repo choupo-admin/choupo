@@ -601,8 +601,11 @@ the announcement quantitative rather than merely present.
   already declared case-locally in the corpus
   (`tutorials/batch/adsorber/*/constant/adsorbents/zeolite13X_A4.dat:14`,
   `dParticle 2.0 mm;`, *read*).  A `kind catalyst;` record in the flat
-  `data/standards/assets/` home (`kind` values today: constructionMaterial, RO,
-  NF, IEM, adsorbent, ionExchangeResin — *read*) carrying pellet
+  `data/standards/assets/` home (for the `kind` values that exist, read
+  `data/standards/assets/README.md`, which is the index, or
+  `grep kind data/standards/assets/*.dat`, which is the tree — a list copied
+  here went stale the day `membraneModule` and `edStack` landed) carrying
+  pellet
   `geometry slab|cylinder|sphere;`, the characteristic dimension, particle
   porosity and tortuosity.  Nothing about the pellet goes on a component: the
   record rules are explicit that pair data lives in pair tables and that a
@@ -704,9 +707,9 @@ is DATA and CITATION, not physics.  Verified (*read*): a grep across every
 `.H`/`.cpp` in `src/` for `raschig|pall ring|HETP|randomPacking|structured
 packing|packingFactor` returns **zero** matches, and the word "packing" itself
 appears only as the cooling tower's Merkel packing and as the ODE integrator's
-"same packing as y".  `data/standards/assets/` holds no packing either — its
-`kind` values today are constructionMaterial, RO, NF, IEM, adsorbent and
-ionExchangeResin (*read*).
+"same packing as y".  `data/standards/assets/` holds no packing either, and no `kind` in it
+is one (*read*; `grep kind data/standards/assets/*.dat` is the authority on
+the lineup, never a list copied here).
 
 Two honest routes, and the project's own precedent decides between them:
 

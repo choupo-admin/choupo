@@ -76,7 +76,11 @@ Fouling and flux decline are NOT modelled by the unit and therefore not tested.
 The `concentration` mode is exercised by no corpus case yet, so its washout
 branch (deliberately absent, a different law) rests on the source and not on a
 run.  And the film coefficient is DECLARED by the case, so nothing here tests
-a polarisation correlation -- there is none.
+a polarisation CORRELATION: `k_film` is a constant and the Sherwood
+correlations are never reached.  The `polarisation {}` POLICY is read (the
+unit builds the shared Polarisation object like the steady module, so a
+suction correction and ion coupling are available to it), but no corpus
+diafiltration declares one, so no arm here exercises either.
 
 SABOTAGE-VERIFIED 2026-08-25, eight times; OBSERVED output recorded below,
 verbatim.

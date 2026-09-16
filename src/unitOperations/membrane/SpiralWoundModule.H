@@ -67,7 +67,19 @@ Description
     user-supplied DP_total, sufficient for pedagogical
     accuracy.  A spacer-enhanced correlation is on the list.
 
-    Hardware spec (two forms, never both):
+    Hardware spec (THREE forms since 2026-09-16, never two at once):
+      * `module <name>;` — the element or the laboratory cell named as a
+        RECORD (`kind membraneModule`, thermo/membrane/MembraneModule.H):
+        the record supplies the active area, the channel height, the
+        spacer porosity, the leaf length and — for a spiral element —
+        the membrane, carries the manufacturer's `limits {}` (CHECKED
+        against the run and ANNOUNCED when exceeded, never refused) and
+        its own `ratedTest {}`.  `format spiralWound | flatSheetCell`:
+        a flat cell has ONE membrane face, so its channel width is A/L
+        and not A/(2L), and the run says which rule it used.  Typing
+        `area`, `length`, `moduleDiameter`, `nModules`, or the
+        channelHeight / spacerPorosity of the massTransfer or
+        pressureDrop blocks BESIDE it refuses by name;
       * `area` + `length` (+ `elements`) — explicit per-element area,
         the legacy spec (numerics untouched);
       * `moduleDiameter` (2.5 | 4 | 8 | 16 in, unit mandatory) +

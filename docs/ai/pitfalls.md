@@ -341,11 +341,24 @@ at high c, `vanHoff` over-predicts Δπ → under-predicts flux.  Switch
 to `osmotic { model Pitzer; }`.
 
 ### `k_film` too small / too large
-`k_film` controls the concentration polarisation `c_m = c_b·exp(J_w/k)`.
+`k_film` controls the concentration polarisation
+`c_m = c_p + (c_b − c_p)·exp(J_v/k)`.
 Too small → c_m blows up, J_w drops to zero (case looks "broken").
 Too large → film effect vanishes (no realistic CP).  Realistic
 range: 10–100 µm/s.  For a hydraulics-correlated value, use
-`massTransfer { model SchockMiquel; channelHeight 0.7 mm;... }`.
+`massTransfer { model SchockMiquel; channelHeight 0.7 mm;... }` — or name
+the element (`module NF270-4040;`) and let the record supply the channel,
+in which case typing the geometry beside it REFUSES by name.
+
+### Reading a multi-ionic feed's wall off a single-ion film
+That exponential needs ONE k and therefore ONE diffusivity, and a mixture
+of ions has none; applied ion by ion it lets each ion polarise alone, so
+charge separates at the wall.  It is the DEFAULT, and on an ion-declared
+feed the run says so.  Declare `polarisation { ionCoupling electroneutral;
+suctionCorrection GeraldesAfonso2006; }` to price each ion's k on its own
+D₀ and couple them by one interface potential fixed by electroneutrality
+at the wall (no film thickness, no new parameter).  Needs ≥ 2 charged
+solutes.
 
 ## Crystallisation (MSMPR + batch)
 

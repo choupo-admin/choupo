@@ -952,6 +952,17 @@ Each carries A_w + per-solute B_s + ratings (P_max, T_max, pH, MWCO); the ion-ex
 | `NF270` |
 | `NF270_dspmde` |
 | `SW30HR` |
+## Modules and stacks (the HARDWARE a membrane is deployed in)
+
+A `spiralWoundModule` names one with `module <name>;` and an `electrodialysisStack` with `stack <name>;`, instead of typing the geometry inline -- and typing it beside the name REFUSES.  The record carries the active area, the channel and spacer, the manufacturer's limits (checked and announced, never refused) and, for a module, the sheet's rated test; a value the source does not state is marked `origin estimate; reviewStatus unverified;` and announced on every run that reads it.
+
+| Name |
+|---|
+| `EUR2C-7P18` |
+| `EurodiaED-100P-50` |
+| `NF270-4040` |
+| `SEPA_CF` |
+| `SW30HR-380` |
 ## Adsorbents and resins
 
 Isotherm and bed properties for the fixed-bed, TSA and softener units.

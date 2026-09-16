@@ -32,6 +32,16 @@ records for itself.  What belongs here is the SHAPE, never the size:
   aqueous species, Henry pairs (van't Hoff), NRTL/UNIQUAC/Pitzer/eNRTL
   pair tables, materials, membranes, adsorbents, utilities — the per-kind
   tallies are in the inventory JSON.
+* **Concentration polarisation of a multi-ionic solution** (2026-09-15):
+  the wall concentration has ONE home (`membrane/massTransfer/Polarisation`)
+  for all three transport laws — per-ion k on each ion's own D0,
+  suction-corrected (`GeraldesAfonso2006` | `filmTheory` | `none`), ions
+  coupled by one interface potential fixed by electroneutrality at the wall
+  (`polarisation { ionCoupling electroneutral; }`, Geraldes & Afonso, J.
+  Membr. Sci. 300 (2007) 20 — no film thickness, no new parameter); the
+  `StirredCell` mass-transfer model and the `polarisationIndex` props bench
+  (`props/membrane/polarisation01_geraldes_afonso_table1`, the paper's own
+  case study); module witness `membrane14_polarisation_multiionic`.
 
 ### Three-axiom property layout
 
@@ -391,22 +401,34 @@ authority on the lineup; the kinds and what each record carries:
   NF270_dspmde (loose-NF, the second carrying the DSPM-DE parameterisation).
   Two CASE-LOCAL NF270 records (membrane12/13) carry the per-ion permeances of
   Fernández de Labastida & Yaroshchuk 2021 (CC BY) for the `SDEM` transport law.
-* **Concentration polarisation of a multi-ionic solution** (2026-09-15):
-  the wall concentration has ONE home (`membrane/massTransfer/Polarisation`)
-  for all three transport laws — per-ion k on each ion's own D0,
-  suction-corrected (`GeraldesAfonso2006` | `filmTheory` | `none`), ions
-  coupled by one interface potential fixed by electroneutrality at the wall
-  (`polarisation { ionCoupling electroneutral; }`, Geraldes & Afonso, J.
-  Membr. Sci. 300 (2007) 20 — no film thickness, no new parameter); the
-  `StirredCell` mass-transfer model and the `polarisationIndex` props bench
-  (`props/membrane/polarisation01_geraldes_afonso_table1`, the paper's own
-  case study); module witness `membrane14_polarisation_multiionic`.
-  A_w (water permeability, m/(s·bar)) + a
+  Each carries A_w (water permeability, m/(s·bar)) + a
   `permeabilities { <solute> <B_s>;... }` sub-dict with the per-solute
   solution-diffusion permeability B_s (m/s) + ratings (P_max, T_max, pH range,
   nominal MWCO).
+- **`membraneModule`** — NF270-4040, SW30HR-380 and the SEPA_CF laboratory
+  cell (2026-09-16): the ELEMENT a case names instead of typing its channel
+  geometry (`module <name>;`).  `format spiralWound | flatSheetCell` (a flat
+  cell has ONE membrane face, so W = A/L and not A/2L), the active area, the
+  channel height, the spacer porosity, the leaf length, the manufacturer's
+  `limits {}` — CHECKED against the run and ANNOUNCED when exceeded, never
+  refused — and the sheet's own `ratedTest {}`.  A value the document does not
+  state is `origin estimate; reviewStatus unverified;` with a note saying how
+  to verify it, announced on every run that reads it.  `module` beside inline
+  geometry refuses by name.
 - **`IEM`** — CMX_AMX, the cation/anion ion-exchange membrane pair used by the
   electrodialysis units.
+- **`edStack`** — EUR2C-7P18 (the bench unit of Geraldes & Afonso 2010) and
+  EurodiaED-100P-50 (2026-09-16): the STACK a case names (`stack <name>;`)
+  instead of typing its hardware — the membrane pair, the cell pairs, the
+  active area (which IS the cell-pair area of the whole stack), the channel
+  and spacer, the hydraulic passes, the stack's own Sherwood correlation with
+  its Reynolds validity band, and any `limits {}` its source states.
+  Declaring any of that beside `stack` refuses by name, `linearVelocity`
+  included: the crossflow velocity is derived from the diluate flow and the
+  channel section.  A record that names no membrane pair requires the CASE to
+  name one, and one that names a pair refuses a case that also does — the
+  RECORD decides which way the refusal points, and what a record leaves out
+  is a fact about its source rather than a gap.
 - **`adsorbent`** — zeolite13X, zeolite5A, activatedCarbon: the isotherm and
   bed properties the fixed-bed and TSA cases run on.
 - **`ionExchangeResin`** — SAC_Na, the strong-acid resin of the softener.

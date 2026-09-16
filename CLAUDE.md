@@ -2029,8 +2029,9 @@ solution-diffusion definition `B = DK/δ`), so none is declared; a separate
 INSIDE the membrane (TMS), neither of which this law assumes.  Refuses by
 name: a solute with no aqueous bridge, an ion with no permeance, a feed that
 is not electroneutral (the FilmTec protocol's own precondition), fewer than
-two ions.  Announced: the per-ion, field-free polarisation film (a
-limitation of this version).  Witnesses `membrane12`/`membrane13` (NF270,
+two ions.  Announced, where the case leaves `polarisation { ionCoupling }`
+at its default: the per-ion, field-free polarisation film, naming the
+declaration that couples it (see THE FILM WITH A FIELD below).  Witnesses `membrane12`/`membrane13` (NF270,
 Fernández de Labastida & Yaroshchuk 2021, CC BY — its Table 1 ion
 permeances; NO₃⁻ negatively rejected under dominant MgSO₄ with the same
 permeances and no parameter for the effect).  **THE FIGURES WERE DIGITISED THE SAME DAY, AND THE SWEEP FOUND WHAT THE

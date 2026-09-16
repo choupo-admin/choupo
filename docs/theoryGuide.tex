@@ -18721,7 +18721,9 @@ inner Newton in the permeate composition $c_p$.  Each inner residual
 evaluation integrates \eqref{eq:sdem-np} with \eqref{eq:sdem-field} by a
 fixed-step RK4 across the layer at the fluxes $j_i=J_v c_{p,i}$ the
 trial $c_p$ implies, and requires the profile to arrive at the wall
-concentrations the film model gives for that same $c_p$.  The unknowns
+concentrations the polarisation object gives for that same $c_p$ (the
+per-ion film by default, the coupled interface model of
+\S\ref{sec:polarisation-multiionic} when the case declares it).  The unknowns
 are the $n$ permeate concentrations; the equations are $n-1$ arrival
 residuals plus permeate electroneutrality --- the arrival residual of the
 ion carrying the most charge is dropped, because the shot conserves
@@ -18843,9 +18845,11 @@ chapter shows the four equations the \code{electrodialysisStack} unit
 solves: \textbf{(i)} Faraday's law for the ion transfer, \textbf{(ii)}
 the Nernst membrane potential built from \emph{real} Davies activities
 per channel, \textbf{(iii)} the ohmic drop across the membrane and
-solution resistances, and \textbf{(iv)} the Cowan--Brown limiting
-current density --- the hard ceiling above which the boundary layer runs
-out of ions.  You will see why ED reuses the electrolyte stack
+solution resistances, and \textbf{(iv)} the limiting current density
+--- the hard ceiling above which the boundary layer runs out of ions,
+which you will meet twice: as the classical single-salt form on a
+\emph{declared} transport number, and then as a \emph{prediction} from
+the ionic diffusivities alone, with no transport number read at all.  You will see why ED reuses the electrolyte stack
 (Chapter~\ref{ch:electrolytes}) wholesale rather than re-deriving an
 activity model, and why the stack \emph{refuses to clamp} an
 over-limiting current.

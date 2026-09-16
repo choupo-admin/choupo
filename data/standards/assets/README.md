@@ -10,7 +10,7 @@ record — one namespace, one consumer each:
 | `RO` / `NF` | `MembraneRegistry` (solution-diffusion; SpiralWoundModule) | SW30HR, NF270, NF270_dspmde |
 | `membraneModule` | `MembraneModuleRegistry` (the HARDWARE a membrane is deployed in: area, channel geometry, limits, rated test; `module <name>;` in SpiralWoundModule) | NF270-4040, SW30HR-380 (spiral elements), SEPA_CF (a flat-sheet laboratory cell) |
 | `IEM` | the `electrodialysisStack` unit's own reader | CMX_AMX |
-| `edStack` | `EDStackRegistry` (the electrodialysis HARDWARE the membrane pair is built into: cell pairs, active area, channel, spacer, hydraulic passes, the stack's OWN Sherwood correlation, limits; `stack <name>;` in `electrodialysisStack`) | EUR2C-7P18 |
+| `edStack` | `EDStackRegistry` (the electrodialysis HARDWARE the membrane pair is built into: cell pairs, active area, channel, spacer, hydraulic passes, the stack's OWN Sherwood correlation, limits; `stack <name>;` in `electrodialysisStack`) | EUR2C-7P18 (a bench stack), EurodiaED-100P-50 (an industrial stack) |
 | `constructionMaterial` | `MaterialRegistry` (sizing / costing) | carbonSteel, SS304, SS316, aluminium |
 | `adsorbent` | `AdsorbentRegistry` (identity only; the per-species isotherms are PAIR data under `parameters/adsorption/equilibria/<name>/`) | activatedCarbon, zeolite13X, zeolite5A |
 | `ionExchangeResin` | the `exchange` props op / `IonExchanger` unit | SAC_Na |

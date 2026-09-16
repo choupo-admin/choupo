@@ -31,9 +31,13 @@ License
   Numerical strategy (the §9 K=1-trap lesson made operational):
     * One z station = one binary (or multi-salt) electrolyte pore problem.
     * Ion gammas (Davies, wall) come from the speciation hook ONCE per station.
-    * The film model raises the bulk salt conc to the WALL conc (closed form,
-      same as SolutionDiffusion), then the salt wall conc is split into ion
-      molarities by stoichiometry -- these are the c_bulk in the partition (2).
+    * The shared Polarisation object (massTransfer/Polarisation.H, the ONE
+      home of the wall for all three transport laws) raises the bulk conc to
+      the WALL conc at the same k the solutionDiffusion seed uses -- the
+      per-solute film by default, the Geraldes & Afonso (2007) coupled
+      interface model when the case declares `polarisation { ionCoupling
+      electroneutral; }` -- and the wall is then read ION BY ION, which is
+      what the partition (2) takes as its c_bulk.
     * Inner unknowns solved by NewtonND: per ion the pore-inlet concentration
       c_in,i, plus J_v -- closed by feed-face electroneutrality (4), zero net
       current (5) integrated across the pore, and the water-flux / osmotic loop.

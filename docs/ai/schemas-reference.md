@@ -292,20 +292,22 @@ Shaft sink / electrical generator. Hardware-free apart from the generator effici
 
 ## `electrodialysisStack`  (electrodialysisStack operation)
 
-Electrodialysis stack: N cell pairs of alternating cation/anion-exchange membranes moving salt from the diluate to the concentrate under a DC current. Give `current` to impose the amperage, or `targetDemin` to ask for a demineralisation fraction and let the current be solved. The run checks the applied current against the LIMITING current from the film model and announces the margin — above i_lim the diluate boundary layer is ion-depleted and water splitting takes over, which is a regime, not a bigger number. The DC power (P = U·I) is published on an energy wire as W_electric, mirroring the shaft-wire convention, so a rectifier (`electricLoad`) absorbs it.
+Electrodialysis stack: N cell pairs of alternating cation/anion-exchange membranes moving salt from the diluate to the concentrate under a DC current. Name the hardware as a record (`stack <name>;`, kind edStack) or type its geometry inline -- one home, and the two refuse side by side. Give `current` to impose the amperage, or `targetDemin` to ask for a demineralisation fraction and let the current be solved. The run checks the applied current against the LIMITING current -- predicted from the ion diffusivities under a stack record, or the legacy Cowan-Brown form on a declared transport number -- and announces the margin: above i_lim the diluate boundary layer is ion-depleted and water splitting takes over, which is a regime, not a bigger number. The DC power (P = U·I) is published on an energy wire as W_electric, mirroring the shaft-wire convention, so a rectifier (`electricLoad`) absorbs it.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `N_cellpairs` | ✓ | integer | - |  |
-| `membraneArea` | ✓ | number | m2 |  |
-| `channelThickness` | ✓ | number | m |  |
-| `channelLength` |   | number | m | Used by the Leveque film correlation; defaults to 0.5 m. |
-| `linearVelocity` |   | number | m/s | Defaults to 0.05 m/s. |
+| `stack` |   | string | — | The stack named as a RECORD (assets catalogue or the case's constant/assets/, kind edStack): it supplies the cell pairs, the active area … |
+| `limitingCurrent` |   | object | — | Which i_lim model runs. `GeraldesAfonso2010` PREDICTS the limiting transport numbers from the ion diffusivities and the diluate compositi… |
+| `N_cellpairs` |   | integer | - | Typed INLINE; required only when the case names no `stack` record, and REFUSED beside one. |
+| `membraneArea` |   | number | m2 | Typed INLINE; required only when the case names no `stack` record, and REFUSED beside one. The area ONE CELL PAIR presents to the current… |
+| `channelThickness` |   | number | m | Typed INLINE; required only when the case names no `stack` record, and REFUSED beside one. |
+| `channelLength` |   | number | m | Used by the Leveque film correlation of the CowanBrown route; defaults to 0.5 m. Typed INLINE; required only when the case names no `stac… |
+| `linearVelocity` |   | number | m/s | The crossflow velocity of the no-record form only; defaults to 0.05 m/s, announced. Under a `stack` record it is REFUSED, because it is t… |
 | `current` |   | number | - | Imposed-current form. Raw SI (amperes). Give this OR targetDemin. |
 | `targetDemin` |   | number | - | Solved-current form: fraction of the diluate's salt to remove; the current is the result. |
 | `xi` |   | number | - | Fraction of the charge that moves salt; defaults to 0.9, announced. |
 | `E_electrodes` |   | number | - | Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced. |
-| `membrane` | ✓ | string | — | Resolved by name (kind IEM), e.g. CMX_AMX; supplies the area resistances and counter-ion transport numbers. |
+| `membrane` |   | string | — | Resolved by name (kind IEM), e.g. CMX_AMX; supplies the area resistances and counter-ion transport numbers. A stack record whose own sour… |
 
 ## `electrolyteActivity`  (electrolyteActivity operation)
 
