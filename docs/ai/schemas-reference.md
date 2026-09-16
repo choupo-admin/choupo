@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*92 of 92 registered operations carry a schema and are documented below.*
+*93 of 93 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -118,6 +118,22 @@ The drying curve as a batch vessel (choupoBatch): a tray of wet solid losing its
 | `criticalMoisture` | ✓ | number | kg/kg dry solid | The break between the constant-rate and the falling-rate periods, on the dry-solid basis. A MEASURED property of this sample, not derivab… |
 | `moisture` |   | string | - | Which component is the moisture. Needed only when the tray holds more than one volatile besides the declared carrier — otherwise the sing… |
 | `air` | ✓ | object | — | The drying air, declared CONSTANT and not integrated — the FixedBedAdsorber's constant-carrier posture. `T` its temperature [K], `Y` its … |
+
+## `batchElectrodialysis`  (batchElectrodialysis operation)
+
+A RECIRCULATING BATCH electrodialysis rig (choupoBatch): two well-mixed tanks -- diluate and concentrate -- pumped through the same stack the steady electrodialysisStack runs. It adds no architecture: the same edCell::predictiveLimitingCurrent assembly of Geraldes & Afonso (2010) Eqs. A13/12/13/15/16, the same Nernst, ohmic and Faraday relations, asked once per instant instead of once per pass. That is the point of it: i_lim is a PREDICTION from the DILUATE COMPOSITION, so in a batch run it FALLS as the tank depletes, and a constant-current run crosses into the over-limiting regime part way through -- which no steady case can show. The unit holds BOTH tanks (state() is the diluate, the concentrate is published internal state, materialInventory() is the sum), so the closed rig's material balance is exact. Drive it with `current` (i fixed, i_lim falling: they cross) OR `voltage` (I solved every instant from the stack equation and decaying as the diluate loses conductivity: no crossing, just time). Both tanks come from 0/internalState, the concentrate as a `concentrate {}` sub-block. NOT modelled, and each refuses or is announced rather than assumed: more than one cation or one anion (refused -- the split between counter-ions is the membranes' selectivity and no record carries it), back-diffusion from the concentrate, water transport, any temperature transient, the pumps. The electrical work IS integrated exactly as a state row, but the heat it becomes is not, so the campaign first law reports UNAVAILABLE and says why.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `stack` | ✓ | string | - | REQUIRED -- there is no inline-geometry form here. Names a `kind edStack` record (assets catalogue or the case's constant/assets/) which … |
+| `diluateFlow` | ✓ | number | m3/s | REQUIRED. The rate at which the diluate tank is pumped through the stack: it sets the crossflow velocity, hence the mass-transfer coeffic… |
+| `current` |   | number | - | Constant-current drive. Raw SI (amperes). Give this OR voltage, exactly one: they are two different experiments. At constant current i do… |
+| `voltage` |   | number | - | Constant-voltage drive. Raw SI (volts). The current is solved from U = N (E_mem + I R_pair) + E_electrodes at every instant and DECAYS as… |
+| `xi` |   | number | - | Fraction of the charge that moves salt; defaults to 0.9, announced. Constant apart from the opt-in over-limiting plateau below. |
+| `E_electrodes` |   | number | - | Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced. No Butler-Volmer here, exactly as in t… |
+| `membrane` |   | string | - | A `kind IEM` record (e.g. CMX_AMX) supplying the area resistances and counter-ion transport numbers. A stack record whose own source name… |
+| `limitingCurrent` |   | object | — | Optional, and there is one route: `GeraldesAfonso2010`, the prediction from the ion diffusivities and the diluate composition. `CowanBrow… |
+| `overLimiting` |   | object | — | OPTIONAL, and the default is `none` -- announced. `none`: the current efficiency stays at xi; if i crosses i_lim the run WARNS that the a… |
 
 ## `boiler`  (boiler operation)
 
@@ -686,7 +702,7 @@ Adiabatic stream mixer. Sums the inlet component flows and closes the energy bal
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `T` |   | number | K | Present = the mixer is ISOTHERMAL at this temperature and the duty is the result. Absent = adiabatic mixing, and the outlet temperature f… |
+| `T` |   | number | K | Present = the mixer is ISOTHERMAL at this declared temperature. Absent = adiabatic mixing, and the outlet temperature follows from the en… |
 
 ## `mixingRules`  (mixingRules operation)
 

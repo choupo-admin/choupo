@@ -77,6 +77,26 @@ int Mixer::solve(const DictPtr& dict,
     for (std::size_t i = 0; i < n; ++i)
         if (!thermo.comp(i).hasGibbsData()) { useFormation = false; break; }
 
+    //  THE DECLARED OUTLET TEMPERATURE, read BEFORE the inlet loop.  It used
+    //  to be read after it, which cost nothing until an inlet arrived that
+    //  the package cannot PRICE: the loop summed inlet enthalpies
+    //  unconditionally, and `Hin_total` feeds exactly one thing -- `h_req`,
+    //  the target of the ADIABATIC Newton.  An isothermal mixer never reads
+    //  it, so a case that DECLARES its outlet temperature was being refused
+    //  over an arithmetic the run does not perform (found 2026-09-16 on an
+    //  electrodialysis recycle loop whose ionic components carry no liquid
+    //  heat capacity -- a refusal that is right for the adiabatic balance and
+    //  meaningless here).  Nothing else moves: where the pricing succeeds the
+    //  sum is still taken, and the mixer publishes no duty.
+    bool   isothermal = false;
+    scalar T_spec     = 0.0;
+    if (dict->found("operation"))
+    {
+        auto operDict0 = dict->subDict("operation");
+        if (operDict0->found("T"))
+        { isothermal = true; T_spec = operDict0->lookupScalar("T"); }
+    }
+
     scalar  F_out     = 0.0;
     sVector Fz(n, 0.0);
     sVector s_out(n, 0.0);
@@ -142,7 +162,7 @@ int Mixer::solve(const DictPtr& dict,
         F_out += F;
         for (std::size_t i = 0; i < n; ++i) Fz[i] += F * z[i];
         if (P < P_out) P_out = P;
-        Hin_total += F * hInlet(T, P, vf, z);
+        if (!isothermal) Hin_total += F * hInlet(T, P, vf, z);
         vfw       += F * vf;
         (vf >= 0.5 ? nVapIn : nLiqIn)++;
         if (vf < 0.5) ++nLiquidInlets;
@@ -190,14 +210,7 @@ int Mixer::solve(const DictPtr& dict,
     // the 1-D Newton in T off its [150, 2500] K bracket (no root -> "failed to
     // converge").  Mixing is exact regardless; only the energy datum for T is
     // the question, and here the author owns it.
-    bool   isothermal = false;
-    scalar T_spec     = 0.0;
-    if (dict->found("operation"))
-    {
-        auto operDict = dict->subDict("operation");
-        if (operDict->found("T")) { isothermal = true; T_spec = operDict->lookupScalar("T"); }
-    }
-
+    //  (`isothermal` / `T_spec` are read above the inlet loop -- see there.)
     scalar T_out     = T_first;
     bool   converged = true;
 

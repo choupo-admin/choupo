@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  edbatch02_constant_voltage / system/controlDict
+
+  The clock again comes from the process.  At the INITIAL current of 4.365 A
+  the hand calculation empties the diluate tank at t = 1754 s; endTime 1500 s
+  stops short of that, so `demin_ideal` is a real number rather than a
+  saturated 1.0 and the gap against `demin_actual` can be read directly.
+
+  Fixed RK4 at deltaT 1 s, as in edbatch01 and for the same reason.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Batch recirculating electrodialysis at constant voltage: the current decays as the diluate loses conductivity, and never reaches the limiting current";
+
+verbosity     3;
+
+startTime       0;
+endTime         1500;      // s   (the hand calculation empties the tank at 1754)
+deltaT          1;         // s
+writeInterval   50;        // s

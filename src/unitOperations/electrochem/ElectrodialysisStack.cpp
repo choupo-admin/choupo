@@ -28,6 +28,7 @@ License
 
 #include "ElectrodialysisStack.H"
 #include "Electrochem.H"
+#include "EDCell.H"
 #include "LimitingCurrent.H"
 #include "thermo/electrolyte/IonTransport.H"
 
@@ -53,143 +54,19 @@ namespace Choupo {
 
 namespace {
 
-namespace fs = std::filesystem;
-
-constexpr scalar MW_WATER_KG = 0.0180153;   // kg/mol (molality closure; matches IonExchanger)
-
-// One channel's ionic state, derived ONCE per pass from a stream.
-struct ChannelState
-{
-    std::vector<SpeciesId>   ion;        // TYPED species ids (via the declared bridge)
-    std::vector<std::size_t> compIdx;    // the component each row came from
-    std::vector<scalar>      z;          // charge
-    std::vector<scalar>      m;          // molality [mol/kg water]
-    std::vector<scalar>      gamma;      // Davies activity coefficient
-    scalar                   I = 0.0;    // ionic strength [mol/kg]
-    scalar                   kappa = 0.0;// specific conductivity [S/m]
-    scalar                   c_eq = 0.0; // equivalent concentration [mol/m3] (for i_lim)
-};
-
-// One IEM (cation- or anion-exchange) membrane's read-in properties.
-struct IEMSpec
-{
-    std::string name;
-    scalar      R_area    = 0.0;   // Ohm.m2
-    scalar      t_cu      = 0.0;   // counter-ion transport number
-    scalar      thickness = 0.0;   // m
-};
-
-// Read a `kind IEM` membrane-pair file from the ONE asset home (Codex
-// assets-audit 2026-07-18): the mirrored constant/assets/<name>.dat is the
-// case-local tier, else the standards catalogue -- a SEALED case reads its
-// own mirror ONLY.  The legacy constant/membranes/ overlay leg is retired
-// (it let a sealed case open unowned input).
-void readIEMPair(const std::string& name, IEMSpec& cem, IEMSpec& aem)
-{
-    fs::path file;
-    {
-        const fs::path cand = records::resolveRecord("assets/" + name + ".dat");
-        if (!cand.empty() && fs::exists(cand)) file = cand;
-    }
-    if (file.empty())
-        throw std::runtime_error("electrodialysisStack: IEM membrane '" + name
-            + "' not found in constant/assets/ (case) or data/standards/assets/");
-
-    auto d = Dictionary::fromFile(file.string());
-    if (d->lookupWordOrDefault("kind", "") != "IEM")
-        throw std::runtime_error("electrodialysisStack: membrane '" + name
-            + "' is not `kind IEM` -- electrodialysis needs an ion-exchange "
-              "membrane pair (cem{} + aem{}), not a solution-diffusion membrane");
-
-    auto readLeg = [&](const std::string& leg) -> IEMSpec
-    {
-        if (!d->found(leg))
-            throw std::runtime_error("electrodialysisStack: IEM '" + name
-                + "' has no `" + leg + "` sub-dict (need cem{} and aem{})");
-        auto sd = d->subDict(leg);
-        IEMSpec s;
-        s.name      = sd->lookupWordOrDefault("name", leg);
-        s.R_area    = sd->lookupScalar("R_area");      // Ohm.m2 (raw SI)
-        s.t_cu      = sd->lookupScalar("t_cu");
-        s.thickness = sd->lookupScalar("thickness");   // m
-        if (s.t_cu <= 0.5 || s.t_cu > 1.0)
-            throw std::runtime_error("electrodialysisStack: IEM '" + name + "." + leg
-                + "' t_cu must be in (0.5, 1] (counter-ion transport number); got "
-                + std::to_string(s.t_cu));
-        return s;
-    };
-    cem = readLeg("cem");
-    aem = readLeg("aem");
-}
-
-// Build the ionic state of a channel from a feed stream (mole fractions),
-// freezing the Davies gammas ONCE.  Reuses the electrolyte stack (AqueousActivity
-// "davies") -- NO parallel gamma implementation.
-ChannelState buildChannel(const ThermoPackage& thermo, const sVector& z,
-                          std::size_t iWater, scalar T,
-                          const electrolyte::AqueousActivity& act)
-{
-    const scalar z_water = z[iWater];
-    if (z_water <= 0.0)
-        throw std::runtime_error("electrodialysisStack: a channel feed has no "
-            "water -- electrodialysis needs an aqueous carrier (water component)");
-    const scalar molesWaterPerKg = 1.0 / MW_WATER_KG;
-
-    ChannelState ch;
-    for (std::size_t i = 0; i < thermo.n(); ++i)
-    {
-        if (i == iWater) continue;
-        if (z[i] <= 0.0) continue;
-        // The component -> species crossing goes through the DECLARED bridge
-        // (aqueousMapping / dissociatesTo), never by name identity.
-        const SpeciesId sp = thermo.aqueousChemistry().singleMaster(
-            ComponentId(thermo.comp(i).name()));
-        if (!electrolyte::findAqueousSpecies(sp.key))
-            throw std::runtime_error("electrodialysisStack: species '" + sp.key
-                + "' has no row in ions.dat -- electrodialysis needs an IONIC "
-                  "water analysis (Na, Cl, ... + water)");
-        ch.ion.push_back(sp);
-        ch.compIdx.push_back(i);
-        ch.z.push_back(static_cast<scalar>(electrolyte::ionCharge(sp)));
-        ch.m.push_back((z[i] / z_water) * molesWaterPerKg);   // mol/kg water
-    }
-    if (ch.ion.empty())
-        throw std::runtime_error("electrodialysisStack: a channel carries no "
-            "ions -- nothing to transport");
-
-    // ionic strength I = 0.5 sum m_i z_i^2
-    scalar I = 0.0;
-    for (std::size_t k = 0; k < ch.m.size(); ++k) I += ch.m[k] * ch.z[k] * ch.z[k];
-    ch.I = 0.5 * I;
-
-    // Davies gammas, frozen for the pass (the reused electrolyte interface).
-    electrolyte::IonState st;
-    st.name.clear();
-    for (const auto& s : ch.ion) st.name.push_back(s.key);
-    st.molality = ch.m; st.charge = ch.z; st.I = ch.I; st.T = T;
-    auto res = act.evaluate(st, T);
-    ch.gamma.resize(ch.m.size());
-    for (std::size_t k = 0; k < ch.m.size(); ++k) ch.gamma[k] = res.gamma(ch.z[k]);
-
-    // Specific conductivity kappa [S/m] from the ION D0 tier via Nernst-Einstein:
-    //   lambda_i = z_i^2 F^2 D0_i / (R T)   [S m2/mol]   (equivalent conductance)
-    //   kappa    = sum c_i lambda_i,  c_i [mol/m3] ~ m_i * rho_water
-    // (dilute approximation rho ~ 1000 kg/m3; the unit ANNOUNCES it).
-    const scalar rho_w = 1000.0;                 // kg/m3 (dilute carrier approx)
-    scalar kappa = 0.0, c_eq = 0.0;
-    for (std::size_t k = 0; k < ch.m.size(); ++k)
-    {
-        const scalar D0 = electrolyte::ionD0(ch.ion[k]);            // m2/s
-        const scalar lam = ch.z[k] * ch.z[k] * electrochem::Faraday
-                         * electrochem::Faraday * D0 / (constant::R * T);  // S m2/mol
-        const scalar c_i = ch.m[k] * rho_w;                        // mol/m3
-        kappa += c_i * lam;
-        c_eq  += c_i * std::abs(ch.z[k]);                          // eq/m3
-    }
-    ch.kappa = kappa;
-    ch.c_eq  = 0.5 * c_eq;   // equivalent concentration of the salt (cation eq = anion eq)
-    return ch;
-}
+//  THE CELL PAIR MOVED TO ONE HOME (2026-09-16).  `IEMSpec` / `readIEMPair`,
+//  `ChannelState` / `buildChannel`, the mean activity ratio, the solution
+//  resistance and the whole GeraldesAfonso2010 assembly lived in this
+//  anonymous namespace while this file was their only caller.  The batch
+//  recirculating rig is the second, and it asks the same questions once per
+//  instant instead of once per pass -- so they are now
+//  `unitOperations/electrochem/EDCell.{H,cpp}`, moved verbatim, with the
+//  refusal messages carrying the caller's own type word so nothing this unit
+//  says has changed.  (The BulkConversion.H precedent: a helper leaves an
+//  anonymous namespace the day the second caller arrives.)
+using edCell::ChannelState;
+using edCell::IEMSpec;
+using edCell::MW_WATER_KG;
 
 } // namespace
 
@@ -318,7 +195,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
 
     // ---- IEM membrane pair (the stack's own reader) ------------------------
     IEMSpec cem, aem;
-    readIEMPair(memName, cem, aem);
+    edCell::readIEMPair(type(), memName, cem, aem);
 
     // ---- The CASE's aqueous activity model, never this stack's -------------
     //  This read a frozen "davies" literal: a unit op selecting thermodynamics
@@ -338,8 +215,8 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     auto act = electrolyte::AqueousActivity::New(aqChem.activityModel);
 
     // Build channel states ONCE per pass (NOT inside any inner I loop).
-    ChannelState chD = buildChannel(thermo, dil.z, iWater, T, *act);
-    ChannelState chC = buildChannel(thermo, con.z, iWater, T, *act);
+    ChannelState chD = edCell::buildChannel(type(), thermo, dil.z, iWater, T, *act);
+    ChannelState chC = edCell::buildChannel(type(), thermo, con.z, iWater, T, *act);
 
     // mol/s of each transferable ion entering the diluate channel (the cap on
     // what current can remove).  Per ion: F_dil [kmol/s] * 1000 * z_frac.
@@ -475,43 +352,23 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
 
     if (lcModel == "GeraldesAfonso2010")
     {
-        for (std::size_t k = 0; k < chD.ion.size(); ++k)
-        {
-            edLimitingCurrent::Ion io;
-            io.name = chD.ion[k].key;
-            io.z    = chD.z[k];
-            io.C    = chD.m[k] * rho_carrier;             // mol/m3 (dilute carrier)
-            io.D    = electrolyte::ionD0(chD.ion[k]) * seFactor;
-            lcIons.push_back(io);
-        }
-        D_eff = edLimitingCurrent::effectiveDiffusivity(lcIons);
-        const EDSherwood& sh = stk->massTransfer();
-        const scalar u_corr = (sh.velocityBasis == "interstitial")
-                            ? u_interstitial : u_superficial;
-        Re_lc = u_corr * h_ch / nu_solvent;
-        Sc_lc = nu_solvent / D_eff;
-        Sh_lc = (sh.model == "powerLaw")
-              ? sh.a * std::pow(Re_lc, sh.b) * std::pow(Sc_lc, sh.c)
-              : sh.a * std::cbrt(std::max(Re_lc * Sc_lc * h_ch / pathLength, 1.0e-12));
-        k_c_eff = Sh_lc * D_eff / h_ch;
-
-        t_cem_lim = edLimitingCurrent::limitingTransportNumbers(lcIons, true);
-        t_aem_lim = edLimitingCurrent::limitingTransportNumbers(lcIons, false);
-        i_lim_cem = edLimitingCurrent::limitingCurrentEq15(lcIons, t_cem_lim, k_c_eff, D_eff);
-        i_lim_aem = edLimitingCurrent::limitingCurrentEq15(lcIons, t_aem_lim, k_c_eff, D_eff);
-        //  "the limiting current density is the lowest of the absolute values
-        //  determined for each membrane" (the paper, after Eq. 15).
-        if (std::abs(i_lim_cem) <= std::abs(i_lim_aem))
-        { i_lim = std::abs(i_lim_cem); i_lim_setBy = "cation-exchange membrane"; }
-        else
-        { i_lim = std::abs(i_lim_aem); i_lim_setBy = "anion-exchange membrane"; }
-
-        //  A route claimed to reduce to another is SEEN doing it: on a single
-        //  salt, Eq. (15) and the classical Eq. (16) are the same number.
-        scalar tCu1 = 0.0;
-        for (std::size_t k = 0; k < lcIons.size(); ++k)
-            if (lcIons[k].z > 0.0) tCu1 = t_cem_lim[k];
-        haveEq16 = edLimitingCurrent::singleSaltEq16(lcIons, k_c_eff, tCu1, i_lim_eq16);
+        //  ONE HOME since 2026-09-16 (edCell::predictiveLimitingCurrent): the
+        //  batch recirculating rig assembles the paper's Eqs. A13/12/13/15/16
+        //  from exactly this channel state and exactly this record, once per
+        //  instant.  The code below is the same code, called.
+        const edCell::LimitingCurrent lc =
+            edCell::predictiveLimitingCurrent(*stk, chD, Q_dil_in, nu_solvent,
+                                              seFactor);
+        lcIons     = lc.ions;
+        t_cem_lim  = lc.t_cem;
+        t_aem_lim  = lc.t_aem;
+        D_eff      = lc.D_eff;   k_c_eff = lc.k_c_eff;
+        Sh_lc      = lc.Sh;      Re_lc   = lc.Re;   Sc_lc = lc.Sc;
+        i_lim      = lc.i_lim;   i_lim_cem = lc.i_lim_cem;
+        i_lim_aem  = lc.i_lim_aem;
+        i_lim_eq16 = lc.i_lim_eq16;
+        haveEq16   = lc.haveEq16;
+        i_lim_setBy = lc.setBy;
     }
     else
     {
@@ -645,26 +502,10 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     // E_mem (per cell pair): CEM passes cations, AEM passes anions; each sees
     // the (concentrate/diluate) activity ratio of its counter-ion.  We take the
     // mean cation and mean anion activity ratio across the channels.
-    auto meanActRatio = [&](scalar sign) -> scalar
-    {
-        // sign > 0: cations; sign < 0: anions.  Geometric mean of a_conc/a_dil.
-        scalar lr = 0.0; int n = 0;
-        for (std::size_t kc = 0; kc < chC.ion.size(); ++kc)
-        {
-            if ((chC.z[kc] > 0) != (sign > 0)) continue;
-            // matching ion in the diluate
-            for (std::size_t kd = 0; kd < chD.ion.size(); ++kd)
-                if (chD.ion[kd] == chC.ion[kc])
-                {
-                    const scalar aC = chC.gamma[kc] * chC.m[kc];
-                    const scalar aD = chD.gamma[kd] * chD.m[kd];
-                    if (aC > 0 && aD > 0) { lr += std::log(aC / aD); ++n; }
-                }
-        }
-        return (n > 0) ? std::exp(lr / n) : 1.0;
-    };
-    const scalar rCat = meanActRatio(+1.0);
-    const scalar rAn  = meanActRatio(-1.0);
+    //  ONE HOME (edCell::meanActivityRatio): the batch rig takes the same
+    //  geometric mean over the same two channel states.
+    const scalar rCat = edCell::meanActivityRatio(chD, chC, +1.0);
+    const scalar rAn  = edCell::meanActivityRatio(chD, chC, -1.0);
     // Nernst potential of each membrane (counter-ion charge magnitude 1 for NaCl).
     const scalar E_cem = electrochem::nernst(+1.0, rCat, T);   // cation across CEM
     const scalar E_aem = electrochem::nernst(-1.0, 1.0 / rAn, T); // anion across AEM (a_conc/a_dil w/ z<0)
@@ -672,13 +513,8 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
 
     // Solution resistances per cell pair (one diluate + one concentrate channel):
     //   R_sol = thickness / (kappa * area)   [Ohm]   per channel
-    auto R_solution = [&](const ChannelState& ch) -> scalar
-    {
-        if (ch.kappa <= 0.0) return 0.0;
-        return h_ch / (ch.kappa * area);
-    };
-    const scalar R_dil  = R_solution(chD);
-    const scalar R_conc = R_solution(chC);
+    const scalar R_dil  = edCell::solutionResistance(chD, h_ch, area);
+    const scalar R_conc = edCell::solutionResistance(chC, h_ch, area);
     const scalar R_cem  = cem.R_area / area;     // Ohm
     const scalar R_aem  = aem.R_area / area;     // Ohm
     const scalar R_pair = R_cem + R_aem + R_dil + R_conc;   // Ohm per cell pair

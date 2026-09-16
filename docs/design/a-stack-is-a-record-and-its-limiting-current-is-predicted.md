@@ -418,15 +418,28 @@ than the channel the number came through is measuring the serialiser.*
 
 ## 9. NOT in this slice, named rather than implied
 
-**Batch electrodialysis.**  A bench stack of seven cell pairs in one pass
+> **BUILT 2026-09-16, the same day, and this section is corrected rather than
+> deleted.**  The three items below said "the next slice"; that slice is
+> `docs/design/the-limiting-current-that-falls-while-you-watch.md`, and the
+> prediction made in the third paragraph — that a plant runs successive stages
+> at decreasing current density, and that this model would predict the fall —
+> is measured there: 338.88 → 21.69 A/m2 over four stages, a factor of 15.6.
+> What follows is what this slice did NOT do, left as it was written, with the
+> outcome marked.
+
+**Batch electrodialysis.**  ~~A bench stack of seven cell pairs in one pass
 removes a few per cent of the diluate's sodium, which is exactly what ed03
 shows and exactly why a real bench run **recirculates** the diluate through a
 tank for minutes.  A `choupoBatch` unit doing that — a stack in a
 recirculation loop, with the tank inventory as the state — is the next slice.
-Nothing here is tested over time.
+Nothing here is tested over time.~~  **DONE:** `batchElectrodialysis` holds
+BOTH tanks (the concentrate is what the Nernst term is a function of), asks
+`edCell::predictiveLimitingCurrent` once per instant, and shows i_lim FALLING
+643.04 → 88.26 A/m2 until i crosses it.
 
-**The network witnesses.**  Stacks in series as stages, and feed-and-bleed as
-a recycle, are the next slice too.
+**The network witnesses.**  ~~Stacks in series as stages, and feed-and-bleed as
+a recycle, are the next slice too.~~  **DONE:** `ed06_stages_in_series` and
+`ed07_feed_and_bleed`.
 
 **AND THE ARCHITECTURE NEEDS NO ELECTRICAL TOPOLOGY FOR THEM**, which is worth
 writing down because it is the kind of thing that gets built by reflex.  An
@@ -441,6 +454,13 @@ The pedagogy that falls out of it is worth the witness when it is built: a real
 plant runs successive stages at **decreasing current density**, because the
 limiting current falls as the diluate depletes — and this slice's model now
 *predicts* that fall, from the composition of each stage's own diluate.
+**Measured in `ed06_stages_in_series` (2026-09-16):** four stages asked for the
+same fractional demineralisation solve 26.80 / 10.72 / 4.29 / 1.72 A against
+limiting currents of 338.88 / 135.55 / 54.22 / 21.69 A/m2 — the current falls
+by exactly the factor the limiting current does, so the margin `i/i_lim` is
+0.158 at every stage, and stage 1's own density applied at stage 4 would be
+2.47 times its limit.  The prediction written in this paragraph was made before
+the case existed and is the reason it was built.
 
 **A zig-zag spacer correlation.**  `EurodiaED-100P-50` borrows the mesh stack's
 fit, justified on the Reynolds band alone (§5c).  Fitting a correlation to a

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/batchElectrodialysis.schema.json",
+  "title": "batchElectrodialysis operation",
+  "description": "A RECIRCULATING BATCH electrodialysis rig (choupoBatch): two well-mixed tanks -- diluate and concentrate -- pumped through the same stack the steady electrodialysisStack runs. It adds no architecture: the same edCell::predictiveLimitingCurrent assembly of Geraldes & Afonso (2010) Eqs. A13/12/13/15/16, the same Nernst, ohmic and Faraday relations, asked once per instant instead of once per pass. That is the point of it: i_lim is a PREDICTION from the DILUATE COMPOSITION, so in a batch run it FALLS as the tank depletes, and a constant-current run crosses into the over-limiting regime part way through -- which no steady case can show. The unit holds BOTH tanks (state() is the diluate, the concentrate is published internal state, materialInventory() is the sum), so the closed rig's material balance is exact. Drive it with `current` (i fixed, i_lim falling: they cross) OR `voltage` (I solved every instant from the stack equation and decaying as the diluate loses conductivity: no crossing, just time). Both tanks come from 0/internalState, the concentrate as a `concentrate {}` sub-block. NOT modelled, and each refuses or is announced rather than assumed: more than one cation or one anion (refused -- the split between counter-ions is the membranes' selectivity and no record carries it), back-diffusion from the concentrate, water transport, any temperature transient, the pumps. The electrical work IS integrated exactly as a state row, but the heat it becomes is not, so the campaign first law reports UNAVAILABLE and says why.",
+  "type": "object",
+  "properties": {
+    "stack": {
+      "type": "string",
+      "title": "Stack record",
+      "description": "REQUIRED -- there is no inline-geometry form here. Names a `kind edStack` record (assets catalogue or the case's constant/assets/) which supplies the cell pairs, the active area, the channel and spacer, the hydraulic passes, the stack's own Sherwood correlation and its limits{}. Declaring N_cellpairs, membraneArea, channelThickness, channelLength, linearVelocity, hydraulicPasses or spacerPorosity beside it refuses by name, and so does `membrane` where the record's source names a pair.",
+      "unit": "-"
+    },
+    "diluateFlow": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Diluate recirculation rate",
+      "description": "REQUIRED. The rate at which the diluate tank is pumped through the stack: it sets the crossflow velocity, hence the mass-transfer coefficient, hence the limiting current. A steady stack reads this off its inlet stream; a batch rig has no stream, so the pump setting is declared here and nowhere else. The concentrate recirculation rate is NOT read -- it enters nothing this model computes.",
+      "unit": "m3/s"
+    },
+    "current": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Applied current",
+      "description": "Constant-current drive. Raw SI (amperes). Give this OR voltage, exactly one: they are two different experiments. At constant current i does not move while i_lim falls with the diluate, so the run CROSSES into the over-limiting regime.",
+      "unit": "-"
+    },
+    "voltage": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Applied stack voltage",
+      "description": "Constant-voltage drive. Raw SI (volts). The current is solved from U = N (E_mem + I R_pair) + E_electrodes at every instant and DECAYS as the diluate loses conductivity and the Nernst back-EMF grows -- which is why a real rig run this way never reaches its limiting current.",
+      "unit": "-"
+    },
+    "xi": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Current efficiency",
+      "description": "Fraction of the charge that moves salt; defaults to 0.9, announced. Constant apart from the opt-in over-limiting plateau below.",
+      "unit": "-"
+    },
+    "E_electrodes": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Electrode overpotential",
+      "description": "Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced. No Butler-Volmer here, exactly as in the steady stack.",
+      "unit": "-"
+    },
+    "membrane": {
+      "type": "string",
+      "title": "Ion-exchange membrane pair",
+      "description": "A `kind IEM` record (e.g. CMX_AMX) supplying the area resistances and counter-ion transport numbers. A stack record whose own source names a pair supplies it and REFUSES this key; a record whose source names none REQUIRES it here.",
+      "unit": "-"
+    },
+    "limitingCurrent": {
+      "type": "object",
+      "title": "Limiting-current model",
+      "description": "Optional, and there is one route: `GeraldesAfonso2010`, the prediction from the ion diffusivities and the diluate composition. `CowanBrown` is REFUSED by name here -- it needs a declared crossflow velocity and channel length that a stack record refuses, and it reads a transport number measured in another solution, a constant where this unit's whole subject is a limiting current that MOVES.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Model",
+          "enum": ["GeraldesAfonso2010", "CowanBrown"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "overLimiting": {
+      "type": "object",
+      "title": "Over-limiting regime",
+      "description": "OPTIONAL, and the default is `none` -- announced. `none`: the current efficiency stays at xi; if i crosses i_lim the run WARNS that the answer past that point is an extrapolation of a model outside its validity, and does NOT clamp the current. `saltFluxPlateau`: at i = i_lim the film delivers the counter-ion as fast as it can, so a larger current is carried by water-splitting products instead of by salt -- xi_eff = xi min(1, i_lim/i). It is a claim about a regime, but it introduces NO new parameter, which is why it is available and why it is opt-in.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Model",
+          "enum": ["none", "saltFluxPlateau"]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["stack", "diluateFlow"],
+  "additionalProperties": false
+}

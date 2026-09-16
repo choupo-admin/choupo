@@ -940,6 +940,108 @@ Method hypotheses, each announced at run time: Lewis = 1 in the adiabatic-satura
 \goldmore{21}
 \end{tutgolden}
 
+\subsection{electrodialysis}
+\grouptheory{electrodialysis}
+\clearpage
+\tutentry{edbatch01\_constant\_current}{tutorials/batch/electrodialysis/edbatch01\_constant\_current}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (rig) at (0.0,-0.0) {\textbf{rig}\\[-1pt]{\tiny batchElectrodialysis}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Batch recirculating electrodialysis at constant current: the limiting current falls with the depleting diluate until i crosses it}
+\begin{tutnarrative}
+a batch electrodialysis rig run at CONSTANT CURRENT, and the limiting current falling under it until they cross.
+
+THE OPERATION. Five litres of 0.1 mol/kg brine in the diluate tank, five litres of 0.5 mol/kg in the concentrate tank, both recirculated through the bench stack of `ed03\_stack\_record` (Eurodia EUR2C-7P18, seven cell pairs, 0.020 m2 each) at the paper's own 175 L/h. The rectifier is held at 3.5 A, which is 175 A/m2 on one cell pair.
+
+WHY IT IS A DIFFERENT EXPERIMENT FROM ed01-ed05. Those are steady: one pass, a fixed diluate composition, so the limiting current is evaluated ONCE. Here the diluate tank DEPLETES, and i\_lim -- which the GeraldesAfonso2010 model predicts from the ion diffusivities and the diluate composition -- falls with it, while i does not move at all. They must cross.
+
+WHAT THE RUN MEASURES (every number below is printed by this run; nothing here is a target):
+
+i 175.00 A/m2, flat, all 2000 s i\_lim 643.04 A/m2 at t = 0 88.26 A/m2 at t = 2000 s THE CROSSING t = 1593 s (i/i\_lim reaches 1) i/i\_lim at the end 1.983 xi\_eff 0.900 $\to$ 0.4539 (the plateau, below) demineralisation 86.27 \% ACTUAL 91.41 \% what the hand calculation predicts the hand calculation's own answer: the tank is EMPTY at t = 2188 s concentrate 0.5 $\to$ 0.5863 mol/kg (x1.173) specific energy 1.946 kWh per m3 of diluate treated material closure 1.4e-15 on mass, 8.5e-14 on the worst element
+
+THE LESSON. Faraday's law at constant current is a STRAIGHT LINE:
+
+n(t) = n(0) - xi I N t / (z F)
+
+and it is what a student computes by hand. The run publishes it as `demin\_ideal`, evaluated from THIS run's own initial current, own initial inventory and own declared xi -- computed, never declared, so the gap cannot have been arranged -- beside `demin\_actual`.
+
+The two agree exactly until t = 1593 s and part after it, and the reason is printed at the instant it happens: i has caught i\_lim. At the limiting current the counter-ion concentration vanishes at the diluate/membrane interface and the film can deliver no more of it, so a larger current is carried by water-splitting products instead of by salt. This case DECLARES that model -- `overLimiting \{ model saltFluxPlateau; \}`, xi\_eff = xi i\_lim/i, which adds no parameter -- so the depletion stops being linear and becomes asymptotic: the straight line hits zero at 2188 s and the tank never does.
+
+WITHOUT the declaration (the default) the current efficiency would stay at xi and the two curves would coincide to the integrator's own precision. That is not a better answer; it is a model with nothing in it that could part from the hand calculation, and the run SAYS so when i crosses i\_lim. `edbatch02\_constant\_voltage` is the same rig with the rectifier held at a voltage instead: there the current DECAYS, the crossing never happens, and the same hand calculation fails for an entirely different reason.
+
+WHAT IS PINNED AND WHAT IS NOT. The golden pins the answer THIS model gives. Nothing here is validated against a measured batch electrodialysis: the stack record reproduces the paper's bench unit and its limiting-current correlation, but no run of that unit in recirculating batch is transcribed anywhere in this tree. `t\_overLimiting\_s` is resolved to the TIME STEP -- it is the first accepted step at which i exceeds i\_lim, so it moves with deltaT (1593 s at deltaT 1, 1592.5 s at deltaT 0.25) while everything else is converged to \textasciitilde{}1e-8.
+
+NOT MODELLED, and it matters to how far this run can be trusted: no salt diffuses back from the concentrate, no water is transported with the ions, the current efficiency is a declared constant apart from the plateau above, and the rig is isothermal with the Joule heat removed by no modelled duty (which is why the campaign energy balance reports UNAVAILABLE and says why). The full list is in the unit's own header.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_Cl\_closure\_rel}{8.52905708999e-14}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_Na\_closure\_rel}{8.52905708999e-14}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{8.52905708999e-14}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{1.39662189668e-15}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{10.1751624752}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{10.1751624752}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{1.42108547152e-14}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldmore{44}
+\end{tutgolden}
+
+\clearpage
+\tutentry{edbatch02\_constant\_voltage}{tutorials/batch/electrodialysis/edbatch02\_constant\_voltage}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (rig) at (0.0,-0.0) {\textbf{rig}\\[-1pt]{\tiny batchElectrodialysis}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Batch recirculating electrodialysis at constant voltage: the current decays as the diluate loses conductivity, and never reaches the limiting current}
+\begin{tutnarrative}
+THE SAME RIG, one knob different, and the hand calculation failing for the opposite reason.
+
+Everything is identical to `edbatch01\_constant\_current` -- the same stack, the same two tanks, the same recirculation flow, the same xi, the same electrode term -- except that the rectifier is held at 4 V instead of 3.5 A. The difference between the two runs IS the difference between the two ways of driving a batch electrodialysis.
+
+WHAT THE RUN MEASURES (printed by this run; nothing here is a target):
+
+I 4.365 A at t = 0 $\to$ 2.018 A at t = 1500 s i/i\_lim 0.3394 $\to$ 0.4086 NEVER reaches 1 demineralisation 61.59 \% ACTUAL 85.51 \% what the hand calculation predicts the hand calculation's own answer: the tank is EMPTY at t = 1754 s diluate 0.1 $\to$ 0.03841 mol/kg kappa (diluate) 1.262 $\to$ 0.4846 S/m E\_mem (per pair) 0.0794 $\to$ 0.1313 V specific energy 1.048 kWh per m3 of diluate treated material closure machine level, as in edbatch01
+
+WHY THE CURRENT FALLS. The stack equation is
+
+U = N ( E\_mem + I R\_pair ) + E\_electrodes
+
+and BOTH terms inside the bracket move against the current as the run proceeds. The diluate loses conductivity, so R\_pair rises (0.0636 $\to$ 0.1119 Ohm per cell pair); and the concentration RATIO between the two tanks grows, so the Nernst back-EMF rises with it. At fixed U the current has nowhere to go but down, and it more than halves.
+
+WHY IT NEVER CROSSES i\_lim. i\_lim falls as the diluate depletes -- exactly as in edbatch01 -- but so does i, and here they fall together: the ratio ends at 0.409 having started at 0.339. That is the reason a real bench rig is run this way when the membranes matter: constant voltage is self-limiting, and the price is time. This case declares NO `overLimiting \{\}` model at all, and the run announces that default; it is irrelevant here precisely because the crossing never happens.
+
+THE LESSON, and it is the same lesson as edbatch01 arriving by a different road. `demin\_ideal` is Faraday's law at the INITIAL current -- a straight line, computed from this run's own I(0), own inventory and own xi. It is 24 percentage points optimistic at 1500 s, and not one of those points has anything to do with the limiting current: the current simply is not what it was. Read `I\_A` in trajectory.csv beside `deminActual` and `deminIdeal` and the whole of the gap is in that first column.
+
+WHAT IS PINNED AND WHAT IS NOT: as edbatch01. The golden pins the answer this model gives; no measured batch electrodialysis is reproduced anywhere in this tree.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_Cl\_closure\_rel}{3.03576608288e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_Na\_closure\_rel}{3.03576608288e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{3.03576608288e-15}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{10.1751624752}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{10.1751624752}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{0}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldmore{44}
+\end{tutgolden}
+
 \subsection{membrane}
 \grouptheory{membrane}
 \clearpage

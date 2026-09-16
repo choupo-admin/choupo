@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  ed07_feed_and_bleed / system/controlDict
+
+  One recycle loop, cut at `Recycle` and closed by Newton on the tear
+  variables.  verbosity 3 keeps the tear iterations and the stack's own
+  glass-box report on screen.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Feed-and-bleed electrodialysis: the stack never sees the feed, and its limiting current is set by the LOOP concentration";
+
+verbosity     3;

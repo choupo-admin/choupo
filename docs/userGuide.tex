@@ -1368,6 +1368,7 @@ The complete catalogue of steady-state unit operations --- what each
 \code{spiralWoundModule} \textit{(alias \code{membraneSW})} & NF/RO element or train (solution-diffusion + film model) & \code{module}, or \code{membrane} + \code{area}; \code{P\_perm} \\
 \code{ionExchanger}    & Cation-exchange softener (Gaines--Thomas) & \code{resin}, \code{CEC} \\
 \code{electrodialysisStack} & N cell pairs; Faraday transfer, Nernst + ohmic voltage & \code{stack}, or \code{N\_cellpairs} + geometry; \code{current} \\
+\code{batchElectrodialysis} \textit{(choupoBatch)} & Recirculating batch rig: two tanks, the limiting current FALLING with the depleting diluate & \code{stack}, \code{diluateFlow}; \code{current} or \code{voltage} \\
 \code{psa}             & Pressure-swing adsorption (equilibrium-theory shortcut) & adsorbent isotherms, \code{bedCapacity}, \code{eta} \\
 \midrule
 \multicolumn{3}{@{}l}{\emph{Solids (\S\ref{sec:solids})}} \\
@@ -3234,6 +3235,65 @@ mechanism, and \code{standard}/\code{complete} refuse by name
 the campaign energy balance names it as a gap rather than closing with a
 term quietly zero.  Theory: Theory Guide, membrane chapter, ``Batch
 diafiltration''.
+
+%  Engine: src/unitOperations/batch/BatchElectrodialysis.{H,cpp} (schema
+%  gui/schemas/operations/batchElectrodialysis.schema.json); witnesses
+%  tutorials/batch/electrodialysis/edbatch01_constant_current and
+%  edbatch02_constant_voltage; numbers from their goldens (2026-09-16).
+\subsection{\code{batchElectrodialysis}}
+
+A recirculating batch electrodialysis rig: two well-mixed tanks, the
+diluate and the concentrate, pumped through the same stack the steady
+\code{electrodialysisStack} runs.  It asks the same limiting-current
+assembly --- Geraldes \& Afonso (2010), Eqs.~A13/12/13/15 --- once per
+instant instead of once per pass, and that is the whole point of it.  The
+limiting current is a PREDICTION from the diluate composition, so in a
+batch run it FALLS as the tank depletes; under a constant current $i$ does
+not move, and the two must cross.  In
+\file{edbatch01\_constant\_current} $i_{lim}$ falls from 643.04 to
+88.26\,A/m$^2$ and the crossing happens at $t = 1593$\,s, announced at the
+instant it happens and replayed in the end-of-run caveat block.
+
+The unit holds BOTH tanks --- \code{state()} is the diluate, because it is
+the product, and the concentrate is internal state it publishes in full ---
+so the closed rig's campaign material balance is exact by construction.
+Both come from \file{0/internalState}, the concentrate as a
+\code{concentrate \{\}} sub-block; a \code{T} or \code{P} inside it is
+refused, because the rig is isothermal and has one temperature.  A
+\code{stack} record is required (there is no inline-geometry form), and so
+is \code{diluateFlow}: a steady stack reads its crossflow off an inlet
+stream, a batch rig has no stream, so the pump setting is declared once and
+nowhere else.  Give \code{current} OR \code{voltage}, exactly one --- they
+are two different experiments.
+
+What it publishes is the lesson.  The hand calculation is Faraday's law at
+the INITIAL current, $n(t) = n(0) - \xi I N t / (z F)$, a straight line
+emptying the tank at a finite time; the unit publishes it as
+\code{demin\_ideal}, evaluated from this run's own $I(0)$, own inventory
+and own declared $\xi$ --- computed, never declared, so the gap with
+\code{demin\_actual} cannot have been arranged --- and it NAMES the reason
+they part.  At constant current that reason is the crossing (86.27\,\%
+against 91.41\,\%); at constant voltage it is the current itself decaying
+as the diluate loses conductivity and the Nernst back-EMF grows
+(\file{edbatch02\_constant\_voltage}: $I$ from 4.365 to 2.018\,A,
+61.59\,\% against 85.51\,\%, and $i/i_{lim}$ never reaching 1 --- which is
+why a bench rig run at fixed voltage is self-limiting).
+
+\code{overLimiting \{ model saltFluxPlateau; \}} is opt-in and introduces
+no parameter: at $i = i_{lim}$ the film delivers the counter-ion as fast as
+it can, so the excess current is carried by water-splitting products and
+$\xi_{eff} = \xi \min(1, i_{lim}/i)$.  The DEFAULT is \code{none} --- the
+current efficiency stays put, the run warns that it is then extrapolating a
+model outside its validity, and the current is never clamped either way.
+
+Not modelled, and each refused or announced rather than assumed: more than
+one cation or one anion (refused by name --- the split of the counter-ion
+current between two counter-ions is the membranes' selectivity, which no
+record carries); back-diffusion from the concentrate; water transport;
+co-ion leakage; any temperature transient (the Joule heat is removed by no
+modelled duty, so the campaign energy balance reports UNAVAILABLE and says
+why); the pumps; the electrode reactions, lumped into
+\code{E\_electrodes}.  Theory: Theory Guide, the electrodialysis chapter.
 
 \subsection{Recipes --- scripting a campaign}
 

@@ -58,6 +58,7 @@ Description
 #include "core/DisplayUnits.H"
 #include "materials/MaterialRegistry.H"
 #include "thermo/membrane/MembraneRegistry.H"
+#include "thermo/electrochem/EDStackRegistry.H"
 #include "thermo/ElementComposition.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
 #include "thermo/solution/SolutionRegistry.H"
@@ -209,6 +210,12 @@ try
     //  every binary that can construct that unit -- otherwise the unit is
     //  registered, the case is valid, and the run dies on an empty catalogue.
     MembraneRegistry::loadFrom(dataRoot.string());
+    //  The `kind edStack` records: needed since `batchElectrodialysis` gave
+    //  this binary a stack to host.  Same rule as the line above -- a
+    //  registry a unit reads must be loaded by every binary that can
+    //  construct that unit, or the unit is registered, the case is valid,
+    //  and the run dies on an empty catalogue.
+    EDStackRegistry::loadFrom(dataRoot.string());
     HenrysLawRegistry::loadFrom(dataRoot.string());
     SolutionRegistry::loadFrom(dataRoot.string());
     UtilityCatalogue::loadFrom(dataRoot.string());

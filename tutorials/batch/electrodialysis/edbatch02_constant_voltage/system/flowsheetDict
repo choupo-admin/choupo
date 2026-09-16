@@ -1,0 +1,86 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  edbatch02_constant_voltage  --  THE SAME RIG, one knob different, and the
+  hand calculation failing for the opposite reason.
+
+  Everything is identical to `edbatch01_constant_current` -- the same stack,
+  the same two tanks, the same recirculation flow, the same xi, the same
+  electrode term -- except that the rectifier is held at 4 V instead of
+  3.5 A.  The difference between the two runs IS the difference between the
+  two ways of driving a batch electrodialysis.
+
+  WHAT THE RUN MEASURES (printed by this run; nothing here is a target):
+
+      I                     4.365 A at t = 0  ->  2.018 A at t = 1500 s
+      i/i_lim               0.3394  ->  0.4086     NEVER reaches 1
+      demineralisation      61.59 %  ACTUAL
+                            85.51 %  what the hand calculation predicts
+      the hand calculation's own answer: the tank is EMPTY at t = 1754 s
+      diluate              0.1 -> 0.03841 mol/kg
+      kappa (diluate)      1.262 -> 0.4846 S/m
+      E_mem (per pair)     0.0794 -> 0.1313 V
+      specific energy       1.048 kWh per m3 of diluate treated
+      material closure      machine level, as in edbatch01
+
+  WHY THE CURRENT FALLS.  The stack equation is
+
+      U = N ( E_mem + I R_pair ) + E_electrodes
+
+  and BOTH terms inside the bracket move against the current as the run
+  proceeds.  The diluate loses conductivity, so R_pair rises (0.0636 ->
+  0.1119 Ohm per cell pair); and the concentration RATIO between the two
+  tanks grows, so the Nernst back-EMF rises with it.  At fixed U the current
+  has nowhere to go but down, and it more than halves.
+
+  WHY IT NEVER CROSSES i_lim.  i_lim falls as the diluate depletes -- exactly
+  as in edbatch01 -- but so does i, and here they fall together: the ratio
+  ends at 0.409 having started at 0.339.  That is the reason a real bench rig
+  is run this way when the membranes matter: constant voltage is
+  self-limiting, and the price is time.  This case declares NO
+  `overLimiting {}` model at all, and the run announces that default; it is
+  irrelevant here precisely because the crossing never happens.
+
+  THE LESSON, and it is the same lesson as edbatch01 arriving by a different
+  road.  `demin_ideal` is Faraday's law at the INITIAL current -- a straight
+  line, computed from this run's own I(0), own inventory and own xi.  It is
+  24 percentage points optimistic at 1500 s, and not one of those points has
+  anything to do with the limiting current: the current simply is not what it
+  was.  Read `I_A` in trajectory.csv beside `deminActual` and `deminIdeal`
+  and the whole of the gap is in that first column.
+
+  WHAT IS PINNED AND WHAT IS NOT: as edbatch01.  The golden pins the answer
+  this model gives; no measured batch electrodialysis is reproduced anywhere
+  in this tree.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        rig;
+        type        batchElectrodialysis;
+
+        operation
+        {
+            stack          EUR2C-7P18;
+            diluateFlow    175 L/h;
+
+            //  CONSTANT VOLTAGE.  The current is solved from the stack
+            //  equation at every instant and decays as the diluate loses
+            //  conductivity and the Nernst back-EMF grows.
+            voltage        4;             // V (raw SI)
+
+            xi             0.9;
+            E_electrodes   1.5;           // V (raw SI), lumped, announced
+
+            //  No `overLimiting {}` block: the run announces the default and
+            //  it never matters, because i/i_lim never reaches 1.
+        }
+    }
+);

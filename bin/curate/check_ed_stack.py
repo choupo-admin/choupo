@@ -97,8 +97,9 @@ those are ed01's goldens' business.  The `leveque` branch of a record's
 massTransfer block is reached by no record and no case.  The `interstitial`
 velocity basis is declared by no record.  `dP_max`, `flow_max` and the pH
 band are declared by no record and are therefore never checked against a run.
-No batch (recirculating) electrodialysis exists, so nothing here is tested
-over time.
+Nothing here is tested OVER TIME: the batch recirculating rig that shows this
+same limiting current FALLING with a depleting diluate arrived 2026-09-16 and
+is `check_ed_batch`'s subject, not this gate's.
 
 SABOTAGE-VERIFIED 2026-09-16 (engine and record edits BY HAND, rebuilt where
 C++ moved, run, restored; the gate never patches a source).  TWO of the nine
@@ -913,8 +914,10 @@ def main():
           "(ed01's goldens), the `leveque` correlation branch and the `interstitial` "
           "velocity basis (no record uses either), and dP_max / flow_max / the pH band (no "
           "record declares them).  Nothing here says the bench stack's correlation is VALID "
-          "on a zig-zag spacer -- only that it is applied inside its own Reynolds band.  No "
-          "batch electrodialysis exists.")
+          "on a zig-zag spacer -- only that it is applied inside its own Reynolds band.  "
+          "Nothing here runs over TIME: the batch recirculating rig, where this same "
+          "limiting current is seen FALLING with a depleting diluate, is check_ed_batch's "
+          "subject.")
     return 0
 
 

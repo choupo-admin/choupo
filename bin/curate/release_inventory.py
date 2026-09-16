@@ -306,6 +306,19 @@ DOC_COUNT_ALLOW = [
      "check_review_status, which recounts it."),
     ("CLAUDE.md", "kept 9 of its 28 pair parameters",
      "a measurement of ONE sealing defect, not a corpus size"),
+    #  BOTH FOUND 2026-09-16, by the same road the two above were: the
+    #  inventory had gone stale (11 cases behind), `--check` exits on
+    #  staleness FIRST, and the prose scan met these two for the first time
+    #  the moment it was regenerated.  That is the third and fourth time this
+    #  list has grown by regenerating rather than by anyone writing a number,
+    #  which is the comment above this one, working.
+    ("CLAUDE.md", "32 of the 89 cases that have a global first law",
+     "a DATED measurement taken on the day check_energy_closure was built, "
+     "and the sentence it sits in says in its own words to read the gate's "
+     "claim line for today's count rather than this one"),
+    ("CLAUDE.md", "across 28 cases, 0 added, 0 removed",
+     "the blast radius of ONE golden re-record, fixed for ever -- how many "
+     "cases a single 2026-09-12 commit moved, not how many the corpus has"),
     ("CLAUDE.md", "14/14 tear cases already satisfy it",
      "audit evidence dated in its own sentence, not a live tally"),
     ("docs/developerGuide.tex", "kept 9 of its 28 pair parameters",

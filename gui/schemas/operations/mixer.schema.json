@@ -9,7 +9,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Imposed outlet temperature",
-      "description": "Present = the mixer is ISOTHERMAL at this temperature and the duty is the result. Absent = adiabatic mixing, and the outlet temperature follows from the enthalpy balance (the normal case).",
+      "description": "Present = the mixer is ISOTHERMAL at this declared temperature. Absent = adiabatic mixing, and the outlet temperature follows from the enthalpy balance (the normal case). This unit publishes NO duty either way: the line used to say the duty was the result and it never was, and since 2026-09-16 the inlet enthalpies are not even summed when T is declared -- nothing reads them, and pricing an inlet the package cannot price was refusing a case over an arithmetic the run does not perform.",
       "unit": "K"
     }
   },

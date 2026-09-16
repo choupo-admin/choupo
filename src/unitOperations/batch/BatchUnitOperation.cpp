@@ -34,6 +34,7 @@ License
 #include "unitOperations/membrane/osmotic/OsmoticModel.H"
 #include "unitOperations/membrane/transport/TransportModel.H"
 #include "BatchDryer.H"
+#include "BatchElectrodialysis.H"
 #include "BatchReactor.H"
 #include "BatchStill.H"
 #include "FixedBedAdsorber.H"
@@ -123,6 +124,17 @@ void BatchUnitOperation::registerBuiltins()
     registerType("batchDryer",
         []() -> std::unique_ptr<BatchUnitOperation>
         { return std::make_unique<BatchDryer>(); });
+
+    //  The batch half of electrodialysis: two recirculating tanks asking
+    //  `edCell::predictiveLimitingCurrent` -- the SAME assembly the steady
+    //  stack asks -- once per instant, so the limiting current is seen
+    //  FALLING as the diluate depletes.  Its records (`kind edStack`,
+    //  `kind IEM`) are loaded by choupoBatch's own main, beside the
+    //  membrane registry the diafilter needed: a unit is not installed
+    //  until everything it constructs is.
+    registerType("batchElectrodialysis",
+        []() -> std::unique_ptr<BatchUnitOperation>
+        { return std::make_unique<BatchElectrodialysis>(); });
 }
 
 // -----------------------------------------------------------------------

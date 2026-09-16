@@ -19296,6 +19296,96 @@ glass-box honesty means showing you the physically-meaningless answer
 \emph{labelled as such}, not a quietly ``fixed'' one.
 \end{pitfall}
 
+\subsection{The limiting current in TIME: the batch rig, and in SPACE: the
+train}\label{sec:ed-batch}
+
+Everything above is written for a stack that sees ONE diluate composition.
+That is a steady stack, and under it the whole apparatus of
+\S\ref{sec:ed-multiionic} delivers a single number: a better estimate of
+$i_\text{lim}$ than a declared transport number would give.  The
+apparatus earns its keep somewhere else.
+
+$i_\text{lim}$ in \eqref{eq:ga-ilim} is a function of the \emph{diluate
+composition}.  Strip the diluate and it falls.  There are exactly two ways
+to do that, and Choupo has a case for each.
+
+\paragraph{In time: a recirculating batch rig.}  Put the diluate in a tank,
+pump it round through the stack, and leave the rectifier on.  The tank
+depletes, so $i_\text{lim}$ falls; hold the current constant and $i$ does
+not move; therefore they \emph{must} cross.  For a single salt the
+mass-transfer coefficient is fixed by the declared recirculation flow and
+$D_\text{eff}$ of \eqref{eq:ga-deff} does not depend on composition at all,
+so \eqref{eq:ga-ilim} reduces to
+\begin{equation}
+   \frac{i_\text{lim}(t)}{i_\text{lim}(0)} \;=\; \frac{c(t)}{c(0)} ,
+   \label{eq:ed-ilim-proportional}
+\end{equation}
+which is the cleanest statement of the whole chapter: the limiting current
+of a batch desalination is a straight line down to the origin while the
+current a student holds is a horizontal one.  The \code{batchElectrodialysis}
+unit of \code{choupoBatch} integrates this, holding both tanks so the closed
+rig conserves matter exactly and so the Nernst term of
+\eqref{eq:ed-nernst} sees the concentrate strengthening as the diluate
+empties.
+
+What crosses matters.  Below $i_\text{lim}$, Faraday's law with a constant
+current efficiency integrates to a straight line,
+\begin{equation}
+   n(t) \;=\; n(0) \;-\; \frac{\xi\, I\, N}{z F}\, t ,
+   \label{eq:ed-batch-linear}
+\end{equation}
+and the tank is predicted empty at a finite $t$.  Above $i_\text{lim}$ the
+counter-ion concentration vanishes at the diluate/membrane interface and
+the film can deliver no more of it; a larger current must be carried by
+something else, and what is available is $\mathrm{H^+}$ and
+$\mathrm{OH^-}$ from water dissociation there.  Freezing the counter-ion
+transfer at its limiting value is the first-order statement of that,
+\begin{equation}
+   \xi_\text{eff} \;=\; \xi \min\!\left(1, \frac{i_\text{lim}}{i}\right) ,
+   \label{eq:ed-plateau}
+\end{equation}
+and it introduces \emph{no new parameter}.  Combine it with
+\eqref{eq:ed-ilim-proportional} and the depletion stops being linear and
+becomes exponential: past the crossing $\mathrm{d}n/\mathrm{d}t \propto
+-n$, so the straight line reaches zero and the tank never does.  Choupo
+treats \eqref{eq:ed-plateau} as a \emph{model of a regime} and makes it
+opt-in; without it the current efficiency stays at $\xi$ and the run
+announces that it is extrapolating past the crossing.  Either way it does
+not clamp the current --- the pitfall above holds in time as it does at
+steady state.
+
+Hold the \emph{voltage} constant instead and the crossing never happens.
+As the diluate loses conductivity $R_\text{pair}$ of \eqref{eq:ed-rpair}
+rises, and as the two tanks separate the Nernst back-EMF of
+\eqref{eq:ed-nernst} rises with it, so
+\eqref{eq:ed-voltage} solved for $I$ gives a current that decays.
+$i$ and $i_\text{lim}$ then fall together and the ratio barely moves ---
+which is why a constant-voltage rig is self-limiting, and why the price of
+that safety is time.  The straight line \eqref{eq:ed-batch-linear} fails
+here too, and for a reason that has nothing to do with the limiting
+current: $I$ is simply not what it was.
+
+\paragraph{In space: stages in series.}  The same physics read along the
+other axis.  A plant that must strip a diluate deeply puts several stacks
+in series; each sees a weaker diluate than the one before, so each has a
+lower $i_\text{lim}$.  This needs no electrical topology in the flowsheet:
+an \emph{electrical stage} is a set of cell pairs served by one electrode
+pair on its own rectifier, so stages in series are units in series, each
+with its own \code{electricLoad}.  Ask each stage for the same fractional
+demineralisation and its current falls by the same factor its limiting
+current does, so the whole train runs at ONE margin $i/i_\text{lim}$ --- and
+a train held at a single current density would drive its last stage deep
+into the over-limiting regime.
+
+\paragraph{And in a loop: feed-and-bleed.}  A recycle does in time what the
+train does in space, and brings its own trap.  With a fraction of the
+product returned to the stack inlet, the stack never sees the FEED
+composition: it sees the mixed loop, which sits much nearer the product.
+Its limiting current is correspondingly lower than the feed analysis
+suggests, its per-pass demineralisation is far below the plant's overall
+figure, and a specific energy quoted per cubic metre \emph{through the
+stack} is not the plant's specific energy at all.
+
 \begin{example}[NaCl desalination, \file{electrochem/ed01\_nacl\_desalination}]
 A $100$-cell-pair Neosepta CMX/AMX stack ($R^A_\text{CEM}=3.0\
 \Omega\,\mathrm{cm^2}$, $t_\text{cu}=0.98$; $R^A_\text{AEM}=2.4\
@@ -19351,7 +19441,22 @@ six operating points, as \code{anchor} rows. \\
 \file{tutorials/electrochem/ed05\_industrial\_stack} --- a 100-cell-pair,
 50~m$^2$ industrial unit: two hydraulic passes, a record that names no
 membrane pair (so the case does) and stores no channel length (so it is
-derived), and a borrowed correlation used inside its own Reynolds band.
+derived), and a borrowed correlation used inside its own Reynolds band. \\
+\file{tutorials/electrochem/ed06\_stages\_in\_series} --- four stages, four
+rectifiers, the current solved per stage: $i_\text{lim}$ falls 15.6-fold
+along the train while the margin $i/i_\text{lim}$ stays at 0.158
+(\S\ref{sec:ed-batch}). \\
+\file{tutorials/electrochem/ed07\_feed\_and\_bleed} --- a recycle: the
+stack sees 0.0187~mol/kg where the feed is 0.0500, so its limiting current
+is 2.68 times below what the feed analysis suggests. \\
+\file{tutorials/batch/electrodialysis/edbatch01\_constant\_current} ---
+the crossing, in time: $i_\text{lim}$ from 643.04 to 88.26~A/m$^2$, $i$
+flat at 175, and the hand calculation \eqref{eq:ed-batch-linear} parting
+from the run at $t = 1593$~s. \\
+\file{tutorials/batch/electrodialysis/edbatch02\_constant\_voltage} --- the
+same rig at fixed voltage: the current decays 4.365 to 2.018~A,
+$i/i_\text{lim}$ never reaches 1, and \eqref{eq:ed-batch-linear} fails for
+the other reason.
 \end{tutoriallink}
 
 

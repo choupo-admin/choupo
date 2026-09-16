@@ -294,3 +294,130 @@ diluateFeed $\to$ +-----------------------+ $\to$ diluate | EurodiaED-100P-50 | 
 \goldmore{37}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ed06\_stages\_in\_series}{tutorials/electrochem/ed06\_stages\_in\_series}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ST1) at (0.0,-0.0) {\textbf{ST1}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (R1) at (0.0,-1.7) {\textbf{R1}\\[-1pt]{\tiny electricLoad}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ST2) at (2.9,-0.0) {\textbf{ST2}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (R2) at (0.0,-3.4) {\textbf{R2}\\[-1pt]{\tiny electricLoad}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ST3) at (5.8,-0.0) {\textbf{ST3}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (R3) at (0.0,-5.1) {\textbf{R3}\\[-1pt]{\tiny electricLoad}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ST4) at (8.7,-0.0) {\textbf{ST4}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (R4) at (0.0,-6.8) {\textbf{R4}\\[-1pt]{\tiny electricLoad}};
+  \draw[->] ($(ST1.west)+(-1.05,-0.17)$) -- ($(ST1.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {D0};
+  \draw[->] ($(ST1.west)+(-1.05,0.17)$) -- ($(ST1.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {C0};
+  \draw[->] (ST1) -- (ST2) node[midway, above, font=\tiny] {D1};
+  \draw[->] (ST1) -- (ST2) node[midway, above, font=\tiny] {C1};
+  \draw[->] (ST2) -- (ST3) node[midway, above, font=\tiny] {D2};
+  \draw[->] (ST2) -- (ST3) node[midway, above, font=\tiny] {C2};
+  \draw[->] (ST3) -- (ST4) node[midway, above, font=\tiny] {D3};
+  \draw[->] (ST3) -- (ST4) node[midway, above, font=\tiny] {C3};
+  \draw[->] ($(ST4.east)+(0,-0.17)$) -- ($(ST4.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {D4};
+  \draw[->] ($(ST4.east)+(0,0.17)$) -- ($(ST4.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {C4};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Four electrodialysis stages in series: the limiting current falls 15.6x along the train, so each stage is given its own current}
+\begin{tutnarrative}
+FOUR electrodialysis stages in series, and why a plant steps the current DOWN along the train.
+
+THE NETWORK NEEDS NO ELECTRICAL TOPOLOGY, and that is the point worth stating first. An ELECTRICAL STAGE is a set of cell pairs served by ONE electrode pair on its own rectifier. So stages in series are simply UNITS in series: four `electrodialysisStack` units, each with its own `electricLoad` rectifier on its own energy wire, the diluate passing from one to the next and the concentrate loop passing through all four. Nothing in the engine models a busbar, and nothing needs to.
+
+D0 --[ ST1 ]-- D1 --[ ST2 ]-- D2 --[ ST3 ]-- D3 --[ ST4 ]-- D4 C0 --[ ]-- C1 --[ ]-- C2 --[ ]-- C3 --[ ]-- C4 | | | | R1 R2 R3 R4 (four rectifiers)
+
+Each stage is the industrial frame of `ed05\_industrial\_stack` (EurodiaED-100P-50: 100 cell pairs, 50 m2 of cell-pair area, 0.5 m2 each), and each is asked for `targetDemin 0.6` -- sixty per cent of ITS OWN inlet -- so the ENGINE solves the current every stage needs instead of the case declaring four numbers.
+
+WHAT THE RUN MEASURES (printed by this run; nothing here is a target):
+
+stage I [A] i [A/m2] i\_lim [A/m2] i/i\_lim 1 26.80 53.60 338.88 0.158 2 10.72 21.44 135.55 0.158 3 4.29 8.58 54.22 0.158 4 1.72 3.43 21.69 0.158
+
+overall demineralisation 97.44 \% (0.05 $\to$ 0.00128 mol/kg)
+
+THE LESSON. The limiting current is a PREDICTION from the diluate composition (Geraldes \& Afonso, J. Membr. Sci. 360 (2010) 499-508), so as the diluate is stripped down the train i\_lim falls with it -- 338.88 A/m2 at the first stage, 21.69 A/m2 at the fourth, a factor of 15.6. A plant therefore CANNOT hold one current density along the train: stage 1 runs at 53.60 A/m2, and that same density in stage 4 would be 53.60 / 21.69 = 2.47 times ITS limiting current -- deep in the water-splitting regime, with the current efficiency collapsing and the membranes stressed. Running each stage at its own current keeps the same 0.158 margin everywhere, and the current falls by the same factor the inlet concentration does.
+
+This is the steady twin of `edbatch01\_constant\_current`: there ONE stack sees a falling concentration in TIME and crosses its own limiting current; here FOUR stacks see it in SPACE and each is given a current that suits where it sits. A batch rig and a series train are the same physics read along two different axes.
+
+WHAT IS PINNED AND WHAT IS NOT. The golden pins the answer this model gives. Nothing here reproduces a measured four-stage plant; the stack record is Vitor Geraldes' own industrial unit as he remembers it (its own header says so, value by value) and its mass-transfer correlation is BORROWED from the bench stack and applied inside the Reynolds band it was fitted over. The concentrate loop is CO-CURRENT and single-pass; no back-diffusion, no water transport and no inter-stage pumping are modelled.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{C0}{F}{0.0466736445318}
+\goldrow{stream}{C0}{T}{298.15}
+\goldrow{stream}{C1}{F}{0.0467236445318}
+\goldrow{stream}{C1}{T}{298.15}
+\goldrow{stream}{C2}{F}{0.0467436445318}
+\goldrow{stream}{C2}{T}{298.15}
+\goldrow{stream}{C3}{F}{0.0467516445318}
+\goldrow{stream}{C3}{T}{298.15}
+\goldrow{stream}{C4}{F}{0.0467548445318}
+\goldrow{stream}{C4}{T}{298.15}
+\goldrow{stream}{D0}{F}{0.0463403111984}
+\goldrow{stream}{D0}{T}{298.15}
+\goldrow{stream}{D1}{F}{0.0462903111984}
+\goldrow{stream}{D1}{T}{298.15}
+\goldmore{178}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ed07\_feed\_and\_bleed}{tutorials/electrochem/ed07\_feed\_and\_bleed}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (MIX) at (37.7,-0.0) {\textbf{MIX}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ED) at (40.6,-0.0) {\textbf{ED}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (SPLIT) at (43.5,-0.0) {\textbf{SPLIT}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (rectifier) at (0.0,-0.0) {\textbf{rectifier}\\[-1pt]{\tiny electricLoad}};
+  \draw[->] ($(MIX.west)+(-1.05,0.00)$) -- ($(MIX.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {Feed};
+  \draw[->, dashed] (SPLIT.south) .. controls +(0,-1.0) and +(0,-1.0) .. (MIX.south) node[midway, below, font=\tiny] {Recycle};
+  \draw[->] (MIX) -- (ED) node[midway, above, font=\tiny] {StackIn};
+  \draw[->] ($(ED.west)+(-1.05,0.00)$) -- ($(ED.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {ConcFeed};
+  \draw[->] (ED) -- (SPLIT) node[midway, above, font=\tiny] {StackOut};
+  \draw[->] ($(ED.east)+(0,0.00)$) -- ($(ED.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {ConcOut};
+  \draw[->] ($(SPLIT.east)+(0,0.00)$) -- ($(SPLIT.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {Product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Feed-and-bleed electrodialysis: the stack never sees the feed, and its limiting current is set by the LOOP concentration}
+\begin{tutnarrative}
+one stack, a recycle loop, and the concentration the stack actually sees.
+
+THE ARRANGEMENT. A feed-and-bleed loop: fresh feed joins a recycled fraction of the stack's own product, the mixture passes once through the stack, and a BLEED equal to the fresh feed leaves as product while the rest goes round again.
+
+Feed ---$\to$[ MIX ]---$\to$ StackIn ---$\to$[ ED ]---$\to$ StackOut \textasciicircum{} | | [ SPLIT ] +---------------- Recycle <-----------+
+
+ConcFeed ---$\to$[ ED ]---$\to$ ConcOut (single-pass concentrate)
+
+It is how a plant reaches a deep demineralisation with ONE stack instead of the four of `ed06\_stages\_in\_series`: the recycle does in time what the train does in space.
+
+THE TRAP IT EXISTS TO SHOW. A student sizing this loop reads the FEED analysis -- 0.05 mol/kg -- looks up the limiting current at that concentration, and sizes the rectifier against it. The stack never sees 0.05 mol/kg. It sees the MIXED loop concentration, which sits between the feed and the product and is much nearer the product, because four fifths of what enters it has already been through.
+
+WHAT THE RUN MEASURES (printed by this run; nothing here is a target):
+
+fresh feed 0.050000 mol/kg at 0.6 m3/h what the STACK sees 0.018667 mol/kg at 3.0 m3/h (the mixed loop) product (the bleed) 0.010831 mol/kg at 0.6 m3/h OVERALL demineralisation 78.34 \% PER PASS demineralisation 41.98 \% i 14.00 A/m2 (7.0 A over 0.5 m2) i\_lim 126.52 A/m2 at the LOOP concentration i\_lim was 338.88 A/m2 at the FEED concentration (ed05, the same stack and flow) i/i\_lim 0.1107 stack power 0.1379 kW
+
+So the limiting current in this loop is 338.88 / 126.52 = 2.68 times LOWER than the feed analysis suggests, and the per-pass duty is 41.98 \% rather than the 78.34 \% the plant delivers. Both errors point the same way -- towards an under-designed stack run too hard -- which is why they are worth meeting before a design sheet is written.
+
+A THIRD READING OF THE SAME TRAP, and it is on the printed sheet. The stack's `specific\_energy\_kWh\_per\_m3` is 0.0460: the run's own kW divided by what passes THROUGH the stack, 3.0 m3/h. The plant makes 0.6 m3/h of product, so its specific energy is 0.1379 kW / 0.6 m3/h = 0.230 kWh/m3 -- five times the number on the unit's own line, because four fifths of what the stack treats it has treated before. A per-pass figure of merit is not a plant figure of merit whenever there is a recycle.
+
+WHY THE ENGINE NEEDS A TEAR, and what that costs. `Recycle` is produced by the splitter, which is declared LAST, and consumed by the mixer, which is declared FIRST; the solver executes units in DECLARED ORDER, so it cannot reach the recycle before it needs it. The cut is declared in `system/solverDict` (`tearStreams ( Recycle );`) and a Newton on the tear variables closes it. Omit the declaration and the engine refuses by name with the cycle chain, rather than quietly reading a stale seed.
+
+WHAT IS PINNED AND WHAT IS NOT. The golden pins the answer this model gives. As in ed05 and ed06 the stack record is an industrial unit described from operating experience, its mass-transfer correlation is borrowed from the bench stack and applied inside its own Reynolds band, and no measured feed-and-bleed plant is reproduced anywhere in this tree. The concentrate is single-pass; back-diffusion and water transport are not modelled.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{ConcFeed}{F}{0.0466736445318}
+\goldrow{stream}{ConcFeed}{T}{298.15}
+\goldrow{stream}{ConcOut}{F}{0.0466867035115}
+\goldrow{stream}{ConcOut}{T}{298.15}
+\goldrow{stream}{Feed}{F}{0.00926806223969}
+\goldrow{stream}{Feed}{T}{298.15}
+\goldrow{stream}{Product}{F}{0.00925500599929}
+\goldrow{stream}{Product}{T}{298.15}
+\goldrow{stream}{Recycle}{F}{0.0370200239972}
+\goldrow{stream}{Recycle}{T}{298.15}
+\goldrow{stream}{StackIn}{F}{0.0462880889762}
+\goldrow{stream}{StackIn}{T}{298.15}
+\goldrow{stream}{StackOut}{F}{0.0462750299965}
+\goldrow{stream}{StackOut}{T}{298.15}
+\goldmore{48}
+\end{tutgolden}
+

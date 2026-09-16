@@ -1,0 +1,190 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ed06_stages_in_series  --  FOUR electrodialysis stages in series, and why a
+  plant steps the current DOWN along the train.
+
+  THE NETWORK NEEDS NO ELECTRICAL TOPOLOGY, and that is the point worth
+  stating first.  An ELECTRICAL STAGE is a set of cell pairs served by ONE
+  electrode pair on its own rectifier.  So stages in series are simply UNITS
+  in series: four `electrodialysisStack` units, each with its own
+  `electricLoad` rectifier on its own energy wire, the diluate passing from
+  one to the next and the concentrate loop passing through all four.  Nothing
+  in the engine models a busbar, and nothing needs to.
+
+  THE ARRANGEMENT.
+
+      D0 --[ ST1 ]-- D1 --[ ST2 ]-- D2 --[ ST3 ]-- D3 --[ ST4 ]-- D4
+      C0 --[      ]-- C1 --[      ]-- C2 --[      ]-- C3 --[      ]-- C4
+             |             |             |             |
+            R1            R2            R3            R4     (four rectifiers)
+
+  Each stage is the industrial frame of `ed05_industrial_stack`
+  (EurodiaED-100P-50: 100 cell pairs, 50 m2 of cell-pair area, 0.5 m2 each),
+  and each is asked for `targetDemin 0.6` -- sixty per cent of ITS OWN inlet
+  -- so the ENGINE solves the current every stage needs instead of the case
+  declaring four numbers.
+
+  WHAT THE RUN MEASURES (printed by this run; nothing here is a target):
+
+      stage      I [A]      i [A/m2]    i_lim [A/m2]    i/i_lim
+        1        26.80        53.60        338.88        0.158
+        2        10.72        21.44        135.55        0.158
+        3         4.29         8.58         54.22        0.158
+        4         1.72         3.43         21.69        0.158
+
+      overall demineralisation  97.44 %   (0.05 -> 0.00128 mol/kg)
+
+  THE LESSON.  The limiting current is a PREDICTION from the diluate
+  composition (Geraldes & Afonso, J. Membr. Sci. 360 (2010) 499-508), so as
+  the diluate is stripped down the train i_lim falls with it -- 338.88 A/m2
+  at the first stage, 21.69 A/m2 at the fourth, a factor of 15.6.  A plant
+  therefore CANNOT hold one current density along the train: stage 1 runs at
+  53.60 A/m2, and that same density in stage 4 would be 53.60 / 21.69 = 2.47
+  times ITS limiting current -- deep in the water-splitting regime, with the
+  current efficiency collapsing and the membranes stressed.  Running each
+  stage at its own current keeps the same 0.158 margin everywhere, and the
+  current falls by the same factor the inlet concentration does.
+
+  This is the steady twin of `edbatch01_constant_current`: there ONE stack
+  sees a falling concentration in TIME and crosses its own limiting current;
+  here FOUR stacks see it in SPACE and each is given a current that suits
+  where it sits.  A batch rig and a series train are the same physics read
+  along two different axes.
+
+  WHAT IS PINNED AND WHAT IS NOT.  The golden pins the answer this model
+  gives.  Nothing here reproduces a measured four-stage plant; the stack
+  record is Vitor Geraldes' own industrial unit as he remembers it (its own
+  header says so, value by value) and its mass-transfer correlation is
+  BORROWED from the bench stack and applied inside the Reynolds band it was
+  fitted over.  The concentrate loop is CO-CURRENT and single-pass; no
+  back-diffusion, no water transport and no inter-stage pumping are modelled.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        ST1;
+        type        electrodialysisStack;
+        inputs      ( D0  C0 );
+        outputs     ( D1  C1 );
+
+        operation
+        {
+            stack             EurodiaED-100P-50;
+            membrane          CMX_AMX;      // the record names no pair -- the CASE must
+            targetDemin       0.6;          // each stage removes 60 % of ITS OWN inlet
+            xi                0.9;
+            E_electrodes      2.0;          // V (raw SI), lumped, announced
+        }
+
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+    {
+        name        R1;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from ST1.power;  kind work;  target W_shaft; }
+        );
+    }
+    {
+        name        ST2;
+        type        electrodialysisStack;
+        inputs      ( D1  C1 );
+        outputs     ( D2  C2 );
+
+        operation
+        {
+            stack             EurodiaED-100P-50;
+            membrane          CMX_AMX;      // the record names no pair -- the CASE must
+            targetDemin       0.6;          // each stage removes 60 % of ITS OWN inlet
+            xi                0.9;
+            E_electrodes      2.0;          // V (raw SI), lumped, announced
+        }
+
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+    {
+        name        R2;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from ST2.power;  kind work;  target W_shaft; }
+        );
+    }
+    {
+        name        ST3;
+        type        electrodialysisStack;
+        inputs      ( D2  C2 );
+        outputs     ( D3  C3 );
+
+        operation
+        {
+            stack             EurodiaED-100P-50;
+            membrane          CMX_AMX;      // the record names no pair -- the CASE must
+            targetDemin       0.6;          // each stage removes 60 % of ITS OWN inlet
+            xi                0.9;
+            E_electrodes      2.0;          // V (raw SI), lumped, announced
+        }
+
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+    {
+        name        R3;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from ST3.power;  kind work;  target W_shaft; }
+        );
+    }
+    {
+        name        ST4;
+        type        electrodialysisStack;
+        inputs      ( D3  C3 );
+        outputs     ( D4  C4 );
+
+        operation
+        {
+            stack             EurodiaED-100P-50;
+            membrane          CMX_AMX;      // the record names no pair -- the CASE must
+            targetDemin       0.6;          // each stage removes 60 % of ITS OWN inlet
+            xi                0.9;
+            E_electrodes      2.0;          // V (raw SI), lumped, announced
+        }
+
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+    {
+        name        R4;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from ST4.power;  kind work;  target W_shaft; }
+        );
+    }
+);

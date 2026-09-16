@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ed07_feed_and_bleed / system/solverDict
+
+  ONE recycle, so ONE tear.  `Recycle` is the back edge: it is produced by
+  the splitter (declared LAST) and consumed by the mixer (declared FIRST),
+  so the sequential plan cannot reach it without a cut, and the engine
+  refuses by name if the cut is not declared.  Its seed lives in 0/Recycle
+  like every other stream's state -- the author's, and announced as such.
+\*---------------------------------------------------------------------------*/
+
+tearStreams           ( Recycle );
+recycleSolver          Newton;

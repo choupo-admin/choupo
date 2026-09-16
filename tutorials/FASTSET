@@ -92,6 +92,7 @@ tutorials/batch/adsorber/batch12_adsorber_refused_P
 tutorials/batch/combustion/ignition01_h2o2_rk4
 tutorials/batch/crystallisation/batch13_nacl_pitzer
 tutorials/batch/drying/dryer01_sucrose_tray
+tutorials/batch/electrodialysis/edbatch01_constant_current
 tutorials/batch/membrane/diafilter01_nf_desalting
 tutorials/batch/reactor/batch03_consecutive
 tutorials/batch/recipes/recipe04_charge_enthalpy

@@ -371,7 +371,12 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3467, "latent under-convergence"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3492, "/ scale[i]"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 2067, "mixes flows and"],
-    ["src/applications/choupoSolve/main.cpp", 290, "Mass balance (global)"],
+    //  291, not 290: the engine gained a comment line above it and the
+    //  anchor was left behind.  The lesson's own citation is the RANGE
+    //  288-291 and still covers it; this list holds the ONE line that must
+    //  carry the string.  (Drift found 2026-09-16 by an unrelated slice --
+    //  a pre-existing red that had nothing to do with it.)
+    ["src/applications/choupoSolve/main.cpp", 291, "Mass balance (global)"],
     ["src/streams/ProcessStream.H", 78, "kmol/s"],
     // --- tear streams: the plan contract
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 4339, "Flowsheet::validateSequentialPlan"],

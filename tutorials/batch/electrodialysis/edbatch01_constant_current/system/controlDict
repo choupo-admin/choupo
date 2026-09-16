@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  edbatch01_constant_current / system/controlDict
+
+  The clock comes from the process.  At 3.5 A, seven cell pairs and xi 0.9,
+  Faraday moves 2.287e-4 mol/s of sodium, so the 0.5 mol the diluate tank
+  starts with would be gone in 2188 s if nothing changed.  endTime 2000 s
+  stops the run just short of that, with the crossing into the over-limiting
+  regime (t = 1593 s) well inside the window and ~400 s of plateau after it
+  to watch.
+
+  `timeStepping` is left at the default `fixed`, and this unit's fixed path
+  is classical RK4 on its packed state.  deltaT 1 s is converged: at 0.25 s
+  every published number moves by less than 1e-7 relative, except
+  `t_overLimiting_s`, which is by definition the first accepted STEP at which
+  i exceeds i_lim and therefore carries the step as its resolution.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Batch recirculating electrodialysis at constant current: the limiting current falls with the depleting diluate until i crosses it";
+
+verbosity     3;
+
+startTime       0;
+endTime         2000;      // s   (the hand calculation empties the tank at 2188)
+deltaT          1;         // s   (fixed RK4; converged -- see above)
+writeInterval   50;        // s

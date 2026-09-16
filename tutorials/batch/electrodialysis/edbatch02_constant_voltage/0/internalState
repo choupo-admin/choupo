@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/internalState -- the rig's TWO tanks, the single source of truth (an
+  inline initial{} block in flowsheetDict is refused by the driver).
+
+  A recirculating electrodialysis rig has a diluate tank and a concentrate
+  tank, and this unit holds BOTH: the diluate is the vessel's own state --
+  it is the product -- and the concentrate is internal state it publishes.
+  The concentrate is declared, not defaulted, because the Nernst membrane
+  potential is a function of it.
+
+  DILUATE      5 litres of water (0.2775418672 kmol) carrying 0.1 mol/kg of
+               NaCl, i.e. 5.0e-4 kmol of Na+ and the same of Cl-.
+  CONCENTRATE  5 litres of water carrying 0.5 mol/kg, i.e. 2.5e-3 kmol of
+               each ion -- a brine the rig is asked to strengthen further.
+
+  Both tanks are at the SAME temperature and pressure: the rig is isothermal
+  and the block below carries one T and one P for it.  Declaring `T` or `P`
+  inside `concentrate {}` is refused -- two homes for one fact.
+\*---------------------------------------------------------------------------*/
+
+time            0;
+application     batch;
+
+units
+{
+    "rig"
+    {
+        T            298.15 K;
+        P            1.5 bar;
+        V            0.005;                // m3 (5 litres of diluate)
+        totalMoles   0.2785418672;         // kmol
+        molarComposition
+        {
+            water    0.9964098754;
+            Na       0.001795062283;
+            Cl       0.001795062283;
+        }
+
+        concentrate
+        {
+            totalMoles   0.2825418672;     // kmol
+            molarComposition
+            {
+                water    0.9823035076;
+                Na       0.00884824619;
+                Cl       0.00884824619;
+            }
+        }
+    }
+}

@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ed06_stages_in_series / system/controlDict
+
+  A pure feed-forward train: four stacks in declared flow order, no recycle,
+  so one pass solves it.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Four electrodialysis stages in series: the limiting current falls 15.6x along the train, so each stage is given its own current";
+
+verbosity     3;

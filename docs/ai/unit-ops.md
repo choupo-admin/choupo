@@ -1383,6 +1383,91 @@ washed to 50.2 %, MgSO4 held at 99.2 %, actual 0.5015 vs ideal 0.4970) and
 `diafilter02_fouling_decline` (same run plus a HYPOTHETICAL `cake` law:
 permeance to 72.5 % of clean, 4.74 diavolumes, 53.4 % of the NaCl left).
 
+### `batchElectrodialysis`
+A RECIRCULATING BATCH electrodialysis rig: two well-mixed tanks — diluate
+and concentrate — pumped through the same stack the steady
+`electrodialysisStack` runs.  It adds no architecture: it asks
+`edCell::predictiveLimitingCurrent` — the same assembly of Geraldes &
+Afonso (2010) Eqs. A13/12/13/15/16, the same `kind edStack` record, the
+same Nernst / ohmic / Faraday relations — once per instant instead of once
+per pass.  **That is the point of it.**  `i_lim` is a PREDICTION from the
+DILUATE COMPOSITION, so in a batch run it FALLS as the tank depletes, and a
+constant-current run crosses into the over-limiting regime part way
+through.  No steady case can show that.
+
+The unit holds BOTH tanks: `state()` is the diluate (the product), the
+concentrate is internal state it publishes in full, and
+`materialInventory()` is the SUM — the rig is CLOSED, so the campaign
+material balance is exact by construction.  Initial state comes from
+`0/internalState`, the concentrate as a `concentrate {}` sub-block; an
+inline `initial {}` is refused, and a `T` or `P` inside `concentrate {}` is
+refused too (the rig is isothermal and has ONE temperature).
+
+```
+{ name rig;  type batchElectrodialysis;
+  operation
+  {
+      stack          EUR2C-7P18;        // REQUIRED -- no inline-geometry form here
+      diluateFlow    175 L/h;           // the pump setting: there is no inlet stream
+      current        3.5;               // A -- constant current  \  exactly
+      // voltage     4;                 // V -- constant voltage  /   one
+      xi             0.9;               // current efficiency (default 0.9, announced)
+      E_electrodes   1.5;               // V, lumped, announced
+      overLimiting   { model saltFluxPlateau; }   // OPTIONAL; default `none`, announced
+  }
+}
+```
+```
+// 0/internalState
+units { "rig" {
+    T 298.15 K;  P 1.5 bar;  V 0.005;
+    totalMoles 0.2785418672;  molarComposition { water ...; Na ...; Cl ...; }
+    concentrate { totalMoles 0.2825418672;  molarComposition { ... } }
+} }
+```
+**The lesson is the point.**  The hand calculation for a batch
+electrodialysis is Faraday's law at the INITIAL current,
+`n(t) = n(0) − ξ·I·N·t/(z·F)` — a straight line hitting zero at a finite
+time.  The unit publishes it as `demin_ideal`, evaluated from THIS RUN's
+own `I_initial`, own inventory and own declared ξ (computed, never
+declared), beside `demin_actual`, and NAMES the reason they part: at
+constant current, `i` crossing `i_lim`; at constant voltage, the current
+decaying as the diluate loses conductivity and the Nernst back-EMF grows.
+
+`overLimiting { model saltFluxPlateau; }` is OPT-IN and adds no parameter:
+at `i = i_lim` the film delivers the counter-ion as fast as it can, so a
+larger current is carried by water-splitting products instead of by salt
+and `ξ_eff = ξ·min(1, i_lim/i)`.  The DEFAULT is `none` — ξ stays put, the
+run warns that it is then EXTRAPOLATING a model outside its validity, and
+the current is NEVER clamped either way.
+
+KPIs: `I_initial`/`I_final`, `U_final`, `i_density_final`,
+`i_lim_initial`/`i_lim_final`, `i_over_ilim_initial`/`_final`,
+`overLimitingReached`, `t_overLimiting_s`, `xi_eff_final`, `demin_actual`,
+`demin_ideal`, `t_idealComplete_s`, `m_dil_final`/`m_conc_final`,
+`concentrationFactor`, `energy_electric_kJ`,
+`specificEnergy_kWh_per_m3`, plus the model's own derived inputs
+(`D_eff`, `k_c_eff`, `Sh`, `Re`, `Sc`, `u_superficial`, `film_thickness`).
+
+NOT modelled, said plainly, and each is REFUSED or ANNOUNCED rather than
+assumed: **more than one cation or one anion** (refused by name — the split
+of the counter-ion current between two counter-ions is the MEMBRANES'
+selectivity and no `kind IEM` record carries it); back-diffusion from the
+concentrate (it needs a membrane salt permeability no record carries);
+water transport, osmotic or electro-osmotic; a falling current efficiency
+from co-ion leakage; any temperature transient (the rig is isothermal and
+the Joule heat is removed by no modelled duty, so `energyLedgerGap` names
+it and the campaign energy balance is UNAVAILABLE); the pumps; the
+electrode reactions (lumped into `E_electrodes`, no Butler-Volmer).
+Witnesses: `tutorials/batch/electrodialysis/edbatch01_constant_current`
+(i_lim 643.04 → 88.26 A/m2, the crossing at t = 1593 s, 86.27 % actual
+against the hand calculation's 91.41 %) and `edbatch02_constant_voltage`
+(the same rig at 4 V: I decays 4.365 → 2.018 A, i/i_lim never reaches 1,
+61.59 % against 85.51 %).  The steady network twins are
+`tutorials/electrochem/ed06_stages_in_series` (four stages, the limiting
+current falling 15.6× along the train) and `ed07_feed_and_bleed` (a recycle:
+the stack never sees the feed).
+
 ## Recipe events (in `flowsheetDict`)
 
 ```

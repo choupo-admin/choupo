@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
+  Raoult DECLARED, not defaulted (gamma = 1 identically).
+  Migrated mechanically from the v1 flat form (physics identical);
+  v2 contract 2026-07-17.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water  Na  Cl );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    // The liquid IS an aqueous electrolyte solution -- declared here, once,
+    // independently of the phase equilibrium above (this stack computes no
+    // VLE).  The stack READS this; it no longer freezes a model of its own.
+    aqueous
+    {
+        activityModel { model davies; }
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+//  THE LIQUID VISCOSITY IS DECLARED, and the limiting-current model reads it
+//  TWICE: once at the run temperature for the Reynolds and Schmidt numbers,
+//  and once at 298.15 K, because the curated ion diffusivities are referenced
+//  there and the model corrects them to the run temperature through
+//  Stokes-Einstein, D(T) = D0 (T/298.15) (mu(298.15)/mu(T)).  With no model
+//  declared there is no correction and the run SAYS so.
+transport
+{
+    liquid
+    {
+        viscosity { model Vogel; }
+    }
+}

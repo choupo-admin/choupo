@@ -3114,6 +3114,28 @@ PYEOF
     fi
     rm -f /tmp/edstack.$$
 
+    # ED-batch gate (2026-09-16).  A BATCH recirculating rig is where the
+    # PREDICTED limiting current starts to matter: the diluate depletes, so
+    # i_lim falls under a constant current until they cross -- which no steady
+    # case can show.  The gate holds the closed rig's inventory at machine
+    # level, recomputes the falling i_lim against the diluate concentration on
+    # every written row, recomputes the hand calculation (Faraday at the
+    # initial current) from the case's own declarations and requires the run
+    # to DISOBEY it -- with the `model none;` twin as the negative that shows
+    # the gap is the declared plateau and not an arrangement -- fires 11
+    # refusals on cases it BUILDS, and proves ONE HOME twice by holding the
+    # rig's t = 0 numbers to ed03's.  11 by-hand sabotages in its docstring,
+    # two of which did not do what was predicted.
+    if "$ROOT/bin/curate/check_ed_batch.py" > /tmp/edbatch.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ed-batch-gate" "$(grep -m1 '^check_ed_batch: OK' /tmp/edbatch.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ed_batch.py)\n" "ed-batch-gate"
+        cat /tmp/edbatch.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/edbatch.$$
+
     # block-tridiagonal gate (2026-08-25).  The MESH declares its Jacobian
     # structure; the declaration is audited on the first iteration and the
     # colored evaluation count must equal the CPR formula recomputed by the

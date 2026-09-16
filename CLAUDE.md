@@ -2152,15 +2152,64 @@ on `spacerType`.  Witnesses
 against the paper's Table 4, +1 to +12 %, 6.9 % average against its own
 reported 9 %; two findings recorded not tuned -- the paper's Re at its highest
 flow does not follow from its own flow rate, and the bias is HIGH here where
-the paper's is LOW on its single-salt rows).  NOT done: batch (recirculating)
-electrodialysis and the stacks-in-series witnesses -- and those need NO
-electrical topology, because an electrical stage is a set of cell pairs served
-by ONE electrode pair on its own rectifier, so stages in series are units in
-series and a plant runs them at DECREASING current density because i_lim falls
-as the diluate depletes, which this model now predicts.  Gate:
-`check_ed_stack` (12 by-hand sabotages, two of which did not do what was
-predicted).  Record:
+the paper's is LOW on its single-salt rows).  This paragraph used to end "NOT
+done: batch (recirculating) electrodialysis and the stacks-in-series
+witnesses"; BOTH WERE BUILT THE SAME DAY and the sentence is corrected here
+rather than left to go stale (the 2026-09-12 rule: when you fix a thing this
+file calls broken, fix the sentence in the same commit).  See the paragraph
+below.  Gate: `check_ed_stack` (12 by-hand sabotages, two of which did not do
+what was predicted).  Record:
 [`docs/design/a-stack-is-a-record-and-its-limiting-current-is-predicted.md`](docs/design/a-stack-is-a-record-and-its-limiting-current-is-predicted.md).
+
+**THE LIMITING CURRENT THAT FALLS WHILE YOU WATCH -- batch electrodialysis
+(2026-09-16, the same day).**  A PREDICTED i_lim evaluated at ONE fixed
+composition is only a better number; **in a batch desalination the diluate
+DEPLETES, so i_lim falls under a constant current until they cross**, and that
+crossing is the whole pedagogy of batch ED and cannot be shown by any model
+that reads a declared transport number.  `batchElectrodialysis` (choupoBatch)
+adds NO architecture -- it asks `edCell::predictiveLimitingCurrent` once per
+instant instead of once per pass -- and the extraction that made that possible
+is the durable half: `readIEMPair`, `buildChannel`, the mean activity ratio,
+the solution resistance and the whole Eq. A13/12/13/15/16 assembly LEFT
+`ElectrodialysisStack.cpp`'s anonymous namespace the day the second caller
+arrived (the `BulkConversion.H` precedent), verbatim, with every ed01-ed05
+golden byte-identical.  **THE UNIT HOLDS BOTH TANKS** (`state()` is the
+diluate, the concentrate is published internal state, `materialInventory()` is
+the SUM): a recirculating tank is not a discharge, and a unit that could not
+see the concentrate could not compute the Nernst term that sets its own
+voltage.  The rig is CLOSED, so the derivative writes ONE number with two
+signs and the campaign closes at machine level.  **THE IDEALISATION IS
+COMPUTED FROM THE RUN** (the diafilter's rule): `demin_ideal` is Faraday's law
+at THIS run's own initial current, never declared, and the run NAMES why it
+parts -- at constant current the crossing, at constant voltage the current
+itself decaying as the diluate loses conductivity.  `overLimiting { model
+saltFluxPlateau; }` (xi_eff = xi min(1, i_lim/i)) is OPT-IN and adds NO
+PARAMETER; the DEFAULT keeps xi and ANNOUNCES that it is then extrapolating
+past the crossing, and the current is never clamped either way.  A MULTI-IONIC
+batch feed REFUSES by name: the split of the counter-ion current between two
+counter-ions is the membranes' SELECTIVITY, which no `kind IEM` record
+carries, and Eqs. 12/13's limiting transport numbers describe the FILM at the
+limit and are a different quantity.  Fixed on the way: an ISOTHERMAL `mixer`
+priced inlet enthalpies it was never going to read (the sum feeds only the
+ADIABATIC Newton's target), so a case DECLARING its outlet temperature was
+refused over an arithmetic the run does not perform -- no number moved.  **NOT
+done, said plainly:** back-diffusion, water transport, co-ion leakage and any
+thermal effect (the electrical work IS integrated exactly, but the heat it
+becomes is not, so the campaign first law is UNAVAILABLE rather than closed
+with a PLUG); and NOTHING here is validated against a measured rig.  RESERVED
+for Vitor: the multi-ion split rule -- and, found while building this and NOT
+fixed because it moves ed04's golden, **the steady unit's Faraday transfer is
+not charge-balanced on a feed of mixed valence** (every ion gets xi I N/(z_i
+F); measured on ed04, the ED1 diluate outlet carries +1.306e-8 kmol/h of net
+charge against 7.164e-7 equivalents, 1.8 %).  Witnesses
+`edbatch01_constant_current` (i_lim 643.04 -> 88.26 A/m2, crossing at 1593 s,
+86.27 % against the hand calculation's 91.41 %), `edbatch02_constant_voltage`
+(I 4.365 -> 2.018 A, i/i_lim never 1, 61.59 % against 85.51 %),
+`ed06_stages_in_series` (four stages, i_lim falling 15.6x, ONE shared margin)
+and `ed07_feed_and_bleed` (the stack never sees the feed).  Gate:
+`check_ed_batch` (11 by-hand sabotages, two of which did not do what was
+predicted).  Record:
+[`docs/design/the-limiting-current-that-falls-while-you-watch.md`](docs/design/the-limiting-current-that-falls-while-you-watch.md).
 
 **AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  An advisory
 carries `where` (the innermost open `AdvisoryFrame`) and `status` (`accepted`

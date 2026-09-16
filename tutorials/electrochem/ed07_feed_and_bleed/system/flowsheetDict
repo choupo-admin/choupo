@@ -1,0 +1,137 @@
+/*---------------------------------------------------------------------------*\
+  ed07_feed_and_bleed  --  one stack, a recycle loop, and the concentration
+  the stack actually sees.
+
+  THE ARRANGEMENT.  A feed-and-bleed loop: fresh feed joins a recycled
+  fraction of the stack's own product, the mixture passes once through the
+  stack, and a BLEED equal to the fresh feed leaves as product while the rest
+  goes round again.
+
+            Feed ---->[ MIX ]----> StackIn ---->[ ED ]----> StackOut
+                         ^                                     |
+                         |                                  [ SPLIT ]
+                         +---------------- Recycle <-----------+
+                                                              |
+                                                          Product (bleed)
+
+            ConcFeed ---->[ ED ]----> ConcOut        (single-pass concentrate)
+
+  It is how a plant reaches a deep demineralisation with ONE stack instead of
+  the four of `ed06_stages_in_series`: the recycle does in time what the
+  train does in space.
+
+  THE TRAP IT EXISTS TO SHOW.  A student sizing this loop reads the FEED
+  analysis -- 0.05 mol/kg -- looks up the limiting current at that
+  concentration, and sizes the rectifier against it.  The stack never sees
+  0.05 mol/kg.  It sees the MIXED loop concentration, which sits between the
+  feed and the product and is much nearer the product, because four fifths of
+  what enters it has already been through.
+
+  WHAT THE RUN MEASURES (printed by this run; nothing here is a target):
+
+      fresh feed              0.050000 mol/kg at 0.6 m3/h
+      what the STACK sees     0.018667 mol/kg at 3.0 m3/h  (the mixed loop)
+      product (the bleed)     0.010831 mol/kg at 0.6 m3/h
+      OVERALL demineralisation   78.34 %
+      PER PASS demineralisation  41.98 %
+      i                        14.00 A/m2      (7.0 A over 0.5 m2)
+      i_lim                   126.52 A/m2      at the LOOP concentration
+      i_lim was               338.88 A/m2      at the FEED concentration (ed05,
+                                                the same stack and flow)
+      i/i_lim                   0.1107
+      stack power               0.1379 kW
+
+  So the limiting current in this loop is 338.88 / 126.52 = 2.68 times LOWER
+  than the feed analysis suggests, and the per-pass duty is 41.98 % rather
+  than the 78.34 % the plant delivers.  Both errors point the same way --
+  towards an under-designed stack run too hard -- which is why they are worth
+  meeting before a design sheet is written.
+
+  A THIRD READING OF THE SAME TRAP, and it is on the printed sheet.  The
+  stack's `specific_energy_kWh_per_m3` is 0.0460: the run's own kW divided by
+  what passes THROUGH the stack, 3.0 m3/h.  The plant makes 0.6 m3/h of
+  product, so its specific energy is 0.1379 kW / 0.6 m3/h = 0.230 kWh/m3 --
+  five times the number on the unit's own line, because four fifths of what
+  the stack treats it has treated before.  A per-pass figure of merit is not
+  a plant figure of merit whenever there is a recycle.
+
+  WHY THE ENGINE NEEDS A TEAR, and what that costs.  `Recycle` is produced by
+  the splitter, which is declared LAST, and consumed by the mixer, which is
+  declared FIRST; the solver executes units in DECLARED ORDER, so it cannot
+  reach the recycle before it needs it.  The cut is declared in
+  `system/solverDict` (`tearStreams ( Recycle );`) and a Newton on the tear
+  variables closes it.  Omit the declaration and the engine refuses by name
+  with the cycle chain, rather than quietly reading a stale seed.
+
+  WHAT IS PINNED AND WHAT IS NOT.  The golden pins the answer this model
+  gives.  As in ed05 and ed06 the stack record is an industrial unit
+  described from operating experience, its mass-transfer correlation is
+  borrowed from the bench stack and applied inside its own Reynolds band, and
+  no measured feed-and-bleed plant is reproduced anywhere in this tree.  The
+  concentrate is single-pass; back-diffusion and water transport are not
+  modelled.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        MIX;
+        type        mixer;
+        inputs      ( Feed  Recycle );
+        outputs     ( StackIn );
+
+        //  ISOTHERMAL, declared.  The adiabatic mixer solves T_out from the
+        //  enthalpy balance, and the ionic components of this case carry no
+        //  liquid heat capacity -- the engine refuses to route a nonvolatile
+        //  through the ideal-gas reference rather than inventing one, which
+        //  is the right refusal.  Both streams arrive at 298.15 K and the
+        //  whole loop is isothermal, so the mixed temperature is not in
+        //  question here; it is DECLARED rather than computed from data the
+        //  catalogue does not have.
+        operation   { T 298.15 K; }
+    }
+
+    {
+        name        ED;
+        type        electrodialysisStack;
+        inputs      ( StackIn  ConcFeed );
+        outputs     ( StackOut  ConcOut );
+
+        operation
+        {
+            stack             EurodiaED-100P-50;
+            membrane          CMX_AMX;      // the record names no pair -- the CASE must
+            current           7.0;          // A (raw SI) -- the rectifier setting
+            xi                0.9;
+            E_electrodes      2.0;          // V (raw SI), lumped, announced
+        }
+
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+
+    {
+        name        SPLIT;
+        type        splitter;
+        in          StackOut;
+        outputs     ( Recycle  Product );   // Recycle FEEDS BACK into MIX
+
+        //  Four fifths round again; the bleed that leaves equals the fresh
+        //  feed, which is what makes the loop steady.
+        operation   { fractions ( 0.8  0.2 ); }
+    }
+
+    {
+        name        rectifier;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from ED.power;  kind work;  target W_shaft; }
+        );
+    }
+);

@@ -1,0 +1,118 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  edbatch01_constant_current  --  a batch electrodialysis rig run at CONSTANT
+  CURRENT, and the limiting current falling under it until they cross.
+
+  THE OPERATION.  Five litres of 0.1 mol/kg brine in the diluate tank, five
+  litres of 0.5 mol/kg in the concentrate tank, both recirculated through the
+  bench stack of `ed03_stack_record` (Eurodia EUR2C-7P18, seven cell pairs,
+  0.020 m2 each) at the paper's own 175 L/h.  The rectifier is held at 3.5 A,
+  which is 175 A/m2 on one cell pair.
+
+  WHY IT IS A DIFFERENT EXPERIMENT FROM ed01-ed05.  Those are steady: one
+  pass, a fixed diluate composition, so the limiting current is evaluated
+  ONCE.  Here the diluate tank DEPLETES, and i_lim -- which the
+  GeraldesAfonso2010 model predicts from the ion diffusivities and the diluate
+  composition -- falls with it, while i does not move at all.  They must
+  cross.
+
+  WHAT THE RUN MEASURES (every number below is printed by this run; nothing
+  here is a target):
+
+      i                     175.00 A/m2, flat, all 2000 s
+      i_lim                 643.04 A/m2 at t = 0
+                             88.26 A/m2 at t = 2000 s
+      THE CROSSING           t = 1593 s          (i/i_lim reaches 1)
+      i/i_lim at the end    1.983
+      xi_eff                0.900 -> 0.4539      (the plateau, below)
+      demineralisation      86.27 %  ACTUAL
+                            91.41 %  what the hand calculation predicts
+      the hand calculation's own answer: the tank is EMPTY at t = 2188 s
+      concentrate          0.5 -> 0.5863 mol/kg  (x1.173)
+      specific energy       1.946 kWh per m3 of diluate treated
+      material closure      1.4e-15 on mass, 8.5e-14 on the worst element
+
+  THE LESSON.  Faraday's law at constant current is a STRAIGHT LINE:
+
+      n(t) = n(0) - xi I N t / (z F)
+
+  and it is what a student computes by hand.  The run publishes it as
+  `demin_ideal`, evaluated from THIS run's own initial current, own initial
+  inventory and own declared xi -- computed, never declared, so the gap
+  cannot have been arranged -- beside `demin_actual`.
+
+  The two agree exactly until t = 1593 s and part after it, and the reason is
+  printed at the instant it happens: i has caught i_lim.  At the limiting
+  current the counter-ion concentration vanishes at the diluate/membrane
+  interface and the film can deliver no more of it, so a larger current is
+  carried by water-splitting products instead of by salt.  This case DECLARES
+  that model -- `overLimiting { model saltFluxPlateau; }`, xi_eff = xi
+  i_lim/i, which adds no parameter -- so the depletion stops being linear and
+  becomes asymptotic: the straight line hits zero at 2188 s and the tank
+  never does.
+
+  WITHOUT the declaration (the default) the current efficiency would stay at
+  xi and the two curves would coincide to the integrator's own precision.
+  That is not a better answer; it is a model with nothing in it that could
+  part from the hand calculation, and the run SAYS so when i crosses i_lim.
+  `edbatch02_constant_voltage` is the same rig with the rectifier held at a
+  voltage instead: there the current DECAYS, the crossing never happens, and
+  the same hand calculation fails for an entirely different reason.
+
+  WHAT IS PINNED AND WHAT IS NOT.  The golden pins the answer THIS model
+  gives.  Nothing here is validated against a measured batch electrodialysis:
+  the stack record reproduces the paper's bench unit and its limiting-current
+  correlation, but no run of that unit in recirculating batch is transcribed
+  anywhere in this tree.  `t_overLimiting_s` is resolved to the TIME STEP --
+  it is the first accepted step at which i exceeds i_lim, so it moves with
+  deltaT (1593 s at deltaT 1, 1592.5 s at deltaT 0.25) while everything else
+  is converged to ~1e-8.
+
+  NOT MODELLED, and it matters to how far this run can be trusted: no salt
+  diffuses back from the concentrate, no water is transported with the ions,
+  the current efficiency is a declared constant apart from the plateau above,
+  and the rig is isothermal with the Joule heat removed by no modelled duty
+  (which is why the campaign energy balance reports UNAVAILABLE and says
+  why).  The full list is in the unit's own header.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        rig;
+        type        batchElectrodialysis;
+
+        operation
+        {
+            stack          EUR2C-7P18;   // the HARDWARE, as a record (ed03)
+
+            //  The pump setting.  A steady stack reads its crossflow off an
+            //  inlet stream; a batch rig has no stream, so the recirculation
+            //  rate is declared here and nowhere else.  175 L/h is the
+            //  paper's own middle flow: u = 0.0791 m/s, Re 68.5, inside the
+            //  50-86 band its correlation was fitted over.
+            diluateFlow    175 L/h;
+
+            //  CONSTANT CURRENT.  175 A/m2 on one cell pair -- below the
+            //  record's estimated 200 A/m2 ceiling, and below i_lim at t = 0.
+            current        3.5;           // A (raw SI)
+
+            xi             0.9;           // current efficiency (declared)
+            E_electrodes   1.5;           // V (raw SI), lumped, announced
+
+            //  THE OVER-LIMITING REGIME, declared.  Without this block the
+            //  current efficiency stays at xi past the crossing and the run
+            //  announces that it is then extrapolating a model outside its
+            //  validity.  With it, the counter-ion transfer is frozen at its
+            //  limiting value -- no new parameter.
+            overLimiting   { model saltFluxPlateau; }
+        }
+    }
+);
