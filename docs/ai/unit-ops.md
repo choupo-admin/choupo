@@ -680,10 +680,14 @@ operation { stages  6; }
 ```
 operation
 {
-    membrane         SW30HR;        // -> data/standards/assets/<name>.dat
-    area             35 m2;          // per element
-    length           1 m;
-    elements         1;              // for a train
+    module           SW30HR-380;    // a RECORD of the hardware (assets/, kind membraneModule):
+                                    // area, channel geometry, leaf length, the membrane it is
+                                    // wound with, the manufacturer's limits -- OR type them:
+    membrane         SW30HR;        // -> data/standards/assets/<name>.dat  (refused beside a
+                                    //    spiral `module`; REQUIRED beside a flat-cell `module`)
+    area             35 m2;          // per element      (refused beside `module`)
+    length           1 m;            //                  (refused beside `module`)
+    elements         1;              // for a train      (allowed beside a spiral `module`)
     interElementDP   0.5 bar;        // gap loss between elements
     P_permeate       1.01325 bar;
     dP_feed_total    2 bar;          // constant drop (used when no pressureDrop block)
@@ -694,8 +698,8 @@ operation
         model         SchockMiquel;  // spacer channel (or `StirredCell`, below);
                                      // for a constant coefficient OMIT this block
                                      // and give `k_film`
-        channelHeight 0.7 mm;
-        spacerPorosity 0.9;
+        channelHeight 0.7 mm;        // (refused beside `module` -- the record's)
+        spacerPorosity 0.9;          // (idem)
         diffusivity   1.6e-9;        // D of a NEUTRAL/lumped solute, m²/s (SI);
                                      // an ION's k is priced on its own species D0
         viscosity     1.0e-3 Pa.s;
@@ -714,6 +718,34 @@ operation
     }
 }
 ```
+
+**`module <name>;` — the hardware as a RECORD** (2026-09-15).  Three ship in
+`data/standards/assets/` with `kind membraneModule;`: **`NF270-4040`** and
+**`SW30HR-380`** (DuPont FilmTec spiral elements, `format spiralWound;`,
+each wound with its membrane record — `NF270` / `SW30HR`) and **`SEPA_CF`**
+(the Sterlitech laboratory flat-sheet crossflow cell, `format
+flatSheetCell;`, which takes ANY coupon: declare `membrane <name>;` beside
+it).  The record supplies `activeArea`, `channelHeight`, `spacerPorosity`,
+`leafLength` (spiral) or `slotWidth`/`slotDepth` (cell — the channel length
+is `activeArea/slotWidth`, derived, never stored), its `limits {}` (P_max,
+T_max, dP_max per element, feedFlow_max, pH band — each checked against the
+run and ANNOUNCED as `[limit]`, never refused: a student may exceed a rating
+on purpose) and, for an element, the sheet's `ratedTest {}`.  **A flat cell
+has ONE membrane face over its channel, so the channel width is A/L; a
+spiral leaf has two, A/(2L)** — the `[spec]` line says which was used, and
+the run publishes `u_crossflow_inlet` (the SEPA CF manual runs spacer
+channels at 0.1–0.5 m/s).  **What the sheet does not state is an ESTIMATE,
+announced:** every value the record marks `origin estimate; reviewStatus
+unverified;` prints an `[estimate] module '...'` line with the record's own
+note on how to verify it (NF270-4040: spacer 28 mil, porosity 0.90, leaf
+0.95 m; SW30HR-380: porosity and leaf — its 28 mil spacer is a sheet fact;
+SEPA_CF: the installed 31 mil spacer and porosity).  Copy a record to the
+case's `constant/assets/` to set your own.  Declaring `area`, `length`,
+`moduleDiameter`, `nModules`, or `channelHeight`/`spacerPorosity` inside
+`massTransfer`/`pressureDrop` beside `module` REFUSES by name (one home); an
+unknown module name refuses with the registered list.  Witnesses:
+`membrane15_module_nf270_4040`, `membrane16_module_sw30hr_8040`,
+`membrane17_sepa_cf_flat_cell` (a laboratory cell in five lines).
 
 **Concentration polarisation** has ONE home for every transport law
 (`massTransfer/Polarisation`): the wall concentration `c_m` per solute.

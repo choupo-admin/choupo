@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases). ---*/
+//  THE FEED FLOW THAT GIVES 0.2 m/s CROSSFLOW in the cell (the SEPA CF
+//  manual, section 5.1: spacer channels are usually run at 0.1-0.5 m/s).
+//  Channel cross-section = slotWidth x channelHeight x spacerPorosity
+//      = 0.0953 m x 0.787e-3 m x 0.90 = 6.750e-5 m2
+//  so Q = 0.2 m/s x 6.750e-5 m2 = 1.350e-5 m3/s = 0.04860 m3/h (48.6 L/h),
+//  and the run publishes the velocity it actually used (u_crossflow_inlet).
+//  Composition: membrane12's feed (0.01 M NaCl + 2e-4 M NaNO3 and NH4Cl,
+//  ion by ion, electroneutral) scaled from 1 m3/h to 0.04860 m3/h.
+componentMolarFlows
+{
+    water   2.69769 kmol/h;
+    Na      4.9572e-4 kmol/h;
+    Cl      4.9572e-4 kmol/h;
+    NO3     9.720e-6 kmol/h;
+    NH4     9.720e-6 kmol/h;
+}
+T               293.15 K;      // 20 C, the paper's feed temperature
+P               400000 Pa;     // 4 bar, inside the paper's 2-14 bar range

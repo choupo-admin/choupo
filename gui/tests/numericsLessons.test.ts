@@ -371,7 +371,7 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3467, "latent under-convergence"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3492, "/ scale[i]"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 2067, "mixes flows and"],
-    ["src/applications/choupoSolve/main.cpp", 289, "Mass balance (global)"],
+    ["src/applications/choupoSolve/main.cpp", 290, "Mass balance (global)"],
     ["src/streams/ProcessStream.H", 78, "kmol/s"],
     // --- tear streams: the plan contract
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 4339, "Flowsheet::validateSequentialPlan"],

@@ -197,10 +197,13 @@ run" has not shown its arm fires, and the docstring says so.
 
 ## 7. Not done, named
 
-* Module RECORDS for the correlation constants and a SEPA/stirred-cell
-  witness on measured polarisation (Vítor's step 2).  No measured
-  polarisation index is compared with here: arm (a) proves the engine solves
-  the paper's equations, not that the paper is right.
+* ~~Module RECORDS and a SEPA-cell witness (Vítor's step 2).~~  DONE the
+  same day: `docs/design/a-module-is-a-record.md` — `module <name>;` names
+  a `kind membraneModule` record (NF270-4040, SW30HR-380, the SEPA CF cell),
+  and `membrane17_sepa_cf_flat_cell` runs this coupled film on the
+  laboratory cell.  What remains of the item: no MEASURED polarisation
+  index is compared with anywhere: arm (a) proves the engine solves the
+  paper's equations, not that the paper is right.
 * The paper's own Fig. 7 comparison (extended Nernst–Planck in the dye's
   film, filled symbols) is not reproduced.
 * Fouling under the coupled film; a film with a potential INSIDE it for

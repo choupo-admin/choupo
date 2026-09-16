@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases). ---*/
+//  13.5 m3/h of 32 g/L NaCl (32,000 ppm): per m3, NaCl 32/58.44 = 0.5476
+//  kmol and water (1000 - 32)/18.015 = 53.73 kmol.  13.5 m3/h = 324 m3/d is
+//  the feed the sheet's rated test implies (26 m3/d permeate at 8 %
+//  recovery); the sheet states no maximum feed flow for this element.
+componentMolarFlows
+{
+    water   725.4 kmol/h;
+    NaCl    7.393 kmol/h;
+}
+T               298.15 K;      // 25 C, the sheet's test temperature
+P               55 bar;        // the sheet's rated applied pressure (800 psi)

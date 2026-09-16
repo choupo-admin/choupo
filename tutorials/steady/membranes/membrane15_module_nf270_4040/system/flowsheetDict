@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane15_module_nf270_4040 -- a commercial element named as a RECORD.
+  `module NF270-4040;` replaces `membrane`, `area`, `length`,
+  `channelHeight` and `spacerPorosity`: the record in
+  data/standards/assets/NF270-4040.dat carries the data sheet's active area
+  and limits, and three EDUCATED values the sheet does not state (spacer
+  thickness, spacer porosity, leaf length), each announced as an estimate on
+  every run.  NaCl 2 g/L at the sheet's rated 4.8 bar; the rated MgSO4 test
+  itself is run by the gate check_membrane_modules and printed beside the
+  sheet.  See the README.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        NF;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+        operation
+        {
+            module           NF270-4040;     // data/standards/assets/, kind membraneModule
+            P_permeate       1.0 bar;
+            nNodes           50;
+
+            //  The film and the friction are COMPUTED from the record's
+            //  channel: Schock & Miquel on the local crossflow (~0.28 m/s
+            //  at this feed flow), the spacer geometry read from the record.
+            //  Declaring channelHeight here beside `module` REFUSES (one home).
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      0.89e-3;           // Pa.s, water at 25 C
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;          // one lumped salt: nothing to couple
+            }
+        }
+    }
+);

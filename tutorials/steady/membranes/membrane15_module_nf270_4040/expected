@@ -1,0 +1,16 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0400358277778  1e-4
+stream  feed                   T                298.15           1e-4
+stream  permeate               F                0.00798302414158 1e-4
+stream  permeate               T                298.15           1e-4
+stream  retentate              F                0.0320528431326  1e-4
+stream  retentate              T                298.15           1e-4
+kpi     NF                     Gamma_NaCl_avg   0.219639208037   1e-4
+kpi     NF                     J_w_avg          1.89301575867e-05 1e-4
+kpi     NF                     R_obs_NaCl       0.723573693403   1e-4
+kpi     NF                     dP_feed          25181.1884852    1e-4
+kpi     NF                     mass_closure_rel 3.07436846548e-16 1e-4
+kpi     NF                     u_crossflow_inlet 0.282091538818   1e-4
+kpi     NF                     water_recovery   0.199197330008   1e-4

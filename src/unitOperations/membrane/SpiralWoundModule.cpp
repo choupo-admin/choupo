@@ -40,6 +40,8 @@ License
 #include "thermo/electrolyte/ScalingIndices.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
 #include "thermo/membrane/Membrane.H"
+#include "thermo/membrane/MembraneModule.H"
+#include "thermo/membrane/MembraneModuleRegistry.H"
 #include "thermo/membrane/MembraneRegistry.H"
 #include "transport/TransportModel.H"
 #include "thermo/ThermoPackage.H"
@@ -97,7 +99,56 @@ int SpiralWoundModule::solve(const DictPtr& dict,
 
     // ---- Operating parameters ---------------------------------------------
     auto opDict = dict->subDict("operation");
-    const std::string membraneName = opDict->lookupWord("membrane");
+    const std::string unitLabel = dict->name().empty() ? type() : dict->name();
+
+    // ---- Module RECORD (2026-09-15): `module <name>;` names a commercial
+    //      element or a laboratory cell in assets/ (kind membraneModule) and
+    //      the record supplies what a case used to type -- the membrane (a
+    //      spiral is wound with one; a flat cell takes any coupon, declared
+    //      beside it), the active area, the channel geometry and the leaf
+    //      length -- plus the manufacturer's limits, checked below.  ONE
+    //      home: the same fact declared inline beside `module` REFUSES by
+    //      name, every offending key listed.
+    const bool hasModule = opDict->found("module");
+    const MembraneModule* modRec = nullptr;
+    if (hasModule)
+    {
+        modRec = &MembraneModuleRegistry::byName(opDict->lookupWord("module"));
+        std::vector<std::string> clash;
+        for (const char* k : { "area", "length", "moduleDiameter", "nModules" })
+            if (opDict->found(k)) clash.push_back(k);
+        for (const char* blk : { "massTransfer", "pressureDrop" })
+            if (opDict->found(blk))
+            {
+                auto b = opDict->subDict(blk);
+                for (const char* k : { "channelHeight", "spacerPorosity" })
+                    if (b->found(k)) clash.push_back(std::string(blk) + "." + k);
+            }
+        if (!modRec->isFlatSheetCell() && opDict->found("membrane"))
+            clash.push_back("membrane");
+        if (!clash.empty())
+        {
+            std::string list;
+            for (const auto& c : clash) list += " `" + c + "`";
+            throw std::runtime_error("spiralWoundModule '" + unitLabel + "': `module "
+                + modRec->name() + ";` supplies the geometry"
+                + (modRec->isFlatSheetCell() ? "" : " and the membrane")
+                + " from its record (" + modRec->sourcePath() + "), and the"
+                  " operation ALSO declares" + list + " -- one home.  Remove"
+                  " the inline value(s), or drop `module` and keep them.");
+        }
+        if (modRec->isFlatSheetCell() && !opDict->found("membrane"))
+            throw std::runtime_error("spiralWoundModule '" + unitLabel + "': `module "
+                + modRec->name() + ";` is a flat-sheet cell, which takes ANY"
+                  " coupon -- declare the membrane beside it: `membrane <name>;`"
+                  " (a record of kind RO | NF).");
+        if (modRec->isFlatSheetCell() && opDict->found("elements"))
+            throw std::runtime_error("spiralWoundModule '" + unitLabel + "': a"
+                " flat-sheet cell is ONE coupon; `elements` is a spiral train's key.");
+    }
+    const std::string membraneName = (hasModule && !modRec->isFlatSheetCell())
+                                   ? modRec->membrane()
+                                   : opDict->lookupWord("membrane");
 
     // ---- Module hardware spec ----------------------------------------------
     // EITHER  `area` + `length` (+ `elements`)  -- explicit area (legacy spec,
@@ -175,6 +226,18 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         // 40-inch standard element length (1.016 m); explicit `length` overrides.
         L = opDict->lookupScalarOrDefault("length", 1.016, Dims::length);
     }
+    else if (hasModule)
+    {
+        A_membrane = modRec->activeArea_m2();
+        //  A spiral marches its LEAF length (the record's, an estimate where
+        //  the sheet publishes only the element length); a flat cell's channel
+        //  length is activeArea / slotWidth, DERIVED here and never stored.
+        L = modRec->isFlatSheetCell()
+          ? modRec->activeArea_m2() / modRec->slotWidth_m()
+          : modRec->leafLength_m();
+        nElements    = static_cast<int>(opDict->lookupScalarOrDefault("elements", 1.0));
+        nModulesReal = static_cast<scalar>(nElements);
+    }
     else
     {
         A_membrane   = opDict->lookupScalar("area",   Dims::area);
@@ -182,6 +245,12 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         nElements    = static_cast<int>(opDict->lookupScalarOrDefault("elements", 1.0));
         nModulesReal = static_cast<scalar>(nElements);
     }
+    //  The channel has TWO membrane faces per leaf in a spiral (the leaf is
+    //  an envelope, permeate carrier inside) and ONE in a flat cell (the
+    //  coupon lies on the permeate carrier; the channel above it has a steel
+    //  lid).  The module reads the format and says which it used.
+    const bool   flatCell     = hasModule && modRec->isFlatSheetCell();
+    const scalar facesPerLeaf = flatCell ? 1.0 : 2.0;
 
     if (verbosity >= 2)
     {
@@ -202,6 +271,18 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                     static_cast<double>(nModulesReal));
                 std::cout << b;
             }
+        }
+        else if (hasModule)
+        {
+            std::snprintf(b, sizeof(b),
+                "  [spec] module '%s' (%s, %s): A %g m2, %s %g m\n",
+                modRec->name().c_str(), modRec->format().c_str(),
+                modRec->manufacturer().c_str(),
+                static_cast<double>(A_membrane),
+                flatCell ? "channel length = activeArea / slotWidth ="
+                         : "leaf length",
+                static_cast<double>(L));
+            std::cout << b;
         }
         else
         {
@@ -239,6 +320,12 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         auto mt = opDict->subDict("massTransfer");
         readGeom(mt);
         if (mt->found("diffusivity")) { D_solute = mt->lookupScalar("diffusivity"); DDeclared = true; }
+    }
+    if (hasModule)
+    {
+        //  The record's channel (the inline keys were refused above).
+        h_ch = modRec->channelHeight_m();
+        eps  = modRec->spacerPorosity();
     }
     //  THE TWO LEGACY CONSTANTS ARE ANNOUNCED, NOT ASSUMED (2026-09-05).
     //  mu_feed = 1e-3 Pa.s and D_solute = 1.6e-9 m²/s were hard-coded here
@@ -314,7 +401,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 " to price it from the package, or set it in the sub-block";
         }
     }
-    const scalar W_ch      = A_membrane / (2.0 * L);   // leaf width (2-sided)
+    const scalar W_ch      = A_membrane / (facesPerLeaf * L);   // channel width: A/(2L) spiral, A/L flat cell
     const scalar A_channel = W_ch * h_ch * eps;
     const scalar d_h       = 2.0 * h_ch * eps;
 
@@ -429,6 +516,43 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         if (verbosity >= 1)
             std::cout << "  [rating] membrane '" << membraneName << "': " << b << "\n";
         AdvisoryLog::instance().add("rating", "warning", "membrane '" + membraneName + "'", b);
+    }
+    if (hasModule)
+    {
+        //  THE CHANNEL THE RECORD GAVE, and which face count was used -- said
+        //  once, because a student comparing a cell with an element must see
+        //  that W = A/L on one and A/(2L) on the other.
+        if (verbosity >= 2)
+        {
+            char b[300];
+            std::snprintf(b, sizeof(b),
+                "  [spec] module '%s': channel W = A/(%g L) = %.4g m (%s),"
+                " h = %.4g mm, spacer porosity %.3g, d_h = %.4g mm\n",
+                modRec->name().c_str(), static_cast<double>(facesPerLeaf),
+                static_cast<double>(W_ch),
+                flatCell ? "one membrane face: the coupon on its carrier"
+                         : "two membrane faces per leaf",
+                static_cast<double>(h_ch * 1.0e3), static_cast<double>(eps),
+                static_cast<double>(d_h * 1.0e3));
+            std::cout << b;
+        }
+        //  EVERY ESTIMATE THE RECORD CARRIES IS ANNOUNCED ON EVERY RUN THAT
+        //  READS IT (Vitor's ruling, 2026-09-15: an educated value with a note
+        //  saying it must be verified, never silent).  The [estimate] tag and
+        //  the AdvisoryLog channel are Database.cpp's -- one vocabulary; a
+        //  record with no estimate produces no line.
+        for (const auto& e : modRec->estimates())
+        {
+            char v[64];
+            std::snprintf(v, sizeof(v), "%.6g", static_cast<double>(e.value));
+            const std::string msg = "`" + e.key + "` = " + v + " (SI) is an"
+                " ESTIMATE, reviewStatus " + e.reviewStatus + " -- " + e.notes;
+            if (verbosity >= 1)
+                std::cout << "  [estimate] module '" << modRec->name() << "': "
+                          << msg << "\n";
+            AdvisoryLog::instance().add("provenance", "warning",
+                "module '" + modRec->name() + "'", msg);
+        }
     }
     std::vector<std::size_t> soluteIdx;
     std::vector<scalar>      B_s;
@@ -1153,6 +1277,68 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         }
     }
 
+    // ---- The manufacturer's LIMITS, checked against THIS run ---------------
+    //  Announced as a violation of the data sheet's limit, never refused: a
+    //  student may exceed a rating on purpose, and the run then says so in
+    //  the log and the caveat block.  Each limit the record does not declare
+    //  is not checked (absent, never a zero).  pH is checked only when the
+    //  case states one (a `scaling { pH <value>; }` block); a run that knows
+    //  no pH says nothing about it.
+    if (hasModule)
+    {
+        const ModuleLimits& lim = modRec->limits();
+        auto violate = [&](const std::string& what)
+        {
+            if (verbosity >= 1)
+                std::cout << "  [limit] module '" << modRec->name() << "': " << what
+                          << " -- the run continues outside the manufacturer's"
+                             " rating (" << modRec->source() << ")\n";
+            AdvisoryLog::instance().add("rating", "warning",
+                "module '" + modRec->name() + "'", what + " -- outside the"
+                " manufacturer's rating, run continued");
+        };
+        char b[240];
+        if (lim.hasP_max && P_in > lim.P_max)
+        {
+            std::snprintf(b, sizeof(b), "feed P %.2f bar EXCEEDS the maximum"
+                " operating pressure %.2f bar", static_cast<double>(P_in * 1e-5),
+                static_cast<double>(lim.P_max * 1e-5));
+            violate(b);
+        }
+        if (lim.hasT_max && T_in > lim.T_max)
+        {
+            std::snprintf(b, sizeof(b), "feed T %.2f K EXCEEDS the maximum"
+                " operating temperature %.2f K", static_cast<double>(T_in),
+                static_cast<double>(lim.T_max));
+            violate(b);
+        }
+        if (lim.hasFeedFlow_max && Q_feed > lim.feedFlow_max)
+        {
+            std::snprintf(b, sizeof(b), "feed flow %.3f m3/h EXCEEDS the"
+                " maximum feed flow %.3f m3/h",
+                static_cast<double>(Q_feed * 3600.0),
+                static_cast<double>(lim.feedFlow_max * 3600.0));
+            violate(b);
+        }
+        if (lim.hasDP_max && (P_in - P_b) / nModulesReal > lim.dP_max)
+        {
+            std::snprintf(b, sizeof(b), "feed-channel pressure drop %.3f bar"
+                " per element EXCEEDS the maximum pressure drop %.3f bar",
+                static_cast<double>((P_in - P_b) / nModulesReal * 1e-5),
+                static_cast<double>(lim.dP_max * 1e-5));
+            violate(b);
+        }
+        if (lim.hasPH && doScaling && !scalePHsolve
+         && (scalePH < lim.pH_min || scalePH > lim.pH_max))
+        {
+            std::snprintf(b, sizeof(b), "declared pH %.2f is OUTSIDE the"
+                " continuous-operation band %.1f - %.1f",
+                static_cast<double>(scalePH), static_cast<double>(lim.pH_min),
+                static_cast<double>(lim.pH_max));
+            violate(b);
+        }
+    }
+
     // ---- KPIs -------------------------------------------------------------
     kpis_.clear();
     const scalar feed_vol = bulk0.Q;                       // m³/s
@@ -1162,6 +1348,12 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     kpis_["water_recovery"] = recovery;
     kpis_["J_w_avg"]        = (A_total > 0) ? Q_perm / A_total : 0.0;  // m/s
     kpis_["dP_feed"]        = P_in - P_b;
+    //  The inlet crossflow velocity in the record's channel -- the number a
+    //  laboratory protocol prescribes (the SEPA CF manual's 0.1-0.5 m/s), so
+    //  a case that declares its feed flow to hit one can be held to it.
+    //  Published only under `module`: no pre-existing golden gains an
+    //  unpinned KPI.
+    if (hasModule && A_channel > 0.0) kpis_["u_crossflow_inlet"] = feed_vol / A_channel;
     // Mass-closure residual |feed − (ret+perm)| / feed (the guard above also
     // throws if it ever exceeds 1e-9): a permanent, visible witness that the
     // module conserves mass.
@@ -1236,6 +1428,32 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 static_cast<double>(diam_in),
                 static_cast<double>(nModulesReal * A_membrane));
             std::cout << b;
+        }
+        else if (hasModule)
+        {
+            std::cout << "  Module:          " << modRec->name() << "  ("
+                      << modRec->format() << ", " << modRec->manufacturer()
+                      << ")  A = " << A_membrane << " m2";
+            if (nElements > 1) std::cout << " x " << nElements;
+            std::cout << "\n";
+            const RatedTest& rt = modRec->ratedTest();
+            if (rt.declared)
+            {
+                //  The data sheet's own standard test, printed beside the run
+                //  so a reader sees what the manufacturer measured at.  The
+                //  comparison at THOSE conditions is check_membrane_modules'.
+                char b[300];
+                std::snprintf(b, sizeof(b),
+                    "  Rated test:      %g ppm %s, %.2f bar, %.2f K, recovery"
+                    " %.0f %%: permeate %.3g m3/d, rejection %.2f %% (data sheet)\n",
+                    static_cast<double>(rt.feedMassFraction * 1e6),
+                    rt.solute.c_str(), static_cast<double>(rt.P * 1e-5),
+                    static_cast<double>(rt.T),
+                    static_cast<double>(rt.recovery * 100.0),
+                    static_cast<double>(rt.permeateFlow * 86400.0),
+                    static_cast<double>(rt.rejection * 100.0));
+                std::cout << b;
+            }
         }
         else
             std::cout << "  Area:            " << A_membrane << " m²\n";

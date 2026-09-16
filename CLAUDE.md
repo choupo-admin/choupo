@@ -2076,6 +2076,19 @@ the trace-limit lines, the not-a-trace ratio and the Fig 2a pin) ·
 written for the paper's authors, its tables GENERATED from the engine).
 Record:
 [`docs/design/electroneutrality-without-a-new-parameter.md`](docs/design/electroneutrality-without-a-new-parameter.md) (§7).
+**A MODULE IS A RECORD (2026-09-15, same day):** `module <name>;` in a
+`spiralWoundModule` names a `kind membraneModule` record in `assets/`
+(NF270-4040, SW30HR-380, the SEPA_CF laboratory cell — `format spiralWound
+| flatSheetCell`, the cell's channel has ONE membrane face, W = A/L) that
+supplies the geometry the case used to type, checks the manufacturer's
+`limits {}` against the run (announced, never refused) and carries the
+sheet's `ratedTest {}`; a value the sheet does not state is `origin
+estimate; reviewStatus unverified;` WITH a note saying how to verify it
+(Vítor's ruling, verbatim in the record) and is announced on every run
+that reads it; `module` beside inline geometry refuses by name.  Gate:
+`check_membrane_modules` (the two spirals' rated tests run and PRINTED
+beside the sheet as a measurement).  Record:
+[`docs/design/a-module-is-a-record.md`](docs/design/a-module-is-a-record.md).
 
 **AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  An advisory
 carries `where` (the innermost open `AdvisoryFrame`) and `status` (`accepted`

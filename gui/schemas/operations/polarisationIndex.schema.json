@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/polarisationIndex.schema.json",
+  "title": "polarisationIndex operation",
+  "description": "The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes & Afonso (J. Membr. Sci. 300 (2007) 20): for every row of a measured dataset (bulk and permeate concentration per ion, volume flux) it prices each ion's mass-transfer coefficient on the ion's OWN diffusivity from the declared correlation, corrects it for suction, and solves the wall concentrations coupled by ONE interface potential gradient fixed by electroneutrality -- no film thickness, no fitted parameter. Publishes per row the polarisation index Gamma_<ion> = (C_m - C_b)/C_b, xi and the wall charge residual, and per ion k_<ion>. Witness polarisation01_geraldes_afonso_table1; gate check_polarisation_coupling recomputes Eqs. (25)-(28) independently.",
+  "type": "object",
+  "properties": {
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "unit": "K"
+    },
+    "massTransfer": {
+      "type": "object",
+      "title": "Film-coefficient correlation",
+      "description": "The cell's correlation, evaluated per ion on the ion's own D0. `StirredCell` (Sh = a (omega r^2/nu)^b Sc^c, k = Sh D/r; Bowen et al. 1997 defaults 0.23/0.567/0.33) needs `omega` and `radius`; `SchockMiquel` (a spacer channel) needs `velocity` and `hydraulicDiameter`. `viscosity` and `density` are REQUIRED (nu = mu/rho).",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Correlation name"
+        },
+        "omega": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Stirrer angular speed",
+          "unit": "rad/s"
+        },
+        "radius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Stirred-cell radius",
+          "unit": "m"
+        },
+        "velocity": {
+          "type": "number",
+          "minimum": 0,
+          "title": "Crossflow velocity",
+          "unit": "m/s"
+        },
+        "hydraulicDiameter": {
+          "type": "number",
+          "minimum": 0,
+          "title": "Hydraulic diameter",
+          "unit": "m"
+        },
+        "viscosity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Feed viscosity",
+          "unit": "Pa.s"
+        },
+        "density": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Feed density",
+          "unit": "kg/m3"
+        },
+        "a": {
+          "type": "number",
+          "title": "Correlation constant a",
+          "unit": "-"
+        },
+        "b": {
+          "type": "number",
+          "title": "Correlation exponent b (Re)",
+          "unit": "-"
+        },
+        "c": {
+          "type": "number",
+          "title": "Correlation exponent c (Sc)",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "model",
+        "viscosity",
+        "density"
+      ],
+      "additionalProperties": false
+    },
+    "polarisation": {
+      "type": "object",
+      "title": "Polarisation policy",
+      "description": "The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} refuses. `suctionCorrection`: GeraldesAfonso2006 (Xi = phi + (1 + 0.26 phi^1.4)^-1.7), filmTheory (the default: Xi = phi + phi/(e^phi - 1)) or none. `ionCoupling`: electroneutral (the multi-ionic model of Geraldes & Afonso 2007 -- each ion's k on its own D0, one interface potential gradient fixed by electroneutrality at the wall; needs >= 2 charged solutes) or none (the default, announced on an ion-declared feed).",
+      "properties": {
+        "suctionCorrection": {
+          "type": "string",
+          "title": "Suction correction of k",
+          "enum": [
+            "GeraldesAfonso2006",
+            "filmTheory",
+            "none"
+          ]
+        },
+        "ionCoupling": {
+          "type": "string",
+          "title": "Interface coupling of the ions",
+          "enum": [
+            "electroneutral",
+            "none"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "title": "Ions",
+      "description": "Components with an aqueous bridge; charge and D0 come from their species records (an ion whose record carries no D0 refuses by name, naming the `transport { D0 }` remedy)."
+    },
+    "closeBy": {
+      "type": "string",
+      "title": "Ion derived by electroneutrality",
+      "description": "That ion's bulk AND permeate concentrations are derived from the others by electroneutrality (as a table that reports only the measured ions does); it must be one of `ions` and must not appear in the dataset."
+    },
+    "dataset": {
+      "type": "string",
+      "title": "Measured rows",
+      "description": "Path to a dataset in the experiments grammar: `columns ( { name C_b_<ion>; unit mol/m3; } ... { name C_p_<ion>; unit mol/m3; } { name J_v; unit m/s; } )` and a flat `data ( ... )` list, one row per operating point."
+    }
+  },
+  "required": [
+    "T",
+    "massTransfer",
+    "ions",
+    "dataset"
+  ],
+  "additionalProperties": false
+}

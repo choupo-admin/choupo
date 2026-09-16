@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*90 of 90 registered operations carry a schema and are documented below.*
+*92 of 92 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -158,7 +158,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
 | `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
-| `feedQuality` |   | number | — | CROSS-CHECK ONLY (2026-09-12).  The feed's thermal condition comes from the feed STREAM -- its declared `vaporFraction`, or, where it declares none, its own resolved equilibrium at (T, P, z).  Declaring `feedQuality` is optional; if it disagrees with the stream the column REFUSES and names both numbers.  q = 1 saturated liquid, q = 0 saturated vapour. |
+| `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
 | `method` |   | string | — | WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotro… |
 | `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
 | `sideDraws` |   | array[object] | — | Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a … |
@@ -275,7 +275,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
 | `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
-| `feedQuality` |   | number | — | CROSS-CHECK ONLY (2026-09-12).  The feed's thermal condition comes from the feed STREAM -- its declared `vaporFraction`, or, where it declares none, its own resolved equilibrium at (T, P, z).  Declaring `feedQuality` is optional; if it disagrees with the stream the column REFUSES and names both numbers.  q = 1 saturated liquid, q = 0 saturated vapour. |
+| `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
 | `method` |   | string | — | WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotro… |
 | `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
 | `sideDraws` |   | array[object] | — | Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a … |
@@ -655,11 +655,12 @@ One-dimensional batch kinetics bench: integrates c(t) for an nth-order rate, ove
 
 ## `membraneSW`  (membraneSW operation)
 
-Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its compact name; both read the identical operation block. Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of two forms — explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.
+Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its compact name; both read the identical operation block. Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of three forms — a `module` RECORD (a commercial element or a laboratory flat-sheet cell from the assets catalogue, kind membraneModule), explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `membrane` | ✓ | string | — | Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. |
+| `module` |   | string | — | A commercial element or a laboratory cell named as a RECORD (assets catalogue or the case's constant/assets/, kind membraneModule): it su… |
+| `membrane` |   | string | — | Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. Required u… |
 | `area` |   | number | m2 | Explicit-hardware form, together with `length`. The alternative is the nominal form: `moduleDiameter` + `nModules`. |
 | `length` |   | number | m |  |
 | `elements` |   | integer | - | A multi-element pressure vessel: the retentate of one element feeds the next. |
@@ -675,6 +676,7 @@ Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its 
 | `osmotic` |   | object | — | Absent = van't Hoff (dilute). `{ model Pitzer; beta0 ...; beta1 ...; Cphi ...; }` prices phi(I) for a concentrated brine — at seawater st… |
 | `pressureDrop` |   | object | — | Computes the feed-channel drop from the spacer geometry instead of taking `dP_feed_total`. |
 | `massTransfer` |   | object | — | Computes k_film from a Sherwood correlation instead of taking it as a constant. |
+| `polarisation` |   | object | — | The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} ref… |
 
 ## `mixer`  (mixer operation)
 
@@ -776,6 +778,19 @@ Dilute-phase pneumatic conveying line: pressure drop of a gas-solids flow along 
 |---|:-:|---|---|---|
 | `geometry` | ✓ | object | — | The pipe run: diameter, length, vertical rise and the bend list. |
 | `particleWallFriction` |   | number | - | Solids-phase wall friction coefficient; defaults to 0.4. |
+
+## `polarisationIndex`  (polarisationIndex operation)
+
+The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes & Afonso (J. Membr. Sci. 300 (2007) 20): for every row of a measured dataset (bulk and permeate concentration per ion, volume flux) it prices each ion's mass-transfer coefficient on the ion's OWN diffusivity from the declared correlation, corrects it for suction, and solves the wall concentrations coupled by ONE interface potential gradient fixed by electroneutrality -- no film thickness, no fitted parameter. Publishes per row the polarisation index Gamma_<ion> = (C_m - C_b)/C_b, xi and the wall charge residual, and per ion k_<ion>. Witness polarisation01_geraldes_afonso_table1; gate check_polarisation_coupling recomputes Eqs. (25)-(28) independently.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `T` | ✓ | number | K |  |
+| `massTransfer` | ✓ | object | — | The cell's correlation, evaluated per ion on the ion's own D0. `StirredCell` (Sh = a (omega r^2/nu)^b Sc^c, k = Sh D/r; Bowen et al. 1997… |
+| `polarisation` |   | object | — | The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} ref… |
+| `ions` | ✓ | array[string] | — | Components with an aqueous bridge; charge and D0 come from their species records (an ion whose record carries no D0 refuses by name, nami… |
+| `closeBy` |   | string | — | That ion's bulk AND permeate concentrations are derived from the others by electroneutrality (as a table that reports only the measured i… |
+| `dataset` | ✓ | string | — | Path to a dataset in the experiments grammar: `columns ( { name C_b_<ion>; unit mol/m3; } ... { name C_p_<ion>; unit mol/m3; } { name J_v… |
 
 ## `propertyPoint`  (propertyPoint operation)
 
@@ -973,11 +988,12 @@ Aqueous speciation: distributes the declared analytical totals over the curated 
 
 ## `spiralWoundModule`  (spiralWoundModule operation)
 
-Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of two forms — explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.
+Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of three forms — a `module` RECORD (a commercial element or a laboratory flat-sheet cell from the assets catalogue, kind membraneModule), explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `membrane` | ✓ | string | — | Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. |
+| `module` |   | string | — | A commercial element or a laboratory cell named as a RECORD (assets catalogue or the case's constant/assets/, kind membraneModule): it su… |
+| `membrane` |   | string | — | Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. Required u… |
 | `area` |   | number | m2 | Explicit-hardware form, together with `length`. The alternative is the nominal form: `moduleDiameter` + `nModules`. |
 | `length` |   | number | m |  |
 | `elements` |   | integer | - | A multi-element pressure vessel: the retentate of one element feeds the next. |
@@ -993,6 +1009,7 @@ Spiral-wound membrane module (RO/NF), solved node by node along the feed channel
 | `osmotic` |   | object | — | Absent = van't Hoff (dilute). `{ model Pitzer; beta0 ...; beta1 ...; Cphi ...; }` prices phi(I) for a concentrated brine — at seawater st… |
 | `pressureDrop` |   | object | — | Computes the feed-channel drop from the spacer geometry instead of taking `dP_feed_total`. |
 | `massTransfer` |   | object | — | Computes k_film from a Sherwood correlation instead of taking it as a constant. |
+| `polarisation` |   | object | — | The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} ref… |
 
 ## `splitter`  (splitter operation)
 
@@ -1028,6 +1045,15 @@ IAPWS-IF97 industrial water/steam properties. This is a propsDict operation unde
 | `saturation` |   | object | — | Temperature scan along the saturation line: psat plus the saturated liquid/vapour pairs (v, h, s) and h_fg per row. Valid over 273.15-623… |
 | `isobar` |   | object | — | h, s, v and cp versus temperature at fixed pressure. A subcritical isobar's saturation crossing is ANNOUNCED before the scan, so the h/s/… |
 | `output` |   | object | — | `{ file <name>.csv; }` — required by the `saturation` and `isobar` scans, optional for `point` (it writes a one-row CSV). |
+
+## `storageTank`  (storageTank operation)
+
+A BUFFER: the outlet IS the inlet — same F, z, T, P and vapour fraction — so mass and energy close over it by construction. What it adds is the HOLDUP the declared residence time implies (V = Q_volumetric * residenceTime, m = V * rho, V_vessel = V / fillFraction), per component as well as in total, so the inventory a plant immobilises at start-up can be VALUED: the ammonia in the product tank and the syngas in the feed tank are not worth the same per tonne. The phase is READ from the stream's own vapour fraction, not guessed; a TWO-PHASE feed is refused by name, because a buffer holding a boiling mixture has a level, a vapour space and a duty, and none of those are modelled here.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `residenceTime` | ✓ | number | s | How long the material sits in the tank. REQUIRED and never defaulted: a holdup nobody declared is not a holdup, and inventing one would p… |
+| `fillFraction` |   | number | - | Working volume over geometric volume, used only to size the vessel around the holdup. Defaults to 0.80, and the default is ANNOUNCED at i… |
 
 ## `stripper`  (stripper operation)
 

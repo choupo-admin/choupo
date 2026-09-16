@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane MODULE: Sterlitech SEPA CF laboratory flat-sheet crossflow cell
+
+  WHAT THIS RECORD IS.  A laboratory cell that takes ANY flat-sheet coupon:
+  the case declares the membrane beside it (`module SEPA_CF; membrane
+  <name>;`) and this record supplies the cell -- the coupon's active area,
+  the slot it sits in, the installed channel height, and the body's limits.
+  A flat cell has ONE membrane face over the channel (the coupon lies on
+  the permeate carrier; a steel lid closes the channel), so the engine
+  takes the channel width as activeArea / channel length and says so; a
+  spiral leaf has two.  The channel LENGTH is not stored: it is
+  activeArea / slotWidth, derived where it is used.
+
+  SOURCE OF THE FACTS (numbers transcribed; no prose):
+      Sterlitech Corporation, SEPA CF Cell Assembly & Operation Manual,
+      https://media.sterlitech.com/media/wysiwyg/Manual_SS_Sepa_CF.pdf,
+      retrieved 2026-09-15 (no revision date printed).
+    Table 1 (manual p. 1): membrane active area 140 cm2 (22 in2); hold-up
+      volume 70 ml; maximum pressure 69 bar (1000 psig), 316SS cell body;
+      maximum temperature 177 C (350 F), 316SS body; slot depth 1.09 mm
+      (0.075 in); slot width 95.3 mm (3.75 in); pH range membrane
+      dependent; crossflow velocity variable.
+    Table 2 (manual p. 12): upper temperature limits -- 316SS cell 177 C,
+      feed spacer (PP) 82 C, permeate carrier (PP) 82 C.
+    Table 3 (manual p. 13): feed spacers (PP) 17, 31, 47 and 65 mil, plus a
+      47 mil parallel spacer; shims 2, 5, 10, 15, 25 mil.
+    Section 5.1 (manual p. 12): spiral-wound spacer channels are usually
+      run at 0.1-0.5 m/s crossflow.
+
+  THE CHANNEL HEIGHT IS THE USER'S STACK.  The slot is 1.09 mm deep and is
+  shimmed down to the installed feed spacer, so the operating channel is
+  the spacer the user chose plus shims -- not a fact of the cell.  The
+  0.787 mm (31 mil) below, the second-thinnest spacer Sterlitech ships, is
+  an EDUCATED DEFAULT marked `origin estimate; reviewStatus unverified;`,
+  as is the spacer porosity; the engine announces both on every run.  The
+  slot depth is stored beside it as the MEASURED cell fact.
+
+  THE BINDING TEMPERATURE LIMIT is the polypropylene feed spacer's 82 C
+  (Table 2), not the steel body's 177 C -- the spacer is in the channel on
+  every run.  No pH band (membrane dependent), no feed-flow limit and no
+  rated test: a cell has none.
+\*---------------------------------------------------------------------------*/
+
+name           SEPA_CF;
+kind           membraneModule;
+manufacturer   "Sterlitech Corporation";
+format         flatSheetCell;      // spiralWound | flatSheetCell -- the case declares `membrane` beside `module`
+
+activeArea     140 cm2;            // 22 in2 (manual Table 1)
+slotDepth      1.09 mm;            // 0.075 in (manual Table 1) -- the MEASURED cell fact
+slotWidth      95.3 mm;            // 3.75 in (manual Table 1); channel length = activeArea / slotWidth, derived in the engine
+channelHeight  0.787 mm;           // 31 mil installed spacer -- ESTIMATE, see provenance
+spacerPorosity 0.90;               // ESTIMATE, see provenance
+holdUpVolume   70 ml;              // manual Table 1
+
+//  The feed spacers Sterlitech ships (manual Table 3), in metres:
+//  17, 31, 47 and 65 mil.  A user's channel is one of these plus shims.
+availableSpacers ( 0.4318e-3  0.7874e-3  1.1938e-3  1.651e-3 );
+
+limits
+{
+    P_max         69 bar;          // 1000 psig, 316SS cell body (Table 1)
+    T_max         355.15 K;        // 82 C: the PP feed spacer / permeate carrier (Table 2) -- binding; the 316SS body allows 177 C
+}
+
+provenance
+{
+    source  "Sterlitech Corporation, SEPA CF Cell Assembly & Operation Manual, https://media.sterlitech.com/media/wysiwyg/Manual_SS_Sepa_CF.pdf, retrieved 2026-09-15";
+
+    channelHeight
+    {
+        origin        estimate;
+        reviewStatus  unverified;
+        notes         "the SEPA CF channel height is the installed feed spacer plus shims (the 1.09 mm slot is shimmed down to it); 31 mil (0.787 mm) is one of the four spacers Sterlitech ships (manual Table 3); to be verified for your own shim/spacer stack";
+    }
+    spacerPorosity
+    {
+        origin        estimate;
+        reviewStatus  unverified;
+        notes         "0.90 is typical for commercial diamond feed spacers; to be verified by weighing a spacer coupon: porosity = 1 - m/(rho_PP * A * h)";
+    }
+}

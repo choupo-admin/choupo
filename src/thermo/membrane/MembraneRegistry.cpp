@@ -77,7 +77,8 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
                 throw std::runtime_error("MembraneRegistry: asset '"
                     + e.path().string() + "' has no `kind` -- every record in the"
                     " shared assets/ home must declare its consumer (RO | NF | IEM"
-                    " | constructionMaterial | adsorbent | ionExchangeResin)");
+                    " | membraneModule | constructionMaterial | adsorbent"
+                    " | ionExchangeResin | catalyst)");
             if (kind != "RO" && kind != "NF") continue;
             Membrane m;
             m.readFromDict(d);

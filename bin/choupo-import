@@ -1601,7 +1601,8 @@ def main():
                         want_plant("parameters/Pitzer/pairs/" + pair + ".dat")
 
     # ---- physical assets referenced by the unit operations / props ops ------
-    # Membranes / adsorbents / construction materials / ion-exchange resins are
+    # Membranes / membrane MODULES (`module NF270-4040;`, 2026-09-15) / adsorbents /
+    # construction materials / ion-exchange resins are
     # named in the flowsheetDict units (`membrane SW30HR;`), the propsDict ops
     # (`resin SAC_Na;`, isothermEval `adsorbent ...`) and the post/controlDict
     # (`material SS304;` for sizing).  The MembraneRegistry / AdsorbentRegistry /
@@ -1616,7 +1617,7 @@ def main():
         dtext = re.sub(r'/\*.*?\*/', '', dtext, flags=re.S)
         dtext = re.sub(r'(^|\s)//.*$', '', dtext, flags=re.M)
         for m in re.finditer(
-                r'\b(?:membrane|adsorbent|material|wallMaterial|wall|resin)'
+                r'\b(?:membrane|module|adsorbent|material|wallMaterial|wall|resin)'
                 r'\s+([A-Za-z0-9_]+)\s*;', dtext):
             asset_names.add(m.group(1))
     for name in sorted(asset_names):

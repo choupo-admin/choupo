@@ -703,6 +703,7 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 
 | Name |
 |---|
+| `Ar-NH3` |
 | `Ar-water` |
 | `CH4-water` |
 | `CO-water` |

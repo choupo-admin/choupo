@@ -2,13 +2,18 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/membraneSW.schema.json",
   "title": "membraneSW operation",
-  "description": "Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its compact name; both read the identical operation block. Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of two forms — explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.",
+  "description": "Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its compact name; both read the identical operation block. Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of three forms — a `module` RECORD (a commercial element or a laboratory flat-sheet cell from the assets catalogue, kind membraneModule), explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.",
   "type": "object",
   "properties": {
+    "module": {
+      "type": "string",
+      "title": "Module record",
+      "description": "A commercial element or a laboratory cell named as a RECORD (assets catalogue or the case's constant/assets/, kind membraneModule): it supplies the active area, the channel geometry (channelHeight, spacerPorosity), the leaf length and, for a spiral element, the membrane; its limits {} are checked against the run and announced. Declaring `area`, `length`, `moduleDiameter`, `nModules`, or channelHeight/spacerPorosity inside massTransfer/pressureDrop beside it refuses by name (one home). Every value the record marks `origin estimate` is announced on every run."
+    },
     "membrane": {
       "type": "string",
       "title": "Membrane",
-      "description": "Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s."
+      "description": "Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. Required unless `module` names a spiral element (which is wound with its own membrane); required BESIDE `module` when the module is a flat-sheet cell (a cell takes any coupon)."
     },
     "area": {
       "type": "number",
@@ -183,10 +188,34 @@
           "unit": "Pa.s"
         }
       }
+    },
+    "polarisation": {
+      "type": "object",
+      "title": "Polarisation policy",
+      "description": "The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} refuses. `suctionCorrection`: GeraldesAfonso2006 (Xi = phi + (1 + 0.26 phi^1.4)^-1.7), filmTheory (the default: Xi = phi + phi/(e^phi - 1)) or none. `ionCoupling`: electroneutral (the multi-ionic model of Geraldes & Afonso 2007 -- each ion's k on its own D0, one interface potential gradient fixed by electroneutrality at the wall; needs >= 2 charged solutes) or none (the default, announced on an ion-declared feed).",
+      "properties": {
+        "suctionCorrection": {
+          "type": "string",
+          "title": "Suction correction of k",
+          "enum": [
+            "GeraldesAfonso2006",
+            "filmTheory",
+            "none"
+          ]
+        },
+        "ionCoupling": {
+          "type": "string",
+          "title": "Interface coupling of the ions",
+          "enum": [
+            "electroneutral",
+            "none"
+          ]
+        }
+      },
+      "additionalProperties": false
     }
   },
   "required": [
-    "membrane",
     "P_permeate"
   ],
   "additionalProperties": false

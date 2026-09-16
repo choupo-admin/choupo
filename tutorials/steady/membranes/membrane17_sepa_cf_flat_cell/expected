@@ -1,0 +1,24 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.000749639133333  1e-4
+stream  feed                   T                293.15             1e-4
+stream  permeate               F                1.90808514124e-05  1e-4
+stream  permeate               T                293.15             1e-4
+stream  retentate              F                0.000730558285788  1e-4
+stream  retentate              T                293.15             1e-4
+kpi     cell                   Gamma_Cl_avg     0.379935512008     1e-4
+kpi     cell                   Gamma_NH4_avg    0.2721421923       1e-4
+kpi     cell                   Gamma_NO3_avg    0.146470492872     1e-4
+kpi     cell                   Gamma_Na_avg     0.377501162862     1e-4
+kpi     cell                   J_w_avg          2.455497741e-05    1e-4
+kpi     cell                   R_obs_Cl         0.67551068628      1e-4
+kpi     cell                   R_obs_NH4        0.714109096783     1e-4
+kpi     cell                   R_obs_NO3        0.180801606137     1e-4
+kpi     cell                   R_obs_Na         0.66505367666      1e-4
+kpi     cell                   dP_feed          2323.32381419      1e-4
+kpi     cell                   mass_closure_rel 2.56844739645e-16  1e-4
+kpi     cell                   membranePotential_mV_avg 33.4400418532      1e-4
+kpi     cell                   u_crossflow_inlet 0.200114903384     1e-4
+kpi     cell                   water_recovery   0.025449426419     1e-4
+kpi     cell                   xi_V_per_m_avg   34.4185802208      1e-4

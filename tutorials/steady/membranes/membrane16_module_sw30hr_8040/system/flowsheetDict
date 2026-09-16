@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane16_module_sw30hr_8040 -- the 8-inch seawater element named as a
+  RECORD.  membrane01 typed `area 35 m2; length 1 m; k_film 5e-5`; here
+  `module SW30HR-380;` reads the 35 m2, the 28 mil spacer (a data-sheet
+  fact on this element) and the two estimates (porosity, leaf length) from
+  data/standards/assets/SW30HR-380.dat, and the film is COMPUTED on the
+  record's channel.  Seawater 32 g/L NaCl at the sheet's 55 bar (800 psi),
+  8 % recovery being the sheet's own test point.  See the README.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        RO;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+        operation
+        {
+            module           SW30HR-380;     // data/standards/assets/, kind membraneModule
+            P_permeate       1.0 bar;
+            nNodes           50;
+
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      0.95e-3;           // Pa.s, seawater near 25 C
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;          // one lumped salt
+            }
+        }
+    }
+);

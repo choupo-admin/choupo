@@ -1,0 +1,104 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane MODULE: DuPont FilmTec NF270-4040 element
+  (a 4-inch x 40-inch commercial nanofiltration element)
+
+  WHAT THIS RECORD IS.  The piece of HARDWARE the NF270 membrane
+  (data/standards/assets/NF270.dat, kind NF -- transport only) is wound
+  into: the active area, the feed-channel geometry, the manufacturer's
+  operating limits and the standard test the data sheet quotes.  A case
+  names it with `module NF270-4040;` and types no geometry.
+
+  SOURCE OF THE FACTS (numbers transcribed; no prose):
+      DuPont FilmTec NF270 Element Product Data Sheet,
+      Form No. 45-D01529-en, Rev. 8, January 2025.
+    Typical properties row (NF270-4040, part 12096027):
+      active area 82 ft2 (7.6 m2); applied pressure 70 psi (4.8 bar);
+      permeate flow 2,500 gpd (9.5 m3/d); stabilized salt rejection > 97.0 %
+      -- at 2,000 ppm MgSO4, 77 F (25 C), 15 % recovery.
+    Element dimensions: A 40.0 in (1,016 mm), B 3.9 in (99 mm),
+      C 0.75 in (19 mm), D 1.05 in (27 mm).
+    Suggested operating conditions: max temperature 113 F (45 C); max
+      pressure 600 psi (41 bar); max pressure drop 15 psi (1.0 bar);
+      pH 3-10 continuous, 1-12 short-term cleaning; max feed flow 16 gpm
+      (3.6 m3/h); SDI 5; free chlorine < 0.1 ppm.
+
+  WHAT THE SHEET DOES NOT STATE, and what stands in for it.  The feed
+  spacer thickness, the spacer porosity and the leaf length are NOT on
+  this sheet (nor on the Rev. 2 2020 sheet, nor in DuPont's midsize
+  design guidelines).  Each carries an EDUCATED value below, marked
+  `origin estimate; reviewStatus unverified;` with a note saying HOW to
+  verify it (Vitor Geraldes, 2026-09-15: "onde faltam parametros coloca um
+  valor educado, com uma nota a dizer que tem de ser verificado").  The
+  engine announces every one of them on every run that reads this record.
+
+  ON THE SPACER.  The sibling sheet for the BW30 PRO-4040 (Form No.
+  45-D03970-en, Rev. 5, October 2024) was fetched and read on 2026-09-15
+  to see whether DuPont states 28 mil for its 4040 elements: it does NOT
+  state a feed spacer thickness either.  The 28 mil (0.711 mm) below is
+  therefore the spacer DuPont states for its 8-inch SW30HR-380 (Form No.
+  45-D00971-en, Rev. 7), carried over as the estimate.
+
+  The rated test is VERIFIABLE: bin/curate/check_membrane_modules.py runs
+  this element at the sheet's conditions through the engine and prints the
+  engine's permeate flow and rejection beside the sheet's, as a MEASUREMENT
+  (the NF270 record's A_w is a fit to a teaching case, so the ratio is a
+  finding, never tuned).
+\*---------------------------------------------------------------------------*/
+
+name           NF270-4040;
+kind           membraneModule;
+manufacturer   "DuPont FilmTec";
+membrane       NF270;              // the membrane record this element is wound with
+format         spiralWound;        // spiralWound | flatSheetCell
+
+activeArea     7.6 m2;             // 82 ft2 (data sheet)
+channelHeight  0.7112 mm;          // 28 mil -- ESTIMATE, see provenance
+spacerPorosity 0.90;               // ESTIMATE, see provenance
+leafLength     0.95 m;             // ESTIMATE, see provenance (element A = 1,016 mm incl. end caps)
+
+limits
+{
+    P_max         41 bar;          // 600 psi, maximum operating pressure
+    T_max         318.15 K;        // 45 C (113 F), maximum operating temperature
+    dP_max        1.0 bar;         // 15 psi, maximum pressure drop
+    feedFlow_max  3.6 m3/h;        // 16 gpm, maximum feed flow
+    pH_min        3;               // continuous operation
+    pH_max        10;
+}
+
+//  The manufacturer's standard test, as quoted (fractions: 2,000 ppm ->
+//  2.0e-3 kg/kg; 15 % -> 0.15; "> 97.0 %" -> 0.97).
+ratedTest
+{
+    solute            MgSO4;
+    feedMassFraction  2.0e-3;      // 2,000 ppm MgSO4
+    P                 4.8 bar;     // 70 psi applied
+    T                 298.15 K;    // 77 F (25 C)
+    recovery          0.15;
+    permeateFlow      9.5 m3/d;    // 2,500 gpd
+    rejection         0.97;        // stabilized salt rejection > 97.0 %
+}
+
+provenance
+{
+    source  "DuPont FilmTec NF270 Element Product Data Sheet, Form No. 45-D01529-en, Rev. 8, January 2025";
+
+    channelHeight
+    {
+        origin        estimate;
+        reviewStatus  unverified;
+        notes         "28 mil (0.7112 mm) is the feed spacer DuPont states for its 8-inch SW30HR-380 (Form No. 45-D00971-en, Rev. 7); the NF270-4040 sheet states none, and neither does the sibling BW30 PRO-4040 sheet (Form No. 45-D03970-en, Rev. 5, fetched 2026-09-15); to be verified by measuring the NF270-4040 feed spacer on an unrolled leaf";
+    }
+    spacerPorosity
+    {
+        origin        estimate;
+        reviewStatus  unverified;
+        notes         "0.90 is typical for commercial diamond feed spacers; to be verified by weighing a spacer coupon: porosity = 1 - m/(rho_PP * A * h)";
+    }
+    leafLength
+    {
+        origin        estimate;
+        reviewStatus  unverified;
+        notes         "element length 1.016 m (dimension A) per the data sheet includes the end caps; the leaf length is not published; to be verified against the element's leaf dimensions (unroll one)";
+    }
+}

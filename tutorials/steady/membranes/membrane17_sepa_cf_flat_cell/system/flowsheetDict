@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane17_sepa_cf_flat_cell -- a LABORATORY CELL a student can build a
+  case for in five lines: `module SEPA_CF;` (Sterlitech's flat-sheet
+  crossflow cell, data/standards/assets/SEPA_CF.dat) with the NF270 coupon
+  of membrane12 (`membrane NF270_sdem_NaCl;`, the case-local record with
+  the paper's per-ion permeances), membrane12's feed (NaCl 0.01 M with
+  NO3-/NH4+ traces) under `transport SDEM;`, the film per ion on
+  Schock & Miquel and coupled at the interface (Geraldes & Afonso 2007).
+  The cell has ONE membrane face, so the channel width is A/L, not A/(2L)
+  -- the engine reads the format and says so.  The feed flow is the one
+  that gives 0.2 m/s in the 31 mil channel (see 0/feed).  See the README.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        cell;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+        operation
+        {
+            module           SEPA_CF;            // the cell: data/standards/assets/SEPA_CF.dat
+            membrane         NF270_sdem_NaCl;    // the coupon: constant/assets/ (membrane12's record)
+            transport        SDEM;
+            P_permeate       1.0 bar;
+            nNodes           20;
+
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      1.0e-3;            // Pa.s, water at 20 C
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        electroneutral;
+            }
+        }
+    }
+);

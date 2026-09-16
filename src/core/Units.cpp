@@ -76,6 +76,7 @@ const std::map<std::string, UnitSpec>& table()
         { "L/s",     UnitSpec{ 1.0e-3,      Dims::volumetricFlow } },
         { "L/h",     UnitSpec{ 1.0e-3/3600.0, Dims::volumetricFlow } },
         { "L/min",   UnitSpec{ 1.0e-3/60.0, Dims::volumetricFlow } },
+        { "m3/d",    UnitSpec{ 1.0/86400.0, Dims::volumetricFlow } },   // a membrane element's rated permeate flow (data sheets quote gpd (m3/d))
 
         // ----- time → s -------------------------------------------------
         { "s",       UnitSpec{ s_to_s,      Dims::time } },

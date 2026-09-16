@@ -3075,6 +3075,24 @@ PYEOF
     fi
     rm -f /tmp/polar.$$
 
+    # membrane-modules gate (2026-09-15).  A membrane MODULE is a RECORD
+    # (kind membraneModule in assets/): the three records match a second
+    # transcription of their data sheets, every value the sheet does not
+    # state is marked an estimate WITH a verification note and announced by
+    # every run that reads it, the inline-geometry refusals fire by name,
+    # the flat cell's one-face channel recomputes from what was published,
+    # the limits announce without refusing, and the two spirals' rated
+    # tests are run and PRINTED beside the data sheet as a measurement.
+    if "$ROOT/bin/curate/check_membrane_modules.py" > /tmp/modules.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "membrane-modules-gate" "$(grep -m1 '^check_membrane_modules: OK' /tmp/modules.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_membrane_modules.py)\n" "membrane-modules-gate"
+        cat /tmp/modules.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/modules.$$
+
     # block-tridiagonal gate (2026-08-25).  The MESH declares its Jacobian
     # structure; the declaration is audited on the first iteration and the
     # colored evaluation count must equal the CPR formula recomputed by the

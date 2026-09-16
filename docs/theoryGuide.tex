@@ -18118,6 +18118,85 @@ sweeps $k$ to draw the polarisation curve. \\
 diminishing-returns recovery down the series.
 \end{tutoriallink}
 
+%  Engine: src/thermo/membrane/MembraneModule.{H,cpp} (the record and its
+%  refusals), src/thermo/membrane/MembraneModuleRegistry.{H,cpp} (kind
+%  membraneModule in assets/), src/unitOperations/membrane/SpiralWoundModule.cpp
+%  (`module` -- the one-home refusals, facesPerLeaf, the [estimate] and
+%  [limit] announcements).  Records: data/standards/assets/{NF270-4040,
+%  SW30HR-380,SEPA_CF}.dat.  Gate: bin/curate/check_membrane_modules.py.
+%  Numbers: the witnesses' expected files (self-recorded goldens).
+\subsection{Modules as records: a spiral element and a laboratory cell}
+
+Everything above takes the channel's geometry --- the active area $A$,
+the leaf length $L$, the spacer height $h$ and its porosity
+$\varepsilon$ --- from the operation dictionary, typed by the author.
+Since 2026-09-15 a case may instead name the hardware:
+\code{module NF270-4040;} reads a record of kind \code{membraneModule}
+from the assets catalogue (\file{data/standards/assets/}), and the
+record supplies what the author used to type, plus two things an author
+never had a place for: the manufacturer's operating \emph{limits} and
+the standard \emph{rated test} the data sheet quotes.  Three ship:
+the DuPont FilmTec NF270-4040 and SW30HR-380 elements
+(\code{format spiralWound;}, each wound with its membrane record) and
+the Sterlitech SEPA~CF cell (\code{format flatSheetCell;}), a
+laboratory flat-sheet crossflow cell that takes any coupon --- there
+the \emph{case} declares \code{membrane} beside \code{module}.
+
+\paragraph{One face or two.}  A spiral leaf is an envelope: membrane on
+both sides of the feed spacer, the permeate carrier inside.  So the
+channel the feed sees has \emph{two} membrane faces and, for a leaf of
+length $L$ and total area $A$, the channel width is
+\begin{equation}
+   W_{\text{spiral}} = \frac{A}{2L},
+   \qquad
+   W_{\text{cell}} = \frac{A}{L},
+   \qquad
+   L_{\text{cell}} = \frac{A}{w_{\text{slot}}},
+   \label{eq:module-faces}
+\end{equation}
+while in a flat cell the coupon lies on its permeate carrier under a
+steel lid: \emph{one} face.  The crossflow section $W h \varepsilon$ and
+with it the velocity, the Reynolds number, $k$ and the friction all
+follow from which of the two the engine takes, so the module reads the
+record's \code{format} and prints which it used.  The cell's channel
+length is not stored: it is the active area over the slot width, derived
+where it is used (the tree never stores a derivative).
+
+\paragraph{What the sheet does not say is an estimate, and the run says so.}
+A data sheet publishes the area and the limits.  It does not publish the
+leaf length, the spacer porosity, or --- for most elements --- the spacer
+thickness; the SEPA~CF's channel height is whatever spacer the user
+installs.  Each such value in a record is an \emph{educated} one, marked
+\code{origin estimate; reviewStatus unverified;} with a note saying how it
+is to be verified (weigh a spacer coupon for its porosity; unroll a leaf
+for its length; measure the spacer), and \textbf{every run that reads the
+record announces every one of them}, in the log and in the end-of-run
+caveat block.  A data-sheet value is never marked so; a record with no
+estimate produces no line.  Declaring \code{area}, \code{length} or a
+\code{channelHeight} beside \code{module} is refused by name: one home.
+
+\paragraph{Limits announce; they do not refuse.}  The record's
+\code{limits \{\}} (maximum pressure, temperature, pressure drop per
+element, feed flow, pH band) are checked against the run and a violation
+is printed as \code{[limit]} --- a student may run an element outside its
+rating on purpose, and the run then says so.  The \code{ratedTest \{\}}
+(for the NF270-4040: 2,000\,ppm MgSO$_4$, 4.8\,bar, 25\,$^\circ$C, 15\,\%
+recovery, 9.5\,m$^3$/d, $>97$\,\% rejection) is not asserted by the engine
+but \emph{measured} by the gate, which runs the element at those
+conditions and prints the engine's permeate flow and rejection beside the
+sheet's: the membrane records' $A_w$ are fits to teaching cases, so the
+ratio is a finding, never tuned away.
+
+\begin{tutoriallink}
+\file{tutorials/steady/membranes/membrane15\_module\_nf270\_4040} --- the
+NF270-4040 element as a record, its three estimates announced. \\
+\file{tutorials/steady/membranes/membrane16\_module\_sw30hr\_8040} --- the
+8-inch seawater element beside membrane01. \\
+\file{tutorials/steady/membranes/membrane17\_sepa\_cf\_flat\_cell} --- a
+laboratory cell in five lines: one membrane face, 0.2\,m/s crossflow, the
+coupled multi-ionic film.
+\end{tutoriallink}
+
 %  Engine: src/unitOperations/batch/BatchDiafilter.{H,cpp} (the model, the
 %  two modes, the published pair, the fouling block and its refusals);
 %  src/unitOperations/membrane/BulkConversion.H (the density closure).

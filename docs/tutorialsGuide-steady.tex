@@ -7050,6 +7050,121 @@ membrane12's feed and law (NF270, NaCl 0.01 M with NO3-/NH4+ traces, `transport 
 \goldmore{6}
 \end{tutgolden}
 
+\clearpage
+\tutentry{membrane15\_module\_nf270\_4040}{tutorials/steady/membranes/membrane15\_module\_nf270\_4040}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(NF.east)+(0,-0.34)$) -- ($(NF.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.00)$) -- ($(NF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+  \draw[->] ($(NF.east)+(0,0.34)$) -- ($(NF.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{NF270-4040 element as a RECORD: NaCl 2 g/L at the rated 4.8 bar -- the geometry, limits and estimates come from data/standards/assets/NF270-4040.dat}
+\begin{tutnarrative}
+a commercial element named as a RECORD. `module NF270-4040;` replaces `membrane`, `area`, `length`, `channelHeight` and `spacerPorosity`: the record in data/standards/assets/NF270-4040.dat carries the data sheet's active area and limits, and three EDUCATED values the sheet does not state (spacer thickness, spacer porosity, leaf length), each announced as an estimate on every run. NaCl 2 g/L at the sheet's rated 4.8 bar; the rated MgSO4 test itself is run by the gate check\_membrane\_modules and printed beside the sheet. See the README.
+
+\end{tutnarrative}
+\tutreadme{The question. What does a student have to type to run a commercial membrane element, and where do the numbers the data sheet does not print come from?}
+\tutreadme{Before this case a spiral-wound module was typed by hand: membrane NF270; area 7.6 m2; length 1 m; and, inside massTransfer \{\}, channelHeight 0.7 mm; spacerPorosity 0.9; -- five numbers from four places, and nothing said which were the manufacturer's and which were guessed. Here one line, module NF270-4040;, names the record data/standards/assets/NF270-4040.dat (kind membraneModule), which carries the DuPont FilmTec NF270 Element data sheet's active area (82 ft2, 7.6 m2) and its limits (41 bar, 45 C, 1.0 bar drop, 3.6 m3/h feed, pH 3-10), the membrane the element is wound with (NF270), and three values the sheet does NOT state.}
+\tutreadme{What the student sees at the top of the log. Every run that reads the record announces its estimates, one line each, with how to verify them:}
+\tutreadme{[estimate] module 'NF270-4040': channelHeight ... is an ESTIMATE, reviewStatus unverified -- 28 mil is the feed spacer DuPont states for its 8-inch SW30HR-380 ...; the NF270-4040 sheet states none ... [estimate] module 'NF270-4040': spacerPorosity ... -- 0.90 is typical for commercial diamond feed spacers; to be verified by weighing a spacer coupon ... [estimate] module 'NF270-4040': leafLength ... -- element length 1.016 m per the data sheet includes the end caps; the leaf length is not published ...}
+\tutreadme{They also reach the end-of-run caveat block and the result JSON. A record with no estimate prints nothing: silence keeps meaning "nothing was assumed". The [spec] lines say what channel the record gave, and that this is a spiral leaf with TWO membrane faces (W = A/(2L)); compare membrane17, a flat cell with one.}
+\tutreadme{The limits speak, they do not stop the run. Raise the feed pressure in 0/feed above 41 bar, or the feed flow above 3.6 m3/h, and the log prints a [limit] module 'NF270-4040': feed P ... EXCEEDS the maximum operating pressure ... line and continues -- a student may run an element outside its rating on purpose, and the run then says so.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0400358277778}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{permeate}{F}{0.00798302414158}
+\goldrow{stream}{permeate}{T}{298.15}
+\goldrow{stream}{retentate}{F}{0.0320528431326}
+\goldrow{stream}{retentate}{T}{298.15}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_avg}{0.219639208037}
+\goldrow{kpi}{NF}{J\_w\_avg}{1.89301575867e-05}
+\goldrow{kpi}{NF}{R\_obs\_NaCl}{0.723573693403}
+\goldrow{kpi}{NF}{dP\_feed}{25181.1884852}
+\goldrow{kpi}{NF}{mass\_closure\_rel}{3.07436846548e-16}
+\goldrow{kpi}{NF}{u\_crossflow\_inlet}{0.282091538818}
+\goldrow{kpi}{NF}{water\_recovery}{0.199197330008}
+\end{tutgolden}
+
+\clearpage
+\tutentry{membrane16\_module\_sw30hr\_8040}{tutorials/steady/membranes/membrane16\_module\_sw30hr\_8040}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (RO) at (0.0,-0.0) {\textbf{RO}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(RO.west)+(-1.05,0.00)$) -- ($(RO.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(RO.east)+(0,-0.34)$) -- ($(RO.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(RO.east)+(0,0.00)$) -- ($(RO.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+  \draw[->] ($(RO.east)+(0,0.34)$) -- ($(RO.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{SW30HR-380 element as a RECORD: seawater 32 g/L NaCl at the rated 55 bar -- membrane01's separation with the hardware read from data/standards/assets/SW30HR-380.dat}
+\begin{tutnarrative}
+the 8-inch seawater element named as a RECORD. membrane01 typed `area 35 m2; length 1 m; k\_film 5e-5`; here `module SW30HR-380;` reads the 35 m2, the 28 mil spacer (a data-sheet fact on this element) and the two estimates (porosity, leaf length) from data/standards/assets/SW30HR-380.dat, and the film is COMPUTED on the record's channel. Seawater 32 g/L NaCl at the sheet's 55 bar (800 psi), 8 \% recovery being the sheet's own test point. See the README.
+
+\end{tutnarrative}
+\tutreadme{The question. membrane01 runs "an SW30HR-style element, 35 m2, 1 m channel, k\_film 5e-5 m/s". What changes when the element is named instead of typed?}
+\tutreadme{Compare with membrane01. Same membrane record (SW30HR, the solution-diffusion fit), the same seawater-class feed (32 g/L NaCl here -- the data sheet's own test salinity -- against membrane01's 35 g/L), the same 55 bar. membrane01 types area 35 m2; length 1 m; and a CONSTANT k\_film 5e-5. Here module SW30HR-380; reads the record data/standards/assets/SW30HR-380.dat: 380 ft2 (35 m2), the 28 mil feed spacer the sheet states (a data-sheet fact on this element, where the NF270-4040 sheet states none), and two ESTIMATES the sheet does not give (spacer porosity 0.90, leaf length 0.95 m) -- each announced on every run with how to verify it. The film is then COMPUTED (Schock \& Miquel on the record's channel, \textasciitilde{}0.32 m/s crossflow) instead of declared, and the polarisation index Gamma\_NaCl\_avg says what the film did.}
+\tutreadme{What the student sees. Two [estimate] lines (not three: the spacer is measured here), the [spec] channel lines (W = A/(2L) = 18.4 m of leaf width in one 8-inch element), the record's rated test printed beside the result (32,000 ppm NaCl, 55 bar, 8 \%: 26 m3/d, 99.7 \%), and the KPIs. Headline: NaCl rejection \textasciitilde{}99.84 \%, recovery \textasciitilde{}16 \%, \textasciitilde{}62 LMH. The sheet's own point is 26 m3/d over 35 m2 = 31 LMH: the engine's A\_w (a fit to membrane01's teaching envelope) is about twice the sheet's -- the gate check\_membrane\_modules runs the rated test and prints that ratio as a measurement (see docs/design/a-module-is-a-record.md).}
+\tutreadme{The limits. 83 bar, 45 C, 1.0 bar drop per element, pH 2-11; the sheet states no maximum feed flow for this element, so none is declared and none is checked -- an absent limit is absent, never a zero. Set P 90 bar; in 0/feed to see the [limit] line; the run continues.}
+\tutreadme{Try. elements 6; beside module -- a six-element pressure vessel of this record (the count is not geometry, so it is allowed); the per-element pressure drop is checked against the sheet's 1.0 bar.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.203553611111}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{permeate}{F}{0.0332180046877}
+\goldrow{stream}{permeate}{T}{298.15}
+\goldrow{stream}{retentate}{F}{0.170338382107}
+\goldrow{stream}{retentate}{T}{298.15}
+\goldrow{kpi}{RO}{Gamma\_NaCl\_avg}{0.240510957354}
+\goldrow{kpi}{RO}{J\_w\_avg}{1.70983805802e-05}
+\goldrow{kpi}{RO}{R\_obs\_NaCl}{0.998417452518}
+\goldrow{kpi}{RO}{dP\_feed}{32649.0044753}
+\goldrow{kpi}{RO}{mass\_closure\_rel}{3.55268001518e-16}
+\goldrow{kpi}{RO}{u\_crossflow\_inlet}{0.318043615679}
+\goldrow{kpi}{RO}{water\_recovery}{0.159583373274}
+\end{tutgolden}
+
+\clearpage
+\tutentry{membrane17\_sepa\_cf\_flat\_cell}{tutorials/steady/membranes/membrane17\_sepa\_cf\_flat\_cell}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (cell) at (0.0,-0.0) {\textbf{cell}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(cell.west)+(-1.05,0.00)$) -- ($(cell.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(cell.east)+(0,-0.34)$) -- ($(cell.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(cell.east)+(0,0.00)$) -- ($(cell.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+  \draw[->] ($(cell.east)+(0,0.34)$) -- ($(cell.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A laboratory cell in five lines: SEPA CF flat-sheet cell + an NF270 coupon, membrane12's NaCl + traces feed under SDEM at 0.2 m/s crossflow, the coupled Geraldes \& Afonso film}
+\begin{tutnarrative}
+a LABORATORY CELL a student can build a case for in five lines: `module SEPA\_CF;` (Sterlitech's flat-sheet crossflow cell, data/standards/assets/SEPA\_CF.dat) with the NF270 coupon of membrane12 (`membrane NF270\_sdem\_NaCl;`, the case-local record with the paper's per-ion permeances), membrane12's feed (NaCl 0.01 M with NO3-/NH4+ traces) under `transport SDEM;`, the film per ion on Schock \& Miquel and coupled at the interface (Geraldes \& Afonso 2007). The cell has ONE membrane face, so the channel width is A/L, not A/(2L) -- the engine reads the format and says so. The feed flow is the one that gives 0.2 m/s in the 31 mil channel (see 0/feed). See the README.
+
+\end{tutnarrative}
+\tutreadme{The question. A student has a Sterlitech SEPA CF cell on the bench and a coupon of NF270. How many lines of case does that take?}
+\tutreadme{module SEPA\_CF; // the cell membrane NF270\_sdem\_NaCl; // the coupon transport SDEM; P\_permeate 1.0 bar; massTransfer \{ model SchockMiquel; viscosity 1.0e-3; \}}
+\tutreadme{plus the polarisation policy (Geraldes \& Afonso 2006 suction correction, ions coupled at the interface) and a feed. The cell record data/standards/assets/SEPA\_CF.dat (kind membraneModule, format flatSheetCell) carries the manual's Table 1: 140 cm2 active area, the 95.3 mm x 1.09 mm slot, 70 ml hold-up, 69 bar and -- the binding limit -- the polypropylene spacer's 82 C. A cell takes ANY coupon, so the membrane is the CASE's to declare beside the module (a spiral element is wound with its own; there membrane beside module is refused).}
+\tutreadme{One membrane face. In a spiral leaf the channel has membrane on both sides, so the module reads the leaf width as A/(2L). A flat cell has the coupon on its permeate carrier and a steel lid above the channel: ONE face, W = A/L. The engine reads the record's format and says which it used in the [spec] line -- and the channel LENGTH is not stored anywhere: it is activeArea / slotWidth = 146.9 mm, derived where it is used (the tree never stores a derivative).}
+\tutreadme{The channel height is yours. The slot is 1.09 mm deep and shimmed down to the spacer you install, so the operating channel is a fact about your stack, not about the cell. The record's 31 mil (0.787 mm), one of the four spacers Sterlitech ships, is an EDUCATED DEFAULT marked origin estimate; reviewStatus unverified; and announced on every run: copy the record to constant/assets/ and set your own.}
+\tutreadme{The crossflow is declared, and published. The manual (section 5.1) says spacer channels are usually run at 0.1-0.5 m/s. 0/feed states the arithmetic: channel section = 95.3 mm x 0.787 mm x 0.90 = 6.75e-5 m2, so 0.2 m/s needs 48.6 L/h, and membrane12's feed (0.01 M NaCl + 2e-4 M NaNO3 and NH4Cl) is scaled to it. The run publishes u\_crossflow\_inlet = 0.200 m/s so the case can be held to the number it claims.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000749639133333}
+\goldrow{stream}{feed}{T}{293.15}
+\goldrow{stream}{permeate}{F}{1.90808514124e-05}
+\goldrow{stream}{permeate}{T}{293.15}
+\goldrow{stream}{retentate}{F}{0.000730558285788}
+\goldrow{stream}{retentate}{T}{293.15}
+\goldrow{kpi}{cell}{Gamma\_Cl\_avg}{0.379935512008}
+\goldrow{kpi}{cell}{Gamma\_NH4\_avg}{0.2721421923}
+\goldrow{kpi}{cell}{Gamma\_NO3\_avg}{0.146470492872}
+\goldrow{kpi}{cell}{Gamma\_Na\_avg}{0.377501162862}
+\goldrow{kpi}{cell}{J\_w\_avg}{2.455497741e-05}
+\goldrow{kpi}{cell}{R\_obs\_Cl}{0.67551068628}
+\goldrow{kpi}{cell}{R\_obs\_NH4}{0.714109096783}
+\goldrow{kpi}{cell}{R\_obs\_NO3}{0.180801606137}
+\goldmore{7}
+\end{tutgolden}
+
 \subsection{optimisation}
 \grouptheory{optimisation}
 \clearpage
