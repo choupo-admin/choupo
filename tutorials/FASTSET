@@ -33,6 +33,11 @@
 #       - 1   plant/acetonePlant, EXCLUDED below and named there
 #       + 2   ctrl/ contributes 3 representatives, not 1
 #       + 1   electrochem/ contributes 2 representatives, not 1
+#  (2026-09-16: electrochem/ now contributes 3 -- ed03_stack_record is the
+#   first case to take the stack RECORD and the predictive limiting current,
+#   which ed01/ed02 do not exercise at all.  The arithmetic block above is
+#   the 2026-09-07 measurement and is left as it was taken; the live counts
+#   are the ones check_fastset prints.)
 #       ---
 #        59   lines in this file
 #
@@ -98,6 +103,7 @@ tutorials/ctrl/ctrl07_lhhw_inhibition
 
 tutorials/electrochem/ed01_nacl_desalination
 tutorials/electrochem/ed02_over_limiting_current
+tutorials/electrochem/ed03_stack_record
 
 tutorials/plant/ChemicalPlantTutorial
 tutorials/plant/esterification2sector

@@ -1,0 +1,170 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict --- ED04 the limiting current, PREDICTED, against a measurement
+  ===========================================================================
+
+  AN EXTERNAL-REFERENCE CASE.  Every number below comes from ONE primary
+  source, end to end, and the case says which:
+
+      V. Geraldes, M.D. Afonso, "Limiting current density in the
+      electrodialysis of multi-ionic solutions", J. Membr. Sci. 360 (2010)
+      499-508, doi:10.1016/j.memsci.2010.05.054.
+
+  WHAT IS BEING TESTED.  The limiting current density of an ED stack used
+  to be a number a student SUPPLIED, through a counter-ion transport
+  number declared on the membrane record.  It is now PREDICTED: the
+  linearised Nernst-Planck equations in the diluate film, closed by
+  electroneutrality, give the limiting transport numbers explicitly from
+  the ion diffusivities and the bulk composition (the paper's Eqs. 12 and
+  13) and the limiting current in closed form (its Eq. 15).  Nothing is
+  fitted to this system; the only equipment datum is the stack's own
+  Sherwood correlation, which the record carries.
+
+  THE PROVENANCE OF EVERY NUMBER IN THIS CASE.
+
+    * THE STACK.  `stack EUR2C-7P18;` -- the paper's own bench unit, as a
+      `kind edStack` record in data/standards/assets/ (section 3.1: seven
+      cells, 0.020 m2 per membrane, channels 0.175 x 0.114 m with a
+      7.7e-4 m net-like spacer; section 3.4: Sh = 0.29 Re^0.5 Sc^0.33).
+      The record marks its four non-source values as estimates and the run
+      announces each one.
+
+    * THE SOLUTION.  Equimolar-in-equivalents MgCl2 + MgSO4 (the paper's
+      "5 + 5" and "10 + 10 equiv./m3" assays, Tables 2 and 4).  Each unit
+      below is declared at the AVERAGE cation concentration of its row --
+      the paper computes its prediction on the average of the inlet and
+      outlet bulk concentrations along the channel (section 4.1 and the
+      footnote to Table 4), and that average is what Table 4 lists.
+
+    * THE FLOW.  145, 175 and 230 L/h (section 3.3).  The velocity is NOT
+      declared: the engine derives it from this flow and the record's
+      geometry, u = Q/(7 W h), giving 0.0655, 0.0791 and 0.1040 m/s
+      against the paper's own 0.066, 0.080 and 0.11 m/s.
+
+    * THE TEMPERATURE.  293.15 K (20 C, section 3.3).  The ion
+      diffusivities curated in data/standards/species/ are referenced at
+      25 C; the engine corrects them to 20 C through Stokes-Einstein on
+      the declared liquid-viscosity model, which is exactly how the
+      paper's Table 3 was built, and the run prints the corrected values.
+
+    * THE CURRENT.  0.2 A (10 A/m2) on every unit -- FAR below every
+      limiting current here.  This case measures i_lim; it does not
+      approach it.  The applied current changes nothing about i_lim, which
+      is computed from the diluate bulk composition.
+
+  THE SIX UNITS ARE THE SIX MgCl2 + MgSO4 ROWS OF TABLE 4:
+
+      unit  flow        Re      C_1,in        C_1,average      i_lim
+                     (paper) (equiv./m3)    (equiv./m3)       (A/m2)
+      ED1   145 L/h    50.0     10.0           9.38             34.3
+      ED2   175 L/h    61.0     10.0           9.43             37.6
+      ED3   230 L/h    86.0     10.0           9.54             42.9
+      ED4   145 L/h    50.0     20.0          18.70             71.2
+      ED5   175 L/h    61.0     20.0          18.80             81.9
+      ED6   230 L/h    86.0     20.0          19.00             93.5
+
+  The `i_lim_cem` golden rows are ANCHORS against that last column -- a
+  MEASUREMENT, not a self-recorded value -- with a band of 13 %, which is
+  the largest average relative deviation the paper itself reports between
+  its model and its data (13 % for MgCl2, 9 % for MgSO4 + MgCl2,
+  section 4.3).  `i_lim` is pinned separately as an ordinary regression
+  row.  What the engine actually returns, and the two findings that came
+  out of it, are in the case README and in
+  docs/design/a-stack-is-a-record-and-its-limiting-current-is-predicted.md.
+
+  The diluate and the concentrate carry the SAME solution here, which is
+  the paper's own arrangement (section 3.3: both streams were recycled
+  back to a single 6 L tank to hold the concentrations nearly constant),
+  so the Nernst back-EMF is zero by construction.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        ED1;
+        type        electrodialysisStack;
+        inputs      ( ED1dilIn  ED1conIn );
+        outputs     ( ED1dilOut  ED1conOut );
+
+        operation
+        {
+            stack             EUR2C-7P18;
+            current           0.2;        // A (raw SI) -- 10 A/m2, far below i_lim: this case MEASURES i_lim, it does not approach it
+            xi                0.9;
+        }
+    }
+    {
+        name        ED2;
+        type        electrodialysisStack;
+        inputs      ( ED2dilIn  ED2conIn );
+        outputs     ( ED2dilOut  ED2conOut );
+
+        operation
+        {
+            stack             EUR2C-7P18;
+            current           0.2;        // A (raw SI) -- 10 A/m2, far below i_lim: this case MEASURES i_lim, it does not approach it
+            xi                0.9;
+        }
+    }
+    {
+        name        ED3;
+        type        electrodialysisStack;
+        inputs      ( ED3dilIn  ED3conIn );
+        outputs     ( ED3dilOut  ED3conOut );
+
+        operation
+        {
+            stack             EUR2C-7P18;
+            current           0.2;        // A (raw SI) -- 10 A/m2, far below i_lim: this case MEASURES i_lim, it does not approach it
+            xi                0.9;
+        }
+    }
+    {
+        name        ED4;
+        type        electrodialysisStack;
+        inputs      ( ED4dilIn  ED4conIn );
+        outputs     ( ED4dilOut  ED4conOut );
+
+        operation
+        {
+            stack             EUR2C-7P18;
+            current           0.2;        // A (raw SI) -- 10 A/m2, far below i_lim: this case MEASURES i_lim, it does not approach it
+            xi                0.9;
+        }
+    }
+    {
+        name        ED5;
+        type        electrodialysisStack;
+        inputs      ( ED5dilIn  ED5conIn );
+        outputs     ( ED5dilOut  ED5conOut );
+
+        operation
+        {
+            stack             EUR2C-7P18;
+            current           0.2;        // A (raw SI) -- 10 A/m2, far below i_lim: this case MEASURES i_lim, it does not approach it
+            xi                0.9;
+        }
+    }
+    {
+        name        ED6;
+        type        electrodialysisStack;
+        inputs      ( ED6dilIn  ED6conIn );
+        outputs     ( ED6dilOut  ED6conOut );
+
+        operation
+        {
+            stack             EUR2C-7P18;
+            current           0.2;        // A (raw SI) -- 10 A/m2, far below i_lim: this case MEASURES i_lim, it does not approach it
+            xi                0.9;
+        }
+    }
+);

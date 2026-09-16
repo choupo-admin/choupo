@@ -67,6 +67,7 @@ Description
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
 #include "thermo/solution/SolutionRegistry.H"
 #include "thermo/membrane/MembraneRegistry.H"
+#include "thermo/electrochem/EDStackRegistry.H"
 #include "thermo/membrane/MembraneModuleRegistry.H"
 #include "thermo/adsorbent/AdsorbentRegistry.H"
 #include "thermo/utility/UtilityCatalogue.H"
@@ -526,6 +527,7 @@ try
         MaterialRegistry::loadFrom(dataRoot.string());
     MembraneRegistry::loadFrom(dataRoot.string());
     MembraneModuleRegistry::loadFrom(dataRoot.string());   // kind membraneModule (2026-09-15)
+    EDStackRegistry::loadFrom(dataRoot.string());          // kind edStack (2026-09-16)
     AdsorbentRegistry::loadFrom(dataRoot.string());
     HenrysLawRegistry::loadFrom(dataRoot.string());
     SolutionRegistry::loadFrom(dataRoot.string());

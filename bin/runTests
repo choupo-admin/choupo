@@ -3093,6 +3093,27 @@ PYEOF
     fi
     rm -f /tmp/modules.$$
 
+    # ED-stack gate (2026-09-16).  An electrodialysis stack is a RECORD and its
+    # limiting current is a PREDICTION: the crossflow velocity is derived from
+    # the diluate flow instead of declared, and the counter-ion transport
+    # number is computed from the ion diffusivities instead of supplied.  The
+    # record is held to a second transcription of Geraldes & Afonso (2010), the
+    # derived velocity is recomputed from each case's own flow (including on a
+    # 7-pass twin, without which the pass division is untested), Eq. 15 is seen
+    # reducing to Eq. 16, D_eff and the limiting transport numbers are
+    # recomputed in Python, and ed04's six anchors are printed against Table 4
+    # with their deviations.  9 by-hand sabotages in its docstring, two of
+    # which did not do what was predicted.
+    if "$ROOT/bin/curate/check_ed_stack.py" > /tmp/edstack.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ed-stack-gate" "$(grep -m1 '^check_ed_stack: OK' /tmp/edstack.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ed_stack.py)\n" "ed-stack-gate"
+        cat /tmp/edstack.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/edstack.$$
+
     # block-tridiagonal gate (2026-08-25).  The MESH declares its Jacobian
     # structure; the declaration is audited on the first iteration and the
     # colored evaluation count must equal the CPR formula recomputed by the

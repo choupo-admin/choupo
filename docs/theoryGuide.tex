@@ -19014,7 +19014,7 @@ need not fork).  The electrical power $P$ is published on the energy wire;
 divided by the diluate volumetric product it gives the headline
 \emph{specific energy} in $\mathrm{kWh/m^3}$.
 
-\subsection{The limiting current: the ceiling Cowan and Brown drew}
+\subsection{The limiting current: what Cowan and Brown actually gave us}
 
 The defining constraint of ED is the \textbf{limiting current density}.
 As current rises, the diluate-side boundary layer at the membrane face is
@@ -19023,7 +19023,22 @@ current $i_\text{lim}$ the interfacial concentration hits zero and the
 ohmic resistance there diverges.  Past it, the only charge carriers left
 are $\mathrm{H^+}$ and $\mathrm{OH^-}$ from water splitting --- current
 efficiency collapses, the pH swings, and the membranes are stressed.
-Cowan and Brown \cite{CowanBrown1959} gave the working form
+
+\begin{keyidea}
+Cowan and Brown \cite{CowanBrown1959} gave an \emph{experimental method},
+not a predictive model.  Plot the stack's electrical resistance $\Delta
+V/I$ against the reciprocal current $1/I$ and read $i_\text{lim}$ off the
+\emph{minimum}: below the limiting current the stack is ohmic, above it the
+depleted film adds resistance, and the turning point is the transition.
+Geraldes and Afonso \cite{GeraldesAfonso2010} measure their limiting
+currents exactly that way, refining the minimum with the fourth-order
+polynomial fit of Rapp and Pfromm \cite{RappPfromm1998}.  The
+single-salt \emph{formula} usually attached to the name is what you get
+when you integrate Nernst--Planck across a stagnant film for one salt; it
+is worth knowing separately from the measurement.
+\end{keyidea}
+
+That classical single-salt form is
 %
 \begin{equation}
   i_\text{lim} \;=\; \frac{z F\,k\,c_\text{dil}}{t_\text{cu} - t_\text{co}},
@@ -19032,28 +19047,240 @@ Cowan and Brown \cite{CowanBrown1959} gave the working form
 \end{equation}
 %
 where $c_\text{dil}$ is the bulk equivalent concentration of the
-\emph{depleting} (diluate) channel, $t_\text{cu}$ the counter-ion
-transport number \emph{in the membrane} (from the IEM \file{.dat}), and
-$t_\text{co}$ the co-ion number; the factor $(t_\text{cu}-t_\text{co}) =
-(2t_\text{cu}-1)$ measures how hard the membrane forces \emph{all} the
-current onto the counter-ion, draining the boundary layer.  The
-mass-transfer coefficient $k$ is estimated from a L\'ev\^eque-type
-Sherwood correlation for the thin spacer slit,
+\emph{depleting} (diluate) channel and $t_\text{cu}$ the counter-ion
+transport number \emph{in the membrane}.  Two things about it should make
+you uneasy.  It is written for \emph{one salt}, and real feeds are not;
+and $t_\text{cu}$ is a \textbf{declared parameter} --- a number the student
+supplies, typically measured in a different solution at a different
+temperature.  Choupo keeps \eqref{eq:ed-ilim} as the \code{CowanBrown}
+route for a case that names no stack record, and the run says so.
+
+\subsection{The multi-ionic limiting current, predicted}
+
+\begin{whatyoulllearn}
+The rest of this section removes that parameter.  It follows Geraldes and
+Afonso, \emph{J.\ Membr.\ Sci.} \textbf{360} (2010) 499--508
+\cite{GeraldesAfonso2010}, whose result is that the limiting transport
+numbers of a multi-ionic solution are not data at all: they follow
+explicitly from the ionic diffusivities and the bulk composition.
+\end{whatyoulllearn}
+
+\paragraph{The film, and what is transported in it.}
+The ions cross a stagnant film of thickness
 %
 \begin{equation}
-  \mathrm{Sh} = 1.85\,
-    \Bigl(\mathrm{Re}\,\mathrm{Sc}\,\frac{d_h}{L}\Bigr)^{1/3},
-  \qquad k = \frac{\mathrm{Sh}\,D}{d_h},
-  \label{eq:ed-leveque}
+  \delta_\text{eff} \;=\; \frac{D_\text{eff}}{k_{c,\text{eff}}},
+  \label{eq:ga-film}
 \end{equation}
 %
-with $d_h \approx 2h$ for the slit, $\mathrm{Re} = v\,d_h/\nu$,
-$\mathrm{Sc} = \nu/D$, and the cross-flow velocity $v$ supplied as
-\code{linearVelocity}.  The student therefore \emph{sees the limiting
-current rise with flow} --- the central design lever of an ED stack.  This
-is the honest ``simple correlation over theory'' rung: $\nu$ is taken as
-the dilute-water value ($\sim\!10^{-6}\ \mathrm{m^2/s}$) and $L$ defaults
-to the channel length, both ANNOUNCED.
+where $D_\text{eff}$ is the \emph{effective diffusivity of the multi-ionic
+solution} (below) and $k_{c,\text{eff}}$ comes from a Sherwood correlation
+built on that same $D_\text{eff}$.  Inside the film each ion obeys
+Nernst--Planck,
+%
+\begin{equation}
+  N_j \;=\; -D_j\frac{\mathrm dC_j}{\mathrm dx}
+            - z_j C_j D_j \frac{F}{\Rgas T}\frac{\mathrm d\psi}{\mathrm dx},
+  \qquad
+  \sum_{j=1}^{n} z_j C_j = 0,
+  \label{eq:ga-np}
+\end{equation}
+%
+and inside a strongly charged membrane the counter-ion moves by
+\emph{electromigration only}, so its flux is fixed by the current,
+$N^m_j = t^m_j i/(z_j F)$.
+
+\paragraph{The linearisation, and what it buys.}
+Solving \eqref{eq:ga-np} exactly needs an iteration over both the current
+and the membrane transport numbers.  Linearising on the assumption that
+the concentration profiles through the film are \emph{nearly linear} ---
+and they are, close to the limiting current --- collapses that into
+closed form.  Taking the co-ion transport numbers as null, the
+\textbf{limiting transport numbers} of the counter-ions come out as ratios
+of the ions' own $|z|DC$ products:
+%
+\begin{align}
+  t^m_{j,\text{lim}} &= \frac{z_j D_j C_{j,b}}
+                              {\sum_{j=1}^{n_c} z_j D_j C_{j,b}}
+  &&\text{(cation-exchange membrane)},
+  \label{eq:ga-tcem}\\[2pt]
+  t^m_{j,\text{lim}} &= \frac{|z_j| D_j C_{j,b}}
+                              {\sum_{j=n_c+1}^{n_c+n_a} |z_j| D_j C_{j,b}}
+  &&\text{(anion-exchange membrane)},
+  \label{eq:ga-taem}
+\end{align}
+%
+and the limiting current density itself is
+%
+\begin{equation}
+  i_\text{lim} \;=\; F\,\frac{k_{c,\text{eff}}}{D_\text{eff}}\,
+    \frac{\sum_{j=1}^{n} C_{j,b}}
+         {\sum_{j=1}^{n} t^m_{j,\text{lim}}\big/(z_j D_j)}.
+  \label{eq:ga-ilim}
+\end{equation}
+%
+Equation~\eqref{eq:ga-ilim} gives a \emph{different} number for each
+membrane --- positive for the CEM and negative for the AEM, in the
+paper's sign convention --- and \textbf{the applicable one is the lowest
+absolute value}.  Choupo computes both and prints which membrane set the
+answer.
+
+\begin{keyidea}
+\textbf{Nothing in \eqref{eq:ga-tcem}--\eqref{eq:ga-ilim} is fitted.}  The
+inputs are the ionic diffusivities at infinite dilution --- catalogue data,
+the same \file{data/standards/species/} tier the conductivity of
+\eqref{eq:ed-kappa} reads --- and the bulk composition of the stream.  The
+only equipment datum is the Sherwood correlation, and that lives on the
+stack record where it belongs.  \emph{A model that removes a parameter is
+worth more than one that fits better.}
+\end{keyidea}
+
+\paragraph{The effective diffusivity.}
+$D_\text{eff}$ is the multi-ionic generalisation of the Nernst--Hartley
+salt diffusivity.  The paper derives it over $n$ salts (Appendix A), salt
+$k$ made of cation $k$ and anion $n+k$ with equivalent fraction $x_k$.
+Written out, the $x$-weights collapse onto the ions themselves:
+%
+\begin{equation}
+  D_\text{eff} \;=\;
+  \frac{\displaystyle\sum_{i\in\text{cat}} X^+_i D_i
+        \sum_{j\in\text{an}} X^-_j\,(z_i + |z_j|)\,D_j}
+       {\displaystyle\sum_{i\in\text{cat}} X^+_i z_i D_i
+        + \sum_{j\in\text{an}} X^-_j |z_j| D_j},
+  \qquad
+  X^\pm = \frac{|z|C}{C_S},
+  \label{eq:ga-deff}
+\end{equation}
+%
+with the equivalent fractions taken on the total of their own sign.  This
+matters practically: a salt decomposition is \emph{not unique} from a list
+of ions (Na, Mg, Cl, SO$_4$ is NaCl + MgSO$_4$, or Na$_2$SO$_4$ +
+MgCl$_2$, or any blend), and \eqref{eq:ga-deff} needs none.  For one salt
+it collapses to $D_S = (z_1+|z_2|)D_1D_2/(z_1D_1+|z_2|D_2)$, the
+Nernst--Hartley result.
+
+\paragraph{One salt: the two forms must agree.}
+For a single salt \eqref{eq:ga-ilim} reduces \emph{exactly} to the
+classical
+%
+\begin{equation}
+  i_\text{lim} \;=\; \frac{F k_c C_b}
+    {t^m_{1,\text{lim}} - z_1 D_1/(z_1 D_1 + |z_2| D_2)},
+  \label{eq:ga-eq16}
+\end{equation}
+%
+and Choupo prints both on a single-salt feed rather than asserting the
+reduction:
+%
+\begin{lstlisting}[language=bash]
+single salt: Eq. 16 gives 643.0407 A/m2 against Eq. 15's 643.0407 A/m2
+             -- the reduction, seen
+\end{lstlisting}
+
+\paragraph{The assumptions, which are what you must weigh.}
+Negligible steric exclusion, so the limiting current is reached when
+\emph{every} counter-ion's interfacial concentration vanishes; null co-ion
+transport numbers; strongly charged membranes, so diffusion inside them is
+negligible against electromigration; nearly linear film profiles; dilute
+solutions, so only ion--solvent friction enters (individual ionic
+diffusivities, no Onsager cross terms); and film theory itself, which
+means \emph{no electroconvection} --- exactly the regime that ends at
+$i_\text{lim}$.  The paper compares the linearised result against a
+numerical solution of the full non-linear Nernst--Planck system and finds
+the limiting current within about 15\,\% even in an extreme case where the
+highest and lowest ionic diffusivities differ tenfold.
+
+\subsection{Where the mass-transfer coefficient comes from --- and the
+velocity}
+
+$k_{c,\text{eff}}$ is the one number in \eqref{eq:ga-ilim} that is neither
+thermodynamics nor catalogue data.  It comes from a Sherwood correlation
+%
+\begin{equation}
+  \mathrm{Sh} = a\,\mathrm{Re}^{b}\,\mathrm{Sc}^{c},
+  \qquad
+  \mathrm{Sh} = \frac{k_{c,\text{eff}} h}{D_\text{eff}},
+  \quad
+  \mathrm{Re} = \frac{\rho u h}{\mu},
+  \quad
+  \mathrm{Sc} = \frac{\mu}{\rho D_\text{eff}},
+  \label{eq:ga-sh}
+\end{equation}
+%
+on the diluate \emph{channel height} $h$ --- and that correlation is
+\textbf{equipment-and-spacer data, never a universal law}.  The one Choupo
+ships, $\mathrm{Sh} = 0.29\,\mathrm{Re}^{0.5}\mathrm{Sc}^{0.33}$, was
+fitted by \cite{GeraldesAfonso2010} to one stack with one mesh spacer from
+its own NaCl limiting-current measurements, with an average error of 7\,\%,
+and its Schmidt exponent was \emph{postulated} rather than fitted.  So it
+lives on the stack record, with its citation and with that postulate
+marked as an estimate, and the run announces it.
+
+\begin{keyidea}
+\textbf{The crossflow velocity is not an operating knob.}  Until
+2026-09-16 a case declared \code{linearVelocity} beside a diluate flow the
+unit already had on its inlet stream --- two homes for one fact, nothing
+checking them against each other, and the velocity setting $k$ and
+therefore $i_\text{lim}$.  With a stack record it is \emph{derived}, and
+the run prints the arithmetic:
+\[
+  u \;=\; \frac{Q_\text{diluate}}
+               {(N_\text{cell pairs}/n_\text{passes})\; W\, h},
+  \qquad
+  L_\text{path} = L_\text{channel} \times n_\text{passes}.
+\]
+$u$ here is the \emph{superficial} velocity, in the empty channel
+cross-section; the interstitial value $u/\varepsilon$ is printed beside
+it, and the record declares which of the two its correlation was fitted
+on.  Declaring a velocity beside \code{stack} refuses by name.
+\end{keyidea}
+
+\subsection{The stack as a record}
+
+\begin{equation*}
+\texttt{stack EUR2C-7P18;}
+\end{equation*}
+%
+names a \code{kind edStack} record in \file{data/standards/assets/} which
+carries the membrane pair, the cell pairs, the active area, the channel and
+spacer, the hydraulic passes, the Sherwood correlation and the operating
+limits.  Two conventions in it are worth stating explicitly.
+
+\textbf{\code{activeArea} is the cell-pair area of the whole stack.}  A
+50~m$^2$ stack has 50~m$^2$ of anion-exchange membrane \emph{and} 50~m$^2$
+of cation-exchange membrane.  The area per cell pair
+($A/N$), the area per membrane kind ($A$) and the total membrane area
+($2A$) are all derived and printed; none is stored, and a record that
+stores one is refused.
+
+\textbf{The hydraulic pass belongs to the equipment}, not to the
+operation: it is a fact about how the stack is plumbed, so
+\code{hydraulicPasses} is on the record and a case that declares it is
+refused.
+
+The limits are \emph{announced} when a run exceeds them and never refuse
+--- a student may drive a stack past its rating on purpose --- and every
+value the source does not state is marked \code{origin estimate;
+reviewStatus unverified;} with a note saying how to verify it, announced
+on every run that reads it.
+
+Two things a stack record may leave \emph{out}, and in both cases the
+absence is a fact.  A record whose source does not name the membrane pair
+does not name one, and the \emph{case} then declares \code{membrane
+<name>;} beside \code{stack}; declaring one beside a record that does name
+a pair refuses instead, so the record decides which way the refusal points
+and neither side guesses.  And where nobody states the channel width or
+its length, \textbf{exactly one of the two is stored} --- the width, as
+the estimate --- and the length is $A/(N\,W)$, derived and printed as
+derived.  Storing a back-calculated length \emph{beside} a
+back-calculated width would be two homes for one guess, and the second
+would read like a declaration.
+
+A record that borrows another stack's correlation carries the Reynolds
+band that correlation was fitted over,
+\code{massTransfer \{ validity \{ Re ( 50 86 ); \} \}} --- equipment data,
+like every other validity window in this tree --- and a run outside the
+band is \textbf{announced as an extrapolation}, never refused.
 
 \begin{pitfall}
 Choupo \textbf{never clamps} the current at $i_\text{lim}$.  If you
@@ -19075,13 +19302,33 @@ Eq.~\eqref{eq:ed-faraday} removes $\xi I N / (zF) = 0.9\cdot 8\cdot
 100/(1\cdot 96485) \approx 7.5\times 10^{-3}\ \mathrm{mol/s}$ of Na$^+$,
 against a diluate Na$^+$ inflow of $5.0\cdot 0.001795\approx
 9.0\times10^{-3}\ \mathrm{mol/s}$ --- about $83\,\%$ demineralisation.
-The log prints the Davies $\gamma$ and $\kappa$ of each channel, the
-Nernst $E_\text{mem}$ from those real activities, the series ohmic
-$R_\text{pair}$, the assembled stack voltage $U$ and power $P=UI$, and the
-Cowan--Brown $i_\text{lim}$ with the verdict $i/i_\text{lim}<1$ (a safe
-sub-limiting design).  The companion case
-\file{electrochem/ed02\_over\_limiting\_current} pushes $I$ past
-$i_\text{lim}$ and trips the over-limiting warning.
+This case names \emph{no} stack record, so it takes the \code{CowanBrown}
+route on the membrane record's declared $t_\text{cu}$ and the run says so
+in two \code{[legacy]} lines: the velocity it could not check against the
+flow, and the fallback with its reason.
+\end{example}
+
+\begin{example}[The limiting current against a measurement,
+\file{electrochem/ed04\_limiting\_current\_multiionic}]
+Six units, one per MgCl$_2$ + MgSO$_4$ row of Table~4 of
+\cite{GeraldesAfonso2010}, on the paper's own bench stack at its own flow
+rates and 20\,$^\circ$C.  Mg$^{2+}$ is the only cation, so its limiting
+transport number at the CEM is exactly 1 by \eqref{eq:ga-tcem}, and it has
+the lowest $|z|D$ of the three ions --- which is why the
+\emph{cation}-exchange membrane sets the limiting current here.  The
+engine's predictions sit $+1$ to $+12\,\%$ from the measurements, 6.9\,\%
+on average, against the 9\,\% the paper reports for this system.  The
+golden pins them as \code{anchor} rows with the paper's own 13\,\% band.
+
+Two findings are recorded rather than tuned away.  The paper's stated
+Reynolds number at its highest flow (86) does not follow from its own
+stated flow rate --- 230~L/h through seven channels of $0.114\times
+7.7\times10^{-4}$~m gives 0.104~m/s and $\mathrm{Re}\approx 80$, not
+0.11~m/s and 86 --- and Choupo derives the velocity from the flow, which is
+the measurable.  And the predictions are biased \emph{high} by about 7\,\%
+on this system where the paper's own are biased \emph{low} by 13\,\% on the
+single-salt MgCl$_2$ rows of the same table; with a mass-transfer
+correlation of 7\,\% average error behind it, neither is surprising.
 \end{example}
 
 \begin{tutoriallink}
@@ -19089,7 +19336,18 @@ $i_\text{lim}$ and trips the over-limiting warning.
 sub-limiting NaCl desalination; \code{current} mode. \\
 \file{tutorials/electrochem/ed02\_over\_limiting\_current} --- the same
 stack driven past $i_\text{lim}$; the LOUD over-limiting warning, no
-silent clamp.
+silent clamp. \\
+\file{tutorials/electrochem/ed03\_stack\_record} --- the same chemistry
+through a \code{kind edStack} record: the velocity derived from the flow,
+the area rule printed as arithmetic, the four estimates announced, and
+Eq.~\eqref{eq:ga-ilim} seen reducing to Eq.~\eqref{eq:ga-eq16}. \\
+\file{tutorials/electrochem/ed04\_limiting\_current\_multiionic} --- the
+multi-ionic limiting current against Table~4 of \cite{GeraldesAfonso2010},
+six operating points, as \code{anchor} rows. \\
+\file{tutorials/electrochem/ed05\_industrial\_stack} --- a 100-cell-pair,
+50~m$^2$ industrial unit: two hydraulic passes, a record that names no
+membrane pair (so the case does) and stores no channel length (so it is
+derived), and a borrowed correlation used inside its own Reynolds band.
 \end{tutoriallink}
 
 
@@ -23285,10 +23543,28 @@ section digitises and compares against.
 
 \bibitem{CowanBrown1959} Cowan, D. A., \& Brown, J. H., ``Effect of
 Turbulence on Limiting Current in Electrodialysis Cells'', \emph{Ind.\
-Eng.\ Chem.}, 51(12), 1445--1448 (1959). The original limiting-current
-relation $i_\text{lim} = zFk\,c/(t_\text{cu}-t_\text{co})$
-(Eq.~\ref{eq:ed-ilim}) and the conductance-vs-current/voltage diagnostic
-for the electrodialysis stack.
+Eng.\ Chem.}, 51(12), 1445--1448 (1959). The \emph{experimental} method
+for locating the limiting current --- the minimum of the stack resistance
+$\Delta V/I$ against $1/I$ --- and the classical single-salt relation
+$i_\text{lim} = zFk\,c/(t_\text{cu}-t_\text{co})$
+(Eq.~\ref{eq:ed-ilim}) usually attached to the name.
+
+\bibitem{GeraldesAfonso2010} Geraldes, V., \& Afonso, M. D., ``Limiting
+current density in the electrodialysis of multi-ionic solutions'',
+\emph{J.\ Membr.\ Sci.}, 360, 499--508 (2010),
+doi:10.1016/j.memsci.2010.05.054.  The linearised Nernst--Planck model
+Choupo's \code{GeraldesAfonso2010} route implements: the effective
+diffusivity of a multi-ionic solution (Eq.~\ref{eq:ga-deff}), the limiting
+counter-ion transport numbers (Eqs.~\ref{eq:ga-tcem} and
+\ref{eq:ga-taem}), the explicit limiting current (Eq.~\ref{eq:ga-ilim}),
+and the EUR2C-7P18 bench stack with its own mass-transfer correlation and
+Table~4 measurements.
+
+\bibitem{RappPfromm1998} Rapp, H.-J., \& Pfromm, P. H.,
+``Electrodialysis for chloride removal from the chemical recovery cycle
+of a Kraft pulp mill'', \emph{J.\ Membr.\ Sci.}, 146, 249--261 (1998).
+The fourth-order polynomial refinement of the Cowan--Brown resistance
+minimum, used by \cite{GeraldesAfonso2010} to locate $i_\text{lim}$.
 
 \bibitem{Strathmann2004} Strathmann, H., \emph{Ion-Exchange Membrane
 Separation Processes}, Membrane Science and Technology Series 9,

@@ -1,0 +1,182 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  ELECTRODIALYSIS STACK: a 100-cell-pair, 50 m2 INDUSTRIAL Eurodia unit
+
+  WHAT THIS RECORD IS, and how it differs from EUR2C-7P18.dat.  That one
+  is a BENCH unit transcribed from a published paper, every number of it
+  in print.  This one is an INDUSTRIAL unit that Vitor Geraldes has
+  OPERATED, and its facts are his own recollection of it -- not a data
+  sheet, not a publication.  They are recorded as what they are: `origin
+  measured; reviewStatus unverified;`, with the source naming him.
+
+  SOURCE OF THE FACTS:
+      V. Geraldes, personal communication / own operating experience,
+      2026-09-16.  Stated by him: 100 cell pairs; 50 m2 of cell-pair
+      active area (so 50 m2 of anionic membrane AND 50 m2 of cationic --
+      his own ruling on what the area MEANS, see below); a spacer /
+      channel height of "aprox" 0.7 mm; a zig-zag spacer; TWO hydraulic
+      passes; a design diluate flow of 3000 L/h.
+
+  VITOR'S RULING ON `activeArea` (2026-09-16), verbatim: *the active area
+  is the CELL-PAIR area; a stack of 50 m2 has 50 m2 of anionic membrane
+  AND 50 m2 of cationic membrane.*  This record is the unit that ruling
+  was stated about.  Everything else is DERIVED and ANNOUNCED:
+      area per cell pair        = activeArea / cellPairs   = 0.500 m2
+      area per membrane KIND    = activeArea               = 50 m2
+      total membrane area       = 2 x activeArea           = 100 m2
+
+  VITOR'S RULING ON THE PASSES (2026-09-16): *the pass belongs to the
+  EQUIPMENT, not the operation.*  Two passes here, so 50 of the 100
+  channels run side by side in each pass and a parcel of diluate travels
+  the channel length TWICE.
+
+  WHAT IS NOT KNOWN, AND HOW IT IS HANDLED.  He gave neither the channel
+  WIDTH nor its LENGTH.  Exactly ONE of the two is stored, and it is the
+  one that is an estimate:
+
+    * `channelWidth 0.298 m` is an ESTIMATE (see provenance).  It was
+      BACK-CALCULATED from a superficial velocity of 0.080 m/s at the
+      design flow of 3000 L/h -- the middle of the band his own 2010
+      bench stack was run at -- and it must be verified by measuring a
+      membrane sheet.  The engine announces it on every run.
+
+    * THE CHANNEL LENGTH IS NOT STORED AT ALL.  It is
+      activeArea / (cellPairs x channelWidth) = 50 / (100 x 0.298) =
+      1.680 m, derived where it is used and announced as derived.
+      Storing a back-calculated length BESIDE a back-calculated width
+      would be two homes for one guess, and the second would read like a
+      declaration.  (EUR2C-7P18 DOES declare its length, because its
+      paper states the width, the length and the effective area as three
+      separate facts.)
+
+    The flow path is therefore 1.680 m per pass and 3.360 m over the two.
+
+  THE MEMBRANE PAIR IS NOT NAMED HERE, and that is a fact rather than a
+  gap: he did not say which membranes the unit carried.  A stack FRAME
+  takes any ion-exchange pair, exactly as the SEPA CF laboratory cell
+  takes any coupon, so a case that names this stack MUST declare
+  `membrane <name>;` beside it, and the engine refuses by name if it does
+  not.  Neither side guesses a pair on the owner's behalf.
+
+  WHY THE PAPER'S CORRELATION IS NOT AN EXTRAPOLATION HERE, which is the
+  check that matters and is the reason this record may carry it at all.
+  The correlation `Sh = 0.29 Re^0.5 Sc^0.33` was fitted on EUR2C-7P18 over
+  Re 50-86.  Run over the same 0.066-0.110 m/s superficial band that bench
+  stack was operated at, and on pure water at 20 C:
+
+      this stack,  h = 0.70 mm :  Re  46  ->  77
+      EUR2C-7P18,  h = 0.77 mm :  Re  51  ->  84
+
+  The two bands very nearly coincide, BECAUSE the two spacer thicknesses
+  very nearly coincide -- Re is built on the channel height.  So the fit
+  is being APPLIED INSIDE the band it was taken over rather than
+  extrapolated beyond it.  That is the whole of the justification, and it
+  is a justification about the REYNOLDS NUMBER only: the spacer here is
+  ZIG-ZAG and the bench stack's was a MESH, and no correlation in this
+  tree selects on the spacer type.  A zig-zag spacer mixes differently;
+  the coefficients below are the mesh stack's and are marked as such.
+  `validity { Re ( 50 86 ); }` is declared with them, and the engine
+  ANNOUNCES any run that leaves the band.
+
+  At the design flow of 3000 L/h this stack runs at u = 0.0800 m/s and
+  Re = 55.9, inside the band.
+\*---------------------------------------------------------------------------*/
+
+name            EurodiaED-100P-50;
+kind            edStack;
+manufacturer    "Eurodia Industrie";
+
+//  No `membranes` key: the source does not name the pair, so the CASE does.
+
+cellPairs       100;               // stated
+activeArea      50 m2;             // CELL-PAIR area of the whole stack (stated)
+
+channelHeight   0.7 mm;            // stated, "aprox" -- see provenance
+channelWidth    0.298 m;           // ESTIMATE, back-calculated -- see provenance
+//  No `channelLength`: it is activeArea/(cellPairs x channelWidth) = 1.680 m,
+//  derived in the engine and announced as derived.
+spacerPorosity  0.90;              // ESTIMATE, see provenance
+spacerType      zigZag;            // stated.  A DECLARED fact, announced; no
+                                   // correlation selects on it today
+hydraulicPasses 2;                 // stated
+
+//  THE CORRELATION IS THE BENCH STACK'S, and the header says why it may be
+//  used here and on what that permission rests.  Sh = a Re^b Sc^c, with
+//  Sh = k_c,eff h / D_eff, Re = rho u h / mu, Sc = mu/(rho D_eff), u the
+//  SUPERFICIAL velocity in the empty channel cross-section.
+massTransfer
+{
+    model          powerLaw;
+    a              0.29;
+    b              0.5;
+    c              0.33;
+    velocityBasis  superficial;
+    validity       { Re ( 50 86 ); }   // the band the fit was taken over
+}
+
+//  NO `limits {}` BLOCK, and the absence is a decision rather than an
+//  omission.  The only number in that family anyone stated is the DESIGN
+//  diluate flow, 3000 L/h -- and a design point is not a ceiling.  Filing it
+//  as `flow_max` would promote it to one silently, and the run would then
+//  accuse a stack of exceeding its rating while doing exactly what it was
+//  designed to do (it did: at the design flow the comparison lands a
+//  floating-point hair above and printed a [limit] line).  A limit this
+//  record does not declare is ABSENT and is not checked; curating the real
+//  ceilings from the Eurodia data sheet is a separate act.
+
+provenance
+{
+    source  "V. Geraldes, personal communication / own operating experience, 2026-09-16 (an industrial Eurodia electrodialysis unit he operated); the mass-transfer correlation is from V. Geraldes, M.D. Afonso, J. Membr. Sci. 360 (2010) 499-508, section 3.4, fitted to the EUR2C-7P18 bench stack";
+    licence "the operating facts are the author's own, contributed to this project; the correlation is cited to the paper above";
+
+    cellPairs
+    {
+        origin        measured;
+        reviewStatus  unverified;
+        notes         "stated from operating experience of the unit, not from a data sheet; to be verified against the Eurodia nameplate";
+    }
+    activeArea
+    {
+        origin        measured;
+        reviewStatus  unverified;
+        notes         "stated from operating experience as the CELL-PAIR area of the stack (50 m2 of anionic membrane and 50 m2 of cationic); to be verified against the Eurodia nameplate";
+    }
+    channelHeight
+    {
+        origin        measured;
+        reviewStatus  unverified;
+        notes         "stated as approximately 0.7 mm, in the owner's own word 'aprox'; to be verified with a micrometer on an installed spacer";
+    }
+    channelWidth
+    {
+        origin        estimate;
+        reviewStatus  unverified;
+        notes         "NOT stated by anyone: back-calculated from a superficial velocity of 0.080 m/s at the design flow of 3000 L/h through 50 channels (100 cell pairs over 2 hydraulic passes) of 0.7 mm height, 0.080 being the middle of the 0.066-0.110 m/s band the EUR2C-7P18 bench stack was run at.  To be verified by measuring the width of a membrane sheet; the channel LENGTH follows from it and the active area and is never stored";
+    }
+    spacerPorosity
+    {
+        origin        estimate;
+        reviewStatus  unverified;
+        notes         "not stated; 0.90 is typical of commercial spacers, to be verified by weighing a spacer coupon: porosity = 1 - m/(rho_polymer * W * L * h)";
+    }
+    spacerType
+    {
+        origin        measured;
+        reviewStatus  unverified;
+        notes         "stated as a zig-zag spacer from operating experience; to be verified by inspecting an installed spacer.  No correlation in this tree selects on the spacer type, and the mass-transfer coefficients below are a MESH stack's";
+    }
+    hydraulicPasses
+    {
+        origin        measured;
+        reviewStatus  unverified;
+        notes         "stated as two passes from operating experience; to be verified against the Eurodia flow schematic";
+    }
+    massTransfer
+    {
+        c
+        {
+            origin        estimate;
+            reviewStatus  unverified;
+            notes         "the source paper POSTULATES the Schmidt exponent 1/3 (section 3.4) rather than fitting it.  To be verified by regressing c from limiting-current data over solutions of materially different effective diffusivity at fixed Re";
+        }
+    }
+}

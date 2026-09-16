@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Meta-control --- ED05 an INDUSTRIAL electrodialysis stack.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Electrodialysis: a 100-cell-pair, 50 m2 industrial stack, two hydraulic passes";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

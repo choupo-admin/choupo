@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: magnesium ion (Mg2+)  -- CASE-LOCAL ionic component
+
+  A master ion of the electrolyte catalogue used AS a flowsheet component,
+  so a process stream can carry a water ANALYSIS.  Name matches the
+  `species` key in the model-species catalogue (data/standards/species/);
+  MW is the same row.
+
+  nonvolatile: an ion never enters the vapour.
+  dissociation 1: one osmotically active particle per mole of ion (the
+  analysis already lists ions, not salts).
+\*---------------------------------------------------------------------------*/
+
+name           Mg;
+formula        "Mg+2";
+
+MW             24.305;          // g/mol (= kg/kmol)
+role        nonvolatile;
+dissociation   1;              // already an ion: 1 particle/mol
+
+// Bridge to the aqueous master species of the same spelling -- two identity
+// spaces, one DECLARED crossing (identifier typing, 2026-07-25).
+aqueousMapping ( { species Mg; nu 1; } );

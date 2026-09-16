@@ -1630,16 +1630,79 @@ capacity refusal `tsa02_refused_capacity`.
 
 ### `electrodialysisStack`
 ED stack (ion-exchange membrane pair): applied CURRENT drives salt from
-diluate to concentrate channels; the limiting current is computed from the
-declared channel hydraulics (Leveque) and an over-limiting demand is
-refused/announced.
+diluate to concentrate channels; an over-limiting demand is announced, never
+clamped.  **Name the stack** — the hardware is a record, not something you
+type:
 ```
-operation { N_cellpairs 100;  current 8.0;  xi 0.9;
-            membraneArea 0.2 m2;  channelThickness 0.5 mm;
-            channelLength 0.4 m;  linearVelocity 0.05 m/s;
-            E_electrodes 1.5; }
+operation { stack EUR2C-7P18;    // a `kind edStack` record in assets/
+            current 2.0;         // OR targetDemin <fraction>; exactly one
+            xi 0.9;
+            E_electrodes 1.5;
+            limitingCurrent { model GeraldesAfonso2010; }   // optional; see below
+}
 ```
-Examples: `ed01_nacl_desalination`, `ed02_over_limiting_current`.
+The record supplies the cell pairs, the active area, the channel (height,
+width, spacer porosity and type), the hydraulic passes, the stack's own
+Sherwood correlation and its limits.  **Declaring any of `N_cellpairs`,
+`membraneArea`, `channelThickness`, `channelLength`, `spacerPorosity`,
+`hydraulicPasses` or `linearVelocity` beside `stack` REFUSES by name**, and an
+unknown stack name refuses with the registered list.
+
+**The membrane pair may be the record's or the case's, and the RECORD decides
+which.**  A record whose source names the pair (`EUR2C-7P18`) carries
+`membranes <name>;` and a case that also declares `membrane` is refused; a
+record whose source names none (`EurodiaED-100P-50`) leaves the field out and
+a case that declares no `membrane` is refused.  Neither side guesses.
+
+**The channel length may be absent from the record**, in which case it is
+`activeArea / (cellPairs * channelWidth)`, derived and printed as derived.
+
+A record may declare the Reynolds band its correlation was fitted over
+(`massTransfer { validity { Re ( 50 86 ); } }`); a run outside it is
+ANNOUNCED as an extrapolation, never refused.
+
+**There is no crossflow velocity to declare.**  It is derived from the diluate
+flow on the inlet stream and printed with its arithmetic:
+`u = Q_diluate / ((cellPairs/hydraulicPasses) * channelWidth * channelHeight)`
+(superficial; the interstitial value `u/spacerPorosity` is printed beside it),
+and the flow path is `channelLength * hydraulicPasses`.  Change the feed and
+the velocity, the Reynolds number and the limiting current all follow.
+
+`activeArea` on the record is **the cell-pair area of the whole stack**: a
+50 m² stack has 50 m² of anion-exchange membrane AND 50 m² of cation-exchange
+membrane.  The area per cell pair, the area per membrane kind and the total
+membrane area are derived and announced; the current density is taken on the
+area one cell pair presents.
+
+**`limitingCurrent { model ... }`** selects how `i_lim` is found.  Accepted:
+
+* `GeraldesAfonso2010` — the PREDICTION (*J. Membr. Sci.* 360 (2010)
+  499–508).  Computes the effective diffusivity of the multi-ionic solution,
+  the film, and the limiting transport number of every ion at each membrane
+  from the ion diffusivities and the diluate composition, then the limiting
+  current of both membranes; the lowest absolute value applies and the run
+  says which membrane set it.  **No transport number is declared.**  Needs a
+  `stack` record (for the Sherwood correlation) and a curated diffusivity for
+  every ion.
+* `CowanBrown` — the LEGACY single-salt working form on the membrane record's
+  declared `t_cu`, with a Lévêque estimate for `k` and a declared
+  `linearVelocity`.  This is what a case with no `stack` gets.
+
+Omit the block and the engine picks `GeraldesAfonso2010` when it can and
+`CowanBrown` otherwise, **announcing which and why** in both cases.  Asking
+for `GeraldesAfonso2010` where it cannot be evaluated refuses by name.
+
+Declare `transport { liquid { viscosity { model Vogel; } } }` in the case's
+`thermoPhysPropDict` if you want the ion diffusivities corrected from their
+curated 25 °C reference to the run temperature (Stokes–Einstein); with no
+model declared there is no correction and the run says so.
+
+Examples: `ed01_nacl_desalination` and `ed02_over_limiting_current` (the
+legacy route, no stack record), `ed03_stack_record` (a bench stack as a record, the
+derived velocity), `ed04_limiting_current_multiionic` (the prediction against
+a published measurement), `ed05_industrial_stack` (an industrial stack whose
+record names no membrane pair and stores no channel length, two hydraulic
+passes).
 
 # Outer drivers (in `outerDict`)
 

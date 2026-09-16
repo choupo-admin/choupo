@@ -1,0 +1,108 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict --- ED05 an INDUSTRIAL stack beside the bench one
+  ===========================================================================
+
+  ed03 runs a BENCH stack: seven cell pairs, 0.140 m2 of cell-pair area,
+  175 L/h, and it removes 2.7 % of the diluate's sodium in one pass.  This
+  is the same machine grown up:
+
+      stack     EurodiaED-100P-50;   // 100 cell pairs, 50 m2, TWO passes
+      membrane  CMX_AMX;             // the CASE names the pair -- see below
+      targetDemin 0.5;               // and Choupo solves for the current
+
+  a 100-cell-pair, 50 m2 industrial Eurodia unit that Vitor Geraldes has
+  OPERATED.  Its record's facts are his own recollection, marked `origin
+  measured; reviewStatus unverified;` and announced on every run -- they
+  are not a data sheet.
+
+  THREE THINGS A STUDENT SHOULD READ OFF THE LOG.
+
+  (1) THE CASE NAMES THE MEMBRANE PAIR, and the record does not.  He did
+      not say which membranes the unit carried, so the record leaves the
+      field out -- a stack FRAME takes any ion-exchange pair, exactly as a
+      laboratory flat-sheet cell takes any coupon.  Omit `membrane` here
+      and the run REFUSES by name.  (ed03's EUR2C-7P18 DOES name its pair,
+      and declaring one beside it refuses instead.  The record decides
+      which way the refusal points; the engine never guesses a pair.)
+
+  (2) THE CHANNEL LENGTH IS DERIVED, AND SAYS SO.  Nobody stated the
+      channel width or its length.  Exactly ONE of the two is stored, and
+      it is the ESTIMATE: `channelWidth 0.298 m`, back-calculated from a
+      superficial velocity of 0.080 m/s at the design flow of 3000 L/h,
+      with a note saying it must be verified by measuring a membrane
+      sheet.  The length is then activeArea/(cellPairs x channelWidth) =
+      1.680 m, derived where it is used and printed as DERIVED.  Storing a
+      back-calculated length beside a back-calculated width would be two
+      homes for one guess, and the second would read like a declaration.
+
+  (3) TWO HYDRAULIC PASSES.  100 cell pairs over 2 passes is 50 channels
+      side by side, so the same 3000 L/h gives twice the velocity it would
+      in a single pass -- and a parcel of diluate travels 1.680 m twice,
+      3.360 m in all.  The pass belongs to the EQUIPMENT (Vitor's ruling),
+      so it is on the record and a case that declares it is refused.
+
+  WHY THE MASS-TRANSFER CORRELATION MAY BE USED HERE.  It is the BENCH
+  stack's, fitted over Re 50-86.  At the 0.066-0.110 m/s band that bench
+  stack was run at, this stack sits at Re 46-77 on its 0.70 mm channel
+  against the bench stack's 51-84 on its 0.77 mm -- the two bands very
+  nearly coincide, because Re is built on the channel height and the two
+  spacer thicknesses very nearly coincide.  So the fit is APPLIED INSIDE
+  its own band, not extrapolated.  The record declares that band
+  (`validity { Re ( 50 86 ); }`) and the engine ANNOUNCES any run that
+  leaves it; at the design flow this case sits at Re 62.8.
+
+  The permission is about the REYNOLDS NUMBER only: this spacer is ZIG-ZAG
+  and the bench stack's was a MESH, no correlation in this tree selects on
+  the spacer type, and the record says so.
+
+      diluateFeed     ->  +-----------------------+ -> diluate
+                          | EurodiaED-100P-50     |
+      concentrateFeed ->  | 100 pairs, CMX/AMX    | -> concentrate
+                          +-----------------------+
+                                   | (power, energy wire)
+                                   v
+                              rectifier (electricLoad)
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        edStack;
+        type        electrodialysisStack;
+        inputs      ( diluateFeed  concentrateFeed );
+        outputs     ( diluate  concentrate );
+
+        operation
+        {
+            stack             EurodiaED-100P-50;   // the HARDWARE, as a record
+            membrane          CMX_AMX;             // the record names no pair -- the CASE must
+            targetDemin       0.5;                 // solve the current for 50 % demineralisation
+            xi                0.9;
+            E_electrodes      2.0;                 // V (raw SI) -- lumped electrode overpotential (announced)
+        }
+
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+    {
+        name        rectifier;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from edStack.power;  kind work;  target W_shaft; }
+        );
+    }
+);

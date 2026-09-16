@@ -1,0 +1,299 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  ED1conIn               F                0.00223622618722 1e-4
+stream  ED1conIn               T                293.15           1e-4
+stream  ED1conOut              F                0.00223625230518 1e-4
+stream  ED1conOut              T                293.15           1e-4
+stream  ED1dilIn               F                0.00223622618722 1e-4
+stream  ED1dilIn               T                293.15           1e-4
+stream  ED1dilOut              F                0.00223620006926 1e-4
+stream  ED1dilOut              T                293.15           1e-4
+stream  ED2conIn               F                0.00269889671236 1e-4
+stream  ED2conIn               T                293.15           1e-4
+stream  ED2conOut              F                0.00269892283032 1e-4
+stream  ED2conOut              T                293.15           1e-4
+stream  ED2dilIn               F                0.00269889671236 1e-4
+stream  ED2dilIn               T                293.15           1e-4
+stream  ED2dilOut              F                0.0026988705944  1e-4
+stream  ED2dilOut              T                293.15           1e-4
+stream  ED3conIn               F                0.00354713017778 1e-4
+stream  ED3conIn               T                293.15           1e-4
+stream  ED3conOut              F                0.00354715629574 1e-4
+stream  ED3conOut              T                293.15           1e-4
+stream  ED3dilIn               F                0.00354713017778 1e-4
+stream  ED3dilIn               T                293.15           1e-4
+stream  ED3dilOut              F                0.00354710405982 1e-4
+stream  ED3dilOut              T                293.15           1e-4
+stream  ED4conIn               F                0.00223669542333 1e-4
+stream  ED4conIn               T                293.15           1e-4
+stream  ED4conOut              F                0.00223672154129 1e-4
+stream  ED4conOut              T                293.15           1e-4
+stream  ED4dilIn               F                0.00223669542333 1e-4
+stream  ED4dilIn               T                293.15           1e-4
+stream  ED4dilOut              F                0.00223666930537 1e-4
+stream  ED4dilOut              T                293.15           1e-4
+stream  ED5conIn               F                0.00269946607    1e-4
+stream  ED5conIn               T                293.15           1e-4
+stream  ED5conOut              F                0.00269949218796 1e-4
+stream  ED5conOut              T                293.15           1e-4
+stream  ED5dilIn               F                0.00269946607    1e-4
+stream  ED5dilIn               T                293.15           1e-4
+stream  ED5dilOut              F                0.00269943995204 1e-4
+stream  ED5dilOut              T                293.15           1e-4
+stream  ED6conIn               F                0.00354788566389 1e-4
+stream  ED6conIn               T                293.15           1e-4
+stream  ED6conOut              F                0.00354791178185 1e-4
+stream  ED6conOut              T                293.15           1e-4
+stream  ED6dilIn               F                0.00354788566389 1e-4
+stream  ED6dilIn               T                293.15           1e-4
+stream  ED6dilOut              F                0.00354785954593 1e-4
+stream  ED6dilOut              T                293.15           1e-4
+kpi     ED1                    D_eff            9.13996712766e-10 1e-4
+kpi     ED1                    E_mem_pair       0                1e-4
+kpi     ED1                    I                0.2              1e-4
+kpi     ED1                    N_cellpairs      7                1e-4
+kpi     ED1                    R_pair           0.64336423542    1e-4
+kpi     ED1                    Re               50.4200300187    1e-4
+kpi     ED1                    Sc               1095.2540719     1e-4
+kpi     ED1                    Sh               20.7366910402    1e-4
+kpi     ED1                    U                0.900709929589   1e-4
+kpi     ED1                    W_electric       0.180141985918   1e-4
+kpi     ED1                    W_electric_kW    0.000180141985918 1e-4
+kpi     ED1                    current_efficiency 0.9              1e-4
+kpi     ED1                    demin_ratio      0.0345653460499  1e-4
+kpi     ED1                    film_thickness   3.71322501989e-05 1e-4
+kpi     ED1                    i_density        10               1e-4
+kpi     ED1                    i_lim            37.5992455228    1e-4
+kpi     ED1                    i_lim_aem        -54.8544233548   1e-4
+kpi     ED1                    i_lim_cem        34.3             0.13     anchor
+kpi     ED1                    i_over_ilim      0.265962783586   1e-4
+kpi     ED1                    k_c_eff          2.46146330446e-05 1e-4
+kpi     ED1                    specific_energy_kWh_per_m3 0.0012423585235  1e-4
+kpi     ED1                    t_lim_aem_Cl     0.656957928803   1e-4
+kpi     ED1                    t_lim_aem_Mg     0                1e-4
+kpi     ED1                    t_lim_aem_SO4    0.343042071197   1e-4
+kpi     ED1                    t_lim_cem_Cl     0                1e-4
+kpi     ED1                    t_lim_cem_Mg     1                1e-4
+kpi     ED1                    t_lim_cem_SO4    0                1e-4
+kpi     ED1                    u_interstitial   0.0728331973153  1e-4
+kpi     ED1                    u_superficial    0.0655498775838  1e-4
+kpi     ED2                    D_eff            9.13996712766e-10 1e-4
+kpi     ED2                    E_mem_pair       0                1e-4
+kpi     ED2                    I                0.2              1e-4
+kpi     ED2                    N_cellpairs      7                1e-4
+kpi     ED2                    R_pair           0.640096132354   1e-4
+kpi     ED2                    Re               60.8517603659    1e-4
+kpi     ED2                    Sc               1095.2540719     1e-4
+kpi     ED2                    Sh               22.7810889775    1e-4
+kpi     ED2                    U                0.896134585296   1e-4
+kpi     ED2                    W_electric       0.179226917059   1e-4
+kpi     ED2                    W_electric_kW    0.000179226917059 1e-4
+kpi     ED2                    current_efficiency 0.9              1e-4
+kpi     ED2                    demin_ratio      0.0284880031283  1e-4
+kpi     ED2                    film_thickness   3.37999645567e-05 1e-4
+kpi     ED2                    i_density        10               1e-4
+kpi     ED2                    i_lim            41.5262780846    1e-4
+kpi     ED2                    i_lim_aem        -60.5836634945   1e-4
+kpi     ED2                    i_lim_cem        37.6             0.13     anchor
+kpi     ED2                    i_over_ilim      0.240811372009   1e-4
+kpi     ED2                    k_c_eff          2.7041351219e-05 1e-4
+kpi     ED2                    specific_energy_kWh_per_m3 0.00102415381173 1e-4
+kpi     ED2                    t_lim_aem_Cl     0.656957928803   1e-4
+kpi     ED2                    t_lim_aem_Mg     0                1e-4
+kpi     ED2                    t_lim_aem_SO4    0.343042071197   1e-4
+kpi     ED2                    t_lim_cem_Cl     0                1e-4
+kpi     ED2                    t_lim_cem_Mg     1                1e-4
+kpi     ED2                    t_lim_cem_SO4    0                1e-4
+kpi     ED2                    u_interstitial   0.0879021346887  1e-4
+kpi     ED2                    u_superficial    0.0791119212198  1e-4
+kpi     ED3                    D_eff            9.13996712766e-10 1e-4
+kpi     ED3                    E_mem_pair       0                1e-4
+kpi     ED3                    I                0.2              1e-4
+kpi     ED3                    N_cellpairs      7                1e-4
+kpi     ED3                    R_pair           0.633026889681   1e-4
+kpi     ED3                    Re               79.9765993306    1e-4
+kpi     ED3                    Sc               1095.2540719     1e-4
+kpi     ED3                    Sh               26.1167645599    1e-4
+kpi     ED3                    U                0.886237645553   1e-4
+kpi     ED3                    W_electric       0.177247529111   1e-4
+kpi     ED3                    W_electric_kW    0.000177247529111 1e-4
+kpi     ED3                    current_efficiency 0.9              1e-4
+kpi     ED3                    demin_ratio      0.0214257256232  1e-4
+kpi     ED3                    film_thickness   2.94829781933e-05 1e-4
+kpi     ED3                    i_density        10               1e-4
+kpi     ED3                    i_lim            48.1620077872    1e-4
+kpi     ED3                    i_lim_aem        -70.2646855819   1e-4
+kpi     ED3                    i_lim_cem        42.9             0.13     anchor
+kpi     ED3                    i_over_ilim      0.207632539826   1e-4
+kpi     ED3                    k_c_eff          3.10008272154e-05 1e-4
+kpi     ED3                    specific_energy_kWh_per_m3 0.000770641430963 1e-4
+kpi     ED3                    t_lim_aem_Cl     0.656957928803   1e-4
+kpi     ED3                    t_lim_aem_Mg     0                1e-4
+kpi     ED3                    t_lim_aem_SO4    0.343042071197   1e-4
+kpi     ED3                    t_lim_cem_Cl     0                1e-4
+kpi     ED3                    t_lim_cem_Mg     1                1e-4
+kpi     ED3                    t_lim_cem_SO4    0                1e-4
+kpi     ED3                    u_interstitial   0.115528519866   1e-4
+kpi     ED3                    u_superficial    0.103975667879   1e-4
+kpi     ED4                    D_eff            9.13996712766e-10 1e-4
+kpi     ED4                    E_mem_pair       0                1e-4
+kpi     ED4                    I                0.2              1e-4
+kpi     ED4                    N_cellpairs      7                1e-4
+kpi     ED4                    R_pair           0.336170937339   1e-4
+kpi     ED4                    Re               50.4200300187    1e-4
+kpi     ED4                    Sc               1095.2540719     1e-4
+kpi     ED4                    Sh               20.7366910402    1e-4
+kpi     ED4                    U                0.470639312275   1e-4
+kpi     ED4                    W_electric       0.094127862455   1e-4
+kpi     ED4                    W_electric_kW    9.4127862455e-05 1e-4
+kpi     ED4                    current_efficiency 0.9              1e-4
+kpi     ED4                    demin_ratio      0.0173381254517  1e-4
+kpi     ED4                    film_thickness   3.71322501989e-05 1e-4
+kpi     ED4                    i_density        10               1e-4
+kpi     ED4                    i_lim            74.9579841447    1e-4
+kpi     ED4                    i_lim_aem        -109.357965537   1e-4
+kpi     ED4                    i_lim_cem        71.2             0.13     anchor
+kpi     ED4                    i_over_ilim      0.133408070056   1e-4
+kpi     ED4                    k_c_eff          2.46146330446e-05 1e-4
+kpi     ED4                    specific_energy_kWh_per_m3 0.000649157672065 1e-4
+kpi     ED4                    t_lim_aem_Cl     0.656957928803   1e-4
+kpi     ED4                    t_lim_aem_Mg     0                1e-4
+kpi     ED4                    t_lim_aem_SO4    0.343042071197   1e-4
+kpi     ED4                    t_lim_cem_Cl     0                1e-4
+kpi     ED4                    t_lim_cem_Mg     1                1e-4
+kpi     ED4                    t_lim_cem_SO4    0                1e-4
+kpi     ED4                    u_interstitial   0.0728331973153  1e-4
+kpi     ED4                    u_superficial    0.0655498775838  1e-4
+kpi     ED5                    D_eff            9.13996712766e-10 1e-4
+kpi     ED5                    E_mem_pair       0                1e-4
+kpi     ED5                    I                0.2              1e-4
+kpi     ED5                    N_cellpairs      7                1e-4
+kpi     ED5                    R_pair           0.334526411069   1e-4
+kpi     ED5                    Re               60.8517603659    1e-4
+kpi     ED5                    Sc               1095.2540719     1e-4
+kpi     ED5                    Sh               22.7810889775    1e-4
+kpi     ED5                    U                0.468336975497   1e-4
+kpi     ED5                    W_electric       0.0936673950994  1e-4
+kpi     ED5                    W_electric_kW    9.36673950994e-05 1e-4
+kpi     ED5                    current_efficiency 0.9              1e-4
+kpi     ED5                    demin_ratio      0.0142894611436  1e-4
+kpi     ED5                    film_thickness   3.37999645567e-05 1e-4
+kpi     ED5                    i_density        10               1e-4
+kpi     ED5                    i_lim            82.788338069     1e-4
+kpi     ED5                    i_lim_aem        -120.78185299    1e-4
+kpi     ED5                    i_lim_cem        81.9             0.13     anchor
+kpi     ED5                    i_over_ilim      0.120789959471   1e-4
+kpi     ED5                    k_c_eff          2.7041351219e-05 1e-4
+kpi     ED5                    specific_energy_kWh_per_m3 0.000535242257693 1e-4
+kpi     ED5                    t_lim_aem_Cl     0.656957928803   1e-4
+kpi     ED5                    t_lim_aem_Mg     0                1e-4
+kpi     ED5                    t_lim_aem_SO4    0.343042071197   1e-4
+kpi     ED5                    t_lim_cem_Cl     0                1e-4
+kpi     ED5                    t_lim_cem_Mg     1                1e-4
+kpi     ED5                    t_lim_cem_SO4    0                1e-4
+kpi     ED5                    u_interstitial   0.0879021346887  1e-4
+kpi     ED5                    u_superficial    0.0791119212198  1e-4
+kpi     ED6                    D_eff            9.13996712766e-10 1e-4
+kpi     ED6                    E_mem_pair       0                1e-4
+kpi     ED6                    I                0.2              1e-4
+kpi     ED6                    N_cellpairs      7                1e-4
+kpi     ED6                    R_pair           0.331289290924   1e-4
+kpi     ED6                    Re               79.9765993306    1e-4
+kpi     ED6                    Sc               1095.2540719     1e-4
+kpi     ED6                    Sh               26.1167645599    1e-4
+kpi     ED6                    U                0.463805007294   1e-4
+kpi     ED6                    W_electric       0.0927610014587  1e-4
+kpi     ED6                    W_electric_kW    9.27610014587e-05 1e-4
+kpi     ED6                    current_efficiency 0.9              1e-4
+kpi     ED6                    demin_ratio      0.0107579696024  1e-4
+kpi     ED6                    film_thickness   2.94829781933e-05 1e-4
+kpi     ED6                    i_density        10               1e-4
+kpi     ED6                    i_lim            95.9201412953    1e-4
+kpi     ED6                    i_lim_aem        -139.940149482   1e-4
+kpi     ED6                    i_lim_cem        93.5             0.13     anchor
+kpi     ED6                    i_over_ilim      0.10425339105    1e-4
+kpi     ED6                    k_c_eff          3.10008272154e-05 1e-4
+kpi     ED6                    specific_energy_kWh_per_m3 0.000403308702019 1e-4
+kpi     ED6                    t_lim_aem_Cl     0.656957928803   1e-4
+kpi     ED6                    t_lim_aem_Mg     0                1e-4
+kpi     ED6                    t_lim_aem_SO4    0.343042071197   1e-4
+kpi     ED6                    t_lim_cem_Cl     0                1e-4
+kpi     ED6                    t_lim_cem_Mg     1                1e-4
+kpi     ED6                    t_lim_cem_SO4    0                1e-4
+kpi     ED6                    u_interstitial   0.115528519866   1e-4
+kpi     ED6                    u_superficial    0.103975667879   1e-4
+#
+#  THE i_lim_cem ROWS ABOVE ARE ANCHORS, not self-recorded values: each is the
+#  MEASURED limiting current density of the corresponding row of Table 4 of
+#  V. Geraldes & M.D. Afonso, J. Membr. Sci. 360 (2010) 499-508 (MgCl2 + MgSO4,
+#  20 C), in A/m2.  The band 0.13 is the LARGEST average relative deviation the
+#  paper itself reports between its model and its data (13 % for MgCl2, 9 % for
+#  MgSO4 + MgCl2, section 4.3); it is the paper's number, not one chosen here.
+#  Regression is pinned separately and tightly by the `i_lim` row of each unit.
+#  What the engine returns today, against the measurement:
+#      ED1  37.599 vs 34.3   + 9.6 %
+#      ED2  41.526 vs 37.6   +10.4 %
+#      ED3  48.162 vs 42.9   +12.3 %
+#      ED4  74.958 vs 71.2   + 5.3 %
+#      ED5  82.788 vs 81.9   + 1.1 %
+#      ED6  95.920 vs 93.5   + 2.6 %
+#  -- average 6.9 %, against the paper's own reported 9 % for this system.
+kpi     ED1                    C_ion_Cl         4.68999999973    1e-4
+kpi     ED1                    C_ion_Mg         4.68999999973    1e-4
+kpi     ED1                    C_ion_SO4        2.34499999986    1e-4
+kpi     ED1                    D_ion_Cl         1.77426135022e-09 1e-4
+kpi     ED1                    D_ion_Mg         6.17058380913e-10 1e-4
+kpi     ED1                    D_ion_SO4        9.26461591739e-10 1e-4
+kpi     ED1                    stokesEinsteinFactor 0.874020369565   1e-4
+kpi     ED2                    C_ion_Cl         4.71499999984    1e-4
+kpi     ED2                    C_ion_Mg         4.71499999984    1e-4
+kpi     ED2                    C_ion_SO4        2.35749999992    1e-4
+kpi     ED2                    D_ion_Cl         1.77426135022e-09 1e-4
+kpi     ED2                    D_ion_Mg         6.17058380913e-10 1e-4
+kpi     ED2                    D_ion_SO4        9.26461591739e-10 1e-4
+kpi     ED2                    stokesEinsteinFactor 0.874020369565   1e-4
+kpi     ED3                    C_ion_Cl         4.77000000029    1e-4
+kpi     ED3                    C_ion_Mg         4.77000000029    1e-4
+kpi     ED3                    C_ion_SO4        2.38500000014    1e-4
+kpi     ED3                    D_ion_Cl         1.77426135022e-09 1e-4
+kpi     ED3                    D_ion_Mg         6.17058380913e-10 1e-4
+kpi     ED3                    D_ion_SO4        9.26461591739e-10 1e-4
+kpi     ED3                    stokesEinsteinFactor 0.874020369565   1e-4
+kpi     ED4                    C_ion_Cl         9.34999999945    1e-4
+kpi     ED4                    C_ion_Mg         9.34999999945    1e-4
+kpi     ED4                    C_ion_SO4        4.67499999973    1e-4
+kpi     ED4                    D_ion_Cl         1.77426135022e-09 1e-4
+kpi     ED4                    D_ion_Mg         6.17058380913e-10 1e-4
+kpi     ED4                    D_ion_SO4        9.26461591739e-10 1e-4
+kpi     ED4                    stokesEinsteinFactor 0.874020369565   1e-4
+kpi     ED5                    C_ion_Cl         9.39999999968    1e-4
+kpi     ED5                    C_ion_Mg         9.39999999968    1e-4
+kpi     ED5                    C_ion_SO4        4.69999999984    1e-4
+kpi     ED5                    D_ion_Cl         1.77426135022e-09 1e-4
+kpi     ED5                    D_ion_Mg         6.17058380913e-10 1e-4
+kpi     ED5                    D_ion_SO4        9.26461591739e-10 1e-4
+kpi     ED5                    stokesEinsteinFactor 0.874020369565   1e-4
+kpi     ED6                    C_ion_Cl         9.50000000057    1e-4
+kpi     ED6                    C_ion_Mg         9.50000000057    1e-4
+kpi     ED6                    C_ion_SO4        4.75000000029    1e-4
+kpi     ED6                    D_ion_Cl         1.77426135022e-09 1e-4
+kpi     ED6                    D_ion_Mg         6.17058380913e-10 1e-4
+kpi     ED6                    D_ion_SO4        9.26461591739e-10 1e-4
+kpi     ED6                    stokesEinsteinFactor 0.874020369565   1e-4
+#
+#  THE i_lim_cem ROWS ABOVE ARE ANCHORS, not self-recorded values: each is the
+#  MEASURED limiting current density of the corresponding row of Table 4 of
+#  V. Geraldes & M.D. Afonso, J. Membr. Sci. 360 (2010) 499-508 (MgCl2 + MgSO4,
+#  20 C), in A/m2.  The band 0.13 is the LARGEST average relative deviation the
+#  paper itself reports between its model and its data (13 % for MgCl2, 9 % for
+#  MgSO4 + MgCl2, section 4.3); it is the paper's number, not one chosen here.
+#  Regression is pinned separately and tightly by the `i_lim` row of each unit.
+#  What the engine returns today, against the measurement:
+#      ED1  37.599 vs 34.3   + 9.6 %
+#      ED2  41.526 vs 37.6   +10.4 %
+#      ED3  48.162 vs 42.9   +12.3 %
+#      ED4  74.958 vs 71.2   + 5.3 %
+#      ED5  82.788 vs 81.9   + 1.1 %
+#      ED6  95.920 vs 93.5   + 2.6 %
+#  -- average 6.9 %, against the paper's own reported 9 % for this system.

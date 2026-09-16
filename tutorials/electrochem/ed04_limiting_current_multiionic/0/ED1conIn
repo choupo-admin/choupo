@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water    8.048714149 kmol/h;
+    Mg    0.00068005 kmol/h;
+    Cl    0.00068005 kmol/h;
+    SO4    0.000340025 kmol/h;
+}
+
+T               293.15 K;
+P               150000 Pa;

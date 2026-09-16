@@ -2090,6 +2090,77 @@ that reads it; `module` beside inline geometry refuses by name.  Gate:
 beside the sheet as a measurement).  Record:
 [`docs/design/a-module-is-a-record.md`](docs/design/a-module-is-a-record.md).
 
+**A STACK IS A RECORD, AND ITS LIMITING CURRENT IS A PREDICTION (2026-09-16).**
+Two DECLARED numbers the engine could not check became two it DERIVES and
+prints.  `stack <name>;` in an `electrodialysisStack` names a `kind edStack`
+record in `assets/` (`EUR2C-7P18`, the bench unit of Geraldes & Afonso,
+J. Membr. Sci. 360 (2010) 499-508) carrying the membrane pair, the cell pairs,
+the active area, the channel and spacer, the hydraulic passes, the stack's OWN
+Sherwood correlation and its limits; `membrane`, `N_cellpairs`,
+`membraneArea`, `channelThickness`, `channelLength`, `spacerPorosity`,
+`hydraulicPasses` or `linearVelocity` beside it REFUSE by name, and an unknown
+stack name refuses with the registered list.  **`linearVelocity` was a SECOND
+HOME** -- the unit already has the diluate flow on its inlet stream, so
+`u = Q/((cellPairs/passes) W h)` is a consequence, printed with its arithmetic
+and SUPERFICIAL because that is what the record's correlation was fitted on
+(`velocityBasis`, declared, never guessed).  Vitor's two rulings, verbatim in
+the record: **`activeArea` IS THE CELL-PAIR AREA** (a 50 m2 stack has 50 m2 of
+anionic membrane AND 50 m2 of cationic; the three other areas are derived and
+announced, and a record storing one is refused) and **THE PASS BELONGS TO THE
+EQUIPMENT**.  `limitingCurrent { model GeraldesAfonso2010 | CowanBrown; }`:
+the first **REMOVES A PARAMETER** -- the linearised Nernst-Planck film gives
+the limiting transport numbers explicitly from the ion diffusivities and the
+diluate composition (Eqs. 12/13) and i_lim in closed form (Eq. 15), per
+membrane, lowest absolute value applying, so no `t_cu` is read and the
+record's declared one is ANNOUNCED beside it (the `dH_rxn` posture).  The
+default is the prediction only where a stack record supplies the correlation
+AND every ion resolves a diffusivity -- otherwise the legacy route, ANNOUNCED
+with which of the three was missing, which is why ed01/ed02 are byte-identical.
+Three traps: **a guard whose only case satisfies it is a guard nothing tests**
+(the record has ONE hydraulic pass, so a sabotage dropping the pass division
+survived every witness until the gate built a 7-pass twin); a sabotage that
+changes no arithmetic proves nothing (an electroneutral feed has equal cation
+and anion equivalent totals); and **a tolerance tighter than the channel the
+number came through is measuring the serialiser** (an identity asserted at
+1e-12 against a KPI the result JSON carries to 12 figures).  Eq. A13's salt
+decomposition is NOT needed and is not unique from ions alone -- the
+ion-equivalent-fraction form is identical and the gate proves it.  TWO RECORDS, and the second's absences are FACTS: `EurodiaED-100P-50` is
+Vitor's OWN industrial unit (`origin measured; reviewStatus unverified;` --
+a recollection, not a data sheet), and because nobody stated its membrane pair
+or its channel width/length, `membranes` is OPTIONAL (**the RECORD decides
+which way the refusal points** -- a record naming a pair refuses a case that
+also does, one naming none refuses a case that does not) and **EXACTLY ONE of
+width and length is stored** (the width, as the estimate; the length is
+`activeArea/(cellPairs x channelWidth)`, derived and announced -- storing a
+back-calculated length beside a back-calculated width is two homes for one
+guess and the second reads like a declaration).  It declares NO `limits {}`:
+the only figure anyone stated is the DESIGN flow, and **a design point is not
+a ceiling** -- filing it as `flow_max` made the run accuse the stack of
+exceeding its rating while doing exactly what it was designed for.  It borrows
+the bench stack's correlation, and the justification is checkable and is in
+its header: Re is built on the channel height, the two spacer thicknesses very
+nearly coincide (0.70 vs 0.77 mm), so over the same velocity band the two Re
+bands do too (46-77 vs 51-84) and the fit is APPLIED INSIDE its own band, not
+extrapolated -- which is why the band is now EQUIPMENT DATA on the record
+(`massTransfer { validity { Re ( 50 86 ); } }`) and a run outside it is
+ANNOUNCED, never refused.  The permission is about the REYNOLDS NUMBER only:
+that spacer is zigZag and the fit's was mesh, and no correlation here selects
+on `spacerType`.  Witnesses
+`ed03_stack_record`, `ed05_industrial_stack` and
+`ed04_limiting_current_multiionic` (six anchors
+against the paper's Table 4, +1 to +12 %, 6.9 % average against its own
+reported 9 %; two findings recorded not tuned -- the paper's Re at its highest
+flow does not follow from its own flow rate, and the bias is HIGH here where
+the paper's is LOW on its single-salt rows).  NOT done: batch (recirculating)
+electrodialysis and the stacks-in-series witnesses -- and those need NO
+electrical topology, because an electrical stage is a set of cell pairs served
+by ONE electrode pair on its own rectifier, so stages in series are units in
+series and a plant runs them at DECREASING current density because i_lim falls
+as the diluate depletes, which this model now predicts.  Gate:
+`check_ed_stack` (12 by-hand sabotages, two of which did not do what was
+predicted).  Record:
+[`docs/design/a-stack-is-a-record-and-its-limiting-current-is-predicted.md`](docs/design/a-stack-is-a-record-and-its-limiting-current-is-predicted.md).
+
 **AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  An advisory
 carries `where` (the innermost open `AdvisoryFrame`) and `status` (`accepted`
 | `trial`), both stamped by the SINK, not by the sites that raise them; THE

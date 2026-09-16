@@ -81,3 +81,216 @@ Choupo does NOT silently clamp the current (the "no silent crutch" credo): it co
 \goldmore{17}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ed03\_stack\_record}{tutorials/electrochem/ed03\_stack\_record}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (edStack) at (0.0,-0.0) {\textbf{edStack}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (rectifier) at (0.0,-1.7) {\textbf{rectifier}\\[-1pt]{\tiny electricLoad}};
+  \draw[->] ($(edStack.west)+(-1.05,-0.17)$) -- ($(edStack.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {diluateFeed};
+  \draw[->] ($(edStack.west)+(-1.05,0.17)$) -- ($(edStack.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {concentrateFeed};
+  \draw[->] ($(edStack.east)+(0,-0.17)$) -- ($(edStack.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {diluate};
+  \draw[->] ($(edStack.east)+(0,0.17)$) -- ($(edStack.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {concentrate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Electrodialysis: the stack named as a record, the crossflow velocity derived}
+\begin{tutnarrative}
+ED03 the stack is a RECORD, and the velocity is derived
+
+The SAME NaCl chemistry as ed01 (0.1 mol/kg diluate against a 0.5 mol/kg concentrate, Neosepta CMX/AMX), run through a stack that the case NAMES instead of typing:
+
+-- the bench unit of Geraldes \& Afonso, J. Membr. Sci. 360 (2010) 499-508, as a `kind edStack` record in data/standards/assets/. What the record supplies, and what the operation therefore no longer declares:
+
+membranes CMX\_AMX (the IEM pair) cellPairs 7 activeArea 0.140 m2 THE CELL-PAIR AREA OF THE WHOLE STACK channel 0.77 mm x 0.114 m x 0.175 m, mesh spacer, porosity 0.90 hydraulicPasses 1 massTransfer Sh = 0.29 Re\textasciicircum{}0.5 Sc\textasciicircum{}0.33 (fitted to THIS stack) limits i\_max, T\_max
+
+WHAT A STUDENT SEES HERE.
+
+(1) THE VELOCITY IS NOT A KNOB. It used to be typed as `linearVelocity 0.05 m/s;` beside a flow the unit already had on its inlet stream -- two homes for one fact, and nothing checked them against each other, while the velocity sets the mass-transfer coefficient and therefore the limiting current. Here the diluate feed carries 175 L/h; the record says seven channels run side by side in one hydraulic pass, each 0.114 m wide and 0.77 mm high; and the run prints u = Q / (n W h) = 175 L/h / (7 x 0.114 x 7.7e-4) = 0.0791 m/s which is the paper's own 0.080 m/s for that flow rate. Change the feed and the velocity follows. Declare a velocity beside `stack` and the run REFUSES by name.
+
+(2) VITOR'S RULE ON THE AREA, printed as arithmetic: `activeArea` is the CELL-PAIR area of the whole stack, so this 0.140 m2 stack carries 0.140 m2 of cation-exchange membrane AND 0.140 m2 of anion-exchange membrane (0.280 m2 in total), and the current density is taken on the 0.020 m2 one cell pair presents. Nothing stores any of those three derivatives.
+
+(3) THE ESTIMATES ANNOUNCE THEMSELVES. Four values in the record are not in the paper -- the spacer porosity, the Schmidt exponent (which the paper POSTULATES rather than fits), and both limits -- and each prints an `[estimate]` line with the note saying how to verify it, and reaches the end-of-run caveat block.
+
+(4) THE LIMITING CURRENT IS PREDICTED, not read off a declared transport number: the run prints D\_eff, k\_c,eff, the limiting transport number of every ion at each membrane, both membranes' limiting current, and -- because NaCl is a single salt -- the classical Eq. 16 beside the general Eq. 15, which agree.
+
+diluateFeed $\to$ +--------------------+ $\to$ diluate | EUR2C-7P18, 7 pairs| concentrateFeed $\to$ | CMX / AMX | $\to$ concentrate +--------------------+ | (power, energy wire) v rectifier (electricLoad)
+
+A bench stack of seven cell pairs in ONE pass removes a few per cent of the diluate's sodium, which is why a real bench run RECIRCULATES the diluate through a tank. That batch arrangement is not modelled here.
+
+\end{tutnarrative}
+\tutreadme{The same NaCl chemistry as ed01\_nacl\_desalination (0.1 mol/kg diluate against a 0.5 mol/kg concentrate, Neosepta CMX/AMX), run through a stack the case names instead of typing:}
+\tutreadme{EUR2C-7P18 is a kind edStack record in data/standards/assets/ --- the bench unit of Geraldes \& Afonso, $\ast$J. Membr. Sci.$\ast$ 360 (2010) 499--508.}
+\tutreadme{Declaring any of the left-hand keys beside stack refuses by name.}
+\tutreadme{It was a second home. The unit already receives the diluate flow on its inlet stream; the crossflow velocity is that flow divided by the section of the channels running side by side. Nothing checked the two against each other, and the velocity is what sets the mass-transfer coefficient and therefore the limiting current --- so a typo in a velocity moved an answer silently. The run now prints the arithmetic:}
+\tutreadme{175 L/h is one of the paper's own three flow rates, and 0.0791 m/s is its own 0.080 m/s for that flow (section 3.3). The correlation in this record was fitted on the SUPERFICIAL velocity, which the record declares (velocityBasis superficial;) rather than leaving to a reader to guess; the interstitial value is printed beside it so the two are never confused.}
+\tutreadme{Change the feed flow and the velocity, the Reynolds number, the Sherwood number and the limiting current all follow. That is the exercise.}
+\begin{tutgolden}
+\goldrow{stream}{concentrate}{F}{0.00274719599904}
+\goldrow{stream}{concentrate}{T}{298.15}
+\goldrow{stream}{concentrateFeed}{F}{0.00274693481944}
+\goldrow{stream}{concentrateFeed}{T}{298.15}
+\goldrow{stream}{diluate}{F}{0.00270778475096}
+\goldrow{stream}{diluate}{T}{298.15}
+\goldrow{stream}{diluateFeed}{F}{0.00270804593056}
+\goldrow{stream}{diluateFeed}{T}{298.15}
+\goldrow{kpi}{edStack}{D\_eff}{1.60708333333e-09}
+\goldrow{kpi}{edStack}{E\_mem\_pair}{0.0794451090256}
+\goldrow{kpi}{edStack}{I}{2}
+\goldrow{kpi}{edStack}{N\_cellpairs}{7}
+\goldrow{kpi}{edStack}{R\_pair}{0.0636141624947}
+\goldrow{kpi}{edStack}{Re}{68.4552367603}
+\goldmore{37}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ed04\_limiting\_current\_multiionic}{tutorials/electrochem/ed04\_limiting\_current\_multiionic}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ED1) at (0.0,-0.0) {\textbf{ED1}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ED2) at (0.0,-1.7) {\textbf{ED2}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ED3) at (0.0,-3.4) {\textbf{ED3}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ED4) at (0.0,-5.1) {\textbf{ED4}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ED5) at (0.0,-6.8) {\textbf{ED5}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ED6) at (0.0,-8.5) {\textbf{ED6}\\[-1pt]{\tiny electrodialysisStack}};
+  \draw[->] ($(ED1.west)+(-1.05,-0.17)$) -- ($(ED1.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {ED1dilIn};
+  \draw[->] ($(ED1.west)+(-1.05,0.17)$) -- ($(ED1.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {ED1conIn};
+  \draw[->] ($(ED2.west)+(-1.05,-0.17)$) -- ($(ED2.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {ED2dilIn};
+  \draw[->] ($(ED2.west)+(-1.05,0.17)$) -- ($(ED2.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {ED2conIn};
+  \draw[->] ($(ED3.west)+(-1.05,-0.17)$) -- ($(ED3.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {ED3dilIn};
+  \draw[->] ($(ED3.west)+(-1.05,0.17)$) -- ($(ED3.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {ED3conIn};
+  \draw[->] ($(ED4.west)+(-1.05,-0.17)$) -- ($(ED4.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {ED4dilIn};
+  \draw[->] ($(ED4.west)+(-1.05,0.17)$) -- ($(ED4.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {ED4conIn};
+  \draw[->] ($(ED5.west)+(-1.05,-0.17)$) -- ($(ED5.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {ED5dilIn};
+  \draw[->] ($(ED5.west)+(-1.05,0.17)$) -- ($(ED5.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {ED5conIn};
+  \draw[->] ($(ED6.west)+(-1.05,-0.17)$) -- ($(ED6.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {ED6dilIn};
+  \draw[->] ($(ED6.west)+(-1.05,0.17)$) -- ($(ED6.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {ED6conIn};
+  \draw[->] ($(ED1.east)+(0,-0.17)$) -- ($(ED1.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ED1dilOut};
+  \draw[->] ($(ED1.east)+(0,0.17)$) -- ($(ED1.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {ED1conOut};
+  \draw[->] ($(ED2.east)+(0,-0.17)$) -- ($(ED2.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ED2dilOut};
+  \draw[->] ($(ED2.east)+(0,0.17)$) -- ($(ED2.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {ED2conOut};
+  \draw[->] ($(ED3.east)+(0,-0.17)$) -- ($(ED3.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ED3dilOut};
+  \draw[->] ($(ED3.east)+(0,0.17)$) -- ($(ED3.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {ED3conOut};
+  \draw[->] ($(ED4.east)+(0,-0.17)$) -- ($(ED4.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ED4dilOut};
+  \draw[->] ($(ED4.east)+(0,0.17)$) -- ($(ED4.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {ED4conOut};
+  \draw[->] ($(ED5.east)+(0,-0.17)$) -- ($(ED5.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ED5dilOut};
+  \draw[->] ($(ED5.east)+(0,0.17)$) -- ($(ED5.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {ED5conOut};
+  \draw[->] ($(ED6.east)+(0,-0.17)$) -- ($(ED6.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ED6dilOut};
+  \draw[->] ($(ED6.east)+(0,0.17)$) -- ($(ED6.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {ED6conOut};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Limiting current density, MgCl2 + MgSO4: engine against Geraldes \& Afonso (2010) Table 4}
+\begin{tutnarrative}
+ED04 the limiting current, PREDICTED, against a measurement
+
+AN EXTERNAL-REFERENCE CASE. Every number below comes from ONE primary source, end to end, and the case says which:
+
+V. Geraldes, M.D. Afonso, "Limiting current density in the electrodialysis of multi-ionic solutions", J. Membr. Sci. 360 (2010) 499-508, doi:10.1016/j.memsci.2010.05.054.
+
+WHAT IS BEING TESTED. The limiting current density of an ED stack used to be a number a student SUPPLIED, through a counter-ion transport number declared on the membrane record. It is now PREDICTED: the linearised Nernst-Planck equations in the diluate film, closed by electroneutrality, give the limiting transport numbers explicitly from the ion diffusivities and the bulk composition (the paper's Eqs. 12 and 13) and the limiting current in closed form (its Eq. 15). Nothing is fitted to this system; the only equipment datum is the stack's own Sherwood correlation, which the record carries.
+
+THE PROVENANCE OF EVERY NUMBER IN THIS CASE.
+
+THE STACK. `stack EUR2C-7P18;` -- the paper's own bench unit, as a `kind edStack` record in data/standards/assets/ (section 3.1: seven cells, 0.020 m2 per membrane, channels 0.175 x 0.114 m with a 7.7e-4 m net-like spacer; section 3.4: Sh = 0.29 Re\textasciicircum{}0.5 Sc\textasciicircum{}0.33). The record marks its four non-source values as estimates and the run announces each one.
+
+THE SOLUTION. Equimolar-in-equivalents MgCl2 + MgSO4 (the paper's "5 + 5" and "10 + 10 equiv./m3" assays, Tables 2 and 4). Each unit below is declared at the AVERAGE cation concentration of its row -- the paper computes its prediction on the average of the inlet and outlet bulk concentrations along the channel (section 4.1 and the footnote to Table 4), and that average is what Table 4 lists.
+
+THE FLOW. 145, 175 and 230 L/h (section 3.3). The velocity is NOT declared: the engine derives it from this flow and the record's geometry, u = Q/(7 W h), giving 0.0655, 0.0791 and 0.1040 m/s against the paper's own 0.066, 0.080 and 0.11 m/s.
+
+THE TEMPERATURE. 293.15 K (20 C, section 3.3). The ion diffusivities curated in data/standards/species/ are referenced at 25 C; the engine corrects them to 20 C through Stokes-Einstein on the declared liquid-viscosity model, which is exactly how the paper's Table 3 was built, and the run prints the corrected values.
+
+THE CURRENT. 0.2 A (10 A/m2) on every unit -- FAR below every limiting current here. This case measures i\_lim; it does not approach it. The applied current changes nothing about i\_lim, which is computed from the diluate bulk composition.
+
+THE SIX UNITS ARE THE SIX MgCl2 + MgSO4 ROWS OF TABLE 4:
+
+unit flow Re C\_1,in C\_1,average i\_lim (paper) (equiv./m3) (equiv./m3) (A/m2) ED1 145 L/h 50.0 10.0 9.38 34.3 ED2 175 L/h 61.0 10.0 9.43 37.6 ED3 230 L/h 86.0 10.0 9.54 42.9 ED4 145 L/h 50.0 20.0 18.70 71.2 ED5 175 L/h 61.0 20.0 18.80 81.9 ED6 230 L/h 86.0 20.0 19.00 93.5
+
+The `i\_lim\_cem` golden rows are ANCHORS against that last column -- a MEASUREMENT, not a self-recorded value -- with a band of 13 \%, which is the largest average relative deviation the paper itself reports between its model and its data (13 \% for MgCl2, 9 \% for MgSO4 + MgCl2, section 4.3). `i\_lim` is pinned separately as an ordinary regression row. What the engine actually returns, and the two findings that came out of it, are in the case README and in docs/design/a-stack-is-a-record-and-its-limiting-current-is-predicted.md.
+
+The diluate and the concentrate carry the SAME solution here, which is the paper's own arrangement (section 3.3: both streams were recycled back to a single 6 L tank to hold the concentrations nearly constant), so the Nernst back-EMF is zero by construction.
+
+\end{tutnarrative}
+\tutreadme{An external-reference case: every number in it comes from one primary source, end to end, and the case says which.}
+\tutreadme{> V. Geraldes, M.D. Afonso, $\ast$"Limiting current density in the electrodialysis > of multi-ionic solutions"$\ast$, J. Membr. Sci. 360 (2010) 499--508, > doi:10.1016/j.memsci.2010.05.054.}
+\tutreadme{The limiting current density used to be computed from a declared counter-ion transport number --- a parameter the student supplied, on a membrane record, measured in a different solution at a different temperature. It is now predicted. The Nernst--Planck equations in the diluate film, linearised on nearly-linear profiles and closed by electroneutrality, give the limiting transport numbers explicitly from the ion diffusivities and the bulk composition (Eqs. 12/13) and the limiting current in closed form (Eq. 15).}
+\tutreadme{This removes a parameter. Nothing in the prediction is fitted to this system; the only equipment datum is the stack's own Sherwood correlation, which lives on the stack record where it belongs.}
+\tutreadme{Average 6.9 \%, against the 9 \% the paper reports for this system (section 4.3). The i\_lim\_cem golden rows are anchors against the measured column with a band of 13 \% --- the larger of the two average relative deviations the paper itself reports, $\ast$its$\ast$ number and not one chosen here. i\_lim is pinned separately and tightly as an ordinary regression row.}
+\tutreadme{1. The paper's own Reynolds number at its highest flow does not follow from its own flow rate. Section 3.3 lists 145, 175 and 230 L/h against superficial velocities 0.066, 0.080 and 0.11 m/s and Reynolds numbers 50, 61 and 86. The first two close exactly on the stated geometry with all seven diluate channels in parallel (0.0655 and 0.0791 m/s); the third does not --- the same division gives 0.1040 m/s, and 86/61 = 1.41 is not 230/175 = 1.31 either. The engine derives the velocity from the flow, so ED3 and ED6 run at Re 79.98 rather than 86, which lowers their predicted i\_lim by 3.7 \% relative to a run at the paper's printed Re. Nothing was adjusted to close the gap: the case declares the flow, which is the measurable.}
+\begin{tutgolden}
+\goldrow{stream}{ED1conIn}{F}{0.00223622618722}
+\goldrow{stream}{ED1conIn}{T}{293.15}
+\goldrow{stream}{ED1conOut}{F}{0.00223625230518}
+\goldrow{stream}{ED1conOut}{T}{293.15}
+\goldrow{stream}{ED1dilIn}{F}{0.00223622618722}
+\goldrow{stream}{ED1dilIn}{T}{293.15}
+\goldrow{stream}{ED1dilOut}{F}{0.00223620006926}
+\goldrow{stream}{ED1dilOut}{T}{293.15}
+\goldrow{stream}{ED2conIn}{F}{0.00269889671236}
+\goldrow{stream}{ED2conIn}{T}{293.15}
+\goldrow{stream}{ED2conOut}{F}{0.00269892283032}
+\goldrow{stream}{ED2conOut}{T}{293.15}
+\goldrow{stream}{ED2dilIn}{F}{0.00269889671236}
+\goldrow{stream}{ED2dilIn}{T}{293.15}
+\goldmore{250}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ed05\_industrial\_stack}{tutorials/electrochem/ed05\_industrial\_stack}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (edStack) at (0.0,-0.0) {\textbf{edStack}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (rectifier) at (0.0,-1.7) {\textbf{rectifier}\\[-1pt]{\tiny electricLoad}};
+  \draw[->] ($(edStack.west)+(-1.05,-0.17)$) -- ($(edStack.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {diluateFeed};
+  \draw[->] ($(edStack.west)+(-1.05,0.17)$) -- ($(edStack.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {concentrateFeed};
+  \draw[->] ($(edStack.east)+(0,-0.17)$) -- ($(edStack.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {diluate};
+  \draw[->] ($(edStack.east)+(0,0.17)$) -- ($(edStack.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {concentrate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Electrodialysis: a 100-cell-pair, 50 m2 industrial stack, two hydraulic passes}
+\begin{tutnarrative}
+ED05 an INDUSTRIAL stack beside the bench one
+
+ed03 runs a BENCH stack: seven cell pairs, 0.140 m2 of cell-pair area, 175 L/h, and it removes 2.7 \% of the diluate's sodium in one pass. This is the same machine grown up:
+
+stack EurodiaED-100P-50; // 100 cell pairs, 50 m2, TWO passes membrane CMX\_AMX; // the CASE names the pair -- see below targetDemin 0.5; // and Choupo solves for the current
+
+a 100-cell-pair, 50 m2 industrial Eurodia unit that Vitor Geraldes has OPERATED. Its record's facts are his own recollection, marked `origin measured; reviewStatus unverified;` and announced on every run -- they are not a data sheet.
+
+THREE THINGS A STUDENT SHOULD READ OFF THE LOG.
+
+(1) THE CASE NAMES THE MEMBRANE PAIR, and the record does not. He did not say which membranes the unit carried, so the record leaves the field out -- a stack FRAME takes any ion-exchange pair, exactly as a laboratory flat-sheet cell takes any coupon. Omit `membrane` here and the run REFUSES by name. (ed03's EUR2C-7P18 DOES name its pair, and declaring one beside it refuses instead. The record decides which way the refusal points; the engine never guesses a pair.)
+
+(2) THE CHANNEL LENGTH IS DERIVED, AND SAYS SO. Nobody stated the channel width or its length. Exactly ONE of the two is stored, and it is the ESTIMATE: `channelWidth 0.298 m`, back-calculated from a superficial velocity of 0.080 m/s at the design flow of 3000 L/h, with a note saying it must be verified by measuring a membrane sheet. The length is then activeArea/(cellPairs x channelWidth) = 1.680 m, derived where it is used and printed as DERIVED. Storing a back-calculated length beside a back-calculated width would be two homes for one guess, and the second would read like a declaration.
+
+(3) TWO HYDRAULIC PASSES. 100 cell pairs over 2 passes is 50 channels side by side, so the same 3000 L/h gives twice the velocity it would in a single pass -- and a parcel of diluate travels 1.680 m twice, 3.360 m in all. The pass belongs to the EQUIPMENT (Vitor's ruling), so it is on the record and a case that declares it is refused.
+
+WHY THE MASS-TRANSFER CORRELATION MAY BE USED HERE. It is the BENCH stack's, fitted over Re 50-86. At the 0.066-0.110 m/s band that bench stack was run at, this stack sits at Re 46-77 on its 0.70 mm channel against the bench stack's 51-84 on its 0.77 mm -- the two bands very nearly coincide, because Re is built on the channel height and the two spacer thicknesses very nearly coincide. So the fit is APPLIED INSIDE its own band, not extrapolated. The record declares that band (`validity \{ Re ( 50 86 ); \}`) and the engine ANNOUNCES any run that leaves it; at the design flow this case sits at Re 62.8.
+
+The permission is about the REYNOLDS NUMBER only: this spacer is ZIG-ZAG and the bench stack's was a MESH, no correlation in this tree selects on the spacer type, and the record says so.
+
+diluateFeed $\to$ +-----------------------+ $\to$ diluate | EurodiaED-100P-50 | concentrateFeed $\to$ | 100 pairs, CMX/AMX | $\to$ concentrate +-----------------------+ | (power, energy wire) v rectifier (electricLoad)
+
+\end{tutnarrative}
+\tutreadme{ed03\_stack\_record runs a bench stack: seven cell pairs, 0.140 m$^2$ of cell-pair area, 175 L/h, and it removes 2.7 \% of the diluate's sodium in one pass. This is the same machine grown up --- a 100-cell-pair, 50 m$^2$ industrial Eurodia unit that V?tor Geraldes has operated, at 3000 L/h, taking 50 \% of the sodium out.}
+\tutreadme{data/standards/assets/EurodiaED-100P-50.dat is not a data sheet. Its numbers --- 100 cell pairs, 50 m$^2$, a channel height of $\ast$"aprox"$\ast$ 0.7 mm, a zig-zag spacer, two hydraulic passes, a design flow of 3000 L/h --- are what their owner remembers of a unit he ran, and each carries origin measured; reviewStatus unverified; with a note saying how to verify it. They are announced on every run.}
+\tutreadme{He did not say which membranes the unit carried, so the record leaves the field out. A stack $\ast$frame$\ast$ takes any ion-exchange pair, exactly as the SEPA CF laboratory cell takes any coupon. Omit membrane here and the run refuses by name; declare one beside stack EUR2C-7P18; in ed03, whose record $\ast$does$\ast$ name its pair, and that refuses instead. The record decides which way the refusal points. Neither side guesses a pair on the owner's behalf.}
+\tutreadme{Nobody stated the channel width or its length. Exactly one of the two is stored, and it is the estimate:}
+\tutreadme{Storing a back-calculated length $\ast$beside$\ast$ a back-calculated width would be two homes for one guess, and the second would read like a declaration. (ed03's record does declare its length, because its paper states the width, the length $\ast$and$\ast$ the effective area as three separate facts --- and the engine cross-checks them.)}
+\tutreadme{100 cell pairs over 2 passes is 50 channels side by side, so the same 3000 L/h gives twice the velocity a single pass would, and a parcel of diluate travels 1.68 m twice. The pass belongs to the equipment (V?tor's ruling), so it is on the record; a case that declares it is refused.}
+\begin{tutgolden}
+\goldrow{stream}{concentrate}{F}{0.0467153111984}
+\goldrow{stream}{concentrate}{T}{298.15}
+\goldrow{stream}{concentrateFeed}{F}{0.0466736445318}
+\goldrow{stream}{concentrateFeed}{T}{298.15}
+\goldrow{stream}{diluate}{F}{0.0462986445318}
+\goldrow{stream}{diluate}{T}{298.15}
+\goldrow{stream}{diluateFeed}{F}{0.0463403111984}
+\goldrow{stream}{diluateFeed}{T}{298.15}
+\goldrow{kpi}{edStack}{C\_ion\_Cl}{50}
+\goldrow{kpi}{edStack}{C\_ion\_Na}{50}
+\goldrow{kpi}{edStack}{D\_eff}{1.60708333333e-09}
+\goldrow{kpi}{edStack}{D\_ion\_Cl}{2.03e-09}
+\goldrow{kpi}{edStack}{D\_ion\_Na}{1.33e-09}
+\goldrow{kpi}{edStack}{E\_mem\_pair}{0.0772348315003}
+\goldmore{37}
+\end{tutgolden}
+

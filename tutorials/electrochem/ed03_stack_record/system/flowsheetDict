@@ -1,0 +1,110 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict --- ED03 the stack is a RECORD, and the velocity is derived
+  ===========================================================================
+
+  The SAME NaCl chemistry as ed01 (0.1 mol/kg diluate against a 0.5 mol/kg
+  concentrate, Neosepta CMX/AMX), run through a stack that the case NAMES
+  instead of typing:
+
+      stack EUR2C-7P18;
+
+  -- the bench unit of Geraldes & Afonso, J. Membr. Sci. 360 (2010)
+  499-508, as a `kind edStack` record in data/standards/assets/.  What the
+  record supplies, and what the operation therefore no longer declares:
+
+      membranes        CMX_AMX        (the IEM pair)
+      cellPairs        7
+      activeArea       0.140 m2       THE CELL-PAIR AREA OF THE WHOLE STACK
+      channel          0.77 mm x 0.114 m x 0.175 m, mesh spacer, porosity 0.90
+      hydraulicPasses  1
+      massTransfer     Sh = 0.29 Re^0.5 Sc^0.33   (fitted to THIS stack)
+      limits           i_max, T_max
+
+  WHAT A STUDENT SEES HERE.
+
+  (1) THE VELOCITY IS NOT A KNOB.  It used to be typed as
+      `linearVelocity 0.05 m/s;` beside a flow the unit already had on its
+      inlet stream -- two homes for one fact, and nothing checked them
+      against each other, while the velocity sets the mass-transfer
+      coefficient and therefore the limiting current.  Here the diluate
+      feed carries 175 L/h; the record says seven channels run side by
+      side in one hydraulic pass, each 0.114 m wide and 0.77 mm high; and
+      the run prints
+          u = Q / (n W h) = 175 L/h / (7 x 0.114 x 7.7e-4) = 0.0791 m/s
+      which is the paper's own 0.080 m/s for that flow rate.  Change the
+      feed and the velocity follows.  Declare a velocity beside `stack`
+      and the run REFUSES by name.
+
+  (2) VITOR'S RULE ON THE AREA, printed as arithmetic: `activeArea` is the
+      CELL-PAIR area of the whole stack, so this 0.140 m2 stack carries
+      0.140 m2 of cation-exchange membrane AND 0.140 m2 of anion-exchange
+      membrane (0.280 m2 in total), and the current density is taken on
+      the 0.020 m2 one cell pair presents.  Nothing stores any of those
+      three derivatives.
+
+  (3) THE ESTIMATES ANNOUNCE THEMSELVES.  Four values in the record are
+      not in the paper -- the spacer porosity, the Schmidt exponent (which
+      the paper POSTULATES rather than fits), and both limits -- and each
+      prints an `[estimate]` line with the note saying how to verify it,
+      and reaches the end-of-run caveat block.
+
+  (4) THE LIMITING CURRENT IS PREDICTED, not read off a declared transport
+      number: the run prints D_eff, k_c,eff, the limiting transport number
+      of every ion at each membrane, both membranes' limiting current, and
+      -- because NaCl is a single salt -- the classical Eq. 16 beside the
+      general Eq. 15, which agree.
+
+      diluateFeed     ->  +--------------------+ -> diluate
+                          | EUR2C-7P18, 7 pairs|
+      concentrateFeed ->  |   CMX / AMX        | -> concentrate
+                          +--------------------+
+                                   | (power, energy wire)
+                                   v
+                              rectifier (electricLoad)
+
+  A bench stack of seven cell pairs in ONE pass removes a few per cent of
+  the diluate's sodium, which is why a real bench run RECIRCULATES the
+  diluate through a tank.  That batch arrangement is not modelled here.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        edStack;
+        type        electrodialysisStack;
+        inputs      ( diluateFeed  concentrateFeed );
+        outputs     ( diluate  concentrate );
+
+        operation
+        {
+            stack             EUR2C-7P18;   // the HARDWARE, as a record
+            current           2.0;          // A (raw SI) -- 100 A/m2, below both i_lim and the record's i_max
+            xi                0.9;          // current efficiency (declared, not defaulted)
+            E_electrodes      1.5;          // V (raw SI) -- lumped electrode overpotential (announced)
+        }
+
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+    {
+        name        rectifier;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from edStack.power;  kind work;  target W_shaft; }
+        );
+    }
+);

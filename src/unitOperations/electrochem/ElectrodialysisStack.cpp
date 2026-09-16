@@ -28,9 +28,14 @@ License
 
 #include "ElectrodialysisStack.H"
 #include "Electrochem.H"
+#include "LimitingCurrent.H"
 #include "thermo/electrolyte/IonTransport.H"
 
+#include "core/Advisory.H"
 #include "core/Constants.H"
+#include "core/RegistryRefusal.H"
+#include "thermo/electrochem/EDStack.H"
+#include "thermo/electrochem/EDStackRegistry.H"
 #include "solver/NewtonRaphson.H"
 #include "thermo/Database.H"
 #include "thermo/electrolyte/AqueousActivity.H"
@@ -42,6 +47,7 @@ License
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 namespace Choupo {
 
@@ -228,7 +234,52 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
 
     // ---- operation{} hardware ---------------------------------------------
     auto op = dict->subDict("operation");
-    const int N = static_cast<int>(op->lookupScalar("N_cellpairs"));
+    const std::string unitLabel = dict->name().empty() ? type() : dict->name();
+
+    //  THE STACK RECORD (2026-09-16).  `stack <name>;` names a `kind edStack`
+    //  record in assets/ and the record supplies what the case used to type:
+    //  the membrane pair, the cell pairs, the active area, the channel, the
+    //  hydraulic passes and the Sherwood correlation fitted to THAT stack.
+    //  ONE home: the same fact declared inline beside `stack` REFUSES by
+    //  name, every offending key listed.  `linearVelocity` is in that list
+    //  for a reason of its own -- it was never an operating knob, it is the
+    //  diluate flow divided by the channel section, and the unit already has
+    //  the flow.
+    const bool hasStack = op->found("stack");
+    const EDStack* stk = nullptr;
+    if (hasStack)
+    {
+        stk = &EDStackRegistry::byName(op->lookupWord("stack"));
+        std::vector<std::string> clash;
+        for (const char* k : { "N_cellpairs", "membraneArea",
+                               "channelThickness", "channelLength",
+                               "linearVelocity", "hydraulicPasses",
+                               "spacerPorosity" })
+            if (op->found(k)) clash.push_back(k);
+        //  The membrane pair is the record's ONLY where the record's source
+        //  names one.  A stack FRAME whose source does not (Vitor's own
+        //  industrial unit) takes any pair, so the CASE declares it -- the
+        //  SEPA CF flat-cell shape, one band along.
+        if (stk->namesMembranes() && op->found("membrane")) clash.push_back("membrane");
+        if (!clash.empty())
+        {
+            std::string list;
+            for (const auto& c : clash) list += " `" + c + "`";
+            throw std::runtime_error("electrodialysisStack '" + unitLabel
+                + "': `stack " + stk->name() + ";` supplies the membrane pair,"
+                  " the cell pairs, the active area, the channel geometry and"
+                  " the hydraulic passes from its record ("
+                + stk->sourcePath() + "), and the operation ALSO declares"
+                + list + " -- one home.  Remove the inline value(s), or drop"
+                  " `stack` and keep them.  A crossflow VELOCITY is never a"
+                  " value to keep: it is the diluate flow on the inlet stream"
+                  " divided by the channel section the record describes, and"
+                  " the run prints that arithmetic.");
+        }
+    }
+
+    const int N = hasStack ? stk->cellPairs()
+                           : static_cast<int>(op->lookupScalar("N_cellpairs"));
     if (N <= 0)
         throw std::runtime_error("electrodialysisStack: N_cellpairs must be > 0");
 
@@ -237,11 +288,26 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         throw std::runtime_error("electrodialysisStack: xi (current efficiency) "
             "must be in (0, 1]; got " + std::to_string(xi));
 
-    const scalar area = op->lookupScalar("membraneArea", Dims::area);          // m2
-    const scalar h_ch = op->lookupScalar("channelThickness", Dims::length);    // m
-    const scalar vel  = op->lookupScalarOrDefault("linearVelocity", 0.05, Dims::velocity); // m/s
+    //  `area` is the area ONE CELL PAIR presents to the current, which is what
+    //  a current density is taken on.  Under a record that is the DERIVED
+    //  activeArea / cellPairs -- Vitor's ruling (2026-09-16): the record's
+    //  activeArea IS the cell-pair area of the whole stack, so a 50 m2 stack
+    //  carries 50 m2 of anionic membrane AND 50 m2 of cationic membrane.
+    const scalar area = hasStack ? stk->areaPerCellPair_m2()
+                                 : op->lookupScalar("membraneArea", Dims::area);
+    const scalar h_ch = hasStack ? stk->channelHeight_m()
+                                 : op->lookupScalar("channelThickness", Dims::length);
     const scalar E_el = op->lookupScalarOrDefault("E_electrodes", 0.0);        // V (lumped)
-    const std::string memName = op->lookupWordOrDefault("membrane", "CMX_AMX");
+    if (hasStack && !stk->namesMembranes() && !op->found("membrane"))
+        throw std::runtime_error("electrodialysisStack '" + unitLabel
+            + "': the stack record '" + stk->name() + "' names no membrane"
+              " pair (its source does not state one), so the CASE must:"
+              " declare `membrane <name>;` beside `stack " + stk->name()
+            + ";` (a `kind IEM` record in assets/, e.g. CMX_AMX).  Neither"
+              " side may guess a pair on the owner's behalf.");
+    const std::string memName = (hasStack && stk->namesMembranes())
+        ? stk->membranes()
+        : op->lookupWordOrDefault("membrane", "CMX_AMX");
 
     const bool haveI      = op->found("current");
     const bool haveTarget = op->found("targetDemin");
@@ -279,34 +345,301 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     // what current can remove).  Per ion: F_dil [kmol/s] * 1000 * z_frac.
     // We track removal per ION via the molality fraction of the diluate feed.
 
-    // ---- Cowan-Brown limiting current density (INLINE; one model in v1) -----
-    // i_lim = z F k c_dil / (t_cu - t_co),  t_co = 1 - t_cu (CEM convention).
-    // Mass-transfer coefficient k from a simple Leveque-type Sherwood estimate
-    // for the thin spacer channel (the honest "simple correlation over theory"
-    // rung -- ANNOUNCED):
-    //     Sh = 1.85 (Re Sc d_h / L)^(1/3),   k = Sh D / d_h
-    // with d_h ~ 2 h_channel (slit), Re = v d_h / nu, Sc = nu / D.  The cross-
-    // flow velocity `linearVelocity` therefore SETS k -- the student sees the
-    // limiting current rise with flow.  nu = water kinematic viscosity (~1e-6
-    // m2/s at 25 C, dilute-carrier approximation, announced).  L ~ membraneArea
-    // / channel-width is unknown here; we use a representative L = 0.5 m and
-    // announce it (an explicit operation key can override later).
-    scalar D_mean = 0.0;
-    for (const auto& nm : chD.ion) D_mean += electrolyte::ionD0(nm);
-    D_mean /= static_cast<scalar>(chD.ion.size());
-    const scalar d_h   = 2.0 * h_ch;                     // slit hydraulic diameter [m]
-    const scalar nu    = 1.0e-6;                         // m2/s (water, 25 C, announced)
-    const scalar L_ch  = op->lookupScalarOrDefault("channelLength", 0.5, Dims::length); // m
-    const scalar Re    = vel * d_h / nu;
-    const scalar Sc    = nu / D_mean;
-    const scalar Sh    = 1.85 * std::cbrt(std::max(Re * Sc * d_h / L_ch, 1.0e-12));
-    const scalar k_mt  = Sh * D_mean / d_h;              // m/s
-    const scalar t_cu = cem.t_cu;                        // CEM counter-ion (cation) tn
+    // ---- THE LIMITING CURRENT DENSITY --------------------------------------
+    //  TWO models now (2026-09-16), so the dispatch lives in
+    //  unitOperations/electrochem/LimitingCurrent.{H,cpp} with the accepted
+    //  words in ONE place and a refusal for a word neither branch knows.  The
+    //  header sentence that justified keeping this INLINE ("exactly ONE
+    //  limiting-current correlation in v1 ... not a factory-for-one") was
+    //  true and is buried here.
+    //
+    //    GeraldesAfonso2010 -- the PREDICTION (J. Membr. Sci. 360 (2010)
+    //      499-508).  No transport number is declared: the linearised
+    //      Nernst-Planck equations in the film give the limiting transport
+    //      numbers from the ion diffusivities and the diluate composition
+    //      (Eqs. 12/13) and the limiting current in closed form (Eq. 15).
+    //      It needs the stack's OWN Sherwood correlation, which is
+    //      equipment-and-spacer data and lives on the stack record -- so a
+    //      case with no `stack` cannot take this route and is told so.
+    //
+    //    CowanBrown -- the LEGACY route, unchanged bit for bit: the classical
+    //      single-salt working form on the membrane record's DECLARED t_cu,
+    //      with k from a Leveque-type estimate on a mean ion diffusivity.
+    //
+    //  THE DEFAULT is announced either way: GeraldesAfonso2010 when a stack
+    //  record supplies the correlation AND every diluate ion resolves a
+    //  diffusivity AND both signs are present; CowanBrown otherwise, naming
+    //  which of those was missing.
+    std::string lcModel;
+    bool        lcDeclared = false;
+    if (op->found("limitingCurrent"))
+    {
+        auto lc = op->subDict("limitingCurrent");
+        lcModel = lc->lookupWordOrDefault("model", "");
+        bool known = false;
+        for (const auto& w : edLimitingCurrent::acceptedModels())
+            if (w == lcModel) known = true;
+        if (!known)
+            throw std::runtime_error("electrodialysisStack '" + unitLabel
+                + "' limitingCurrent: "
+                + registryRefusal::message("limiting-current model", lcModel,
+                      edLimitingCurrent::acceptedModels(), "Accepted"));
+        lcDeclared = true;
+    }
+
+    //  Can the predictive route be taken at all?  Asked BEFORE any default is
+    //  chosen, so the reason a case falls back is a fact and not a guess.
+    std::string predictiveBlocker;
+    if (!hasStack)
+        predictiveBlocker = "the case names no `stack <name>;` record, and the"
+            " Sherwood correlation the model needs is equipment-and-spacer data"
+            " that only a `kind edStack` record carries";
+    else
+    {
+        int nCat = 0, nAn = 0;
+        for (auto zz : chD.z) { if (zz > 0.0) ++nCat; else if (zz < 0.0) ++nAn; }
+        if (nCat == 0 || nAn == 0)
+            predictiveBlocker = "the diluate carries ions of only one sign";
+        else
+            for (const auto& sp : chD.ion)
+                try { (void) electrolyte::ionD0(sp); }
+                catch (const std::exception& e)
+                {
+                    predictiveBlocker = std::string("an ion has no curated"
+                        " diffusivity -- ") + e.what();
+                    break;
+                }
+    }
+    if (lcDeclared && lcModel == "GeraldesAfonso2010" && !predictiveBlocker.empty())
+        throw std::runtime_error("electrodialysisStack '" + unitLabel
+            + "': `limitingCurrent { model GeraldesAfonso2010; }` was declared"
+              " and cannot be evaluated, because " + predictiveBlocker
+            + ".  Name a stack record and curate the missing diffusivity, or"
+              " declare `model CowanBrown;` to keep the legacy single-salt"
+              " form on the membrane record's own t_cu.");
+    if (!lcDeclared)
+        lcModel = predictiveBlocker.empty() ? "GeraldesAfonso2010" : "CowanBrown";
+
+    //  ---- the DERIVED crossflow velocity, printed with its arithmetic ------
+    //  The velocity was an operation key until 2026-09-16 and was a SECOND
+    //  HOME: the diluate flow arrives on the inlet stream, so the velocity is
+    //  a consequence of that flow, the channel section and how many channels
+    //  run side by side in one hydraulic pass.  A declared velocity could
+    //  contradict the flow and nothing noticed -- while it sets k and
+    //  therefore i_lim.
+    const scalar rho_carrier = 1000.0;      // kg/m3, the dilute-carrier value this unit already uses
+    const scalar Q_dil_in = dil.F * dil.z[iWater] * 1000.0 * MW_WATER_KG / rho_carrier;  // m3/s
+    scalar u_superficial = 0.0, u_interstitial = 0.0, channelsPerPass = 0.0;
+    scalar pathLength = 0.0, sectionEmpty = 0.0;
+    if (hasStack)
+    {
+        channelsPerPass = stk->channelsPerPass();
+        sectionEmpty    = channelsPerPass * stk->channelWidth_m() * h_ch;
+        u_superficial   = Q_dil_in / sectionEmpty;
+        u_interstitial  = u_superficial / stk->spacerPorosity();
+        pathLength      = stk->flowPathLength_m();
+    }
+
+    //  ---- the fluid: kinematic viscosity, and D0 corrected to the run T ----
+    //  The paper prices Re and Sc on PURE WATER at the run temperature, so
+    //  the package is asked for the solvent's own liquid viscosity (a
+    //  water-only composition) rather than a mixture value; the density is
+    //  the dilute-carrier 1000 kg/m3 this unit already announces for the
+    //  conductivity -- ONE constant, and Sh depends on it as rho^(b-c), which
+    //  is 0.03 % over the 0.18 % between 1000 and the paper's 998.2.
+    //  The ion D0 tier is curated at 25 C; the paper's Table 3 is at 20 C,
+    //  corrected through Stokes-Einstein.  So is this, from the SAME
+    //  viscosity model at both temperatures -- and when the case declares no
+    //  liquid-viscosity model there is no correction and the run SAYS so.
+    sVector xSolvent(Ncomp, 0.0);
+    xSolvent[iWater] = 1.0;
+    scalar mu_solvent = 0.0, nu_solvent = 1.0e-6, seFactor = 1.0;
+    bool   muPriced = false;
+    if (thermo.hasLiquidViscosity())
+    {
+        mu_solvent = thermo.viscosityLiquid(T, xSolvent);
+        const scalar mu_ref = thermo.viscosityLiquid(298.15, xSolvent);
+        nu_solvent = mu_solvent / rho_carrier;
+        seFactor   = (T / 298.15) * (mu_ref / mu_solvent);
+        muPriced   = true;
+    }
+
+    scalar D_eff = 0.0, k_c_eff = 0.0, Sh_lc = 0.0, Re_lc = 0.0, Sc_lc = 0.0;
+    scalar i_lim = 0.0, i_lim_cem = 0.0, i_lim_aem = 0.0, i_lim_eq16 = 0.0;
+    bool   haveEq16 = false;
+    std::string i_lim_setBy;
+    std::vector<edLimitingCurrent::Ion> lcIons;
+    std::vector<scalar> t_cem_lim, t_aem_lim;
+    const scalar t_cu = cem.t_cu;                        // CEM counter-ion (cation) tn (DECLARED)
     const scalar t_co = 1.0 - t_cu;
-    const scalar z_lim = 1.0;                            // monovalent salt basis (NaCl)
-    // i_lim uses the DILUATE bulk equivalent concentration (the depleting side).
-    const scalar i_lim = z_lim * electrochem::Faraday * k_mt * chD.c_eq
-                       / (t_cu - t_co);                  // A/m2
+
+    if (lcModel == "GeraldesAfonso2010")
+    {
+        for (std::size_t k = 0; k < chD.ion.size(); ++k)
+        {
+            edLimitingCurrent::Ion io;
+            io.name = chD.ion[k].key;
+            io.z    = chD.z[k];
+            io.C    = chD.m[k] * rho_carrier;             // mol/m3 (dilute carrier)
+            io.D    = electrolyte::ionD0(chD.ion[k]) * seFactor;
+            lcIons.push_back(io);
+        }
+        D_eff = edLimitingCurrent::effectiveDiffusivity(lcIons);
+        const EDSherwood& sh = stk->massTransfer();
+        const scalar u_corr = (sh.velocityBasis == "interstitial")
+                            ? u_interstitial : u_superficial;
+        Re_lc = u_corr * h_ch / nu_solvent;
+        Sc_lc = nu_solvent / D_eff;
+        Sh_lc = (sh.model == "powerLaw")
+              ? sh.a * std::pow(Re_lc, sh.b) * std::pow(Sc_lc, sh.c)
+              : sh.a * std::cbrt(std::max(Re_lc * Sc_lc * h_ch / pathLength, 1.0e-12));
+        k_c_eff = Sh_lc * D_eff / h_ch;
+
+        t_cem_lim = edLimitingCurrent::limitingTransportNumbers(lcIons, true);
+        t_aem_lim = edLimitingCurrent::limitingTransportNumbers(lcIons, false);
+        i_lim_cem = edLimitingCurrent::limitingCurrentEq15(lcIons, t_cem_lim, k_c_eff, D_eff);
+        i_lim_aem = edLimitingCurrent::limitingCurrentEq15(lcIons, t_aem_lim, k_c_eff, D_eff);
+        //  "the limiting current density is the lowest of the absolute values
+        //  determined for each membrane" (the paper, after Eq. 15).
+        if (std::abs(i_lim_cem) <= std::abs(i_lim_aem))
+        { i_lim = std::abs(i_lim_cem); i_lim_setBy = "cation-exchange membrane"; }
+        else
+        { i_lim = std::abs(i_lim_aem); i_lim_setBy = "anion-exchange membrane"; }
+
+        //  A route claimed to reduce to another is SEEN doing it: on a single
+        //  salt, Eq. (15) and the classical Eq. (16) are the same number.
+        scalar tCu1 = 0.0;
+        for (std::size_t k = 0; k < lcIons.size(); ++k)
+            if (lcIons[k].z > 0.0) tCu1 = t_cem_lim[k];
+        haveEq16 = edLimitingCurrent::singleSaltEq16(lcIons, k_c_eff, tCu1, i_lim_eq16);
+    }
+    else
+    {
+        // ---- CowanBrown (LEGACY, bit for bit) ------------------------------
+        // i_lim = z F k c_dil / (t_cu - t_co),  t_co = 1 - t_cu (CEM convention).
+        // Mass-transfer coefficient k from a simple Leveque-type Sherwood estimate
+        // for the thin spacer channel (the honest "simple correlation over theory"
+        // rung -- ANNOUNCED):
+        //     Sh = 1.85 (Re Sc d_h / L)^(1/3),   k = Sh D / d_h
+        // with d_h ~ 2 h_channel (slit), Re = v d_h / nu, Sc = nu / D.  The cross-
+        // flow velocity `linearVelocity` therefore SETS k -- the student sees the
+        // limiting current rise with flow.  nu = water kinematic viscosity (~1e-6
+        // m2/s at 25 C, dilute-carrier approximation, announced).  L ~ membraneArea
+        // / channel-width is unknown here; we use a representative L = 0.5 m and
+        // announce it (an explicit operation key can override later).
+        const scalar vel = op->lookupScalarOrDefault("linearVelocity", 0.05, Dims::velocity);
+        scalar D_mean = 0.0;
+        for (const auto& nm : chD.ion) D_mean += electrolyte::ionD0(nm);
+        D_mean /= static_cast<scalar>(chD.ion.size());
+        const scalar d_h   = 2.0 * h_ch;                     // slit hydraulic diameter [m]
+        const scalar nu    = 1.0e-6;                         // m2/s (water, 25 C, announced)
+        const scalar L_ch  = op->lookupScalarOrDefault("channelLength", 0.5, Dims::length); // m
+        const scalar Re    = vel * d_h / nu;
+        const scalar Sc    = nu / D_mean;
+        const scalar Sh    = 1.85 * std::cbrt(std::max(Re * Sc * d_h / L_ch, 1.0e-12));
+        const scalar k_mt  = Sh * D_mean / d_h;              // m/s
+        const scalar z_lim = 1.0;                            // monovalent salt basis (NaCl)
+        // i_lim uses the DILUATE bulk equivalent concentration (the depleting side).
+        i_lim   = z_lim * electrochem::Faraday * k_mt * chD.c_eq / (t_cu - t_co);   // A/m2
+        Sh_lc   = Sh;  Re_lc = Re;  Sc_lc = Sc;  k_c_eff = k_mt;  D_eff = D_mean;
+        u_superficial = vel;
+        i_lim_setBy = "the membrane record's declared t_cu";
+    }
+
+    // ---- ANNOUNCEMENTS: the route, the assumptions, the estimates ----------
+    //  Nothing below changes a number; all of it says what the run did.  The
+    //  [estimate] tag and the AdvisoryLog channel are Database.cpp's -- one
+    //  vocabulary -- so a record with no estimate produces no line and the
+    //  silence keeps meaning "nothing was assumed".
+    {
+        auto say = [&](const char* tag, const std::string& msg,
+                       const char* category)
+        {
+            if (verbosity >= 1)
+                std::cout << "  [" << tag << "] electrodialysisStack '"
+                          << unitLabel << "': " << msg << "\n";
+            AdvisoryLog::instance().add(category, "warning",
+                "electrodialysisStack '" + unitLabel + "'", msg);
+        };
+        if (verbosity >= 2)
+            std::cout << "  [limiting current] model " << lcModel << " "
+                      << (lcDeclared ? "DECLARED by the case"
+                                     : "selected by default")
+                      << (lcDeclared || predictiveBlocker.empty()
+                            ? "" : " because " + predictiveBlocker)
+                      << "\n";
+        if (!lcDeclared && !predictiveBlocker.empty())
+            say("legacy", "the limiting current falls back to the CowanBrown"
+                " single-salt working form on the membrane record's DECLARED"
+                " t_cu, because " + predictiveBlocker + ".  The predictive"
+                " route (GeraldesAfonso2010) needs none.", "provenance");
+        if (!hasStack)
+            say("legacy", "the crossflow velocity was DECLARED"
+                " (`linearVelocity`) and the engine could not check it against"
+                " the diluate flow on the inlet stream -- a velocity is a"
+                " consequence of that flow, the channel section and the number"
+                " of channels in parallel.  Name a `kind edStack` record"
+                " (`stack <name>;`) and the velocity is derived and printed"
+                " with its arithmetic.", "provenance");
+        if (lcModel == "GeraldesAfonso2010" && !muPriced)
+            say("legacy", "the ion diffusivities were used at their curated"
+                " 25 C reference with NO Stokes-Einstein correction to the run"
+                " temperature -- the case declares no `transport {"
+                " liquidViscosity { model Vogel; } }`, so the viscosity ratio"
+                " the correction needs is unavailable, and the kinematic"
+                " viscosity fell back to 1e-6 m2/s.", "provenance");
+        if (hasStack)
+        {
+            //  A cross-check, not a derivation: the source states the channel
+            //  footprint AND the effective area, and they are two facts.
+            const scalar ratio = stk->areaPerCellPair_m2() / stk->channelFootprint_m2();
+            if (stk->lengthDeclared() && (ratio < 0.95 || ratio > 1.05))
+            {
+                char b[300];
+                std::snprintf(b, sizeof(b), "the declared active area per cell"
+                    " pair (%.6g m2) and the channel footprint W*L (%.6g m2)"
+                    " differ by %.1f %% -- they are two facts about one cell,"
+                    " but that much apart usually means one of them is wrong",
+                    static_cast<double>(stk->areaPerCellPair_m2()),
+                    static_cast<double>(stk->channelFootprint_m2()),
+                    static_cast<double>(100.0 * (ratio - 1.0)));
+                say("record", b, "provenance");
+            }
+            //  THE CORRELATION'S OWN VALIDITY WINDOW.  It is EQUIPMENT DATA
+            //  on the record, like every other validity window in this tree,
+            //  and leaving it is ANNOUNCED rather than refused -- the posture
+            //  of the extrapolated Antoine and the sub-band Davies.
+            const EDSherwood& shw = stk->massTransfer();
+            if (shw.hasReBand && lcModel == "GeraldesAfonso2010"
+             && (Re_lc < shw.Re_lo || Re_lc > shw.Re_hi))
+            {
+                char b[300];
+                std::snprintf(b, sizeof(b), "Re = %.2f is OUTSIDE the band"
+                    " %.4g - %.4g the record's mass-transfer correlation was"
+                    " fitted over -- k_c,eff, and therefore the limiting"
+                    " current, is an EXTRAPOLATION here", static_cast<double>(Re_lc),
+                    static_cast<double>(shw.Re_lo), static_cast<double>(shw.Re_hi));
+                say("extrapolation", b, "model");
+            }
+            //  EVERY ESTIMATE THE RECORD CARRIES, ON EVERY RUN THAT READS IT
+            //  (Vitor's ruling, 2026-09-15: an educated value with a note
+            //  saying it must be verified, never silent).
+            for (const auto& e : stk->estimates())
+            {
+                char v[64];
+                std::snprintf(v, sizeof(v), "%.6g", static_cast<double>(e.value));
+                if (verbosity >= 1)
+                    std::cout << "  [estimate] stack '" << stk->name() << "': `"
+                              << e.key << "` = " << v << " (SI) is an ESTIMATE,"
+                              << " reviewStatus " << e.reviewStatus << " -- "
+                              << e.notes << "\n";
+                AdvisoryLog::instance().add("provenance", "warning",
+                    "stack '" + stk->name() + "'",
+                    "`" + e.key + "` = " + v + " (SI) is an ESTIMATE,"
+                    " reviewStatus " + e.reviewStatus + " -- " + e.notes);
+            }
+        }
+    }
 
     // ---- Stack voltage as a function of current I --------------------------
     // E_mem (per cell pair): CEM passes cations, AEM passes anions; each sees
@@ -492,14 +825,62 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         std::cout << "  Membrane pair:   " << memName << "  (CEM " << cem.name
                   << ", AEM " << aem.name << ")\n";
         std::cout << "  N cell pairs:    " << N << "\n";
-        std::cout << "  Active area:     " << std::setprecision(4) << area
-                  << " m2 / membrane\n";
+        std::cout << "  Area per cell pair: " << std::setprecision(4) << area
+                  << " m2   (what one cell pair presents to the current, and"
+                     " what the current DENSITY is taken on)\n";
         std::cout << "  Current eff. xi: " << std::setprecision(3) << xi
                   << "   (ANNOUNCED default 0.9 unless set)\n";
+        if (hasStack)
+        {
+            std::cout << "  Stack record:    " << stk->name() << "  ("
+                      << stk->manufacturer() << ", " << stk->sourcePath() << ")\n";
+            std::cout << "  Area (Vitor's rule: activeArea IS the cell-pair area):\n";
+            std::cout << "      declared activeArea      " << std::setprecision(6)
+                      << stk->activeArea_m2() << " m2  (the whole stack, per cell pair summed)\n";
+            std::cout << "      -> per cell pair         " << stk->areaPerCellPair_m2()
+                      << " m2   (activeArea / " << N << " cell pairs)\n";
+            std::cout << "      -> per membrane KIND     " << stk->areaPerMembraneKind_m2()
+                      << " m2   (that much CEM and that much AEM)\n";
+            std::cout << "      -> total membrane area   " << stk->totalMembraneArea_m2()
+                      << " m2   (2 x activeArea)\n";
+            if (stk->lengthDeclared())
+                std::cout << "      geometric footprint W*L  "
+                          << stk->channelFootprint_m2()
+                          << " m2   (a SECOND fact the source states, not a"
+                             " derivative -- cross-checked, never used)\n";
+            std::cout << "  Crossflow velocity, DERIVED from the diluate flow"
+                         " (it is no longer declared):\n";
+            std::cout << "      channels in parallel     " << std::setprecision(4)
+                      << channelsPerPass << "   = " << N << " cell pairs / "
+                      << stk->hydraulicPasses() << " hydraulic pass"
+                      << (stk->hydraulicPasses() == 1 ? "" : "es") << "\n";
+            std::cout << "      Q_diluate                " << std::scientific
+                      << std::setprecision(5) << Q_dil_in << " m3/s   ("
+                      << std::fixed << std::setprecision(2) << (Q_dil_in * 3.6e6)
+                      << " L/h)\n";
+            std::cout << "      u = Q/(n W h)            " << std::setprecision(6)
+                      << u_superficial << " m/s  SUPERFICIAL (empty channel section "
+                      << std::scientific << std::setprecision(5) << sectionEmpty
+                      << " m2)\n" << std::fixed;
+            std::cout << "      u/porosity               " << std::setprecision(6)
+                      << u_interstitial << " m/s  interstitial (spacer porosity "
+                      << std::setprecision(3) << stk->spacerPorosity() << ")\n";
+            std::cout << "      channel length           " << std::setprecision(6)
+                      << stk->channelLength_m() << " m   "
+                      << (stk->lengthDeclared()
+                            ? "(DECLARED by the source)"
+                            : "(DERIVED: activeArea / (cellPairs x channelWidth)"
+                              " -- the source states none)") << "\n";
+            std::cout << "      flow path length         " << std::setprecision(4)
+                      << pathLength << " m   = channelLength x passes\n";
+            std::cout << "      spacer type              " << stk->spacerType()
+                      << "   (DECLARED; no correlation selects on it today --"
+                         " it is the fact the Sherwood fit belongs to)\n";
+        }
         std::cout << "  Mass-transfer k: " << std::scientific << std::setprecision(3)
-                  << k_mt << " m/s  (Sh=" << std::fixed << Sh
-                  << ", D_mean=" << std::scientific << D_mean
-                  << ", d_h=" << d_h << ")\n" << std::fixed;
+                  << k_c_eff << " m/s  (Sh=" << std::fixed << std::setprecision(4)
+                  << Sh_lc << ", Re=" << Re_lc << ", Sc=" << Sc_lc
+                  << ", D=" << std::scientific << D_eff << " m2/s)\n" << std::fixed;
         std::cout << "  Davies I (dil):  " << std::setprecision(4) << chD.I
                   << " mol/kg   kappa_dil = " << std::setprecision(4) << chD.kappa
                   << " S/m\n";
@@ -522,8 +903,60 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
                   << (solvedI ? "  (solved for targetDemin)" : "  (specified)") << "\n";
         std::cout << "  i (dens) = " << std::setprecision(2) << i_dens << " A/m2\n";
         std::cout << "  i_lim    = " << std::setprecision(2) << i_lim
-                  << " A/m2  (Cowan-Brown; t_cu=" << std::setprecision(3) << t_cu
-                  << ", t_co=" << t_co << ")\n";
+                  << " A/m2  (model " << lcModel << ", "
+                  << (lcDeclared ? "DECLARED" : "default") << "; set by "
+                  << i_lim_setBy << ")\n";
+        if (lcModel == "GeraldesAfonso2010")
+        {
+            std::cout << "  --- limiting current: Geraldes & Afonso, J. Membr. Sci."
+                         " 360 (2010) 499-508 ---\n";
+            std::cout << "  D_eff    = " << std::scientific << std::setprecision(5)
+                      << D_eff << " m2/s   (Eq. A13, from the ion equivalent"
+                         " fractions -- no salt decomposition)\n";
+            std::cout << "  k_c,eff  = " << k_c_eff << " m/s   (Sh = "
+                      << std::fixed << std::setprecision(4) << Sh_lc
+                      << " = " << stk->massTransfer().a << " Re^"
+                      << stk->massTransfer().b << " Sc^" << stk->massTransfer().c
+                      << ", the stack record's OWN fit)\n";
+            std::cout << "  delta    = D_eff/k_c,eff = " << std::scientific
+                      << std::setprecision(4) << (D_eff / k_c_eff)
+                      << " m   (Eq. 1, the film)\n" << std::fixed;
+            std::cout << "  ionic diffusivities at " << std::setprecision(2) << T
+                      << " K" << (muPriced
+                          ? "  (D0(25 C) x Stokes-Einstein (T/298.15)(mu_ref/mu) = "
+                          : "  (NO Stokes-Einstein correction, factor = ")
+                      << std::setprecision(5) << seFactor << ")\n";
+            for (const auto& io : lcIons)
+                std::cout << "      " << std::setw(6) << io.name
+                          << "  z " << std::setprecision(1) << io.z
+                          << "   C " << std::setprecision(4) << io.C
+                          << " mol/m3   D " << std::scientific << std::setprecision(4)
+                          << io.D << " m2/s\n" << std::fixed;
+            std::cout << "  limiting transport numbers (Eqs. 12/13; co-ions NULL"
+                         " by the model's own assumption):\n";
+            for (std::size_t k = 0; k < lcIons.size(); ++k)
+                std::cout << "      " << std::setw(6) << lcIons[k].name
+                          << "   CEM t_lim " << std::setprecision(5) << t_cem_lim[k]
+                          << "   AEM t_lim " << t_aem_lim[k] << "\n";
+            std::cout << "  i_lim (Eq. 15) CEM " << std::setprecision(2) << i_lim_cem
+                      << " A/m2,  AEM " << i_lim_aem
+                      << " A/m2  -> the LOWEST absolute value applies\n";
+            if (haveEq16)
+                std::cout << "  single salt: Eq. 16 gives " << std::setprecision(4)
+                          << i_lim_eq16 << " A/m2 against Eq. 15's "
+                          << i_lim_cem << " A/m2 -- the reduction, seen\n";
+            std::cout << "  the membrane record DECLARES t_cu = " << std::setprecision(3)
+                      << t_cu << " (CEM, 0.5 M NaCl); this model READS NONE of it"
+                         " -- it takes the co-ion numbers as null and computes the"
+                         " counter-ion ones above.  Neither value overrides the"
+                         " other; both are printed.\n";
+        }
+        else
+        {
+            std::cout << "             (Cowan-Brown working form on the membrane"
+                         " record's t_cu=" << std::setprecision(3) << t_cu
+                      << ", t_co=" << t_co << ")\n";
+        }
         std::cout << "  i/i_lim  = " << std::setprecision(3) << overLimit << "\n";
         std::cout << "  --- stack ---\n";
         std::cout << "  U        = " << std::setprecision(3) << U << " V\n";
@@ -558,6 +991,48 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
                      "(the diluate is fully demineralised for that ion).  Reduce "
                      "the current or N_cellpairs.\n";
 
+    // ---- The stack's LIMITS, checked against THIS run ---------------------
+    //  Announced as a departure from the source's stated limit, never
+    //  refused: a student may drive a stack past its rating on purpose, and
+    //  the run then says so in the log and the end-of-run caveat block.  A
+    //  limit the record does not declare is ABSENT and is not checked.
+    if (hasStack)
+    {
+        const EDStackLimits& lim = stk->limits();
+        auto violate = [&](const std::string& what)
+        {
+            if (verbosity >= 1)
+                std::cout << "  [limit] stack '" << stk->name() << "': " << what
+                          << " -- the run continues outside the stated rating ("
+                          << stk->source() << ")\n";
+            AdvisoryLog::instance().add("rating", "warning",
+                "stack '" + stk->name() + "'", what + " -- outside the stated"
+                " rating, run continued");
+        };
+        char b[260];
+        if (lim.hasI_max && i_dens > lim.i_max)
+        {
+            std::snprintf(b, sizeof(b), "current density %.2f A/m2 EXCEEDS the"
+                " maximum %.2f A/m2", static_cast<double>(i_dens),
+                static_cast<double>(lim.i_max));
+            violate(b);
+        }
+        if (lim.hasT_max && T > lim.T_max)
+        {
+            std::snprintf(b, sizeof(b), "diluate T %.2f K EXCEEDS the maximum"
+                " operating temperature %.2f K", static_cast<double>(T),
+                static_cast<double>(lim.T_max));
+            violate(b);
+        }
+        if (lim.hasFlow_max && Q_dil_in > lim.flow_max)
+        {
+            std::snprintf(b, sizeof(b), "diluate flow %.3f m3/h EXCEEDS the"
+                " maximum %.3f m3/h", static_cast<double>(Q_dil_in * 3600.0),
+                static_cast<double>(lim.flow_max * 3600.0));
+            violate(b);
+        }
+    }
+
     // ---- KPIs --------------------------------------------------------------
     kpis_["U"]                        = U;
     kpis_["I"]                        = I;
@@ -572,6 +1047,34 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     kpis_["W_electric_kW"]            = W_electric / 1000.0;
     kpis_["E_mem_pair"]               = E_mem_pair;
     kpis_["R_pair"]                   = R_pair;
+    //  The predictive route's own numbers, published ONLY on that route, so
+    //  no pre-existing golden gains an unpinned KPI (the module-record rule
+    //  of 2026-09-15).
+    if (lcModel == "GeraldesAfonso2010")
+    {
+        kpis_["D_eff"]            = D_eff;
+        kpis_["k_c_eff"]          = k_c_eff;
+        kpis_["Sh"]               = Sh_lc;
+        kpis_["Re"]               = Re_lc;
+        kpis_["Sc"]               = Sc_lc;
+        kpis_["u_superficial"]    = u_superficial;
+        kpis_["u_interstitial"]   = u_interstitial;
+        kpis_["i_lim_cem"]        = i_lim_cem;
+        kpis_["i_lim_aem"]        = i_lim_aem;
+        kpis_["film_thickness"]   = D_eff / k_c_eff;
+        kpis_["stokesEinsteinFactor"] = seFactor;
+        for (std::size_t k = 0; k < lcIons.size(); ++k)
+        {
+            //  The diffusivity the model ACTUALLY used, at the run temperature
+            //  -- published, because it is the model's key derived input and a
+            //  reader recomputing Eq. A13 by hand needs the same number.
+            kpis_["D_ion_" + lcIons[k].name]     = lcIons[k].D;
+            kpis_["C_ion_" + lcIons[k].name]     = lcIons[k].C;
+            kpis_["t_lim_cem_" + lcIons[k].name] = t_cem_lim[k];
+            kpis_["t_lim_aem_" + lcIons[k].name] = t_aem_lim[k];
+        }
+        if (haveEq16) kpis_["i_lim_eq16"] = i_lim_eq16;
+    }
 
     return 0;
 }
