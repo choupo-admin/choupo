@@ -1617,9 +1617,52 @@ def main():
         dtext = re.sub(r'/\*.*?\*/', '', dtext, flags=re.S)
         dtext = re.sub(r'(^|\s)//.*$', '', dtext, flags=re.M)
         for m in re.finditer(
-                r'\b(?:membrane|module|adsorbent|material|wallMaterial|wall|resin)'
-                r'\s+([A-Za-z0-9_]+)\s*;', dtext):
+                r'\b(?:membrane|module|stack|adsorbent|material|wallMaterial'
+                r'|wall|resin)'
+                r'\s+([A-Za-z0-9_-]+)\s*;', dtext):
             asset_names.add(m.group(1))
+
+    #  ONE asset may NAME another, and the seal must follow it.  A `kind
+    #  edStack` record declares the `kind IEM` pair the stack is built with
+    #  (`membranes CMX_AMX;`), and that reference lives in the RECORD, not in
+    #  any system dict -- so the scan above cannot see it.  Follow it to a
+    #  fixpoint, over the staged tree first and the catalogue second, so a
+    #  case-local stack record is followed too.
+    #
+    #  TWO THINGS THIS LINE GOT WRONG until 2026-09-18, and both made the
+    #  electrodialysis cases UNSEALABLE rather than wrongly sealed -- which is
+    #  the fail-closed direction, and is why they simply shipped with no
+    #  manifest and check_sealed_corpus went red:
+    #    * `stack` was not a key here at all, so `stack EUR2C-7P18;` staged
+    #      nothing and the staged run died at EDStackRegistry with the whole
+    #      factory empty;
+    #    * the NAME class excluded the hyphen, and every record this slice
+    #      added carries one (NF270-4040, SW30HR-380, EUR2C-7P18,
+    #      EurodiaED-100P-50) -- `module NF270-4040;` matched `NF270`, an
+    #      asset that exists and is a DIFFERENT record.
+    #  The 2026-08-04 rule stands and is what this is: when you add a record
+    #  home a model reads, add it to the importer's closure in the same commit.
+    seen_assets = set()
+    while True:
+        fresh = asset_names - seen_assets
+        if not fresh:
+            break
+        seen_assets |= fresh
+        for name in sorted(fresh):
+            for base in (Path(caseDir) / "constant" / "assets",
+                         std / "assets"):
+                f = base / (name + ".dat")
+                if not f.exists():
+                    continue
+                atext = read(f) or ""
+                atext = re.sub(r'/\*.*?\*/', '', atext, flags=re.S)
+                atext = re.sub(r'(^|\s)//.*$', '', atext, flags=re.M)
+                for m in re.finditer(
+                        r'^\s*membranes?\s+([A-Za-z0-9_-]+)\s*;',
+                        atext, re.M):
+                    asset_names.add(m.group(1))
+                break
+
     for name in sorted(asset_names):
         want_plant("assets/" + name + ".dat")
         eq = std / "parameters" / "adsorption" / "equilibria" / name
