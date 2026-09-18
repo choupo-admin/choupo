@@ -32,7 +32,7 @@ Single-point property evaluation: at a given (T, P, composition) the thermo pack
 
 \begin{tutoriallink}
 \file{tutorials/props/compare/acetone01\_ipa\_water\_azeotrope}
-\quad (and 8 more)
+\quad (and 9 more)
 \end{tutoriallink}
 
 \paragraph{\code{explainProperty}}
@@ -659,6 +659,25 @@ The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve 
 \begin{tutoriallink}
 \file{tutorials/props/molecular/envelope01\_natural\_gas}
 \quad (and 1 more)
+\end{tutoriallink}
+
+\paragraph{\code{polarisationIndex}}
+The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes \& Afonso (J. Membr. Sci. 300 (2007) 20): for every row of a measured dataset (bulk and permeate concentration per ion, volume flux) it prices each ion's mass-transfer coefficient on the ion's OWN diffusivity from the declared correlation, corrects it for suction, and solves the wall concentrations coupled by ONE interface potential gradient fixed by electroneutrality -- no film thickness, no fitted parameter. Publishes per row the polarisation index Gamma\_<ion> = (C\_m - C\_b)/C\_b, xi and the wall charge residual, and per ion k\_<ion>. Witness polarisation01\_geraldes\_afonso\_table1; gate check\_polarisation\_coupling recomputes Eqs. (25)-(28) independently.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{T}\textbf{*} & Temperature [K] \\
+\code{closeBy} & Ion derived by electroneutrality \\
+\code{dataset}\textbf{*} & Measured rows \\
+\code{ions}\textbf{*} & Ions \\
+\code{massTransfer}\textbf{*} & Film-coefficient correlation \\
+\code{polarisation} & Polarisation policy \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/membrane/polarisation01\_geraldes\_afonso\_table1}
 \end{tutoriallink}
 
 \paragraph{\code{reactionCurve}}

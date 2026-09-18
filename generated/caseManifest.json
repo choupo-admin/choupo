@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 397,
+  "cases": 413,
   "witnesses": 15,
   "validationOp": 6,
-  "anchored": 11
+  "anchored": 12
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -380,6 +380,38 @@
     "activityModels": [
      "ideal"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/electrodialysis/edbatch01_constant_current": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchElectrodialysis"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/electrodialysis/edbatch02_constant_voltage": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchElectrodialysis"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
    },
    "roles": [],
    "hasGolden": true
@@ -1093,6 +1125,94 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/electrochem/ed03_stack_record": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/electrochem/ed04_limiting_current_multiionic": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/electrochem/ed05_industrial_stack": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/electrochem/ed06_stages_in_series": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/electrochem/ed07_feed_and_bleed": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack",
+    "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/plant/ChemicalPlantTutorial": {
    "application": "choupoSolve",
    "thermo": {
@@ -1141,6 +1261,14 @@
     "activityModels": [
      "ideal"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/greenAmmoniaIndustrialN2": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution"
    },
    "roles": [],
    "hasGolden": true
@@ -2018,6 +2146,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/membrane/polarisation01_geraldes_afonso_table1": {
+   "application": "choupoProps",
+   "ops": [
+    "polarisationIndex"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/molecular/cosmoSAC01_water_ethanol": {
    "application": "choupoProps",
    "thermo": {
@@ -2191,6 +2335,17 @@
     "activityModels": [
      "ideal"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/srk01_h2n2_density": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
    },
    "roles": [],
    "hasGolden": true
@@ -4956,6 +5111,110 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane13_sdem_nf270_mgso4_traces": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane14_polarisation_multiionic": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane15_module_nf270_4040": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane16_module_sw30hr_8040": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/optimisation/designSpec01_triple_equal_areas": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5811,6 +6070,8 @@
     "tutorials/batch/crystallisation/batch13_nacl_pitzer",
     "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
     "tutorials/batch/drying/dryer01_sucrose_tray",
+    "tutorials/batch/electrodialysis/edbatch01_constant_current",
+    "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
     "tutorials/batch/membrane/diafilter02_fouling_decline",
     "tutorials/batch/reactor/batch01_first_order",
@@ -5920,6 +6181,7 @@
     "tutorials/props/heat/psychro02_air_water",
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
+    "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope01_natural_gas",
@@ -5934,6 +6196,7 @@
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
+    "tutorials/props/molecular/srk01_h2n2_density",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/reactor/thiele02_prater_temperature",
     "tutorials/props/scan/binary01_lle_water_nbutanol",
@@ -5958,10 +6221,16 @@
    "choupoSolve": [
     "tutorials/electrochem/ed01_nacl_desalination",
     "tutorials/electrochem/ed02_over_limiting_current",
+    "tutorials/electrochem/ed03_stack_record",
+    "tutorials/electrochem/ed04_limiting_current_multiionic",
+    "tutorials/electrochem/ed05_industrial_stack",
+    "tutorials/electrochem/ed06_stages_in_series",
+    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammonia02_full_plant",
     "tutorials/plant/esterification2sector",
+    "tutorials/plant/greenAmmoniaIndustrialN2",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",
     "tutorials/plant/polycaprolactonePlant",
@@ -6134,6 +6403,12 @@
     "tutorials/steady/membranes/membrane09_index_vs_rigorous",
     "tutorials/steady/membranes/membrane10_dspmde_divalent",
     "tutorials/steady/membranes/membrane11_dspmde_born_toggle",
+    "tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces",
+    "tutorials/steady/membranes/membrane13_sdem_nf270_mgso4_traces",
+    "tutorials/steady/membranes/membrane14_polarisation_multiionic",
+    "tutorials/steady/membranes/membrane15_module_nf270_4040",
+    "tutorials/steady/membranes/membrane16_module_sw30hr_8040",
+    "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",
@@ -6260,6 +6535,10 @@
    ],
    "batchDryer": [
     "tutorials/batch/drying/dryer01_sucrose_tray"
+   ],
+   "batchElectrodialysis": [
+    "tutorials/batch/electrodialysis/edbatch01_constant_current",
+    "tutorials/batch/electrodialysis/edbatch02_constant_voltage"
    ],
    "batchReactor": [
     "tutorials/batch/combustion/ignition01_h2o2",
@@ -6424,6 +6703,10 @@
    "electricLoad": [
     "tutorials/electrochem/ed01_nacl_desalination",
     "tutorials/electrochem/ed02_over_limiting_current",
+    "tutorials/electrochem/ed03_stack_record",
+    "tutorials/electrochem/ed05_industrial_stack",
+    "tutorials/electrochem/ed06_stages_in_series",
+    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
@@ -6431,7 +6714,12 @@
    ],
    "electrodialysisStack": [
     "tutorials/electrochem/ed01_nacl_desalination",
-    "tutorials/electrochem/ed02_over_limiting_current"
+    "tutorials/electrochem/ed02_over_limiting_current",
+    "tutorials/electrochem/ed03_stack_record",
+    "tutorials/electrochem/ed04_limiting_current_multiionic",
+    "tutorials/electrochem/ed05_industrial_stack",
+    "tutorials/electrochem/ed06_stages_in_series",
+    "tutorials/electrochem/ed07_feed_and_bleed"
    ],
    "equilibriumReactor": [
     "tutorials/steady/reactors/equil01_reforming"
@@ -6592,6 +6880,7 @@
     "tutorials/steady/thermoTest/model5_nrtl_flash"
    ],
    "mixer": [
+    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
@@ -6669,9 +6958,16 @@
     "tutorials/steady/membranes/membrane09_index_vs_rigorous",
     "tutorials/steady/membranes/membrane10_dspmde_divalent",
     "tutorials/steady/membranes/membrane11_dspmde_born_toggle",
+    "tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces",
+    "tutorials/steady/membranes/membrane13_sdem_nf270_mgso4_traces",
+    "tutorials/steady/membranes/membrane14_polarisation_multiionic",
+    "tutorials/steady/membranes/membrane15_module_nf270_4040",
+    "tutorials/steady/membranes/membrane16_module_sw30hr_8040",
+    "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling"
    ],
    "splitter": [
+    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/process03_recycle",
@@ -6796,13 +7092,21 @@
     "tutorials/props/molecular/cosmoSAC01_water_ethanol"
    ],
    "davies": [
+    "tutorials/batch/electrodialysis/edbatch01_constant_current",
+    "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
     "tutorials/electrochem/ed01_nacl_desalination",
     "tutorials/electrochem/ed02_over_limiting_current",
+    "tutorials/electrochem/ed03_stack_record",
+    "tutorials/electrochem/ed04_limiting_current_multiionic",
+    "tutorials/electrochem/ed05_industrial_stack",
+    "tutorials/electrochem/ed06_stages_in_series",
+    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/props/electrolyte/davies01_band_edge",
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
     "tutorials/props/electrolyte/pitzer_calcite_brine",
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",
     "tutorials/props/electrolyte/tartaricAcid_acidulation",
+    "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
@@ -6824,6 +7128,10 @@
     "tutorials/steady/membranes/membrane07_scaling_si",
     "tutorials/steady/membranes/membrane08_softened_scaling",
     "tutorials/steady/membranes/membrane09_index_vs_rigorous",
+    "tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces",
+    "tutorials/steady/membranes/membrane13_sdem_nf270_mgso4_traces",
+    "tutorials/steady/membranes/membrane14_polarisation_multiionic",
+    "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
     "tutorials/steady/thermo/basis01_two_unit_chain"
    ],
@@ -6865,6 +7173,8 @@
     "tutorials/batch/combustion/ignition02_h2air_slack",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/drying/dryer01_sucrose_tray",
+    "tutorials/batch/electrodialysis/edbatch01_constant_current",
+    "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
     "tutorials/batch/membrane/diafilter02_fouling_decline",
     "tutorials/batch/reactor/batch01_first_order",
@@ -6907,6 +7217,11 @@
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/electrochem/ed01_nacl_desalination",
     "tutorials/electrochem/ed02_over_limiting_current",
+    "tutorials/electrochem/ed03_stack_record",
+    "tutorials/electrochem/ed04_limiting_current_multiionic",
+    "tutorials/electrochem/ed05_industrial_stack",
+    "tutorials/electrochem/ed06_stages_in_series",
+    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/esterification2sector",
     "tutorials/plant/hda",
@@ -6950,6 +7265,7 @@
     "tutorials/props/heat/psychro02_air_water",
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
+    "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_root_jump",
     "tutorials/props/molecular/flash01_operating_line",
@@ -7069,6 +7385,12 @@
     "tutorials/steady/membranes/membrane09_index_vs_rigorous",
     "tutorials/steady/membranes/membrane10_dspmde_divalent",
     "tutorials/steady/membranes/membrane11_dspmde_born_toggle",
+    "tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces",
+    "tutorials/steady/membranes/membrane13_sdem_nf270_mgso4_traces",
+    "tutorials/steady/membranes/membrane14_polarisation_multiionic",
+    "tutorials/steady/membranes/membrane15_module_nf270_4040",
+    "tutorials/steady/membranes/membrane16_module_sw30hr_8040",
+    "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",
@@ -7217,6 +7539,9 @@
     "tutorials/props/electrolyte/pitzer_hmw_hot_agreement",
     "tutorials/props/electrolyte/pitzer_nacl_sp77_hot"
    ],
+   "polarisationIndex": [
+    "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
+   ],
    "propertyPoint": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
@@ -7224,6 +7549,7 @@
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
+    "tutorials/props/molecular/srk01_h2n2_density",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder"
