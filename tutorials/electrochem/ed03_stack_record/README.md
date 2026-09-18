@@ -82,7 +82,7 @@ channel dimensions and the effective mass-transfer area, and they differ by
 
 The paper states the spacer thickness but no porosity; it **postulates** the
 Schmidt exponent 1/3 rather than fitting it; and it states no stack limits at
-all.  Each of those four values carries `origin estimate; reviewStatus
+all.  Each of those four values carries `origin estimated; reviewStatus
 unverified;` and a note, and each prints on **every** run that reads it —
 
 ```

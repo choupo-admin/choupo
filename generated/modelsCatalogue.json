@@ -1146,9 +1146,9 @@
       },
       {
         "key": "assets",
-        "name": "Plant assets, flat with a `kind` field: construction materials, membranes, adsorbents, ion-exchange media",
+        "name": "Plant assets, flat with a `kind` field: construction materials, membranes, membrane modules, electrodialysis stacks, adsorbents, ion-exchange media",
         "source": "data/standards/assets/",
-        "count": 12
+        "count": 17
       },
       {
         "key": "utilities",

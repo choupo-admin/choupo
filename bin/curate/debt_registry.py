@@ -321,7 +321,7 @@ SELF_CONTRADICTING_RECORDS = {}
 #  enthalpy charged for it is "missing (or inventing) that phase change, which
 #  is a residual of latent-heat size".  The check is not in question.
 #
-#  What is pinned here is that SEVEN shipped tutorials trigger it, five with a
+#  What is pinned here is that shipped tutorials trigger it, some with a
 #  real energy residual beside the label.  The corpus stayed green because the
 #  finding is announced rather than refused, which is the right default for an
 #  extrapolation and is doing more work than it should here: an extrapolated
@@ -330,7 +330,7 @@ SELF_CONTRADICTING_RECORDS = {}
 #
 #  WHY IT IS PINNED AND NOT FIXED.  Correcting a case means changing what it
 #  DECLARES about its streams -- the `vaporFraction`/`phase` in 0/ -- which
-#  changes published answers in five tutorials with recorded goldens.  That is
+#  changes published answers in tutorials with recorded goldens.  That is
 #  a curation decision about each case's physics and is Vitor's.  Refusing an
 #  impossible label outright is a contract change with the same blast radius.
 #
@@ -343,18 +343,24 @@ SELF_CONTRADICTING_RECORDS = {}
 #  REMEDY, per case: decide what the stream really is at its (T, P, z) and
 #  declare it -- `vaporFraction`/`phase` in 0/ -- then re-record the golden.
 #  BLOCKER: each is a thermodynamic judgement about that case, not a sweep.
+#  THREE PINS CLEARED 2026-09-18, and the record of WHEN is the point.
+#
+#  `combined01_brayton_rankine` left this dict on 2026-09-12 (1d0264ed5),
+#  whose message named the shape in its own words: A FIX THAT PAYS SEVERAL
+#  DEBTS AT ONCE PAYS THEM IN SEVERAL LEDGERS, AND THE ONE NOBODY REMEMBERS
+#  IS THE ONE IN A DIFFERENT FILE.  It was written at 12:08.  Three hours
+#  later `d6a984701` resolved the feed's thermal state and paid
+#  `stripper01_sour_water` and `stripper02_sour_water_h2s`; nine hours later
+#  `8d29f4621` made the evaporator chest read its own phase and paid
+#  `phasechange01_partial_condenser`.  Neither cleared its ledger entry, so
+#  this gate was RED from that evening until today -- the warning falsified
+#  by the next two commits after the one that wrote it.
+#
+#  MEASURED 2026-09-18: all three print IMPOSSIBLE INLET PHASE exactly zero
+#  times.  Nothing about the remaining three changed; their residuals are
+#  re-measured by the gate on every run and are not transcribed here.
 IMPOSSIBLE_PHASE_CASES = {
-    "phasechange01_partial_condenser":   898.64,
     "acetone03_luyben_reaction_section": 390.606,
-    #  PAID 2026-09-08 by the exchanger enthalpy-inversion (1298dc0d5) and
-    #  the pin outlived it by four days.  MEASURED 2026-09-12: the case
-    #  prints IMPOSSIBLE INLET PHASE exactly ZERO times, and the gate's
-    #  own stale-pin arm is what found it -- the machinery working.  Its
-    #  sibling ENERGY pins for the same case were cleared that day; this
-    #  one was missed, which is the shape to watch for: a fix that pays
-    #  several debts at once pays them in several ledgers.
-    "stripper02_sour_water_h2s":          17.4804,
-    "stripper01_sour_water":              12.7946,
     "tsa01_co2_twin_bed":                  0.023239,
     "flash10_ch4propane_pcsaft":           2.4e-05,
 }

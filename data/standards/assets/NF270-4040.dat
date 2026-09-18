@@ -26,7 +26,7 @@
   spacer thickness, the spacer porosity and the leaf length are NOT on
   this sheet (nor on the Rev. 2 2020 sheet, nor in DuPont's midsize
   design guidelines).  Each carries an EDUCATED value below, marked
-  `origin estimate; reviewStatus unverified;` with a note saying HOW to
+  `origin estimated; reviewStatus unverified;` with a note saying HOW to
   verify it (Vitor Geraldes, 2026-09-15: "onde faltam parametros coloca um
   valor educado, com uma nota a dizer que tem de ser verificado").  The
   engine announces every one of them on every run that reads this record.
@@ -85,19 +85,19 @@ provenance
 
     channelHeight
     {
-        origin        estimate;
+        origin        estimated;
         reviewStatus  unverified;
         notes         "28 mil (0.7112 mm) is the feed spacer DuPont states for its 8-inch SW30HR-380 (Form No. 45-D00971-en, Rev. 7); the NF270-4040 sheet states none, and neither does the sibling BW30 PRO-4040 sheet (Form No. 45-D03970-en, Rev. 5, fetched 2026-09-15); to be verified by measuring the NF270-4040 feed spacer on an unrolled leaf";
     }
     spacerPorosity
     {
-        origin        estimate;
+        origin        estimated;
         reviewStatus  unverified;
         notes         "0.90 is typical for commercial diamond feed spacers; to be verified by weighing a spacer coupon: porosity = 1 - m/(rho_PP * A * h)";
     }
     leafLength
     {
-        origin        estimate;
+        origin        estimated;
         reviewStatus  unverified;
         notes         "element length 1.016 m (dimension A) per the data sheet includes the end caps; the leaf length is not published; to be verified against the element's leaf dimensions (unroll one)";
     }

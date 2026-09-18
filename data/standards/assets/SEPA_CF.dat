@@ -31,7 +31,7 @@
   shimmed down to the installed feed spacer, so the operating channel is
   the spacer the user chose plus shims -- not a fact of the cell.  The
   0.787 mm (31 mil) below, the second-thinnest spacer Sterlitech ships, is
-  an EDUCATED DEFAULT marked `origin estimate; reviewStatus unverified;`,
+  an EDUCATED DEFAULT marked `origin estimated; reviewStatus unverified;`,
   as is the spacer porosity; the engine announces both on every run.  The
   slot depth is stored beside it as the MEASURED cell fact.
 
@@ -69,13 +69,13 @@ provenance
 
     channelHeight
     {
-        origin        estimate;
+        origin        estimated;
         reviewStatus  unverified;
         notes         "the SEPA CF channel height is the installed feed spacer plus shims (the 1.09 mm slot is shimmed down to it); 31 mil (0.787 mm) is one of the four spacers Sterlitech ships (manual Table 3); to be verified for your own shim/spacer stack";
     }
     spacerPorosity
     {
-        origin        estimate;
+        origin        estimated;
         reviewStatus  unverified;
         notes         "0.90 is typical for commercial diamond feed spacers; to be verified by weighing a spacer coupon: porosity = 1 - m/(rho_PP * A * h)";
     }

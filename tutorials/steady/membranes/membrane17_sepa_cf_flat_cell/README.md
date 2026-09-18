@@ -31,7 +31,7 @@ stores a derivative).
 **The channel height is yours.**  The slot is 1.09 mm deep and shimmed down
 to the spacer you install, so the operating channel is a fact about your
 stack, not about the cell.  The record's 31 mil (0.787 mm), one of the four
-spacers Sterlitech ships, is an EDUCATED DEFAULT marked `origin estimate;
+spacers Sterlitech ships, is an EDUCATED DEFAULT marked `origin estimated;
 reviewStatus unverified;` and announced on every run: copy the record to
 `constant/assets/` and set your own.
 

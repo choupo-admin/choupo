@@ -148,13 +148,13 @@ provenance
     }
     channelWidth
     {
-        origin        estimate;
+        origin        estimated;
         reviewStatus  unverified;
         notes         "NOT stated by anyone: back-calculated from a superficial velocity of 0.080 m/s at the design flow of 3000 L/h through 50 channels (100 cell pairs over 2 hydraulic passes) of 0.7 mm height, 0.080 being the middle of the 0.066-0.110 m/s band the EUR2C-7P18 bench stack was run at.  To be verified by measuring the width of a membrane sheet; the channel LENGTH follows from it and the active area and is never stored";
     }
     spacerPorosity
     {
-        origin        estimate;
+        origin        estimated;
         reviewStatus  unverified;
         notes         "not stated; 0.90 is typical of commercial spacers, to be verified by weighing a spacer coupon: porosity = 1 - m/(rho_polymer * W * L * h)";
     }
@@ -174,7 +174,7 @@ provenance
     {
         c
         {
-            origin        estimate;
+            origin        estimated;
             reviewStatus  unverified;
             notes         "the source paper POSTULATES the Schmidt exponent 1/3 (section 3.4) rather than fitting it.  To be verified by regressing c from limiting-current data over solutions of materially different effective diffusivity at fixed Re";
         }

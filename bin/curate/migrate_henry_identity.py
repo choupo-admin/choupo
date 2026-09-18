@@ -140,6 +140,14 @@ KI_PAIRS = {
                    " (the profile is a convention, not a solvent pin)",
     ("N2", "NH3"): "Krichevsky-Kasarnovsky/Ilinskaya extensions (v_inf,"
                    " margulesA) within the same H_xp convention; solvent NH3",
+    #  PROMOTED to the catalogue 2026-09-08 (Vitor's decision, 9ae268c15) in
+    #  the SAME full KK form as its two siblings above, and the exception
+    #  table was not extended with it -- so this check has refused the pair,
+    #  and the gate has been red, since the day it landed.  The table is the
+    #  record of a human curation decision; the decision was taken with the
+    #  record, and this line is it being written down.
+    ("Ar", "NH3"): "Krichevsky-Kasarnovsky/Ilinskaya extensions (v_inf,"
+                   " margulesA) within the same H_xp convention; solvent NH3",
 }
 KI_EXTRA_KEYS = {"v_inf", "margulesA"}
 

@@ -39,7 +39,7 @@ which it used.
 **What the sheet does not state is an ESTIMATE, marked and announced**
 (Vítor Geraldes, 2026-09-15: *"onde faltam parâmetros coloca um valor
 educado, com uma nota a dizer que tem de ser verificado"*).  A value no
-document gives carries `{ origin estimate; reviewStatus unverified; notes
+document gives carries `{ origin estimated; reviewStatus unverified; notes
 "how to verify it"; }` in the record's `provenance {}`; the reader refuses
 an estimate with no note or no review status, and the module announces
 every estimate it reads on every run (`[estimate] module '...'`, and the
@@ -73,7 +73,7 @@ belongs to the equipment (the same ruling).
 The `massTransfer {}` block is equipment-and-spacer data, never a universal
 law: `Sh = a Re^b Sc^c` fitted to one stack, with the velocity basis it was
 fitted on declared beside it.  Estimates follow the `kind membraneModule`
-contract exactly — `{ origin estimate; reviewStatus unverified; notes "how to
+contract exactly — `{ origin estimated; reviewStatus unverified; notes "how to
 verify it"; }`, refused without the note, announced on every run that reads
 one — and reach ONE level into `limits {}` and `massTransfer {}`, because
 that is where two of EUR2C-7P18's four estimates live.

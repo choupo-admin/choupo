@@ -29,12 +29,13 @@ facts and this gate keeps them separate.
 
 PINNED, NOT FIXED, and that is deliberate.  Correcting these means changing
 what each case DECLARES about its streams, which changes published answers in
-five tutorials with recorded goldens; that is a curation decision and it is
-Vitor's.  Refusing an impossible label outright is a contract change with the
-same blast radius.  What is NOT deferred is the ratchet: a case that acquires
-one of these from here on must FAIL rather than join the list quietly.  A
-visible gap is strictly better than an invisible falsehood -- the same
-posture as the four NEVER-list records and the eighteen missing citations.
+the tutorials that carry them, each with a recorded golden; that is a curation
+decision and it is Vitor's.  Refusing an impossible label outright is a
+contract change with the same blast radius.  What is NOT deferred is the
+ratchet: a case that acquires one of these from here on must FAIL rather than
+join the list quietly.  A visible gap is strictly better than an invisible
+falsehood -- the same posture as the four NEVER-list records and the eighteen
+missing citations.
 
 WHY IT MATTERS TO SOMEONE LEARNING.  Found by authoring a case as a student
 would: the run reported `Recycle converged in 3 Newton iteration(s)`, wrote
@@ -230,7 +231,7 @@ def main() -> int:
           + ", ".join(clean) + ").  Every number here is measured from the"
           " runs, never read back from the pin table.  PINNED, NOT FIXED:"
           " correcting these changes what each case DECLARES about its"
-          " streams, and so changes published answers in five tutorials with"
+          " streams, and so changes published answers in tutorials with"
           " recorded goldens -- a curation decision, reserved.  NOT COVERED:"
           " whether any label SHOULD be corrected and how (a per-case"
           " thermodynamic judgement), the Rachford-Rice test itself (the"
