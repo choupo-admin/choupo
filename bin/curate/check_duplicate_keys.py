@@ -73,9 +73,19 @@ def scan(path):
     #  this gate reporting a duplicate at a line that held only a brace).
     def blank(m):
         return re.sub(r"[^\n]", " ", m.group(0))
-    body = re.sub(r"/\*.*?\*/", blank, body, flags=re.S)
-    body = re.sub(r"//[^\n]*", blank, body)
-    body = re.sub(r'"(?:[^"\\]|\\.)*"', blank, body, flags=re.S)
+    #  ONE pass, leftmost-wins, mirroring the engine's own tokenizer: it
+    #  consumes a quoted string ATOMICALLY the moment it sees the opening
+    #  quote (Dictionary.cpp, the `if (c == '"')` branch), and only looks
+    #  for `//` between tokens.  Stripping comments FIRST does not mirror
+    #  that: a URL inside a citation string ("https://...") has its tail
+    #  blanked away together with the string's CLOSING quote, after which
+    #  every quote in the file pairs with the wrong partner and the prose
+    #  of the next note is scanned as if it were dict grammar.  That is
+    #  how this gate came to report a `to` declared twice in
+    #  data/standards/assets/SEPA_CF.dat -- two `notes` strings, each
+    #  containing the words "to be verified", in a record the engine
+    #  parses correctly.
+    body = re.sub(r'"(?:[^"\\]|\\.)*"|/\*.*?\*/|//[^\n]*', blank, body, flags=re.S)
 
     #  Pair keys carry a hyphen (compA-compB, CO2-water), so it belongs in the
     #  key character class.  Without it the scanner split `compA-compB` into

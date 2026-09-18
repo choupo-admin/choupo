@@ -88,7 +88,19 @@ def run(case):
 
 
 def psat_lines(out):
-    return [ln for ln in out.splitlines() if "[psat]" in ln]
+    """The `[psat]` advisories themselves -- not every line that MENTIONS one.
+
+    The tag is a PREFIX the vapour-pressure path stamps on its own
+    announcements.  A substring test also catches prose that points the
+    reader AT those lines, and on 2026-09-08 the engine acquired exactly
+    that: `StreamEquilibrium.H`'s supercritical-root message ends "read the
+    [henry] and [psat] extrapolation lines for this run".  It is a good
+    sentence and it is not a psat advisory -- it names a STREAM, so arm (d)
+    (every message names its component) failed on it, and arm (a) read it as
+    a supercritical evaluation that had skipped the above-Tc sentence.  Both
+    accusations were false and the engine was right.
+    """
+    return [ln for ln in out.splitlines() if ln.lstrip().startswith("[psat]")]
 
 
 def main() -> int:
