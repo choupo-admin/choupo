@@ -233,7 +233,7 @@ void EDStack::readFromDict(const DictPtr& d, const std::string& sourcePath)
         throw std::runtime_error(locus + ": no `provenance {}` block -- a stack"
             " record cites the document it was transcribed from (`source"
             " \"...\";`) and marks each value the document does not state with"
-            " `{ origin estimate; reviewStatus unverified; notes \"how to"
+            " `{ origin estimated; reviewStatus unverified; notes \"how to"
             " verify it\"; }`.");
     auto p = d->subDict("provenance");
     source_ = p->lookupWordOrDefault("source", "");

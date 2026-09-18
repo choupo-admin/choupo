@@ -168,7 +168,7 @@ void MembraneModule::readFromDict(const DictPtr& d, const std::string& sourcePat
         throw std::runtime_error(locus + ": no `provenance {}` block -- a"
             " module record cites the data sheet it was transcribed from"
             " (`source \"...\";`) and marks each value the sheet does not"
-            " state with `{ origin estimate; reviewStatus unverified;"
+            " state with `{ origin estimated; reviewStatus unverified;"
             " notes \"how to verify it\"; }`.");
     auto p = d->subDict("provenance");
     source_ = p->lookupWordOrDefault("source", "");

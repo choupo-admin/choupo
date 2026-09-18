@@ -12,7 +12,7 @@ which was a guess.  Now `module <name>;` names a record of kind
 laboratory flat-sheet cell that takes any coupon), and Vitor's ruling on the
 numbers no document gives -- "onde faltam parametros coloca um valor educado,
 com uma nota a dizer que tem de ser verificado" -- is a CONTRACT the engine
-must keep on every run: an educated value is marked `origin estimate;
+must keep on every run: an educated value is marked `origin estimated;
 reviewStatus unverified;` with a note saying how to verify it, and the module
 ANNOUNCES each one it reads.  Three claims are pinned here: the records say
 what the documents say, the engine tells the reader what was assumed, and the
@@ -22,7 +22,7 @@ WHAT THIS GATE CHECKS (every witness is RUN here; nothing is read from a
 stale converged/):
   (a) THE RECORDS AGAINST THE DOCUMENTS.  Every `kind membraneModule` record
       in data/standards/assets/ carries the keys its format needs; every value
-      the TABLE below marks as an estimate carries `origin estimate` +
+      the TABLE below marks as an estimate carries `origin estimated` +
       `reviewStatus unverified` + non-empty `notes`, and NO data-sheet value
       does; and every data-sheet value equals the TABLE -- a second, independent
       transcription of the same pages (DuPont Form No. 45-D01529-en Rev. 8,
@@ -93,6 +93,17 @@ C++ moved, run, restored; the gate never patches a source):
                                                           CAUGHT by (d): the
       profile's last z (0.0953) is not A/slotWidth (0.1469), and the section
       check fails with it.
+
+THE WORD IS `estimated`, spelled out here because the engine is tolerant.
+`core/Origin.H::originFromWord` accepts BOTH `estimate` and `estimated`
+and maps them onto the same Origin, so no run can tell you which one a
+record used.  These records shipped with `estimate` -- a word no other
+record in the tree writes, and the one `originWord()` never renders back
+-- so check_origin_census (the vocabulary's own gate) refused them from
+the day they landed while this gate asserted the same word and passed.
+The records were normalised to `estimated` on 2026-09-18 and this reader
+follows them.  Two gates testing one word is two homes; they now agree,
+and the census is the one that decides what the vocabulary is.
 """
 import json
 import os
@@ -311,8 +322,8 @@ def main():
             if not isinstance(blk, dict):
                 failures.append(f"(a) {name}: `{k}` is not in the document and carries no provenance block")
                 continue
-            if word(blk.get("origin", [])) != "estimate":
-                failures.append(f"(a) {name}: `{k}` provenance origin {word(blk.get('origin', []))!r}, must be `estimate`")
+            if word(blk.get("origin", [])) != "estimated":
+                failures.append(f"(a) {name}: `{k}` provenance origin {word(blk.get('origin', []))!r}, must be `estimated`")
             if word(blk.get("reviewStatus", [])) != "unverified":
                 failures.append(f"(a) {name}: `{k}` reviewStatus {word(blk.get('reviewStatus', []))!r}, must be `unverified`")
             if len(word(blk.get("notes", []))) < 20 or "verif" not in word(blk.get("notes", [])):
@@ -320,7 +331,7 @@ def main():
             if k in d and not close(si(d[k]), v, 1e-3):
                 failures.append(f"(a) {name}: estimate `{k}` = {si(d[k])} is not the recorded educated value {v}")
         for k, blk in prov.items():
-            if isinstance(blk, dict) and word(blk.get("origin", [])) == "estimate" and k not in tb["estimates"]:
+            if isinstance(blk, dict) and word(blk.get("origin", [])) == "estimated" and k not in tb["estimates"]:
                 failures.append(f"(a) {name}: `{k}` is a data-sheet value and is marked as an estimate")
     for name in TABLE:
         if name not in records:
@@ -487,7 +498,7 @@ def main():
         return 1
     print("check_membrane_modules: OK -- 3 `kind membraneModule` records (NF270-4040, SW30HR-380, SEPA_CF) match a second "
           "transcription of their documents on every data-sheet value, mark every value the document does not state "
-          "`origin estimate; reviewStatus unverified;` with a note saying how to verify it and mark no data-sheet value so; "
+          "`origin estimated; reviewStatus unverified;` with a note saying how to verify it and mark no data-sheet value so; "
           "membrane15/16/17 announce exactly those estimates (3/2/2 lines, the record's own note, a provenance advisory each) "
           "and no [limit] line; 5 refusals fire by name (inline area / channelHeight / membrane beside a spiral module, a cell "
           "without a membrane, an unknown module with the registered list); the published inlet crossflow recomputes the feed "

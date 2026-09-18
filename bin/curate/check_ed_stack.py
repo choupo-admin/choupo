@@ -33,7 +33,7 @@ stale converged/):
       the same sections of the same paper; for EurodiaED-100P-50 what its
       owner stated -- read from the .dat by this gate's own parser, never
       through the engine.  Every value the TABLE marks an estimate carries
-      `origin estimate` + `reviewStatus unverified` + a non-empty note, every
+      `origin estimated` + `reviewStatus unverified` + a non-empty note, every
       value it marks `measured` carries `origin measured` + the same review
       status and note, and no value the source states is marked an estimate.
       Two structural rules ride here: a record whose source names no membrane
@@ -169,6 +169,17 @@ engine's own D_eff therefore arrives already rounded at ~8e-13 relative.  The
 threshold is 1e-10 -- still eight orders tighter than any formula error -- and
 the message now prints the relative gap.  A failure whose numbers look equal
 teaches the reader nothing.
+
+THE WORD IS `estimated`, spelled out here because the engine is tolerant.
+`core/Origin.H::originFromWord` accepts BOTH `estimate` and `estimated`
+and maps them onto the same Origin, so no run can tell you which one a
+record used.  These records shipped with `estimate` -- a word no other
+record in the tree writes, and the one `originWord()` never renders back
+-- so check_origin_census (the vocabulary's own gate) refused them from
+the day they landed while this gate asserted the same word and passed.
+The records were normalised to `estimated` on 2026-09-18 and this reader
+follows them.  Two gates testing one word is two homes; they now agree,
+and the census is the one that decides what the vocabulary is.
 """
 import json
 import math
@@ -501,8 +512,8 @@ def main():
                 failures.append("(a) %s: `%s` is not stated by the paper and "
                                 "carries no provenance block" % (name, dotted))
                 continue
-            if word(blk.get("origin", [])) != "estimate":
-                failures.append("(a) %s: `%s` provenance origin %r, must be `estimate`"
+            if word(blk.get("origin", [])) != "estimated":
+                failures.append("(a) %s: `%s` provenance origin %r, must be `estimated`"
                                 % (name, dotted, word(blk.get("origin", []))))
             if word(blk.get("reviewStatus", [])) != "unverified":
                 failures.append("(a) %s: `%s` reviewStatus %r, must be `unverified`"
@@ -538,7 +549,7 @@ def main():
                     continue
                 dotted = prefix + k
                 if "origin" in sub:
-                    if word(sub["origin"]) == "estimate" and dotted not in tb["estimates"]:
+                    if word(sub["origin"]) == "estimated" and dotted not in tb["estimates"]:
                         failures.append("(a) %s: `%s` is a value the paper states "
                                         "and is marked as an estimate" % (name, dotted))
                 else:
@@ -880,10 +891,10 @@ def main():
     print("check_ed_stack: OK -- 2 `kind edStack` records.  EUR2C-7P18 (a bench unit) "
           "matches a second transcription of Geraldes & Afonso, J. Membr. Sci. 360 (2010) "
           "499-508 on every value the paper states and marks its 4 non-source values "
-          "`origin estimate; reviewStatus unverified;` with a note saying how to verify "
+          "`origin estimated; reviewStatus unverified;` with a note saying how to verify "
           "each; EurodiaED-100P-50 (Vitor Geraldes' own industrial unit, facts from "
           "operating experience) marks its 6 stated values `origin measured; reviewStatus "
-          "unverified;` and its 3 unstated ones `origin estimate;`, names NO membrane pair "
+          "unverified;` and its 3 unstated ones `origin estimated;`, names NO membrane pair "
           "and stores NO channel length (exactly one of width and length is stored where "
           "neither is stated), declares no limits{} because a DESIGN flow is not a ceiling, "
           "and carries the Reynolds band its borrowed correlation was fitted over.  Neither "

@@ -50,7 +50,7 @@ Description
     "onde faltam parametros coloca um valor educado, com uma nota a dizer que
     tem de ser verificado" -- an educated value, marked as an ESTIMATE that
     must be verified, never silent.  So a value the document does not state
-    carries a per-value provenance block `{ origin estimate; reviewStatus
+    carries a per-value provenance block `{ origin estimated; reviewStatus
     unverified; notes "..."; }` naming HOW to verify it, the reader here
     REFUSES an estimate with no note or no review status, and every consumer
     ANNOUNCES each estimate it reads on every run (the [estimate] tag of
