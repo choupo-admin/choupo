@@ -53,6 +53,7 @@ Description
 #include <iostream>
 #include <limits>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 
