@@ -1439,7 +1439,8 @@ Repeated here for completeness:
 \end{equation}
 Watson is a corresponding-states result: it depends only on $T_r$
 and $T_{br}$, and the $0.38$ exponent is the universal value Watson
-extracted from a broad survey of vapour-pressure curves in 1943.
+extracted from a broad survey of vapour-pressure curves in
+1943\cite{Watson}.
 The simulator computes it in \code{Component::Hvap\_latent}.
 
 \subsection{Worked example: water from $\ln P$ vs $1/T$ to Antoine}
@@ -9148,8 +9149,9 @@ The Jacobian is dense, square, and small ($n \lesssim 50$ in nearly
 every simulator unit op).  Iterative methods (CG, GMRES) shine on
 large sparse systems; for our size they are slower than direct
 factorisation.  The simulator uses Gauss elimination with partial
-pivoting on $\Jac\,\Delta\xv = -\Fv$ followed by back-substitution
---- the same algorithm taught in undergraduate linear algebra,
+pivoting on $\Jac\,\Delta\xv = -\Fv$ followed by
+back-substitution\cite{GVL} --- the same algorithm taught in
+undergraduate linear algebra,
 implemented in $\sim 60$ LOC in \file{src/solver/NewtonND.cpp}.
 
 \paragraph{Partial pivoting.}  At each elimination step, swap the
@@ -14782,7 +14784,8 @@ Before any split is computed, the flash must decide \emph{whether a
 split exists at all}.  A single liquid is stable when no trial phase
 can lower the total Gibbs energy; it is unstable --- a split exists ---
 when some trial composition $\yv$ lies \emph{below} the tangent plane
-drawn to the molar-Gibbs surface at the feed.  Michelsen (1982) turned
+drawn to the molar-Gibbs surface at the feed.  Michelsen
+(1982)\cite{Michelsen} turned
 this geometric statement into a one-number criterion, the tangent-plane
 distance $\mathrm{tm}$, and a cheap successive-substitution iteration
 that finds the deepest-cutting trial phase.  \code{michelsenTPD} in
@@ -16771,7 +16774,8 @@ cascade}\label{ch:absorber}
 An absorber washes a solute out of a gas with a liquid solvent; a
 stripper does the reverse, blowing a solute out of a liquid with a gas.
 Both are counter-current multistage cascades, and both are governed by
-one dimensionless group --- the absorption factor $A=L/(KV)$.  This
+one dimensionless group --- the absorption factor
+$A=L/(KV)$\cite{HenleySeader}.  This
 chapter sets up the per-stage balance as a tridiagonal system (solved
 by the Thomas algorithm, not the closed-form Kremser), then adds the
 \emph{energy} balance that the textbook Kremser ignores --- and which
@@ -18884,7 +18888,8 @@ be ionic species with a row in \file{ions.dat} (\code{Na}, \code{Cl},
 
 The current is a flux of charge; each mole of a $z$-valent counter-ion
 carried across a membrane consumes $zF$ coulombs, where
-$F = 96\,485\ \mathrm{C/mol}$ is Faraday's constant.  Inverting, the
+$F = 96\,485\ \mathrm{C/mol}$ is Faraday's constant\cite{BardFaulkner2001}.
+Inverting, the
 molar transfer rate of a counter-ion per cell pair is
 %
 \begin{equation}
@@ -18923,7 +18928,7 @@ both, or neither, is a degrees-of-freedom error and the unit says so.
 Even at zero current a cell pair sustains a potential, because each
 membrane separates two solutions of different ionic activity.  A perfectly
 selective CEM is reversible to its counter-cation, so its equilibrium
-(Donnan + diffusion) potential is the Nernst expression
+(Donnan + diffusion) potential is the Nernst expression\cite{Strathmann2004}
 %
 \begin{equation}
   E \;=\; \frac{\Rgas T}{z F}\,
@@ -18986,7 +18991,7 @@ infinite-dilution diffusivity $D_i^0$ (the \file{ions.dat} transport
 tier, Nightingale 1959 \cite{Nightingale1959}) via the
 \textbf{Nernst--Einstein} relation, and $c_i \approx m_i\rho_w$ in the
 dilute-carrier approximation ($\rho_w\approx 1000\ \mathrm{kg/m^3}$,
-announced).  The per-cell-pair resistance is the series sum
+announced).  The per-cell-pair resistance is the series sum\cite{Strathmann2004}
 %
 \begin{equation}
   R_\text{pair}
@@ -23485,6 +23490,10 @@ Iterative Processes'', \emph{Comm. ACM}, 1(6), 9--13 (1958). The
 two-page paper that powers the simulator's outer activity-coefficient
 loop.
 
+\bibitem{Watson} Watson, K. M., ``Thermodynamics of the Liquid State'',
+\emph{Ind. Eng. Chem.}, 35, 398 (1943). The heat-of-vaporisation
+correlation.
+
 \bibitem{RPP} Poling, B. E., Prausnitz, J. M., \& O'Connell, J. P.,
 \emph{The Properties of Gases and Liquids}, 5th ed., McGraw-Hill,
 2001. The standard reference for pure-component property correlations
@@ -23618,6 +23627,11 @@ Two-Constant Equation of State'', \emph{Ind.\ Eng.\ Chem.\ Fundam.},
 15(1), 59--64 (1976). The Peng--Robinson cubic ($\Omega_a = 0.45724$,
 $\Omega_b = 0.07780$, $\kappa(\omega)$) implemented in \code{PR}.
 
+\bibitem{GVL} Golub, G. H., \& Van Loan, C. F.,
+\emph{Matrix Computations}, 4th ed., Johns Hopkins University Press,
+2013. Reference for the Gauss elimination with partial pivoting used
+in \code{NewtonND}.
+
 \bibitem{Levenberg44} Levenberg, K., ``A Method for the Solution of
 Certain Non-Linear Problems in Least Squares'', \emph{Quarterly of
 Applied Mathematics}, 2(2), 164--168 (1944). The original damped
@@ -23722,6 +23736,12 @@ measurements in experimental catalysis'', \emph{Advances in Catalysis}
 which removes the intrinsic rate constant that a diffusion-limited experiment
 cannot measure.
 
+\bibitem{Michelsen} Michelsen, M. L., ``The Isothermal Flash Problem.
+Part I --- Stability'' and ``Part II --- Phase-Split Calculation'',
+\emph{Fluid Phase Equilibria}, 9, 1--19, 21--40 (1982). The
+tangent-plane-distance criterion and the second-order Newton method
+on the roadmap.
+
 \bibitem{WH} Wang, J. C., \& Henke, G. E., ``Tridiagonal Matrix for
 Distillation'', \emph{Hydrocarbon Processing}, 45(8), 155 (1966). The
 bubble-point method used in \code{DistillationColumn}.
@@ -23729,6 +23749,11 @@ bubble-point method used in \code{DistillationColumn}.
 \bibitem{NS} Naphtali, L. M., \& Sandholm, D. P., ``Multicomponent
 Separation Calculations by Linearization'', \emph{AIChE J.}, 17,
 148--153 (1971). The equation-oriented Newton method on the roadmap.
+
+\bibitem{HenleySeader} Henley, E. J., Seader, J. D., \& Roper, D. K.,
+\emph{Separation Process Principles}, 3rd ed., Wiley, 2011. Chapters
+4--7 cover the equilibrium-stage methods used in this simulator
+(flash, distillation, absorption).
 
 \bibitem{SilvesterPitzer1977} Silvester, L. F., \& Pitzer, K. S.,
 ``Thermodynamics of Electrolytes. 8.\ High-Temperature Properties,
@@ -23828,6 +23853,20 @@ Solution-Diffusion-Electro-Migration Model'', \emph{Membranes}, 11(4),
 permeances per dominant salt (its Table~1, carried by the SDEM witness
 cases) and the rejection figures the Tutorials Guide's validation
 section digitises and compares against.
+
+\bibitem{BardFaulkner2001} Bard, A. J., \& Faulkner, L. R.,
+\emph{Electrochemical Methods: Fundamentals and Applications}, 2nd ed.,
+Wiley, 2001. The reference followed by Choupo's shared \code{electrochem}
+kernel for the Nernst equation, Faraday's law of electrolysis
+(Eq.~\ref{eq:ed-faraday}), and the Butler--Volmer stub.
+
+\bibitem{Strathmann2004} Strathmann, H., \emph{Ion-Exchange Membrane
+Separation Processes}, Membrane Science and Technology Series 9,
+Elsevier, 2004. The standard text on electrodialysis; source of the
+membrane (Donnan + diffusion) potential form of the Nernst equation
+(Eq.~\ref{eq:ed-nernst}), the cell-pair resistance build-up
+(Eq.~\ref{eq:ed-rpair}), and the representative Neosepta CMX/AMX
+area-resistance values in the IEM \file{.dat}.
 
 \bibitem{Nightingale1959} Nightingale, E. R., ``Phenomenological Theory
 of Ion Solvation: Effective Radii of Hydrated Ions'', \emph{J.\ Phys.\
@@ -23949,44 +23988,6 @@ description of Monsanto's FLOWTRAN, the first commercially viable
 chemical process simulator and the architectural ancestor of every
 sequential-modular simulator since.  Used here for the comparative
 context of Appendix~C.
-
-%  --- the entries below are in the tree but cited nowhere in this manual ---
-%  Kept, not deleted: removing a curated reference is the authors' act.  Their
-%  order among themselves is whatever it was; everything above is ordered by
-%  first citation (bin/curate/gen_theory_bibliography.py).
-\bibitem{HenleySeader} Henley, E. J., Seader, J. D., \& Roper, D. K.,
-\emph{Separation Process Principles}, 3rd ed., Wiley, 2011. Chapters
-4--7 cover the equilibrium-stage methods used in this simulator
-(flash, distillation, absorption).
-
-\bibitem{Strathmann2004} Strathmann, H., \emph{Ion-Exchange Membrane
-Separation Processes}, Membrane Science and Technology Series 9,
-Elsevier, 2004. The standard text on electrodialysis; source of the
-membrane (Donnan + diffusion) potential form of the Nernst equation
-(Eq.~\ref{eq:ed-nernst}), the cell-pair resistance build-up
-(Eq.~\ref{eq:ed-rpair}), and the representative Neosepta CMX/AMX
-area-resistance values in the IEM \file{.dat}.
-
-\bibitem{BardFaulkner2001} Bard, A. J., \& Faulkner, L. R.,
-\emph{Electrochemical Methods: Fundamentals and Applications}, 2nd ed.,
-Wiley, 2001. The reference followed by Choupo's shared \code{electrochem}
-kernel for the Nernst equation, Faraday's law of electrolysis
-(Eq.~\ref{eq:ed-faraday}), and the Butler--Volmer stub.
-
-\bibitem{Watson} Watson, K. M., ``Thermodynamics of the Liquid State'',
-\emph{Ind. Eng. Chem.}, 35, 398 (1943). The heat-of-vaporisation
-correlation.
-
-\bibitem{Michelsen} Michelsen, M. L., ``The Isothermal Flash Problem.
-Part I --- Stability'' and ``Part II --- Phase-Split Calculation'',
-\emph{Fluid Phase Equilibria}, 9, 1--19, 21--40 (1982). The
-tangent-plane-distance criterion and the second-order Newton method
-on the roadmap.
-
-\bibitem{GVL} Golub, G. H., \& Van Loan, C. F.,
-\emph{Matrix Computations}, 4th ed., Johns Hopkins University Press,
-2013. Reference for the Gauss elimination with partial pivoting used
-in \code{NewtonND}.
 
 \end{thebibliography}
 
