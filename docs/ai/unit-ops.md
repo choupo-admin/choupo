@@ -735,7 +735,7 @@ has ONE membrane face over its channel, so the channel width is A/L; a
 spiral leaf has two, A/(2L)** — the `[spec]` line says which was used, and
 the run publishes `u_crossflow_inlet` (the SEPA CF manual runs spacer
 channels at 0.1–0.5 m/s).  **What the sheet does not state is an ESTIMATE,
-announced:** every value the record marks `origin estimate; reviewStatus
+announced:** every value the record marks `origin estimated; reviewStatus
 unverified;` prints an `[estimate] module '...'` line with the record's own
 note on how to verify it (NF270-4040: spacer 28 mil, porosity 0.90, leaf
 0.95 m; SW30HR-380: porosity and leaf — its 28 mil spacer is a sheet fact;

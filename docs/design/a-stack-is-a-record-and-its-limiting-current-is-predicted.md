@@ -171,7 +171,7 @@ pair, the cell pairs, the active area, the channel and spacer, the passes, the
 `massTransfer {}` correlation and `limits {}`.
 
 **The estimates follow the `kind membraneModule` contract exactly** — `{
-origin estimate; reviewStatus unverified; notes "how to verify it"; }`,
+origin estimated; reviewStatus unverified; notes "how to verify it"; }`,
 refused without the note, announced on every run that reads one, and reaching
 the end-of-run caveat block.  One thing is new: a provenance block may name a
 **sub-dict** of the record and describe the values inside it, because two of

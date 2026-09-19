@@ -8,7 +8,7 @@
     "stack": {
       "type": "string",
       "title": "Stack record",
-      "description": "The stack named as a RECORD (assets catalogue or the case's constant/assets/, kind edStack): it supplies the cell pairs, the active area (THE CELL-PAIR AREA of the whole stack), the channel and spacer, the hydraulic passes, the stack's own Sherwood correlation and its limits {}, which are checked against the run and announced. Declaring `N_cellpairs`, `membraneArea`, `channelThickness`, `channelLength`, `linearVelocity`, `hydraulicPasses` or `spacerPorosity` beside it refuses by name (one home), and so does `membrane` where the record's own source names a pair. The crossflow velocity is DERIVED from the diluate flow and the channel section and printed with its arithmetic. Every value the record marks `origin estimate` is announced on every run."
+      "description": "The stack named as a RECORD (assets catalogue or the case's constant/assets/, kind edStack): it supplies the cell pairs, the active area (THE CELL-PAIR AREA of the whole stack), the channel and spacer, the hydraulic passes, the stack's own Sherwood correlation and its limits {}, which are checked against the run and announced. Declaring `N_cellpairs`, `membraneArea`, `channelThickness`, `channelLength`, `linearVelocity`, `hydraulicPasses` or `spacerPorosity` beside it refuses by name (one home), and so does `membrane` where the record's own source names a pair. The crossflow velocity is DERIVED from the diluate flow and the channel section and printed with its arithmetic. Every value the record marks `origin estimated` is announced on every run."
     },
     "limitingCurrent": {
       "type": "object",

@@ -309,7 +309,7 @@ def _components_footer() -> str:
         "carries the active area, the channel and spacer, the manufacturer's "
         "limits (checked and announced, never refused) and, for a module, the "
         "sheet's rated test; a value the source does not state is marked "
-        "`origin estimate; reviewStatus unverified;` and announced on every "
+        "`origin estimated; reviewStatus unverified;` and announced on every "
         "run that reads it.",
     ) + "\n" + _kind_section(
         "## Adsorbents and resins",

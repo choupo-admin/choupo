@@ -106,7 +106,7 @@ C++ moved, run, restored; the gate never patches a source).  TWO of the nine
 did not do what was predicted, and both are recorded as MEASURED:
   S1  EUR2C-7P18.dat activeArea 0.140 -> 0.070 m2         CAUGHT by (a):
       "activeArea = 0.07 vs the paper's 0.14".
-  S2  EUR2C-7P18.dat massTransfer.c provenance origin estimate -> literature
+  S2  EUR2C-7P18.dat massTransfer.c provenance origin estimated -> literature
                                                           CAUGHT by (a) (a
       value the paper POSTULATES is marked as one it states) and by (g) on
       both witnesses (3 announced estimates and 3 advisories against 4).
@@ -150,7 +150,7 @@ did not do what was predicted, and both are recorded as MEASURED:
       +20.0 %, outside the paper's own 13 % band).
   S9  the limits check deleted                            CAUGHT by (g): the
       320 K twin printed no [limit] line.
-  S10 EurodiaED-100P-50.dat channelWidth provenance origin estimate ->
+  S10 EurodiaED-100P-50.dat channelWidth provenance origin estimated ->
       measured                                            CAUGHT by (a) (a
       value NOBODY stated marked as one its owner did) and by (g) (ed05
       announced 2 estimates against the table's 3).

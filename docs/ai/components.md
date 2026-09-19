@@ -954,7 +954,7 @@ Each carries A_w + per-solute B_s + ratings (P_max, T_max, pH, MWCO); the ion-ex
 | `SW30HR` |
 ## Modules and stacks (the HARDWARE a membrane is deployed in)
 
-A `spiralWoundModule` names one with `module <name>;` and an `electrodialysisStack` with `stack <name>;`, instead of typing the geometry inline -- and typing it beside the name REFUSES.  The record carries the active area, the channel and spacer, the manufacturer's limits (checked and announced, never refused) and, for a module, the sheet's rated test; a value the source does not state is marked `origin estimate; reviewStatus unverified;` and announced on every run that reads it.
+A `spiralWoundModule` names one with `module <name>;` and an `electrodialysisStack` with `stack <name>;`, instead of typing the geometry inline -- and typing it beside the name REFUSES.  The record carries the active area, the channel and spacer, the manufacturer's limits (checked and announced, never refused) and, for a module, the sheet's rated test; a value the source does not state is marked `origin estimated; reviewStatus unverified;` and announced on every run that reads it.
 
 | Name |
 |---|

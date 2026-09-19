@@ -160,7 +160,7 @@ void MembraneModule::readFromDict(const DictPtr& d, const std::string& sourcePat
     }
 
     // ---- provenance {} : the citation, and the per-value ESTIMATES --------
-    //  Every sub-dict names a declared field.  An `origin estimate` block
+    //  Every sub-dict names a declared field.  An `origin estimated` block
     //  must carry a reviewStatus and a non-empty notes -- Vitor's ruling is
     //  "a value with a note saying it must be verified", and a marked value
     //  without the note is the silence the ruling forbids.

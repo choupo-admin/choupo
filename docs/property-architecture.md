@@ -73,8 +73,8 @@ threaded through the solver.
 ```
 provenance
 {
-    Tc    { origin estimate;    method "Joback (Joback & Reid 1987)";       uncertainty 0.02; validity "subcritical"; }
-    omega { origin estimate;    method "Lee-Kesler from (Tb,Tc,Pc)";        uncertainty 0.03; }
+    Tc    { origin estimated;    method "Joback (Joback & Reid 1987)";       uncertainty 0.02; validity "subcritical"; }
+    omega { origin estimated;    method "Lee-Kesler from (Tb,Tc,Pc)";        uncertainty 0.03; }
     Psat  { origin predictive;  method "Ambrose-Walton corresponding states"; validity "Tr 0.5-1.0; degrades polar/associating"; }
     NRTL  { origin regressed;   method "LM fit vs Carey&Lewis 1932";        uncertainty 0.005; }
 }

@@ -412,7 +412,7 @@ authority on the lineup; the kinds and what each record carries:
   channel height, the spacer porosity, the leaf length, the manufacturer's
   `limits {}` — CHECKED against the run and ANNOUNCED when exceeded, never
   refused — and the sheet's own `ratedTest {}`.  A value the document does not
-  state is `origin estimate; reviewStatus unverified;` with a note saying how
+  state is `origin estimated; reviewStatus unverified;` with a note saying how
   to verify it, announced on every run that reads it.  `module` beside inline
   geometry refuses by name.
 - **`IEM`** — CMX_AMX, the cation/anion ion-exchange membrane pair used by the

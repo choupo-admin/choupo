@@ -8,7 +8,7 @@
     "module": {
       "type": "string",
       "title": "Module record",
-      "description": "A commercial element or a laboratory cell named as a RECORD (assets catalogue or the case's constant/assets/, kind membraneModule): it supplies the active area, the channel geometry (channelHeight, spacerPorosity), the leaf length and, for a spiral element, the membrane; its limits {} are checked against the run and announced. Declaring `area`, `length`, `moduleDiameter`, `nModules`, or channelHeight/spacerPorosity inside massTransfer/pressureDrop beside it refuses by name (one home). Every value the record marks `origin estimate` is announced on every run."
+      "description": "A commercial element or a laboratory cell named as a RECORD (assets catalogue or the case's constant/assets/, kind membraneModule): it supplies the active area, the channel geometry (channelHeight, spacerPorosity), the leaf length and, for a spiral element, the membrane; its limits {} are checked against the run and announced. Declaring `area`, `length`, `moduleDiameter`, `nModules`, or channelHeight/spacerPorosity inside massTransfer/pressureDrop beside it refuses by name (one home). Every value the record marks `origin estimated` is announced on every run."
     },
     "membrane": {
       "type": "string",

@@ -2084,7 +2084,7 @@ Record:
 supplies the geometry the case used to type, checks the manufacturer's
 `limits {}` against the run (announced, never refused) and carries the
 sheet's `ratedTest {}`; a value the sheet does not state is `origin
-estimate; reviewStatus unverified;` WITH a note saying how to verify it
+estimated; reviewStatus unverified;` WITH a note saying how to verify it
 (Vítor's ruling, verbatim in the record) and is announced on every run
 that reads it; `module` beside inline geometry refuses by name.  Gate:
 `check_membrane_modules` (the two spirals' rated tests run and PRINTED

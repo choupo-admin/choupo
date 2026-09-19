@@ -18184,7 +18184,7 @@ A data sheet publishes the area and the limits.  It does not publish the
 leaf length, the spacer porosity, or --- for most elements --- the spacer
 thickness; the SEPA~CF's channel height is whatever spacer the user
 installs.  Each such value in a record is an \emph{educated} one, marked
-\code{origin estimate; reviewStatus unverified;} with a note saying how it
+\code{origin estimated; reviewStatus unverified;} with a note saying how it
 is to be verified (weigh a spacer coupon for its porosity; unroll a leaf
 for its length; measure the spacer), and \textbf{every run that reads the
 record announces every one of them}, in the log and in the end-of-run
@@ -19282,7 +19282,7 @@ refused.
 
 The limits are \emph{announced} when a run exceeds them and never refuse
 --- a student may drive a stack past its rating on purpose --- and every
-value the source does not state is marked \code{origin estimate;
+value the source does not state is marked \code{origin estimated;
 reviewStatus unverified;} with a note saying how to verify it, announced
 on every run that reads it.
 

@@ -63,7 +63,7 @@ Description
 
     THE ESTIMATES ARE THE POINT, exactly as for `kind membraneModule`
     (2026-09-15): a value the source does not state carries `{ origin
-    estimate; reviewStatus unverified; notes "how to verify it"; }` in
+    estimated; reviewStatus unverified; notes "how to verify it"; }` in
     `provenance {}`, this reader REFUSES an estimate with no note or no
     review status, and the consumer ANNOUNCES every estimate it reads on
     every run.  Provenance blocks reach ONE level into `limits {}` and

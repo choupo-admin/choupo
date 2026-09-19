@@ -57,9 +57,9 @@ ratedTest { solute MgSO4; feedMassFraction 2.0e-3; P 4.8 bar; T 298.15 K; recove
 provenance
 {
     source  "DuPont FilmTec NF270 Element Product Data Sheet, Form No. 45-D01529-en, Rev. 8, January 2025";
-    channelHeight  { origin estimate; reviewStatus unverified; notes "..."; }
-    spacerPorosity { origin estimate; reviewStatus unverified; notes "..."; }
-    leafLength     { origin estimate; reviewStatus unverified; notes "..."; }
+    channelHeight  { origin estimated; reviewStatus unverified; notes "..."; }
+    spacerPorosity { origin estimated; reviewStatus unverified; notes "..."; }
+    leafLength     { origin estimated; reviewStatus unverified; notes "..."; }
 }
 ```
 
@@ -89,7 +89,7 @@ Grammar decisions, each with its other value:
 
 ## 3. The estimates, and the ruling made structural
 
-The reader REFUSES an `origin estimate` block with no `reviewStatus` or no
+The reader REFUSES an `origin estimated` block with no `reviewStatus` or no
 `notes`: an educated value that does not say it is one, and how to check
 it, is the silence the ruling forbids.  The module ANNOUNCES every estimate
 on every run — `[estimate] module 'NF270-4040': \`channelHeight\` = ... is an
