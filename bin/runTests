@@ -3947,6 +3947,26 @@ PYEOF
     fi
     rm -f /tmp/thbib.$$
 
+    # Pedro Mendes' Major point on the Theory Guide (2026-09-19): in a
+    # glass-box spirit every equation, hypothesis and datum should be
+    # referenced systematically, and there it happens only sporadically.
+    # This project enforces exactly that everywhere else -- a record cites a
+    # primary per value, a correlation is an object carrying a citation, an
+    # EduTool lesson symbol needs a verified file:line into the engine -- and
+    # the manuals had no equivalent.  The debt is per CHAPTER (58 of 81
+    # equation-bearing chapters cited nothing when it was measured) and the
+    # gate RATCHETS it down from a seeded pin list.  Read-only, ~2 s.
+    if "$ROOT/bin/curate/check_theory_citations.py" > /tmp/thcite.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_theory_citations" \
+            "$("$ROOT/bin/curate/gate_claim.py" check_theory_citations /tmp/thcite.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (see below)\n" "check_theory_citations"
+        cat /tmp/thcite.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/thcite.$$
+
     # The manuals are the one artefact with NO compiler behind them: a guide
     # can send a reader to a file deleted two hundred commits ago and nothing
     # notices.  It had.  (Retired driver still offered as an example to read;
