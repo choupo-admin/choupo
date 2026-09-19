@@ -254,6 +254,19 @@ a citation anywhere near an equation counts:
 
 ### 4.2  The sporadic-ness is CONCENTRATED, not uniform
 
+> **CORRECTED 2026-09-19 — the three counts in this section's bullet list are
+> WRONG, and the correction is measured, not argued.**  Re-walking the SAME
+> file at the SAME commit gives **92 numbered sections, 81 of them carrying a
+> numbered equation, and 58 of those 81 citing nothing** — against the 79 / 56
+> / 44 below.  Everything else this document measures reproduces exactly (534
+> environments, 105 cites, 83 bibitems, 6 uncited, 0 dangling), so the defect
+> is the section walk alone: **the bibliography sits in the MIDDLE of this
+> manual**, and Part VIII plus ten numbered sections — the PID chapter among
+> them — come *after* `\end{thebibliography}`, where the walk stopped looking.
+> The count is no longer carried in prose anywhere: `check_theory_citations.py`
+> measures it with `--seed` and prints it on its claim line.  Full record:
+> [`a-manual-that-cites-what-it-teaches.md`](a-manual-that-cites-what-it-teaches.md) §1.
+
 This is the finding that changes the shape of the campaign.
 
 * 79 `\section`s; **56 carry at least one numbered equation**.
