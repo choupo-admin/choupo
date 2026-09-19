@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HTart.dat -- CASE-LOCAL model species for the wine tutorial ed08.
+
+  Body fields (name, formula, charge, MW, hfAq) are data/standards/species/
+  HTart.dat's, verbatim; the transport block is this case's addition.
+  THE TRANSPORT BLOCK IS AN ESTIMATE AND SAYS SO.  No limiting ionic
+  conductivity of this anion could be READ from a primary source in the
+  session that wrote this record (the measurements exist and are named in
+  `notes` below, behind paywalls); a value written from memory would be an
+  invisible falsehood, so the D0 is derived by a stated method from facts the
+  tree already carries, marked `origin estimated; reviewStatus unverified;`
+  and ANNOUNCED by the engine on every run that reads it.  Promotion to
+  data/standards/ is a curation act reserved to a human review against the
+  named primaries.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HTart;
+formula     "HC4H4O6-";
+charge  -1;
+MW { value 149.08; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -1292100; unit J/mol;}
+}
+
+transport
+{
+    D0 { value 7.568e-10; unit m2/s; }
+    provenance
+    {
+        source  "no primary read; derived from the tree's own records as stated in `method`";
+        licence "this record's derivation is the project's own; the inputs are the catalogue's, cited in their own records";
+        D0
+        {
+            origin        estimated;
+            method        "Stokes-Einstein at 298.15 K on the engine's own water viscosity, 8.8987e-4 Pa s (the Vogel fit of data/standards/components/water.dat), with the anion radius taken as the sphere of ITS CRYSTAL MOLAR VOLUME: potassium bitartrate's rho_p = 1980 kg/m3 and MW 188.177 (data/standards/components/potassiumBitartrate.dat) give 95.04 cm3/mol per formula unit, minus K+'s conventional V0 = 9.02 cm3/mol (species/K.dat) = 86.02 cm3/mol for HC4H4O6-, r = 3.243e-10 m, D0 = 7.568e-10 m2/s (lambda0 = 28.4 S cm2/mol by Nernst-Einstein)";
+            reviewStatus  unverified;
+            notes         "Verify against Marsh, Spiro and Selvaratnam, J. Phys. Chem. 67 (1963) 699-703 (transference numbers of d-tartaric acid and the limiting equivalent conductance of the bitartrate ion at 25 C) and Bester-Rogac, Neueder, Barthel and Apelblat, J. Solution Chem. 27 (1998), Part III (acidic tartrates); neither could be read here. A crystal-volume Stokes radius is a lower bound on the hydrodynamic radius, so this D0 is more likely high than low.";
+        }
+    }
+}

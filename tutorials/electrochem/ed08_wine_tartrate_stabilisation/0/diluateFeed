@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/diluateFeed -- THE WINE, as an ionic analysis at 3000 L/h (the stack's design flow).
+  Every value is derived in system/flowsheetDict's header (the composition
+  table with its sources, the speciation at pH 3.60, the closure on sulfate)
+  and reproduced here so this file stands alone:
+
+      ion       mmol/L      mg/L      from
+      K+        25.5768     1000.0    1000 mg/L declared (Siren 2015, 740-1077)
+      Na+       5.2197      120.0     120 mg/L declared (99.5-181)
+      Ca2+      1.2476      50.0      50 mg/L declared (34.3-59.7)
+      Mg2+      4.1144      100.0     100 mg/L declared (69.2-128.0)
+      H+        0.2512       0.25    pH 3.60, a_H taken as c_H
+      Cl-       1.1283      40.0      40 mg/L declared (25.3-54.3)
+      SO4 2-    6.3973     614.5    THE CLOSURE ION: electroneutrality, see the header
+      HC4H4O6-  8.3037    1237.9   1800 mg/L tartaric acid x alpha1 = 0.6924 at pH 3.60
+      C4H4O6 2- 1.4232     210.7   ... x alpha2 = 0.1187
+      C4H5O5-   1.0626     141.4    250 mg/L malic acid x alpha1 = 0.5699
+      C4H4O5 2- 0.0338       4.5    ... x alpha2 = 0.0181
+      C3H5O3-   9.0285    804.2   2300 mg/L lactic acid x alpha = 0.3536
+      H2PO4-    6.5396    634.3    650 mg/L phosphate (as HPO4) x alpha1 = 0.9657
+
+  The water is 3000 kg/h so that the engine's carrier volume (rho 1000 kg/m3,
+  the dilute-carrier approximation the unit announces) equals the wine's
+  3000 L/h and every mmol/L above is what the stack sees.  The real wine
+  holds about 2580 kg/h of water; the rest is ethanol (~320 kg/h at
+  13.5 % v/v) and dissolved solids, and NEITHER is declared here -- see the
+  header's first paragraph.  T = 293.15 K (20 C), the cellar temperature
+  this case declares and the temperature Siren et al. measured the pH at.
+\*---------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water    166.5251203144 kmol/h;
+    K        0.0767302675 kmol/h;
+    Na       0.0156589822 kmol/h;
+    Ca       0.0037427017 kmol/h;
+    Mg       0.0123431393 kmol/h;
+    H        0.0007535659 kmol/h;
+    Cl       0.0033850494 kmol/h;
+    SO4      0.0191918545 kmol/h;
+    HTart    0.0249112330 kmol/h;
+    Tart     0.0042696790 kmol/h;
+    HMal     0.0031878182 kmol/h;
+    Mal      0.0001015064 kmol/h;
+    Lactate  0.0270854192 kmol/h;
+    H2PO4    0.0196188981 kmol/h;
+}
+
+T               293.15 K;
+P               250000 Pa;

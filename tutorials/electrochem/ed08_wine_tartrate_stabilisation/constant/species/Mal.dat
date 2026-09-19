@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Mal.dat -- CASE-LOCAL model species for the wine tutorial ed08.
+
+  No catalogue record of this species exists: identity AND transport are
+  declared here.  No aqueousThermo block (see HMal.dat).
+  THE TRANSPORT BLOCK IS AN ESTIMATE AND SAYS SO.  No limiting ionic
+  conductivity of this anion could be READ from a primary source in the
+  session that wrote this record (the measurements exist and are named in
+  `notes` below, behind paywalls); a value written from memory would be an
+  invisible falsehood, so the D0 is derived by a stated method from facts the
+  tree already carries, marked `origin estimated; reviewStatus unverified;`
+  and ANNOUNCED by the engine on every run that reads it.  Promotion to
+  data/standards/ is a curation act reserved to a human review against the
+  named primaries.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Mal;
+formula     "C4H4O5-2";
+charge  -2;
+MW { value 132.07; unit g/mol;}
+
+transport
+{
+    D0 { value 7.880e-10; unit m2/s; }
+    provenance
+    {
+        source  "no primary read; derived from the tree's own records as stated in `method`";
+        licence "this record's derivation is the project's own; the inputs are the catalogue's, cited in their own records";
+        D0
+        {
+            origin        estimated;
+            method        "the same route as HMal: the bitartrate crystal-volume Stokes estimate scaled by (132.07/149.08)^(1/3) = 0.9604 as the radius ratio";
+            reviewStatus  unverified;
+            notes         "Verify against a conductance study of malic acid or its alkali salts (none could be read here). At wine pH this dianion is under 2 % of the malate and its D0 moves nothing a reader would act on.";
+        }
+    }
+}

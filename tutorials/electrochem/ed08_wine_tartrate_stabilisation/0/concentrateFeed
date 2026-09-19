@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/concentrateFeed -- THE BRINE: a potassium bitartrate solution at 20 mmol/L (3.76 g/L KHT),
+  the same 3000 L/h.  It is 76 %% of KHT's solubility in WATER at 20 C
+  (4.92 g/L, Berg & Keefer 1958, Table 1 as reproduced by the AWRI -- the
+  primary was not reached), because that is the ceiling of a wine-ED
+  concentrate loop: the salt the stack moves is sparingly soluble, and the
+  loop is bled to stay under it.  Declared as K+ and HC4H4O6- only (the
+  brine's own tartrate speciation is not resolved; announced simplification).
+  The choice barely touches the DILUATE answer -- the concentrate enters the
+  stack only through the membrane back-EMF and its channel resistance --
+  and the header says by how much.
+\*---------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water    166.5251203144 kmol/h;
+    K        0.0600000000 kmol/h;
+    HTart    0.0600000000 kmol/h;
+}
+
+T               293.15 K;
+P               250000 Pa;

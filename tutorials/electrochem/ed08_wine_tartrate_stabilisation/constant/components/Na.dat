@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sodium ion (Na+)  -- CASE-LOCAL ionic component
+
+  A model species used AS a flowsheet component, so a process stream can
+  carry an ionic ANALYSIS of the wine (the ed04/ed05 shape).  The name is
+  the `species` key of the catalogue record data/standards/species/Na.dat (charge, MW, D0); MW is that record's.
+
+  nonvolatile: an ion never enters the vapour.
+  dissociation 1: one osmotically active particle per mole of ion (the
+  analysis already lists ions, not salts).
+\*---------------------------------------------------------------------------*/
+
+name           Na;
+formula        "Na+";
+
+MW             22.99;          // g/mol (= kg/kmol)
+role        nonvolatile;
+dissociation   1;              // already an ion: 1 particle/mol
+
+//  The physics behind `role nonvolatile`, DECLARED so the run need not say
+//  it is unknown: a charged species has no vapour pressure -- it leaves an
+//  aqueous phase only with the water it is dissolved in.
+volatility
+{
+    class       nonvolatile;
+    provenance  { citation "an ion is nonvolatile by definition: a bare charge cannot enter a vapour phase; no boiling point exists to cite"; status accepted; }
+}
+
+// Bridge to the aqueous model species of the same spelling -- two identity
+// spaces, one DECLARED crossing (identifier typing, 2026-07-25).
+aqueousMapping ( { species Na; nu 1; } );

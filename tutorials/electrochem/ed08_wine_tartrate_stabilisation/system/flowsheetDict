@@ -1,0 +1,310 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict --- ED08 tartaric stabilisation of a red wine, on a CONDUCTIVITY target
+  ===========================================================================
+
+  ETHANOL IS NOT IN THIS WINE, AND THAT IS THE FIRST THING TO KNOW.  A new
+  medium red carries about 13.5 % v/v of ethanol (106 g/L), and the stack
+  cannot be told so: every non-water component passes through the aqueous
+  species bridge, and declaring `ethanol` in the components list REFUSES
+  ("aqueousMapping: component 'ethanol' declares no aqueous mapping" --
+  measured on a twin of this case; an ethanol given a mapping would then
+  refuse for having no species row and no D0).  So the engine prices the
+  solvent as PURE WATER: Re and Sc on water's viscosity, every ion's
+  conductivity on its infinite-dilution D0 in water.  How much that costs
+  was COMPUTED with the engine's own liquid-viscosity route, not cited: a
+  `propertyScan1D` of `viscosity_liquid` on {water 0.955, ethanol 0.045}
+  (13.5 % v/v) against pure water, Vogel per component and the package's
+  Grunberg-Nissan mixing rule, gives mu_mix/mu_water = 1.0094e-3 / 1.0011e-3
+  = 1.0084 at 293.15 K -- 0.8 %.  That is the number the engine has, and it
+  is a lower bound on the truth: the rule is ln mu = sum x_i ln mu_i with NO
+  binary term, so it interpolates between the two pure viscosities and can
+  never sit above both, while a water-ethanol mixture can.  Mobilities and
+  conductivities scale with 1/mu, so kappa_in and kappa_out are both
+  overestimated by whatever the real factor is; the RELATIVE target (20 %)
+  is insensitive to a common factor, the ABSOLUTE stack voltage and power
+  are not.  NAMED AND NOT BUILT: a neutral co-solvent carried through the
+  mass balance and priced into the solvent viscosity (the design record's
+  NOT DONE).  Everything below stands on that caveat.
+
+  THE TARGET IS CONDUCTIVITY, BECAUSE THAT IS WHAT IS MEASURED.  Vitor
+  Geraldes framed it in one sentence -- "na eletrodialise aponta para a
+  condutividade, porque isso e que e medido" -- and the tartaric-stability
+  practice on wine is stated as a per-cent DROP in the wine's electrical
+  conductivity (a 20 % tartrate removal "is considered sufficient to
+  stabilize red wines": Tsygurina et al., Membranes 12 (2022) 1187, citing
+  Ribereau-Gayon et al., Handbook of Enology vol. 2, 2nd ed., 2006 -- the
+  handbook itself was not reached; the 20 % here is also Vitor's own
+  operating practice on this very unit, origin measured, reviewStatus
+  unverified).  So this case is the first to use the third operating form:
+
+      stack                      EurodiaED-100P-50;   // his 100-cell-pair, 50 m2 unit
+      membrane                   CMX_AMX;             // the record names no pair; the CASE must
+      targetConductivityRemoval  0.20;                // 20 % of kappa, and Choupo solves I
+
+  `targetDemin` would have fixed the demineralisation of the FIRST cation in
+  component order (K here) and moved with the order of the components list;
+  the conductivity target counts every ion with its own z^2 D0 c at both
+  ends of the channel and does not care how the list is written.  The
+  gate (check_ed_stack arm (m)) holds that with a reordered twin.
+
+  THE WINE: a typical new medium red, built from PUBLISHED RANGES.  One
+  coherent primary for the ions, READ in full (open access):
+      Siren, Siren & Siren, "Evaluation of organic and inorganic compounds
+      levels of red wines processed from Pinot Noir grapes", Analytical
+      Chemistry Research 3 (2015) 26-36, Table 2 -- eight bottled Pinot Noir
+      red wines, 12.5-14.5 % alcohol, pH 3.51-4.02 at 20 C (measured).
+  Cross-checked, not blended, against two more readable sources: Jakkielska
+  et al., Foods 12 (2023) 3205 (22 red wines, ICP-OES, K mean 1521 mg/L) and
+  USDA FoodData Central SR Legacy 173190 "Alcoholic beverage, wine, table,
+  red" (public domain: K 127, Ca 8, Mg 12, Na 4, P 23 mg per 100 g; ethanol
+  10.6 g/100 g).  Values chosen INSIDE the Siren range (wine 6, whose
+  tartaric acid reads 10 mg/L, excluded as anomalous for the acids):
+
+      quantity          chosen       Siren 2015 range       other readable source
+      -----------------------------------------------------------------------------
+      K+                1000 mg/L    740 - 1077             1521 (Jakkielska), ~1260 (USDA)
+      Na+                120 mg/L    99.5 - 181             ~40 (USDA)
+      Ca2+                50 mg/L    34.3 - 59.7            ~80 (USDA); 41.9 mean (Gajek 2021, n=79)
+      Mg2+               100 mg/L    69.2 - 128.0           ~120 (USDA); 57.1 mean (Gajek 2021)
+      Cl-                 40 mg/L    25.3 - 54.3            --
+      phosphate (as HPO4) 650 mg/L   463 - 1150             USDA P 23 mg/100 g = ~700 mg/L as HPO4
+      tartaric acid     1800 mg/L    1427 - 2177            Tsygurina 2022 model red wine 0.013 M (1950 mg/L)
+      malic acid         250 mg/L    101 - 447              (malolactic wines)
+      lactic acid       2300 mg/L    1382 - 3362            (malolactic wines)
+      pH                 3.60        3.51 - 4.02 (20 C)     3.33 mean, 2.53-4.60 (Gajek 2021, n=79)
+      ethanol            13.5 % v/v  12.5 - 14.5            USDA 10.6 g/100 g = ~13.3 % v/v
+      density            993 g/L     --                     Bica et al., Molecules 25 (2020) 2961 (measured wine)
+      sulfate            CLOSURE     21 - 53 (IC)           see ELECTRONEUTRALITY below
+
+  Gajek et al., Molecules 26 (2021) 214, is quoted for Ca, Mg and pH only:
+  its K mean for red wines (72 mg/L) is an order of magnitude below every
+  other survey and is not used.  Succinic and acetic acid (Siren: 534-853 and
+  605-1297 mg/L) are NOT declared: with pKa 4.207 (succinic, Pinching &
+  Bates, quoted in Eden & Bates 1959 Table 6) a unit above the wine pH they
+  are mostly undissociated and would add of the order of 2 meq/L of anions
+  -- named here as part of what the closure below absorbs.
+
+  SPECIATION AT THE FEED pH IS FIXED AND DECLARED.  The steady stack does
+  not re-speciate, so the ionic forms are computed once, here, with
+  thermodynamic pKa in WATER at 25 C from primaries read in full (all NIST
+  Journal of Research, public domain):
+      tartaric  pK1 3.036  pK2 4.366   Bates & Canham, J. Res. NBS 47 (1951) 343
+      malic     pK1 3.459  pK2 5.097   Eden & Bates,   J. Res. NBS 62 (1959) 161
+      phosphoric pK1 2.148 pK2 7.200   Bates, J. Res. NBS 47 (1951) 127; Bates & Acree,
+                                       J. Res. NBS 30 (1943) 129 (pK2 = 1979.5/T - 5.3541 + 0.019840 T)
+      lactic    pKa 3.862             Nims & Smith, J. Biol. Chem. 113 (1936) 145, AS QUOTED by
+                                       Mauger, Dissolution Technol. 24(3) (2017) 38 -- primary not reached
+  Henderson-Hasselbalch on a diprotic acid at pH 3.60:
+      r1 = 10^(pH - pK1),  r2 = 10^(pH - pK2),  D = 1 + r1 + r1 r2
+      alpha0 = 1/D (neutral),  alpha1 = r1/D (mono-anion),  alpha2 = r1 r2/D (di-anion)
+      tartaric:  r1 3.664  r2 0.1714  -> alpha0 0.1889  alpha1 0.6924  alpha2 0.1187
+      malic:     r1 1.383  r2 0.0318  -> alpha0 0.4119  alpha1 0.5699  alpha2 0.0181
+      phosphoric: alpha1(H2PO4-) 0.9657, H3PO4 0.0341, HPO4 2- 0.00024 (dropped)
+      lactic:    alpha = 1/(1 + 10^(pKa - pH)) = 0.3536
+  applied to 11.993 mmol/L tartaric, 1.8645 malic, 25.533 lactic and 6.772
+  phosphate (as HPO4) gives the anions in 0/diluateFeed.  The NEUTRAL forms
+  cannot be declared (a neutral molecule has no species row and carries no
+  current) and are LEFT OUT of the feed: 18.9 % of the tartaric acid
+  (2.27 mmol/L H2Tart), 41.2 % of the malic (0.77 mmol/L), 64.6 % of the
+  lactic (16.5 mmol/L) and 3.4 % of the phosphate.  For a CONDUCTIVITY
+  target that is the right omission -- a neutral carries no charge -- and
+  the consequence is the one to remember: the stack removes IONS, and the
+  undissociated acid left behind re-dissociates as the pH drifts, which this
+  fixed-speciation case cannot see.  The pKa are the WATER values: in a
+  13.5 % ethanol medium they shift upward (Berg & Keefer 1958 determined
+  the tartaric constants "in alcohol" and found their ratio differs; the
+  numbers were not read), so alpha1 of tartaric is somewhat overstated here.
+  H+ is declared at c = 10^-pH = 0.2512 mmol/L, taking a_H = c_H (announced
+  simplification; Davies puts gamma about 0.85 at this ionic strength).
+
+  ELECTRONEUTRALITY IS THE AUTHOR'S TO CLOSE, and the engine does not check
+  it (there is no electroneutrality test in ElectrodialysisStack.cpp --
+  measured).  With everything above:
+      cations  K 25.577 + Na 5.220 + 2 Ca 2.495 + 2 Mg 8.229 + H 0.251 = 41.772 meq/L
+      anions   HTart 8.304 + 2 Tart 2.846 + HMal 1.063 + 2 Mal 0.068 + Lactate 9.028
+             + Cl 1.128 + H2PO4 6.540                                   = 28.977 meq/L
+      gap                                                                12.795 meq/L
+  closed on ONE named ion, SULFATE: 12.795/2 = 6.397 mmol/L = 614.5 mg/L
+  SO4 2- (1.115 g/L expressed as K2SO4).  Why sulfate: Siren's own table
+  contradicts itself on it -- its ion-chromatography sulfate (20.6-53.3 mg/L)
+  sits against a total-sulfur column of 99-252 mg S/L (363-755 mg/L if all
+  of it were sulfate), and the paper notes matrix interference on the
+  sulfate peak; it is the one measured anion whose value the source itself
+  puts in doubt by an order of magnitude.  The closure lands inside that
+  total-sulfur ceiling and JUST ABOVE the OIV maximum acceptable limit for
+  a young dry wine (1 g/L as K2SO4; OIV International Code of Oenological
+  Practices, Annex "Maximum acceptable limits"), which says plainly that not
+  all of the missing anionic charge is sulfate -- some is the succinate and
+  acetate not declared, bisulfite adducts and phenolate the analysis did not
+  measure.  The magnitude is stated so a reader can move it: this is the
+  `aqueousAnalysis` posture (a named adjustment of a stated size), never a
+  silent one.
+
+  EVERY ION NEEDS A D0, AND SIX OF THESE HAD NONE.  `electrolyte::ionD0`
+  refuses an ion without a `D0` row -- correctly -- and the limiting-current
+  PREDICTION (GeraldesAfonso2010) runs only when every diluate ion resolves
+  one.  K, Na, Ca, Mg, H, Cl and SO4 carry curated D0 in data/standards/
+  species/; HTart, Tart, H2PO4 do not, and HMal, Mal, Lactate have no species
+  record at all.  They are supplied CASE-LOCALLY under constant/species/,
+  each `origin estimated; reviewStatus unverified;` with the method and a
+  note naming the primary to verify against (none of those primaries --
+  Marsh, Spiro & Selvaratnam 1963 for bitartrate; Bester-Rogac, Neueder,
+  Barthel & Apelblat 1997/1998 for the tartrates; Selvaratnam & Spiro 1965
+  and Pethybridge et al. 2006 for H2PO4- -- could be read here, and a value
+  written from memory would be an invisible falsehood).  The method, from
+  facts the tree already carries: Stokes-Einstein at 25 C on the engine's
+  own water viscosity (8.8987e-4 Pa s, the Vogel fit of water.dat) with the
+  bitartrate radius taken as the sphere of its CRYSTAL molar volume --
+  potassium bitartrate's rho_p 1980 kg/m3 and MW 188.177 give 95.04 cm3/mol,
+  minus K+'s conventional V0 9.02 cm3/mol = 86.02 cm3/mol, r = 3.243e-10 m,
+  D0 = 7.568e-10 m2/s (lambda0 28.4 S cm2/mol by Nernst-Einstein); Tart 2-
+  the same radius; HMal, Mal and Lactate scaled by the cube root of their
+  molar-mass ratio to bitartrate (0.9629, 0.9604, 0.8422); H2PO4- set equal
+  to the isosteric sulfate ion's curated 1.06e-9.  The engine ANNOUNCES each
+  of the six on every run ([estimate] species ..., the caveat block, the
+  result JSON) -- the announcement was ADDED for this case, because the
+  species bridge dropped the provenance block and an estimated D0 was being
+  read in the same silence as a measured one.  The case-local route was
+  VERIFIED to win over the catalogue before any of this was trusted (a
+  deliberately wrong D0 in constant/species/HTart.dat moved kappa; the
+  catalogue's own HTart.dat has no D0 to shadow).
+
+  THE BRINE.  The concentrate loop of a wine ED plant collects the salt the
+  stack moves, and that salt is sparingly soluble: 0/concentrateFeed is a
+  potassium bitartrate solution at 20 mmol/L (3.76 g/L), 76 % of KHT's
+  solubility in WATER at 20 C (4.92 g/L: Berg & Keefer 1958 Table 1, as
+  reproduced by the AWRI's potassium-instability page -- the primary was not
+  reached), because that ceiling is why such a loop is bled.  Measured, not
+  argued, on a twin with the brine at 10 mmol/L: I is IDENTICAL (1.4583 A --
+  the conductivity target is a property of the diluate alone) while U falls
+  from 5.476 to 3.134 V, through the membrane back-EMF (E_mem +0.019 ->
+  -0.014 V per pair) and the concentrate channel's resistance (0.0068 ->
+  0.0135 Ohm per pair).  The concentrate enters the diluate's answer
+  nowhere else.
+
+  WHAT A STUDENT SHOULD READ OFF THE LOG -- and the two findings this feed
+  exposes about the UNIT.
+
+  (1) THE ANSWER.  kappa_in 0.5003 S/m -> kappa_out 0.4002 S/m (20.00 %),
+      I = 1.458 A on 0.5 m2 per cell pair (i = 2.92 A/m2), U = 5.48 V,
+      P = 8.0 W, 0.0027 kWh/m3 of wine; i_lim = 207.4 A/m2 (GeraldesAfonso2010,
+      set by the anion-exchange membrane, D corrected to 20 C through
+      Stokes-Einstein with factor 0.874), so i/i_lim = 0.014 -- Vitor's
+      machine at 20 % removal on this wine is nowhere near its limiting
+      current on THIS model.  The Newton converges in 2 iterations from the
+      linear seed (kappa_out is linear in I until a cap binds).
+
+  (2) THE FEED'S CONDUCTIVITY IS TOO HIGH, and the run says why.  5.0 mS/cm,
+      where instruments read 1.5-3 mS/cm on such wines (Tsygurina et al.'s
+      model red-wine solution: 2.04 mS/cm at pH 3.25).  The engine's kappa
+      is sum c_i lambda_i with lambda at INFINITE DILUTION (no Kohlrausch
+      relaxation or electrophoretic term at I ~ 0.05 mol/kg), on PURE WATER
+      (no ethanol, first paragraph), with D0 at its 25 C reference divided
+      by RT at the run T (a 1/T that goes the wrong way: the Stokes-Einstein
+      correction the limiting current receives is NOT applied to kappa --
+      an engine inconsistency, named in the design record and not fixed
+      here because it moves every ED golden), and with the sulfate closure
+      above.  A relative target is insensitive to a common factor; U and P
+      are not.
+
+  (3) THE UNIT'S FARADAY SPLIT IS A SINGLE-SALT IDEALISATION, AND A
+      13-ION WINE SHOWS IT.  Every counter-ion loses xi I N/(|z| F) mol/s
+      REGARDLESS of its concentration or mobility: 1.632 mmol/L from each
+      monovalent ion and 0.816 from each divalent one at this current.  So
+      K+ falls 6.4 % (25.58 -> 23.94 mmol/L) while H+, Cl-, HMal- and Mal 2-
+      are removed ENTIRELY -- the cap binds four times and the [WARNING]
+      says so -- and the diluate leaves with no chloride and no free
+      hydrogen ion.  Charge is not conserved either: 5 cations each lose
+      xi I N/F equivalents and 8 anions each lose the same, so the diluate
+      OUTLET carries +3.64 meq/L of net positive charge (+5.5 % of its
+      66.3 eq/L of ion equivalents; the concentrate the mirror -3.64) -- the
+      finding CLAUDE.md records as "not charge-balanced on a feed of mixed
+      valence", measured at 1.8 % on ed04's three ions and at 5.5 % here on
+      thirteen.  RESERVED for Vitor and NOT fixed here (it moves ed04's
+      golden).  What a transport-number split would give is a hand
+      calculation from the run's OWN printed numbers: sharing the cation
+      current by the film limiting transport numbers the engine prints
+      (t_lim K 0.746, Na 0.103, Mg 0.086, H 0.035, Ca 0.029) and the anion
+      current likewise (SO4 0.337, Lactate 0.202, H2PO4 0.172, HTart 0.156,
+      Cl 0.057, Tart 0.054, HMal 0.021), the same 20 % of kappa needs
+      I = 6.68 A -- 4.6 times the equal-share answer -- at i/i_lim = 0.064.
+      The right number for a real wine lies with the second model; this
+      case prints the first because that is what the unit does today, and
+      it prints it loudly.
+
+  (4) THE MOTIVE, QUANTIFIED WITH ITS APPROXIMATIONS.  A new wine is
+      supersaturated in KHT and will throw crystals in the bottle.  Berg &
+      Keefer's Table 1 (via the AWRI) gives KHT's solubility at 20 C as
+      2.77 g/L in 12 % and 2.51 g/L in 14 % ethanol; interpolated to 13.5 %,
+      2.575 g/L = 13.68 mmol/L.  A saturated KHT solution sits at pH
+      (pK1+pK2)/2 = 3.70, where alpha1 = 0.698, so its concentration product
+      Ksp' = [K+][HT-] = 13.68 x 9.55 = 130.7 mM2 (water pKa, no activity
+      correction, both stated).  The feed: 25.58 x 8.30 = 212.4 mM2, a
+      supersaturation ratio S = 1.62.  After the run's 20 % conductivity
+      removal: 23.94 x 6.67 = 159.7, S = 1.22 -- still supersaturated by
+      this arithmetic, because the equal-share split takes only 6.4 % of the
+      potassium.  Under the transport-number split of (3), K falls to about
+      20.0 and HT- to about 7.1 mmol/L: S = 1.09.  Neither clears 1.0 on
+      paper, and Berg & Keefer themselves report that KHT precipitates far
+      more slowly from wine than from alcohol-water (colloids), which is why
+      the trade's criterion is the mini-contact test and not a solubility
+      product.  The potassiumBitartrate.dat c_sat(T) coefficients are NOT
+      used: their own header calls them illustrative.
+
+  (5) TEMPERATURE.  293.15 K (20 C) is declared: ED tartaric stabilisation
+      runs at cellar-to-ambient temperature, Siren et al. measured their pH
+      at 20 C, and it is the temperature of Geraldes & Afonso's Table 3, so
+      the Stokes-Einstein path (factor 0.874 on every D) is exercised where
+      ed04 already exercises it.  Re = 55.9, inside the record's 50-86 band.
+
+      diluateFeed (the wine) ->  +-----------------------+ -> diluate (stabilised wine)
+                                 | EurodiaED-100P-50     |
+      concentrateFeed (brine) -> | 100 pairs, CMX/AMX    | -> concentrate
+                                 +-----------------------+
+                                          | (power, energy wire)
+                                          v
+                                     rectifier (electricLoad)
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        edStack;
+        type        electrodialysisStack;
+        inputs      ( diluateFeed  concentrateFeed );
+        outputs     ( diluate  concentrate );
+
+        operation
+        {
+            stack                      EurodiaED-100P-50;   // the HARDWARE, as a record (Vitor's own unit)
+            membrane                   CMX_AMX;             // the record names no pair -- the CASE must
+            targetConductivityRemoval  0.20;                // 20 % of the wine's conductivity, and Choupo solves I
+            xi                         0.9;                 // current efficiency (the announced default, declared)
+            E_electrodes               2.0;                 // V (raw SI) -- lumped electrode overpotential (announced)
+        }
+
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+    {
+        name        rectifier;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from edStack.power;  kind work;  target W_shaft; }
+        );
+    }
+);

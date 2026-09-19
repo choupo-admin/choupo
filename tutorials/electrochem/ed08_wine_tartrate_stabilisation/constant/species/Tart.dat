@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Tart.dat -- CASE-LOCAL model species for the wine tutorial ed08.
+
+  Body fields (name, formula, charge, MW, hfAq) are data/standards/species/
+  Tart.dat's, verbatim; the transport block is this case's addition.
+  THE TRANSPORT BLOCK IS AN ESTIMATE AND SAYS SO.  No limiting ionic
+  conductivity of this anion could be READ from a primary source in the
+  session that wrote this record (the measurements exist and are named in
+  `notes` below, behind paywalls); a value written from memory would be an
+  invisible falsehood, so the D0 is derived by a stated method from facts the
+  tree already carries, marked `origin estimated; reviewStatus unverified;`
+  and ANNOUNCED by the engine on every run that reads it.  Promotion to
+  data/standards/ is a curation act reserved to a human review against the
+  named primaries.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Tart;
+formula     "C4H4O6-2";
+charge  -2;
+MW { value 148.07; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -1291000; unit J/mol;}
+}
+
+transport
+{
+    D0 { value 7.568e-10; unit m2/s; }
+    provenance
+    {
+        source  "no primary read; derived from the tree's own records as stated in `method`";
+        licence "this record's derivation is the project's own; the inputs are the catalogue's, cited in their own records";
+        D0
+        {
+            origin        estimated;
+            method        "the SAME radius as HC4H4O6- (one proton fewer does not change the crystal molar volume at the precision of this estimate), so the same D0; the equivalent conductivity per equivalent is then 56.8 S cm2/mol by Nernst-Einstein";
+            reviewStatus  unverified;
+            notes         "Verify against Bester-Rogac, Neueder, Barthel and Apelblat, J. Solution Chem. 26 (1997) 537 (Part II) and 27 (1998) (Part III), which evaluate lambda(1/2 Tar2-); not read here.";
+        }
+    }
+}

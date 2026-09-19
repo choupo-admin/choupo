@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Lactate.dat -- CASE-LOCAL model species for the wine tutorial ed08.
+
+  No catalogue record of this species exists (the catalogue carries Acetate
+  and not Lactate): identity AND transport are declared here.  No
+  aqueousThermo block -- no formation datum was read and none is invented.
+  THE TRANSPORT BLOCK IS AN ESTIMATE AND SAYS SO.  No limiting ionic
+  conductivity of this anion could be READ from a primary source in the
+  session that wrote this record (the measurements exist and are named in
+  `notes` below, behind paywalls); a value written from memory would be an
+  invisible falsehood, so the D0 is derived by a stated method from facts the
+  tree already carries, marked `origin estimated; reviewStatus unverified;`
+  and ANNOUNCED by the engine on every run that reads it.  Promotion to
+  data/standards/ is a curation act reserved to a human review against the
+  named primaries.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Lactate;
+formula     "C3H5O3-";
+charge  -1;
+MW { value 89.07; unit g/mol;}
+
+transport
+{
+    D0 { value 8.985e-10; unit m2/s; }
+    provenance
+    {
+        source  "no primary read; derived from the tree's own records as stated in `method`";
+        licence "this record's derivation is the project's own; the inputs are the catalogue's, cited in their own records";
+        D0
+        {
+            origin        estimated;
+            method        "the bitartrate crystal-volume Stokes estimate scaled by (89.07/149.08)^(1/3) = 0.8422 as the radius ratio (lambda0 = 33.7 S cm2/mol by Nernst-Einstein)";
+            reviewStatus  unverified;
+            notes         "Verify against a conductance study of lactic acid or its alkali salts, or Robinson and Stokes, Electrolyte Solutions, 2nd ed. (1959) Appendix 6.1 (lactate is listed there in the editions this project has cited for NO3- and NH4+); neither could be read here.";
+        }
+    }
+}
