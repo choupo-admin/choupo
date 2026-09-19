@@ -493,3 +493,54 @@ LESSON_SYMBOLS_DEBT = {
               "of it.",
     "blocked": None,   # not blocked on anything -- it is writing
 }
+
+
+# ---------------------------------------------------------------------------
+#  ORIGIN VOCABULARY -- words written as `origin <word>;` that the vocabulary's
+#  one home does not know (2026-09-19)
+# ---------------------------------------------------------------------------
+
+#  `check_origin_census.KNOWN` enumerates the origin words the frozen tree
+#  writes, and `check_origin_vocabulary` holds every `origin <word>;` DICT FORM
+#  in prose (docs, comments, docstrings, schema descriptions) to that set --
+#  because on 2026-09-19 every prose home of the estimate word had drifted to
+#  the bare word (`estimate`) while all 150 records said `estimated`, and the engine's
+#  tolerant `originFromWord` made the drift invisible at run time.
+#
+#  These two words are written in the dict form, are NOT in KNOWN, and are not
+#  typos: each is a word somebody CHOSE and registered nowhere the vocabulary
+#  lives.  They are pinned rather than added to KNOWN because a new origin
+#  word is a classification decision (the census says so in its own header),
+#  and pinned rather than rewritten because the first one is LIVE.
+ORIGIN_WORDS_OUTSIDE_VOCABULARY = {
+    "teachingSurrogate":
+        "LIVE.  `src/propertyOps/ThielePellet.cpp` dispatches on it by string "
+        "(`cat.origin() == \"teachingSurrogate\"`), two case-local catalyst "
+        "records under tutorials/props/reactor/thiele0*/ declare it, and the "
+        "GUI lesson quotes it.  `core/Origin.H` resolves it to `unattributed` "
+        "and the census never sees it (case-local records are outside its "
+        "domain) -- the `measuredFit` lesson written in Origin.H's own comment, "
+        "unapplied: a declared word must be registered where the vocabulary "
+        "lives.",
+    "citedHeuristic":
+        "PROPOSED, not shipped.  `docs/design/engineering-heuristics-as-"
+        "curated-data.md` sketches a `provenance { origin citedHeuristic; }` "
+        "grammar for a heuristic transcribed from a cited handbook; no record "
+        "and no reader carries the word.",
+}
+
+ORIGIN_WORDS_DEBT = {
+    "why": "A word the engine dispatches on, or a document teaches, that the "
+           "vocabulary's one home does not list is a second home for the "
+           "vocabulary -- and the tolerant `originFromWord` means a wrong or "
+           "unregistered word runs to exit 0 and prints a plausible word back.",
+    "remedy": "For each word: register it in `core/Origin.H` (with the rung it "
+              "resolves to) AND `check_origin_census.KNOWN` in one commit, or "
+              "rename the sites to a word already there.  Either is a "
+              "vocabulary decision; the gate only keeps the list visible.",
+    "blocked": "A classification decision (whose rung `teachingSurrogate` "
+               "is -- it is deliberately NOT `estimated`, the record says "
+               "'do not quote it') is reserved; the census header records "
+               "that the engine enum and the five-axes contract already "
+               "disagree, and no gate may settle that.",
+}

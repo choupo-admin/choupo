@@ -4202,6 +4202,28 @@ PYEOF
     fi
     rm -f /tmp/origcensus.$$
 
+    # origin-vocabulary gate (2026-09-19).  The census above reads RECORDS
+    # under data/standards/; nothing read the PROSE that teaches how to write
+    # one, and every prose home of the estimate word had drifted to the bare
+    # `estimate` while all 150 records said `estimated` -- 21 sites in 15
+    # files, the Theory Guide, CLAUDE.md and two engine comments among them.
+    # The engine's originFromWord tolerates the synonym, so a record copied
+    # from any of them runs and prints the right word back: nothing at run
+    # time can see it.  This gate holds every `origin <word>;` DICT FORM under
+    # docs/, src/, bin/, gui/src/, gui/schemas/ and the root *.md to the
+    # census's KNOWN set -- IMPORTED, never copied -- reading each file as one
+    # string so a form wrapped across two lines is seen.  Read-only, ~1 s.
+    if "$ROOT/bin/curate/check_origin_vocabulary.py" > /tmp/origvocab.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_origin_vocabulary" \
+            "$("$ROOT/bin/curate/gate_claim.py" check_origin_vocabulary /tmp/origvocab.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (see below)\n" "check_origin_vocabulary"
+        cat /tmp/origvocab.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/origvocab.$$
+
     # standards-write-guard gate (2026-09-04).  Four documents state that the
     # engine refuses to write under data/standards/; one code site enforced it.
     # Reproduced before the fix: `fitParameters proposal` wrote a promotable

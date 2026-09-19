@@ -995,6 +995,11 @@
       "exit": 0,
       "claim": "check_utility_tag_symmetry: OK -- a utility `category` is applied only when the circuit is declared on BOTH sides of a unit; a half-declared one has its tag ignored (the medium counted as material, which nets its own formation datum exactly) and the run ANNOUNCES it by unit and stream with the remedy.  Verified on the source rule, on a live case that has such a circuit, on that case's own per-unit ledger -- on the unit the announcement NAMES, |dH| is under 1 % of the enthalpy flowing through it, i.e. the medium's datum cancels -- and on a case with no categorised stream, which stays silent.  SCOPE, MEASURED: ten corpus cases tag a utility stream and exactly ONE reaches this path -- two refuse their energy balance for a missing enthalpy datum and seven never hand the tagged stream to a unit's balance, so this gate speaks for one case and says so.  NOT CHECKED: the SYMMETRIC path -- no case in the corpus tags both ends of a circuit, so nothing here witnesses that a fully declared circuit reports the right duty.",
       "seconds": 0.1
+    },
+    "check_origin_vocabulary": {
+      "exit": 0,
+      "claim": "check_origin_vocabulary: OK -- 95 `origin <word>;` forms in 49 prose files all use a KNOWN word (15 words imported from check_origin_census, never copied), or one of 2 word(s) pinned in debt_registry with a stated exit (citedHeuristic, teachingSurrogate), or one of 6 sites exempt BY NAME (5 deliberate quotations, 1 English sentence).  SCANNED: docs, src, bin, gui/src, gui/schemas and the root *.md, every text file, read as one string so a line-wrapped form is seen.  NOT CHECKED: records under data/ (the census's domain) and case-local records under tutorials/ (nobody's); the engine's tolerance in core/Origin.H; whether a word is TRUE of its value; the backtick prose form with no semicolon.",
+      "seconds": 0.5
     }
   }
 }
