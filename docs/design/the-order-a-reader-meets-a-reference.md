@@ -31,9 +31,16 @@ obvious one.
 entries happen to be written in *is* the numbering the reader sees.  Nothing
 tied that order to the order the body cites them.
 
-Measured at HEAD before the fix: of the 2701 ordered pairs of cited entries,
-**1778 were inverted** against citation order.  The first citation in the body
+Measured at HEAD before the fix: of the 2926 ordered pairs of cited entries,
+**1880 were inverted** against citation order.  The first citation in the body
 was entry #79 of 83, the second #82, the third #65.
+
+(Those two numbers are a correction.  The first pass counted 2701 and 1778 --
+commit `4101fedaf`'s message still carries them -- because its regex read one
+LINE at a time and three of the manual's `\cite{a,b}` commands are broken
+across a line break, so their keys were invisible to it.  Same defect, one
+level up, as the thing being fixed: a derived number is only as good as the
+scan that produced it, and 77 keys are cited, not 74.)
 
 It is a derived fact — a function of the body text — and the project's own
 arity doctrine forbids storing one by hand.  That is also why *hand-sorting
