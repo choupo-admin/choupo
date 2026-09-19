@@ -24,6 +24,25 @@
 \usepackage{needspace}
 \usepackage{graphicx}
 
+% ---- Figure and table captions --------------------------------------
+%  WHY THIS IS DECLARED AT ALL.  Nothing here set a caption size, so every
+%  guide took the class default, which in `article` is the BODY size exactly
+%  (measured: 10.95pt for both at 11pt).  Pedro Mendes read the Choupo-2608
+%  Theory Guide and reported the captions as LARGER than the body text, and
+%  the measurement says why he is right about what he saw: all 92 of that
+%  guide's figures are drawn, 79 of them label their own interior at
+%  \footnotesize and 75 use \scriptsize, and every one of the 92 captions is
+%  a paragraph of explanatory prose (median 684 characters).  A body-size
+%  paragraph under an 8-9pt drawing reads as oversized whatever the ruler
+%  says.  So the caption is declared one step below the body -- the ordinary
+%  scholarly convention, and the size a reader expects a caption to be.
+%
+%  This is SHARED by every guide in docs/Makefile's DOCS list; captions exist
+%  today in theoryGuide (92), designGuide (3), propsGuide (2) and the
+%  generated tutorialsGuide SDEM parts (5).  Changing it moves all of them,
+%  deliberately: one manual set, one caption size.
+\usepackage[font=small,labelfont=bf]{caption}
+
 % ---- Code listings --------------------------------------------------
 \usepackage{listings}
 \usepackage{xcolor}
