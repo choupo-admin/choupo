@@ -23461,113 +23461,29 @@ $\Lambda$                   & Wilson binary parameter \\
 
 \begin{thebibliography}{99}
 
-\bibitem{Langmuir1918} Langmuir, I., ``The adsorption of gases on plane
-surfaces of glass, mica and platinum'', \emph{J.\ Am.\ Chem.\ Soc.} \textbf{40}
-(1918) 1361.  The isotherm Eq.~\eqref{eq:langmuir} rests on.
+\bibitem{Westerberg1979} Westerberg, A. W., Hutchison, H. P.,
+Motard, R. L., \& Winter, P., \emph{Process Flowsheeting},
+Cambridge University Press, 1979.  The first textbook on
+sequential-modular flowsheeting.  Chapters 2 and 4 articulate the
+``the user should not be required to know which variables the solver
+will iterate on'' principle that Choupo inherits.
 
-\bibitem{Hinshelwood1940} Hinshelwood, C.N., \emph{The Kinetics of Chemical
-Change}, Oxford University Press, 1940.  Surface reaction between adsorbed
-species as the rate-determining step.
+\bibitem{CapeOpen} CAPE-OPEN Laboratories Network,
+\emph{Unit Operation Interface Specification}, current version,
+\url{https://www.colan.org/specifications/unit-operation-interface-specification/}.
+The vendor-neutral standard (since 1999) that codifies the
+ports-vs-parameters separation, the material / energy / information
+stream taxonomy, and the contract that any third-party unit
+operation must satisfy to be droppable into a CAPE-OPEN-compliant
+flowsheeter.  Choupo's
+\code{UnitOperation} interface is a deliberate subset of this
+standard; v1.0 will add adapter wrappers so Choupo modules can
+load into a CAPE-OPEN host and vice versa.
 
-\bibitem{HougenWatson1943} Hougen, O.A.\ and Watson, K.M., ``Solid catalysts and
-reaction rates'', \emph{Ind.\ Eng.\ Chem.} \textbf{35} (1943) 529.  The
-engineering form: kinetic factor, driving force, adsorption group.
-
-\bibitem{Popken2000} P\"opken, T., G\"otze, L.\ and Gmehling, J., ``Reaction
-kinetics and chemical equilibrium of homogeneously and heterogeneously catalyzed
-acetic acid esterification with methanol and methyl acetate hydrolysis'',
-\emph{Ind.\ Eng.\ Chem.\ Res.} \textbf{39} (2000) 2601.  Eq.~16 (adsorption-based
-rate law, Table 11), the adsorption constants (Table 10), the UNIQUAC parameters
-they were regressed with (Tables 2--3), and the independent $K_a$ of Eq.~17.
-
-\bibitem{Thiele1939} Thiele, E.W., ``Relation between catalytic
-activity and size of particle'', \emph{Ind.\ Eng.\ Chem.} \textbf{31} (1939)
-916.  The pellet balance Eq.~\eqref{eq:pellet-balance}, the modulus
-Eq.~\eqref{eq:thiele-char} and the closed forms
-Eqs.~\eqref{eq:eta-slab}--\eqref{eq:eta-sphere}.
-
-\bibitem{WeiszPrater1954} Weisz, P.B.\ and Prater, C.D., ``Interpretation of
-measurements in experimental catalysis'', \emph{Advances in Catalysis}
-\textbf{6} (1954) 143.  The observable criterion Eq.~\eqref{eq:weisz-prater},
-which removes the intrinsic rate constant that a diffusion-limited experiment
-cannot measure.
-
-\bibitem{Aris1957} Aris, R., ``On shape factors for irregular particles~---
-I.\ The steady state problem.\ Diffusion and reaction'', \emph{Chemical
-Engineering Science} \textbf{6} (1957) 262.  The volume-to-surface length
-$\Lambda$ of Eq.~\eqref{eq:thiele-generalised}, on which the three geometries
-nearly collapse onto one $\eta(\phi)$ curve.
-
-\bibitem{SoudersBrown1934} Souders, M.\ and Brown, G.G., ``Design of
-fractionating columns.~I.\ Entrainment and capacity'', \emph{Industrial \&
-Engineering Chemistry} \textbf{26} (1934) 98.  The droplet-suspension argument
-behind $u_{\mathrm{flood}} \propto \sqrt{(\rho_L-\rho_V)/\rho_V}$.
-
-\bibitem{Fair1961} Fair, J.R., ``How to predict sieve tray entrainment and
-flooding'', \emph{Petro/Chem Engineer} \textbf{33}(10) (1961) 45.  The capacity
-parameter $C_{\mathrm{SB}}(F_{LV},\mathrm{TS})$, published as a chart.
-
-\bibitem{LygerosMagoulas1986} Lygeros, A.I.\ and Magoulas, K.G.,
-\emph{Hydrocarbon Processing} \textbf{65}(12) (1986) 43.  The algebraic
-representation of Fair's chart used in Eq.~\eqref{eq:lygeros}; inaccurate below
-$F_{LV}\approx0.03$, where its slope has the wrong sign.
-
-\bibitem{Liebson1957} Liebson, I., Kelley, R.E.\ and Bullington, L.A.,
-\emph{Petroleum Refiner} \textbf{36} (1957).  The sieve-tray discharge
-coefficient $C_o$, charted against $A_h/A_p$ and plate thickness over hole
-diameter.
-
-\bibitem{Sinnott} Sinnott, R.K., \emph{Coulson \& Richardson's Chemical
-Engineering}, Vol.~6, \emph{Chemical Engineering Design}, Butterworth-Heinemann.
-The clear-liquid-head lineage used here: dry-tray head, weir crest, residual
-head, downcomer backup, and the weep point.
-
-\bibitem{Weisbach1845} Weisbach, J., \emph{Lehrbuch der Ingenieur- und
-Maschinen-Mechanik}, Vol.~1, Braunschweig, 1845; and Darcy, H.,
-\emph{Recherches exp\'erimentales relatives au mouvement de l'eau dans
-les tuyaux}, Mallet-Bachelier, Paris, 1857.  The velocity-head form of
-the pipe-friction law and the experiments behind the friction factor;
-the modern name credits both.
-
-\bibitem{Colebrook1939} Colebrook, C. F., ``Turbulent Flow in Pipes,
-with Particular Reference to the Transition Region between the Smooth and
-Rough Pipe Laws,'' \emph{J. Inst. Civ. Eng.}\ \textbf{11}(4),
-133--156, 1939.  The implicit friction-factor equation interpolating
-Nikuradse's smooth- and rough-pipe data; Choupo's \code{Colebrook}
-model.
-
-\bibitem{Haaland1983} Haaland, S. E., ``Simple and Explicit Formulas for
-the Friction Factor in Turbulent Pipe Flow,'' \emph{J. Fluids Eng.}\
-\textbf{105}(1), 89--90, 1983.  The explicit approximation to
-Colebrook used by Choupo's \code{Haaland} model.
-
-\bibitem{Churchill1977} Churchill, S. W., ``Friction-Factor Equation
-Spans All Fluid-Flow Regimes,'' \emph{Chem. Eng.}\ \textbf{84}(24),
-91--92, 1977.  The single explicit correlation valid across laminar,
-transition and turbulent flow; Choupo's default \code{Churchill}
-model.
-
-\bibitem{LockhartMartinelli1949} Lockhart, R. W., \& Martinelli, R. C.,
-``Proposed Correlation of Data for Isothermal Two-Phase, Two-Component Flow
-in Pipes,'' \emph{Chem. Eng. Prog.}\ \textbf{45}(1), 39--48, 1949.  The
-foundational gas--liquid pressure-drop correlation, developed and validated
-on air-water (and similar) pipe data; Choupo's default \code{twoPhase} model.
-
-\bibitem{Butterworth1975} Butterworth, D., ``A Comparison of Some
-Void-Fraction Relationships for Co-Current Gas--Liquid Flow,''
-\emph{Int. J. Multiphase Flow} \textbf{1}(6), 845--850, 1975.  The algebraic
-fit of the Lockhart--Martinelli void fraction Choupo uses for the holdup.
-
-\bibitem{Friedel1979} Friedel, L., ``Improved Friction Pressure Drop
-Correlations for Horizontal and Vertical Two-Phase Pipe Flow,'' European
-Two-Phase Flow Group Meeting, Ispra, paper E2, 1979.  The general two-phase
-friction multiplier $\phi_{LO}^2$; Choupo's \code{Friedel} model.
-
-\bibitem{BeggsBrill1973} Beggs, H. D., \& Brill, J. P., ``A Study of Two-Phase
-Flow in Inclined Pipes,'' \emph{J. Petroleum Technology} \textbf{25}(5),
-607--617, 1973.  Flow-pattern map, holdup with inclination correction, and the
-two-phase friction-factor ratio; Choupo's \code{BeggsBrill} model.
-
+\bibitem{Wegstein} Wegstein, J. H., ``Accelerating Convergence of
+Iterative Processes'', \emph{Comm. ACM}, 1(6), 9--13 (1958). The
+two-page paper that powers the simulator's outer activity-coefficient
+loop.
 
 \bibitem{RPP} Poling, B. E., Prausnitz, J. M., \& O'Connell, J. P.,
 \emph{The Properties of Gases and Liquids}, 5th ed., McGraw-Hill,
@@ -23575,113 +23491,95 @@ two-phase friction-factor ratio; Choupo's \code{BeggsBrill} model.
 and activity-coefficient models. Chapters 6 (vapour pressure), 8
 (activity coefficients), 9 (mixture properties).
 
-\bibitem{HenleySeader} Henley, E. J., Seader, J. D., \& Roper, D. K.,
-\emph{Separation Process Principles}, 3rd ed., Wiley, 2011. Chapters
-4--7 cover the equilibrium-stage methods used in this simulator
-(flash, distillation, absorption).
+\bibitem{Renon} Renon, H., \& Prausnitz, J. M., ``Local Compositions in
+Thermodynamic Excess Functions for Liquid Mixtures'', \emph{AIChE J.},
+14, 135--144 (1968). Original NRTL paper.
 
-\bibitem{WijmansBaker} Wijmans, J. G., \& Baker, R. W., ``The
-Solution-Diffusion Model: A Review'', \emph{J.\ Membr.\ Sci.}, 107,
-1--21 (1995), DOI 10.1016/0376-7388(95)00102-I. The standard derivation of the pressure- and
-concentration-driven fluxes (Eqs.~\ref{eq:sd-water}--\ref{eq:sd-solute})
-used by the spiral-wound module.
+\bibitem{Wilson} Wilson, G. M., ``A New Expression for the Excess
+Gibbs Energy of Mixing'', \emph{J. Am. Chem. Soc.}, 86, 127 (1964).
+Original Wilson paper.
 
-\bibitem{BowenMohammadHilal1997} Bowen, W. R., Mohammad, A. W., \&
-Hilal, N., ``Characterisation of nanofiltration membranes for predictive
-purposes --- use of salt, uncharged solutes and atomic force
-microscopy'', \emph{J.\ Membr.\ Sci.}, 126, 91--105 (1997). The
-Donnan-Steric Pore Model (DSPM): the extended Nernst--Planck pore flux
-(Eq.~\ref{eq:dspmde-enp}), the steric partition and Deen hindrance
-(Eqs.~\ref{eq:dspmde-steric}, \ref{eq:dspmde-Kd}--\ref{eq:dspmde-Kc}),
-pore electroneutrality (Eq.~\ref{eq:dspmde-electroneutral}) and the
-effective fixed charge density $X_d$ fitted from salt rejection.
+\bibitem{Abrams1975} Abrams, D. S., \& Prausnitz, J. M., ``Statistical
+Thermodynamics of Liquid Mixtures: A New Expression for the Excess Gibbs
+Energy of Partly or Completely Miscible Systems'', \emph{AIChE J.},
+21(1), 116--128 (1975). Original UNIQUAC paper --- the combinatorial
+(Staverman--Guggenheim) plus residual (quasi-chemical) split and the
+$r$, $q$ structural constants.
 
-\bibitem{BowenWelfoot2002} Bowen, W. R., \& Welfoot, J. S., ``Modelling
-the performance of membrane nanofiltration --- critical assessment and
-model development'', \emph{Chem.\ Eng.\ Sci.}, 57, 1121--1137 (2002).
-Adds dielectric exclusion to give DSPM-DE: the Born solvation partition
-(Eq.~\ref{eq:dspmde-born}) with the reduced pore dielectric
-$\varepsilon_p$, the three-mechanism interfacial partition
-(Eq.~\ref{eq:dspmde-partition}) and the pore-transmission closure
-(Eq.~\ref{eq:dspmde-transmission}); source of the NF270 archetype
-parameters ($r_p$, $A_k/\Delta x$, $\varepsilon_p$).
+\bibitem{Fredenslund1975} Fredenslund, A., Jones, R. L., \& Prausnitz,
+J. M., ``Group-Contribution Estimation of Activity Coefficients in
+Nonideal Liquid Mixtures'', \emph{AIChE J.}, 21, 1086--1099 (1975). The
+original UNIFAC paper.
 
-\bibitem{Deen1987} Deen, W. M., ``Hindered transport of large molecules
-in liquid-filled pores'', \emph{AIChE J.}, 33(9), 1409--1425 (1987).
-The hydrodynamic hindrance factors $K_d$ (diffusive) and $K_c$
-(convective) as functions of $\lambda=r_i/r_p$
-(Eqs.~\ref{eq:dspmde-Kd}--\ref{eq:dspmde-Kc}).
+\bibitem{Hansen1991} Hansen, H. K., Rasmussen, P., Fredenslund, A.,
+Schiller, M., \& Gmehling, J., ``Vapor-Liquid Equilibria by UNIFAC Group
+Contribution. 5.\ Revision and Extension'', \emph{Ind. Eng. Chem. Res.},
+30, 2352--2355 (1991). The revised original-UNIFAC $R_k/Q_k$ and
+main-group $a_{mn}$ tables bundled in \file{data/standards/parameters/UNIFAC/}.
 
-\bibitem{GeraldesAfonso2007} Geraldes, V., \& Afonso, M. D., ``Prediction
-of the concentration polarization in the nanofiltration/reverse osmosis of
-dilute multi-ionic solutions'', \emph{J.\ Membr.\ Sci.}, 300, 20--27
-(2007), DOI 10.1016/j.memsci.2007.04.025.  The multi-ionic polarisation
-model of \S\ref{sec:polarisation-multiionic}: the interface balance
-(Eq.~\ref{eq:polar-interface}), electroneutrality at the wall
-(Eq.~\ref{eq:polar-electroneutral}), the explicit wall
-(Eq.~\ref{eq:polar-explicit}), the single-salt closed form
-(Eq.~\ref{eq:polar-single-salt}), and the stirred-cell case study of
-tutorial \code{polarisation01}.
+\bibitem{Pitzer1973} Pitzer, K. S., ``Thermodynamics of Electrolytes.
+I.\ Theoretical Basis and General Equations'', \emph{J.\ Phys.\ Chem.},
+77(2), 268--277 (1973). The ion-interaction model whose osmotic
+coefficient (Eq.~\ref{eq:pitzer-phi}) the simulator uses for the
+membrane osmotic pressure, via the Debye--H\"uckel limiting law plus
+short-range virial corrections.
 
-\bibitem{GeraldesAfonso2006} Geraldes, V., \& Afonso, M. D., ``Generalized
-mass-transfer correction factor for nanofiltration and reverse osmosis'',
-\emph{AIChE J.}, 52(10), 3353--3362 (2006), DOI 10.1002/aic.10968.  The
-suction correction $\Xi_i$ of Eq.~\ref{eq:polar-xi-2006}
-(\code{suctionCorrection GeraldesAfonso2006}), valid for $\varphi_i<20$.
+\bibitem{ChenSongEvans1982} Chen, C.-C., Britt, H. I., Boston, J. F.,
+\& Evans, L. B., ``Local Composition Model for Excess Gibbs Energy of
+Electrolyte Systems'', \emph{AIChE J.}, 28(4), 588--596 (1982). The
+original two-rule (like-ion repulsion + local electroneutrality)
+electrolyte-NRTL formulation underlying \S\ref{ch:enrtl}.
 
-\bibitem{Yaroshchuk2013} Yaroshchuk, A., Bruening, M. L., \& Lic\'on
-Bernal, E. E., ``Solution-diffusion--electro-migration model and its uses
-for analysis of nanofiltration, pressure-retarded osmosis and forward
-osmosis in multi-ionic solutions'', \emph{J.\ Membr.\ Sci.}, 447,
-463--476 (2013), DOI 10.1016/j.memsci.2013.07.047.  The SDEM law of
-\S\ref{ch:sdem}: Nernst--Planck on virtual concentrations
-(Eq.~\ref{eq:sdem-np}), virtual-solution electroneutrality and zero
-current (Eq.~\ref{eq:sdem-constraints}), the ambipolar single-salt
-limit (Eq.~\ref{eq:sdem-ambipolar}).  The analytical trace-ion solution
-is Yaroshchuk \& Bruening, \emph{J.\ Membr.\ Sci.}, 523, 361--372
-(2017), DOI 10.1016/j.memsci.2016.09.046.
+\bibitem{ChenEvans1986} Chen, C.-C., \& Evans, L. B., ``A Local
+Composition Model for the Excess Gibbs Energy of Aqueous Electrolyte
+Systems'', \emph{AIChE J.}, 32(3), 444--454 (1986). The
+electrolyte-NRTL model (\S\ref{ch:enrtl}); source of the water--NaCl
+energy parameters $\tau = (8.885, -4.549)$ and $\alpha = 0.2$, and the
+unsymmetric-reference local-composition equations the
+\code{ENRTLSingleSalt} kernel implements.
 
-\bibitem{FdL2021} Fern\'andez de Labastida, M., \& Yaroshchuk, A.,
-``Nanofiltration of Multi-Ion Solutions: Quantitative Control of
-Concentration Polarization and Interpretation by
-Solution-Diffusion-Electro-Migration Model'', \emph{Membranes}, 11(4),
-272 (2021), DOI 10.3390/membranes11040272, CC~BY~4.0.  NF270 ion
-permeances per dominant salt (its Table~1, carried by the SDEM witness
-cases) and the rejection figures the Tutorials Guide's validation
-section digitises and compares against.
+\bibitem{HamerWu1972} Hamer, W. J., \& Wu, Y.-C., ``Osmotic
+Coefficients and Mean Activity Coefficients of Uni-univalent
+Electrolytes in Water at 25\,\textdegree C'', \emph{J. Phys. Chem. Ref.
+Data}, 1(4), 1047--1100 (1972). The NaCl $\gamma_\pm(m)$ and $\phi(m)$
+reference data the eNRTL kernel is validated against (AAD 1.8\,\% /
+1.4\,\%, \S\ref{ch:enrtl}).
 
-\bibitem{CowanBrown1959} Cowan, D. A., \& Brown, J. H., ``Effect of
-Turbulence on Limiting Current in Electrodialysis Cells'', \emph{Ind.\
-Eng.\ Chem.}, 51(12), 1445--1448 (1959). The \emph{experimental} method
-for locating the limiting current --- the minimum of the stack resistance
-$\Delta V/I$ against $1/I$ --- and the classical single-salt relation
-$i_\text{lim} = zFk\,c/(t_\text{cu}-t_\text{co})$
-(Eq.~\ref{eq:ed-ilim}) usually attached to the name.
+\bibitem{Teas1968} Teas, J. P., ``Graphic Analysis of Resin Solubilities'',
+\emph{J. Paint Technol.}, 40 (516), 19--25 (1968).  The origin of the
+fractional-parameter ternary plot of Eq.~\eqref{eq:teas}.  Cited for the
+CONSTRUCTION only: this project holds no Hansen parameter values, from this
+paper or from anywhere else, and none is reproduced here.
 
-\bibitem{GeraldesAfonso2010} Geraldes, V., \& Afonso, M. D., ``Limiting
-current density in the electrodialysis of multi-ionic solutions'',
-\emph{J.\ Membr.\ Sci.}, 360, 499--508 (2010),
-doi:10.1016/j.memsci.2010.05.054.  The linearised Nernst--Planck model
-Choupo's \code{GeraldesAfonso2010} route implements: the effective
-diffusivity of a multi-ionic solution (Eq.~\ref{eq:ga-deff}), the limiting
-counter-ion transport numbers (Eqs.~\ref{eq:ga-tcem} and
-\ref{eq:ga-taem}), the explicit limiting current (Eq.~\ref{eq:ga-ilim}),
-and the EUR2C-7P18 bench stack with its own mass-transfer correlation and
-Table~4 measurements.
+\bibitem{HMW1984} Harvie, C. E., M\o ller, N., \& Weare, J. H., ``The
+prediction of mineral solubilities in natural waters: The
+Na--K--Mg--Ca--H--Cl--SO$_4$--OH--HCO$_3$--CO$_3$--CO$_2$--H$_2$O system
+to high ionic strengths at 25\,\textdegree C'', \emph{Geochim.\
+Cosmochim.\ Acta}, 48(4), 723--751 (1984). The multi-ion assembly of the
+per-ion $\ln\gamma_i$ (Eqs.~\ref{eq:hmw-cation}--\ref{eq:hmw-F})
+implemented in \code{PitzerHMW}; the seawater/brine ternary parameter set
+($\theta$, $\psi$, $\lambda$, $\zeta$) carried as per-record files
+under \file{parameters/Pitzer/}.
 
-\bibitem{RappPfromm1998} Rapp, H.-J., \& Pfromm, P. H.,
-``Electrodialysis for chloride removal from the chemical recovery cycle
-of a Kraft pulp mill'', \emph{J.\ Membr.\ Sci.}, 146, 249--261 (1998).
-The fourth-order polynomial refinement of the Cowan--Brown resistance
-minimum, used by \cite{GeraldesAfonso2010} to locate $i_\text{lim}$.
+\bibitem{Pitzer1975} Pitzer, K. S., ``Thermodynamics of Electrolytes.
+V.\ Effects of Higher-Order Electrostatic Terms'', \emph{J.\ Solution
+Chem.}, 4(3), 249--265 (1975). The unsymmetrical higher-order mixing
+term $E_\theta(I)$ and its integral $J(x)$ (Eqs.~\ref{eq:etheta},
+\ref{eq:Jfunc}) for like-sign ions of different charge, evaluated in
+\code{PitzerForm::Etheta}; the closed-form $J(x)$ approximation is the
+one tabulated in Pitzer (1991) ``Activity Coefficients in Electrolyte
+Solutions'', 2nd ed., CRC, ch.~3, and used by USGS PHRQPITZ (Plummer et
+al.\ 1988).
 
-\bibitem{Strathmann2004} Strathmann, H., \emph{Ion-Exchange Membrane
-Separation Processes}, Membrane Science and Technology Series 9,
-Elsevier, 2004. The standard text on electrodialysis; source of the
-membrane (Donnan + diffusion) potential form of the Nernst equation
-(Eq.~\ref{eq:ed-nernst}), the cell-pair resistance build-up
-(Eq.~\ref{eq:ed-rpair}), and the representative Neosepta CMX/AMX
-area-resistance values in the IEM \file{.dat}.
+\bibitem{Edwards1978} Edwards, T. J., Maurer, G., Newman, J. and
+Prausnitz, J. M., ``Vapor-Liquid Equilibria in Multicomponent Aqueous
+Solutions of Volatile Weak Electrolytes'', \emph{AIChE J.}, 24(6),
+966--976 (1978). The Pitzer truncation extended to molecular solutes
+(\S\ref{ch:edwards}); its Tables 4--6 carry the one measured parameter
+family and the estimation rules for the rest, under the authors' own
+caveat that they are ``preliminary results subject to change''.
+
+\bibitem{Parkhurst2013} Parkhurst, D. L. and Appelo, C. A. J., ``Description of Input and Examples for PHREEQC Version~3 --- A Computer Program for Speciation, Batch-Reaction, One-Dimensional Transport, and Inverse Geochemical Calculations'', U.S.\ Geological Survey Techniques and Methods, book~6, chap.~A43 (2013). The public-domain speciation engine whose mass-action databases (\file{phreeqc.dat}) Choupo's \file{speciation.dat} catalogue is derived from, and whose charge-balance percent-error convention (Eq.~\ref{eq:percent-error}) and charge-balance pH closure the speciation solver follows.
 
 \bibitem{Davies1962} Davies, C. W., \emph{Ion Association}, Butterworths,
 London, 1962. The extended Debye--H\"uckel ($\log_{10}\gamma_i =
@@ -23703,28 +23601,11 @@ liquid-water density polynomial $\rho_w(t)$ supplying the
 $(\rho_w/\rho_w^{25})^{1/2}$ part of the Debye--H\"uckel factor
 (\code{SolventProperties::rhoWaterKell}).
 
-\bibitem{Nightingale1959} Nightingale, E. R., ``Phenomenological Theory
-of Ion Solvation: Effective Radii of Hydrated Ions'', \emph{J.\ Phys.\
-Chem.}, 63(9), 1381--1387 (1959). Source of the per-ion
-infinite-dilution diffusivities $D_i^0$ (and hydrated radii) in
-\file{ions.dat}, from which the channel conductivity
-(Eq.~\ref{eq:ed-kappa}) is built via Nernst--Einstein.
-
-\bibitem{BardFaulkner2001} Bard, A. J., \& Faulkner, L. R.,
-\emph{Electrochemical Methods: Fundamentals and Applications}, 2nd ed.,
-Wiley, 2001. The reference followed by Choupo's shared \code{electrochem}
-kernel for the Nernst equation, Faraday's law of electrolysis
-(Eq.~\ref{eq:ed-faraday}), and the Butler--Volmer stub.
-
-\bibitem{RandolphLarson} Randolph, A. D., \& Larson, M. A.,
-\emph{Theory of Particulate Processes}, 2nd ed., Academic Press, 1988.
-The standard text on the population balance and the MSMPR crystalliser;
-source of Eq.~\ref{eq:pbe} and the $n(L)=n^0 e^{-L/G\tau}$ result.
-
-\bibitem{HulburtKatz} Hulburt, H. M., \& Katz, S., ``Some Problems in
-Particle Technology: A Statistical Mechanical Formulation'',
-\emph{Chem.\ Eng.\ Sci.}, 19, 555--574 (1964). Introduces the method
-of moments for the population balance (Eq.~\ref{eq:moments}).
+\bibitem{Soave1972} Soave, G., ``Equilibrium Constants from a Modified
+Redlich--Kwong Equation of State'', \emph{Chem.\ Eng.\ Sci.}, 27(6),
+1197--1203 (1972). Introduces the $\alpha(T;\omega)$ temperature
+function and the $m(\omega)$ correlation
+(eqs.~\ref{eq:srk-alpha}--\ref{eq:srk-m}) used by \code{SRK}.
 
 \bibitem{Sandler} Sandler, S. I.,
 \emph{Chemical, Biochemical, and Engineering Thermodynamics}, 5th ed.,
@@ -23732,161 +23613,10 @@ Wiley, 2017. The textbook the simulator's thermodynamic notation
 follows most closely; source of the cubic-EoS departure functions
 $H^{\mathrm R}, S^{\mathrm R}$ (eqs.~\ref{eq:srk-HR}--\ref{eq:srk-SR}).
 
-\bibitem{Soave1972} Soave, G., ``Equilibrium Constants from a Modified
-Redlich--Kwong Equation of State'', \emph{Chem.\ Eng.\ Sci.}, 27(6),
-1197--1203 (1972). Introduces the $\alpha(T;\omega)$ temperature
-function and the $m(\omega)$ correlation
-(eqs.~\ref{eq:srk-alpha}--\ref{eq:srk-m}) used by \code{SRK}.
-
 \bibitem{PengRobinson1976} Peng, D.-Y., \& Robinson, D. B., ``A New
 Two-Constant Equation of State'', \emph{Ind.\ Eng.\ Chem.\ Fundam.},
 15(1), 59--64 (1976). The Peng--Robinson cubic ($\Omega_a = 0.45724$,
 $\Omega_b = 0.07780$, $\kappa(\omega)$) implemented in \code{PR}.
-
-\bibitem{Renon} Renon, H., \& Prausnitz, J. M., ``Local Compositions in
-Thermodynamic Excess Functions for Liquid Mixtures'', \emph{AIChE J.},
-14, 135--144 (1968). Original NRTL paper.
-
-\bibitem{Wilson} Wilson, G. M., ``A New Expression for the Excess
-Gibbs Energy of Mixing'', \emph{J. Am. Chem. Soc.}, 86, 127 (1964).
-Original Wilson paper.
-
-
-\bibitem{Fredenslund1975} Fredenslund, A., Jones, R. L., \& Prausnitz,
-J. M., ``Group-Contribution Estimation of Activity Coefficients in
-Nonideal Liquid Mixtures'', \emph{AIChE J.}, 21, 1086--1099 (1975). The
-original UNIFAC paper.
-
-
-\bibitem{Teas1968} Teas, J. P., ``Graphic Analysis of Resin Solubilities'',
-\emph{J. Paint Technol.}, 40 (516), 19--25 (1968).  The origin of the
-fractional-parameter ternary plot of Eq.~\eqref{eq:teas}.  Cited for the
-CONSTRUCTION only: this project holds no Hansen parameter values, from this
-paper or from anywhere else, and none is reproduced here.
-
-\bibitem{Hansen1991} Hansen, H. K., Rasmussen, P., Fredenslund, A.,
-Schiller, M., \& Gmehling, J., ``Vapor-Liquid Equilibria by UNIFAC Group
-Contribution. 5.\ Revision and Extension'', \emph{Ind. Eng. Chem. Res.},
-30, 2352--2355 (1991). The revised original-UNIFAC $R_k/Q_k$ and
-main-group $a_{mn}$ tables bundled in \file{data/standards/parameters/UNIFAC/}.
-
-\bibitem{Abrams1975} Abrams, D. S., \& Prausnitz, J. M., ``Statistical
-Thermodynamics of Liquid Mixtures: A New Expression for the Excess Gibbs
-Energy of Partly or Completely Miscible Systems'', \emph{AIChE J.},
-21(1), 116--128 (1975). Original UNIQUAC paper --- the combinatorial
-(Staverman--Guggenheim) plus residual (quasi-chemical) split and the
-$r$, $q$ structural constants.
-
-\bibitem{Watson} Watson, K. M., ``Thermodynamics of the Liquid State'',
-\emph{Ind. Eng. Chem.}, 35, 398 (1943). The heat-of-vaporisation
-correlation.
-
-\bibitem{Parkhurst2013} Parkhurst, D. L. and Appelo, C. A. J., ``Description of Input and Examples for PHREEQC Version~3 --- A Computer Program for Speciation, Batch-Reaction, One-Dimensional Transport, and Inverse Geochemical Calculations'', U.S.\ Geological Survey Techniques and Methods, book~6, chap.~A43 (2013). The public-domain speciation engine whose mass-action databases (\file{phreeqc.dat}) Choupo's \file{speciation.dat} catalogue is derived from, and whose charge-balance percent-error convention (Eq.~\ref{eq:percent-error}) and charge-balance pH closure the speciation solver follows.
-
-\bibitem{GainesThomas1953} Gaines, G. L., \& Thomas, H. C., ``Adsorption Studies on Clay Minerals. II.\ A Formulation of the Thermodynamics of Exchange Adsorption'', \emph{J.\ Chem.\ Phys.}, \textbf{21}(4), 714--718 (1953). The convention Choupo uses for the bound-species activity in \eqref{eq:gt-beta}: the activity of an exchanger species is its charge-weighted \emph{equivalent fraction} on the resin, not its molality.
-
-\bibitem{Helfferich1962} Helfferich, F., \emph{Ion Exchange}, McGraw-Hill, New York (1962; Dover reprint 1995). The classic monograph on ion-exchange equilibria, selectivity and the strong-acid cation resin used as the textbook capacity nameplate for \code{SAC\_Na}.
-
-\bibitem{Wachinski2017} Wachinski, A. M., \emph{Ion Exchange Treatment for Water}, American Water Works Association, Denver (2017). Practitioner reference for water-softening capacity bases (eq/L bed vs eq/kg dry), regeneration and the sodium ``salt penalty'' \eqref{eq:salt-penalty}.
-
-\bibitem{Edwards1978} Edwards, T. J., Maurer, G., Newman, J. and
-Prausnitz, J. M., ``Vapor-Liquid Equilibria in Multicomponent Aqueous
-Solutions of Volatile Weak Electrolytes'', \emph{AIChE J.}, 24(6),
-966--976 (1978). The Pitzer truncation extended to molecular solutes
-(\S\ref{ch:edwards}); its Tables 4--6 carry the one measured parameter
-family and the estimation rules for the rest, under the authors' own
-caveat that they are ``preliminary results subject to change''.
-
-\bibitem{Pitzer1973} Pitzer, K. S., ``Thermodynamics of Electrolytes.
-I.\ Theoretical Basis and General Equations'', \emph{J.\ Phys.\ Chem.},
-77(2), 268--277 (1973). The ion-interaction model whose osmotic
-coefficient (Eq.~\ref{eq:pitzer-phi}) the simulator uses for the
-membrane osmotic pressure, via the Debye--H\"uckel limiting law plus
-short-range virial corrections.
-
-\bibitem{Pitzer1975} Pitzer, K. S., ``Thermodynamics of Electrolytes.
-V.\ Effects of Higher-Order Electrostatic Terms'', \emph{J.\ Solution
-Chem.}, 4(3), 249--265 (1975). The unsymmetrical higher-order mixing
-term $E_\theta(I)$ and its integral $J(x)$ (Eqs.~\ref{eq:etheta},
-\ref{eq:Jfunc}) for like-sign ions of different charge, evaluated in
-\code{PitzerForm::Etheta}; the closed-form $J(x)$ approximation is the
-one tabulated in Pitzer (1991) ``Activity Coefficients in Electrolyte
-Solutions'', 2nd ed., CRC, ch.~3, and used by USGS PHRQPITZ (Plummer et
-al.\ 1988).
-
-\bibitem{SilvesterPitzer1977} Silvester, L. F., \& Pitzer, K. S.,
-``Thermodynamics of Electrolytes. 8.\ High-Temperature Properties,
-Including Enthalpy and Heat Capacity, with Application to Sodium
-Chloride'', \emph{J.\ Phys.\ Chem.}, 81(19), 1822--1828 (1977). The
-temperature derivatives of the Pitzer virial parameters
-($\partial\beta^{(0)}/\partial T$, $\partial\beta^{(1)}/\partial T$,
-$\partial C^\phi/\partial T$, Eq.~\ref{eq:silvester-slots}) from which
-the relative apparent molar enthalpy $L_\phi$ is obtained by
-Gibbs--Helmholtz; carried per pair in the
-\file{parameters/Pitzer/pairs/} records and fitted by
-\code{bin/curate/fit\_lphi\_pitzer.py}.
-
-\bibitem{Parker1965} Parker, V. B., \emph{Thermal Properties of Aqueous
-Uni-univalent Electrolytes}, National Standard Reference Data Series
-NSRDS--NBS~2, U.S.\ National Bureau of Standards, Washington, D.C.\
-(1965). The compiled relative apparent molar enthalpies $\Phi_L(m)$ at
-$25^\circ$C (e.g.\ NaOH) against which the Silvester--Pitzer $T$-slots
-are regressed and the \code{calorimetricFit} gate is evaluated.
-
-\bibitem{HMW1984} Harvie, C. E., M\o ller, N., \& Weare, J. H., ``The
-prediction of mineral solubilities in natural waters: The
-Na--K--Mg--Ca--H--Cl--SO$_4$--OH--HCO$_3$--CO$_3$--CO$_2$--H$_2$O system
-to high ionic strengths at 25\,\textdegree C'', \emph{Geochim.\
-Cosmochim.\ Acta}, 48(4), 723--751 (1984). The multi-ion assembly of the
-per-ion $\ln\gamma_i$ (Eqs.~\ref{eq:hmw-cation}--\ref{eq:hmw-F})
-implemented in \code{PitzerHMW}; the seawater/brine ternary parameter set
-($\theta$, $\psi$, $\lambda$, $\zeta$) carried as per-record files
-under \file{parameters/Pitzer/}.
-
-\bibitem{ChenEvans1986} Chen, C.-C., \& Evans, L. B., ``A Local
-Composition Model for the Excess Gibbs Energy of Aqueous Electrolyte
-Systems'', \emph{AIChE J.}, 32(3), 444--454 (1986). The
-electrolyte-NRTL model (\S\ref{ch:enrtl}); source of the water--NaCl
-energy parameters $\tau = (8.885, -4.549)$ and $\alpha = 0.2$, and the
-unsymmetric-reference local-composition equations the
-\code{ENRTLSingleSalt} kernel implements.
-
-\bibitem{ChenSongEvans1982} Chen, C.-C., Britt, H. I., Boston, J. F.,
-\& Evans, L. B., ``Local Composition Model for Excess Gibbs Energy of
-Electrolyte Systems'', \emph{AIChE J.}, 28(4), 588--596 (1982). The
-original two-rule (like-ion repulsion + local electroneutrality)
-electrolyte-NRTL formulation underlying \S\ref{ch:enrtl}.
-
-\bibitem{HamerWu1972} Hamer, W. J., \& Wu, Y.-C., ``Osmotic
-Coefficients and Mean Activity Coefficients of Uni-univalent
-Electrolytes in Water at 25\,\textdegree C'', \emph{J. Phys. Chem. Ref.
-Data}, 1(4), 1047--1100 (1972). The NaCl $\gamma_\pm(m)$ and $\phi(m)$
-reference data the eNRTL kernel is validated against (AAD 1.8\,\% /
-1.4\,\%, \S\ref{ch:enrtl}).
-
-\bibitem{Wegstein} Wegstein, J. H., ``Accelerating Convergence of
-Iterative Processes'', \emph{Comm. ACM}, 1(6), 9--13 (1958). The
-two-page paper that powers the simulator's outer activity-coefficient
-loop.
-
-\bibitem{WH} Wang, J. C., \& Henke, G. E., ``Tridiagonal Matrix for
-Distillation'', \emph{Hydrocarbon Processing}, 45(8), 155 (1966). The
-bubble-point method used in \code{DistillationColumn}.
-
-\bibitem{NS} Naphtali, L. M., \& Sandholm, D. P., ``Multicomponent
-Separation Calculations by Linearization'', \emph{AIChE J.}, 17,
-148--153 (1971). The equation-oriented Newton method on the roadmap.
-
-\bibitem{Michelsen} Michelsen, M. L., ``The Isothermal Flash Problem.
-Part I --- Stability'' and ``Part II --- Phase-Split Calculation'',
-\emph{Fluid Phase Equilibria}, 9, 1--19, 21--40 (1982). The
-tangent-plane-distance criterion and the second-order Newton method
-on the roadmap.
-
-\bibitem{GVL} Golub, G. H., \& Van Loan, C. F.,
-\emph{Matrix Computations}, 4th ed., Johns Hopkins University Press,
-2013. Reference for the Gauss elimination with partial pivoting used
-in \code{NewtonND}.
 
 \bibitem{Levenberg44} Levenberg, K., ``A Method for the Solution of
 Certain Non-Linear Problems in Least Squares'', \emph{Quarterly of
@@ -23898,6 +23628,13 @@ Estimation of Nonlinear Parameters'', \emph{Journal of the Society for
 Industrial and Applied Mathematics}, 11(2), 431--441 (1963). The
 diagonal-scaling refinement (Eq.~\ref{eq:marquardt}) that the simulator
 implements.
+
+\bibitem{NumericalRecipes} Press, W. H., Teukolsky, S. A.,
+Vetterling, W. T., \& Flannery, B. P., \emph{Numerical Recipes:
+The Art of Scientific Computing}, 3rd ed., Cambridge University Press,
+2007. Chapter 15.5 (``Nonlinear Models'') treats Levenberg-Marquardt in
+the same notation used here; the 10-up/10-down $\lambda$ heuristic of
+that text is gentled to 3-up/5-down in the simulator.
 
 \bibitem{NelderMead1965} Nelder, J. A., \& Mead, R., ``A Simplex Method
 for Function Minimization'', \emph{The Computer Journal}, 7(4),
@@ -23926,31 +23663,12 @@ Mathematical Systems, vol.~187, Springer, 1981. Source of the analytic
 problems HS21, HS35 and HS71 used by \code{verifySQP} as the
 merge-blocking self-check of the SQP algorithm against published optima.
 
-\bibitem{NumericalRecipes} Press, W. H., Teukolsky, S. A.,
-Vetterling, W. T., \& Flannery, B. P., \emph{Numerical Recipes:
-The Art of Scientific Computing}, 3rd ed., Cambridge University Press,
-2007. Chapter 15.5 (``Nonlinear Models'') treats Levenberg-Marquardt in
-the same notation used here; the 10-up/10-down $\lambda$ heuristic of
-that text is gentled to 3-up/5-down in the simulator.
-
-\bibitem{Turton} Turton, R., Bailie, R. C., Whiting, W. B., \& Shaeiwitz,
-J. A., \emph{Analysis, Synthesis, and Design of Chemical Processes},
-4th ed., Prentice Hall, 2012. Source of the Guthrie-style cost
-correlations and the CEPCI scaling used by \code{CostingPass}.
-
 \bibitem{RuddPowers1973} Rudd, D. F., \& Powers, G. J.,
 \emph{Process Synthesis}, Prentice-Hall, 1973.  The book that
 introduces the modern framing of a flowsheet as a directed graph of
 \emph{physical equipment} connected by \emph{physical streams}.  The
 ``unit op as equipment'' stance in this chapter is, in spirit, the
 opening message of Chapters 1--3 of that text.
-
-\bibitem{Westerberg1979} Westerberg, A. W., Hutchison, H. P.,
-Motard, R. L., \& Winter, P., \emph{Process Flowsheeting},
-Cambridge University Press, 1979.  The first textbook on
-sequential-modular flowsheeting.  Chapters 2 and 4 articulate the
-``the user should not be required to know which variables the solver
-will iterate on'' principle that Choupo inherits.
 
 \bibitem{Stephanopoulos1988} Stephanopoulos, G., \emph{Chemical
 Process Control: An Introduction to Theory and Practice},
@@ -23967,17 +23685,262 @@ two-level inner/outer decomposition of design optimisation that
 Choupo mirrors with sequential-modular evaluation inside and
 DesignSpec / OptimizationDriver wraps outside.
 
-\bibitem{CapeOpen} CAPE-OPEN Laboratories Network,
-\emph{Unit Operation Interface Specification}, current version,
-\url{https://www.colan.org/specifications/unit-operation-interface-specification/}.
-The vendor-neutral standard (since 1999) that codifies the
-ports-vs-parameters separation, the material / energy / information
-stream taxonomy, and the contract that any third-party unit
-operation must satisfy to be droppable into a CAPE-OPEN-compliant
-flowsheeter.  Choupo's
-\code{UnitOperation} interface is a deliberate subset of this
-standard; v1.0 will add adapter wrappers so Choupo modules can
-load into a CAPE-OPEN host and vice versa.
+\bibitem{Langmuir1918} Langmuir, I., ``The adsorption of gases on plane
+surfaces of glass, mica and platinum'', \emph{J.\ Am.\ Chem.\ Soc.} \textbf{40}
+(1918) 1361.  The isotherm Eq.~\eqref{eq:langmuir} rests on.
+
+\bibitem{Hinshelwood1940} Hinshelwood, C.N., \emph{The Kinetics of Chemical
+Change}, Oxford University Press, 1940.  Surface reaction between adsorbed
+species as the rate-determining step.
+
+\bibitem{HougenWatson1943} Hougen, O.A.\ and Watson, K.M., ``Solid catalysts and
+reaction rates'', \emph{Ind.\ Eng.\ Chem.} \textbf{35} (1943) 529.  The
+engineering form: kinetic factor, driving force, adsorption group.
+
+\bibitem{Popken2000} P\"opken, T., G\"otze, L.\ and Gmehling, J., ``Reaction
+kinetics and chemical equilibrium of homogeneously and heterogeneously catalyzed
+acetic acid esterification with methanol and methyl acetate hydrolysis'',
+\emph{Ind.\ Eng.\ Chem.\ Res.} \textbf{39} (2000) 2601.  Eq.~16 (adsorption-based
+rate law, Table 11), the adsorption constants (Table 10), the UNIQUAC parameters
+they were regressed with (Tables 2--3), and the independent $K_a$ of Eq.~17.
+
+\bibitem{Thiele1939} Thiele, E.W., ``Relation between catalytic
+activity and size of particle'', \emph{Ind.\ Eng.\ Chem.} \textbf{31} (1939)
+916.  The pellet balance Eq.~\eqref{eq:pellet-balance}, the modulus
+Eq.~\eqref{eq:thiele-char} and the closed forms
+Eqs.~\eqref{eq:eta-slab}--\eqref{eq:eta-sphere}.
+
+\bibitem{Aris1957} Aris, R., ``On shape factors for irregular particles~---
+I.\ The steady state problem.\ Diffusion and reaction'', \emph{Chemical
+Engineering Science} \textbf{6} (1957) 262.  The volume-to-surface length
+$\Lambda$ of Eq.~\eqref{eq:thiele-generalised}, on which the three geometries
+nearly collapse onto one $\eta(\phi)$ curve.
+
+\bibitem{WeiszPrater1954} Weisz, P.B.\ and Prater, C.D., ``Interpretation of
+measurements in experimental catalysis'', \emph{Advances in Catalysis}
+\textbf{6} (1954) 143.  The observable criterion Eq.~\eqref{eq:weisz-prater},
+which removes the intrinsic rate constant that a diffusion-limited experiment
+cannot measure.
+
+\bibitem{WH} Wang, J. C., \& Henke, G. E., ``Tridiagonal Matrix for
+Distillation'', \emph{Hydrocarbon Processing}, 45(8), 155 (1966). The
+bubble-point method used in \code{DistillationColumn}.
+
+\bibitem{NS} Naphtali, L. M., \& Sandholm, D. P., ``Multicomponent
+Separation Calculations by Linearization'', \emph{AIChE J.}, 17,
+148--153 (1971). The equation-oriented Newton method on the roadmap.
+
+\bibitem{SilvesterPitzer1977} Silvester, L. F., \& Pitzer, K. S.,
+``Thermodynamics of Electrolytes. 8.\ High-Temperature Properties,
+Including Enthalpy and Heat Capacity, with Application to Sodium
+Chloride'', \emph{J.\ Phys.\ Chem.}, 81(19), 1822--1828 (1977). The
+temperature derivatives of the Pitzer virial parameters
+($\partial\beta^{(0)}/\partial T$, $\partial\beta^{(1)}/\partial T$,
+$\partial C^\phi/\partial T$, Eq.~\ref{eq:silvester-slots}) from which
+the relative apparent molar enthalpy $L_\phi$ is obtained by
+Gibbs--Helmholtz; carried per pair in the
+\file{parameters/Pitzer/pairs/} records and fitted by
+\code{bin/curate/fit\_lphi\_pitzer.py}.
+
+\bibitem{Parker1965} Parker, V. B., \emph{Thermal Properties of Aqueous
+Uni-univalent Electrolytes}, National Standard Reference Data Series
+NSRDS--NBS~2, U.S.\ National Bureau of Standards, Washington, D.C.\
+(1965). The compiled relative apparent molar enthalpies $\Phi_L(m)$ at
+$25^\circ$C (e.g.\ NaOH) against which the Silvester--Pitzer $T$-slots
+are regressed and the \code{calorimetricFit} gate is evaluated.
+
+\bibitem{RandolphLarson} Randolph, A. D., \& Larson, M. A.,
+\emph{Theory of Particulate Processes}, 2nd ed., Academic Press, 1988.
+The standard text on the population balance and the MSMPR crystalliser;
+source of Eq.~\ref{eq:pbe} and the $n(L)=n^0 e^{-L/G\tau}$ result.
+
+\bibitem{HulburtKatz} Hulburt, H. M., \& Katz, S., ``Some Problems in
+Particle Technology: A Statistical Mechanical Formulation'',
+\emph{Chem.\ Eng.\ Sci.}, 19, 555--574 (1964). Introduces the method
+of moments for the population balance (Eq.~\ref{eq:moments}).
+
+\bibitem{WijmansBaker} Wijmans, J. G., \& Baker, R. W., ``The
+Solution-Diffusion Model: A Review'', \emph{J.\ Membr.\ Sci.}, 107,
+1--21 (1995), DOI 10.1016/0376-7388(95)00102-I. The standard derivation of the pressure- and
+concentration-driven fluxes (Eqs.~\ref{eq:sd-water}--\ref{eq:sd-solute})
+used by the spiral-wound module.
+
+\bibitem{GeraldesAfonso2007} Geraldes, V., \& Afonso, M. D., ``Prediction
+of the concentration polarization in the nanofiltration/reverse osmosis of
+dilute multi-ionic solutions'', \emph{J.\ Membr.\ Sci.}, 300, 20--27
+(2007), DOI 10.1016/j.memsci.2007.04.025.  The multi-ionic polarisation
+model of \S\ref{sec:polarisation-multiionic}: the interface balance
+(Eq.~\ref{eq:polar-interface}), electroneutrality at the wall
+(Eq.~\ref{eq:polar-electroneutral}), the explicit wall
+(Eq.~\ref{eq:polar-explicit}), the single-salt closed form
+(Eq.~\ref{eq:polar-single-salt}), and the stirred-cell case study of
+tutorial \code{polarisation01}.
+
+\bibitem{GeraldesAfonso2006} Geraldes, V., \& Afonso, M. D., ``Generalized
+mass-transfer correction factor for nanofiltration and reverse osmosis'',
+\emph{AIChE J.}, 52(10), 3353--3362 (2006), DOI 10.1002/aic.10968.  The
+suction correction $\Xi_i$ of Eq.~\ref{eq:polar-xi-2006}
+(\code{suctionCorrection GeraldesAfonso2006}), valid for $\varphi_i<20$.
+
+\bibitem{BowenMohammadHilal1997} Bowen, W. R., Mohammad, A. W., \&
+Hilal, N., ``Characterisation of nanofiltration membranes for predictive
+purposes --- use of salt, uncharged solutes and atomic force
+microscopy'', \emph{J.\ Membr.\ Sci.}, 126, 91--105 (1997). The
+Donnan-Steric Pore Model (DSPM): the extended Nernst--Planck pore flux
+(Eq.~\ref{eq:dspmde-enp}), the steric partition and Deen hindrance
+(Eqs.~\ref{eq:dspmde-steric}, \ref{eq:dspmde-Kd}--\ref{eq:dspmde-Kc}),
+pore electroneutrality (Eq.~\ref{eq:dspmde-electroneutral}) and the
+effective fixed charge density $X_d$ fitted from salt rejection.
+
+\bibitem{BowenWelfoot2002} Bowen, W. R., \& Welfoot, J. S., ``Modelling
+the performance of membrane nanofiltration --- critical assessment and
+model development'', \emph{Chem.\ Eng.\ Sci.}, 57, 1121--1137 (2002).
+Adds dielectric exclusion to give DSPM-DE: the Born solvation partition
+(Eq.~\ref{eq:dspmde-born}) with the reduced pore dielectric
+$\varepsilon_p$, the three-mechanism interfacial partition
+(Eq.~\ref{eq:dspmde-partition}) and the pore-transmission closure
+(Eq.~\ref{eq:dspmde-transmission}); source of the NF270 archetype
+parameters ($r_p$, $A_k/\Delta x$, $\varepsilon_p$).
+
+\bibitem{Deen1987} Deen, W. M., ``Hindered transport of large molecules
+in liquid-filled pores'', \emph{AIChE J.}, 33(9), 1409--1425 (1987).
+The hydrodynamic hindrance factors $K_d$ (diffusive) and $K_c$
+(convective) as functions of $\lambda=r_i/r_p$
+(Eqs.~\ref{eq:dspmde-Kd}--\ref{eq:dspmde-Kc}).
+
+\bibitem{Yaroshchuk2013} Yaroshchuk, A., Bruening, M. L., \& Lic\'on
+Bernal, E. E., ``Solution-diffusion--electro-migration model and its uses
+for analysis of nanofiltration, pressure-retarded osmosis and forward
+osmosis in multi-ionic solutions'', \emph{J.\ Membr.\ Sci.}, 447,
+463--476 (2013), DOI 10.1016/j.memsci.2013.07.047.  The SDEM law of
+\S\ref{ch:sdem}: Nernst--Planck on virtual concentrations
+(Eq.~\ref{eq:sdem-np}), virtual-solution electroneutrality and zero
+current (Eq.~\ref{eq:sdem-constraints}), the ambipolar single-salt
+limit (Eq.~\ref{eq:sdem-ambipolar}).  The analytical trace-ion solution
+is Yaroshchuk \& Bruening, \emph{J.\ Membr.\ Sci.}, 523, 361--372
+(2017), DOI 10.1016/j.memsci.2016.09.046.
+
+\bibitem{FdL2021} Fern\'andez de Labastida, M., \& Yaroshchuk, A.,
+``Nanofiltration of Multi-Ion Solutions: Quantitative Control of
+Concentration Polarization and Interpretation by
+Solution-Diffusion-Electro-Migration Model'', \emph{Membranes}, 11(4),
+272 (2021), DOI 10.3390/membranes11040272, CC~BY~4.0.  NF270 ion
+permeances per dominant salt (its Table~1, carried by the SDEM witness
+cases) and the rejection figures the Tutorials Guide's validation
+section digitises and compares against.
+
+\bibitem{Nightingale1959} Nightingale, E. R., ``Phenomenological Theory
+of Ion Solvation: Effective Radii of Hydrated Ions'', \emph{J.\ Phys.\
+Chem.}, 63(9), 1381--1387 (1959). Source of the per-ion
+infinite-dilution diffusivities $D_i^0$ (and hydrated radii) in
+\file{ions.dat}, from which the channel conductivity
+(Eq.~\ref{eq:ed-kappa}) is built via Nernst--Einstein.
+
+\bibitem{CowanBrown1959} Cowan, D. A., \& Brown, J. H., ``Effect of
+Turbulence on Limiting Current in Electrodialysis Cells'', \emph{Ind.\
+Eng.\ Chem.}, 51(12), 1445--1448 (1959). The \emph{experimental} method
+for locating the limiting current --- the minimum of the stack resistance
+$\Delta V/I$ against $1/I$ --- and the classical single-salt relation
+$i_\text{lim} = zFk\,c/(t_\text{cu}-t_\text{co})$
+(Eq.~\ref{eq:ed-ilim}) usually attached to the name.
+
+\bibitem{GeraldesAfonso2010} Geraldes, V., \& Afonso, M. D., ``Limiting
+current density in the electrodialysis of multi-ionic solutions'',
+\emph{J.\ Membr.\ Sci.}, 360, 499--508 (2010),
+doi:10.1016/j.memsci.2010.05.054.  The linearised Nernst--Planck model
+Choupo's \code{GeraldesAfonso2010} route implements: the effective
+diffusivity of a multi-ionic solution (Eq.~\ref{eq:ga-deff}), the limiting
+counter-ion transport numbers (Eqs.~\ref{eq:ga-tcem} and
+\ref{eq:ga-taem}), the explicit limiting current (Eq.~\ref{eq:ga-ilim}),
+and the EUR2C-7P18 bench stack with its own mass-transfer correlation and
+Table~4 measurements.
+
+\bibitem{RappPfromm1998} Rapp, H.-J., \& Pfromm, P. H.,
+``Electrodialysis for chloride removal from the chemical recovery cycle
+of a Kraft pulp mill'', \emph{J.\ Membr.\ Sci.}, 146, 249--261 (1998).
+The fourth-order polynomial refinement of the Cowan--Brown resistance
+minimum, used by \cite{GeraldesAfonso2010} to locate $i_\text{lim}$.
+
+\bibitem{GainesThomas1953} Gaines, G. L., \& Thomas, H. C., ``Adsorption Studies on Clay Minerals. II.\ A Formulation of the Thermodynamics of Exchange Adsorption'', \emph{J.\ Chem.\ Phys.}, \textbf{21}(4), 714--718 (1953). The convention Choupo uses for the bound-species activity in \eqref{eq:gt-beta}: the activity of an exchanger species is its charge-weighted \emph{equivalent fraction} on the resin, not its molality.
+
+\bibitem{Helfferich1962} Helfferich, F., \emph{Ion Exchange}, McGraw-Hill, New York (1962; Dover reprint 1995). The classic monograph on ion-exchange equilibria, selectivity and the strong-acid cation resin used as the textbook capacity nameplate for \code{SAC\_Na}.
+
+\bibitem{Wachinski2017} Wachinski, A. M., \emph{Ion Exchange Treatment for Water}, American Water Works Association, Denver (2017). Practitioner reference for water-softening capacity bases (eq/L bed vs eq/kg dry), regeneration and the sodium ``salt penalty'' \eqref{eq:salt-penalty}.
+
+\bibitem{Weisbach1845} Weisbach, J., \emph{Lehrbuch der Ingenieur- und
+Maschinen-Mechanik}, Vol.~1, Braunschweig, 1845; and Darcy, H.,
+\emph{Recherches exp\'erimentales relatives au mouvement de l'eau dans
+les tuyaux}, Mallet-Bachelier, Paris, 1857.  The velocity-head form of
+the pipe-friction law and the experiments behind the friction factor;
+the modern name credits both.
+
+\bibitem{Colebrook1939} Colebrook, C. F., ``Turbulent Flow in Pipes,
+with Particular Reference to the Transition Region between the Smooth and
+Rough Pipe Laws,'' \emph{J. Inst. Civ. Eng.}\ \textbf{11}(4),
+133--156, 1939.  The implicit friction-factor equation interpolating
+Nikuradse's smooth- and rough-pipe data; Choupo's \code{Colebrook}
+model.
+
+\bibitem{Haaland1983} Haaland, S. E., ``Simple and Explicit Formulas for
+the Friction Factor in Turbulent Pipe Flow,'' \emph{J. Fluids Eng.}\
+\textbf{105}(1), 89--90, 1983.  The explicit approximation to
+Colebrook used by Choupo's \code{Haaland} model.
+
+\bibitem{Churchill1977} Churchill, S. W., ``Friction-Factor Equation
+Spans All Fluid-Flow Regimes,'' \emph{Chem. Eng.}\ \textbf{84}(24),
+91--92, 1977.  The single explicit correlation valid across laminar,
+transition and turbulent flow; Choupo's default \code{Churchill}
+model.
+
+\bibitem{Butterworth1975} Butterworth, D., ``A Comparison of Some
+Void-Fraction Relationships for Co-Current Gas--Liquid Flow,''
+\emph{Int. J. Multiphase Flow} \textbf{1}(6), 845--850, 1975.  The algebraic
+fit of the Lockhart--Martinelli void fraction Choupo uses for the holdup.
+
+\bibitem{Friedel1979} Friedel, L., ``Improved Friction Pressure Drop
+Correlations for Horizontal and Vertical Two-Phase Pipe Flow,'' European
+Two-Phase Flow Group Meeting, Ispra, paper E2, 1979.  The general two-phase
+friction multiplier $\phi_{LO}^2$; Choupo's \code{Friedel} model.
+
+\bibitem{BeggsBrill1973} Beggs, H. D., \& Brill, J. P., ``A Study of Two-Phase
+Flow in Inclined Pipes,'' \emph{J. Petroleum Technology} \textbf{25}(5),
+607--617, 1973.  Flow-pattern map, holdup with inclination correction, and the
+two-phase friction-factor ratio; Choupo's \code{BeggsBrill} model.
+
+\bibitem{LockhartMartinelli1949} Lockhart, R. W., \& Martinelli, R. C.,
+``Proposed Correlation of Data for Isothermal Two-Phase, Two-Component Flow
+in Pipes,'' \emph{Chem. Eng. Prog.}\ \textbf{45}(1), 39--48, 1949.  The
+foundational gas--liquid pressure-drop correlation, developed and validated
+on air-water (and similar) pipe data; Choupo's default \code{twoPhase} model.
+
+\bibitem{SoudersBrown1934} Souders, M.\ and Brown, G.G., ``Design of
+fractionating columns.~I.\ Entrainment and capacity'', \emph{Industrial \&
+Engineering Chemistry} \textbf{26} (1934) 98.  The droplet-suspension argument
+behind $u_{\mathrm{flood}} \propto \sqrt{(\rho_L-\rho_V)/\rho_V}$.
+
+\bibitem{Fair1961} Fair, J.R., ``How to predict sieve tray entrainment and
+flooding'', \emph{Petro/Chem Engineer} \textbf{33}(10) (1961) 45.  The capacity
+parameter $C_{\mathrm{SB}}(F_{LV},\mathrm{TS})$, published as a chart.
+
+\bibitem{LygerosMagoulas1986} Lygeros, A.I.\ and Magoulas, K.G.,
+\emph{Hydrocarbon Processing} \textbf{65}(12) (1986) 43.  The algebraic
+representation of Fair's chart used in Eq.~\eqref{eq:lygeros}; inaccurate below
+$F_{LV}\approx0.03$, where its slope has the wrong sign.
+
+\bibitem{Sinnott} Sinnott, R.K., \emph{Coulson \& Richardson's Chemical
+Engineering}, Vol.~6, \emph{Chemical Engineering Design}, Butterworth-Heinemann.
+The clear-liquid-head lineage used here: dry-tray head, weir crest, residual
+head, downcomer backup, and the weep point.
+
+\bibitem{Liebson1957} Liebson, I., Kelley, R.E.\ and Bullington, L.A.,
+\emph{Petroleum Refiner} \textbf{36} (1957).  The sieve-tray discharge
+coefficient $C_o$, charted against $A_h/A_p$ and plate thickness over hole
+diameter.
+
+\bibitem{Turton} Turton, R., Bailie, R. C., Whiting, W. B., \& Shaeiwitz,
+J. A., \emph{Analysis, Synthesis, and Design of Chemical Processes},
+4th ed., Prentice Hall, 2012. Source of the Guthrie-style cost
+correlations and the CEPCI scaling used by \code{CostingPass}.
 
 \bibitem{Rosen1977} Rosen, E. M., \& Pauls, A. C., ``Computer Aided
 Chemical Process Design: The FLOWTRAN System'', \emph{Computers \&
@@ -23986,6 +23949,44 @@ description of Monsanto's FLOWTRAN, the first commercially viable
 chemical process simulator and the architectural ancestor of every
 sequential-modular simulator since.  Used here for the comparative
 context of Appendix~C.
+
+%  --- the entries below are in the tree but cited nowhere in this manual ---
+%  Kept, not deleted: removing a curated reference is the authors' act.  Their
+%  order among themselves is whatever it was; everything above is ordered by
+%  first citation (bin/curate/gen_theory_bibliography.py).
+\bibitem{HenleySeader} Henley, E. J., Seader, J. D., \& Roper, D. K.,
+\emph{Separation Process Principles}, 3rd ed., Wiley, 2011. Chapters
+4--7 cover the equilibrium-stage methods used in this simulator
+(flash, distillation, absorption).
+
+\bibitem{Strathmann2004} Strathmann, H., \emph{Ion-Exchange Membrane
+Separation Processes}, Membrane Science and Technology Series 9,
+Elsevier, 2004. The standard text on electrodialysis; source of the
+membrane (Donnan + diffusion) potential form of the Nernst equation
+(Eq.~\ref{eq:ed-nernst}), the cell-pair resistance build-up
+(Eq.~\ref{eq:ed-rpair}), and the representative Neosepta CMX/AMX
+area-resistance values in the IEM \file{.dat}.
+
+\bibitem{BardFaulkner2001} Bard, A. J., \& Faulkner, L. R.,
+\emph{Electrochemical Methods: Fundamentals and Applications}, 2nd ed.,
+Wiley, 2001. The reference followed by Choupo's shared \code{electrochem}
+kernel for the Nernst equation, Faraday's law of electrolysis
+(Eq.~\ref{eq:ed-faraday}), and the Butler--Volmer stub.
+
+\bibitem{Watson} Watson, K. M., ``Thermodynamics of the Liquid State'',
+\emph{Ind. Eng. Chem.}, 35, 398 (1943). The heat-of-vaporisation
+correlation.
+
+\bibitem{Michelsen} Michelsen, M. L., ``The Isothermal Flash Problem.
+Part I --- Stability'' and ``Part II --- Phase-Split Calculation'',
+\emph{Fluid Phase Equilibria}, 9, 1--19, 21--40 (1982). The
+tangent-plane-distance criterion and the second-order Newton method
+on the roadmap.
+
+\bibitem{GVL} Golub, G. H., \& Van Loan, C. F.,
+\emph{Matrix Computations}, 4th ed., Johns Hopkins University Press,
+2013. Reference for the Gauss elimination with partial pivoting used
+in \code{NewtonND}.
 
 \end{thebibliography}
 

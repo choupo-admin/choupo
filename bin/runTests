@@ -3929,6 +3929,24 @@ PYEOF
     fi
     rm -f /tmp/sdemt.$$
 
+    # The Theory Guide's bibliography is numbered IN SOURCE ORDER by LaTeX, so
+    # the order the entries are written in IS the numbering a reader sees --
+    # a derived fact with a hand-maintained home.  It had drifted all the way:
+    # the manual's first two citations rendered [79] and [82] (Pedro Mendes,
+    # reviewing Choupo-2608, where they read [73] and [76] on printed page 3).
+    # The generator reorders by first citation and touches no entry's text.
+    if "$ROOT/bin/curate/gen_theory_bibliography.py" --check > /tmp/thbib.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "theory-bibliography-gate" \
+            "$(grep -m1 '^gen_theory_bibliography: OK' /tmp/thbib.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/gen_theory_bibliography.py, then rebuild and commit)\n" \
+            "theory-bibliography-gate"
+        cat /tmp/thbib.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/thbib.$$
+
     # The manuals are the one artefact with NO compiler behind them: a guide
     # can send a reader to a file deleted two hundred commits ago and nothing
     # notices.  It had.  (Retired driver still offered as an example to read;
