@@ -1456,12 +1456,21 @@ def validate_staged_agrees(staged, out):
             #  "agreeing" while its stream and utility rows had moved 17-20%,
             #  because this reader silently skipped every kind it did not
             #  know -- the Edwards gap inside the checker built to close it.
+            #  WHITESPACE IN A UTILITY NAME IS `_` IN THE GOLDEN, and this
+            #  reader compared the raw word (2026-09-19, found by ed08's
+            #  rectifier: "electricity (generated)" is written
+            #  `electricity_(generated)` by bin/runTests, ON BOTH SIDES, so
+            #  every seal carrying such a row was refused as MISSING --
+            #  fail-closed, which is why nobody had sealed one).  Normalise
+            #  exactly as runTests does; a stricter reading of the same key
+            #  is not a stricter check, it is a different key.
             parts = key.split(".")
             got = None
             if len(parts) == 3:
                 for e in (res.get("utilityAllocation") or []):
                     if (e.get("unit") == name and e.get("tier") == parts[0]
-                            and e.get("utility") == parts[1]):
+                            and re.sub(r"\s+", "_", str(e.get("utility", "")))
+                                == parts[1]):
                         got = e.get(parts[2])
                         break
         else:

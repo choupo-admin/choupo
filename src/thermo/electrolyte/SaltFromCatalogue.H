@@ -173,6 +173,31 @@ inline DictPtr bridgeTrueIon(const DictPtr& r, const std::string& species)
         auto t = r->subDict("transport");
         if (t->found("radius")) os << "radius " << t->subDict("radius")->lookupScalar("value") << "; ";
         if (t->found("D0"))     os << "D0 "     << t->subDict("D0")->lookupScalar("value")     << "; ";
+        //  THE REDUCED-IDENTITY RULE, fourth encounter (2026-09-19): a
+        //  species record may declare WHERE its D0 came from --
+        //  `transport { provenance { D0 { origin; method; reviewStatus;
+        //  notes; } } }`, the shape the stack and module records use --
+        //  and this bridge dropped it, so an ESTIMATED diffusivity was read
+        //  in the same silence as a measured one.  The wine tutorial's
+        //  organic anions carry exactly that block.  Flat keys, so ionD0()
+        //  can announce the estimate once per run.
+        if (t->found("provenance") && t->subDict("provenance")->found("D0"))
+        {
+            auto pv = t->subDict("provenance")->subDict("D0");
+            auto quote = [](std::string s)
+            {
+                for (auto& c : s) if (c == '"') c = '\'';
+                return "\"" + s + "\"";
+            };
+            if (pv->found("origin"))
+                os << "D0origin " << pv->lookupWord("origin") << "; ";
+            if (pv->found("reviewStatus"))
+                os << "D0reviewStatus " << pv->lookupWord("reviewStatus") << "; ";
+            if (pv->found("method"))
+                os << "D0method " << quote(pv->lookupWord("method")) << "; ";
+            if (pv->found("notes"))
+                os << "D0notes " << quote(pv->lookupWord("notes")) << "; ";
+        }
     }
     //  THE REDUCED-IDENTITY RULE, third encounter (first: dissociatesTo;
     //  second: formula -- CLAUDE.md sec.5): this bridge REBUILDS the record,

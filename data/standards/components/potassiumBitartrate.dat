@@ -31,13 +31,17 @@ dissociation   2;              // K+ + HC4H4O6-
 
 // FORMATION DATUM -- NOT a component-level standardThermochemistry block by design.
 // KHT is a sparingly-soluble electrolyte (K+ + bitartrate HC4H4O6-).  Its
-// cation's aqueous thermodynamics live in the ion tier, species/aqueous/
-// (K+, z = +1), referenced BY NAME.  The bitartrate anion HC4H4O6- has NO
-// published Pitzer/eNRTL parameters and is INTENTIONALLY absent from the ion
-// tier (a deliberate gap, not an oversight) -- saturation is therefore carried
-// as the measured SLE solubility CURVE below, which already embeds the
-// dissociation.  See docs/ai/data-doctrine.md sec.2 (arity-2 lives in a tier;
-// where no tier datum exists the honest route is the measured curve).
+// cation's aqueous thermodynamics live in the ion tier, species/K.dat
+// (K+, z = +1), referenced BY NAME.  The bitartrate anion IS in the ion tier
+// too -- species/HTart.dat (charge -1, MW, hfAq; NO transport block and NO
+// Pitzer/eNRTL pair parameters) -- so what is absent is not the ion but a
+// curated ion-interaction parameterisation for it; saturation is therefore
+// carried as the SLE solubility CURVE below, which already embeds the
+// dissociation.  (This comment used to call the anion "INTENTIONALLY absent
+// from the ion tier"; species/HTart.dat existed when that was written and
+// the sentence was false -- corrected 2026-09-19, no value changed.)  See
+// docs/ai/data-doctrine.md sec.2 (arity-2 lives in a tier; where no tier
+// datum exists the honest route is the measured curve).
 
 solubility
 {

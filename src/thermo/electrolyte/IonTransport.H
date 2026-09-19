@@ -38,6 +38,13 @@ Description
     compute a meaningless conductivity / limiting current / hindrance factor).
     Coverage today: the eight master ions (Nightingale 1959 radii; D0 via
     Nernst-Einstein from lambda0).  Extending coverage is a curation act.
+
+    A record may DECLARE where its D0 came from -- `transport { provenance
+    { D0 { origin; method; reviewStatus; notes; } } }` -- and an
+    `origin estimated` is ANNOUNCED once per run by ionD0() on the
+    component tier's own [estimate] channel and into AdvisoryLog
+    (2026-09-19; the wine tutorial's case-local organic anions are the
+    first such records).  No provenance block, no line.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -45,6 +52,8 @@ Description
 #include "core/Identifiers.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 
+#include <cstdio>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -86,7 +95,36 @@ inline scalar ionD0(const SpeciesId& id)
               " for the eight master ions today (D0 from lambda0 via"
               " Nernst-Einstein).  Add a `D0` row (m2/s, primary-cited) to"
               " the species record before using '" + species + "' here.");
-    return row->lookupScalar("D0");
+    const scalar D0 = row->lookupScalar("D0");
+    //  AN ESTIMATE THAT IS USED IS ANNOUNCED (2026-09-19, the module/stack
+    //  record rule reaching the species tier).  A record that declares
+    //  `transport { provenance { D0 { origin estimated; ... } } }` is read
+    //  by every consumer of this accessor -- the electrodialysis units, the
+    //  DSPM-DE and polarisation models -- and each of them would otherwise
+    //  price a guessed diffusivity in the same silence as a measured one.
+    //  Once per run per species (announceOnce), on the same channel the
+    //  component tier's [estimate] line uses, and into AdvisoryLog so it
+    //  reaches the end-of-run caveat block and the result JSON.  A record
+    //  declaring no provenance produces no line: silence keeps meaning
+    //  "nothing was assumed".
+    const std::string origin = row->lookupWordOrDefault("D0origin", "");
+    if ((origin == "estimated" || origin == "estimate")
+        && announceOnce("estimateD0:" + species))
+    {
+        const std::string status = row->lookupWordOrDefault("D0reviewStatus", "");
+        const std::string method = row->lookupWordOrDefault("D0method", "");
+        const std::string notes  = row->lookupWordOrDefault("D0notes", "");
+        char v[48];
+        std::snprintf(v, sizeof(v), "%.4g", static_cast<double>(D0));
+        std::string msg = std::string("`D0` = ") + v + " m2/s is an ESTIMATE"
+            + (method.empty() ? "" : " (" + method + ")")
+            + (status.empty() ? "" : ", reviewStatus " + status)
+            + (notes.empty()  ? "" : " -- " + notes);
+        std::cerr << "[estimate] species '" << species << "': " << msg << "\n";
+        AdvisoryLog::instance().add("provenance", "warning",
+                                    "species '" + species + "'", msg);
+    }
+    return D0;
 }
 
 } // namespace electrolyte
