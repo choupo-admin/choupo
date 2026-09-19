@@ -11793,7 +11793,8 @@ identical in spirit to Antoine for vapour pressure.
 \end{tikzpicture}
 \caption{The transport map: three coefficients, their correlations, and
 where they are consumed.  Each Newtonian coefficient (teal) is supplied by
-a two- or three-parameter correlation (orange)---Andrade/Vogel or
+a two- or three-parameter correlation (orange)---Andrade/Vogel
+\cite{Andrade1930,Vogel1921} or
 Chung/Chapman--Enskog for viscosity, Sato--Riedel/Eucken/modified Eucken for
 conductivity, Fuller and Wilke--Chang for diffusivity (the models the
 engine registers; Sutherland is taught below as theory and is NOT
@@ -11908,6 +11909,7 @@ representative Sutherland shape, not to the same vertical scale).}
 Liquid viscosity drops sharply with temperature because molecules
 move past each other more easily once thermal energy starts to
 overcome the cohesive potential.  The empirical fit is
+Andrade's\cite{Andrade1930},
 \begin{equation}
    \boxed{\;
    \ln \mu^{\mathrm{liq}}(T) \;=\; A \;+\; \frac{B}{T},
@@ -11924,8 +11926,8 @@ extended four-parameter Andrade
      A \;+\; \frac{B}{T} \;+\; C\,\ln T \;+\; D\,T^E,
 \end{equation}
 and Choupo ships \emph{both}: \code{Andrade} for a pair fitted to two
-points, and \code{chemsepEq101} for the four-parameter form read
-straight from a published DIPPR-style fit
+points, and \code{chemsepEq101}\cite{ChemSep} for the four-parameter form
+read straight from a published DIPPR-style fit
 ($\mu = \exp(A + B/T + C \ln T + D\,T^{E})$), which the great majority
 of the imported components carry.  Note what is \emph{not} done: the
 five published parameters are never refitted down to Andrade's two.
@@ -11982,8 +11984,8 @@ constant, in K),
    \label{eq:chapman-enskog}
 \end{equation}
 where $T^* = kT / \epsilon$ and the dimensionless collision integral
-$\Omega_{\!\mu}$ is tabulated (Reid Table 9-2) or approximated by the
-Neufeld correlation
+$\Omega_{\!\mu}$ is tabulated (Reid Table 9-2\cite{RPP}) or approximated by
+the Neufeld correlation\cite{Neufeld1972}
 \begin{equation}
    \Omega_{\!\mu}(T^*) \;\approx\; \frac{1.16145}{(T^*)^{0.14874}}
      \;+\; \frac{0.52487}{e^{0.7732\,T^*}}
@@ -11995,8 +11997,8 @@ and diffusivity --- not separately fitted per property.  Tabulations
 exist for most common species.
 
 \textbf{Status: IMPLEMENTED (2026-09-06)} as \code{model ChapmanEnskog;},
-in the form Svehla (1962, NASA TR R-132, eq.~(1), report page 2) states
-it: $\eta\,[\mu\mathrm{P}] = 26.693\sqrt{MT}/(\sigma^2\Omega^{(2,2)*})$,
+in the form Svehla (1962, NASA TR R-132, eq.~(1), report page
+2)\cite{Svehla1962} states it: $\eta\,[\mu\mathrm{P}] = 26.693\sqrt{MT}/(\sigma^2\Omega^{(2,2)*})$,
 the same expression as eq.~\eqref{eq:chapman-enskog} in other units.  The
 Neufeld fit above has ONE home in the engine
 (\file{src/thermo/transport/NeufeldOmega.H}), called by Chung at its
@@ -12033,7 +12035,8 @@ formula with an MW cross-check, never by name; promotion into the public
 catalogue is a review.  The model's own anchor is Svehla's printed
 viscosity for N$_2$ at 300~K (report page 90) from his own constants,
 reproduced within a declared 1\,\% (0.40\,\% observed: the Neufeld fit
-against the Hirschfelder 1954 $\Omega$ tables he interpolated) --- an
+against the Hirschfelder 1954\cite{Hirschfelder1954} $\Omega$ tables he
+interpolated) --- an
 arithmetic check of the constant and the unit chain, not a comparison with
 a measurement Choupo holds.  Tutorial \code{transport02\_chapman\_enskog}.
 \textbf{Binary diffusivity by Chapman-Enskog is NOT implemented}: the
@@ -12042,7 +12045,7 @@ and a constant typed from memory is a number nobody can check.
 
 \subsection{The Chung correlation --- what Choupo actually uses}
 The Lennard-Jones form needs $\sigma$ and $\epsilon/k$, which are tabulated
-for only some species.  Choupo instead ships the \textbf{Chung et al.\ (1988)}
+for only some species.  Choupo instead ships the \textbf{Chung et al.\ (1988)}\cite{Chung1988}
 corresponding-states realisation of the SAME kinetic theory, which ESTIMATES
 the collision parameters from the critical properties every component already
 carries --- so a gas viscosity follows from $T_c, P_c, \omega, M$ alone, with
@@ -12146,7 +12149,7 @@ correction for polyatomics.  Reid Chapter~10.
 where $T_r = T / T_c$, $T_{br} = T_b / T_c$ and $M$ is in g/mol
 (equivalently kg/kmol).  The formula contains zero fitted constants
 per component --- it is pure corresponding states, calibrated once
-across the Reid-Prausnitz-Poling reference set.  Accuracy:
+across the Reid-Prausnitz-Poling reference set\cite{RPP}.  Accuracy:
 $\sim$8\% on average across non-polar liquids, $\sim$15\% for polar
 ones (water is an outlier and gets its own tabulation).
 
@@ -12162,7 +12165,7 @@ $\sim$0.158 W/(m·K).
 Sato--Riedel asks for nothing but $M$, $T_b$ and $T_c$, which is its
 whole appeal: it answers for a substance nobody has measured.  The
 price is that it cannot know anything a published fit knows.  Choupo
-therefore also carries \code{chemsepEq16}, a five-parameter
+therefore also carries \code{chemsepEq16}\cite{ChemSep}, a five-parameter
 per-component form
 \begin{equation}
    \kappa^{\mathrm{liq}}(T) \;=\; A + \exp\!\left(\frac{B}{T} + C + D\,T
@@ -12203,8 +12206,8 @@ check against.
 
 \subsection{Pure gas: Eucken}
 
-Eucken combined heat conduction and viscosity through the kinetic
-energy budget of a colliding-molecule model:
+Eucken\cite{Eucken1913} combined heat conduction and viscosity through
+the kinetic energy budget of a colliding-molecule model:
 \begin{equation}
    \boxed{\;
    \kappa^{\mathrm{gas}}(T) \;=\;
@@ -12218,8 +12221,8 @@ otherwise overpredicts $\kappa$ for monatomics.  Polyatomic
 molecules carry extra internal degrees of freedom; the
 \emph{modified Eucken} separates the translational and internal
 contributions and weights the internal one by 1.32.  In the form Svehla
-(1962, NASA TR R-132, eq.~(2), report page 3) used for every polyatomic gas
-in his tables,
+(1962, NASA TR R-132, eq.~(2), report page 3)\cite{Svehla1962} used for every
+polyatomic gas in his tables,
 \begin{equation}
    \kappa \;=\; \frac{R}{M}\left[\frac{15}{4} + 1.32\left(\frac{c_p}{R} - \frac{5}{2}\right)\right]\mu
    \qquad [\text{W/(m$\cdot$K)}],
@@ -12230,8 +12233,9 @@ Either way, gas thermal conductivity is a derived quantity in this scheme
 --- no new fitted parameter beyond those already in $\mu$ and $c_p$.
 \textbf{Status:} Choupo registers BOTH, \code{model Eucken;} and
 \code{model modifiedEucken;} (since 2026-09-06).  They coincide EXACTLY for
-a monatomic gas (with $c_p = 5R/2$ both give the Chapman-Enskog
-$\kappa = \tfrac{15}{4}\,R\mu/M$, which is what each one's own
+a monatomic gas (with $c_p = 5R/2$ both give the
+Chapman-Enskog $\kappa = \tfrac{15}{4}\,R\mu/M$\cite{ChapmanCowling1939},
+which is what each one's own
 \code{verify()} anchor checks) and differ on every polyatomic gas, which the
 \code{transportBench} shows side by side --- the conductivity spread in
 tutorial \code{transport02\_chapman\_enskog} is that difference.  Plain
@@ -12273,8 +12277,8 @@ declared model refuses loudly.
 Diffusivity is fundamentally a \emph{pair} property: it describes
 the motion of species $i$ relative to species $j$, and an isolated
 component cannot carry a single number.  For binary diffusion in
-gases the workhorse is Fuller-Schettler-Giddings; for binary
-diffusion in dilute liquids it is Wilke-Chang.  Multicomponent
+gases the workhorse is Fuller-Schettler-Giddings\cite{Fuller1966}; for
+binary diffusion in dilute liquids it is Wilke-Chang\cite{RPP}.  Multicomponent
 extensions (Vignes, Maxwell-Stefan) build on the binary values.
 Reid Chapters~11--12.
 \end{whatyoulllearn}
@@ -12368,8 +12372,8 @@ spray dryer, and the electrodialysis stack.  A missing
 
 \begin{whatyoulllearn}
 Pure-component transport properties are useless on their own ---
-every real stream is a mixture.  Reid-Prausnitz-Poling Chapter~9
-recommends Wilke's rule for gas viscosity, a log-mole-fraction
+every real stream is a mixture.  Reid-Prausnitz-Poling
+Chapter~9\cite{RPP} recommends Wilke's rule for gas viscosity, a log-mole-fraction
 average for liquid viscosity, a mass-fraction average for liquid
 thermal conductivity, and the Vignes interpolation for binary
 diffusivity.  Each rule has a domain of validity and a
@@ -12387,7 +12391,8 @@ ten-line implementation.
           {\bigl[8(1 + M_i/M_j)\bigr]^{1/2}}.
    \label{eq:wilke-rule}
 \end{equation}
-The $\phi_{ij}$ are dimensionless interaction terms.  Reid reports
+The $\phi_{ij}$ are dimensionless interaction
+terms\cite{Wilke1950}.  Reid reports
 $\sim$2\% accuracy for binary gas mixtures across the full
 composition range, with the rule reducing exactly to $\mu_i$ in the
 pure-component limit by construction.
@@ -12420,8 +12425,8 @@ engineering accuracy mass-fraction mixing is enough.
 
 \subsection{Gas thermal conductivity: Wassiljewa with Mason-Saxena}
 
-Same shape as Wilke for viscosity, with
-$\phi_{ij}$ rebuilt from the ratio of thermal conductivities:
+Same shape as Wilke for viscosity\cite{Wassiljewa1904,MasonSaxena1958},
+with $\phi_{ij}$ rebuilt from the ratio of thermal conductivities:
 \begin{equation}
    \kappa^{\mathrm{gas}}_{\mathrm{mix}} \;=\;
      \sum_i \frac{y_i\,\kappa_i}{\sum_j y_j\,A_{ij}}.
@@ -12490,7 +12495,8 @@ v1.x starts plugging them.
 Convective $h$ on either side of a tube wall comes from a Nusselt
 correlation Nu = $f$(Re, Pr).  Two workhorses:
 \begin{itemize}[leftmargin=*,nosep]
-  \item \textbf{Dittus-Boelter (turbulent, smooth tubes):}
+  \item \textbf{Dittus-Boelter (turbulent, smooth
+        tubes)}\cite{DittusBoelter1930,IncroperaDeWitt}\textbf{:}
         Nu $= 0.023\,\mathrm{Re}^{0.8}\,\mathrm{Pr}^{n}$,
         with $n = 0.4$ for heating, $0.3$ for cooling.
   \item \textbf{Sieder-Tate} (same with a wall-viscosity correction
@@ -13597,9 +13603,11 @@ documented in the heat-transfer rating material.
 \medskip\noindent
 \emph{Primary references:} the saturation curve and Clausius--Clapeyron latent
 heat (Sec.~\ref{ch:vap}); Smith, Van Ness \& Abbott, \emph{Introduction to
-Chemical Engineering Thermodynamics}, on the lever rule and dome enthalpies; IAPWS
-R7-97 (IF97) for the pure-fluid $T^{\mathrm{sat}}(P)$ kernel; for the geometry
-branch, Nusselt (1916) film condensation and Rohsenow (1952) / Zuber (1959)
+Chemical Engineering Thermodynamics}, on the lever rule and dome enthalpies;
+IAPWS R7-97 (IF97)\cite{IAPWS_R797} for the pure-fluid
+$T^{\mathrm{sat}}(P)$ kernel; for the geometry branch,
+Nusselt (1916)\cite{Nusselt1916} film condensation and
+Rohsenow (1952)\cite{Rohsenow1952} / Zuber (1959)\cite{Zuber1959}
 nucleate boiling and critical heat flux.
 
 % ---------------------------------------------------------------------
@@ -20996,11 +21004,13 @@ nothing if the tube film controls).
   Nu = \frac{(f/8)(Re-1000)\,Pr}{1 + 12.7\sqrt{f/8}\,(Pr^{2/3}-1)},
   \qquad f = (0.790\ln Re - 1.64)^{-2},
 \end{equation}
-(Gnielinski; Incropera \& DeWitt) with $h_i = Nu\,k/d_i$, evaluated at the
+(Gnielinski; Incropera \& DeWitt)\cite{Gnielinski1976,IncroperaDeWitt} with
+$h_i = Nu\,k/d_i$, evaluated at the
 stream's mean temperature with real (IF97 for water) $\rho,\mu,k,c_p$.
 
 \paragraph{Shell-side film (Kern).}  The shell side is a baffled crossflow;
-the Kern method lumps it into a bundle correlation on an EQUIVALENT diameter
+the Kern method\cite{Kern1950} lumps it into a bundle correlation on an
+EQUIVALENT diameter
 $D_e$ and the crossflow mass flux $G_s$:
 \begin{equation}
   Nu = 0.36\,Re_s^{0.55}\,Pr^{1/3},\quad
@@ -23677,6 +23687,97 @@ Mathematical Systems, vol.~187, Springer, 1981. Source of the analytic
 problems HS21, HS35 and HS71 used by \code{verifySQP} as the
 merge-blocking self-check of the SQP algorithm against published optima.
 
+\bibitem{Andrade1930} Andrade, E. N. da C., ``The Viscosity of Liquids'',
+\emph{Nature} \textbf{125}, 309--310, 1930.  The two-constant
+$\ln\mu = A + B/T$ form, as given in Reid, Prausnitz \& Poling, 4th ed.\
+(1987), ch.~9; Choupo's \code{Andrade} liquid-viscosity model.
+
+\bibitem{Vogel1921} Vogel, H., \emph{Physik. Z.}\ \textbf{22}, 645--646,
+1921; also Fulcher, G. S., \emph{J. Am. Ceram. Soc.}\ \textbf{8},
+339--355, 1925, and Tammann, G. \& Hesse, W., \emph{Z. Anorg. Allg.
+Chem.}\ \textbf{156}, 245--257, 1926.  The three-constant
+$\ln\mu = A + B/(T-C)$ form; Choupo's \code{Vogel} model.
+
+\bibitem{ChemSep} Kooijman, H. A. \& Taylor, R., the ChemSep
+pure-component database.  Distributed under the Artistic License 2.0
+(an accepted source under \code{bin/curate/check\_source\_licence.py}).
+Equation form 101 is Choupo's \code{chemsepEq101} liquid viscosity and
+form 16 its \code{chemsepEq16} liquid conductivity; the per-component
+coefficients live in each record.
+
+\bibitem{Neufeld1972} Neufeld, P. D., Janzen, A. R. \& Aziz, R. A.,
+\emph{J. Chem. Phys.}\ \textbf{57}(3), 1100--1102, 1972.  The
+$\Omega^{(2,2)*}$ collision-integral fit, stated by its authors for
+$0.3 \le T^* \le 100$; ONE home in the engine
+(\file{src/thermo/transport/NeufeldOmega.H}), called by both \code{Chung}
+and \code{ChapmanEnskog}.
+
+\bibitem{Svehla1962} Svehla, R. A., \emph{Estimated Viscosities and
+Thermal Conductivities of Gases at High Temperatures}, NASA TR R-132,
+1962.  Eq.~(1) (report page 2) is the Chapman-Enskog viscosity Choupo's
+\code{ChapmanEnskog} implements; eqs.~(2)--(4) (report page 3 and
+appendix B) the modified Eucken conductivity of \code{modifiedEucken};
+Table~I(a) the Lennard-Jones $\sigma$ and $\epsilon/k$ with their
+per-value method codes.  US-government work, public domain.
+
+\bibitem{Hirschfelder1954} Hirschfelder, J. O., Curtiss, C. F. \& Bird,
+R. B., \emph{Molecular Theory of Gases and Liquids}, Wiley, 1954,
+eq.~8.2-18.  The kinetic theory behind eq.~\eqref{eq:chapman-enskog},
+and the $\Omega$ tables Svehla interpolated --- which is why the
+Neufeld fit and Svehla's own printed viscosity differ by more than the
+fit's stated claim.
+
+\bibitem{Chung1988} Chung, T.-H., Ajlan, M., Lee, L. L. \& Starling,
+K. E., \emph{Ind. Eng. Chem. Res.}\ \textbf{27}(4), 671--679, 1988.
+The corresponding-states realisation of kinetic-theory gas viscosity
+used by \code{Chung}; transcribed via Reid, Prausnitz \& Poling, 4th ed.\
+(1987), eq.~9-4.10.
+
+\bibitem{Eucken1913} Eucken, A., \emph{Physik. Z.}\ \textbf{14},
+324--332, 1913.  The relation between gas thermal conductivity and
+viscosity; Choupo's \code{Eucken} model, transcribed via Reid, Prausnitz
+\& Poling, 4th ed.\ (1987), eq.~10-3.2.
+
+\bibitem{ChapmanCowling1939} Chapman, S. \& Cowling, T. G., \emph{The
+Mathematical Theory of Non-uniform Gases}, Cambridge University Press,
+1939.  The monatomic limit $\kappa = \tfrac{15}{4}R\mu/M$ that both
+\code{Eucken} and \code{modifiedEucken} use as their \code{verify()}
+anchor --- a THEORY anchor, not an arithmetic one.
+
+\bibitem{Fuller1966} Fuller, E. N., Schettler, P. D. \& Giddings, J. C.,
+\emph{Ind. Eng. Chem.}\ \textbf{58}(5), 18--27, 1966.  The atomic
+diffusion-volume correlation for binary gas diffusivity,
+eq.~\eqref{eq:fuller}; transcribed via Reid, Prausnitz \& Poling, 4th
+ed.\ (1987), eq.~11-4.4.  Choupo's \code{Fuller} model.
+
+\bibitem{Wilke1950} Wilke, C. R., \emph{J. Chem. Phys.}\ \textbf{18},
+517--519, 1950.  The interaction factor $\phi_{ij}$ of
+eq.~\eqref{eq:wilke-rule} and the gas-viscosity mixing rule built on it;
+ONE home in \file{src/thermo/transport/GasMixingRules.H}.
+
+\bibitem{Wassiljewa1904} Wassiljewa, A., \emph{Physik. Z.}\ \textbf{5},
+737--742, 1904.  The gas thermal-conductivity mixing rule that shares
+Wilke's $\phi_{ij}$.
+
+\bibitem{MasonSaxena1958} Mason, E. A. \& Saxena, S. C., \emph{Phys.
+Fluids} \textbf{1}, 361--369, 1958.  The approximation $A_{ij} =
+\phi_{ij}$ that lets the Wassiljewa conductivity rule reuse Wilke's
+interaction factor.
+
+\bibitem{DittusBoelter1930} Dittus, F. W. \& Boelter, L. M. K., 1930.
+The turbulent in-tube correlation $Nu = 0.023\,Re^{0.8}Pr^{n}$; Choupo's
+\code{DittusBoelter} model.  Its validity window is taken from Incropera
+\& DeWitt \cite{IncroperaDeWitt} eq.~8.60, which is the route this code
+was transcribed from; no fuller reference to the 1930 original is
+recorded anywhere in this repository.
+
+\bibitem{IncroperaDeWitt} Incropera, F. P. \& DeWitt, D. P.,
+\emph{Fundamentals of Heat and Mass Transfer}, Wiley.  Ch.~8 supplies
+the validity windows of \code{DittusBoelter} (eq.~8.60) and
+\code{Gnielinski} (eq.~8.62); Ch.~10 the film-condensation and
+nucleate-boiling worked examples that are the \code{verify()} anchors of
+\code{NusseltFilm}, \code{Rohsenow} and \code{ZuberCHF}.
+
 \bibitem{RuddPowers1973} Rudd, D. F., \& Powers, G. J.,
 \emph{Process Synthesis}, Prentice-Hall, 1973.  The book that
 introduces the modern framing of a flowsheet as a directed graph of
@@ -23698,6 +23799,28 @@ Process Design}, Prentice-Hall, 1997.  Chapter 8 formalises the
 two-level inner/outer decomposition of design optimisation that
 Choupo mirrors with sequential-modular evaluation inside and
 DesignSpec / OptimizationDriver wraps outside.
+
+\bibitem{IAPWS_R797} IAPWS R7-97(2012).  Every coefficient table in
+\file{src/thermo/iapws/IF97.cpp} is transcribed from this release at
+full published precision, and its \code{verify()} cross-checks them
+against the release's own computer-program verification tables.
+
+\bibitem{Nusselt1916} Nusselt, W., ``Die Oberfl\"achenkondensation des
+Wasserdampfes'', \emph{Z. Ver. Dt. Ing.}\ \textbf{60}, 541--575, 1916.
+Laminar film-condensation theory; Choupo's \code{NusseltFilm}
+phase-change coefficient.
+
+\bibitem{Rohsenow1952} Rohsenow, W. M., ``A Method of Correlating Heat
+Transfer Data for Surface Boiling of Liquids'', \emph{Trans. ASME}
+\textbf{74}, 969--976, 1952.  The nucleate-boiling correlation of
+Choupo's \code{Rohsenow} model, whose cubed dependence on $C_{sf}$ is
+why the engine reports an indicative flux inside a wide band rather
+than a number.
+
+\bibitem{Zuber1959} Zuber, N., ``Hydrodynamic Aspects of Boiling Heat
+Transfer'', AECU-4439, U.S. Atomic Energy Commission, 1959.  The
+critical-heat-flux analysis behind \code{ZuberCHF} --- the ceiling the
+boiling dispatch refuses to design above.
 
 \bibitem{Langmuir1918} Langmuir, I., ``The adsorption of gases on plane
 surfaces of glass, mica and platinum'', \emph{J.\ Am.\ Chem.\ Soc.} \textbf{40}
@@ -23951,6 +24074,18 @@ two-phase friction-factor ratio; Choupo's \code{BeggsBrill} model.
 in Pipes,'' \emph{Chem. Eng. Prog.}\ \textbf{45}(1), 39--48, 1949.  The
 foundational gas--liquid pressure-drop correlation, developed and validated
 on air-water (and similar) pipe data; Choupo's default \code{twoPhase} model.
+
+\bibitem{Gnielinski1976} Gnielinski, V., 1976.  The lower-scatter
+turbulent in-tube correlation on Petukhov's smooth-tube friction factor;
+Choupo's \code{Gnielinski} model and the default tube-side film.  As
+with \cite{DittusBoelter1930}, the route is Incropera \& DeWitt
+\cite{IncroperaDeWitt} eq.~8.62 and no fuller reference to the original
+is recorded in this repository.
+
+\bibitem{Kern1950} Kern, D. Q., \emph{Process Heat Transfer}, 1950.
+The shell-side bundle correlation $Nu = 0.36\,Re_s^{0.55}Pr^{1/3}$ on an
+equivalent diameter, and the shell pressure drop over the baffles;
+Choupo's \code{Kern} model, a $\pm 25\,\%$ method by its own account.
 
 \bibitem{SoudersBrown1934} Souders, M.\ and Brown, G.G., ``Design of
 fractionating columns.~I.\ Entrainment and capacity'', \emph{Industrial \&
