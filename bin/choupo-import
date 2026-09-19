@@ -1480,8 +1480,21 @@ def validate_staged_agrees(staged, out):
         if got is None:
             bad.append("%s %s.%s MISSING from the sealed run" % (kind, name, key))
             continue
-        denom = abs(want) if want else 1.0
-        if abs(float(got) - want) / denom > tol:
+        #  THE GOLDEN'S RULE IS runTests' RULE, FLOOR INCLUDED.  bin/runTests
+        #  (within_tol) divides by |expected| only while |expected| > 1e-9 and
+        #  otherwise compares the ABSOLUTE difference, because a row pinning a
+        #  machine-round-off residual has no scale to be relative to.  This
+        #  comparison divided unconditionally, so every such row read as a
+        #  ~100 % disagreement and the seal was refused -- fail-closed, on a
+        #  case whose sealed run was byte-identical to its live one (found
+        #  2026-09-19 sealing membrane12: mass_closure_rel is 5.99e-16 sealed
+        #  AND unsealed, against a golden recorded at 7.99e-16, which runTests
+        #  passes and this refused).  Reading the same row under a different
+        #  rule is not a stricter check, it is a different claim -- the same
+        #  lesson the utility-name normalisation above was paid for.
+        diff = abs(float(got) - want)
+        rel = diff / abs(want) if abs(want) > 1e-9 else diff
+        if rel > tol:
             bad.append("%s %s.%s: sealed %.6g vs golden %.6g (reltol %g)"
                        % (kind, name, key, float(got), want, tol))
     if bad:
