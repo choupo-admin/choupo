@@ -20481,7 +20481,8 @@ particle--wall friction coefficient, is declared and announced.
 \subsection{Solids friction: Yang (1974)}
 The solids friction factor is the hard part --- particles differ in size,
 shape and charge, and there is no universal Reynolds number.  Choupo uses the
-correlation of Yang (1974), which ties $f_p$ to the voidage $\varepsilon$
+correlation of Yang (1974)\cite{Yang1974}, which ties $f_p$ to the voidage
+$\varepsilon$
 ($1-\varepsilon = \rho_s^*/\rho_p$, the solids holdup) and the terminal-to-
 particle Reynolds ratio $(Re)_t/(Re)_p = u_t/u_p$:
 \begin{align}
@@ -20657,7 +20658,8 @@ they can disagree by $\sim$3$\times$ in $d_{50}$ (\file{cyclone05\_dirgo\_leith\
         $\psi=\rho_p d^2 Q/(\dots)$ is the inertia parameter, $C$ a geometric
         constant, and $n=1-(1-0.67\,D^{0.14})(T/283)^{0.3}$ the vortex
         exponent (weaker spin in a hotter, wider cyclone).
-  \item \textbf{Iozia--Leith} (1989) --- \emph{flow pattern}: $d_{50}$ from the
+  \item \textbf{Iozia--Leith} (1989)\cite{IoziaLeith1989} --- \emph{flow
+        pattern}: $d_{50}$ from the
         core velocity, Eq.~\eqref{eq:iozia-d50} (derived just below).
   \item \textbf{Barth} (1956) --- \emph{equilibrium orbit}: the critical
         particle orbits the vortex-finder edge where its outward drift
@@ -20699,7 +20701,8 @@ supersonic $V_{t,\max}\!\sim\!400$\,m/s and a ten-fold-too-fine cut ---
 contradicting the paper's own Figure~4, where $V_{t,\max}\le\!40$\,m/s.
 The factor of exactly ten is a misplaced decimal; Choupo uses the
 Figure-4-consistent $0.61$.)  Validate it against the measured
-fractional-efficiency curves of Dirgo \& Leith (1985) in
+fractional-efficiency curves of Dirgo \& Leith
+(1985)\cite{DirgoLeith1985} in
 \file{cyclone05\_dirgo\_leith\_validation} --- where the five sub-models
 spread over $\sim$3$\times$ in $d_{50}$ on one real cyclone, the reason
 data, not a single correlation, has the last word.
@@ -21029,7 +21032,7 @@ budget.  The tube side (friction over all $n_p$ passes plus the turnaround
 losses):
 \begin{equation}
   \Delta P_t = \Big(4 f\,\frac{L\,n_p}{d_i} + 4 n_p\Big)\frac{\rho u_t^2}{2},
-  \qquad f = 0.079\,Re^{-1/4}\ \text{(Blasius)}.
+  \qquad f = 0.079\,Re^{-1/4}\ \text{(Blasius\cite{Blasius1913})}.
 \end{equation}
 The shell side (Kern), over the $N_b$ baffles:
 \begin{equation}
@@ -24075,6 +24078,23 @@ in Pipes,'' \emph{Chem. Eng. Prog.}\ \textbf{45}(1), 39--48, 1949.  The
 foundational gas--liquid pressure-drop correlation, developed and validated
 on air-water (and similar) pipe data; Choupo's default \code{twoPhase} model.
 
+\bibitem{Yang1974} Yang, W.-C., \emph{AIChE J.}\ \textbf{20}(3), 605,
+1974.  The modified solids-friction correlation for dilute-phase
+pneumatic conveying, vertical and horizontal, used by Choupo's
+\code{pneumaticConveyor}.
+
+\bibitem{IoziaLeith1989} Iozia, D. L. \& Leith, D., \emph{Aerosol Sci.
+Technol.}\ \textbf{10}, 491, 1989.  The flow-pattern cut-size model,
+Choupo's \code{IoziaLeith} cyclone sub-model.  Its printed prefactor on
+$V_{t,\max}$ is $6.1$; Choupo uses the $0.61$ consistent with the
+paper's own Figure~4, and says so at the equation.
+
+\bibitem{DirgoLeith1985} Dirgo, J. \& Leith, D., \emph{Aerosol Sci.
+Technol.}\ \textbf{4}, 401, 1985.  The measured fractional-efficiency
+curves of a Stairmand high-efficiency cyclone that
+\file{cyclone05\_dirgo\_leith\_validation} runs against --- the only
+MEASURED cyclone data in the tree.
+
 \bibitem{Gnielinski1976} Gnielinski, V., 1976.  The lower-scatter
 turbulent in-tube correlation on Petukhov's smooth-tube friction factor;
 Choupo's \code{Gnielinski} model and the default tube-side film.  As
@@ -24086,6 +24106,12 @@ is recorded in this repository.
 The shell-side bundle correlation $Nu = 0.36\,Re_s^{0.55}Pr^{1/3}$ on an
 equivalent diameter, and the shell pressure drop over the baffles;
 Choupo's \code{Kern} model, a $\pm 25\,\%$ method by its own account.
+
+\bibitem{Blasius1913} Blasius, H., \emph{Forschungsheft des Vereins
+deutscher Ingenieure} \textbf{131}, 1--41, 1913.  The smooth-tube
+turbulent friction factor $f = 0.079\,Re^{-1/4}$ (Fanning); Choupo's
+\code{Blasius} friction-factor model, and the tube-side drop in the
+heat-exchanger design chapter.
 
 \bibitem{SoudersBrown1934} Souders, M.\ and Brown, G.G., ``Design of
 fractionating columns.~I.\ Entrainment and capacity'', \emph{Industrial \&
