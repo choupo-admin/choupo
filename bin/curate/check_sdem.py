@@ -212,8 +212,16 @@ def build_probe(dst, salt, trace_scale):
     salts at TRACE_M * trace_scale, k_film 1 m/s and a 1 mbar element so the
     run is uniform and film-free."""
     src = ROOT / CASES["NaCl"]
+    #  A PROBE IS NOT ITS DONOR.  The witnesses are SEALED cases, and a sealed
+    #  manifest forbids the runtime every catalogue fallback -- so a probe that
+    #  copies one and then WIDENS its component set (a second salt, a third ion)
+    #  refuses at the resolver seam before it can reach the behaviour under test.
+    #  The sealed manifest is the donor's, and this is not the donor (the same
+    #  move as check_feed_thermal_state's and check_evaporator_chest_phase's
+    #  probe builders).
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns("converged", "log.*", "expected",
-                                                            "reports", "experimental"))
+                                                            "reports", "experimental",
+                                                            "propertyManifest"))
     cat, zc, Pc = TABLE1[salt]["cation"]; an, za, Pa = TABLE1[salt]["anion"]
     feed = dict(FEED_M[salt])
     tr = TRACE_M * trace_scale
@@ -355,8 +363,10 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         def probe(name, mutate):
             d = Path(tmp) / name
+            #  the donor is sealed -- see the note in build_probe
             shutil.copytree(src, d, ignore=shutil.ignore_patterns("converged", "log.*",
-                                                                   "expected", "reports"))
+                                                                   "expected", "reports",
+                                                                   "propertyManifest"))
             mutate(d)
             return run_case(d)
 

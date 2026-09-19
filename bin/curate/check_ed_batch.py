@@ -248,9 +248,16 @@ def result_of(out):
 
 
 def copy_case(src, dst):
+    #  A PROBE IS NOT ITS DONOR.  The witnesses are SEALED cases, and a sealed
+    #  manifest forbids the runtime every catalogue fallback -- so a probe that
+    #  copies one and then WIDENS its component set (a second salt, a third ion)
+    #  refuses at the resolver seam before it can reach the behaviour under test.
+    #  The sealed manifest is the donor's, and this is not the donor (the same
+    #  move as check_feed_thermal_state's and check_evaporator_chest_phase's
+    #  probe builders).
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
         "converged", "log.*", "expected", "reports", "design", "trajectory.csv",
-        "[0-9]*"))
+        "propertyManifest", "[0-9]*"))
     #  0/ is authored state and MUST come across; the ignore above drops the
     #  written transient instants (50/, 100/ ...) only.
     if (Path(src) / "0").is_dir() and not (Path(dst) / "0").exists():
