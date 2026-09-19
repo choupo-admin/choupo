@@ -2340,7 +2340,8 @@ field & unit & meaning, and where it is consumed\\
 The data file looks like a flat list of numbers because it
 \emph{is} one: a thermodynamic ground truth the simulator's models
 do not re-derive, only consult.  Every entry is either
-\textbf{measured} (Tc, Pc from Reid/Prausnitz/Poling tables;
+\textbf{measured} (Tc, Pc from Reid/Prausnitz/Poling
+tables\cite{RPP};
 Tb, HvapTb from boiling-point calorimetry; Vliq from density at
 $25\,^\circ$C; Antoine from regression of vapour-pressure tables;
 $c_p$ from calorimetric measurements) or \textbf{empirical}
@@ -7260,8 +7261,9 @@ When the ideal-gas assumption breaks down, Choupo replaces the
 \]
 parametrised by $T_c$, $P_c$ and $\omega$ for each species (the
 data files already carry these; see
-Chapter~\ref{ch:criticals}).  Soave-Redlich-Kwong (SRK): $u = 1, w = 0$.
-Peng-Robinson (PR): $u = 2, w = -1$.  Both produce $\hat\varphi_i$
+Chapter~\ref{ch:criticals}).  Soave-Redlich-Kwong
+(SRK)\cite{Soave1972}: $u = 1, w = 0$.  Peng-Robinson
+(PR)\cite{PengRobinson1976}: $u = 2, w = -1$.  Both produce $\hat\varphi_i$
 in closed form from the mixture parameters $a_{\mathrm{mix}},
 b_{\mathrm{mix}}$ via the standard derivation
 $\ln \hat\varphi_i = (\partial(n\,\bar A^{\mathrm{R}}/RT) /
@@ -7909,7 +7911,8 @@ their \file{.dat} files (the loader rejects the EoS otherwise --- see
 Every activity model in the preceding sections describes a molecule by
 numbers fitted to how it \emph{behaves}: an interaction energy, a group
 count, a pair parameter.  COSMO-SAC (Lin \& Sandler, \emph{Ind.\ Eng.\
-Chem.\ Res.}~41 (2002) 899) starts one level down.  A quantum-chemistry
+Chem.\ Res.}~41 (2002)
+899)\cite{LinSandler2002} starts one level down.  A quantum-chemistry
 calculation places the molecule in a \textbf{perfect conductor}, which
 screens its charge exactly, and the screening charge density $\sigma$ is
 read off the cavity surface.  Choupo does \emph{not} perform that
@@ -7997,8 +8000,8 @@ are not validated against measurement.  A curator's own copy installs via
 
 The cubic chapter closed on its own limit: hydrogen-bonded fluids,
 where much of the physics \emph{is} the directional bond.  PC-SAFT
-(Gross \& Sadowski, \emph{Ind.\ Eng.\ Chem.\ Res.}~40 (2001) 1244)
-approaches the problem from statistical mechanics instead of from a
+(Gross \& Sadowski, \emph{Ind.\ Eng.\ Chem.\ Res.}~40 (2001)
+1244)\cite{GrossSadowski2001} approaches the problem from statistical mechanics instead of from a
 patched van~der~Waals loop: a molecule is a \textbf{chain of $m$
 tangent spherical segments} of diameter $\sigma$ and dispersion energy
 $\varepsilon/k$, and the residual Helmholtz energy is built as a sum of
@@ -8012,7 +8015,8 @@ a hard-\emph{chain} reference (hard spheres plus the bonding of $m$
 segments into a chain, priced through the hard-sphere contact value
 $g^{\mathrm{hs}}_{ij}$), a two-term dispersion perturbation with
 universal constants, and --- for fluids whose molecules carry donor and
-acceptor sites --- the Wertheim association term of the next
+acceptor sites --- the Wertheim association
+term\cite{GrossSadowski2002} of the next
 subsection.  Everything downstream is a \emph{derivative} of this one
 function: $Z = 1 + \rho\,(\partial \tilde a/\partial\rho)$, the
 pressure closes $P = Z\rho kT$, and $\ln\hat\varphi_i$ is a
@@ -10315,7 +10319,8 @@ guess''.  The recycle is converged when the guess reproduces itself,
    \mathbf{r}(\mathbf{x}^{\!*}) \;\equiv\; G(\mathbf{x}^{\!*}) - \mathbf{x}^{\!*} \;=\; \mathbf{0}.
    \label{eq:tear-residual}
 \end{equation}
-Wegstein attacks the left form (a fixed point $\mathbf{x} = G(\mathbf{x})$,
+Wegstein\cite{Wegstein} attacks the left form (a fixed point
+$\mathbf{x} = G(\mathbf{x})$,
 accelerated component-wise).  Newton attacks the right form (a root
 $\mathbf{r}(\mathbf{x}) = \mathbf{0}$), all components at once.  Same
 $G$, same sweep, same per-unit pedagogy --- only the outer iteration
@@ -19758,8 +19763,8 @@ adsorbed phase):
 q = H\,p, \qquad H = \lim_{p\to 0}\frac{q}{p} .
 \label{eq:ads-henry}
 \end{equation}
-The Langmuir model adds the finite site count: a balance over
-identical, independent sites with fractional coverage
+The Langmuir model\cite{Langmuir1918} adds the finite site count: a balance
+over identical, independent sites with fractional coverage
 $\theta = q/q_{\max}$, adsorption rate $\propto p\,(1-\theta)$ and
 desorption rate $\propto\theta$, gives at equilibrium
 \begin{equation}
@@ -21588,16 +21593,18 @@ rigorous MESH column takes over.  ``FUG designs, Wang--Henke verifies.''}
 \end{figure}
 
 \begin{itemize}[leftmargin=*,nosep,topsep=2pt]
-  \item \textbf{Fenske} --- minimum stages at total reflux and the
-        non-key split:
+  \item \textbf{Fenske}\cite{Fenske1932} --- minimum stages at total
+        reflux and the non-key split:
         $N_{\min} = \ln\!\bigl[(x_{LK}/x_{HK})_D\,(x_{HK}/x_{LK})_B\bigr]
         / \ln\alpha_{LK}$.
-  \item \textbf{Underwood} --- minimum reflux from the root $\theta\in
+  \item \textbf{Underwood}\cite{Underwood1948} --- minimum reflux from the
+        root $\theta\in
         (1,\alpha_{LK})$ of $\sum_i \alpha_i z_i/(\alpha_i-\theta) =
         1-q$ (bisection), then $R_{\min}+1 = \sum_i \alpha_i x_{D,i}/
         (\alpha_i-\theta)$.
-  \item \textbf{Gilliland} (Molokanov form) --- the actual stage count
-        $N$ from $N_{\min}$, the operating $R$ and $R_{\min}$;
+  \item \textbf{Gilliland}\cite{Gilliland1940} (Molokanov form) --- the
+        actual stage count $N$ from $N_{\min}$, the operating $R$ and
+        $R_{\min}$;
         \textbf{Kirkbride} then locates the feed stage.
 \end{itemize}
 The relative volatilities are taken at the feed bubble point
@@ -21893,7 +21900,8 @@ Jacobian of the simultaneous CMO model is \emph{block-tridiagonal} with
 $N$ diagonal blocks of size $n_v = n$ (the $n-1$ compositions and $T_j$).
 The column declares that structure to the solver, and the declaration buys
 two classical pieces: a \emph{colored} finite-difference Jacobian (Curtis,
-Powell \& Reid, \emph{J.\ Inst.\ Maths Applics} 13 (1974) 117 --- one
+Powell \& Reid, \emph{J.\ Inst.\ Maths Applics} 13 (1974)
+117\cite{CurtisPowellReid1974} --- one
 variable slot of every third stage is perturbed at once, so the cost is
 about $3\,n_v$ residual evaluations per Jacobian, \emph{independent of the
 stage count}, against $N n_v$ dense) and a block-Thomas solve on the three
@@ -23629,16 +23637,32 @@ Redlich--Kwong Equation of State'', \emph{Chem.\ Eng.\ Sci.}, 27(6),
 function and the $m(\omega)$ correlation
 (eqs.~\ref{eq:srk-alpha}--\ref{eq:srk-m}) used by \code{SRK}.
 
+\bibitem{PengRobinson1976} Peng, D.-Y., \& Robinson, D. B., ``A New
+Two-Constant Equation of State'', \emph{Ind.\ Eng.\ Chem.\ Fundam.},
+15(1), 59--64 (1976). The Peng--Robinson cubic ($\Omega_a = 0.45724$,
+$\Omega_b = 0.07780$, $\kappa(\omega)$) implemented in \code{PR}.
+
 \bibitem{Sandler} Sandler, S. I.,
 \emph{Chemical, Biochemical, and Engineering Thermodynamics}, 5th ed.,
 Wiley, 2017. The textbook the simulator's thermodynamic notation
 follows most closely; source of the cubic-EoS departure functions
 $H^{\mathrm R}, S^{\mathrm R}$ (eqs.~\ref{eq:srk-HR}--\ref{eq:srk-SR}).
 
-\bibitem{PengRobinson1976} Peng, D.-Y., \& Robinson, D. B., ``A New
-Two-Constant Equation of State'', \emph{Ind.\ Eng.\ Chem.\ Fundam.},
-15(1), 59--64 (1976). The Peng--Robinson cubic ($\Omega_a = 0.45724$,
-$\Omega_b = 0.07780$, $\kappa(\omega)$) implemented in \code{PR}.
+\bibitem{LinSandler2002} Lin, S.-T. \& Sandler, S. I., \emph{Ind. Eng.
+Chem. Res.}\ \textbf{41}, 899, 2002.  The COSMO-SAC variant Choupo
+implements as \code{cosmoSAC}; a $\sigma$-profile declared under any
+other \code{variant} is refused rather than run against these constants.
+
+\bibitem{GrossSadowski2001} Gross, J. \& Sadowski, G., \emph{Ind. Eng.
+Chem. Res.}\ \textbf{40}, 1244, 2001.  PC-SAFT, and Table~1 is the source
+of the $m$, $\sigma$, $\varepsilon/k$ triples in each component's
+\code{pcsaft} block.
+
+\bibitem{GrossSadowski2002} Gross, J. \& Sadowski, G., \emph{Ind. Eng.
+Chem. Res.}\ \textbf{41}, 5510, 2002.  The working form of the
+association contribution Choupo implements (Wertheim TPT1, after Chapman
+et al.\ 1990), with the $\sigma_{ij}^3$ convention under which the
+published $\kappa^{AB}$ were fitted.
 
 \bibitem{GVL} Golub, G. H., \& Van Loan, C. F.,
 \emph{Matrix Computations}, 4th ed., Johns Hopkins University Press,
@@ -24112,6 +24136,27 @@ deutscher Ingenieure} \textbf{131}, 1--41, 1913.  The smooth-tube
 turbulent friction factor $f = 0.079\,Re^{-1/4}$ (Fanning); Choupo's
 \code{Blasius} friction-factor model, and the tube-side drop in the
 heat-exchanger design chapter.
+
+\bibitem{Fenske1932} Fenske, M. R., \emph{Ind. Eng. Chem.}\ \textbf{24},
+482, 1932.  The minimum stage count at total reflux,
+$N_{\min}=\ln[(x_{LK}/x_{HK})_D(x_{HK}/x_{LK})_B]/\ln\alpha_{LK}$, and
+the non-key split; the first step of Choupo's \code{shortcutColumn}.
+
+\bibitem{Underwood1948} Underwood, A. J. V., \emph{Chem. Eng. Prog.}\
+\textbf{44}, 603, 1948.  The minimum reflux from the root $\theta$ of
+$\sum_i\alpha_i z_i/(\alpha_i-\theta)=1-q$ --- the second step, and the
+one whose root bracket the engine refuses to guess at.
+
+\bibitem{Gilliland1940} Gilliland, E. R., \emph{Ind. Eng. Chem.}\
+\textbf{32}, 1220, 1940.  The empirical $N(R)$ correlation between the
+Fenske and Underwood limits.  Choupo evaluates it in the Molokanov
+closed form, for which this repository records no reference at all.
+
+\bibitem{CurtisPowellReid1974} Curtis, A. R., Powell, M. J. D. \& Reid,
+J. K., \emph{J. Inst. Maths Applics} \textbf{13}, 117, 1974.  The
+coloured finite-difference Jacobian that the \code{simultaneous} MESH
+column's declared block-tridiagonal structure buys --- about $3n_v$
+residual evaluations per Jacobian, independent of the stage count.
 
 \bibitem{SoudersBrown1934} Souders, M.\ and Brown, G.G., ``Design of
 fractionating columns.~I.\ Entrainment and capacity'', \emph{Industrial \&
