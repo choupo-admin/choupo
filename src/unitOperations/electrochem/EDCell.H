@@ -53,7 +53,8 @@ Description
     stack-record clash refusals and the operating-mode grammar.  Those differ
     between the two units -- a flowing stack reads its flow off an inlet
     stream and a batch rig declares a recirculation rate; a flowing stack may
-    be given a `targetDemin`, a batch rig may be given a voltage -- and
+    be given a `targetDemin` or a `targetConductivityRemoval`, a batch rig may
+    be given a voltage -- and
     folding two different questions into one function is how a shared home
     becomes a switchboard.
 \*---------------------------------------------------------------------------*/

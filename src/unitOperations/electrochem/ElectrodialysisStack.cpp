@@ -186,12 +186,35 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         ? stk->membranes()
         : op->lookupWordOrDefault("membrane", "CMX_AMX");
 
+    //  THREE OPERATING FORMS, exactly one of which the case gives (the third
+    //  arrived 2026-09-19 for the wine tutorial): the current itself; the
+    //  demineralisation of the reference cation; or the fraction of the
+    //  diluate's CONDUCTIVITY to remove -- the quantity a cellar floor
+    //  actually measures, and the one the tartaric-stability practice is
+    //  stated in.  Zero or two-or-more is a degrees-of-freedom error and the
+    //  refusal names all three and what it found.
     const bool haveI      = op->found("current");
     const bool haveTarget = op->found("targetDemin");
-    if (haveI == haveTarget)
-        throw std::runtime_error("electrodialysisStack: give EITHER `current "
-            "<I> A;` (the applied current) OR `targetDemin <fraction>;` (solve I "
-            "for that diluate demineralisation) -- exactly one.");
+    const bool haveKappa  = op->found("targetConductivityRemoval");
+    {
+        std::vector<std::string> given;
+        if (haveI)      given.push_back("`current`");
+        if (haveTarget) given.push_back("`targetDemin`");
+        if (haveKappa)  given.push_back("`targetConductivityRemoval`");
+        if (given.size() != 1)
+        {
+            std::string found = given.empty() ? "none of them" : "";
+            for (std::size_t k = 0; k < given.size(); ++k)
+                found += (k ? " AND " : "") + given[k];
+            throw std::runtime_error("electrodialysisStack '" + unitLabel
+                + "': give EXACTLY ONE of `current <I> A;` (the applied"
+                  " current), `targetDemin <fraction>;` (solve I for that"
+                  " demineralisation of the reference cation) or"
+                  " `targetConductivityRemoval <fraction>;` (solve I for that"
+                  " fraction of the diluate's conductivity removed) -- the"
+                  " operation declares " + found + ".");
+        }
+    }
 
     // ---- IEM membrane pair (the stack's own reader) ------------------------
     IEMSpec cem, aem;
@@ -536,11 +559,119 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         return dil.F * 1000.0 * dil.z[compIdx];   // mol/s
     };
 
+    //  THE FARADAY SPLIT, ONE HOME (2026-09-19).  Every counter-ion in the
+    //  diluate loses xi I N / (|z_i| F) mol/s, capped at what the diluate
+    //  carries (announced when the cap binds).  It used to live inline after
+    //  the current was fixed; the conductivity target needs the OUTLET
+    //  composition inside its residual, so the arithmetic is a function now
+    //  and the product streams are built from the same call -- never a
+    //  second copy of the split.  Bit for bit the old loop.
+    struct FaradaySplit
+    {
+        sVector   FzD, FzC;              // kmol/s per component, after transfer
+        bool      capBound   = false;
+        scalar    removedRef = 0.0, refInflow = 0.0;
+        SpeciesId refIon;                // the FIRST cation in component order
+    };
+    auto faradaySplit = [&](scalar Icur) -> FaradaySplit
+    {
+        FaradaySplit s;
+        s.FzD.assign(Ncomp, 0.0);
+        s.FzC.assign(Ncomp, 0.0);
+        for (std::size_t i = 0; i < Ncomp; ++i)
+        {
+            s.FzD[i] = dil.F * dil.z[i];     // kmol/s per component (diluate)
+            s.FzC[i] = con.F * con.z[i];     // kmol/s per component (concentrate)
+        }
+        for (std::size_t k = 0; k < chD.ion.size(); ++k)
+        {
+            const std::size_t i = chD.compIdx[k];
+            const scalar zmag    = std::abs(chD.z[k]);
+            scalar dn = electrochem::faradayMolarRate(Icur, zmag, xi)
+                      * static_cast<scalar>(N);            // mol/s for THIS ion
+            const scalar avail = s.FzD[i] * 1000.0;        // mol/s present in diluate
+            if (dn > avail) { dn = avail; s.capBound = true; }
+            const scalar dn_kmol = dn / 1000.0;            // kmol/s
+            s.FzD[i] -= dn_kmol;
+            s.FzC[i] += dn_kmol;
+            if (s.refIon.key.empty() && chD.z[k] > 0)
+            { s.refIon = chD.ion[k]; s.removedRef = dn; s.refInflow = avail; }
+        }
+        return s;
+    };
+    //  Mole fractions from a per-component flow vector (the product streams
+    //  and the outlet channel state are both built through this).
+    auto moleFractions = [&](const sVector& Fz) -> sVector
+    {
+        scalar Ftot = 0.0; for (auto v : Fz) Ftot += v;
+        sVector z(Ncomp, 0.0);
+        if (Ftot > 0.0) for (std::size_t i = 0; i < Ncomp; ++i) z[i] = Fz[i] / Ftot;
+        return z;
+    };
+    //  The diluate OUTLET's conductivity at a current: the split, then the
+    //  SAME channel builder (Nernst-Einstein on the ion D0 tier, the
+    //  dilute-carrier density) that priced the inlet -- one sentence for
+    //  both ends of the channel.
+    auto outletConductivity = [&](scalar Icur) -> scalar
+    {
+        const FaradaySplit s = faradaySplit(Icur);
+        return edCell::buildChannel(type(), thermo, moleFractions(s.FzD),
+                                    iWater, T, *act).kappa;
+    };
+
     scalar I = 0.0;
     bool   solvedI = false;
+    scalar kappa_out = 0.0, kappaRemoval = 0.0;   // filled on the conductivity form
+    std::string solvedFor;                        // which target fixed I
     if (haveI)
     {
         I = op->lookupScalar("current");   // A (raw)
+    }
+    else if (haveKappa)
+    {
+        //  f(I) = (1 - kappa_out(I)/kappa_in) - target.  kappa_out is linear
+        //  in I until a cap binds (the water carrier is untouched, so every
+        //  molality falls in proportion to the moles removed), and it FALLS
+        //  with I, so f rises monotonically -- the bracket posture of the
+        //  demin form.  Order-INDEPENDENT: every ion contributes its own
+        //  z^2 D0 c, and no ion is singled out as a reference.
+        const scalar target = op->lookupScalar("targetConductivityRemoval");
+        if (target <= 0.0 || target >= 1.0)
+            throw std::runtime_error("electrodialysisStack '" + unitLabel
+                + "': targetConductivityRemoval must be in (0, 1); got "
+                + std::to_string(target));
+        const scalar kappa_in = chD.kappa;
+        if (!(kappa_in > 0.0))
+            throw std::runtime_error("electrodialysisStack '" + unitLabel
+                + "': the diluate feed has no conductivity to remove"
+                  " (kappa_in = " + std::to_string(kappa_in) + " S/m)");
+        auto f  = [&](scalar Icur) {
+            return (1.0 - outletConductivity(Icur) / kappa_in) - target;
+        };
+        auto df = [&](scalar Icur) { const scalar d = 1e-3; return (f(Icur+d)-f(Icur-d))/(2*d); };
+        solver::NROptions nro;
+        nro.tolerance = 1e-8; nro.maxIter = 50;
+        nro.lower = 0.0; nro.upper = 1e7; nro.bracket = true;
+        nro.monotoneIncreasing = true;
+        //  The seed is the LINEAR answer read off the same residual at a
+        //  probe current (no second formula for the slope): exact until a
+        //  cap binds, and the Newton is then a one-step confirmation the
+        //  student can see.
+        const scalar I_probe = 1.0;                                  // A
+        const scalar drop    = kappa_in - outletConductivity(I_probe);   // S/m per A
+        const scalar I0      = (drop > 0.0) ? target * kappa_in * I_probe / drop : 1.0;
+        auto r = solver::newton1D(f, df, std::max(I0, 1e-3), nro);
+        I = r.x; solvedI = true; solvedFor = "targetConductivityRemoval";
+        recordResidual(std::abs(r.residual));
+        kappa_out    = outletConductivity(I);
+        kappaRemoval = 1.0 - kappa_out / kappa_in;
+        if (verbosity >= 3)
+            std::cout << "  [solve I] targetConductivityRemoval " << target
+                      << "  ->  I = " << I << " A  (kappa_in = " << kappa_in
+                      << " S/m, kappa_out = " << kappa_out << " S/m; Newton, "
+                      << r.iterations << " it, residual " << std::scientific
+                      << r.residual << std::fixed << "; seed " << I0
+                      << " A from the linear slope at " << I_probe << " A)\n";
     }
     else
     {
@@ -570,7 +701,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         const scalar I0 = std::abs(z_ref) * electrochem::Faraday * n_in * target
                         / (xi * std::max(1, N));
         auto r = solver::newton1D(f, df, std::max(I0, 1e-3), nro);
-        I = r.x; solvedI = true;
+        I = r.x; solvedI = true; solvedFor = "targetDemin";
         recordResidual(std::abs(r.residual));
         if (verbosity >= 3)
             std::cout << "  [solve I] targetDemin " << target << " on ion " << refIon.key
@@ -584,50 +715,27 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     const scalar i_dens = I / area;        // A/m2 (current density)
 
     // ---- Faraday transfer: move ions diluate -> concentrate ----------------
+    //  ONE call of the split above at the current now fixed; the product
+    //  streams are re-mole-fractioned from it (water unchanged; F constant --
+    //  ion transfer is mole-for-mole charge-balanced, water carrier dominates).
     products_.resize(2);
     ProcessStream& outD = products_[0];
     ProcessStream& outC = products_[1];
     outD.name = "diluate"; outC.name = "concentrate";
     outD.T = dil.T; outD.P = dil.P; outD.vf = dil.vf; outD.F = dil.F;
     outC.T = con.T; outC.P = con.P; outC.vf = con.vf; outC.F = con.F;
-    sVector FzD(Ncomp, 0.0), FzC(Ncomp, 0.0);
-    for (std::size_t i = 0; i < Ncomp; ++i)
-    {
-        FzD[i] = dil.F * dil.z[i];     // kmol/s per component (diluate)
-        FzC[i] = con.F * con.z[i];     // kmol/s per component (concentrate)
-    }
-
-    // Per counter-ion molar transfer (Faraday), capped at the diluate inflow
-    // (cannot remove more than is present -- announce if it binds).
-    bool capBound = false;
-    scalar removedRef = 0.0, refInflow = 0.0;
-    SpeciesId refIonSp;
-    for (std::size_t k = 0; k < chD.ion.size(); ++k)
-    {
-        const std::size_t i = chD.compIdx[k];
-        const scalar zmag    = std::abs(chD.z[k]);
-        scalar dn = electrochem::faradayMolarRate(I, zmag, xi)
-                  * static_cast<scalar>(N);            // mol/s for THIS ion
-        const scalar avail = FzD[i] * 1000.0;          // mol/s present in diluate
-        if (dn > avail) { dn = avail; capBound = true; }
-        const scalar dn_kmol = dn / 1000.0;            // kmol/s
-        FzD[i] -= dn_kmol;
-        FzC[i] += dn_kmol;
-        if (refIonSp.key.empty() && chD.z[k] > 0)
-        { refIonSp = chD.ion[k]; removedRef = dn; refInflow = avail; }
-    }
-
-    // Re-mole-fraction the two product streams (water unchanged; F constant --
-    // ion transfer is mole-for-mole charge-balanced, water carrier dominates).
+    const FaradaySplit split = faradaySplit(I);
+    const bool   capBound   = split.capBound;
+    const scalar removedRef = split.removedRef, refInflow = split.refInflow;
+    const SpeciesId refIonSp = split.refIon;
     auto finalise = [&](ProcessStream& s, const sVector& Fz)
     {
         scalar Ftot = 0.0; for (auto v : Fz) Ftot += v;
         s.F = Ftot;
-        s.z.assign(Ncomp, 0.0);
-        if (Ftot > 0.0) for (std::size_t i = 0; i < Ncomp; ++i) s.z[i] = Fz[i] / Ftot;
+        s.z = moleFractions(Fz);
     };
-    finalise(outD, FzD);
-    finalise(outC, FzC);
+    finalise(outD, split.FzD);
+    finalise(outC, split.FzC);
 
     // ---- Stack voltage, power, efficiencies --------------------------------
     const scalar U = stackVoltage(I);
@@ -723,6 +831,10 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         std::cout << "  Davies I (con):  " << std::setprecision(4) << chC.I
                   << " mol/kg   kappa_con = " << std::setprecision(4) << chC.kappa
                   << " S/m\n";
+        if (haveKappa)
+            std::cout << "  kappa_dil OUT:   " << std::setprecision(4) << kappa_out
+                      << " S/m   -> conductivity removal " << std::setprecision(2)
+                      << (100.0 * kappaRemoval) << " %  (the target, met)\n";
         std::cout << "  --- potentials (per cell pair) ---\n";
         std::cout << "  E_mem  = " << std::setprecision(5) << E_mem_pair
                   << " V   (CEM " << E_cem << " + AEM " << E_aem
@@ -736,7 +848,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
                   << E_el << " V  (no Butler-Volmer in v1)\n";
         std::cout << "  --- current ---\n";
         std::cout << "  I        = " << std::setprecision(3) << I << " A"
-                  << (solvedI ? "  (solved for targetDemin)" : "  (specified)") << "\n";
+                  << (solvedI ? "  (solved for " + solvedFor + ")" : "  (specified)") << "\n";
         std::cout << "  i (dens) = " << std::setprecision(2) << i_dens << " A/m2\n";
         std::cout << "  i_lim    = " << std::setprecision(2) << i_lim
                   << " A/m2  (model " << lcModel << ", "
@@ -883,6 +995,16 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     kpis_["W_electric_kW"]            = W_electric / 1000.0;
     kpis_["E_mem_pair"]               = E_mem_pair;
     kpis_["R_pair"]                   = R_pair;
+    //  The conductivity form's own numbers, published ONLY on that form so no
+    //  pre-existing golden gains an unpinned KPI (the module-record rule of
+    //  2026-09-15): the two conductivities the target was taken on, and the
+    //  removal achieved.
+    if (haveKappa)
+    {
+        kpis_["kappa_dil_in_S_m"]     = chD.kappa;
+        kpis_["kappa_dil_out_S_m"]    = kappa_out;
+        kpis_["conductivityRemoval"]  = kappaRemoval;
+    }
     //  The predictive route's own numbers, published ONLY on that route, so
     //  no pre-existing golden gains an unpinned KPI (the module-record rule
     //  of 2026-09-15).

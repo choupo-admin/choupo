@@ -18927,13 +18927,21 @@ that ion) --- the ``no silent clamp'' credo of
 Chapter~\ref{ch:op-is-equipment} applied to charge.
 
 \begin{keyidea}
-Two operating modes, exactly one of which you give.
+Three operating modes, exactly one of which you give.
 \code{current\ <I>\ A;} fixes the current and the demineralisation
 emerges; \code{targetDemin\ <fraction>;} fixes the demineralisation of
-the reference cation and Choupo solves \eqref{eq:ed-faraday} for the
-current $I$ with a glass-box 1-D Newton (the residual
-$\dot n_\text{removed}/\dot n_\text{in} - \text{target}$, printed). Giving
-both, or neither, is a degrees-of-freedom error and the unit says so.
+the reference cation (the first cation in component order) and Choupo
+solves \eqref{eq:ed-faraday} for the current $I$ with a glass-box 1-D
+Newton (the residual $\dot n_\text{removed}/\dot n_\text{in} -
+\text{target}$, printed); \code{targetConductivityRemoval\ <fraction>;}
+fixes the fraction of the diluate's \emph{conductivity} removed,
+$1-\kappa_\text{out}/\kappa_\text{in}$, with both $\kappa$ priced by
+Nernst--Einstein on every ion's $D^0$ at the two ends of the channel ---
+conductivity is the quantity a cellar or a plant actually measures (the
+tartaric-stability practice on wine is stated as a per-cent drop in it),
+and every ion counts with its own $z_i^2 D^0_i c_i$, so this target does
+not depend on the order the components are listed in.  Giving two of the
+three, or none, is a degrees-of-freedom error and the unit says so.
 \end{keyidea}
 
 \subsection{The membrane potential: Nernst on real activities}

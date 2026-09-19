@@ -94,8 +94,16 @@ Description
         stack         <name>           a `kind edStack` record in assets/ that
                                        SUPPLIES the hardware below (see THE
                                        STACK RECORD)
-        current       I [A]            applied stack current        \  give
-        targetDemin   (fraction)       OR solve I for this demin ratio  /  one
+        current       I [A]            applied stack current            \
+        targetDemin   (fraction)       OR solve I for this demin ratio   | give
+                                       of the FIRST cation in component  | exactly
+                                       order                             | one
+        targetConductivityRemoval      OR solve I so the diluate loses   |
+                      (fraction)       this fraction of its CONDUCTIVITY /
+                                       (kappa by Nernst-Einstein on the ion
+                                       D0 tier; order-independent -- the
+                                       quantity a cellar or a plant MEASURES,
+                                       2026-09-19)
         xi            current efficiency [-]   (default 0.9, announced)
         E_electrodes  [V]              lumped electrode overpotential (default 0)
         limitingCurrent { model ...; } which i_lim model (see above)

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/electrodialysisStack.schema.json",
   "title": "electrodialysisStack operation",
-  "description": "Electrodialysis stack: N cell pairs of alternating cation/anion-exchange membranes moving salt from the diluate to the concentrate under a DC current. Name the hardware as a record (`stack <name>;`, kind edStack) or type its geometry inline -- one home, and the two refuse side by side. Give `current` to impose the amperage, or `targetDemin` to ask for a demineralisation fraction and let the current be solved. The run checks the applied current against the LIMITING current -- predicted from the ion diffusivities under a stack record, or the legacy Cowan-Brown form on a declared transport number -- and announces the margin: above i_lim the diluate boundary layer is ion-depleted and water splitting takes over, which is a regime, not a bigger number. The DC power (P = U·I) is published on an energy wire as W_electric, mirroring the shaft-wire convention, so a rectifier (`electricLoad`) absorbs it.",
+  "description": "Electrodialysis stack: N cell pairs of alternating cation/anion-exchange membranes moving salt from the diluate to the concentrate under a DC current. Name the hardware as a record (`stack <name>;`, kind edStack) or type its geometry inline -- one home, and the two refuse side by side. Give `current` to impose the amperage, `targetDemin` to ask for a demineralisation fraction of the reference cation, or `targetConductivityRemoval` to ask for a fraction of the diluate's conductivity removed -- the measured quantity -- and let the current be solved; exactly one of the three. The run checks the applied current against the LIMITING current -- predicted from the ion diffusivities under a stack record, or the legacy Cowan-Brown form on a declared transport number -- and announces the margin: above i_lim the diluate boundary layer is ion-depleted and water splitting takes over, which is a regime, not a bigger number. The DC power (P = U·I) is published on an energy wire as W_electric, mirroring the shaft-wire convention, so a rectifier (`electricLoad`) absorbs it.",
   "type": "object",
   "properties": {
     "stack": {
@@ -65,7 +65,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Applied current",
-      "description": "Imposed-current form. Raw SI (amperes). Give this OR targetDemin.",
+      "description": "Imposed-current form. Raw SI (amperes). Give this OR targetDemin OR targetConductivityRemoval -- exactly one of the three.",
       "unit": "-"
     },
     "targetDemin": {
@@ -73,7 +73,15 @@
       "exclusiveMinimum": 0,
       "maximum": 1,
       "title": "Target demineralisation",
-      "description": "Solved-current form: fraction of the diluate's salt to remove; the current is the result.",
+      "description": "Solved-current form: fraction of the diluate's salt to remove; the current is the result. The reference is the FIRST cation in component order, so on a multi-ionic feed the answer depends on how the components are listed.",
+      "unit": "-"
+    },
+    "targetConductivityRemoval": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1,
+      "title": "Target conductivity removal",
+      "description": "Solved-current form: fraction of the diluate's CONDUCTIVITY to remove; the current is the result. Conductivity is what a cellar or a plant measures (the tartaric-stability practice on wine is stated in it), priced by Nernst-Einstein on every ion's D0 at both ends of the channel, so the target is order-independent and every ion counts with its own z^2 D0 c. Exactly one of current / targetDemin / targetConductivityRemoval.",
       "unit": "-"
     },
     "xi": {

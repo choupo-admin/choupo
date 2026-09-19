@@ -1720,7 +1720,8 @@ clamped.  **Name the stack** — the hardware is a record, not something you
 type:
 ```
 operation { stack EUR2C-7P18;    // a `kind edStack` record in assets/
-            current 2.0;         // OR targetDemin <fraction>; exactly one
+            current 2.0;         // OR targetDemin <fraction>; OR targetConductivityRemoval <fraction>;
+                                 // exactly one of the three (conductivity is what a plant MEASURES)
             xi 0.9;
             E_electrodes 1.5;
             limitingCurrent { model GeraldesAfonso2010; }   // optional; see below
