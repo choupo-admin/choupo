@@ -263,15 +263,28 @@ def main() -> int:
     #  make this the slowest gate in the suite; arms (a)-(c) observe the real
     #  output of the one that can be driven cheaply.  Stating the limit is the
     #  difference between partial coverage and overclaimed coverage.
-    missing = [b for b in BINARIES
-               if "printAdvisorySummary(" not in
-               (ROOT / "src" / "applications" / b / "main.cpp").read_text()]
+    #  A main that DELEGATES its run to a shared driver carries the call in
+    #  the driver, not in main.cpp (choupoCtrl and choupoSemiContinuous both
+    #  run src/dynamicDriver/ since 2026-09-20).  The scan therefore reads the
+    #  main AND every `#include "dynamicDriver/..."` it names -- the file the
+    #  binary actually runs -- never a hand-kept per-binary list, so a third
+    #  application over the same driver is covered the day it includes it.
+    def run_sources(b):
+        main = ROOT / "src" / "applications" / b / "main.cpp"
+        texts = [main.read_text()]
+        for inc in re.findall(r'^\s*#\s*include\s+"(dynamicDriver/[^"]+)"',
+                              texts[0], re.M):
+            cpp = (ROOT / "src" / inc).with_suffix(".cpp")
+            if cpp.exists():
+                texts.append(cpp.read_text())
+        return "".join(texts)
+    missing = [b for b in BINARIES if "printAdvisorySummary(" not in run_sources(b)]
     if missing:
         fail.append("binaries with no caveat block: " + ", ".join(missing)
                     + ".  A surface present in some applications teaches the "
                       "reader that its absence means 'nothing to report'.")
     else:
-        checked.append(f"all {len(BINARIES)} binaries CALL the summary (source check, not an observed run)")
+        checked.append(f"all {len(BINARIES)} binaries CALL the summary (source check of each main and the driver it delegates to, not an observed run)")
 
     if fail:
         print("check_caveat_surface: FAILED")

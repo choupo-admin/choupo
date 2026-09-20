@@ -60,7 +60,7 @@ SRC = ROOT / "src"
 #  a band is legal; upward (to a SMALLER index) is not.
 BANDS = [
     ["applications"],
-    ["outerDriver", "postProcessing", "reporting"],
+    ["outerDriver", "postProcessing", "reporting", "dynamicDriver"],
     ["result", "io", "unitOperations", "propertyOps", "control"],
     ["thermo", "streams", "materials", "solver"],
     ["core"],

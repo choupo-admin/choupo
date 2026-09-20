@@ -21,7 +21,7 @@ counts, and self-edges within a subsystem are excluded.
 
 ```
 applications
-   └─ outerDriver ─ postProcessing ─ reporting
+   └─ outerDriver ─ postProcessing ─ reporting ─ dynamicDriver
         └─ result ─ io ─ unitOperations ─ propertyOps ─ control
              └─ thermo ─ streams ─ materials ─ solver
                   └─ core                       (the bottom: depends on nothing)
@@ -52,6 +52,21 @@ violate.  A band is now declared for each, and `result` is the new home ruling
   `unitOperations` *reads it*, and those two are the same band.
 * **`curation`** (`AqueousGraph`) is **not in the stack at all** — see the
   tooling plane below.
+
+**A fourth placement, 2026-09-20: `dynamicDriver` sits beside `outerDriver`.**
+The time-integrated flowsheet driver (0/ seeding, unit construction, the
+router, both time loops, the balance ledger, the writers, the result emission
+and the outerDict functor) was extracted verbatim from `choupoCtrl`'s
+`main.cpp` so that a second application, `choupoSemiContinuous`, could run
+the same driver without a control loop
+([`a-class-a-student-can-name.md`](../design/a-class-a-student-can-name.md)).
+Its band was DERIVED, not chosen: it reads `outerDriver` (the campaign
+functor is wrapped by `OuterDriver::New`), `unitOperations/dynamic`,
+`control`, `io` and `result`, and nothing in the runtime reads it back — only
+an application's `main`.  Reading `outerDriver` rules out every band below 1;
+being read by nothing rules out nothing above it; so band 1 is the one legal
+home.  (The diagram in §4 is the 2026-08-05 measurement and is left as it was
+taken.)
 
 **`io` was split, and a single `io` subsystem was the mistake.**  It briefly
 held two unlike things: `SolutionWriter`, which interprets domain meaning (it
