@@ -194,16 +194,19 @@ The four binaries share `src/{core,thermo,solver,materials,unitOperations,contro
 
 ## Tutorials
 
-Cases live under `tutorials/<category>/<name>/`:
+Cases live under `tutorials/<discipline>/<name>/`.  A top-level folder is
+a DISCIPLINE a student studies, not a binary (ruled 2026-09-20); `runCase`
+reads each case's `controlDict.application` and dispatches to the right
+binary, and `listCases` prints that column from the case itself.
 
-| Category | Binary |
-|---|---|
-| `steady/` | `choupoSolve` |
-| `batch/`  | `choupoBatch` |
-| `ctrl/`   | `choupoCtrl`  |
-| `props/`  | `choupoProps` |
-| `plant/`  | `choupoSolve` (fractal multi-sector showcase) |
-| `electrochem/` | `choupoSolve` |
+| Discipline | What it is | Binary found there |
+|---|---|---|
+| `steady/` | steady-state process simulation | `choupoSolve` |
+| `unsteady/` | transient process simulation, no control loop | `choupoCtrl` |
+| `ctrl/` | process control: design of control loops | `choupoCtrl` |
+| `batch/` | batch processes: recipes, vessels, campaigns | `choupoBatch` |
+| `props/` | thermophysical properties and the props bench | `choupoProps` |
+| `plant/` | integrated plant design (capstone, fractal multi-sector) | `choupoSolve` |
 
 **Counts are generated, never written here.**  The single source of truth
 is [`generated/releaseInventory.json`](generated/releaseInventory.json)

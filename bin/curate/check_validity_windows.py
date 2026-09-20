@@ -79,7 +79,7 @@ SCAN = ["data/standards", "tutorials"]
 #  engine behaviour it never observed.  So the engine is actually run: once
 #  over a record declaring `Trange unknown;` (must announce, must succeed) and
 #  once over a deliberately inverted one (must refuse by name, must fail).
-PROBE_CASE = "tutorials/electrochem/ed01_nacl_desalination"
+PROBE_CASE = "tutorials/steady/electrodialysis/ed01_nacl_desalination"
 PROBE_RECORD = "constant/components/water.dat"
 
 

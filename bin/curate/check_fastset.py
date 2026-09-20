@@ -93,11 +93,11 @@ def family(case: str) -> str:
 def walked():
     """Every case `bin/runTests` sweeps, restated from its gather.
 
-    steady/batch/ctrl/props/electrochem: any directory holding
+    steady/unsteady/batch/ctrl/props: any directory holding
     system/controlDict, at any depth.  plant/: run-only EXCEPT a case that
     ships an `expected` golden or carries a `.known-broken` marker."""
     out = []
-    for cat in ("steady", "batch", "ctrl", "props", "electrochem"):
+    for cat in ("steady", "unsteady", "batch", "ctrl", "props"):
         d = ROOT / "tutorials" / cat
         if not d.is_dir():
             continue

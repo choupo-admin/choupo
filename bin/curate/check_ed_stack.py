@@ -194,10 +194,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "build" / "linux64Gcc"
 ASSETS = ROOT / "data/standards/assets"
-ED01 = ROOT / "tutorials/electrochem/ed01_nacl_desalination"
-ED03 = ROOT / "tutorials/electrochem/ed03_stack_record"
-ED04 = ROOT / "tutorials/electrochem/ed04_limiting_current_multiionic"
-ED05 = ROOT / "tutorials/electrochem/ed05_industrial_stack"
+ED01 = ROOT / "tutorials/steady/electrodialysis/ed01_nacl_desalination"
+ED03 = ROOT / "tutorials/steady/electrodialysis/ed03_stack_record"
+ED04 = ROOT / "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic"
+ED05 = ROOT / "tutorials/steady/electrodialysis/ed05_industrial_stack"
 MW_WATER = 0.0180153          # kg/mol, the unit's own molality closure
 RHO_CARRIER = 1000.0          # kg/m3, the dilute-carrier density the unit announces
 FARADAY = 96485.33212

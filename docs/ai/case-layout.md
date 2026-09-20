@@ -209,7 +209,7 @@ the whole state of an unconnected one — a case that declares no topology is
 byte-identical to before.  Forward series/parallel routing only: a
 self-loop, two producers of one stream name, and a controller actuating a
 ROUTED inlet field all refuse by name.  Worked example:
-`tutorials/ctrl/ctrl19_tanks_in_series` (three equal tanks, impulse in
+`tutorials/unsteady/unsteady02_tanks_in_series` (three equal tanks, impulse in
 tank 1, Erlang-3 moments at tank 3 against Levenspiel closed forms).
 Only units with a clean packed-ODE form (`batchReactor`, `dynamicCSTR`) take
 the adaptive sweep; any other vessel takes one fixed sub-step per interval.
@@ -304,17 +304,22 @@ cases follows the convention above.
 
 ## Tutorial layout
 
-Cases live under `tutorials/<category>/<name>/` where `category` is
-one of:
+Cases live under `tutorials/<discipline>/<name>/`.  A top-level folder is
+a DISCIPLINE a student studies, not a binary (ruled 2026-09-20); the
+binary is the case's own `controlDict.application`, which `runCase` reads:
 
 ```
 tutorials/
-├── steady/       runs with choupoSolve  (the largest collection)
-├── batch/        runs with choupoBatch
-├── ctrl/         runs with choupoCtrl
-├── props/        runs with choupoProps
-├── electrochem/  electrochemical cases (ED stacks, ion-exchange membranes)
-└── plant/        nested-folder plant tutorials (composite + leaf nodes)
+├── steady/       steady-state process simulation  (choupoSolve; the largest
+│                 collection, sub-foldered by OPERATION: flash/, distillation/,
+│                 membranes/, electrodialysis/, ...)
+├── unsteady/     transient process simulation, no control loop (choupoCtrl
+│                 today, choupoBatch later)
+├── ctrl/         process control: the design of control loops (choupoCtrl)
+├── batch/        batch processes: recipes, vessels, campaigns (choupoBatch)
+├── props/        thermophysical properties and the props bench (choupoProps)
+└── plant/        integrated plant design: nested-folder plant tutorials
+                  (composite + leaf nodes)
 ```
 
 `bin/runCase` reads each case's `controlDict.application` field and

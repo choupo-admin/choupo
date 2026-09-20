@@ -265,7 +265,7 @@ where a student writes physics.
 **The measurement, which is what the DictAudit header demands before its own
 scope is widened.**  A throwaway patch called `auditTree` on the package dict
 and the corpus was walked — every `choupoSolve` case under `tutorials/steady`,
-`tutorials/plant` and `tutorials/electrochem` that ships a golden:
+`tutorials/plant` and the then-separate `tutorials/electrochem` (its cases live under `tutorials/steady/electrodialysis` since 2026-09-20) that ships a golden:
 
 > **27 findings, three classes, zero false positives.**
 >

@@ -15,7 +15,7 @@ under BOTH integrators (zero-order hold across adaptive sub-steps, like
 the MVs), four refusals (two fired by live probe; the no-routable-inlet
 one honestly stated as unreachable until a second inlet-less dynamic type
 exists; the controller-clash one fired), and the witness
-`ctrl19_tanks_in_series`: σ² = 19198.8 s² against the Erlang-3 closed form
+`unsteady02_tanks_in_series`: σ² = 19198.8 s² against the Erlang-3 closed form
 19200 (0.006 %), t̄ = 241.5 s = 240 + the announced 2-step transport
 delay, the whole 21-case ctrl corpus byte-identical.  The one-page scope
 held: no implicit coupling, no back-pressure, no flow networks.

@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  ctrl19_tanks_in_series -- the SECOND HALF of the RTD lesson, unlocked by
+  unsteady02_tanks_in_series -- the SECOND HALF of the RTD lesson, unlocked by
   the ctrl router (ruled 2026-08-24): three EQUAL mixing tanks in series,
   each tau = n/F = 0.004/5e-5 = 80 s, chained by the same `in`/`outputs`
   topology grammar every steady flowsheet already uses.  The router applies

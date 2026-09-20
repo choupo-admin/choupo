@@ -1075,7 +1075,7 @@ else
     # A case is any directory holding system/controlDict, at ANY depth -- so the
     # <category>/<subclass>/<case> layout (steady/batch/props) AND the flat ctrl/
     # both work, and props/old/ (regression fodder) is swept here too.
-    for cat in steady batch ctrl props electrochem; do
+    for cat in steady unsteady batch ctrl props; do
         [ -d "tutorials/$cat" ] || continue
         while IFS= read -r cd; do
             case_dir="$(dirname "$(dirname "$cd")")"

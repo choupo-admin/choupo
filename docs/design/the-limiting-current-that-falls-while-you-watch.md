@@ -369,6 +369,6 @@ is the model's own, the `saltFluxPlateau` claim included.
 | registration | `src/unitOperations/batch/BatchUnitOperation.cpp`, `src/applications/choupoBatch/main.cpp` (`EDStackRegistry::loadFrom`) |
 | fixed on the way | `src/unitOperations/mixer/Mixer.cpp` |
 | schema | `gui/schemas/operations/batchElectrodialysis.schema.json` |
-| witnesses | `tutorials/batch/electrodialysis/edbatch01_constant_current`, `edbatch02_constant_voltage`, `tutorials/electrochem/ed06_stages_in_series`, `ed07_feed_and_bleed` |
+| witnesses | `tutorials/batch/electrodialysis/edbatch01_constant_current`, `edbatch02_constant_voltage`, `tutorials/steady/electrodialysis/ed06_stages_in_series`, `ed07_feed_and_bleed` |
 | gate | `bin/curate/check_ed_batch.py` |
 | docs | `docs/ai/unit-ops.md`, `docs/tutorials-catalogue.md`, `docs/userGuide.tex`, `docs/theoryGuide.tex` (§ the limiting current in TIME and in SPACE) |

@@ -38,6 +38,14 @@
 #   which ed01/ed02 do not exercise at all.  The arithmetic block above is
 #   the 2026-09-07 measurement and is left as it was taken; the live counts
 #   are the ones check_fastset prints.)
+#  (2026-09-20: a top-level folder is a DISCIPLINE, not a binary (Vitor's
+#   ruling).  `electrochem/` is RETIRED and its seven cases are
+#   `steady/electrodialysis/`, one more `steady/` family, keeping the three
+#   representatives above; `unsteady/` is a NEW flat family (transient
+#   process simulation, no control loop) represented by
+#   unsteady01_startup_transient, which was ctrl/ctrl03_startup_transient,
+#   so ctrl/ now contributes 2.  The 2026-09-07 block is still left as
+#   taken.)
 #       ---
 #        59   lines in this file
 #
@@ -99,12 +107,12 @@ tutorials/batch/recipes/recipe04_charge_enthalpy
 tutorials/batch/still/still01_benzene_toluene
 
 tutorials/ctrl/ctrl02_disturbance_rejection
-tutorials/ctrl/ctrl03_startup_transient
+tutorials/unsteady/unsteady01_startup_transient
 tutorials/ctrl/ctrl07_lhhw_inhibition
 
-tutorials/electrochem/ed01_nacl_desalination
-tutorials/electrochem/ed02_over_limiting_current
-tutorials/electrochem/ed03_stack_record
+tutorials/steady/electrodialysis/ed01_nacl_desalination
+tutorials/steady/electrodialysis/ed02_over_limiting_current
+tutorials/steady/electrodialysis/ed03_stack_record
 
 tutorials/plant/ChemicalPlantTutorial
 tutorials/plant/esterification2sector

@@ -21,7 +21,7 @@ from or be marked GUESS.  Cases chosen to bite in different places:
 | `flash01_benzene_toluene` | the baseline: can a K-value be traced to its parameters? |
 | `esterification2sector` | the honesty test: a case that DECLARES known-poor physics — is the reader correctly calibrated? |
 | `column13_sour_water_stage_identity` | the hardest physics: does the output TEACH the chemistry or merely report it? |
-| `ctrl19_tanks_in_series` | built the same day: is the RTD lesson extractable? |
+| `unsteady02_tanks_in_series` | built the same day: is the RTD lesson extractable? |
 
 Every finding below was AUDITED against the tree before being recorded;
 the ones that changed the engine are marked FIXED with the commit.

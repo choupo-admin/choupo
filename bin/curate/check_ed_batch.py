@@ -219,11 +219,11 @@ BUILD = ROOT / "build" / "linux64Gcc"
 BATCH = ROOT / "tutorials/batch/electrodialysis"
 EB1 = BATCH / "edbatch01_constant_current"
 EB2 = BATCH / "edbatch02_constant_voltage"
-ED03 = ROOT / "tutorials/electrochem/ed03_stack_record"
-ED04 = ROOT / "tutorials/electrochem/ed04_limiting_current_multiionic"
-ED05 = ROOT / "tutorials/electrochem/ed05_industrial_stack"
-ED06 = ROOT / "tutorials/electrochem/ed06_stages_in_series"
-ED07 = ROOT / "tutorials/electrochem/ed07_feed_and_bleed"
+ED03 = ROOT / "tutorials/steady/electrodialysis/ed03_stack_record"
+ED04 = ROOT / "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic"
+ED05 = ROOT / "tutorials/steady/electrodialysis/ed05_industrial_stack"
+ED06 = ROOT / "tutorials/steady/electrodialysis/ed06_stages_in_series"
+ED07 = ROOT / "tutorials/steady/electrodialysis/ed07_feed_and_bleed"
 
 FARADAY = 96485.33212
 MW_WATER = 0.0180153

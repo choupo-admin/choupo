@@ -233,9 +233,25 @@ case/
   unaffected; `runCase`/`choupoSolve` take the folder path).  Intentionally
   empty for now; future GUI-only metadata lives here without polluting the
   dicts the C++ solver reads.
-* **Tutorial categories:** `steady/` → choupoSolve, `batch/` → choupoBatch,
-  `ctrl/` → choupoCtrl.  `bin/runCase` reads `controlDict.application` and
-  dispatches automatically.
+* **A top-level folder of `tutorials/` is a DISCIPLINE a student studies,
+  NOT a binary (ruled 2026-09-20, Vítor; do NOT relitigate).**  `steady/` is
+  steady-state process simulation (choupoSolve, plus the two choupoProps
+  cases that were already there); `unsteady/` is TRANSIENT process
+  simulation -- unit operations connected by streams whose internal states
+  are non-stationary, with NO control loop (choupoCtrl today, choupoBatch
+  later); `ctrl/` is process control -- the design of control loops -- one
+  course at IST and its own folder (choupoCtrl); `batch/` is batch
+  processes -- recipes, vessels, campaigns (choupoBatch); `props/` is
+  thermophysical properties and the props bench (choupoProps); `plant/` is
+  integrated plant design, the capstone.  `electrochem/` is RETIRED --
+  electrochemistry is not a discipline the tutorials are organised by, and
+  its seven steady electrodialysis cases live under
+  `steady/electrodialysis/`, a subfolder named by OPERATION like every other
+  `steady/` subfolder.  Folder ≠ binary costs the engine nothing:
+  `bin/runCase` reads `controlDict.application` and dispatches; only the
+  prose that claimed folder = binary changed, and a session re-proposing this
+  taxonomy is exactly what the ruling ends.  The `ctrlNN_` prefix is a
+  course label, so a case moved out of `ctrl/` takes an `unsteadyNN_` one.
 * Optional dicts are truly optional.  A minimal steady case has
   `controlDict`, `flowsheetDict`, `constant/thermoPhysPropDict`, and a complete `0/`
   directory.  `flowsheetDict` contains topology only; stream values live in
@@ -829,7 +845,7 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   a derived number is the arity sin, and a doc is not exempt from it.  Read
   `generated/releaseInventory.json`, or run `bin/curate/release_inventory.py`.
   What is stated below is the SHAPE of the corpus, never its size.
-* **Runnable tutorial cases** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
+* **Runnable tutorial cases** under `tutorials/{steady,unsteady,ctrl,batch,props,plant}/`;
   `bin/runTests` VERIFIES them via golden-master KPI + NaN/inf guard + the
   doctrine + release-inventory gates (0 FAIL, 0 KNOWN-BROKEN; deliberate EXPECTED-FAILs).
 * The standard catalogue carries components (incl. the combustion library —

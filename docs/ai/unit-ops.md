@@ -1464,7 +1464,7 @@ Witnesses: `tutorials/batch/electrodialysis/edbatch01_constant_current`
 against the hand calculation's 91.41 %) and `edbatch02_constant_voltage`
 (the same rig at 4 V: I decays 4.365 → 2.018 A, i/i_lim never reaches 1,
 61.59 % against 85.51 %).  The steady network twins are
-`tutorials/electrochem/ed06_stages_in_series` (four stages, the limiting
+`tutorials/steady/electrodialysis/ed06_stages_in_series` (four stages, the limiting
 current falling 15.6× along the train) and `ed07_feed_and_bleed` (a recycle:
 the stack never sees the feed).
 

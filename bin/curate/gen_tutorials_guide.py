@@ -288,13 +288,13 @@ def application(case: Path) -> str:
     m = re.search(r'^application\s+(\w+)\s*;', p.read_text(errors="replace"), re.M)
     return m.group(1) if m else "?"
 
-CATS = ["steady", "props", "batch", "ctrl", "electrochem", "plant"]
+CATS = ["steady", "unsteady", "props", "batch", "ctrl", "plant"]
 CATTITLE = {
     "steady": "Steady-state flowsheets (choupoSolve)",
     "props":  "The property bench (choupoProps)",
     "batch":  "Batch and time-dependent (choupoBatch)",
     "ctrl":   "Dynamics and control (choupoCtrl)",
-    "electrochem": "Electrochemical systems",
+    "unsteady": "Transient process simulation (choupoCtrl, no control loop)",
     "plant":  "Multi-sector plant showcases",
 }
 

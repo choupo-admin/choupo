@@ -30,13 +30,15 @@
 # =============================================================================
 #  listCases  --  list available tutorial cases
 #
-#  Tutorials live under tutorials/<category>/<name>/ (v0.24+) where
-#  category ∈ {steady, batch, ctrl}.  Each category corresponds to the
-#  binary the case runs on:
-#
-#      steady -> choupoSolve   (F(x) = 0, steady root finding)
-#      batch  -> choupoBatch   (dY/dt = f, closed vessels + recipes)
-#      ctrl   -> choupoCtrl    (dY/dt = f(Y,u,t), continuous + control)
+#  Tutorials live under tutorials/<discipline>/<name>/.  A top-level folder
+#  is a DISCIPLINE a student studies, NOT a binary (ruled 2026-09-20, Vitor):
+#  steady/ unsteady/ ctrl/ batch/ props/ plant/.  The binary a case runs on
+#  is the case's own `controlDict.application`, which `runCase` reads and
+#  dispatches on -- so this script keeps NO folder->binary table and NO
+#  hand-kept folder list: it enumerates the top-level folders of tutorials/
+#  and prints each case's declared application beside it.  (The table this
+#  used to carry named three folders and had been wrong since props/, plant/
+#  and electrochem/ existed.)
 #
 #  Each entry shows the first comment line from system/flowsheetDict
 #  as a short description.
@@ -61,21 +63,23 @@ cd "$ROOT/tutorials"
 echo "Tutorial cases in $ROOT/tutorials:"
 echo
 
-for cat in steady batch ctrl; do
-    if [ ! -d "$cat" ]; then continue; fi
-    case "$cat" in
-        steady) bin="choupoSolve" ;;
-        batch)  bin="choupoBatch" ;;
-        ctrl)   bin="choupoCtrl"  ;;
-    esac
-    echo "  ── $cat/   (run with $bin) ────────────────────────────────────"
-    printf "    %-50s %s\n" "CASE" "DESCRIPTION"
+for catdir in */; do
+    cat="${catdir%/}"
+    [ -d "$cat" ] || continue
+    # A folder holding no case (no system/controlDict anywhere below) is not
+    # a discipline; skip it silently rather than print an empty table.
+    [ -n "$(find "$cat" -path '*/system/controlDict' -print -quit 2>/dev/null)" ] || continue
+    echo "  ── $cat/ ──────────────────────────────────────────────────────────"
+    printf "    %-50s %-12s %s\n" "CASE" "APPLICATION" "DESCRIPTION"
     # A case is any directory holding system/controlDict, at ANY depth, so the
-    # <category>/<subclass>/<case> layout shows the sub-class as a path prefix
-    # (e.g. membranes/membrane01_...) and the flat ctrl/ still lists plainly.
+    # <discipline>/<subclass>/<case> layout shows the sub-class as a path
+    # prefix (e.g. membranes/membrane01_...) and a flat folder lists plainly.
     while IFS= read -r cd; do
         d="$(dirname "$(dirname "$cd")")"
         name="${d#"$cat"/}"
+        # The binary column is READ from the case, never inferred from the
+        # folder: `application <word>;` in system/controlDict.
+        app=$(awk '/^[ \t]*application[ \t]/ { sub(/;.*$/, "", $2); print $2; exit }' "$cd")
         desc=""
         fd="$d/system/flowsheetDict"
         if [ -f "$fd" ]; then
@@ -91,7 +95,7 @@ for cat in steady batch ctrl; do
                 }
             ' "$fd")
         fi
-        printf "    %-50s %s\n" "$name" "${desc:--}"
+        printf "    %-50s %-12s %s\n" "$name" "${app:-?}" "${desc:--}"
     done < <(find "$cat" -path '*/system/controlDict' 2>/dev/null | sort)
     echo
 done

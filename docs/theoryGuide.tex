@@ -19412,7 +19412,7 @@ suggests, its per-pass demineralisation is far below the plant's overall
 figure, and a specific energy quoted per cubic metre \emph{through the
 stack} is not the plant's specific energy at all.
 
-\begin{example}[NaCl desalination, \file{electrochem/ed01\_nacl\_desalination}]
+\begin{example}[NaCl desalination, \file{steady/electrodialysis/ed01\_nacl\_desalination}]
 A $100$-cell-pair Neosepta CMX/AMX stack ($R^A_\text{CEM}=3.0\
 \Omega\,\mathrm{cm^2}$, $t_\text{cu}=0.98$; $R^A_\text{AEM}=2.4\
 \Omega\,\mathrm{cm^2}$) desalinates a $0.1$~mol/kg NaCl diluate against a
@@ -19429,7 +19429,7 @@ flow, and the fallback with its reason.
 \end{example}
 
 \begin{example}[The limiting current against a measurement,
-\file{electrochem/ed04\_limiting\_current\_multiionic}]
+\file{steady/electrodialysis/ed04\_limiting\_current\_multiionic}]
 Six units, one per MgCl$_2$ + MgSO$_4$ row of Table~4 of
 \cite{GeraldesAfonso2010}, on the paper's own bench stack at its own flow
 rates and 20\,$^\circ$C.  Mg$^{2+}$ is the only cation, so its limiting
@@ -19452,27 +19452,27 @@ correlation of 7\,\% average error behind it, neither is surprising.
 \end{example}
 
 \begin{tutoriallink}
-\file{tutorials/electrochem/ed01\_nacl\_desalination} --- canonical
+\file{tutorials/steady/electrodialysis/ed01\_nacl\_desalination} --- canonical
 sub-limiting NaCl desalination; \code{current} mode. \\
-\file{tutorials/electrochem/ed02\_over\_limiting\_current} --- the same
+\file{tutorials/steady/electrodialysis/ed02\_over\_limiting\_current} --- the same
 stack driven past $i_\text{lim}$; the LOUD over-limiting warning, no
 silent clamp. \\
-\file{tutorials/electrochem/ed03\_stack\_record} --- the same chemistry
+\file{tutorials/steady/electrodialysis/ed03\_stack\_record} --- the same chemistry
 through a \code{kind edStack} record: the velocity derived from the flow,
 the area rule printed as arithmetic, the four estimates announced, and
 Eq.~\eqref{eq:ga-ilim} seen reducing to Eq.~\eqref{eq:ga-eq16}. \\
-\file{tutorials/electrochem/ed04\_limiting\_current\_multiionic} --- the
+\file{tutorials/steady/electrodialysis/ed04\_limiting\_current\_multiionic} --- the
 multi-ionic limiting current against Table~4 of \cite{GeraldesAfonso2010},
 six operating points, as \code{anchor} rows. \\
-\file{tutorials/electrochem/ed05\_industrial\_stack} --- a 100-cell-pair,
+\file{tutorials/steady/electrodialysis/ed05\_industrial\_stack} --- a 100-cell-pair,
 50~m$^2$ industrial unit: two hydraulic passes, a record that names no
 membrane pair (so the case does) and stores no channel length (so it is
 derived), and a borrowed correlation used inside its own Reynolds band. \\
-\file{tutorials/electrochem/ed06\_stages\_in\_series} --- four stages, four
+\file{tutorials/steady/electrodialysis/ed06\_stages\_in\_series} --- four stages, four
 rectifiers, the current solved per stage: $i_\text{lim}$ falls 15.6-fold
 along the train while the margin $i/i_\text{lim}$ stays at 0.158
 (\S\ref{sec:ed-batch}). \\
-\file{tutorials/electrochem/ed07\_feed\_and\_bleed} --- a recycle: the
+\file{tutorials/steady/electrodialysis/ed07\_feed\_and\_bleed} --- a recycle: the
 stack sees 0.0187~mol/kg where the feed is 0.0500, so its limiting current
 is 2.68 times below what the feed analysis suggests. \\
 \file{tutorials/batch/electrodialysis/edbatch01\_constant\_current} ---

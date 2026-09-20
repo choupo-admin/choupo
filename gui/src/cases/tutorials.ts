@@ -31,12 +31,16 @@ License
   build time so the GUI can switch between them without a backend.
   Vite's import.meta.glob inlines the dict files as raw strings.
 
-  Tutorial layout:
+  Tutorial layout -- a top-level folder is a DISCIPLINE a student studies,
+  never a binary (ruled 2026-09-20); the binary is each case's own
+  controlDict.application:
       tutorials/
-        steady/   <name>/system/...   <name>/constant/...   -> choupoSolve
-        batch/    <name>/...                                 -> choupoBatch
-        ctrl/     <name>/...                                 -> choupoCtrl
-        props/    <name>/...                                 -> choupoProps
+        steady/    <subclass>/<name>/...  steady-state process simulation
+        unsteady/  <name>/...             transient process simulation, no loop
+        ctrl/      <name>/...             process control (control loops)
+        batch/     <subclass>/<name>/...  batch processes
+        props/     <subclass>/<name>/...  thermophysical properties
+        plant/     <name>/...             integrated plant design (fractal)
 
   All four binaries are built as WASM (see make/wasm.mk) and runnable
   in the browser.
@@ -140,7 +144,7 @@ const UNSUPPORTED_PATHS_IN_BROWSER: ReadonlySet<string> = new Set([
   "steady/optimisation/fitNRTL01_ethanol_water",
 ]);
 
-export type Category = "steady" | "batch" | "ctrl" | "props" | "plant" | "electrochem";
+export type Category = "steady" | "unsteady" | "batch" | "ctrl" | "props" | "plant";
 
 export interface TutorialEntry {
   /** Full identifier including category, e.g. "steady/flash01_benzene_toluene". */
@@ -152,7 +156,7 @@ export interface TutorialEntry {
   /** Pedagogical sub-class WITHIN the category (e.g. "Membranes (NF/RO)"),
    *  derived from the leaf name -- a GUI-only grouping, NOT a folder on disk
    *  (the identifier stays `<category>/<shortName>`).  "" if the category is
-   *  not sub-classed (ctrl / plant: too few to bother). */
+   *  not sub-classed (unsteady / ctrl / plant: too few to bother). */
   subclass: string;
   /** One-line description extracted from controlDict.description (may be empty). */
   description: string;
@@ -185,12 +189,12 @@ export const TUTORIALS_BY_CATEGORY: {
   label: string;
   entries: TutorialEntry[];
 }[] = [
-  { category: "steady", label: "Steady-state  (choupoSolve)", entries: [] },
-  { category: "batch",  label: "Batch         (choupoBatch)", entries: [] },
-  { category: "ctrl",   label: "Control       (choupoCtrl)",  entries: [] },
-  { category: "props",  label: "Properties    (choupoProps)", entries: [] },
-  { category: "plant",  label: "Plant         (fractal)",      entries: [] },
-  { category: "electrochem", label: "Electrochem   (choupoSolve)", entries: [] },
+  { category: "steady",   label: "Steady-state  (choupoSolve)", entries: [] },
+  { category: "unsteady", label: "Unsteady      (choupoCtrl)",  entries: [] },
+  { category: "ctrl",     label: "Control       (choupoCtrl)",  entries: [] },
+  { category: "batch",    label: "Batch         (choupoBatch)", entries: [] },
+  { category: "props",    label: "Properties    (choupoProps)", entries: [] },
+  { category: "plant",    label: "Plant         (fractal)",      entries: [] },
 ];
 for (const t of TUTORIALS) {
   const g = TUTORIALS_BY_CATEGORY.find((x) => x.category === t.category);
@@ -202,15 +206,15 @@ for (const t of TUTORIALS) {
 // The 2026-06-03 reorganisation put steady/batch/props cases into sub-class
 // SUBFOLDERS on disk (e.g. tutorials/steady/membranes/membrane01_...).  The
 // case identifier therefore INCLUDES the sub-class (<cat>/<subclass>/<case>)
-// and the slug IS the folder name.  ctrl/ and plant/ stay flat (few cases, and
-// plant is fractal).  Below: which categories are sub-classed, the menu order
+// and the slug IS the folder name.  unsteady/, ctrl/ and plant/ stay flat (few
+// cases, and plant is fractal).  Below: which categories are sub-classed, the menu order
 // of the slugs, and a pretty label per slug for the Open-Case dialog.
 function isSubclassed(cat: string): boolean {
   return cat === "steady" || cat === "batch" || cat === "props";
 }
 const SUBCLASS_ORDER: Partial<Record<Category, string[]>> = {
   steady: ["flash", "distillation", "absorption", "reactors", "gibbs",
-           "membranes", "heat", "gas-solid", "crystallisation", "evaporation",
+           "membranes", "electrodialysis", "heat", "gas-solid", "crystallisation", "evaporation",
            "drying", "rotating", "power", "utilities", "flowsheets",
            "optimisation", "thermo", "userops"],
   batch: ["reactor", "still", "recipes"],
@@ -223,6 +227,7 @@ const SUBCLASS_LABEL: { [slug: string]: string } = {
   reactors: "Reactors (CSTR / PFR)",
   gibbs: "Gibbs reactors",
   membranes: "Membranes (NF / RO)",
+  electrodialysis: "Electrodialysis",
   heat: "Heat transfer & integration",
   "gas-solid": "Gas–solid separation",
   crystallisation: "Crystallisation",
@@ -326,7 +331,7 @@ function buildIndex(): TutorialEntry[] {
   } = {};
 
   const ingest = (absPath: string, body: string) => {
-    // The case root is <cat>/<name> for FLAT categories (ctrl, plant) and
+    // The case root is <cat>/<name> for FLAT categories (unsteady, ctrl, plant) and
     // <cat>/<subclass>/<name> for SUB-CLASSED ones (steady, batch, props).
     // `rel` is ANY path under the case root --- system/, constant/, OR a
     // fractal subfolder (concentration/system/flowsheetDict,...).  The case
@@ -335,8 +340,8 @@ function buildIndex(): TutorialEntry[] {
     if (!m || !m[1]) return;
     const segs = m[1].split("/");
     const cat = segs[0];
-    if (cat !== "steady" && cat !== "batch" && cat !== "ctrl"
-        && cat !== "props" && cat !== "plant" && cat !== "electrochem")
+    if (cat !== "steady" && cat !== "unsteady" && cat !== "batch"
+        && cat !== "ctrl" && cat !== "props" && cat !== "plant")
       return;
     const rootLen = isSubclassed(cat) ? 3 : 2; // segments forming the case root
     if (segs.length <= rootLen) return;        // not a file inside a case

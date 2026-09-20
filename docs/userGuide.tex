@@ -91,10 +91,13 @@ less tutorials/steady/flash/flash01_benzene_toluene/log.choupoSolve
 \end{lstlisting}
 
 Tutorials live under \file{tutorials/<category>/<family>/<name>/}, where
-the category is one of \file{steady/} (\code{choupoSolve}),
-\file{batch/} (\code{choupoBatch}), \file{ctrl/} (\code{choupoCtrl}),
-\file{props/} (\code{choupoProps}), \file{electrochem/}, or
-\file{plant/} (multi-sector cases).  \code{runCase} reads each case's
+the category is a DISCIPLINE a student studies, never a binary: \file{steady/}
+(steady-state process simulation, \code{choupoSolve}), \file{unsteady/}
+(transient process simulation with no control loop, \code{choupoCtrl}),
+\file{ctrl/} (process control, \code{choupoCtrl}), \file{batch/} (batch
+processes, \code{choupoBatch}), \file{props/} (thermophysical properties,
+\code{choupoProps}) or \file{plant/} (integrated plant design, multi-sector
+cases).  \code{runCase} reads each case's
 \code{controlDict.application} and dispatches to the right binary
 automatically --- you never pick the executable by hand.  After your
 first build a symlink per binary (e.g.\ \file{./choupoSolve}) points to
@@ -2268,7 +2271,7 @@ record's own correlation, and is the default wherever one is named and
 every diluate ion resolves a diffusivity.  The run announces which model
 ran, and why.
 
-Tutorials: \file{tutorials/electrochem/ed01\_nacl\_desalination} and
+Tutorials: \file{tutorials/steady/electrodialysis/ed01\_nacl\_desalination} and
 \file{ed02\_over\_limiting\_current} (what the $i_{\lim}$ warning looks
 like when you cross it), then \file{ed03\_stack\_record} (the same bench
 stack as a record), \file{ed04\_limiting\_current\_multiionic} (the
@@ -3859,8 +3862,8 @@ source arrived.
 
 \begin{whatyoulllearn}
 Choupo ships a large corpus of runnable tutorials under
-\file{tutorials/}, in six categories: \file{steady/}, \file{batch/},
-\file{ctrl/}, \file{props/}, \file{plant/}, \file{electrochem/}.
+\file{tutorials/}, in six disciplines: \file{steady/}, \file{unsteady/},
+\file{ctrl/}, \file{batch/}, \file{props/}, \file{plant/}.
 \code{listCases} tabulates them all with one-line descriptions --- and it
 is the authority on how many there are, which is why no number appears
 here.  The selection below is the on-ramp ---
@@ -3935,7 +3938,7 @@ pick the one closest to what you want to do and edit from there.
 \toprule
 \textbf{Tutorial} & \textbf{What you learn} \\
 \midrule
-\multicolumn{2}{@{}l}{\emph{batch/, ctrl/, electrochem/, plant/}} \\
+\multicolumn{2}{@{}l}{\emph{batch/, ctrl/, unsteady/, plant/}} \\
 \code{batch01\_first\_order} / \code{batch02\_adiabatic} & RK4 vs the analytic decay; thermal runaway. \\
 \code{still01} / \code{still04} / \code{still05} & Rayleigh; constant-$R$ rectifier; constant-$x_D$ policy at the reflux ceiling. \\
 \code{recipe01\_react\_then\_distill}   & A scripted transfer between vessels. \\

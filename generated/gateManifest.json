@@ -373,7 +373,7 @@
     },
     "check_fastset": {
       "exit": 0,
-      "claim": "check_fastset: OK -- 63 declared case(s) covering 59 of the 61 tutorial famil(ies) the suite walks, each an existing case the full sweep also walks, no case declared twice; the remaining 2 famil(ies) carry a DECLARED `# EXCLUDED` line with a reason (tutorials/plant/acetonePlant, tutorials/plant/ammonia02_full_plant).  NOT COVERED: whether the declared cases are CHEAP (a measurement, and one that moved 26 % between two runs of the same tree -- it lives dated in FASTSET's header, not in a gate), whether they PASS (that is `bin/runTests --fast`), and whether a family's representative is REPRESENTATIVE of it (an author's judgement, made in review, exactly as check_witness_tier leaves representativeness to the architect).",
+      "claim": "check_fastset: OK -- 63 declared case(s) covering 60 of the 62 tutorial famil(ies) the suite walks, each an existing case the full sweep also walks, no case declared twice; the remaining 2 famil(ies) carry a DECLARED `# EXCLUDED` line with a reason (tutorials/plant/acetonePlant, tutorials/plant/ammonia02_full_plant).  NOT COVERED: whether the declared cases are CHEAP (a measurement, and one that moved 26 % between two runs of the same tree -- it lives dated in FASTSET's header, not in a gate), whether they PASS (that is `bin/runTests --fast`), and whether a family's representative is REPRESENTATIVE of it (an author's judgement, made in review, exactly as check_witness_tier leaves representativeness to the architect).",
       "seconds": 0.1
     },
     "check_feed_switch": {

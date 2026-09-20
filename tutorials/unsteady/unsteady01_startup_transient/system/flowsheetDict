@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  ctrl03_startup_transient  --  OPEN-LOOP CSTR start-up.
+  unsteady01_startup_transient  --  OPEN-LOOP CSTR start-up.
 
   Process:
       A continuous CSTR (first-order compA -> compB, mild exotherm) is

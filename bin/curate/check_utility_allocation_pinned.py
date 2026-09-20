@@ -87,7 +87,7 @@ def candidates():
     out = {}
     for cd in sorted(ROOT.glob("tutorials/**/system/controlDict")):
         rel = cd.relative_to(ROOT).as_posix()
-        if not rel.startswith(("tutorials/steady/", "tutorials/electrochem/",
+        if not rel.startswith(("tutorials/steady/",
                                "tutorials/plant/")):
             continue
         out[cd.parent.parent] = True

@@ -793,20 +793,6 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/ctrl/ctrl03_startup_transient": {
-   "application": "choupoCtrl",
-   "unitTypes": [
-    "dynamicCSTR"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
-  },
   "tutorials/ctrl/ctrl05_disturbance_transient": {
    "application": "choupoCtrl",
    "unitTypes": [
@@ -1057,22 +1043,6 @@
    ],
    "hasGolden": true
   },
-  "tutorials/ctrl/ctrl19_tanks_in_series": {
-   "application": "choupoCtrl",
-   "unitTypes": [
-    "dynamicCSTR"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [
-    "anchored"
-   ],
-   "hasGolden": true
-  },
   "tutorials/ctrl/ctrl20_bode_cstr": {
    "application": "choupoCtrl",
    "unitTypes": [
@@ -1089,128 +1059,6 @@
    "roles": [
     "anchored"
    ],
-   "hasGolden": true
-  },
-  "tutorials/electrochem/ed01_nacl_desalination": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "electricLoad",
-    "electrodialysisStack"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "davies",
-     "ideal"
-    ],
-    "aqueousChemistry": true
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/electrochem/ed02_over_limiting_current": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "electricLoad",
-    "electrodialysisStack"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "davies",
-     "ideal"
-    ],
-    "aqueousChemistry": true
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/electrochem/ed03_stack_record": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "electricLoad",
-    "electrodialysisStack"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "davies",
-     "ideal"
-    ],
-    "aqueousChemistry": true
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/electrochem/ed04_limiting_current_multiionic": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "electrodialysisStack"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "davies",
-     "ideal"
-    ],
-    "aqueousChemistry": true
-   },
-   "roles": [
-    "anchored"
-   ],
-   "hasGolden": true
-  },
-  "tutorials/electrochem/ed05_industrial_stack": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "electricLoad",
-    "electrodialysisStack"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "davies",
-     "ideal"
-    ],
-    "aqueousChemistry": true
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/electrochem/ed06_stages_in_series": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "electricLoad",
-    "electrodialysisStack"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "davies",
-     "ideal"
-    ],
-    "aqueousChemistry": true
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/electrochem/ed07_feed_and_bleed": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "electricLoad",
-    "electrodialysisStack",
-    "mixer",
-    "splitter"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "davies",
-     "ideal"
-    ],
-    "aqueousChemistry": true
-   },
-   "roles": [],
    "hasGolden": true
   },
   "tutorials/plant/ChemicalPlantTutorial": {
@@ -3418,6 +3266,128 @@
     "activityModels": [
      "ideal"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/electrodialysis/ed01_nacl_desalination": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/electrodialysis/ed02_over_limiting_current": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/electrodialysis/ed03_stack_record": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/electrodialysis/ed05_industrial_stack": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/electrodialysis/ed06_stages_in_series": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/electrodialysis/ed07_feed_and_bleed": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack",
+    "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
    },
    "roles": [],
    "hasGolden": true
@@ -6039,6 +6009,36 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/unsteady/unsteady01_startup_transient": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/unsteady/unsteady02_tanks_in_series": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
   }
  },
  "indices": {
@@ -6099,7 +6099,6 @@
     "tutorials/ctrl/ctrl01_cstr_temp_control",
     "tutorials/ctrl/ctrl02_disturbance_rejection",
     "tutorials/ctrl/ctrl03_adaptive_disturbance",
-    "tutorials/ctrl/ctrl03_startup_transient",
     "tutorials/ctrl/ctrl05_disturbance_transient",
     "tutorials/ctrl/ctrl06_sine_disturbance",
     "tutorials/ctrl/ctrl07_lhhw_inhibition",
@@ -6115,8 +6114,9 @@
     "tutorials/ctrl/ctrl17_step_reaction_curve",
     "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
     "tutorials/ctrl/ctrl19_freq_response_cstr",
-    "tutorials/ctrl/ctrl19_tanks_in_series",
-    "tutorials/ctrl/ctrl20_bode_cstr"
+    "tutorials/ctrl/ctrl20_bode_cstr",
+    "tutorials/unsteady/unsteady01_startup_transient",
+    "tutorials/unsteady/unsteady02_tanks_in_series"
    ],
    "choupoProps": [
     "tutorials/plant/polycaprolactonePlant/properties",
@@ -6219,13 +6219,6 @@
     "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars"
    ],
    "choupoSolve": [
-    "tutorials/electrochem/ed01_nacl_desalination",
-    "tutorials/electrochem/ed02_over_limiting_current",
-    "tutorials/electrochem/ed03_stack_record",
-    "tutorials/electrochem/ed04_limiting_current_multiionic",
-    "tutorials/electrochem/ed05_industrial_stack",
-    "tutorials/electrochem/ed06_stages_in_series",
-    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammonia02_full_plant",
@@ -6292,6 +6285,13 @@
     "tutorials/steady/drying/sprayDryer07_design",
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
+    "tutorials/steady/electrodialysis/ed01_nacl_desalination",
+    "tutorials/steady/electrodialysis/ed02_over_limiting_current",
+    "tutorials/steady/electrodialysis/ed03_stack_record",
+    "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic",
+    "tutorials/steady/electrodialysis/ed05_industrial_stack",
+    "tutorials/steady/electrodialysis/ed06_stages_in_series",
+    "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/evaporation/evaporator01_brine",
     "tutorials/steady/evaporation/evaporator02_triple_effect_sugar",
     "tutorials/steady/evaporation/evaporator03_co_current",
@@ -6685,7 +6685,6 @@
     "tutorials/ctrl/ctrl01_cstr_temp_control",
     "tutorials/ctrl/ctrl02_disturbance_rejection",
     "tutorials/ctrl/ctrl03_adaptive_disturbance",
-    "tutorials/ctrl/ctrl03_startup_transient",
     "tutorials/ctrl/ctrl05_disturbance_transient",
     "tutorials/ctrl/ctrl06_sine_disturbance",
     "tutorials/ctrl/ctrl07_lhhw_inhibition",
@@ -6697,29 +6696,30 @@
     "tutorials/ctrl/ctrl17_step_reaction_curve",
     "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
     "tutorials/ctrl/ctrl19_freq_response_cstr",
-    "tutorials/ctrl/ctrl19_tanks_in_series",
-    "tutorials/ctrl/ctrl20_bode_cstr"
+    "tutorials/ctrl/ctrl20_bode_cstr",
+    "tutorials/unsteady/unsteady01_startup_transient",
+    "tutorials/unsteady/unsteady02_tanks_in_series"
    ],
    "electricLoad": [
-    "tutorials/electrochem/ed01_nacl_desalination",
-    "tutorials/electrochem/ed02_over_limiting_current",
-    "tutorials/electrochem/ed03_stack_record",
-    "tutorials/electrochem/ed05_industrial_stack",
-    "tutorials/electrochem/ed06_stages_in_series",
-    "tutorials/electrochem/ed07_feed_and_bleed",
+    "tutorials/steady/electrodialysis/ed01_nacl_desalination",
+    "tutorials/steady/electrodialysis/ed02_over_limiting_current",
+    "tutorials/steady/electrodialysis/ed03_stack_record",
+    "tutorials/steady/electrodialysis/ed05_industrial_stack",
+    "tutorials/steady/electrodialysis/ed06_stages_in_series",
+    "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/power/rankine01_water"
    ],
    "electrodialysisStack": [
-    "tutorials/electrochem/ed01_nacl_desalination",
-    "tutorials/electrochem/ed02_over_limiting_current",
-    "tutorials/electrochem/ed03_stack_record",
-    "tutorials/electrochem/ed04_limiting_current_multiionic",
-    "tutorials/electrochem/ed05_industrial_stack",
-    "tutorials/electrochem/ed06_stages_in_series",
-    "tutorials/electrochem/ed07_feed_and_bleed"
+    "tutorials/steady/electrodialysis/ed01_nacl_desalination",
+    "tutorials/steady/electrodialysis/ed02_over_limiting_current",
+    "tutorials/steady/electrodialysis/ed03_stack_record",
+    "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic",
+    "tutorials/steady/electrodialysis/ed05_industrial_stack",
+    "tutorials/steady/electrodialysis/ed06_stages_in_series",
+    "tutorials/steady/electrodialysis/ed07_feed_and_bleed"
    ],
    "equilibriumReactor": [
     "tutorials/steady/reactors/equil01_reforming"
@@ -6880,11 +6880,11 @@
     "tutorials/steady/thermoTest/model5_nrtl_flash"
    ],
    "mixer": [
-    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
+    "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
     "tutorials/steady/flowsheets/process03_recycle",
@@ -6967,8 +6967,8 @@
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling"
    ],
    "splitter": [
-    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/plant/polycaprolactonePlant",
+    "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/process03_recycle",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
@@ -7094,13 +7094,6 @@
    "davies": [
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
     "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
-    "tutorials/electrochem/ed01_nacl_desalination",
-    "tutorials/electrochem/ed02_over_limiting_current",
-    "tutorials/electrochem/ed03_stack_record",
-    "tutorials/electrochem/ed04_limiting_current_multiionic",
-    "tutorials/electrochem/ed05_industrial_stack",
-    "tutorials/electrochem/ed06_stages_in_series",
-    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/props/electrolyte/davies01_band_edge",
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
     "tutorials/props/electrolyte/pitzer_calcite_brine",
@@ -7110,6 +7103,13 @@
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
+    "tutorials/steady/electrodialysis/ed01_nacl_desalination",
+    "tutorials/steady/electrodialysis/ed02_over_limiting_current",
+    "tutorials/steady/electrodialysis/ed03_stack_record",
+    "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic",
+    "tutorials/steady/electrodialysis/ed05_industrial_stack",
+    "tutorials/steady/electrodialysis/ed06_stages_in_series",
+    "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/flash/analysis01_water_analysis_inlet",
     "tutorials/steady/flash/analysis02_weighted_least_squares",
     "tutorials/steady/flash/flash09_nh3_water_reactive",
@@ -7198,7 +7198,6 @@
     "tutorials/ctrl/ctrl01_cstr_temp_control",
     "tutorials/ctrl/ctrl02_disturbance_rejection",
     "tutorials/ctrl/ctrl03_adaptive_disturbance",
-    "tutorials/ctrl/ctrl03_startup_transient",
     "tutorials/ctrl/ctrl05_disturbance_transient",
     "tutorials/ctrl/ctrl06_sine_disturbance",
     "tutorials/ctrl/ctrl07_lhhw_inhibition",
@@ -7213,15 +7212,7 @@
     "tutorials/ctrl/ctrl17_step_reaction_curve",
     "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
     "tutorials/ctrl/ctrl19_freq_response_cstr",
-    "tutorials/ctrl/ctrl19_tanks_in_series",
     "tutorials/ctrl/ctrl20_bode_cstr",
-    "tutorials/electrochem/ed01_nacl_desalination",
-    "tutorials/electrochem/ed02_over_limiting_current",
-    "tutorials/electrochem/ed03_stack_record",
-    "tutorials/electrochem/ed04_limiting_current_multiionic",
-    "tutorials/electrochem/ed05_industrial_stack",
-    "tutorials/electrochem/ed06_stages_in_series",
-    "tutorials/electrochem/ed07_feed_and_bleed",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/esterification2sector",
     "tutorials/plant/hda",
@@ -7310,6 +7301,13 @@
     "tutorials/steady/drying/sprayDryer07_design",
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
+    "tutorials/steady/electrodialysis/ed01_nacl_desalination",
+    "tutorials/steady/electrodialysis/ed02_over_limiting_current",
+    "tutorials/steady/electrodialysis/ed03_stack_record",
+    "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic",
+    "tutorials/steady/electrodialysis/ed05_industrial_stack",
+    "tutorials/steady/electrodialysis/ed06_stages_in_series",
+    "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/evaporation/evaporator01_brine",
     "tutorials/steady/evaporation/evaporator02_triple_effect_sugar",
     "tutorials/steady/evaporation/evaporator03_co_current",
@@ -7439,7 +7437,9 @@
     "tutorials/steady/userops/userOp02_component_splitter",
     "tutorials/steady/utilities/utility01_dowtherm_preheat",
     "tutorials/steady/utilities/utility02_hitec_csp_heater",
-    "tutorials/steady/utilities/utility03_glycol_brine_chiller"
+    "tutorials/steady/utilities/utility03_glycol_brine_chiller",
+    "tutorials/unsteady/unsteady01_startup_transient",
+    "tutorials/unsteady/unsteady02_tanks_in_series"
    ],
    "pitzerHMW": [
     "tutorials/props/electrolyte/davies01_band_edge",

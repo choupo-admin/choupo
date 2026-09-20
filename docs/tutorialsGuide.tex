@@ -504,34 +504,47 @@ companion.
 \clearpage
 \section*{Category I: Steady-state flowsheets (choupoSolve)}\addcontentsline{toc}{section}{Category I: Steady-state flowsheets (choupoSolve)}\markboth{Steady-state flowsheets}{Steady-state flowsheets}
 Solved as one nonlinear system $F(\mathbf{x}) = \mathbf{0}$: units in
-sequence, recycles as tears, everything announced.
+sequence, recycles as tears, everything announced.  The electrodialysis
+stacks sit here as the \texttt{electrodialysis} sub-class since 2026-09-20
+(a top-level folder is a discipline, not a binary; the retired
+\file{electrochem/} folder held these seven steady cases).
 \input{tutorialsGuide-steady}
+
+\clearpage
+\section*{Category II: Transient process simulation (choupoCtrl, no control loop)}\addcontentsline{toc}{section}{Category II: Transient process simulation (choupoCtrl, no control loop)}\markboth{Transient process simulation}{Transient process simulation}
+Unit operations connected by streams whose internal states are
+NON-STATIONARY: the same $\mathrm{d}\mathbf{Y}/\mathrm{d}t = f(\mathbf{Y})$
+integration in real time as the control category, with no controller
+declared -- the process is watched, not driven.  A discipline of its own
+(ruled 2026-09-20): the open-loop transient a student studies before any
+loop is closed on it.  The binary is \code{choupoCtrl} without a control
+loop; \code{choupoBatch} cases join this folder later.  Two cases today:
+the cold start-up of a CSTR relaxing to its natural steady state while
+OpenFOAM-style instant directories fill, and three equal mixing tanks in
+series answering an impulse with the Erlang-3 residence-time density.
+\input{tutorialsGuide-unsteady}
 
 % A VALIDATION STUDY, hand-written, tables generated from the engine
 % (bin/curate/gen_sdem_validation.py); written for the source paper's authors.
 \input{tutorialsGuide-sdemValidation}
 
 \clearpage
-\section*{Category II: The property bench (choupoProps)}\addcontentsline{toc}{section}{Category II: The property bench (choupoProps)}\markboth{The property bench}{The property bench}
+\section*{Category III: The property bench (choupoProps)}\addcontentsline{toc}{section}{Category III: The property bench (choupoProps)}\markboth{The property bench}{The property bench}
 Questions asked of the thermodynamics BEFORE a simulation uses it --
 CREATE, SEE, TEST, FIT, PROMOTE.
 \input{tutorialsGuide-props}
 
 \clearpage
-\section*{Category III: Batch and time-dependent (choupoBatch)}\addcontentsline{toc}{section}{Category III: Batch and time-dependent (choupoBatch)}\markboth{Batch and time-dependent}{Batch and time-dependent}
+\section*{Category IV: Batch and time-dependent (choupoBatch)}\addcontentsline{toc}{section}{Category IV: Batch and time-dependent (choupoBatch)}\markboth{Batch and time-dependent}{Batch and time-dependent}
 $\mathrm{d}\mathbf{Y}/\mathrm{d}t = f(\mathbf{Y})$ integrated in real time,
 with recipes for discrete events; trajectories, not steady states.
 \input{tutorialsGuide-batch}
 
 \clearpage
-\section*{Category IV: Dynamics and control (choupoCtrl)}\addcontentsline{toc}{section}{Category IV: Dynamics and control (choupoCtrl)}\markboth{Dynamics and control}{Dynamics and control}
+\section*{Category V: Dynamics and control (choupoCtrl)}\addcontentsline{toc}{section}{Category V: Dynamics and control (choupoCtrl)}\markboth{Dynamics and control}{Dynamics and control}
 Continuous processes in time with feedback: PID loops, setpoint schedules,
 disturbances and responses.
 \input{tutorialsGuide-ctrl}
-
-\clearpage
-\section*{Category V: Electrochemical systems}\addcontentsline{toc}{section}{Category V: Electrochemical systems}\markboth{Electrochemical systems}{Electrochemical systems}
-\input{tutorialsGuide-electrochem}
 
 \clearpage
 \section*{Category VI: Multi-sector plant showcases}\addcontentsline{toc}{section}{Category VI: Multi-sector plant showcases}\markboth{Plant showcases}{Plant showcases}

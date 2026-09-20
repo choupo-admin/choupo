@@ -22,7 +22,8 @@ EXPECTED-FAIL" against five — the same second-home defect CLAUDE.md §6
 records for itself.  What belongs here is the SHAPE, never the size:
 
 * **Runnable tutorials** under
-  `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`; `bin/runTests`
+  `tutorials/{steady,unsteady,ctrl,batch,props,plant}/` (a top-level folder
+  is a DISCIPLINE, not a binary -- ruled 2026-09-20); `bin/runTests`
   verifies golden-master KPIs + a NaN/inf guard on every case + the
   architectural gates; deliberate EXPECTED-FAIL teaching refusals are
   counted and named, never skipped.  Batch/ctrl cases carry goldens too —
