@@ -128,6 +128,37 @@ suite parses **every** dict file under `tutorials/` and asserts
 `parse(serialize(parse(text))) === parse(text)` (structural AST equality).  When
 adding new tutorials, the test discovers them automatically.
 
+### The two batch campaign ledgers — an absence is a REFUSAL
+
+`choupoBatch` publishes two structured ledgers beside the `timeline`:
+`transfers` (the MATERIAL ledger — one record per material edge, with the
+per-component `dn` and the transported `H_kJ`) and `energyLedger` (one record
+per segment of constant physics on one vessel, with `E_kJ`, its `basis` and
+its `T_service_K`).  The `timeline` is a PROJECTION of the first —
+`choupoBatch/main.cpp` builds it by iterating `transfers` — and the projection
+SUMS the `dn` map and drops the enthalpy, which is why the Gantt reads the
+ledger rather than the projection's `detail` string.
+
+**The contract every reader must honour.**  `src/result/ResultEmitter.cpp`
+writes `H_kJ` only when the engine's `H_valid` is true and `E_kJ` only when
+`E_valid` is true, and it emits **neither boolean** — an unpriceable record
+instead carries `H_missing` / `E_missing` naming why.  So on the TypeScript
+side **the number's presence IS its validity**, and an absent one means
+UNPRICEABLE, never zero.  `r.E_kJ ?? 0` fabricates a closed balance out of a
+refusal, and the corpus holds both states at once: `still06_ledger_mixed_
+validity` publishes priced and refused records on one vessel, while three
+adsorber cases publish a record whose `E_kJ` is EXACTLY 0.
+
+`gui/src/case/campaignLedger.ts` is the ONE home that reads them — pure, no
+physics, no sum the engine did not publish.  It owns the validity state, the
+per-vessel grouping, the magnitude scale, whether the view is offered at all
+(`hasCampaignSequence`), and every sentence the plot and the pop-out print, so
+the two surfaces cannot state different things about one run.  The Gantt's
+second band and the ledger pop-out (`gui/src/ui/campaignLedgerPopOut.ts`, the
+`streamsPopOut` HTML-table pattern, not the PNG one) draw it; the drawing
+rules and their arguments are in
+[`design/the-ledger-the-gantt-threw-away.md`](design/the-ledger-the-gantt-threw-away.md).
+
 ---
 
 ## 5. WebAssembly build (`make wasm`) — Emscripten quirks

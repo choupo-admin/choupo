@@ -328,6 +328,70 @@ export interface TimelineEvent {
   tEnd?: number;
 }
 
+/*  THE TWO BATCH CAMPAIGN LEDGERS (`transfers`, `energyLedger`).
+ *
+ *  THE ABSENCE CONTRACT, and it is the honesty half of both interfaces.
+ *  `src/result/ResultEmitter.cpp` writes `H_kJ` ONLY when the engine's
+ *  `H_valid` is true, and `E_kJ` ONLY when `E_valid` is true; an unpriceable
+ *  record instead carries `H_missing` / `E_missing` naming why.  The booleans
+ *  themselves are NOT emitted -- measured on the JSON, not assumed -- so on
+ *  this side the number's PRESENCE *is* its validity.
+ *
+ *  Therefore: an absent `H_kJ`/`E_kJ` means UNPRICEABLE, never zero.  A reader
+ *  that writes `r.E_kJ ?? 0` fabricates a closed balance out of a refusal, and
+ *  the corpus contains both states at once -- `still06_ledger_mixed_validity`
+ *  has priceable and refused records on the same vessel, and three adsorber
+ *  cases publish a record whose E_kJ is EXACTLY 0, which is a measurement and
+ *  not an absence.  Defaulting the one to the other makes them the same
+ *  picture.  `campaignLedger.ts` is the ONE home that reads these. */
+
+/** One material edge of the campaign: a discrete recipe `transfer`, one
+ *  window of a continuous `dischargeTo`, an `external` outlet, an
+ *  `externalIntake`, or a `feedAmendment` (a re-declared feed's datum jump).
+ *  `kind` is the engine's own stable word -- NOT validated against a list
+ *  here, see campaignLedger.ts. */
+export interface TransferRecord {
+  tStart: number;
+  tEnd: number;
+  from: string;
+  to: string;
+  kind: string;
+  /** kmol moved, per component. */
+  dn: { [component: string]: number };
+  /** Transported enthalpy (kJ), integrated at each package's own instant and
+   *  temperature.  ABSENT = the engine refused to price this edge. */
+  H_kJ?: number;
+  /** Named species/reasons the price is missing.  Present with `H_kJ` absent. */
+  H_missing?: string[];
+}
+
+/** One SEGMENT of constant physics on one vessel.  A recipe `setParameter`
+ *  closes the running segment and opens a new one, so `E_kJ` is always an
+ *  EXACT integral over an interval the stated `basis` covers. */
+export interface EnergyRecord {
+  tStart: number;
+  tEnd: number;
+  unit: string;
+  /** The engine's own stable word (`reaction`, `reboiler`, `condenser`,
+   *  `adsorption`, `latent`, `impulse`, `wallHeat`, ...).  Deliberately typed
+   *  as a free string: the canon in `SimulationResult.H`'s comment is STALE
+   *  (measured 2026-09-20) and nothing in the engine reads it, so a closed
+   *  union here would be a second stale home. */
+  kind: string;
+  /** SIGN IS DIRECTION: > 0 is heat ADDED to the vessel.  ABSENT = the engine
+   *  refused to price this segment; 0 is a priced, genuinely zero duty. */
+  E_kJ?: number;
+  /** Named reasons the price is missing.  Present with `E_kJ` absent. */
+  E_missing?: string[];
+  /** The glass-box statement of the physics used.  Present on every corpus
+   *  record, including refused ones (where it says so). */
+  basis: string;
+  /** The process temperature a utility must beat to serve this duty.  Absent
+   *  when unknown -- and present on some REFUSED records, so it is not a
+   *  proxy for validity. */
+  T_service_K?: number;
+}
+
 /**
  * Time-series trajectory emitted by the dynamic binaries
  * (choupoBatch, choupoCtrl).  `t` is the time vector (s).  `vars`
@@ -543,6 +607,16 @@ export interface RunResult {
    *  refluxMax).  `from` is the acting unit (the Gantt lane); `to` the
    *  transfer destination.  Absent unless the run fired events. */
   timeline?: TimelineEvent[];
+  /** The batch MATERIAL ledger: one record per material edge, with the
+   *  per-component `dn` and the transported `H_kJ`.  The `timeline` above is
+   *  a PROJECTION of this (choupoBatch builds it by iterating these records),
+   *  and the projection throws the quantities away -- which is why the Gantt
+   *  reads THIS for what moved and what it carried.  Absent for steady runs. */
+  transfers?: TransferRecord[];
+  /** The batch ENERGY ledger: one record per segment of constant physics on
+   *  one vessel.  Absent for steady runs, and absent for a batch run whose
+   *  units ledger no segment -- which is a different fact from "no heat". */
+  energyLedger?: EnergyRecord[];
   /** Solver "speak-up" advisories: a bound active at the converged solution, an
    *  equipment rating exceeded, an auto-initialised tear, a thermo model used
    *  outside its fitted range, an omitted electrolyte enthalpy channel.  The

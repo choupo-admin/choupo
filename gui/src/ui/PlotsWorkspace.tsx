@@ -80,6 +80,7 @@ import { TrajectoryPlot } from "./plotting/TrajectoryPlot.js";
 import { TxyPlot } from "./plotting/TxyPlot.js";
 import { CsvAutoPlot, dropPointColumn } from "./plotting/CsvAutoPlot.js";
 import { GanttPlot } from "./plotting/GanttPlot.js";
+import { hasCampaignSequence } from "../case/campaignLedger.js";
 
 import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import {
@@ -192,7 +193,12 @@ export function PlotsWorkspace() {
     const hasProfile = (result?.profiles?.length ?? 0) > 0;
     const hasConvergence = (result?.convergence.length ?? 0) > 0;
     const hasTrajectory = Boolean(result?.trajectory);
-    const hasTimeline = (result?.timeline?.length ?? 0) > 0;
+    //  THE CAMPAIGN VIEW IS AVAILABLE ON EITHER LEDGER, not only on a
+    //  timeline (widened 2026-09-20).  The rule and the measurement behind
+    //  it live in `campaignLedger.hasCampaignSequence` -- a pure function
+    //  precisely because nothing here asserts a `useMemo`: written inline,
+    //  narrowing it back to `hasTimeline` left the whole suite green.
+    const campaignAvailable = hasCampaignSequence(result);
     const hasCampaign = Boolean(result?.kpis?.["campaign"]);
     // PRESENCE of either artefact, never truthiness of the body: an
     // init-time refusal can leave an empty CSV while the .meta is exactly
@@ -255,9 +261,9 @@ export function PlotsWorkspace() {
           { key: "trajectory", label: "Trajectory", available: hasTrajectory,
             hideWhenUnavailable: true,
             hint: "Time-series state; emitted only by choupoBatch / choupoCtrl runs." },
-          { key: "gantt", label: "Campaign sequence", available: hasTimeline,
+          { key: "gantt", label: "Campaign sequence", available: campaignAvailable,
             hideWhenUnavailable: true,
-            hint: "The batch recipe as a Gantt: one lane per vessel, every FIRED action at its instant (transfers as arrows), unit status events flagged.  Hover a mark for the engine's detail line and the trigger that fired it." },
+            hint: "The batch campaign as a Gantt: one lane per vessel, every FIRED action at its instant (transfers as arrows), unit status events flagged, and beneath each vessel that has one an ENERGY band -- the engine's energy ledger, coloured by kind, height against a scale the legend prints, up = heat added.  An UNPRICEABLE record is hatched at full height: unknown is not zero.  Hover for what moved, what it carried and the basis; the ledger tables pop out in full." },
         ],
       },
       {
@@ -359,8 +365,17 @@ export function PlotsWorkspace() {
   const activePlot = (() => {
     switch (view) {
       case "trajectory":  return result.trajectory  ? <TrajectoryPlot data={result.trajectory} /> : null;
-      case "gantt":       return result.timeline
-        ? <GanttPlot timeline={result.timeline} {...(result.kpis ? { kpis: result.kpis } : {})} /> : null;
+      //  DRAWN FROM WHATEVER THE RUN PUBLISHED.  A case with an energy
+      //  ledger and no recipe has no timeline, and its lanes come from the
+      //  KPI units -- so the timeline argument degrades to [] rather than
+      //  gating the whole view.
+      case "gantt":       return (result.timeline || result.transfers
+                                  || result.energyLedger)
+        ? <GanttPlot timeline={result.timeline ?? []}
+            {...(result.kpis ? { kpis: result.kpis } : {})}
+            {...(result.transfers ? { transfers: result.transfers } : {})}
+            {...(result.energyLedger
+                  ? { energyLedger: result.energyLedger } : {})} /> : null;
       case "campaignBalance": {
         const c = result.kpis?.["campaign"];
         return c ? <CampaignBalancePlot campaign={c} /> : null;

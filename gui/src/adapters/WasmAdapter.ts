@@ -72,6 +72,7 @@ import type {
   ComponentCoverage,
   ConvergenceCurve,
   Economics,
+  EnergyRecord,
   ExperimentalDataset,
   ValidationBlock,
   ModelBoundary,
@@ -81,6 +82,7 @@ import type {
   SolverAdapter,
   StreamResult,
   TimelineEvent,
+  TransferRecord,
   TxyData,
   UnitProfile,
   UtilityAllocationRow,
@@ -162,7 +164,7 @@ export class WasmAdapter implements SolverAdapter {
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
         const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
-          utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
+          utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
@@ -178,6 +180,14 @@ export class WasmAdapter implements SolverAdapter {
         if (globalMassBoundary) result.globalMassBoundary = globalMassBoundary;
         if (computed && Object.keys(computed).length > 0) result.computed = computed;
         if (timeline && timeline.length > 0) result.timeline = timeline;
+        //  The two BATCH CAMPAIGN LEDGERS.  Carried SEPARATELY from the
+        //  timeline they are projected into: the projection collapses the
+        //  per-component `dn` to a total and drops the transported H_kJ
+        //  entirely, so a reader that wants what MOVED and what it CARRIED
+        //  has to read the ledger.  Absent stays absent -- never [].
+        if (transfers && transfers.length > 0) result.transfers = transfers;
+        if (energyLedger && energyLedger.length > 0)
+          result.energyLedger = energyLedger;
         if (advisories && advisories.length > 0) result.advisories = advisories;
         if (divergences && divergences.length > 0) result.divergences = divergences;
         if (modelBoundaries && modelBoundaries.length > 0) result.modelBoundaries = modelBoundaries;
@@ -361,6 +371,10 @@ export function extractStructured(log: string,
   computed?: { [name: string]: number };
   /** Batch campaign timeline (fired recipe actions + unit status events). */
   timeline?: TimelineEvent[];
+  /** The batch MATERIAL ledger the timeline is a projection of. */
+  transfers?: TransferRecord[];
+  /** The batch ENERGY ledger (one record per segment of constant physics). */
+  energyLedger?: EnergyRecord[];
   /** Solver advisories (bound active at the solution, rating, auto-init). */
   advisories?: Advisory[];
   divergences?: Divergence[];
@@ -591,6 +605,12 @@ export function extractStructured(log: string,
 ...(parsed.timeline && parsed.timeline.length > 0
       ? { timeline: parsed.timeline }
     : {}),
+...(parsed.transfers && parsed.transfers.length > 0
+      ? { transfers: parsed.transfers }
+    : {}),
+...(parsed.energyLedger && parsed.energyLedger.length > 0
+      ? { energyLedger: parsed.energyLedger }
+    : {}),
 ...(parsed.advisories && parsed.advisories.length > 0
       ? { advisories: parsed.advisories }
     : {}),
@@ -686,6 +706,8 @@ interface ResultPayload {
   kpis: { [unitName: string]: { [k: string]: number } };
   computed?: { [name: string]: number };
   timeline?: TimelineEvent[];
+  transfers?: TransferRecord[];
+  energyLedger?: EnergyRecord[];
   advisories?: Advisory[];
   /** the engine's `problemDivergence` array -- a separate channel from the
    *  advisories, carried under its JSON name here and renamed at the seam. */
