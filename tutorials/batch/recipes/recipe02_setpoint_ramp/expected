@@ -48,3 +48,5 @@ kpi     campaign               utility_cost_eur_total 0.00168981930105 1e-4
 kpi     campaign               utility_steamLP_eur 0.00159490955303 1e-4
 kpi     campaign               utility_steamLP_kJ 132.909129419    1e-4
 kpi     campaign               utility_steamLP_kg 0.0608001506948  1e-4
+ledger  reactor                energy.reaction.valid valid            exact
+ledger  reactor                energy.impulse.valid valid            exact

@@ -45,3 +45,9 @@ kpi     still                  E_condenser_seg1_kJ -37.1804699663   1e-4
 kpi     still                  E_condenser_total_kJ -37.1804699663   1e-4
 kpi     still                  E_reboiler_seg0_kJ 37.6711228825    1e-4
 kpi     still                  E_reboiler_total_kJ 37.6711228825    1e-4
+ledger  still->(external_boundary) material.external.dn.ethanol 0.000399999966116 1e-4
+ledger  still->(external_boundary) material.external.dn.water 0.000500000034907 1e-4
+ledger  still->(external_boundary) material.external.H_kJ -249.391762836   1e-4
+ledger  still->(external_boundary) material.external.valid valid            exact
+ledger  still                  energy.reboiler.valid valid            exact
+ledger  still                  energy.condenser.valid valid            exact

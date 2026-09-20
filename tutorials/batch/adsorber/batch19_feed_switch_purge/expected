@@ -46,3 +46,14 @@ kpi     campaign               utility_chilledWater_eur 9.46384302158e-05  1e-4
 kpi     campaign               utility_chilledWater_kJ 23.659607554       1e-4
 kpi     campaign               utility_chilledWater_kg 1.12664797876      1e-4
 kpi     campaign               utility_cost_eur_total 9.46384302158e-05  1e-4
+ledger  bed->(external_boundary) material.external.dn.CO2 0.0103710689902  1e-4
+ledger  bed->(external_boundary) material.external.dn.He 0.171248259098   1e-4
+ledger  bed->(external_boundary) material.external.H_kJ -4081.81492675   1e-4
+ledger  bed->(external_boundary) material.external.valid valid            exact
+ledger  bed->(external_boundary) material.feedAmendment.dn.CO2 0.0163457395279  1e-4
+ledger  bed->(external_boundary) material.feedAmendment.H_kJ -6432.46654861   1e-4
+ledger  bed->(external_boundary) material.feedAmendment.valid valid            exact
+ledger  (external_boundary)->bed material.feedAmendment.dn.He 0.0163457395279  1e-4
+ledger  (external_boundary)->bed material.feedAmendment.H_kJ -0.0509741887178 1e-4
+ledger  (external_boundary)->bed material.feedAmendment.valid valid            exact
+ledger  bed                    energy.adsorption.valid valid            exact

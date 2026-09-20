@@ -44,3 +44,9 @@ kpi     campaign               utility_steamLP_kJ 30.329531479     1e-4
 kpi     campaign               utility_steamLP_kg 0.0138744425796  1e-4
 kpi     campaign               utility_steamLP_peak_kW 0.0871484021649  1e-4
 kpi     campaign               utility_steamLP_t_peak_s 0                1e-4
+ledger  still->(external_boundary) material.external.dn.benzene 0.000491777878022 1e-4
+ledger  still->(external_boundary) material.external.dn.toluene 0.000408222122779 1e-4
+ledger  still->(external_boundary) material.external.H_kJ 38.7543769459    1e-4
+ledger  still->(external_boundary) material.external.valid valid            exact
+ledger  still                  energy.reboiler.valid valid            exact
+ledger  still                  energy.condenser.valid valid            exact

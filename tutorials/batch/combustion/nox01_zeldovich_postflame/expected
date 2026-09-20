@@ -39,3 +39,4 @@ kpi     campaign               transfers_H_valid 0                1e-4
 kpi     campaign               transfers_logged 0                1e-4
 kpi     postflame              E_reaction_seg0_kJ 0.00267435574828 1e-4
 kpi     postflame              E_reaction_total_kJ 0.00267435574828 1e-4
+ledger  postflame              energy.reaction.valid valid            exact

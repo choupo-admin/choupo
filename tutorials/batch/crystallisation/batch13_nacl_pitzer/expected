@@ -32,3 +32,4 @@ kpi     cryst                  n_NaCl_final     6.76347428194      1e-4
 kpi     cryst                  n_water_final    49.9583958816      1e-4
 kpi     cryst                  t_end            7200               1e-4
 kpi     cryst                  totalMoles_final 56.7218701635      1e-4
+ledger  cryst                  energy.latent.valid valid            exact

@@ -58,3 +58,15 @@ kpi     campaign               css_converged    0                1e-4
 kpi     campaign               css_cycles_completed 3                1e-4
 kpi     campaign               css_relative_change 0.0210588707343  1e-4
 kpi     campaign               css_tolerance    0.001            1e-4
+ledger  bed->(external_boundary) material.external.dn.CO2 0.032114841889   1e-4
+ledger  bed->(external_boundary) material.external.dn.He 0.323178834854   1e-4
+ledger  bed->(external_boundary) material.external.H_kJ -12405.4937509   1e-4
+ledger  bed->(external_boundary) material.external.valid valid            exact
+ledger  bed->(external_boundary) material.feedAmendment.dn.CO2 0.0980250956764  1e-4
+ledger  bed->(external_boundary) material.feedAmendment.dn.He 0.831500596995   1e-4
+ledger  bed->(external_boundary) material.feedAmendment.H_kJ -37990.3632239   1e-4
+ledger  bed->(external_boundary) material.feedAmendment.valid valid            exact
+ledger  (external_boundary)->bed material.feedAmendment.dn.He 0.784354610353   1e-4
+ledger  (external_boundary)->bed material.feedAmendment.dn.CO2 0.0653500637843  1e-4
+ledger  (external_boundary)->bed material.feedAmendment.H_kJ -24839.8484605   1e-4
+ledger  (external_boundary)->bed material.feedAmendment.valid valid            exact

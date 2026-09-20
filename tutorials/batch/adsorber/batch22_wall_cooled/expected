@@ -59,3 +59,8 @@ kpi     campaign               utility_chilledWater_kg 8.76473787216    1e-4
 kpi     campaign               utility_cost_eur_total 0.000736237981261 1e-4
 kpi     bed                    T_min_final_K    298.150773911    1e-4
 kpi     bed                    gasInventory_mol 0.0786600693503  1e-4
+ledger  bed->(external_boundary) material.external.dn.CO2 0.0290487939235  1e-4
+ledger  bed->(external_boundary) material.external.dn.He 0.205745154805   1e-4
+ledger  bed->(external_boundary) material.external.H_kJ -11317.4898748   1e-4
+ledger  bed->(external_boundary) material.external.valid valid            exact
+ledger  bed                    energy.wallHeat.valid valid            exact

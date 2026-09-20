@@ -68,3 +68,13 @@ kpi     legacy                 t_end            1000             1e-4
 kpi     legacy                 t_stoichiometric_CO2 711.778661332    1e-4
 kpi     legacy                 totalMoles_final 8.06790910917e-06 1e-4
 kpi     ergun                  gasInventory_mol 0.00806825955289 1e-4
+ledger  legacy->(external_boundary) material.external.dn.CO2 2.45119996505e-06 1e-4
+ledger  legacy->(external_boundary) material.external.dn.He 0.020167321573   1e-4
+ledger  legacy->(external_boundary) material.external.H_kJ -0.964596210245  1e-4
+ledger  legacy->(external_boundary) material.external.valid valid            exact
+ledger  ergun->(external_boundary) material.external.dn.CO2 2.45079353857e-06 1e-4
+ledger  ergun->(external_boundary) material.external.dn.He 0.0201617076797  1e-4
+ledger  ergun->(external_boundary) material.external.H_kJ -0.964436273299  1e-4
+ledger  ergun->(external_boundary) material.external.valid valid            exact
+ledger  legacy                 energy.adsorption.valid valid            exact
+ledger  ergun                  energy.adsorption.valid valid            exact

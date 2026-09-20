@@ -54,3 +54,14 @@ kpi     campaign               transfers_H_valid 4                1e-4
 kpi     campaign               transfers_logged 4                1e-4
 kpi     bed                    T_min_final_K    299.722793961    1e-4
 kpi     bed                    gasInventory_mol 0.0698117716575  1e-4
+ledger  bed->(external_boundary) material.external.dn.CO2 0.0105769301249  1e-4
+ledger  bed->(external_boundary) material.external.dn.He 0.169073699529   1e-4
+ledger  bed->(external_boundary) material.external.H_kJ -4072.29283355   1e-4
+ledger  bed->(external_boundary) material.external.valid valid            exact
+ledger  bed->(external_boundary) material.feedAmendment.dn.CO2 0.0254139136939  1e-4
+ledger  bed->(external_boundary) material.feedAmendment.dn.He 0.144012177599   1e-4
+ledger  bed->(external_boundary) material.feedAmendment.H_kJ -10000.8833168   1e-4
+ledger  bed->(external_boundary) material.feedAmendment.valid valid            exact
+ledger  (external_boundary)->bed material.feedAmendment.dn.He 0.107343076878   1e-4
+ledger  (external_boundary)->bed material.feedAmendment.H_kJ 227.29483258     1e-4
+ledger  (external_boundary)->bed material.feedAmendment.valid valid            exact

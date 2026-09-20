@@ -50,3 +50,9 @@ kpi     campaign               utility_coolingWater_peak_kW 0.0509772668089  1e-
 kpi     campaign               utility_coolingWater_t_peak_s 599              1e-4
 kpi     campaign               utility_steamLP_peak_kW 0.0871484021649  1e-4
 kpi     campaign               utility_steamLP_t_peak_s 0                1e-4
+ledger  still->receiver        material.continuous.dn.benzene 0.000491777878022 1e-4
+ledger  still->receiver        material.continuous.dn.toluene 0.000408222122779 1e-4
+ledger  still->receiver        material.continuous.H_kJ 38.7543769459    1e-4
+ledger  still->receiver        material.continuous.valid valid            exact
+ledger  still                  energy.reboiler.valid valid            exact
+ledger  still                  energy.condenser.valid valid            exact

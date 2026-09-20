@@ -22,3 +22,4 @@ kpi     reactor                totalMoles_final 0.01               1e-4
 kpi     campaign               moles_kmol_external_out 0                1e-4
 kpi     campaign               moles_kmol_final 0.01             1e-4
 kpi     campaign               moles_kmol_initial 0.01             1e-4
+ledger  reactor                energy.reaction.valid invalid          exact

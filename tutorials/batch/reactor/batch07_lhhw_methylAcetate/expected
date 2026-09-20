@@ -40,3 +40,4 @@ kpi     campaign               utility_coolingWater_t_peak_s 0                1e
 kpi     campaign               utility_cost_eur_total 8.720395937e-05  1e-4
 kpi     reactor                E_reaction_seg0_kJ -218.009898425   1e-4
 kpi     reactor                E_reaction_total_kJ -218.009898425   1e-4
+ledger  reactor                energy.reaction.valid valid            exact

@@ -50,3 +50,10 @@ kpi     retentate              washoutActual_MgSO4 0.992814118999     1e-4
 kpi     retentate              washoutActual_NaCl 0.533717737445     1e-4
 kpi     retentate              washoutIdeal_MgSO4 0.993045869853     1e-4
 kpi     retentate              washoutIdeal_NaCl 0.543895815321     1e-4
+ledger  retentate->(external_boundary) material.external.dn.MgSO4 1.43703248262e-06 1e-4
+ledger  retentate->(external_boundary) material.external.dn.NaCl 9.32471268658e-05 1e-4
+ledger  retentate->(external_boundary) material.external.dn.water 2.63782813913    1e-4
+ledger  retentate->(external_boundary) material.external.valid invalid          exact
+ledger  (external_boundary)->retentate material.externalIntake.dn.water 2.63814023115    1e-4
+ledger  (external_boundary)->retentate material.externalIntake.H_kJ -755567.561417   1e-4
+ledger  (external_boundary)->retentate material.externalIntake.valid valid            exact

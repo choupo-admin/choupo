@@ -34,3 +34,4 @@ kpi     cryst                  n_ethanol_final  5.55090846961      1e-4
 kpi     cryst                  n_water_final    49.9584334839      1e-4
 kpi     cryst                  t_end            7200               1e-4
 kpi     cryst                  totalMoles_final 64.204645496       1e-4
+ledger  cryst                  energy.latent.valid valid            exact

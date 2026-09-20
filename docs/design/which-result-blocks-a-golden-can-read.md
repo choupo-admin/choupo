@@ -56,6 +56,7 @@ The kinds today, each naming WHERE and nothing else:
 | `verdict` | `operationResults[].curation` | op | field (compares a WORD) |
 | `equipment` | `equipment[]` | unit | `basis` (a WORD, `exact`, whitespace→`_`) · `values.<key>` · `cost.<purchased\|bareModule\|totalModule>` |
 | `boundary` | `globalEnergyBoundary` (one object) | the fixed word `global` | `H_feeds_kW` · `Q_boundary_kW` · `H_products_kW` · `residual_kW` (generated only when ≥ 1 W in magnitude — a smaller one is round-off, the column13 lesson; the threshold has ONE home, the generator) · `W_shaft_kW` (2026-09-12, generated under that SAME 1 W floor: `Q_boundary_kW` is heat and shaft work added together, and `Q_heat_kW` is published beside them but deliberately given NO row of its own — it is `Q_boundary_kW − W_shaft_kW` and both of those are pinned, so a third row would be a third home for a number two already fix) |
+| `ledger` | `transfers[]` · `energyLedger[]` (the two choupoBatch CAMPAIGN ledgers) | the material ledger's EDGE `<from>-><to>` (whitespace→`_`) or the energy ledger's VESSEL | `material.<kind>.dn.<component>` · `material.<kind>.H_kJ` · `material.<kind>.valid` · `energy.<kind>.valid` — the last two compare a WORD (`valid` \| `partial` \| `invalid`) with `exact`.  The key is the (subject, kind) AGGREGATE and NOT the record: keying on a record's own `tStart` is not a key, because three corpus cases log two `feedAmendment` records on one edge at one instant.  There is deliberately no `energy.<kind>.E_kJ`: choupoBatch already mirrors that aggregate into `kpi <unit> E_<kind>_total_kJ`, which is its one home |
 
 The `claim` column (`anchor`) stays orthogonal: the kind says where the number
 is read from, the claim says what the row asserts about it.  One column per
@@ -132,13 +133,13 @@ stated reasons rather than by omission:
 
 ## 5. The gates
 
-Each of the three fixed blocks got a gate requiring **published ⇒ pinned AND
+Each of the fixed blocks got a gate requiring **published ⇒ pinned AND
 pinned ⇒ published**, because one direction alone is not enough: the first
 stops a number drifting unwatched, the second stops a row that matches nothing
 from reading as coverage.
 
 `check_overlay_aad_pinned` · `check_closure_ledger_pinned` ·
-`check_utility_allocation_pinned`.  **Each gate's OK line carries its own live
+`check_utility_allocation_pinned` · `check_campaign_ledger_pinned` (§6).  **Each gate's OK line carries its own live
 count, and this document deliberately carries none** — a tally repeated in
 prose is a second home for a derived number, and the release-inventory gate
 caught exactly that in the first draft of this record's CLAUDE.md paragraph,
@@ -154,3 +155,102 @@ wider gate.
 *should* be pinnable, and §4 is exactly the judgement it cannot make — a curve
 and a decision look identical to a script.  What §2 has instead is this
 document and three worked examples.
+
+
+## 6. The two batch campaign ledgers, and what measuring first changed (2026-09-20)
+
+`choupoBatch` publishes `transfers` (the MATERIAL ledger — one record per
+material edge, with per-component `dn`, the transported `H_kJ` and its
+validity) and `energyLedger` (one record per SEGMENT of constant physics on
+one vessel).  Both are top-level arrays of objects, so §2's rule applied and
+neither had a kind.  `ledger` is that kind; `check_campaign_ledger_pinned` is
+the gate.
+
+**Three things were MEASURED before anything was written, and two of them
+changed the design.**
+
+1. **The energy ledger's numbers were already pinned, through another kind.**
+   choupoBatch mirrors each (unit, kind) aggregate into
+   `kpis[<unit>]["E_<kind>_total_kJ"]`, and all **41** valid groups in the
+   corpus already carried that `kpi` row in their golden — 41 of 41, not a
+   sample.  So no `ledger` row duplicates it: a second home for one number in
+   one file is the arity sin in a golden, the same reason `equipment` leaves
+   `cost.factors.*` out.  What the gate does instead is require the BLOCK to
+   REPRODUCE that KPI (and the material block to reproduce
+   `campaign.moles_kmol_external_out`) to 1e-9, so the block is falsifiable
+   without a duplicate row.  What genuinely had no home anywhere was the
+   material ledger below the campaign totals.
+
+2. **The record is NOT the key, and the usual reason is the wrong one.**  The
+   argument against a per-record key is normally that a step boundary moves
+   and every row moves with it.  Measured, that is FALSE here: a record
+   boundary is set by a RECIPE EVENT, not by an integrator step, and
+   tightening `rtol` 100× on `batch24_blowdown_inert` and 1000× on
+   `batch13_breakthrough_co2` left both ledgers byte-identical, `tStart` and
+   `tEnd` included.  What rules the per-record key out is that `tStart` is
+   **not a key**: `batch21_tsa_hot_purge`, `batch23_tsa_cycles` and
+   `batch24_tsa_until_css` each log TWO `feedAmendment` records on ONE edge at
+   ONE instant (the old feed leaves and the new one arrives together), so 20
+   rows across those three cases would have collided and pinned whichever
+   record the writer happened to reach first.  The aggregate is chosen because
+   it is unique, not because the record moves — and the cost of choosing it is
+   stated rather than hidden: a REDISTRIBUTION of the same total across
+   instants moves no row, which is exactly what a campaign timeline would
+   draw.
+
+3. **The invalid arms needed no probe.**  `still06_ledger_mixed_validity` was
+   built for this and ships four `partial` energy groups; `batch03_consecutive`
+   and the two diafilter cases supply more.  Over the corpus the validity word
+   comes out **75 `valid`, 7 `invalid`, 4 `partial`** — every arm exercised by
+   cases that already existed, so the guard is not one whose only case
+   satisfies it.
+
+**Validity is pinned as a WORD, on the `verdict` precedent, and it is a COLUMN
+of the group rather than a row of its own kind** — `material.<kind>.valid`
+beside `material.<kind>.H_kJ`, same subject, same key prefix.  The reason is
+that the two answer one question about one group: whether the number beside
+them is the whole of it.  Splitting them into two kinds would make the reader
+join them, and the engine already refuses to emit `H_kJ`/`E_kJ` for an
+unpriceable record, so *"the number is there"* and *"the record is priceable"*
+are the same fact read two ways.  A pin carrying only the number would pass
+while a ledger silently went invalid and the campaign balance turned
+UNAVAILABLE.
+
+**A trap paid for, and it is the mirror of the 2026-09-05 one above.**  The
+reader's first draft wrote its three-way validity word as a ternary broken
+before the `:` — legal in gawk, rejected by **mawk**, which is what runs here.
+mawk's parse error goes to stderr and the function returns EMPTY, so every
+`ledger` row in the golden reported `MISSING` rather than a wrong value.  That
+was loud and was caught on the first run; the same construct inside the
+GENERATOR would have been silent, because a generator that emits nothing
+appends nothing and `--record-append` would have reported a refresh with an
+unchanged file — which is precisely how `verdict` rows vanished on their first
+day (2026-09-04).  Both sites are plain `if` chains now.
+
+### A finding this slice did not fix, named so it is not lost
+
+Both ledgers declare their `kind` vocabulary in a comment in
+`src/result/SimulationResult.H`, and BOTH comments are stale — found by
+enumerating what the corpus actually emits rather than by reading them:
+
+* `TransferRecord` says *"kind is a STABLE ENUM STRING: `discrete` |
+  `continuous` | `external`"*.  The corpus emits **five**: those three plus
+  `feedAmendment` (the A5 datum amendment, 2026-08-01) and `externalIntake`
+  (the diafilter's make-up, 2026-08-25).  Both were added deliberately and
+  both are described elsewhere in `CLAUDE.md`; only this comment was not
+  told.
+* `EnergyRecord` says the canon was *"reserved up front (#99-2) so the
+  campaign balance reads canonical records, never side calculations"* and
+  lists `reaction | sensible | latent | mixing | impulse | externalH |
+  shaftWork | heatLoss`.  The corpus emits `adsorption`, `condenser`,
+  `impulse`, `latent`, `reaction`, `reboiler` and `wallHeat` — **four of
+  the seven live kinds are not in the reserved canon at all**, and five of
+  the eight reserved words appear nowhere.  Reserving a word that is never
+  used is fine and was the point; emitting one that was never reserved is
+  the claim going false.
+
+Nothing here depends on either list — `get_ledger` and the gate read the
+`kind` the record carries and never an enumeration — so this is reported
+rather than repaired: the fix is a comment in `src/`, which moves no number
+but costs a full-suite run, and BURYING A STALE CLAIM is worth its own
+commit rather than a rider on this one.

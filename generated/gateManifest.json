@@ -1030,6 +1030,11 @@
       "exit": 0,
       "claim": "check_workspace_truth: OK -- HEAD 52c193e94d is SYNCED with origin/main (freshly fetched), and the poisoned overlay is absent.  NOT GUARANTEED: the recycler itself, and the window between this proof and the action it guards -- git's own non-fast-forward refusal is the backstop there.",
       "seconds": 0.7
+    },
+    "check_campaign_ledger_pinned": {
+      "exit": 0,
+      "claim": "check_campaign_ledger_pinned: OK -- 254 campaign-ledger quantit(ies) pinned across 86 (subject, kind) group(s) in 47 candidate choupoBatch case(s), in both directions (published implies pinned, pinned implies published); 11 candidate(s) publish no ledger at all and pass silently.  The MATERIAL ledger's per-component `dn`, its transported `H_kJ` and both ledgers' validity WORD are pinned by `ledger` rows; the ENERGY ledger's per-(unit, kind) total is pinned by the `kpi E_<kind>_total_kJ` row that is its one home, and the block is required to REPRODUCE it (and the campaign's `moles_kmol_external_out`) within 1e-9.  NOT CHECKED: whether any ledger number is RIGHT; the TIME DISTRIBUTION (a row is the campaign aggregate, so moving an amount between instants moves no row); `basis`, `T_service_K`, `tStart`/`tEnd` and the `H_missing`/`E_missing` reason lists, which no row kind reads; and any ledger outside choupoBatch, of which there is none.  NOT JUDGED: 3 batch case(s) carrying a declared opt-out marker (batch12_adsorber_refused_P, ignition01_h2o2_eulersi, ignition01_h2o2_rk4) -- they produce no answer to pin.",
+      "seconds": 547.1
     }
   }
 }

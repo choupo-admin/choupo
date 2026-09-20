@@ -80,6 +80,8 @@
 #       verdict  nrtl_etoh_water_heldout verdict validated          exact
 #       closure  transporter step_kW    -2.98508731741 1e-4
 #       utility  transporter heating.steamLP.eur_h 1.728  1e-4
+#       ledger   bed->(external_boundary) material.external.dn.CO2 0.00350975565134 1e-4
+#       ledger   potA      energy.reboiler.valid partial           exact
 #
 #  `kind` names WHERE the number is read from: `kpi` (inside the "kpis" of the
 #  named unit), `stream` (inside the named stream), `diag` (inside an
@@ -89,10 +91,17 @@
 #  `"energyClosures"` model-boundary ledger, `name` = the unit), `utility`
 #  (inside the top-level `"utilityAllocation"` array, `name` = the unit and
 #  `key` = `<tier>.<utility>.<field>`, or `<tier>.<port>.unserved` for a duty
-#  no catalogue utility can meet), `csv` (one cell of a case-emitted CSV) or
+#  no catalogue utility can meet), `ledger` (inside the top-level
+#  `"transfers"` or `"energyLedger"` array -- the two choupoBatch CAMPAIGN
+#  ledgers; `name` = the material ledger's EDGE `<from>-><to>` or the energy
+#  ledger's VESSEL, `key` = `material|energy.<kind>.<field>`; see
+#  get_ledger), `csv` (one cell of a case-emitted CSV) or
 #  `verdict` (inside an `operationResults[].curation` object, `name` = the op)
 #  -- the LAST of these compares a WORD, exactly, and its tolerance column
-#  must read `exact`; every other kind compares a number.  `reltol` is |actual-exp|/|exp| (falls
+#  must read `exact`; every other kind compares a number.  A `ledger` row
+#  whose key ends `.valid` is a WORD too (valid | partial | invalid) and
+#  carries `exact` -- and it is the `exact` COLUMN, never the kind, that
+#  selects the word comparison (see the check loop).  `reltol` is |actual-exp|/|exp| (falls
 #  back to absolute when exp is ~0).
 #
 #  `anchor` is a SIXTH-COLUMN CLAIM, not a kind (2026-08-10; respelled the
@@ -618,6 +627,128 @@ get_boundary() {
         | grep -oE "\"$key\": *-?[0-9][0-9.eE+-]*" | sed -E 's/^"[^"]*": *//'
 }
 
+#  ledger <subject> <ledger>.<kind>.<field> -- one quantity of a CAMPAIGN
+#  ledger (choupoBatch, forum #99/#101), read from the top-level `transfers`
+#  or `energyLedger` array.  Each record is ONE object on ONE line, exactly
+#  as `energyClosures` is, so this reader and the GUI timeline that will draw
+#  them see the same thing.
+#
+#  `name` is the SUBJECT: for the material ledger the EDGE, spelled
+#  `<from>-><to>` with whitespace normalised to `_` (so the boundary role
+#  reads `bed->(external_boundary)`); for the energy ledger the VESSEL.
+#  `key` is `<ledger>.<kind>.<field>`:
+#
+#     material.<kind>.dn.<component>   kmol moved, SUMMED over the campaign
+#     material.<kind>.H_kJ             transported enthalpy, summed over the
+#                                        records that carry one
+#     material.<kind>.valid            valid | partial | invalid   (a WORD)
+#     energy.<kind>.valid              valid | partial | invalid   (a WORD)
+#
+#  THE KEY IS THE (SUBJECT, KIND) AGGREGATE, NOT THE RECORD, and that was
+#  MEASURED rather than preferred (2026-09-20).  Keying on the record's own
+#  `tStart` is not a key at all: `batch21_tsa_hot_purge`,
+#  `batch23_tsa_cycles` and `batch24_tsa_until_css` each log TWO
+#  `feedAmendment` records on ONE edge at ONE instant (the old feed leaves
+#  and the new one arrives at the same t), so 20 rows across those three
+#  cases would have collided and silently pinned whichever record came
+#  first.  The other half of the measurement cuts the other way and is
+#  recorded because it contradicts the reason usually given: a record
+#  boundary here is set by a RECIPE EVENT, not by an integrator step, so it
+#  is NOT fragile -- tightening `rtol` 100x on batch24_blowdown_inert and
+#  1000x on batch13_breakthrough_co2 left both ledgers BYTE-IDENTICAL,
+#  tStart and tEnd included.  The aggregate is chosen because it is unique,
+#  not because the record moves.
+#
+#  WHAT THE AGGREGATE THEREFORE DOES NOT PIN, said here so the timeline
+#  slice does not inherit a false sense of cover: a REDISTRIBUTION of the
+#  same total across instants (cycle 1's amount moving into cycle 2) leaves
+#  every row unchanged.
+#
+#  NO `energy.<kind>.E_kJ` ROW EXISTS, deliberately.  choupoBatch already
+#  mirrors that exact aggregate into `kpis[<unit>]["E_<kind>_total_kJ"]`,
+#  and MEASURED on 2026-09-20 all 41 valid (unit, kind) groups in the corpus
+#  already carry that `kpi` row in their golden -- a `ledger` row beside it
+#  would be a second home for one number in one file, which is the arity sin
+#  in a golden (the same reason `equipment` leaves `cost.factors.*` out).
+#  The energy block's own numbers are made falsifiable instead by
+#  `check_campaign_ledger_pinned`, which sums `E_kJ` out of the BLOCK and
+#  requires it to reproduce the value that `kpi` row pins.
+get_ledger() {
+    local out="$1" name="$2" key="$3" blk sub rest rkind field
+    sub=${key%%.*}
+    case "$sub" in
+        material) blk="transfers"    ;;
+        energy)   blk="energyLedger" ;;
+        *)        return 0 ;;
+    esac
+    rest=${key#*.};  [ "$rest"  = "$key"  ] && return 0
+    rkind=${rest%%.*}
+    field=${rest#*.}; [ "$field" = "$rest" ] && return 0
+    printf '%s\n' "$out" | awk -v n="$name" -v b="$blk" -v k="$rkind" -v f="$field" '
+        function norm(s) { gsub(/[ \t]+/, "_", s); return s }
+        $0 ~ "^  \"" b "\": \\[$" { inb = 1; next }
+        inb && /^  \]/ { inb = 0 }
+        !inb { next }
+        {
+            if (b == "transfers") {
+                if (!match($0, /"from": "[^"]*"/)) next
+                fr = substr($0, RSTART+9, RLENGTH-10)
+                if (!match($0, /"to": "[^"]*"/)) next
+                to = substr($0, RSTART+7, RLENGTH-8)
+                subj = norm(fr) "->" norm(to); vf = "H_kJ"
+            } else {
+                if (!match($0, /"unit": "[^"]*"/)) next
+                subj = norm(substr($0, RSTART+9, RLENGTH-10)); vf = "E_kJ"
+            }
+            if (subj != n) next
+            if (!match($0, /"kind": "[^"]*"/)) next
+            if (substr($0, RSTART+9, RLENGTH-10) != k) next
+            seen = 1; nrec++
+            #  VALIDITY IS READ FROM THE PRESENCE OF THE NUMBER, never from a
+            #  flag: the emitter writes `H_kJ`/`E_kJ` only when the record is
+            #  valid, so "the number is there" and "the record is priceable"
+            #  are the same fact and cannot drift apart.
+            v = ""
+            if (match($0, "\"" vf "\": *-?[0-9][0-9.eE+-]*")) {
+                v = substr($0, RSTART, RLENGTH); sub(/^"[^"]*": */, "", v)
+                nvalid++
+            }
+            if (f == "valid") next
+            if (f == vf) { if (v != "") { sum += v; got = 1 } ; next }
+            if (b == "transfers" && substr(f, 1, 3) == "dn.") {
+                comp = substr(f, 4)
+                if (!match($0, /"dn": \{[^}]*\}/)) next
+                d = substr($0, RSTART+7, RLENGTH-8)
+                #  Split rather than build a regex from the component name:
+                #  an ion (`Na+`, `SO4--`) would make a regex out of its own
+                #  charge and match the wrong species.  No corpus name does
+                #  that TODAY (measured: all twelve are alphanumeric), which
+                #  is exactly when such a trap is cheapest to close.
+                m = split(d, kv, /, */)
+                for (i = 1; i <= m; i++) {
+                    if (split(kv[i], p, /": */) < 2) continue
+                    gsub(/^[ \t]*"/, "", p[1]); gsub(/[ \t]*$/, "", p[2])
+                    if (p[1] == comp) { sum += p[2]; got = 1 }
+                }
+            }
+        }
+        END {
+            if (!seen) exit                       # no such group -> MISSING
+            if (f == "valid") {
+                #  One line, not two: mawk rejects a ternary broken before
+                #  its `:` and the whole reader then returns EMPTY, which
+                #  reads as MISSING on every row (found the first time this
+                #  ran).
+                w = "partial"
+                if (nvalid == nrec) w = "valid"
+                if (nvalid == 0)    w = "invalid"
+                print w
+                exit
+            }
+            if (got) printf "%.12g\n", sum        # 12 sig figs: jsonNumber s
+        }'
+}
+
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
     #  The CLAIM (published vs self-recorded) is a different column and does
@@ -630,6 +761,7 @@ get_any() {
     elif [ "$kind" = verdict ]; then get_verdict "$out" "$name" "$key"
     elif [ "$kind" = equipment ]; then get_equipment "$out" "$name" "$key"
     elif [ "$kind" = boundary ]; then get_boundary "$out" "$name" "$key"
+    elif [ "$kind" = ledger ]; then get_ledger  "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
 
@@ -1230,6 +1362,113 @@ auto_generate() {
                 [ -n "$gv" ] && printf 'boundary %-20s %-16s %-18s %s\n' mass "$gk" "$gv" "$reltol"
             done
         fi
+        #  THE TWO CAMPAIGN LEDGERS (choupoBatch; 2026-09-20).  Until today
+        #  the `transfers` and `energyLedger` arrays were emitted and no
+        #  golden row kind could read either, which is the 2026-08-12 rule's
+        #  own defect -- and this is the block a campaign TIMELINE will be
+        #  drawn from, so it is the block whose numbers must be falsifiable
+        #  first.
+        #
+        #  MEASURED before it was written (36 of the 50 corpus batch cases
+        #  publish a ledger; all 36 ship a golden): what the ledgers already
+        #  had was the campaign COUNTS (`transfers_logged`,
+        #  `transfers_H_valid/invalid`, `energy_records_valid/invalid`) and,
+        #  for the energy side, the per-(unit, kind) total mirrored into
+        #  `kpi <unit> E_<kind>_total_kJ` -- present on 41 of 41 valid
+        #  groups.  What had NO home anywhere was every per-edge number of
+        #  the MATERIAL ledger: `dn` per component, the transported `H_kJ`,
+        #  and which group is priceable at all.
+        #
+        #  So this writes the material numbers, and for BOTH ledgers the
+        #  VALIDITY WORD -- never `energy.<kind>.E_kJ`, whose one home is
+        #  the `kpi` row above (see get_ledger).
+        #
+        #  NO ROUND-OFF FLOOR is applied, unlike the `closure` rows.  A `dn`
+        #  is an amount moved and an `H_kJ` an integrated enthalpy; neither
+        #  is the difference of two nearly-equal numbers, and measured over
+        #  the corpus not one of the 213 generated values sits within
+        #  1e-9 kmol or 1e-6 kJ of zero.  A floor invented for a case that
+        #  does not exist is machinery nothing tests.
+        for lblk in transfers energyLedger; do
+            printf '%s\n' "$out" | awk -v tol="$reltol" -v b="$lblk" '
+                function norm(s) { gsub(/[ \t]+/, "_", s); return s }
+                #  Groups are flushed in FIRST-APPEARANCE order, kept in
+                #  `gorder`: `for (g in nrec)` is unspecified in awk, and a
+                #  generator whose row order depends on a hash walk produces
+                #  a golden diff no reader can check line by line -- which is
+                #  the whole point of --record-append.
+                function flush(   i, gi, g, nm, ky, w) {
+                    for (gi = 1; gi <= ng; gi++) {
+                        g = gorder[gi]; nm = gname[g]; ky = gkind[g]
+                        for (i = 1; i <= ncomp[g]; i++)
+                            printf "ledger  %-22s %-16s %-18s %s\n", nm,
+                                   led "." ky ".dn." compname[g, i],
+                                   sprintf("%.12g", compsum[g, i]), tol
+                        if (nvalid[g] > 0 && b == "transfers")
+                            printf "ledger  %-22s %-16s %-18s %s\n", nm,
+                                   led "." ky ".H_kJ",
+                                   sprintf("%.12g", vsum[g]), tol
+                        w = "partial"
+                        if (nvalid[g] == nrec[g]) w = "valid"
+                        if (nvalid[g] == 0)       w = "invalid"
+                        printf "ledger  %-22s %-16s %-18s %s\n", nm,
+                               led "." ky ".valid", w, "exact"
+                    }
+                }
+                BEGIN { led = (b == "transfers") ? "material" : "energy"; ng = 0 }
+                $0 ~ "^  \"" b "\": \\[$" { inb = 1; next }
+                inb && /^  \]/ { if (inb) { flush(); inb = 0 } }
+                !inb { next }
+                {
+                    if (b == "transfers") {
+                        if (!match($0, /"from": "[^"]*"/)) next
+                        fr = substr($0, RSTART+9, RLENGTH-10)
+                        if (!match($0, /"to": "[^"]*"/)) next
+                        to = substr($0, RSTART+7, RLENGTH-8)
+                        nm = norm(fr) "->" norm(to); vf = "H_kJ"
+                    } else {
+                        if (!match($0, /"unit": "[^"]*"/)) next
+                        nm = norm(substr($0, RSTART+9, RLENGTH-10)); vf = "E_kJ"
+                    }
+                    if (!match($0, /"kind": "[^"]*"/)) next
+                    kd = substr($0, RSTART+9, RLENGTH-10)
+                    g = nm SUBSEP kd
+                    if (!(g in nrec)) {
+                        nrec[g] = 0; nvalid[g] = 0; ncomp[g] = 0
+                        gorder[++ng] = g; gname[g] = nm; gkind[g] = kd
+                    }
+                    nrec[g]++
+                    if (match($0, "\"" vf "\": *-?[0-9][0-9.eE+-]*")) {
+                        v = substr($0, RSTART, RLENGTH); sub(/^"[^"]*": */, "", v)
+                        nvalid[g]++; vsum[g] += v
+                    }
+                    if (b != "transfers") next
+                    if (!match($0, /"dn": \{[^}]*\}/)) next
+                    d = substr($0, RSTART+7, RLENGTH-8)
+                    m = split(d, kv, /, */)
+                    for (i = 1; i <= m; i++) {
+                        #  An EMPTY `dn` object is legal output -- a transfer
+                        #  that moved nothing -- and without this guard it
+                        #  generated the row `material.<kind>.dn.` with value
+                        #  0, which the reader then reports MISSING for ever.
+                        #  Verified by hand against a synthetic record; no
+                        #  corpus case emits one today, which is when it is
+                        #  cheapest to close.
+                        if (split(kv[i], p, /": */) < 2) continue
+                        gsub(/^[ \t]*"/, "", p[1]); gsub(/[ \t]*$/, "", p[2])
+                        if (p[1] == "") continue
+                        seenc = 0
+                        for (j = 1; j <= ncomp[g]; j++)
+                            if (compname[g, j] == p[1]) { compsum[g, j] += p[2]; seenc = 1 }
+                        if (!seenc) {
+                            ncomp[g]++
+                            compname[g, ncomp[g]] = p[1]
+                            compsum[g, ncomp[g]] = p[2] + 0
+                        }
+                    }
+                }
+                END { if (inb) flush() }'
+        done
         #  overlay AADs: how far each model sits from the MEASURED dataset.
         #  These are the numbers a `compare_*` case exists to publish, and
         #  until 2026-08-12 auto-generation walked straight past them, so the
@@ -1425,7 +1664,7 @@ if [ -n "$RECORD" ]; then
                     #  is the second home for the list of kinds, and the check
                     #  loop below has no such list at all, so the two cannot
                     #  be kept honest by reading one of them.
-                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary) ;; *) continue;; esac
+                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary|ledger) ;; *) continue;; esac
                     if ! awk -v k="$gkind" -v n="$gname" -v y="$gkey" \
                          '$1==k && $2==n && $3==y {found=1} END{exit !found}' "$exp"; then
                         printf '%-7s %-22s %-16s %-16s %s\n' \
@@ -5313,6 +5552,22 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/utilpin.$$
+
+    # Campaign-ledger gate (2026-09-20): the two choupoBatch CAMPAIGN ledgers
+    # live in the top-level `transfers` and `energyLedger` arrays; published
+    # => pinned AND pinned => published, plus the two arms that require each
+    # BLOCK to reproduce the KPI its aggregate is mirrored into (which is why
+    # no `ledger` row duplicates the energy total -- see get_ledger).
+    if "$ROOT/bin/curate/check_campaign_ledger_pinned.py" > /tmp/camlpin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "campaign-ledger-gate" \
+            "$("$ROOT/bin/curate/gate_claim.py" check_campaign_ledger_pinned < /tmp/camlpin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_campaign_ledger_pinned.py)\n" "campaign-ledger-gate"
+        cat /tmp/camlpin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/camlpin.$$
     unset CHOUPO_SUITE_OUTPUTS
 
     branch="tutorials/plant/ChemicalPlantTutorial/FERMENTATION"

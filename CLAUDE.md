@@ -1013,9 +1013,28 @@ at exit 0).  Record:
 An unreadable block does not fail — it just stops being checked, silently,
 with the suite green; so when you add a top-level result block carrying a
 number a reader would act on, add the row kind that reads it IN THE SAME
-COMMIT (published ⇒ pinned AND pinned ⇒ published).  Gates:
+COMMIT (published ⇒ pinned AND pinned ⇒ published).  **THE RULE HAS A SECOND
+HALF, found the day the two choupoBatch CAMPAIGN ledgers got their kind
+(2026-09-20): MEASURE WHETHER THE NUMBER ALREADY HAS A HOME BEFORE ADDING
+ONE.**  `transfers` and `energyLedger` were both unreadable by any row kind,
+but the ENERGY ledger's per-(unit, kind) total is mirrored by choupoBatch into
+a `kpi E_<kind>_total_kJ` row, and every case that publishes one already
+carried it — so a `ledger` row beside it would have been a second home for one
+number in one file, which is the arity sin in a golden.  The new `ledger` kind
+therefore pins the MATERIAL ledger's per-component `dn` and `H_kJ`, and both
+ledgers' VALIDITY as a WORD (`valid`/`partial`/`invalid`, on the `verdict`
+precedent — a pin carrying only the number passes while a ledger goes
+unpriceable and the campaign balance turns UNAVAILABLE); the energy NUMBERS
+stay in their one home and the gate requires the BLOCK to REPRODUCE it.  The
+key is the (subject, kind) AGGREGATE, and the usual argument for that is the
+wrong one: a record boundary here is a RECIPE EVENT, not an integrator step,
+and a 1000× tolerance tightening moved no boundary at all — what rules out a
+per-record key is that `tStart` is not a key (three corpus cases log two
+`feedAmendment` records on one edge at one instant).  What the aggregate
+cannot see is a REDISTRIBUTION across instants, which is said on the gate's
+claim line because the campaign TIMELINE is what will draw it.  Gates:
 `check_overlay_aad_pinned` · `check_closure_ledger_pinned` ·
-`check_utility_allocation_pinned`.  Record:
+`check_utility_allocation_pinned` · `check_campaign_ledger_pinned`.  Record:
 [`docs/design/which-result-blocks-a-golden-can-read.md`](docs/design/which-result-blocks-a-golden-can-read.md).
 
 **THE `aad` ROW (2026-08-12).**  An overlay's AAD against a MEASURED dataset is

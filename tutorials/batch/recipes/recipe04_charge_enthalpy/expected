@@ -36,3 +36,6 @@ kpi     hot                    totalMoles_final 0                1e-4
 kpi     campaign               moles_kmol_external_out 0                1e-4
 kpi     campaign               moles_kmol_final 0.0015           1e-4
 kpi     campaign               moles_kmol_initial 0.0015           1e-4
+ledger  hot->cold              material.discrete.dn.ethanol 0.0005           1e-4
+ledger  hot->cold              material.discrete.H_kJ -136.599454691   1e-4
+ledger  hot->cold              material.discrete.valid valid            exact

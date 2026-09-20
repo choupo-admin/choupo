@@ -40,3 +40,4 @@ kpi     campaign               moles_kmol_final 0.0185           1e-4
 kpi     campaign               moles_kmol_initial 0.0185           1e-4
 kpi     campaign               utility_coolingWater_peak_kW 0.849382680299   1e-4
 kpi     campaign               utility_coolingWater_t_peak_s 0                1e-4
+ledger  reactor                energy.reaction.valid valid            exact
