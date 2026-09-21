@@ -50,7 +50,7 @@ import {
   type NodeChange,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { ActionIcon, Badge, Box, Button, Chip, Group, Stack, Text, Tooltip, useComputedColorScheme } from "@mantine/core";
+import { ActionIcon, Badge, Box, Button, Chip, Group, Popover, ScrollArea, Stack, Text, Tooltip, useComputedColorScheme } from "@mantine/core";
 import { IconPlayerPlay, IconPlayerStop, IconRefresh } from "@tabler/icons-react";
 import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
 import { useReducedMotion } from "@mantine/hooks";
@@ -61,6 +61,7 @@ import type { DynamicInstant } from "../case/dynamicInstants.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
 import { streamNumberResolver } from "../case/streamNumbering.js";
 import { dashKindOf, dashStyle, legendDashes, type DashKind } from "../case/edgeDashes";
+import { caseDescription } from "../case/caseDescription";
 import { boundaryForStream } from "../case/modelBoundary.js";
 import { tutorialByName } from "../cases/tutorials.js";
 import type { StreamSpec } from "../case/types.js";
@@ -145,13 +146,15 @@ export function FlowCanvas({ scrubInstant }: { scrubInstant?: DynamicInstant } =
   const flowsheet = useStore((s) => s.caseFiles.flowsheet);
   const controlDict = useStore((s) => s.caseFiles.controlDict);
   const blank = useStore((s) => !hasCaseOpen(s.tutorialName));
-  // Onboarding: surface controlDict.description right above the canvas
-  // so an opened case answers "what is this?" in one line.  Mirrors the
-  // PropsView subtitle.
-  const description: string | undefined = useMemo(() => {
-    const d = controlDict?.["description"];
-    return typeof d === "string" && d.trim().length > 0 ? d.trim() : undefined;
-  }, [controlDict]);
+  //  Onboarding: surface controlDict.description right above the canvas so
+  //  an opened case answers "what is this?" IN ONE LINE -- which is what this
+  //  comment always said and what the row stopped doing once the corpus grew
+  //  descriptions into paragraphs.  The lead is shown, the rest is one click
+  //  away; see case/caseDescription.ts for why it folds rather than wraps.
+  const description = useMemo(
+    () => caseDescription(controlDict?.["description"]),
+    [controlDict],
+  );
 
   // Empty-state: a malformed case OR a non-flowsheet case slipped through.
   // Show a clear message instead of a silent dotted void.
@@ -200,12 +203,43 @@ export function FlowCanvas({ scrubInstant }: { scrubInstant?: DynamicInstant } =
       {description && (
         <Box style={{
           flex: "0 0 auto",
-          padding: "8px 16px",
+          padding: "6px 16px",
           borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+          display: "flex", alignItems: "center", gap: 8, minWidth: 0,
         }}>
-          <Text size="sm" c="var(--mantine-color-text)" fw={500} style={{ lineHeight: 1.3 }}>
-            {description}
+          <Text
+            size="sm" c="var(--mantine-color-text)" fw={500}
+            style={{
+              lineHeight: 1.3, whiteSpace: "nowrap",
+              overflow: "hidden", textOverflow: "ellipsis", minWidth: 0,
+            }}
+            title={description.hasMore ? undefined : description.full}
+          >
+            {description.lead}
           </Text>
+          {description.hasMore && (
+            //  The affordance is REQUIRED, never optional: a description cut
+            //  with nothing to open is worse than a long one, because the
+            //  reader cannot know what was taken.  `hasMore` is the module's
+            //  answer, so the button and the cut can never disagree.
+            <Popover width={520} position="bottom-start" withArrow shadow="md">
+              <Popover.Target>
+                <Button
+                  size="compact-xs" variant="subtle"
+                  style={{ flex: "0 0 auto" }}
+                >
+                  about this case
+                </Button>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <ScrollArea.Autosize mah={320}>
+                  <Text size="sm" style={{ lineHeight: 1.45 }}>
+                    {description.full}
+                  </Text>
+                </ScrollArea.Autosize>
+              </Popover.Dropdown>
+            </Popover>
+          )}
         </Box>
       )}
       <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
