@@ -28,7 +28,12 @@ import type { PlotKind } from "./exploreViews.js";
 export function theoryAnchor(plotType: PlotKind, property: string): string {
   switch (plotType) {
     case "txy": return "ch:flash";          // binary VLE / bubble-dew
-    case "flash": return "ch:flash";        // binary flash: tie-line + lever rule
+    //  The equilibrium curve y*(x): the SAME chapter as the boiling envelope,
+    //  because it is the same equilibrium read against the other axis pair.
+    //  (`flash` used to answer here too; the binary flash is a method
+    //  construction and left the Explorer 2026-09-21 — the EduTools registry
+    //  carries its anchor now.)
+    case "yx": return "ch:flash";           // equilibrium curve y(x) + y = x
     case "gamma": return "ch:activity";     // activity coefficients
     case "ternary": return "sec:ternary";   // ternary boiling surface
     case "ternaryLle": return "ch:lle-gibbs"; // liquid-liquid / solubility

@@ -45,11 +45,14 @@ import type { ExploreSpec } from "./exploreSynth.js";
 
 export type LocalUnifac = ReturnType<typeof buildLocalUnifac>;
 
-/** The lenses fed by ONE binary-VLE engine run.  "txy" / "mccabe" / "flash"
- *  share the T_bubble + y_eq(x) + liquid-stability sweep (the construction on
- *  top — staircase, tie-line — is pure geometry in the plot component);
- *  "gamma" sweeps the two activity coefficients instead. */
-export type BinaryVleKind = "txy" | "gamma" | "flash" | "mccabe";
+/** The lenses fed by ONE binary-VLE engine run.  "txy" / "yx" / "mccabe" /
+ *  "flash" share the T_bubble + y_eq(x) + liquid-stability sweep (the
+ *  construction on top — staircase, tie-line — is pure geometry in the plot
+ *  component); "gamma" sweeps the two activity coefficients instead.
+ *
+ *  "yx" is the Explorer's equilibrium-curve LENS and "flash"/"mccabe" are
+ *  EduTools tools: the word names the reading, and the run is one. */
+export type BinaryVleKind = "txy" | "yx" | "gamma" | "flash" | "mccabe";
 
 /** Put the MORE VOLATILE component (lower normal boiling point) first, so the
  *  equilibrium curve y*(x) lies ABOVE the y=x diagonal and a McCabe-Thiele

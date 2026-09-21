@@ -40,7 +40,7 @@ import {
 
 import { resolveAdapter } from "../adapters/index.js";
 import { EXPLORE_OUTPUT, synthesizeExploreCase, type ExploreSpec } from "../case/exploreSynth.js";
-import { caseComponentFiles, caseComponents, mergeCatalogue, metaByName, rawRecordFor, type ComponentMeta } from "../case/catalogue.js";
+import { CATALOGUE, caseComponentFiles, caseComponents, mergeCatalogue, metaByName, rawRecordFor, type ComponentMeta } from "../case/catalogue.js";
 import { readComponentRecord } from "../case/componentRecord.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { CsvAutoPlot, axisDisplay } from "./plotting/CsvAutoPlot.js";
@@ -48,7 +48,6 @@ import { GibbsMapPanel } from "./GibbsMapPanel.js";
 import type { JsonDict } from "../dict/index.js";
 import { PurePhaseDiagram } from "./plotting/PurePhaseDiagram.js";
 import { BinaryLlePlot } from "./plotting/BinaryLlePlot.js";
-import { FlashPlot } from "./plotting/FlashPlot.js";
 import { dropCsvColumn } from "./plotting/csvShape.js";
 import {
   shapeSteamCsv, steamViewKey, steamViews, type SteamMode,
@@ -65,13 +64,17 @@ import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import { binaryVleSpec, orderBinaryByVolatility } from "../case/methodFeeds.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
 import { type PlotKind, viewsFor } from "../case/exploreViews.js";
+import { LENS_SHORT, PLOT_TYPES, defaultLensFor, type PlotType } from "../case/exploreLenses.js";
+import { gibbsMapAtoms, parseFormulaAtoms } from "../case/gibbsMapSpec.js";
+import { PURE_PROPS, isPureProp, scanPropertyKeys } from "../case/scanProperties.js";
 import { theoryUrl } from "../case/exploreTheory.js";
 import { hasPair } from "../case/pairsCatalogue.js";
 import { solidPhaseFor } from "../case/solidPhaseData.js";
 import { mergeTernaryCsvs, workerCount } from "../case/ternaryParallel.js";
 import {
   BJERRUM_FAMILIES, bjerrumChunks, bjerrumEngineNotes, bjerrumOutput, bjerrumPhGrid,
-  familyById, mergeBjerrumCsvs, parseChargeResiduals, parseRefusalPoint,
+  collapseChargeAdvisories, familyById, mergeBjerrumCsvs, parseChargeResiduals,
+  parseRefusalPoint,
 } from "../case/bjerrumSweep.js";
 import { BjerrumPlot } from "./plotting/BjerrumPlot.js";
 import { familyForProperty, mergeMethodCsvs, methodSpread, specForModel } from "../case/methodCompare.js";
@@ -81,94 +84,16 @@ import {
   kToDisplay, paToDisplay, parseTemperature, parsePressure, temperatureLabel, pressureLabel,
 } from "../state/displayUnits.js";
 
-interface PlotType {
-  id: PlotKind;
-  label: string;
-  min: number;
-  max: number;      // 99 = "any"
-  vle: boolean;     // requires every selected component VLE-able
-  why: string;      // disabled-reason hint
-  comingSoon?: string; // if set, the type is shown but always gated (not yet wired)
-  needsUnifac?: boolean; // requires every selected component to have a UNIFAC decomposition
-}
-const PLOT_TYPES: PlotType[] = [
-  { id: "scan",  label: "Property vs T/P", min: 1, max: 99, vle: false, why: "pick at least one component" },
-  // Pure-compound P-T phase diagram: saturation curve to the critical point.
-  { id: "phase", label: "Pure phase diagram (P-T)", min: 1, max: 1, vle: true,
-    why: "needs exactly 1 VLE-able component (Tc + vapour pressure)" },
-  { id: "txy",   label: "Binary boiling envelope (T-x-y)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
-  { id: "gamma", label: "Activity coefficients γ(x)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
-  // (McCabe-Thiele — a METHOD CONSTRUCTION over the same y_eq(x) run — moved
-  // to the Methods workspace 2026-08-15; the psychrometric chart went with it.)
-  // Binary flash: the same y*(x) curve, read as an equilibrium tie-line through
-  // the feed z — the lever rule gives V/F.  T (or V/F) and P are the 2 knobs
-  // (Duhem); pure-TS redraw, no re-solve, like McCabe.
-  { id: "flash", label: "Binary flash (x-y + lever rule)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
-  // Binary LLE: g_mix(x) + the common-tangent construction reading the two
-  // coexisting liquid compositions off a single LL flash (predictive UNIFAC γ).
-  { id: "binaryLle", label: "Binary LLE (g_mix + tangent)", min: 2, max: 2, vle: false, needsUnifac: true,
-    why: "needs exactly 2 components with UNIFAC groups (e.g. water + nButanol)" },
-  // VLE boiling-temperature surface over the composition triangle — works for
-  // ANY 3 VLE-able compounds (ideal binaries fine; needs only the 3 Psat).
-  { id: "ternary", label: "Ternary boiling surface (T_bubble)", min: 3, max: 3, vle: true,
-    why: "needs exactly 3 VLE-able components" },
-  // LLE/solubility map (miscibility region + tie-lines).  Activity from UNIFAC
-  // (group contribution) — no fitted binary pairs needed, so it works for real
-  // systems (water/ethanol/benzene, …) whose components have UNIFAC groups.
-  { id: "ternaryLle", label: "Ternary solubility (LLE)", min: 3, max: 3, vle: true, needsUnifac: true,
-    why: "needs exactly 3 components with UNIFAC groups (e.g. water, ethanol, benzene)" },
-  // Membrane-scaling audit (scalingScan engine op): speciate a water analysis
-  // at increasing RO/NF recovery and SEE each mineral's SI = log10(IAP/K)
-  // cross zero — the crossing IS the max safe recovery.  Needs only water (the
-  // solvent); the ions are set in the analysis panel, not the compound set.
-  { id: "scaling", label: "Scaling (SI vs recovery)", min: 1, max: 99, vle: false,
-    why: "select water + a dissolved electrolyte (e.g. NaCl) — RO-scaling needs ions" },
-  // Species distribution vs pH — the Bjerrum plot (ruled into EXPLORE, not
-  // EduTools, 2026-08-18: a distribution diagram shows what a system IS, not a
-  // construction a student performs).  One `speciate` op per pH point over the
-  // curated chemistry network; the acid/base FAMILY is picked in the lens
-  // panel, like the scaling analysis, because a master ion is not a component.
-  { id: "bjerrum", label: "Species distribution vs pH (Bjerrum)", min: 1, max: 99, vle: false,
-    why: "select water (alone, or with a dissolved salt) — aqueous speciation needs the solvent" },
-  // Gibbs equilibrium map (forum 2026-07-02): iso-lines of equilibrium
-  // composition over T x P — why industrial reactors fix T and P.
-  { id: "gibbsmap", label: "Equilibrium map (Gibbs)", min: 2, max: 12, vle: false,
-    why: "pick 2+ gas-phase species with parseable formulas (e.g. N2 + H2 + NH3)" },
-  // Steam tables (steamTables engine op): IAPWS-IF97 (R7-97(2012)), the WATER
-  // industrial formulation — the saturated-steam table (region-4 line) or an
-  // isobar (h,s,v,cp vs T; the engine announces the Tsat crossing).
-  { id: "steam", label: "Steam tables (IF97)", min: 1, max: 1, vle: false,
-    why: "IF97 is the water formulation — select water alone" },
-  //  Solvent selection by cohesive energy density.  Needs no pair parameters
-  //  and no VLE: delta is derived per component from HvapTb, Tc and Vliq, so
-  //  any two substances that carry those three can be compared -- which is
-  //  what makes this the one study that works across the whole catalogue.
-  { id: "solubility", label: "Solubility parameter (Hildebrand)", min: 2, max: 12, vle: false,
-    why: "pick 2+ liquids that carry HvapTb, Tc and Vliq — delta is derived from those three" },
-];
+// PLOT_TYPES (the lens catalogue), LENS_SHORT (its toolbar words) and the
+// PlotType shape moved to case/exploreLenses.ts (2026-09-21), beside the
+// PLOT_KINDS enumeration they label.  They had lived 150 lines into this
+// component, where no test could reach them, so a lens could join the union,
+// be gated correctly, and still arrive on the strip with no word of its own.
 
-// Short lens labels for the toolbar SegmentedControl (the full label rides the
-// tooltip).  Keeps the one toolbar row from wrapping while the long names stay
-// discoverable on hover.
-const LENS_SHORT: Record<PlotKind, string> = {
-  scan: "scan", phase: "P-T", txy: "T-x-y", flash: "flash",
-  //  NOT "γ(x)".  In this sans-serif face a lowercase gamma and a lowercase y
-  //  are the same glyph, and this is the one place the symbol stands alone
-  //  with no word beside it to disambiguate.  Next to `T-x-y` and `flash`, a
-  //  reader looking for the equilibrium curve y(x) -- the most familiar
-  //  diagram in VLE, a function of the same x, drawn against the same axis --
-  //  clicks this and gets activity coefficients.  Reported three times before
-  //  anyone looked at the SCREEN rather than the code.  The word carries it.
-  gamma: "activity γ",
-  binaryLle: "LLE", ternary: "ternary", ternaryLle: "tern.LLE",
-  scaling: "scaling", steam: "steam", gibbsmap: "gibbsmap", bjerrum: "Bjerrum",
-  solubility: "delta",
-};
 
-// PURE = per-component intrinsic properties the engine resolves as <prop>_<c>:
-// one curve per compound, composition has NO effect.  Everything else is a
-// MIXTURE scalar evaluated at a composition.
-const PURE_PROPS = ["Psat", "Cp_liquid"];
+// PURE_PROPS / isPureProp and the rule for WHICH per-component curves a scan
+// asks for moved to case/scanProperties.ts (2026-09-21): the property list and
+// the `skipped` note were two homes for one fact, and they disagreed.
 const MIXTURE_PROPS = ["Z", "v_molar", "Cp_ig", "H_real", "S_real"];
 // Transport properties are their OWN family: the engine computes them from
 // (T, x) only — they NEVER call the EOS (PropertyEvaluator.cpp:116-130).  The
@@ -177,7 +102,6 @@ const TRANSPORT_PROPS = ["viscosity_liquid", "viscosity_gas", "thermal_conductiv
 // The ONLY scan properties that actually call eos() (PropertyEvaluator.cpp:110-113);
 // the EOS picker shows for these alone (positive allowlist, not subtraction).
 const EOS_PROPS = ["Z", "v_molar", "H_real", "S_real"];
-const isPureProp = (p: string) => PURE_PROPS.includes(p);
 const isTransportProp = (p: string) => TRANSPORT_PROPS.includes(p);
 // Pretty labels for the transport keys (the engine keys are long/underscored).
 const TRANSPORT_LABEL: Record<string, string> = {
@@ -227,28 +151,6 @@ const SI_REFERENCE = [
   { y: 0, label: "saturation — above this line the mineral precipitates" },
 ];
 
-/** Parse a chemical formula ("C2H5OH", "NH3") into element counts.  Best
- *  effort: element = capital + optional lowercase, count = trailing digits;
- *  parentheses are expanded one level ("Ca(OH)2").  Unparseable -> {}. */
-function parseFormulaAtoms(formula: string): { [el: string]: number } {
-  if (!formula || /[^A-Za-z0-9()]/.test(formula)) return {};
-  let f = formula;
-  // expand one level of (...)n
-  f = f.replace(/\(([A-Za-z0-9]+)\)(\d+)/g, (_m, grp: string, n: string) =>
-    grp.repeat(parseInt(n, 10)));
-  const out: { [el: string]: number } = {};
-  const re = /([A-Z][a-z]?)(\d*)/g;
-  let m: RegExpExecArray | null;
-  let consumed = 0;
-  while ((m = re.exec(f)) !== null) {
-    if (m.index !== consumed) return {};        // gap -> unparseable
-    consumed = m.index + m[0].length;
-    const el = m[1]!;
-    const n = m[2] ? parseInt(m[2], 10) : 1;
-    out[el] = (out[el] ?? 0) + n;
-  }
-  return consumed === f.length ? out : {};
-}
 
 // (dropCsvColumn moved to plotting/csvShape.ts 2026-08-15 — it is shared with
 // the Methods workspace's McCabe tool now.  The scaling CSV's ionic-strength
@@ -304,7 +206,20 @@ export function ExploreWorkspace() {
   }, []);
   const [selected, setSelected] = useState<string[]>(boot.known);
   const [linkRefused] = useState<string[]>(boot.missing);
-  const [plotType, setPlotType] = useState<PlotKind>("scan");
+  //  D1 (2026-09-21): the boot lens is a DECISION, not a literal.  Every
+  //  selection used to open on the property scan, whose own boot property is
+  //  Psat -- so `?components=water,NaCl` opened on the engine refusing
+  //  `Psat_NaCl`, a red banner before the student had touched anything.  The
+  //  class knows better, and `defaultLensFor` only ever names a lens
+  //  `viewsFor` agrees applies.  Boot-ONLY: the lens must not move under a
+  //  reader who then adds a compound.
+  //
+  //  CATALOGUE, not the merged pool: `boot.known` is filtered through
+  //  `rawRecordFor`, which resolves the SHARED catalogue only, so a name that
+  //  reached this state is one CATALOGUE holds.  The merged pool is a memo
+  //  declared further down anyway, and a boot decision must not wait for it.
+  const [plotType, setPlotType] = useState<PlotKind>(
+    () => defaultLensFor(boot.known, CATALOGUE, buildLocalUnifac({})));
   /* The resizable left-component-bar (Vítor's ask) — drag the right border,
    * double-click to reset, `[` to fold, persisted per reader.
    *
@@ -525,14 +440,16 @@ export function ExploreWorkspace() {
     return readComponentRecord(local ?? rawRecordFor(inspecting) ?? "");
   }, [inspecting, localComponentFiles]);
 
-  //  WHICH LENSES DRAW THEIR OWN HEADER.  `flash` opens with five result
-  //  badges, the Duhem sentence and its two sliders; the workspace's caption
-  //  ribbon is drawn ABSOLUTELY over the top-left of the figure area, so on
-  //  this lens alone the two collide.  Named here, beside the other lens
-  //  predicates, so the next lens that grows a header is one word away from
-  //  being handled rather than one screenshot away from being reported.
-  const ownsHeader = plotType === "flash";
-  const isVle = plotType === "txy" || plotType === "gamma" || plotType === "flash";
+  //  (`ownsHeader` lived here until 2026-09-21.  It existed for ONE lens --
+  //  the binary flash, which opened with five badges, the Duhem sentence and
+  //  two sliders, so the caption ribbon drawn absolutely over the top-left of
+  //  the figure area landed on them.  That lens is a method construction and
+  //  moved to EduTools; with it gone, every lens here starts its figure at the
+  //  top of the box and the overlay's assumption holds again.  If a lens ever
+  //  grows a header, it does not belong on this plane -- the chrome budget
+  //  says its knobs go in the toolbar, and the plot's top-left origin is
+  //  FIXED.)
+  const isVle = plotType === "txy" || plotType === "yx" || plotType === "gamma";
   const isTernary = plotType === "ternary" || plotType === "ternaryLle";
   //  THE LABEL MUST NAME THE PAIR THE SPEC RAN, not the order they were picked
   //  in.  `binaryVleSpec` puts the MORE VOLATILE component on the x axis
@@ -552,6 +469,21 @@ export function ExploreWorkspace() {
   // per-component property is a pure-component comparison; anything else is a
   // mixture scalar.  No manual toggle that could pick a physically-wrong combo.
   const scanMode: "pure" | "mixture" = isPureProp(property) ? "pure" : "mixture";
+  //  WHICH per-component curves this scan asks the engine for, and which of the
+  //  SET cannot answer — ONE call, two halves of one return value
+  //  (case/scanProperties.ts).  Declared here because `run()` below needs the
+  //  reason derived from it.
+  const scanKeys = useMemo(() => scanPropertyKeys(property, selected, catalogue),
+    [property, selected, catalogue]);
+  //  EVERY selected compound is unable to answer -> there is no run to make.
+  //  Say so, instead of sending the engine an empty property list and
+  //  reporting back whatever it says about that.
+  const noCurveReason = (plotType === "scan" && scanKeys.keys.length === 0
+                         && selected.length > 0)
+    ? `None of the selected compounds carries ${property}`
+      + `${scanKeys.skipped.length ? ` (${scanKeys.skipped.join(", ")})` : ""} — pick `
+      + "a compound that does, or choose another property."
+    : null;
 
   // availability + reason per plot type (the gating IS the pedagogy)
   // Single source: a view is applicable iff it is in viewsFor(classify(sel)).
@@ -602,7 +534,10 @@ export function ExploreWorkspace() {
     const hasWater = selected.includes("water");
     const hasElectrolyte = selected.some((c) => has(c)?.isElectrolyte);
     if (selected.length === 1 && vleCount === 1)
-      return "+1 VLE compound → boiling envelope, γ(x), binary flash (and McCabe-Thiele in EduTools)";
+      //  Names what the STRIP will say (LENS_SHORT), plus the two EduTools
+      //  constructions that read the same run on the other plane.  The binary
+      //  flash joined McCabe-Thiele there 2026-09-21.
+      return "+1 VLE compound → T-x-y, y-x, activity γ (and McCabe-Thiele + flash in EduTools)";
     if (selected.length === 2 && allVle && !currentViews.has("ternary"))
       return "+1 VLE compound → ternary boiling surface";
     if (hasWater && !hasElectrolyte && !currentViews.has("scaling"))
@@ -638,13 +573,10 @@ export function ExploreWorkspace() {
     if (plotType === "gibbsmap") {
       // Elements + atoms derived from each component's FORMULA (glass-box:
       // the same numbers a student would write in the gibbsReactor dict).
-      const parsed = selected.map((c) => ({
-        name: c, atoms: parseFormulaAtoms(metaByName(c, catalogue)?.formula ?? ""),
-      }));
-      const elements = [...new Set(parsed.flatMap((p) => Object.keys(p.atoms)))].sort();
-      const species = parsed.map((p) => ({
-        name: p.name, atoms: elements.map((e) => p.atoms[e] ?? 0),
-      }));
+      // ONE home (case/gibbsMapSpec.ts): the gate that decides whether this
+      // lens is offered at all counts the SAME elements, so the lens cannot
+      // be offered on one parse and run on another.
+      const { elements, species } = gibbsMapAtoms(selected, catalogue);
       const feed: { [c: string]: number } = {};
       for (const c of selected) feed[c] = gmFeed[c] ?? 1;
       const target = gmMetricSp && selected.includes(gmMetricSp)
@@ -800,13 +732,13 @@ export function ExploreWorkspace() {
       };
     }
 
-    if (plotType === "txy" || plotType === "gamma" || plotType === "flash") {
+    if (plotType === "txy" || plotType === "yx" || plotType === "gamma") {
       // binary VLE: sweep x of the more volatile component 0->1 at fixed P.
-      // The T-x-y and the binary FLASH share ONE engine run shape (T_bubble +
-      // y_eq_<c1> + the per-x liquid-liquid stability probe); γ(x) sweeps the
-      // two activity coefficients instead.  The spec construction is SHARED
-      // with the Methods workspace's McCabe-Thiele tool (the same run feeds
-      // it) via case/methodFeeds.ts — one home, no drift.
+      // The T-x-y and the equilibrium curve y(x) are TWO READINGS of ONE
+      // engine run (T_bubble + y_eq_<c1> + the per-x liquid-liquid stability
+      // probe); γ(x) sweeps the two activity coefficients instead.  The spec
+      // construction is SHARED with the EduTools McCabe-Thiele and flash tools
+      // (the same run feeds them) via case/methodFeeds.ts — one home, no drift.
       return binaryVleSpec({
         pair: [selected[0] ?? "", selected[1] ?? ""],
         catalogue,
@@ -820,9 +752,15 @@ export function ExploreWorkspace() {
       });
     }
     // scan: property vs T or P.  PURE -> one curve per compound (Psat_<c>),
-    // composition irrelevant; MIXTURE -> the single mixture scalar at composition.
+    // composition irrelevant; MIXTURE -> the single mixture scalar at
+    // composition.  The KEY LIST and the `skipped` note come from ONE call
+    // (case/scanProperties.ts), so the run asks only for curves that exist and
+    // the note describes exactly the rest.  CALLED here rather than read off
+    // `scanKeys` above so this memo's dependency list stays the one place
+    // every knob is enumerated -- property, selected and catalogue are all
+    // already in it, and the function is pure.
     const pure = isPureProp(property);
-    const properties = pure ? selected.map((c) => `${property}_${c}`) : [property];
+    const properties = scanPropertyKeys(property, selected, catalogue).keys;
     const state: ExploreSpec["state"] = { composition };
     if (axisVar === "T") state.P = fixedP; else state.T = fixedT;
     // Transport: emit the matching `transport {}` sub-block (the model selection
@@ -878,7 +816,11 @@ export function ExploreWorkspace() {
   const abortRef = useRef<AbortController | null>(null);
 
   const run = useCallback(async () => {
-    if (activeReason) { abortRef.current?.abort(); setCsv(null); setErr(null); setCompareInfo(null); setOpAdvisories([]); setBusy(false); return; }
+    if (activeReason || noCurveReason) {
+      abortRef.current?.abort();
+      setCsv(null); setErr(noCurveReason); setCompareInfo(null); setOpAdvisories([]);
+      setBusy(false); return;
+    }
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
@@ -963,7 +905,12 @@ export function ExploreWorkspace() {
         //  The engine's own sentences (K(T) route, activity-model scope, the
         //  pH-scale statement, the Henry pin, every advisory), deduplicated —
         //  the sweep prints each of them once PER POINT and once per block.
-        setOpAdvisories([...new Set(notes)]);
+        //  Deduplicated by exact string, THEN collapsed: the charge advisory
+        //  quotes each point's own percentage, so no two are equal and 43
+        //  points filled the whole viewport with one sentence.  ONE line with
+        //  the range (case/bjerrumSweep.ts); the per-point number is already
+        //  on the picture, as the titrant curve on the right-hand axis.
+        setOpAdvisories(collapseChargeAdvisories([...new Set(notes)]));
         const merged = mergeBjerrumCsvs(pts);
         if (merged) { setCsv(merged); setErr(null); }
         else {
@@ -1031,7 +978,7 @@ export function ExploreWorkspace() {
       if (seq === runSeq.current) setBusy(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [spec, activeReason, property, comparing, compareOn, compareModels, cmpFam, plotType]);
+  }, [spec, activeReason, noCurveReason, property, comparing, compareOn, compareModels, cmpFam, plotType]);
 
   // Switching plot type clears the chart immediately: each plot kind owns a
   // DIFFERENT CSV schema (a scan is `T,prop`, psychro is `T_C,Y,curve`).  If a
@@ -1074,16 +1021,15 @@ export function ExploreWorkspace() {
     return () => window.removeEventListener("keydown", onKey);
   }, [helpUrl]);
 
-  // Components that can't yield the chosen pure property (so their curve won't
-  // appear) — surfaced as a note instead of a silent gap.  Only Psat is
-  // pre-checkable from the catalogue (vleAble = has vapour pressure).
-  // `bjerrum` joins `scaling` in the exemption for the same reason: neither
-  // lens reads the scan property at all, so listing the compounds that have no
-  // vapour pressure would be a warning about a curve nobody asked for.
-  const skipped = (!isVle && plotType !== "scaling" && plotType !== "bjerrum"
-                   && property === "Psat")
-    ? selected.filter((c) => !(metaByName(c, catalogue)?.vleAble ?? false))
-    : [];
+  //  Components that can't yield the chosen pure property (so no curve of
+  //  theirs exists) — surfaced as a note instead of a silent gap.  The SAME
+  //  call decides which keys the run asks for (case/scanProperties.ts), so the
+  //  note and the run cannot disagree about what was asked.
+  //  `bjerrum` joins `scaling` in the exemption for the same reason: neither
+  //  lens reads the scan property at all, so listing the compounds that have no
+  //  vapour pressure would be a warning about a curve nobody asked for.
+  const skipped = (!isVle && plotType !== "scaling" && plotType !== "bjerrum")
+    ? scanKeys.skipped : [];
 
   // Scaling validity surface: the ionic strength at the scan end-points, read
   // off the engine's CSV (column I) — the number Davies' trust hinges on.
@@ -1265,8 +1211,14 @@ export function ExploreWorkspace() {
     : isVle
       ? plotType === "txy"
         ? `Binary VLE — liquid composition swept 0→1 at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)}`
-        : plotType === "flash"
-        ? `Binary flash at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)} — the real y*(x) curve + the tie-line through the feed z; the lever rule gives V/F (pure-TS redraw, no re-solve)`
+        //  WHAT THE PICTURE CLAIMS, and what is deliberately NOT on it.  This
+        //  is the equilibrium SURFACE — the engine's y*(x) against the y = x
+        //  reference, on equal axes so the diagonal is drawn at 45 degrees and
+        //  the vertical gap reads as the enrichment it is.  No feed, no
+        //  operating line, no lever: a construction ON this curve answers a
+        //  DESIGN question and belongs in EduTools (gui-credo §9).
+        : plotType === "yx"
+        ? `Equilibrium curve y*(x) at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)} — the vapour in equilibrium with each liquid composition, against the y = x reference; the vertical gap IS the enrichment, and a crossing is an azeotrope. Equal axis scale, so the diagonal is 45°.`
         : `Activity coefficients γ(x) — composition swept 0→1`
       : isTransportProp(property)
         ? `${TRANSPORT_LABEL[property] ?? property} — transport correlation${tModel ? ` (${tModel})` : ""}, computed from (T, x) only — independent of the equation of state · ${selected.length >= 2 ? `mixture xᵢ = 1/${selected.length}` : "pure"} vs ${axisLabel}`
@@ -1812,26 +1764,22 @@ export function ExploreWorkspace() {
         <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 16, paddingTop: 12, display: "flex", flexDirection: "column" }}>
         <Stack gap="sm" style={{ flex: 1, minHeight: 0 }}>
           {csv ? (
-            <Box style={{ flex: 1, minHeight: 360, position: "relative",
-              ...(ownsHeader ? { display: "flex", flexDirection: "column" } : {}) }}>
-              {/*  ON-PLOT OVERLAY, *UNLESS* THE LENS BRINGS ITS OWN HEADER
-                  (2026-09-12).  The SET pill (load-bearing when the rail is
+            <Box style={{ flex: 1, minHeight: 360, position: "relative" }}>
+              {/*  ON-PLOT OVERLAY.  The SET pill (load-bearing when the rail is
                   collapsed), the PURE/MIXTURE badge and the caption ride
-                  top-left, absolutely positioned "so they never push the
-                  figure down" -- which silently assumes the FIGURE starts at
-                  the top of this box.  `flash` does not: FlashPlot opens with
+                  top-left, absolutely positioned so they never push the figure
+                  down -- which assumes the FIGURE starts at the top of this
+                  box.  It did not, for one lens: the binary flash opened with
                   five badges, the Duhem sentence and two sliders, so the
                   overlay landed ON them and Vitor got the SET pill written
-                  across `x (acetone) = 0.284` and two paragraphs of prose
-                  superimposed.  An absolute overlay is a claim about what is
-                  underneath it.
-                  So a lens that owns its header gets the same three pieces in
-                  NORMAL FLOW above the figure -- nothing is dropped, and the
-                  pill stays reachable with the rail closed. */}
-              <Box style={ownsHeader
-                ? { padding: "0 0 6px 2px", display: "flex", flexDirection: "column",
-                    gap: 4, alignItems: "flex-start", maxWidth: "100%" }
-                : { position: "absolute", top: 4, left: 8, zIndex: 4,
+                  across `x (acetone) = 0.284`.  An absolute overlay is a claim
+                  about what is underneath it, and 2026-09-12 bought the claim
+                  a `ownsHeader` exception.  Since 2026-09-21 the claim is TRUE
+                  again for every lens here: the flash is a method construction
+                  and lives in EduTools, and the exception went with it.  A
+                  lens that wants a header of its own is a lens whose knobs
+                  belong in the toolbar (chrome budget, gui-credo §3). */}
+              <Box style={{ position: "absolute", top: 4, left: 8, zIndex: 4,
                     display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start",
                     pointerEvents: "none", maxWidth: "70%" }}>
                 <Group gap={6} align="center" style={{ pointerEvents: "auto" }}>
@@ -1854,13 +1802,6 @@ export function ExploreWorkspace() {
                   tb={metaByName(selected[0] ?? "", catalogue)?.tb} />
               ) : plotType === "binaryLle" ? (
                 <BinaryLlePlot csv={csv} compA={selected[0] ?? ""} compB={selected[1] ?? ""} />
-              ) : plotType === "flash" ? (
-                // The binary flash: the engine's y_eq(x) read as an equilibrium
-                // tie-line through the feed z; T/P knobs move the split, the
-                // lever rule gives V/F — pure TS, no WASM re-solve.
-                <FlashPlot csv={dropCsvColumn(csv, "liquid_stable")}
-                  compA={vlePair?.[0] ?? selected[0] ?? ""}
-                  compB={vlePair?.[1] ?? selected[1] ?? ""} P={fixedP} />
               ) : plotType === "bjerrum" && spec.bjerrum ? (
                 // Its own renderer, not CsvAutoPlot: the generic 1-D scan can
                 // draw these curves but cannot say on the axis that its x is an
@@ -1888,13 +1829,20 @@ export function ExploreWorkspace() {
                   // Steam: one property family at a time (mixed magnitudes
                   // flatten each other), renamed to the mass-basis SI labels.
                   csv={plotType === "scaling" ? dropCsvColumn(csv, "I")
-                    : plotType === "txy" ? dropCsvColumn(csv, "liquid_stable")
+                    : (plotType === "txy" || plotType === "yx") ? dropCsvColumn(csv, "liquid_stable")
                     : plotType === "steam" ? shapeSteamCsv(csv, steamMode, steamProp) : csv}
                   filename={EXPLORE_OUTPUT}
                   referenceLines={plotType === "scaling" ? SI_REFERENCE : undefined}
                   secondaryColumn={plotType === "scaling" ? "pH" : undefined}
-                  txyPartner={plotType === "txy" ? (vlePair?.[1] ?? selected[1]) : undefined}
-                  txyP={plotType === "txy" ? fixedP : undefined}
+                  //  ONE PICTURE, ONE FRONT DOOR.  `yx` IS the equilibrium
+                  //  curve, so it offers that representation and no switch at
+                  //  all; `txy` keeps the two temperature readings of the same
+                  //  run and no longer carries `x-y`, which used to be the
+                  //  only way to reach the diagram now on the strip.
+                  defaultTxyMode={plotType === "yx" ? "x-y" : "T-x-y"}
+                  txyModes={plotType === "yx" ? ["x-y"] : ["T-x-y", "T-x", "T-y"]}
+                  txyPartner={(plotType === "txy" || plotType === "yx") ? (vlePair?.[1] ?? selected[1]) : undefined}
+                  txyP={(plotType === "txy" || plotType === "yx") ? fixedP : undefined}
                   ternaryLabels={selected.length === 3
                     ? [selected[0]!, selected[1]!, selected[2]!] : undefined} />
               )}
@@ -2082,8 +2030,18 @@ export function ExploreWorkspace() {
           }
           const notes: React.ReactNode[] = [];
           if (pairNote) notes.push(<Text key="pair" size="xs" c="dimmed">{pairNote}</Text>);
+          {/*  SAY WHAT HAPPENED, which is not what this line used to say.
+               "curve not shown" described an engine that answered the rest and
+               drew what it could; since the REFUSED-CALCULATIONS posture, a run
+               whose question is refused fails AS A WHOLE, and asking `Psat` of
+               a nonvolatile refused the whole scan -- so the sentence sat under
+               a red banner and an empty plot, describing behaviour the engine
+               no longer had.  The run does not ask any more (scanProperties.ts)
+               and the note says exactly that. */}
           if (skipped.length > 0) notes.push(
-            <Text key="skip" size="xs" c="dimmed">No vapour pressure (curve not shown): {skipped.join(", ")}</Text>);
+            <Text key="skip" size="xs" c="dimmed">
+              No vapour pressure in the record, so no curve was asked for: {skipped.join(", ")}
+            </Text>);
           if (iEnds) notes.push(
             <Text key="i" size="xs" c="dimmed">
               ionic strength I = {iEnds.first.toPrecision(3)} → {iEnds.last.toPrecision(3)} mol/kg
@@ -2112,8 +2070,19 @@ export function ExploreWorkspace() {
                   </Text>
                 )}
               </Group>
+              {/*  THE FOOTER MUST NEVER PUSH THE PLOT DOWN (gui-credo §3), and
+                   until 2026-09-21 it could: the box has `flexShrink: 0` and
+                   carried whatever the engine said, so the Bjerrum lens -- one
+                   advisory per pH point, forced OPEN because it is a standing
+                   statement -- left the diagram a 10-px sliver under the
+                   toolbar.  The repetition itself is fixed upstream
+                   (collapseChargeAdvisories); this is the STRUCTURAL guard, so
+                   the next verbose lens costs the plot a scrollbar and not its
+                   height.  A share of the column, not a pixel count, so it
+                   scales with the window. */}
               <Collapse in={footerOpen}>
-                <Stack gap={6} mt={6}>
+                <Stack gap={6} mt={6}
+                  style={{ maxHeight: "35vh", overflowY: "auto", overflowX: "hidden" }}>
                   {alerts}
                   {notes}
                   {isVle && <Text size="xs" c="dimmed">NRTL/Wilson pairs auto-resolve by name; absent → ideal (no azeotrope).</Text>}

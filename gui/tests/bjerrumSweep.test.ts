@@ -58,7 +58,8 @@ import { describe, it, expect } from "vitest";
 
 import {
   BJERRUM_FAMILIES, bjerrumChunks, bjerrumEngineNotes, bjerrumOutput, bjerrumPhGrid,
-  familyById, mergeBjerrumCsvs, parseChargeResiduals, parseRefusalPoint,
+  collapseChargeAdvisories, familyById, mergeBjerrumCsvs, parseChargeResiduals,
+  parseRefusalPoint,
 } from "../src/case/bjerrumSweep.js";
 import { synthesizeExploreCase } from "../src/case/exploreSynth.js";
 import { fromJson, serialize } from "../src/dict/index.js";
@@ -400,5 +401,83 @@ describe("the lens's own wiring", () => {
     //  An unknown id must fall back rather than throw — the lens reads its
     //  family from React state that a future rename could outlive.
     expect(familyById("no-such-family")).toBe(BJERRUM_FAMILIES[0]);
+  });
+});
+
+/*  D3 (audit of 2026-09-20, re-measured on the running app with the real
+    engine).  water -> Bjerrum: the diagram the lens exists for was a 10-px
+    sliver under the toolbar, and 43 near-identical advisories filled the
+    whole viewport.  They survive the exact-string dedup because each quotes
+    its own point's percentage; the footer has no maxHeight; and `hasAlert`
+    forces the footer OPEN on this lens, which is right — the statement is a
+    standing one — so nothing but the repetition could be fixed. */
+const CHARGE = (pct: string) =>
+  `[advisory] pH was GIVEN, so electroneutrality was not imposed -- the answer `
+  + `carries a net charge of ${pct}% of its total ionic content. A measured `
+  + `laboratory pH makes this legitimate (the unmeasured counter-ions carry the `
+  + `difference), but no physical beaker holds this composition as written; `
+  + "`pH solve;` closes the balance instead.";
+
+const OTHER = [
+  "[chemistry] closure over the curated network: 4 equilibria activated, 58 unreachable from this feed",
+  "aqueous activity: Davies (A = 0.5100) -- trustworthy to I ~ 0.5 mol/kg, indicative beyond; a_w from phi = 1 (dilute approximation)",
+  "speciation: pH scale = free H+ activity, Davies charge-symmetric single-ion convention -- the GIVEN pH is READ on this scale; a meter reading is NBS",
+];
+
+describe("collapseChargeAdvisories — one claim, one line, and the RANGE", () => {
+  //  The percentages of the shipped carbonate default, verbatim from the
+  //  audit's page text (water_04_bjerrum.txt): they fall to 5.0 % and climb
+  //  again, which is why the line reports min..max and not first -> last.
+  const PCT = ["100.0", "99.9", "86.8", "38.4", "5.0", "12.7", "76.6"];
+  const NOTES = [OTHER[0]!, ...PCT.slice(0, 3).map(CHARGE), OTHER[1]!,
+                 ...PCT.slice(3).map(CHARGE), OTHER[2]!];
+
+  it("collapses every repeat to ONE line", () => {
+    const out = collapseChargeAdvisories(NOTES);
+    expect(NOTES.filter((n) => /net charge of/.test(n))).toHaveLength(7);
+    expect(out.filter((n) => /net charge of/.test(n))).toHaveLength(1);
+    expect(out).toHaveLength(OTHER.length + 1);
+  });
+
+  it("the one line carries the RANGE, not an end-to-end sweep", () => {
+    const line = collapseChargeAdvisories(NOTES).find((n) => /net charge/.test(n))!;
+    expect(line).toContain("5.0–100.0 %");
+    expect(line).toContain("7 points");
+    //  the ends alone would say "100.0 -> 76.6", which is true of the ends and
+    //  false of the sweep: the residual is not monotone in pH.
+    expect(line).not.toContain("76.6");
+  });
+
+  it("keeps the CLAIM, and points at where the per-point number still is", () => {
+    const line = collapseChargeAdvisories(NOTES).find((n) => /net charge/.test(n))!;
+    expect(line).toMatch(/electroneutrality was not imposed/);
+    expect(line).toMatch(/pH solve;/);
+    expect(line).toMatch(/titrant curve on the right-hand axis/);
+  });
+
+  it("touches nothing else, and keeps the engine's order", () => {
+    const out = collapseChargeAdvisories(NOTES);
+    expect(out[0]).toBe(OTHER[0]);
+    expect(out[out.length - 1]).toBe(OTHER[2]);
+    //  the collapsed line keeps the PLACE of the first advisory it replaces
+    expect(out[1]).toMatch(/net charge/);
+    expect(out[2]).toBe(OTHER[1]);
+    expect(collapseChargeAdvisories(OTHER)).toEqual(OTHER);
+  });
+
+  it("a SINGLE point is left verbatim — a range of one is not a range", () => {
+    const one = [OTHER[0]!, CHARGE("42.0")];
+    expect(collapseChargeAdvisories(one)).toEqual(one);
+  });
+
+  it("the family it collapses is the one bjerrumEngineNotes lifts off the log", () => {
+    //  If the engine's wording moved, the notes would still arrive and this
+    //  collapse would silently stop working.  Read them through the REAL
+    //  reader so the two cannot drift.
+    const log = [OTHER[0], CHARGE("100.0"), CHARGE("38.4"), OTHER[1]].join("\n");
+    const notes = bjerrumEngineNotes(log);
+    expect(notes.filter((n) => /net charge of/.test(n))).toHaveLength(2);
+    expect(collapseChargeAdvisories(notes).filter((n) => /net charge of/.test(n)))
+      .toHaveLength(1);
   });
 });

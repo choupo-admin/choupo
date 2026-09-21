@@ -65,6 +65,13 @@ export interface ComponentMeta {
    *  test stand-in, not a chemical.  Read, never inferred: a CAS of 00-00-0
    *  would have been a fair guess, and guessing is what philosophy 3c forbids. */
   isSynthetic: boolean;
+  /** Carries a `standardThermochemistry {}` block — the formation datum the
+   *  Gibbs minimiser prices a species with.  Read STRUCTURALLY (the block is
+   *  present), never from a name list: NaCl is the catalogue's own counter-
+   *  example, and its header says why (the salt's solid enthalpy is
+   *  ion-derived at build time, so storing one would be a second home).
+   *  Gates the equilibrium-map lens — see case/gibbsMapSpec.ts. */
+  hasThermochem: boolean;
   /** Carries a UNIFAC group decomposition in its .dat (`groups { unifac (…) }`)
    *  — the engine reads it directly, so the component is UNIFAC-able (gates the
    *  γ=UNIFAC views without a hardcoded map). */
@@ -165,7 +172,9 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
   const kind: ComponentKind = nonvol ? "nonvolatile" : vleAble ? "volatile" : "fragment";
   // electrolyte: a declared electrolyte{} block, OR dissociation > 1 on a
   // non-solid (excludes solid sugars etc. that may carry a stoichiometry).
-  const isSolid = typeof j.standardThermochemistry === "object" && j.standardThermochemistry !== null
+  const hasThermochem = typeof j.standardThermochemistry === "object"
+    && j.standardThermochemistry !== null;
+  const isSolid = hasThermochem
     && (j.standardThermochemistry as JsonDict).phase === "solid";
   const dissoc = typeof j.dissociation === "number" ? j.dissociation : 1;
   const isElectrolyte = (j.electrolyte !== undefined && j.electrolyte !== null)
@@ -200,7 +209,7 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
     && typeof j.HvapTb === "number" && j.HvapTb > 0
     && typeof j.Vliq === "number" && j.Vliq > 0
     && !nonvol;
-  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isRadical, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, hasUnifac, unifacGroups,
+  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isRadical, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, hasThermochem, hasUnifac, unifacGroups,
     deltaAble, origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb) };
 }
 

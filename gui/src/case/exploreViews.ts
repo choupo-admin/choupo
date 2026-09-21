@@ -9,6 +9,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { metaByName, type ComponentMeta } from "./catalogue.js";
+import { gibbsMapApplies } from "./gibbsMapSpec.js";
 import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 
 // "mccabe" and "psychro" LEFT this union 2026-08-15: they are METHOD
@@ -23,8 +24,22 @@ import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 // plot kind" could only ever check the kinds somebody remembered to type out.
 // Adding a kind here makes it visible to `tests/exploreTheoryAnchors.test.ts`
 // the same day it is written, by nobody remembering.
+// "flash" LEFT this union 2026-09-21, for the SAME reason and by the same
+// criterion: the binary flash is an operating-line construction (its own
+// header called it "the next member of the operating-line graphical-method
+// family"), and on 2026-08-28 it was built AGAIN in EduTools as "Flash
+// (operating line)" over the same case/binaryFlash.ts geometry.  Two homes for
+// one construction, one of them on the wrong plane.  The geometry module stays
+// where both hosts could read it; only the Explorer lens is gone.
+//
+// "yx" JOINED it the same day.  The equilibrium curve y*(x) at fixed P is a
+// PROPERTY SURFACE by the same criterion that keeps T-x-y here, and it was
+// reachable only through a `View:` SegmentedControl the plot component drew
+// for itself — a fourth chrome home, inside the plot, which the lens strip
+// never showed.  It is the most familiar diagram in VLE and Vitor reported it
+// missing three times.
 export const PLOT_KINDS = [
-  "scan", "txy", "flash", "gamma", "binaryLle", "ternary",
+  "scan", "txy", "yx", "gamma", "binaryLle", "ternary",
   "ternaryLle", "phase", "scaling", "steam", "gibbsmap", "bjerrum",
   "solubility",
 ] as const;
@@ -55,7 +70,11 @@ export function viewsFor(sel: string[], cat: ComponentMeta[],
                          localUnifac: ReturnType<typeof buildLocalUnifac>): Set<PlotKind> {
   const out = new Set<PlotKind>(["scan"]);                   // a property scan always applies
   const n = sel.length;
-  if (n >= 2) out.add("gibbsmap");                           // 2+ species: equilibrium map
+  //  The equilibrium map is offered only where it is a question that CAN be
+  //  asked — the engine's own criterion, in case/gibbsMapSpec.ts.  It used to
+  //  be added for every 2+ selection before any class gate, so every binary in
+  //  the catalogue carried a lens whose only possible outcome was a red error.
+  if (n >= 2 && gibbsMapApplies(sel, cat)) out.add("gibbsmap");
   if (n === 0) return out;
   const metas = sel.map((c) => metaByName(c, cat));
   const cls = classifySelection(sel, cat);
@@ -72,7 +91,13 @@ export function viewsFor(sel: string[], cat: ComponentMeta[],
   // (McCabe-Thiele shared this front door until 2026-08-15; it is a method
   // construction and moved to the Methods workspace.  Its feed — the same
   // binary-VLE engine run — is shared via case/methodFeeds.ts.)
-  if (n === 2 && vleMix && allVle) { out.add("txy"); out.add("flash"); out.add("gamma"); }
+  //  The binary-VLE family: the boiling envelope, the equilibrium curve y(x)
+  //  and the activity coefficients — three READINGS of one engine run
+  //  (case/methodFeeds.ts binaryVleSpec), so offering them together costs
+  //  nothing and hiding one behind a control inside the plot cost three
+  //  reports.  (The binary FLASH shared this front door until 2026-09-21; it
+  //  is a method construction and lives in EduTools.)
+  if (n === 2 && vleMix && allVle) { out.add("txy"); out.add("yx"); out.add("gamma"); }
   //  Solvent selection: needs no pair parameters and no VLE, only the three
   //  data delta is derived from -- which is why it reaches parts of the
   //  catalogue every other multi-component study cannot.

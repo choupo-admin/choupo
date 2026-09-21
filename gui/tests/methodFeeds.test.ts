@@ -6,8 +6,10 @@ import { binaryVleSpec, orderBinaryByVolatility } from "../src/case/methodFeeds.
 
 // The binary-VLE feed moved to ONE home (case/methodFeeds.ts) when McCabe-
 // Thiele migrated to the Methods workspace (2026-08-15): Explore's T-x-y /
-// γ(x) / flash lenses and Methods' McCabe tool consume the SAME spec builder.
-// This pins the shared contract so the two hosts cannot drift apart.
+// y-x / γ(x) lenses and EduTools' McCabe and flash tools consume the SAME spec
+// builder.  This pins the shared contract so the two hosts cannot drift apart.
+// (The flash LENS left the Explorer 2026-09-21 and the y-x lens arrived the
+// same day; `kind` still names both readings, because the run is one.)
 const NO_LOCAL = buildLocalUnifac({});
 
 describe("methodFeeds — the ONE binary-VLE feed shared by Explore and Methods", () => {

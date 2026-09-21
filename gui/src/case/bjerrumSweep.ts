@@ -339,3 +339,61 @@ export function bjerrumEngineNotes(log: string): string[] {
   }
   return out;
 }
+
+/*  ONE LINE PER CLAIM, even when the claim carries a per-point NUMBER
+    (2026-09-21).
+
+    `bjerrumEngineNotes` deduplicates by exact string, which works for every
+    sentence that is identical across the sweep.  The charge-residual advisory
+    is not: the engine prints it once per pH point WITH that point's own
+    percentage, so 43 points gave 43 near-identical lines, the honesty footer
+    has no maxHeight, and `hasAlert` forces it OPEN on this lens.  Measured on
+    water -> Bjerrum: the diagram the lens exists for was a 10-px sliver under
+    the toolbar and the rest of the viewport was the same sentence forty-three
+    times.  That is the footer's own promise ("each line once") broken by its
+    own content.
+
+    Nothing is lost by collapsing them.  The per-point number is already on the
+    picture: the titrant curve on the right-hand axis IS the charge residual,
+    point by point, which is the whole reason it is drawn.  What the footer
+    owes the reader is the CLAIM and its RANGE.
+
+    The range is reported as min..max rather than first -> last because the
+    residual is NOT monotone in pH — on the corpus carbonate family it falls
+    from 100 % to 5 % and climbs again, so "100 % -> 77 %" would be a true
+    sentence about the ends and a false one about the sweep. */
+
+/** The advisory family this collapses: one line per pH point, differing only
+ *  in the percentage it quotes. */
+const CHARGE_ADVISORY =
+  /^\[advisory\] pH was GIVEN, so electroneutrality was not imposed .*?net charge of\s*([\d.]+)\s*%/;
+
+/** Collapse the repeated per-point charge advisory into ONE line carrying the
+ *  range, leaving every other engine sentence untouched and in order.  Pure:
+ *  the footer renders what this returns. */
+export function collapseChargeAdvisories(notes: string[]): string[] {
+  const pct: number[] = [];
+  for (const n of notes) {
+    const m = CHARGE_ADVISORY.exec(n);
+    if (m) { const v = Number(m[1]); if (Number.isFinite(v)) pct.push(v); }
+  }
+  //  Fewer than two: there is no repetition to collapse, so the engine's own
+  //  full sentence stands.  (A single point's advisory must not be rewritten
+  //  into a "range" of one.)
+  if (pct.length < 2) return notes;
+  const lo = Math.min(...pct), hi = Math.max(...pct);
+  const one = `[advisory] pH was GIVEN at every one of the ${pct.length} points, so `
+    + `electroneutrality was not imposed: the answers carry a net charge of `
+    + `${lo.toFixed(1)}–${hi.toFixed(1)} % of their total ionic content (the dashed `
+    + `titrant curve on the right-hand axis is that residual, point by point). `
+    + `A measured laboratory pH makes this legitimate — the unmeasured counter-ions `
+    + `carry the difference — but no physical beaker holds these compositions as `
+    + `written; \`pH solve;\` closes the balance instead.`;
+  const out: string[] = [];
+  let placed = false;
+  for (const n of notes) {
+    if (!CHARGE_ADVISORY.test(n)) { out.push(n); continue; }
+    if (!placed) { out.push(one); placed = true; }   // keep its place in the order
+  }
+  return out;
+}

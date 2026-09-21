@@ -135,6 +135,11 @@ import { theoryAnchor } from "../src/case/exploreTheory.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const THEORY_TEX = resolve(here, "../../docs/theoryGuide.tex");
 const EXPLORE_TSX = resolve(here, "../src/ui/ExploreWorkspace.tsx");
+//  PURE_PROPS left the workspace for case/scanProperties.ts on 2026-09-21, so
+//  the list this gate walks lives in TWO files now.  Both are read, and a name
+//  found in NEITHER refuses -- which is what happened on the day of the move:
+//  the arm's own "this gate has gone blind" message fired, exactly as written.
+const SCAN_PROPS_TS = resolve(here, "../src/case/scanProperties.ts");
 
 const tex: string | null =
   existsSync(THEORY_TEX) ? readFileSync(THEORY_TEX, "utf8") : null;
@@ -162,7 +167,12 @@ const DECLARED: Record<PlotKind, string | typeof PROPERTY_DISPATCH> = {
   // A property scan is ABOUT its property, so the property picks the section.
   scan: PROPERTY_DISPATCH,
   txy: "ch:flash",            // binary boiling envelope — bubble/dew
-  flash: "ch:flash",          // tie-line through the feed + the lever rule
+  //  The equilibrium curve y*(x): the same chapter as the boiling envelope,
+  //  because it is the same equilibrium read against the other axis pair.
+  //  (`flash` answered here too until 2026-09-21; the binary flash is a method
+  //  construction and its anchor is the EduTools registry's now, which
+  //  methodTheoryAnchors.test.ts gates.)
+  yx: "ch:flash",             // equilibrium curve y(x) + the y = x reference
   gamma: "ch:activity",       // γ(x) from the activity model
   //  Cohesive energy density: derived from the latent heat and the molar
   //  volume, and the section says in the same breath where regular-solution
@@ -231,11 +241,13 @@ describe("Explore theory anchors — the gate can actually run", () => {
   it("probes every property the workspace offers", () => {
     //  ExploreWorkspace keeps its property lists private; read them off the
     //  source so a new property cannot slip past the scan arm below.
-    const src = readFileSync(EXPLORE_TSX, "utf8");
+    const src = readFileSync(EXPLORE_TSX, "utf8")
+      + "\n" + readFileSync(SCAN_PROPS_TS, "utf8");
     const offered: string[] = [];
     for (const name of ["PURE_PROPS", "MIXTURE_PROPS", "TRANSPORT_PROPS"]) {
-      const m = src.match(new RegExp(`const ${name} = \\[([^\\]]*)\\]`));
-      expect(m, `${name} not found in ExploreWorkspace.tsx — this gate has gone blind`)
+      const m = src.match(new RegExp(`(?:export )?const ${name} = \\[([^\\]]*)\\]`));
+      expect(m, `${name} is in NEITHER ExploreWorkspace.tsx NOR scanProperties.ts — `
+        + "this gate has gone blind: find where the list moved and read it there")
         .toBeTruthy();
       for (const q of m![1]!.matchAll(/"([^"]+)"/g)) offered.push(q[1]!);
     }

@@ -1,4 +1,4 @@
-// The T-x-y / γ(x) / flash family runs the binary VOLATILITY-ORDERED, so which
+// The T-x-y / y-x / γ(x) family runs the binary VOLATILITY-ORDERED, so which
 // component the axes carry is a fact about the ENGINE RUN, not about the order
 // the reader clicked the two compounds.  This pins the rule on both sides of
 // the seam, because it had drifted on one of them:
@@ -15,6 +15,8 @@
 // running choupoProps on the synthesized case: `x[ethanol],T_bubble,
 // y_eq_ethanol,liquid_stable`), which is why the axis component can be READ
 // rather than inferred.
+
+import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
@@ -68,6 +70,59 @@ describe("the binary-VLE lenses label the pair the SPEC ran, not the pick order"
       (compA === curve!.comp ? compB : compA);
     expect(partnerOf("water", "ethanol")).toBe("water");
     expect(partnerOf("ethanol", "water")).toBe("water");
+  });
+
+  //  D4 (2026-09-21).  The equilibrium curve y(x) became a LENS.  It is the
+  //  SAME engine run as the T-x-y read against the other axis pair, so the
+  //  rule above must hold for it BYTE FOR BYTE — a second run shape here would
+  //  be a second home for the same question.
+  it("the y-x lens runs the IDENTICAL spec as the T-x-y", () => {
+    const args = {
+      catalogue: CATALOGUE, activity: "NRTL", eos: "idealGas",
+      P: 101325, n: 11, localUnifac: NO_LOCAL,
+    } as const;
+    for (const pair of [["water", "ethanol"], ["benzene", "toluene"]] as [string, string][]) {
+      const txy = binaryVleSpec({ ...args, pair, kind: "txy" });
+      const yx = binaryVleSpec({ ...args, pair, kind: "yx" });
+      expect(yx).toEqual(txy);
+      //  and it carries the liquid-stability probe, so the y-x lens drops the
+      //  same column the T-x-y does rather than plotting it as a curve.
+      expect(yx.properties).toContain("liquid_stable");
+    }
+  });
+
+  //  EQUAL AXIS SCALE is what makes an x-y equilibrium diagram readable: the
+  //  y = x reference must be drawn at 45 degrees, because the VERTICAL GAP to
+  //  the curve is the enrichment.  Measured off the pre-fix screenshot's own
+  //  axis ticks (benzene/toluene, 1440x900): the plot box was 1088 x 491 px,
+  //  aspect 2.22, so the diagonal came out at 24 degrees.
+  //  `constrain: "domain"` is what makes `scaleanchor` safe — without it
+  //  Plotly widens the anchored axis's RANGE to satisfy the ratio, which is
+  //  how a mole-fraction axis came to show -1.5 (commit 377618c16).
+  it("the x-y diagram declares equal scale AND constrains the domain", () => {
+    const src = readFileSync(
+      new URL("../src/ui/plotting/CsvAutoPlot.tsx", import.meta.url), "utf8");
+    //  BOUNDED to buildPlot's x-y branch: the file carries other plots with
+    //  their own layouts (the multi-model T-x-y among them), and an unbounded
+    //  slice would count theirs and pass on somebody else's declaration.
+    const a = src.indexOf('// mode === "x-y"');
+    const b = src.indexOf("/** Build the red azeotrope marker", a);
+    expect(a, "buildPlot's x-y branch moved — this gate has gone blind").toBeGreaterThan(0);
+    expect(b).toBeGreaterThan(a);
+    const xy = src.slice(a, b);
+    expect(xy.length).toBeGreaterThan(400);
+    //  COMMENTS STRIPPED before counting.  Prose is not a declaration -- the
+    //  lesson of 2026-09-06, and it fired here on the first run: the branch's
+    //  own comment explains why `constrain: "domain"` is load-bearing, and the
+    //  count read three declarations where the code makes two.
+    const layout = xy.slice(xy.indexOf("layout: {"))
+      .split("\n").filter((l) => !l.trim().startsWith("//")).join("\n");
+    expect(layout).toMatch(/scaleanchor:\s*"x"/);
+    expect(layout).toMatch(/scaleratio:\s*1/);
+    //  BOTH axes: the ratio is satisfied by giving on the drawing area, and
+    //  an unconstrained partner axis is where the range runs away.
+    expect(layout.match(/constrain:\s*"domain"/g) ?? []).toHaveLength(2);
+    expect(layout).not.toMatch(/constrain:\s*"range"/);
   });
 
   it("a pair already in volatility order is untouched (no case that works today moves)", () => {

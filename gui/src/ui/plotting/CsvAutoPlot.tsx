@@ -962,11 +962,19 @@ export type TxyMode = "T-x-y" | "x-y" | "T-x" | "T-y";
  * Azeotrope auto-annotation in every mode where it is geometrically
  * meaningful (T-x-y and x-y).
  */
-function TxyPlot({ parsed, info, overlays, defaultMode, partner, P }: {
+function TxyPlot({ parsed, info, overlays, defaultMode, modes, partner, P }: {
   parsed: ParsedCsv;
   info: { iX: number; iTbub: number; iYeq: number; comp: string };
   overlays: ExperimentalOverlay[];
   defaultMode?: TxyMode;
+  /** The representations THIS host offers.  Default: all four.
+   *
+   *  The Explorer passes a single mode per lens, because the equilibrium
+   *  curve y(x) became a LENS of its own on 2026-09-21 and a picture must not
+   *  have two front doors: it was reachable before only through this switch,
+   *  drawn inside the plot box, which the lens strip never showed and the SET
+   *  pill was overlaid across.  One mode => no switch is drawn at all. */
+  modes?: TxyMode[];
   /** Second component of the pair (for the title); omitted -> comp alone. */
   partner?: string;
   /** Fixed pressure of the sweep [Pa] (for the title); omitted -> "constant P". */
@@ -974,7 +982,10 @@ function TxyPlot({ parsed, info, overlays, defaultMode, partner, P }: {
 }) {
   const { iX, iTbub, iYeq, comp } = info;
   const prefs = useStore((s) => s.displayPrefs);
-  const [mode, setMode] = useState<TxyMode>(defaultMode ?? "T-x-y");
+  const offered: TxyMode[] = modes && modes.length > 0
+    ? modes : ["T-x-y", "x-y", "T-x", "T-y"];
+  const [mode, setMode] = useState<TxyMode>(
+    defaultMode && offered.includes(defaultMode) ? defaultMode : offered[0]!);
 
   // Sort by x so the curves go left-to-right and any envelope fill works.
   const rows = useMemo(
@@ -1019,21 +1030,18 @@ function TxyPlot({ parsed, info, overlays, defaultMode, partner, P }: {
   return (
     <Box style={{ width: "100%", height: "100%",
                   display: "flex", flexDirection: "column" }}>
-      <Group justify="space-between" px="md" py={6}
-             style={{ flex: "0 0 auto" }}>
-        <Text size="xs" c="dimmed">View:</Text>
-        <SegmentedControl
-          size="xs"
-          value={mode}
-          onChange={(v) => setMode(v as TxyMode)}
-          data={[
-            { value: "T-x-y", label: "T-x-y" },
-            { value: "x-y",   label: "x-y"   },
-            { value: "T-x",   label: "T-x"   },
-            { value: "T-y",   label: "T-y"   },
-          ]}
-        />
-      </Group>
+      {offered.length > 1 && (
+        <Group justify="space-between" px="md" py={6}
+               style={{ flex: "0 0 auto" }}>
+          <Text size="xs" c="dimmed">View:</Text>
+          <SegmentedControl
+            size="xs"
+            value={mode}
+            onChange={(v) => setMode(v as TxyMode)}
+            data={offered.map((m) => ({ value: m, label: m }))}
+          />
+        </Group>
+      )}
       <Box style={{ flex: 1, minHeight: 0 }}>
         <Plot
           data={data}
@@ -1330,7 +1338,21 @@ function buildPlot(mode: TxyMode,
         text: `x-y equilibrium diagram   ·   ${pair}   ${pLabel}`,
         font: {...darkLayout.font, size: 14 },
       },
-      xaxis: compAxis(`liquid mole fraction   x_${comp}`),
+      //  EQUAL AXIS SCALE, and it is load-bearing rather than tidiness.  On an
+      //  x-y equilibrium diagram the y = x reference is read as a 45-degree
+      //  line: the vertical gap to the curve at a given x IS the enrichment,
+      //  and an unequal scale makes that gap look like something else.
+      //  Measured off the pre-fix screenshot's own axis ticks (benzene/toluene,
+      //  1440x900): the plot box was 1088 x 491 px, aspect 2.22, so the y = x
+      //  reference was drawn at 24 degrees.
+      //
+      //  `constrain: "domain"` is what makes `scaleanchor` safe here.  Plotly
+      //  satisfies the ratio by WIDENING THE ANCHORED AXIS'S RANGE by default,
+      //  not by shrinking the drawing area -- which is how a MOLE FRACTION
+      //  axis came to show -1.5 on the flash lens (commit 377618c16).  "domain"
+      //  moves the give to the plot area instead, so [0, 1] stays [0, 1].
+      xaxis: { ...compAxis(`liquid mole fraction   x_${comp}`),
+        constrain: "domain" as const },
       // darkLayout.YAXIS: this read `darkLayout.xaxis` — the two objects happen
       // to be identical today, so nothing on screen was wrong, but an axis
       // styled from the other axis's declaration goes silently wrong the day
@@ -1340,7 +1362,9 @@ function buildPlot(mode: TxyMode,
         title: { text: `vapour mole fraction   y_${comp}` },
         range: [0, 1],
         autorange: false,
-        constrain: "range" as const,
+        scaleanchor: "x" as const,
+        scaleratio: 1,
+        constrain: "domain" as const,
       },
     },
   };
@@ -1462,11 +1486,13 @@ function FitHistoryPlot({ parsed }: { parsed: ParsedCsv }) {
 //   Public component
 // ---------------------------------------------------------------------------
 
-export function CsvAutoPlot({ csv, filename, overlays, defaultTxyMode, extras, ternaryLabels, txyPartner, txyP, referenceLines, secondaryColumn }: {
+export function CsvAutoPlot({ csv, filename, overlays, defaultTxyMode, txyModes, extras, ternaryLabels, txyPartner, txyP, referenceLines, secondaryColumn }: {
   csv: string;
   filename?: string;
   overlays?: ExperimentalOverlay[];
   defaultTxyMode?: TxyMode;
+  /** Which binary-VLE representations this host offers (see TxyPlot). */
+  txyModes?: TxyMode[];
   extras?: { [k: string]: number };
   ternaryLabels?: [string, string, string];
   /** Binary-VLE context the CSV cannot carry: the partner component and the
@@ -1538,7 +1564,7 @@ export function CsvAutoPlot({ csv, filename, overlays, defaultTxyMode, extras, t
     }
     if (kind.tag === "txy") {
       return <TxyPlot parsed={parsed} info={kind} overlays={overlays ?? []} defaultMode={defaultTxyMode}
-        partner={txyPartner} P={txyP} />;
+        modes={txyModes} partner={txyPartner} P={txyP} />;
     }
   }
   if (kind === "grid") return <ScanHeatmap parsed={parsed} />;
