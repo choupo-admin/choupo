@@ -100,6 +100,10 @@ const CTRL_PID: WorkspaceContext = {
   application: "choupoCtrl", hasPid: true,
 };
 const CTRL_NO_PID: WorkspaceContext = { ...CTRL_PID, hasPid: false };
+const SEMI: WorkspaceContext = {
+  hasCase: true, showIntro: false, isPropsCase: false,
+  application: "choupoSemiContinuous", hasPid: false,
+};
 const INTRO: WorkspaceContext = { ...SOLVE, showIntro: true };
 
 /** The modes, by the name a reader of the decision would use.
@@ -120,7 +124,7 @@ describe("a case tab's menu carries views and nothing else", () => {
     for (const m of MODE_NAMES) {
       expect(VIEW_LABELS.has(m)).toBe(false);
       expect(WORKSPACES.map((w) => w.label)).not.toContain(m);
-      for (const ctx of [BLANK, SOLVE, PROPS, CTRL_PID, CTRL_NO_PID, INTRO]) {
+      for (const ctx of [BLANK, SOLVE, PROPS, CTRL_PID, CTRL_NO_PID, SEMI, INTRO]) {
         expect(allowedWorkspaceLabels(ctx).has(m)).toBe(false);
         expect(visibleWorkspacesFor(ctx).map((w) => w.label)).not.toContain(m);
       }
@@ -139,6 +143,20 @@ describe("a case tab's menu carries views and nothing else", () => {
   it("VIEW_LABELS is derived from the lineup, never a second list", () => {
     expect([...VIEW_LABELS].sort()).toEqual(WORKSPACES.map((w) => w.label).sort());
     expect(VIEW_LABELS.size).toBe(WORKSPACES.length);   // no duplicate labels
+  });
+});
+
+describe("the lineup is keyed on the application WORD (2026-09-20)", () => {
+  it("a choupoSemiContinuous case gets the TIME set, never the steady set, never Control", () => {
+    // The binary REFUSES a controllers block, so no PID can exist and the
+    // Control Room must never be offered; and a transient case must not fall
+    // through to Streams / Variables / Pinch, each a lit-but-dead button.
+    const semi = allowedWorkspaceLabels(SEMI);
+    expect(semi).toEqual(allowedWorkspaceLabels(CTRL_NO_PID));
+    for (const dead of ["Streams", "Variables", "Pinch", "Reports", "Control"])
+      expect(semi.has(dead)).toBe(false);
+    for (const live of ["Flowsheet", "Plots", "Log", "Case"])
+      expect(semi.has(live)).toBe(true);
   });
 });
 

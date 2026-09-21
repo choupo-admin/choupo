@@ -238,8 +238,8 @@ case/
   steady-state process simulation (choupoSolve, plus the two choupoProps
   cases that were already there); `unsteady/` is TRANSIENT process
   simulation -- unit operations connected by streams whose internal states
-  are non-stationary, with NO control loop (choupoCtrl today, choupoBatch
-  later); `ctrl/` is process control -- the design of control loops -- one
+  are non-stationary, with NO control loop (`choupoSemiContinuous` since
+  2026-09-20 -- the fifth problem class, §10; choupoBatch later); `ctrl/` is process control -- the design of control loops -- one
   course at IST and its own folder (choupoCtrl); `batch/` is batch
   processes -- recipes, vessels, campaigns (choupoBatch); `props/` is
   thermophysical properties and the props bench (choupoProps); `plant/` is
@@ -302,8 +302,12 @@ src/
 │   ├── flowsheet/                Flowsheet (the orchestrator)
 │   ├── membrane/                 SpiralWoundModule  (NF/RO)
 │   ├── batch/                    BatchUnitOperation + BatchReactor + BatchStill  (choupoBatch)
-│   └── dynamic/                  DynamicUnitOperation + DynamicCSTR  (choupoCtrl)
+│   └── dynamic/                  DynamicUnitOperation + DynamicCSTR  (choupoCtrl + choupoSemiContinuous)
 ├── control/             Controller abstract + PIDController + ScheduleController  (choupoCtrl)
+├── dynamicDriver/       THE ONE HOME of the time-integrated flowsheet driver (0/ seeding,
+│                         units, router, both time loops, ledger, writers, result, outerDict
+│                         functor) -- extracted VERBATIM from choupoCtrl's main 2026-09-20;
+│                         choupoCtrl runs it + the control layer, choupoSemiContinuous runs it alone
 ├── outerDriver/         OuterDriver abstract + SweepDriver + GridSweepDriver
 │                         + ParetoSweepDriver + OptimizationDriver (Nelder-Mead)
 │                         + DesignSpec   (fitBinaryPair is RETIRED: factory throws,
@@ -321,7 +325,8 @@ src/
 └── applications/
     ├── choupoSolve/main.cpp     steady-state binary
     ├── choupoBatch/main.cpp     batch / time-dependent binary
-    ├── choupoCtrl/main.cpp      dynamic continuous + control binary
+    ├── choupoCtrl/main.cpp      dynamic continuous + control binary (driver + control layer)
+    ├── choupoSemiContinuous/main.cpp  transient flowsheet, NO control loop (driver alone; 2026-09-20)
     └── choupoProps/main.cpp     property evaluation + the PROPS BENCH
 ```
 
@@ -855,10 +860,12 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   binary-interaction pairs (NRTL/UNIQUAC — the bulk moved to `data/local` in
   the legal scrub) plus Pitzer and eNRTL pairs, unit-operation models,
   materials, membranes and utilities.
-* **Four binaries by problem class:** `choupoSolve` (steady, F(x)=0,
+* **Five binaries by problem class:** `choupoSolve` (steady, F(x)=0,
   Newton-on-tears recycle), `choupoBatch` (batch dY/dt=f + recipe layer),
-  `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
-  PROPS BENCH).
+  `choupoSemiContinuous` (the time-integrated flowsheet WITHOUT a control
+  loop -- start-up, disturbance, fed-batch, feed & bleed; ruled 2026-09-20,
+  §10), `choupoCtrl` (the same integration + the control layer),
+  `choupoProps` (property eval + the PROPS BENCH).
 
 **A SUITE'S PASS COVERS WHAT ITS GATES ASSERT, AND NOTHING ELSE (2026-09-08).**
 Vítor asked how it was possible to keep reporting a green suite while energy
@@ -2336,7 +2343,9 @@ machinery that enforces it got its own arity treatment.**
   estimates now ride `AdvisoryLog` into the result JSON AND are replayed once
   at the end of every run, grouped (`core/AdvisorySummary.H`).  A run with
   nothing to say says so — silence must mean "nothing raised", never "the
-  block did not run".  All four binaries emit it.
+  block did not run".  All five binaries emit it (the two dynamic ones
+  through `src/dynamicDriver/`, which is why `check_caveat_surface` arm (d)
+  scans each main AND the driver it includes).
 * **`Trange unknown;` (AP3).**  Three states, not two: a declared window, a
   DECLARED absence, or no key at all.  An impossible interval (`hi <= lo`)
   now REFUSES at construction — extrapolation needs a real domain to
@@ -3031,6 +3040,36 @@ split below).
   numerical-strategy variants (no `flashFoam`/`cstrFoam`); all strategies
   (Newton, Wegstein, RK4, Nelder-Mead, …) coexist inside each binary, selected
   via dicts.
+  **THE FIFTH CLASS IS `choupoSemiContinuous` (ruled 2026-09-20, Vítor —
+  *"Como é que um aluno sabe que choupoCtrl simula um reactor feed and
+  bleed?!  Cria a classe semiContinuous!"* — do NOT relitigate, and do NOT
+  rename it to `unsteady`/`dynamic`/`transient`: the word is his).**  The
+  time-integrated flowsheet of unit operations connected by streams whose
+  internal states are non-stationary, WITHOUT a control loop: continuous
+  transients (start-up, disturbance), fed-batch, feed & bleed.  `choupoCtrl`
+  stays as a distinct class BY RULING — the same integration with the CONTROL
+  layer, because process control is a distinct discipline (one course, its
+  own `tutorials/ctrl/`).  MEASURED before it was built: a feed & bleed
+  reactor already ran (`dynamicCSTR`, continuous inlet and outlet, chained by
+  the router, controllers OPTIONAL) and the student could not find it because
+  the binary was called Ctrl — so the slice is a NAME and an EXTRACTION, not
+  new physics.  ONE home: `src/dynamicDriver/` (band 1 of the layering,
+  beside `outerDriver`); `choupoCtrl/main.cpp` is the driver + the Controller
+  and Signal factories, `choupoSemiContinuous/main.cpp` is the driver alone,
+  and the driver holds no `if (binary == …)` — the two differ only through
+  `DynamicDriverConfig` (name, banner, usage, instant tag, the class-boundary
+  policy).  THE BOUNDARY IS REFUSED ONE WAY AND ANNOUNCED THE OTHER:
+  `choupoSemiContinuous` REFUSES a `controllers` block by name (a control
+  loop is choupoCtrl's class); `choupoCtrl` with no controllers ANNOUNCES
+  `[class] no controllers declared …` and runs — `ctrl12_williams_otto` is
+  the open-loop plant of a reference battery and stays in `ctrl/`.  The
+  asymmetry is deliberate: a loop under the loopless binary is a category
+  error, a loopless case under the loop binary is merely the wrong door.
+  NOT done, named: the quasi-steady seam (#185 — a feed & bleed around a
+  STEADY unit such as an ED stack or a membrane), and the OLD `0/` shape
+  (#186 — the new binary INHERITS `0/internalState` + `0/streamFaces`).
+  Record:
+  [`docs/design/a-class-a-student-can-name.md`](docs/design/a-class-a-student-can-name.md).
 * **No silent crutch (numerical honesty) — decided 2026-05-30.**  Every solver
   aid (initial guess, tear estimate, bound) is first-class, explicit in the
   dict, and the student's to own; the solver **announces** what it does to
@@ -3121,7 +3160,7 @@ domains like membranes).
 * **Backwards-compat is mandatory** — existing tutorials must keep passing.
   Run the full regression after every meaningful change:
   ```bash
-  bin/runTests                 # every tutorial, all four binaries + buildCode
+  bin/runTests                 # every tutorial, all five binaries + buildCode
   bin/runTests tutorials/steady/flash/flash01_benzene_toluene   # one case
   bin/runTests --record <case> # refresh a case's golden-master `expected`
   ```
@@ -3216,7 +3255,7 @@ tutorials); `npm run typecheck`; `npm run build`.
 
 The WASM solver is the same C++ as the native binary, compiled with Emscripten
 into `gui/public/wasm/`.  **Default rebuild is `make wasm-gui`** (verified
-2026-08-01: the target now builds all four binaries into
+2026-08-01: the target now builds all the binaries -- five since 2026-09-20 -- into
 `gui/public/wasm/`; never run two `make wasm` concurrently — they clobber
 `gui/public/wasm/`).
 

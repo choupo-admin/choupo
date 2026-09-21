@@ -192,7 +192,7 @@ function mirror(url, dir) {
     if (!/^(https?:|data:|#|mailto:)/.test(h)) queue.push(h);
   }
   queue.push("workers/solverWorker.js", "wasm/version.json", "docs/guides.json",
-    ...["choupoSolve", "choupoBatch", "choupoCtrl", "choupoProps"].flatMap((b) => [`wasm/${b}.js`, `wasm/${b}.wasm`]));
+    ...["choupoSolve", "choupoBatch", "choupoCtrl", "choupoSemiContinuous", "choupoProps"].flatMap((b) => [`wasm/${b}.js`, `wasm/${b}.wasm`]));
 
   //  The LAZY CHUNKS: every "assets/*.js|css" literal in every JS we fetch,
   //  scanned transitively (the first mirror omitted these and invented a 404

@@ -294,7 +294,7 @@ CATTITLE = {
     "props":  "The property bench (choupoProps)",
     "batch":  "Batch and time-dependent (choupoBatch)",
     "ctrl":   "Dynamics and control (choupoCtrl)",
-    "unsteady": "Transient process simulation (choupoCtrl, no control loop)",
+    "unsteady": "Transient process simulation (choupoSemiContinuous, no control loop)",
     "plant":  "Multi-sector plant showcases",
 }
 

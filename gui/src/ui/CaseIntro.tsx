@@ -60,6 +60,7 @@ const APP_LABEL: { [k: string]: string } = {
   choupoSolve: "Steady-state",
   choupoBatch: "Batch",
   choupoCtrl: "Dynamic / control",
+  choupoSemiContinuous: "Transient (no control loop)",
   choupoProps: "Properties",
 };
 

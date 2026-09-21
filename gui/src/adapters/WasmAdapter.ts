@@ -100,6 +100,7 @@ export type WasmBinary =
   | "choupoSolve"
   | "choupoBatch"
   | "choupoCtrl"
+  | "choupoSemiContinuous"
   | "choupoProps";
 
 /**
@@ -107,6 +108,7 @@ export type WasmBinary =
  *
  * choupoBatch -> batch + recipes (transient)
  * choupoCtrl  -> dynamic + control (transient)
+ * choupoSemiContinuous -> transient flowsheet, no control loop (2026-09-20)
  * choupoProps -> property scans / fits
  * anything else (incl. undefined / "choupoSolve") -> choupoSolve, so a case
  * that omits `application` still runs the steady solver -- backwards compat.
@@ -114,7 +116,8 @@ export type WasmBinary =
  * Exported pure so the dispatch is unit-testable without spawning a worker.
  */
 export function selectBinary(app: unknown): WasmBinary {
-  if (app === "choupoBatch" || app === "choupoCtrl" || app === "choupoProps") {
+  if (app === "choupoBatch" || app === "choupoCtrl"
+      || app === "choupoSemiContinuous" || app === "choupoProps") {
     return app;
   }
   return "choupoSolve";

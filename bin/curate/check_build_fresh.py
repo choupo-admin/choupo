@@ -34,7 +34,7 @@ have given and did not, and the cost was one wrong attribution: the first
 reading blamed the commit.
 
 WHAT THIS CHECKS.  The newest modification time among the sources that
-`libchoupo.so` is built from, against the library and the four binaries.  If
+`libchoupo.so` is built from, against the library and the five binaries.  If
 any source is newer, the build cannot be a build OF this tree, and the gate
 refuses naming the offending file.
 
@@ -89,7 +89,7 @@ SOURCE_FILES = []
 
 #  What is built.  The library first: it is what the gates' probes link.
 ARTEFACTS = ["libchoupo.so", "choupoSolve", "choupoBatch", "choupoCtrl",
-             "choupoProps"]
+             "choupoSemiContinuous", "choupoProps"]
 
 
 def platform_dir():

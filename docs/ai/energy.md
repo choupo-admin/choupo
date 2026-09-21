@@ -284,7 +284,7 @@ Three levels, engine-owned: total MASS, per-ELEMENT atoms (the true
 invariant of a reacting system), and energy.  Steady: the `elementBalance`
 report (plant boundary, kmol-atom/h; `spreadsheet` carries the sheet).
 Batch: `kpis.campaign` (mass/elements/energy with availability).  Dynamic
-(choupoCtrl): the accepted-step ledger writes `balanceTrajectory.csv` +
+(choupoCtrl / choupoSemiContinuous, one driver): the accepted-step ledger writes `balanceTrajectory.csv` +
 `.meta`; the dynamicCSTR's physical-energy claim honestly refuses (its ODE
 is not the derivative of a canonical U/H).  All three ride ONE formula
 parser (`elementalComposition` props op is its glass-box surface); an

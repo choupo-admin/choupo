@@ -77,7 +77,7 @@ SKIPPED_LIST = ROOT / "bin/curate/migrate_thermoPhysProp.skipped.txt"
 MIGRATION_NOTES = {}      # caseDir -> note printed with the converted report
 
 V2_DISPATCHING_APPS = {"choupoSolve", "choupoProps",
-                       "choupoBatch", "choupoCtrl"}
+                       "choupoBatch", "choupoCtrl", "choupoSemiContinuous"}
 
 GAMMA_MODELS = {"ideal", "NRTL", "UNIQUAC", "Wilson", "cosmoSAC"}
 

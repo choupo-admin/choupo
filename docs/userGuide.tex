@@ -52,7 +52,7 @@ section opens with a \emph{What you'll learn} note; boxes mark
 crystal-clear takeaways, common pitfalls, and small experiments you
 should run as you read.
 
-Four binaries cover four problem classes, and one dispatcher
+Five binaries cover five problem classes, and one dispatcher
 (\code{runCase}) picks the right one for each case:
 
 \begin{center}\small
@@ -62,6 +62,7 @@ Four binaries cover four problem classes, and one dispatcher
 \midrule
 \code{choupoSolve} & steady-state flowsheets & $F(x)=0$ root-finding; Newton-on-tears recycles \\
 \code{choupoBatch} & batch vessels + recipes & $\mathrm{d}Y/\mathrm{d}t = f(Y)$, RK4 or stiff Rosenbrock \\
+\code{choupoSemiContinuous} & transient flowsheets, no control loop & $\mathrm{d}Y/\mathrm{d}t = f(Y,t)$ with continuous inlets and outlets (start-up, disturbance, fed-batch, feed \& bleed) \\
 \code{choupoCtrl}  & dynamic continuous + control & $\mathrm{d}Y/\mathrm{d}t = f(Y,u,t)$ with controllers writing $u$ \\
 \code{choupoProps} & property evaluation & points, scans, consistency tests, LM fits \\
 \bottomrule
@@ -93,7 +94,7 @@ less tutorials/steady/flash/flash01_benzene_toluene/log.choupoSolve
 Tutorials live under \file{tutorials/<category>/<family>/<name>/}, where
 the category is a DISCIPLINE a student studies, never a binary: \file{steady/}
 (steady-state process simulation, \code{choupoSolve}), \file{unsteady/}
-(transient process simulation with no control loop, \code{choupoCtrl}),
+(transient process simulation with no control loop, \code{choupoSemiContinuous}),
 \file{ctrl/} (process control, \code{choupoCtrl}), \file{batch/} (batch
 processes, \code{choupoBatch}), \file{props/} (thermophysical properties,
 \code{choupoProps}) or \file{plant/} (integrated plant design, multi-sector
@@ -403,7 +404,7 @@ overridden.
 The essential keys:
 
 \begin{lstlisting}[language=dict]
-application   choupoSolve;      // | choupoBatch | choupoCtrl | choupoProps
+application   choupoSolve;      // | choupoBatch | choupoSemiContinuous | choupoCtrl | choupoProps
 description   "Isothermal flash benzene/toluene at 370 K, 1 bar (Raoult)";
 verbosity     3;                // 0 silent / 1 +warnings / 2 +summary
                                 // 3 info (Newton iterations visible) / 4 debug
@@ -418,7 +419,7 @@ reports
 For pedagogical use you want \code{verbosity 3} --- that prints every
 Newton iteration, every Wegstein step, every $K$-value refresh.  Set it
 lower only when an outer driver sweeps the simulator hundreds of times.
-Time-dependent cases (\code{choupoBatch} / \code{choupoCtrl}) add time
+Time-dependent cases (\code{choupoBatch} / \code{choupoSemiContinuous} / \code{choupoCtrl}) add time
 controls --- see \S\ref{sec:batch}.
 
 \subsection{\file{flowsheetDict} --- topology only}\label{sec:flowsheet}
@@ -3472,7 +3473,14 @@ sample time and the integrator step are two different things.
 
 \code{choupoCtrl} integrates open vessels with continuous feeds ---
 $\mathrm{d}Y/\mathrm{d}t = f(Y, u, t)$ --- with a \code{controllers}
-layer writing the manipulated variables $u$ at each sample.  In
+layer writing the manipulated variables $u$ at each sample.  The SAME
+integration with NO control loop is its own problem class,
+\code{choupoSemiContinuous} (ruled 2026-09-20): a start-up, a disturbance
+watched open-loop, fed-batch, feed \& bleed.  Both binaries run one driver
+(\file{src/dynamicDriver/}); \code{choupoSemiContinuous} refuses a
+\code{controllers} block by name, and \code{choupoCtrl} announces when a case
+declares none.  Everything in this section about the time loop, the
+ledger and the instants applies to both.  In
 \file{controlDict}, \code{deltaT} is the controller \emph{sample time};
 with \code{timeStepping adaptive;} the plant is sub-stepped between
 samples by the stiff integrator while the manipulated variable is held
@@ -3554,9 +3562,9 @@ as first-class columns.
 The trajectory CSV carries every CV, MV and setpoint --- plot it and
 read the tuning off the page.
 
-% Source: src/applications/choupoCtrl/main.cpp:575-618 (declaration, the two
-% refusals, the armed line), :700-722 (accepted-step trapezoid),
-% :1470-1524 (KPIs, reports/rtd/E.csv, the printed moments and spread).
+% Source: src/dynamicDriver/DynamicDriver.cpp:610-653 (declaration, the two
+% refusals, the armed line), :735-757 (accepted-step trapezoid),
+% :1505-1559 (KPIs, reports/rtd/E.csv, the printed moments and spread).
 % Grammar as written by tutorials/ctrl/ctrl18_rtd_pulse_cstr/system/controlDict
 % and its system/flowsheetDict (the pulse drive on the inlet face).
 \subsection{Residence-time distribution by pulse tracer: \code{rtd}}\label{sec:ctrl-rtd}
@@ -3587,9 +3595,9 @@ dynamic unit, a \code{tracer} that is not a declared component, and a
 run in which no tracer ever left the outlet
 (\file{ctrl18\_rtd\_pulse\_cstr}).
 
-% Source: src/applications/choupoCtrl/main.cpp:620-697 (declaration,
+% Source: src/dynamicDriver/DynamicDriver.cpp:655-732 (declaration,
 % `frequency` XOR `reference`, the five refusals, the armed line),
-% :1527-1577 (the fit, its KPIs, the fewer-than-8-samples refusal).
+% :1562-1612 (the fit, its KPIs, the fewer-than-8-samples refusal).
 % Grammar as written by tutorials/ctrl/ctrl19_freq_response_cstr/system/controlDict;
 % the drive from its system/flowsheetDict; the Bode sweep from
 % tutorials/ctrl/ctrl20_bode_cstr/system/outerDict.
@@ -3624,9 +3632,9 @@ division by the drive's declared amplitude.  A fit window that
 \code{linkedTargets ( controllers[1].signal.frequency );} so the carrier
 mirror moves in lockstep (\file{ctrl20\_bode\_cstr}).
 
-% Source: src/applications/choupoCtrl/main.cpp:731-750 (trajectory.csv
-% header and rows), :855-860 (console echo), :1433-1440 (the summary
-% line), :1455-1466 (SP_final / PV_final / MV_final);
+% Source: src/dynamicDriver/DynamicDriver.cpp:766-785 (trajectory.csv
+% header and rows), :890-895 (console echo), :1468-1475 (the summary
+% line), :1490-1501 (SP_final / PV_final / MV_final);
 % src/control/ScheduleController.H:80 (hasPV() false) against
 % src/control/Controller.H:96 (the default, true);
 % tutorials/ctrl/ctrl02_disturbance_rejection/expected:4-6.

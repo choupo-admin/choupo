@@ -60,7 +60,7 @@ records for itself.  What belongs here is the SHAPE, never the size:
    replacement of the whole reference-state block; see
    `docs/ai/data-doctrine.md` §3).
 
-### Four binaries by problem class (see `src/applications/`)
+### Five binaries by problem class (see `src/applications/`)
 
       choupoSolve   --   steady-state simulation,  F(x) = 0
                           (root-finding, Newton-on-tears recycle by
@@ -83,6 +83,19 @@ records for itself.  What belongs here is the SHAPE, never the size:
                           ENERGY only when every piece is ledgered+priceable
                           -- otherwise `energy balance UNAVAILABLE` naming
                           each gap (recipe01 closes end-to-end at 6e-16)
+      choupoSemiContinuous  --  the time-integrated flowsheet of unit
+                          operations connected by streams whose internal
+                          states are non-stationary, WITHOUT a control loop:
+                          start-up, a disturbance watched open-loop,
+                          fed-batch, feed & bleed.  dY/dt = f(Y, t).  The
+                          fifth problem class (ruled 2026-09-20): the same
+                          driver as choupoCtrl (src/dynamicDriver/, ONE
+                          home), minus the control layer -- a `controllers`
+                          block is REFUSED by name.  Inherits the dynamic
+                          0/ shape (0/internalState + 0/streamFaces), the
+                          forward router, the accepted-step balance ledger,
+                          the real-time instant directories and the
+                          outerDict functor unchanged.
       choupoCtrl    --   dynamic continuous + control loops,
                           dY/dt = f(Y, u, t) with controllers writing MVs
       choupoProps   --   property evaluation + the PROPS BENCH

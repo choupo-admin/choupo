@@ -29,14 +29,14 @@ File
     src/core/Banner.H
 
 Description
-    Shared startup banner for the four binaries.  Centralises the version
+    Shared startup banner for the five binaries.  Centralises the version
     string in ONE place (CHOUPO_VERSION) instead of duplicating it across
     every application's main.cpp -- so a release bump is a single edit, and
     a banner-style tweak ripples to every binary at once.
 
     Each main.cpp calls printBanner() with its own short suffix (an empty
-    string for choupoSolve, "  batch" / "  ctrl" / "  props" for the
-    others); the function pads the row to the standard 77-column box width.
+    string for choupoSolve, "  batch" / "  ctrl" / "  semiContinuous" /
+    "  props" for the others); the function pads the row to the standard 77-column box width.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

@@ -28,7 +28,7 @@ License
 
 /*---------------------------------------------------------------------------*\
   TrajectoryPlot --- time-series for dynamic cases (choupoBatch /
-  choupoCtrl).  Reads `result.trajectory` and lays out the traces on
+  choupoCtrl / choupoSemiContinuous).  Reads `result.trajectory` and lays out the traces on
   two y-axes:
 
       Left axis (y1):    moles n_i   [kmol]

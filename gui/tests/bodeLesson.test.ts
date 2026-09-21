@@ -282,10 +282,10 @@ describe("every file:line this page cites into the engine resolves", () => {
    *  long enough" and "the claim is where I said it is". */
   const ANCHORS: [string, number, string][] = [
     // the measurement: the sin/cos fit and what it publishes
-    ["src/applications/choupoCtrl/main.cpp", 1553, "std::hypot(abc[1], abc[2])"],
-    ["src/applications/choupoCtrl/main.cpp", 1555, "std::atan2(abc[2], abc[1])"],
-    ["src/applications/choupoCtrl/main.cpp", 1567, "out_phase_rad"],
-    ["src/applications/choupoCtrl/main.cpp", 1572, "fit_residual_rel"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 1588, "std::hypot(abc[1], abc[2])"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 1590, "std::atan2(abc[2], abc[1])"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 1602, "out_phase_rad"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 1607, "fit_residual_rel"],
     // the drive
     ["src/control/signal/Signals.H", 124, "amplitude*sin"],
     // "one point of a Bode plot" — the engine's own words for what it measures

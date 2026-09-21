@@ -43,3 +43,4 @@ batchRecipe                 tutorials/batch/recipes/recipe01_react_then_distill
 dynamicControl              tutorials/ctrl/ctrl11_esterification_jacket
 propsBench                  tutorials/props/electrolyte/pitzer_gamma_hamer_wu
 designEconomics             tutorials/steady/flowsheets/process02_with_design
+semiContinuousTransient     tutorials/unsteady/unsteady01_startup_transient

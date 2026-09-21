@@ -228,7 +228,7 @@ export function useMethodRun(
   witness: string | null,
   overrides: readonly DictOverride[],
   overridesKey: string,
-  binary: "choupoSolve" | "choupoBatch" | "choupoCtrl" | "choupoProps",
+  binary: "choupoSolve" | "choupoBatch" | "choupoCtrl" | "choupoSemiContinuous" | "choupoProps",
 ): { result: RunResult | null; err: string | null; busy: boolean;
      log: string | null } {
   const [result, setResult] = useState<RunResult | null>(null);

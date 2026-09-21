@@ -142,6 +142,8 @@ Choupo/
 |   |-- postProcessing/             PostProcessor base + Sizing/Costing passes
 |   |-- propertyOps/                PropertyOperation base (choupoProps)
 |   |-- control/                    Controller base + PID/Schedule (choupoCtrl)
+|   |-- dynamicDriver/              ONE home of the time-integrated flowsheet driver
+|   |                                (choupoCtrl + choupoSemiContinuous; 2026-09-20)
 |   |-- reporting/                  BalanceMath, EnergyBalanceReport (the ledger)
 |   |-- result/                     the pipeline's OUTPUT records (SimulationResult,
 |   |                                UnitProfile, ResultEmitter) -- see Sec. layering
@@ -149,7 +151,8 @@ Choupo/
 |   |-- curation/                   BESIDE the stack, not in it: a tool may read
 |   |                                the runtime, the runtime may read no tool
 |   `-- applications/               choupoSolve / choupoBatch / choupoCtrl /
-|                                     choupoProps -- one main.cpp per binary
+|                                     choupoSemiContinuous / choupoProps --
+|                                     one main.cpp per binary
 |-- bin/                           runCase, runTests, listCases, curate/check_*
 |-- tutorials/                     end-to-end cases under
 |                                     steady/ unsteady/ ctrl/ batch/ props/ plant/
@@ -171,7 +174,7 @@ canonical reference for every curation question, summarised in
 \end{keyidea}
 
 \begin{keyidea}
-There is \emph{one binary per problem class}, four in all --- they share
+There is \emph{one binary per problem class}, five in all --- they share
 the same library under \file{src/\{core,thermo,solver,\dots\}} and differ
 only in their \file{applications/<name>/main.cpp}:
 \begin{itemize}[leftmargin=*,nosep]
@@ -179,6 +182,11 @@ only in their \file{applications/<name>/main.cpp}:
         (root-finding);
   \item \file{choupoBatch} --- batch / recipe-driven, per-vessel ODE
         integration + time-triggered events;
+  \item \file{choupoSemiContinuous} --- transient flowsheet, NO control
+        loop, $d\mathbf{Y}/dt = f(\mathbf{Y},t)$ with continuous inlets and
+        outlets (start-up, disturbance, fed-batch, feed \& bleed); the fifth
+        class, ruled 2026-09-20, sharing ONE driver
+        (\file{src/dynamicDriver/}) with \file{choupoCtrl};
   \item \file{choupoCtrl}  --- dynamic continuous + control,
         $d\mathbf{Y}/dt = f(\mathbf{Y},\mathbf{u},t)$ with PID/schedule
         controllers;
@@ -1863,7 +1871,7 @@ Don't omit this on new files --- it doubles as licence notice.
 Regression is run with \code{bin/runTests}.
 
 \begin{lstlisting}
-bin/runTests                 # every tutorial (4 binaries + buildCode cases)
+bin/runTests                 # every tutorial (5 binaries + buildCode cases)
 bin/runTests <case>          # one case
 bin/runTests <directory>     # every case under it -- the chunk
 bin/runTests --witnesses     # one witness per execution class
@@ -3208,8 +3216,9 @@ A short list, each item born from a real incident. Memorise it.
         Pedagogical visibility outweighs convenience.
   \item Do \textbf{not} split a binary by numerical strategy
         (\code{*Foam}-style proliferation). Strategy is run-time. Splitting
-        by \emph{problem class} --- the four binaries Solve / Batch / Ctrl /
-        Props --- is the deliberate exception, not a precedent for more.
+        by \emph{problem class} --- the five binaries Solve / Batch /
+        SemiContinuous / Ctrl / Props --- is the deliberate exception, not a
+        precedent for more.
   \item Do \textbf{not} bypass the dict format. Never use YAML, JSON, or
         TOML inside the case directory. The dict is the canonical wire
         format.

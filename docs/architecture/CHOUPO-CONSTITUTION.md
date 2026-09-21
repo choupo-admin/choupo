@@ -225,9 +225,10 @@ Simulator core  src/{thermo,solver,streams,unitOperations (incl. flowsheet/)}  F
 PostProcessor   src/postProcessing/  sizing / costing / reporting — augments after a pass
 ```
 
-Four binaries by problem class: `choupoSolve` (steady, F(x)=0, Newton-on-tears),
-`choupoBatch` (batch dY/dt + recipe), `choupoCtrl` (dynamic + control), `choupoProps`
-(property eval + the PROPS bench).  One binary per class — never split within a class
+Five binaries by problem class: `choupoSolve` (steady, F(x)=0, Newton-on-tears),
+`choupoBatch` (batch dY/dt + recipe), `choupoSemiContinuous` (transient flowsheet, no
+control loop -- the fifth class, ruled 2026-09-20 by Vítor Geraldes), `choupoCtrl`
+(dynamic + control), `choupoProps` (property eval + the PROPS bench).  One binary per class — never split within a class
 for a numerical-strategy variant.
 
 ---

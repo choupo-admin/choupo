@@ -95,7 +95,7 @@ export function StreamsTable() {
     );
   }
 
-  // Dynamic cases (choupoBatch, choupoCtrl) do not produce
+  // Dynamic cases (choupoBatch, choupoCtrl, choupoSemiContinuous) do not produce
   // steady-state streams --- their output is a time-series trajectory.
   // Point the student at the Plots tab instead of leaving this view
   // mysteriously empty.

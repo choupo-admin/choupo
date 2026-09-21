@@ -4,12 +4,15 @@
 directories, modular thermo, file-based component database, browser GUI
 (WASM).
 
-> **Choupo-2608** — four binaries, one per problem class.
+> **Choupo-dev** — five binaries, one per problem class (the maintained
+> release, Choupo-2608, shipped four; `choupoSemiContinuous` arrived
+> 2026-09-20).
 > `main` is the development line, `Choupo-dev`; a release is an immutable tag
 > `vYYMM` (public name `Choupo-YYMM`).  Cite the
 > exact version you used — see [`CITATION.cff`](CITATION.cff) and the
 > [versioned releases](https://github.com/choupo-admin/choupo/releases).
 > (`choupoSolve` steady, `choupoBatch` time-dependent + recipes,
+> `choupoSemiContinuous` transient flowsheets with no control loop,
 > `choupoCtrl` dynamic continuous + control loops, `choupoProps`
 > property evaluation + parameter fitting); a large runnable tutorial
 > corpus, every case guarded by regression checks (golden-master KPIs +
@@ -34,7 +37,7 @@ directories, modular thermo, file-based component database, browser GUI
 > `.ods`).  Hand-rolled Newton, Wegstein, RK4, Nelder-Mead,
 > Levenberg-Marquardt, Michelsen TPD.  Built-in physical-
 > dimensions tracking on every dict scalar.  Web GUI (React + Mantine +
-> React Flow + Plotly) with all four binaries shipped as WebAssembly.
+> React Flow + Plotly) with all five binaries shipped as WebAssembly.
 
 ## Why this exists
 
@@ -69,7 +72,7 @@ Optional, and only for parts you may never touch:
 
 ```bash
 make all              # native release, -O2 → ./choupoSolve ./choupoBatch
-                      #                        ./choupoCtrl  ./choupoProps
+                      #                        ./choupoCtrl  ./choupoSemiContinuous  ./choupoProps
 make MODE=debug all   # -O0 -g, parallel build tree
 make wasm-gui         # WebAssembly builds for the browser GUI — all four
                       # binaries into gui/public/wasm/ (never run two
@@ -152,10 +155,11 @@ no special "standalone" mode.
 |---|---|---|---|
 | `choupoSolve` | Steady-state simulation                | `F(x) = 0` (root finding) | flash, bubble-T, distillation, CSTR steady, recycle flowsheets, sweeps, optimisation, parameter estimation |
 | `choupoBatch` | Batch / time-dependent simulation       | `dY/dt = f(Y, t)` with recipe events | batch reactor (isothermal / adiabatic / multi-reaction), Rayleigh distillation, recipe-driven multi-vessel sequences |
+| `choupoSemiContinuous` | Transient flowsheet, NO control loop (the fifth class, 2026-09-20) | `dY/dt = f(Y, t)` with continuous inlets and outlets | CSTR start-up, tanks in series, a disturbance watched open-loop, fed-batch, feed & bleed |
 | `choupoCtrl`  | Dynamic continuous + control loops      | `dY/dt = f(Y, u(t), t)`  | continuous CSTR with PID temperature control, disturbance-rejection studies |
 | `choupoProps` | Property evaluation (the PROPS BENCH)   | direct model evaluation — no flowsheet | γ / φ / Psat / Cp scans, T-x-y and binary-LLE sweeps, aqueous speciation + scaling, parameter fits, thermodynamic-consistency tests |
 
-The four binaries share `src/{core,thermo,solver,materials,unitOperations,control}`; `make all` builds all four.  Pick the one your case needs by setting `application` in `controlDict` --- `runCase` then dispatches automatically.
+The five binaries share `src/{core,thermo,solver,materials,unitOperations,control}` (the two dynamic ones share ONE driver, `src/dynamicDriver/`); `make all` builds all five.  Pick the one your case needs by setting `application` in `controlDict` --- `runCase` then dispatches automatically.
 
 ## Capability matrix
 
@@ -202,7 +206,7 @@ binary, and `listCases` prints that column from the case itself.
 | Discipline | What it is | Binary found there |
 |---|---|---|
 | `steady/` | steady-state process simulation | `choupoSolve` |
-| `unsteady/` | transient process simulation, no control loop | `choupoCtrl` |
+| `unsteady/` | transient process simulation, no control loop | `choupoSemiContinuous` |
 | `ctrl/` | process control: design of control loops | `choupoCtrl` |
 | `batch/` | batch processes: recipes, vessels, campaigns | `choupoBatch` |
 | `props/` | thermophysical properties and the props bench | `choupoProps` |

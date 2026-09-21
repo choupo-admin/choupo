@@ -193,6 +193,9 @@ describe("selectBinary (WASM dispatch by application)", () => {
     expect(selectBinary("choupoCtrl")).toBe("choupoCtrl");
     expect(selectBinary("choupoBatch")).toBe("choupoBatch");
   });
+  it("routes choupoSemiContinuous (the fifth class, 2026-09-20) to its own binary", () => {
+    expect(selectBinary("choupoSemiContinuous")).toBe("choupoSemiContinuous");
+  });
   it("routes choupoProps to the props binary", () => {
     expect(selectBinary("choupoProps")).toBe("choupoProps");
   });

@@ -204,14 +204,20 @@ export interface WorkspaceContext {
  *    choupoProps  -> Props · Plots · Log · Case       (no canvas/streams/duties)
  *    choupoSolve  -> the full steady set              (streams, variables, pinch)
  *    choupoBatch/Ctrl -> Flowsheet · Props · Plots · Log · Case
- *                        (no steady-only Streams/Variables/Pinch/Reports) */
+ *                        (no steady-only Streams/Variables/Pinch/Reports)
+ *    choupoSemiContinuous -> the SAME time set, and never Control: the binary
+ *                        refuses a controllers block, so no PID can exist
+ *                        (2026-09-20; without this line a transient case fell
+ *                        through to the steady set -- Streams, Variables,
+ *                        Pinch, every one a lit-but-dead button) */
 export function allowedWorkspaceLabels(ctx: WorkspaceContext): Set<string> {
   if (!ctx.hasCase) return new Set();
   if (ctx.showIntro) return new Set();
   if (ctx.isPropsCase || ctx.application === "choupoProps") {
     return new Set(["Props", "Plots", "Log", "Case", "Literature"]);
   }
-  if (ctx.application === "choupoBatch" || ctx.application === "choupoCtrl") {
+  if (ctx.application === "choupoBatch" || ctx.application === "choupoCtrl"
+      || ctx.application === "choupoSemiContinuous") {
     return new Set([
       "Flowsheet", "Props", "Plots", "Log", "Case", "Literature",
       ...(ctx.hasPid ? ["Control"] : []),

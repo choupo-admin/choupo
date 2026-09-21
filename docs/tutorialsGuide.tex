@@ -511,14 +511,16 @@ stacks sit here as the \texttt{electrodialysis} sub-class since 2026-09-20
 \input{tutorialsGuide-steady}
 
 \clearpage
-\section*{Category II: Transient process simulation (choupoCtrl, no control loop)}\addcontentsline{toc}{section}{Category II: Transient process simulation (choupoCtrl, no control loop)}\markboth{Transient process simulation}{Transient process simulation}
+\section*{Category II: Transient process simulation (choupoSemiContinuous, no control loop)}\addcontentsline{toc}{section}{Category II: Transient process simulation (choupoSemiContinuous, no control loop)}\markboth{Transient process simulation}{Transient process simulation}
 Unit operations connected by streams whose internal states are
 NON-STATIONARY: the same $\mathrm{d}\mathbf{Y}/\mathrm{d}t = f(\mathbf{Y})$
 integration in real time as the control category, with no controller
 declared -- the process is watched, not driven.  A discipline of its own
 (ruled 2026-09-20): the open-loop transient a student studies before any
-loop is closed on it.  The binary is \code{choupoCtrl} without a control
-loop; \code{choupoBatch} cases join this folder later.  Two cases today:
+loop is closed on it.  The binary is \code{choupoSemiContinuous}, the fifth
+problem class (ruled 2026-09-20): the same driver \code{choupoCtrl} runs,
+without the control layer, and a \code{controllers} block is refused there by
+name; \code{choupoBatch} cases join this folder later.  Two cases today:
 the cold start-up of a CSTR relaxing to its natural steady state while
 OpenFOAM-style instant directories fill, and three equal mixing tanks in
 series answering an impulse with the Erlang-3 residence-time density.

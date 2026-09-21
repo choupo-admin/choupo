@@ -7,7 +7,7 @@
  },
  "counts": {
   "cases": 413,
-  "witnesses": 15,
+  "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
  },
@@ -6011,7 +6011,7 @@
    "hasGolden": true
   },
   "tutorials/unsteady/unsteady01_startup_transient": {
-   "application": "choupoCtrl",
+   "application": "choupoSemiContinuous",
    "unitTypes": [
     "dynamicCSTR"
    ],
@@ -6021,11 +6021,14 @@
      "ideal"
     ]
    },
-   "roles": [],
+   "witnessClass": "semiContinuousTransient",
+   "roles": [
+    "witness"
+   ],
    "hasGolden": true
   },
   "tutorials/unsteady/unsteady02_tanks_in_series": {
-   "application": "choupoCtrl",
+   "application": "choupoSemiContinuous",
    "unitTypes": [
     "dynamicCSTR"
    ],
@@ -6114,9 +6117,7 @@
     "tutorials/ctrl/ctrl17_step_reaction_curve",
     "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
     "tutorials/ctrl/ctrl19_freq_response_cstr",
-    "tutorials/ctrl/ctrl20_bode_cstr",
-    "tutorials/unsteady/unsteady01_startup_transient",
-    "tutorials/unsteady/unsteady02_tanks_in_series"
+    "tutorials/ctrl/ctrl20_bode_cstr"
    ],
    "choupoProps": [
     "tutorials/plant/polycaprolactonePlant/properties",
@@ -6217,6 +6218,10 @@
     "tutorials/props/transport/transport02_chapman_enskog",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
     "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars"
+   ],
+   "choupoSemiContinuous": [
+    "tutorials/unsteady/unsteady01_startup_transient",
+    "tutorials/unsteady/unsteady02_tanks_in_series"
    ],
    "choupoSolve": [
     "tutorials/plant/ChemicalPlantTutorial",

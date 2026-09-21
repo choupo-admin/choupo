@@ -1,11 +1,12 @@
 /*---------------------------------------------------------------------------*\
   Choupo -- Web Worker host for the WebAssembly solvers (v0.25+).
 
-  The worker hosts FOUR possible WASM modules, one per binary:
+  The worker hosts FIVE possible WASM modules, one per binary:
 
       choupoSolve   (steady-state)
       choupoBatch   (batch + recipes)
       choupoCtrl    (dynamic + control)
+      choupoSemiContinuous  (transient flowsheet, no control loop)
       choupoProps   (properties + LM fitting,   v0.38+)
 
   The host (WasmAdapter) reads each case's `application` field from
@@ -29,7 +30,7 @@
     main -> worker:  {
                        type: "run",
                        binary: "choupoSolve" | "choupoBatch" | "choupoCtrl"
-                              | "choupoProps",
+                              | "choupoSemiContinuous" | "choupoProps",
                        files:  { "system/controlDict": "...", ... },
                      }
     worker -> main:  { type: "log",        line: string }
@@ -45,6 +46,7 @@ const BINARIES = {
   choupoSolve: { factory: "createChoupoSolve" },
   choupoBatch: { factory: "createChoupoBatch" },
   choupoCtrl:  { factory: "createChoupoCtrl"  },
+  choupoSemiContinuous: { factory: "createChoupoSemiContinuous" },
   choupoProps: { factory: "createChoupoProps" },
 };
 
@@ -206,7 +208,7 @@ self.addEventListener("message", async (e) => {
           log("[worker] run_case returned rc=" + rc);
 
           // Collect every CSV the case produced under /case.  Used by:
-          //   * choupoBatch / choupoCtrl  ->  trajectory.csv
+          //   * choupoBatch / choupoCtrl / choupoSemiContinuous  ->  trajectory.csv
           //   * choupoProps                 ->  property scan / fit CSVs
           //                                      (filenames user-defined)
           // Steady cases typically produce nothing; absence is silent.
@@ -215,7 +217,7 @@ self.addEventListener("message", async (e) => {
               const csvFiles = {};
               const proposals = {};   // *.estimate-*.dat written by estimateComponent
               // OpenFOAM-style real-time INSTANT files the dynamic binaries
-              // (choupoBatch / choupoCtrl) drop under <t>/ at the case root:
+              // (choupoBatch / choupoCtrl / choupoSemiContinuous) drop under <t>/ at the case root:
               //   <t>/internalState   holdup truth (mole inventory, T, V, ...)
               //   <t>/streamFaces     instantaneous outlet faces (continuous)
               // <t> is a single all-digit directory name.  We harvest these so

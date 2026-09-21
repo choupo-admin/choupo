@@ -27,7 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  DynamicBalancePlot -- the choupoCtrl balance ledger over TIME, drawn from
+  DynamicBalancePlot -- the choupoCtrl / choupoSemiContinuous balance ledger over TIME, drawn from
   the engine's own balanceTrajectory.csv + .meta artefacts (accepted-step
   trapezoids in the C++ time loop; the GUI computes nothing).  Two panels:
   the mass inventory trace and the conservation RESIDUALS (mass + one line

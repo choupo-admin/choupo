@@ -47,7 +47,7 @@ because it does NOT merely assert that an announcement exists:
       should report: that is a stated design decision (the last pass, never a
       union), not something a gate can derive.
 
-  (d) ALL FOUR BINARIES emit it.  A caveat surface present in one application
+  (d) ALL FIVE BINARIES emit it.  A caveat surface present in one application
       and absent from three teaches the reader that its absence means "nothing
       to report".  `choupoProps` was in fact MISSED when the block was first
       wired, and the commit that wired the other three claimed all four -- this
@@ -133,7 +133,8 @@ SCOPE     = "[caveats] this run made"
 
 HEADER = "ASSUMPTIONS AND CAVEATS"
 NONE_LINE = "ASSUMPTIONS AND CAVEATS: none raised."
-BINARIES = ["choupoSolve", "choupoBatch", "choupoCtrl", "choupoProps"]
+BINARIES = ["choupoSolve", "choupoBatch", "choupoCtrl", "choupoSemiContinuous",
+            "choupoProps"]
 
 
 def run(case):
@@ -259,7 +260,7 @@ def main() -> int:
     #  A sabotage a gate survives is a gate that was not testing what it said.
     #
     #  THIS ARM IS A SOURCE CHECK, not an observed run, and the OK line says
-    #  so.  Driving all four binaries needs a case per application and would
+    #  so.  Driving all five binaries needs a case per application and would
     #  make this the slowest gate in the suite; arms (a)-(c) observe the real
     #  output of the one that can be driven cheaply.  Stating the limit is the
     #  difference between partial coverage and overclaimed coverage.
@@ -298,7 +299,7 @@ def main() -> int:
             "an advisory is JUSTIFIED -- that is curation, and "
             "check_cp_range_announced and check_review_status own those "
             "judgements.  DOMAIN: choupoSolve's own output on five corpus "
-            "cases plus a source scan of the four binaries' main.cpp.  "
+            "cases plus a source scan of the five binaries' main.cpp (and the driver two of them delegate to).  "
             "LIMITS: arm (d) is a source check and cannot see an enclosing "
             "`if` -- which is how the outerDict silence survived it -- and "
             "arm (e) requires the block to RUN under an outer driver and to "

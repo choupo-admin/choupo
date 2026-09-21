@@ -11,6 +11,7 @@
 #  Binaries built (one per problem class):
 #      choupoSolve   --  steady-state simulation,  F(x) = 0
 #      choupoBatch   --  batch / time-dependent recipe simulation
+#      choupoSemiContinuous  --  transient flowsheet, NO control loop (2026-09-20)
 #      choupoCtrl    --  dynamic continuous + control loops (v0.24+)
 #      choupoProps   --  physical-property service + parameter fitting (v0.36+)
 # =============================================================================
@@ -35,14 +36,16 @@ DEPS         := $(OBJS:.o=.d)
 SOLVE_OBJS   := $(filter $(BUILD)/src/applications/choupoSolve/%, $(OBJS))
 BATCH_OBJS   := $(filter $(BUILD)/src/applications/choupoBatch/%, $(OBJS))
 CTRL_OBJS    := $(filter $(BUILD)/src/applications/choupoCtrl/%,  $(OBJS))
+SEMI_OBJS    := $(filter $(BUILD)/src/applications/choupoSemiContinuous/%, $(OBJS))
 PROPS_OBJS   := $(filter $(BUILD)/src/applications/choupoProps/%, $(OBJS))
 
 LIB_OBJS     := $(filter-out $(SOLVE_OBJS) $(BATCH_OBJS) \
-                  $(CTRL_OBJS) $(PROPS_OBJS), $(OBJS))
+                  $(CTRL_OBJS) $(SEMI_OBJS) $(PROPS_OBJS), $(OBJS))
 
 BINARY_SOLVE := $(BUILD)/choupoSolve$(EXE)
 BINARY_BATCH := $(BUILD)/choupoBatch$(EXE)
 BINARY_CTRL  := $(BUILD)/choupoCtrl$(EXE)
+BINARY_SEMI  := $(BUILD)/choupoSemiContinuous$(EXE)
 BINARY_PROPS := $(BUILD)/choupoProps$(EXE)
 
 # Shared engine library + per-binary linking.  On Linux the engine is a
@@ -72,10 +75,12 @@ endif
 #      ./choupoSolve tutorials/xyz
 #      ./choupoBatch tutorials/xyz
 #      ./choupoCtrl  tutorials/xyz
+#      ./choupoSemiContinuous tutorials/xyz
 # keep working across build modes.
 SYMLINK_SOLVE := choupoSolve$(EXE)
 SYMLINK_BATCH := choupoBatch$(EXE)
 SYMLINK_CTRL  := choupoCtrl$(EXE)
+SYMLINK_SEMI  := choupoSemiContinuous$(EXE)
 SYMLINK_PROPS := choupoProps$(EXE)
 
 .PHONY: all clean distclean test print debug release windows lib
@@ -95,7 +100,7 @@ gitversion:
 	  else mv generated/.gitVersion.tmp generated/gitVersion.H; fi; \
 	fi
 
-all: gitversion $(SYMLINK_SOLVE) $(SYMLINK_BATCH) $(SYMLINK_CTRL) $(SYMLINK_PROPS)
+all: gitversion $(SYMLINK_SOLVE) $(SYMLINK_BATCH) $(SYMLINK_CTRL) $(SYMLINK_SEMI) $(SYMLINK_PROPS)
 
 # `make lib` --- the shared engine library + choupoSolve main.o that
 # bin/buildCode needs to compile a case's own unit ops.
@@ -120,6 +125,10 @@ $(SYMLINK_CTRL): $(BINARY_CTRL)
 	@ln -sfn $(BINARY_CTRL) $(SYMLINK_CTRL)
 	@printf "  -->   %s -> %s\n" $(SYMLINK_CTRL) $(BINARY_CTRL)
 
+$(SYMLINK_SEMI): $(BINARY_SEMI)
+	@ln -sfn $(BINARY_SEMI) $(SYMLINK_SEMI)
+	@printf "  -->   %s -> %s\n" $(SYMLINK_SEMI) $(BINARY_SEMI)
+
 $(SYMLINK_PROPS): $(BINARY_PROPS)
 	@ln -sfn $(BINARY_PROPS) $(SYMLINK_PROPS)
 	@printf "  -->   %s -> %s\n" $(SYMLINK_PROPS) $(BINARY_PROPS)
@@ -139,6 +148,11 @@ $(BINARY_CTRL): $(CTRL_OBJS) $(LIB_DEP) $(LINK_STAMP)
 	@printf "  LD    %s\n" $@
 	@$(CXX) $(CXXFLAGS) -o $@ $(CTRL_OBJS) $(LIB_LINK) $(LDFLAGS)
 
+$(BINARY_SEMI): $(SEMI_OBJS) $(LIB_DEP) $(LINK_STAMP)
+	@mkdir -p $(@D)
+	@printf "  LD    %s\n" $@
+	@$(CXX) $(CXXFLAGS) -o $@ $(SEMI_OBJS) $(LIB_LINK) $(LDFLAGS)
+
 $(BINARY_PROPS): $(PROPS_OBJS) $(LIB_DEP) $(LINK_STAMP)
 	@mkdir -p $(@D)
 	@printf "  LD    %s\n" $@
@@ -157,11 +171,11 @@ windows:
 
 clean:
 	@rm -rf $(BUILD)
-	@rm -f  $(SYMLINK_SOLVE) $(SYMLINK_BATCH) $(SYMLINK_CTRL) $(SYMLINK_PROPS)
+	@rm -f  $(SYMLINK_SOLVE) $(SYMLINK_BATCH) $(SYMLINK_CTRL) $(SYMLINK_SEMI) $(SYMLINK_PROPS)
 
 distclean: wasm-clean
 	@rm -rf build
-	@rm -f  $(SYMLINK_SOLVE) $(SYMLINK_BATCH) $(SYMLINK_CTRL) $(SYMLINK_PROPS)
+	@rm -f  $(SYMLINK_SOLVE) $(SYMLINK_BATCH) $(SYMLINK_CTRL) $(SYMLINK_SEMI) $(SYMLINK_PROPS)
 
 test: $(SYMLINK_SOLVE)
 	./$(SYMLINK_SOLVE) tutorials/flash01_benzene_toluene
@@ -175,6 +189,7 @@ print:
 	@echo "BINARY_SOLVE = $(BINARY_SOLVE)"
 	@echo "BINARY_BATCH = $(BINARY_BATCH)"
 	@echo "BINARY_CTRL  = $(BINARY_CTRL)"
+	@echo "BINARY_SEMI  = $(BINARY_SEMI)"
 	@echo "BINARY_PROPS = $(BINARY_PROPS)"
 	@echo "Sources      = $(words $(SRCS)) cpp files"
 	@echo "  choupoSolve entry objs: $(words $(SOLVE_OBJS))"

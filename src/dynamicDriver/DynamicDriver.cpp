@@ -270,6 +270,18 @@ try
 
     auto controlDict   = Dictionary::fromFile("system/controlDict");
     auto flowsheetDict = Dictionary::fromFile("system/flowsheetDict");
+
+    //  THE CLASS BOUNDARY, decided on the declared flowsheet before anything
+    //  is built (see DynamicDriverConfig::ControlLoop).  Refused one way,
+    //  announced the other, silent in neither.
+    const bool declaresControllers = flowsheetDict->found("controllers");
+    if (cfg.controlLoop == DynamicDriverConfig::ControlLoop::refused
+        && declaresControllers)
+        throw std::runtime_error(cfg.binaryName + ": this case declares a"
+            " control loop (a `controllers` block in system/flowsheetDict);"
+            " that is choupoCtrl's class -- set `application choupoCtrl;` in"
+            " system/controlDict, or remove the block to simulate the process"
+            " open-loop here.");
     // The case system lives in constant/thermoPhysPropDict.
     if (!fs::exists("constant/thermoPhysPropDict")
         && fs::exists("constant/propertyDict"))
@@ -296,7 +308,7 @@ try
     if (verbosity >= 1 && fs::exists("system/solverDict"))
         std::cerr << "[dict] system/solverDict is present but "
                   << cfg.binaryName << " does not read it -- every value in it had NO effect"
-                     " on this run.  Ctrl numerics live in controlDict"
+                     " on this run.  Time-integration numerics live in controlDict"
                      " `timeStepping` / `timeSteppingControl {}`"
                      " (rtol, atol, deltaT0, deltaTmax).\n";
     //  The manifest says it verifies its claimed records by sha256.  The
@@ -308,6 +320,13 @@ try
     records::verifySeal(verbosity);
 
     thermoAnnounceLevel() = verbosity;   // gate the load-phase thermo chorus too
+    if (cfg.controlLoop == DynamicDriverConfig::ControlLoop::optionalAnnounced
+        && !declaresControllers && verbosity >= 1)
+        std::cout << "[class] no controllers declared: an open-loop transient;"
+                     " the binary for a process without a control loop is"
+                     " choupoSemiContinuous (set `application"
+                     " choupoSemiContinuous;` in system/controlDict).  This"
+                     " run continues unchanged.\n";
     const std::string application =
         controlDict->lookupWordOrDefault("application", cfg.binaryName);
     const std::string description =

@@ -18,6 +18,7 @@
   "control",
   "core",
   "curation",
+  "dynamicDriver",
   "io",
   "materials",
   "outerDriver",
@@ -34,6 +35,7 @@
   "choupoBatch": "src/applications/choupoBatch/main.cpp",
   "choupoCtrl": "src/applications/choupoCtrl/main.cpp",
   "choupoProps": "src/applications/choupoProps/main.cpp",
+  "choupoSemiContinuous": "src/applications/choupoSemiContinuous/main.cpp",
   "choupoSolve": "src/applications/choupoSolve/main.cpp"
  },
  "classes": {
@@ -372,6 +374,9 @@
   ],
   "DynamicCSTR": [
    "src/unitOperations/dynamic/DynamicCSTR.H"
+  ],
+  "DynamicDriverConfig": [
+   "src/dynamicDriver/DynamicDriver.H"
   ],
   "DynamicUnitOperation": [
    "src/unitOperations/dynamic/DynamicUnitOperation.H"
@@ -2485,74 +2490,19 @@
   "src/applications/choupoBatch/wasmEntry.cpp": [],
   "src/applications/choupoCtrl/main.cpp": [
    "src/control/Controller.H",
-   "src/control/SignalController.H",
    "src/control/signal/Signal.H",
-   "src/core/Advisory.H",
-   "src/core/AdvisorySummary.H",
-   "src/core/Banner.H",
-   "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
-   "src/core/DisplayUnits.H",
-   "src/core/DivergenceSummary.H",
-   "src/core/FlatUnit.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PortRoles.H",
-   "src/core/ProblemDivergence.H",
-   "src/core/ResultRecords.H",
-   "src/core/ThermoResolution.H",
    "src/core/Types.H",
-   "src/core/distribution/SizeDistribution.H",
-   "src/io/SolutionWriter.H",
-   "src/materials/Material.H",
-   "src/materials/MaterialRegistry.H",
-   "src/outerDriver/OuterDriver.H",
-   "src/result/ResultEmitter.H",
-   "src/result/SimulationResult.H",
-   "src/result/UnitProfile.H",
+   "src/dynamicDriver/DynamicDriver.H",
    "src/solver/Convergence.H",
-   "src/solver/NewtonND.H",
-   "src/solver/ODE/AdaptiveTimeStep.H",
-   "src/solver/ODE/ODEIntegrator.H",
-   "src/streams/ProcessStream.H",
-   "src/streams/StreamOverrides.H",
-   "src/thermo/ChemistrySystem.H",
    "src/thermo/Component.H",
-   "src/thermo/Database.H",
-   "src/thermo/ElementComposition.H",
    "src/thermo/PackageAudit.H",
-   "src/thermo/PropertyContext.H",
-   "src/thermo/SaturationCurves.H",
-   "src/thermo/SealCheck.H",
-   "src/thermo/SurfaceTensionModel.H",
-   "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
-   "src/thermo/ThermoPackageBuilder.H",
-   "src/thermo/activityCoefficient/ActivityModel.H",
-   "src/thermo/electrolyte/AqueousActivity.H",
-   "src/thermo/electrolyte/AqueousVolumetric.H",
-   "src/thermo/equationOfState/EquationOfState.H",
-   "src/thermo/heatCapacity/HeatCapacityModel.H",
-   "src/thermo/henrysLaw/HenrysLaw.H",
-   "src/thermo/henrysLaw/HenrysLawRegistry.H",
-   "src/thermo/phase/Phase.H",
-   "src/thermo/pureFluid/PureFluidModel.H",
-   "src/thermo/solution/SolutionPair.H",
-   "src/thermo/solution/SolutionRegistry.H",
-   "src/thermo/transport/CorrelationVerify.H",
-   "src/thermo/transport/DiffusivityModel.H",
-   "src/thermo/transport/LiquidConductivityModel.H",
-   "src/thermo/transport/LiquidDiffusivityModel.H",
-   "src/thermo/transport/LiquidViscosityModel.H",
-   "src/thermo/transport/ThermalConductivityModel.H",
-   "src/thermo/transport/TransportModel.H",
-   "src/thermo/utility/Utility.H",
-   "src/thermo/utility/UtilityCatalogue.H",
-   "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
-   "src/unitOperations/dynamic/DynamicUnitOperation.H",
-   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
+   "src/unitOperations/dynamic/DynamicUnitOperation.H"
   ],
   "src/applications/choupoCtrl/wasmEntry.cpp": [],
   "src/applications/choupoProps/AadCompare.cpp": [
@@ -2619,6 +2569,10 @@
   ],
   "src/applications/choupoProps/registerUserTypesStub.cpp": [],
   "src/applications/choupoProps/wasmEntry.cpp": [],
+  "src/applications/choupoSemiContinuous/main.cpp": [
+   "src/dynamicDriver/DynamicDriver.H"
+  ],
+  "src/applications/choupoSemiContinuous/wasmEntry.cpp": [],
   "src/applications/choupoSolve/main.cpp": [
    "src/core/Advisory.H",
    "src/core/AdvisorySummary.H",
@@ -2892,6 +2846,78 @@
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/RecordResolver.H"
+  ],
+  "src/dynamicDriver/DynamicDriver.cpp": [
+   "src/control/Controller.H",
+   "src/control/SignalController.H",
+   "src/control/signal/Signal.H",
+   "src/core/Advisory.H",
+   "src/core/AdvisorySummary.H",
+   "src/core/Banner.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/DisplayUnits.H",
+   "src/core/DivergenceSummary.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PortRoles.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/core/distribution/SizeDistribution.H",
+   "src/dynamicDriver/DynamicDriver.H",
+   "src/io/SolutionWriter.H",
+   "src/materials/Material.H",
+   "src/materials/MaterialRegistry.H",
+   "src/outerDriver/OuterDriver.H",
+   "src/result/ResultEmitter.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/solver/NewtonND.H",
+   "src/solver/ODE/AdaptiveTimeStep.H",
+   "src/solver/ODE/ODEIntegrator.H",
+   "src/streams/ProcessStream.H",
+   "src/streams/StreamOverrides.H",
+   "src/thermo/ChemistrySystem.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/ElementComposition.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/PropertyContext.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/SealCheck.H",
+   "src/thermo/SurfaceTensionModel.H",
+   "src/thermo/ThermoAnnounce.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/ThermoPackageBuilder.H",
+   "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/electrolyte/AqueousActivity.H",
+   "src/thermo/electrolyte/AqueousVolumetric.H",
+   "src/thermo/equationOfState/EquationOfState.H",
+   "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/thermo/henrysLaw/HenrysLaw.H",
+   "src/thermo/henrysLaw/HenrysLawRegistry.H",
+   "src/thermo/phase/Phase.H",
+   "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/solution/SolutionPair.H",
+   "src/thermo/solution/SolutionRegistry.H",
+   "src/thermo/transport/CorrelationVerify.H",
+   "src/thermo/transport/DiffusivityModel.H",
+   "src/thermo/transport/LiquidConductivityModel.H",
+   "src/thermo/transport/LiquidDiffusivityModel.H",
+   "src/thermo/transport/LiquidViscosityModel.H",
+   "src/thermo/transport/ThermalConductivityModel.H",
+   "src/thermo/transport/TransportModel.H",
+   "src/thermo/utility/Utility.H",
+   "src/thermo/utility/UtilityCatalogue.H",
+   "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/dynamic/BalanceSnapshot.H",
+   "src/unitOperations/dynamic/DynamicUnitOperation.H",
+   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
   ],
   "src/io/DesignSheetWriter.cpp": [
    "src/core/Advisory.H",
@@ -7813,7 +7839,8 @@
    "src/control/Controller.cpp",
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
-   "src/control/SignalController.cpp"
+   "src/control/SignalController.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp"
   ],
   "src/control/PIDController.H": [
    "src/control/Controller.cpp",
@@ -7824,9 +7851,9 @@
    "src/control/ScheduleController.cpp"
   ],
   "src/control/SignalController.H": [
-   "src/applications/choupoCtrl/main.cpp",
    "src/control/Controller.cpp",
-   "src/control/SignalController.cpp"
+   "src/control/SignalController.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp"
   ],
   "src/control/signal/Signal.H": [
    "src/applications/choupoCtrl/main.cpp",
@@ -7834,7 +7861,8 @@
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
    "src/control/signal/Signal.cpp",
-   "src/control/signal/Signals.cpp"
+   "src/control/signal/Signals.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp"
   ],
   "src/control/signal/Signals.H": [
    "src/control/Controller.cpp",
@@ -7844,10 +7872,10 @@
   ],
   "src/core/Advisory.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/core/ThermoResolution.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -7974,25 +8002,25 @@
   ],
   "src/core/AdvisorySummary.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
-   "src/applications/choupoSolve/main.cpp"
+   "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp"
   ],
   "src/core/Banner.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/core/Banner.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/SolutionWriter.cpp",
    "src/propertyOps/FitParameters.cpp"
   ],
   "src/core/Constants.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/control/signal/Signals.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
@@ -8096,6 +8124,7 @@
    "src/core/distribution/SizeDistribution.cpp",
    "src/core/distribution/TabularSizeDistribution.cpp",
    "src/curation/AqueousGraph.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -8386,6 +8415,7 @@
    "src/core/distribution/SizeDistribution.cpp",
    "src/core/distribution/TabularSizeDistribution.cpp",
    "src/curation/AqueousGraph.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -8655,17 +8685,17 @@
   ],
   "src/core/DisplayUnits.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/core/DisplayUnits.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp"
   ],
   "src/core/DivergenceSummary.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
-   "src/applications/choupoSolve/main.cpp"
+   "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp"
   ],
   "src/core/ExprEval.H": [
    "src/core/ExprEval.cpp",
@@ -8674,9 +8704,9 @@
   ],
   "src/core/FlatUnit.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -8742,6 +8772,7 @@
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
    "src/curation/AqueousGraph.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -8980,6 +9011,7 @@
    "src/control/SignalController.cpp",
    "src/core/ThermoResolution.cpp",
    "src/curation/AqueousGraph.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -9200,17 +9232,17 @@
   ],
   "src/core/PortRoles.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/SolutionWriter.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp"
   ],
   "src/core/ProblemDivergence.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -9307,9 +9339,9 @@
   ],
   "src/core/ResultRecords.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -9372,10 +9404,10 @@
   ],
   "src/core/ThermoResolution.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/core/ThermoResolution.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -9458,6 +9490,7 @@
    "src/core/distribution/SizeDistribution.cpp",
    "src/core/distribution/TabularSizeDistribution.cpp",
    "src/curation/AqueousGraph.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -9774,13 +9807,13 @@
   ],
   "src/core/distribution/SizeDistribution.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/core/distribution/LogNormalSize.cpp",
    "src/core/distribution/RosinRammler.cpp",
    "src/core/distribution/SizeDistribution.cpp",
    "src/core/distribution/TabularSizeDistribution.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp"
   ],
@@ -9791,6 +9824,11 @@
   "src/curation/AqueousGraph.H": [
    "src/applications/choupoProps/main.cpp",
    "src/curation/AqueousGraph.cpp"
+  ],
+  "src/dynamicDriver/DynamicDriver.H": [
+   "src/applications/choupoCtrl/main.cpp",
+   "src/applications/choupoSemiContinuous/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp"
   ],
   "src/io/DesignSheetWriter.H": [
    "src/applications/choupoSolve/main.cpp",
@@ -9803,15 +9841,15 @@
   ],
   "src/io/SolutionWriter.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/SolutionWriter.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp"
   ],
   "src/materials/Material.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/materials/MaterialRegistry.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
@@ -9834,8 +9872,8 @@
   ],
   "src/materials/MaterialRegistry.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/materials/MaterialRegistry.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/SizingPass.cpp",
@@ -9862,8 +9900,8 @@
    "src/outerDriver/ParetoSweepDriver.cpp"
   ],
   "src/outerDriver/OuterDriver.H": [
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/outerDriver/DesignSpec.cpp",
    "src/outerDriver/GridSweepDriver.cpp",
    "src/outerDriver/OptimizationDriver.cpp",
@@ -10335,9 +10373,9 @@
   ],
   "src/result/ResultEmitter.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/outerDriver/DesignSpec.cpp",
    "src/outerDriver/OptimizationDriver.cpp",
    "src/outerDriver/ParetoSweepDriver.cpp",
@@ -10346,9 +10384,9 @@
   ],
   "src/result/SimulationResult.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -10405,9 +10443,9 @@
   ],
   "src/result/UnitProfile.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -10527,6 +10565,7 @@
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -10696,7 +10735,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp"
   ],
   "src/solver/NewtonND.H": [
-   "src/applications/choupoCtrl/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/outerDriver/DesignSpec.cpp",
    "src/solver/ActiveSetQP.cpp",
    "src/solver/NewtonND.cpp",
@@ -10744,7 +10783,7 @@
   ],
   "src/solver/ODE/AdaptiveTimeStep.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp"
+   "src/dynamicDriver/DynamicDriver.cpp"
   ],
   "src/solver/ODE/EulerSI.H": [
    "src/solver/ODE/EulerSI.cpp",
@@ -10757,7 +10796,7 @@
   ],
   "src/solver/ODE/ODEIntegrator.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/solver/ODE/EulerSI.cpp",
    "src/solver/ODE/Jacobian.cpp",
    "src/solver/ODE/ODEIntegrator.cpp",
@@ -10808,9 +10847,9 @@
   ],
   "src/streams/ProcessStream.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -10941,8 +10980,8 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp"
   ],
   "src/streams/StreamOverrides.H": [
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/outerDriver/DesignSpec.cpp",
    "src/outerDriver/GridSweepDriver.cpp",
    "src/outerDriver/OptimizationDriver.cpp",
@@ -10983,9 +11022,9 @@
   ],
   "src/thermo/ChemistrySystem.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -11003,6 +11042,7 @@
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
    "src/curation/AqueousGraph.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -11219,10 +11259,10 @@
   ],
   "src/thermo/Database.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/curation/AqueousGraph.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/materials/MaterialRegistry.cpp",
    "src/outerDriver/DesignSpec.cpp",
    "src/outerDriver/GridSweepDriver.cpp",
@@ -11310,7 +11350,7 @@
   ],
   "src/thermo/ElementComposition.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
@@ -11337,6 +11377,7 @@
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -11501,9 +11542,9 @@
   ],
   "src/thermo/PropertyContext.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/thermo/RecordResolver.H": [
@@ -11578,9 +11619,9 @@
   ],
   "src/thermo/SaturationCurves.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -11639,17 +11680,17 @@
   ],
   "src/thermo/SealCheck.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/result/ResultEmitter.cpp",
    "src/thermo/SealCheck.cpp"
   ],
   "src/thermo/SurfaceTensionModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/SurfaceTensionModel.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/BrockBird.cpp"
@@ -11660,9 +11701,9 @@
   ],
   "src/thermo/ThermoAnnounce.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -11716,6 +11757,7 @@
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
    "src/io/SolutionWriter.cpp",
@@ -11874,9 +11916,9 @@
   ],
   "src/thermo/ThermoPackageBuilder.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -11886,9 +11928,9 @@
   ],
   "src/thermo/activityCoefficient/ActivityModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -12002,9 +12044,9 @@
   ],
   "src/thermo/electrolyte/AqueousActivity.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/thermo/electrolyte/AqueousActivity.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
@@ -12017,9 +12059,9 @@
   ],
   "src/thermo/electrolyte/AqueousVolumetric.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/thermo/electrolyte/AqueousVolumetric.cpp"
   ],
@@ -12246,9 +12288,9 @@
   ],
   "src/thermo/equationOfState/EquationOfState.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -12291,9 +12333,9 @@
   ],
   "src/thermo/heatCapacity/HeatCapacityModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
@@ -12340,8 +12382,8 @@
   ],
   "src/thermo/henrysLaw/HenrysLaw.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
@@ -12350,8 +12392,8 @@
   ],
   "src/thermo/henrysLaw/HenrysLawRegistry.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/unitOperations/separation/Absorber.cpp",
@@ -12399,9 +12441,9 @@
   ],
   "src/thermo/phase/Phase.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/solver/StabilityTest.cpp",
    "src/thermo/ThermoPackage.cpp",
@@ -12426,9 +12468,9 @@
   ],
   "src/thermo/pureFluid/PureFluidModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
@@ -12468,16 +12510,16 @@
   ],
   "src/thermo/solution/SolutionPair.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/solution/SolutionPair.cpp",
    "src/thermo/solution/SolutionRegistry.cpp"
   ],
   "src/thermo/solution/SolutionRegistry.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/solution/SolutionRegistry.cpp"
   ],
@@ -12509,9 +12551,9 @@
   ],
   "src/thermo/transport/CorrelationVerify.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/TransportBench.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/Andrade.cpp",
@@ -12533,9 +12575,9 @@
   ],
   "src/thermo/transport/DiffusivityModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/TransportBench.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/DiffusivityModel.cpp",
@@ -12556,9 +12598,9 @@
   ],
   "src/thermo/transport/LiquidConductivityModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/TransportBench.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
@@ -12567,18 +12609,18 @@
   ],
   "src/thermo/transport/LiquidDiffusivityModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/LiquidDiffusivityModel.cpp",
    "src/thermo/transport/WilkeChang.cpp"
   ],
   "src/thermo/transport/LiquidViscosityModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/TransportBench.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/Andrade.cpp",
@@ -12601,9 +12643,9 @@
   ],
   "src/thermo/transport/ThermalConductivityModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/TransportBench.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/Eucken.cpp",
@@ -12612,9 +12654,9 @@
   ],
   "src/thermo/transport/TransportModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/TransportBench.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/ChapmanEnskog.cpp",
@@ -12631,8 +12673,8 @@
   ],
   "src/thermo/utility/Utility.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
    "src/streams/UtilityCircuit.cpp",
@@ -12641,8 +12683,8 @@
   ],
   "src/thermo/utility/UtilityCatalogue.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
    "src/streams/UtilityCircuit.cpp",
@@ -12660,9 +12702,9 @@
   ],
   "src/thermo/vaporPressure/VaporPressureModel.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -12837,6 +12879,7 @@
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp"
@@ -12851,6 +12894,7 @@
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp"
@@ -12991,9 +13035,9 @@
   ],
   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H": [
    "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp"

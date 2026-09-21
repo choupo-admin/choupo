@@ -77,6 +77,24 @@ struct DynamicDriverConfig
     //  The `application` word SolutionWriter stamps on every real-time
     //  instant directory it writes under solutionControl { write true; }.
     std::string instantTag;
+
+    //  THE CLASS BOUNDARY (ruled 2026-09-20).  A `controllers (...)` block
+    //  in flowsheetDict is what separates the two classes that run this
+    //  driver, and the driver REFUSES or ANNOUNCES it -- never silently
+    //  runs the other class's case:
+    //    refused            choupoSemiContinuous: a control loop is
+    //                       choupoCtrl's class; the block refuses BY NAME
+    //                       with the remedy (set `application choupoCtrl;`).
+    //    optionalAnnounced  choupoCtrl: a case with NO controllers still
+    //                       runs (ctrl12_williams_otto is the open-loop
+    //                       plant of a reference battery) and is TOLD that
+    //                       the binary for a loopless process is
+    //                       choupoSemiContinuous.
+    //  The asymmetry is deliberate: a loop under the loopless binary is a
+    //  category error; a loopless case under the loop binary is merely the
+    //  wrong door.
+    enum class ControlLoop { refused, optionalAnnounced };
+    ControlLoop controlLoop = ControlLoop::optionalAnnounced;
 };
 
 //  Run one application over a case directory: argv handling, registration

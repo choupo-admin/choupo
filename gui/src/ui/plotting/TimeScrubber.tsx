@@ -28,7 +28,7 @@ License
 
 /*---------------------------------------------------------------------------*\
   TimeScrubber -- scrub the OpenFOAM-style real-time instants a dynamic run
-  (choupoBatch / choupoCtrl) wrote.  A slider walks the written physical times;
+  (choupoBatch / choupoCtrl / choupoSemiContinuous) wrote.  A slider walks the written physical times;
   the panel shows each unit's HOLDUP state at the selected instant (T, V, mole
   inventory, any extras = conversion / supersaturation) PLUS the instantaneous
   outlet face for continuous units.  A T(t) line beneath marks where on the

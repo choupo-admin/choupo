@@ -16,7 +16,7 @@ when one or two focused files answer the question.
 | File | Read when |
 |---|---|
 | `start-here.md`   | First run and the canonical files of a minimal case. |
-| `overview.md`     | What Choupo is, the 4 binaries, and the governing contracts. |
+| `overview.md`     | What Choupo is, the 5 binaries, and the governing contracts. |
 | `dict-syntax.md`  | Before writing any dict.  Dict syntax, units, `$variables`. |
 | `case-layout.md`  | When organising the directory tree (`system/`, `constant/`, `.cho`). |
 | `thermo.md`       | When composing `constant/thermoPhysPropDict` (components + γ-φ models). |
@@ -68,9 +68,11 @@ user-facing.  Don't confuse them.
   Plotly + React Flow for the GUI; Emscripten for the WASM build.
   Zero external C++ deps (Newton / Gauss / RK4 / Nelder-Mead are
   hand-rolled).
-- **4 binaries** (one per problem class):
+- **5 binaries** (one per problem class):
   - `choupoSolve` -- steady-state simulation, `F(x) = 0`.
   - `choupoBatch` -- batch / time-dependent, recipe-driven.
+  - `choupoSemiContinuous` -- transient flowsheet, NO control loop (start-up,
+    disturbance, fed-batch, feed & bleed); `application choupoSemiContinuous;`.
   - `choupoCtrl`  -- dynamic continuous + control loops.
   - `choupoProps` -- property evaluations + LM regression.
 - **Cases are plain-text dicts on disk**.  The GUI is a

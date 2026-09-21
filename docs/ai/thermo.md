@@ -468,7 +468,7 @@ in its `.dat` (NaCl, glucose, MgSO4 ship this).
 
 ## What does the simulator do with thermoPhysPropDict?
 
-The four binaries all hand the authored dict to
+The five binaries all hand the authored dict to
 `ThermoPackageBuilder::build(dict, db, chemistry)` at startup, which:
 
 1. Verifies `recordType thermophysicalPropertySystem;` (any other shape is a

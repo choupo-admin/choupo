@@ -150,7 +150,7 @@ never in the dicts the C++ solver reads.
 ## The four standard `controlDict` keys
 
 ```
-application   choupoSolve;          // | choupoBatch | choupoCtrl | choupoProps
+application   choupoSolve;          // | choupoBatch | choupoSemiContinuous | choupoCtrl | choupoProps
 description   "one-line label";      // printed in the run header
 verbosity     3;                     // 0 silent, 3 default (Newton iters visible)
 reports
@@ -163,7 +163,7 @@ reports
 }
 ```
 
-For `choupoBatch` / `choupoCtrl` (time-dependent), add:
+For `choupoBatch` / `choupoSemiContinuous` / `choupoCtrl` (time-dependent), add:
 
 ```
 startTime       0;        // s
@@ -313,8 +313,8 @@ tutorials/
 ├── steady/       steady-state process simulation  (choupoSolve; the largest
 │                 collection, sub-foldered by OPERATION: flash/, distillation/,
 │                 membranes/, electrodialysis/, ...)
-├── unsteady/     transient process simulation, no control loop (choupoCtrl
-│                 today, choupoBatch later)
+├── unsteady/     transient process simulation, no control loop
+│                 (choupoSemiContinuous; choupoBatch later)
 ├── ctrl/         process control: the design of control loops (choupoCtrl)
 ├── batch/        batch processes: recipes, vessels, campaigns (choupoBatch)
 ├── props/        thermophysical properties and the props bench (choupoProps)
@@ -479,8 +479,8 @@ in four places, and that is a decision, not fragmentation left unfixed:
 |---|---|---|
 | `system/solverDict` | **steady flowsheet numerics** — recycle solver, tear tolerances, acceleration | `choupoSolve` |
 | a unit's `solver { }` | **that unit's own integrator choice** and its tolerances | every binary, per unit |
-| `system/controlDict` | **time control** — start/end/write, and the adaptive error tolerances that govern stepping | `choupoBatch`, `choupoCtrl` |
-| `system/outerDict` | the **outer driver's** own numerics (sweep, optimiser, estimator) | all four |
+| `system/controlDict` | **time control** — start/end/write, and the adaptive error tolerances that govern stepping | `choupoBatch`, `choupoSemiContinuous`, `choupoCtrl` |
+| `system/outerDict` | the **outer driver's** own numerics (sweep, optimiser, estimator) | all five |
 
 The organising idea is *whose* number it is.  A tear tolerance belongs to
 the flowsheet; an integrator belongs to the unit that integrates; a time
@@ -492,14 +492,14 @@ every key, which one it governs.
 `system/solverDict` in a batch or ctrl case is read by nobody — those
 binaries take their numerics from `controlDict` and from each unit's
 `solver { }`.  Silently ignoring it would let an author tune a number that
-never reaches the solver.  So `choupoBatch` and `choupoCtrl` **announce a
+never reaches the solver.  So `choupoBatch`, `choupoSemiContinuous` and `choupoCtrl` **announce a
 present-but-unread `solverDict` by name**, state what it cost (nothing —
 the run continues on the defaults), and carry on; the steady binary does
 the same for a transient `timeStepping` key it will not use.  Same posture
 as the unread-dict-keys announcement: *a declared value that nothing reads
 is a result you did not compute.*
 
-Alternatives B (one home for all four binaries) and C (move only the
+Alternatives B (one home for all the binaries) and C (move only the
 adaptive error tolerances) were scoped with file-and-line evidence and
 **not** taken — both change the grammar of existing cases to buy tidiness,
 and the four-home story is teachable as long as it is written down, which

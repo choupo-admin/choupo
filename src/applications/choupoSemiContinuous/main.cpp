@@ -26,53 +26,51 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 Application
-    choupoCtrl
+    choupoSemiContinuous
 
 Description
-    Dynamic continuous simulation WITH the control layer (the third problem
-    class).  Equation form: dY/dt = f(Y, u, t) with control u(t) supplied by
-    Controller objects that read measurements off the process and write
-    back to manipulated variables.
+    The fifth problem class (ruled 2026-09-20, Vitor: "Como e que um aluno
+    sabe que choupoCtrl simula um reactor feed and bleed?!  Cria a classe
+    semiContinuous!").  The time-integrated flowsheet of unit operations
+    connected by streams whose internal states are NON-STATIONARY, WITHOUT
+    a control loop: continuous transients (start-up, a disturbance),
+    fed-batch, feed & bleed.  Equation form: dY/dt = f(Y, t).
 
-    The integration itself -- the units, the router, the time loop, the
-    ledger, the writers, the result -- is the dynamic driver
-    (src/dynamicDriver/), shared with choupoSemiContinuous, which runs the
-    same driver with NO control loop.  What this main adds is exactly the
-    control layer: it registers the Controller and Signal factories the
-    driver will construct from a case's `controllers (...)` block.
+    It is the dynamic driver (src/dynamicDriver/) and nothing else -- the
+    same integration choupoCtrl runs, minus the control layer.  A case that
+    declares a `controllers (...)` block is REFUSED by name: a control loop
+    is choupoCtrl's class.  The capability existed before the name did (a
+    dynamicCSTR with a continuous inlet and outlet, chained by the router,
+    ran under choupoCtrl with controllers optional); the student could not
+    find it because the binary was called Ctrl.
 
-    Usage:  choupoCtrl [case_dir]
+    Usage:  choupoSemiContinuous [case_dir]
 \*---------------------------------------------------------------------------*/
 
-#include "control/Controller.H"
-#include "control/signal/Signal.H"
 #include "dynamicDriver/DynamicDriver.H"
 
 using namespace Choupo;
 
 int main(int argc, char** argv)
 {
-    //  THE CONTROL LAYER -- the one thing this application owns.  Registered
-    //  here, explicitly, before the driver runs (the factory contract: no
-    //  auto-registration anywhere).  The driver itself registers every other
-    //  model family; a binary without a control loop never registers these.
-    Signal    ::registerBuiltins();   // forcing-function vocabulary
-    Controller::registerBuiltins();
-
+    //  No control layer: the Controller and Signal factories are NOT
+    //  registered here, and the driver refuses a case that would need them.
     static const char* USAGE =
-        "Usage: choupoCtrl [options] [case-directory]\n"
+        "Usage: choupoSemiContinuous [options] [case-directory]\n"
         "\n"
-        "  Dynamic continuous solver with control loops.  With no case\n"
-        "  directory it runs the current directory.\n"
+        "  Transient flowsheet solver, no control loop (start-up,\n"
+        "  disturbance, fed-batch, feed & bleed).  With no case directory\n"
+        "  it runs the current directory.  A case with a `controllers`\n"
+        "  block belongs to choupoCtrl and is refused here.\n"
         "\n"
         "  --version, -V     print the banner (which carries version and commit)\n"
         "  --help, -h        this text\n";
 
     DynamicDriverConfig cfg;
-    cfg.binaryName   = "choupoCtrl";
-    cfg.bannerSuffix = "  ctrl";
+    cfg.binaryName   = "choupoSemiContinuous";
+    cfg.bannerSuffix = "  semiContinuous";
     cfg.usage        = USAGE;
-    cfg.instantTag   = "ctrl";
-    cfg.controlLoop  = DynamicDriverConfig::ControlLoop::optionalAnnounced;
+    cfg.instantTag   = "semiContinuous";
+    cfg.controlLoop  = DynamicDriverConfig::ControlLoop::refused;
     return runDynamicDriver(argc, argv, cfg);
 }

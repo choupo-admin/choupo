@@ -83,6 +83,27 @@ def count_registered(cpp_rel: str) -> int:
     return len(re.findall(r'\breg\(\s*"', f.read_text()))
 
 
+def count_engines() -> int:
+    """The binaries this tree builds -- one directory per entry point under
+    src/applications/, counted by the main.cpp that makes it a program.
+
+    IT IS COUNTED, NOT REMEMBERED, and that is the whole point: this field
+    was a hand-written literal until 2026-09-21, and every other field in
+    this generator is a count.  The literal was right by coincidence for as
+    long as the number never moved; the day a FIFTH binary arrived it was
+    bumped here -- and `--check-release`, which recounts an IMMUTABLE tag
+    from a worktree of that tag, then reported v2608 as having five engines
+    when its own tree holds four.  A recount that carries a literal is not a
+    recount.  Every counter here reads the module-global ROOT, which the
+    release path swaps to the tag's worktree, so this one is right in both
+    directions by construction.
+    """
+    apps = ROOT / "src" / "applications"
+    if not apps.is_dir():
+        return 0
+    return sum(1 for d in apps.iterdir() if (d / "main.cpp").is_file())
+
+
 def release_id() -> str:
     """The LATEST STABLE release name -- the storefront label (homepage, README,
     /models all say "here is the latest release, and this is what it has").
@@ -191,7 +212,7 @@ def build() -> dict:
         },
         "engine": {
             "unitOperations":    count_registered("src/unitOperations/UnitOperation.cpp"),
-            "engines":           4,  # choupoSolve / choupoBatch / choupoCtrl / choupoProps
+            "engines":           count_engines(),
         },
         "tutorials": {
             "runnableCases":     tutorials,

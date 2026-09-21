@@ -119,7 +119,7 @@ BARE_ROOTS = {
     # relative to src/ (source-tree prose: `core/Dictionary`, ...)
     "core", "streams", "thermo", "solver", "unitOperations", "flowsheet",
     "postProcessing", "outerDriver", "materials", "control", "applications",
-    "choupoSolve", "choupoBatch", "choupoCtrl", "choupoProps",
+    "choupoSolve", "choupoBatch", "choupoCtrl", "choupoSemiContinuous", "choupoProps",
     # relative to a props case / guide prose
     "propertyOps", "code",
 }

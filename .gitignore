@@ -9,6 +9,8 @@ build/
 /choupoBatch.exe
 /choupoCtrl
 /choupoCtrl.exe
+/choupoSemiContinuous
+/choupoSemiContinuous.exe
 /choupoProps
 /choupoProps.exe
 
@@ -65,7 +67,7 @@ tutorials/**/postProcessing/
 # 0/ is the committable stream-state INPUT (SolutionWriter output now in iterations/)
 !**/0/
 !**/0/**
-# The DYNAMIC binaries (choupoBatch / choupoCtrl) name the instant directory
+# The DYNAMIC binaries (choupoBatch / choupoCtrl / choupoSemiContinuous) name the instant directory
 # after the REAL physical time in seconds; a fractional deltaT writes a dir
 # like `0.5/` or `10.25/` (trailing zeros trimmed, OpenFOAM style).  Ignore any
 # directory whose name is a number with a decimal point -- still purely numeric,

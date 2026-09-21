@@ -235,25 +235,26 @@ without re-validating.
 ### Build targets
 
 ```makefile
-make wasm-gui                   # the GUI bundle: ALL FOUR binaries
-                                #   (choupoSolve + choupoProps + choupoBatch + choupoCtrl)
+make wasm-gui                   # the GUI bundle: ALL FIVE binaries
+                                #   (choupoSolve + choupoProps + choupoBatch + choupoCtrl + choupoSemiContinuous)
 make wasm-steady-props          # FAST: just choupoSolve + choupoProps (the common src/ edit)
 make wasm-solve                 # steady-state binary alone (choupoSolve)
-make wasm                       # release -O2, build ALL FOUR binaries (same set as wasm-gui)
+make wasm                       # release -O2, build ALL FIVE binaries (same set as wasm-gui)
 make wasm WASM_MODE=debug       # -O0 -g3, assertions on
 make wasm-clean                 # remove artifacts
 ```
 
-**`make wasm-gui` now builds all FOUR binaries.**  The GUI dispatches by
+**`make wasm-gui` now builds all FIVE binaries.**  The GUI dispatches by
 `controlDict.application`, so a transient case (`ctrl03` / `batch04`) needs
 choupoCtrl / choupoBatch present in `gui/public/wasm/` to run in-browser and
-offer the **time scrubber** (the holdup state per written instant).  The four:
+offer the **time scrubber** (the holdup state per written instant).  The five:
 choupoSolve (steady flowsheets), choupoProps (the PropsView — property scans /
-fits), choupoBatch (batch + recipes), choupoCtrl (dynamic + control).  When you
+fits), choupoBatch (batch + recipes), choupoCtrl (dynamic + control),
+choupoSemiContinuous (transient flowsheet, no control loop; 2026-09-20).  When you
 only touched choupoSolve / choupoProps and the dynamic binaries are already
 current, `make wasm-steady-props` is the fast path.  The build is
 concurrency-fragile (two concurrent `make wasm*` clobber `gui/public/wasm/` ---
-never run two at once; the four binaries build sequentially within one target).
+never run two at once; the five binaries build sequentially within one target).
 
 **IMPORTANT — rebuild WASM after adding/changing a unit op.**  The GUI runs the
 WASM build, which is SEPARATE from the native binary.  A new built-in (absorber,

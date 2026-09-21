@@ -24407,9 +24407,9 @@ chain that closes the loop from a converged flowsheet to a EUR
 figure, and ---  --- the dynamic simulation classes:
 batch reactors (isothermal + adiabatic + multi-reaction), Rayleigh
 batch distillation, continuous dynamic CSTR, and the feedback
-control layer with the ideal PID controller.  Four binaries
-(\code{choupoSolve}, \code{choupoBatch}, \code{choupoCtrl},
-\code{choupoProps})
+control layer with the ideal PID controller.  Five binaries
+(\code{choupoSolve}, \code{choupoBatch}, \code{choupoSemiContinuous},
+\code{choupoCtrl}, \code{choupoProps})
 ship with this edition, one per problem class.  Appendix~C
 places Choupo in its historical lineage, comparing it block-by-block
 with Monsanto's FLOWTRAN (1966--1993) following the description by
@@ -24432,10 +24432,12 @@ other class of chemical-engineering questions asks instead: starting
 from a known state $\Yv(0)$, what is $\Yv(t)$ for $t > 0$?  Batch
 reactors, simple batch stills, continuous reactors with finite
 hold-up and control loops --- none of these have a steady state to
-find; they tell a story over time.  Choupo ships two extra
+find; they tell a story over time.  Choupo ships three extra
 binaries for this class, \code{choupoBatch} (closed vessels with
-recipe events) and \code{choupoCtrl} (continuous flow with
-controllers), both built on the same shared library used by
+recipe events), \code{choupoSemiContinuous} (continuous flow with no
+control loop -- start-up, disturbance, fed-batch, feed \& bleed) and
+\code{choupoCtrl} (the same continuous flow with controllers; the two
+share one driver), all built on the same shared library used by
 \code{choupoSolve}.
 
 The integration scheme is the same explicit RK4 derived in

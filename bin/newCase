@@ -141,7 +141,7 @@ cat > "$CASE/system/controlDict" <<EOF
   controlDict  --  meta-control for this case.
 \*---------------------------------------------------------------------------*/
 
-application   choupoSolve;        // choupoSolve | choupoBatch | choupoCtrl
+application   choupoSolve;        // choupoSolve | choupoBatch | choupoSemiContinuous | choupoCtrl | choupoProps
 description   "$DESC";
 verbosity     3;                  // 0 silent .. 3 info (Newton iters) .. 4 debug
 EOF
@@ -243,7 +243,7 @@ in-GUI AI console.
 - \`system/flowsheetDict\` -- units and connections (topology only).
 - \`0/<stream>\` -- one complete state file for every graph stream.
 - \`constant/thermoPhysPropDict\` -- the thermophysical system (v2 grammar).
-- \`system/controlDict\` -- application (choupoSolve/Batch/Ctrl) + verbosity.
+- \`system/controlDict\` -- application (choupoSolve/Batch/SemiContinuous/Ctrl/Props) + verbosity.
 
 ## Rules
 - **UNITS ARE MANDATORY** on every dimensional value (\`370 K\`, \`1 bar\`,

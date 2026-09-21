@@ -1483,7 +1483,15 @@ Actions: `transfer` (partial via `fraction`), `setParameter`, `when`
 condition-triggered (`quantity` can be `T`, `total`, `n_<comp>`,
 `x_<comp>`; `op` is `gt`/`ge`/`lt`/`le`).
 
-# choupoCtrl (dynamic continuous + control)
+# choupoCtrl / choupoSemiContinuous (dynamic continuous, with / without control)
+
+The dynamic units below run under BOTH binaries (one driver,
+`src/dynamicDriver/`): `choupoSemiContinuous` integrates them with NO
+`controllers` block (a start-up, a disturbance watched open-loop, fed-batch,
+feed & bleed -- `application choupoSemiContinuous;`), `choupoCtrl` adds the
+control layer (`controllers (...)`).  The class boundary is refused one way
+(a `controllers` block under choupoSemiContinuous) and announced the other
+(no controllers under choupoCtrl).
 
 ### `dynamicCSTR`
 Constant-volume continuous CSTR, optional jacket (UA·(T_j-T)).  RK4 on packed

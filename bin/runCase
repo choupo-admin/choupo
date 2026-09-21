@@ -36,6 +36,8 @@
 #      application choupoSolve;  -> ./choupoSolve   (default)
 #      application choupoBatch;  -> ./choupoBatch
 #      application choupoCtrl;   -> ./choupoCtrl
+#      application choupoSemiContinuous; -> ./choupoSemiContinuous
+#      application choupoProps;  -> ./choupoProps
 #
 #  Writes the log inside the case directory (log.<application>) so
 #  each case carries its own output.
@@ -205,10 +207,10 @@ else
             "$CASE_ABS/system/controlDict" 2>/dev/null | head -1 || true)
     APP="${APP:-choupoSolve}"
     case "$APP" in
-        choupoSolve|choupoBatch|choupoCtrl|choupoProps) ;;
+        choupoSolve|choupoBatch|choupoCtrl|choupoSemiContinuous|choupoProps) ;;
         *)
             echo "runCase: controlDict has 'application $APP;' which is not a known binary" >&2
-            echo "         (expected one of: choupoSolve, choupoBatch, choupoCtrl, choupoProps)" >&2
+            echo "         (expected one of: choupoSolve, choupoBatch, choupoCtrl, choupoSemiContinuous, choupoProps)" >&2
             exit 1
             ;;
     esac

@@ -109,7 +109,7 @@ export function useEngineSeries(
   witness: string | null,
   points: readonly SeriesPoint[],
   seriesKey: string,
-  binary: "choupoSolve" | "choupoBatch" | "choupoCtrl" | "choupoProps",
+  binary: "choupoSolve" | "choupoBatch" | "choupoCtrl" | "choupoSemiContinuous" | "choupoProps",
 ): SeriesState {
   const [state, setState] = useState<SeriesState>(IDLE);
   const seq = useRef(0);

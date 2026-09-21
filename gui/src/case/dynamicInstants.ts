@@ -28,7 +28,7 @@ License
 
 /*---------------------------------------------------------------------------*\
   dynamicInstants -- parse the OpenFOAM-style real-time INSTANT directories the
-  dynamic binaries (choupoBatch / choupoCtrl) write at the case root when
+  dynamic binaries (choupoBatch / choupoCtrl / choupoSemiContinuous) write at the case root when
   `controlDict.solutionControl { write true; }` is on.
 
   Each written physical time `t` (s) is a directory `<t>/` carrying:
@@ -94,7 +94,7 @@ export interface DynamicInstant {
 /** Every written instant, time-ordered, plus the component list (union over
  *  all instants, first-seen order) for stable table columns. */
 export interface DynamicInstants {
-  application: string;        // "batch" | "ctrl"
+  application: string;        // "batch" | "ctrl"  (the ctrl word also covers choupoSemiContinuous: same driver, same instant shape)
   components: string[];
   instants: DynamicInstant[];
 }

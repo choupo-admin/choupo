@@ -15,7 +15,7 @@ bin/runCase tutorials/steady/flash/adiabaticFlash01_benzene_toluene
 `runCase` reads `controlDict.application` and dispatches to the right
 binary.  The binaries also run DIRECTLY -- `choupoSolve <caseDir>` (or from
 inside the case dir, `choupoSolve .`), same for `choupoProps` / `choupoBatch`
-/ `choupoCtrl`; set `CHOUPO_HOME=<repo root>` when running from a directory
+/ `choupoSemiContinuous` / `choupoCtrl`; set `CHOUPO_HOME=<repo root>` when running from a directory
 that cannot see `data/` (deeper than three levels).  An UNSEALED case (no
 `constant/propertyManifest`) is perfectly fine for local work: component and
 parameter names resolve from the installation catalogue.  Sealing

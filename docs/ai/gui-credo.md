@@ -124,7 +124,7 @@ chemical-process simulation is not CFD; some adaptations are needed.
 | **Right panel** | Properties of selected filter | **Floating selection card** (top-right): the selected node's hardware + run KPIs, or a stream's conditions.  Vanishes when nothing is selected | A docked Properties panel is mostly empty most of the time.  A card that appears on selection and gets out of the way otherwise keeps the canvas dominant. |
 | **View modes** | Render View / Spreadsheet / Plot / etc. swap on the central canvas | **On-demand workspaces** opened from the top menu (context-dependent lineup — see §2.5; `MenuBar.tsx` is the authority); each toggles over the canvas, Esc returns | Done in Fase A/B (2026-05-27).  The earlier bottom-tab strip was removed; workspaces are the canvas-view-mode pattern this row once flagged for "Layer 2". |
 | **Multi-view split** | Yes (4-up layout) | **No — pop-outs (new tab) instead** | Pop-outs let the user multi-monitor or window-tile, with the same outcome and far less code.  Browser tabs are persistent and survive a Choupo crash. |
-| **Time controls** | Timeline + slider for transient runs | Not yet — `choupoBatch` / `choupoCtrl` trajectories have static plots | Layer 2 work. |
+| **Time controls** | Timeline + slider for transient runs | Not yet — `choupoBatch` / `choupoCtrl` / `choupoSemiContinuous` trajectories have static plots | Layer 2 work. |
 | **Color By field selector** | Yes | Not yet | Layer 2 work — colour streams by T / dominant component / phase. |
 
 ### The Property Explorer (interactive visualiser scratchpad) — adaptation, 2026-06-05

@@ -1,16 +1,16 @@
 # =============================================================================
 #  Choupo  --  WebAssembly build (v0.25+; incremental objects 2026-07-19)
 #
-#  Compiles the four Choupo binaries to WebAssembly via Emscripten,
+#  Compiles the five Choupo binaries to WebAssembly via Emscripten,
 #  one .wasm per binary so each can be loaded independently by the
 #  worker based on the case's `application` field.
 #
 #  INCREMENTAL: every source compiles ONCE into a per-mode object tree
 #  (build/wasm/<mode>/obj/**.o with -MMD -MP dependency files, separate
-#  from the native GCC objects); the four targets LINK the same common
+#  from the native GCC objects); the five targets LINK the same common
 #  objects plus their own application objects.  The common core is never
-#  compiled four times, a touched header recompiles only its dependents,
-#  and an application-only edit relinks only that target.  The four
+#  compiled five times, a touched header recompiles only its dependents,
+#  and an application-only edit relinks only that target.  The five
 #  binaries stay separate modules with their own EXPORT_NAME -- nothing
 #  is merged, and although no static-init registration exists to be
 #  discarded (Choupo registers builtins EXPLICITLY), the link still uses
@@ -18,7 +18,7 @@
 #
 #  The curated `data/standards/` tree (components, materials, pairs) is
 #  embedded into every .wasm at LINK time; a stamp file depends on every
-#  FILE under data/standards, so editing a .dat relinks all four and
+#  FILE under data/standards, so editing a .dat relinks all five and
 #  refreshes the embedded MEMFS (the directory-mtime gap is closed).
 #  Case dicts are written into MEMFS by JS at runtime.
 #
@@ -26,11 +26,12 @@
 #      choupoSolve.{js,wasm}    steady-state solver
 #      choupoBatch.{js,wasm}    batch + recipe solver
 #      choupoCtrl.{js,wasm}     dynamic + control solver
+#      choupoSemiContinuous.{js,wasm}  transient flowsheet, no control loop
 #      choupoProps.{js,wasm}    property service + LM fit (v0.38+)
 #
 #  Usage:
-#      make wasm                    # all four, release (-O2)
-#      make wasm WASM_MODE=debug    # all four, -O0 -g, assertions
+#      make wasm                    # all five, release (-O2)
+#      make wasm WASM_MODE=debug    # all five, -O0 -g, assertions
 # =============================================================================
 
 EMXX       ?= em++
@@ -80,11 +81,13 @@ WASM_LIB_OBJS   := $(call WASM_OBJ_OF,$(WASM_LIB_SRCS))
 WASM_SOLVE_OBJS := $(call WASM_OBJ_OF,$(call WASM_APP_SRCS,choupoSolve))
 WASM_BATCH_OBJS := $(call WASM_OBJ_OF,$(call WASM_APP_SRCS,choupoBatch))
 WASM_CTRL_OBJS  := $(call WASM_OBJ_OF,$(call WASM_APP_SRCS,choupoCtrl))
+WASM_SEMI_OBJS  := $(call WASM_OBJ_OF,$(call WASM_APP_SRCS,choupoSemiContinuous))
 WASM_PROPS_OBJS := $(call WASM_OBJ_OF,$(call WASM_APP_SRCS,choupoProps))
 
 WASM_SOLVE_JS := $(WASM_DIR)/choupoSolve.js
 WASM_BATCH_JS := $(WASM_DIR)/choupoBatch.js
 WASM_CTRL_JS  := $(WASM_DIR)/choupoCtrl.js
+WASM_SEMI_JS  := $(WASM_DIR)/choupoSemiContinuous.js
 WASM_PROPS_JS := $(WASM_DIR)/choupoProps.js
 
 # Aggregate targets ask for BOTH group members explicitly: GNU make only
@@ -93,6 +96,7 @@ WASM_PROPS_JS := $(WASM_DIR)/choupoProps.js
 WASM_ALL_OUT := $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) \
                 $(WASM_BATCH_JS) $(WASM_BATCH_JS:.js=.wasm) \
                 $(WASM_CTRL_JS)  $(WASM_CTRL_JS:.js=.wasm) \
+                $(WASM_SEMI_JS)  $(WASM_SEMI_JS:.js=.wasm) \
                 $(WASM_PROPS_JS) $(WASM_PROPS_JS:.js=.wasm)
 
 # The version the SHIPPED app announces = the version baked into these
@@ -112,7 +116,7 @@ WASM_ALL_OUT := $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) \
 #  It used to be the FIRST prerequisite of `wasm` and `wasm-gui`, so the file
 #  claiming which commit is in the bundles was written BEFORE a single object
 #  compiled.  Observed on 2026-08-19 at 10:16: version.json read `"commit":
-#  "9d5eda1c"` while the four .wasm files beside it were three weeks old, and
+#  "9d5eda1c"` while the four .wasm files (five since 2026-09-20) beside it were three weeks old, and
 #  it would have kept reading that if the build had then died -- the GUI
 #  announcing to the reader an engine version that is not the one running.
 #
@@ -137,9 +141,9 @@ wasm-version:
 wasm: $(WASM_ALL_OUT)
 	@$(MAKE) --no-print-directory wasm-version
 
-# The GUI's FOUR binaries: the GUI dispatches by controlDict.application,
-# so all four must be present in gui/public/wasm/ for a transient case
-# (ctrl03 / batch04) to run in-browser and offer the time scrubber.  Same
+# The GUI's FIVE binaries: the GUI dispatches by controlDict.application,
+# so all five must be present in gui/public/wasm/ for a transient case
+# (ctrl03 / batch04 / unsteady01) to run in-browser and offer the time scrubber.  Same
 # set as `wasm`; the alias is kept because the bin/ scripts + docs refer
 # to it as THE GUI rebuild.
 wasm-gui: $(WASM_ALL_OUT)
@@ -235,6 +239,9 @@ $(WASM_BATCH_JS) $(WASM_BATCH_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_BATCH_OBJ
 
 $(WASM_CTRL_JS) $(WASM_CTRL_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_CTRL_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoCtrl)
+
+$(WASM_SEMI_JS) $(WASM_SEMI_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_SEMI_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
+	$(call WASM_LINK,createChoupoSemiContinuous)
 
 $(WASM_PROPS_JS) $(WASM_PROPS_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_PROPS_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoProps)

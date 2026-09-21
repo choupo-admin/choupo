@@ -36,7 +36,7 @@
 #      processor*       (placeholder for future parallel runs)
 #      reports/         (the reports{} output tree: CSV, .ods, sub-folders)
 #      design/          (the equipment specification sheets)
-#      trajectory.csv   (choupoBatch / choupoCtrl time series)
+#      trajectory.csv   (choupoBatch / choupoSemiContinuous / choupoCtrl time series)
 #      code/.build/     (per-case compiled binary from buildCode)
 #      0.01/ 0.02/ ...  (all-numeric transient instants)
 #
@@ -117,7 +117,7 @@ if [ -d "$TARGET/code/.build" ]; then
     count=$((count + 1))
 fi
 
-# Transient time-snapshot directories (choupoBatch / choupoCtrl `solutionControl
+# Transient time-snapshot directories (choupoBatch / choupoSemiContinuous / choupoCtrl `solutionControl
 # { write true; }` fills the case root with OpenFOAM-style `50/ 100/ ... 1000/`
 # or `1/ 2/ 3/ ...`).  These are RUN OUTPUTS -- remove them all EXCEPT the
 # authored initial state `0/`.  A dir counts as a time only if its whole name is

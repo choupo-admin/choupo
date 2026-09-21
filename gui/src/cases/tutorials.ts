@@ -42,7 +42,7 @@ License
         props/     <subclass>/<name>/...  thermophysical properties
         plant/     <name>/...             integrated plant design (fractal)
 
-  All four binaries are built as WASM (see make/wasm.mk) and runnable
+  All five binaries are built as WASM (see make/wasm.mk) and runnable
   in the browser.
 \*---------------------------------------------------------------------------*/
 
@@ -146,6 +146,15 @@ const UNSUPPORTED_PATHS_IN_BROWSER: ReadonlySet<string> = new Set([
 
 export type Category = "steady" | "unsteady" | "batch" | "ctrl" | "props" | "plant";
 
+/** The `application` word of a controlDict's raw text -- ONE home for the
+ *  folder-independent reading of which binary a case runs on.  The regex is
+ *  the one bin/runTests and bin/runCase use; the default is the engine's own
+ *  (a case that omits the key runs choupoSolve).  Exported pure for the test. */
+export function applicationOf(controlDictText: string | undefined): string {
+  const m = /^\s*application\s+(\w+)/m.exec(controlDictText ?? "");
+  return m?.[1] ?? "choupoSolve";
+}
+
 export interface TutorialEntry {
   /** Full identifier including category, e.g. "steady/flash01_benzene_toluene". */
   name: string;
@@ -160,6 +169,12 @@ export interface TutorialEntry {
   subclass: string;
   /** One-line description extracted from controlDict.description (may be empty). */
   description: string;
+  /** The binary this case runs on -- `controlDict.application`, read from the
+   *  case's own text (the same `^\s*application\s+(\w+)` bin/runTests reads),
+   *  `choupoSolve` ONLY when the key is absent, NEVER inferred from the folder
+   *  (a folder is a discipline: steady/ holds choupoProps cases, unsteady/
+   *  runs choupoSemiContinuous). */
+  application: string;
   /** The case's audience, the `tier` word of its controlDict ("witness" /
    *  "tutorial" / "showcase" -- bin/curate/check_case_tiers owns the
    *  vocabulary); "" when undeclared.  `tutorial` is the FIRST PATH: the
@@ -189,12 +204,16 @@ export const TUTORIALS_BY_CATEGORY: {
   label: string;
   entries: TutorialEntry[];
 }[] = [
-  { category: "steady",   label: "Steady-state  (choupoSolve)", entries: [] },
-  { category: "unsteady", label: "Unsteady      (choupoCtrl)",  entries: [] },
-  { category: "ctrl",     label: "Control       (choupoCtrl)",  entries: [] },
-  { category: "batch",    label: "Batch         (choupoBatch)", entries: [] },
-  { category: "props",    label: "Properties    (choupoProps)", entries: [] },
-  { category: "plant",    label: "Plant         (fractal)",      entries: [] },
+  // A folder is a DISCIPLINE, never a binary (ruled 2026-09-20): steady/
+  // holds two choupoProps cases and unsteady/ runs choupoSemiContinuous, so
+  // a label naming a binary per folder would be the restatement that went
+  // false.  Each entry carries its own `application`, read from its dicts.
+  { category: "steady",   label: "Steady-state process simulation", entries: [] },
+  { category: "unsteady", label: "Unsteady (transient, no control loop)", entries: [] },
+  { category: "ctrl",     label: "Process control", entries: [] },
+  { category: "batch",    label: "Batch processes", entries: [] },
+  { category: "props",    label: "Thermophysical properties", entries: [] },
+  { category: "plant",    label: "Plant design (fractal)", entries: [] },
 ];
 for (const t of TUTORIALS) {
   const g = TUTORIALS_BY_CATEGORY.find((x) => x.category === t.category);
@@ -359,10 +378,7 @@ function buildIndex(): TutorialEntry[] {
   const out: TutorialEntry[] = [];
   for (const key of Object.keys(collected).sort()) {
     const { category, shortName, files } = collected[key]!;
-    const bin = category === "batch" ? "choupoBatch"
-            : category === "ctrl"  ? "choupoCtrl"
-            : category === "props" ? "choupoProps"
-            : "choupoSolve";
+    const bin = applicationOf(files["system/controlDict"]);
 
     //: all three binaries are built as WASM, so batch/ctrl
     // cases ARE runnable in the browser.  The only remaining cases
@@ -400,6 +416,7 @@ function buildIndex(): TutorialEntry[] {
       // categories (key = <cat>/<subclass>/<case>), "" for flat ones.
       subclass: isSubclassed(category) ? key.split("/")[1]! : "",
       description,
+      application: bin,
       tier: typeof rawTier === "string" ? rawTier : "",
       files: cf,
       unsupportedReason,
@@ -574,6 +591,10 @@ function subNodesFor(rootName: string,
         category,
         subclass: "", // fractal sub-nodes are reached by URL, not the menu
         description: typeof rawDesc === "string" ? rawDesc : "",
+        // A drilled sub-node runs on the binary its inherited controlDict
+        // names (the cascade above copied the nearest ancestor's), read the
+        // same way as a root case -- never from the folder.
+        application: applicationOf(sub["system/controlDict"]),
         tier: "",   // a sub-node inherits no audience; the ROOT case declares it
         files: cf,
       });
