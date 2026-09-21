@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 413,
+  "cases": 414,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -1095,6 +1095,14 @@
    "hasGolden": true
   },
   "tutorials/plant/ammonia02_full_plant": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/ammonia03_quench_converter": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -6227,6 +6235,7 @@
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammonia02_full_plant",
+    "tutorials/plant/ammonia03_quench_converter",
     "tutorials/plant/esterification2sector",
     "tutorials/plant/greenAmmoniaIndustrialN2",
     "tutorials/plant/hda",

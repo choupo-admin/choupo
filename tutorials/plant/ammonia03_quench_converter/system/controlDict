@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoSolve;
+tier         tutorial;
+description  "Ammonia synthesis loop with a THREE-BED QUENCH CONVERTER: cold feed gas is taken off upstream of the feed-effluent exchanger and injected between adiabatic catalyst beds, so the gas zigzags about the locus of maximum rate instead of riding one adiabatic line to a single hot equilibrium. Same loop as ammonia02 (200 bar, 3:1 makeup, 3% purge, Henry-law dissolved gases); the converter is the redesign. The quench split is the design variable.";
+verbosity    3;

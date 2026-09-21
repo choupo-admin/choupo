@@ -1,0 +1,225 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ammonia03_quench_converter -- the SAME synthesis loop as ammonia02, with the
+  converter redesigned as THREE ADIABATIC BEDS WITH COLD-SHOT QUENCH.
+  ===================================================================
+  makeup 25 bar ─[T101]─[makeupComp 25->245]─┐
+                                             ▼
+                        recycle ─[recycleComp]─►[mixer]
+                                                │ mixed  (26645 kmol/h, 386 K)
+                                                ▼
+                                        [quenchSplit]  <-- THE DESIGN VARIABLE
+                              47 %│          25 %│          28 %│
+                             toFEHE│       quench1│       quench2│
+                                   ▼              │              │
+                             [FEHE] ◄══ hotEffluent (heat recovery)
+                                   │ preheatedFeed 683 K          │
+                                   ▼              │              │
+                              [bed1] ──841 K──►[quench1Mix]◄─────┘ (682 K)
+                                                 │ bed2Feed
+                                                 ▼
+                              [bed2] ──798 K──►[quench2Mix]◄──────── (681 K)
+                                                 │ bed3Feed
+                                                 ▼
+                              [bed3] ──778 K──► hotEffluent ──► [FEHE] hot side
+                                                                    │
+                                                     [waterCooler] ─┘
+                                                            ▼
+                                                     [separator] 250 K / 200 bar
+                                                       │        │
+                                                   rawLiquid  unreactedGas
+                                                       ▼            ▼
+                                                 [letdown]     [purgeSplit]
+                                                  │     │       │        │
+                                           productNH3  gas    purge   recycle (tear)
+
+  WHY QUENCH.  N2 + 3 H2 <-> 2 NH3 is EXOTHERMIC and REVERSIBLE.  Exothermic
+  means an adiabatic bed heats itself as it converts; reversible means the
+  equilibrium it is climbing towards RETREATS as it heats.  A single adiabatic
+  bed therefore runs up one straight line in the (conversion, temperature)
+  plane until it meets the equilibrium curve, and stops there -- ammonia02
+  stops at 839.6 K and 10.75 % NH3.  A quench converter cuts the bed into
+  pieces and drops the gas back down the temperature axis between them, with
+  cold loop gas taken off upstream of the interchanger.  The gas ZIGZAGS: up
+  the adiabatic line inside a bed, vertically down at each cold shot.
+
+  MEASURED, this run against ammonia02 (identical feed, pressure, purge and
+  separator; only the converter and the interchanger differ):
+
+      converter exit        10.75 % NH3 @ 839.6 K   ->   17.28 % NH3 @ 777.5 K
+      per-pass N2 conv.           17.84 %           ->        28.80 %
+      loop circulation        40545 kmol/h          ->    26645 kmol/h
+      recycle                 32545 kmol/h          ->    18645 kmol/h
+      purge (3 % of recycle)   1006 kmol/h          ->      577 kmol/h
+      product                  3498.7 kmol/h        ->     3719.8 kmol/h  (+6.3 %)
+
+  The product gain is NOT the extra equilibrium conversion by itself: it is
+  that a loop which converts more per pass recirculates less, so the 3 % purge
+  throws away 43 % less hydrogen.
+
+  THE SPLIT IS THE DESIGN.  47 / 25 / 28 is not a given; it is chosen.  With
+  the interchanger fixed at 375 m2, lowering the FEHE branch sends a smaller
+  stream through the same area and preheats bed 1 MORE while cooling beds 2
+  and 3; raising it does the opposite.  47 % is the value at which all three
+  beds enter within 2.6 K of each other, at the 683 K that ammonia02's own
+  converter already uses as its light-off inlet.  Read README.md for the
+  measurements, including what a BAD split costs and why a fourth bed is not
+  obviously worth building.
+
+  WHAT THIS MODEL DOES NOT CONTAIN -- read this before quoting any number.
+  Every bed here is a `gibbsReactor`: it runs to FULL EQUILIBRIUM, which is
+  the same as saying it is infinitely long.  There is no rate law, no catalyst
+  volume, no particle size and no approach to equilibrium anywhere in this
+  case, so:
+    * no bed can be SIZED, and system/postDict declares all three so that the
+      engine refuses them by name on every run;
+    * nothing here can tell a good injection POINT from a bad one.  Measured:
+      moving quench from 25/28 to 50/3 leaves the converter exit unchanged to
+      five figures, because with the last bed at equilibrium the outlet
+      depends only on the TOTAL cold shot, not on where it enters.  That is
+      an exact property of the model, not a numerical accident -- and it is
+      exactly the question a real design has to answer.
+
+  THE CONSTRUCTION IS DYSON AND SIMON'S.  The rate contours in the
+  conversion-temperature plane, the locus of maximum rate descending as
+  conversion rises, and a cold-shot trajectory drawn as a zigzag about it, are
+  Figure 2 of D. C. Dyson and J. M. Simon, "A kinetic expression with
+  diffusion correction for ammonia synthesis on industrial catalyst",
+  Ind. Eng. Chem. Fundam. 7 (1968) 605-610.  This case executes that picture
+  with equilibrium beds; their rate law is what would put the locus on it.
+
+  UNCHANGED FROM ammonia02, deliberately: 200 bar synthesis, makeup 1980
+  kmol/h N2 + 5940 kmol/h H2 (exactly 3:1) + 80 kmol/h Ar, both compressors
+  and their shaft powers, the water cooler, the 250 K / 200 bar refrigerated
+  separator, the 20 bar let-down, the 3 % purge, the two storage tanks, the
+  declared cooling-water circuit, and the SRK + Henry thermophysical package
+  with its cited N2-NH3 and H2-NH3 pairs.
+
+  CHANGED, and each change is a consequence of the converter:
+    * the INTERCHANGER falls from 1500 m2 to 375 m2.  It carries 47 % of the
+      loop gas instead of 100 %, from an effluent 62 K cooler.  Its duty falls
+      from 117.2 MW to 31.2 MW.
+    * the WATER COOLER takes 66.2 MW instead of 57.8 MW: 8.4 MW that the
+      interchanger no longer recovers leaves through the cooling water
+      instead.  A real plant puts a waste-heat boiler on that effluent.  This
+      case does not add one -- that is a separate design act, and inventing it
+      here would change two things at once.
+    * the recycle TOLERANCE is 1e-8 instead of 1e-5.  At 1e-5 this loop's
+      element balance closed only to 0.05 %; three reactors on one tear leave
+      more room for a loose tear to show.
+  NOT changed and worth seeing: the recycle compressor still takes 4000 kW on
+  a circulation 43 % smaller, so it now discharges at 258 bar into a mixer
+  that runs at 245.  The circulator is oversized for the converter it feeds --
+  a real consequence of the redesign, left visible rather than tuned away.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    { name T101;  type storageTank;  in makeup;  outputs ( makeupStored );
+      operation { residenceTime 0.5 h; } }
+
+    { name makeupComp;  type compressor;  in makeupStored;   outputs ( compMakeup );
+      operation { W_shaft 24000 kW;  eta 0.78; } }
+
+    { name recycleComp; type compressor;  in recycle;  outputs ( compRecycle );
+      operation { W_shaft 4000 kW;   eta 0.80; } }
+
+    { name mixer;  type mixer;  inputs ( compMakeup  compRecycle );  outputs ( mixed ); }
+
+    //  THE DESIGN VARIABLE.  The cold shots are drawn here, UPSTREAM of the
+    //  interchanger, so they reach the beds at loop-inlet temperature (386 K)
+    //  rather than at the 683 K the interchanger delivers.  Change these three
+    //  numbers and you have redesigned the converter; nothing else in the case
+    //  has to move.
+    { name quenchSplit;  type splitter;  in mixed;
+      outputs ( toFEHE  quench1  quench2 );
+      operation { fractions ( 0.47  0.25  0.28 ); } }
+
+    { name FEHE;  type heatExchanger;  inputs ( hotEffluent  toFEHE );
+      outputs ( cooledEffluent  preheatedFeed );
+      operation { area 375 m2;  U 550 W/m2/K;  flow counter; } }
+
+    //  BED 1 -- the coldest feed and the leanest gas, so the steepest climb:
+    //  683 -> 841 K, and it alone accounts for 1075 of the 3674 kmol/h of
+    //  ammonia made per pass.  `T` is the outer Newton's GUESS, not a spec:
+    //  in adiabatic mode the temperature is what the run computes.
+    { name bed1;  type gibbsReactor;  in preheatedFeed;  outputs ( bed1Out );
+      operation
+      {
+          mode adiabatic;  P 200 bar;  T 840 K;
+          elements ( N  H  Ar );
+          species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
+                    { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
+      } }
+
+    //  COLD SHOT 1.  25 % of the loop gas at 386 K meets the bed-1 effluent at
+    //  841 K and takes it back to 682 K -- the vertical leg of the zigzag.  It
+    //  also DILUTES: the ammonia fraction drops from 10.61 % to 7.12 %, which
+    //  moves the gas away from equilibrium as well as down in temperature.
+    { name quench1Mix;  type mixer;  inputs ( bed1Out  quench1 );  outputs ( bed2Feed ); }
+
+    { name bed2;  type gibbsReactor;  in bed2Feed;  outputs ( bed2Out );
+      operation
+      {
+          mode adiabatic;  P 200 bar;  T 800 K;
+          elements ( N  H  Ar );
+          species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
+                    { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
+      } }
+
+    //  COLD SHOT 2 is LARGER than cold shot 1 (28 % against 25 %) even though
+    //  bed 2's temperature rise is SMALLER (116 K against 158 K): bed 2 is
+    //  carrying half again as much gas, so the heat to be removed is larger.
+    { name quench2Mix;  type mixer;  inputs ( bed2Out  quench2 );  outputs ( bed3Feed ); }
+
+    //  BED 3 -- the whole loop gas, the richest feed and the lowest exit
+    //  temperature, and it still makes the most ammonia of the three
+    //  (1391 kmol/h) because it works at the coolest equilibrium.
+    { name bed3;  type gibbsReactor;  in bed3Feed;  outputs ( hotEffluent );
+      operation
+      {
+          mode adiabatic;  P 200 bar;  T 780 K;
+          elements ( N  H  Ar );
+          species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
+                    { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
+      } }
+
+    { name waterCooler;  type heatExchanger;  inputs ( cooledEffluent  cw );
+      outputs ( chilledEffluent  cwOut );
+      operation { area 4000 m2;  U 700 W/m2/K;  flow counter; } }
+
+    { name separator;  type isothermalFlash;  in chilledEffluent;
+      outputs ( rawLiquid  unreactedGas );  operation { T 250 K;  P 200 bar; } }
+
+    { name letdown;  type isothermalFlash;  in rawLiquid;
+      outputs ( productNH3  letdownGas );  operation { T 250 K;  P 20 bar; } }
+
+    { name purgeSplit;  type splitter;  in unreactedGas;  outputs ( purge  recycle );
+      operation { fractions ( 0.03  0.97 ); } }
+
+    { name T201;  type storageTank;  in productNH3;  outputs ( productStored );
+      operation { residenceTime 48 h; } }
+);
+
+//  THE COOLING WATER IS A DECLARED CIRCUIT, NOT PROCESS MATERIAL -- exactly as
+//  in ammonia02, and for the same reason: at 9007.5 t/h it is 99.2 % of this
+//  plant's boundary mass, so a closure computed over it is passing by
+//  dilution.  The declaration buys a second, PROCESS scope in the plant
+//  summary; it removes the circuit from no physical check.
+utilities
+(
+    {
+        name     CW1;
+        service  coolingWater;
+        supply   cw;
+        return   cwOut;
+        note     "closed cooling-water circuit: tower supply at 25 C, return at 35 C";
+    }
+);

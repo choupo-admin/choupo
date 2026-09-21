@@ -202,6 +202,104 @@ HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs 
 \end{tutgolden}
 
 \clearpage
+\tutentry{ammonia03\_quench\_converter}{tutorials/plant/ammonia03\_quench\_converter}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T101) at (0.0,-0.0) {\textbf{T101}\\[-1pt]{\tiny storageTank}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (makeupComp) at (2.9,-0.0) {\textbf{makeupComp}\\[-1pt]{\tiny compressor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (recycleComp) at (327.7,-0.0) {\textbf{recycleComp}\\[-1pt]{\tiny compressor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (330.6,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (quenchSplit) at (333.5,-0.0) {\textbf{quenchSplit}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (FEHE) at (336.4,-0.0) {\textbf{FEHE}\\[-1pt]{\tiny heatExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed1) at (339.3,-0.0) {\textbf{bed1}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (quench1Mix) at (342.2,-0.0) {\textbf{quench1Mix}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed2) at (345.1,-0.0) {\textbf{bed2}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (quench2Mix) at (348.0,-0.0) {\textbf{quench2Mix}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed3) at (350.9,-0.0) {\textbf{bed3}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (waterCooler) at (339.3,-1.7) {\textbf{waterCooler}\\[-1pt]{\tiny heatExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (342.2,-1.7) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (345.1,-1.7) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (345.1,-3.4) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T201) at (348.0,-1.7) {\textbf{T201}\\[-1pt]{\tiny storageTank}};
+  \draw[->] ($(T101.west)+(-1.05,0.00)$) -- ($(T101.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->] (T101) -- (makeupComp) node[midway, above, font=\tiny] {makeupStored};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (recycleComp.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (makeupComp) -- (mixer) node[midway, above, font=\tiny] {compMakeup};
+  \draw[->] (recycleComp) -- (mixer) node[midway, above, font=\tiny] {compRecycle};
+  \draw[->] (mixer) -- (quenchSplit) node[midway, above, font=\tiny] {mixed};
+  \draw[->, dashed] (bed3.south) .. controls +(0,-1.0) and +(0,-1.0) .. (FEHE.south) node[midway, below, font=\tiny] {hotEffluent};
+  \draw[->] (quenchSplit) -- (FEHE) node[midway, above, font=\tiny] {toFEHE};
+  \draw[->] (FEHE) -- (bed1) node[midway, above, font=\tiny] {preheatedFeed};
+  \draw[->] (bed1) -- (quench1Mix) node[midway, above, font=\tiny] {bed1Out};
+  \draw[->] (quenchSplit) -- (quench1Mix) node[midway, above, font=\tiny] {quench1};
+  \draw[->] (quench1Mix) -- (bed2) node[midway, above, font=\tiny] {bed2Feed};
+  \draw[->] (bed2) -- (quench2Mix) node[midway, above, font=\tiny] {bed2Out};
+  \draw[->] (quenchSplit) -- (quench2Mix) node[midway, above, font=\tiny] {quench2};
+  \draw[->] (quench2Mix) -- (bed3) node[midway, above, font=\tiny] {bed3Feed};
+  \draw[->] (FEHE) -- (waterCooler) node[midway, above, font=\tiny] {cooledEffluent};
+  \draw[->] ($(waterCooler.west)+(-1.05,0.00)$) -- ($(waterCooler.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {cw};
+  \draw[->] (waterCooler) -- (separator) node[midway, above, font=\tiny] {chilledEffluent};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] (letdown) -- (T201) node[midway, above, font=\tiny] {productNH3};
+  \draw[->] ($(waterCooler.east)+(0,0.00)$) -- ($(waterCooler.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {cwOut};
+  \draw[->] ($(letdown.east)+(0,0.00)$) -- ($(letdown.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+  \draw[->] ($(T201.east)+(0,0.00)$) -- ($(T201.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {productStored};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Ammonia synthesis loop with a THREE-BED QUENCH CONVERTER: cold feed gas is taken off upstream of the feed-effluent exchanger and injected between adiabatic catalyst beds, so the gas zigzags about the locus of maximum rate instead of riding one adiabatic line to a single hot equilibrium. Same loop as ammonia02 (200 bar, 3:1 makeup, 3\% purge, Henry-law dissolved gases); the converter is the redesign. The quench split is the design variable.}
+\begin{tutnarrative}
+the SAME synthesis loop as ammonia02, with the converter redesigned as THREE ADIABATIC BEDS WITH COLD-SHOT QUENCH.
+
+makeup 25 bar  [T101] [makeupComp 25$\to$245]     recycle  [recycleComp]  [mixer]   mixed (26645 kmol/h, 386 K)   [quenchSplit] <-- THE DESIGN VARIABLE 47 \%  25 \%  28 \%  toFEHE  quench1  quench2        [FEHE]     hotEffluent (heat recovery)   preheatedFeed 683 K         [bed1]   841 K   [quench1Mix]        (682 K)   bed2Feed   [bed2]   798 K   [quench2Mix]          (681 K)   bed3Feed   [bed3]   778 K    hotEffluent     [FEHE] hot side
+
+[waterCooler]      [separator] 250 K / 200 bar     rawLiquid unreactedGas     [letdown] [purgeSplit]         productNH3 gas purge recycle (tear)
+
+WHY QUENCH. N2 + 3 H2 <$\to$ 2 NH3 is EXOTHERMIC and REVERSIBLE. Exothermic means an adiabatic bed heats itself as it converts; reversible means the equilibrium it is climbing towards RETREATS as it heats. A single adiabatic bed therefore runs up one straight line in the (conversion, temperature) plane until it meets the equilibrium curve, and stops there -- ammonia02 stops at 839.6 K and 10.75 \% NH3. A quench converter cuts the bed into pieces and drops the gas back down the temperature axis between them, with cold loop gas taken off upstream of the interchanger. The gas ZIGZAGS: up the adiabatic line inside a bed, vertically down at each cold shot.
+
+MEASURED, this run against ammonia02 (identical feed, pressure, purge and separator; only the converter and the interchanger differ):
+
+converter exit 10.75 \% NH3 @ 839.6 K $\to$ 17.28 \% NH3 @ 777.5 K per-pass N2 conv. 17.84 \% $\to$ 28.80 \% loop circulation 40545 kmol/h $\to$ 26645 kmol/h recycle 32545 kmol/h $\to$ 18645 kmol/h purge (3 \% of recycle) 1006 kmol/h $\to$ 577 kmol/h product 3498.7 kmol/h $\to$ 3719.8 kmol/h (+6.3 \%)
+
+The product gain is NOT the extra equilibrium conversion by itself: it is that a loop which converts more per pass recirculates less, so the 3 \% purge throws away 43 \% less hydrogen.
+
+THE SPLIT IS THE DESIGN. 47 / 25 / 28 is not a given; it is chosen. With the interchanger fixed at 375 m2, lowering the FEHE branch sends a smaller stream through the same area and preheats bed 1 MORE while cooling beds 2 and 3; raising it does the opposite. 47 \% is the value at which all three beds enter within 2.6 K of each other, at the 683 K that ammonia02's own converter already uses as its light-off inlet. Read README.md for the measurements, including what a BAD split costs and why a fourth bed is not obviously worth building.
+
+WHAT THIS MODEL DOES NOT CONTAIN -- read this before quoting any number. Every bed here is a `gibbsReactor`: it runs to FULL EQUILIBRIUM, which is the same as saying it is infinitely long. There is no rate law, no catalyst volume, no particle size and no approach to equilibrium anywhere in this case, so: no bed can be SIZED, and system/postDict declares all three so that the engine refuses them by name on every run; nothing here can tell a good injection POINT from a bad one. Measured: moving quench from 25/28 to 50/3 leaves the converter exit unchanged to five figures, because with the last bed at equilibrium the outlet depends only on the TOTAL cold shot, not on where it enters. That is an exact property of the model, not a numerical accident -- and it is exactly the question a real design has to answer.
+
+THE CONSTRUCTION IS DYSON AND SIMON'S. The rate contours in the conversion-temperature plane, the locus of maximum rate descending as conversion rises, and a cold-shot trajectory drawn as a zigzag about it, are Figure 2 of D. C. Dyson and J. M. Simon, "A kinetic expression with diffusion correction for ammonia synthesis on industrial catalyst", Ind. Eng. Chem. Fundam. 7 (1968) 605-610. This case executes that picture with equilibrium beds; their rate law is what would put the locus on it.
+
+UNCHANGED FROM ammonia02, deliberately: 200 bar synthesis, makeup 1980 kmol/h N2 + 5940 kmol/h H2 (exactly 3:1) + 80 kmol/h Ar, both compressors and their shaft powers, the water cooler, the 250 K / 200 bar refrigerated separator, the 20 bar let-down, the 3 \% purge, the two storage tanks, the declared cooling-water circuit, and the SRK + Henry thermophysical package with its cited N2-NH3 and H2-NH3 pairs.
+
+CHANGED, and each change is a consequence of the converter: the INTERCHANGER falls from 1500 m2 to 375 m2. It carries 47 \% of the loop gas instead of 100 \%, from an effluent 62 K cooler. Its duty falls from 117.2 MW to 31.2 MW. the WATER COOLER takes 66.2 MW instead of 57.8 MW: 8.4 MW that the interchanger no longer recovers leaves through the cooling water instead. A real plant puts a waste-heat boiler on that effluent. This case does not add one -- that is a separate design act, and inventing it here would change two things at once. the recycle TOLERANCE is 1e-8 instead of 1e-5. At 1e-5 this loop's element balance closed only to 0.05 \%; three reactors on one tear leave more room for a loose tear to show. NOT changed and worth seeing: the recycle compressor still takes 4000 kW on a circulation 43 \% smaller, so it now discharges at 258 bar into a mixer that runs at 245. The circulator is oversized for the converter it feeds -- a real consequence of the redesign, left visible rather than tuned away.
+
+\end{tutnarrative}
+\tutreadme{The same synthesis loop as ammonia02\_full\_plant --- 200 bar, makeup 1980 kmol/h N$_2$ + 5940 kmol/h H$_2$ (exactly 3:1) + 80 kmol/h Ar, refrigerated separator at 250 K, 3 \% purge, SRK fugacity with measured N$_2$--NH$_3$ and H$_2$--NH$_3$ Henry pairs --- with one thing changed: the converter. ammonia02 has a single adiabatic bed. This case has three adiabatic beds with cold-shot quench between them, which is what the BASF account of Haber--Bosch describes when it says the reacting hot gas is cooled with a supply of cold gas $\ast$inside$\ast$ the reactor.}
+\tutreadme{Ammonia synthesis is exothermic $\ast$and$\ast$ reversible, and those two facts pull in opposite directions.}
+\tutreadme{$\ast$ Exothermic $\to$ an adiabatic bed heats itself as it converts. Its state moves up a straight line in the (conversion, temperature) plane: every mole of NH$_3$ formed buys a fixed number of degrees. $\ast$ Reversible $\to$ the equilibrium conversion falls as the temperature rises. The target retreats as you chase it.}
+\tutreadme{Between them there is a locus of maximum rate: at any conversion there is one temperature where the forward and reverse rates are furthest apart, and that temperature descends as conversion rises. A single adiabatic bed crosses that locus early and then spends the rest of itself on the wrong side of it, running into a receding equilibrium.}
+\tutreadme{A quench converter follows the locus instead --- in a staircase. Inside a bed the gas climbs its adiabatic line; at the cold shot it drops vertically (cold gas removes heat, and dilutes, but converts nothing). Up, down, up, down, up. That zigzag is the whole design.}
+\tutreadme{> The picture is Dyson and Simon's. The rate contours in the > conversion--temperature plane, the descending locus of maximum rate, and a > cold-shot trajectory drawn as a zigzag about it, are Figure 2 of > D. C. Dyson and J. M. Simon, $\ast$A kinetic expression with diffusion correction > for ammonia synthesis on industrial catalyst$\ast$, Ind. Eng. Chem. Fundam. 7 > (1968) 605--610. This case executes that figure with equilibrium beds. > Their rate law is what would put the contours on it; see ?6.}
+\begin{tutgolden}
+\goldrow{stream}{bed1Out}{F}{3.17996753423}
+\goldrow{stream}{bed1Out}{T}{841.2767605}
+\goldrow{stream}{bed2Feed}{F}{5.03030532814}
+\goldrow{stream}{bed2Feed}{T}{682.045268453}
+\goldrow{stream}{bed2Out}{F}{4.69483355428}
+\goldrow{stream}{bed2Out}{T}{797.933843704}
+\goldrow{stream}{bed3Feed}{F}{6.76721188346}
+\goldrow{stream}{bed3Feed}{T}{680.610038848}
+\goldrow{stream}{chilledEffluent}{F}{6.38083264983}
+\goldrow{stream}{chilledEffluent}{T}{324.3024335}
+\goldrow{stream}{compMakeup}{F}{2.22222222222}
+\goldrow{stream}{compMakeup}{T}{656.394257943}
+\goldrow{stream}{compRecycle}{F}{5.17912895342}
+\goldrow{stream}{compRecycle}{T}{274.060726539}
+\goldmore{278}
+\end{tutgolden}
+
+\clearpage
 \tutentry{esterification2sector}{tutorials/plant/esterification2sector}
 \tutwhat{Esterification plant -- two sectors (REACTION + SEPARATION) sharing components; per-sector constant/ data (S1 kinetics, S2 NRTL pair); ethanol-water pair inherited from the standard library}
 \tutreadme{A two-sector plant that exists to prove one thing: data lives with the sector that owns it, and a whole-plant run finds it there.}

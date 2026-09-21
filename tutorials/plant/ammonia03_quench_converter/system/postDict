@@ -1,0 +1,96 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- SIZING ONLY.  THIS CASE PUBLISHES NO COST, DELIBERATELY.
+
+  ammonia02 sizes and costs its whole loop, converter included, from an
+  author-set catalyst volume of 80 m3.  This case will not repeat that, and
+  the reason is the lesson:
+
+    A CATALYST BED'S SIZE IS ITS CATALYST VOLUME, AND A CATALYST VOLUME IS A
+    KINETIC RESULT.  It follows from a rate law, a particle size, an
+    approach-to-equilibrium and a space velocity.  This case has none of
+    them -- every bed here runs to FULL EQUILIBRIUM, which is the same as
+    saying every bed is infinitely long.  Dividing 80 m3 across three beds
+    would need a rule; there is no rule, so there is no division.
+
+  So the three beds ARE declared below, with no design basis, and the engine
+  REFUSES them by name on every run:
+
+      bed1  FAILED: Vessel: unit 'bed1' needs a design basis in designRules
+            -- one of spaceVelocity [1/h], residenceTime [s], or volume [m^3]
+      ^ 3 unit(s) could not be SIZED and are therefore absent from `sizings`
+        (and so from costing): bed1 bed2 bed3
+
+  That refusal is the point of the declaration.  An absence the engine states
+  on every run, in the caveat block and in the result JSON, is a fact; an
+  absence recorded only in a comment is a sentence.
+
+  AND THERE IS NO `costing` AND NO `economics` BLOCK HERE.  With the
+  converter unsized, a capital total would omit the single most expensive
+  item in a 200-bar synthesis loop, and an NPV built on it would be a
+  confident number about a plant whose reactor is missing.  An invented
+  vessel volume converts `unsized` into `falsely sized`; a CAPEX that quietly
+  drops the reactor converts `uncosted` into `falsely costed`.  Neither a
+  reader nor a gate can detect either.  For the loop appraisal, read
+  ammonia02 -- and read its 80 m3 knowing where it came from.
+
+  WHAT IS SIZED: the two compressors (by shaft power), the two exchangers (by
+  area) and the two drums (by vapour residence).  The interchanger is the one
+  to look at: it carries 47 % of the loop gas here instead of 100 %, and its
+  area falls from 1500 m2 to 375 m2.
+\*---------------------------------------------------------------------------*/
+sizing
+{
+    units
+    (
+        { unitName makeupComp;  type compressor;  material SS316;
+          designRules { pressureDesign 250.0; } }
+        { unitName recycleComp; type compressor;  material SS316;
+          designRules { pressureDesign 260.0; } }
+
+        //  The feed-effluent interchanger, resized for the quench converter:
+        //  it sees only the fraction of loop gas that does NOT go to the cold
+        //  shots, and the effluent it recovers from is 62 K cooler than
+        //  ammonia02's.  375 m2 against 1500.
+        { unitName FEHE;        type shellTubeHX;  material SS316;
+          designRules { U 550.0;  LMTD 157.0;  pressureDesign 220.0; } }
+
+        //  The water cooler takes MORE duty than ammonia02's (66 MW against
+        //  58 MW): less of the effluent heat is recovered into the feed, so
+        //  more of it leaves through the cooling water.  Named, not fixed --
+        //  a real plant puts a waste-heat boiler here, which is a separate
+        //  design act and not this case's subject.
+        { unitName waterCooler; type shellTubeHX;  material carbonSteel;
+          designRules { U 700.0;  LMTD 119.0;   pressureDesign 200.0; } }
+
+        //  THE THREE CATALYST BEDS -- declared so that the engine refuses
+        //  them by name.  See the header above.
+        { unitName bed1;        type vessel;  material SS316;
+          designRules { L_over_D 6.0;  pressureDesign 220.0;
+                        corrosionAllow 0.004;  jointEfficiency 1.0; } }
+        { unitName bed2;        type vessel;  material SS316;
+          designRules { L_over_D 6.0;  pressureDesign 220.0;
+                        corrosionAllow 0.004;  jointEfficiency 1.0; } }
+        { unitName bed3;        type vessel;  material SS316;
+          designRules { L_over_D 6.0;  pressureDesign 220.0;
+                        corrosionAllow 0.004;  jointEfficiency 1.0; } }
+
+        //  The high-pressure SEPARATOR and the product LET-DOWN drum, exactly
+        //  as ammonia02 sizes them.
+        { unitName separator;   type vessel;  material SS316;
+          designRules { residenceTime 45.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;  pressureDesign 220.0;
+                        jointEfficiency 1.0; } }
+        { unitName letdown;     type vessel;  material carbonSteel;
+          designRules { residenceTime 60.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;  pressureDesign 25.0;
+                        jointEfficiency 1.0; } }
+    );
+}

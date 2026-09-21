@@ -74,6 +74,7 @@
 #           full sweep meets the case and reports the same rows.  This line
 #           EXPIRES the day those goldens are re-recorded -- put the case back.
 # EXCLUDED  tutorials/plant/acetonePlant  39.97 s -- over the 3 s per-case cap this list is built to; the tier is checked by the full sweep instead
+# EXCLUDED  tutorials/plant/ammonia03_quench_converter  5.7-5.8 s measured over three runs on 2026-09-21 -- over the 3 s per-case cap, and for a reason that is the case itself: three adiabatic gibbsReactor beds on a two-stream tear, each with its own outer Newton on temperature.  The full sweep meets it.  This line EXPIRES if the case ever comes in under the cap -- re-measure before believing it
 #
 # THE FOUR CONSERVATION GATES, and why those four.  A golden pins what a run
 # PRINTS, so a stable wrong answer passes by construction: the spray dryer of
