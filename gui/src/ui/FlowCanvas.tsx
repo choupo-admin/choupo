@@ -60,6 +60,7 @@ import { caseMolarMass, meanMolarMass } from "../case/caseMolarMass.js";
 import type { DynamicInstant } from "../case/dynamicInstants.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
 import { streamNumberResolver } from "../case/streamNumbering.js";
+import { dashKindOf, dashStyle, legendDashes, type DashKind } from "../case/edgeDashes";
 import { boundaryForStream } from "../case/modelBoundary.js";
 import { tutorialByName } from "../cases/tutorials.js";
 import type { StreamSpec } from "../case/types.js";
@@ -856,6 +857,17 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         const isEnergy = (e.data as { kind?: string } | undefined)?.kind === "energy";
         const isTear   = (e.data as { kind?: string } | undefined)?.kind === "tear";
         const isDuty   = (e.data as { kind?: string } | undefined)?.kind === "duty";
+        const isRecipe = (e.data as { kind?: string } | undefined)?.kind === "recipe";
+        //  ONE evaluation of what this wire IS: it paints the stroke below
+        //  AND travels on `data` so the legend decodes the same answer.
+        //  Deriving the legend by reading dasharrays back off the edges would
+        //  be a second home for the vocabulary, and the ambiguous patterns
+        //  (4 4 and 6 3 -- see case/edgeDashes.ts) make that reading
+        //  impossible anyway.
+        const dashKind: DashKind = dashKindOf({
+          isEnergy, isDuty, isRecipe, isTear, isUtility,
+          isEmpty: undefined,
+        });
         // Model-boundary audit entry for THIS stream ("information follows
         // the streams"): the edge component docks a small ΔH / REFUSED chip
         // next to its label point.  Badge only -- the STROKE below stays the
@@ -898,6 +910,8 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             onCommit: commitEdgeCenters,
             onReset: onEdgeCenterReset,
             showNumbers: show.numbers,
+            dashKind: dashKind !== "process"
+              ? dashKind : (ps?.phase === "empty" ? "empty" : "process"),
             num: numberOf(label),   // ABSOLUTE number (overrides toGraph local)
             ...(boundary ? { boundary: { refused: boundary.refused } } : {}),
           },
@@ -924,24 +938,13 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             ...(e.style ?? {}),
             stroke: color,
             strokeWidth,
-            // Empty streams (zero flow): dashed so the eye sees that this
-            // pipe carries nothing in the current run.
-            ...(ps?.phase === "empty" && !isEnergy
-              ? { strokeDasharray: "4 4", opacity: 0.55 }
-              : {}),
-            // Recycle (tear) edges: dashed long-pattern so the back-edge
-            // reads instantly as a recycle line, not just another stream.
-            // Phase colour preserved -- a vapour recycle stays orange.
-            ...(isTear
-              ? { strokeDasharray: "10 5" }
-              : {}),
-            // Utility streams: dashed short-pattern so they read instantly
-            // as plant utilities (steam header, cooling water, oil loop)
-            // rather than process material.  Phase colour preserved so a
-            // saturated-steam edge still reads "vapour" at a glance.
-            ...(isUtility && !isTear && !isEnergy
-              ? { strokeDasharray: "6 3", opacity: 0.85 }
-              : {}),
+            //  WHAT A DASH MEANS HAS ONE HOME (case/edgeDashes.ts).  These
+            //  were three hand-rolled spreads whose precedence was the order
+            //  they appeared in -- a rule nobody could read off the screen,
+            //  and one the legend beside them did not share.  The table now
+            //  paints the wire AND fills the legend, so the two cannot drift.
+            ...dashStyle(dashKind !== "process" ? dashKind
+                         : (ps?.phase === "empty" ? "empty" : "process")),
             // Selection halo: SVG drop-shadow in the project accent.
             // Visible regardless of phase colour, doesn't repaint stroke.
             ...(isSelected
@@ -964,6 +967,19 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     [graph.edges, selectedStreamName, phaseOf, utilityOf, maxFlow, show,
      edgeCenters, onEdgeCenterChange, commitEdgeCenters, onEdgeCenterReset,
      runResult, numberOf, scrubOverlay, colorScheme],
+  );
+
+  //  THE DASH LEGEND.  Derived from the kind each edge was STAMPED with, so
+  //  the swatch and the wire are one answer.  Only the kinds PRESENT are
+  //  listed -- the same rule the phase legend beside it follows, so a reader
+  //  learns the vocabulary of THIS plant rather than of the software.
+  const dashesPresent = useMemo(
+    () => legendDashes(
+      styledEdges
+        .map((e) => (e.data as { dashKind?: DashKind } | undefined)?.dashKind)
+        .filter((k): k is DashKind => !!k),
+    ),
+    [styledEdges],
   );
 
   // Keyboard shortcuts.  Esc -> deselect; F -> fit view; ] -> fold/unfold the
@@ -1169,6 +1185,48 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             pressure mode it becomes a continuous viridis scale bar annotated
             with the run's min/max in the chosen unit --- so the eye decodes a
             gradient cyan as "cold", never as "liquid". */}
+        {/* The DASH legend, under the phase legend.  Vitor asked why a
+            stream was dashed when it is not a utility (it was a recycle
+            cut): the canvas states six facts in stroke patterns and nothing
+            decoded them.  Colour is shown where a kind HAS a fixed one --
+            two patterns are shared and only the colour separates them. */}
+        {dashesPresent.length > 0 && (
+          <Box
+            style={{
+              position: "absolute",
+              left: 12,
+              top: 90,
+              zIndex: 5,
+              padding: "6px 10px",
+              borderRadius: 4,
+              background: "light-dark(rgba(255,255,255,0.9), rgba(0,0,0,0.55))",
+              pointerEvents: "none",
+              display: "flex",
+              gap: 12,
+              alignItems: "center",
+              flexWrap: "wrap",
+              maxWidth: 520,
+            }}
+          >
+            <Text size="10px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
+              wires
+            </Text>
+            {dashesPresent.map((d) => (
+              <Box key={d.kind} style={{ display: "flex", gap: 5, alignItems: "center" }} title={d.meaning}>
+                <svg width={22} height={6} aria-hidden>
+                  <line
+                    x1={0} y1={3} x2={22} y2={3}
+                    stroke={d.colour ?? "currentColor"}
+                    strokeWidth={2}
+                    strokeDasharray={d.dash ?? undefined}
+                    opacity={d.opacity}
+                  />
+                </svg>
+                <Text size="10px" c="dimmed">{d.label}</Text>
+              </Box>
+            ))}
+          </Box>
+        )}
         {phasesPresent.size > 0 && (
           <Box
             style={{
