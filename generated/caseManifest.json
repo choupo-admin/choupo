@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 414,
+  "cases": 415,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -1978,6 +1978,20 @@
    "application": "choupoProps",
    "ops": [
     "frictionBench"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/kinetics/ammoniaRate01_dyson_simon": {
+   "application": "choupoProps",
+   "ops": [
+    "ammoniaRateBench"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -6189,6 +6203,7 @@
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
     "tutorials/props/hydraulics/moody01_friction_correlations",
+    "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
@@ -7269,6 +7284,7 @@
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
     "tutorials/props/hydraulics/moody01_friction_correlations",
+    "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/molecular/envelope01_natural_gas",
@@ -7466,6 +7482,9 @@
   "byOp": {
    "activityCoefficients": [
     "tutorials/props/molecular/nrtl01_ethanol_water_package"
+   ],
+   "ammoniaRateBench": [
+    "tutorials/props/kinetics/ammoniaRate01_dyson_simon"
    ],
    "electrolyteActivity": [
     "tutorials/props/electrolyte/pitzer02_nacl_package"

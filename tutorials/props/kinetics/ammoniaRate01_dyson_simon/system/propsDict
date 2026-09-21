@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  propsDict -- the ammonia synthesis rate of Dyson & Simon (1968), on the
+  bench.  Two questions, and they are different questions.
+
+  THE LOCUS.  Sweeping temperature at a FIXED conversion locates the
+  temperature of greatest net rate.  Three conversions locate three points of
+  the locus, and the point is that it DESCENDS.  The sweep runs 600-900 K
+  because that is roughly the band an iron catalyst lives in; at the lowest
+  conversion the maximum is pushed ONTO the window's upper edge, and the bench
+  says so rather than reporting an edge as a maximum.
+
+  THE DECLARED STATES.  Three gases TRANSCRIBED from the converged answer of
+  tutorials/plant/ammonia03_quench_converter, at the digits that case's own
+  golden pins.  A transcription is a SECOND HOME for somebody else's number
+  and it will go stale if that case moves, so `check_ammonia_rate` RUNS
+  ammonia03 and holds these three blocks to its converged result.
+
+  The catalyst is 8 mm, inside the 6-10 mm range Equation 39's effectiveness
+  factor was fitted for.  There is NO default particle size anywhere in the
+  engine: omit this block and Equation 40 refuses by name.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      dysonSimon;
+        type      ammoniaRateBench;
+
+        catalyst  { particleDiameter 8 mm; }
+
+        locus
+        {
+            pressure     300 atm;
+            conversions  ( 0.05  0.15  0.25 );
+            temperature  { from 600 K;  to 900 K;  n 301; }
+        }
+
+        points
+        (
+            //  Bed 1's inlet: the leanest, coldest gas in the converter, and
+            //  by far the fastest.
+            { label bed1Inlet;   T 683.1469 K;  P 200 bar;
+              composition { N2 0.2393446; H2 0.7262456; NH3 0.0111202; inert 0.0232896; } }
+
+            //  Bed 1's outlet -- which the flowsheet computed as an
+            //  EQUILIBRIUM state, so this rate should be zero and is not.
+            //  See README.md section 4: it is the two equilibria disagreeing.
+            { label bed1Outlet;  T 841.2768 K;  P 200 bar;
+              composition { N2 0.2148635; H2 0.6535734; NH3 0.1060861; inert 0.0254770; } }
+
+            //  The converter's exit.
+            { label bed3Outlet;  T 777.5091 K;  P 200 bar;
+              composition { N2 0.1976567; H2 0.6024952; NH3 0.1728337; inert 0.0270144; } }
+        );
+    }
+);

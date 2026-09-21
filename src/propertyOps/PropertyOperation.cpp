@@ -33,6 +33,7 @@ License
 #include "Exchange.H"
 #include "FitParameters.H"
 #include "HeatCapacityFit.H"
+#include "AmmoniaRateBench.H"
 #include "FrictionBench.H"
 #include "TransportBench.H"
 #include "SolubilityParameter.H"
@@ -198,6 +199,11 @@ void PropertyOperation::registerBuiltins()
     reg("heatCapacityFit", []{ return std::make_unique<HeatCapacityFit>(); });
     reg("heatTransferBench", []{ return std::make_unique<HeatTransferBench>(); });
     reg("frictionBench", []{ return std::make_unique<FrictionBench>(); });
+    //  THE AMMONIA RATE LAW ON THE BENCH.  `DysonSimon1968` carries its own
+    //  verify(); an unwired self-check is a no-silent-crutch violation, and
+    //  this op is the wire -- the same posture as the friction and transport
+    //  families.
+    reg("ammoniaRateBench", []{ return std::make_unique<AmmoniaRateBench>(); });
     reg("transportBench", []{ return std::make_unique<TransportBench>(); });
     reg("solubilityParameter", []{ return std::make_unique<SolubilityParameter>(); });
     reg("estimateComponent", []{ return std::make_unique<EstimateComponent>(); });

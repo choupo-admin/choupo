@@ -78,11 +78,23 @@
   "AmbroseWalton": [
    "src/thermo/vaporPressure/AmbroseWalton.H"
   ],
+  "AmmoniaRateBench": [
+   "src/propertyOps/AmmoniaRateBench.H"
+  ],
+  "AmmoniaRateContext": [
+   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
+  ],
+  "AmmoniaRateResult": [
+   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
+  ],
   "AnalysisReconciliation": [
    "src/streams/ProcessStream.H"
   ],
   "Analyte": [
    "src/streams/ProcessStream.H"
+  ],
+  "Anchor": [
+   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
   ],
   "Andrade": [
    "src/thermo/transport/Andrade.H"
@@ -383,6 +395,9 @@
   ],
   "DynamicUnitSnapshot": [
    "src/io/SolutionWriter.H"
+  ],
+  "DysonSimon1968": [
+   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
   ],
   "EDSherwood": [
    "src/thermo/electrochem/EDStack.H"
@@ -1851,6 +1866,10 @@
     "type": "FrictionBench"
    },
    {
+    "key": "ammoniaRateBench",
+    "type": "AmmoniaRateBench"
+   },
+   {
     "key": "transportBench",
     "type": "TransportBench"
    },
@@ -2801,7 +2820,6 @@
    "src/core/Origin.H",
    "src/core/ThermoResolution.H"
   ],
-  "src/core/Types.H": [],
   "src/core/Units.cpp": [
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -3627,6 +3645,14 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/propertyOps/AmmoniaRateBench.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/propertyOps/AmmoniaRateBench.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
+  ],
   "src/propertyOps/ConstantEstimator.cpp": [
    "src/propertyOps/ConstantEstimator.H",
    "src/propertyOps/Joback.H",
@@ -4074,11 +4100,6 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/saturation/BubblePoint.H"
-  ],
-  "src/propertyOps/PropertyOperation.H": [
-   "src/core/Dictionary.H",
-   "src/core/Dimensions.H",
-   "src/core/Types.H"
   ],
   "src/propertyOps/PropertyOperation.cpp": [
    "src/core/Constants.H",
@@ -7433,6 +7454,10 @@
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.H"
   ],
+  "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp": [
+   "src/core/Types.H",
+   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
+  ],
   "src/unitOperations/reactor/pellet/Catalyst.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -8160,6 +8185,7 @@
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
+   "src/propertyOps/AmmoniaRateBench.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -8187,7 +8213,6 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
-   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -8452,6 +8477,7 @@
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
+   "src/propertyOps/AmmoniaRateBench.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -8479,7 +8505,6 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
-   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -9529,6 +9554,7 @@
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
+   "src/propertyOps/AmmoniaRateBench.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -9556,7 +9582,6 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
-   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -9758,6 +9783,7 @@
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp",
    "src/unitOperations/reactor/pellet/Catalyst.cpp",
    "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
@@ -10036,6 +10062,9 @@
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp"
   ],
+  "src/propertyOps/AmmoniaRateBench.H": [
+   "src/propertyOps/AmmoniaRateBench.cpp"
+  ],
   "src/propertyOps/CasePackage.H": [
    "src/applications/choupoProps/main.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -10173,6 +10202,7 @@
   ],
   "src/propertyOps/PropertyOperation.H": [
    "src/applications/choupoProps/main.cpp",
+   "src/propertyOps/AmmoniaRateBench.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -13237,6 +13267,10 @@
   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.H": [
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp"
+  ],
+  "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H": [
+   "src/propertyOps/AmmoniaRateBench.cpp",
+   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp"
   ],
   "src/unitOperations/reactor/pellet/Catalyst.H": [
    "src/propertyOps/ThielePellet.cpp",
