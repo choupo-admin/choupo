@@ -1,0 +1,39 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    dysonSimon             anchor1_pass     1                1e-4
+diag    dysonSimon             anchor2_pass     1                1e-4
+diag    dysonSimon             anchor3_pass     1                1e-4
+diag    dysonSimon             anchor4_pass     1                1e-4
+diag    dysonSimon             anchor5_pass     1                1e-4
+diag    dysonSimon             anchorCount      5                1e-4
+diag    dysonSimon             anchorsPassed    5                1e-4
+diag    dysonSimon             bed1Inlet_Eq40   312.95744498     1e-4
+diag    dysonSimon             bed1Inlet_V3     929.13051108     1e-4
+diag    dysonSimon             bed1Inlet_eta    0.0251956498047  1e-4
+diag    dysonSimon             bed1Inlet_xi     0.336828294032   1e-4
+diag    dysonSimon             bed1Outlet_Eq40  4.6853092592     1e-4
+diag    dysonSimon             bed1Outlet_V3    9.34102880697    1e-4
+diag    dysonSimon             bed1Outlet_eta   0.219727948649   1e-4
+diag    dysonSimon             bed1Outlet_xi    0.501583857199   1e-4
+diag    dysonSimon             bed3Outlet_Eq40  0.769439779812   1e-4
+diag    dysonSimon             bed3Outlet_V3    1.00310235931    1e-4
+diag    dysonSimon             bed3Outlet_eta   0.337604123841   1e-4
+diag    dysonSimon             bed3Outlet_xi    0.76706008382    1e-4
+diag    dysonSimon             locus1_Eq40      -889.947776496   1e-4
+diag    dysonSimon             locus1_T_maxRate_K 900              1e-4
+diag    dysonSimon             locus1_V3_max    9449.93142752    1e-4
+diag    dysonSimon             locus1_eta       0.05             1e-4
+diag    dysonSimon             locus1_xi        -0.09417505125   1e-4
+diag    dysonSimon             locus2_Eq40      299.095596686    1e-4
+diag    dysonSimon             locus2_T_maxRate_K 867              1e-4
+diag    dysonSimon             locus2_V3_max    1275.6160105     1e-4
+diag    dysonSimon             locus2_eta       0.15             1e-4
+diag    dysonSimon             locus2_xi        0.234471497868   1e-4
+diag    dysonSimon             locus3_Eq40      145.680532358    1e-4
+diag    dysonSimon             locus3_T_maxRate_K 794              1e-4
+diag    dysonSimon             locus3_V3_max    274.092717767    1e-4
+diag    dysonSimon             locus3_eta       0.25             1e-4
+diag    dysonSimon             locus3_xi        0.531500922551   1e-4
+diag    dysonSimon             locusDescends    1                1e-4
+diag    dysonSimon             particleDiameter_mm 8                1e-4

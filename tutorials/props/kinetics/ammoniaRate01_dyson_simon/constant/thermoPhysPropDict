@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict -- DECLARED, AND DELIBERATELY NOT USED.
+
+  `ammoniaRateBench` never asks this package anything.  Dyson & Simon's rate
+  law carries its own equilibrium constant (Eq 2, after Gillespie & Beattie
+  1930) and its own fugacity coefficients (Eqs 6-8, after Cooper 1967 and
+  Newton 1935), and that INDEPENDENCE is the case's point: it is what makes
+  the 0.63 % agreement in README.md section 4 a comparison between two
+  sources rather than a model checking itself.  Replace SRK here with
+  anything and not one number in this case moves.
+
+  The block exists because choupoProps assembles a package before it runs any
+  operation.  It names ammonia, the substance the case is about, rather than
+  an unrelated component chosen for convenience.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( NH3 );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

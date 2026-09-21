@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ammoniaRate01_dyson_simon -- the ammonia synthesis rate law on the bench.
+
+  THE PACKAGE BELOW IS A FORMALITY AND SAYS SO.  `ammoniaRateBench` asks the
+  correlation object for a rate; it never touches the thermophysical package,
+  because Dyson & Simon carry their OWN fugacity coefficients (Eqs 6-8) and
+  their OWN equilibrium constant (Eq 2, after Gillespie & Beattie).  That is
+  the point of the case rather than an omission: the rate law is an
+  INDEPENDENT source, and comparing it with what Choupo's own SRK + Gibbs
+  minimisation says is a comparison between two sources instead of a model
+  checking itself.  See README.md section 4 -- they agree to 0.63 %.
+\*---------------------------------------------------------------------------*/
+application  choupoProps;
+tier         tutorial;
+description  "The ammonia synthesis rate of Dyson & Simon (1968) as a cited correlation object: Eq 19's pseudo-homogeneous rate, Eq 39's effectiveness factor over Table I's three tabulated pressures, Eq 40, with a declared 150-300 atm window, an announced pressure interpolation and five verify() anchors that each state whether they are THEORY or ARITHMETIC. It locates the LOCUS OF MAXIMUM RATE at three conversions and shows it descending -- the curve ammonia03_quench_converter zigzags about -- and evaluates the rate at that converter's own bed states.";
+verbosity    3;

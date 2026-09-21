@@ -2180,6 +2180,48 @@ WHAT THIS CASE DOES NOT DO. It does not say which correlation is right. That dep
 \subsection{kinetics}
 \grouptheory{kinetics}
 \clearpage
+\tutentry{ammoniaRate01\_dyson\_simon}{tutorials/props/kinetics/ammoniaRate01\_dyson\_simon}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{dysonSimon}\\[-1pt]{\tiny ammoniaRateBench}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The ammonia synthesis rate of Dyson \& Simon (1968) as a cited correlation object: Eq 19's pseudo-homogeneous rate, Eq 39's effectiveness factor over Table I's three tabulated pressures, Eq 40, with a declared 150-300 atm window, an announced pressure interpolation and five verify() anchors that each state whether they are THEORY or ARITHMETIC. It locates the LOCUS OF MAXIMUM RATE at three conversions and shows it descending -- the curve ammonia03\_quench\_converter zigzags about -- and evaluates the rate at that converter's own bed states.}
+\begin{tutnarrative}
+propsDict -- the ammonia synthesis rate of Dyson \& Simon (1968), on the bench. Two questions, and they are different questions.
+
+THE LOCUS. Sweeping temperature at a FIXED conversion locates the temperature of greatest net rate. Three conversions locate three points of the locus, and the point is that it DESCENDS. The sweep runs 600-900 K because that is roughly the band an iron catalyst lives in; at the lowest conversion the maximum is pushed ONTO the window's upper edge, and the bench says so rather than reporting an edge as a maximum.
+
+THE DECLARED STATES. Three gases TRANSCRIBED from the converged answer of tutorials/plant/ammonia03\_quench\_converter, at the digits that case's own golden pins. A transcription is a SECOND HOME for somebody else's number and it will go stale if that case moves, so `check\_ammonia\_rate` RUNS ammonia03 and holds these three blocks to its converged result.
+
+The catalyst is 8 mm, inside the 6-10 mm range Equation 39's effectiveness factor was fitted for. There is NO default particle size anywhere in the engine: omit this block and Equation 40 refuses by name.
+
+\end{tutnarrative}
+\tutreadme{tutorials/plant/ammonia03\_quench\_converter builds a three-bed quench converter out of equilibrium beds and then says, in its own README, what it cannot do: it cannot size a bed, it cannot tell a good injection point from a bad one, and it rewards over-quenching into a region where a real catalyst is too slow to reach the equilibrium the model hands it. All three gaps are the same gap --- there is no rate law.}
+\tutreadme{> D. C. Dyson and J. M. Simon, $\ast$A kinetic expression with diffusion correction > for ammonia synthesis on industrial catalyst$\ast$, Ind. Eng. Chem. Fundam. 7 > (1968) 605--610. Equations 2, 6--8, 18, 19, 39 with Table I, and 40. > Nothing in this case is measured by Choupo: the data these equations were > fitted to are Nielsen, Kj?r and Hansen's (J. Catalysis 3 (1964) 68).}
+\tutreadme{The same two letters, meaning opposite things. This case keeps the paper's convention because every number in it is read off the paper's own equations, and the engine says so at every surface that prints either letter. Carry $\eta$ across from the reactor side and you will read a conversion as an effectiveness factor.}
+\tutreadme{A correlation in this tree is an object with three things a reader can check, and this one is no exception:}
+\tutreadme{$\ast$ citation() --- the primary, equation by equation. $\ast$ validityWindow() --- 150 to 300 atm; ? tabulated at exactly 150, 225 and 300 atm; ? for 6--10 mm particles; ? fitted on a 3:1 H$_2$/N$_2$ mixture with 12.7 \% inerts. $\ast$ verify() --- five anchors, each stating what kind of claim it is.}
+\tutreadme{None is measured, and the run says so. An arithmetic anchor reproducing a literal to twelve figures proves a transcription; it is not a validation, and a bench that let a 0.000 \% deviation read as one would be lying quietly.}
+\begin{tutgolden}
+\goldrow{diag}{dysonSimon}{anchor1\_pass}{1}
+\goldrow{diag}{dysonSimon}{anchor2\_pass}{1}
+\goldrow{diag}{dysonSimon}{anchor3\_pass}{1}
+\goldrow{diag}{dysonSimon}{anchor4\_pass}{1}
+\goldrow{diag}{dysonSimon}{anchor5\_pass}{1}
+\goldrow{diag}{dysonSimon}{anchorCount}{5}
+\goldrow{diag}{dysonSimon}{anchorsPassed}{5}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_Eq40}{312.95744498}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_V3}{929.13051108}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_eta}{0.0251956498047}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_xi}{0.336828294032}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_Eq40}{4.6853092592}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_V3}{9.34102880697}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_eta}{0.219727948649}
+\goldmore{22}
+\end{tutgolden}
+
+\clearpage
 \tutentry{rate01\_arrhenius\_recovery}{tutorials/props/kinetics/rate01\_arrhenius\_recovery}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

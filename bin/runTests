@@ -3478,6 +3478,25 @@ PYEOF
     fi
     rm -f /tmp/friction.$$
 
+    # ammonia-rate gate (2026-09-21).  Dyson & Simon's 1968 rate law became a
+    # cited object with a window, a citation and five verify() anchors that
+    # each state whether they are THEORY or ARITHMETIC -- nothing in this tree
+    # measures an ammonia rate.  The gate re-implements Eqs 2/6-8/19/39 and
+    # reproduces the witness's diagnostics, fires all five refusals, and holds
+    # the three states transcribed from ammonia03 to that case's converged
+    # answer.  Eleven sabotages, two of which did not do what was predicted
+    # (one masked the arm it was aimed at; one survived and closed a real
+    # blind spot in the recomputation).
+    if "$ROOT/bin/curate/check_ammonia_rate.py" > /tmp/ammrate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ammonia-rate-gate" "$(head -1 /tmp/ammrate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ammonia_rate.py)\n" "ammonia-rate-gate"
+        cat /tmp/ammrate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ammrate.$$
+
     # transport-correlation gate (2026-09-05).  The five transport families
     # (Chung, Eucken, Fuller, Andrade/Vogel/chemsepEq101, SatoRiedel/
     # chemsepEq16) and the shared Wilke phi_ij became objects with a window, a

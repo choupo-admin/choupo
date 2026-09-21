@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*93 of 93 registered operations carry a schema and are documented below.*
+*94 of 94 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -74,6 +74,16 @@ Adiabatic flash (Q = 0). The feed flashes to the outlet pressure; outlet tempera
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `P` | ✓ | number | Pa | Pressure at which the flash is solved. |
+
+## `ammoniaRateBench`  (ammoniaRateBench operation)
+
+The ammonia synthesis rate of Dyson & Simon (1968) — Ind. Eng. Chem. Fundam. 7(4) 605-610 — as a cited correlation object, in three parts. VERIFY (always): five anchors, each stating whether it is THEORY (an identity the expression must satisfy, such as Eq 19's two terms having ratio (Ka/Q)^2) or ARITHMETIC (the closed form at a stated point against a literal, which proves a TRANSCRIPTION and never a physics). Nothing here is measured by Choupo: the data these equations were fitted to are Nielsen, Kjaer and Hansen's. LOCUS (optional): sweeping temperature at a fixed nitrogen conversion on the paper's own reference mixture locates the temperature of greatest net rate, and three conversions show that locus DESCENDING — the curve a quench converter zigzags about. POINTS (optional): the rate at states the case declares. Note the SYMBOL COLLISION: the paper writes xi for the effectiveness factor and eta for the conversion of nitrogen, which is the opposite of CatalystPellet.H and of most textbooks.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `catalyst` |   | object | — | There is NO default particle size: which branch of Eq 39/40 applies depends entirely on it, so omitting this block makes Equation 40 refu… |
+| `locus` |   | object | — | Optional. Sweep temperature at each declared conversion and report where the net rate is greatest. |
+| `points` |   | array[object] | — | Optional. Evaluate the rate at gases the case declares — typically the bed states another case computed. Nothing is ranked or compared. |
 
 ## `bagFilter`  (bagFilter operation)
 

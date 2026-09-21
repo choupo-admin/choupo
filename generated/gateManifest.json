@@ -1035,6 +1035,11 @@
       "exit": 0,
       "claim": "check_campaign_ledger_pinned: OK -- 254 campaign-ledger quantit(ies) pinned across 86 (subject, kind) group(s) in 47 candidate choupoBatch case(s), in both directions (published implies pinned, pinned implies published); 11 candidate(s) publish no ledger at all and pass silently.  The MATERIAL ledger's per-component `dn`, its transported `H_kJ` and both ledgers' validity WORD are pinned by `ledger` rows; the ENERGY ledger's per-(unit, kind) total is pinned by the `kpi E_<kind>_total_kJ` row that is its one home, and the block is required to REPRODUCE it (and the campaign's `moles_kmol_external_out`) within 1e-9.  NOT CHECKED: whether any ledger number is RIGHT; the TIME DISTRIBUTION (a row is the campaign aggregate, so moving an amount between instants moves no row); `basis`, `T_service_K`, `tStart`/`tEnd` and the `H_missing`/`E_missing` reason lists, which no row kind reads; and any ledger outside choupoBatch, of which there is none.  NOT JUDGED: 3 batch case(s) carrying a declared opt-out marker (batch12_adsorber_refused_P, ignition01_h2o2_eulersi, ignition01_h2o2_rk4) -- they produce no answer to pin.",
       "seconds": 547.1
+    },
+    "check_ammonia_rate": {
+      "exit": 0,
+      "claim": "check_ammonia_rate: OK -- 5 anchors, all passing, labelled ['arithmetic', 'theory']; Eqs 2/6-8/19/39 reproduced by a second implementation at every published locus point AND at all three declared states, the latter through the pressure interpolation (an ALGEBRA check; both copies were typed from the same page, so a mistyped COEFFICIENT survives it); the three transcribed gases still match ammonia03's converged answer (a transcription is a second home, so it is held to its source rather than trusted).  NOT CHECKED: whether the rate law is RIGHT (nothing in this tree measures an ammonia rate; the agreement with Nielsen, Kjaer and Hansen's data is the authors' claim, made in 1968), any bed (nothing here integrates a reactor, and the four reactors that announce eta = 1 are untouched by this slice), and the T and eta domain of Table I -- the paper states none, which is why arm (h) exists at all.",
+      "seconds": 0.4
     }
   }
 }
