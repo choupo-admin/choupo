@@ -2801,6 +2801,7 @@
    "src/core/Origin.H",
    "src/core/ThermoResolution.H"
   ],
+  "src/core/Types.H": [],
   "src/core/Units.cpp": [
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -4073,6 +4074,11 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/saturation/BubblePoint.H"
+  ],
+  "src/propertyOps/PropertyOperation.H": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H"
   ],
   "src/propertyOps/PropertyOperation.cpp": [
    "src/core/Constants.H",
@@ -8181,6 +8187,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -8472,6 +8479,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -9548,6 +9556,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",

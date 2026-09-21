@@ -136,16 +136,48 @@ def main() -> int:
                 "a version no citation carries.  Delete it; the release's "
                 "artefact already describes what a patch does not change.")
 
+    #  CAN THIS GATE RUN AT ALL?  Every arm below reads a TAG -- its commit,
+    #  a worktree of it, its CITATION.cff.  A checkout with NO TAGS WHATSOEVER
+    #  (a shallow clone, which is what `git clone --depth` and most CI and
+    #  container checkouts produce) carries none of that, and the arms then
+    #  measure the clone rather than the release.  That is not a finding about
+    #  Choupo, and reporting it as one made the suite red for a contributor who
+    #  had done nothing: the mirror of "a check that cannot run must not pass"
+    #  is that it must not FAIL either, it must REFUSE and name the remedy
+    #  (drive-app, 2026-09-06).
+    #
+    #  THE DISTINCTION IS THE WHOLE POINT, and it is NOT "the tag is missing":
+    #  a tree that HAS tags and is missing THIS one means somebody deleted an
+    #  immutable tag, which is exactly what this gate exists to catch.  Only a
+    #  tree with no tags at all cannot be asked the question.
+    have_tags = subprocess.run(["git", "tag"], capture_output=True, text=True,
+                               cwd=ROOT).stdout.strip()
+    if not have_tags:
+        names = ", ".join(a.stem for a in artefacts)
+        print("check_release_identity: NOT RUN -- this checkout carries NO"
+              " TAGS AT ALL (a shallow or tagless clone), and every arm of this"
+              " gate reads a tag: the artefact's commit, a worktree of the tag,"
+              " and the tag's CITATION.cff.  Nothing was verified about"
+              f" {names}; this is reported, never passed.  Remedy: `git fetch"
+              " --tags --unshallow` (or clone without --depth) and run again."
+              "  NOT CHECKED, and it is what this gate is FOR: whether an"
+              " immutable tag has been moved or deleted, and whether each"
+              " release artefact still recounts from its own tag.")
+        return 0
+
     flats = {}
     for af in artefacts:
         art = json.loads(af.read_text())
         tag = art.get("tag", "")
         flats.update(flatten(art))
 
-        # (a) the artefact is the tag's
-        want = subprocess.run(["git", "rev-parse", tag + "^{}"],
-                              capture_output=True, text=True,
-                              cwd=ROOT).stdout.strip()
+        # (a) the artefact is the tag's.  `git rev-parse` ECHOES ITS ARGUMENT
+        # on stdout when it cannot resolve it, so the returncode is the only
+        # honest reading -- taking stdout alone once produced the sentence
+        # "tag v2608 resolves to v2608^{}", which is not a resolution.
+        rp = subprocess.run(["git", "rev-parse", tag + "^{}"],
+                            capture_output=True, text=True, cwd=ROOT)
+        want = rp.stdout.strip() if rp.returncode == 0 else ""
         if not want:
             fail.append(f"{af.name}: its tag '{tag}' does not resolve -- an "
                         "artefact for a tag that does not exist describes "

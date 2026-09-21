@@ -176,10 +176,24 @@ def main() -> int:
                    "(c) the id round-trip of every written block",
                    "(d) the no-partial-decomposition check"]
         if written:
-            fails.append(f"{written} imported record(s) carry UNIFAC groups but"
-                         " the ChemSep archive is absent, so nothing can verify"
-                         " them -- they were written by a run that had it, and"
-                         " this run cannot confirm they still agree")
+            #  REPORTED, NEVER FAILED.  This used to append to `fails`, and it
+            #  contradicted the sentence this gate prints two screens below:
+            #  that what cannot be verified is "reported rather than passed".
+            #  The absence of a GITIGNORED PRIVATE archive is not evidence that
+            #  the written blocks drifted -- it is the absence of evidence
+            #  either way, and failing on it asserts the first while knowing
+            #  only the second.  A fresh clone has no archive BY DESIGN, so the
+            #  old behaviour made the suite red for every contributor who had
+            #  done nothing wrong: friction that teaches a reader to ignore the
+            #  gate (the 2026-09-04 rule -- a gate that accuses the innocent).
+            #  The mirror of "a check that cannot run must not pass" is that it
+            #  must not FAIL either; it must say so (drive-app, 2026-09-06).
+            notrun.append(f"(a) whether the {written} imported record(s) that"
+                          " carry UNIFAC groups still agree with ChemSep -- the"
+                          " archive is gitignored and absent, so they were"
+                          " written by a run that had it and this run can"
+                          " neither confirm nor contradict them"
+                          " (bin/curate/chemsep_to_choupo.py names the install)")
     else:
         # ---- (b0) THE EVIDENCE IS INDEPENDENT OF THE OUTPUT --------------
         #  The first run of this gate reported the key solved from 232

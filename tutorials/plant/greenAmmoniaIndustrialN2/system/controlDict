@@ -7,6 +7,14 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application  choupoSolve;
+
+//  AUDIENCE.  A SHOWCASE composes engineering (bin/curate/check_case_tiers):
+//  three sectors, two recycle cuts and two property packages are not a
+//  feature being isolated (a witness) nor a feature being composed (a
+//  tutorial) -- they are a plant.  Declared rather than defaulted: without
+//  this word the case was a WITNESS by omission, which is the audience a
+//  regression fixture has, not the one a capstone deserves.
+tier         showcase;
 description  "Green ammonia, 500 t/day (Sines), with INDUSTRIAL-GRADE nitrogen (99.5 % N2 / 0.40 % O2 / 0.10 % Ar), laid out in three sectors: PURIFICATION (nitrogen booster, 3:1 mixing, Pd deoxo, chilling to 279 K, knock-out drum, 4A molecular-sieve dryer and the synthesis compressor), LOOP (Haber-Bosch loop with feed/effluent exchanger, adiabatic converter, cooling, cold separation at 250 K, purge and recycle) and PRODUCT (let-down to 20 bar). Both recycle cuts -- material (Recycle) and energy (HotEffluent) -- are INTERNAL to the LOOP sector. SRK vapour; H2, N2 and Ar dissolved in liquid ammonia through measured Henry constants. The purification sector carries its own property package, with water as the solvent.";
 verbosity    3;
 

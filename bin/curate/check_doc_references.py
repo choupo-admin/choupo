@@ -41,13 +41,24 @@ PREFIXES = ("tutorials", "src", "bin", "data", "docs", "gui", "make",
 #  A path may legitimately not exist.  Each entry says WHY, and the reason is
 #  the thing a reviewer checks -- an unexplained entry here is a suppressed
 #  failure wearing a whitelist.
+#  THE PRIVATE TIER IS A RULE, NOT FOUR ENTRIES.  `data/local/` is the
+#  gitignored, private working tier: the public repository ships it EMPTY by
+#  design, so NOTHING under it can exist in a clean checkout, and a doc that
+#  names one of its paths is describing where a user's OWN data goes.  This
+#  used to be a hand-kept list of four such paths, and it went stale the
+#  moment a fifth was written about (`data/local/lennardJones/`, the Svehla
+#  slice of 2026-09-06) -- the suite then went red on a correct sentence in
+#  CLAUDE.md, in every fresh clone, for ever.  A list of instances of a rule
+#  is the rule with extra steps and a drift.  The tier IS the reason, stated
+#  once here; a path needing a reason of its OWN still goes in ALLOWED_PATHS.
+PRIVATE_TIER = "data/local/"
+
+
+def in_private_tier(p: str) -> bool:
+    return p.startswith(PRIVATE_TIER)
+
+
 ALLOWED_PATHS = {
-    # The private tier ships EMPTY and gitignored; the docs describe where a
-    # user's own data GOES, which is exactly a path that is absent by design.
-    "data/local/components/":            "private tier, ships empty (gitignored)",
-    "data/local/parameters/":            "private tier, ships empty (gitignored)",
-    "data/local/cosmo/":                 "private tier, ships empty (gitignored)",
-    "data/local/CHEMSEP-PAIR-AUDIT.md":  "written by the importer into the private tier",
     # Retired homes, named BECAUSE they are retired.  Removing the mention
     # would lose the instruction not to recreate them.
     "data/proposed/":                        "RETIRED 2026-07-13, named as retired",
@@ -157,7 +168,8 @@ def main() -> int:
         for p in sorted({m.group(1).rstrip('.,;:)`"\'')
                          for m in PATH_RE.finditer(txt)}):
             nPaths += 1
-            if PLACEHOLDER.search(p) or p in ALLOWED_PATHS or path_exists(p):
+            if PLACEHOLDER.search(p) or p in ALLOWED_PATHS \
+               or in_private_tier(p) or path_exists(p):
                 continue
             dead.append(f"{rel}: path '{p}' does not exist")
 
@@ -167,7 +179,8 @@ def main() -> int:
                or (ROOT / root).is_dir():
                 continue
             whole = m.group(0).rstrip('.,;:)`"\'')
-            if PLACEHOLDER.search(whole) or whole in ALLOWED_PATHS:
+            if PLACEHOLDER.search(whole) or whole in ALLOWED_PATHS \
+               or in_private_tier(whole):
                 continue
             dead.append(f"{rel}: '{whole}' looks like a repo path but"
                         f" '{root}/' is not a directory of this repository"
