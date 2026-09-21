@@ -14,7 +14,6 @@ Run it:
 runCase tutorials/plant/ammonia03_quench_converter
 ```
 
----
 
 ## 1. Why a converter is quenched
 
@@ -38,15 +37,14 @@ the gas climbs its adiabatic line; at the cold shot it drops **vertically**
 (cold gas removes heat, and dilutes, but converts nothing).  **Up, down, up,
 down, up.**  That zigzag is the whole design.
 
-> **The picture is Dyson and Simon's.**  The rate contours in the
-> conversion–temperature plane, the descending locus of maximum rate, and a
-> cold-shot trajectory drawn as a zigzag about it, are **Figure 2** of
-> D. C. Dyson and J. M. Simon, *A kinetic expression with diffusion correction
-> for ammonia synthesis on industrial catalyst*, **Ind. Eng. Chem. Fundam. 7
-> (1968) 605–610**.  This case executes that figure with equilibrium beds.
-> Their rate law is what would put the contours on it; see §6.
+**The picture is Dyson and Simon's.**  The rate contours in the
+conversion–temperature plane, the descending locus of maximum rate, and a
+cold-shot trajectory drawn as a zigzag about it, are **Figure 2** of
+D. C. Dyson and J. M. Simon, *A kinetic expression with diffusion correction
+for ammonia synthesis on industrial catalyst*, **Ind. Eng. Chem. Fundam. 7
+(1968) 605–610**.  This case executes that figure with equilibrium beds.
+Their rate law is what would put the contours on it; see §6.
 
----
 
 ## 2. What the beds actually do
 
@@ -74,7 +72,6 @@ Read it as the staircase:
   step backwards on the conversion axis — you pay for the cooling with
   unconverted-looking gas.  That is the trade the split has to price.
 
----
 
 ## 3. The design variable is the split
 
@@ -109,7 +106,6 @@ The two cold shots are then sized by the heat each bed puts in.  Note that
 temperature rise is the smaller** (116 K against 158 K): bed 2 is carrying
 half again as much gas, so there is more heat to take out of it.
 
----
 
 ## 4. What it buys, against ammonia02
 
@@ -145,7 +141,6 @@ Two costs, both stated rather than hidden:
   at 245 bar.  Left visible on purpose — a converter redesign propagates into
   the machines, and the run shows it.
 
----
 
 ## 5. What a BAD split costs — measured, same hardware
 
@@ -184,7 +179,6 @@ Three lessons, and the third is the most important one in this case.
    between the injection points.  The split that a real designer agonises over
    is the one thing this model cannot see.
 
----
 
 ## 6. What this model does NOT contain — read before quoting a number
 
@@ -218,7 +212,6 @@ equilibrium and no pressure drop anywhere in this case.  Consequently:
 * Fresh, clean, fully reduced catalyst is implied everywhere.  Nothing here
   models poisoning, ageing, or reduction.
 
----
 
 ## 7. Is three the right number of beds?
 
@@ -239,7 +232,6 @@ its quench nozzle is an **economic** question, and this case deliberately
 publishes no cost, so it does not pretend to answer it.  Three is where the
 knee is, and it is where industrial quench converters sit.
 
----
 
 ## 8. Things to try
 

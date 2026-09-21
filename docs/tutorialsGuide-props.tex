@@ -2198,11 +2198,11 @@ The catalyst is 8 mm, inside the 6-10 mm range Equation 39's effectiveness facto
 
 \end{tutnarrative}
 \tutreadme{tutorials/plant/ammonia03\_quench\_converter builds a three-bed quench converter out of equilibrium beds and then says, in its own README, what it cannot do: it cannot size a bed, it cannot tell a good injection point from a bad one, and it rewards over-quenching into a region where a real catalyst is too slow to reach the equilibrium the model hands it. All three gaps are the same gap --- there is no rate law.}
-\tutreadme{> D. C. Dyson and J. M. Simon, $\ast$A kinetic expression with diffusion correction > for ammonia synthesis on industrial catalyst$\ast$, Ind. Eng. Chem. Fundam. 7 > (1968) 605--610. Equations 2, 6--8, 18, 19, 39 with Table I, and 40. > Nothing in this case is measured by Choupo: the data these equations were > fitted to are Nielsen, Kj?r and Hansen's (J. Catalysis 3 (1964) 68).}
+\tutreadme{The source. D. C. Dyson and J. M. Simon, $\ast$A kinetic expression with diffusion correction for ammonia synthesis on industrial catalyst$\ast$, Ind. Eng. Chem. Fundam. 7 (1968) 605--610. Equations 2, 6--8, 18, 19, 39 with Table I, and 40.}
+\tutreadme{Nothing in this case is measured by Choupo: the data these equations were fitted to are Nielsen, Kj?r and Hansen's (J. Catalysis 3 (1964) 68).}
 \tutreadme{The same two letters, meaning opposite things. This case keeps the paper's convention because every number in it is read off the paper's own equations, and the engine says so at every surface that prints either letter. Carry $\eta$ across from the reactor side and you will read a conversion as an effectiveness factor.}
 \tutreadme{A correlation in this tree is an object with three things a reader can check, and this one is no exception:}
 \tutreadme{$\ast$ citation() --- the primary, equation by equation. $\ast$ validityWindow() --- 150 to 300 atm; ? tabulated at exactly 150, 225 and 300 atm; ? for 6--10 mm particles; ? fitted on a 3:1 H$_2$/N$_2$ mixture with 12.7 \% inerts. $\ast$ verify() --- five anchors, each stating what kind of claim it is.}
-\tutreadme{None is measured, and the run says so. An arithmetic anchor reproducing a literal to twelve figures proves a transcription; it is not a validation, and a bench that let a 0.000 \% deviation read as one would be lying quietly.}
 \begin{tutgolden}
 \goldrow{diag}{dysonSimon}{anchor1\_pass}{1}
 \goldrow{diag}{dysonSimon}{anchor2\_pass}{1}

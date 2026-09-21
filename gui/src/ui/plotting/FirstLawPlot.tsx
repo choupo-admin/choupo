@@ -194,11 +194,16 @@ export function FirstLawPlot({ boundary }: FirstLawPlotProps) {
     `Σ H(in) = ${fmtKw(fig.H_in_kW)} kW · Σ H(out) = ${fmtKw(fig.H_out_kW)} kW`
     + `, on the ${fig.datum} datum — absolute values are set by that reference,`
     + ` only their difference is physical`
-    + (fig.clipped
-        ? `; the enthalpy bars run off this window, which is scaled to the`
-          + ` process quantities (above the level a column is uniformly`
-          + ` translucent-over-solid, so nothing is hidden but the foot)`
-        : "");
+    + (fig.enthalpyCollapsed
+        ? `.  They are NOT drawn apart: at this scale the two bars would each`
+          + ` run far off a window sized for the process, and their visible`
+          + ` extent would be the window's rather than their own.  ΔH is drawn`
+          + ` as the one quantity that IS physical`
+        : fig.clipped
+          ? `; the enthalpy bars run off this window, which is scaled to the`
+            + ` process quantities (above the level a column is uniformly`
+            + ` translucent-over-solid, so nothing is hidden but the foot)`
+          : "");
 
   const title =
     `First law at the plant boundary — ΔH = Q − W`

@@ -112,6 +112,19 @@ export interface FirstLawFigure {
   window: [number, number];
   /** a column whose bars run outside the window */
   clipped: boolean;
+  /**
+   * The enthalpy column is drawn as ONE bar (its net) because its two terms
+   * are not process-scale.  On the elements datum Sigma H(in) and Sigma H(out)
+   * routinely run to millions of kW while the process exchanges thousands, and
+   * NEITHER IS PHYSICAL ON ITS OWN -- this figure's own caption says so.
+   * Stacking them meant drawing, in the most prominent position on the chart,
+   * two clipped slabs whose visible extent was set by the window rather than
+   * by their values; a reader then compared two columns of different shape and
+   * concluded the law did not close, on a plant closing to 1.7 kW in 61 081.
+   * The decomposition is not lost -- it is stated in the caption, in text,
+   * which is where a quantity that is not physical alone belongs.
+   */
+  enthalpyCollapsed: boolean;
   /** the plant declares nothing crossing its boundary: the law is vacuous */
   vacuous: boolean;
   datum: string;
@@ -239,6 +252,29 @@ export function firstLawFigure(gb: GlobalEnergyBoundary | undefined): FirstLawFi
   for (const v of [enthalpy.positiveTop, Math.min(0, enthalpy.level)]) {
     if (Math.abs(v) <= 3 * scale) pts.push(v);
   }
+  //  COLLAPSE THE ENTHALPY STACK WHEN IT IS NOT DRAWABLE HERE.  The test is
+  //  the one the window already applies to the same two numbers a few lines
+  //  above -- one rule, one threshold, so the bar and the axis can never
+  //  disagree about whether the decomposition fits.
+  const enthalpyFits = [enthalpy.positiveTop, Math.min(0, enthalpy.level)]
+    .every((v) => Math.abs(v) <= 3 * scale);
+  if (!enthalpyFits) {
+    enthalpy.terms = [{
+      label: "ΔH",
+      detail: `Σ H(out) − Σ H(in) over ${gb.n_products} product and`
+        + ` ${gb.n_feeds} feed stream(s).  The two absolute enthalpies are on`
+        + ` the ${gb.datum ?? "elements"} datum and are ~${
+            Math.round(Math.max(Math.abs(hIn), Math.abs(hOut)) / scale)
+          }x the process scale, so they are NOT drawn apart here: neither is`
+        + ` physical on its own, and only this difference is`,
+      kw: enthalpy.level,
+      color: enthalpy.level >= 0
+        ? FIRST_LAW_COLORS.positive : FIRST_LAW_COLORS.negative,
+      subtracts: enthalpy.level < 0,
+    }];
+    enthalpy.positiveTop = Math.max(enthalpy.level, 0);
+  }
+
   let lo = Math.min(...pts), hi = Math.max(...pts);
   const span = hi - lo > 0 ? hi - lo : Math.max(scale, 1e-9);
   const pad = 0.22 * span;
@@ -258,6 +294,7 @@ export function firstLawFigure(gb: GlobalEnergyBoundary | undefined): FirstLawFi
     splitPublished,
     window: [lo, hi],
     clipped,
+    enthalpyCollapsed: !enthalpyFits,
     vacuous: gb.noBoundary === true,
     datum: gb.datum ?? "elements",
     H_in_kW: hIn,

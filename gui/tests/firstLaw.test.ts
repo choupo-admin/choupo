@@ -158,7 +158,33 @@ describe("the y window is scaled to the process terms, not to Σ H", () => {
     }
     //  ...and the window is nowhere near the datum-scale bars
     expect(hi - lo).toBeLessThan(50);
-    expect(f.clipped).toBe(true);
+  });
+
+  //  THIS TEST USED TO ASSERT `clipped === true` HERE, and that assertion was
+  //  itself the finding: it pinned the behaviour Vitor reported on the live
+  //  site -- two columns of visibly different shape on a plant whose first law
+  //  closes to 1.7 kW in 61 081.  A test can pin a defect as firmly as a fix.
+  it("Σ H that dwarfs the process is drawn as ONE bar, not a clipped stack", () => {
+    const f = firstLawFigure(PUMP)!;
+    expect(f.enthalpyCollapsed).toBe(true);
+    const enth = f.columns[0];
+    expect(enth.terms).toHaveLength(1);
+    expect(enth.terms[0]!.label).toBe("ΔH");
+    //  the one bar IS the net, so the column's level is unchanged ...
+    expect(enth.terms[0]!.kw).toBeCloseTo(enth.level, 9);
+    //  ... and nothing runs off the window any more
+    const [lo, hi] = f.window;
+    expect(enth.positiveTop).toBeGreaterThanOrEqual(lo);
+    expect(enth.positiveTop).toBeLessThanOrEqual(hi);
+    //  the two absolutes are NOT lost: they still travel for the caption
+    expect(Number.isFinite(f.H_in_kW)).toBe(true);
+    expect(Number.isFinite(f.H_out_kW)).toBe(true);
+  });
+
+  it("a process-scale case keeps its decomposition", () => {
+    const f = firstLawFigure(RANKINE)!;
+    expect(f.enthalpyCollapsed).toBe(false);
+    expect(f.columns[0].terms).toHaveLength(2);
   });
 
   it("a case whose terms are process-scale is NOT clipped", () => {

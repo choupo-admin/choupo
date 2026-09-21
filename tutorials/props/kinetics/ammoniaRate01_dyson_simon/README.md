@@ -13,13 +13,14 @@ This case is the rate law.
 runCase tutorials/props/kinetics/ammoniaRate01_dyson_simon
 ```
 
-> D. C. Dyson and J. M. Simon, *A kinetic expression with diffusion correction
-> for ammonia synthesis on industrial catalyst*, **Ind. Eng. Chem. Fundam. 7
-> (1968) 605–610**.  Equations 2, 6–8, 18, 19, 39 with Table I, and 40.
-> Nothing in this case is measured by Choupo: the data these equations were
-> fitted to are Nielsen, Kjær and Hansen's (J. Catalysis 3 (1964) 68).
+**The source.**  D. C. Dyson and J. M. Simon, *A kinetic expression with
+diffusion correction for ammonia synthesis on industrial catalyst*,
+**Ind. Eng. Chem. Fundam. 7 (1968) 605–610**.  Equations 2, 6–8, 18, 19, 39
+with Table I, and 40.
 
----
+Nothing in this case is measured by Choupo: the data these equations were
+fitted to are Nielsen, Kjær and Hansen's (J. Catalysis 3 (1964) 68).
+
 
 ## 1. Read this first: xi and eta are swapped
 
@@ -34,7 +35,6 @@ and the engine says so at every surface that prints either letter.  Carry `η`
 across from the reactor side and you will read a conversion as an
 effectiveness factor.
 
----
 
 ## 2. What the object carries
 
@@ -61,7 +61,6 @@ The kinds matter more than the numbers:
 a literal to twelve figures proves a transcription; it is not a validation,
 and a bench that let a 0.000 % deviation read as one would be lying quietly.
 
----
 
 ## 3. The locus of maximum rate, and it DESCENDS
 
@@ -95,7 +94,6 @@ temperature of best rate falls 106 K.  **That descent is the curve
 ammonia03's quench converter zigzags about** — and until this case existed,
 nothing in Choupo could draw it.
 
----
 
 ## 4. The rate inside ammonia03's converter — and a finding
 
@@ -134,7 +132,6 @@ composition buys you this close to equilibrium.
 Those three gases are a **second home** for somebody else's numbers, so
 `check_ammonia_rate` runs ammonia03 and holds them to its converged result.
 
----
 
 ## 5. Every branch of Equation 40 refuses or announces, and none defaults
 
@@ -167,7 +164,6 @@ what they mean is **the correction is unpriced**.  Here the authors priced it
 and found it unity.  Same number, opposite claims, and the engine keeps them
 apart in words.
 
----
 
 ## 6. What is still missing — and it is most of a converter
 
@@ -183,7 +179,6 @@ and a working converter is none of those for most of its life.  The engine
 carries that sentence on every result rather than in a comment, because it has
 to reach wherever a size is eventually published.
 
----
 
 ## 7. Things to try
 
