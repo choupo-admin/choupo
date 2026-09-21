@@ -70,7 +70,9 @@ import {
   molalToDisplay, effectiveConcentrationUnit,
   type DisplayPrefs,
 } from "../../state/displayUnits.js";
-import { detectCategoricalCsv, hasSiColumns, type CategoricalCsv } from "./csvShape.js";
+import {
+  detectCategoricalCsv, hasSiColumns, unitFromTokens, type CategoricalCsv,
+} from "./csvShape.js";
 
 interface ParsedCsv {
   header: string[];
@@ -626,19 +628,18 @@ function commonPrefix(names: string[]): string {
   return out.join("_");
 }
 
-/** Heuristic unit annotation for plot axis labels.  Walks every
- *  "_"-separated token of the column name (not just the head) and
- *  returns the first one with a known unit, e.g.
+/** Heuristic unit annotation for plot axis labels, e.g.
  *      viscosity_liquid              -> viscosity_liquid (Pa·s)
  *      thermal_conductivity_liquid   -> thermal_conductivity_liquid (W/(m·K))
  *      Psat_ethanol                  -> Psat_ethanol (Pa)
- *  Falls through to the raw name when no token is known — better to
- *  show no unit than the wrong one. */
+ *  WHICH tokens may declare the dimension is csvShape.unitFromTokens' rule —
+ *  the head of the name, never a deep token (it used to walk every token, and
+ *  68 of the corpus's 872 column names came back with a WRONG unit).  Falls
+ *  through to the raw name when the name declares none: better to show no unit
+ *  than the wrong one. */
 function labelWithUnit(colName: string): string {
-  for (const tok of colName.toLowerCase().split("_")) {
-    if (COL_UNITS[tok]) return `${colName} (${COL_UNITS[tok]})`;
-  }
-  return colName;
+  const u = unitFromTokens(colName.split("_"));
+  return u ? `${colName} (${u})` : colName;
 }
 
 // Axis display per the global UnitsMenu (displayPrefs): a pressure column (Pa)
@@ -652,10 +653,14 @@ export function axisDisplay(colName: string, prefs: DisplayPrefs):
   // DEFENSIVE: a missing/empty column name must never throw (this was a crash
   // path when a non-scan CSV reached the scan plot).
   if (!colName) return { conv: (v) => v, label: "", unit: "" };
-  let canon = "";
-  for (const tok of colName.toLowerCase().split(/[_[\]]/)) {
-    if (COL_UNITS[tok]) { canon = COL_UNITS[tok]; break; }
-  }
+  //  NOTE (2026-09-21): this pass splits on brackets as well as "_" while the
+  //  fall-through below splits on "_" alone, so `x[benzene]` resolves here and
+  //  not there.  Two splits, ONE rule: `unitFromTokens` decides which token
+  //  positions may declare a dimension, and the divergence in the SPLIT is
+  //  named rather than quietly unified — unifying it would give every
+  //  `x[<comp>]` axis a "(mol frac)" suffix it does not carry today, which is
+  //  a separate change with its own screenshots.
+  const canon = unitFromTokens(colName.split(/[_[\]]/));
   if (canon === "Pa")
     return { conv: (v) => paToDisplay(v, prefs.pressure),
              label: `${colName} (${prefs.pressure})`, unit: prefs.pressure };
@@ -673,60 +678,11 @@ export function axisDisplay(colName: string, prefs: DisplayPrefs):
     return { conv: (v) => molalToDisplay(v, u),
              label: `${colName} (${u})`, unit: u };
   }
-  for (const tok of colName.toLowerCase().split("_")) {
-    if (COL_UNITS[tok])
-      return { conv: (v) => v, label: `${colName} (${COL_UNITS[tok]})`, unit: COL_UNITS[tok]! };
-  }
+  const u = unitFromTokens(colName.split("_"));
+  if (u) return { conv: (v) => v, label: `${colName} (${u})`, unit: u };
   return { conv: (v) => v, label: colName, unit: "" };
 }
 
-const COL_UNITS: Record<string, string> = {
-  t:            "K",
-  temperature:  "K",
-  p:            "Pa",
-  pressure:     "Pa",
-  psat:         "Pa",
-  z:            "—",
-  mu:           "Pa·s",
-  visc:         "Pa·s",
-  viscosity:    "Pa·s",
-  cond:         "W/(m·K)",
-  conductivity: "W/(m·K)",
-  k:            "W/(m·K)",
-  diff:         "m²/s",
-  diffusivity:  "m²/s",
-  d:            "m²/s",
-  cp:           "J/(mol·K)",
-  cv:           "J/(mol·K)",
-  h:            "J/mol",
-  enthalpy:     "J/mol",
-  s:            "J/(mol·K)",
-  entropy:      "J/(mol·K)",
-  g:            "J/mol",
-  gibbs:        "J/mol",
-  gamma:        "—",
-  molality:     "mol/kg",
-  rho:          "kg/m³",
-  density:      "kg/m³",
-  v:            "m³/mol",
-  volume:       "m³/mol",
-  x:            "mol frac",
-  y:            "mol frac",
-  // Steam tables (IF97) are MASS-basis SI: the Explorer renames the op's
-  // h_f/h/... columns to these collision-free tokens (h alone would label the
-  // MOLAR J/mol above) so the axis states the true basis.
-  hf:           "J/kg",
-  hg:           "J/kg",
-  hfg:          "J/kg",
-  sf:           "J/(kg·K)",
-  sg:           "J/(kg·K)",
-  vf:           "m³/kg",
-  vg:           "m³/kg",
-  hmass:        "J/kg",
-  smass:        "J/(kg·K)",
-  vmass:        "m³/kg",
-  cpmass:       "J/(kg·K)",
-};
 
 /** Categorical fallback (the speciate ops' species tables:
  *  `species,molality,activity,gamma`).  Every numeric-x renderer drew EMPTY

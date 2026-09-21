@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { detectCategoricalCsv, hasSiColumns } from "../src/ui/plotting/csvShape.js";
+import {
+  COL_UNITS, detectCategoricalCsv, hasSiColumns, unitFromTokens,
+} from "../src/ui/plotting/csvShape.js";
 import {
   DEFAULT_PREFS,
   effectiveConcentrationUnit,
@@ -81,5 +83,90 @@ describe("displayUnits — concentration preference", () => {
     expect(effectiveConcentrationUnit("mg/L", false)).toBe("mol/kg");
     expect(effectiveConcentrationUnit("mg/L", true)).toBe("mg/L");
     expect(effectiveConcentrationUnit("mmol/kg", false)).toBe("mmol/kg");
+  });
+});
+
+//  D8b (2026-09-21).  The axis labeller walked EVERY "_"-separated token of a
+//  column name and took the first with a known unit.  Measured over the 872
+//  distinct column names the corpus's own CSVs carry, 67 came back with a
+//  WRONG unit.  The rule now reads the HEAD of the name only -- the first
+//  token always, the second only as a whole word.
+describe("column units — the dimension is read from the HEAD of the name", () => {
+  const unit = (col: string) => unitFromTokens(col.split("_"));
+
+  it("takes the quantity at the head", () => {
+    expect(unit("Psat_ethanol")).toBe("Pa");
+    expect(unit("T")).toBe("K");
+    expect(unit("mu_gas_N2")).toBe("Pa·s");
+    expect(unit("viscosity_liquid")).toBe("Pa·s");
+    expect(unit("rho_liquid_water")).toBe("kg/m³");
+  });
+
+  it("accepts the SECOND token only as a whole word", () => {
+    //  the labeller's own documented example, and the reason the window is
+    //  two tokens wide rather than one
+    expect(unit("thermal_conductivity_liquid")).toBe("W/(m·K)");
+    expect(unit("thermal_conductivity")).toBe("W/(m·K)");
+    //  ...but a LONE LETTER at index 1 is a subject or a unit suffix, never
+    //  the quantity: `rig.U_V` is volts, and it read as m3/mol.
+    expect(unit("rig.U_V")).toBe("");
+    expect(unit("m_H")).toBe("");
+    expect(unit("F_P")).toBe("");
+  });
+
+  it("never reads a dimension out of a deep token", () => {
+    //  THE DEFECT: a dimensionless saturation index given an ENTROPY unit,
+    //  because the walk reached the `S` of `labile_S`.  That also tore the
+    //  column out of the SI panel onto an axis of its own -- the columns are
+    //  grouped by resolved unit.
+    expect(unit("SI_labile_S")).toBe("");
+    expect(unit("SI_aragonite")).toBe("");
+    expect(unit("SI_calcite")).toBe("");
+    //  ...and the flow and rate columns that read as J/mol or J/(mol K)
+    //  because their name spells its own unit out at the end.  (The COUNT of
+    //  them lives in ONE place, the module header's measurement; a number
+    //  repeated in a comment is a second home for a fact.)
+    expect(unit("n_Ca_kmol_per_h")).toBe("");
+    expect(unit("mass_flow_kg_per_h")).toBe("");
+    expect(unit("rig.kappa_dil_S_per_m")).toBe("");
+    expect(unit("cost_EUR_per_h")).toBe("");
+    expect(unit("L_over_D")).toBe("");
+  });
+
+  it("puts every SI_<mineral> column on ONE axis", () => {
+    //  the grouping consequence, stated as the grouping: same unit => same
+    //  panel, and the SI = 0 reference line belongs to that panel.
+    const cols = ["SI_aragonite", "SI_calcite", "SI_gypsum", "SI_labile_S", "SI_halite"];
+    expect(new Set(cols.map(unit)).size).toBe(1);
+  });
+
+  it("states the limit it does NOT reach", () => {
+    //  MEASURED, and it is not what a first draft of this arm predicted: after
+    //  the head rule, NO corpus column still resolves a WRONG unit at index 1
+    //  (the only two that resolve there at all are `thermal_conductivity` and
+    //  `thermal_conductivity_liquid`, both right).  Every wrong unit that
+    //  survives sits at index ZERO -- a one-letter quantity key colliding with
+    //  a DIFFERENT quantity spelled with the same letter.  No rule about
+    //  POSITION can see these; only a column that declares its own dimension
+    //  can, which is the engine's own 2026-09-04 rule one plane down.
+    expect(unit("D_rectifying")).toBe("m\u00b2/s");     //  a column DIAMETER, in m
+    expect(unit("H_kW")).toBe("J/mol");              //  an enthalpy FLOW, in kW
+    expect(unit("V_R")).toBe("m\u00b3/mol");            //  a reactor VOLUME, in m3
+    expect(unit("X_moisture")).toBe("mol frac");     //  a mass ratio, kg/kg
+  });
+
+  it("declares no unit for a name that carries none", () => {
+    expect(unit("recovery")).toBe("");
+    expect(unit("curve")).toBe("");
+    expect(unit("")).toBe("");
+    expect(unitFromTokens([])).toBe("");
+  });
+
+  it("the table it reads is the ONE table", () => {
+    //  COL_UNITS lived inside CsvAutoPlot.tsx, which plotly makes unimportable
+    //  in this suite -- so the table nothing could reach was the table nothing
+    //  could test.
+    expect(COL_UNITS["psat"]).toBe("Pa");
+    expect(COL_UNITS["hmass"]).toBe("J/kg");
   });
 });

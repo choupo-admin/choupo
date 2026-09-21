@@ -42,3 +42,71 @@ export const SOLID_PHASE: Record<string, SolidPhase> = {
 export function solidPhaseFor(name: string): SolidPhase | undefined {
   return SOLID_PHASE[name];
 }
+
+/*---------------------------------------------------------------------------*\
+  WHAT THE PICTURE ACTUALLY DREW.
+
+  The P-T lens's caption was a literal ending "Solid region omitted -- needs
+  triple-point / dHfus data", and for water the engine had drawn the
+  sublimation (S-V) and fusion (S-L) lines and marked the triple point.  The
+  legend said one thing and the sentence beside it said the opposite.
+
+  Deriving the caption from the SPEC (does the case hand the op a `solid {}`
+  block?) would be right today and wrong tomorrow: since 2026-06-14 the engine
+  ALSO reads a curated `sublimation { tripleT; tripleP; Hfus; Hsub; }` block off
+  the component itself, and that WINS over the op-dict block.  Three components
+  carry one (water, CO2, acetylene) and only water is in the table above -- so
+  a spec-derived caption would tell a CO2 reader the solid region was omitted
+  while the sublimation curve was on screen.
+
+  So the caption is derived from the CSV: the op labels every row with its
+  `curve` (saturation / critical / sublimation / triple / fusion), and reading
+  that is reading the picture.  It also distinguishes the THIRD state the old
+  two-way sentence could not express -- the sublimation curve drawn WITHOUT the
+  melting line, which is exactly what a component carrying `sublimation{}` but
+  no dVfus gets (PurePhaseDiagram.cpp: `hasFusion = hasSub && Hfus > 0 &&
+  dVfus != 0`, and dVfus is a sample quantity that lives only in the table
+  above).
+\*---------------------------------------------------------------------------*/
+
+/** Which branches a purePhaseDiagram CSV actually contains. */
+export interface PhaseCurvesDrawn {
+  sublimation: boolean;
+  fusion: boolean;
+  triple: boolean;
+}
+
+/** Read the `curve` column of a purePhaseDiagram CSV.  An unreadable or absent
+ *  CSV reports NOTHING drawn -- the caption then makes no claim about a solid
+ *  region, which is correct: there is no picture yet. */
+export function phaseCurvesDrawn(csv: string | null | undefined): PhaseCurvesDrawn {
+  const none = { sublimation: false, fusion: false, triple: false };
+  if (!csv) return none;
+  const lines = csv.trim().split(/\r?\n/);
+  if (lines.length < 2) return none;
+  const col = lines[0]!.split(",").map((s) => s.trim()).indexOf("curve");
+  if (col < 0) return none;
+  const seen = new Set<string>();
+  for (let i = 1; i < lines.length; i++) {
+    const cell = lines[i]!.split(",")[col];
+    if (cell) seen.add(cell.trim());
+  }
+  return {
+    sublimation: seen.has("sublimation"),
+    fusion: seen.has("fusion"),
+    triple: seen.has("triple"),
+  };
+}
+
+/** The sentence the P-T caption ends with, describing THE SOLID REGION AS
+ *  DRAWN.  Three states, because the engine has three. */
+export function solidRegionCaption(drawn: PhaseCurvesDrawn): string {
+  if (drawn.sublimation && drawn.fusion)
+    return "Solid region drawn: the sublimation (S–V) and fusion (S–L) lines, "
+      + "meeting the saturation curve at the marked triple point.";
+  if (drawn.sublimation)
+    return "Solid region partly drawn: the sublimation (S–V) line and the triple point. "
+      + "The fusion (S–L) line needs the volume change on melting, which this "
+      + "compound's record does not carry.";
+  return "Solid region omitted — this compound carries no triple-point / ΔHfus data.";
+}

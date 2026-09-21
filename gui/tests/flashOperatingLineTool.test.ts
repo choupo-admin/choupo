@@ -25,6 +25,8 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
+import { FLASH01_TXY_CSV } from "./fixtures/flash01Txy.js";
+
 import {
   eqCurveFromTxyCsv, flashAtVF, leverSegments, operatingLine,
   operatingLineAt,
@@ -73,10 +75,14 @@ describe("the operating line, as an identity", () => {
   it("puts the engine's own flash answer ON the line", () => {
     //  The solved (x, y) must satisfy the balance the line expresses -- that
     //  is what makes the intersection the answer rather than a coincidence.
-    const csv = tutorialByName(FLASH_WITNESS)!.files.rawFiles?.[FLASH_CSV];
-    const curve = eqCurveFromTxyCsv(csv ?? readFileSync(
-      new URL("../../tutorials/props/molecular/flash01_operating_line/txy.csv",
-        import.meta.url), "utf-8"))!;
+    //
+    //  THE SUBJECT IS TRACKED (2026-09-21).  This read the case's own
+    //  `txy.csv`, which is a RUN OUTPUT that .gitignore sweeps --
+    //  so the arm passed on a checkout where somebody had run the witness and
+    //  threw ENOENT on one where nobody had.  A test whose subject may be
+    //  absent is green by circumstance.  It now reads a captured fixture,
+    //  checked below against the case's own tracked declarations.
+    const curve = eqCurveFromTxyCsv(FLASH01_TXY_CSV)!;
     expect(curve).toBeTruthy();
     for (const psi of [0.15, 0.3, 0.55, 0.8]) {
       const sol = flashAtVF(curve, 0.4, psi);
@@ -189,5 +195,49 @@ describe("the lesson and its placement", () => {
     //  has a frozen curve.  Saying so is the difference between a tool a
     //  student trusts and one they cannot account for.
     expect(SRC).toContain("only one that re-runs the engine");
+  });
+});
+
+describe("the captured curve is still the case's curve", () => {
+  //  A fixture is a second home for something the engine produces, so it has
+  //  to be answerable to the case it was taken from.  Both facts below are
+  //  TRACKED files -- the fixture cannot drift from them in silence.
+  const props = tutorialByName(FLASH_WITNESS)!.files.rawFiles![PROPS]!;
+  const golden = readFileSync(
+    new URL("../../tutorials/props/molecular/flash01_operating_line/expected",
+      import.meta.url), "utf-8");
+
+  it("parses at all -- and says so loudly if it does not", () => {
+    const curve = eqCurveFromTxyCsv(FLASH01_TXY_CSV);
+    expect(curve, "tests/fixtures/flash01Txy.ts no longer parses as a T-x-y CSV")
+      .not.toBeNull();
+  });
+
+  it("sweeps the variable the case declares", () => {
+    const m = /variable\s+(x\[[^\]]+\])/.exec(props);
+    expect(m, "the case no longer declares a swept variable").toBeTruthy();
+    expect(`x[${eqCurveFromTxyCsv(FLASH01_TXY_CSV)!.comp}]`).toBe(m![1]);
+  });
+
+  it("carries the number of points the case's own golden pins", () => {
+    //  `diag txy n_points 51` in tutorials/.../expected, and `n 51` in the
+    //  propsDict.  A curve recaptured at another resolution changes every
+    //  answer read off it (the construction interpolates linearly between
+    //  rows -- the case header says so), and this is what catches it.
+    const pinned = /n_points\s+(\d+)/.exec(golden);
+    expect(pinned, "the case's golden no longer pins n_points").toBeTruthy();
+    const declared = /\bn\s+(\d+)\s*;/.exec(props);
+    expect(declared![1]).toBe(pinned![1]);
+    expect(eqCurveFromTxyCsv(FLASH01_TXY_CSV)!.x.length).toBe(Number(pinned![1]));
+  });
+
+  it("spans the whole composition range, monotonically", () => {
+    const c = eqCurveFromTxyCsv(FLASH01_TXY_CSV)!;
+    expect(c.x[0]).toBeCloseTo(0, 12);
+    expect(c.x[c.x.length - 1]).toBeCloseTo(1, 12);
+    //  y*(x) above x for a zeotropic pair, and the bubble T falling with the
+    //  lighter component: the SHAPE the geometry arms assume.
+    for (let i = 1; i < c.x.length - 1; i++) expect(c.yEq[i]!).toBeGreaterThan(c.x[i]!);
+    expect(c.Tbub[0]!).toBeGreaterThan(c.Tbub[c.Tbub.length - 1]!);
   });
 });

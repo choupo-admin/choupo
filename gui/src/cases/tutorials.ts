@@ -127,7 +127,30 @@ const CASE_FILES = import.meta.glob(
     // regression fodder for bin/runTests, hidden from the GUI to keep
     // the menu aligned with the new comparison-first philosophy.
     "!../../../tutorials/props/old/**",
+    // SOLVER-GENERATED CSVs.  .gitignore sweeps `tutorials/**/*.csv` with the
+    // reason stated: "the filename is user-defined in the dict so we match by
+    // location".  This glob did not, so on any machine that has run the corpus
+    // -- which is every machine a release is built on -- the bundle inlined one
+    // machine's run outputs as though they were case INPUTS: MEASURED at 287
+    // files on 2026-09-21, among them every `balanceTrajectory.csv`, a whole
+    // `postProcessing/` tree on the flagship plant, and the `txy.csv` a test
+    // was reading as its subject.  It is the third instance of the failure the
+    // `design/` and `converged/` locks above were written for, and it is worse
+    // than either: those two live in a NAMED view the Case tree dims as run
+    // output, while a case-root CSV is drawn as a file the student authored.
+    // It is a SEPARATE pattern rather than a negation because Vite's glob does
+    // not re-include after a negation (measured: adding the experimental path
+    // back as a later positive pattern left it excluded, 0 of 4).
+    "!../../../tutorials/**/*.csv",
   ],
+  { query: "?raw", import: "default", eager: true },
+) as { [path: string]: string };
+
+// The ONE place a CSV is a case INPUT: a dataset that ships WITH a case for
+// the engine to read (an overlay's measured points, a digitised figure).
+// .gitignore whitelists exactly this path and so does the bundle.
+const CASE_DATA_CSV = import.meta.glob(
+  "../../../tutorials/**/constant/experimental/*.csv",
   { query: "?raw", import: "default", eager: true },
 ) as { [path: string]: string };
 
@@ -374,6 +397,8 @@ function buildIndex(): TutorialEntry[] {
   };
 
   for (const [absPath, body] of Object.entries(CASE_FILES)) ingest(absPath, body);
+  //  ...and the one CSV shape that IS a case input (see CASE_DATA_CSV above).
+  for (const [absPath, body] of Object.entries(CASE_DATA_CSV)) ingest(absPath, body);
 
   const out: TutorialEntry[] = [];
   for (const key of Object.keys(collected).sort()) {

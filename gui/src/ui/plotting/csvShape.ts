@@ -106,3 +106,107 @@ export function dropCsvColumn(csv: string, name: string): string {
 export function hasSiColumns(header: string[]): boolean {
   return header.slice(1).some((h) => /^SI_/.test(h.split("__")[0]!));
 }
+
+/*---------------------------------------------------------------------------*\
+  WHICH PART OF A COLUMN NAME MAY DECLARE ITS DIMENSION.
+
+  The axis labeller walked EVERY "_"-separated token of a column name and took
+  the first with a known unit.  A column name is `<quantity>_<subject>`, so the
+  deep tokens are subjects -- a component, a mineral, a phase -- or the unit the
+  author already spelled into the name; and the single-letter quantity keys
+  (`h`, `s`, `v`, `d`, `k`, `p`, `g`) collide with all three.  Measured over the
+  872 distinct column names the corpus's own CSVs carry, 67 were given a unit
+  that is WRONG: `n_Ca_kmol_per_h` read as J/mol, `rig.U_V` (volts) as m3/mol,
+  `SI_labile_S` -- a dimensionless saturation index -- as J/(mol K), which also
+  tore it out of the SI panel onto an entropy axis of its own.
+
+  THE RULE, one sentence: the dimension is read from the HEAD of the name --
+  the first token always, the second only when it is a full word.  Anything
+  deeper names the subject, and a one-letter token that does not lead the name
+  is not a quantity.
+
+  Measured consequence of the rule over those same 872 names: 68 change, 67 of
+  them from a wrong unit to NO unit -- which is the labeller's own stated
+  preference ("better to show no unit than the wrong one").  The one that loses
+  a CORRECT unit is `process_T_K`, whose name already ends in the unit it lost.
+
+  WHAT THE RULE DOES NOT CATCH, measured rather than predicted -- and it is not
+  what the first draft of this paragraph said.  After the head rule NO corpus
+  column resolves a wrong unit at index 1 at all; every wrong unit that
+  survives sits at index ZERO, where a one-letter quantity key collides with a
+  DIFFERENT quantity spelled with the same letter: `D_rectifying` (a column
+  DIAMETER, in m) reads as m2/s, `H_kW` (an enthalpy FLOW) as J/mol, `V_R` (a
+  reactor VOLUME) as m3/mol, `X_moisture` (kg/kg dry) as a mole fraction.  No
+  rule about POSITION can see those.  What can is a column that DECLARES its
+  own dimension -- the engine's own rule (2026-09-04, `EquipmentSizing::set`),
+  one plane down and not this slice's to build.  A name is not a dimension
+  declaration; reading one off a name is a heuristic and stays labelled one.
+\*---------------------------------------------------------------------------*/
+
+/** Heuristic unit per column-name token.  The keys are LOWERCASE tokens. */
+export const COL_UNITS: Record<string, string> = {
+  t:            "K",
+  temperature:  "K",
+  p:            "Pa",
+  pressure:     "Pa",
+  psat:         "Pa",
+  z:            "—",
+  mu:           "Pa·s",
+  visc:         "Pa·s",
+  viscosity:    "Pa·s",
+  cond:         "W/(m·K)",
+  conductivity: "W/(m·K)",
+  k:            "W/(m·K)",
+  diff:         "m²/s",
+  diffusivity:  "m²/s",
+  d:            "m²/s",
+  cp:           "J/(mol·K)",
+  cv:           "J/(mol·K)",
+  h:            "J/mol",
+  enthalpy:     "J/mol",
+  s:            "J/(mol·K)",
+  entropy:      "J/(mol·K)",
+  g:            "J/mol",
+  gibbs:        "J/mol",
+  gamma:        "—",
+  molality:     "mol/kg",
+  rho:          "kg/m³",
+  density:      "kg/m³",
+  v:            "m³/mol",
+  volume:       "m³/mol",
+  x:            "mol frac",
+  y:            "mol frac",
+  // Steam tables (IF97) are MASS-basis SI: the Explorer renames the op's
+  // h_f/h/... columns to these collision-free tokens (h alone would label the
+  // MOLAR J/mol above) so the axis states the true basis.
+  hf:           "J/kg",
+  hg:           "J/kg",
+  hfg:          "J/kg",
+  sf:           "J/(kg·K)",
+  sg:           "J/(kg·K)",
+  vf:           "m³/kg",
+  vg:           "m³/kg",
+  hmass:        "J/kg",
+  smass:        "J/(kg·K)",
+  vmass:        "m³/kg",
+  cpmass:       "J/(kg·K)",
+};
+
+/** The unit a column name DECLARES, read off the head of an already-split
+ *  token list (the callers split on different separators -- see the note in
+ *  CsvAutoPlot.axisDisplay -- so the SPLIT stays at the call site and only the
+ *  RULE lives here).  "" when the name declares none. */
+export function unitFromTokens(tokens: string[]): string {
+  const t = tokens.map((s) => s.trim().toLowerCase()).filter((s) => s.length > 0);
+  if (t.length === 0) return "";
+  const head = COL_UNITS[t[0]!];
+  if (head) return head;
+  //  The second token may name the quantity (`thermal_conductivity_liquid`),
+  //  but only as a WHOLE WORD: a lone letter there is a subject or a unit
+  //  suffix (`rig.U_V`, `n_H`, `Tf_K`), never the quantity.
+  if (t.length > 1 && t[1]!.length > 1) {
+    const second = COL_UNITS[t[1]!];
+    if (second) return second;
+  }
+  return "";
+}

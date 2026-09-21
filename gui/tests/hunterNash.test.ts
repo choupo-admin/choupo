@@ -35,9 +35,13 @@ License
     load them.  The cascade numbers below are a RECORDED run of
     `./choupoSolve tutorials/steady/absorption/extract01_ethanol_water_benzene`
     taken on 2026-08-18 on the tree's own build, transcribed from the result
-    JSON.  The map side needs no transcription at all: the witness ships its
-    own `ternary.csv`, the committed output reproduces the fresh run
-    byte-for-byte, and this suite reads THAT file out of the bundled corpus.
+    JSON.  The map side is a CAPTURE, not a transcription: the engine's own
+    `ternary.csv` for that witness, taken byte-for-byte into
+    tests/fixtures/ternary03Lle.ts.  This paragraph used to call that file
+    "committed" and read it out of the bundled corpus; it is a RUN OUTPUT that
+    .gitignore sweeps, so the arms below passed only where somebody had run the
+    witness.  The capture is checked against the case's own golden, which is
+    tracked -- see "the captured map is still the case's map" at the end.
   * IT NEVER RENDERS THE TOOL.  jsdom gives every box a zero size, so a test
     that mounted the SVG would be pinning a picture nobody can see.  The
     component is deliberately thin: the reading and the construction are in
@@ -54,11 +58,14 @@ License
   broken — a check that cannot fail is not a check.
 \*---------------------------------------------------------------------------*/
 
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import type { StreamResult, UnitProfile } from "../src/adapters/SolverAdapter.js";
 import { applyScalarOverride, methodCase } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
+import { TERNARY03_LLE_CSV } from "./fixtures/ternary03Lle.js";
 import {
   COLUMN_WITNESS, MAP_CSV, MAP_WITNESS, TIE_TRIANGLE_KNOBS,
   WITNESS_CARRIER, WITNESS_COMPONENTS, WITNESS_SOLUTE, WITNESS_SOLVENT,
@@ -230,14 +237,16 @@ describe("the knob map — every target resolves against the real raw text", () 
 
 // ---- The scan reader, against the REAL bundled CSV --------------------------
 
-const mapCsv = (): string => {
-  const csv = rawOf(MAP_WITNESS)[MAP_CSV];
-  expect(csv, `${MAP_WITNESS} does not ship ${MAP_CSV} — this suite reads the `
-    + "engine's own committed output and cannot substitute one").toBeDefined();
-  return csv!;
-};
+//  THE MAP IS A TRACKED FIXTURE (2026-09-21).  This read `ternary.csv` out of
+//  the bundled corpus and called it "the engine's own COMMITTED output".  It is
+//  not committed -- .gitignore sweeps every CSV under tutorials/ -- so the file
+//  is there only where somebody has run the witness, and these arms were green
+//  by circumstance while stating the opposite about their own subject.  The
+//  capture carries its provenance; the arm below holds it to the case's own
+//  golden, which IS tracked.
+const mapCsv = (): string => TERNARY03_LLE_CSV;
 
-describe("readTernaryScan — over the engine's own committed phase map", () => {
+describe("readTernaryScan — over a CAPTURE of the engine's own phase map", () => {
   it("reads every row: nodes, paired tie-lines, nothing skipped", () => {
     const r = readTernaryScan(mapCsv());
     expect(r.ok).toBe(true);
@@ -302,6 +311,31 @@ describe("readTernaryScan — over the engine's own committed phase map", () => 
     const r = readTernaryScan(`${header}\n0.1,0.2\n`);
     if (!r.ok) throw new Error(r.why);
     expect(r.read.skippedRows).toBe(1);
+  });
+
+  it("the captured map is still the case's map", () => {
+    //  A fixture is a second home for something the engine produces, so it
+    //  answers to the case it came from.  The node and tie counts the arms
+    //  above assert are pinned by that case's OWN golden (`diag lle n_nodes`,
+    //  `n_tielines`) and by its propsDict (`grid { n 16; }`, `tieStride 4`),
+    //  both TRACKED.  A map recaptured at other settings changes every count
+    //  here, and this is what catches it.
+    const golden = readFileSync(new URL(
+      "../../tutorials/props/scan/ternary03_lle_water_ethanol_benzene/expected",
+      import.meta.url), "utf-8");
+    const pin = (key: string) => {
+      const m = new RegExp(`${key}\\s+(\\d+)`).exec(golden);
+      expect(m, `the case's golden no longer pins ${key}`).toBeTruthy();
+      return Number(m![1]);
+    };
+    const r = readTernaryScan(mapCsv());
+    if (!r.ok) throw new Error(r.why);
+    expect(r.read.nodes.length).toBe(pin("n_nodes"));
+    expect(r.read.ties.length).toBe(pin("n_tielines"));
+
+    const props = rawOf(MAP_WITNESS)["system/propsDict"]!;
+    expect(props).toMatch(/tieStride\s+4\s*;/);
+    expect(props).toMatch(/grid\s*\{\s*n\s+16\s*;\s*\}/);
   });
 });
 

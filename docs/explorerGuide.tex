@@ -50,9 +50,11 @@ will hit it at $x = 0.89$.
         (criticals, $P^{\mathrm{sat}}$, $c_p$, formation --- and what it
         lacks).  Case-local components (from an open case's
         \file{constant/}) appear alongside, marked.
-  \item \textbf{Pick a view} (the tabs enable themselves when their
-        component-count and data requirements are met; a disabled tab tells
-        you WHY it is disabled).
+  \item \textbf{Pick a view}.  A lens that does not apply to the selection is
+        \emph{removed} from the strip, not greyed out --- so what you see
+        offered is what can be answered.  (The one reason-string you will meet
+        belongs to the lens you are ALREADY on, when a change of components
+        drifts the selection out from under it.)
   \item \textbf{Pick the method} where more than one applies ---
         activity model, equation of state, $P^{\mathrm{sat}}$ correlation.
         Overlaying two methods on the same axes is the fastest modelling
@@ -115,17 +117,65 @@ produces outside a fit's window (the guide's recurring lesson: a
 correlation is DATA, and data has a domain).
 
 \subsection{Pure phase diagram ($P$--$T$)}
-The full phase map of one substance: sublimation, melting and vapour-pressure
-lines meeting at the triple point, ending at the critical point.  Expect
-water's negatively-sloped melting line (the anomaly), and the supercritical
-region where the liquid/vapour distinction dissolves.
+The phase map of one substance: the vapour-pressure (saturation) curve from
+low temperature to the critical point, and --- \emph{where the compound's data
+reach that far} --- the sublimation and melting lines meeting it at the triple
+point.  Expect water's negatively-sloped melting line (the anomaly), and the
+supercritical region where the liquid/vapour distinction dissolves.
+%  2026-09-21: the app's caption used to end "Solid region omitted" on EVERY
+%  compound, including water, whose legend beside it carried "sublimation
+%  (S-V)" and "fusion (S-L)".  It is now read off the CSV's own `curve` column
+%  (gui/src/case/solidPhaseData.ts), so the sentence and the picture cannot
+%  disagree.  Hence the conditional clause here: the solid region is drawn for
+%  a compound that carries the data and honestly absent for one that does not,
+%  and the caption says which.
+The sublimation line needs the triple point and an enthalpy of sublimation;
+the melting line needs, on top of those, an enthalpy of fusion and the volume
+change on melting.  A compound whose record carries none of them gets the
+liquid--vapour diagram alone, and the caption under the plot states which of
+the three cases you are looking at, rather than leaving you to wonder whether
+the solid was omitted or simply does not exist.
 
 \subsection{Binary boiling envelope ($T$--$x$--$y$)}
 The bubble and dew curves of a binary at fixed $P$.  This is where
 azeotropes announce themselves: the curves touch, and no distillation can
 cross the touching point.  Switch the activity model (ideal $\to$ NRTL
 $\to$ UNIFAC) and watch the envelope bend --- ideal solutions cannot
-azeotrope; real ones do.
+azeotrope; real ones do.  If you ask for NRTL or Wilson on a pair the
+catalogue has no parameters for, the engine \emph{refuses the run}
+and names the pair: running that pair as ideal would answer a different
+question from the one you asked.  UNIFAC needs no fitted pair and is the
+usual way on.
+
+%  A \subsection{Binary flash (x-y + lever rule)} stood here.  The binary
+%  flash is a METHOD CONSTRUCTION -- an operating line and its intersection --
+%  so by the criterion that moved McCabe-Thiele and the psychrometric chart on
+%  2026-08-15 it belongs in EduTools, where the SAME construction had in fact
+%  been built again on 2026-08-28 over the same gui/src/case/binaryFlash.ts
+%  geometry.  The Explorer lens was removed on 2026-09-21; the EduTools tool
+%  "Flash (operating line)" is the one home, and it carries the derivation.
+%  This paragraph replaces it rather than deleting it silently, because the
+%  same sentence ("the lever rule made visible") described a picture the lens
+%  had already stopped drawing.
+\subsection{Equilibrium curve $y(x)$}
+The most familiar diagram in vapour--liquid equilibrium, and for a long time
+the hardest to find here: the vapour in equilibrium with each liquid
+composition, against the $y = x$ diagonal, at fixed $P$.  The distance from
+the diagonal IS the separability --- where the curve touches it, no
+equilibrium stage separates anything, which is what an azeotrope means
+operationally.  It is the same engine run as the boiling envelope beside it,
+read on different axes, so switching between the two costs nothing.
+%  2026-09-21: this was NOT a lens.  It was the second option of a `View:`
+%  SegmentedControl the plot component drew inside its own box -- a fourth
+%  chrome home the lens strip never showed, with the SET pill overlaid across
+%  its label -- and while it was showing, the strip still lit "T-x-y" and the
+%  caption still described the boiling envelope.  Vitor reported the diagram
+%  missing three times before anyone found the control.
+
+Everything a student draws ON this curve --- a feed, an operating line, its
+intersection, the lever arms --- is a graphical \emph{method}, and those live
+in EduTools (\S\ref{sec:edutools} below), not here.  The Explorer draws the
+property surface; EduTools draws the construction on it.
 
 \subsection{$\gamma(x)$ --- activity coefficients}
 The raw non-ideality of a binary: $\gamma_1, \gamma_2$ against composition,
@@ -133,12 +183,11 @@ with the infinite-dilution values $\gamma^\infty$ at the edges.
 $\gamma > 1$: the pair dislikes mixing (positive deviation, minimum-boiling
 azeotropes); $\gamma < 1$: association (maximum-boiling).  The
 Gibbs--Duhem constraint ties the two curves together --- one cannot bend
-without the other answering.
-
-\subsection{Binary flash ($x$--$y$ + lever rule)}
-One flash, drawn: feed, vapour and liquid on the equilibrium diagram with
-the lever rule made visible.  Use it to understand what a single
-equilibrium stage can and cannot do.
+without the other answering.  Read the pair note under the plot before you
+read the curves: a parameter record may declare itself an \emph{assumption}
+(\code{origin assumed}, null coefficients) rather than a fit to data, and then
+the two flat lines at $\gamma = 1$ are Raoult's law wearing an NRTL label ---
+the benzene--toluene pair in the standard catalogue is exactly that.
 
 \subsection{Binary and ternary LLE}
 Liquid--liquid splitting from the mixing Gibbs energy: $g_{\mathrm{mix}}(x)$
@@ -188,7 +237,7 @@ power-cycle case, browsable.
 %  MethodsWorkspace.tsx), and this guide went on describing them as
 %  Explorer views for three weeks.  Retired 2026-09-03 by the coverage
 %  sweep; they are reached from the EduTools workspace described next.
-\subsection{EduTools (the Methods workspace)}
+\subsection{EduTools (the Methods workspace)}\label{sec:edutools}
 % Verified against gui/src/ui/MethodsWorkspace.tsx (criterion 36-41; zero
 % physics in TS 42-48; chooser on a tool tab leads the chrome row, on a case
 % tab it is a Select 96-101, 350, 518; TeachesLine 563; "Author -> copy
@@ -203,8 +252,9 @@ workspace, \textbf{EduTools}, split from the Explorer by one criterion:
 \emph{a property surface answers ``what does this system's property look
 like?''} (the Explorer); \emph{a method construction answers ``what does
 the classical graphical method say about a design question?''} ---
-McCabe--Thiele, Kremser, Rayleigh, $\varepsilon$-NTU, pinch composites,
-and derivation pages for the property models.  Open it from the
+the binary flash (operating line and lever rule), McCabe--Thiele, Kremser,
+Rayleigh, $\varepsilon$-NTU, pinch composites, and derivation pages for the
+property models.  Open it from the
 hub's \textbf{EduTools} button: it is a tab of its own, needs no case, and
 does not talk to the flowsheet.  A tool is chosen from the top row of the
 tab; every tool carries a one-line ``teaches'' caption and its Theory Guide
@@ -245,9 +295,12 @@ The Explorer inherits the project's credo:
   \item \textbf{Every number has a source.}  Component cards show where each
         value came from; estimates carry their UNVALIDATED badge; nothing is
         silently filled in.
-  \item \textbf{Disabled means explained.}  A view that cannot run tells you
-        which requirement failed (component count, missing VLE data, missing
-        UNIFAC groups) --- never a dead button.
+  \item \textbf{Irrelevant means absent.}  A view that cannot apply to the
+        selection is removed from the strip rather than greyed --- never a dead
+        button, and never a live one whose only possible answer is an error.
+        Where a view you are already on stops applying, it says which
+        requirement failed (component count, missing VLE data, missing UNIFAC
+        groups).
   \item \textbf{The Explorer never writes.}  It reads the catalogue and the
         open case; promoting data, fitting parameters and locking goldens
         belong to the props bench and the curation tools.  Sketch here,

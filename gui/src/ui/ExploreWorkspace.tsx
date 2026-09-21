@@ -68,8 +68,15 @@ import { LENS_SHORT, PLOT_TYPES, defaultLensFor, type PlotType } from "../case/e
 import { gibbsMapAtoms, parseFormulaAtoms } from "../case/gibbsMapSpec.js";
 import { PURE_PROPS, isPureProp, scanPropertyKeys } from "../case/scanProperties.js";
 import { theoryUrl } from "../case/exploreTheory.js";
-import { hasPair } from "../case/pairsCatalogue.js";
-import { solidPhaseFor } from "../case/solidPhaseData.js";
+import {
+  defaultActivityFor, failureHeadline, modelRefusalWarning, pairNoteText,
+} from "../case/exploreHonesty.js";
+import {
+  SCALING_IONS, brackishDefaultMolal, mgPerLFromMolal, molalFromMgPerL,
+} from "../case/scalingSpec.js";
+import {
+  phaseCurvesDrawn, solidPhaseFor, solidRegionCaption,
+} from "../case/solidPhaseData.js";
 import { mergeTernaryCsvs, workerCount } from "../case/ternaryParallel.js";
 import {
   BJERRUM_FAMILIES, bjerrumChunks, bjerrumEngineNotes, bjerrumOutput, bjerrumPhGrid,
@@ -122,22 +129,12 @@ function transportModelsFor(property: string): string[] {
   return [];
 }
 
-// Scaling (SI vs recovery): the editable water analysis.  Master ions the
-// standards speciation catalogue covers, with MW [g/mol] copied from
-// data/standards/electrolyte/ions.dat ONLY for the mg/L <-> mol/kg display
-// conversion (at rho ~ 1 kg/L, dilute) — the synthesized dict always carries
-// mol/kg water; the engine never sees mg/L.  Defaults = the representative
-// brackish groundwater of tutorials/props/electrolyte/scaling_ro_brackish
-// (~1500 mg/L TDS, charge-balanced).
-const SCALING_IONS: { ion: string; mw: number }[] = [
-  { ion: "Ca", mw: 40.078 }, { ion: "Mg", mw: 24.305 }, { ion: "Na", mw: 22.99 },
-  { ion: "K", mw: 39.098 }, { ion: "Cl", mw: 35.453 }, { ion: "SO4", mw: 96.06 },
-  { ion: "HCO3", mw: 61.02 },
-];
-const BRACKISH_DEFAULT: { [ion: string]: number } = {
-  Ca: 0.0021, Mg: 0.0011, Na: 0.0158, K: 0.0003,
-  Cl: 0.0124, SO4: 0.0026, HCO3: 0.0030,
-};
+// Scaling (SI vs recovery): the editable water analysis.  The ions, the
+// declared brackish groundwater it opens on and the mg/L <-> mol/kg
+// conversions live in case/scalingSpec.ts — the analysis is DECLARED in the
+// unit a laboratory reports it in and the mol/kg the dict carries is derived,
+// because the chloride of the seven mol/kg literals that used to sit here was
+// transcribed wrong and took the feed's charge balance with it.
 // The minerals the equilibrium toggle drives to SI = 0 — the canonical RO/NF
 // scaling pair (carbonate + sulfate) the scan already reports SI for, matching
 // tutorials/props/electrolyte/precipitation_ro_brackish.  NOT a user picker:
@@ -263,7 +260,7 @@ export function ExploreWorkspace() {
   // Scaling: the water analysis (TOTAL molalities, mol/kg water — canonical;
   // the unit select converts for DISPLAY only), pH, recovery range.  Setting
   // an ion to 0 drops it from the synthesized `totals {}`.
-  const [ionTotals, setIonTotals] = useState<{ [ion: string]: number }>({ ...BRACKISH_DEFAULT });
+  const [ionTotals, setIonTotals] = useState<{ [ion: string]: number }>(brackishDefaultMolal());
   const [ionUnit, setIonUnit] = useState<"mg/L" | "mol/kg">("mg/L");
   // pH default = SOLVED from electroneutrality (`pH solve;` — the honest
   // flagship: the engine announces the feed charge imbalance the solved pH
@@ -366,9 +363,9 @@ export function ExploreWorkspace() {
   // display unit.  mg/L converts at rho ~ 1 kg/L (a dilute analysis) — a
   // DISPLAY convenience exactly like kToDisplay, not engine physics.
   const ionToDisp = (m: number, mw: number) =>
-    ionUnit === "mg/L" ? Number((m * mw * 1000).toFixed(2)) : m;
+    ionUnit === "mg/L" ? Number(mgPerLFromMolal(m, mw).toFixed(2)) : m;
   const ionToMolal = (d: number, mw: number) =>
-    ionUnit === "mg/L" ? d / (mw * 1000) : d;
+    ionUnit === "mg/L" ? molalFromMgPerL(d, mw) : d;
 
   // Case-local components (G1/G2): when a case is open, its constant/components/
   // *.dat appear in the browser, supply UNIFAC groups, and ship to the WASM run.
@@ -399,21 +396,22 @@ export function ExploreWorkspace() {
   const localComponentFiles = useMemo<Record<string, string>>(() => caseComponentFiles(caseRaw), [caseRaw]);
   const hasLocal = Object.keys(localComponentFiles).length > 0;
 
-  // Honest DEFAULT model: a fitted-pair model (NRTL/Wilson) with NO curated pair
-  // silently collapses to ideal — a meaningless lens.  When a freshly-selected
-  // binary has no such pair but DOES have UNIFAC groups, default to UNIFAC
-  // (predictive, shows the real non-ideality + any split) instead of ideal-garbage.
-  // Fires only on a COMPONENT change (not on model change), so a manual pick of
-  // NRTL for the same pair is respected.
+  // Honest DEFAULT model: a fitted-pair model with a pair the catalogue does
+  // not hold is a run the ENGINE REFUSES by name, so booting on it hands the
+  // student a red banner for a choice they never made.  Where every component
+  // carries UNIFAC groups there is a predictive model that needs no pair.
+  // Fires only on a COMPONENT change (not on model change), so a manual pick
+  // of NRTL for a covered pair is respected.
+  //
+  // The decision is case/exploreHonesty.defaultActivityFor.  It used to open
+  // `if (selected.length !== 2) return;` right here, so THREE organics booted
+  // the ternary lens on NRTL and the engine refused -- although all three
+  // carry UNIFAC groups and the same effect saves every binary.
   const unifacAble = useCallback((c: string) =>
     (metaByName(c, catalogue)?.hasUnifac ?? false) || hasUnifacGroups(c, localUnifac),
     [catalogue, localUnifac]);
   useEffect(() => {
-    if (selected.length !== 2) return;
-    const a = selected[0]!, b = selected[1]!;
-    if (!unifacAble(a) || !unifacAble(b)) return;
-    setActivity((prev) =>
-      (prev === "NRTL" || prev === "Wilson") && !hasPair(prev, a, b) ? "UNIFAC" : prev);
+    setActivity((prev) => defaultActivityFor(prev, selected, unifacAble));
   }, [selected, unifacAble]);
 
   const addComp = useCallback((n: string) => setSelected((s) => (s.includes(n) ? s : [...s, n])), []);
@@ -946,11 +944,14 @@ export function ExploreWorkspace() {
         if (seq !== runSeq.current) return;   // superseded by a newer change
         out = result.csvFiles?.[EXPLORE_OUTPUT];
         notDone = result.status !== "done";
-        failureDetail = result.log
-          .split("\n")
-          .map((line) => line.trim())
-          .reverse()
-          .find((line) => /(?:error|fatal|refused|failed)/i.test(line));
+        //  The FIRST line naming a refusal, not the last: an engine refusal
+        //  leads with the headline that names its subject ("... 2 binary
+        //  pair(s) have no parameters ...: benzene-nHexane, toluene-nHexane")
+        //  and follows it with the explanation and the remedies.  Reading
+        //  backwards put the EXPLANATION in the red banner ("That is a
+        //  DIFFERENT MODEL from the one requested") and threw away the only
+        //  sentence that says WHICH pairs.  case/exploreHonesty.ts.
+        failureDetail = failureHeadline(result.log);
         // Honesty: lift the op's "[advisory]" lines off the run log (e.g.
         // scalingScan's Davies-beyond-trust-range flag) — the Explorer shows
         // no log tab, and a swallowed advisory is a silent crutch.  The
@@ -965,6 +966,12 @@ export function ExploreWorkspace() {
         advisories = (result.log.match(/^\s*(\[advisory\]|speciation: feed charge imbalance|steamTables: the .* isobar crosses|EQUILIBRATE allowed|.*precipitation CEILING).*$/gm) ?? []).map((s) => s.trim());
       }
       setOpAdvisories(advisories);
+      //  A run that produced nothing must not leave the PREVIOUS picture on
+      //  screen.  It did: force NRTL onto a pair the catalogue lacks and the
+      //  UNIFAC envelope stayed drawn, under a red banner refusing NRTL, with
+      //  the toolbar reading "γ NRTL" -- a diagram computed under one model
+      //  standing as the answer to a question about another.
+      if (!out) setCsv(null);
       if (out) { setCsv(out); setErr(null); }
       else setErr(notDone
         ? `choupoProps did not finish${failureDetail ? `: ${failureDetail}` : ". Try a narrower range or a curated compound."}`
@@ -1035,8 +1042,13 @@ export function ExploreWorkspace() {
   // off the engine's CSV (column I) — the number Davies' trust hinges on.
   const iEnds = plotType === "scaling" && csv ? csvColumnEnds(csv, "I") : null;
 
-  // which curated binary pairs back the chosen activity model (so the student
-  // SEES whether a pair is found → non-ideal, or absent → ideal fallback)
+  // which curated binary pairs back the chosen activity model, and WHAT EACH
+  // RECORD CLAIMS.  Three things were wrong here at once and they came apart
+  // in case/exploreHonesty.ts: the absent branch said "absent → ideal" (the
+  // engine REFUSES, and has since 2026-08-11); every present record drew a
+  // green tick, including the one whose own `origin assumed;` makes it the
+  // ideality assumption; and the pairs were enumerated by a hand-written
+  // 2-or-3 branch, so a fourth component produced no note at all.
   const pairNote = (() => {
     if (isVle === false && plotType !== "ternary") return null;   // only VLE / bubble-T use γ pairs
     if (activity === "ideal") return null;
@@ -1046,29 +1058,19 @@ export function ExploreWorkspace() {
         ? `UNIFAC groups — missing for ${missing.join(", ")} (treated as ideal); try water, ethanol, benzene, nHexane, nButanol…`
         : `UNIFAC groups — all ${selected.length} components covered ✓ (predictive, no fitted pairs)`;
     }
-    const combos: [string, string][] = [];
-    if (selected.length === 2) combos.push([selected[0]!, selected[1]!]);
-    else if (selected.length === 3)
-      combos.push([selected[0]!, selected[1]!], [selected[0]!, selected[2]!], [selected[1]!, selected[2]!]);
-    if (!combos.length) return null;
-    const parts = combos.map(([a, b]) =>
-      `${a}–${b}: ${hasPair(activity, a, b) ? `${activity} ✓` : "absent → ideal"}`);
-    return `pairs — ${parts.join("  ·  ")}`;
+    return pairNoteText(activity, selected);
   })();
 
-  // Slice 0 — the "no-lie" state: a binary VLE diagram with a fitted-pair model
-  // but NO curated pair silently falls back to IDEAL, which by construction can
-  // show neither an azeotrope nor a liquid-liquid split.  Announce it loudly
-  // (no silent crutch) instead of drawing a clean, misleading single-liquid lens.
-  const idealLieWarning = (() => {
-    if (!isVle || selected.length !== 2) return null;
-    if (activity !== "NRTL" && activity !== "Wilson") return null;
-    const a = selected[0]!, b = selected[1]!;
-    if (hasPair(activity, a, b)) return null;
-    return `No curated ${activity} pair covers ${a}–${b}, so this diagram assumes IDEAL mixing — `
-      + `it cannot show an azeotrope or a liquid-liquid split. Switch γ to UNIFAC (predictive, `
-      + `from the components' groups), or curate a ${activity} pair for this system.`;
-  })();
+  // THE NO-LIE STATE.  A fitted-pair model with a pair the catalogue lacks
+  // used to be announced as "this diagram assumes IDEAL mixing".  The engine
+  // has not done that since the problem-divergence ruling (2026-08-11): it
+  // REFUSES, names the pairs, and lists the legitimate paths.  So does this.
+  // It also fires for the TERNARY lens now, which uses the same γ model and
+  // is exactly where the n = 3 refusal was met (the old guard was
+  // `selected.length !== 2`).
+  const idealLieWarning = (isVle || plotType === "ternary")
+    ? modelRefusalWarning(activity, selected, unifacAble)
+    : null;
 
   // T-x-y liquid-liquid split (from the `liquid_stable` probe): the homogeneous
   // boiling envelope is a PHANTOM where the liquid splits.  Report it (model +
@@ -1121,7 +1123,12 @@ export function ExploreWorkspace() {
   const subtitle = plotType === "gibbsmap"
     ? `Equilibrium map — iso-lines of ${gmMetricSp && selected.includes(gmMetricSp) ? gmMetricSp : (selected[selected.length - 1] ?? "product")} mole fraction over T × log-P by Gibbs-energy minimisation (the ATOMS you fed, redistributed to minimum G at each cell). Labelled industrial window + a user-declared kinetic band; unconverged cells marked, never interpolated. Click any cell for its full composition + the gibbsReactor dict.${gmDeltaT !== 0 ? ` ΔT approach = ${gmDeltaT} K: reaction equilibrium at T+ΔT, physical state at T (empirical; ghost ΔT=0 contours underneath).` : ""}`
     : plotType === "phase"
-    ? `Pure-compound P–T phase diagram — liquid–vapour saturation curve to the critical point (AmbroseWalton corresponding states; marks Tc, Pc, normal b.p.). Solid region omitted — needs triple-point / ΔHfus data.`
+    //  The solid half of this sentence is READ OFF THE PICTURE (the CSV's own
+    //  `curve` column), not asserted: it used to end "Solid region omitted"
+    //  while the legend beside it carried "sublimation (S-V)" and "fusion
+    //  (S-L)".  case/solidPhaseData.ts says why it is not derived from the
+    //  spec instead.
+    ? `Pure-compound P–T phase diagram — liquid–vapour saturation curve to the critical point (AmbroseWalton corresponding states; marks Tc, Pc, normal b.p.). ${solidRegionCaption(phaseCurvesDrawn(csv))}`
     : plotType === "scaling"
     ? `Membrane-scaling audit — SI = log₁₀(IAP/K) per mineral vs water recovery; concentrate totals = feed/(1−r) (pure water removal), ${
         scalingPHMode === "solve"
@@ -1668,7 +1675,7 @@ export function ExploreWorkspace() {
               menu-button showing the committed value, opening its Select. */}
           {showGamma && (
             <ToolMenu label="γ" value={activity}
-              tip="liquid activity model: ideal = Raoult (no azeotrope); NRTL/Wilson auto-resolve curated binary pairs by name, else that pair is ideal; UNIFAC is PREDICTIVE (γ from molecular groups, no fitted pairs) — a component without a group decomposition is treated as ideal">
+              tip="liquid activity model: ideal = Raoult (no azeotrope); NRTL/Wilson/UNIQUAC resolve curated binary pairs by name and the engine REFUSES the run when a pair has none (it will not quietly run that pair as ideal); UNIFAC is PREDICTIVE (γ from molecular groups, no fitted pairs) — a component without a group decomposition is treated as ideal">
               <Select size="xs" label="γ model" data={["ideal", "NRTL", "Wilson", "UNIFAC"]} value={activity}
                 onChange={(v) => setActivity(v ?? "NRTL")} w={150} allowDeselect={false} />
             </ToolMenu>
@@ -1991,8 +1998,16 @@ export function ExploreWorkspace() {
                 </Text>
               </Alert>);
           }
+          //  THE TITLE IS PART OF THE SENTENCE.  This card read "Assuming
+          //  ideal mixing — not your real system" over a body that had
+          //  already been corrected to say the engine REFUSES, so the two
+          //  halves of one alert contradicted each other on screen.  Found by
+          //  DRIVING the app, not by reading the source: the title is a
+          //  separate literal from the text it titles, and a grep for the
+          //  claim's wording does not reach it.
           if (idealLieWarning) alerts.push(
-            <Alert key="ideal" color="orange" variant="light" title="Assuming ideal mixing — not your real system">
+            <Alert key="ideal" color="orange" variant="light"
+              title="No curated pair — the engine will refuse this model">
               <Text size="xs">{idealLieWarning}</Text>
             </Alert>);
           if (lleInTxy) alerts.push(
@@ -2064,11 +2079,14 @@ export function ExploreWorkspace() {
                 <Button variant="subtle" size="compact-xs" onClick={() => setSnippetOpen((o) => !o)}>
                   {snippetOpen ? "Hide propsDict" : "Author → copy propsDict"}
                 </Button>
-                {!footerOpen && nFlags === 0 && isVle && (
-                  <Text size="xs" c="dimmed" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    NRTL/Wilson pairs auto-resolve by name; absent → ideal (no azeotrope).
-                  </Text>
-                )}
+                {/*  A folded-footer TEASER lived here, and the one sentence
+                     it carried was "NRTL/Wilson pairs auto-resolve by name;
+                     absent -> ideal (no azeotrope)" -- false since the
+                     problem-divergence ruling of 2026-08-11, and printed on
+                     every VLE lens.  It is not replaced: the pair note is one
+                     click away in the details, and repeating it here would be
+                     a second home for it.  An empty element is worse than no
+                     element.  */}
               </Group>
               {/*  THE FOOTER MUST NEVER PUSH THE PLOT DOWN (gui-credo §3), and
                    until 2026-09-21 it could: the box has `flexShrink: 0` and
@@ -2085,7 +2103,6 @@ export function ExploreWorkspace() {
                   style={{ maxHeight: "35vh", overflowY: "auto", overflowX: "hidden" }}>
                   {alerts}
                   {notes}
-                  {isVle && <Text size="xs" c="dimmed">NRTL/Wilson pairs auto-resolve by name; absent → ideal (no azeotrope).</Text>}
                 </Stack>
               </Collapse>
               <Collapse in={snippetOpen}>
