@@ -96,6 +96,7 @@ import { UnitNode } from "./UnitNode.js";
 import { loadLayout, saveLayout, layoutFromChoText, layoutToChoText, mergeLayouts,
   type XY, type HandlePos, type CaseLayout } from "../state/layout.js";
 import { runControl } from "../case/runControl.js";
+import { buildDrillSeed, feedsKeyFor, inheritKeyFor } from "../case/drillSeed.js";
 import type { DutyAllocationFacts } from "../case/dutyUtility.js";
 import { writeCaseFile } from "../cases/workspace.js";
 import { notifications } from "@mantine/notifications";
@@ -321,16 +322,41 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     (nodeId: string) => {
       const sub = drillableSub(nodeId);
       if (!sub) return;
-      // Open the unit/sector as its own case.  Its stream STATE lives in its 0/
-      // (the plant run materialised it); the drilled tab reads those values
-      // directly and re-solves from them on Run.  No volatile in-memory
-      // inherit/feeds hand-off -- that was retired by the stream-state
-      // constitution, and it left the drilled tab showing a wrong, half-applied
-      // sliced result until the user pressed Reset (the 0/ state is the truth).
-      const url = `${window.location.pathname}?case=${encodeURIComponent(sub)}`;
+      //  HAND THE CHILD THE STATE IT STARTS FROM.  This comment used to say
+      //  the drilled sub-case's stream state "lives in its 0/ (the plant run
+      //  materialised it)", and the writer was removed on that premise.  The
+      //  plant run materialises no such thing: `converged/` is written at the
+      //  case ROOT with the sector geography inside it, never as a `0/` in a
+      //  unit's own folder.  So a drilled unit had no initial state at all
+      //  and failed with `input stream 'Feed' not in registry` -- which is
+      //  how Vítor found it, drilling into the converter to study it alone.
+      //
+      //  `store.bootCase` has read the two stashes all along and names THIS
+      //  function as their writer.  It is one again.  What is seeded, and why
+      //  the ports are resolved through the parent's connections rather than
+      //  matched by name: case/drillSeed.ts.
+      const member = nodeId.slice("unit:".length);
+      const subT = tutorialByName(sub);
+      const seed = subT
+        ? buildDrillSeed(flowsheet, subT.files, member,
+                         runResult)
+        : null;
+      let url = `${window.location.pathname}?case=${encodeURIComponent(sub)}`;
+      if (seed) {
+        //  Storage is best-effort: a private window or blocked site data must
+        //  open the tab UNSEEDED rather than not at all.  The child then says
+        //  its inlet is unfed, which is true, instead of being handed a guess.
+        try {
+          const fk = feedsKeyFor(sub), ik = inheritKeyFor(sub);
+          window.localStorage.setItem(fk, JSON.stringify(seed.feeds));
+          window.localStorage.setItem(ik, JSON.stringify(seed.inherited));
+          url += `&feeds=${encodeURIComponent(fk)}`
+               + `&inherit=${encodeURIComponent(ik)}`;
+        } catch { /* blocked storage -- open unseeded, which is honest */ }
+      }
       window.open(url, "_blank");
     },
-    [drillableSub],
+    [drillableSub, flowsheet, runResult],
   );
 
   // Recompute graph whenever the case changes.
