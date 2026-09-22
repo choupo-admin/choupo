@@ -103,7 +103,27 @@ const THEORY_DEST: Record<string, string> = {
   // flash + saturation
   flash: "ch:flash",
   isothermalFlash: "ch:flash",
-  adiabaticFlash: "ch:flash",
+  //  NOT `ch:flash`.  That label sits on a section titled "Isothermal flash,
+  //  vapour-liquid", and `adiabaticFlash` is a DIFFERENT engine class -- so
+  //  a student clicking "Theory -- the section deriving this unit" on an
+  //  adiabatic drum landed on the derivation of the isothermal one, under a
+  //  link promising it derived theirs.  Vítor found it on the first case a
+  //  student runs.
+  //
+  //  A SHARED DESTINATION IS HONEST ONLY WHEN ITS HEADING COVERS EVERY TYPE
+  //  THAT LANDS ON IT.  Measured across the whole table: 54 mapped types,
+  //  28 destinations, 17 of them shared -- and every other share passes that
+  //  test by its own heading ("compressors, turbines, pumps"; "cyclone, bag
+  //  filter, ideal splitter"; "boiler / condenser"), or is an umbrella that
+  //  names none of them on purpose ("The simple unit operations").  This was
+  //  the only one that named ONE sharer and excluded another.
+  //
+  //  The adiabatic flash IS derived, inside that same chapter: the outer
+  //  Newton in T around the isothermal kernel, whose two-loop figure carries
+  //  the derivation in its caption.  `destlabel=true` (docs/preamble.tex)
+  //  makes every \label a PDF named destination, so this resolves without
+  //  touching the guide.
+  adiabaticFlash: "fig:adiabatic-flash-loops",
   bubbleT: "ch:bubble-dew-ref",
   dewT: "ch:bubble-dew-ref",
   // membrane

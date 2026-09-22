@@ -3809,6 +3809,21 @@ PYEOF
     fi
     rm -f /tmp/introtrace.$$
 
+    # guide-anchor gate (2026-09-22).  The GUI deep-links to the guides by
+    # LaTeX label name (hyperref destlabel makes each one a PDF named
+    # destination).  A label renamed in a guide breaks every link to it in
+    # SILENCE -- the PDF just opens at page one -- and the map is TypeScript
+    # while the labels are LaTeX, so no compiler or test saw across the seam.
+    if "$ROOT/bin/curate/check_guide_anchors.py" > /tmp/guideanch.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "guide-anchor-gate" "$(head -1 /tmp/guideanch.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_guide_anchors.py)\n" "guide-anchor-gate"
+        cat /tmp/guideanch.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/guideanch.$$
+
     # viewport-unit gate (2026-09-22).  The app shell is a full-viewport box
     # with `overflow: hidden`.  Written `height: 100vh` it lays out taller
     # than a phone's glass -- `100vh` measures the window as if the URL bar
