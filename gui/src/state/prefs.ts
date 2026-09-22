@@ -202,6 +202,22 @@ export function fitToViewport(px: number, available: number, spec: SizeSpec): nu
  *  spelling already existed and already meant "is the EduTools setup chrome
  *  folded away?", and minting a second one for the same question when that
  *  chrome became a docked panel would be the arity sin. */
+/**
+ * The flowsheet node's DETAIL LEVEL: true draws the type badge and the
+ * operating-parameter lines, false draws the symbol and the name alone.
+ *
+ * A READER PREFERENCE, not a tab's and not a case's, by this module's own
+ * ruling -- which is why it lives here and not in the canvas's `show` state.
+ * It is the FIRST chip in the canvas's `SHOW` row that persists: the others
+ * are content filters that answer "does this case have any?" and are
+ * deliberately per-tab.  Said plainly here because the row now holds two
+ * kinds of control that look alike.
+ *
+ * Defaults TRUE, so a reader who has never touched it sees exactly what
+ * shipped before.
+ */
+export const NODE_DETAILS_KEY = "choupo.flowsheet.nodeDetails";
+
 export const METHODS_SETUP_COLLAPSED_KEY = "choupo.methods.controlsCollapsed";
 
 /** A shell / workspace panel whose size and fold the reader controls. */

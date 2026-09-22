@@ -43,6 +43,7 @@ import type { JsonValue } from "../dict/index.js";
 import { scalarToSI } from "../dict/scalarSI.js";
 import { UNIT_LABEL, unitIconFor } from "./unitIcons.js";
 import { symbolOf } from "../case/unitFamily";
+import { symbolSizeFor, nodeMinHeight } from "../case/nodeDetail.js";
 import { operationSchemaFor, type OperationSchema } from "../case/operationSchemas.js";
 import { COLUMN_TYPES, HEAT_DUTY_TYPES, COOLING_DUTY_TYPES, PHASE_SPLIT_TYPES } from "../case/dutyTypes.js";
 import { useStore } from "../state/store.js";
@@ -105,6 +106,18 @@ export function UnitNode({ id, data, selected }: NodeProps) {
   //  keeps the old glyph and the box, which is the honest fallback rather
   //  than a silhouette we would be inventing.
   const symbol = symbolOf(unit.type);
+  //  DETAIL LEVEL.  Absent means FULL -- an older tab, or any caller that
+  //  does not pass it, draws exactly what it always did.
+  const showDetails = (data as { showDetails?: boolean }).showDetails !== false;
+  //  THE SYMBOL GROWS BECAUSE THE BOX SHRINKS.  Enlarging it inside a full
+  //  node was tried once (34 -> 41 px) and moved the silhouette from a
+  //  quarter of the card to barely more; the card is what is big.  With the
+  //  badge row and the parameter lines gone the box is a fraction of its
+  //  height, so 56 px DOMINATES it and still leaves a SMALLER footprint than
+  //  the 41 px full node -- which matters, because siblings are laid out at
+  //  Y_STEP 130 in toGraph.ts and a full node is already taller than its own
+  //  lane.  Growing the symbol any other way makes that crowding worse.
+  const symbolPx = symbolSizeFor(showDetails);
   const icon = unitIconFor(unit.type, 18);
   const label = UNIT_LABEL[unit.type] ?? unit.type;
   const opSummary = summarise(unit.operation, operationSchemaFor(unit.type) ?? undefined, prefs, kpis);
@@ -143,6 +156,15 @@ export function UnitNode({ id, data, selected }: NodeProps) {
         borderRadius: 10,
         padding: "10px 14px",
         minWidth: 190,
+        //  A SHORT BOX CROWDS ITS OWN HANDLES.  Connection points are placed
+        //  at a FRACTION of the border, so a unit with several inlets packs
+        //  them into whatever height the box has -- and the simple view is
+        //  short by design.  The floor is the port count times a spacing
+        //  that keeps two 11 px dots apart, taken on the BUSIER side, so a
+        //  two-port unit stays compact and an evaporator does not fuse its
+        //  wires.  Named rather than tuned: no test here measures a pixel,
+        //  and the number below is the one a human must check by looking.
+        minHeight: nodeMinHeight(showDetails, inputs.length, outputs.length),
         boxShadow: selected
           ? "0 0 0 3px rgba(38, 198, 218, 0.15)"
         : "0 1px 3px rgba(0,0,0,0.4)",
@@ -264,7 +286,7 @@ export function UnitNode({ id, data, selected }: NodeProps) {
                 //  inverts the hierarchy a PFD is read by -- the shape is
                 //  recognised first and the tag is read second.  At 41 the
                 //  silhouette carries the same weight as the name.
-                <svg width={41} height={41} viewBox="0 0 48 48" aria-hidden
+                <svg width={symbolPx} height={symbolPx} viewBox="0 0 48 48" aria-hidden
                      style={{ display: "block" }}>
                   <path
                     d={symbol.path}
@@ -301,6 +323,16 @@ export function UnitNode({ id, data, selected }: NodeProps) {
             </Tooltip>
           )}
         </Group>
+        {/*  THE TYPE BADGE AND THE PARAMETER LINES ARE WHAT THE DETAIL CHIP
+             HIDES.  The SYMBOL and the NAME always stay: the shape is what a
+             flowsheet is read by, and the name is the one string that ties
+             the block to the dict a student edits -- dropping either would
+             cost more than the space it buys.  What goes is the pair that is
+             answered better elsewhere: a single click opens the Properties
+             card with the full schema-driven operation block, its prose and
+             its display units, which is a SUPERSET of these two or three
+             lines.  */}
+        {showDetails && (
         <Group gap={4} style={{ alignSelf: "flex-start" }}>
           {/* tt="none": ALL-CAPS is reserved for SECTOR names (the
               UPPER_CASE naming convention, docs/ai/case-layout.md).  A unit
@@ -315,7 +347,8 @@ export function UnitNode({ id, data, selected }: NodeProps) {
             </Badge>
           )}
         </Group>
-        {opSummary.length > 0 && (
+        )}
+        {showDetails && opSummary.length > 0 && (
           <Stack gap={2} mt={4}>
             {opSummary.map(({ k, v }) => (
               <Text key={k} size="xs" c="dimmed" ff="monospace">

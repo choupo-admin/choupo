@@ -128,6 +128,45 @@ plot window is its own document -- restates the property in `100dvh`
 instead, which is the one thing a React style OBJECT cannot express, since
 it has a single key per property.
 
+**THE SYMBOL GROWS BECAUSE THE BOX SHRINKS -- the `details` chip
+(2026-09-22).**  Asked three times in one day why the unit symbols look
+small, and answered wrongly twice: the symbol was enlarged 34 -> 41 px and
+Vítor came back.  Measured, **the symbol is not small; the box is big** -- a
+full node carries the symbol, the name, a type badge and up to three
+parameter lines, so the silhouette is about a QUARTER of its own card, and
+the card is already taller than its lane (`toGraph.ts` lays siblings out at
+`Y_STEP = 130`).  Enlarging inside that card cannot fix the ratio without
+making the crowding worse.  So the `details` chip REMOVES the badge row and
+the parameter lines; the box shrinks, and the symbol grows into what frees.
+At 56 px on a short box the silhouette dominates AND the node still has a
+smaller footprint than the 41 px full one -- the only option that improves
+the ratio by shrinking rather than growing.
+
+The symbol and the NAME always stay: the shape is what a flowsheet is read
+by, and the name is the one string tying the block to the dict a student
+edits.  **No popup was added, and that was the substantive decision**: a
+single click already opens the Properties card with the full schema-driven
+operation block, a strict SUPERSET of the lines hidden, and the 2026-06-12
+ruling settled on exactly TWO unit surfaces.  A third would be a second home
+for an answer that exists.  Two other options were rejected on engineering
+rather than taste -- the NAME BELOW THE BOX (in React Flow the box IS the
+handle frame, so text inside buys no height and text outside is unowned by
+the node, overlapping edges and neighbours with no collision handling), and
+SIZE BY ZOOM (a second, non-linear grammar of size on a canvas where size
+means nothing today).
+
+Two things this slice paid for.  The chip folds into the existing `SHOW` row
+per the NO-REBLOAT invariant, but it is the FIRST one there that PERSISTS:
+the other four are content filters that answer "does this case have any?" and
+are per-tab, while a way of looking belongs to the READER (`prefs.ts`'s own
+ruling).  The row now holds two kinds of control that look alike, and that is
+said in the code rather than hidden.  And a short box CROWDS ITS OWN HANDLES,
+because a handle sits at a fraction of the border -- so the simple node takes
+a height floor sized on the BUSIER SIDE, never the sum, since ports are on
+opposite borders.  The two numbers live in `case/nodeDetail.ts` where tests
+can hold them; nothing here renders React, so the drawing around them is
+checked by a human looking, and the module says so.
+
 **SHAPE IS THE EQUIPMENT, TAG IS THE CALCULATION MODEL (2026-09-22).**  A flowsheet is read
 BY SHAPE, and a sheet of identical boxes teaches none of the vocabulary.  Two
 rounds were needed and the second is the lesson.  Round one replaced a

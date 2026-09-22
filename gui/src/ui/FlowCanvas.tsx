@@ -96,6 +96,7 @@ import { UnitNode } from "./UnitNode.js";
 import { loadLayout, saveLayout, layoutFromChoText, layoutToChoText, mergeLayouts,
   type XY, type HandlePos, type CaseLayout } from "../state/layout.js";
 import { runControl } from "../case/runControl.js";
+import { readFlag, writeFlag, NODE_DETAILS_KEY } from "../state/prefs.js";
 import { buildDrillSeed, feedsKeyFor, inheritKeyFor } from "../case/drillSeed.js";
 import type { DutyAllocationFacts } from "../case/dutyUtility.js";
 import { writeCaseFile } from "../cases/workspace.js";
@@ -297,6 +298,20 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   // classes so a busy plant declutters.  Process material is always on;
   // energy wires (W/Q), recycle tears and utility streams toggle.
   const [show, setShow] = useState({ energy: true, recycle: true, utility: true, numbers: true });
+  //  THE NODE DETAIL LEVEL IS A READER PREFERENCE, and the other four chips
+  //  beside it are not.  They are content FILTERS -- each disables itself
+  //  when the case has none of that class -- and they are deliberately
+  //  per-tab.  This one is a way of looking that applies to every case, so
+  //  by prefs.ts's own ruling it belongs to the reader and persists.  The
+  //  row now holds two kinds of control that look alike; that is the cost
+  //  of folding into an existing surface rather than growing a new one
+  //  (the NO-REBLOAT invariant), and it is cheaper than a second row.
+  const [showDetails, setShowDetails] = useState(
+    () => readFlag(NODE_DETAILS_KEY, true));
+  const onDetails = useCallback((v: boolean) => {
+    setShowDetails(v);
+    writeFlag(NODE_DETAILS_KEY, v);
+  }, []);
 
   // Fractal drill-down (step 4c): double-click a node that is itself a case
   // (a sector or unit folder with a.cho) to OPEN it in a NEW WINDOW, loaded
@@ -900,6 +915,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                   utilityCategory, resolved, dutyKW, dutyAlloc, dutyEurH,
                   feedDrivenTag,
                   showNumbers: show.numbers,
+                  showDetails,
                   // ABSOLUTE number (overrides toGraph's per-view local one).
                   streamNumber: numberOf((n.data as { name?: string }).name ?? ""),
                   handleOverrides, onHandleMove, onHandleCommit: commitHandles,
@@ -907,6 +923,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         };
       }),
     [nodes, selectedNodeId, drillableSub, phaseOf, utilityOf, resultStreamOf, show,
+     showDetails,
      handlePos, onHandleMove, onHandleReset, commitHandles, runResult, numberOf,
      scrubOverlay, colorScheme],
   );
@@ -1259,6 +1276,19 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             <ShowChip color="grape" label="№ streams" present={present.numbers}
               checked={show.numbers} onChange={(v) => setShow((s) => ({...s, numbers: v }))}
               emptyHint="No streams to number yet." />
+            {/*  ALWAYS PRESENT: every flowsheet has units, so unlike the four
+                 filters beside it this chip is never disabled.  Off, the node
+                 keeps its SYMBOL and its NAME and drops the type badge and
+                 the parameter lines -- the box SHRINKS and the symbol grows
+                 into it, which is the only way to make the silhouette
+                 dominate without pushing neighbours apart (siblings are laid
+                 out at Y_STEP 130 in toGraph.ts, and a full node is already
+                 taller than that).  The details are not lost: a single click
+                 opens the Properties card with the whole schema-driven
+                 operation block, which is a SUPERSET of these lines.  */}
+            <ShowChip color="blue" label="details" present
+              checked={showDetails} onChange={onDetails}
+              emptyHint="" />
           </Group>
         </Box>
         {/* Legend, top-left (below the filters).  Only shown when a run
