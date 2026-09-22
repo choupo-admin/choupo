@@ -106,6 +106,15 @@ const VESSEL =                      // vertical capsule, dished heads
 const COLUMN_SHELL =                // tall capsule
   "M16 10a8 5 0 0116 0v28a8 5 0 01-16 0z";
 const SIDE_NOZZLES = " M3 24h5 M40 24h5";
+//  A stirred vessel WITH continuous flow: the CSTR and its transient sibling.
+const STIRRED_FLOW =
+  "M15 14a9 6 0 0118 0v20a9 6 0 01-18 0z M24 8v14 M18 22h12 M18 28h12"
+  + " M3 18h5 M40 30h5 M24 6V2";
+//  A BATCH vessel is closed to continuous flow, and that IS hardware: it is
+//  charged from the top and discharged from the bottom, with no side pair.
+//  So the batch units are not "the steady ones tagged" -- their nozzles
+//  differ, which is a real difference and is drawn.
+const BATCH_NOZZLES = " M24 6V2 M24 42v4";
 const TOP_NOZZLE = " M24 6V2";
 const BOTTOM_NOZZLE = " M24 42v4";
 
@@ -113,8 +122,14 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
   //  ---- REACTORS.  Real hardware differences are drawn; specifications are
   //  tagged.  CSTR and PFR are hardware; the other three are one vessel.
   { cls: "CSTR", label: "stirred-tank reactor (CSTR)",
-    path: VESSEL + " M24 8v14 M18 22h12 M18 28h12"
-        + " M3 18h5 M40 30h5" + TOP_NOZZLE },
+    path: STIRRED_FLOW, tag: "SS" },
+  { cls: "DynamicCSTR", label: "stirred-tank reactor, transient",
+    //  THE SAME EQUIPMENT.  A dynamic CSTR has the same shell, the same
+    //  agitator and the same nozzles as the steady one; what differs is that
+    //  the holdup is an integrated STATE rather than a parameter, which is a
+    //  SOLUTION MODE and not hardware.  Drawing it differently would be the
+    //  invented-difference error this module was corrected for.
+    path: STIRRED_FLOW, tag: "d/dt" },
   { cls: "PFR", label: "plug-flow reactor (tubular)",
     //  A serpentine TUBE in a shell: nothing is mixed, everything travels.
     path: "M8 12h32v24H8z M13 18h22a3 3 0 010 6H13a3 3 0 000 6h22"
@@ -279,6 +294,66 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
     path: "M12 16h24v24H12z M12 16l12-7 12 7 M12 30h24"
         + " M3 22h9 M24 40v5" },
 
+  //  ---- BATCH VESSELS (choupoBatch) and the ONE lumped benchmark.
+  //  These are NOT the steady units with a tag: a batch vessel is CLOSED to
+  //  continuous flow, charged from the top and discharged from the bottom,
+  //  and that is hardware rather than a solution mode.
+  { cls: "BatchReactor", label: "batch reactor",
+    path: VESSEL + " M24 8v14 M18 22h12 M18 28h12" + BATCH_NOZZLES },
+  { cls: "BatchCrystalliser", label: "batch crystalliser",
+    //  Closed, well mixed, and carrying the CRYSTAL population that is its
+    //  whole subject (the dynamic sibling of the steady MSMPR).
+    path: VESSEL + " M24 8v12 M19 20h10"
+        + " M19 29l3-3 3 3-3 3z M27 33l2.5-2.5 2.5 2.5-2.5 2.5z"
+        + BATCH_NOZZLES },
+  { cls: "BatchStill", label: "batch still (Rayleigh)",
+    //  A POT boiled off with the vapour taken overhead: no reflux, no plates
+    //  -- so no column shell, and the take-off is drawn where it leaves.
+    path: VESSEL + " M18 32c3-3 6 3 9 0 M18 36c3-3 6 3 9 0"
+        + " M24 8V2 M24 2h10" },
+  { cls: "BatchAccumulator", label: "receiver / accumulator (passive)",
+    //  A PASSIVE vessel: it does nothing on its own and is only charged, so
+    //  it carries an inlet and a level and no agitator, coil or outlet.
+    path: VESSEL + " M15 30h18 M24 6V2" },
+  { cls: "BatchAdsorber", label: "batch adsorber (closed contactor)",
+    //  A CLOSED gas-solid contacting vessel: a headspace over the adsorbent
+    //  with the jacket that pins its temperature.  The jacket is the mark
+    //  that separates it from a flow-through bed.
+    path: VESSEL + " M15 28h18 M18 32a2 2 0 104 0a2 2 0 10-4 0"
+        + " M26 32a2 2 0 104 0a2 2 0 10-4 0"
+        + " M11 18v14 M37 18v14" + BATCH_NOZZLES },
+  { cls: "FixedBedAdsorber", label: "fixed-bed adsorber (breakthrough)",
+    //  A PACKED bed the gas passes THROUGH -- the axial flow is the model,
+    //  so the nozzles are the through pair and the bed is hatched.
+    path: VESSEL + " M15 19h18 M15 26h18 M15 33h18" + BATCH_NOZZLES },
+  { cls: "BatchDryer", label: "batch tray dryer",
+    //  A TRAY of wet solid in air of declared condition: the tray is the
+    //  equipment, and the moisture leaves upward.
+    path: "M10 18h28v16H10z M14 26h20 M18 18v-5 M24 18v-7 M30 18v-5"
+        + " M24 34v10" },
+  { cls: "BatchDiafilter", label: "batch diafiltration rig",
+    //  A stirred hold-up vessel with the MEMBRANE module it recirculates
+    //  through: the loop is the rig, and it is what the unit models.
+    path: "M8 12a7 5 0 0114 0v16a7 5 0 01-14 0z M15 8v8"
+        + " M28 18h14v10H28z M35 18v10 M22 23h6 M42 23h3 M15 33v7" },
+  { cls: "BatchElectrodialysis", label: "batch electrodialysis rig",
+    //  BOTH TANKS and the stack between them: the unit holds the diluate
+    //  and the concentrate, and a rig that could not see the second one
+    //  could not compute its own voltage.
+    path: "M4 14h10v20H4z M34 14h10v20H34z"
+        + " M19 12v24 M23 12v24 M27 12v24 M31 12v24"
+        + " M14 20h5 M31 20h3 M14 30h5 M31 30h3" },
+  { cls: "WilliamsOttoPlant", label: "Williams-Otto plant (one lumped unit)",
+    //  NOT ONE PIECE OF EQUIPMENT.  Its own header says "the Williams-Otto
+    //  plant as ONE dynamic unit" -- a whole benchmark plant lumped into a
+    //  block -- so it is drawn as a boxed FLOWSHEET rather than as a vessel
+    //  it is not: the 2026-09-07 ruling, a labelled box beats a wrong
+    //  picture, applied rather than re-argued.
+    path: "M6 10h36v28H6z M13 18a3 3 0 106 0a3 3 0 10-6 0"
+        + " M29 18a3 3 0 106 0a3 3 0 10-6 0"
+        + " M13 30a3 3 0 106 0a3 3 0 10-6 0"
+        + " M19 18h10 M16 21v6 M22 30h13 M35 21v9" + SIDE_NOZZLES },
+
   //  ---- NOT EQUIPMENT.
   { cls: "BubblePoint", label: "bubble-point calculation (not equipment)",
     //  BUBBLES leaving a liquid: the first vapour.
@@ -308,6 +383,19 @@ const BY_CLASS = new Map(SYMBOLS.map((s) => [s.cls, s]));
  */
 export const UNIT_CLASS: { readonly [type: string]: string } = {
   cstr: "CSTR",
+  //  DynamicUnitOperation's registry (choupoCtrl + choupoSemiContinuous).
+  dynamicCSTR: "DynamicCSTR",
+  williamsOttoPlant: "WilliamsOttoPlant",
+  //  BatchUnitOperation's registry (choupoBatch).
+  batchReactor: "BatchReactor",
+  batchStill: "BatchStill",
+  batchAccumulator: "BatchAccumulator",
+  batchCrystalliser: "BatchCrystalliser",
+  batchAdsorber: "BatchAdsorber",
+  fixedBedAdsorber: "FixedBedAdsorber",
+  batchDiafilter: "BatchDiafilter",
+  batchDryer: "BatchDryer",
+  batchElectrodialysis: "BatchElectrodialysis",
   pfr: "PFR",
   conversionReactor: "ConversionReactor",
   gibbsReactor: "GibbsReactor",

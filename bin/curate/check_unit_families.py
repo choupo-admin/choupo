@@ -75,24 +75,59 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-ENGINE = ROOT / "src" / "unitOperations" / "UnitOperation.cpp"
+#  THE ENGINE HAS THREE REGISTRIES, AND THIS GATE COUNTED ONE.
+#
+#  Round three's claim line said "all 51 unit type(s) the engine registers
+#  carry a symbol".  True of `UnitOperation::registerBuiltins()` and FALSE as
+#  a statement about the engine: `dynamicCSTR` is registered by
+#  `DynamicUnitOperation` and the nine batch units by `BatchUnitOperation`, so
+#  every case under tutorials/unsteady, tutorials/ctrl and tutorials/batch went
+#  on drawing the generic glyph -- and this gate could not see it, because it
+#  was not looking there.  Vitor found it by opening `unsteady/`.
+#
+#  A gate's claim is the line it prints, and that line promised more than the
+#  gate had measured.  All three registries are read now, each with the call
+#  shape it actually uses, and a registry that yields NOTHING fails rather
+#  than quietly narrowing the domain.
+REGISTRIES = [
+    ("UnitOperation",
+     ROOT / "src" / "unitOperations" / "UnitOperation.cpp",
+     r'reg\("([A-Za-z0-9_]+)"[^;]*?make_unique<([A-Za-z0-9_]+)>'),
+    ("DynamicUnitOperation",
+     ROOT / "src" / "unitOperations" / "dynamic" / "DynamicUnitOperation.cpp",
+     r'registerType\("([A-Za-z0-9_]+)"[^;]*?make_unique<([A-Za-z0-9_]+)>'),
+    ("BatchUnitOperation",
+     ROOT / "src" / "unitOperations" / "batch" / "BatchUnitOperation.cpp",
+     r'registerType\("([A-Za-z0-9_]+)"[^;]*?make_unique<([A-Za-z0-9_]+)>'),
+]
+ENGINE = REGISTRIES[0][1]
 TABLE = ROOT / "gui" / "src" / "case" / "unitFamily.ts"
 
 
 def main() -> int:
-    if not ENGINE.is_file():
-        print(f"check_unit_families: FAILED\n  {ENGINE} is missing -- the "
-              "registry this gate derives its rule from does not exist, so "
-              "nothing was checked.")
-        return 1
+    for name, path, _ in REGISTRIES:
+        if not path.is_file():
+            print(f"check_unit_families: FAILED\n  {path} is missing -- "
+                  f"{name} is one of the three registries this gate derives "
+                  f"its rule from, so nothing was checked.")
+            return 1
     if not TABLE.is_file():
         print(f"check_unit_families: FAILED\n  {TABLE} is missing.")
         return 1
 
-    #  The engine's own answer: name -> class it constructs.
-    engine = dict(re.findall(
-        r'reg\("([A-Za-z0-9_]+)"[^;]*?make_unique<([A-Za-z0-9_]+)>',
-        ENGINE.read_text()))
+    #  The engine's own answer: name -> class it constructs, from ALL THREE
+    #  registries.  Per-registry counts are kept so the claim line can name
+    #  them and an EMPTY one can fail instead of narrowing the domain.
+    engine = {}
+    per_registry = {}
+    empty = []
+    for name, path, rx in REGISTRIES:
+        rows = re.findall(rx, path.read_text(), re.S)
+        if not rows:
+            empty.append(name)
+        per_registry[name] = len(rows)
+        for t, c in rows:
+            engine[t] = c
     src = TABLE.read_text()
 
     m = re.search(r"export const UNIT_CLASS[^{]*\{(.*?)\n\};", src, re.S)
@@ -172,10 +207,13 @@ def main() -> int:
     if fails_early:
         fails.append(fails_early)
 
-    if not engine:
-        fails.append("harvested NO types from the engine registry -- the "
-                     "shape of registerBuiltins() changed, so this gate is "
-                     "blind rather than satisfied")
+    if empty:
+        fails.append(
+            "harvested NO types from registr(ies) " + ", ".join(empty)
+            + " -- their call shape changed, so this gate is blind THERE "
+              "rather than satisfied, and a narrowed domain is exactly how "
+              "every batch and dynamic unit went unsymbolled while the claim "
+              "line said the engine was covered")
     if not table:
         fails.append("harvested NO entries from UNIT_CLASS -- the shape of "
                      "the table changed, so this gate is blind rather than "
@@ -264,7 +302,9 @@ def main() -> int:
               for c in sorted(used)}
     multi = {c: ts for c, ts in shared.items() if len(ts) > 1}
     print(f"check_unit_families: OK -- all {len(engine)} unit type(s) the "
-          f"engine registers carry a symbol; they construct {len(used)} "
+          f"engine registers across its THREE registries ("
+          + ", ".join(f"{k} {v}" for k, v in per_registry.items())
+          + f") carry a symbol; they construct {len(used)} "
           f"distinct class(es) and each is drawn exactly once, with no two "
           f"classes sharing a path.  {len(multi)} class(es) are reached by "
           f"more than one name and therefore share a drawing, which the "

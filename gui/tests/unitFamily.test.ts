@@ -94,17 +94,51 @@ describe("SHAPE IS THE EQUIPMENT, TAG IS THE CALCULATION MODEL", () => {
     //  whether it absorbs or strips.
     const tagged = SYMBOLS.filter((s) => s.tag).map((s) => s.cls).sort();
     expect(tagged).toEqual([
-      "Absorber", "AdiabaticFlash", "ConversionReactor", "DistillationColumn",
-      "EquilibriumReactor", "GibbsReactor", "IsothermalFlash",
-      "ShortcutColumn", "Stripper",
+      "Absorber", "AdiabaticFlash", "CSTR", "ConversionReactor",
+      "DistillationColumn", "DynamicCSTR", "EquilibriumReactor",
+      "GibbsReactor", "IsothermalFlash", "ShortcutColumn", "Stripper",
     ]);
   });
 
   it("real hardware is still drawn, never tagged away", () => {
     //  A CSTR has an agitator and a PFR is a tube.  No tag replaces that.
-    expect(symbolOf("cstr")!.tag).toBeUndefined();
     expect(symbolOf("pfr")!.tag).toBeUndefined();
     expect(symbolOf("cstr")!.path).not.toBe(symbolOf("pfr")!.path);
+  });
+
+  it("a TRANSIENT CSTR is the same equipment, tagged", () => {
+    //  Same shell, same agitator, same nozzles.  What differs is that the
+    //  holdup is an integrated STATE rather than a parameter -- a SOLUTION
+    //  MODE, not hardware, so it is tagged and not redrawn.
+    expect(symbolOf("dynamicCSTR")!.path).toBe(symbolOf("cstr")!.path);
+    expect(symbolOf("cstr")!.tag).toBe("SS");
+    expect(symbolOf("dynamicCSTR")!.tag).toBe("d/dt");
+  });
+
+  it("a BATCH vessel is NOT the steady one tagged -- its nozzles differ", () => {
+    //  Closed to continuous flow, charged from the top and discharged from
+    //  the bottom.  That IS hardware, so it is drawn, not tagged.
+    expect(symbolOf("batchReactor")!.path).not.toBe(symbolOf("cstr")!.path);
+    expect(symbolOf("batchReactor")!.tag).toBeUndefined();
+    expect(symbolOf("batchCrystalliser")!.path)
+      .not.toBe(symbolOf("crystalliser")!.path);
+  });
+
+  it("the three REGISTRIES all reach a symbol", () => {
+    //  The defect Vítor found by opening tutorials/unsteady: the engine has
+    //  three registries and the table covered one, so every batch and
+    //  dynamic case drew the generic glyph.
+    for (const t of ["cstr", "dynamicCSTR", "batchReactor"]) {
+      expect(symbolOf(t), t).not.toBeNull();
+    }
+  });
+
+  it("a whole PLANT lumped into one unit is not drawn as a vessel", () => {
+    //  WilliamsOttoPlant's own header: "the Williams-Otto plant as ONE
+    //  dynamic unit".  A labelled box beats a wrong picture.
+    expect(symbolOf("williamsOttoPlant")!.label).toContain("lumped");
+    expect(symbolOf("williamsOttoPlant")!.path)
+      .not.toBe(symbolOf("cstr")!.path);
   });
 
   it("every symbol carries at least one NOZZLE", () => {
