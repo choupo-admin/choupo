@@ -27,6 +27,8 @@
       concentration       n/n_0 = VCF^-(1 - R)   and   c/c_0 = VCF^R
       both in sequence    loss  = 1 - exp((R - 1)(ln VCF + N))
       wash time           t_DF  = N V / (A J_w)
+      the governing group G     = ln VCF + N, and loss = 1 - exp((R - 1) G)
+      the DF optimum      the maximum of C J_f, read off a flux curve
 
   Nothing else is computed here.  The fluxes, the rejections, the osmotic
   pressures, the polarisation and the fouling are the ENGINE's, and this
@@ -184,7 +186,124 @@ export function concentrationIdeal(R: number, vcf: number): number {
  * costs the same product as washing ln(VCF) diavolumes does.
  */
 export function productLoss(R: number, vcf: number, N: number): number {
-  return 1 - Math.exp((R - 1) * (Math.log(vcf) + N));
+  return lossFromGroup(R, lossGroup(vcf, N));
+}
+
+/**
+ * THE GOVERNING GROUP: G = ln VCF + N.
+ *
+ * The concentration factor and the diavolumes do not enter the loss
+ * separately -- they enter through this ONE number, which is why they are
+ * INTERCHANGEABLE in it: concentrating by a factor VCF costs exactly what
+ * washing ln(VCF) diavolumes costs, and a process may trade one against the
+ * other freely as far as yield is concerned (it may NOT as far as buffer
+ * exchange is concerned, which is the whole tension).
+ *
+ * Millipore Technical Brief TB032 (2003) p. 6 writes the loss this way and
+ * draws it against this group; the equation is the composite of the two
+ * closed forms above and is derived in step 4 of the lesson, not imported.
+ */
+export function lossGroup(vcf: number, N: number): number {
+  return Math.log(vcf) + N;
+}
+
+/** The fraction of product lost to the filtrate at a constant retention R
+ *  over a process whose governing group is G = ln VCF + N. */
+export function lossFromGroup(R: number, G: number): number {
+  return 1 - Math.exp((R - 1) * G);
+}
+
+/**
+ * THE INVERSE, which is the design move: the LARGEST governing group a
+ * retention R can spend and still meet a yield goal.
+ *
+ *   loss = 1 - exp((R - 1) G)   =>   G = ln(1 - loss) / (R - 1)
+ *
+ * A process already at a larger group than this misses its goal, and the
+ * three ways out are the three terms of the group and the R in front of it:
+ * concentrate less, wash less, or choose a membrane that retains better.
+ * Returns NaN at R = 1, where no group is too large because nothing is lost.
+ */
+export function groupForLoss(R: number, loss: number): number {
+  return Math.log(1 - loss) / (R - 1);
+}
+
+/** The loss curve of one retention over a range of the governing group --
+ *  the family Millipore's TB032 figure 6 draws, computed here rather than
+ *  transcribed. */
+export function lossCurve(
+  R: number, groups: readonly number[],
+): number[] {
+  return groups.map((G) => lossFromGroup(R, G));
+}
+
+/**
+ * THE WORKED EXAMPLE of TB032 p. 6, as its INPUTS only.
+ *
+ * Every number the page prints from it is recomputed here through
+ * `lossFromGroup` and `groupForLoss`; nothing is transcribed from the
+ * source's text, and the page labels the result as the source's example
+ * recomputed.  The source rounds ln 20 to 3 in its own arithmetic and this
+ * module does not, so a printed loss can differ from the source's rounded
+ * figure in the third decimal -- which the page says rather than hides.
+ */
+export const TB032_EXAMPLE = {
+  /** The volume concentration factor the example concentrates by. */
+  vcf: 20,
+  /** The diavolumes of constant-volume wash it then performs. */
+  N: 7,
+  /** The yield goal: lose less than this fraction to the filtrate. */
+  goal: 0.07,
+  /** The retention the first membrane offers, which misses the goal. */
+  R: 0.99,
+  /** The shortened wash the example tries next, as the source chooses it. */
+  Ncut: 4.3,
+  /** The retention of the better membrane, which meets it unchanged. */
+  Rbetter: 0.999,
+  /** The retentions the source's own figure draws the family at. */
+  family: [0.8, 0.9, 0.99, 0.999] as const,
+} as const;
+
+/** One line of that example: what was changed, and what it costs. */
+export interface Tb032Row {
+  what: string;
+  R: number;
+  /** The diavolumes of wash, which also fix the buffer exchange. */
+  N: number;
+  /** The governing group the process then has. */
+  G: number;
+  /** The fraction of product lost at that R and that group. */
+  loss: number;
+}
+
+/**
+ * THE THREE-WAY TRADE, as arithmetic.  The INPUTS are the source's
+ * (`TB032_EXAMPLE`); every G and every loss below is computed here from
+ * `lossGroup`, `lossFromGroup` and `groupForLoss`, so no figure of the
+ * source's is transcribed and the page can say which numbers are whose.
+ *
+ * The rows are the three ways out of a missed yield goal: wash less (row 2,
+ * at the source's own chosen wash; row 3, at the shortest wash that exactly
+ * meets the goal), or retain better (row 4).  Concentrating less is the
+ * fourth and is the same arithmetic through ln VCF, which is the point the
+ * group makes and the reason it needs no row of its own.
+ */
+export function tb032Rows(): Tb032Row[] {
+  const e = TB032_EXAMPLE;
+  const row = (what: string, R: number, N: number): Tb032Row => {
+    const G = lossGroup(e.vcf, N);
+    return { what, R, N, G, loss: lossFromGroup(R, G) };
+  };
+  //  The shortest wash that meets the goal on the FIRST membrane: invert the
+  //  loss for the group it can afford, then take the concentration out.
+  const Ngoal = groupForLoss(e.R, e.goal) - Math.log(e.vcf);
+  return [
+    row(`as specified: VCF ${e.vcf}, N ${e.N}`, e.R, e.N),
+    row(`wash cut to N = ${e.Ncut}, same membrane`, e.R, e.Ncut),
+    row(`the shortest wash that meets the goal: N = ${Ngoal.toFixed(4)}`,
+      e.R, Ngoal),
+    row(`membrane changed, VCF and N untouched`, e.Rbetter, e.N),
+  ];
 }
 
 /**
@@ -322,6 +441,14 @@ export interface OptimumScan {
  * transport law.  So the maximum is READ OFF the engine's own J_w(c), which
  * is the same method applied to a different flux law, and no constant is
  * borrowed from a model that is not running.
+ *
+ * INDUSTRIAL PRACTICE AGREES, AND SAYS SO IN THE SAME WORDS.  Millipore's
+ * Technical Brief TB032 (2003) p. 12 calls the c_gel/e rule an APPROXIMATION
+ * valid only where the flux decay follows a well-defined standard curve, and
+ * gives the generally applicable method as the maximum of its "DF
+ * Optimization Parameter", C J_f -- which is `Jc` below, under another name.
+ * What that source does and this scan cannot is run the construction on TWO
+ * buffer curves; see `conservativeOptimum`.
  */
 export function scanWashOptimum(
   samples: readonly Sample[], cb: readonly number[],
@@ -339,6 +466,57 @@ export function scanWashOptimum(
   for (let k = 1; k < points.length; k++)
     if (points[k]!.Jc > points[iMax]!.Jc) iMax = k;
   return { points, iMax, interior: iMax > 0 && iMax < points.length - 1 };
+}
+
+/** One buffer's answer to the construction: the concentration at which that
+ *  curve's C J_f is largest, and the curve it was read off. */
+export interface BufferOptimum { buffer: string; c: number }
+
+export interface ConservativeOptimum {
+  /** Every curve's own optimum, in the order supplied. */
+  candidates: readonly BufferOptimum[];
+  /** The concentration to work at: the LOWEST of them. */
+  c: number;
+  /** The curve that produced it. */
+  buffer: string;
+  /**
+   * true only when TWO OR MORE curves were available.  The construction the
+   * source describes needs the flux measured in the STARTING buffer and in
+   * the DIAFILTRATION buffer, because the true optimum lies between them --
+   * the product is exchanged from one to the other as the wash proceeds.  One
+   * curve gives a number, not a bracket, and the page says which it has.
+   */
+  bracketed: boolean;
+}
+
+/**
+ * THE CONSERVATIVE RULE, and the reason it points DOWNWARD.
+ *
+ * Millipore TB032 (2003) p. 12: plot the flux against the log of product
+ * concentration in BOTH the starting buffer and the diafiltration buffer,
+ * form C J_f along each curve, and take the maximum of each.  Where the two
+ * optima differ materially, work at the LOWER one -- the true optimum is
+ * between the curves, and the lower choice errs toward more buffer and more
+ * area rather than toward a concentration the product may not survive.
+ *
+ * Implemented as a decision over whatever curves are supplied, so that the
+ * ABSENCE of a second one is carried in the return value (`bracketed`) rather
+ * than assumed away.  Choupo sweeps one solution: no corpus case declares a
+ * second buffer's flux behaviour, so today every caller passes one curve and
+ * every result says so.
+ */
+export function conservativeOptimum(
+  candidates: readonly BufferOptimum[],
+): ConservativeOptimum | null {
+  const usable = candidates.filter((k) => Number.isFinite(k.c));
+  const first = usable[0];
+  if (first === undefined) return null;
+  let low = first;
+  for (const k of usable) if (k.c < low.c) low = k;
+  return {
+    candidates: usable, c: low.c, buffer: low.buffer,
+    bracketed: usable.length > 1,
+  };
 }
 
 // ---- The trapezoid, and what it is for here --------------------------------

@@ -63,10 +63,11 @@ vi.mock("../src/ui/plotting/plotly.js", () => ({
 
 import {
   type KpiMap, type Sample,
-  LMH_PER_MS, concentrationIdeal, detectDiafilter, diafiltrationTime,
-  gapDirection, productLoss, readSamples, readSolute, readVessel,
-  retainedIdeal, scanWashOptimum, solutesFromKpis, soluteVerdict, trapezoid,
-  washoutIdeal,
+  LMH_PER_MS, TB032_EXAMPLE, concentrationIdeal, conservativeOptimum,
+  detectDiafilter, diafiltrationTime, gapDirection, groupForLoss, lossCurve,
+  lossFromGroup, lossGroup, productLoss, readSamples, readSolute, readVessel,
+  retainedIdeal, scanWashOptimum, solutesFromKpis, soluteVerdict, tb032Rows,
+  trapezoid, washoutIdeal,
 } from "../src/ui/methods/batchMembraneMath.js";
 import {
   BATCH_MEMBRANE_KNOBS, BATCH_MEMBRANE_WITNESS_CLEAN,
@@ -553,8 +554,9 @@ describe("buildView -- what the page draws, assembled once", () => {
 // ---- The lesson and the registry --------------------------------------------
 
 describe("the batch membrane lesson", () => {
-  it("has seven steps, numbered without a gap, and every formula is glossed", () => {
-    expect(BATCH_MEMBRANE_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+  it("has nine steps, numbered without a gap, and every formula is glossed", () => {
+    expect(BATCH_MEMBRANE_STEPS.map((s) => s.n))
+      .toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
     for (const s of BATCH_MEMBRANE_STEPS)
       if (s.formula)
         expect(s.where?.length ?? 0, `step ${s.n}`).toBeGreaterThan(0);
@@ -659,5 +661,247 @@ describe("the wash-length design brief", () => {
     //  Longer wash, more product lost -- monotone, which is the trade the
     //  row exists to show.
     expect(productLoss(R, 3, 10)).toBeGreaterThan(productLoss(R, 3, 5));
+  });
+});
+
+// ---- The governing group, ln VCF + N ----------------------------------------
+
+describe("the governing group: VCF and N enter the loss ONLY through it", () => {
+  it("productLoss IS the group form, so the two cannot drift apart", () => {
+    for (const R of [0.5, 0.8714, 0.99, 0.9985])
+      for (const vcf of [1, 3.2, 20])
+        for (const N of [0, 4.3, 7])
+          expect(productLoss(R, vcf, N))
+            .toBeCloseTo(lossFromGroup(R, lossGroup(vcf, N)), 14);
+  });
+
+  it("the concentration and the wash are INTERCHANGEABLE in the yield", () => {
+    //  Concentrating by VCF costs exactly what washing ln(VCF) diavolumes
+    //  costs -- the whole claim of step 9, as an identity.
+    const R = 0.99;
+    expect(lossGroup(Math.E ** 3, 7)).toBeCloseTo(lossGroup(1, 10), 12);
+    expect(productLoss(R, 20, 7))
+      .toBeCloseTo(productLoss(R, 1, Math.log(20) + 7), 14);
+    expect(productLoss(R, 20, 7))
+      .toBeCloseTo(productLoss(R, 20 * Math.E, 6), 14);
+  });
+
+  it("groupForLoss inverts the loss, and R = 1 spends any group at all", () => {
+    for (const R of [0.8, 0.99, 0.999])
+      for (const loss of [0.01, 0.07, 0.3])
+        expect(lossFromGroup(R, groupForLoss(R, loss))).toBeCloseTo(loss, 12);
+    expect(Number.isFinite(groupForLoss(1, 0.07))).toBe(false);
+  });
+
+  it("lossCurve is the closed form at every point, and rises with G", () => {
+    const G = [0, 4, 8, 12, 16];
+    const y = lossCurve(0.99, G);
+    expect(y.length).toBe(G.length);
+    y.forEach((v, k) => expect(v).toBeCloseTo(lossFromGroup(0.99, G[k]!), 14));
+    for (let k = 1; k < y.length; k++) expect(y[k]!).toBeGreaterThan(y[k - 1]!);
+    //  A perfect membrane loses nothing at any group.
+    expect(lossCurve(1, G).every((v) => Math.abs(v) < 1e-15)).toBe(true);
+  });
+});
+
+// ---- The source's worked example, RECOMPUTED --------------------------------
+
+describe("TB032 p. 6, recomputed from the closed form", () => {
+  const rows = tb032Rows();
+
+  it("carries the source's INPUTS and computes everything else", () => {
+    expect(TB032_EXAMPLE.vcf).toBe(20);
+    expect(TB032_EXAMPLE.N).toBe(7);
+    expect(TB032_EXAMPLE.goal).toBe(0.07);
+    expect(rows.length).toBe(4);
+    //  Every row's G and loss follow from its own VCF, N and R -- nothing is
+    //  transcribed, which is what makes quoting a copyrighted brief safe.
+    for (const r of rows) {
+      expect(r.G).toBeCloseTo(lossGroup(TB032_EXAMPLE.vcf, r.N), 14);
+      expect(r.loss).toBeCloseTo(lossFromGroup(r.R, r.G), 14);
+    }
+  });
+
+  it("reproduces the three figures the source states, to its own rounding", () => {
+    //  The source rounds ln 20 to 3; this module does not, so agreement is
+    //  asserted at the precision the source prints (one decimal in %).
+    expect(rows[0]!.G).toBeCloseTo(Math.log(20) + 7, 12);   // 9.9957, not 10
+    expect(100 * rows[0]!.loss).toBeCloseTo(9.5, 1);        // the goal missed
+    expect(100 * rows[1]!.loss).toBeCloseTo(7.0, 1);        // wash cut to 4.3
+    expect(100 * rows[3]!.loss).toBeCloseTo(1.0, 1);        // R -> 0.999
+    //  The FIRST row misses the goal, which is the decision the example
+    //  exists to make; changing the membrane (row 4) meets it comfortably.
+    expect(rows[0]!.loss).toBeGreaterThan(TB032_EXAMPLE.goal);
+    expect(rows[3]!.loss).toBeLessThan(TB032_EXAMPLE.goal);
+    //  A FINDING, recorded rather than rounded away: the source's own
+    //  shortened wash of 4.3 diavolumes lands at 7.04 %, which is
+    //  MARGINALLY OVER a goal of "less than 7 %".  It meets the goal only
+    //  at the one decimal the source's figure is read to; the wash that
+    //  exactly meets it is row 3, at 4.2613 diavolumes.  The lesson says
+    //  so, because a graph read to one decimal is exactly what this page
+    //  exists to replace with arithmetic.
+    expect(rows[1]!.loss).toBeGreaterThan(TB032_EXAMPLE.goal);
+    expect(rows[1]!.loss - TB032_EXAMPLE.goal).toBeLessThan(5e-4);
+    expect(rows[2]!.loss).toBeCloseTo(TB032_EXAMPLE.goal, 12);
+    expect(rows[2]!.N).toBeLessThan(TB032_EXAMPLE.Ncut);
+  });
+
+  it("the exact wash that meets the goal is the source's 4.3, unrounded", () => {
+    //  Row 2 is the source's chosen value; row 3 is this page's own answer
+    //  to the same question, and they must be the same number rounded.
+    expect(rows[2]!.N).toBeCloseTo(4.2613, 3);
+    expect(Math.abs(rows[2]!.N - TB032_EXAMPLE.Ncut)).toBeLessThan(0.05);
+    expect(100 * rows[2]!.loss).toBeCloseTo(7.0, 6);
+  });
+
+  it("cutting the wash is paid for in buffer exchange, not in yield", () => {
+    //  Step 4's washout at R = 0: exp(-N) of the old buffer is left behind.
+    //  Stopping at 4.3 diavolumes instead of 7 leaves ~15x as much.
+    const ratio = Math.exp(-rows[1]!.N) / Math.exp(-rows[0]!.N);
+    expect(ratio).toBeCloseTo(Math.exp(7 - TB032_EXAMPLE.Ncut), 10);
+    expect(ratio).toBeCloseTo(14.9, 1);
+    //  Changing the membrane instead leaves the wash exactly where it was.
+    expect(rows[3]!.N).toBe(TB032_EXAMPLE.N);
+    expect(rows[3]!.G).toBeCloseTo(rows[0]!.G, 14);
+  });
+});
+
+// ---- The conservative two-buffer rule ---------------------------------------
+
+describe("conservativeOptimum -- the lower of the two buffer curves", () => {
+  it("takes the LOWER optimum and names the curve it came from", () => {
+    const o = conservativeOptimum([
+      { buffer: "starting", c: 55 }, { buffer: "diafiltration", c: 30 }]);
+    expect(o!.c).toBe(30);
+    expect(o!.buffer).toBe("diafiltration");
+    expect(o!.bracketed).toBe(true);
+    //  Order must not decide it.
+    expect(conservativeOptimum([
+      { buffer: "diafiltration", c: 30 }, { buffer: "starting", c: 55 }])!.c)
+      .toBe(30);
+  });
+
+  it("ONE curve is an answer that is NOT bracketed, and says so", () => {
+    const o = conservativeOptimum([{ buffer: "the only one", c: 42 }]);
+    expect(o!.c).toBe(42);
+    expect(o!.bracketed).toBe(false);
+    expect(o!.candidates.length).toBe(1);
+  });
+
+  it("drops a non-finite candidate and refuses an empty construction", () => {
+    expect(conservativeOptimum([{ buffer: "x", c: NaN }])).toBeNull();
+    expect(conservativeOptimum([])).toBeNull();
+    const o = conservativeOptimum([
+      { buffer: "x", c: NaN }, { buffer: "y", c: 12 }]);
+    expect(o!.c).toBe(12);
+    expect(o!.bracketed).toBe(false);
+  });
+});
+
+// ---- Steps 8 and 9 -----------------------------------------------------------
+
+describe("the construction, and the group", () => {
+  const s8 = BATCH_MEMBRANE_STEPS[7]!;
+  const s9 = BATCH_MEMBRANE_STEPS[8]!;
+
+  it("step 8 teaches the construction, not just that an optimum exists", () => {
+    //  The four moves of the bench method, in order.
+    expect(s8.derivation?.length ?? 0).toBeGreaterThanOrEqual(4);
+    const eqs = (s8.derivation ?? []).map((d) => d.eq ?? "").join(" ");
+    expect(eqs).toContain(String.raw`J_f(\log C)`);
+    expect(eqs).toContain(String.raw`\mathrm{DFOP}(C) = C\, J_f(C)`);
+    expect(s8.formula).toContain(String.raw`\min\left( C_\mathrm{opt,start}`);
+    //  and it names the two buffers as the reason there are two curves.
+    expect(s8.body).toMatch(/TWICE/);
+    expect(s8.body).toMatch(/starts in/);
+  });
+
+  it("step 8 calls the c_g/e rule the approximation, as its source does", () => {
+    const eqs = (s8.derivation ?? []).map((d) => d.eq ?? "").join(" ");
+    expect(eqs).toContain(String.raw`\frac{c_g}{e}`);
+    expect(s8.formula).toMatch(/approximation of the above/);
+    //  Step 7 refuses the closed form because this engine has no gel law;
+    //  step 8 says industrial practice reaches the same conclusion.
+    expect(BATCH_MEMBRANE_STEPS[6]!.note).toMatch(/does not carry that law/);
+  });
+
+  it("step 8 names the practical limits on ACTING on the optimum", () => {
+    expect(s8.note).toMatch(/minimum recirculation volume/);
+    expect(s8.note).toMatch(/STABLE/);
+    expect(s8.note).toMatch(/buffer/);
+    expect(s8.note).toMatch(/area/);
+  });
+
+  it("step 8 names the missing second curve rather than implying it has it", () => {
+    expect(s8.note).toMatch(/ONE solution/);
+    expect(s8.note).toMatch(/not bracketed/);
+    const gap = BATCH_MEMBRANE_LIMITS.find((l) => l.id === "one-buffer-only");
+    expect(gap).toBeDefined();
+    expect(gap!.body).toMatch(/second curve/);
+    expect(gap!.body).toMatch(/lower of them/);
+  });
+
+  it("step 9 makes ln VCF + N one group, and gives the yield ceiling", () => {
+    expect(s9.formula).toContain(String.raw`G = \ln \mathrm{VCF} + N`);
+    expect(s9.formula).toContain(String.raw`G_\mathrm{max}`);
+    expect(s9.body).toMatch(/INTERCHANGEABLE/);
+    //  The three-way trade, as the last move of the derivation.
+    const last = (s9.derivation ?? []).slice(-1)[0];
+    expect(last!.eq).toContain(String.raw`\mathrm{VCF} \downarrow`);
+    expect(last!.eq).toContain(String.raw`R \uparrow`);
+  });
+
+  it("every Millipore citation on the page carries the document's number", () => {
+    //  A citation that drifts into "a Millipore brief" is one a reader
+    //  cannot check.  Lit. No. TB032, Rev. C, 06/03, 03-117 (2003) is what
+    //  the document's own back cover states.
+    const whole = BATCH_MEMBRANE_STEPS.map(
+      (s) => [s.title, s.body, s.formula ?? "", s.note ?? "",
+        ...(s.derivation ?? []).map((d) => `${d.step} ${d.eq ?? ""}`)]
+        .join(" ")).join(" ");
+    const named = whole.match(/Millipore Technical Brief/g) ?? [];
+    expect(named.length).toBeGreaterThan(0);
+    expect(whole.match(/TB032 \(Rev\. C, 06\/03, 03-117\)/g)?.length)
+      .toBe(named.length);
+  });
+});
+
+describe("the page's own answer to the construction", () => {
+  const traj = {
+    t: [0, 10, 20],
+    vars: {
+      "retentate.V_m3": [0.01, 0.005, 0.0025],
+      "retentate.J_w_LMH": [233, 120, 20],
+      "retentate.Q_p_m3s": [3.2e-4, 2.0e-4, 5e-5],
+      "retentate.diavolumes": [0, 0, 0],
+      "retentate.V_perm_m3": [0, 5.0e-3, 7.5e-3],
+      "retentate.c_b_MgSO4": [0.02, 0.039, 0.075],
+      "retentate.c_p_MgSO4": [3e-5, 3e-5, 3e-5],
+      "retentate.R_obs_MgSO4": [0.9985, 0.9985, 0.9986],
+    },
+  };
+  const kpis: KpiMap = { retentate: {
+    V_initial_m3: 0.01, V_permeated_m3: 7.5e-3, diavolumes: 0,
+    concentrationFactor: 4, R_initial_MgSO4: 0.9985, R_final_MgSO4: 0.9986,
+    recovery_MgSO4: 0.999 } };
+
+  it("is ONE buffer's, and the view carries that rather than hiding it", () => {
+    const v = buildView(traj, kpis, null)!;
+    expect(v.scan!.interior).toBe(true);
+    expect(v.dfOptimum).not.toBeNull();
+    expect(v.dfOptimum!.bracketed).toBe(false);
+    expect(v.dfOptimum!.candidates.length).toBe(1);
+    //  and it IS the marked maximum, not a second computation of it.
+    expect(v.dfOptimum!.c).toBeCloseTo(v.scan!.points[v.scan!.iMax]!.c, 14);
+  });
+
+  it("offers no optimum at all where the run did not bracket one", () => {
+    //  A monotone sweep: the largest point is an endpoint, so there is no
+    //  optimum to be conservative about.
+    const rising = { t: traj.t, vars: { ...traj.vars,
+      "retentate.J_w_LMH": [233, 230, 228] } };
+    const v = buildView(rising, kpis, null)!;
+    expect(v.scan!.interior).toBe(false);
+    expect(v.dfOptimum).toBeNull();
   });
 });

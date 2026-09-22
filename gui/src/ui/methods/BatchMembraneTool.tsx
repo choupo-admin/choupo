@@ -62,8 +62,9 @@ License
 
   WHAT IS COMPUTED HERE, AND WHY THAT IS ALLOWED.  The arithmetic in
   batchMembraneMath.ts is the METHOD BEING TAUGHT -- the exponential washout,
-  the power law of a concentration, the composite loss, the wash time, and a
-  maximum located on a curve -- which is the one labelled exception to "no
+  the power law of a concentration, the composite loss, the wash time, a
+  maximum located on a curve, and the governing group ln VCF + N with the
+  yield ceiling it implies -- which is the one labelled exception to "no
   physics in the browser".  The engine is the judge: its own
   `washoutIdeal_<s>` is printed beside the hand law that must reproduce it,
   its `R_obs_<s>` trajectory is printed beside the constant the law assumed,
@@ -73,7 +74,18 @@ License
   `operation {}` block and every result number from the run's KPIs or
   trajectory; a parameter on neither surface is NAMED as unavailable with the
   surface it would come from, and there is no default area, TMP, k_film, rho
-  or rejection anywhere on this page.
+  or rejection anywhere on this page.  The ONE class of number here that
+  comes from neither the case nor the run is the worked example of Millipore
+  Technical Brief TB032 (Rev. C, 06/03, 03-117) p. 6, whose INPUTS are the
+  source's and whose every output is recomputed from the closed form of step
+  9 -- printed under a heading that says exactly that.
+
+  WHAT THE PAGE DOES NOT CLAIM TO HAVE DONE.  Step 8's construction reads the
+  flux curve in the product's starting buffer AND in the diafiltration
+  buffer, and takes the lower of the two maxima.  Choupo sweeps one solution
+  and no corpus case declares a second buffer's flux behaviour, so the page
+  draws the one curve it has, marks its maximum, and says in the caption that
+  the answer is NOT bracketed and which way the missing curve would move it.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
@@ -93,11 +105,12 @@ import {
   BATCH_MEMBRANE_LIMITS, BATCH_MEMBRANE_STEPS,
 } from "./batchMembraneLesson.js";
 import {
-  type KpiMap, type OptimumScan, type Sample, type SoluteVerdict,
-  type VesselDeclaration,
-  LMH_PER_MS, detectDiafilter, diafiltrationTime, gapDirection, productLoss,
-  readSamples, readSolute, readVessel, scanWashOptimum, soluteVerdict,
-  trapezoid,
+  type ConservativeOptimum, type KpiMap, type OptimumScan, type Sample,
+  type SoluteVerdict, type VesselDeclaration,
+  LMH_PER_MS, TB032_EXAMPLE, conservativeOptimum, detectDiafilter,
+  diafiltrationTime, gapDirection, lossCurve, lossFromGroup, lossGroup,
+  productLoss, readSamples, readSolute, readVessel, scanWashOptimum,
+  soluteVerdict, tb032Rows, trapezoid,
 } from "./batchMembraneMath.js";
 
 // ---- The two witnesses ------------------------------------------------------
@@ -213,6 +226,10 @@ export interface BatchMembraneView {
    *  one whose inventory fixes how small the vessel can be). */
   retained: string | null;
   scan: OptimumScan | null;
+  /** The conservative two-buffer rule of step 8, applied to whatever curves
+   *  exist.  Choupo sweeps ONE solution, so `bracketed` is false and the
+   *  page says so rather than implying the construction was completed. */
+  dfOptimum: ConservativeOptimum | null;
   /** The bulk-concentration series of each solute, for the main plot. */
   series: { [solute: string]: { cb: number[]; R: number[] } };
 }
@@ -258,6 +275,16 @@ export function buildView(
   const scan = !det.constantVolume && samples !== null && cb !== undefined
     ? scanWashOptimum(samples, cb) : null;
 
+  //  ONE CURVE, and the decision carries that fact.  Step 8's construction
+  //  wants the flux measured with the product in the starting buffer AND in
+  //  the diafiltration buffer; nothing in the corpus declares the second, so
+  //  exactly one candidate is offered and `bracketed` comes back false.
+  const bestPoint = scan === null ? undefined : scan.points[scan.iMax];
+  const dfOptimum = scan !== null && scan.interior && bestPoint !== undefined
+    ? conservativeOptimum([
+      { buffer: "the solution this case declares", c: bestPoint.c }])
+    : null;
+
   return {
     unit: det.unit, solutes: det.solutes, constantVolume: det.constantVolume,
     V0, N, vcf, samples, verdicts, vessel: readVessel(files, det.unit),
@@ -265,7 +292,7 @@ export function buildView(
       : trapezoid(samples.map((s) => s.t), samples.map((s) => s.Qp)),
     VpermState: samples === null ? null
       : (samples[samples.length - 1]?.Vperm ?? null),
-    retained, scan, series,
+    retained, scan, dfOptimum, series,
   };
 }
 
@@ -419,7 +446,7 @@ export function BatchMembraneTool(): JSX.Element {
         <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
           {lessonHead}
           {refusal}
-          {[1, 2, 3, 4, 5, 6, 7].map(lessonStep)}
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(lessonStep)}
           <Stack gap={8} style={{ maxWidth: 280 }}>{controls}</Stack>
           <Box style={{ display: "flex", alignItems: "center",
             justifyContent: "center", padding: 12 }}>
@@ -498,24 +525,89 @@ export function BatchMembraneTool(): JSX.Element {
     });
   }
 
+  //  ---- Step 8's construction, on the axis an engineer reads --------------
+  //  The abscissa is the PRODUCT CONCENTRATION, log-scaled, which is the
+  //  axis the bench method plots on (and which makes the flux decay close to
+  //  straight).  It used to be the VCF, which is the engine's clock and not
+  //  a quantity anybody measures in a sample; the VCF is still on the point,
+  //  in the hover, because it is what the run is steered by.
+  //
+  //  TWO CURVES ON TWO AXES, deliberately: the flux against concentration is
+  //  the measurement (the source's figure 12) and C J_f against the same
+  //  concentration is what is maximised (its figure 13).  Drawing them apart
+  //  would hide that the second is built from the first.
   const optimumTraces: object[] = [];
   if (view.scan !== null) {
+    const pts = view.scan.points;
+    const cs = pts.map((p) => p.c);
+    const vcfs = pts.map((p) => p.vcf);
     optimumTraces.push({
       type: "scatter", mode: "lines",
-      name: `J_w · c (${view.retained ?? ""})`,
-      x: view.scan.points.map((p) => p.vcf),
-      y: view.scan.points.map((p) => p.Jc),
+      name: `C · J_f  (${view.retained ?? ""})`,
+      x: cs, y: pts.map((p) => p.Jc),
+      customdata: vcfs,
+      hovertemplate:
+        "C = %{x:.4g} kmol/m³<br>C·J_f = %{y:.4g} mol/(m²·h)"
+        + "<br>VCF = %{customdata:.4g}<extra></extra>",
       line: { color: PLOT_COLORS.accent, width: 2 },
     });
-    const best = view.scan.points[view.scan.iMax];
+    optimumTraces.push({
+      type: "scatter", mode: "lines", yaxis: "y2",
+      name: "filtrate flux J_f (right axis)",
+      x: cs, y: pts.map((p) => p.J_LMH),
+      customdata: vcfs,
+      hovertemplate:
+        "C = %{x:.4g} kmol/m³<br>J_f = %{y:.4g} L/(m²·h)"
+        + "<br>VCF = %{customdata:.4g}<extra></extra>",
+      line: { color: PLOT_COLORS.warm2, width: 1.5, dash: "dot" },
+    });
+    const best = pts[view.scan.iMax];
     if (best !== undefined)
       optimumTraces.push({
         type: "scatter", mode: "markers",
-        name: view.scan.interior ? "maximum (interior)" : "largest point (at an end)",
-        x: [best.vcf], y: [best.Jc],
+        name: view.scan.interior
+          ? "maximum (interior)" : "largest point (at an end)",
+        x: [best.c], y: [best.Jc],
+        customdata: [best.vcf],
+        hovertemplate:
+          "C = %{x:.4g} kmol/m³<br>C·J_f = %{y:.4g} mol/(m²·h)"
+          + "<br>VCF = %{customdata:.4g}<extra></extra>",
         marker: { color: PLOT_COLORS.warm, size: 11, symbol: "diamond" },
       });
   }
+
+  //  ---- Step 9's figure: the loss against the governing group -------------
+  //  The family is drawn at the retentions TB032's own figure uses, and
+  //  every value is recomputed here from the closed form -- nothing is read
+  //  off the source's picture.  Beside it, the run's own retention and the
+  //  run's own group, which come from the engine.
+  const GROUPS: number[] = [];
+  for (let g = 0; g <= 16.0001; g += 0.25) GROUPS.push(g);
+  const retainedVerdict = view.retained === null ? undefined
+    : view.verdicts.find((v) => v.solute === view.retained);
+  const runR0 = retainedVerdict?.R0 ?? null;
+  const runGroup = view.vcf !== null && view.vcf > 0 && view.N !== null
+    ? lossGroup(view.vcf, view.N) : null;
+  const lossTraces: object[] = TB032_EXAMPLE.family.map((R, i) => ({
+    type: "scatter", mode: "lines", name: `R = ${R}`,
+    x: GROUPS, y: lossCurve(R, GROUPS).map((f) => 100 * f),
+    line: { color: PLOT_COLORS.series[i % PLOT_COLORS.series.length],
+      width: 1.5, dash: "dot" },
+  }));
+  if (runR0 !== null && Number.isFinite(runR0))
+    lossTraces.push({
+      type: "scatter", mode: "lines",
+      name: `R = ${runR0.toPrecision(4)} — this run's ${view.retained ?? ""}`,
+      x: GROUPS, y: lossCurve(runR0, GROUPS).map((f) => 100 * f),
+      line: { color: PLOT_COLORS.accent, width: 2.5 },
+    });
+  if (runR0 !== null && Number.isFinite(runR0)
+    && runGroup !== null && Number.isFinite(runGroup))
+    lossTraces.push({
+      type: "scatter", mode: "markers", name: "where this run sits",
+      x: [runGroup], y: [100 * lossFromGroup(runR0, runGroup)],
+      marker: { color: PLOT_COLORS.warm, size: 11, symbol: "diamond" },
+    });
 
   // ---- Tables ---------------------------------------------------------------
   const head = (
@@ -701,6 +793,7 @@ export function BatchMembraneTool(): JSX.Element {
         </Box>
 
         {lessonStep(7)}
+        {lessonStep(8)}
 
         <Box style={{ overflowX: "auto" }}>
           {view.scan === null ? (
@@ -714,19 +807,27 @@ export function BatchMembraneTool(): JSX.Element {
             </Text>
           ) : (
             <>
-              <Box style={{ minWidth: 0, height: 320 }}>
+              <Box style={{ minWidth: 0, height: 340 }}>
                 <Plot
                   data={optimumTraces}
                   layout={{
                     ...darkLayout,
-                    title: { text: "Where a wash is cheapest: J_w · c against "
-                      + "the volume concentration factor",
+                    margin: { ...darkLayout.margin, r: 56 },
+                    title: { text: "The construction: C · J_f against product "
+                      + "concentration, with the flux it is built from",
                       font: { ...darkLayout.font, size: 13 } },
                     xaxis: { ...darkLayout.xaxis,
-                      title: { text: "VCF = V_0/V  [-]" }, type: "log" },
+                      title: { text:
+                        `product concentration C (${view.retained ?? "—"})`
+                        + "  [kmol/m³]" },
+                      type: "log" },
                     yaxis: { ...darkLayout.yaxis,
-                      title: { text: "J_w · c  [kmol/(m²·h)]" } },
-                    legend: { ...darkLayout.legend, x: 0.62, y: 0.98,
+                      title: { text: "C · J_f  [mol/(m²·h)]" } },
+                    yaxis2: { ...darkLayout.yaxis,
+                      title: { text: "J_f  [L/(m²·h)]" },
+                      overlaying: "y", side: "right", showgrid: false,
+                      automargin: true },
+                    legend: { ...darkLayout.legend, x: 0.02, y: 0.02,
                       xanchor: "left" },
                   }}
                   useResizeHandler
@@ -734,17 +835,44 @@ export function BatchMembraneTool(): JSX.Element {
                 />
               </Box>
               <Text size="xs" c="dimmed" mt={4}>
+                The abscissa is the product concentration the run publishes,
+                which is step 8&apos;s axis; the VCF that produced each point
+                is on the hover, because that is what the rig is steered by.
                 Retained species chosen from the run, as the solute with the
                 highest initial rejection: {view.retained ?? "—"}.{" "}
                 {view.scan.interior
                   ? `The maximum is INSIDE the window this run swept: `
-                    + `VCF = ${fmt(best?.vcf, 4)}, c = ${fmt(best?.c, 4)} `
-                    + `kmol/m³, J_w = ${fmt(best?.J_LMH, 4)} L/(m²·h). `
+                    + `C = ${fmt(best?.c, 4)} kmol/m³ `
+                    + `(VCF = ${fmt(best?.vcf, 4)}), `
+                    + `J_f = ${fmt(best?.J_LMH, 4)} L/(m²·h). `
                     + "Pre-concentrate to there, then wash."
                   : "The largest point in this run sits at an END of the "
                     + "window, so the run did NOT bracket an optimum — an "
                     + "endpoint is not a maximum. Lengthen the horizon (or "
                     + "shorten it) until the product turns over."}
+              </Text>
+              <Text size="xs" c="dimmed" mt={4}>
+                <Text span fw={600}>ONE BUFFER, NOT TWO.</Text>{" "}
+                {view.dfOptimum === null || view.dfOptimum.bracketed
+                  ? "Step 8's construction reads two flux curves and takes "
+                    + "the lower of their two maxima."
+                  : `Step 8's construction reads TWO flux curves — the `
+                    + `product in its starting buffer and in the wash buffer `
+                    + `— and takes the lower of their two maxima. This page `
+                    + `has ${view.dfOptimum.candidates.length}: `
+                    + `${view.dfOptimum.candidates[0]?.buffer ?? "—"}. The `
+                    + `mark above is that one curve's answer, NOT the `
+                    + `two-buffer construction: it is not bracketed, the `
+                    + `second curve would give a second maximum with the `
+                    + `true optimum between them, and the conservative rule `
+                    + `would then send you to the lower of the two. No case `
+                    + `in the corpus declares a second buffer's flux `
+                    + `behaviour, so the curve is not drawn rather than `
+                    + `guessed.`}{" "}
+                The bench method plots g/L against L/(m²·h); Choupo&apos;s
+                batch run publishes molar concentration (kmol/m³) and no
+                molar mass, so the axis is the run&apos;s own unit and nothing
+                is converted.
               </Text>
               <Table withTableBorder withColumnBorders mt={8}
                 style={{ fontSize: 12 }} verticalSpacing={2}>
@@ -790,6 +918,84 @@ export function BatchMembraneTool(): JSX.Element {
               </Text>
             </>
           )}
+        </Box>
+
+        {lessonStep(9)}
+
+        <Box style={{ overflowX: "auto" }}>
+          <Box style={{ minWidth: 0, height: 320 }}>
+            <Plot
+              data={lossTraces}
+              layout={{
+                ...darkLayout,
+                title: { text: "Product lost against the governing group "
+                  + "G = ln VCF + N",
+                  font: { ...darkLayout.font, size: 13 } },
+                xaxis: { ...darkLayout.xaxis,
+                  title: { text: "G = ln VCF + N  [-]" }, range: [0, 16] },
+                yaxis: { ...darkLayout.yaxis,
+                  title: { text: "product lost to the filtrate  [%]" },
+                  range: [0, 50] },
+                legend: { ...darkLayout.legend, x: 0.62, y: 0.05,
+                  xanchor: "left" },
+              }}
+              useResizeHandler
+              style={{ width: "100%", height: "100%" }}
+            />
+          </Box>
+          <Text size="xs" c="dimmed" mt={4}>
+            The dotted family is drawn at the four retentions TB032&apos;s own
+            figure uses, every value recomputed here from
+            loss = 1 − exp((R − 1)G) — nothing is read off the source&apos;s
+            picture. The solid curve is THIS run&apos;s own initial rejection
+            for {view.retained ?? "—"}, and the diamond is where this run
+            sits: G = ln({fmt(view.vcf, 4)}) + {fmt(view.N, 4)} ={" "}
+            {fmt(runGroup, 4)}. Read the spacing of the curves rather than
+            any one of them: between R = 0.99 and R = 0.999 the loss falls
+            roughly tenfold at every group, which is why the membrane is the
+            first decision.
+          </Text>
+          <Text size="sm" fw={600} mt={10}>
+            The source&apos;s worked example, recomputed here
+          </Text>
+          <Table withTableBorder withColumnBorders mt={6}
+            style={{ fontSize: 12 }} verticalSpacing={2}>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>the process</Table.Th>
+                <Table.Th>R</Table.Th>
+                <Table.Th>G = ln VCF + N</Table.Th>
+                <Table.Th>product lost</Table.Th>
+                <Table.Th>old buffer left, exp(−N)</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {tb032Rows().map((r) => (
+                <Table.Tr key={r.what}>
+                  <Table.Td>{r.what}</Table.Td>
+                  <Table.Td>{r.R}</Table.Td>
+                  <Table.Td>{r.G.toFixed(4)}</Table.Td>
+                  <Table.Td>{(100 * r.loss).toFixed(2)} %</Table.Td>
+                  <Table.Td>{(100 * Math.exp(-r.N)).toFixed(3)} %</Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+          <Text size="xs" c="dimmed" mt={4}>
+            Inputs are the source&apos;s (VCF = {TB032_EXAMPLE.vcf},
+            N = {TB032_EXAMPLE.N}, the shortened wash N ={" "}
+            {TB032_EXAMPLE.Ncut}, a goal of losing less than{" "}
+            {(100 * TB032_EXAMPLE.goal).toFixed(0)} %, retentions{" "}
+            {TB032_EXAMPLE.R} and {TB032_EXAMPLE.Rbetter}); every other number
+            in the table is computed on this page from the closed form of step
+            9. The source rounds ln 20 to 3 and this page does not, so its
+            printed figures and these differ in the third decimal. The last
+            column is step 4&apos;s washout law at R = 0, which is what makes
+            the second row&apos;s cost visible: it is the buffer exchange the
+            wash existed to achieve. Millipore Technical Brief TB032
+            (Rev. C, 06/03, 03-117), &ldquo;Protein Concentration and
+            Diafiltration by Tangential Flow Filtration&rdquo;, p. 6.
+          </Text>
         </Box>
 
         {limits}

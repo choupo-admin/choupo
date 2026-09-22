@@ -79,6 +79,17 @@
       1976 it was `Separation Science`; it became `Separation Science and
       Technology` from volume 12 (1977), so anything citing volume 11 under
       the later name has back-filled it.
+    Millipore Technical Brief, "Protein Concentration and Diafiltration by
+      Tangential Flow Filtration", Lit. No. TB032, Rev. C, 06/03, 03-117,
+      (c) 2003 Millipore Corporation, Billerica, MA -- the citation is
+      transcribed from the document's own back cover, which is the only place
+      it states a number or a year.  It is the source of steps 8 and 9: the
+      graphical construction for the diafiltration optimum (p. 12, figures 12
+      and 13) and the governing group ln VCF + N with its worked example
+      (p. 6, figure 6).  It is a COPYRIGHTED technical brief: the equations
+      and the method are implemented and cited, no sentence of it is
+      reproduced, and every number this page prints from its worked example
+      is recomputed from the formula in batchMembraneMath.ts.
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep, SymbolGloss } from "./lessonStep.js";
@@ -502,6 +513,194 @@ V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{D
       + "optimum, it is a run that did not bracket one.  Nothing here borrows "
       + "a constant from a model that is not running.",
   },
+  {
+    n: 8,
+    title: "How an engineer actually ARRIVES at that concentration",
+    body: "Step 7 says where the optimum is.  It does not say how anybody "
+      + "finds it, and a criterion you cannot execute is a slogan.  The "
+      + "method industry uses is graphical and takes an afternoon on a "
+      + "bench rig.  Measure the filtrate flux at several product "
+      + "concentrations and plot it against the LOGARITHM of concentration, "
+      + "where the decay is close to a straight line and is therefore "
+      + "readable.  Do it TWICE: once with the product in the buffer it "
+      + "starts in and once in the buffer you will wash with, because a "
+      + "change of buffer moves the whole flux curve and the wash crosses "
+      + "from one to the other.  Then form the product of concentration and "
+      + "flux at points along each curve, plot THAT against concentration, "
+      + "and read off where it turns over.  Two curves give two maxima, and "
+      + "where they differ materially you take the lower of them.",
+    derivation: [
+      { step: "Measure the flux against product concentration, in the "
+          + "STARTING buffer and again in the DIAFILTRATION buffer.  The log "
+          + "axis is not decoration: it is what makes the decay straight "
+          + "enough to interpolate between measured points.",
+        eq: String.raw`J_f = J_f(\log C) \qquad \text{two buffers, two curves}`},
+      { step: "At several concentrations spanning the range the process will "
+          + "pass through, form the product of concentration and flux.  Step "
+          + "7 showed the wash time is inversely proportional to it, so the "
+          + "largest value is the cheapest place to wash.",
+        eq: String.raw`\mathrm{DFOP}(C) = C\, J_f(C)`},
+      { step: "Plot that product against concentration and read where it "
+          + "turns over.  Each buffer curve gives its own maximum, and the "
+          + "turn is what an optimum IS -- a value at the end of the range "
+          + "you measured is a range that was too short.",
+        eq: String.raw`C_\mathrm{opt,start} \text{ and } C_\mathrm{opt,DF}: \quad \mathrm{DFOP} \text{ at its maximum on each curve}`},
+      { step: "Where the two differ materially, take the LOWER.  The true "
+          + "optimum lies between the curves, because the product is "
+          + "exchanged from the starting buffer into the wash buffer as the "
+          + "diavolumes go through; the lower choice errs toward more buffer "
+          + "and more area rather than toward a concentration the product "
+          + "may not survive.",
+        eq: String.raw`C_\mathrm{opt} = \min\left( C_\mathrm{opt,start},\; C_\mathrm{opt,DF} \right)`},
+      { step: "The rule you were probably taught -- wash at the gel "
+          + "concentration divided by e -- is an APPROXIMATION of this "
+          + "construction, and the industrial source of the construction is "
+          + "the one that says so: it holds where the flux decay follows a "
+          + "well-defined standard curve, and the construction above holds "
+          + "generally.",
+        eq: String.raw`C_\mathrm{opt} \approx \frac{c_g}{e} \qquad (e = 2.718\ldots)`},
+    ],
+    formula: String.raw`\begin{array}{ll}
+\mathrm{DFOP} = C\, J_f & \text{maximise this; it is the general rule}\\[6pt]
+C_\mathrm{opt} = \min\left( C_\mathrm{opt,start},\, C_\mathrm{opt,DF} \right) & \text{when the two buffers disagree, take the lower}\\[6pt]
+C_\mathrm{opt} \approx c_g/e & \text{the classical shortcut, and an approximation of the above}
+\end{array}`,
+    where: [
+      { sym: "\\mathrm{DFOP}",
+        means: "the DIAFILTRATION OPTIMISATION PARAMETER: the product of the "
+        + "concentration and the flux at a point on a flux curve.  It is the "
+        + "same quantity step 7 calls J_w c, named the way the bench method "
+        + "names it", unit: "g/(m²·h)" },
+      { sym: "C", means: "the product concentration -- the RETAINED species, "
+        + "the one whose inventory fixes how small the vessel can be",
+        unit: "g/L" },
+      { sym: "J_f", means: "the FILTRATE flux at that concentration, measured "
+        + "on the rig.  It is step 1's J_w read off an experiment instead of "
+        + "computed", unit: "L/(m²·h)" },
+      { sym: "C_\\mathrm{opt,start}",
+        means: "the concentration at which DFOP is largest on the curve "
+        + "measured in the STARTING buffer", unit: "g/L" },
+      { sym: "C_\\mathrm{opt,DF}",
+        means: "the same, on the curve measured in the DIAFILTRATION buffer",
+        unit: "g/L" },
+      { sym: "C_\\mathrm{opt}",
+        means: "the concentration to pre-concentrate to before washing: the "
+        + "LOWER of the two, which is the conservative choice", unit: "g/L" },
+      { sym: "c_g", means: "the GEL concentration of the classical "
+        + "ultrafiltration flux law -- the concentration at which its flux "
+        + "extrapolates to zero.  This engine carries no such law and no "
+        + "case declares one", unit: "g/L" },
+      { sym: "e", means: "Euler's number, 2.718…, which appears here only "
+        + "because it falls out of maximising the gel-polarised flux law -- "
+        + "not because anything general puts it there" },
+      { sym: "\\min", means: "the smaller of the two values, which is the "
+        + "conservative rule being applied" },
+    ],
+    note: "THREE REASONS YOU MIGHT NOT BE ABLE TO USE THE ANSWER, and they "
+      + "are practical rather than thermodynamic.  The optimum may sit BELOW "
+      + "the rig's minimum recirculation volume -- a vessel and a loop have "
+      + "a smallest working charge and no optimum overrides it.  The product "
+      + "may not be STABLE that concentrated.  Either way you work at a lower "
+      + "concentration and pay for it in buffer, in membrane area and in "
+      + "time.  The trade runs the other way too: if buffer is the scarce "
+      + "thing, work HIGHER than the optimum and pay in area or in "
+      + "processing time instead.  WHAT THIS PAGE CANNOT DO, said before you "
+      + "look at the plot: Choupo sweeps ONE solution.  The construction "
+      + "above wants the flux curve in the diafiltration buffer as well, and "
+      + "no case in the corpus declares a second buffer's flux behaviour, so "
+      + "the figure below draws the curve the engine has and marks its "
+      + "maximum.  That is one buffer's answer, not the two-buffer "
+      + "construction, and it is not bracketed: the second curve would move "
+      + "the optimum, and the rule above says which way you would then go.  "
+      + "The method is Millipore Technical Brief TB032 (Rev. C, 06/03, "
+      + "03-117), \"Protein Concentration and Diafiltration by Tangential "
+      + "Flow Filtration\", p. 12 -- which is also where the claim that the "
+      + "c_g/e rule is only an approximation comes from, so step 7's refusal "
+      + "to quote that closed form here and industrial practice are saying "
+      + "the same thing.",
+  },
+  {
+    n: 9,
+    title: "ln VCF + N is ONE number, and it decides the yield",
+    body: "Look again at the composite loss of step 4.  The concentration "
+      + "factor and the diavolumes do not appear in it separately -- they "
+      + "appear only through their sum once the concentration factor has "
+      + "been logged.  Call that sum the governing group.  Two consequences "
+      + "follow immediately and both are design decisions.  First, VCF and N "
+      + "are INTERCHANGEABLE as far as product yield is concerned: "
+      + "concentrating twenty-fold costs exactly what washing ln(20) = 3 "
+      + "diavolumes costs, and a process may trade one against the other "
+      + "freely without changing what it loses.  Second, a yield goal is a "
+      + "CEILING ON THE GROUP, so it can be met in three ways and only one "
+      + "of them leaves the separation alone.",
+    derivation: [
+      { step: "Take the composite loss of step 4 exactly as it was derived "
+          + "there, from the two retained fractions multiplied.",
+        eq: String.raw`\mathrm{loss} = 1 - \exp\!\left( (R - 1)(\ln \mathrm{VCF} + N) \right)`},
+      { step: "The two process variables never appear apart.  Name their "
+          + "combination and the loss becomes a curve in one variable, which "
+          + "is the figure this step draws.",
+        eq: String.raw`G = \ln \mathrm{VCF} + N \qquad \mathrm{loss} = 1 - \exp\!\left( (R - 1) G \right)`},
+      { step: "Invert it.  A yield goal fixes the LARGEST group a given "
+          + "retention can spend -- this is the number a design is checked "
+          + "against, and it needs no iteration.",
+        eq: String.raw`G_\mathrm{max} = \frac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R - 1}`},
+      { step: "A process outside that ceiling has three ways back inside, "
+          + "and they are not equivalent: concentrating less leaves the wash "
+          + "intact but enlarges the vessel, washing less cuts the BUFFER "
+          + "EXCHANGE the wash existed to achieve, and a membrane that "
+          + "retains better meets the goal without touching either.",
+        eq: String.raw`\mathrm{VCF} \downarrow \qquad N \downarrow \qquad R \uparrow`},
+    ],
+    formula: String.raw`\begin{array}{ll}
+G = \ln \mathrm{VCF} + N & \text{the concentration and the wash enter ONLY here}\\[6pt]
+\mathrm{loss} = 1 - \exp\!\left( (R - 1) G \right) & \text{so they are interchangeable in the yield}\\[6pt]
+G_\mathrm{max} = \dfrac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R - 1} & \text{the group a yield goal can afford}
+\end{array}`,
+    where: [
+      { sym: "G", means: "the GOVERNING GROUP, ln VCF + N -- the only "
+        + "combination of the concentration factor and the diavolumes that "
+        + "the product loss can see" },
+      { sym: "\\mathrm{VCF}",
+        means: "the volume concentration factor of step 3" },
+      { sym: "N", means: "the diavolumes of step 3" },
+      { sym: "R", means: "the retention of the product, HELD CONSTANT "
+        + "through the whole process -- the same assumption step 4 spends, "
+        + "and step 5 is about why it is not true" },
+      { sym: "\\mathrm{loss}",
+        means: "the fraction of the product lost to the filtrate over the "
+        + "whole concentrate-then-wash process" },
+      { sym: "\\mathrm{loss}_\\mathrm{goal}",
+        means: "the largest loss the process is allowed -- a yield "
+        + "specification, which is a decision and never a measurement" },
+      { sym: "G_\\mathrm{max}",
+        means: "the largest governing group that retention can spend and "
+        + "still meet the goal" },
+    ],
+    note: "THE WORKED EXAMPLE, RECOMPUTED.  Millipore Technical Brief TB032 "
+      + "(Rev. C, 06/03, 03-117) p. 6 makes this concrete: concentrate "
+      + "twenty-fold, then wash seven diavolumes, and keep more than 93 % of "
+      + "the product.  The group is ln(20) + 7 = 9.9957 (the source rounds "
+      + "ln 20 to 3 and calls it 10; this page does not round, which is why "
+      + "its figures can differ in the third decimal).  At a retention of "
+      + "0.99 the loss is 9.51 %, and the goal is missed.  Cutting the wash "
+      + "to 4.3 diavolumes brings the group to 7.2957 and the loss to "
+      + "7.04 %, which is MARGINALLY OVER a goal of less than 7 % -- it "
+      + "meets the goal only at the one decimal a graph is read to, and "
+      + "the wash that exactly meets it is 4.2613 diavolumes.  That "
+      + "difference is small and it is the whole argument for doing this "
+      + "step as arithmetic rather than with a ruler.  Either way the "
+      + "wash was there to exchange the buffer, and "
+      + "step 4's own exponential prices that: a freely permeating buffer "
+      + "species (R = 0) leaves exp(-N) behind, so stopping at 4.3 "
+      + "diavolumes instead of 7 leaves exp(7 - 4.3) = 14.9 times as much of "
+      + "the old buffer in the vessel.  Raising the retention "
+      + "to 0.999 instead leaves VCF, N and the buffer exchange exactly "
+      + "where they were and drops the loss to 0.99 %.  THAT is the reason "
+      + "the membrane choice is the first decision and not the last.  The "
+      + "table below carries those numbers as this page computes them from "
+      + "the formula above; nothing in it is transcribed.",
+  },
 ];
 
 export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
@@ -527,6 +726,27 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
       + "nothing here judges the engine's answer to be right -- the goldens "
       + "of the two witnesses pin what this MODEL gives, and neither case is "
       + "validated against a measured diafiltration.",
+  },
+  {
+    id: "one-buffer-only",
+    title: "The two-buffer optimum construction is HALF done here, and the "
+      + "missing half is the one that brackets the answer.",
+    body: "Step 8's construction reads the flux curve in the product's "
+      + "STARTING buffer and again in the DIAFILTRATION buffer, takes the "
+      + "maximum of concentration times flux on each, and works at the lower "
+      + "of the two.  Choupo sweeps ONE solution.  The only fact the unit holds "
+      + "about the wash buffer is its DENSITY (`rho_diafiltrate`, which "
+      + "closes the solvent mass balance and enters no flux law), and it "
+      + "carries no solute at all -- so there is nothing from which a "
+      + "second flux curve could be built, and no case in the corpus even "
+      + "declares that density.  So the "
+      + "figure on this page is ONE curve and its maximum is ONE buffer's "
+      + "answer.  What the second curve would change: it would give a second "
+      + "maximum, the true optimum would lie between the two, and the "
+      + "conservative rule would send you to the lower of them -- so the "
+      + "number here is not bracketed and could move in either direction.  "
+      + "Nothing on this page implies otherwise, and the plot's own caption "
+      + "repeats it rather than leaving it in this list.",
   },
   {
     id: "no-measured-fouling",
