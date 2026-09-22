@@ -3774,6 +3774,23 @@ PYEOF
     fi
     rm -f /tmp/globraw.$$
 
+    # unit-family gate (2026-09-22).  Vitor: the flowsheet boxes carry no
+    # symbol of the unit operation.  Measured, the engine registers 51 unit
+    # types and the GUI mapped 24 -- the other 27 all drew the SAME generic
+    # sliders glyph through a `default:`, in silence, because a default never
+    # complains.  The drawing is fixed by families; this gate is why that fix
+    # is not the same mistake again: it recounts the GUI's table against the
+    # engine's own registry, so it cannot go quietly short a second time.
+    if "$ROOT/bin/curate/check_unit_families.py" > /tmp/unitfam.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "unit-family-gate" "$(head -1 /tmp/unitfam.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unit_families.py)\n" "unit-family-gate"
+        cat /tmp/unitfam.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/unitfam.$$
+
     # mixing-ledger gate (2026-08-31).  The mixingRules op publishes the
     # one-fluid decomposition through EquationOfState::mixingLedger -- a
     # window on the SAME buildMix the hot path runs, which is the right

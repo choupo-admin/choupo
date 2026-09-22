@@ -42,6 +42,7 @@ import type { UnitSpec } from "../case/types.js";
 import type { JsonValue } from "../dict/index.js";
 import { scalarToSI } from "../dict/scalarSI.js";
 import { UNIT_LABEL, unitIconFor } from "./unitIcons.js";
+import { familyOf, familySpec } from "../case/unitFamily";
 import { operationSchemaFor, type OperationSchema } from "../case/operationSchemas.js";
 import { COLUMN_TYPES, HEAT_DUTY_TYPES, COOLING_DUTY_TYPES, PHASE_SPLIT_TYPES } from "../case/dutyTypes.js";
 import { useStore } from "../state/store.js";
@@ -97,6 +98,13 @@ export function UnitNode({ id, data, selected }: NodeProps) {
   useEffect(() => {
     updateNodeInternals(id);
   }, [id, overrideKey, updateNodeInternals]);
+  //  THE SILHOUETTE.  A process engineer reads a flowsheet by SHAPE, and
+  //  this node used to draw an 18 px generic glyph -- the SAME sliders icon
+  //  for more than half the engine's types (see case/unitFamily.ts).  The
+  //  family's outline is drawn large instead; a type the table does not know
+  //  keeps the old glyph and the box, which is the honest fallback rather
+  //  than a silhouette we would be inventing.
+  const family = familyOf(unit.type);
   const icon = unitIconFor(unit.type, 18);
   const label = UNIT_LABEL[unit.type] ?? unit.type;
   const opSummary = summarise(unit.operation, operationSchemaFor(unit.type) ?? undefined, prefs, kpis);
@@ -234,8 +242,18 @@ export function UnitNode({ id, data, selected }: NodeProps) {
                 color: "var(--mantine-color-accent-4)",
                 display: "inline-flex",
               }}
+              title={family ? familySpec(family).label : undefined}
             >
-              {icon}
+              {family ? (
+                <svg width={34} height={34} viewBox="0 0 48 48" aria-hidden
+                     style={{ display: "block" }}>
+                  <path
+                    d={familySpec(family).path}
+                    fill="none" stroke="currentColor" strokeWidth={2.2}
+                    strokeLinecap="round" strokeLinejoin="round"
+                  />
+                </svg>
+              ) : icon}
             </span>
             <Text fw={700} size="md" c="var(--mantine-color-text)">
               {unit.name}
