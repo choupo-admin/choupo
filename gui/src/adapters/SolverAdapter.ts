@@ -761,6 +761,16 @@ export interface UtilityAllocationRow {
   MW: number;
   eur_h: number;
   allocated: boolean;
+  /** Typed since 2026-09-03: a duty that is NOT allocated is either CARRIED
+   *  (met by the unit's own process streams or a heat link -- nothing to buy)
+   *  or UNSERVED (no catalogue utility can meet it).  The engine emits it
+   *  (`ResultEmitter.cpp`), and the record's own comment says why it exists:
+   *  "prose is not a field a reader may test".  It was published and not
+   *  declared here, so the canvas had only `utility`'s prose to draw and drew
+   *  it -- a sentence in a slot sized for `steamLP`.  OPTIONAL, because a
+   *  result written before the flag existed genuinely does not carry it, and
+   *  `case/dutyUtility.ts` refuses to guess which of the two it was. */
+  carried?: boolean;
 }
 
 export interface SolverAdapter {

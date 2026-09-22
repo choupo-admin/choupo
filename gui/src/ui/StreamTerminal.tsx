@@ -35,6 +35,7 @@ import { Group, Stack, Text, Tooltip } from "@mantine/core";
 import { IconBolt } from "@tabler/icons-react";
 
 import type { StreamSpec } from "../case/types.js";
+import { dutyUtilityLabel, type DutyAllocationFacts } from "../case/dutyUtility.js";
 import { scalarToSI } from "../dict/scalarSI.js";
 import { useStore } from "../state/store.js";
 import { phaseColor as phaseColorFor } from "./plotting/palette.js";
@@ -95,10 +96,16 @@ interface StreamTerminalData {
   /** Utility named explicitly on the column port (operation.<port>.utility).
    *  When absent the allocation picks one by temperature level. */
   utilityName?: string;
-  /** Allocated utility + cost from the latest run (the solver's
-   *  utilityAllocation) --- authoritative; shown in preference to the
-   *  declared utilityName once a run exists. */
-  dutyUtility?: string;
+  /** The latest run's allocation FACTS for this duty (the solver's
+   *  utilityAllocation row) --- authoritative; shown in preference to the
+   *  declared utilityName once a run exists.  The row is passed whole and
+   *  `case/dutyUtility.ts` decides what the card says, from the TYPED
+   *  `allocated`/`carried` flags.  It used to be the rendered `utility`
+   *  string, which is a NAME field the engine also fills with PROSE when
+   *  there is no name -- so the card drew
+   *  `(carried: its own process streams (heatExchanger))` in a slot sized
+   *  for `steamLP`. */
+  dutyAlloc?: DutyAllocationFacts;
   dutyEurH?: number;
   [key: string]: unknown;
 }
@@ -106,7 +113,7 @@ interface StreamTerminalData {
 export function StreamTerminal({ data, selected }: NodeProps) {
   const { name, role, stream, phaseColor, phaseLabel, phaseGlyph, utilityCategory, resolved,
           streamNumber, showNumbers, streamOrigin, feedDrivenTag,
-          dutyPort, tier, dutyKW, utilityName, dutyUtility, dutyEurH } =
+          dutyPort, tier, dutyKW, utilityName, dutyAlloc, dutyEurH } =
     data as StreamTerminalData;
   const prefs = useStore((s) => s.displayPrefs);
 
@@ -122,6 +129,7 @@ export function StreamTerminal({ data, selected }: NodeProps) {
     // for cooling.  W (shaft work) for the power tier, Q (heat) otherwise.
     const handleTop = heating || isPower;
     const valLabel = isPower ? "W" : "Q";
+    const service = dutyUtilityLabel(dutyAlloc, utilityName);
     return (
       <div
         style={{
@@ -143,11 +151,18 @@ export function StreamTerminal({ data, selected }: NodeProps) {
                 style={{ color, letterSpacing: 0.4 }}>
             {dutyPort === "Q" ? "duty" : dutyPort}
           </Text>
-          {/* Allocated utility (post-run, authoritative) wins over the
-              declared name; e.g. "steamLP", "electricity", "(carried...)". */}
-          {(dutyUtility ?? utilityName) && (
-            <Text size="10px" fw={600} ff="monospace" c="dimmed">
-              {dutyUtility ?? utilityName}
+          {/*  ONE WORD, and the sentence in the tooltip.  The run's typed
+               facts win over the declared name; where the engine has prose
+               to add ("its own process streams (heatExchanger)"), it is the
+               TITLE, never the label -- the same rule D13 gave the case
+               description.  */}
+          {service && (
+            <Text size="10px" fw={600} ff="monospace" c="dimmed"
+                  title={service.detail ?? undefined}
+                  style={service.detail ? { cursor: "help",
+                          textDecoration: "underline dotted",
+                          textUnderlineOffset: 2 } : undefined}>
+              {service.word}
             </Text>
           )}
         </Group>

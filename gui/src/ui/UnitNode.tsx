@@ -237,15 +237,34 @@ export function UnitNode({ id, data, selected }: NodeProps) {
       <Stack gap={4}>
         <Group gap={8} wrap="nowrap" justify="space-between">
           <Group gap={8} wrap="nowrap">
+            {/*  THE SILHOUETTE IS DRAWN IN INK, not in the brand accent.
+                 Vítor, reading the flowsheet: the blue was strange.  It was
+                 `accent-4` (#26c6da, a LIGHT cyan), and three things were
+                 wrong with it.  A PFD draws its equipment in ink -- the
+                 symbol is a drawing, not a piece of interface chrome.  On
+                 this canvas colour already MEANS something (phase, duty
+                 tier, utility class), so spending one on "this is a unit"
+                 makes the palette say less -- and the cyan it spent is the
+                 same cyan that means LIQUID two pixels away.  And a light
+                 cyan at a 2.2 px stroke is faint on white, which is the
+                 wrong bet when the real audience is a lecture-room
+                 projector.  The old glyph fallback keeps the accent: it is
+                 interface, and it is honest about being one.  */}
             <span
               style={{
-                color: "var(--mantine-color-accent-4)",
+                color: family ? "var(--mantine-color-text)"
+                              : "var(--mantine-color-accent-4)",
                 display: "inline-flex",
               }}
               title={family ? familySpec(family).label : undefined}
             >
               {family ? (
-                <svg width={34} height={34} viewBox="0 0 48 48" aria-hidden
+                //  41 px, not 34.  Vítor, reading the flowsheet: the NAME was
+                //  drawn larger than the symbol that explains it, which
+                //  inverts the hierarchy a PFD is read by -- the shape is
+                //  recognised first and the tag is read second.  At 41 the
+                //  silhouette carries the same weight as the name.
+                <svg width={41} height={41} viewBox="0 0 48 48" aria-hidden
                      style={{ display: "block" }}>
                   <path
                     d={familySpec(family).path}

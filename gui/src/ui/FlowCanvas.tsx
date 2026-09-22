@@ -96,6 +96,7 @@ import { UnitNode } from "./UnitNode.js";
 import { loadLayout, saveLayout, layoutFromChoText, layoutToChoText, mergeLayouts,
   type XY, type HandlePos, type CaseLayout } from "../state/layout.js";
 import { runControl } from "../case/runControl.js";
+import type { DutyAllocationFacts } from "../case/dutyUtility.js";
 import { writeCaseFile } from "../cases/workspace.js";
 import { notifications } from "@mantine/notifications";
 
@@ -829,7 +830,11 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         // the solver's utilityAllocation, so the stub shows "which utility,
         // how much €" --- not just the bare Q.
         let dutyKW: number | undefined;
-        let dutyUtility: string | undefined;
+        //  The allocation FACTS, not a rendered string.  The stub decides
+        //  what to say through case/dutyUtility.ts -- one home, and it reads
+        //  the TYPED `allocated`/`carried` rather than parsing `utility`'s
+        //  prose, which is how a sentence ended up on the card.
+        let dutyAlloc: DutyAllocationFacts | undefined;
         let dutyEurH: number | undefined;
         const dport = (n.data as { dutyPort?: string }).dutyPort;
         if (dport === "power") {
@@ -839,7 +844,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           const alloc = runResult?.utilityAllocation?.find(
             (a) => a.unit === owner && a.tier === "power");
           if (alloc) {
-            dutyUtility = alloc.utility; dutyEurH = alloc.eur_h;
+            dutyAlloc = alloc; dutyEurH = alloc.eur_h;
             if (typeof alloc.duty_kW === "number") dutyKW = alloc.duty_kW;
           }
         } else if (dport) {
@@ -855,7 +860,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           const alloc = runResult?.utilityAllocation?.find(
             (a) => a.unit === owner && a.port === allocPort);
           if (alloc) {
-            dutyUtility = alloc.utility; dutyEurH = alloc.eur_h;
+            dutyAlloc = alloc; dutyEurH = alloc.eur_h;
             if (dutyKW === undefined && typeof alloc.duty_kW === "number") dutyKW = alloc.duty_kW;
           }
         }
@@ -866,7 +871,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                || (isUtilityTerminal && !show.utility)
                || (dport !== undefined && !show.utility),
           data: {...(n.data as object), drillable, phaseColor, phaseLabel, phaseGlyph,
-                  utilityCategory, resolved, dutyKW, dutyUtility, dutyEurH,
+                  utilityCategory, resolved, dutyKW, dutyAlloc, dutyEurH,
                   feedDrivenTag,
                   showNumbers: show.numbers,
                   // ABSOLUTE number (overrides toGraph's per-view local one).

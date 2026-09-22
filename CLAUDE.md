@@ -2937,6 +2937,19 @@ Corollaries, each paid for:
 * **Launch a background suite under the harness's own supervision.**  A plain
   `nohup … &` from a tool call is killed when the call returns — it happened
   twice in one day, losing two 30-minute runs.
+* **A by-hand sabotage restored by `cp` is byte-identical and CLOCK-different,
+  and `check_build_fresh` reads the clock.**  So a sabotage that touched
+  anything under `src/` leaves the tree in the state that gate exists to
+  refuse — it ABORTS the whole suite before a single case runs, which is the
+  gate working, not a failure.  The remedy is the one it names: one
+  idempotent `make all` before the suite.  Budget it, or sabotage the gate's
+  inputs rather than the engine's source where the arm allows it.  (Costed
+  once, 2026-09-22: a restored `ResultEmitter.cpp` with an unchanged md5
+  aborted a run that had already started.)
+* **Do not block the turn waiting for a suite.**  The commander's job is to
+  coordinate AND to stay reachable; a ten-minute blocking wait is neither.
+  Check in short calls and REFLECT in between — Vítor has said this twice,
+  the second time sharply, and the second time was after it happened again.
 
 ### Pedagogical mindset, not industrial
 
