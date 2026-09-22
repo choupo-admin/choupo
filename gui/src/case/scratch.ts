@@ -112,6 +112,55 @@ function setAtPath(root: JsonValue, segs: (string | number)[], value: JsonValue)
  *  Every other path applies to the flowsheet JSON.  No edits -> the same
  *  object back (cheap identity), so callers can pass the result straight to
  *  the solver without a needless deep copy. */
+/**
+ * The operation edits IN FORCE for one unit, keyed by field.
+ *
+ * WHY THIS EXISTS.  Vítor, on the first tutorial: the Properties box let him
+ * change the flash pressure, the outlet streams came back at the new
+ * pressure -- and the NODE went on drawing the old one.  `UnitNode` renders
+ * `unit.operation`, which is the value ON DISK, while the run is solved from
+ * the scratch overlay.  So after a tinker the box says `P = 1.01 bar` and the
+ * stream leaving it says `1.5 bar`, and nothing on the canvas reconciles
+ * them.
+ *
+ * The overlay's own contract calls tinkering "LOUD -- a yellow amber state, a
+ * from->to diff and a per-field reset", and it is: INSIDE THE PROPERTIES
+ * PANEL, which is open on one unit at a time.  The canvas, which is what a
+ * student actually looks at, carried no mark at all.  *A value with two homes
+ * and a surface that shows the wrong one* is this project's oldest defect
+ * shape, here on the surface a class sees first.
+ *
+ * Keyed by NAME rather than by index on purpose: the caller has a node, and
+ * a node knows its name.  A unit the flowsheet does not carry returns an
+ * EMPTY map, so the canvas falls back to the declared value -- the right
+ * failure, because showing the declared number is merely incomplete while
+ * showing someone else's edit would be wrong.
+ */
+export function operationScratch(
+  flowsheet: JsonValue | undefined,
+  unitName: string,
+  edits: ScratchEdits,
+): Record<string, ScratchEdit> {
+  const out: Record<string, ScratchEdit> = {};
+  if (!flowsheet || typeof flowsheet !== "object" || Array.isArray(flowsheet))
+    return out;
+  const units = (flowsheet as { units?: unknown }).units;
+  if (!Array.isArray(units)) return out;
+  const idx = units.findIndex(
+    (u) => u !== null && typeof u === "object"
+        && (u as { name?: unknown }).name === unitName);
+  if (idx < 0) return out;
+  //  The path the Properties panel writes: `units[i].operation.<key>`.
+  const head = `units[${idx}].operation.`;
+  for (const [path, edit] of Object.entries(edits))
+    if (path.startsWith(head)) {
+      const key = path.slice(head.length);
+      //  A nested path (`a.b`) is not an operation FIELD the node draws.
+      if (key.length > 0 && !key.includes(".")) out[key] = edit;
+    }
+  return out;
+}
+
 export function applyScratch(files: CaseFiles, edits: ScratchEdits): CaseFiles {
   const keys = Object.keys(edits);
   if (keys.length === 0) return files;

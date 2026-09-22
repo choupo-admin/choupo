@@ -884,9 +884,33 @@ function SchemaSection({
   const prefs = useStore((s) => s.displayPrefs);
   return (
     <Stack gap={6}>
-      <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
-        Operation
-      </Text>
+      {/*  THE HEADING NAMES WHAT THESE NUMBERS ARE.  Vítor, on the first
+           tutorial: "it lets you change the OUTLET PRESSURE -- outlet streams
+           are CALCULATED!"  He is right about outlet streams and the field is
+           not one: for an adiabatic flash the pressure is the single degree of
+           freedom the author FIXES, and the outlet temperature, vapour
+           fraction and phase follow from the energy balance -- which that
+           unit's own schema description says.  But the panel listed the block
+           as bare editable numbers and never said they are the SPECIFICATION,
+           so a reader who meets an editable field labelled "Outlet pressure"
+           beside an outlet stream card reading 1.5 bar draws exactly his
+           conclusion.  One line, every unit, no per-schema campaign.  */}
+      <Group gap={6} align="baseline">
+        <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
+          Operation
+        </Text>
+        <Tooltip
+          label={"These are the unit's SPECIFICATION -- the degrees of freedom "
+               + "the case fixes.  Everything else, including the outlet "
+               + "streams' temperature, vapour fraction and phase, is "
+               + "COMPUTED from them and cannot be typed here."}
+          withArrow position="right" multiline w={280}
+        >
+          <Text size="xs" c="dimmed" style={{ cursor: "help" }}>
+            (specified)
+          </Text>
+        </Tooltip>
+      </Group>
       {schema.description && (
         <Text size="xs" c="dimmed" style={{ lineHeight: 1.45 }}>
           {schema.description}

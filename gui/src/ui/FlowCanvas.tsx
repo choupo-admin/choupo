@@ -97,6 +97,7 @@ import { loadLayout, saveLayout, layoutFromChoText, layoutToChoText, mergeLayout
   type XY, type HandlePos, type CaseLayout } from "../state/layout.js";
 import { runControl } from "../case/runControl.js";
 import { readFlag, writeFlag, NODE_DETAILS_KEY } from "../state/prefs.js";
+import { operationScratch } from "../case/scratch.js";
 import { buildDrillSeed, feedsKeyFor, inheritKeyFor } from "../case/drillSeed.js";
 import type { DutyAllocationFacts } from "../case/dutyUtility.js";
 import { writeCaseFile } from "../cases/workspace.js";
@@ -306,6 +307,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   //  row now holds two kinds of control that look alike; that is the cost
   //  of folding into an existing surface rather than growing a new one
   //  (the NO-REBLOAT invariant), and it is cheaper than a second row.
+  //  The transient tinkering overlay.  Read here so the NODE can draw the
+  //  value the next run will use; the Properties panel is the only other
+  //  reader, and it is open on one unit at a time.
+  const scratchEdits = useStore((s) => s.scratchEdits);
   const [showDetails, setShowDetails] = useState(
     () => readFlag(NODE_DETAILS_KEY, true));
   const onDetails = useCallback((v: boolean) => {
@@ -916,6 +921,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                   feedDrivenTag,
                   showNumbers: show.numbers,
                   showDetails,
+                  //  WHAT THE RUN WILL USE, not what is on disk.  A tinkered
+                  //  operation value was visible only inside the Properties
+                  //  panel, so the node drew the declared number while the
+                  //  stream leaving it carried the edited one.
+                  opScratch: operationScratch(flowsheet, n.id.slice("unit:".length),
+                                              scratchEdits),
                   // ABSOLUTE number (overrides toGraph's per-view local one).
                   streamNumber: numberOf((n.data as { name?: string }).name ?? ""),
                   handleOverrides, onHandleMove, onHandleCommit: commitHandles,
@@ -923,7 +934,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         };
       }),
     [nodes, selectedNodeId, drillableSub, phaseOf, utilityOf, resultStreamOf, show,
-     showDetails,
+     showDetails, scratchEdits,
      handlePos, onHandleMove, onHandleReset, commitHandles, runResult, numberOf,
      scrubOverlay, colorScheme],
   );

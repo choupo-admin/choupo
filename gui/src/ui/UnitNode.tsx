@@ -120,7 +120,25 @@ export function UnitNode({ id, data, selected }: NodeProps) {
   const symbolPx = symbolSizeFor(showDetails);
   const icon = unitIconFor(unit.type, 18);
   const label = UNIT_LABEL[unit.type] ?? unit.type;
-  const opSummary = summarise(unit.operation, operationSchemaFor(unit.type) ?? undefined, prefs, kpis);
+  //  THE NODE DRAWS WHAT THE RUN WILL USE.  A tinkered operation value lives
+  //  in the transient scratch overlay and is applied at Run; drawing
+  //  `unit.operation` alone made the box say `P = 1.01 bar` while the stream
+  //  leaving it said `1.5 bar` -- two homes for one number, with the canvas
+  //  showing the one that did NOT produce the result.  The edited value is
+  //  merged in and MARKED, because a changed number that looks declared is
+  //  worse than no mark at all: the overlay is transient and a reader must
+  //  be able to see that this is not what the file says.
+  const opScratch = (data as {
+    opScratch?: Record<string, { value: number; from: number; unit?: string }>;
+  }).opScratch ?? {};
+  const effectiveOp = Object.keys(opScratch).length === 0
+    ? unit.operation
+    : Object.fromEntries(Object.entries(unit.operation).map(([k, v]) => {
+        const e = opScratch[k];
+        return [k, e === undefined ? v
+                 : (e.unit ? `${e.value} ${e.unit}` : e.value)];
+      }));
+  const opSummary = summarise(effectiveOp, operationSchemaFor(unit.type) ?? undefined, prefs, kpis);
 
   // One handle per stream (in / outputs), spread vertically.  React Flow
   // resolves edges to specific handles via `id`; toGraph.ts sets
@@ -351,8 +369,18 @@ export function UnitNode({ id, data, selected }: NodeProps) {
         {showDetails && opSummary.length > 0 && (
           <Stack gap={2} mt={4}>
             {opSummary.map(({ k, v }) => (
-              <Text key={k} size="xs" c="dimmed" ff="monospace">
-                {k} = {v}
+              //  AMBER is the tinkering colour the Properties panel already
+              //  uses for the same fact; one vocabulary, two surfaces.
+              <Text key={k} size="xs" ff="monospace"
+                    c={opScratch[k] ? "yellow.7" : "dimmed"}
+                    fw={opScratch[k] ? 600 : undefined}
+                    title={opScratch[k]
+                      ? `Tinkered: the case file says ${opScratch[k]!.from}`
+                        + `${opScratch[k]!.unit ? " " + opScratch[k]!.unit : ""}`
+                        + `, the next run uses ${v}.  The edit is transient and `
+                        + `is never written to disk.`
+                      : undefined}>
+                {k} = {v}{opScratch[k] ? " ◆" : ""}
               </Text>
             ))}
           </Stack>
