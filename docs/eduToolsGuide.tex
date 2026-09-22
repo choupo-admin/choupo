@@ -1269,6 +1269,152 @@ mass-transfer zone whose width the unused length measures.  The trapezoid,
 the crossing and the scale-up on this page are the hand method itself,
 labelled as such, and judged against those engine numbers.}
 
+\subsection{Membranes: a UF/NF batch, concentrated and washed}\label{sec:edu-batch-membrane}
+
+\declaredanchor{ch:membrane}
+
+\noindent\textit{\small Tool:} \code{tool=batch-membrane}.  \textit{\small
+Witnesses:} \file{tutorials/batch/membrane/diafilter01\_nf\_desalting} and
+its twin \file{tutorials/batch/membrane/diafilter02\_fouling\_decline},
+which differ by a \dict{fouling} block and by nothing else.
+
+\subsubsection*{The question}
+
+\emph{I have a stirred vessel behind a membrane.  I can take permeate away
+and let the vessel shrink, or I can make solvent up as fast as it leaves
+and hold the volume.  The first concentrates what the membrane keeps; the
+second washes out what it does not.  How far does each one get, how long
+does it take, and how much of the product do I lose doing it?}
+
+\subsubsection*{What to vary, what to watch}
+
+The two modes are one line of the model apart --- the diafiltrate rate
+$Q_d$ is zero in a concentration and equal to the permeate rate in a wash
+--- and the page makes that the mode switch.  It also makes it the
+\emph{axis}: each mode is plotted against its own clock, the volume
+concentration factor $\mathrm{VCF} = V_0/V$ for a concentration and the
+diavolumes $N = \int Q_d\,\mathrm{d}t / V_0$ for a wash.  Neither clock is
+seconds, and that is deliberate: both are dimensionless, both start at
+their own origin, and both make runs at different areas and pressures
+comparable, which seconds do not.  Flipping the mode therefore changes
+what the horizontal axis \emph{means}, not merely the curve on it.
+
+Four knobs re-run the engine in the browser --- the feed pressure, the
+membrane area, the film coefficient $k_{\mathrm{film}}$ and the horizon
+--- beside two switches, the mode and whether Hermia's cake law is
+applied.  Every retained fraction is drawn on a logarithmic axis, because
+the closed forms the construction is about are exponentials and a student
+should be able to read a straight line where one is claimed.
+
+\begin{tryit}
+Start on the wash.  The classical result says the retained fraction falls
+as $\exp\!\big[-(1-R)N\big]$: a straight line on the log axis, whose
+slope is fixed by a \emph{constant} rejection.  Put the engine's curve
+beside it and the two part.  Now open the rejection trace underneath:
+$R_{\mathrm{obs}}$ is not constant, it climbs as the salt leaves --- and
+the ideal line the page drew was built from \emph{this run's own initial}
+$R$, so the gap cannot have been arranged.  Switch to concentrate mode
+and watch the axis become $\mathrm{VCF}$ and the law become a power.  Watch which power: the RETAINED
+fraction falls as $\mathrm{VCF}^{-(1-R)}$ while the concentration rises as
+$\mathrm{VCF}^{R}$, and at $R=1$ that second form gives
+$c/c_0=\mathrm{VCF}$ --- a membrane that keeps everything concentrates
+exactly as the vessel shrinks.  The same assumption as the wash, spent
+the same way.  Then turn
+on Hermia cake and change nothing else: the twin case is the same
+operation with a deposited layer, and the run buys fewer diavolumes in
+the same horizon.  Finally look at the last plot --- the product
+$J_w c$ against $\mathrm{VCF}$ --- and find where a wash is cheapest.
+\end{tryit}
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Mode} --- the one line that differs, $Q_d = 0$ or
+        $Q_d = Q_p$.  It changes the question, the clock and the axis.
+  \item \textbf{Feed pressure} --- raises the flux and therefore shortens
+        every diavolume, but it also raises the wall concentration, which
+        is where the rejection's drift comes from.
+  \item \textbf{Membrane area $A$} --- buys time and nothing else: the
+        trajectory against $N$ or $\mathrm{VCF}$ barely moves, while the
+        clock in seconds does.  That is the clocks' whole argument, made
+        visible with one knob.
+  \item \textbf{Film coefficient $k_{\mathrm{film}}$} --- the stirring.
+        Lower it and the wall concentrates, the osmotic pressure rises and
+        the flux falls, with no fouling anywhere in the case.
+  \item \textbf{Hermia cake} --- a \emph{claim about a mechanism}, not a
+        fitted exponent, which is why the engine makes the case state a
+        \dict{reason} in writing before it will apply one.
+\end{itemize}
+
+\subsubsection*{The trade, and the one classical optimum on the page}
+
+Washing longer buys purity and costs two things.  It costs product,
+because no rejection is one and the exponent never stops running; and it
+costs time, because every diavolume is a vessel volume of permeate that
+must cross the membrane, $t_{\mathrm{DF}} = N V/(A J_w)$.  At a fixed
+inventory of the retained species a smaller vessel is a more concentrated
+one, so pre-concentrating shortens every diavolume --- and simultaneously
+raises the osmotic pressure and the polarisation, which cuts the flux.
+The two pull against each other, so a cheapest concentration exists, and
+the classical statement of it is that it sits where the product of flux
+and retained concentration is largest: Ng, Lundblad and
+Mitra, \emph{Optimization of Solute Separation by Diafiltration},
+Separation Science \textbf{11}(5) (1976) 499--502.
+
+The page applies that \emph{criterion} and deliberately not the closed
+form usually quoted beside it.  ``Wash at the gel concentration divided by
+$\mathrm{e}$'' does not follow from the criterion alone --- it follows
+from the gel-polarised flux law of ultrafiltration, and this engine does
+not carry that law; its flux is an applied pressure less an osmotic
+pressure through the declared transport model.  So the tool reads the
+product off the engine's own concentration trajectory, marks the maximum,
+and says whether that maximum was bracketed by the sweep or sitting on one
+of its ends, because an endpoint is not an optimum --- it is a run that
+did not find one.  Nothing on the page borrows a constant from a model
+that is not running.
+
+\subsubsection*{The misconception the construction exposes}
+
+\begin{pitfall}
+\textbf{That the rejection is a property of the membrane.}  It is written
+as a single number on a datasheet, it is taught as a single number, and
+every closed form on this page is obtained by carrying it outside an
+integral.  It is not a number: it is an outcome of the wall concentration,
+which follows the flux, which follows the osmotic pressure, which follows
+a composition that the run is deliberately changing.  A student who sizes
+a wash from the datasheet's $R$ will over-wash or under-wash, and will not
+know which.  The engine publishes $R_{\mathrm{obs}}$ at every instant for
+exactly this reason, and the page draws the hand result from the run's own
+\emph{initial} rejection so that the two curves start together and part
+for a reason the student can watch.  Where they stay together, the hand
+derivation was safe --- and knowing which case you are in is the whole
+skill.
+\end{pitfall}
+
+\begin{pitfall}
+\textbf{That flux decline means fouling.}  Lower the film coefficient in a
+case with no \dict{fouling} block at all and the flux still falls, because
+the wall concentrates and the osmotic pressure rises.  Concentration
+polarisation is reversible and instantaneous; fouling is an accumulated
+history of what the membrane has been asked to do.  The two twin cases
+exist so that the difference can be seen rather than asserted:
+\file{diafilter01} and \file{diafilter02} are the same operation, and one
+block apart.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Said here because the page says it too, and an absence that is named is
+worth more than a green run that implies otherwise.  Choupo has \emph{no
+feed-and-bleed membrane loop} today: that is a steady module inside a
+recirculating tank, and the seam between a steady unit and a time
+integrator is open work, not a mode of this unit.  The tree carries no
+measured fouling data at all, so a cake constant is equipment-and-feed
+data a case declares and never a catalogue value.  The polarisation
+coefficient is declared, never correlated from a geometry the engine was
+not told.  The pump work that drives the filtration is not ledgered, so
+the campaign's first law reports itself \textsc{unavailable} rather than
+closing on a term quietly set to zero.  And the vessel is one well-mixed
+liquid at one temperature.
+
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 %  No count here.  This sentence used to say "Six live tools", against a

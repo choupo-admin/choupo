@@ -65,7 +65,8 @@ export type MethodToolId =
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
   | "sour-water" | "rules-of-thumb" | "bode"
-  | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup";
+  | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
+  | "batch-membrane";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -650,6 +651,34 @@ export const METHOD_TOOLS: MethodTool[] = [
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     teaches: "How a laboratory breakthrough curve sizes a plant bed: t_b and t_st read off the data, the capacity they imply checked against the isotherm, LUB = L(1 − t_b/t_st) carried to full scale at the same velocity — L_full = L_es + LUB, the diameter from the design flow, and why a longer bed wastes a smaller fraction.",
     theory: "ch:adsorption",
+  },
+  //  THE BATCH HALF of the membrane physics (2026-09-22).  Everything this
+  //  page needs was already in the engine -- the transport laws, the osmotic
+  //  models, the film, the Hermia fouling and `batchDiafilter` itself -- and
+  //  all of it was reachable only from a case file.  A module at steady state
+  //  has an operating point; a batch rig has a HISTORY, and every classical
+  //  result taught for one (the exponential washout, the power law of a
+  //  concentration, the loss over a concentrate-then-wash) is an integral
+  //  taken with the rejection held constant.  The unit already publishes the
+  //  measurement that shows it is not: `R_obs_<s>` at every instant, and
+  //  `washoutIdeal_<s>` built from THIS run's own initial R, so the gap
+  //  cannot have been arranged.
+  {
+    id: "batch-membrane", label: "Batch membrane filtration (UF/NF)",
+    discipline: "Separations & phase equilibria", kind: "construction",
+    status: "live",
+    teaches: "The two pure batch operations behind a UF/NF membrane and the "
+      + "one line that differs between them (Q_d = 0 or Q_d = Q_p): each "
+      + "mode's own clock -- the volume concentration factor and the "
+      + "diavolume, never seconds -- the closed forms a student integrates by "
+      + "hand for each, and why they part from the run.  Every one of them "
+      + "pulls the rejection out of the integral, and the engine publishes "
+      + "the observed rejection at every instant to show it moving.  Hermia "
+      + "fouling as a claim about a MECHANISM, on a twin case that differs by "
+      + "nothing else, and the wash-time trade whose optimum is read off the "
+      + "engine's own flux rather than borrowed from a gel model this engine "
+      + "does not carry.",
+    theory: "ch:membrane",
   },
   //  MOUNTED 2026-08-19.  This entry arrived deliberately `planned` with the
   //  mount written out below it, because the host's dispatch was a hand-written
