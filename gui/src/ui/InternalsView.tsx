@@ -126,7 +126,7 @@ export function InternalsView() {
   };
 
   return (
-    <Box style={{ height: "100vh", display: "flex", flexDirection: "column", background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))" }}>
+    <Box style={{ height: "var(--choupo-vh)", display: "flex", flexDirection: "column", background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))" }}>
       <Group gap={8} px="md" py={8} style={{ borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))" }}>
         <IconStethoscope size={17} color="var(--mantine-color-accent-4)" />
         <Text fw={600} c="accent.3">{s.name}</Text>

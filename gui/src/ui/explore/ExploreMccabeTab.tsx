@@ -42,7 +42,7 @@ export function ExploreMccabeTab() {
   return (
     <Box
       style={{
-        height: "100vh",
+        height: "var(--choupo-vh)",
         width: "100vw",
         display: "flex",
         flexDirection: "column",

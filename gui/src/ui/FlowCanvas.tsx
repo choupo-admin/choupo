@@ -1385,7 +1385,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
               top: 52,
               zIndex: 7,
               width: CARD_HANDLE_W + CARD_BODY_W,
-              maxHeight: "calc(100vh - 160px)",
+              maxHeight: "calc(var(--choupo-vh) - 160px)",
               // Clip to the rounded border so the inner ScrollArea is what
               // scrolls -- without this, content taller than maxHeight paints
               // PAST the card edge instead of scrolling (playground section).

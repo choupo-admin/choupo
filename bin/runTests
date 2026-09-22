@@ -3791,6 +3791,23 @@ PYEOF
     fi
     rm -f /tmp/unitfam.$$
 
+    # viewport-unit gate (2026-09-22).  The app shell is a full-viewport box
+    # with `overflow: hidden`.  Written `height: 100vh` it lays out taller
+    # than a phone's glass -- `100vh` measures the window as if the URL bar
+    # were retracted -- and with no scroller the bottom strip is unreachable.
+    # Desktop cannot see the difference: 100vh and 100dvh are the same number
+    # without a retracting chrome, so every screen, test and screenshot here
+    # agrees while the phone is broken.  A gate is the only thing that looks.
+    if "$ROOT/bin/curate/check_viewport_units.py" > /tmp/viewportunits.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "viewport-unit-gate" "$(head -1 /tmp/viewportunits.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_viewport_units.py)\n" "viewport-unit-gate"
+        cat /tmp/viewportunits.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/viewportunits.$$
+
     # mixing-ledger gate (2026-08-31).  The mixingRules op publishes the
     # one-fluid decomposition through EquationOfState::mixingLedger -- a
     # window on the SAME buildMix the hot path runs, which is the right

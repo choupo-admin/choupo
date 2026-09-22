@@ -42,7 +42,7 @@ export function ExpiredTabPanel({ kind }: { kind: "focus" | "internals" | "explo
   return (
     <Box
       style={{
-        height: "100vh",
+        height: "var(--choupo-vh)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

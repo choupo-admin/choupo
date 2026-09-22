@@ -83,9 +83,15 @@ export async function popOutPlotElement(plotDiv: HTMLElement, title: string): Pr
 <meta charset="utf-8">
 <title>Choupo — ${safeTitle}</title>
 <style>
+  /*  A POPPED-OUT WINDOW IS A SEPARATE DOCUMENT and does not inherit the
+      app's --choupo-vh, so it declares the dynamic viewport itself -- and
+      here, in a real stylesheet rather than a React style OBJECT, the
+      two-declaration fallback can actually be written: a browser that does
+      not know 'dvh' ignores the second line and keeps the first.  */
   body { margin: 0; background: ${C.bg}; color: ${C.text};
          font-family: system-ui, sans-serif;
-         min-height: 100vh; display: flex; flex-direction: column; }
+         min-height: 100vh; min-height: 100dvh;
+         display: flex; flex-direction: column; }
   header { padding: 10px 16px; border-bottom: 1px solid ${C.border};
            font-size: 13px; color: ${C.dim};
            display: flex; justify-content: space-between; align-items: center; }
@@ -93,6 +99,7 @@ export async function popOutPlotElement(plotDiv: HTMLElement, title: string): Pr
   main { flex: 1; display: flex; align-items: center; justify-content: center;
          padding: 16px; }
   img { max-width: 100%; max-height: calc(100vh - 80px);
+        max-height: calc(100dvh - 80px);
         border-radius: 4px; background: ${C.panel}; }
   a.dl { color: ${C.accent}; text-decoration: none; font-size: 12px; }
   a.dl:hover { text-decoration: underline; }

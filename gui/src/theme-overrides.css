@@ -74,3 +74,43 @@ License
    --------------------------------------------------------------------------- */
 .choupo-stale-canvas .react-flow__edge { opacity: 0.3; }
 .choupo-stale-body { opacity: 0.42; }
+
+/* THE FULL-VIEWPORT HEIGHT, and it has ONE home.
+ *
+ * WHY.  The app shell is `height: 100vh` with `overflow: hidden` -- correct
+ * for a desktop application chrome, and wrong on a phone.  `100vh` is the
+ * LARGE viewport: it measures the window as if the browser's own URL bar
+ * were retracted, whether it is or not.  So on iOS Safari and Android
+ * Chrome the shell is laid out taller than the glass a student can see, the
+ * bottom strip sits UNDER the browser chrome, and the shell's own
+ * `overflow: hidden` means there is no scroller to reach it with.  The
+ * docked console row and the bottom of every workspace are simply gone.
+ *
+ * `100dvh` is the DYNAMIC viewport -- it tracks the chrome as it retracts --
+ * and it is what a full-height application shell wants on a phone.
+ *
+ * WHY A CUSTOM PROPERTY AND NOT THE UNIT AT EACH SITE.  Two reasons, and the
+ * second is the load-bearing one.  (1) Arity: the app has several
+ * full-viewport roots (the shell, the internals view, the expired-tab panel,
+ * the standalone McCabe tab) plus one `calc()` that subtracts from it, and a
+ * viewport story told in five places drifts.  (2) THE FALLBACK CANNOT BE
+ * WRITTEN IN AN INLINE STYLE.  The standard way to fall back is to declare
+ * the property twice and let a browser that does not know `dvh` ignore the
+ * second -- and a React style OBJECT has one key per property, so the first
+ * declaration is simply overwritten in JavaScript, never in CSS.  Here the
+ * `@supports` block does the same job where it can actually be expressed,
+ * and every site reads one name.
+ *
+ * A DOCUMENT THAT CANNOT INHERIT THIS MUST DECLARE ITS OWN: a popped-out
+ * plot window is a separate document and does not see this rule, which is
+ * why `plotPopOut.ts` writes the two-declaration form into its own
+ * stylesheet rather than reading a variable that would resolve to nothing.
+ */
+:root {
+  --choupo-vh: 100vh;
+}
+@supports (height: 100dvh) {
+  :root {
+    --choupo-vh: 100dvh;
+  }
+}

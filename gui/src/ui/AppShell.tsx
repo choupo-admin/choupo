@@ -347,7 +347,13 @@ export function AppShell() {
           ? `"header" "center" "console"`
           : `"header" "center"`,
         transition: reduceMotion ? "none" : "grid-template-rows 200ms ease",
-        height: "100vh",
+        //  The DYNAMIC viewport, not `100vh`.  On a phone `100vh` measures the
+        //  window as if the browser's URL bar were retracted, so the shell is
+        //  laid out taller than the glass and its own `overflow: hidden`
+        //  leaves no scroller to reach the bottom strip with -- the docked
+        //  console row and the foot of every workspace simply unreachable.
+        //  One home, with its `@supports` fallback: src/theme-overrides.css.
+        height: "var(--choupo-vh)",
         width: "100vw",
         overflow: "hidden",
         background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",

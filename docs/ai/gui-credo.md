@@ -112,6 +112,30 @@ strip — all three were removed.  The layout is now:
   `flowsheet`) replaces the canvas centre with the property-scan /
   fit view instead.
 
+**A FULL-VIEWPORT HEIGHT IS THE DYNAMIC VIEWPORT (2026-09-22).**  The shell
+is a full-viewport box with `overflow: hidden`, which is right for an
+application chrome and wrong the moment it is written `height: 100vh`.
+`100vh` is the LARGE viewport -- it measures the window as though the
+browser's own URL bar were retracted, whether it is or not -- so on a phone
+the shell lays out taller than the glass, the bottom strip sits under the
+browser chrome, and the shell's own `overflow: hidden` means there is no
+scroller to reach it with.  The docked console row and the foot of every
+workspace were not awkward on a phone; they were unreachable.  One home,
+`--choupo-vh` in `gui/src/theme-overrides.css`, `100vh` with an
+`@supports (height: 100dvh)` upgrade so a browser without `dvh` still gets a
+height rather than none.  A document that cannot inherit it -- a popped-out
+plot window is its own document -- restates the property in `100dvh`
+instead, which is the one thing a React style OBJECT cannot express, since
+it has a single key per property.
+
+**Why this needed a gate and the panel contract did not.**  The fit rule
+answers from measured widths and is wrong VISIBLY when it is wrong.  This
+one is invisible to the entire toolchain: without a retracting chrome
+`100vh` and `100dvh` are the same number, so every developer screen, every
+test and every screenshot agrees while the phone is broken.  A defect no
+part of the workbench can see is exactly what a gate is for --
+`check_viewport_units`.
+
 ## 3. Deliberate adaptations vs ParaView
 
 ParaView is the architectural inspiration (DSL + viewer family, dicts
