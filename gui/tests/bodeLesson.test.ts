@@ -74,28 +74,24 @@ describe("the Bode lesson's shape", () => {
     }
   });
 
-  it("glosses every symbol that any step's formula or derivation uses", () => {
-    //  The python gate (bin/curate/check_lesson_symbols.py) owns this rule
-    //  corpus-wide; this arm is the same claim for this page, so a missing
-    //  gloss fails where the author is working rather than only in the suite.
-    const glossed = new Set<string>();
+  it("gives every equation a `where` list to be checked against", () => {
+    //  THE SYMBOL-BY-SYMBOL RULE LIVES IN ONE PLACE, and it is not here.
+    //  This arm used to reimplement it: a regex over the formula text, a
+    //  hand-kept list of English words to skip, and a rule that anything
+    //  longer than two letters was prose.  Since the equations became LaTeX
+    //  (2026-09-22) the notation itself says which token is a symbol, which
+    //  is prose (`\text{}`) and which is a substance (`\ce{}`), and
+    //  bin/curate/check_lesson_symbols.py reads exactly that.  A second,
+    //  weaker parser beside it would be a second home for the rule -- and it
+    //  was already wrong in both directions before, by its own admission.
+    //
+    //  What is left here is the structural half, which this file can hold
+    //  honestly: an equation with no `where` list has nothing for that gate
+    //  to check it against.
     for (const s of BODE_STEPS) {
-      for (const g of s.where ?? []) {
-        glossed.add(g.sym);
-        for (const part of g.sym.split(/\s*\/\s*|,\s+/)) glossed.add(part.trim());
-      }
-      const text = [s.formula ?? "", ...(s.derivation ?? []).map((d) => d.eq ?? "")]
-        .join("\n");
-      //  Greek letters and anything with an underscore are symbols; a bare
-      //  Latin word is prose.  Chemical formulas cannot occur on this page.
-      for (const tok of text.match(/[A-Za-zα-ωΑ-Ω][A-Za-z0-9_α-ωΑ-Ω]*/g) ?? []) {
-        if (!/[_α-ωΑ-Ω]/.test(tok) && tok.length > 2) continue;    // prose
-        if (["in", "10", "at", "dt", "dx", "e"].includes(tok)) continue;
-        if (/^(sin|cos|exp|ln|log|arctan|dec|out|and|s|t|i|u|y|w)$/.test(tok))
-          continue;
-        expect(glossed, `"${tok}" appears in a formula and is glossed nowhere`)
-          .toContain(tok);
-      }
+      if (!s.formula && !(s.derivation ?? []).some((d) => d.eq)) continue;
+      expect(s.where?.length ?? 0, `step ${s.n} has an equation and no gloss`)
+        .toBeGreaterThan(0);
     }
   });
 });
@@ -113,8 +109,8 @@ describe("every number the page quotes is recomputed here", () => {
   it("the two decibel landmarks", () => {
     expect(dB(Math.SQRT1_2).toFixed(4)).toBe("-3.0103");
     expect(dB(0.5).toFixed(4)).toBe("-6.0206");
-    expect(stepText(2)).toContain("−3.0103");
-    expect(stepText(2)).toContain("−6.0206");
+    expect(stepText(2)).toContain("-3.0103");
+    expect(stepText(2)).toContain("-6.0206");
     expect(dB(1)).toBe(0);
     //  0.70711 is the rounding the page shows beside the log; it must be the
     //  rounding of the real thing.
@@ -127,10 +123,10 @@ describe("every number the page quotes is recomputed here", () => {
     expect(toDeg(r.phaseRad)).toBeCloseTo(-45, 12);
     expect(dB(r.mag).toFixed(4)).toBe("-3.0103");
     const t = stepText(4);
-    expect(t).toContain("−45°");
-    expect(t).toContain("−3.0103 dB");
-    expect(t).toContain("−20 dB/decade");
-    expect(t).toContain("−90°");
+    expect(t).toContain(String.raw`-45^\circ`);
+    expect(t).toContain(String.raw`-3.0103\ \mathrm{dB}`);
+    expect(t).toContain(String.raw`-20\ \mathrm{dB}/\text{decade}`);
+    expect(t).toContain(String.raw`-90^\circ`);
   });
 
   it("the 240 s tank corners at 4.167e-3 rad/s, as step 4 says", () => {

@@ -29,11 +29,11 @@ describe("the steps", () => {
   it("state the two mass-action steps as equilibria, not as arithmetic", () => {
     const f = BJERRUM_STEPS[0]?.formula ?? "";
     expect(f).toContain("CO2(aq)");
-    expect(f).toContain("HCO3-");
-    expect(f).toContain("CO3--");
-    expect(f).toContain("H+");
-    expect(f).toContain("K1");
-    expect(f).toContain("K2");
+    expect(f).toContain("HCO3^-");
+    expect(f).toContain("CO3^2-");
+    expect(f).toContain("H^+");
+    expect(f).toContain("K_1");
+    expect(f).toContain("K_2");
   });
 
   //  THIS TEST USED TO PIN A FALSEHOOD.  It asserted the page said "no pH
@@ -50,14 +50,14 @@ describe("the steps", () => {
     expect(body).toMatch(/electroneutrality/i);            // and what it costs
     expect(body).toMatch(/pH solve;/);                     // what this case picked
     expect(body).not.toMatch(/no pH input|has no pH knob/i);
-    expect(s?.formula ?? "").toContain("Σ z_i m_i = 0");
+    expect(s?.formula ?? "").toContain(String.raw`\sum_i z_i m_i = 0`);
   });
 
   it("names what is in each beaker at the three landmark ratios", () => {
     const f = BJERRUM_STEPS[2]?.formula ?? "";
     expect(f).toContain("NaHCO3");
     expect(f).toContain("Na2CO3");
-    expect(prose(f)).toMatch(/dissolved CO2/);
+    expect(f).toContain(String.raw`\text{dissolved } \ce{CO2}`);
   });
 
   it("declares the stoichiometric basis and why the analysis check is wrong here", () => {

@@ -50,10 +50,10 @@ describe("the lesson runs end to end", () => {
     const all = f.join("\n");
     //  rectifying, stripping, q-line -- and the slope of the first is what
     //  the reflux knob turns, so R must appear in it.
-    expect(all).toContain("R/(R+1)");
-    expect(all).toContain("x_D/(R+1)");
-    expect(all).toContain("q/(q−1)");
-    expect(all).toContain("z_F/(q−1)");
+    expect(all).toContain(String.raw`\frac{R}{R+1}`);
+    expect(all).toContain(String.raw`\frac{x_D}{R+1}`);
+    expect(all).toContain(String.raw`\frac{q}{q-1}`);
+    expect(all).toContain(String.raw`\frac{z_F}{q-1}`);
   });
 
   it("says the straight lines are an assumption, in both places", () => {

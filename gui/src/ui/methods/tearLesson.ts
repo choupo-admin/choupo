@@ -71,18 +71,19 @@ export const TEAR_STEPS: readonly LessonStep[] = [
           + "be walked from one end to the other." },
       { step: "The cut leaves the stream with two roles: an assumed INPUT at "
           + "the top of the chain, and a computed OUTPUT at the bottom.",
-        eq: "x_assumed   ->   walk the chain   ->   G(x_assumed)" },
+        eq: String.raw`x_\mathrm{assumed} \;\longrightarrow\; \text{walk the chain} \;\longrightarrow\; G(x_\mathrm{assumed})`},
       { step: "Iterate until the two agree. Choupo does this by Newton on "
           + "the tear residual by default, or by Wegstein if the case asks.",
-        eq: "x = G(x)" },
+        eq: String.raw`x = G(x)`},
     ],
-    formula: "x = G(x)",
+    formula: String.raw`x = G(x)`,
     where: [
       { sym: "x", means: "the TEAR VECTOR — the assumed state of the cut "
         + "stream: its total flow, its composition and its temperature" },
       { sym: "G", means: "one complete pass through the flowsheet in declared "
         + "order, starting from that assumption" },
-      { sym: "x_assumed", means: "the same tear vector, written out where the "
+      { sym: "x_\\mathrm{assumed}",
+        means: "the same tear vector, written out where the "
         + "point is that it is an ASSUMPTION being handed to the plant rather "
         + "than an answer" },
     ],
@@ -107,14 +108,15 @@ export const TEAR_STEPS: readonly LessonStep[] = [
       { step: "The edge is BACKWARD when the consumer sits at or before the "
           + "producer. At the same position means a unit consuming its own "
           + "output, which is a genuine one-unit cycle.",
-        eq: "backward  <=>  pos(consumer) <= pos(producer)" },
+        eq: String.raw`\text{backward} \iff \mathrm{pos}(\text{consumer}) \le \mathrm{pos}(\text{producer})`},
       { step: "Every backward edge must be declared, and no forward one may "
           + "be. So for a given order the tear set is not a choice: it IS "
           + "the set of backward edges." },
     ],
-    formula: "backward  <=>  pos(consumer) <= pos(producer)",
+    formula: String.raw`\text{backward} \iff \mathrm{pos}(\text{consumer}) \le \mathrm{pos}(\text{producer})`,
     where: [
-      { sym: "pos", means: "the position of a unit in the declared list — "
+      { sym: "\\mathrm{pos}",
+        means: "the position of a unit in the declared list — "
         + "first unit is 0, and the solver reaches them in that order" },
     ],
     note: "The panel below marks each edge forward or backward as you reorder "
@@ -162,16 +164,18 @@ export const TEAR_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "Per torn stream, the Wegstein branch packs the total flow, "
           + "every mole fraction and the temperature.",
-        eq: "n_W = N_t (N_c + 2)" },
+        eq: String.raw`n_W = N_t (N_c + 2)`},
       { step: "Per torn stream, the Newton branch packs component flows and "
           + "the temperature.",
-        eq: "n_N = N_t (N_c + 1)" },
+        eq: String.raw`n_N = N_t (N_c + 1)`},
       { step: "And one Newton step perturbs each of those variables up and "
           + "down, running a full sweep at each.",
-        eq: "sweeps per Newton step = 2 n_N" },
+        eq: String.raw`\text{sweeps per Newton step} = 2 n_N`},
     ],
-    formula: "n_W = N_t (N_c + 2)       n_N = N_t (N_c + 1)\n"
-      + "sweeps per Newton step = 2 n_N          per Wegstein step = 1",
+    formula: String.raw`\begin{aligned}
+n_W &= N_t (N_c + 2) &\qquad n_N &= N_t (N_c + 1)\\[4pt]
+\text{sweeps per Newton step} &= 2 n_N &\qquad \text{per Wegstein step} &= 1
+\end{aligned}`,
     where: [
       { sym: "N_t", means: "the number of torn streams" },
       { sym: "N_c", means: "the number of components the flowsheet carries" },

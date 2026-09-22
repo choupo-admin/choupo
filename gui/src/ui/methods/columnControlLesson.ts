@@ -54,10 +54,12 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
       + "column empties or floods — an inventory with no loop on it is not a "
       + "variable you postponed, it is a shutdown you scheduled.  Three "
       + "valves are spent before composition is mentioned, and two are left.",
-    formula: "valves around the column     5    condenser duty · D · L · V · B\n"
-      + "inventories, not optional   −3    pressure · drum level · sump level\n"
-      + "                            ———\n"
-      + "left for composition         2    →  a 2×2 problem, and only 2×2",
+    formula: String.raw`\begin{array}{lrl}
+\text{valves around the column} & 5 & \text{condenser duty} \cdot D \cdot L \cdot V \cdot B\\
+\text{inventories, not optional} & -3 & \text{pressure} \cdot \text{drum level} \cdot \text{sump level}\\
+\hline
+\text{left for composition} & 2 & \longrightarrow \text{ a } 2 \times 2 \text{ problem, and only } 2 \times 2
+\end{array}`,
     where: [
       { sym: "D", means: "The DISTILLATE: the top product drawn off the "
         + "reflux drum.  One of the five manipulable flows around a "
@@ -92,12 +94,15 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
       + "LV's levels but drives each composition loop through a ratio "
       + "station, so a change in throughput moves both members of a pair "
       + "together instead of leaving one behind.",
-    formula: "name          free for composition   drum level on   sump level on\n"
-      + "LV            L , V                  D               B\n"
-      + "LB            L , B                  D               V\n"
-      + "DV            D , V                  L               B\n"
-      + "DB            D , B                  L               V\n"
-      + "(L/D)(V/B)    L , V as ratios        D               B",
+    formula: String.raw`\begin{array}{llll}
+\text{name} & \text{free for composition} & \text{drum level on} & \text{sump level on}\\
+\hline
+\text{LV} & L,\ V & D & B\\
+\text{LB} & L,\ B & D & V\\
+\text{DV} & D,\ V & L & B\\
+\text{DB} & D,\ B & L & V\\
+(L/D)(V/B) & L,\ V \text{ as ratios} & D & B
+\end{array}`,
     where: [
       { sym: "L/D", means: "The reflux RATIO used as a handle in its own "
         + "right, rather than the reflux flow itself.  A ratio structure "
@@ -129,12 +134,15 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
       + "flows, while in DV the top loop drives a material-balance stream "
       + "directly.  Whether that helps on YOUR column is a quantitative "
       + "question, and it is the one this page hands back to you.",
-    formula: "LV    T_top ← L        T_bot ← V     both handles are internal flows\n"
-      + "DV    T_top ← D        T_bot ← V     the top loop is on a product\n"
-      + "LB    T_top ← L        T_bot ← B     the bottom loop is on a product\n"
-      + "DB    T_top ← D        T_bot ← B     both loops are on products",
+    formula: String.raw`\begin{array}{llll}
+\text{LV} & T_\mathrm{top} \leftarrow L & T_\mathrm{bot} \leftarrow V & \text{both handles are internal flows}\\
+\text{DV} & T_\mathrm{top} \leftarrow D & T_\mathrm{bot} \leftarrow V & \text{the top loop is on a product}\\
+\text{LB} & T_\mathrm{top} \leftarrow L & T_\mathrm{bot} \leftarrow B & \text{the bottom loop is on a product}\\
+\text{DB} & T_\mathrm{top} \leftarrow D & T_\mathrm{bot} \leftarrow B & \text{both loops are on products}
+\end{array}`,
     where: [
-      { sym: "T_top", means: "The controlled temperature standing in for the "
+      { sym: "T_\\mathrm{top}",
+        means: "The controlled temperature standing in for the "
         + "TOP composition — a tray temperature in the rectifying section.  "
         + "IT IS A PROXY, exact only for a binary at fixed pressure: with "
         + "more than two components many compositions share a bubble point, "
@@ -147,13 +155,15 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
         + "because that is usually NOT the top one: the top tray is where the "
         + "profile is flattest and a sensor there is nearly deaf.",
         unit: "K" },
-      { sym: "T_bot", means: "The controlled temperature standing in for the "
+      { sym: "T_\\mathrm{bot}",
+        means: "The controlled temperature standing in for the "
         + "BOTTOM composition — a tray temperature in the stripping section, "
         + "under exactly the same proxy caveat as T_top.  The engine's "
         + "matching KPI is spelt `T_bottom` (there is no `T_bot` key), and "
         + "it carries the same warning: it is stage N, the reboiler itself.",
         unit: "K" },
-      { sym: "←", means: "Reads 'is controlled by': the quantity on the left "
+      { sym: "\\leftarrow",
+        means: "Reads 'is controlled by': the quantity on the left "
         + "is measured, and the flow on the right is the valve the controller "
         + "moves to hold it.", unit: "none" },
     ],
@@ -180,18 +190,20 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
       + "solves, and the number belongs to this column at these settings with "
       + "this handle.  On the classroom witness they select DIFFERENT trays, "
       + "and the disagreement is the lesson rather than a defect.",
-    formula: "slope         n* = argmax_n | T(n+1) − T(n) |        one solve\n"
-      + "sensitivity   n* = argmax_n | ΔT(n) / Δu |            two solves\n"
-      + "\n"
-      + "u must be NAMED: change the handle and the answer moves.",
+    formula: String.raw`\begin{array}{lll}
+\text{slope} & n^* = \operatorname*{arg\,max}_n \left| T(n+1) - T(n) \right| & \text{one solve}\\[4pt]
+\text{sensitivity} & n^* = \operatorname*{arg\,max}_n \left| \dfrac{\Delta T(n)}{\Delta u} \right| & \text{two solves}\\[10pt]
+\text{and } u \text{ must be NAMED:} & \text{change the handle and the answer moves.}
+\end{array}`,
     where: [
       { sym: "n", means: "The STAGE index — which tray, counted down the "
         + "column.  The candidates are the trays only: stage 1 is the "
         + "condenser and the last stage the reboiler, and neither is a place "
         + "to put a control sensor.", unit: "dimensionless (a stage number)" },
-      { sym: "n*", means: "The stage the criterion SELECTS — the answer, the "
+      { sym: "n^*", means: "The stage the criterion SELECTS — the answer, the "
         + "tray you would put the thermocouple on.", unit: "stage number" },
-      { sym: "argmax_n", means: "'The n that maximises' what follows.  Which "
+      { sym: "\\mathrm{argmax}_n",
+        means: "'The n that maximises' what follows.  Which "
         + "criterion sits inside is the whole point of this step: the two "
         + "lines above return DIFFERENT trays on the very witness below.",
         unit: "none" },
@@ -199,7 +211,7 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
         + "bubble-point temperature on stage n of the published profile.  It "
         + "is what both criteria read, and what substitutes for composition.",
         unit: "K" },
-      { sym: "ΔT", means: "The temperature RESPONSE of a stage: the "
+      { sym: "\\Delta T", means: "The temperature RESPONSE of a stage: the "
         + "difference between the perturbed run and the base run at that "
         + "stage.  It is SIGNED on purpose — the response changes sign "
         + "somewhere between the two ends, and a sensor at the crossing is "
@@ -209,7 +221,8 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
         + "the sensitivity criterion measures the response to.  It has no "
         + "default: the equation has no answer until you name it, and the "
         + "selected tray moves when you change it.", unit: "the handle's own" },
-      { sym: "Δu", means: "The size of the step applied to u in the finite "
+      { sym: "\\Delta u",
+        means: "The size of the step applied to u in the finite "
         + "difference.  It cancels in the ratio, which is why the criterion "
         + "compares trays rather than measuring a gain.", unit: "u's own" },
     ],

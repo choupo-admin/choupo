@@ -43,13 +43,13 @@ describe("the lesson runs end to end", () => {
 
   it("explains why absorption is written in mole RATIOS", () => {
     const s1 = KREMSER_STEPS[0]!;
-    expect(s1.formula).toContain("Y = y/(1−y)");
+    expect(s1.formula).toContain(String.raw`Y = \frac{y}{1-y}`);
     expect(prose(s1.note!)).toContain("straight even when the total flows");
   });
 
   it("defines the absorption factor and says which way it decides", () => {
     const s2 = KREMSER_STEPS.find((s) => s.n === 2)!;
-    expect(s2.formula).toContain("A = L / (K · V)");
+    expect(s2.formula).toContain(String.raw`A = \frac{L}{K \cdot V}`);
     expect(prose(s2.note!)).toContain("A > 1");
     expect(prose(s2.note!)).toContain("A < 1");
     //  The design consequence, not just the inequality: below one, a taller
@@ -92,8 +92,8 @@ describe("the claims are true of the closed form the tool ships", () => {
     //  Recomputed independently from the printed expression, so a typo in
     //  either would separate them.
     const s3 = KREMSER_STEPS.find((s) => s.n === 3)!;
-    expect(s3.formula).toContain("(A^(N+1) − A) / (A^(N+1) − 1)");
-    expect(s3.formula).toContain("N / (N + 1)");
+    expect(s3.formula).toContain(String.raw`\frac{A^{N+1} - A}{A^{N+1} - 1}`);
+    expect(s3.formula).toContain(String.raw`\frac{N}{N+1}`);
     for (const [A, N] of [[0.8, 4], [1.4, 6], [2.5, 3]] as const) {
       const p = Math.pow(A, N + 1);
       expect(kremserRecovery(A, N)).toBeCloseTo((p - A) / (p - 1), 12);

@@ -74,8 +74,8 @@ describe("the column-control lesson", () => {
     //  numbers are parsed back out and the subtraction redone.
     const f = step(1).formula!;
     const valves = Number(/valves[^\n]*?(\d+)\s/.exec(f)![1]);
-    const held = Number(/inventories[^\n]*?−(\d+)\s/.exec(f)![1]);
-    const left = Number(/left for composition\s+(\d+)/.exec(f)![1]);
+    const held = Number(/inventories[^\n]*?-(\d+)\s/.exec(f)![1]);
+    const left = Number(/left for composition[^\n]*?(\d+)/.exec(f)![1]);
     expect(valves).toBe(5);
     expect(held).toBe(3);
     expect(valves - held).toBe(left);
@@ -106,10 +106,20 @@ describe("the naming convention agrees with the catalogue that draws it", () => 
   };
 
   /** The step-2 table, parsed back into rows. */
+  //  The table is a LaTeX `array` since 2026-09-22: rows end in `\\` and
+  //  cells are separated by `&`.  A heading is `\text{LV}` and a formula cell
+  //  is bare mathematics, so the reader strips the one wrapper and keeps the
+  //  cell's own text -- the same rows, read out of the notation they are now
+  //  written in.
+  const cellText = (c: string): string =>
+    c.replace(/\\begin\{array\}\{[a-z]*\}|\\end\{array\}|\\hline/g, "")
+      .replace(/\\text\{([^}]*)\}/g, "$1").replace(/\\ /g, " ")
+      .replace(/\s+/g, " ").trim();
   const rows = new Map<string, string[]>();
-  for (const line of step(2).formula!.split("\n").slice(1)) {
-    const cells = line.trim().split(/\s{2,}/);
-    if (cells.length === 4) rows.set(cells[0]!, cells);
+  for (const line of step(2).formula!.split(/\\\\/)) {
+    const cells = line.split("&").map(cellText);
+    if (cells.length === 4 && cells[0] && cells[0] !== "name")
+      rows.set(cells[0]!, cells);
   }
 
   it("parsed a row for every structure the table claims to list", () => {
@@ -183,12 +193,12 @@ describe("it teaches a CHOICE, and never an answer", () => {
     expect(s3).toContain("steady-state balance");
   });
 
-  it("carries the pairing notation as a monospace block of its own", () => {
+  it("carries the pairing notation as a table of its own", () => {
     const f = step(3).formula!;
-    expect(f).toContain("T_top ← L");
-    expect(f).toContain("T_top ← D");
-    expect(f).toContain("T_bot ← V");
-    expect(f).toContain("T_bot ← B");
+    expect(f).toContain(String.raw`T_\mathrm{top} \leftarrow L`);
+    expect(f).toContain(String.raw`T_\mathrm{top} \leftarrow D`);
+    expect(f).toContain(String.raw`T_\mathrm{bot} \leftarrow V`);
+    expect(f).toContain(String.raw`T_\mathrm{bot} \leftarrow B`);
   });
 
   it("never tells the reader which structure to use", () => {
@@ -242,7 +252,7 @@ describe("the honest half — what the tool cannot do is said, not implied", () 
     //  Both criteria, and the price of each: one solve against two.
     expect(step(4).formula!).toContain("one solve");
     expect(step(4).formula!).toContain("two solves");
-    expect(prose(step(4).formula!)).toContain("u must be NAMED");
+    expect(step(4).formula!).toContain(String.raw`u \text{ must be NAMED:}`);
   });
 
   it("keeps every limit, by id", () => {
@@ -308,7 +318,7 @@ describe("the tool renders it as a scrolling lesson", () => {
       "the limits are not last").toBeGreaterThan(SRC.indexOf("{lessonStep(5)}"));
   });
 
-  it("renders a formula as a bordered monospace block", () => {
+  it("renders a formula as a bordered block of mathematics", () => {
     //  This used to slice 1200 characters after `const lessonStep = ` in THIS
     //  tool and read the drawing out of them.  The drawing now lives in ONE
     //  place -- methods/lessonStep.tsx, which replaced seventeen private
@@ -318,8 +328,15 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC).toContain("lessonStepper(COLUMN_CONTROL_STEPS)");
     const body = readFileSync(
       resolve(__dirname, "../src/ui/methods/lessonStep.tsx"), "utf8");
+    //  THE EQUATIONS ARE SET AS MATHEMATICS, not as monospace text
+    //  (2026-09-22).  The shared renderer hands every formula to KaTeX
+    //  through methods/lessonTex.ts; the bordered block around it is the
+    //  same 3px left rule it always was.  `ff="monospace"` survives in
+    //  that file for the derivation numbering and for the SOURCE shown
+    //  when a formula does not parse -- neither of which is the equation,
+    //  so asserting it here would pin the wrong thing.
     expect(body).toContain("step.formula");
-    expect(body).toContain('ff="monospace"');
+    expect(body).toContain('<Tex src={step.formula} mode="display" />');
     expect(body).toContain("borderLeft");
     //  Both monospace surfaces survive: the lesson's block and the engine's
     //  verbatim refusal.

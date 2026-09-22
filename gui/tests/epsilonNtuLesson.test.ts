@@ -48,8 +48,8 @@ describe("the lesson runs end to end", () => {
     const s1 = step(1);
     expect(prose(s1.body)).toContain("all FOUR terminal temperatures");
     expect(prose(s1.body)).toContain("the two INLETS and a piece of hardware");
-    expect(s1.formula).toContain("Q = U·A·ΔT_lm");
-    expect(s1.formula).toContain("Q = ε·C_min·(T_h,in − T_c,in)");
+    expect(s1.formula).toContain(String.raw`Q = U A\, \Delta T_\mathrm{lm}`);
+    expect(s1.formula).toContain(String.raw`Q = \varepsilon\, C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})`);
     //  And it says which route the engine actually takes, which is checkable
     //  in HeatExchanger.cpp: eps-NTU first, LMTD afterwards as a cross-check.
     expect(prose(s1.note!)).toContain("only then computes the LMTD");
@@ -57,8 +57,8 @@ describe("the lesson runs end to end", () => {
 
   it("derives Q_max and says why it is C_min and not C_max", () => {
     const s2 = step(2);
-    expect(s2.formula).toContain("C_min = min(C_hot, C_cold)");
-    expect(s2.formula).toContain("Q_max = C_min · (T_h,in − T_c,in)");
+    expect(s2.formula).toContain(String.raw`C_\mathrm{min} &= \min(C_\mathrm{hot},\, C_\mathrm{cold})`);
+    expect(s2.formula).toContain(String.raw`Q_\mathrm{max} &= C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})`);
     //  The REASON, not just the rule: giving the full swing to the larger-C
     //  stream drives the smaller-C one past its partner's inlet.
     expect(prose(s2.body)).toContain("past the OTHER stream's inlet temperature");
@@ -67,17 +67,17 @@ describe("the lesson runs end to end", () => {
 
   it("defines the two dimensionless numbers, and refuses to call ε an efficiency", () => {
     const s3 = step(3);
-    expect(s3.formula).toContain("ε = Q / Q_max");
-    expect(s3.formula).toContain("NTU = U·A / C_min");
+    expect(s3.formula).toContain(String.raw`\varepsilon &= \frac{Q}{Q_\mathrm{max}}`);
+    expect(s3.formula).toContain(String.raw`\mathrm{NTU} &= \frac{U A}{C_\mathrm{min}}`);
     expect(prose(s3.note!)).toContain("not a thermodynamic efficiency");
     expect(prose(s3.note!)).toContain("FIRST-LAW maximum");
   });
 
   it("gives C_r its own step and both bracketing limits", () => {
     const s4 = step(4);
-    expect(s4.formula).toContain("C_r = C_min / C_max");
-    expect(s4.formula).toContain("ε = 1 − exp(−NTU)");
-    expect(s4.formula).toContain("ε = NTU / (1 + NTU)");
+    expect(s4.formula).toContain(String.raw`C_r = \dfrac{C_\mathrm{min}}{C_\mathrm{max}}`);
+    expect(s4.formula).toContain(String.raw`\varepsilon = 1 - \exp(-\mathrm{NTU})`);
+    expect(s4.formula).toContain(String.raw`\varepsilon = \dfrac{\mathrm{NTU}}{1 + \mathrm{NTU}}`);
     //  C_r = 0 is where the arrangement stops mattering; C_r = 1 is where it
     //  matters most.  Both halves, or the chart stays unreadable.
     expect(prose(s4.note!)).toContain("all three arrangements collapse onto ONE curve");
@@ -248,7 +248,7 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC).toContain("<Stack gap={8}>{controls}</Stack>");
   });
 
-  it("sets the equations in a bordered monospace box", () => {
+  it("sets the equations as mathematics, in a bordered box", () => {
     //  THE BORDER CHANGED, and the change is the point.  This tool drew its
     //  formula boxes with a FULL 1px border while fifteen of its siblings drew
     //  a 3px left rule -- one of SEVEN variants the seventeen private copies
@@ -258,7 +258,14 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC).toContain("lessonStepper(ENTU_STEPS)");
     const shared = readFileSync(
       resolve(__dirname, "../src/ui/methods/lessonStep.tsx"), "utf8");
-    expect(shared).toContain('ff="monospace"');
+    //  THE EQUATIONS ARE SET AS MATHEMATICS, not as monospace text
+    //  (2026-09-22).  The shared renderer hands every formula to KaTeX
+    //  through methods/lessonTex.ts; the bordered block around it is the
+    //  same 3px left rule it always was.  `ff="monospace"` survives in
+    //  that file for the derivation numbering and for the SOURCE shown
+    //  when a formula does not parse -- neither of which is the equation,
+    //  so asserting it here would pin the wrong thing.
+    expect(shared).toContain('<Tex src={step.formula} mode="display" />');
     expect(shared).toMatch(/borderLeft: `3px solid \$\{BORDER\}`/);
   });
 

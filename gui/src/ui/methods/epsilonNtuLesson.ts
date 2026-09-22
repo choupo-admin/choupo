@@ -43,25 +43,33 @@ export const ENTU_STEPS: readonly LessonStep[] = [
       + "to guess an outlet, compute a duty, correct the guess and go round "
       + "again.  The ε-NTU method is the same first law rearranged so that "
       + "the duty falls out of what you already know.",
-    formula: "LMTD route   Q = U·A·ΔT_lm       needs T_h,in T_h,out T_c,in T_c,out\n"
-      + "ε-NTU route  Q = ε·C_min·(T_h,in − T_c,in)   needs the two INLETS",
+    formula: String.raw`\begin{array}{lll}
+\text{LMTD route} & Q = U A\, \Delta T_\mathrm{lm} & \text{needs } T_{h,\mathrm{in}},\ T_{h,\mathrm{out}},\ T_{c,\mathrm{in}},\ T_{c,\mathrm{out}}\\
+\varepsilon\text{-NTU route} & Q = \varepsilon\, C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}}) & \text{needs the two INLETS}
+\end{array}`,
     where: [
       { sym: "Q", means: "the DUTY — heat actually crossing from the hot "
         + "stream to the cold one", unit: "W" },
       { sym: "U", means: "the overall heat-transfer coefficient, hot side to "
         + "cold side through the wall", unit: "W/(m²·K)" },
-      { sym: "A", means: "the heat-transfer AREA of the exchanger", unit: "m²" },
-      { sym: "ΔT_lm", means: "the log-mean temperature difference — the "
+      { sym: "A", means: "the heat-transfer AREA of the exchanger",
+        unit: "m²" },
+      { sym: "\\Delta T_\\mathrm{lm}",
+        means: "the log-mean temperature difference — the "
         + "average driving force along the exchanger, which needs all FOUR "
         + "terminal temperatures and therefore needs the answer before it "
         + "can be computed", unit: "K" },
-      { sym: "ε", means: "the EFFECTIVENESS — the duty as a fraction of the "
+      { sym: "\\varepsilon",
+        means: "the EFFECTIVENESS — the duty as a fraction of the "
         + "most this pair of streams could possibly exchange" },
-      { sym: "C_min", means: "the smaller of the two capacity rates ṁ·c_p, "
+      { sym: "C_\\mathrm{min}",
+        means: "the smaller of the two capacity rates ṁ·c_p, "
         + "defined in the next step", unit: "W/K" },
-      { sym: "T_h,in / T_c,in", means: "the hot and cold INLET temperatures",
+      { sym: "T_{h,\\mathrm{in}} \\,/\\, T_{c,\\mathrm{in}}",
+        means: "the hot and cold INLET temperatures",
         unit: "K" },
-      { sym: "T_h,out / T_c,out", means: "the two outlet temperatures — what "
+      { sym: "T_{h,\\mathrm{out}} \\,/\\, T_{c,\\mathrm{out}}",
+        means: "the two outlet temperatures — what "
         + "the LMTD route needs and the ε-NTU route does not", unit: "K" },
     ],
     note: "Choupo's exchanger takes the second route: it solves the duty and "
@@ -83,22 +91,28 @@ export const ENTU_STEPS: readonly LessonStep[] = [
       + "achievable: the stream with the smaller C is the one that can swing "
       + "the whole ΔT_max, because handing that swing to the larger-C stream "
       + "would force the smaller-C one straight past its partner's inlet.",
-    formula: "C = ṁ·c_p          C_min = min(C_hot, C_cold)\n"
-      + "Q_max = C_min · (T_h,in − T_c,in)",
+    formula: String.raw`\begin{aligned}
+C &= \dot m\, c_p & C_\mathrm{min} &= \min(C_\mathrm{hot},\, C_\mathrm{cold})\\
+Q_\mathrm{max} &= C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})
+\end{aligned}`,
     where: [
       { sym: "C", means: "the CAPACITY RATE of a stream — how much heat it "
         + "carries away per degree", unit: "W/K" },
-      { sym: "ṁ", means: "mass flow rate", unit: "kg/s" },
+      { sym: "\\dot m", means: "mass flow rate", unit: "kg/s" },
       { sym: "c_p", means: "specific heat capacity", unit: "J/(kg·K)" },
-      { sym: "C_min", means: "the smaller of the two capacity rates — the "
+      { sym: "C_\\mathrm{min}",
+        means: "the smaller of the two capacity rates — the "
         + "stream that changes temperature FASTEST, and therefore the one "
         + "that limits the exchange" },
-      { sym: "C_hot / C_cold", means: "the capacity rates of the hot and the "
+      { sym: "C_\\mathrm{hot} \\,/\\, C_\\mathrm{cold}",
+        means: "the capacity rates of the hot and the "
         + "cold stream", unit: "W/K" },
-      { sym: "C_max", means: "the larger of the two" },
-      { sym: "Q_max", means: "the largest duty this pair of streams could "
+      { sym: "C_\\mathrm{max}", means: "the larger of the two" },
+      { sym: "Q_\\mathrm{max}",
+        means: "the largest duty this pair of streams could "
         + "exchange, at infinite area", unit: "W" },
-      { sym: "T_h,in / T_c,in", means: "the two INLET temperatures — the only "
+      { sym: "T_{h,\\mathrm{in}} \\,/\\, T_{c,\\mathrm{in}}",
+        means: "the two INLET temperatures — the only "
         + "temperatures the eps-NTU route needs", unit: "K" },
     ],
     note: "Q_max is what a COUNTERFLOW exchanger of infinite area would "
@@ -115,8 +129,16 @@ export const ENTU_STEPS: readonly LessonStep[] = [
       + "dimensionless SIZE: the heat-transfer conductance U·A measured "
       + "against the capacity rate it has to serve.  Double the area, or "
       + "double U, and you double NTU.",
-    formula: "ε = Q / Q_max              0 ≤ ε ≤ 1\n"
-      + "NTU = U·A / C_min",
+    formula: String.raw`\begin{aligned}
+\varepsilon &= \frac{Q}{Q_\mathrm{max}} &\qquad& 0 \le \varepsilon \le 1\\
+\mathrm{NTU} &= \frac{U A}{C_\mathrm{min}}
+\end{aligned}`,
+    where: [
+      { sym: "\\mathrm{NTU}",
+        means: "the NUMBER OF TRANSFER UNITS: the exchanger's size made "
+        + "dimensionless against the stream that limits it.  It is the SIZE "
+        + "variable of the method, as epsilon is its performance variable" },
+    ],
     note: "ε is not a thermodynamic efficiency: it is a fraction of a "
       + "FIRST-LAW maximum, and an exchanger at ε = 1 still destroys plenty "
       + "of availability across its temperature difference.  And NTU is a "
@@ -131,17 +153,20 @@ export const ENTU_STEPS: readonly LessonStep[] = [
       + "decides whether the flow arrangement matters at all.  Two limits "
       + "bracket every curve on the plot, and once you can place them the "
       + "whole family becomes readable.",
-    formula: "C_r = C_min / C_max                    0 ≤ C_r ≤ 1\n"
-      + "C_r = 0    ε = 1 − exp(−NTU)           every arrangement\n"
-      + "C_r = 1    ε = NTU / (1 + NTU)         counter-current",
+    formula: String.raw`\begin{array}{lll}
+C_r = \dfrac{C_\mathrm{min}}{C_\mathrm{max}} & & 0 \le C_r \le 1\\[4pt]
+C_r = 0 & \varepsilon = 1 - \exp(-\mathrm{NTU}) & \text{every arrangement}\\
+C_r = 1 & \varepsilon = \dfrac{\mathrm{NTU}}{1 + \mathrm{NTU}} & \text{counter-current}
+\end{array}`,
     where: [
-      { sym: "NTU", means: "the NUMBER OF TRANSFER UNITS, U·A/C_min — the "
+      { sym: "\\mathrm{NTU}",
+        means: "the NUMBER OF TRANSFER UNITS, U·A/C_min — the "
         + "exchanger's SIZE measured against the stream that limits it, and "
         + "dimensionless because it is a ratio of two conductances" },
       { sym: "C_r", means: "the capacity-rate RATIO C_min/C_max — how evenly "
         + "matched the two streams are.  0 when one side changes phase and "
         + "holds its temperature; 1 when both swing equally" },
-      { sym: "T_h / T_c", means: "hot-side and cold-side temperature, at "
+      { sym: "T_h \\,/\\, T_c", means: "hot-side and cold-side temperature, at "
         + "whichever end the subscript names", unit: "K" },
     ],
     note: "C_r = 0 is a stream whose temperature does not move — condensing "

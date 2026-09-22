@@ -63,30 +63,37 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       + "of the adsorbent, the feed, the velocity, the temperature and the "
       + "particle size -- and NOT of the bed length.  That is what lets a "
       + "half-metre column say anything about a three-metre bed.",
-    formula: "given   c_out/c_in against t,  at  L_lab, u, c_in, ρ_b, ε, T\n"
-      + "wanted  L_full and D  for a service time t_req  at the SAME u",
+    formula: String.raw`\begin{aligned}
+\text{given}\quad & c_\mathrm{out}/c_\mathrm{in} \text{ against } t, \text{ at } L_\mathrm{lab},\ u,\ c_\mathrm{in},\ \rho_b,\ \varepsilon,\ T\\
+\text{wanted}\quad & L_\mathrm{full} \text{ and } D \text{ for a service time } t_\mathrm{req} \text{ at the SAME } u
+\end{aligned}`,
     where: [
-      { sym: "c_out", means: "concentration leaving the column -- the "
+      { sym: "c_\\mathrm{out}",
+        means: "concentration leaving the column -- the "
         + "logged signal", unit: "mol/m³" },
-      { sym: "c_in", means: "the feed concentration, which the outlet "
+      { sym: "c_\\mathrm{in}",
+        means: "the feed concentration, which the outlet "
         + "climbs toward", unit: "mol/m³" },
       { sym: "t", means: "time since the feed was switched onto the clean "
         + "column", unit: "s" },
-      { sym: "L_lab", means: "the LABORATORY column's packed length -- the "
+      { sym: "L_\\mathrm{lab}",
+        means: "the LABORATORY column's packed length -- the "
         + "one number the method is going to change", unit: "m" },
       { sym: "u", means: "the SUPERFICIAL velocity, volumetric flow over "
         + "the empty tube's cross-section.  Held constant across the "
         + "scale-up, for a reason step 5 states", unit: "m/s" },
-      { sym: "ρ_b", means: "the BULK density of the packing, kilograms of "
+      { sym: "\\rho_b", means: "the BULK density of the packing, kilograms of "
         + "adsorbent per cubic metre of bed, voids included", unit: "kg/m³" },
-      { sym: "ε", means: "the interparticle VOID FRACTION of the bed" },
+      { sym: "\\varepsilon",
+        means: "the interparticle VOID FRACTION of the bed" },
       { sym: "T", means: "the bed temperature -- isothermal in the "
         + "laboratory, and assumed the same at full scale", unit: "K" },
-      { sym: "L_full", means: "the full-scale bed length the method "
+      { sym: "L_\\mathrm{full}", means: "the full-scale bed length the method "
         + "delivers", unit: "m" },
       { sym: "D", means: "the full-scale bed diameter, set by the design "
         + "feed flow at the same u", unit: "m" },
-      { sym: "t_req", means: "the REQUIRED service time: how long the plant "
+      { sym: "t_\\mathrm{req}",
+        means: "the REQUIRED service time: how long the plant "
         + "needs the outlet on specification before the bed is switched",
         unit: "s" },
     ],
@@ -118,9 +125,11 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       + "equal, so the area above the curve, out to where it reaches the "
       + "feed value, is t_st itself.  On data that area is a trapezoid sum "
       + "over the samples.",
-    formula: "t_b :  c_out/c_in = f_b        (f_b = 0.05 unless you choose otherwise)\n"
-      + "t_st = ∫₀^∞ (1 − c_out/c_in) dt\n"
-      + "     ≈ Σ_k ½ (t_{k+1} − t_k) [(1 − f_k) + (1 − f_{k+1})]",
+    formula: String.raw`\begin{aligned}
+t_b :\quad & c_\mathrm{out}/c_\mathrm{in} = f_b \qquad (f_b = 0.05 \text{ unless you choose otherwise})\\[4pt]
+t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \right) \mathrm{d}t\\[4pt]
+&\approx \sum_k \tfrac{1}{2} (t_{k+1} - t_k) \left[ (1 - f_k) + (1 - f_{k+1}) \right]
+\end{aligned}`,
     where: [
       { sym: "t_b", means: "the BREAKTHROUGH time -- the first instant the "
         + "outlet reaches the declared fraction f_b, found by linear "
@@ -130,14 +139,16 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       { sym: "f_b", means: "the breakthrough CRITERION, c_out/c_in at which "
         + "you switch beds -- a specification you declare (the knob), never "
         + "a datum the curve carries" },
-      { sym: "t_st", means: "the STOICHIOMETRIC time: the area above the "
+      { sym: "t_\\mathrm{st}",
+        means: "the STOICHIOMETRIC time: the area above the "
         + "curve, and the arrival time of an ideal square front carrying the "
         + "same total", unit: "s" },
-      { sym: "Σ_k", means: "a sum over every pair of consecutive samples k, "
+      { sym: "\\sum_k",
+        means: "a sum over every pair of consecutive samples k, "
         + "k+1 of the logged curve" },
-      { sym: "t_k, t_{k+1}", means: "the times of two consecutive samples",
+      { sym: "t_k,\\ t_{k+1}", means: "the times of two consecutive samples",
         unit: "s" },
-      { sym: "f_k, f_{k+1}", means: "c_out/c_in at those two samples -- the "
+      { sym: "f_k,\\ f_{k+1}", means: "c_out/c_in at those two samples -- the "
         + "trapezoid rule applied to the data, which is exactly the "
         + "quadrature the engine runs on its own outlet "
         + "(FixedBedAdsorber.cpp:1384)" },
@@ -167,17 +178,22 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       + "reading of the same number -- its retention factor KPI folds the "
       + "isotherm's q*(c_in) in, by its own definition, and solving that "
       + "definition for q* gives the isotherm's answer.  The two must agree.",
-    formula: "ρ_b q* L_lab = u c_in t_st − ε c_in L_lab\n"
-      + "q*_curve    = c_in (u t_st − ε L_lab) / (ρ_b L_lab)\n"
-      + "q*_isotherm = (R_f − ε) c_in / ρ_b        R_f = ε + ρ_b q*(c_in)/c_in",
+    formula: String.raw`\begin{aligned}
+\rho_b\, q^*\, L_\mathrm{lab} &= u\, c_\mathrm{in}\, t_\mathrm{st} - \varepsilon\, c_\mathrm{in}\, L_\mathrm{lab}\\[4pt]
+q^*_\mathrm{curve} &= \frac{c_\mathrm{in} \left( u\, t_\mathrm{st} - \varepsilon\, L_\mathrm{lab} \right)}{\rho_b\, L_\mathrm{lab}}\\[4pt]
+q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
+ &\qquad R_f &= \varepsilon + \rho_b \frac{q^*(c_\mathrm{in})}{c_\mathrm{in}}
+\end{aligned}`,
     where: [
-      { sym: "q*", means: "the EQUILIBRIUM loading of the solid at the feed "
+      { sym: "q^*", means: "the EQUILIBRIUM loading of the solid at the feed "
         + "concentration -- moles held per kilogram of adsorbent when the "
         + "solid has stopped taking anything up", unit: "mol/kg" },
-      { sym: "q*_curve", means: "that loading as the CURVE implies it: the "
+      { sym: "q^*_\\mathrm{curve}",
+        means: "that loading as the CURVE implies it: the "
         + "solute fed to t_st, less what the voids hold, per kilogram of "
         + "packing", unit: "mol/kg" },
-      { sym: "q*_isotherm", means: "the same loading as the ISOTHERM gives "
+      { sym: "q^*_\\mathrm{isotherm}",
+        means: "the same loading as the ISOTHERM gives "
         + "it, recovered from the engine's own retention factor "
         + "(retention_factor_<i>, FixedBedAdsorber.cpp:2411-2412) by "
         + "inverting the definition the engine prints", unit: "mol/kg" },
@@ -208,17 +224,20 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       + "premise that length is the same in every bed run at these "
       + "conditions, however long the bed.  That is the quantity carried to "
       + "full scale.",
-    formula: "f_used = t_b / t_st\n"
-      + "LUB    = L_lab (1 − t_b / t_st)\n"
-      + "L_MTZ  ≈ 2 · LUB        (a SYMMETRIC front only)",
+    formula: String.raw`\begin{aligned}
+f_\mathrm{used} &= \frac{t_b}{t_\mathrm{st}}\\[4pt]
+\mathrm{LUB} &= L_\mathrm{lab} \left( 1 - \frac{t_b}{t_\mathrm{st}} \right)\\[4pt]
+L_\mathrm{MTZ} &\approx 2\, \mathrm{LUB} \qquad \text{(a SYMMETRIC front only)}
+\end{aligned}`,
     where: [
-      { sym: "f_used", means: "the fraction of the laboratory bed's "
+      { sym: "f_\\mathrm{used}", means: "the fraction of the laboratory bed's "
         + "capacity used at breakthrough" },
-      { sym: "LUB", means: "the LENGTH OF UNUSED BED -- the part of the "
+      { sym: "\\mathrm{LUB}",
+        means: "the LENGTH OF UNUSED BED -- the part of the "
         + "column still clean when it was switched, which the constant "
         + "pattern makes a property of the conditions rather than of the "
         + "column", unit: "m" },
-      { sym: "L_MTZ", means: "the length of the MASS-TRANSFER ZONE, "
+      { sym: "L_\\mathrm{MTZ}", means: "the length of the MASS-TRANSFER ZONE, "
         + "estimated as twice the unused length.  That equality holds only "
         + "for a front symmetric about t_st; the sizing below uses LUB "
         + "directly, which needs no symmetry", unit: "m" },
@@ -247,23 +266,29 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       + "length at fixed u, the equilibrium section is the laboratory column "
       + "scaled by the ratio of the two times.  The diameter is set by "
       + "nothing but the design flow and the velocity you are keeping.",
-    formula: "L_es   = u c_in t_req / (ρ_b q* + ε c_in)  =  L_lab · t_req / t_st\n"
-      + "L_full = L_es + LUB\n"
-      + "η_bed  = L_es / L_full\n"
-      + "D      = √(4 Q / (π u))\n"
-      + "m_ads  = ρ_b (π D² / 4) L_full",
+    formula: String.raw`\begin{aligned}
+L_\mathrm{es} &= \frac{u\, c_\mathrm{in}\, t_\mathrm{req}}{\rho_b\, q^* + \varepsilon\, c_\mathrm{in}}
+ \;=\; L_\mathrm{lab} \frac{t_\mathrm{req}}{t_\mathrm{st}}\\[4pt]
+L_\mathrm{full} &= L_\mathrm{es} + \mathrm{LUB}\\[4pt]
+\eta_\mathrm{bed} &= \frac{L_\mathrm{es}}{L_\mathrm{full}}\\[4pt]
+D &= \sqrt{\frac{4Q}{\pi u}}\\[4pt]
+m_\mathrm{ads} &= \rho_b \frac{\pi D^2}{4} L_\mathrm{full}
+\end{aligned}`,
     where: [
-      { sym: "L_es", means: "the EQUILIBRIUM-SECTION length -- the bed that "
+      { sym: "L_\\mathrm{es}",
+        means: "the EQUILIBRIUM-SECTION length -- the bed that "
         + "would suffice if the front were a square wave arriving at t_req",
         unit: "m" },
-      { sym: "η_bed", means: "the bed UTILISATION at full scale: the share "
+      { sym: "\\eta_\\mathrm{bed}",
+        means: "the bed UTILISATION at full scale: the share "
         + "of the bed that is doing equilibrium work at switch" },
       { sym: "Q", means: "the DESIGN feed volumetric flow the plant bed "
         + "must take -- the second design requirement, beside t_req",
         unit: "m³/s" },
-      { sym: "π", means: "the circle constant, because the bed is a "
+      { sym: "\\pi", means: "the circle constant, because the bed is a "
         + "cylinder" },
-      { sym: "m_ads", means: "the mass of adsorbent the full-scale bed "
+      { sym: "m_\\mathrm{ads}",
+        means: "the mass of adsorbent the full-scale bed "
         + "holds, ρ_b times its volume", unit: "kg" },
     ],
     note: "THE LESSON'S POINT IS IN η_bed.  LUB is fixed by the conditions, "

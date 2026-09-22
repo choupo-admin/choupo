@@ -25,6 +25,27 @@ const candidates = /^(?:licen[cs]e|copying|notice)(?:\..*)?$/i;
 for (const [relative, meta] of Object.entries(lock.packages)) {
   if (!relative.startsWith("node_modules/") || meta.dev === true) continue;
   const packageDir = join(root, relative);
+
+  //  A PLATFORM-SPECIFIC package is skipped whether or not it is installed,
+  //  and that is a correction (2026-09-22).  The rule below used to be
+  //  "absent here, so it ships nothing", which makes this file a record of
+  //  the BUILD MACHINE rather than of the published site: run the generator
+  //  on linux-x64-musl and `@napi-rs/canvas-linux-x64-musl` appears; run it
+  //  on the publishing runner and a different one does.  A tracked file
+  //  whose content depends on whose laptop ran it has as many homes as there
+  //  are machines.
+  //
+  //  The criterion is what REACHES THE READER.  These are native node
+  //  binaries behind an optional dependency; Vite bundles none of them into
+  //  the browser artefact, so listing the host's one OVERSTATES what the
+  //  site redistributes -- the exact mirror of the understatement the note
+  //  below guards against.  Both are skipped visibly, never dropped.
+  if (meta.optional === true && (meta.os || meta.cpu)) {
+    notInstalled.push(`${relative}${meta.os ? ` (${meta.os.join("/")}` : " ("}`
+                    + `${meta.cpu ? `-${meta.cpu.join("/")}` : ""})`);
+    continue;
+  }
+
   if (!existsSync(packageDir)) {
     //  A package the lockfile lists for ANOTHER platform is not installed
     //  here and is therefore not in the build we ship -- so it carries no

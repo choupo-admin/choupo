@@ -58,7 +58,7 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
       + "read off at that point, not a third coordinate you get to set.  The "
       + "curves are computed for the pair you name, so the carrier's molar "
       + "mass is part of the answer and not a decoration.",
-    formula: "Y = (M_v / M_c) · p_v / (P − p_v)      [kg vapour / kg dry gas]",
+    formula: String.raw`Y = \frac{M_v}{M_c} \cdot \frac{p_v}{P - p_v} \qquad [\text{kg vapour / kg dry gas}]`,
     where: [
       { sym: "Y", means: "The HUMIDITY RATIO: kg of condensable vapour carried "
         + "by one kg of DRY carrier gas.  The dry-carrier denominator is not "
@@ -102,16 +102,20 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
       + "you are: φ = p_v/P_sat(T), a ratio of PRESSURES and not of "
       + "humidities, so each φ curve is the saturation curve scaled at every "
       + "temperature.",
-    formula: "φ = p_v / P_sat(T)\n"
-      + "Y(φ, T) = (M_v/M_c) · φ P_sat(T) / (P − φ P_sat(T))\n"
-      + "saturation:  φ = 1",
+    formula: String.raw`\begin{aligned}
+\varphi &= \frac{p_v}{P_\mathrm{sat}(T)}\\[4pt]
+Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \varphi\, P_\mathrm{sat}(T)}\\[4pt]
+\text{saturation:}\quad \varphi &= 1
+\end{aligned}`,
     where: [
-      { sym: "φ", means: "The RELATIVE HUMIDITY: the vapour's actual partial "
+      { sym: "\\varphi",
+        means: "The RELATIVE HUMIDITY: the vapour's actual partial "
         + "pressure over the saturation pressure at the SAME temperature.  A "
         + "ratio of PRESSURES, not of humidity ratios — the two are close but "
         + "not equal, and saturation is φ = 1.  Charts and dialogs usually "
         + "enter it as a percentage.", unit: "dimensionless" },
-      { sym: "P_sat", means: "The SATURATION vapour pressure of the pure "
+      { sym: "P_\\mathrm{sat}",
+        means: "The SATURATION vapour pressure of the pure "
         + "condensable at T, from that component's own vapour-pressure model. "
         + " It is the ceiling the whole chart hangs from, a property of the "
         + "condensable ALONE, and it does not move when the total pressure "
@@ -150,25 +154,30 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
       + "nearly the latent heat taken in — so the constant-enthalpy lines and "
       + "the adiabatic-saturation lines almost coincide, and an adiabatic "
       + "humidification reads as a straight line at all.",
-    formula: "adiabatic saturation:  c_s · (T − T_as) = ( Y_sat(T_as) − Y ) · λ(T_as)\n"
-      + "humid heat:            c_s = c_p,carrier + Y · c_p,vapour\n"
-      + "moist-gas enthalpy:    h = c_s · (T − T₀) + Y · λ(T₀)   [per kg dry gas]\n"
-      + "true wet bulb:         same anchor, slope × Le^(2/3),  Le = α / D_AB",
+    formula: String.raw`\begin{aligned}
+\text{adiabatic saturation:}\quad & c_s (T - T_\mathrm{as}) = \left( Y_\mathrm{sat}(T_\mathrm{as}) - Y \right) \lambda(T_\mathrm{as})\\
+\text{humid heat:}\quad & c_s = c_\mathrm{p,carrier} + Y\, c_\mathrm{p,vapour}\\
+\text{moist-gas enthalpy:}\quad & h = c_s (T - T_0) + Y\, \lambda(T_0) \qquad [\text{per kg dry gas}]\\
+\text{true wet bulb:}\quad & \text{same anchor, slope} \times \mathrm{Le}^{2/3}, \quad \mathrm{Le} = \alpha / D_\mathrm{AB}
+\end{aligned}`,
     where: [
-      { sym: "T_as", means: "The ADIABATIC-SATURATION temperature: what the "
+      { sym: "T_\\mathrm{as}",
+        means: "The ADIABATIC-SATURATION temperature: what the "
         + "gas would reach if it saturated itself by evaporating the "
         + "condensable into it with no heat crossing the boundary.  It comes "
         + "from an ENERGY BALANCE on the gas, and it labels a whole FAMILY — "
         + "every state on that line has this adiabatic-saturation "
         + "temperature.", unit: "°C" },
-      { sym: "T_wb", means: "The TRUE WET-BULB temperature: what a wet wick "
+      { sym: "T_\\mathrm{wb}",
+        means: "The TRUE WET-BULB temperature: what a wet wick "
         + "in the stream settles at, where latent heat leaving the surface "
         + "and sensible heat arriving from the gas cancel.  It comes from the "
         + "RATIO of heat transfer to mass transfer, so it carries the Lewis "
         + "number.  IT IS A DIFFERENT QUANTITY FROM T_as and equals it only "
         + "when Le = 1 — a near-coincidence that air-water happens to "
         + "satisfy, which is why most textbooks conflate them.", unit: "°C" },
-      { sym: "Y_sat", means: "The humidity ratio ON the saturation curve: the "
+      { sym: "Y_\\mathrm{sat}",
+        means: "The humidity ratio ON the saturation curve: the "
         + "most vapour the gas can carry at that temperature and pressure.  "
         + "It is the top edge of the habitable chart and the anchor point of "
         + "every adiabatic and wet-bulb line.",
@@ -178,12 +187,15 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
         + "It is named on the same dry basis as Y, which is what makes it the "
         + "slope-setter of the adiabatic line.",
         unit: "J/(kg dry gas·K)" },
-      { sym: "c_p,carrier", means: "The specific heat of the dry carrier gas, "
+      { sym: "c_\\mathrm{p,carrier}",
+        means: "The specific heat of the dry carrier gas, "
         + "per kg of it.", unit: "J/(kg·K)" },
-      { sym: "c_p,vapour", means: "The specific heat of the vapour, per kg of "
+      { sym: "c_\\mathrm{p,vapour}",
+        means: "The specific heat of the vapour, per kg of "
         + "vapour — which is why it is multiplied by Y in the humid heat.",
         unit: "J/(kg·K)" },
-      { sym: "λ", means: "The LATENT HEAT of vaporisation per kg, at the "
+      { sym: "\\lambda",
+        means: "The LATENT HEAT of vaporisation per kg, at the "
         + "anchor temperature.  It is the price of evaporation, and being in "
         + "the denominator it is what makes the adiabatic line SHALLOW.",
         unit: "J/kg" },
@@ -191,16 +203,19 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
         + "same basis again.  Its two terms are the sensible heat of the "
         + "mixture and the latent heat the vapour brought with it.",
         unit: "J/kg dry gas" },
-      { sym: "T₀", means: "The enthalpy DATUM temperature.  Its value is a "
+      { sym: "T_0", means: "The enthalpy DATUM temperature.  Its value is a "
         + "convention: only enthalpy DIFFERENCES between two states on the "
         + "chart mean anything.", unit: "°C" },
-      { sym: "Le", means: "The LEWIS number: thermal diffusivity over mass "
+      { sym: "\\mathrm{Le}",
+        means: "The LEWIS number: thermal diffusivity over mass "
         + "diffusivity — how fast heat spreads compared with how fast the "
         + "vapour does.  It is the single number that separates the two "
         + "temperatures above, and Le ≈ 1 for air-water is why they are so "
         + "often treated as one.", unit: "dimensionless" },
-      { sym: "α", means: "Thermal diffusivity of the gas.", unit: "m²/s" },
-      { sym: "D_AB", means: "Diffusivity of the vapour in the carrier gas.",
+      { sym: "\\alpha", means: "Thermal diffusivity of the gas.",
+        unit: "m²/s" },
+      { sym: "D_\\mathrm{AB}",
+        means: "Diffusivity of the vapour in the carrier gas.",
         unit: "m²/s" },
     ],
     note: "THE TWO TEMPERATURES ARE NOT THE SAME QUANTITY.  The "
@@ -233,14 +248,18 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
       + "MIXING two streams puts the mixed state on the straight segment "
       + "joining them, dividing it in the inverse ratio of the two dry-gas "
       + "flows.",
-    formula: "heating / cooling:        Y constant, move along T\n"
-      + "dehumidification:         condensate = Y_in − Y_sat(T_surface)\n"
-      + "adiabatic humidification: up a wet-bulb line, bounded below by T_wb\n"
-      + "mixing:  Y_m = (G₁·Y₁ + G₂·Y₂) / (G₁ + G₂),   G = dry-gas mass flow",
+    formula: String.raw`\begin{aligned}
+\text{heating / cooling:}\quad & Y \text{ constant, move along } T\\
+\text{dehumidification:}\quad & \text{condensate} = Y_\mathrm{in} - Y_\mathrm{sat}(T_\mathrm{surface})\\
+\text{adiabatic humidification:}\quad & \text{up a wet-bulb line, bounded below by } T_\mathrm{wb}\\
+\text{mixing:}\quad & Y_m = \frac{G_1 Y_1 + G_2 Y_2}{G_1 + G_2}, \quad G = \text{dry-gas mass flow}
+\end{aligned}`,
     where: [
-      { sym: "Y_in", means: "The humidity ratio of the gas ENTERING the "
+      { sym: "Y_\\mathrm{in}",
+        means: "The humidity ratio of the gas ENTERING the "
         + "operation.", unit: "kg vapour / kg dry gas" },
-      { sym: "T_surface", means: "The temperature of the COIL surface the gas "
+      { sym: "T_\\mathrm{surface}",
+        means: "The temperature of the COIL surface the gas "
         + "touches — not the gas temperature.  Condensation is set by how "
         + "cold the metal is, which is why a coil can dehumidify air that is "
         + "nowhere near saturated in the bulk.", unit: "°C" },
@@ -279,7 +298,7 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
       + "level and read in a city a kilometre up understates the humidity "
       + "ratio of every state on it, and a dryer or a coil sized from it is "
       + "sized for a gas that is not there.",
-    formula: "Y = (M_v/M_c) · p_v / (P − p_v)     →     Y rises as P falls, at fixed T and φ",
+    formula: String.raw`Y = \frac{M_v}{M_c} \cdot \frac{p_v}{P - p_v} \quad \longrightarrow \quad Y \text{ rises as } P \text{ falls, at fixed } T \text{ and } \varphi`,
     note: "The remedy is not a correction factor: P is a knob here, so redraw "
       + "the chart at the pressure you actually have.  The same applies, far "
       + "more strongly, to a pressurised or a vacuum dryer.  What does NOT "

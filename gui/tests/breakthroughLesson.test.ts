@@ -74,9 +74,9 @@ describe("the breakthrough lesson", () => {
     const s1 = BREAKTHROUGH_STEPS[0]!;
     //  The conservation equation and the LINEAR DRIVING FORCE beside it --
     //  the transport assumption, named where a reader meets the model.
-    expect(s1.formula).toContain("ρ_b ∂q_i/∂t");
-    expect(s1.formula).toContain("D_ax ∂²c_i/∂z²");
-    expect(s1.formula).toContain("∂q_i/∂t = k_i · (q*_i − q_i)");
+    expect(s1.formula).toContain(String.raw`\rho_b \frac{\partial q_i}{\partial t}`);
+    expect(s1.formula).toContain(String.raw`D_\mathrm{ax} \frac{\partial^2 c_i}{\partial z^2}`);
+    expect(s1.formula).toContain(String.raw`\frac{\partial q_i}{\partial t} &= k_i \left( q^*_i - q_i \right)`);
     expect(prose(s1.note!)).toContain("LINEAR DRIVING FORCE");
     expect(prose(s1.note!)).toContain("first-order upwind");
   });
@@ -84,16 +84,16 @@ describe("the breakthrough lesson", () => {
   it("defines the mass-transfer zone and why it crawls", () => {
     const s2 = BREAKTHROUGH_STEPS.find((s) => s.n === 2)!;
     expect(prose(s2.body)).toContain("MASS-TRANSFER ZONE");
-    expect(s2.formula).toContain("R_f  = ε + ρ_b · q*(c_in) / c_in");
-    expect(s2.formula).toContain("u_zone = u / R_f");
-    expect(s2.formula).toContain("t_st = (L / u) · R_f");
+    expect(s2.formula).toContain(String.raw`R_f &= \varepsilon + \rho_b \frac{q^*(c_\mathrm{in})}{c_\mathrm{in}}`);
+    expect(s2.formula).toContain(String.raw`u_\mathrm{zone} &= \frac{u}{R_f}`);
+    expect(s2.formula).toContain(String.raw`t_\mathrm{st} &= \frac{L}{u}\, R_f`);
   });
 
   it("says the S-curve is the zone passing the exit, not a new object", () => {
     const s3 = BREAKTHROUGH_STEPS.find((s) => s.n === 3)!;
     expect(prose(s3.body)).toContain("picture of the ZONE itself");
     expect(prose(s3.body)).toContain("steepness IS the zone");
-    expect(s3.formula).toContain("∫₀^∞ (1 − c_out/c_in) dt = t_st");
+    expect(s3.formula).toContain(String.raw`\int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \right) \mathrm{d}t = t_\mathrm{st}`);
   });
 });
 
@@ -106,7 +106,7 @@ describe("the design consequence — a switched bed is only partly used", () => 
     expect(prose(s4.body)).toContain("everything upstream of the zone is saturated");
     expect(prose(s4.body)).toContain("downstream is still clean");
     expect(prose(s4.body)).toContain("how WIDE the zone is");
-    expect(s4.formula).toContain("LUB = L · (1 − t_b / t_st)");
+    expect(s4.formula).toContain(String.raw`\mathrm{LUB} = L \left( 1 - \frac{t_b}{t_\mathrm{st}} \right)`);
   });
 
   it("says which way it goes: sharp usable, broad wasteful", () => {
@@ -165,8 +165,8 @@ describe("what sharpens or broadens the zone, and the cyclic reality", () => {
     //  Adsorbent::loading is the extended (competitive) Langmuir with a shared
     //  site denominator, and LangmuirIsotherm::affinity is van't Hoff.  A page
     //  naming a plain single-species Langmuir would understate the engine.
-    expect(s5.formula).toContain("q*_i = q_sat,i · b_i(T) · p_i / (1 + Σ_j b_j(T) · p_j)");
-    expect(s5.formula).toContain("b(T) = b(T_ref) · exp[ −(ΔH_ads/R)(1/T − 1/T_ref) ]");
+    expect(s5.formula).toContain(String.raw`q^*_i &= \frac{q_\mathrm{sat,i}\, b_i(T)\, p_i}{1 + \sum_j b_j(T)\, p_j}`);
+    expect(s5.formula).toContain(String.raw`b(T) &= b(T_\mathrm{ref}) \exp\!\left[ -\frac{\Delta H_\mathrm{ads}}{R} \left( \frac{1}{T} - \frac{1}{T_\mathrm{ref}} \right) \right]`);
   });
 
   it("gets the sign of the temperature effect right", () => {
@@ -320,8 +320,17 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC).toContain("c_out/c_in final: the late plateau");
   });
 
-  it("renders every step's formula in a bordered monospace box", () => {
-    expect(SRC).toContain('ff="monospace"');
+  it("renders every step's formula in a bordered box, as mathematics", () => {
+    //  THE EQUATIONS ARE SET AS MATHEMATICS, not as monospace text
+    //  (2026-09-22).  The shared renderer hands every formula to KaTeX
+    //  through methods/lessonTex.ts; the bordered block around it is the
+    //  same 3px left rule it always was.  `ff="monospace"` survives in
+    //  that file for the derivation numbering and for the SOURCE shown
+    //  when a formula does not parse -- neither of which is the equation,
+    //  so asserting it here would pin the wrong thing.
+    expect(readFileSync(
+      new URL("../src/ui/methods/lessonStep.tsx", import.meta.url), "utf8"))
+      .toContain('<Tex src={step.formula} mode="display" />');
     //  The bordered formula box and the step walk now live in ONE
     //  place (methods/lessonStep.tsx), so pinning them in THIS
     //  tool's source pinned a copy that no longer exists.  The

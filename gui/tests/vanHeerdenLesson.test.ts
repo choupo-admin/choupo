@@ -54,8 +54,8 @@ describe("the ignition / extinction lesson", () => {
     //  drew them without saying so would be presenting a parallel
     //  calculation as if it were the engine's own.
     const s1 = step(1);
-    expect(prose(s1.formula!)).toContain("phi(T) = H_out(T) − H_in − Q_ext(T) = 0");
-    expect(prose(s1.formula!)).toContain("phi(T) = R(T) − G(T)");
+    expect(prose(s1.formula!)).toContain(String.raw`\varphi(T) &= H_\mathrm{out}(T) - H_\mathrm{in} - Q_\mathrm{ext}(T) = 0`);
+    expect(prose(s1.formula!)).toContain(String.raw`\varphi(T) &= R(T) - G(T)`);
     expect(prose(s1.note!)).toContain("IDENTITY");
     expect(prose(s1.note!)).toContain("R − G reproduces phi exactly");
   });
@@ -69,7 +69,7 @@ describe("the ignition / extinction lesson", () => {
     const s2 = step(2);
     expect(prose(s2.body)).toContain("STRAIGHT LINE in T");
     expect(prose(s2.body)).toContain("cut a sigmoid once, twice or three times");
-    expect(prose(s2.formula!)).toContain("R(T) = F·c_p·(T − T_in) + UA·(T − T_coolant)");
+    expect(prose(s2.formula!)).toContain(String.raw`R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})`);
     expect(prose(s2.note!)).toContain("not straight by construction");
   });
 
@@ -77,8 +77,8 @@ describe("the ignition / extinction lesson", () => {
     //  The load-bearing sentence of the whole page: a steady state is stable
     //  when the removal line is steeper than the generation curve there.
     const s3 = step(3);
-    expect(prose(s3.formula!)).toContain("d(Q_rem)/dT > d(Q_gen)/dT");
-    expect(prose(s3.formula!)).toContain("dR/dT > dG/dT");
+    expect(prose(s3.formula!)).toContain(String.raw`\frac{\mathrm{d}Q_\mathrm{rem}}{\mathrm{d}T} &> \frac{\mathrm{d}Q_\mathrm{gen}}{\mathrm{d}T}`);
+    expect(prose(s3.formula!)).toContain(String.raw`\frac{\mathrm{d}R}{\mathrm{d}T} &> \frac{\mathrm{d}G}{\mathrm{d}T}`);
     expect(prose(s3.body)).toContain("REMOVAL LINE IS STEEPER");
     expect(prose(s3.note!)).toContain("MIDDLE one fails this test");
     //  And the distinction the criterion exists to draw.
@@ -91,7 +91,7 @@ describe("the ignition / extinction lesson", () => {
     //  becoming unstable, and the asymmetry is the safety lesson: the
     //  setting that ignites is not the setting that extinguishes.
     const s4 = step(4);
-    expect(prose(s4.formula!)).toContain("dG/dT = dR/dT");
+    expect(prose(s4.formula!)).toContain(String.raw`\frac{\mathrm{d}G}{\mathrm{d}T} = \frac{\mathrm{d}R}{\mathrm{d}T}`);
     expect(prose(s4.formula!)).toContain("the two roots merge");
     expect(prose(s4.body)).toContain("TANGENT");
     expect(prose(s4.note!)).toContain("HYSTERESIS");
@@ -105,7 +105,7 @@ describe("the ignition / extinction lesson", () => {
     //  line, UA and flow tilt it.
     const s5 = step(5);
     expect(prose(s5.formula!))
-      .toContain("R(T) = (F·c_p + UA)·T − (F·c_p·T_in + UA·T_coolant)");
+      .toContain(String.raw`R(T) &= (F c_p + \mathrm{UA})\, T - (F c_p T_\mathrm{in} + \mathrm{UA}\, T_\mathrm{coolant})`);
     expect(prose(s5.body)).toContain("Coolant temperature enters the INTERCEPT");
     expect(prose(s5.body)).toContain("UA and the total flow enter the SLOPE");
   });

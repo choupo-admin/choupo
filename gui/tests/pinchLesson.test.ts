@@ -58,7 +58,7 @@ describe("the lesson runs end to end", () => {
     const s1 = prose(step(1).body);
     expect(s1).toContain("MINIMUM hot utility");
     expect(s1).toContain("before a single exchanger has been drawn");
-    expect(step(1).formula).toContain("CP = Q / |T_target − T_supply|");
+    expect(step(1).formula).toContain(String.raw`\mathrm{CP} = \dfrac{Q}{\lvert T_\mathrm{target} - T_\mathrm{supply} \rvert}`);
   });
 
   it("says what a composite curve IS: every stream of one kind, merged", () => {
@@ -66,7 +66,7 @@ describe("the lesson runs end to end", () => {
     expect(prose(s2.body)).toContain("HOT COMPOSITE CURVE");
     expect(prose(s2.body)).toContain("COLD COMPOSITE");
     //  The merge rule itself, not just the name.
-    expect(s2.formula).toContain("CP_total = Σ CP_i");
+    expect(s2.formula).toContain(String.raw`\mathrm{CP}_\mathrm{total} &= \sum_i \mathrm{CP}_i`);
     //  And the horizontal freedom, which is what makes the slide meaningful.
     expect(prose(s2.note!)).toContain("slid horizontally");
   });
@@ -76,8 +76,8 @@ describe("the lesson runs end to end", () => {
     expect(prose(s3.body)).toContain("OVERLAP");
     expect(prose(s3.body)).toContain("hot utility");
     expect(prose(s3.body)).toContain("cold utility");
-    expect(s3.formula).toContain("Q_H,min = Σ ΔH_cold − Q_recovery");
-    expect(s3.formula).toContain("Q_C,min = Σ ΔH_hot  − Q_recovery");
+    expect(s3.formula).toContain(String.raw`Q_\mathrm{H,min} &= \sum \Delta H_\mathrm{cold} - Q_\mathrm{recovery}`);
+    expect(s3.formula).toContain(String.raw`Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}`);
   });
 
   it("makes ΔT_min a trade and not a physical constant", () => {
@@ -87,7 +87,7 @@ describe("the lesson runs end to end", () => {
     //  area.  Either half alone is the half-argument students carry away.
     expect(prose(s4.body)).toContain("more recovery, less utility");
     expect(prose(s4.body)).toContain("buys more surface");
-    expect(s4.formula).toContain("A = Q / (U · ΔT_lm)");
+    expect(s4.formula).toContain(String.raw`A &= \frac{Q}{U \cdot \Delta T_\mathrm{lm}}`);
     //  The pinch splits the plant, and that is why the rules below bite.
     expect(prose(s4.body)).toMatch(/net heat SINK[\s\S]*net heat SOURCE/);
   });
@@ -121,8 +121,8 @@ describe("THE THREE RULES, and the price of breaking each", () => {
     const b = prose(s5.body);
     expect(b).toContain("BOTH targets rise by Q");
     expect(b).toContain("paid for twice");
-    expect(s5.formula).toContain("Q_H = Q_H,min + Q");
-    expect(s5.formula).toContain("Q_C = Q_C,min + Q");
+    expect(s5.formula).toContain(String.raw`Q_H = Q_\mathrm{H,min} + Q`);
+    expect(s5.formula).toContain(String.raw`Q_C = Q_\mathrm{C,min} + Q`);
   });
 
   it("explains WHY, on both sides of the pinch, rather than asserting it", () => {
@@ -146,7 +146,7 @@ describe("the printed arithmetic follows from the printed definitions", () => {
     //  identity with no ΔT_min in it.  Recomputed here from the definitions
     //  themselves, so a typo in either line separates them.
     expect(step(3).formula)
-      .toContain("Q_H,min − Q_C,min = Σ ΔH_cold − Σ ΔH_hot");
+      .toContain(String.raw`Q_\mathrm{H,min} - Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{cold} - \sum \Delta H_\mathrm{hot}`);
     for (const [Hhot, Hcold, Qrec] of
       [[100, 60, 40], [250, 250, 175], [30, 500, 12]] as const) {
       const QH = Hcold - Qrec;
@@ -170,7 +170,7 @@ describe("the printed arithmetic follows from the printed definitions", () => {
 
   it("the shifted scale really does put the two curves ΔT_min apart", () => {
     expect(step(4).formula)
-      .toContain("T* = T_hot − ΔT_min/2 = T_cold + ΔT_min/2");
+      .toContain(String.raw`T^* &= T_\mathrm{hot} - \tfrac{1}{2}\Delta T_\mathrm{min} = T_\mathrm{cold} + \tfrac{1}{2}\Delta T_\mathrm{min}`);
     for (const [Tstar, dT] of [[350, 10], [400, 20], [300, 5]] as const) {
       const Thot = Tstar + dT / 2;
       const Tcold = Tstar - dT / 2;
@@ -184,7 +184,7 @@ describe("the printed arithmetic follows from the printed definitions", () => {
     expect(QCmin + Q - QCmin).toBeCloseTo(Q, 12);
     //  And the excess over target is the sum of the named terms.
     expect(step(5).formula)
-      .toContain("= cross-pinch transfer + heating below + cooling above");
+      .toContain(String.raw`= \text{cross-pinch transfer} + \text{heating below} + \text{cooling above}`);
   });
 });
 

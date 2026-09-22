@@ -54,22 +54,32 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "so the answer is not a point but a HISTORY, and the number a designer "
       + "acts on is a time.  What the engine integrates is a concentration "
       + "field moving down a bed while the solid underneath it loads.",
-    formula: "ε ∂c_i/∂t + ρ_b ∂q_i/∂t = −∂(u c_i)/∂z + D_ax ∂²c_i/∂z²\n"
-      + "∂q_i/∂t = k_i · (q*_i − q_i)",
+    formula: String.raw`\begin{aligned}
+\varepsilon \frac{\partial c_i}{\partial t} + \rho_b \frac{\partial q_i}{\partial t}
+ &= -\frac{\partial (u\, c_i)}{\partial z} + D_\mathrm{ax} \frac{\partial^2 c_i}{\partial z^2}\\[4pt]
+\frac{\partial q_i}{\partial t} &= k_i \left( q^*_i - q_i \right)
+\end{aligned}`,
     where: [
+      { sym: "t", means: "time since the feed was admitted to a clean bed",
+        unit: "s" },
+      { sym: "q",
+        means: "the ADSORBED loading, per mass of adsorbent; q_i is component i's "
+        + "share of it",
+        unit: "mol/kg" },
       { sym: "c_i", means: "concentration of species i in the GAS moving "
         + "through the bed", unit: "mol/m³" },
       { sym: "q_i", means: "the LOADING — moles of i held on the solid per "
         + "kilogram of adsorbent.  Per kilogram of the thing that stays "
         + "behind, which is why the bed's inventory is a simple sum",
         unit: "mol/kg" },
-      { sym: "q*_i", means: "the loading the solid WOULD hold if it were at "
+      { sym: "q^*_i", means: "the loading the solid WOULD hold if it were at "
         + "equilibrium with the gas beside it — the star is equilibrium, not "
         + "an operating value", unit: "mol/kg" },
-      { sym: "ε", means: "the VOID FRACTION of the bed — the share of its "
+      { sym: "\\varepsilon",
+        means: "the VOID FRACTION of the bed — the share of its "
         + "volume that is gas, between the particles.  The engine's own line "
         + "prints ρ_p = ρ_b/(1−ε), which is what fixes both meanings" },
-      { sym: "ρ_b", means: "the BULK density of the packing — kilograms of "
+      { sym: "\\rho_b", means: "the BULK density of the packing — kilograms of "
         + "adsorbent per cubic metre of BED, voids included (not per cubic "
         + "metre of solid, which is ρ_p)", unit: "kg/m³" },
       { sym: "u", means: "the SUPERFICIAL velocity — volumetric flow divided "
@@ -77,7 +87,8 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
         + "there.  The gas between the particles actually moves faster, at "
         + "u/ε", unit: "m/s" },
       { sym: "z", means: "distance along the bed from the inlet", unit: "m" },
-      { sym: "D_ax", means: "the AXIAL DISPERSION coefficient — how much the "
+      { sym: "D_\\mathrm{ax}",
+        means: "the AXIAL DISPERSION coefficient — how much the "
         + "front smears by mixing along the flow", unit: "m²/s" },
       { sym: "k_i", means: "the LINEAR DRIVING FORCE coefficient — one "
         + "declared rate constant standing for the pore, film and crystal "
@@ -101,19 +112,23 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "because nearly every mole that enters leaves the gas and sits on the "
       + "solid.  The ratio of the two speeds is the retention factor, and it "
       + "is set by the feed concentration and the isotherm together.",
-    formula: "R_f  = ε + ρ_b · q*(c_in) / c_in\n"
-      + "u_zone = u / R_f\n"
-      + "t_st = (L / u) · R_f",
+    formula: String.raw`\begin{aligned}
+R_f &= \varepsilon + \rho_b \frac{q^*(c_\mathrm{in})}{c_\mathrm{in}}\\[4pt]
+u_\mathrm{zone} &= \frac{u}{R_f}\\[4pt]
+t_\mathrm{st} &= \frac{L}{u}\, R_f
+\end{aligned}`,
     where: [
       { sym: "R_f", means: "the RETENTION FACTOR — the engine's own word, "
         + "and its KPI key (`retention_factor_<i>`) — how many times slower "
         + "the concentration front travels than the gas does, because most of "
         + "each molecule's time is spent on the solid" },
-      { sym: "c_in", means: "the feed concentration entering the bed",
+      { sym: "c_\\mathrm{in}", means: "the feed concentration entering the bed",
         unit: "mol/m³" },
-      { sym: "u_zone", means: "the speed of the mass-transfer zone through "
+      { sym: "u_\\mathrm{zone}",
+        means: "the speed of the mass-transfer zone through "
         + "the bed — the front, not the gas", unit: "m/s" },
-      { sym: "t_st", means: "the STOICHIOMETRIC time — when the front would "
+      { sym: "t_\\mathrm{st}",
+        means: "the STOICHIOMETRIC time — when the front would "
         + "reach the exit if it were infinitely sharp", unit: "s" },
       { sym: "L", means: "the length of the bed", unit: "m" },
     ],
@@ -139,9 +154,10 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "one fixed place: its steepness IS the zone's width, and a bed with a "
       + "zone of zero width would give the square wave the plot draws at t_st "
       + "instead.",
-    formula: "∫₀^∞ (1 − c_out/c_in) dt = t_st",
+    formula: String.raw`\int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \right) \mathrm{d}t = t_\mathrm{st}`,
     where: [
-      { sym: "c_out", means: "concentration leaving the bed — the curve this "
+      { sym: "c_\\mathrm{out}",
+        means: "concentration leaving the bed — the curve this "
         + "whole page is about", unit: "mol/m³" },
     ],
     note: "That identity is exact for the conservative scheme, and the engine "
@@ -163,9 +179,10 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "between: the capacity you bought and did not use is set entirely by "
       + "how WIDE the zone is.  The usual bookkeeping turns that width into a "
       + "length of bed thrown away at every switch.",
-    formula: "LUB = L · (1 − t_b / t_st)        (length of unused bed)",
+    formula: String.raw`\mathrm{LUB} = L \left( 1 - \frac{t_b}{t_\mathrm{st}} \right) \qquad \text{(length of unused bed)}`,
     where: [
-      { sym: "LUB", means: "LENGTH OF UNUSED BED — the part still clean when "
+      { sym: "\\mathrm{LUB}",
+        means: "LENGTH OF UNUSED BED — the part still clean when "
         + "you switched, which is the price of a front with width",
         unit: "m" },
       { sym: "t_b", means: "the BREAKTHROUGH time — when the outlet first "
@@ -199,10 +216,17 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "up with the gas going past it, and axial dispersion smears the front "
       + "directly.  Slow uptake or a low Péclet number widens the zone, and "
       + "the wasted length of step 4 grows with it.",
-    formula: "q*_i = q_sat,i · b_i(T) · p_i / (1 + Σ_j b_j(T) · p_j)\n"
-      + "b(T) = b(T_ref) · exp[ −(ΔH_ads/R)(1/T − 1/T_ref) ]",
+    formula: String.raw`\begin{aligned}
+q^*_i &= \frac{q_\mathrm{sat,i}\, b_i(T)\, p_i}{1 + \sum_j b_j(T)\, p_j}\\[4pt]
+b(T) &= b(T_\mathrm{ref}) \exp\!\left[ -\frac{\Delta H_\mathrm{ads}}{R} \left( \frac{1}{T} - \frac{1}{T_\mathrm{ref}} \right) \right]
+\end{aligned}`,
     where: [
-      { sym: "q_sat,i", means: "the saturation loading of i — the monolayer "
+      { sym: "b",
+        means: "the Langmuir AFFINITY, the same quantity as b_i written without its "
+        + "component index when the temperature law is the subject",
+        unit: "1/Pa" },
+      { sym: "q_\\mathrm{sat,i}",
+        means: "the saturation loading of i — the monolayer "
         + "the Langmuir picture allows", unit: "mol/kg" },
       { sym: "b_i", means: "the AFFINITY of i for the surface, which falls as "
         + "the bed warms.  Its pressure basis is DECLARED per record "
@@ -212,17 +236,19 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
         + "unit that record's `pressureBasis` declares — bar for this one, "
         + "so the witness's own check reads 9 × 0.15",
         unit: "bar (declared)" },
-      { sym: "b_j, p_j", means: "the same two quantities for EVERY OTHER "
+      { sym: "b_j,\\ p_j", means: "the same two quantities for EVERY OTHER "
         + "adsorbing species — the subscript changes, the meaning does not" },
       { sym: "T", means: "the temperature of the bed at that point",
         unit: "K" },
-      { sym: "Σ_j", means: "a sum over EVERY adsorbing species, including "
+      { sym: "\\sum_j", means: "a sum over EVERY adsorbing species, including "
         + "i itself.  The shared denominator is the competition: what one "
         + "species takes, another cannot have" },
-      { sym: "ΔH_ads", means: "the heat of adsorption, NEGATIVE because "
+      { sym: "\\Delta H_\\mathrm{ads}",
+        means: "the heat of adsorption, NEGATIVE because "
         + "adsorption releases heat — which is why a warm bed holds less and "
         + "why a hot purge regenerates one", unit: "J/mol" },
-      { sym: "T_ref", means: "the temperature at which the affinity was "
+      { sym: "T_\\mathrm{ref}",
+        means: "the temperature at which the affinity was "
         + "measured, the anchor the van't Hoff term moves away from",
         unit: "K" },
       { sym: "R", means: "the gas constant — NOT the reflux ratio a "

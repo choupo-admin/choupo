@@ -81,28 +81,6 @@ const PAGES: [string, readonly LessonStep[], readonly LessonLimit[]][] = [
   ["active-set QP", QP_STEPS, QP_LIMITS],
 ];
 
-/** SHORT ENGLISH WORDS THAT SURVIVE THE SYMBOL FILTER, and they are the
- *  corpus gate's own list.
- *
- *  `bin/curate/check_lesson_symbols.py` owns this rule for every lesson in
- *  the tree; the arm below is the same claim for these three pages, so a
- *  missing gloss fails beside the author instead of only in the suite.  The
- *  list is therefore a MIRROR of that gate's WORDS, deliberately rather than
- *  a second judgement: an arm that disagreed with the gate about what counts
- *  as a word would pass here and fail there, which is worse than not having
- *  it.  The three entries after the gap are this shelf's own notation. */
-const WORDS = new Set([
-  "and", "or", "the", "of", "to", "in", "at", "is", "a", "an", "for", "by",
-  "with", "per", "from", "on", "if", "then", "exp", "ln", "log", "min",
-  "max", "sum", "both", "one", "two", "out", "line", "same", "that",
-  "there", "so", "as", "be", "are", "not", "only", "when", "where", "d",
-  "no", "all", "any", "its", "it", "we", "up", "low", "high", "s", "kg",
-  "kW", "mol", "kJ", "K", "Pa", "bar", "m", "h", "eq", "vs",
-  //  this shelf's own: the iteration counter, the running point, and the
-  //  three single letters the QP is written in.
-  "k", "x", "p", "q", "r", "u", "y", "i", "t", "f", "n", "e", "g", "b", "c",
-  "G", "B", "C", "I", "J", "W", "sin", "cos", "10", "dt", "dx",
-]);
 
 const allText = (s: LessonStep): string =>
   [s.title, s.body, s.formula ?? "", s.note ?? "",
@@ -142,21 +120,21 @@ describe("the three lessons' shape", () => {
       expect(new Set(limits.map((l) => l.id)).size).toBe(limits.length);
     });
 
-    it(`${name}: glosses every symbol any formula or derivation uses`, () => {
-      const glossed = new Set<string>();
+    it(`${name}: gives every equation a \`where\` list to be checked against`, () => {
+      //  THE SYMBOL-BY-SYMBOL RULE HAS ONE HOME, and it is
+      //  bin/curate/check_lesson_symbols.py.  This arm used to reimplement
+      //  it against the monospace formula text, with its own stop-list of
+      //  English words and its own guess that a token longer than two
+      //  letters was prose.  The equations are LaTeX since 2026-09-22 and
+      //  the notation now declares what each token is, so the gate reads
+      //  them exactly; a weaker second parser here would be a second home
+      //  for the rule.  The structural half stays, because this file can
+      //  hold it honestly.
       for (const s of steps) {
-        for (const g of s.where ?? []) {
-          glossed.add(g.sym);
-          for (const p of g.sym.split(/\s*\/\s*|,\s+/)) glossed.add(p.trim());
-        }
-        const text = [s.formula ?? "",
-          ...(s.derivation ?? []).map((d) => d.eq ?? "")].join("\n");
-        for (const tok of text.match(/[A-Za-zα-ωΑ-Ω][A-Za-z0-9_α-ωΑ-Ω]*/g) ?? []) {
-          if (!/[_α-ωΑ-Ω]/.test(tok) && tok.length > 2) continue;   // prose
-          if (WORDS.has(tok) || WORDS.has(tok.toLowerCase())) continue;
-          expect(glossed, `${name}: "${tok}" appears in a formula and is `
-            + "glossed nowhere").toContain(tok);
-        }
+        if (!s.formula && !(s.derivation ?? []).some((d) => d.eq)) continue;
+        expect(s.where?.length ?? 0,
+          `${name} step ${s.n} has an equation and no gloss`)
+          .toBeGreaterThan(0);
       }
     });
   }

@@ -84,7 +84,7 @@ describe("the one idea the page exists for: the driving force is not a ΔT", () 
   it("says the heat leaves by EVAPORATION, and prints the enthalpy potential", () => {
     const s1 = step(1);
     expect(prose(s1.body)).toContain("EVAPORATES");
-    expect(s1.formula).toContain("h*(T_water) − h_air");
+    expect(s1.formula).toContain(String.raw`h^*(T_\mathrm{water}) - h_\mathrm{air}`);
     //  The unit matters: the potential is per kg of DRY air, which is why the
     //  diagram's y-axis is not a temperature.
     expect(s1.formula).toContain("kJ per kg dry air");
@@ -102,7 +102,7 @@ describe("the wet bulb is the floor, and the approach is the price", () => {
   it("says WET bulb, and says the dry bulb is not the floor", () => {
     const s2 = step(2);
     expect(prose(s2.body)).toContain("WET-BULB temperature");
-    expect(s2.formula).toContain("approach = T_water,out − T_wb,in");
+    expect(s2.formula).toContain(String.raw`\text{approach} = T_\mathrm{water,out} - T_\mathrm{wb,in}`);
     expect(prose(s2.note!)).toContain("dry bulb is not the floor");
   });
 
@@ -132,10 +132,10 @@ describe("the wet bulb is the floor, and the approach is the price", () => {
 describe("range belongs to the process, not to the tower", () => {
   it("prints the sensible-heat balance that fixes it", () => {
     const s3 = step(3);
-    expect(s3.formula).toContain("Q = L · cp_L · range");
-    expect(s3.formula).toContain("range = T_water,in − T_water,out");
+    expect(s3.formula).toContain(String.raw`Q &= L\, \mathrm{cp}_L\, \text{range}`);
+    expect(s3.formula).toContain(String.raw`\text{range} &= T_\mathrm{water,in} - T_\mathrm{water,out}`);
     //  The operating line's slope is where L/G enters the diagram.
-    expect(s3.formula).toContain("(L·cp_L / G)");
+    expect(s3.formula).toContain(String.raw`\frac{L\, \mathrm{cp}_L}{G}`);
   });
 
   it("names the engine's two spec modes and the either/or between them", () => {
@@ -156,9 +156,9 @@ describe("the Merkel integral, printed as the engine evaluates it", () => {
     //  printing ∫dT/(h* − h) would be quoting a different quantity from the
     //  one the KPI reports.
     const s4 = step(4);
-    expect(s4.formula).toContain("Me = KaV/L");
-    expect(s4.formula).toContain("cp_L dT / (h*(T) − h(T))");
-    expect(s4.formula).toContain("[T_out → T_in]");
+    expect(s4.formula).toContain(String.raw`\mathrm{Me} = \frac{KaV}{L}`);
+    expect(s4.formula).toContain(String.raw`\frac{\mathrm{cp}_L\, \mathrm{d}T}{h^*(T) - h(T)}`);
+    expect(s4.formula).toContain(String.raw`\int_{T_\mathrm{out}}^{T_\mathrm{in}}`);
     expect(ENGINE_H).toContain("INT_{T_out}^{T_in}  cpL dT / (h*(T) - h(T))");
   });
 

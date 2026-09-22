@@ -28,6 +28,11 @@ License
 
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+//  KaTeX draws the EduTool equations (ui/methods/lessonTex.ts).  Its
+//  stylesheet references its own woff2/woff/ttf faces by relative path, so
+//  Vite emits them into the build's assets and the app never reaches a CDN
+//  for a font -- it has to work with no network at all.
+import "katex/dist/katex.min.css";
 // Our own variable overrides -- MUST come after Mantine's so they win.
 import "./theme-overrides.css";
 

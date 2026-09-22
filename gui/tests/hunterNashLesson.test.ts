@@ -42,7 +42,7 @@ describe("the extraction lesson", () => {
   it("keeps the lever rule as the thing it already is", () => {
     const s2 = HUNTER_NASH_STEPS.find((s) => s.n === 2)!;
     expect(s2.formula).toContain("M = F + S");
-    expect(s2.formula).toContain("FM / MS = S / F");
+    expect(s2.formula).toContain(String.raw`\frac{\overline{FM}}{\overline{MS}} = \frac{S}{F}`);
     expect(prose(s2.body)).toContain("lever rule");
   });
 
@@ -58,7 +58,7 @@ describe("the extraction lesson", () => {
     //  a page that printed the formula without saying why that is correct
     //  would leave the alarm in place.
     const s4 = HUNTER_NASH_STEPS.find((s) => s.n === 4)!;
-    expect(s4.formula).toContain("Δ = F − E₁ = R_N − S");
+    expect(s4.formula).toContain(String.raw`\Delta = F - E_1 = R_N - S`);
     expect(prose(s4.note!)).toContain("OUTSIDE THE TRIANGLE");
     expect(prose(s4.note!)).toContain("DIFFERENCE of flows, not a mixture");
   });

@@ -47,7 +47,7 @@ describe("the reactor-sizing lesson", () => {
     for (const s of LEVENSPIEL_STEPS) {
       expect(s.formula, `step ${s.n} has no formula`).toBeTruthy();
       expect(s.formula!, `step ${s.n} names something else`)
-        .toContain("(−r_A)");
+        .toContain("-r_A");
     }
   });
 
@@ -56,8 +56,8 @@ describe("the reactor-sizing lesson", () => {
     expect(prose(s1.body)).toContain("AREA IS VOLUME");
     //  Both design equations, printed side by side — the integral and the
     //  product — because the whole page is the difference between them.
-    expect(prose(s1.formula!)).toContain("V = F_A0 ∫₀^X dX/(−r_A)");
-    expect(prose(s1.formula!)).toContain("V = F_A0 · X/(−r_A)|exit");
+    expect(prose(s1.formula!)).toContain(String.raw`V = F_{A0} \displaystyle\int_0^X \frac{\mathrm{d}X}{-r_A}`);
+    expect(prose(s1.formula!)).toContain(String.raw`V = F_{A0}\, \dfrac{X}{\left.(-r_A)\right|_\mathrm{exit}}`);
     //  And the condition the construction needs to mean anything at all.
     expect(prose(s1.note!)).toContain("function of X alone");
     expect(prose(s1.note!)).toContain("isothermal");
@@ -70,7 +70,7 @@ describe("the reactor-sizing lesson", () => {
     expect(prose(s2.body)).toContain("OUTLET composition everywhere");
     expect(prose(s2.body)).toContain("converted at the exit rate");
     expect(prose(s2.formula!))
-      .toContain("V_CSTR = F_A0 · X_exit / (−r_A)|exit");
+      .toContain(String.raw`V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{exit}}`);
     expect(prose(s2.note!)).toContain("Nothing was approximated");
     expect(prose(s2.note!)).toContain("exact mole balance of an ideal CSTR");
   });
@@ -79,7 +79,7 @@ describe("the reactor-sizing lesson", () => {
     const s3 = step(3);
     expect(prose(s3.body)).toContain("1/(−r_A) RISES with X");
     expect(prose(s3.body)).toContain("contains the entire area");
-    expect(prose(s3.formula!)).toContain("V_PFR ≤ V_CSTR");
+    expect(prose(s3.formula!)).toContain(String.raw`V_\mathrm{PFR} &\le V_\mathrm{CSTR}`);
     //  Tanks in series and the PFR limit fall straight out of the same
     //  picture; a page that stopped at one tank would leave that unexplained.
     expect(prose(s3.note!)).toContain("staircase of rectangles");
@@ -98,7 +98,7 @@ describe("the reactor-sizing lesson", () => {
     //  And the consequence at X = 0 with no uncatalysed path, which is why a
     //  tank (or a recycle) is not merely cheaper but necessary.
     expect(prose(s4.body)).toContain("a plug-flow reactor cannot start");
-    expect(prose(s4.formula!)).toContain("1/(−r_A) unbounded there");
+    expect(prose(s4.formula!)).toContain(String.raw`\frac{1}{-r_A} \text{ unbounded there}`);
   });
 
   it("says the falling case is DESCRIBED, not demonstrated below", () => {
@@ -118,7 +118,7 @@ describe("the reactor-sizing lesson", () => {
     expect(prose(s5.body)).toContain("followed by a PFR that takes the rest");
     //  The optimum is where the curve is flat — a derivative, not a rule of
     //  thumb, and the note does the derivative rather than asserting it.
-    expect(prose(s5.formula!)).toContain("X* at the curve's MINIMUM");
+    expect(prose(s5.formula!)).toContain(String.raw`X^* \text{ at the curve's MINIMUM}`);
     expect(prose(s5.note!)).toContain("the two ordinate terms cancel");
     expect(prose(s5.note!)).toContain("where the curve is FLAT");
     //  The degenerate case, so the rule does not read as new physics for the

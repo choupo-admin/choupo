@@ -101,8 +101,10 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "makes the page worth scrolling is that the classical results you "
       + "were taught for this rig are all integrals of that trajectory taken "
       + "with one of its quantities held still.",
-    formula: "V(t)    c_i(t)    J_w(t)    R_i(t)\n"
-      + "one run  ->  one trajectory, never one design point",
+    formula: String.raw`\begin{aligned}
+& V(t) \qquad c_i(t) \qquad J_w(t) \qquad R_i(t)\\
+& \text{one run } \longrightarrow \text{ one trajectory, never one design point}
+\end{aligned}`,
     where: [
       { sym: "V", means: "the volume of liquid still in the vessel -- the "
         + "RETENTATE, what is left behind the membrane", unit: "m³" },
@@ -143,16 +145,19 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "either zero or the permeate rate (BatchDiafilter.cpp:389).  A word "
       + "the engine does not know is refused by name rather than defaulted "
       + "(BatchDiafilter.cpp:202-210).",
-    formula: "solutes   dn_i/dt = -J_s,i A  +  Q_d c_d,i\n"
-      + "solvent   the permeate's mass, closed on the SAME solution density ρ\n"
-      + "          the concentrations were built from (BatchDiafilter.cpp:439-446)\n"
-      + "\n"
-      + "concentration     Q_d = 0       the vessel shrinks\n"
-      + "constantVolume    Q_d = Q_p     the volume is held",
+    formula: String.raw`\begin{array}{ll}
+\text{solutes} & \dfrac{\mathrm{d}n_i}{\mathrm{d}t} = -J_\mathrm{s,i}\, A + Q_d\, c_\mathrm{d,i}\\[8pt]
+\text{solvent} & \text{the permeate's mass, closed on the SAME solution density } \rho\\
+& \text{the concentrations were built from (BatchDiafilter.cpp:439-446)}\\[8pt]
+\text{concentration} & Q_d = 0 \qquad \text{the vessel shrinks}\\
+\text{constantVolume} & Q_d = Q_p \qquad \text{the volume is held}
+\end{array}`,
     where: [
-      { sym: "dn_i/dt", means: "the rate of change of the moles of solute i "
+      { sym: "\\mathrm{d}n_i/\\mathrm{d}t",
+        means: "the rate of change of the moles of solute i "
         + "held in the vessel", unit: "kmol/s" },
-      { sym: "J_s,i", means: "the flux of solute i through the membrane, "
+      { sym: "J_\\mathrm{s,i}",
+        means: "the flux of solute i through the membrane, "
         + "which solution-diffusion writes as B_s,i (c_m,i − c_p,i) "
         + "(SolutionDiffusion.cpp:153)", unit: "kmol/(m²·s)" },
       { sym: "A", means: "the membrane area the case declares "
@@ -162,18 +167,20 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
         unit: "m³/s" },
       { sym: "Q_p", means: "the PERMEATE rate, A J_w -- what leaves through "
         + "the membrane", unit: "m³/s" },
-      { sym: "c_d,i", means: "the concentration of solute i in the "
+      { sym: "c_\\mathrm{d,i}", means: "the concentration of solute i in the "
         + "diafiltrate.  A clean wash carries none, which is the only case "
         + "this unit supports", unit: "kmol/m³" },
-      { sym: "ρ", means: "the solution mass density every concentration in "
+      { sym: "\\rho", means: "the solution mass density every concentration in "
         + "the vessel is closed on.  The case declares it; when it does not, "
         + "the engine takes 1000 kg/m³ and ANNOUNCES that it did "
         + "(BatchDiafilter.cpp:140-158)", unit: "kg/m³" },
-      { sym: "B_s,i", means: "the membrane's solute permeability for i, read "
+      { sym: "B_\\mathrm{s,i}",
+        means: "the membrane's solute permeability for i, read "
         + "from the membrane record", unit: "m/s" },
-      { sym: "c_m,i", means: "the concentration of i at the membrane WALL -- "
+      { sym: "c_\\mathrm{m,i}",
+        means: "the concentration of i at the membrane WALL -- "
         + "step 5", unit: "kmol/m³" },
-      { sym: "c_p,i", means: "the concentration of i in the permeate",
+      { sym: "c_\\mathrm{p,i}", means: "the concentration of i in the permeate",
         unit: "kmol/m³" },
     ],
     note: "WHY THE SOLVENT LINE IS WRITTEN IN WORDS ABOVE AND NOT AS AN "
@@ -200,10 +207,13 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "publishes each of them, and publishes the diavolume count ONLY in "
       + "constant-volume mode, because outside it the number would be "
       + "counting a wash that is not happening (BatchDiafilter.H:262-263).",
-    formula: "VCF = V_0 / V                    the concentration clock\n"
-      + "N   = ∫ Q_d dt / V_0             the wash clock",
+    formula: String.raw`\begin{aligned}
+\mathrm{VCF} &= \frac{V_0}{V} &\qquad& \text{the concentration clock}\\[4pt]
+N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
+\end{aligned}`,
     where: [
-      { sym: "VCF", means: "the VOLUME CONCENTRATION FACTOR, how many times "
+      { sym: "\\mathrm{VCF}",
+        means: "the VOLUME CONCENTRATION FACTOR, how many times "
         + "smaller the vessel is than its charge.  VCF = 1 at the start; the "
         + "engine publishes it as `concentrationFactor` "
         + "(BatchDiafilter.cpp:580)" },
@@ -216,7 +226,8 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
         + "and the trajectory cannot disagree (BatchDiafilter.H:255-263)" },
       { sym: "Q_d", means: "the diafiltrate rate of step 2, equal to the "
         + "permeate rate in constant-volume mode", unit: "m³/s" },
-      { sym: "dt", means: "the element of time the diafiltrate flow is "
+      { sym: "\\mathrm{d}t",
+        means: "the element of time the diafiltrate flow is "
         + "integrated over", unit: "s" },
     ],
     note: "THE PAGE PUTS THE RUN'S OWN CLOCK ON THE AXIS, so flipping the "
@@ -247,32 +258,38 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       { step: "Write the solute balance.  By the DEFINITION of the observed "
           + "rejection the permeate carries c_p = (1 − R) c, so the solute "
           + "leaves in proportion to what is in the vessel.",
-        eq: "dn/dt = -Q_p c_p = -Q_p (1 − R) c" },
+        eq: String.raw`\frac{\mathrm{d}n}{\mathrm{d}t} = -Q_p c_p = -Q_p (1 - R)\, c`},
       { step: "Write the volume balance.  This is the only line that knows "
           + "which mode you are running.",
-        eq: "dV/dt = Q_d − Q_p" },
+        eq: String.raw`\frac{\mathrm{d}V}{\mathrm{d}t} = Q_d - Q_p`},
       { step: "CONSTANT VOLUME: Q_d = Q_p, so V never moves and c = n/V.  "
           + "Divide through and the natural variable is the wash clock.",
-        eq: "dn/n = −(1 − R) Q_p dt / V = −(1 − R) dN\n"
-          + "n/n_0 = exp(−(1 − R) N)" },
+        eq: String.raw`\begin{aligned}
+\frac{\mathrm{d}n}{n} &= -(1 - R)\, \frac{Q_p\, \mathrm{d}t}{V} = -(1 - R)\, \mathrm{d}N\\[4pt]
+\frac{n}{n_0} &= \exp(-(1 - R) N)
+\end{aligned}`},
       { step: "CONCENTRATION: Q_d = 0, so dV/dt = −Q_p and the volume is the "
           + "clock.  Divide the two balances and time cancels entirely -- "
           + "which is why the answer holds whatever the flux does.",
-        eq: "dn/n = (1 − R) dV/V\n"
-          + "n/n_0 = (V/V_0)^(1 − R) = VCF^−(1 − R)" },
+        eq: String.raw`\begin{aligned}
+\frac{\mathrm{d}n}{n} &= (1 - R)\, \frac{\mathrm{d}V}{V}\\[4pt]
+\frac{n}{n_0} &= \left( \frac{V}{V_0} \right)^{1 - R} = \mathrm{VCF}^{-(1 - R)}
+\end{aligned}`},
       { step: "The concentration follows from the retained moles and the "
           + "volume they now sit in.",
-        eq: "c/c_0 = (n/n_0)(V_0/V) = VCF^R" },
+        eq: String.raw`\frac{c}{c_0} = \frac{n}{n_0} \cdot \frac{V_0}{V} = \mathrm{VCF}^{R}`},
       { step: "A concentration and then a wash are two retained fractions "
           + "multiplied, so their exponents ADD -- concentrating by VCF costs "
           + "exactly what washing ln(VCF) diavolumes costs.",
-        eq: "n/n_0 = exp((R − 1)(ln VCF + N))" },
+        eq: String.raw`\frac{n}{n_0} = \exp\!\left( (R - 1)(\ln \mathrm{VCF} + N) \right)`},
       { step: "EVERY LINE ABOVE PULLED R OUT OF THE INTEGRAL.  That is the "
           + "whole of what the rest of this page is about." },
     ],
-    formula: "constant volume    n/n_0 = exp(−(1 − R) N)\n"
-      + "concentration      n/n_0 = VCF^−(1 − R)        c/c_0 = VCF^R\n"
-      + "both in sequence   loss  = 1 − exp((R − 1)(ln VCF + N))",
+    formula: String.raw`\begin{array}{lll}
+\text{constant volume} & n/n_0 = \exp(-(1 - R) N)\\
+\text{concentration} & n/n_0 = \mathrm{VCF}^{-(1 - R)} & c/c_0 = \mathrm{VCF}^{R}\\
+\text{both in sequence} & \mathrm{loss} = 1 - \exp\!\left( (R - 1)(\ln \mathrm{VCF} + N) \right)
+\end{array}`,
     where: [
       { sym: "n", means: "moles of the solute still in the vessel",
         unit: "kmol" },
@@ -286,15 +303,19 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       { sym: "R", means: "the rejection, HELD CONSTANT -- the assumption "
         + "every line here spends" },
       { sym: "N", means: "the diavolumes of step 3" },
-      { sym: "dN", means: "an element of the wash clock, Q_p dt / V" },
-      { sym: "VCF", means: "the volume concentration factor of step 3" },
+      { sym: "\\mathrm{d}N",
+        means: "an element of the wash clock, Q_p dt / V" },
+      { sym: "\\mathrm{VCF}",
+        means: "the volume concentration factor of step 3" },
       { sym: "V", means: "the vessel volume", unit: "m³" },
       { sym: "V_0", means: "the volume of the initial charge", unit: "m³" },
-      { sym: "dV/dt", means: "the rate of change of that volume",
+      { sym: "\\mathrm{d}V/\\mathrm{d}t",
+        means: "the rate of change of that volume",
         unit: "m³/s" },
       { sym: "Q_p", means: "the permeate rate", unit: "m³/s" },
       { sym: "Q_d", means: "the diafiltrate rate", unit: "m³/s" },
-      { sym: "loss", means: "the fraction of the solute NOT left in the "
+      { sym: "\\mathrm{loss}",
+        means: "the fraction of the solute NOT left in the "
         + "vessel at the end of a concentration followed by a wash" },
     ],
     note: "READ THE TWO EXTREMES AND THE FORMULAE STOP BEING SYMBOLS.  At "
@@ -324,13 +345,22 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "changes, so the flux changes, so the wall changes, so the permeate "
       + "changes -- and the rejection you would MEASURE moves although the "
       + "membrane has not changed at all.",
-    formula: "R_obs = 1 − c_p / c_b          measured against the BULK\n"
-      + "c_m  >  c_b                    the wall is richer than the bulk\n"
-      + "\n"
-      + "washoutActual = n/n_0 from the run\n"
-      + "washoutIdeal  = exp(−(1 − R_0) N),   R_0 = R_obs at t = 0",
+    formula: String.raw`\begin{array}{ll}
+R_\mathrm{obs} = 1 - \dfrac{c_p}{c_b} & \text{measured against the BULK}\\[8pt]
+c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
+\mathrm{washoutActual} = n/n_0 \text{ from the run}\\
+\mathrm{washoutIdeal} = \exp(-(1 - R_0) N), & R_0 = R_\mathrm{obs} \text{ at } t = 0
+\end{array}`,
     where: [
-      { sym: "R_obs", means: "the OBSERVED rejection the run publishes at "
+      { sym: "\\mathrm{washoutActual}",
+        means: "the solute fraction REMAINING at the end of this run, read off the "
+        + "integrated inventory" },
+      { sym: "\\mathrm{washoutIdeal}",
+        means: "what the constant-rejection law predicts for the same wash, "
+        + "evaluated from THIS run's own initial rejection.  The gap between "
+        + "the two is the lesson" },
+      { sym: "R_\\mathrm{obs}",
+        means: "the OBSERVED rejection the run publishes at "
         + "every instant as `R_obs_<solute>` (BatchDiafilter.cpp:566-569)" },
       { sym: "c_b", means: "the solute's concentration in the well-mixed "
         + "BULK of the vessel, published as `c_b_<solute>`",
@@ -381,12 +411,17 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "neither law is modified (BatchDiafilter.cpp:340-357).  The "
       + "resistance grows with the volume filtered per unit area, by one of "
       + "Hermia's blocking laws.",
-    formula: "1 / A_eff = 1 / A_w + r_f(v),      v = V_permeated / A\n"
-      + "\n"
-      + "cake           r_f = k v                  a deposited layer\n"
-      + "intermediate   1 / A_eff = e^(k v) / A_w  pores being covered",
+    formula: String.raw`\begin{array}{ll}
+\dfrac{1}{A_\mathrm{eff}} = \dfrac{1}{A_w} + r_f(v), & v = \dfrac{V_\mathrm{permeated}}{A}\\[10pt]
+\text{cake} \qquad r_f = k v & \text{a deposited layer}\\[4pt]
+\text{intermediate} \qquad \dfrac{1}{A_\mathrm{eff}} = \dfrac{\exp(k v)}{A_w} & \text{pores being covered}
+\end{array}`,
     where: [
-      { sym: "A_eff", means: "the EFFECTIVE water permeance the transport "
+      { sym: "V_\\mathrm{permeated}",
+        means: "the cumulative permeate VOLUME, an integrated state of the run",
+        unit: "m^3" },
+      { sym: "A_\\mathrm{eff}",
+        means: "the EFFECTIVE water permeance the transport "
         + "law is handed -- what the membrane still has", unit: "m/(s·Pa)" },
       { sym: "A_w", means: "the CLEAN water permeance, the membrane record's "
         + "own datum", unit: "m/(s·Pa)" },
@@ -432,11 +467,14 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "so there is a concentration at which the wash is cheapest, and the "
       + "classical statement of it is that it is where the product of flux "
       + "and concentration is largest.",
-    formula: "t_DF = N V / (A J_w)             the time N diavolumes take\n"
-      + "V ∝ 1 / c  at fixed inventory   =>   t_DF ∝ 1 / (J_w c)\n"
-      + "cheapest wash  =>  J_w c at its maximum",
+    formula: String.raw`\begin{aligned}
+t_\mathrm{DF} &= \frac{N V}{A J_w} &\qquad& \text{the time } N \text{ diavolumes take}\\[4pt]
+V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{DF} \propto \frac{1}{J_w c}\\[4pt]
+&\text{cheapest wash} &\Rightarrow\quad& J_w c \text{ at its maximum}
+\end{aligned}`,
     where: [
-      { sym: "t_DF", means: "the time a wash of N diavolumes takes at this "
+      { sym: "t_\\mathrm{DF}",
+        means: "the time a wash of N diavolumes takes at this "
         + "volume, area and flux", unit: "s" },
       { sym: "N", means: "the diavolumes the wash must deliver, which step 4 "
         + "fixes from the purity you need" },

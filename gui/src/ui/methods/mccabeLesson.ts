@@ -60,10 +60,10 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
           + "cut, the condenser and the top product.  Vapour V rises past "
           + "the cut carrying y; liquid L falls past it carrying x; D leaves "
           + "at x_D.",
-        eq: "V · y_{n+1} = L · x_n + D · x_D" },
+        eq: String.raw`V\, y_{n+1} = L\, x_n + D\, x_D`},
       { step: "Divide by V to get y on its own.  Nothing has been assumed "
           + "yet — this is exact for any column.",
-        eq: "y_{n+1} = (L/V) · x_n + (D/V) · x_D" },
+        eq: String.raw`y_{n+1} = \frac{L}{V}\,x_n + \frac{D}{V}\,x_D`},
       { step: "SPEND THE ASSUMPTION.  Constant molar overflow says L and V "
           + "do not change from tray to tray within a section, so L/V is one "
           + "number and the relation is a STRAIGHT LINE.  This is the whole "
@@ -71,17 +71,19 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
       { step: "Now write both in terms of R = L/D, which is the knob an "
           + "operator actually turns.  A total balance on the same envelope "
           + "gives V = L + D, so",
-        eq: "L/V = L/(L+D) = R/(R+1)     and     D/V = 1/(R+1)" },
+        eq: String.raw`\frac{L}{V} = \frac{L}{L+D} = \frac{R}{R+1} \qquad \text{and} \qquad \frac{D}{V} = \frac{1}{R+1}`},
       { step: "Substitute.  The rectifying operating line falls out, and "
           + "notice it passes through (x_D, x_D) for every R — which is why "
           + "turning the reflux PIVOTS it about that point on the diagonal.",
-        eq: "y = R/(R+1) · x + x_D/(R+1)" },
+        eq: String.raw`y = \frac{R}{R+1}\,x + \frac{x_D}{R+1}`},
       { step: "Below the feed the same cut is made downward, over the "
           + "envelope containing the reboiler and the bottoms.  The bar "
           + "marks the section, not an average: the feed has changed both "
           + "flows.",
-        eq: "V̄ · y_{m+1} = L̄ · x_m − B · x_B\n"
-          + "y = (L̄/V̄) · x − (B/V̄) · x_B" },
+        eq: String.raw`\begin{aligned}
+\bar V\, y_{m+1} &= \bar L\, x_m - B\, x_B\\[4pt]
+y &= \frac{\bar L}{\bar V}\,x - \frac{B}{\bar V}\,x_B
+\end{aligned}`},
       { step: "In the engine the stripping line is not asked for as an "
           + "input at all.  It is DETERMINED: the line through (x_B, x_B) "
           + "and the point where the rectifying line meets the q-line, so it "
@@ -89,8 +91,10 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
           + "degree of freedom.  (strippingLine in "
           + "gui/src/case/mccabeThiele.ts is the six lines that do it.)" },
     ],
-    formula: "rectifying:  y = R/(R+1) · x + x_D/(R+1)\n"
-      + "stripping:   y = (L̄/V̄) · x − (B/V̄) · x_B",
+    formula: String.raw`\begin{aligned}
+\text{rectifying:}\quad y &= \frac{R}{R+1}\,x + \frac{x_D}{R+1}\\[4pt]
+\text{stripping:}\quad y &= \frac{\bar L}{\bar V}\,x - \frac{B}{\bar V}\,x_B
+\end{aligned}`,
     where: [
       { sym: "x", means: "mole fraction of the MORE VOLATILE component in the "
         + "liquid on a tray" },
@@ -121,7 +125,8 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
         + "the feed" },
       { sym: "y_{m+1}", means: "the stripping section's counterpart to "
         + "y_{n+1}" },
-      { sym: "L̄, V̄", means: "the same two flows BELOW the feed.  The bar "
+      { sym: "\\bar L,\\ \\bar V",
+        means: "the same two flows BELOW the feed.  The bar "
         + "marks a SECTION, not an average — the feed changes both, which is "
         + "why the column needs two operating lines and not one" },
     ],
@@ -146,15 +151,15 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
       { step: "What the feed does to the internal flows follows directly "
           + "from that definition — the liquid gains the liquid FRACTION of "
           + "the feed, and the vapour loses the rest.",
-        eq: "L̄ = L + q · F        V = V̄ + (1 − q) · F" },
+        eq: String.raw`\bar L = L + q\, F \qquad V = \bar V + (1 - q)\, F`},
       { step: "Subtract the two operating-line balances, one from the "
           + "other, and use the overall balance F·z_F = D·x_D + B·x_B.  "
           + "Every term in x_D and x_B cancels.",
-        eq: "(V − V̄) · y = (L − L̄) · x + F · z_F" },
+        eq: String.raw`(V - \bar V)\, y = (L - \bar L)\, x + F\, z_F`},
       { step: "Substitute the two flow relations above.  This is the q-line: "
           + "the locus of every point where the two operating lines can "
           + "meet, fixed by the feed alone and by neither product.",
-        eq: "y = q/(q−1) · x − z_F/(q−1)" },
+        eq: String.raw`y = \frac{q}{q-1}\,x - \frac{z_F}{q-1}`},
       { step: "Two readings worth having.  It passes through (z_F, z_F) for "
           + "every q, so changing the feed's thermal state ROTATES it about "
           + "that point on the diagonal; and at q = 1 the slope is "
@@ -163,7 +168,7 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
           + "than dividing by zero.  (qLine in "
           + "gui/src/case/mccabeThiele.ts carries that test.)" },
     ],
-    formula: "q-line:  y = q/(q−1) · x − z_F/(q−1)",
+    formula: String.raw`\text{q-line:}\quad y = \frac{q}{q-1}\,x - \frac{z_F}{q-1}`,
     where: [
       { sym: "q", means: "the FEED THERMAL CONDITION — moles of liquid added "
         + "to the stripping section per mole of feed.  1 for a saturated "
@@ -187,13 +192,15 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
       + "line touches the equilibrium curve, and at that pinch the steps "
       + "become infinitely small, so you need infinitely many.  Minimum "
       + "energy, infinite column.",
-    formula: "N_min at R → ∞      ·      N → ∞ at R → R_min",
+    formula: String.raw`N_\mathrm{min} \text{ at } R \to \infty \qquad \cdot \qquad N \to \infty \text{ at } R \to R_\mathrm{min}`,
     where: [
       { sym: "N", means: "number of EQUILIBRIUM stages — ideal ones; a real "
         + "column needs more" },
-      { sym: "N_min", means: "the fewest stages that can make the separation, "
+      { sym: "N_\\mathrm{min}",
+        means: "the fewest stages that can make the separation, "
         + "reached at total reflux (Fenske)" },
-      { sym: "R_min", means: "the smallest reflux ratio that can make it, "
+      { sym: "R_\\mathrm{min}",
+        means: "the smallest reflux ratio that can make it, "
         + "needing infinitely many stages" },
     ],
     note: "Neither is buildable, and that is what makes them useful: every "

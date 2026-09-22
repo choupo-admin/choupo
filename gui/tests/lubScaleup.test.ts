@@ -314,23 +314,23 @@ describe("the LUB scale-up lesson", () => {
 
   it("reads t_b and t_st off the curve and names the engine's own t_st beside it", () => {
     const s2 = LUB_SCALEUP_STEPS[1]!;
-    expect(s2.formula).toContain("∫₀^∞ (1 − c_out/c_in) dt");
+    expect(s2.formula).toContain(String.raw`\int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \right) \mathrm{d}t`);
     expect(s2.note).toContain("t_stoichiometric_<i>");
     expect(s2.note).toContain("LOWER BOUND");
   });
 
   it("checks the curve's capacity against the isotherm through R_f", () => {
     const s3 = LUB_SCALEUP_STEPS[2]!;
-    expect(s3.formula).toContain("q*_curve    = c_in (u t_st − ε L_lab) / (ρ_b L_lab)");
-    expect(s3.formula).toContain("q*_isotherm = (R_f − ε) c_in / ρ_b");
+    expect(s3.formula).toContain(String.raw`q^*_\mathrm{curve} &= \frac{c_\mathrm{in} \left( u\, t_\mathrm{st} - \varepsilon\, L_\mathrm{lab} \right)}{\rho_b\, L_\mathrm{lab}}`);
+    expect(s3.formula).toContain(String.raw`q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}`);
   });
 
   it("carries LUB to full scale at the SAME velocity and says which knobs re-run", () => {
     const s4 = LUB_SCALEUP_STEPS[3]!;
     const s5 = LUB_SCALEUP_STEPS[4]!;
-    expect(s4.formula).toContain("LUB    = L_lab (1 − t_b / t_st)");
-    expect(s5.formula).toContain("L_full = L_es + LUB");
-    expect(s5.formula).toContain("D      = √(4 Q / (π u))");
+    expect(s4.formula).toContain(String.raw`\mathrm{LUB} &= L_\mathrm{lab} \left( 1 - \frac{t_b}{t_\mathrm{st}} \right)`);
+    expect(s5.formula).toContain(String.raw`L_\mathrm{full} &= L_\mathrm{es} + \mathrm{LUB}`);
+    expect(s5.formula).toContain(String.raw`D &= \sqrt{\frac{4Q}{\pi u}}`);
     expect(s5.note).toMatch(/RE-RUN/);
     expect(s5.note).toMatch(/POST-PROCESSING/);
   });

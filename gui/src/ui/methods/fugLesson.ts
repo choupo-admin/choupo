@@ -49,11 +49,14 @@ export const FUG_STEPS: readonly LessonStep[] = [
       + "mostly in the bottoms.  Everything else is priced by its volatility "
       + "relative to the heavy key, and the separation is specified by the two "
       + "key RECOVERIES.",
-    formula: "α_i,HK = K_i / K_HK          keys: LK (light) and HK (heavy)\n"
-      + "recoveryLK, recoveryHK — both the fraction of that key's FEED that\n"
-      + "leaves in the DISTILLATE (so a sharp split is a high LK and a low HK)",
+    formula: String.raw`\begin{aligned}
+\alpha_{i,\mathrm{HK}} &= \frac{K_i}{K_\mathrm{HK}} &\qquad& \text{keys: LK (light) and HK (heavy)}\\[6pt]
+&\mathrm{recoveryLK},\ \mathrm{recoveryHK}: \text{ both the fraction of that key's FEED}\\
+&\text{that leaves in the DISTILLATE, so a sharp split is a high LK and a low HK}
+\end{aligned}`,
     where: [
-      { sym: "α_i,HK", means: "The RELATIVE VOLATILITY of component i referred "
+      { sym: "\\alpha_{i,\\mathrm{HK}}",
+        means: "The RELATIVE VOLATILITY of component i referred "
         + "to the heavy key: K_i/K_HK.  The heavy key's own value is exactly "
         + "1 by construction, and the light key's is the larger of the two.  "
         + "It is evaluated ONCE, at the feed bubble point, and held constant "
@@ -63,20 +66,25 @@ export const FUG_STEPS: readonly LessonStep[] = [
         + "the case's DECLARED thermodynamics — the very same K the flash and "
         + "the rigorous column use, but asked for at a single state instead "
         + "of stage by stage.", unit: "dimensionless" },
-      { sym: "K_HK", means: "The heavy key's equilibrium ratio at that same "
+      { sym: "K_\\mathrm{HK}",
+        means: "The heavy key's equilibrium ratio at that same "
         + "state — the denominator that turns every K into a relative "
         + "volatility.  A non-volatile heavy key has no volatility to be "
         + "relative to, and is refused.", unit: "dimensionless" },
-      { sym: "LK", means: "The LIGHT KEY: the more volatile of the two "
+      { sym: "\\mathrm{LK}",
+        means: "The LIGHT KEY: the more volatile of the two "
         + "components whose split you are specifying.  Choosing the keys is "
         + "YOUR design decision, not the method's.", unit: "—" },
-      { sym: "HK", means: "The HEAVY KEY: the less volatile of the pair.  "
+      { sym: "\\mathrm{HK}",
+        means: "The HEAVY KEY: the less volatile of the pair.  "
         + "Everything lighter than LK goes essentially overhead and "
         + "everything heavier than HK essentially down; the method only "
         + "really decides about the keys.", unit: "—" },
-      { sym: "recoveryLK", means: "The fraction of the light key's FEED that "
+      { sym: "\\mathrm{recoveryLK}",
+        means: "The fraction of the light key's FEED that "
         + "leaves in the DISTILLATE.", unit: "dimensionless" },
-      { sym: "recoveryHK", means: "The fraction of the heavy key's feed that "
+      { sym: "\\mathrm{recoveryHK}",
+        means: "The fraction of the heavy key's feed that "
         + "leaves in the distillate — note the same basis, which is why a "
         + "sharp split is a HIGH light-key recovery and a LOW heavy-key one.",
         unit: "dimensionless" },
@@ -99,23 +107,28 @@ export const FUG_STEPS: readonly LessonStep[] = [
       + "do this separation in fewer stages, and no column can be operated "
       + "there, because a column at total reflux makes no product.  On the "
       + "N(R) plot below it is the horizontal asymptote.",
-    formula: "N_min = ln[ (x_LK/x_HK)_D · (x_HK/x_LK)_B ] / ln α_LK,HK\n"
-      + "        (the same product grouped by component: "
-      + "(x_D/x_B)_LK · (x_B/x_D)_HK )",
+    formula: String.raw`\begin{aligned}
+N_\mathrm{min} &= \frac{\ln\!\left[ \left(\dfrac{x_\mathrm{LK}}{x_\mathrm{HK}}\right)_{\!D} \left(\dfrac{x_\mathrm{HK}}{x_\mathrm{LK}}\right)_{\!B} \right]}{\ln \alpha_\mathrm{LK,HK}}\\[6pt]
+&\quad \text{(the same product grouped by component: } \left(\tfrac{x_D}{x_B}\right)_\mathrm{LK} \left(\tfrac{x_B}{x_D}\right)_\mathrm{HK} )
+\end{aligned}`,
     where: [
-      { sym: "N_min", means: "The stage count at TOTAL REFLUX: the fewest "
+      { sym: "N_\\mathrm{min}",
+        means: "The stage count at TOTAL REFLUX: the fewest "
         + "equilibrium stages that could ever achieve this separation.  It is "
         + "a LIMIT, not a design — a column at total reflux makes no product "
         + "at all.  It is not an integer, and the engine keeps it as a real "
         + "number.", unit: "equilibrium stages" },
-      { sym: "x_LK", means: "Mole fraction of the LIGHT KEY in a named "
+      { sym: "x_\\mathrm{LK}",
+        means: "Mole fraction of the LIGHT KEY in a named "
         + "product stream — per mole of THAT stream, so x_LK,D and x_LK,B are "
         + "different numbers wearing the same symbol.  The subscript is doing "
         + "the work; read it every time.", unit: "dimensionless" },
-      { sym: "x_HK", means: "Mole fraction of the HEAVY KEY in a named "
+      { sym: "x_\\mathrm{HK}",
+        means: "Mole fraction of the HEAVY KEY in a named "
         + "product stream, on the same per-stream basis.",
         unit: "dimensionless" },
-      { sym: "α_LK,HK", means: "The light key's relative volatility referred "
+      { sym: "\\alpha_\\mathrm{LK,HK}",
+        means: "The light key's relative volatility referred "
         + "to the heavy key — the single number Fenske divides by.  The "
         + "engine refuses a value not greater than 1, because that means the "
         + "keys have been assigned the wrong way round.",
@@ -152,10 +165,18 @@ export const FUG_STEPS: readonly LessonStep[] = [
       + "equation, then sum a second series over the distillate to get R_min.  "
       + "q is the same feed quality as McCabe-Thiele's q-line.  On the plot it "
       + "is the vertical asymptote.",
-    formula: "Σ_i  α_i z_i / (α_i − θ)  =  1 − q          →  θ\n"
-      + "R_min + 1  =  Σ_i  α_i x_D,i / (α_i − θ)",
+    formula: String.raw`\begin{aligned}
+\sum_i \frac{\alpha_i z_i}{\alpha_i - \theta} &= 1 - q \quad \longrightarrow \quad \theta\\[4pt]
+R_\mathrm{min} + 1 &= \sum_i \frac{\alpha_i\, x_{D,i}}{\alpha_i - \theta}
+\end{aligned}`,
     where: [
-      { sym: "Σ_i", means: "The sum runs over EVERY component in the case, all "
+      { sym: "\\alpha_i",
+        means: "component i's relative volatility against the heavy key: the same "
+        + "quantity as alpha_i,HK, written short" },
+      { sym: "x_{D,i}",
+        means: "mole fraction of component i in the DISTILLATE" },
+      { sym: "\\sum_i",
+        means: "The sum runs over EVERY component in the case, all "
         + "n of them — not just the two keys.  That is precisely why the "
         + "shortcut survives a multicomponent feed: the keys fix the "
         + "separation, but every non-key still contributes its own term, and "
@@ -163,7 +184,8 @@ export const FUG_STEPS: readonly LessonStep[] = [
       { sym: "z_i", means: "FEED mole fraction of component i, per mole of "
         + "total feed, normalised to sum to 1 whatever the author typed.",
         unit: "dimensionless" },
-      { sym: "θ", means: "UNDERWOOD'S ROOT — the one quantity in the whole "
+      { sym: "\\theta",
+        means: "UNDERWOOD'S ROOT — the one quantity in the whole "
         + "method that has to be SOLVED for rather than evaluated.  The "
         + "left-hand sum has a vertical asymptote at every component "
         + "volatility, so it crosses many times and most crossings are "
@@ -179,7 +201,8 @@ export const FUG_STEPS: readonly LessonStep[] = [
         + "feed's declared TEMPERATURE enters only as the bubble-point "
         + "solver's initial guess, nowhere else in the method.",
         unit: "dimensionless" },
-      { sym: "R_min", means: "The MINIMUM REFLUX RATIO — the reflux below "
+      { sym: "R_\\mathrm{min}",
+        means: "The MINIMUM REFLUX RATIO — the reflux below "
         + "which the separation is unreachable at ANY column height, because "
         + "a pinch has appeared.  The sum gives R_min + 1, and the −1 is what "
         + "makes it a ratio of reflux to distillate.", unit: "dimensionless" },
@@ -223,9 +246,10 @@ export const FUG_STEPS: readonly LessonStep[] = [
       + "equilibrium relation.  It is written in two coordinates that put "
       + "minimum reflux at X = 0 and total reflux at X = 1, so that the two "
       + "derived limits sit at the ends of the fit by construction.",
-    formula: "X = (R − R_min) / (R + 1)        Y = (N − N_min) / (N + 1)\n"
-      + "Y = 1 − exp[ ((1 + 54.4 X) / (11 + 117.2 X)) · (X − 1) / √X ]\n"
-      + "                                       (the usual closed form)",
+    formula: String.raw`\begin{aligned}
+X &= \frac{R - R_\mathrm{min}}{R + 1} &\qquad Y &= \frac{N - N_\mathrm{min}}{N + 1}\\[4pt]
+Y &= 1 - \exp\!\left[ \frac{1 + 54.4\,X}{11 + 117.2\,X} \cdot \frac{X - 1}{\sqrt{X}} \right] &\qquad& \text{(the usual closed form)}
+\end{aligned}`,
     where: [
       { sym: "R", means: "The OPERATING reflux ratio, L/D — liquid returned "
         + "to the top per mole of distillate drawn.  It is an INPUT here, "
@@ -276,19 +300,27 @@ export const FUG_STEPS: readonly LessonStep[] = [
       + "never equal one, so no azeotrope is representable at all: point a "
       + "shortcut column at ethanol/water and it will return a stage count, "
       + "and that count will be an answer to a system that does not exist.",
-    formula: "Kirkbride (feed stage, empirical):\n"
-      + "N_rect / N_strip = [ (z_HK/z_LK) · (x_LK,B / x_HK,D)² · (B/D) ]^0.206",
+    formula: String.raw`\begin{aligned}
+&\text{Kirkbride (feed stage, empirical):}\\[4pt]
+&\frac{N_\mathrm{rect}}{N_\mathrm{strip}} = \left[ \frac{z_\mathrm{HK}}{z_\mathrm{LK}} \left( \frac{x_\mathrm{LK,B}}{x_\mathrm{HK,D}} \right)^{\!2} \frac{B}{D} \right]^{0.206}
+\end{aligned}`,
     where: [
-      { sym: "N_rect", means: "The number of stages ABOVE the feed — the "
+      { sym: "x_\\mathrm{LK,B}",
+        means: "mole fraction of the light key in the BOTTOMS" },
+      { sym: "x_\\mathrm{HK,D}",
+        means: "mole fraction of the heavy key in the DISTILLATE" },
+      { sym: "N_\\mathrm{rect}",
+        means: "The number of stages ABOVE the feed — the "
         + "rectifying section.", unit: "stages" },
-      { sym: "N_strip", means: "The number of stages BELOW the feed — the "
+      { sym: "N_\\mathrm{strip}",
+        means: "The number of stages BELOW the feed — the "
         + "stripping section.  Kirkbride gives only their RATIO, so the total "
         + "N from Gilliland has to be split by it; the feed stage is the one "
         + "number on this page with no theoretical derivation behind it at "
         + "all.", unit: "stages" },
-      { sym: "z_HK", means: "Heavy-key mole fraction in the FEED.",
+      { sym: "z_\\mathrm{HK}", means: "Heavy-key mole fraction in the FEED.",
         unit: "dimensionless" },
-      { sym: "z_LK", means: "Light-key mole fraction in the feed.",
+      { sym: "z_\\mathrm{LK}", means: "Light-key mole fraction in the feed.",
         unit: "dimensionless" },
     ],
     note: "So use it the way it was meant: the shortcut designs, the rigorous "

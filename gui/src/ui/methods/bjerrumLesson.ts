@@ -51,8 +51,17 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "one proton.  Nothing is created or destroyed as you move between "
       + "them — the total carbon is fixed — so what a diagram of this system "
       + "shows is not how much carbon there is, but WHICH FORM it is in.",
-    formula: "CO2(aq) + H2O  ⇌  HCO3-  +  H+        K1\n"
-      + "HCO3-          ⇌  CO3--  +  H+        K2",
+    formula: String.raw`\begin{aligned}
+\ce{CO2(aq) + H2O &<=> HCO3^- + H^+} &\qquad& K_1\\
+\ce{HCO3^- &<=> CO3^2- + H^+} &\qquad& K_2
+\end{aligned}`,
+    where: [
+      { sym: "K_1",
+        means: "the FIRST dissociation constant of carbonic acid: the loss of the "
+        + "first proton, from dissolved CO2 to bicarbonate" },
+      { sym: "K_2",
+        means: "the SECOND: the loss of the proton from bicarbonate to carbonate" },
+    ],
     note: "The two constants are not free numbers on this page: they come "
       + "from data/standards/chemistry/CO2aq-formation.dat and "
       + "CO3-formation.dat, curated from the USGS PHREEQC database (public "
@@ -74,9 +83,9 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "joins the unknowns and CHARGE is what decides it: the solution must "
       + "be electrically neutral, and given everything else in the beaker "
       + "that fixes [H+].",
-    formula: "Σ z_i m_i = 0     →     [H+] , and therefore pH",
+    formula: String.raw`\sum_i z_i m_i = 0 \quad \longrightarrow \quad [\ce{H+}] \text{, and therefore } \mathrm{pH}`,
     where: [
-      { sym: "Σ", means: "The sum runs over EVERY aqueous species in the "
+      { sym: "\\sum", means: "The sum runs over EVERY aqueous species in the "
         + "converged table — the masters, H+, OH- and every complex.  It is "
         + "not decoration: this is a row the solver assembles and imposes, "
         + "and it is the row that closes the system when the pH is unknown.  "
@@ -91,7 +100,8 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
         + "declared per litre has to pass through a density before it can "
         + "enter here, and the engine announces that conversion.",
         unit: "mol/kg water" },
-      { sym: "pH", means: "A RESULT on this page.  With `pH solve;` the free "
+      { sym: "\\mathrm{pH}",
+        means: "A RESULT on this page.  With `pH solve;` the free "
         + "H+ molality joins the Newton unknowns and the row above is what "
         + "closes for it.  It is reported WITH its scale: −log10(γ_H · m_H) "
         + "on the Davies charge-symmetric convention, so this is a FREE H+ "
@@ -113,11 +123,13 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "mmol/kg throughout; what varies is how much strong acid or strong "
       + "base sits beside it.  Each of the 44 points is a real neutral "
       + "mixture — something you could weigh out and dissolve.",
-    formula: "Na/C_T = 0   dissolved CO2            (carbonic acid)\n"
-      + "Na/C_T = 1   sodium bicarbonate       (NaHCO3)\n"
-      + "Na/C_T = 2   sodium carbonate         (Na2CO3)\n"
-      + "Na/C_T > 2   Na2CO3 + caustic soda\n"
-      + "the acid side  dissolved CO2 + hydrochloric acid",
+    formula: String.raw`\begin{array}{ll}
+\mathrm{Na}/C_T = 0 & \text{dissolved } \ce{CO2} \text{ (carbonic acid)}\\
+\mathrm{Na}/C_T = 1 & \text{sodium bicarbonate } (\ce{NaHCO3})\\
+\mathrm{Na}/C_T = 2 & \text{sodium carbonate } (\ce{Na2CO3})\\
+\mathrm{Na}/C_T > 2 & \ce{Na2CO3} + \text{caustic soda}\\
+\text{the acid side} & \text{dissolved } \ce{CO2} + \text{hydrochloric acid}
+\end{array}`,
     note: "The case declares `totalsBasis stoichiometric;` to say so.  Without "
       + "it the engine reads the totals as a LABORATORY ANALYSIS, where a "
       + "charge imbalance means somebody mismeasured, and warns that the "
@@ -131,7 +143,8 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
         + "form the carbon is in rather than how much of it there is.  It is "
         + "declared once as a case variable and read by every operation.",
         unit: "mol/kg water (the witness declares 0.001)" },
-      { sym: "Na", means: "The total sodium in the beaker, added as strong "
+      { sym: "\\mathrm{Na}",
+        means: "The total sodium in the beaker, added as strong "
         + "base (NaOH).  Na/C_T is therefore the titration coordinate: how "
         + "many equivalents of base per carbonate.  It is an INPUT — the "
         + "thing you weigh out — while the pH it produces is the output.",
@@ -148,10 +161,13 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "at the pH equal to the pK of the step that separates them.  Neither "
       + "pK was an input to any of the 44 calculations.  They are constants "
       + "inside the reaction network, and the titration simply ARRIVES there.",
-    formula: "CO2(aq) = HCO3-   at pH 6.341     (pK1 = 6.352)\n"
-      + "HCO3-   = CO3--   at pH 10.262    (pK2 = 10.329)",
+    formula: String.raw`\begin{aligned}
+\ce{CO2(aq)} &= \ce{HCO3^-} &\quad& \text{at } \mathrm{pH}\ 6.341 &\quad& (\mathrm{p}K_1 = 6.352)\\
+\ce{HCO3^-} &= \ce{CO3^2-} &\quad& \text{at } \mathrm{pH}\ 10.262 &\quad& (\mathrm{p}K_2 = 10.329)
+\end{aligned}`,
     where: [
-      { sym: "pK1", means: "−log10 of the equilibrium constant for the FIRST "
+      { sym: "\\mathrm{p}K_1",
+        means: "−log10 of the equilibrium constant for the FIRST "
         + "dissociation, CO2(aq) + H2O = HCO3- + H+.  Choupo's chemistry "
         + "record writes the reaction the other way round, as a FORMATION, "
         + "so the file carries logK25 = +6.352 for CO2aq-formation and the "
@@ -159,7 +175,7 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
         + "constant, one convention apart, which is exactly the kind of sign "
         + "that gets copied wrong between a book and a data file",
         unit: "dimensionless" },
-      { sym: "pK2", means: "the same for the SECOND dissociation, "
+      { sym: "\\mathrm{p}K_2", means: "the same for the SECOND dissociation, "
         + "HCO3- = CO3-- + H+ (the record is CO3-formation, logK25 = "
         + "−10.329).  It is nearly four pH units above pK1, which is why the "
         + "three curves separate rather than overlapping",

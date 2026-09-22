@@ -72,7 +72,7 @@ describe("the two regimes, and what controls each", () => {
     const s = step(1);
     expect(prose(s.body)).toContain("the rate is set by the AIR");
     expect(prose(s.body)).toContain("the rate is set by the SOLID");
-    expect(s.formula).toContain("X = m_moisture / m_drySolid");
+    expect(s.formula).toContain(String.raw`X = \frac{m_\mathrm{moisture}}{m_\mathrm{drySolid}}`);
   });
 
   it("step 2 puts the surface at the WET BULB and draws the safety consequence", () => {
@@ -83,8 +83,8 @@ describe("the two regimes, and what controls each", () => {
     //  without this would have taught nothing.
     expect(prose(s.body)).toContain("heat-sensitive");
     expect(prose(s.body)).toMatch(/cool/);
-    expect(s.formula).toContain("R_c = k_Y");
-    expect(s.formula).toContain("Y_sat(T_wb)");
+    expect(s.formula).toContain(String.raw`R_c &= k_Y`);
+    expect(s.formula).toContain(String.raw`Y_\mathrm{sat}(T_\mathrm{wb})`);
   });
 
   it("step 2 declares the two hypotheses it runs on, rather than implying a correlation", () => {
@@ -161,7 +161,7 @@ describe("the printed arithmetic is the arithmetic the engine runs", () => {
     //  printing a different law would be teaching against its own solver.
     expect(ENGINE).toContain("R_c_ * (X - X_eq_) / (X_c_ - X_eq_)");
     const f = step(4).formula!.replace(/\s+/g, "");
-    expect(f).toContain("R=R_c·(X−X_eq)/(X_c−X_eq)");
+    expect(f).toContain(String.raw`R&=R_c\,\frac{X-X_\mathrm{eq}}{X_c-X_\mathrm{eq}}`);
   });
 
   it("prints the strict inequality the classifier uses", () => {
@@ -176,8 +176,8 @@ describe("the printed arithmetic is the arithmetic the engine runs", () => {
   it("the tail-time expression is the inverse of the exponential above it", () => {
     //  Recomputed rather than eyeballed: step 4 prints the forward form and
     //  step 5 prints its inverse, and a typo in either would separate them.
-    expect(step(4).formula).toContain("exp(−(t − t_c)/τ)");
-    expect(step(5).formula).toContain("τ · ln( (X_c − X_eq) / (X − X_eq) )");
+    expect(step(4).formula).toContain(String.raw`\exp\!\left(-\frac{t - t_c}{\tau}\right)`);
+    expect(step(5).formula).toContain(String.raw`\tau \ln\!\left(\frac{X_c - X_\mathrm{eq}}{X - X_\mathrm{eq}}\right)`);
     const tc = 1027.7, tau = 595.0, Xc = 0.12, Xeq = 0.0158;
     for (const t of [1100, 1500, 2000, 3000]) {
       const X = Xeq + (Xc - Xeq) * Math.exp(-(t - tc) / tau);
@@ -199,12 +199,12 @@ describe("the printed arithmetic is the arithmetic the engine runs", () => {
   it("the constant-rate leg is the engine's own hand check", () => {
     //  t_c = m_s (X_0 - X_c)/(R_c A) is the expression BatchDryer announces as
     //  its hand check at initialise.
-    expect(step(3).formula).toContain("m_s · (X_0 − X_c) / (R_c · A)");
+    expect(step(3).formula).toContain(String.raw`\frac{m_s (X_0 - X_c)}{R_c\, A}`);
     expect(ENGINE).toContain("m_solid_ * (X_0_ - X_c_) / (R_c_ * area_)");
   });
 
   it("tau is the engine's tau", () => {
-    expect(step(4).formula).toContain("τ = m_s (X_c − X_eq)/(R_c A)");
+    expect(step(4).formula).toContain(String.raw`\tau = \frac{m_s (X_c - X_\mathrm{eq})}{R_c\, A}`);
     expect(ENGINE).toContain("m_solid_ * (X_c_ - X_eq_) / (R_c_ * area_)");
   });
 });
@@ -291,8 +291,17 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(empty).toBeLessThan(SRC.indexOf("{lessonStep(1)}"));
   });
 
-  it("keeps the equations in a bordered monospace box", () => {
-    expect(SRC).toContain('ff="monospace"');
+  it("keeps the equations in a bordered box, set as mathematics", () => {
+    //  THE EQUATIONS ARE SET AS MATHEMATICS, not as monospace text
+    //  (2026-09-22).  The shared renderer hands every formula to KaTeX
+    //  through methods/lessonTex.ts; the bordered block around it is the
+    //  same 3px left rule it always was.  `ff="monospace"` survives in
+    //  that file for the derivation numbering and for the SOURCE shown
+    //  when a formula does not parse -- neither of which is the equation,
+    //  so asserting it here would pin the wrong thing.
+    expect(readFileSync(
+      new URL("../src/ui/methods/lessonStep.tsx", import.meta.url), "utf8"))
+      .toContain('<Tex src={step.formula} mode="display" />');
     //  The bordered formula box and the step walk now live in ONE
     //  place (methods/lessonStep.tsx), so pinning them in THIS
     //  tool's source pinned a copy that no longer exists.  The

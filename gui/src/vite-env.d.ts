@@ -32,3 +32,11 @@ declare module "virtual:local-component-catalogue" {
   const bodies: string[];
   export default bodies;
 }
+
+//  KaTeX's contrib entries carry no typings of their own (the package types
+//  only its main entry).  mhchem is imported for its SIDE EFFECT -- it
+//  registers \ce{} on the katex instance and exports nothing -- so the module's
+//  existence is the whole shape there is to declare.  See methods/lessonTex.ts
+//  for why \ce{} is this project's declaration that a token is a SUBSTANCE
+//  rather than a symbol a reader is owed a definition of.
+declare module "katex/contrib/mhchem";

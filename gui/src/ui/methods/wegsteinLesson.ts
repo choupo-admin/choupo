@@ -56,18 +56,18 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       { step: "Call the assumed state of the torn stream x, and call one "
           + "complete pass through the flowsheet G. One pass turns the "
           + "assumption into its consequence.",
-        eq: "x_assumed  ->  one sweep  ->  G(x_assumed)" },
+        eq: String.raw`x_\mathrm{assumed} \;\longrightarrow\; \text{one sweep} \;\longrightarrow\; G(x_\mathrm{assumed})`},
       { step: "The plant is consistent exactly when the consequence agrees "
           + "with the assumption. That is a fixed point, not an equation to "
           + "rearrange: G has no formula — it is a reactor, a flash and a "
           + "splitter run in order.",
-        eq: "x = G(x)" },
+        eq: String.raw`x = G(x)`},
       { step: "Equivalently, a root of the tear residual. This is the form "
           + "Newton wants; the fixed-point form is the one direct "
           + "substitution and Wegstein want.",
-        eq: "r(x) = G(x) - x = 0" },
+        eq: String.raw`r(x) = G(x) - x = 0`},
     ],
-    formula: "x = G(x)          equivalently   r(x) = G(x) - x = 0",
+    formula: String.raw`x = G(x) \qquad \text{equivalently} \qquad r(x) = G(x) - x = 0`,
     where: [
       { sym: "x", means: "the TEAR VECTOR — the assumed state of the cut "
         + "stream, one number per independent coordinate of it" },
@@ -76,7 +76,8 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
         + "what the plant sends back" },
       { sym: "r", means: "the TEAR RESIDUAL, how far the returned stream is "
         + "from the assumed one. Zero at the answer" },
-      { sym: "x_assumed", means: "the same tear vector, written out where the "
+      { sym: "x_\\mathrm{assumed}",
+        means: "the same tear vector, written out where the "
         + "point is that it is an ASSUMPTION being handed to the plant rather "
         + "than an answer" },
     ],
@@ -99,31 +100,36 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       { step: "The WEGSTEIN branch packs the total flow, every mole "
           + "fraction, and the temperature — per torn stream "
           + "(src/unitOperations/flowsheet/Flowsheet.cpp:1988-1999).",
-        eq: "x = ( F, z_1, z_2, ..., z_Nc, T )" },
+        eq: String.raw`x = ( F,\ z_1,\ z_2,\ \ldots,\ z_{N_c},\ T )`},
       { step: "That is one number more than the stream has independent "
           + "content, because the fractions must sum to one. The redundant "
           + "direction is harmless but real, and the unpack step "
           + "renormalises the fractions back onto the simplex every "
           + "iteration (:2027).",
-        eq: "z_1 + z_2 + ... + z_Nc = 1" },
+        eq: String.raw`z_1 + z_2 + \ldots + z_{N_c} = 1`},
       { step: "The NEWTON branch avoids the redundancy by tearing on "
           + "component molar flows instead, which are mutually independent "
           + "(:3404-3413). The total and the fractions are recovered "
           + "afterwards.",
-        eq: "x = ( F_1, ..., F_Nc, T ),    F_i = F z_i" },
+        eq: String.raw`x = ( F_1,\ \ldots,\ F_{N_c},\ T ), \qquad F_i = F z_i`},
     ],
-    formula: "Wegstein   x = ( F, z_1, ..., z_Nc, T )      Nc + 2 numbers\n"
-      + "Newton     x = ( F_1, ..., F_Nc, T )        Nc + 1 numbers",
+    formula: String.raw`\begin{array}{lll}
+\text{Wegstein} & x = ( F,\ z_1,\ \ldots,\ z_{N_c},\ T ) & N_c + 2 \text{ numbers}\\
+\text{Newton} & x = ( F_1,\ \ldots,\ F_{N_c},\ T ) & N_c + 1 \text{ numbers}
+\end{array}`,
     where: [
-      { sym: "F", means: "total molar flow of the torn stream", unit: "kmol/s" },
-      { sym: "z_i / z_1 / z_2 / z_Nc", means: "mole fraction of component i "
+      { sym: "F", means: "total molar flow of the torn stream",
+        unit: "kmol/s" },
+      { sym: "z_i \\,/\\, z_1 \\,/\\, z_2 \\,/\\, z_{N_c}",
+        means: "mole fraction of component i "
         + "in the torn stream, numbered 1 to Nc — dimensionless, and "
         + "constrained to sum to 1" },
-      { sym: "F_i / F_1 / F_Nc", means: "molar flow of component i alone, "
+      { sym: "F_i \\,/\\, F_1 \\,/\\, F_{N_c}",
+        means: "molar flow of component i alone, "
         + "numbered 1 to Nc", unit: "kmol/s" },
       { sym: "T", means: "temperature of the torn stream", unit: "K" },
       { sym: "N_c", means: "number of components in the flowsheet" },
-      { sym: "Nc", means: "the same count, written without the underscore "
+      { sym: "N_c", means: "the same count, written without the underscore "
         + "where a subscript would nest inside another" },
     ],
     note: "So the Wegstein tear vector really does hold a flow of order "
@@ -143,17 +149,18 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       + "per pass and you are counting sweeps in the hundreds.",
     derivation: [
       { step: "Accept the consequence as the next assumption.",
-        eq: "x_next = G(x)" },
+        eq: String.raw`x_\mathrm{next} = G(x)`},
       { step: "Write the error against the answer and linearise G about it. "
           + "The next error is the current one multiplied by the slope.",
-        eq: "e_next = a e,      a = the slope of G at the fixed point" },
+        eq: String.raw`e_\mathrm{next} = a\, e, \qquad a = \text{the slope of } G \text{ at the fixed point}`},
       { step: "So the error is geometric, and the number of sweeps needed "
           + "for a fixed accuracy blows up as the gain approaches one.",
-        eq: "e_k = a^k e_0" },
+        eq: String.raw`e_k = a^k e_0`},
     ],
-    formula: "x_next = G(x)          e_k = a^k e_0",
+    formula: String.raw`x_\mathrm{next} = G(x) \qquad e_k = a^k e_0`,
     where: [
-      { sym: "e / e_k / e_next / e_0", means: "the error — how far the "
+      { sym: "e \\,/\\, e_k \\,/\\, e_\\mathrm{next} \\,/\\, e_0",
+        means: "the error — how far the "
         + "current assumption is from the fixed point. Written e_k at sweep "
         + "k, e_next one sweep on, and e_0 at the author's first guess" },
       { sym: "a", means: "the LOOP GAIN in this direction: the slope of G at "
@@ -161,7 +168,8 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
         + "not converge at all" },
       { sym: "k", means: "the sweep counter — each k is one complete pass "
         + "through every unit of the plant" },
-      { sym: "x_next", means: "the assumption the NEXT sweep will be handed. "
+      { sym: "x_\\mathrm{next}",
+        means: "the assumption the NEXT sweep will be handed. "
         + "How it is formed from the current one is the whole difference "
         + "between the three solvers on this page" },
     ],
@@ -182,15 +190,15 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
           + "numerator and the denominator are differences in the SAME "
           + "quantity, so this ratio is dimensionless "
           + "(src/solver/Wegstein.cpp:78).",
-        eq: "s = ( G(x_k) - G(x_prev) ) / ( x_k - x_prev )" },
+        eq: String.raw`s = \frac{G(x_k) - G(x_\mathrm{prev})}{x_k - x_\mathrm{prev}}`},
       { step: "Solve the linear fixed point on that secant line: set the "
           + "line equal to x and collect terms.",
-        eq: "x = G(x_k) + s ( x - x_k )   ->   x (1 - s) = G(x_k) - s x_k" },
+        eq: String.raw`x = G(x_k) + s\,( x - x_k ) \quad \longrightarrow \quad x\,(1 - s) = G(x_k) - s\, x_k`},
       { step: "Rearranged with one bookkeeping coefficient, which is the "
           + "form the code uses (src/solver/Wegstein.cpp:82, :85).",
-        eq: "q = s / (s - 1)" },
+        eq: String.raw`q = \frac{s}{s - 1}`},
     ],
-    formula: "x_next = q x + (1 - q) G(x)        q = s / (s - 1)",
+    formula: String.raw`x_\mathrm{next} = q x + (1 - q) G(x) \qquad q = \frac{s}{s - 1}`,
     where: [
       { sym: "s", means: "the SECANT SLOPE through the last two passes — the "
         + "method's estimate of how much of a change in the assumption "
@@ -199,7 +207,8 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
         + "the current assumption with its image. q = 0 is direct "
         + "substitution; q = -1 is a step twice as long; q below -1 is "
         + "stronger extrapolation" },
-      { sym: "x_prev", means: "the assumption used on the PREVIOUS pass — the "
+      { sym: "x_\\mathrm{prev}",
+        means: "the assumption used on the PREVIOUS pass — the "
         + "second point the secant needs" },
       { sym: "x_k", means: "the assumption used on the current pass" },
     ],
@@ -224,22 +233,30 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "One secant per variable, formed only from that variable's own "
           + "history. Nothing couples the rows.",
-        eq: "s_i = ( g_i(x_k) - g_i(x_prev) ) / ( x_i,k - x_i,prev )" },
+        eq: String.raw`s_i = \frac{g_i(x_k) - g_i(x_\mathrm{prev})}{x_{i,k} - x_{i,\mathrm{prev}}}`},
       { step: "One coefficient per variable, and one update per variable.",
-        eq: "x_i,next = q_i x_i + (1 - q_i) g_i(x)" },
+        eq: String.raw`x_{i,\mathrm{next}} = q_i x_i + (1 - q_i) g_i(x)`},
       { step: "Now rescale variable i however you like — kelvin to Celsius, "
           + "kmol/s to kmol/h — as an affine map. The image rescales the "
           + "same way, because it is the same quantity.",
-        eq: "x_i -> A x_i + B      implies      g_i -> A g_i + B" },
+        eq: String.raw`x_i \to A x_i + B \qquad \text{implies} \qquad g_i \to A g_i + B`},
       { step: "Both the numerator and the denominator of the secant pick up "
           + "the same factor A, and the offset B cancels in each difference. "
           + "So the slope is unchanged, hence so is the coefficient, hence "
           + "so is the entire trajectory.",
-        eq: "s_i -> ( A g_i ) / ( A x_i ) = s_i" },
+        eq: String.raw`s_i \to \frac{A g_i}{A x_i} = s_i`},
     ],
-    formula: "s_i = ( g_i(x_k) - g_i(x_prev) ) / ( x_i,k - x_i,prev )\n"
-      + "x_i,next = q_i x_i + (1 - q_i) g_i(x)         one i at a time",
+    formula: String.raw`\begin{aligned}
+s_i &= \frac{g_i(x_k) - g_i(x_\mathrm{prev})}{x_{i,k} - x_{i,\mathrm{prev}}}\\[4pt]
+x_{i,\mathrm{next}} &= q_i x_i + (1 - q_i) g_i(x) \qquad \text{one } i \text{ at a time}
+\end{aligned}`,
     where: [
+      { sym: "i",
+        means: "the COMPONENT index: which entry of the tear vector is meant" },
+      { sym: "x_{i,k} \\,/\\, x_{i,\\mathrm{prev}} \\,/\\, x_{i,\\mathrm{next}}",
+        means: "entry i of the tear vector at the current step, at the previous one, "
+        + "and in the estimate being built: the same three states as x_k, "
+        + "x_prev and x_next, one component at a time" },
       { sym: "s_i", means: "the secant slope of variable i alone" },
       { sym: "q_i", means: "the Wegstein coefficient of variable i alone" },
       { sym: "g_i", means: "entry i of the sweep's answer G(x) — what the "
@@ -273,7 +290,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "The clamp, read from the case's own solverDict "
           + "(recycleWegsteinQmin / recycleWegsteinQmax).",
-        eq: "q = clamp( s / (s - 1),  q_min,  q_max )" },
+        eq: String.raw`q = \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{max} \right)`},
       { step: "q_max = 0 forbids the wrong direction: whenever the secant "
           + "says the loop is not contracting, the step falls back to plain "
           + "direct substitution — slow, never wrong." },
@@ -287,12 +304,16 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
           + "parallel to the diagonal and meets it nowhere; the code names "
           + "that case and falls back to direct substitution too (:79-80)." },
     ],
-    formula: "q = clamp( s / (s - 1),  q_min,  q_max )\n"
-      + "recycle defaults:  q_min = -1,  q_max = 0",
+    formula: String.raw`\begin{aligned}
+q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{max} \right)\\[4pt]
+\text{recycle defaults:}\quad & q_\mathrm{min} = -1, \qquad q_\mathrm{max} = 0
+\end{aligned}`,
     where: [
-      { sym: "q_min", means: "the most negative coefficient allowed — the "
+      { sym: "q_\\mathrm{min}",
+        means: "the most negative coefficient allowed — the "
         + "limit on how far the extrapolation may reach" },
-      { sym: "q_max", means: "the largest coefficient allowed. Zero, which "
+      { sym: "q_\\mathrm{max}",
+        means: "the largest coefficient allowed. Zero, which "
         + "forbids stepping away from the image" },
     ],
     note: "The defaults are worth reading carefully, because there are two "
@@ -316,26 +337,28 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "What Wegstein has: one number per variable, the diagonal seen "
           + "along one direction.",
-        eq: "s_i  approximates  the partial derivative of g_i in x_i" },
+        eq: String.raw`s_i \text{ approximates the partial derivative of } g_i \text{ in } x_i`},
       { step: "What Newton has: every cross-term, so a step accounts for a "
           + "change in one variable feeding back through another.",
-        eq: "J = dG/dx - I,     J dx = -r" },
+        eq: String.raw`J = \frac{\mathrm{d}G}{\mathrm{d}x} - I, \qquad J\, \mathrm{d}x = -r`},
       { step: "And what it costs. Choupo builds that matrix by CENTRAL "
           + "finite differences: perturb one tear variable up and down and "
           + "run a complete flowsheet sweep at each. Wegstein takes one "
           + "sweep per step, whatever the size of the vector.",
-        eq: "Newton: 2 (Nc + 1) sweeps per step;   Wegstein: 1" },
+        eq: String.raw`\text{Newton: } 2 (N_c + 1) \text{ sweeps per step;} \qquad \text{Wegstein: } 1`},
     ],
-    formula: "J = dG/dx - I        J dx = -r",
+    formula: String.raw`J = \frac{\mathrm{d}G}{\mathrm{d}x} - I \qquad J\, \mathrm{d}x = -r`,
     where: [
       { sym: "J", means: "the JACOBIAN of the tear residual — the full matrix "
         + "of how every returned variable responds to every assumed one" },
-      { sym: "dG/dx", means: "the matrix of partial derivatives of the sweep: "
+      { sym: "\\mathrm{d}G/\\mathrm{d}x",
+        means: "the matrix of partial derivatives of the sweep: "
         + "entry (i, j) is how much returned variable i moves when assumed "
         + "variable j does. Wegstein sees only its diagonal, and only along "
         + "the path it happened to take" },
       { sym: "I", means: "the identity matrix" },
-      { sym: "dx", means: "the Newton step: the correction added to the "
+      { sym: "\\mathrm{d}x",
+        means: "the Newton step: the correction added to the "
         + "current tear vector" },
     ],
     note: "The panel below turns the coupling directly. With the coupling "
@@ -360,12 +383,12 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "The Wegstein branch's measure: one unscaled norm over the "
           + "mixed vector.",
-        eq: "|G(x) - x|  compared with  recycleTol" },
+        eq: String.raw`\lvert G(x) - x \rvert \ \text{ compared with } \ \mathrm{recycleTol}`},
       { step: "The Newton branch of the same function does NOT do this. It "
           + "divides each residual by a characteristic scale — the tear's "
           + "own total flow for a flow entry, the temperature itself for the "
           + "temperature entry (:3454-3467, applied at :3477).",
-        eq: "r_i = ( g_i(x) - x_i ) / scale_i" },
+        eq: String.raw`r_i = \frac{g_i(x) - x_i}{\mathrm{scale}_i}`},
       { step: "The engine's own comment on that scaling names what its "
           + "absence costs, in those words: the latent under-convergence the "
           + "old Wegstein default also had (:3452-3453)." },
@@ -376,12 +399,21 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
           + "mixes flows and temperatures into one dimensionless number "
           + "(:2057-2062). Those two are the curves you see below." },
     ],
-    formula: "Wegstein test   | G(x) - x |  <  recycleTol      (no scaling)\n"
-      + "Newton test     | ( G(x) - x ) / scale |  <  recycleTol",
+    formula: String.raw`\begin{aligned}
+\text{Wegstein test}\quad & \lvert G(x) - x \rvert < \mathrm{recycleTol} \qquad \text{(no scaling)}\\
+\text{Newton test}\quad & \left\lvert \frac{G(x) - x}{\mathrm{scale}} \right\rvert < \mathrm{recycleTol}
+\end{aligned}`,
     where: [
+      { sym: "\\mathrm{recycleTol}",
+        means: "the convergence tolerance the case declares for the recycle, in "
+        + "system/solverDict" },
+      { sym: "\\mathrm{scale}",
+        means: "the per-equation scale the Newton test divides by; scale_i is one "
+        + "entry of it" },
       { sym: "r_i", means: "entry i of the tear residual, after it has been "
         + "made dimensionless by its own scale" },
-      { sym: "scale_i", means: "the characteristic size of variable i, used "
+      { sym: "\\mathrm{scale}_i",
+        means: "the characteristic size of variable i, used "
         + "to make each residual entry dimensionless before they are "
         + "compared: the tear's total flow for a flow, the temperature for "
         + "the temperature" },

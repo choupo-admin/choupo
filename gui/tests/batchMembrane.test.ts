@@ -568,16 +568,16 @@ describe("the batch membrane lesson", () => {
 
   it("puts each mode's own clock on the page, and neither of them is time", () => {
     const s3 = BATCH_MEMBRANE_STEPS[2]!;
-    expect(s3.formula).toContain("VCF = V_0 / V");
-    expect(s3.formula).toContain("N   = ∫ Q_d dt / V_0");
+    expect(s3.formula).toContain(String.raw`\mathrm{VCF} &= \frac{V_0}{V}`);
+    expect(s3.formula).toContain(String.raw`N &= \frac{\int Q_d\, \mathrm{d}t}{V_0}`);
   });
 
   it("derives the closed forms rather than stating them", () => {
     const s4 = BATCH_MEMBRANE_STEPS[3]!;
     expect(s4.derivation?.length ?? 0).toBeGreaterThan(4);
-    expect(s4.formula).toContain("n/n_0 = exp(−(1 − R) N)");
-    expect(s4.formula).toContain("VCF^−(1 − R)");
-    expect(s4.formula).toContain("c/c_0 = VCF^R");
+    expect(s4.formula).toContain(String.raw`n/n_0 = \exp(-(1 - R) N)`);
+    expect(s4.formula).toContain(String.raw`\mathrm{VCF}^{-(1 - R)}`);
+    expect(s4.formula).toContain(String.raw`c/c_0 = \mathrm{VCF}^{R}`);
     //  The assumption every line spends is stated as the last move, not
     //  discovered later.
     expect(s4.derivation!.some((d) => /PULLED R OUT OF THE INTEGRAL/.test(d.step)))
@@ -588,12 +588,12 @@ describe("the batch membrane lesson", () => {
     const s5 = BATCH_MEMBRANE_STEPS[4]!;
     expect(s5.note).toMatch(/CANNOT HAVE BEEN ARRANGED/);
     expect(s5.note).toMatch(/NO IDEAL AT ALL/);
-    expect(s5.formula).toContain("R_0 = R_obs at t = 0");
+    expect(s5.formula).toContain(String.raw`R_0 = R_\mathrm{obs} \text{ at } t = 0`);
   });
 
   it("treats a blocking law as a claim about a mechanism", () => {
     const s6 = BATCH_MEMBRANE_STEPS[5]!;
-    expect(s6.formula).toContain("1 / A_eff = 1 / A_w + r_f(v)");
+    expect(s6.formula).toContain(String.raw`\dfrac{1}{A_\mathrm{eff}} = \dfrac{1}{A_w} + r_f(v)`);
     expect(s6.note).toMatch(/REFUSED BY NAME/);
     expect(s6.note).toMatch(/written `reason`/);
   });

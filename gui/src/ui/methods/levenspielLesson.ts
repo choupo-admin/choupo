@@ -42,15 +42,17 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
       + "limiting reactant, and it is a volume in m³.  AREA IS VOLUME — that "
       + "is the whole method, and everything below is geometry on this one "
       + "picture.",
-    formula: "PFR:   V = F_A0 ∫₀^X dX/(−r_A)     — the AREA under the curve\n"
-      + "CSTR:  V = F_A0 · X/(−r_A)|exit    — a RECTANGLE of that height",
+    formula: String.raw`\begin{array}{lll}
+\text{PFR:} & V = F_{A0} \displaystyle\int_0^X \frac{\mathrm{d}X}{-r_A} & \text{the AREA under the curve}\\[8pt]
+\text{CSTR:} & V = F_{A0}\, \dfrac{X}{\left.(-r_A)\right|_\mathrm{exit}} & \text{a RECTANGLE of that height}
+\end{array}`,
     where: [
       { sym: "V", means: "The reactor VOLUME — the quantity this whole "
         + "construction exists to produce.  Note the direction of travel: in "
         + "the engine the volume is an INPUT and the conversion is the "
         + "result; this diagram reads the same equation backwards, sizing a "
         + "reactor for a conversion you want.", unit: "m³" },
-      { sym: "F_A0", means: "The molar feed rate of the LIMITING reactant A: "
+      { sym: "F_{A0}", means: "The molar feed rate of the LIMITING reactant A: "
         + "its inlet mole fraction times the total inlet molar flow, fixed "
         + "once and used as the reference for every conversion on the page.  "
         + "It is what turns an area into a volume.", unit: "mol/s" },
@@ -60,7 +62,8 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
         + "dry-basis moisture content in drying, a solute mole ratio in "
         + "Kremser, and the Gilliland abscissa in the shortcut-column page.  "
         + "Here it is conversion and nothing else.", unit: "dimensionless" },
-      { sym: "dX", means: "A differential slice of conversion — the width of "
+      { sym: "\\mathrm{d}X",
+        means: "A differential slice of conversion — the width of "
         + "one strip under the curve.  The engine does not march in X: it "
         + "integrates the mole balance in reactor VOLUME and computes X at "
         + "each stored point.  The two are the same equation with the "
@@ -93,14 +96,18 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
       + "the entire job.  That is why its volume is a conversion divided by a "
       + "single number, and why on this plot it is a rectangle: width X_exit, "
       + "height the ordinate at that same X_exit.",
-    formula: "V_CSTR = F_A0 · X_exit / (−r_A)|exit\n"
-      + "rectangle:  width X_exit,  height 1/(−r_A)|exit",
+    formula: String.raw`\begin{aligned}
+V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{exit}}\\[4pt]
+\text{rectangle:}\quad &\text{width } X_\mathrm{exit}, \quad \text{height } \frac{1}{\left.(-r_A)\right|_\mathrm{exit}}
+\end{aligned}`,
     where: [
-      { sym: "V_CSTR", means: "The volume of the perfectly mixed tank — the "
+      { sym: "V_\\mathrm{CSTR}",
+        means: "The volume of the perfectly mixed tank — the "
         + "RECTANGLE.  Nothing is approximated to get it: it is the exact "
         + "mole balance of an ideal CSTR, drawn instead of solved.",
         unit: "m³" },
-      { sym: "X_exit", means: "The conversion at the tank's outlet — ONE "
+      { sym: "X_\\mathrm{exit}",
+        means: "The conversion at the tank's outlet — ONE "
         + "number, not a profile, because a perfectly mixed vessel has no "
         + "gradient: the whole vessel sits at its exit state.  That is also "
         + "why the rectangle's height is read at the exit and not anywhere "
@@ -123,11 +130,13 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
       + "conversion: the stirred tank needs the larger volume, and the "
       + "picture says by how much.  The chip beside the plot measures exactly "
       + "that ratio, at the CSTR's own conversion.",
-    formula: "1/(−r_A) increasing on [0, X]  ⇒  ∫₀^X dX/(−r_A) ≤ X · "
-      + "1/(−r_A)|exit\nhence  V_PFR ≤ V_CSTR   for the same feed and the "
-      + "same conversion",
+    formula: String.raw`\begin{aligned}
+\frac{1}{-r_A} \text{ increasing on } [0, X] \;&\Rightarrow\; \int_0^X \frac{\mathrm{d}X}{-r_A} \le \frac{X}{\left.(-r_A)\right|_\mathrm{exit}}\\[4pt]
+\text{hence}\quad V_\mathrm{PFR} &\le V_\mathrm{CSTR} \quad \text{for the same feed and the same conversion}
+\end{aligned}`,
     where: [
-      { sym: "V_PFR", means: "The volume of the tubular reactor — the AREA "
+      { sym: "V_\\mathrm{PFR}",
+        means: "The volume of the tubular reactor — the AREA "
         + "under the curve.  The inequality on this line is the whole reason "
         + "a plug-flow reactor is smaller than a tank for the same job "
         + "whenever the ordinate rises with conversion: the tank pays the "
@@ -159,8 +168,10 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
       + "exactly zero, the ordinate is unbounded, and a plug-flow reactor "
       + "cannot start — it needs a recycle or a seed of product, which a "
       + "stirred tank provides by construction.",
-    formula: "autocatalytic:  −r_A = k · C_A · C_P\n"
-      + "C_P = 0 at X = 0  ⇒  −r_A = 0  ⇒  1/(−r_A) unbounded there",
+    formula: String.raw`\begin{aligned}
+\text{autocatalytic:}\quad -r_A &= k\, C_A\, C_P\\
+C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_A} \text{ unbounded there}
+\end{aligned}`,
     where: [
       { sym: "C_A", means: "The molar CONCENTRATION of A that the rate law "
         + "sees — a molar flow divided by a volumetric flow.  The volumetric "
@@ -206,17 +217,20 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
       + "exactly where its own geometry is favourable.  For an ordinary "
       + "rising curve the minimum sits at X = 0, the CSTR shrinks to nothing, "
       + "and the rule degenerates into the answer you already had.",
-    formula: "V_total/F_A0 = X*·1/(−r_A)|X*  +  ∫_{X*}^{X_f} dX/(−r_A)\n"
-      + "d/dX* of that total  =  X* · d[1/(−r_A)]/dX  =  0   ⇒   X* at the "
-      + "curve's MINIMUM",
+    formula: String.raw`\begin{aligned}
+\frac{V_\mathrm{total}}{F_{A0}} &= \frac{X^*}{\left.(-r_A)\right|_{X^*}} + \int_{X^*}^{X_f} \frac{\mathrm{d}X}{-r_A}\\[4pt]
+\frac{\mathrm{d}}{\mathrm{d}X^*} \text{ of that total} &= X^* \frac{\mathrm{d}}{\mathrm{d}X}\!\left[\frac{1}{-r_A}\right] = 0
+\;\Rightarrow\; X^* \text{ at the curve's MINIMUM}
+\end{aligned}`,
     where: [
-      { sym: "V_total", means: "The volume of the two reactors in SERIES: a "
+      { sym: "V_\\mathrm{total}",
+        means: "The volume of the two reactors in SERIES: a "
         + "tank carried to the minimum of the ordinate, then a tube taking "
         + "the rest.  This combination is a lesson construction — no engine "
         + "site computes it and no tutorial flowsheet puts a tank and a tube "
         + "in series, so what you see here is the two published volumes "
         + "added, not a simulated train.", unit: "m³" },
-      { sym: "X*", means: "The conversion at which you switch from the tank "
+      { sym: "X^*", means: "The conversion at which you switch from the tank "
         + "to the tube — the abscissa of the curve's MINIMUM.  The derivative "
         + "in the second line is why: at the minimum the extra volume of "
         + "widening the rectangle exactly matches the strip the tube would "

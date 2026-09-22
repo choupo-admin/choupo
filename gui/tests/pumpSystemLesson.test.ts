@@ -85,14 +85,14 @@ describe("the lesson runs end to end", () => {
     expect(prose(s1.title)).toContain("The pump does not set the flow");
     expect(prose(s1.body)).toContain("two different flows");
     //  The crossing is DEFINED in step 1, before either curve is drawn.
-    expect(s1.formula).toContain("Δp_pump(Q*) = Δp_system(Q*)");
+    expect(s1.formula).toContain(String.raw`\Delta p_\mathrm{pump}(Q^*) = \Delta p_\mathrm{system}(Q^*)`);
     expect(prose(s1.body)).toContain("operating point");
   });
 
   it("splits the system curve into a static part and a friction part", () => {
     const s2 = PUMP_STEPS.find((s) => s.n === 2)!;
-    expect(s2.formula).toContain("ρ g Δz");
-    expect(s2.formula).toContain("( f·L/D + ΣK ) · ρ v² / 2");
+    expect(s2.formula).toContain(String.raw`\rho\, g\, \Delta z`);
+    expect(s2.formula).toContain(String.raw`\left( \frac{f L}{D} + \sum K \right) \frac{\rho\, v^2}{2}`);
     //  The two halves must be told apart by BEHAVIOUR, not only by name.
     expect(prose(s2.body)).toContain("does not care how fast you push");
     expect(prose(s2.body)).toContain("grows roughly as the SQUARE of the flow");
@@ -100,7 +100,7 @@ describe("the lesson runs end to end", () => {
 
   it("gives the pump curve of the model this page actually runs", () => {
     const s3 = PUMP_STEPS.find((s) => s.n === 3)!;
-    expect(s3.formula).toContain("Δp_pump = η · W_shaft / Q");
+    expect(s3.formula).toContain(String.raw`\Delta p_\mathrm{pump} = \frac{\eta\, W_\mathrm{shaft}}{Q}`);
     //  A real machine's curve is measured; this one is derived.  Saying so is
     //  the difference between a teaching page and a wrong claim.
     expect(prose(s3.body)).toContain("MEASURED on a test");
@@ -118,14 +118,14 @@ describe("the consequences an engineer acts on", () => {
     expect(prose(s4.body)).toContain("slides LEFT to a lower flow");
     //  The cost, not just the movement: the throttled head is destroyed.
     expect(prose(s4.body)).toContain("dissipated as heat");
-    expect(s4.formula).toContain("ΣK ↑");
+    expect(s4.formula).toContain(String.raw`\sum K \uparrow`);
   });
 
   it("speed: the affinity laws, with the cube that is the whole argument", () => {
     const s4 = PUMP_STEPS.find((s) => s.n === 4)!;
-    expect(s4.formula).toContain("Q ∝ N");
-    expect(s4.formula).toContain("H ∝ N²");
-    expect(s4.formula).toContain("P ∝ N³");
+    expect(s4.formula).toContain(String.raw`Q \propto N`);
+    expect(s4.formula).toContain(String.raw`H \propto N^2`);
+    expect(s4.formula).toContain(String.raw`P \propto N^3`);
     expect(prose(s4.body)).toContain("follows its CUBE");
   });
 
@@ -149,9 +149,9 @@ describe("the consequences an engineer acts on", () => {
     expect(prose(s5.body)).toContain("SUCTION side");
     expect(prose(s5.body)).toContain("FALLS as flow rises");
     expect(prose(s5.body)).toContain("RISES with flow");
-    expect(s5.formula).toContain("NPSH_a");
-    expect(s5.formula).toContain("NPSH_r");
-    expect(s5.formula).toContain("cavitation when   NPSH_a ≤ NPSH_r");
+    expect(s5.formula).toContain(String.raw`\mathrm{NPSH}_a`);
+    expect(s5.formula).toContain(String.raw`\mathrm{NPSH}_r`);
+    expect(s5.formula).toContain(String.raw`\text{cavitation when}\quad \mathrm{NPSH}_a \le \mathrm{NPSH}_r`);
   });
 });
 

@@ -52,16 +52,19 @@ export const QP_STEPS: readonly LessonStep[] = [
       { step: "The objective. B is symmetric and positive definite, which is "
           + "what makes the problem CONVEX: there is one minimum, and a "
           + "local answer is the global one.",
-        eq: "min  0.5 d' B d + g' d" },
+        eq: String.raw`\min\ \tfrac{1}{2} d' B d + g' d`},
       { step: "The constraints, both written so that satisfied means the "
           + "left-hand side is at most zero. Writing them all one way saves "
           + "a reader remembering which side each was stated on.",
-        eq: "A_eq d + b_eq = 0        A_in d + b_in <= 0" },
+        eq: String.raw`A_\mathrm{eq}\, d + b_\mathrm{eq} = 0 \qquad A_\mathrm{in}\, d + b_\mathrm{in} \le 0`},
       { step: "Without any constraints the answer is one linear solve: set "
           + "the gradient to zero.",
-        eq: "B d + g = 0" },
+        eq: String.raw`B d + g = 0`},
     ],
-    formula: "min  0.5 d' B d + g' d     s.t.  A_eq d + b_eq = 0,  A_in d + b_in <= 0",
+    formula: String.raw`\begin{aligned}
+\min\ & \tfrac{1}{2} d' B d + g' d\\
+\text{s.t.}\ & A_\mathrm{eq}\, d + b_\mathrm{eq} = 0, \qquad A_\mathrm{in}\, d + b_\mathrm{in} \le 0
+\end{aligned}`,
     where: [
       { sym: "d", means: "the unknown — the vector being chosen. Called d "
         + "because in an SQP method it is a STEP away from the current point" },
@@ -70,13 +73,14 @@ export const QP_STEPS: readonly LessonStep[] = [
         + "is exactly one minimum" },
       { sym: "g", means: "the linear part of the objective — the gradient at "
         + "the origin. The unconstrained minimum sits where B d = -g" },
-      { sym: "A_eq", means: "the coefficient rows of the equality "
+      { sym: "A_\\mathrm{eq}", means: "the coefficient rows of the equality "
         + "constraints, one row per law that must hold exactly" },
-      { sym: "b_eq", means: "the constant of each equality row: how far from "
+      { sym: "b_\\mathrm{eq}",
+        means: "the constant of each equality row: how far from "
         + "satisfied it is at the origin" },
-      { sym: "A_in", means: "the coefficient rows of the inequality "
+      { sym: "A_\\mathrm{in}", means: "the coefficient rows of the inequality "
         + "constraints — the ones that may or may not be tight at the answer" },
-      { sym: "b_in", means: "the constant of each inequality row" },
+      { sym: "b_\\mathrm{in}", means: "the constant of each inequality row" },
     ],
     note: "Choupo's solver is Nocedal & Wright, Numerical Optimization 2nd "
       + "ed. (2006), Algorithm 16.3 — a published, public-domain method, "
@@ -100,14 +104,16 @@ export const QP_STEPS: readonly LessonStep[] = [
       { step: "Solve the equality-constrained problem over W. Stationarity "
           + "plus the rows themselves is one symmetric linear system, the "
           + "KKT system (N&W eq. 16.4).",
-        eq: "[ B   A_W' ] [ p      ]   [ -grad ]\n"
-          + "[ A_W  0   ] [ lambda ] = [ -c_W  ]" },
+        eq: String.raw`\begin{bmatrix} B & A_W' \\ A_W & 0 \end{bmatrix}
+\begin{bmatrix} p \\ \lambda \end{bmatrix}
+= \begin{bmatrix} -\mathrm{grad} \\ -c_W \end{bmatrix}`},
       { step: "Then ask the two questions that can tell you the guess was "
           + "wrong: did the step run into a constraint that was NOT in W, "
           + "and does any constraint in W want to be released?" },
     ],
-    formula: "[ B   A_W' ] [ p      ]   [ -grad ]\n"
-      + "[ A_W  0   ] [ lambda ] = [ -c_W  ]",
+    formula: String.raw`\begin{bmatrix} B & A_W' \\ A_W & 0 \end{bmatrix}
+\begin{bmatrix} p \\ \lambda \end{bmatrix}
+= \begin{bmatrix} -\mathrm{grad} \\ -c_W \end{bmatrix}`,
     where: [
       { sym: "W", means: "the WORKING SET: the constraints currently being "
         + "treated as equalities — every equality row, plus the inequality "
@@ -115,9 +121,10 @@ export const QP_STEPS: readonly LessonStep[] = [
       { sym: "A_W", means: "the coefficient rows of the working set, stacked" },
       { sym: "p", means: "the step this system proposes, from the current "
         + "point, staying on every working-set constraint" },
-      { sym: "lambda", means: "the LAGRANGE MULTIPLIER of each working-set "
+      { sym: "\\lambda", means: "the LAGRANGE MULTIPLIER of each working-set "
         + "row: how hard that constraint is pushing back" },
-      { sym: "grad", means: "the gradient of the objective at the current "
+      { sym: "\\mathrm{grad}",
+        means: "the gradient of the objective at the current "
         + "point, B x + g" },
       { sym: "c_W", means: "how far each working-set row is from satisfied at "
         + "the current point — zero once the point is on it" },
@@ -136,28 +143,32 @@ export const QP_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "A constraint outside W only matters if the step is moving "
           + "TOWARDS it: the row's value must be increasing along p.",
-        eq: "slope_k = a_k . p  >  0" },
+        eq: String.raw`\mathrm{slope}_k = a_k \cdot p > 0`},
       { step: "Then the fraction at which its value reaches zero is its "
           + "current value divided by that slope, negated. N&W eq. 16.41.",
-        eq: "alpha_k = - ( a_k . x + b_k ) / slope_k" },
+        eq: String.raw`\alpha_k = -\frac{a_k \cdot x + b_k}{\mathrm{slope}_k}`},
       { step: "Take the smallest, capped at a whole step, move, and if "
           + "something blocked, add it.",
-        eq: "alpha = min( 1, smallest alpha_k over the blocking rows )" },
+        eq: String.raw`\alpha = \min\left( 1,\ \text{smallest } \alpha_k \text{ over the blocking rows} \right)`},
     ],
-    formula: "slope_k = a_k . p        alpha_k = - ( a_k . x + b_k ) / slope_k\n"
-      + "alpha = min( 1, min over blocking k of alpha_k )",
+    formula: String.raw`\begin{aligned}
+\mathrm{slope}_k &= a_k \cdot p &\qquad \alpha_k &= -\frac{a_k \cdot x + b_k}{\mathrm{slope}_k}\\[4pt]
+\alpha &= \min\left( 1,\ \min_{\text{blocking } k} \alpha_k \right)
+\end{aligned}`,
     where: [
       { sym: "a_k", means: "the coefficient row of inequality k" },
-      { sym: "slope_k", means: "how fast row k's value rises along the "
+      { sym: "\\mathrm{slope}_k",
+        means: "how fast row k's value rises along the "
         + "proposed step. Positive means the step is moving towards that "
         + "wall; zero or negative means it cannot block" },
-      { sym: "alpha_k", means: "the fraction of the step at which row k would "
+      { sym: "\\alpha_k",
+        means: "the fraction of the step at which row k would "
         + "be reached exactly. The smallest of these over all rows is what "
         + "the step is cut down to" },
       { sym: "b_k", means: "the constant of inequality k" },
       { sym: "x", means: "the current point — the running total of the steps "
         + "taken so far, which starts at the origin" },
-      { sym: "alpha", means: "the fraction of the proposed step actually "
+      { sym: "\\alpha", means: "the fraction of the proposed step actually "
         + "taken: 1 when nothing is in the way, less when something is" },
     ],
     note: "Choupo keeps a running point starting at zero and solves each KKT "
@@ -182,21 +193,24 @@ export const QP_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "The step over W came out zero, so this point is optimal FOR W. "
           + "The only remaining question is whether W is right.",
-        eq: "p = 0" },
+        eq: String.raw`p = 0`},
       { step: "Read the multipliers of the working-set INEQUALITIES. The "
           + "equalities' multipliers are unconstrained in sign — an equality "
           + "may push either way and is never dropped." },
       { step: "If every one is non-negative, the KKT conditions hold and this "
           + "is the answer.",
-        eq: "all lambda_k >= 0   =>   optimal" },
+        eq: String.raw`\text{all } \lambda_k \ge 0 \quad \Rightarrow \quad \text{optimal}`},
       { step: "Otherwise drop the most negative and solve again with a "
           + "smaller working set. The objective strictly improves, which is "
           + "why this cannot go round for ever." },
     ],
-    formula: "p = 0  and  all lambda_k >= 0   =>   OPTIMAL\n"
-      + "p = 0  and  some lambda_k <  0   =>   DROP the most negative",
+    formula: String.raw`\begin{aligned}
+p = 0 \ \text{ and all } \lambda_k \ge 0 \quad &\Rightarrow \quad \text{OPTIMAL}\\
+p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the most negative}
+\end{aligned}`,
     where: [
-      { sym: "lambda_k", means: "the multiplier of working-set inequality k — "
+      { sym: "\\lambda_k",
+        means: "the multiplier of working-set inequality k — "
         + "its price. Zero means the constraint is tight but costs nothing; "
         + "negative means it is in the way" },
     ],
@@ -235,25 +249,28 @@ export const QP_STEPS: readonly LessonStep[] = [
       { step: "Move each measurement as little as its own uncertainty says "
           + "is cheap: a chi-squared in standard deviations, so a precise "
           + "analyte is expensive to move and a loose one is cheap.",
-        eq: "min  Sum_r ( ( x_r - m_r ) / sigma_r )^2" },
+        eq: String.raw`\min\ \sum_r \left( \frac{x_r - m_r}{\sigma_r} \right)^{\!2}`},
       { step: "Subject to the laws the case DECLARES it wants enforced: "
           + "charge balance, elemental conservation.",
-        eq: "C x = t" },
+        eq: String.raw`C x = t`},
       { step: "And subject to the one constraint nobody declares because it "
           + "is not optional: no negative concentrations.",
-        eq: "x >= 0" },
+        eq: String.raw`x \ge 0`},
       { step: "That is a convex QP with B the identity in sigma units, and "
           + "Choupo hands it to the same active-set solver the SQP driver "
           + "uses." },
     ],
-    formula: "min  Sum_r ( ( x_r - m_r ) / sigma_r )^2     s.t.  C x = t,  x >= 0",
+    formula: String.raw`\begin{aligned}
+\min\ & \sum_r \left( \frac{x_r - m_r}{\sigma_r} \right)^{\!2}\\
+\text{s.t.}\ & C x = t, \qquad x \ge 0
+\end{aligned}`,
     where: [
-      { sym: "Sum_r", means: "a sum over every measured quantity on the "
+      { sym: "\\sum_r", means: "a sum over every measured quantity on the "
         + "laboratory sheet" },
       { sym: "x_r", means: "the RECONCILED value of measured quantity r — "
         + "what the equilibrium is actually fed" },
       { sym: "m_r", means: "what the laboratory REPORTED for quantity r" },
-      { sym: "sigma_r", means: "the declared standard uncertainty of that "
+      { sym: "\\sigma_r", means: "the declared standard uncertainty of that "
         + "measurement, in its own units. It is the weight, and it is why "
         + "the correction lands where it does" },
       { sym: "C", means: "the coefficient rows of the enforced conservation "
@@ -282,23 +299,28 @@ export const QP_STEPS: readonly LessonStep[] = [
       { step: "Work in sigma units, so the objective's Hessian is the "
           + "identity and the problem is perfectly scaled whatever the "
           + "analytes weigh.",
-        eq: "u_r = ( x_r - m_r ) / sigma_r" },
+        eq: String.raw`u_r = \frac{x_r - m_r}{\sigma_r}`},
       { step: "Stationarity of the Lagrangian at the answer: the gradient of "
           + "the objective plus the constraint gradients times their "
           + "multipliers is zero.",
-        eq: "u + C' lambda + A_in' mu = 0" },
+        eq: String.raw`u + C' \lambda + A_\mathrm{in}' \mu = 0`},
       { step: "Read off one row of it. Every term on the right is a genuine "
           + "part of an identity, and Choupo ASSERTS that they reconstruct "
           + "the correction before it publishes them.",
-        eq: "u_r = - Sum_k lambda_k C_kr  +  mu_r" },
+        eq: String.raw`u_r = -\sum_k \lambda_k\, C_{kr} + \mu_r`},
     ],
-    formula: "u_r = - Sum_k lambda_k C_kr  +  mu_r",
+    formula: String.raw`u_r = -\sum_k \lambda_k\, C_{kr} + \mu_r`,
     where: [
+      { sym: "u",
+        means: "the vector of SCALED residuals, one per measurement: the gradient of "
+        + "the objective in the scaled variables" },
       { sym: "u_r", means: "the correction to row r, in units of its own "
         + "standard uncertainty — the number the report publishes" },
-      { sym: "Sum_k", means: "a sum over every enforced conservation law" },
-      { sym: "C_kr", means: "the coefficient of measured quantity r in law k" },
-      { sym: "mu / mu_r", means: "the multiplier of a non-negativity bound — "
+      { sym: "\\sum_k", means: "a sum over every enforced conservation law" },
+      { sym: "C_{kr}",
+        means: "the coefficient of measured quantity r in law k" },
+      { sym: "\\mu \\,/\\, \\mu_r",
+        means: "the multiplier of a non-negativity bound — "
         + "mu_r is row r's. Zero unless that measurement was pinned at zero" },
     ],
     note: "It is an identity, not an attribution scheme, and that is the "

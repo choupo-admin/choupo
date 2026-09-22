@@ -58,7 +58,7 @@ export const DRYING_STEPS: readonly LessonStep[] = [
       + "counted on the DRY basis — kg of water per kg of bone-dry solid — "
       + "because the dry solid is the one quantity in the tray that does not "
       + "change while it dries.",
-    formula: "X = m_moisture / m_drySolid        [kg/kg dry solid]",
+    formula: String.raw`X = \frac{m_\mathrm{moisture}}{m_\mathrm{drySolid}} \qquad [\text{kg/kg dry solid}]`,
     where: [
       { sym: "X", means: "The moisture content on the DRY BASIS: kg of "
         + "moisture per kg of BONE-DRY solid.  The dry solid is the one thing "
@@ -69,9 +69,11 @@ export const DRYING_STEPS: readonly LessonStep[] = [
         + "Gilliland's reduced reflux coordinate on the shortcut-column "
         + "page: four unrelated quantities, one letter.",
         unit: "kg moisture / kg dry solid" },
-      { sym: "m_moisture", means: "The mass of moisture in the charge — the "
+      { sym: "m_\\mathrm{moisture}",
+        means: "The mass of moisture in the charge — the "
         + "only part of the state that moves.", unit: "kg" },
-      { sym: "m_drySolid", means: "The bone-dry solid mass, fixed once at the "
+      { sym: "m_\\mathrm{drySolid}",
+        means: "The bone-dry solid mass, fixed once at the "
         + "start and constant thereafter.  Written m_s below.", unit: "kg" },
     ],
     note: "The dry basis is why X can exceed 1 and why the axis has no "
@@ -93,8 +95,10 @@ export const DRYING_STEPS: readonly LessonStep[] = [
       + "while it dries, which is why the constant-rate period is the safe one "
       + "for a heat-sensitive product, and why hot air is not automatically a "
       + "danger to it.",
-    formula: "Y_sat(T_wb) − Y = (cp_c + Y·cp_v)(T_air − T_wb) / λ(T_wb)\n"
-      + "R_c = k_Y · ( Y_sat(T_wb) − Y )                 [kg/(m² s)]",
+    formula: String.raw`\begin{aligned}
+Y_\mathrm{sat}(T_\mathrm{wb}) - Y &= \frac{(\mathrm{cp}_c + Y\,\mathrm{cp}_v)(T_\mathrm{air} - T_\mathrm{wb})}{\lambda(T_\mathrm{wb})}\\[4pt]
+R_c &= k_Y \left( Y_\mathrm{sat}(T_\mathrm{wb}) - Y \right) \qquad [\text{kg/(m}^2\,\text{s)}]
+\end{aligned}`,
     where: [
       { sym: "Y", means: "The HUMIDITY RATIO of the drying air: kg of "
         + "moisture carried per kg of DRY gas.  Here it is a declared "
@@ -102,17 +106,20 @@ export const DRYING_STEPS: readonly LessonStep[] = [
         + "picks moisture up.  (Kremser's Y is a gas-phase solute mole ratio "
         + "and the shortcut column's is a reduced stage count; neither is "
         + "this.)", unit: "kg moisture / kg dry gas" },
-      { sym: "Y_sat", means: "The SATURATION humidity ratio at a given "
+      { sym: "Y_\\mathrm{sat}",
+        means: "The SATURATION humidity ratio at a given "
         + "temperature — what that gas would carry if it were saturated, "
         + "built from the moisture's own vapour pressure at the declared "
         + "pressure.  Evaluated at T_wb it is one half of the driving force.",
         unit: "kg moisture / kg dry gas" },
-      { sym: "T_wb", means: "The WET-BULB temperature: where the heat "
+      { sym: "T_\\mathrm{wb}",
+        means: "The WET-BULB temperature: where the heat "
         + "arriving from the air exactly matches the latent heat leaving with "
         + "the vapour, so an evaporating free surface parks there.  The "
         + "engine finds it by bisection and holds the surface at it by "
         + "HYPOTHESIS for as long as the surface stays wet.", unit: "K" },
-      { sym: "T_air", means: "The DRY-BULB temperature of the air — constant "
+      { sym: "T_\\mathrm{air}",
+        means: "The DRY-BULB temperature of the air — constant "
         + "for the whole run.  The solid is never integrated toward it, and "
         + "note what that means precisely: the SURFACE is held at T_wb by "
         + "hypothesis while it stays wet, but the vessel's own temperature "
@@ -120,11 +127,14 @@ export const DRYING_STEPS: readonly LessonStep[] = [
         + "case charged.  On this witness the two agree because the tray was "
         + "authored AT the wet bulb (300.53 K against T_wb 300.5343), not "
         + "because the engine computed the agreement.", unit: "K" },
-      { sym: "cp_c", means: "The specific heat of the dry CARRIER gas — the "
+      { sym: "\\mathrm{cp}_c",
+        means: "The specific heat of the dry CARRIER gas — the "
         + "dry-gas term of the humid heat.", unit: "J/(kg·K)" },
-      { sym: "cp_v", means: "The specific heat of the moisture VAPOUR — the "
+      { sym: "\\mathrm{cp}_v",
+        means: "The specific heat of the moisture VAPOUR — the "
         + "second term of the humid heat cp_c + Y·cp_v.", unit: "J/(kg·K)" },
-      { sym: "λ", means: "The LATENT HEAT of vaporisation of the moisture per "
+      { sym: "\\lambda",
+        means: "The LATENT HEAT of vaporisation of the moisture per "
         + "unit mass, taken at the wet-bulb temperature.  It is what the AIR "
         + "supplies — heat crossing in from outside the batch boundary.",
         unit: "J/kg" },
@@ -162,7 +172,7 @@ export const DRYING_STEPS: readonly LessonStep[] = [
       + "being stripped faster than the interior can resupply.  X_c belongs to "
       + "the material AND the conditions together, which is why it is "
       + "measured.",
-    formula: "t_c = m_s · (X_0 − X_c) / (R_c · A)      [the constant-rate leg]",
+    formula: String.raw`t_c = \frac{m_s (X_0 - X_c)}{R_c\, A} \qquad \text{(the constant-rate leg)}`,
     where: [
       { sym: "t_c", means: "The BREAK TIME — the instant the moisture crosses "
         + "X_c and the falling-rate law takes over.  In the engine it is "
@@ -203,19 +213,23 @@ export const DRYING_STEPS: readonly LessonStep[] = [
       + "toward the air's DRY-BULB temperature.  That is where a "
       + "heat-sensitive product is actually at risk, and it is the opposite "
       + "end of the curve from where the hot air first worried you.",
-    formula: "R = R_c · (X − X_eq) / (X_c − X_eq)\n"
-      + "X(t) − X_eq = (X_c − X_eq)·exp(−(t − t_c)/τ),   "
-      + "τ = m_s (X_c − X_eq)/(R_c A)",
+    formula: String.raw`\begin{aligned}
+R &= R_c\, \frac{X - X_\mathrm{eq}}{X_c - X_\mathrm{eq}}\\[4pt]
+X(t) - X_\mathrm{eq} &= (X_c - X_\mathrm{eq}) \exp\!\left(-\frac{t - t_c}{\tau}\right),
+\qquad \tau = \frac{m_s (X_c - X_\mathrm{eq})}{R_c\, A}
+\end{aligned}`,
     where: [
       { sym: "R", means: "The drying flux at moisture content X — falling "
         + "linearly here from R_c at the critical point to zero at "
         + "equilibrium.  Note it is not the R of any other page: not a reflux "
         + "ratio, not the gas constant.", unit: "kg/(m²·s)" },
-      { sym: "X_eq", means: "The EQUILIBRIUM moisture content — where the "
+      { sym: "X_\\mathrm{eq}",
+        means: "The EQUILIBRIUM moisture content — where the "
         + "solid is in equilibrium with the air and drying stops.  It is a "
         + "RESULT of the air's condition, not a property of the solid alone: "
         + "drier air means a lower X_eq.", unit: "kg/kg dry solid" },
-      { sym: "τ", means: "The TIME CONSTANT of the falling-rate period — the "
+      { sym: "\\tau",
+        means: "The TIME CONSTANT of the falling-rate period — the "
         + "e-folding time of the approach to equilibrium.  Read its "
         + "definition: it is built from the SAME R_c and A as the constant "
         + "rate, so the two periods are not independently parameterised.",
@@ -249,7 +263,7 @@ export const DRYING_STEPS: readonly LessonStep[] = [
       + "or hotter air, not a longer run.  A dryer specified to a moisture "
       + "below the equilibrium value of the air it is fed cannot meet its "
       + "specification at any residence time.",
-    formula: "t(X) = t_c + τ · ln( (X_c − X_eq) / (X − X_eq) )   →  ∞  as X → X_eq",
+    formula: String.raw`t(X) = t_c + \tau \ln\!\left(\frac{X_c - X_\mathrm{eq}}{X - X_\mathrm{eq}}\right) \;\longrightarrow\; \infty \quad \text{as } X \to X_\mathrm{eq}`,
     note: "Both consequences are visible in the two diagrams: on X(t) the tail "
       + "flattens onto X_eq and never touches it; on R(X) the sloping segment "
       + "aims at R = 0 exactly at X_eq.  X_eq here is a RESULT, not a "

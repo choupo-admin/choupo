@@ -52,17 +52,20 @@ export const BODE_STEPS: readonly LessonStep[] = [
           + "not a thought experiment: Choupo's `sinusoidal` signal writes "
           + "exactly this onto a manipulated variable "
           + "(src/control/signal/Signals.H:124).",
-        eq: "u(t) = mean + A·sin(ω·t)" },
+        eq: String.raw`u(t) = \mathrm{mean} + A \sin(\omega t)`},
       { step: "Integrate the plant until the free response has decayed, then "
           + "look at the outlet.  It is a sinusoid at the same ω, so it can "
           + "be written with just two unknowns.",
-        eq: "y(t) = mean_out + A·AR·sin(ω·t + φ)" },
+        eq: String.raw`y(t) = \mathrm{mean}_\mathrm{out} + A\, \mathrm{AR} \sin(\omega t + \varphi)`},
       { step: "Those two unknowns are what a Bode diagram plots, each "
           + "against ω on a logarithmic axis.  Nothing else about the "
           + "response is needed, because nothing else about it can differ." },
     ],
-    formula: "in    u(t) = mean + A·sin(ω·t)\n"
-      + "out   y(t) = mean_out + A·AR·sin(ω·t + φ)      (transient gone)",
+    formula: String.raw`\begin{aligned}
+\text{in}\quad u(t) &= \mathrm{mean} + A \sin(\omega t)\\
+\text{out}\quad y(t) &= \mathrm{mean}_\mathrm{out} + A\, \mathrm{AR} \sin(\omega t + \varphi)
+ \qquad \text{(transient gone)}
+\end{aligned}`,
     where: [
       { sym: "u", means: "the INPUT signal — the manipulated variable the "
         + "experiment drives (here a tracer feed rate)" },
@@ -71,14 +74,18 @@ export const BODE_STEPS: readonly LessonStep[] = [
       { sym: "t", means: "time", unit: "s" },
       { sym: "A", means: "the amplitude of the input swing, in the input's "
         + "own units — half the peak-to-peak" },
-      { sym: "mean / mean_out", means: "the steady values the input and the "
+      { sym: "\\mathrm{mean} \\,/\\, \\mathrm{mean}_\\mathrm{out}",
+        means: "the steady values the input and the "
         + "output oscillate about; a Bode diagram is about the SWING, and "
         + "these drop out of it" },
-      { sym: "ω", means: "ANGULAR FREQUENCY of the drive — ω = 2π·f, and the "
+      { sym: "\\omega",
+        means: "ANGULAR FREQUENCY of the drive — ω = 2π·f, and the "
         + "x-axis of both curves", unit: "rad/s" },
-      { sym: "AR", means: "the AMPLITUDE RATIO — the output swing divided by "
+      { sym: "\\mathrm{AR}",
+        means: "the AMPLITUDE RATIO — the output swing divided by "
         + "the input swing.  The magnitude curve" },
-      { sym: "φ", means: "the PHASE — how far the output sinusoid is shifted "
+      { sym: "\\varphi",
+        means: "the PHASE — how far the output sinusoid is shifted "
         + "relative to the input.  NEGATIVE means the output runs BEHIND: a "
         + "lag.  The phase curve", unit: "rad (drawn in degrees)" },
     ],
@@ -103,28 +110,32 @@ export const BODE_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "Blocks in series multiply their magnitudes and add their "
           + "phases — that is what a complex product is.",
-        eq: "|G₁·G₂| = |G₁|·|G₂|          ∠(G₁·G₂) = ∠G₁ + ∠G₂" },
+        eq: String.raw`\lvert G_1 G_2 \rvert = \lvert G_1 \rvert \lvert G_2 \rvert \qquad \angle(G_1 G_2) = \angle G_1 + \angle G_2`},
       { step: "So take 20·log10 of the magnitude and it adds as well.  The "
           + "factor 20 (not 10) is historical, from power ratios; what "
           + "matters here is only that it is a FIXED multiple of the "
           + "logarithm.",
-        eq: "dB = 20·log10(AR)" },
+        eq: String.raw`\mathrm{dB} = 20 \log_{10}(\mathrm{AR})`},
       { step: "Two landmarks worth memorising, both recomputable on any "
           + "calculator: unity is the zero of the axis, and a halving of "
           + "the swing is about −6 dB.",
-        eq: "AR = 1     → 20·log10(1)  = 0 dB\n"
-          + "AR = 1/√2  → 20·log10(0.70711) = −3.0103 dB\n"
-          + "AR = 1/2   → 20·log10(0.5)     = −6.0206 dB" },
+        eq: String.raw`\begin{aligned}
+\mathrm{AR} = 1 \quad &\longrightarrow\quad 20 \log_{10}(1) = 0\ \mathrm{dB}\\
+\mathrm{AR} = 1/\sqrt{2} \quad &\longrightarrow\quad 20 \log_{10}(0.70711) = -3.0103\ \mathrm{dB}\\
+\mathrm{AR} = 1/2 \quad &\longrightarrow\quad 20 \log_{10}(0.5) = -6.0206\ \mathrm{dB}
+\end{aligned}`},
     ],
-    formula: "dB = 20·log10(AR)",
+    formula: String.raw`\mathrm{dB} = 20 \log_{10}(\mathrm{AR})`,
     where: [
-      { sym: "dB", means: "DECIBEL — the magnitude axis, 20·log10 of the "
+      { sym: "\\mathrm{dB}",
+        means: "DECIBEL — the magnitude axis, 20·log10 of the "
         + "amplitude ratio.  0 dB is a system that passes the swing "
         + "unchanged; negative is attenuation" },
       { sym: "G", means: "the system's response at one frequency, as a "
         + "complex number: its magnitude is AR and its angle is φ.  G₁ and "
         + "G₂ are two blocks in series" },
-      { sym: "decade", means: "a factor of ten in frequency.  Slopes on this "
+      { sym: "\\mathrm{decade}",
+        means: "a factor of ten in frequency.  Slopes on this "
         + "diagram are quoted in dB per decade" },
     ],
     note: "A DECADE is a factor of ten in frequency, and it is the unit the "
@@ -150,35 +161,39 @@ export const BODE_STEPS: readonly LessonStep[] = [
           + "(the witness case holds F fixed by SUBSTITUTING tracer for "
           + "carrier, so the tank's residence time cannot move with the "
           + "experiment).",
-        eq: "N·dx/dt = F·x_in − F·x" },
+        eq: String.raw`N \frac{\mathrm{d}x}{\mathrm{d}t} = F x_\mathrm{in} - F x`},
       { step: "Divide by F.  The group that appears is the residence time — "
           + "the same one the unit computes for itself at "
           + "src/unitOperations/dynamic/DynamicCSTR.cpp:377.",
-        eq: "τ = N/F          τ·dx/dt + x = x_in" },
+        eq: String.raw`\tau = \frac{N}{F} \qquad \tau \frac{\mathrm{d}x}{\mathrm{d}t} + x = x_\mathrm{in}`},
       { step: "Now feed it the sinusoid of step 1 and look for a sinusoidal "
           + "answer of the same frequency: x = AR·sin(ω·t + φ).  "
           + "Differentiate, substitute, and match the sin and cos parts.",
-        eq: "x_in = sin(ω·t)   ⇒   τ·ω·AR·cos(ω·t + φ) + AR·sin(ω·t + φ) = sin(ω·t)" },
+        eq: String.raw`x_\mathrm{in} = \sin(\omega t) \quad \Rightarrow \quad \tau \omega\, \mathrm{AR} \cos(\omega t + \varphi) + \mathrm{AR} \sin(\omega t + \varphi) = \sin(\omega t)`},
       { step: "Matching gives two equations in AR and φ; solving them is the "
           + "whole content of the first-order Bode curve.  Written in "
           + "complex form (substitute x_in = exp(i·ω·t) in the same ODE) it "
           + "is one line.",
-        eq: "G(i·ω) = 1/(1 + i·ω·τ)" },
+        eq: String.raw`G(i\omega) = \frac{1}{1 + i\omega\tau}`},
       { step: "Take the magnitude and the angle of that complex number.",
-        eq: "AR = 1/√(1 + (ω·τ)²)          φ = −arctan(ω·τ)" },
+        eq: String.raw`\mathrm{AR} = \frac{1}{\sqrt{1 + (\omega\tau)^2}} \qquad \varphi = -\arctan(\omega\tau)`},
     ],
-    formula: "τ = N/F\n"
-      + "G(i·ω) = 1/(1 + i·ω·τ)\n"
-      + "AR = 1/√(1 + (ω·τ)²)          φ = −arctan(ω·τ)",
+    formula: String.raw`\begin{aligned}
+\tau &= \frac{N}{F}\\[4pt]
+G(i\omega) &= \frac{1}{1 + i\omega\tau}\\[4pt]
+\mathrm{AR} &= \frac{1}{\sqrt{1 + (\omega\tau)^2}} &\qquad \varphi &= -\arctan(\omega\tau)
+\end{aligned}`,
     where: [
       { sym: "N", means: "the total molar inventory held in the tank — what "
         + "the case declares as `holdupMolar`", unit: "kmol" },
       { sym: "F", means: "the molar flow through the tank, in at the feed "
         + "and out at the outlet (constant volume, so the two are equal)",
         unit: "kmol/s" },
-      { sym: "x / x_in", means: "the tracer's mole fraction inside the tank "
+      { sym: "x \\,/\\, x_\\mathrm{in}",
+        means: "the tracer's mole fraction inside the tank "
         + "(= at the outlet, because it is well mixed) and in the feed" },
-      { sym: "τ", means: "the TIME CONSTANT — here the residence time N/F.  "
+      { sym: "\\tau",
+        means: "the TIME CONSTANT — here the residence time N/F.  "
         + "It is the only thing about this plant the diagram depends on",
         unit: "s" },
       { sym: "i", means: "the imaginary unit; substituting s = i·ω into a "
@@ -203,11 +218,14 @@ export const BODE_STEPS: readonly LessonStep[] = [
       + "sits at −90°.  The corner is at ω·τ = 1, where the two asymptotes "
       + "cross — and the true curve passes 3 dB below that crossing, with "
       + "exactly half the total phase spent.",
-    formula: "ω·τ ≪ 1     AR → 1            0 dB           φ →   0°\n"
-      + "ω·τ = 1     AR = 1/√2      −3.0103 dB     φ = −45°\n"
-      + "ω·τ ≫ 1     AR → 1/(ω·τ)   −20 dB/decade  φ → −90°",
+    formula: String.raw`\begin{array}{llll}
+\omega\tau \ll 1 & \mathrm{AR} \to 1 & 0\ \mathrm{dB} & \varphi \to 0^\circ\\
+\omega\tau = 1 & \mathrm{AR} = 1/\sqrt{2} & -3.0103\ \mathrm{dB} & \varphi = -45^\circ\\
+\omega\tau \gg 1 & \mathrm{AR} \to 1/(\omega\tau) & -20\ \mathrm{dB}/\text{decade} & \varphi \to -90^\circ
+\end{array}`,
     where: [
-      { sym: "corner frequency", means: "ω = 1/τ, where the two asymptotes "
+      { sym: "\\text{corner frequency}",
+        means: "ω = 1/τ, where the two asymptotes "
         + "meet.  A tank with a 240 s residence time corners at "
         + "1/240 = 4.167e-3 rad/s", unit: "rad/s" },
     ],
@@ -231,16 +249,21 @@ export const BODE_STEPS: readonly LessonStep[] = [
       + "run, a belt, an analyser cycle) is the dangerous one: its "
       + "magnitude is EXACTLY one at every frequency — it hides completely "
       + "from the magnitude curve — while its phase falls without bound.",
-    formula: "gain        K              |G| = K          slope  0        ∠G = 0\n"
-      + "lag         1/(τ·s+1)      |G| = 1/√(1+(ω·τ)²)  →−20 dB/dec  0 → −90°\n"
-      + "integrator  1/s            |G| = 1/ω        −20 dB/dec  ∠G = −90°\n"
-      + "dead time   exp(−θ·s)      |G| = 1          slope  0    ∠G = −ω·θ",
+    formula: String.raw`\begin{array}{llll}
+\text{gain} & K & \lvert G \rvert = K & \text{slope } 0 \quad \angle G = 0\\
+\text{lag} & \dfrac{1}{\tau s + 1} & \lvert G \rvert = \dfrac{1}{\sqrt{1 + (\omega\tau)^2}}
+ & \to -20\ \mathrm{dB}/\text{dec} \quad 0 \to -90^\circ\\[8pt]
+\text{integrator} & \dfrac{1}{s} & \lvert G \rvert = \dfrac{1}{\omega}
+ & -20\ \mathrm{dB}/\text{dec} \quad \angle G = -90^\circ\\[8pt]
+\text{dead time} & \exp(-\theta s) & \lvert G \rvert = 1 & \text{slope } 0 \quad \angle G = -\omega\theta
+\end{array}`,
     where: [
       { sym: "K", means: "the STEADY-STATE GAIN of the process — how far the "
         + "output finally moves per unit of sustained input change.  The "
         + "engine identifies one from a step response and publishes it "
         + "(src/propertyOps/ReactionCurve.H:221)" },
-      { sym: "θ", means: "DEAD TIME — a pure delay: nothing happens at all "
+      { sym: "\\theta",
+        means: "DEAD TIME — a pure delay: nothing happens at all "
         + "for θ seconds, then the response begins", unit: "s" },
     ],
     note: "The dead time's phase, −ω·θ radians, is linear in ω, so on a "
@@ -266,34 +289,40 @@ export const BODE_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "The textbook ideal form — the one every published tuning rule "
           + "is written in.",
-        eq: "G_c(s) = K_c·(1 + 1/(τ_I·s) + τ_D·s)" },
+        eq: String.raw`G_c(s) = K_c \left( 1 + \frac{1}{\tau_I s} + \tau_D s \right)`},
       { step: "Substitute s = i·ω.  1/i = −i, so the integral term is "
           + "negative imaginary and the derivative term positive imaginary: "
           + "they sit on the SAME axis and subtract.",
-        eq: "G_c(i·ω) = K_c·(1 + i·(ω·τ_D − 1/(ω·τ_I)))" },
+        eq: String.raw`G_c(i\omega) = K_c \left( 1 + i \left( \omega\tau_D - \frac{1}{\omega\tau_I} \right) \right)`},
       { step: "Magnitude and angle follow at once.  The bracket is purely "
           + "real — the controller contributes no phase at all — exactly "
           + "where the two terms cancel, at ω = 1/√(τ_I·τ_D).",
-        eq: "|G_c| = K_c·√(1 + (ω·τ_D − 1/(ω·τ_I))²)\n"
-          + "∠G_c = arctan(ω·τ_D − 1/(ω·τ_I))" },
+        eq: String.raw`\begin{aligned}
+\lvert G_c \rvert &= K_c \sqrt{1 + \left( \omega\tau_D - \frac{1}{\omega\tau_I} \right)^2}\\[4pt]
+\angle G_c &= \arctan\!\left( \omega\tau_D - \frac{1}{\omega\tau_I} \right)
+\end{aligned}`},
       { step: "Choupo's PID is written in the PARALLEL form, and the engine "
           + "states the conversion itself, in the refusal it raises when a "
           + "case declares the textbook spelling in the dict "
           + "(src/control/PIDController.cpp:75).",
-        eq: "K_p = K_c          K_i = K_c/τ_I          K_d = K_c·τ_D" },
+        eq: String.raw`K_p = K_c \qquad K_i = \frac{K_c}{\tau_I} \qquad K_d = K_c \tau_D`},
     ],
-    formula: "G_c(i·ω) = K_c·(1 + i·(ω·τ_D − 1/(ω·τ_I)))\n"
-      + "K_p = K_c     K_i = K_c/τ_I     K_d = K_c·τ_D",
+    formula: String.raw`\begin{aligned}
+G_c(i\omega) &= K_c \left( 1 + i \left( \omega\tau_D - \frac{1}{\omega\tau_I} \right) \right)\\[4pt]
+K_p &= K_c &\qquad K_i &= \frac{K_c}{\tau_I} &\qquad K_d &= K_c \tau_D
+\end{aligned}`,
     where: [
       { sym: "G_c", means: "the CONTROLLER's response at one frequency" },
       { sym: "K_c", means: "controller GAIN in the textbook form — the "
         + "proportional action" },
-      { sym: "τ_I", means: "INTEGRAL TIME: how long the integral term takes "
+      { sym: "\\tau_I",
+        means: "INTEGRAL TIME: how long the integral term takes "
         + "to repeat the proportional action.  Small τ_I is aggressive "
         + "integral action", unit: "s" },
-      { sym: "τ_D", means: "DERIVATIVE TIME — how far ahead the derivative "
+      { sym: "\\tau_D", means: "DERIVATIVE TIME — how far ahead the derivative "
         + "term extrapolates", unit: "s" },
-      { sym: "K_p / K_i / K_d", means: "the three gains Choupo's dict "
+      { sym: "K_p \\,/\\, K_i \\,/\\, K_d",
+        means: "the three gains Choupo's dict "
         + "actually declares, in the parallel form u = u_bias + K_p·e + "
         + "K_i·∫e·dt − K_d·d(PV)/dt (src/control/PIDController.cpp:123-127)",
         unit: "K_p [-], K_i [1/s], K_d [s]" },
@@ -320,24 +349,30 @@ export const BODE_STEPS: readonly LessonStep[] = [
       + "big as it left, it grows each lap and the loop oscillates.  So two "
       + "frequencies matter, and each is read off one curve and answered on "
       + "the other.",
-    formula: "L(i·ω) = G_c(i·ω) · G_p(i·ω)\n"
-      + "gain crossover    |L(ω_c)| = 1   (0 dB)     ⇒   PM = 180° + ∠L(ω_c)\n"
-      + "phase crossover   ∠L(ω_u) = −180°          ⇒   GM = 1/|L(ω_u)|",
+    formula: String.raw`\begin{aligned}
+L(i\omega) &= G_c(i\omega)\, G_p(i\omega)\\[4pt]
+\text{gain crossover}\quad & \lvert L(\omega_c) \rvert = 1 \ (0\ \mathrm{dB})
+ &\Rightarrow\quad & \mathrm{PM} = 180^\circ + \angle L(\omega_c)\\
+\text{phase crossover}\quad & \angle L(\omega_u) = -180^\circ
+ &\Rightarrow\quad & \mathrm{GM} = \frac{1}{\lvert L(\omega_u) \rvert}
+\end{aligned}`,
     where: [
       { sym: "L", means: "the OPEN-LOOP response: controller times process "
         + "times everything else in the ring (valve, sensor, delay)" },
       { sym: "G_p", means: "the PROCESS response — the plant as the "
         + "controller sees it, from manipulated variable to measurement" },
-      { sym: "ω_c", means: "the GAIN crossover frequency, where the "
+      { sym: "\\omega_c", means: "the GAIN crossover frequency, where the "
         + "open-loop magnitude passes through 1.  The phase margin is read "
         + "here", unit: "rad/s" },
-      { sym: "ω_u", means: "the PHASE crossover frequency, where the "
+      { sym: "\\omega_u", means: "the PHASE crossover frequency, where the "
         + "open-loop phase passes through −180°.  The gain margin is read "
         + "here.  It is also the frequency at which the loop would "
         + "oscillate", unit: "rad/s" },
-      { sym: "PM", means: "PHASE MARGIN — how many more degrees of lag the "
+      { sym: "\\mathrm{PM}",
+        means: "PHASE MARGIN — how many more degrees of lag the "
         + "loop could take at ω_c before the phase reached −180°", unit: "°" },
-      { sym: "GM", means: "GAIN MARGIN — the factor by which the loop gain "
+      { sym: "\\mathrm{GM}",
+        means: "GAIN MARGIN — the factor by which the loop gain "
         + "could be multiplied before the magnitude reached 1 at ω_u.  "
         + "Often quoted in dB" },
     ],
@@ -362,7 +397,8 @@ export const BODE_STEPS: readonly LessonStep[] = [
       + "statement is Nyquist's, and it counts encirclements rather than "
       + "reading two numbers.",
     where: [
-      { sym: "margin", means: "a DISTANCE from a boundary, never a promise "
+      { sym: "\\mathrm{margin}",
+        means: "a DISTANCE from a boundary, never a promise "
         + "of good behaviour: a loop can have 45° of phase margin and still "
         + "ring unacceptably, and the diagram will not tell you so" },
     ],

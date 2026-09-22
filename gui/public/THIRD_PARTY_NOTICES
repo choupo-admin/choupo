@@ -592,12 +592,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 -------------------------------------------------------------------------------
-@napi-rs/canvas-linux-x64-gnu@0.1.100 (MIT)
--------------------------------------------------------------------------------
-
-No standalone licence/notice file was present in the installed package.
-
--------------------------------------------------------------------------------
 @plotly/d3@3.8.2 (BSD-3-Clause)
 -------------------------------------------------------------------------------
 
@@ -4884,6 +4878,61 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 -------------------------------------------------------------------------------
+katex@0.18.7 (MIT)
+-------------------------------------------------------------------------------
+
+[LICENSE]
+The MIT License (MIT)
+
+Copyright (c) 2013-2020 Khan Academy and other contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-------------------------------------------------------------------------------
+commander@15.0.0 (MIT)
+-------------------------------------------------------------------------------
+
+[LICENSE]
+(The MIT License)
+
+Copyright (c) 2011 TJ Holowaychuk <tj@vision-media.ca>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-------------------------------------------------------------------------------
 kdbush@4.0.2 (ISC)
 -------------------------------------------------------------------------------
 
@@ -8232,7 +8281,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 -------------------------------------------------------------------------------
-NOT LISTED: 10 platform-specific optional package(s)
+NOT LISTED: 11 platform-specific optional package(s)
 -------------------------------------------------------------------------------
 
 The lockfile names these for platforms other than the one this build ran
@@ -8247,6 +8296,7 @@ did not happen.  They are named so the omission is visible:
   node_modules/@napi-rs/canvas-linux-arm64-gnu (linux-arm64)
   node_modules/@napi-rs/canvas-linux-arm64-musl (linux-arm64)
   node_modules/@napi-rs/canvas-linux-riscv64-gnu (linux-riscv64)
+  node_modules/@napi-rs/canvas-linux-x64-gnu (linux-x64)
   node_modules/@napi-rs/canvas-linux-x64-musl (linux-x64)
   node_modules/@napi-rs/canvas-win32-arm64-msvc (win32-arm64)
   node_modules/@napi-rs/canvas-win32-x64-msvc (win32-x64)

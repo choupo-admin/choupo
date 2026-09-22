@@ -64,14 +64,14 @@ describe("the lesson runs end to end", () => {
     expect(prose(s1.body)).toContain("mass of DRY carrier gas");
     expect(prose(s1.note!)).toContain(
       "passes through a heater, a dryer or a cooling coil UNCHANGED");
-    expect(prose(s1.formula!)).toContain("Y = (M_v / M_c) · p_v / (P − p_v)");
+    expect(prose(s1.formula!)).toContain(String.raw`Y = \frac{M_v}{M_c} \cdot \frac{p_v}{P - p_v}`);
   });
 
   it("makes the saturation curve a ceiling and RH a ratio of PRESSURES", () => {
     const s2 = PSYCHRO_STEPS.find((s) => s.n === 2)!;
     expect(prose(s2.body)).toContain("SATURATION CURVE");
     expect(prose(s2.body)).toContain("ratio of PRESSURES and not of humidities");
-    expect(prose(s2.formula!)).toContain("φ = p_v / P_sat(T)");
+    expect(prose(s2.formula!)).toContain(String.raw`\varphi &= \frac{p_v}{P_\mathrm{sat}(T)}`);
     //  RH moves with nothing added or removed -- which is why Y is the
     //  variable a mass balance can be written in and φ is not.
     expect(prose(s2.note!)).toContain("heat the gas at constant Y and φ falls");
@@ -85,9 +85,9 @@ describe("the lesson runs end to end", () => {
     //  The enthalpy argument is what makes an adiabatic line STRAIGHT.
     expect(prose(s3.body)).toContain("constant-enthalpy lines");
     const f = prose(s3.formula!);
-    expect(f).toContain("c_s · (T − T_as) = ( Y_sat(T_as) − Y ) · λ(T_as)");
-    expect(f).toContain("c_s = c_p,carrier + Y · c_p,vapour");
-    expect(f).toContain("h = c_s · (T − T₀) + Y · λ(T₀)");
+    expect(f).toContain(String.raw`c_s (T - T_\mathrm{as}) = \left( Y_\mathrm{sat}(T_\mathrm{as}) - Y \right) \lambda(T_\mathrm{as})`);
+    expect(f).toContain(String.raw`c_s = c_\mathrm{p,carrier} + Y\, c_\mathrm{p,vapour}`);
+    expect(f).toContain(String.raw`h = c_s (T - T_0) + Y\, \lambda(T_0)`);
   });
 
   it("keeps the wet-bulb / adiabatic-saturation distinction, and calls Le ≈ 1 a coincidence", () => {
@@ -103,7 +103,7 @@ describe("the lesson runs end to end", () => {
     expect(n).toContain("coincide when Le ≈ 1");
     expect(n).toContain("not a law");
     expect(n).toContain("SEPARATE families");
-    expect(prose(s3.formula!)).toContain("Le^(2/3)");
+    expect(prose(s3.formula!)).toContain(String.raw`\mathrm{Le}^{2/3}`);
   });
 
   it("draws all four processes, with the mixing lever rule named", () => {
@@ -122,7 +122,7 @@ describe("the lesson runs end to end", () => {
     expect(prose(s4.note!)).toContain("LEVER RULE");
     expect(prose(s4.note!)).toContain("extraction triangle");
     expect(prose(s4.formula!))
-      .toContain("Y_m = (G₁·Y₁ + G₂·Y₂) / (G₁ + G₂)");
+      .toContain(String.raw`Y_m = \frac{G_1 Y_1 + G_2 Y_2}{G_1 + G_2}`);
   });
 
   it("says the chart is drawn at ONE pressure, and names the altitude trap", () => {

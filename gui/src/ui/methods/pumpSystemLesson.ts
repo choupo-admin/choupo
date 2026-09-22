@@ -59,16 +59,18 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "at each flow.  One curve rises, the other falls, so they meet at "
       + "exactly one place, and that crossing is the operating point: the "
       + "only flow the installation can actually run at.",
-    formula: "Δp_pump(Q*) = Δp_system(Q*)      →      Q* , the operating point",
+    formula: String.raw`\Delta p_\mathrm{pump}(Q^*) = \Delta p_\mathrm{system}(Q^*) \quad \longrightarrow \quad Q^*, \text{ the operating point}`,
     where: [
-      { sym: "Δp_pump", means: "The pressure RISE the pump delivers at a given "
+      { sym: "\\Delta p_\\mathrm{pump}",
+        means: "The pressure RISE the pump delivers at a given "
         + "flow.  In this model it is a closed form, not a machine "
         + "characteristic: a fixed shaft power times a fixed efficiency, "
         + "divided by the volume passing through.  The curve falls simply "
         + "because the same power is spread over more volume — there is no "
         + "speed, no impeller diameter and no measured curve behind it.",
         unit: "Pa" },
-      { sym: "Δp_system", means: "The pressure the PIPEWORK demands at that "
+      { sym: "\\Delta p_\\mathrm{system}",
+        means: "The pressure the PIPEWORK demands at that "
         + "flow — exactly three terms: distributed friction, minor losses, "
         + "and static elevation.  There is no fourth: no terminal-vessel "
         + "pressure difference is modelled anywhere in the sum.",
@@ -76,7 +78,7 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       { sym: "Q", means: "Volumetric flow through the system.  It is never "
         + "CHOSEN by the pump: the feed's molar flow sets it, and the sweep "
         + "imposes that point by point.", unit: "m³/s" },
-      { sym: "Q*", means: "The OPERATING POINT — the one flow at which the "
+      { sym: "Q^*", means: "The OPERATING POINT — the one flow at which the "
         + "two curves agree.  It is not a setting: it is where the "
         + "installation ends up, which is the whole lesson of the page.",
         unit: "m³/s" },
@@ -101,11 +103,13 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "the moving liquid rubs away — the pipe wall along the run, plus the "
       + "elbows, bends and valves — and it grows roughly as the SQUARE of "
       + "the flow, because it is driven by the velocity head ρv²/2.",
-    formula: "Δp_system = ρ g Δz              (static — flat in Q)\n"
-      + "          + ( f·L/D + ΣK ) · ρ v² / 2   (friction — grows ≈ Q²)\n"
-      + "with   v = Q / A",
+    formula: String.raw`\begin{aligned}
+\Delta p_\mathrm{system} &= \rho\, g\, \Delta z &&\text{(static: flat in } Q)\\
+&\quad + \left( \frac{f L}{D} + \sum K \right) \frac{\rho\, v^2}{2} &&\text{(friction: grows} \approx Q^2)\\[4pt]
+\text{with}\quad v &= \frac{Q}{A}
+\end{aligned}`,
     where: [
-      { sym: "ρ", means: "Liquid density — and both curves on this diagram "
+      { sym: "\\rho", means: "Liquid density — and both curves on this diagram "
         + "now use the same one.  The pump builds ρ from the component "
         + "record's constant liquid volume; the pipe asks the thermo "
         + "package, which since 2026-08-29 ANCHORS the Rackett correlation "
@@ -122,7 +126,8 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         unit: "kg/m³" },
       { sym: "g", means: "Standard gravitational acceleration.",
         unit: "m/s²" },
-      { sym: "Δz", means: "Elevation change from pipe inlet to outlet — and "
+      { sym: "\\Delta z",
+        means: "Elevation change from pipe inlet to outlet — and "
         + "the WHOLE of the static term, the only flow-independent "
         + "contribution.  Elevation only: an installation discharging into a "
         + "pressurised header has static head this curve does not contain.",
@@ -135,7 +140,7 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         + "ratio L/D.  Fittings are counted separately and carry no length.",
         unit: "m" },
       { sym: "D", means: "Internal pipe diameter.", unit: "m" },
-      { sym: "ΣK", means: "The sum of minor-loss coefficients over the "
+      { sym: "\\sum K", means: "The sum of minor-loss coefficients over the "
         + "declared fittings.  It multiplies the velocity head directly, so "
         + "this term is EXACTLY quadratic in Q — unlike the distributed "
         + "friction, whose f drifts.", unit: "dimensionless" },
@@ -162,15 +167,16 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "is given a fixed shaft power and a fixed efficiency, so the "
       + "pressure rise is whatever that power buys when it is spread over "
       + "the volume passing through.  Twice the flow, half the rise.",
-    formula: "Δp_pump = η · W_shaft / Q        (Q = volumetric flow)",
+    formula: String.raw`\Delta p_\mathrm{pump} = \frac{\eta\, W_\mathrm{shaft}}{Q} \qquad (Q = \text{volumetric flow})`,
     where: [
-      { sym: "η", means: "Pump EFFICIENCY — a declared constant, read once "
+      { sym: "\\eta", means: "Pump EFFICIENCY — a declared constant, read once "
         + "and applied at every flow.  It is not a curve and not a function "
         + "of Q, so this model has no best-efficiency point and no "
         + "efficiency-versus-flow reading exists.  It splits the shaft work: "
         + "the η fraction becomes pressure, the rest heats the liquid.",
         unit: "dimensionless" },
-      { sym: "W_shaft", means: "Shaft POWER supplied to the pump — one of "
+      { sym: "W_\\mathrm{shaft}",
+        means: "Shaft POWER supplied to the pump — one of "
         + "three mutually exclusive specifications.  Note it is power, not "
         + "rotational speed: nothing in this model converts between the two.",
         unit: "W" },
@@ -199,8 +205,10 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "cube is the whole argument for variable-speed drives — head a "
       + "throttle destroys is head the pump never has to produce in the "
       + "first place.",
-    formula: "throttle:  ΣK ↑   →  system curve steepens  →  Q* falls\n"
-      + "affinity:  Q ∝ N        H ∝ N²        P ∝ N³",
+    formula: String.raw`\begin{aligned}
+\text{throttle:}\quad & \sum K \uparrow \;\longrightarrow\; \text{system curve steepens} \;\longrightarrow\; Q^* \text{ falls}\\
+\text{affinity:}\quad & Q \propto N \qquad H \propto N^2 \qquad P \propto N^3
+\end{aligned}`,
     where: [
       { sym: "N", means: "Rotational SPEED, in the affinity laws.  NOT "
         + "COMPUTED BY THIS ENGINE — the pump model has no speed and no "
@@ -250,27 +258,35 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "the blades: the pump stops delivering the curve it was chosen on, "
       + "it gets noisy, and it erodes.  None of that is visible in a "
       + "pump-versus-system diagram, however good the crossing looks.",
-    formula: "NPSH_a = (P_suction − P_vap)/(ρ g) + z_suction − h_f,suction   (falls with Q)\n"
-      + "NPSH_r = the pump's own, measured                                (rises with Q)\n"
-      + "cavitation when   NPSH_a ≤ NPSH_r",
+    formula: String.raw`\begin{aligned}
+\mathrm{NPSH}_a &= \frac{P_\mathrm{suction} - P_\mathrm{vap}}{\rho\, g} + z_\mathrm{suction} - h_\mathrm{f,suction} && \text{(falls with } Q)\\
+\mathrm{NPSH}_r &= \text{the pump's own, measured} && \text{(rises with } Q)\\[4pt]
+&\text{cavitation when}\quad \mathrm{NPSH}_a \le \mathrm{NPSH}_r
+\end{aligned}`,
     where: [
-      { sym: "NPSH_a", means: "Net positive suction head AVAILABLE — how much "
+      { sym: "\\mathrm{NPSH}_a",
+        means: "Net positive suction head AVAILABLE — how much "
         + "head the liquid arrives with above its own vapour pressure, "
         + "falling as flow rises.  NOT COMPUTED BY THIS ENGINE: no unit "
         + "publishes an NPSH of either kind and the pump carries no suction "
         + "geometry.", unit: "m" },
-      { sym: "NPSH_r", means: "Net positive suction head REQUIRED — the "
+      { sym: "\\mathrm{NPSH}_r",
+        means: "Net positive suction head REQUIRED — the "
         + "pump's own property, measured by its maker, rising with flow.  NOT "
         + "COMPUTED, and could not be: it is measured machine data, and this "
         + "model carries no measured data of any kind.", unit: "m" },
-      { sym: "P_suction", means: "Absolute pressure at the pump suction.",
+      { sym: "P_\\mathrm{suction}",
+        means: "Absolute pressure at the pump suction.",
         unit: "Pa" },
-      { sym: "P_vap", means: "The liquid's vapour pressure at the suction "
+      { sym: "P_\\mathrm{vap}",
+        means: "The liquid's vapour pressure at the suction "
         + "temperature — the floor the suction pressure must stay above.",
         unit: "Pa" },
-      { sym: "z_suction", means: "Static head of liquid above (or below) the "
+      { sym: "z_\\mathrm{suction}",
+        means: "Static head of liquid above (or below) the "
         + "pump centreline on the suction side.", unit: "m" },
-      { sym: "h_f,suction", means: "Friction head lost in the SUCTION line "
+      { sym: "h_\\mathrm{f,suction}",
+        means: "Friction head lost in the SUCTION line "
         + "alone — which is why a long or throttled suction is the classic "
         + "way to cavitate a pump that is otherwise sized correctly.",
         unit: "m" },

@@ -54,8 +54,14 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
       + "flow-weighted average of what went in.  Where on that line is fixed "
       + "by the flows, and the arithmetic is exactly the lever rule you read "
       + "off the flash: the mixing point sits closer to the bigger stream.",
-    formula: "M = F + S        FM / MS = S / F",
+    formula: String.raw`M = F + S \qquad \frac{\overline{FM}}{\overline{MS}} = \frac{S}{F}`,
     where: [
+      { sym: "\\overline{FM} \\,/\\, \\overline{MS}",
+        means: "the two SEGMENTS into "
+        + "which the mixing point M cuts the straight line FS — the lever "
+        + "arms, measured on the diagram.  Each is opposite the stream whose "
+        + "flow it is proportional to, which is why the ratio comes out "
+        + "inverted", unit: "a length on the triangle" },
       { sym: "F", means: "The FEED — the stream carrying the solute in its "
         + "original carrier, entering the cascade at stage 1 and leaving it, "
         + "stripped, as the raffinate at stage N.  It is a real inlet: the "
@@ -102,9 +108,10 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
       + "operating line in the construction passes through it, so the pencil "
       + "of lines through Δ plays the part the single operating line played "
       + "in McCabe.",
-    formula: "Δ = F − E₁ = R_N − S",
+    formula: String.raw`\Delta = F - E_1 = R_N - S`,
     where: [
-      { sym: "Δ", means: "The DIFFERENCE POINT — a fictitious stream: the net "
+      { sym: "\\Delta",
+        means: "The DIFFERENCE POINT — a fictitious stream: the net "
         + "flow passing every cut of the cascade.  Because F − E₁ = R_j − "
         + "E_{j+1} = R_N − S is the same net stream wherever you cut, Δ, R_j "
         + "and E_{j+1} are colinear for every j, which is exactly why every "
@@ -118,7 +125,8 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
         + "from the terminal streams the engine does publish, and it can be "
         + "absent entirely when the two defining lines are parallel and the "
         + "net stream is at infinity.", unit: "mol/s as a net flow" },
-      { sym: "E", means: "The EXTRACT (E₁ is the one leaving stage 1) — the solvent-rich "
+      { sym: "E",
+        means: "The EXTRACT (E₁ is the one leaving stage 1) — the solvent-rich "
         + "phase, flowing countercurrent to the raffinate and carrying out "
         + "the solute it has taken up.  The engine does not decide which "
         + "phase is the extract by name: at each stage it flashes the "

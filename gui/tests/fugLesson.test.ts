@@ -74,7 +74,7 @@ describe("the lesson runs end to end", () => {
     //  and 0.01).  A page that called recoveryHK "to the bottoms" would send
     //  the reader to type 0.99 into a key that wants 0.01.
     const f1 = prose(step(1).formula!);
-    expect(f1).toContain("α_i,HK = K_i / K_HK");
+    expect(f1).toContain(String.raw`\alpha_{i,\mathrm{HK}} &= \frac{K_i}{K_\mathrm{HK}}`);
     expect(f1).toContain("recoveryLK");
     expect(f1).toContain("recoveryHK");
     expect(f1).toContain("DISTILLATE");
@@ -85,7 +85,8 @@ describe("the lesson runs end to end", () => {
 describe("Fenske: the minimum-stages limit, and the assumption under it", () => {
   it("prints the Fenske expression", () => {
     const f = prose(step(2).formula!);
-    expect(f).toContain("N_min = ln[ (x_LK/x_HK)_D · (x_HK/x_LK)_B ] / ln α_LK,HK");
+    expect(f).toContain(String.raw`\ln \alpha_\mathrm{LK,HK}`);
+    expect(f).toContain(String.raw`N_\mathrm{min} &= \frac{\ln\!\left[ \left(\dfrac{x_\mathrm{LK}}{x_\mathrm{HK}}\right)_{\!D} \left(\dfrac{x_\mathrm{HK}}{x_\mathrm{LK}}\right)_{\!B} \right]}`);
   });
 
   it("says it is a LIMIT and not an operating point", () => {
@@ -115,8 +116,8 @@ describe("Fenske: the minimum-stages limit, and the assumption under it", () => 
 describe("Underwood: the minimum-reflux limit and the root that is fiddly", () => {
   it("prints both halves — the θ equation and the R_min sum", () => {
     const f = prose(step(3).formula!);
-    expect(f).toContain("Σ_i α_i z_i / (α_i − θ) = 1 − q");
-    expect(f).toContain("R_min + 1 = Σ_i α_i x_D,i / (α_i − θ)");
+    expect(f).toContain(String.raw`\sum_i \frac{\alpha_i z_i}{\alpha_i - \theta} &= 1 - q`);
+    expect(f).toContain(String.raw`R_\mathrm{min} + 1 &= \sum_i \frac{\alpha_i\, x_{D,i}}{\alpha_i - \theta}`);
   });
 
   it("says what R_min MEANS, not just how it is computed", () => {
@@ -164,10 +165,10 @@ describe("Gilliland: the honesty point this page exists to make", () => {
 
   it("prints the two normalised coordinates and the closed form", () => {
     const f = prose(step(4).formula!);
-    expect(f).toContain("X = (R − R_min) / (R + 1)");
-    expect(f).toContain("Y = (N − N_min) / (N + 1)");
-    expect(f).toContain("(1 + 54.4 X) / (11 + 117.2 X)");
-    expect(f).toContain("(X − 1) / √X");
+    expect(f).toContain(String.raw`X &= \frac{R - R_\mathrm{min}}{R + 1}`);
+    expect(f).toContain(String.raw`Y &= \frac{N - N_\mathrm{min}}{N + 1}`);
+    expect(f).toContain(String.raw`\frac{1 + 54.4\,X}{11 + 117.2\,X}`);
+    expect(f).toContain(String.raw`\frac{X - 1}{\sqrt{X}}`);
   });
 
   it("separates the two KINDS of claim, and draws the consequence", () => {
@@ -205,7 +206,7 @@ describe("what the shortcut buys and what it cannot tell you", () => {
   it("prints the Kirkbride correlation with its empirical exponent", () => {
     //  ShortcutColumn.cpp raises the bracket to 0.206.  Printing the exponent
     //  is what makes "empirical" checkable rather than a word.
-    expect(prose(step(5).formula!)).toContain("^0.206");
+    expect(prose(step(5).formula!)).toContain(String.raw`\right]^{0.206}`);
   });
 
   it("does not attribute the shortcut/rigorous gap to a single cause", () => {

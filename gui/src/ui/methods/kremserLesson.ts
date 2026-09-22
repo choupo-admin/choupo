@@ -40,7 +40,7 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "RATIOS, moles of solute per mole of solute-free carrier, because the "
       + "carrier gas and the solvent pass through almost unchanged while the "
       + "total flows do not.",
-    formula: "Y = y/(1−y)      X = x/(1−x)",
+    formula: String.raw`Y = \frac{y}{1-y} \qquad X = \frac{x}{1-x}`,
     where: [
       { sym: "y", means: "solute MOLE FRACTION in the gas — per mole of gas, "
         + "total" },
@@ -71,7 +71,7 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "factor, and it is the single number that says whether the column "
       + "can work at all: it compares the solvent's capacity to carry the "
       + "solute away against the solute's tendency to stay in the gas.",
-    formula: "A = L / (K · V)",
+    formula: String.raw`A = \frac{L}{K \cdot V}`,
     where: [
       { sym: "A", means: "the absorption factor — how hard the solvent pulls "
         + "relative to how hard the equilibrium pushes back.  A > 1 and the "
@@ -107,10 +107,13 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "stages — you compute the recovery directly from A and N.  That is "
       + "Kremser, and it is why absorbers are designed with a formula while "
       + "distillation columns are drawn or solved stage by stage.",
-    formula: "recovery = (A^(N+1) − A) / (A^(N+1) − 1)        A ≠ 1\n"
-      + "recovery = N / (N + 1)                              A = 1",
+    formula: String.raw`\begin{aligned}
+\mathrm{recovery} &= \frac{A^{N+1} - A}{A^{N+1} - 1} &\quad& A \ne 1\\
+\mathrm{recovery} &= \frac{N}{N+1} &\quad& A = 1
+\end{aligned}`,
     where: [
-      { sym: "recovery", means: "the fraction of the entering solute the "
+      { sym: "\\mathrm{recovery}",
+        means: "the fraction of the entering solute the "
         + "solvent captures" },
       { sym: "A", means: "the absorption factor, as above" },
       { sym: "N", means: "the number of EQUILIBRIUM stages — ideal ones, not "
