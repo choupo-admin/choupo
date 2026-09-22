@@ -1,48 +1,66 @@
 #!/usr/bin/env python3
-"""Gate: every unit type the ENGINE registers has a silhouette, and no more.
+"""Gate: every unit type has a symbol, and two types share one only if the
+ENGINE says they are the same object.
 
     bin/curate/check_unit_families.py
 
-WHY THIS EXISTS.  Vitor said the flowsheet boxes carry no symbol of the unit
-operation.  Measured, the cause was not size: the engine registers 51 unit
-types and `gui/src/ui/unitIcons.tsx` mapped 24.  The remaining 27 --
-gibbsReactor, flash, column, evaporator, pipe among them -- all fell through
+WHY THIS EXISTS, AND WHY IT WAS REWRITTEN THE DAY AFTER IT SHIPPED.
+
+Round one: Vitor said the flowsheet boxes carry no symbol of the unit
+operation.  Measured, the cause was not size -- the engine registered 51 unit
+types and `gui/src/ui/unitIcons.tsx` mapped 24; the other 27 fell through
 `default: return IconAdjustments`, the generic settings-sliders glyph.  The
 same picture stood for a Gibbs reactor, a pipe and a column, and nothing ever
-said so, because a default never complains.
+said so, because a default never complains.  The fix grouped the types into
+ELEVEN FAMILIES and this gate recounted them against the registry.
 
-The drawing was then fixed by families (gui/src/case/unitFamily.ts).  THIS
-GATE IS WHY THAT FIX IS NOT THE SAME MISTAKE AGAIN.  A hand-kept per-type
-table in the GUI drifted to 24 of 51 while the engine grew; a second one
-would drift the same way for the same reason.  Here the table is recounted
-against the engine's own registry, so it cannot go quietly short.
+Round two, within the hour: `mixer` and a `splitter` wore the SAME BOW-TIE on
+his screen.  So did `pump`, `compressor` and `turbine`; so did all five
+reactors.  THE FAMILIES WERE ARGUED ON MAINTENANCE -- a hand-kept per-type
+table is what had drifted to 24 of 51 -- and that argument was already void,
+because THIS GATE had solved maintenance in the same commit.  The coarseness
+went on being paid for a problem that no longer existed.
+
+    GRANULARITY MUST FOLLOW MEANING.  A gate that prevents drift is what
+    makes fine granularity affordable; it is not a reason to stay coarse.
+
+THE RULE, AND IT IS NOT A JUDGEMENT.  `UnitOperation::registerBuiltins()` maps
+each registered NAME to the C++ CLASS it constructs: 51 names, 42 classes.
+The nine names sharing a class are one object under two words (`flash` and
+`isothermalFlash`; `boiler`, `condenser` and `phaseChanger`; ...).  So:
+
+    TWO TYPES SHARE A SYMBOL IF AND ONLY IF THEY CONSTRUCT THE SAME CLASS.
+
+Nothing here decides what "looks similar enough" -- that question is what
+produced the bow-tie.  The engine has already answered it, in the only place
+that can be checked, and this gate derives the map from that source.
 
 WHAT THIS CHECKS.
-  (a) COVERAGE.  Every `reg("<type>", ...)` in
-      src/unitOperations/UnitOperation.cpp has a key in UNIT_FAMILY.  A unit
-      added to the engine without a silhouette FAILS here rather than
-      arriving on screen as a generic glyph.
-  (b) NO ORPHANS.  Every key in UNIT_FAMILY names a type the engine
-      registers.  A type deleted or renamed leaves a dead entry that would
-      otherwise sit there looking maintained.
-  (c) EVERY FAMILY IS DRAWABLE.  Each family used by the table has a spec in
-      FAMILIES with a non-empty SVG path, so a type can never be assigned to
-      a family nobody drew.
-  (d) NO UNUSED SILHOUETTE.  A family defined and assigned to nothing is a
-      drawing with no subject; it is reported, because the legend lists what
-      is PRESENT and a never-present family cannot be checked by looking.
+  (a) COVERAGE.  Every `reg("<type>", ... make_unique<Class>)` has an entry in
+      UNIT_FAMILY's UNIT_CLASS.  A unit added to the engine without a symbol
+      FAILS here rather than arriving on screen with no drawing.
+  (b) NO ORPHANS.  Every entry names a type the engine registers.
+  (c) THE CLASS IS THE ENGINE'S.  Each entry names the class the engine
+      actually constructs for that type.  This is the arm that makes the
+      whole rule mechanical: a type repointed at another class in C++ fails
+      here instead of going on wearing its old picture.
+  (d) EVERY CLASS IS DRAWN, with a non-empty path.
+  (e) NO TWO CLASSES SHARE A PATH.  The round-two defect, made impossible:
+      two classes are two operations, and a reader must be able to tell them
+      apart by looking.  Whitespace-normalised, so a reformat cannot hide a
+      duplicate.
+  (f) NO UNUSED DRAWING.  A class drawn that no type constructs is a picture
+      with no subject.
 
 WHAT THIS DOES NOT CHECK, said plainly:
-  * WHETHER A TYPE IS IN THE RIGHT FAMILY.  That is a reading judgement --
-    whether a crystalliser reads as a vessel or a reactor is an argument
-    between engineers, not something a script can settle.  The assignments
-    carry their reasoning in the module, which is where a reviewer checks
-    them.
-  * WHETHER A SILHOUETTE LOOKS LIKE THE THING.  No script can see a picture.
-  * The ALIAS structure.  `column` and `distillationColumn` construct the
-    same class and must share a family, but this gate reads the registry as
-    a flat list of names and does not resolve aliases; a mis-assigned alias
-    passes here and is caught by reading.
+  * WHETHER A SYMBOL LOOKS LIKE ITS SUBJECT.  No script sees a picture.  That
+    the crystalliser's crystals read as crystals is a human's judgement, and
+    `/tmp`-rendered contact sheets are how it was actually reviewed.
+  * WHETHER TWO DISTINCT PATHS LOOK DISTINCT.  Arm (e) catches an identical
+    path, not a nearly identical one.  Two drawings differing by one stray
+    line would pass and read the same on screen.
+  * THE LABEL.  Whether "rotary dryer" is the right words for SolidDryer is
+    prose, checked by reading.
 
 Exit 1 with the offending names.
 """
@@ -54,78 +72,109 @@ ROOT = Path(__file__).resolve().parents[2]
 ENGINE = ROOT / "src" / "unitOperations" / "UnitOperation.cpp"
 TABLE = ROOT / "gui" / "src" / "case" / "unitFamily.ts"
 
-#  Keys of the FamilySpec interface, which match the entry-line shape but are
-#  not unit types.  Named rather than filtered by position so that adding a
-#  field to the interface fails loudly here instead of inventing a unit.
-SPEC_KEYS = {"family", "label", "path"}
-
 
 def main() -> int:
     if not ENGINE.is_file():
         print(f"check_unit_families: FAILED\n  {ENGINE} is missing -- the "
-              "registry this gate recounts against does not exist, so nothing "
-              "was checked.")
+              "registry this gate derives its rule from does not exist, so "
+              "nothing was checked.")
         return 1
     if not TABLE.is_file():
         print(f"check_unit_families: FAILED\n  {TABLE} is missing.")
         return 1
 
-    engine = set(re.findall(r'reg\("([A-Za-z0-9_]+)"', ENGINE.read_text()))
+    #  The engine's own answer: name -> class it constructs.
+    engine = dict(re.findall(
+        r'reg\("([A-Za-z0-9_]+)"[^;]*?make_unique<([A-Za-z0-9_]+)>',
+        ENGINE.read_text()))
     src = TABLE.read_text()
 
-    #  The map entries: `  someType: "family",` at the indentation the object
-    #  literal uses.  The trailing quote is what separates a unit entry from
-    #  a FamilySpec field, whose value is also a string -- hence SPEC_KEYS.
-    #  A TRAILING COMMENT IS PART OF THE CORPUS, not an exception.  The
-    #  first run of this gate reported seven types missing -- FUG, MHeatX,
-    #  REquil, boiler, column, condenser, extract -- and every one of them
-    #  was PRESENT: they are the alias entries, and each carries a
-    #  `// alias of ...` after the value.  Anchoring to the end of the line
-    #  made the gate blind to exactly the rows whose reasoning is written
-    #  down, which is the 2026-09-07 lesson (a pattern anchored where its
-    #  subject does not live is a check that cannot fire) in miniature.
-    table = {m.group(1): m.group(2)
-             for m in re.finditer(
-                 r'^\s+([A-Za-z0-9_]+):\s*"([a-zA-Z]+)",?\s*(?://.*)?$',
-                 src, re.M)
-             if m.group(1) not in SPEC_KEYS}
+    m = re.search(r"export const UNIT_CLASS[^{]*\{(.*?)\n\};", src, re.S)
+    table = dict(re.findall(r'\n  ([A-Za-z0-9_]+): "([A-Za-z0-9_]+)",',
+                            m.group(1))) if m else {}
 
-    families_declared = set(re.findall(r'family:\s*"([a-zA-Z]+)"', src))
-    #  A path is only a silhouette if it is not empty.
-    drawn = {m.group(1) for m in re.finditer(
-        r'family:\s*"([a-zA-Z]+)",[\s\S]{0,400}?path:\s*"([^"]+)"', src)}
+    #  The drawings.  A class is DRAWN only when its entry carries a path, so
+    #  the two are harvested together and an entry with an empty path is not
+    #  counted as a drawing at all.
+    drawn = {}
+    for e in re.split(r"\n  \{ cls: ", src[src.find("export const SYMBOLS"):]):
+        cm = re.match(r'"([A-Za-z0-9_]+)"', e)
+        if not cm:
+            continue
+        tail = re.sub(r"//[^\n]*", "", e[e.find("label:"):]) \
+            if "label:" in e else ""
+        chunks = re.findall(r'"((?:[^"\\]|\\.)*)"', tail)
+        path = "".join(chunks[1:])            # chunk 0 is the label
+        if path.strip():
+            drawn[cm.group(1)] = re.sub(r"\s+", " ", path).strip()
 
     fails = []
 
-    missing = sorted(engine - set(table))
+    if not engine:
+        fails.append("harvested NO types from the engine registry -- the "
+                     "shape of registerBuiltins() changed, so this gate is "
+                     "blind rather than satisfied")
+    if not table:
+        fails.append("harvested NO entries from UNIT_CLASS -- the shape of "
+                     "the table changed, so this gate is blind rather than "
+                     "satisfied")
+    if not drawn:
+        fails.append("harvested NO drawings from SYMBOLS -- the shape of the "
+                     "table changed, so this gate is blind rather than "
+                     "satisfied")
+    if fails:
+        print("check_unit_families: FAILED")
+        for f in fails:
+            print("  -", f)
+        return 1
+
+    missing = sorted(set(engine) - set(table))
     if missing:
         fails.append(
             f"{len(missing)} unit type(s) the engine registers have NO "
-            f"silhouette, so they would draw as a generic glyph: "
-            + ", ".join(missing)
-            + " -- add them to UNIT_FAMILY in gui/src/case/unitFamily.ts")
+            f"symbol: " + ", ".join(missing)
+            + " -- add them to UNIT_CLASS in gui/src/case/unitFamily.ts")
 
-    orphans = sorted(set(table) - engine)
+    orphans = sorted(set(table) - set(engine))
     if orphans:
         fails.append(
-            f"{len(orphans)} entr(ies) in UNIT_FAMILY name no registered "
+            f"{len(orphans)} entr(ies) in UNIT_CLASS name no registered "
             f"type: " + ", ".join(orphans)
             + " -- the engine deleted or renamed them and the table kept "
               "looking maintained")
 
-    used = set(table.values())
-    undrawn = sorted(used - drawn)
-    if undrawn:
+    wrong = sorted(t for t in table if t in engine and table[t] != engine[t])
+    if wrong:
         fails.append(
-            "assigned to famil(ies) with no drawable silhouette: "
-            + ", ".join(undrawn))
+            "the table names a class the engine does not construct for: "
+            + ", ".join(f"{t} (table {table[t]}, engine {engine[t]})"
+                        for t in wrong)
+            + " -- the SHARING RULE is derived from the class, so a wrong "
+              "class silently makes two operations one picture, or one two")
 
-    unused = sorted(families_declared - used)
+    used = set(table.values())
+    undrawn = sorted(used - set(drawn))
+    if undrawn:
+        fails.append("class(es) a type maps to with no drawing: "
+                     + ", ".join(undrawn))
+
+    unused = sorted(set(drawn) - used)
     if unused:
+        fails.append("class(es) drawn that no registered type constructs (a "
+                     "picture with no subject): " + ", ".join(unused))
+
+    #  (e) the round-two defect.
+    by_path = {}
+    for cls, path in sorted(drawn.items()):
+        by_path.setdefault(path, []).append(cls)
+    collisions = [v for v in by_path.values() if len(v) > 1]
+    if collisions:
         fails.append(
-            "famil(ies) defined and assigned to nothing (a drawing with no "
-            "subject, and one no reader can ever check by looking): "
-            + ", ".join(unused))
+            "two or more CLASSES share one drawing: "
+            + "; ".join(" = ".join(v) for v in collisions)
+            + " -- two classes are two operations, and this is exactly the "
+              "defect that put one bow-tie on a mixer and a splitter.  A "
+              "type may share a symbol ONLY by sharing the engine class.")
 
     if fails:
         print("check_unit_families: FAILED")
@@ -133,18 +182,20 @@ def main() -> int:
             print("  -", f)
         return 1
 
-    per = {}
-    for t, f in table.items():
-        per.setdefault(f, []).append(t)
-    shape = ", ".join(f"{f} {len(v)}" for f, v in sorted(per.items()))
+    shared = {c: [t for t in sorted(table) if table[t] == c]
+              for c in sorted(used)}
+    multi = {c: ts for c, ts in shared.items() if len(ts) > 1}
     print(f"check_unit_families: OK -- all {len(engine)} unit type(s) the "
-          f"engine registers carry a silhouette and no entry is an orphan "
-          f"({len(used)} famil(ies): {shape}).  NOT CHECKED: whether a type "
-          f"is in the RIGHT family (a reading judgement, reasoned in the "
-          f"module), whether a silhouette resembles its subject (no script "
-          f"sees a picture), and the alias structure -- `column` and "
-          f"`distillationColumn` construct one class and must share a family, "
-          f"which this gate reads as two independent names.")
+          f"engine registers carry a symbol; they construct {len(used)} "
+          f"distinct class(es) and each is drawn exactly once, with no two "
+          f"classes sharing a path.  {len(multi)} class(es) are reached by "
+          f"more than one name and therefore SHARE a drawing, which the "
+          f"ENGINE sanctions by constructing one object for both: "
+          + "; ".join(f"{c} <- {', '.join(ts)}" for c, ts in multi.items())
+          + ".  NOT CHECKED: whether a symbol resembles its subject or "
+            "whether two DISTINCT paths look distinct (no script sees a "
+            "picture -- arm (e) catches an identical path, not a nearly "
+            "identical one), and the labels, which are prose.")
     return 0
 
 

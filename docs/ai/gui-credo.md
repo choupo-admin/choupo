@@ -128,6 +128,34 @@ plot window is its own document -- restates the property in `100dvh`
 instead, which is the one thing a React style OBJECT cannot express, since
 it has a single key per property.
 
+**THE PFD SYMBOL IS ONE PER ENGINE CLASS (2026-09-22).**  A flowsheet is read
+BY SHAPE, and a sheet of identical boxes teaches none of the vocabulary.  Two
+rounds were needed and the second is the lesson.  Round one replaced a
+per-type icon table that had gone silently short (24 of 51 types drew the
+generic settings-sliders glyph through a `default:`) with ELEVEN FAMILIES plus
+a gate that recounts against the engine's registry.  Vítor found the
+consequence within the hour: `mixer` and a splitter wore one bow-tie, and so
+did pump/compressor/turbine, and so did all five reactors.  **The families had
+been argued on MAINTENANCE, and the same commit's gate had already solved
+maintenance** -- so the coarseness was being paid for a problem that no longer
+existed.  *Granularity must follow MEANING; a gate that prevents drift is what
+makes fine granularity affordable, never a reason to stay coarse.*
+
+The rule is therefore not a judgement about what looks similar enough (that
+question is what produced the bow-tie): `UnitOperation::registerBuiltins()`
+maps each registered NAME to the C++ CLASS it constructs -- 51 names, 42
+classes -- and **two types share a symbol if and only if they construct the
+same class**.  The gate derives that map from the engine source, checks each
+entry's class against it, refuses two classes drawn with one path, and
+enumerates the eight sanctioned shares in its own claim line.  A symbol shows
+what makes the block that block (the agitator, the serpentine tube, the
+packing, the trays, the fan); a difference that is a SPECIFICATION is not
+drawn and lives on the badge, unless it is hardware -- an adiabatic flash is
+insulated, and insulation is hardware.  Drawn in INK, not the brand accent:
+colour on this canvas already means phase, duty tier and utility class, and
+the accent it spent was the same cyan that means LIQUID.  Gate:
+`check_unit_families`.
+
 **Why this needed a gate and the panel contract did not.**  The fit rule
 answers from measured widths and is wrong VISIBLY when it is wrong.  This
 one is invisible to the entire toolchain: without a retracting chrome
