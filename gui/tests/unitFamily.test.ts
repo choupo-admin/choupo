@@ -52,18 +52,72 @@ describe("every symbol can actually be drawn", () => {
   });
 });
 
-describe("NO TWO CLASSES SHARE A DRAWING -- the defect this replaces", () => {
-  it("every path is distinct", () => {
-    //  The first version of this module grouped 51 types into 11 families,
-    //  and Vítor found `mixer` and `quenchSplit` (a splitter) wearing one
-    //  bow-tie within the hour.  Two classes are two operations.
+describe("SHAPE IS THE EQUIPMENT, TAG IS THE CALCULATION MODEL", () => {
+  it("no two classes share BOTH a path and a tag", () => {
+    //  Round two put one bow-tie on a mixer and a splitter.  Two classes are
+    //  two operations, and a reader must be able to tell them apart by
+    //  looking -- by the shape, or, where the hardware genuinely is the same,
+    //  by the tag drawn inside it.
     const seen = new Map<string, string>();
     for (const s of SYMBOLS) {
-      const norm = s.path.replace(/\s+/g, " ").trim();
-      const prior = seen.get(norm);
+      const key = s.path.replace(/\s+/g, " ").trim() + "\u0000" + (s.tag ?? "");
+      const prior = seen.get(key);
       expect(prior, `${s.cls} draws exactly what ${prior} draws`)
         .toBeUndefined();
-      seen.set(norm, s.cls);
+      seen.set(key, s.cls);
+    }
+  });
+
+  it("a SHARED shape carries a non-empty tag on every class that shares it", () => {
+    //  The load-bearing half.  A shape used by one class needs no tag; a
+    //  shape used by two and tagged on neither is the round-two defect back.
+    const byPath = new Map<string, typeof SYMBOLS[number][]>();
+    for (const s of SYMBOLS) {
+      const k = s.path.replace(/\s+/g, " ").trim();
+      byPath.set(k, [...(byPath.get(k) ?? []), s]);
+    }
+    for (const [, group] of byPath) {
+      if (group.length < 2) continue;
+      for (const s of group) {
+        expect(s.tag, `${s.cls} shares its shape and carries no tag`)
+          .toBeTruthy();
+      }
+    }
+  });
+
+  it("the four shared shapes are exactly the ones with no hardware difference", () => {
+    //  Stated as a list because it is a JUDGEMENT about equipment, and a
+    //  judgement belongs somewhere a reviewer can read it.  RStoic, REquil
+    //  and RGibbs are one vessel with three specifications; a flash drum is
+    //  one drum whether the spec is T or Q=0; a trayed column is one column
+    //  whether it is solved by MESH or by FUG; a packed column is one column
+    //  whether it absorbs or strips.
+    const tagged = SYMBOLS.filter((s) => s.tag).map((s) => s.cls).sort();
+    expect(tagged).toEqual([
+      "Absorber", "AdiabaticFlash", "ConversionReactor", "DistillationColumn",
+      "EquilibriumReactor", "GibbsReactor", "IsothermalFlash",
+      "ShortcutColumn", "Stripper",
+    ]);
+  });
+
+  it("real hardware is still drawn, never tagged away", () => {
+    //  A CSTR has an agitator and a PFR is a tube.  No tag replaces that.
+    expect(symbolOf("cstr")!.tag).toBeUndefined();
+    expect(symbolOf("pfr")!.tag).toBeUndefined();
+    expect(symbolOf("cstr")!.path).not.toBe(symbolOf("pfr")!.path);
+  });
+
+  it("every symbol carries at least one NOZZLE", () => {
+    //  A PFD symbol carries its connections; without them it is an icon.
+    //  Measured structurally: a path with fewer than two subpaths cannot
+    //  have both a body and a stub.  The three NON-equipment drawings are
+    //  exempt by name -- a bubble-point calculation has no nozzle to draw.
+    const NOT_EQUIPMENT = ["BubblePoint", "DewPoint", "ElectricLoad"];
+    for (const s of SYMBOLS) {
+      if (NOT_EQUIPMENT.includes(s.cls)) continue;
+      const subpaths = (s.path.match(/M/g) ?? []).length;
+      expect(subpaths, `${s.cls} has ${subpaths} subpath(s)`)
+        .toBeGreaterThanOrEqual(2);
     }
   });
 
@@ -75,17 +129,14 @@ describe("NO TWO CLASSES SHARE A DRAWING -- the defect this replaces", () => {
     ["compressor", "turbine"],
     ["pump", "turbine"],
     ["cstr", "pfr"],              // RCSTR and RPlug are not one drawing
-    ["cstr", "gibbsReactor"],
+    ["cstr", "gibbsReactor"],   // hardware vs specification: a real difference
     ["pfr", "conversionReactor"],
-    ["gibbsReactor", "equilibriumReactor"],
     ["heater", "heatExchanger"],  // Heater and HeatX are different blocks
     ["heatExchanger", "multiStreamHX"],
     ["evaporator", "coolingTower"],
     ["flash", "storageTank"],     // a drum that splits, a tank that holds
     ["flash", "crystalliser"],
     ["distillationColumn", "absorber"],   // trays are not packing
-    ["absorber", "stripper"],
-    ["distillationColumn", "shortcutColumn"],
     ["distillationColumn", "extractor"],
     ["cyclone", "bagFilter"],
     ["cyclone", "gasSolidSplitter"],
@@ -132,15 +183,13 @@ describe("two names for ONE object share one drawing", () => {
     });
   }
 
-  it("a SPEC difference is not drawn, but INSULATION is", () => {
-    //  isothermal vs adiabatic is one drum and a different specification --
-    //  except that the adiabatic one is insulated, and insulation is
-    //  hardware.  Both are separate CLASSES in the engine, so both are
-    //  drawn; this pins that the difference drawn is the physical one.
-    expect(symbolOf("adiabaticFlash")!.cls).toBe("AdiabaticFlash");
-    expect(symbolOf("flash")!.cls).toBe("IsothermalFlash");
-    expect(symbolOf("adiabaticFlash")!.path)
-      .not.toBe(symbolOf("flash")!.path);
+  it("a SPEC difference is TAGGED, never drawn as invented hardware", () => {
+    //  Round two gave the adiabatic flash an insulation jacket it has no
+    //  reason to have -- inventing hardware for a specification, which is
+    //  the very thing this module says it does not do.  One drum, two tags.
+    expect(symbolOf("flash")!.path).toBe(symbolOf("adiabaticFlash")!.path);
+    expect(symbolOf("flash")!.tag).toBe("T");
+    expect(symbolOf("adiabaticFlash")!.tag).toBe("Q=0");
   });
 });
 

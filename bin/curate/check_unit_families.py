@@ -45,10 +45,16 @@ WHAT THIS CHECKS.
       whole rule mechanical: a type repointed at another class in C++ fails
       here instead of going on wearing its old picture.
   (d) EVERY CLASS IS DRAWN, with a non-empty path.
-  (e) NO TWO CLASSES SHARE A PATH.  The round-two defect, made impossible:
-      two classes are two operations, and a reader must be able to tell them
-      apart by looking.  Whitespace-normalised, so a reformat cannot hide a
-      duplicate.
+  (e) SHAPE IS THE EQUIPMENT, TAG IS THE CALCULATION MODEL.  Two classes may
+      not share BOTH a path and a tag -- the round-two defect made
+      impossible.  They MAY share a path where the hardware genuinely is the
+      same (RStoic, REquil and RGibbs are one vessel with three
+      specifications; a flash drum is one drum whether the spec is T or
+      Q=0), and then every class sharing it must carry a NON-EMPTY tag, so
+      the sheet still tells them apart.  Whitespace-normalised, so a reformat
+      cannot hide a duplicate.  What this does NOT judge is whether a shared
+      shape SHOULD be shared: that a crystalliser is not a flash drum is an
+      equipment judgement, reasoned in the module and listed in the tests.
   (f) NO UNUSED DRAWING.  A class drawn that no type constructs is a picture
       with no subject.
 
@@ -93,22 +99,78 @@ def main() -> int:
     table = dict(re.findall(r'\n  ([A-Za-z0-9_]+): "([A-Za-z0-9_]+)",',
                             m.group(1))) if m else {}
 
+    #  SHARED GEOMETRY LIVES IN CONSTANTS, and the first version of this
+    #  harvest could not see through them.  A path is written
+    #  `VESSEL + SIDE_NOZZLES + " M15 30h18"`, so reading only the quoted
+    #  chunks yields the literal remainder and TWO CLASSES SHARING ONE
+    #  CONSTANT LOOK DIFFERENT.  The gate reported "0 shapes shared" on a
+    #  module with four sharing groups -- blind exactly where the rule it
+    #  enforces lives, which is the project's standing trap (a pattern
+    #  anchored where its subject does not live is a check that cannot
+    #  fire).  Top-level string constants are resolved first.
+    consts = {}
+    for cm2 in re.finditer(r"^const ([A-Z_][A-Z0-9_]*) =\s*((?:[^;]|\n)*?);",
+                           src, re.M):
+        chunks = re.findall(r'"((?:[^"\\]|\\.)*)"',
+                            re.sub(r"//[^\n]*", "", cm2.group(2)))
+        consts[cm2.group(1)] = "".join(chunks)
+    if not consts:
+        fails_early = ("harvested NO shared geometry constants from "
+                       f"{TABLE.relative_to(ROOT)} -- the module's shape "
+                       "changed, so the sharing rule cannot be checked")
+    else:
+        fails_early = None
+
+    unresolved = []
+
+    def resolve(expr: str) -> str:
+        """Concatenate a `path:` expression: string literals + constants.
+
+        An identifier this cannot resolve is COLLECTED, never skipped.  A
+        skipped one silently shortens the path, and two classes sharing that
+        constant then look different -- which is the blind spot that made
+        this gate report "0 shapes shared" on a module with four sharing
+        groups.  Half a resolution is the same failure, quieter.
+        """
+        expr = re.sub(r"//[^\n]*", "", expr)
+        out = []
+        for tok in re.finditer(r'"((?:[^"\\]|\\.)*)"|\b([A-Z_][A-Z0-9_]*)\b',
+                               expr):
+            if tok.group(1) is not None:
+                out.append(tok.group(1))
+            elif tok.group(2) in consts:
+                out.append(consts[tok.group(2)])
+            else:
+                unresolved.append(tok.group(2))
+        return "".join(out)
+
     #  The drawings.  A class is DRAWN only when its entry carries a path, so
     #  the two are harvested together and an entry with an empty path is not
     #  counted as a drawing at all.
     drawn = {}
+    tags = {}
     for e in re.split(r"\n  \{ cls: ", src[src.find("export const SYMBOLS"):]):
         cm = re.match(r'"([A-Za-z0-9_]+)"', e)
         if not cm:
             continue
-        tail = re.sub(r"//[^\n]*", "", e[e.find("label:"):]) \
-            if "label:" in e else ""
-        chunks = re.findall(r'"((?:[^"\\]|\\.)*)"', tail)
-        path = "".join(chunks[1:])            # chunk 0 is the label
+        pm = re.search(r"path:\s*((?:[^,]|\n)*?)(?:,\s*\n\s*tag:|\s*\},|,\s*tag:)",
+                       e, re.S)
+        path = resolve(pm.group(1)) if pm else ""
         if path.strip():
             drawn[cm.group(1)] = re.sub(r"\s+", " ", path).strip()
+        tm = re.search(r'tag:\s*"([^"]*)"', e)
+        tags[cm.group(1)] = tm.group(1) if tm else ""
 
     fails = []
+    if unresolved:
+        fails.append(
+            "path expression(s) name geometry this gate cannot resolve: "
+            + ", ".join(sorted(set(unresolved)))
+            + " -- the resolved path would be SHORT, so two classes sharing "
+              "that piece would look different and the sharing rule would "
+              "pass over them in silence")
+    if fails_early:
+        fails.append(fails_early)
 
     if not engine:
         fails.append("harvested NO types from the engine registry -- the "
@@ -163,18 +225,34 @@ def main() -> int:
         fails.append("class(es) drawn that no registered type constructs (a "
                      "picture with no subject): " + ", ".join(unused))
 
-    #  (e) the round-two defect.
+    #  (e) shape is the equipment, tag is the calculation model.
     by_path = {}
     for cls, path in sorted(drawn.items()):
         by_path.setdefault(path, []).append(cls)
-    collisions = [v for v in by_path.values() if len(v) > 1]
-    if collisions:
+    shared_shape = {p: v for p, v in by_path.items() if len(v) > 1}
+
+    identical = []
+    for p, group in shared_shape.items():
+        by_tag = {}
+        for cls in group:
+            by_tag.setdefault(tags.get(cls, ""), []).append(cls)
+        identical += [v for v in by_tag.values() if len(v) > 1]
+    if identical:
         fails.append(
-            "two or more CLASSES share one drawing: "
-            + "; ".join(" = ".join(v) for v in collisions)
+            "two or more CLASSES are drawn IDENTICALLY (same shape, same "
+            "tag): " + "; ".join(" = ".join(v) for v in identical)
             + " -- two classes are two operations, and this is exactly the "
-              "defect that put one bow-tie on a mixer and a splitter.  A "
-              "type may share a symbol ONLY by sharing the engine class.")
+              "defect that put one bow-tie on a mixer and a splitter.")
+
+    untagged = sorted(cls for group in shared_shape.values() for cls in group
+                      if not tags.get(cls, "").strip())
+    if untagged:
+        fails.append(
+            "class(es) sharing a shape with another and carrying NO tag: "
+            + ", ".join(untagged)
+            + " -- a shape may be shared only where the hardware is the "
+              "same, and then the CALCULATION MODEL is what tells them "
+              "apart; an untagged share is indistinguishable on the sheet")
 
     if fails:
         print("check_unit_families: FAILED")
@@ -189,10 +267,14 @@ def main() -> int:
           f"engine registers carry a symbol; they construct {len(used)} "
           f"distinct class(es) and each is drawn exactly once, with no two "
           f"classes sharing a path.  {len(multi)} class(es) are reached by "
-          f"more than one name and therefore SHARE a drawing, which the "
+          f"more than one name and therefore share a drawing, which the "
           f"ENGINE sanctions by constructing one object for both: "
           + "; ".join(f"{c} <- {', '.join(ts)}" for c, ts in multi.items())
-          + ".  NOT CHECKED: whether a symbol resembles its subject or "
+          + f".  {len(shared_shape)} SHAPE(S) are shared by classes the "
+            f"engine keeps apart, every one of them tagged with its "
+            f"calculation model ("
+          + "; ".join(f"{'/'.join(v)}" for v in shared_shape.values())
+          + ").  NOT CHECKED: whether a symbol resembles its subject or "
             "whether two DISTINCT paths look distinct (no script sees a "
             "picture -- arm (e) catches an identical path, not a nearly "
             "identical one), and the labels, which are prose.")

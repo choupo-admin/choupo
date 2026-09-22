@@ -271,6 +271,21 @@ export function UnitNode({ id, data, selected }: NodeProps) {
                     fill="none" stroke="currentColor" strokeWidth={2.2}
                     strokeLinecap="round" strokeLinejoin="round"
                   />
+                  {/*  SHAPE IS THE EQUIPMENT, TAG IS THE CALCULATION MODEL.
+                       Four shapes are shared by two or three classes that
+                       have no distinct hardware -- RStoic/REquil/RGibbs are
+                       one vessel, a flash is one drum whether the spec is T
+                       or Q=0 -- and the tag is what tells them apart, as it
+                       does on any commercial sheet.  Drawing an invented
+                       hardware difference instead is what this replaced.  */}
+                  {symbol.tag && (
+                    <text x={24} y={27} textAnchor="middle"
+                          fontSize={symbol.tag.length > 3 ? 8 : 10}
+                          fontWeight={700} fontFamily="Inter, sans-serif"
+                          fill="currentColor" stroke="none">
+                      {symbol.tag}
+                    </text>
+                  )}
                 </svg>
               ) : icon}
             </span>

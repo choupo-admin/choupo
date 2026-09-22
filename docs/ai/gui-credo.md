@@ -128,7 +128,7 @@ plot window is its own document -- restates the property in `100dvh`
 instead, which is the one thing a React style OBJECT cannot express, since
 it has a single key per property.
 
-**THE PFD SYMBOL IS ONE PER ENGINE CLASS (2026-09-22).**  A flowsheet is read
+**SHAPE IS THE EQUIPMENT, TAG IS THE CALCULATION MODEL (2026-09-22).**  A flowsheet is read
 BY SHAPE, and a sheet of identical boxes teaches none of the vocabulary.  Two
 rounds were needed and the second is the lesson.  Round one replaced a
 per-type icon table that had gone silently short (24 of 51 types drew the
@@ -155,6 +155,39 @@ insulated, and insulation is hardware.  Drawn in INK, not the brand accent:
 colour on this canvas already means phase, duty tier and utility class, and
 the accent it spent was the same cyan that means LIQUID.  Gate:
 `check_unit_families`.
+
+**Round three corrected my own reasoning, not just the drawings.**  Held
+against how a commercial sheet is actually drawn, three things were wrong.
+There were no NOZZLES, and a symbol without its connections is an icon rather
+than a process block.  Vessels were RECTANGLES where a pressure vessel is a
+capsule with dished heads.  And -- the real error -- round two had DRAWN
+DIFFERENCES THAT ARE NOT HARDWARE: it gave `gibbsReactor` a minimum curve and
+`equilibriumReactor` a double arrow, inventing physical distinctions for three
+blocks that have none (RStoic, REquil and RGibbs are one vessel with three
+SPECIFICATIONS), and gave the adiabatic flash an insulation jacket, all while
+its own text said a specification is not drawn.  So a symbol may carry a TAG,
+and four shapes are shared by classes with identical hardware: the vessel
+reactor (CONV/EQ/GIBBS), the flash drum (T/Q=0), the trayed column (MESH/FUG)
+and the packed column (ABS/STR).  **Two classes may share a shape only if
+their tags differ and neither is empty**; real hardware is still drawn (a CSTR
+has an agitator, a PFR is a tube) and no tag replaces it.
+
+**COLOUR IS NOT USED TO CLASSIFY, and the reason is this canvas's own
+grammar.**  A proposal coloured the symbols by family -- reaction red, heat
+amber, separation blue.  Refused: colour here ALREADY means phase (cyan
+liquid, orange vapour, purple two-phase), duty tier and utility class, every
+one of them a RESULT the engine computed.  A fixed equipment colour puts a
+second grammar of colour on one picture, and a blue vessel among blue wires
+stops saying which of the two it means.  Symbols in ink; colour for what is
+computed.
+
+**A gate goes blind the moment the thing it checks is factored.**  The sharing
+rule lives in shared geometry CONSTANTS, and the gate's harvester read only
+quoted literals -- so it reported "0 shapes shared" on a module with four
+sharing groups, blind exactly where its own rule lives.  It resolves the
+constants now, and an identifier it CANNOT resolve fails rather than being
+skipped: half a resolution shortens the path, and two classes sharing that
+piece then look different -- the same failure, quieter.
 
 **Why this needed a gate and the panel contract did not.**  The fit rule
 answers from measured widths and is wrong VISIBLY when it is wrong.  This
