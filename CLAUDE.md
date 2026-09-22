@@ -2976,7 +2976,7 @@ split below).
   the sole sole-author exception when the macro already said otherwise, and it
   then carried a verbatim copy of the macro's answer under a sentence telling
   the reader not to copy the macro's answer — which went false the day a third
-  list arrived (2026-09-22, Moni Faria on the EduTools Guide, at Vítor's
+  list arrived (2026-09-22, Mónica Faria on the EduTools Guide, at Vítor's
   request, as its curator).  A second home for a fact about who answers for a
   work is the worst kind to let drift. Their prose, figures, and explanatory text are
   CC BY-SA 4.0. Code excerpts, Choupo case files, and other machine-readable
