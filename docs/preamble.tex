@@ -270,13 +270,23 @@
 \newcommand{\cpp}{C\texttt{++}}
 
 % Manual authorship is selected by each guide before loading this preamble.
-% Properties/Theory: Vitor, Pedro, Miguel. All other guides: Vitor alone.
+% Properties/Theory: Vitor, Pedro, Miguel.  EduTools: Vitor and Moni Faria.
+% All other guides: Vitor alone.
+%
+% THE AUTHOR NAMES LIVE HERE AND NOWHERE ELSE.  A guide declares only WHICH
+% list it carries -- never the names -- so a person's authorship of record has
+% one home, and a guide cannot drift from it.  That is why this stayed a
+% selector when a third list arrived (2026-09-22) instead of each guide
+% spelling its own line: three copies of a copyright attribution is three
+% places for it to go quietly wrong.
 \newcommand{\manualauthors}{%
   \ifdefined\propertyTheoryAuthors
     V\'{\i}tor Geraldes, Pedro Mendes, and Miguel Rodrigues%
+  \else\ifdefined\eduToolsAuthors
+    V\'{\i}tor Geraldes and Moni Faria%
   \else
     V\'{\i}tor Geraldes%
-  \fi}
+  \fi\fi}
 
 % OpenFOAM-style manual front matter: title page, then a copyright/licence
 % notice page.  No source-code banner belongs on manual covers.

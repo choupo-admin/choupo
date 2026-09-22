@@ -2967,14 +2967,18 @@ split below).
   documentary work authored, curated, and editorially maintained by Vítor
   Geraldes and Pedro Mendes. **The AUTHORSHIP LINE OF EACH GUIDE IS DECIDED IN
   ONE PLACE — `docs/preamble.tex`'s `\manualauthors`** (ruled 2026-08-18,
-  Vítor: *"fico só eu"*, on the EduTools Guide).  Today that macro gives Vítor
-  Geraldes + Pedro Mendes + Miguel Rodrigues to the Properties and Theory
-  Guides, and **Vítor Geraldes alone to every other guide**, the EduTools
-  Guide included.  This paragraph used to name the Developer Guide as the sole
-  sole-author exception, which had already drifted from the macro that decides
-  it — a second home for a fact about who answers for a work, which is the
-  worst kind to let drift.  Read `preamble.tex`; do not copy its answer back
-  here. Their prose, figures, and explanatory text are
+  Vítor: *"fico só eu"*, on the EduTools Guide).  **Read `preamble.tex` for
+  the answer; it is deliberately NOT repeated here.**  A guide declares only
+  WHICH list it carries (`\propertyTheoryAuthors`, `\eduToolsAuthors`, or
+  nothing); the names themselves live in that one macro, so a person's
+  authorship of record cannot drift between a guide and the file that decides
+  it.  This paragraph learnt that twice: it once named the Developer Guide as
+  the sole sole-author exception when the macro already said otherwise, and it
+  then carried a verbatim copy of the macro's answer under a sentence telling
+  the reader not to copy the macro's answer — which went false the day a third
+  list arrived (2026-09-22, Moni Faria on the EduTools Guide, at Vítor's
+  request, as its curator).  A second home for a fact about who answers for a
+  work is the worst kind to let drift. Their prose, figures, and explanatory text are
   CC BY-SA 4.0. Code excerpts, Choupo case files, and other machine-readable
   examples included in the guides remain GPL-3.0-or-later. Do not put the
   manuals under GPL wholesale, and do not treat external project contributors
