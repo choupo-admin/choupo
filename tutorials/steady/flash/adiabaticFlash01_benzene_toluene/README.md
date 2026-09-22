@@ -16,7 +16,8 @@ case's own golden (`expected`), which `bin/runTests` re-checks.
    outlet enthalpy equals the inlet's; at every trial T the inner one solves
    the Rachford-Rice flash.  Watch it in the **Log** tab — each outer step
    prints its H-residual, and the last one prints `H_residual` at the
-   round-off floor (−2.2e-3 W on a 100 kmol/h stream).
+   round-off floor (−2.2e-3 J/mol; over the whole 100 kmol/h stream that is
+   6.2e-5 kW against a 1091 kW throughput).
 3. **Where the 11 K went.**  Vaporising 5 % of the feed costs latent heat,
    and the only place it can come from is the sensible heat of the liquid.
    Open **Streams**: the vapour is benzene-rich, the liquid barely moved in
@@ -35,8 +36,18 @@ case's own golden (`expected`), which `bin/runTests` re-checks.
 
 ## What to try
 
-Edit `operation { P … }` to 0.5 bar in the **Case** tab and run again: a
-deeper let-down flashes more, and the drum ends colder.  Then look at the
+Click the drum and edit `P` in the **Properties** box on the right — the
+**Case** tab is a read-only view of the files, so nothing is typed there.
+Set 0.5 bar and run again: a deeper let-down flashes more, and the drum ends
+colder.  The edit is transient — it never touches the file, the node shows it
+in amber until you reset it, and Reset puts the declared value back.
+
+Now try the other direction, because it teaches more than it looks.  Raise `P`
+to 1.5 bar and nothing happens: V/F goes to 0 and the temperature does not
+drop at all.  That is not a broken run — **this feed's bubble pressure at
+380 K is 1.4088 bar**, so 1.5 bar leaves it 0.09 bar subcooled and there is
+nothing to flash.  The engine says so in as many words (`Regime: subcooled
+liquid`).  The wall is much closer above than below.  Then look at the
 stream table printed *before* the solve — it shows the `0/` seed values,
 which look like an answer and are not one; the converged table further
 down is the answer.

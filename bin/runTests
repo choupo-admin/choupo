@@ -3791,6 +3791,24 @@ PYEOF
     fi
     rm -f /tmp/unitfam.$$
 
+    # intro-trace gate (2026-09-22).  The `?intro=1` on-ramp prints the outer
+    # Newton's iterations for the flagship cases, under a comment saying the
+    # numbers are the engine's own.  Three rows of the FIRST case a student
+    # runs had drifted, and nothing could see it: the literals appear nowhere
+    # else in the tree, so no golden and no test read them.  On the screen
+    # that exists to prove the engine is glass, an unpinned copy is the one
+    # thing that must not be there.  The gate re-runs each case and compares
+    # at the precision the screen chose -- a transcription may round.
+    if "$ROOT/bin/curate/check_intro_trace.py" > /tmp/introtrace.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "intro-trace-gate" "$(head -1 /tmp/introtrace.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_intro_trace.py)\n" "intro-trace-gate"
+        cat /tmp/introtrace.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/introtrace.$$
+
     # viewport-unit gate (2026-09-22).  The app shell is a full-viewport box
     # with `overflow: hidden`.  Written `height: 100vh` it lays out taller
     # than a phone's glass -- `100vh` measures the window as if the URL bar

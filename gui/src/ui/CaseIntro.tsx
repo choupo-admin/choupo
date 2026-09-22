@@ -66,6 +66,15 @@ const APP_LABEL: { [k: string]: string } = {
 
 // Per-flagship REAL specifics (captured from an actual run -- the numbers are
 // the engine's own).  Cases without an entry fall back to honest generics.
+//
+// AND NOW PINNED, because the claim above went false without anything
+// noticing.  Three rows of the adiabatic trace drifted -- 3.17088e+04 where
+// the engine prints 3.30212e+04, and 1.83628e+04 where it prints 1.90096e+04
+// -- on THE SCREEN WHOSE WHOLE PURPOSE IS TO PROVE THE BOX IS GLASS.  A
+// transcribed number is a second home for a result, and this one had no
+// reader: the literals appear nowhere else in gui/, docs/ or bin/.
+// `check_intro_trace` re-runs each case named here and holds every row of
+// its trace to what the engine actually prints.
 const FLASH01 = "steady/flash/flash01_benzene_toluene";
 const ADIAB01 = "steady/flash/adiabaticFlash01_benzene_toluene";
 const GUIDE: { [id: string]: { model: string; sequence: string; trace: string } } = {
@@ -120,10 +129,10 @@ const GUIDE: { [id: string]: { model: string; sequence: string; trace: string } 
     trace:
       "Outer Newton in T (energy balance):\n"
       + "   it       T [K]       H_out−Hreq\n"
-      + "  0     380.0000     3.17088e+04\n"
+      + "  0     380.0000     3.30212e+04\n"
       + "  1     365.0000    -2.22540e+03\n"
-      + "  2     380.0000     3.17088e+04\n"
-      + "  3     372.5000     1.83628e+04\n"
+      + "  2     380.0000     3.30212e+04\n"
+      + "  3     372.5000     1.90096e+04\n"
       + "  4     369.0615     1.89020e+03\n"
       + "  5     368.6619     6.48394e-01\n"
       + "  8     368.6618    -2.15364e-03   ✓\n"
