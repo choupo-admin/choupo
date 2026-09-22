@@ -1154,8 +1154,25 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                  loaded" badge about a run the student had already replaced.
                  The badge and the button are two views of ONE fact and were
                  computed separately, which is how they came to disagree.  */}
+            {/*  FILLED, not `light`.  Vítor: the green text top-right has bad
+                 contrast.  Measured, the cause is that THIS BADGE FLOATS OVER
+                 A CANVAS WITH A DIFFERENT BACKGROUND FROM THE REST OF THE
+                 APP: every other surface is `gray-0` in the light scheme,
+                 while the React Flow pane is `gray-6` (a MID grey, a few
+                 lines down at the `ReactFlow` style).  Mantine's `light`
+                 variant is a saturated foreground on a very pale tint of the
+                 same hue, computed for the PAGE's background -- so on mid
+                 grey the tint all but vanishes and the teal, orange or red
+                 word is left floating at low contrast.
+                 The rule, and it is general: AN INDICATOR THAT FLOATS OVER A
+                 CANVAS OF VARYING COLOUR MUST CARRY ITS OWN OPAQUE SURFACE
+                 and never assume the page's.  `filled` does, and Mantine's
+                 `autoContrast` (theme.ts) picks the readable text colour per
+                 hue, in both schemes.  The `Reset` button beside it was
+                 already legible for exactly this reason -- `variant="default"`
+                 brings a surface of its own.  */}
             {rc.badge && (
-              <Badge size="sm" color={rc.badge.color} variant="light"
+              <Badge size="sm" color={rc.badge.color} variant="filled"
                 title={rc.badge.title}>
                 {rc.badge.text}
               </Badge>

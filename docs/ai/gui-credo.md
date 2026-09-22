@@ -623,6 +623,20 @@ height, and an aspect-fitted plot pays lost height in width: 913 px drawn
 becomes 1068 with zero side margin).  A square plot pays the opposite way,
 and dragging or folding recovers it.
 
+**AN INDICATOR THAT FLOATS OVER THE CANVAS CARRIES ITS OWN SURFACE
+(2026-09-22).**  The run-status badge read as low-contrast coloured text, and
+the cause is a fact about this app rather than about the badge: **the React
+Flow pane does not share the background of the rest of the app** -- every
+other surface is `gray-0` in the light scheme, the canvas is `gray-6`, a mid
+grey.  A Mantine `light` variant is a saturated foreground on a very pale tint
+of the same hue, computed for the PAGE's background; over mid grey the tint
+vanishes and the word is left floating.  So anything overlaid on the canvas --
+a badge, a chip, a legend -- is `filled`, or sits on a box with its own
+background, and never relies on the page's.  The `Reset` button beside it had
+always been legible for exactly that reason (`variant="default"` brings a
+surface).  The same rule is why the legend strips are opaque boxes and not
+bare text.
+
 **A COLLAPSED PANEL MUST BE `visibility: hidden`, not merely `width: 0`.**
 Paid for once, across seven panels at once: `width: 0; overflow: hidden`
 clips PAINT only — the children keep boxes, tab order and hit-testing, so a
