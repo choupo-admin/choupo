@@ -36,14 +36,26 @@
   Mass closes to 100% on N, H and Ar.
 
   THE PURGE.  Ar enters with the makeup and would accumulate without end; the
-  purge bleeds it, holding Ar at steady state (Ar_in_makeup = Ar_out).  Delete
-  the purge and the recycle fills with Ar until the loop chokes -- try it.
+  purge is what makes the loop finite, and Ar reaches steady state
+  (Ar_in_makeup = Ar_out, closing at 100.00 %).  But the purge is NOT the
+  exit that carries most of it out.  Measured from this case's own
+  converged/ streams: of 0.01 kmol/h of Ar in, the purge takes 16.2 %, the
+  let-down gas 9.6 %, and 74.1 % leaves DISSOLVED IN THE LIQUID AMMONIA
+  PRODUCT -- argon is 1.56 % of that product.  This paragraph used to say
+  the purge bleeds it, which the diagram makes easy to believe and the
+  streams do not support.  Delete the purge and the recycle still fills
+  with Ar until the loop chokes -- try it.
 
-  THE LET-DOWN.  At 200 bar the SRK flash leaves a lot of N2/H2 DISSOLVED in the
+  THE LET-DOWN.  At 200 bar the separator leaves N2/H2 DISSOLVED in the
   liquid (a real high-pressure effect, over-stated here because there is no
   N2/H2-NH3 binary interaction parameter -- SRK over-predicts light-gas
-  solubility).  So the raw separator liquid is only ~80% NH3.  A let-down drum
-  (flash to 20 bar) boils the dissolved gas off -> 97.8% NH3 product.
+  solubility).  Measured from converged/: the raw separator liquid is
+  97.676 % NH3 (1.752 % Ar, 0.385 % H2, 0.187 % N2), and the let-down drum
+  (flash to 20 bar) boils the dissolved gas off to give 98.390 % NH3 -- a
+  gain of 0.7 percentage points, almost all of it H2 and N2.  These two
+  numbers read `~80%` and `97.8%` until 2026-09-24; the first was wrong by
+  17 points and made the let-down look like the main separation.  What it
+  does NOT remove is the argon, which stays at 1.56 % of the product.
 
   HONEST SIMPLIFICATIONS.  (1) The loop is isobaric at 200 bar; the makeup
   compression and the feed/effluent heat integration are folded into the unit

@@ -46,9 +46,9 @@ Global mass closure 100.000 %, worst element closure 0.0000 %.
 | reactor in, kmol/h | 57.83 | 57.84 | (not independent) |
 | reactor out, kmol/h | 92.6 | 91.81 | −0.9 % |
 | C1 condenser, MW | 1.045 | 0.849 | −18.7 % |
-| C1 reboiler, MW | 1.217 | 0.882 | −27.5 % |
+| C1 reboiler, MW | 1.217 | 0.849 | −30.3 % |
 | C2 condenser, MW | 0.1193 | 0.116 | −2.8 % |
-| C2 reboiler, MW | 0.1204 | 0.125 | +4.0 % |
+| C2 reboiler, MW | 0.1204 | 0.124 | +2.9 % |
 
 **The plant makes 85 % of his acetone at a purity that misses his spec, and
 loses three times as much of it out of the top.** Nothing was tuned to get

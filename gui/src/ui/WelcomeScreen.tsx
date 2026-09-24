@@ -92,7 +92,7 @@ export const SUGGESTED: { id: string; title: string; desc: string }[] = [
     desc: "A real flash drum: no heat added (Q=0) — the outlet T is the answer the energy balance gives." },
   { id: "steady/flash/flash01_benzene_toluene",
     title: "Now hold the temperature",
-    desc: "The same benzene/toluene split at fixed T — and the heat duty that costs (the isothermal contrast)." },
+    desc: "The same benzene/toluene split with T declared rather than computed — the feed already is that state, so Q = 0; move T and a duty appears." },
   { id: "steady/flowsheets/process01_reactor_flash",
     title: "A first flowsheet",
     desc: "Reactor → flash: two units wired by their streams." },

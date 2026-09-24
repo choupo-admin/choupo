@@ -20,8 +20,17 @@
   Feed: 100 kmol/h, 30/70 ethanol/water, 1 atm.  The column feed enthalpy is
   set by feedQuality = 1.0 (saturated liquid), NOT by the stream T: the stated
   T = 363 K is ~7 K above the 30/70 bubble point (~355.5 K at 1 atm), so the
-  stream itself is slightly superheated — the MESH model uses feedQuality, so
-  this does not affect the column solution.
+  stream itself is slightly superheated — the MESH model uses feedQuality,
+  so the STAGE solution is set by that declaration.  It is not free,
+  though, and this line used to claim it was.  The engine announces on
+  every run of this case that the feed `is priced as LIQUID (vf = 0) at
+  T = 363 K ... its own Rachford-Rice residual there is g(V=0) = 0.393227,
+  i.e. it is ABOVE its bubble point and cannot hold that label; the
+  enthalpy priced for it is missing (or inventing) that phase change.`
+  So `feedQuality 1.0` (saturated liquid) and the stream's own state
+  disagree, the engine says so rather than refusing, and the ENTHALPY is
+  what carries the disagreement.  The plant boundary still closes at
+  0.000000 kW, because the same pricing is used on both sides of it.
   Column: 16 stages, feed at 8, R = 2.5, D = 25 kmol/h, method simultaneous.
 
   Expected: converged; x_D(ethanol) ~ 0.80 (< 0.894 azeotrope -- physical);

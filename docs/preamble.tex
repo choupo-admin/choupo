@@ -283,10 +283,32 @@
   \ifdefined\propertyTheoryAuthors
     V\'{\i}tor Geraldes, Pedro Mendes, and Miguel Rodrigues%
   \else\ifdefined\eduToolsAuthors
-    V\'{\i}tor Geraldes and M\'{o}nica Faria%
+    V\'{\i}tor Geraldes%
   \else
     V\'{\i}tor Geraldes%
   \fi\fi}
+
+% CURATORS are a SEPARATE channel from \manualauthors, and the separation is
+% the point.  \manualauthors feeds three sentences below, and the first of
+% them is the COPYRIGHT line -- so a name added there claims rights in the
+% work, whatever was meant by it.  A colleague who agrees to review a chapter
+% is not making that claim.
+%
+% The two words are close enough to collide on one page, so each says what it
+% means: the AUTHORS carry editorial responsibility for the whole guide; a
+% CURATOR reviews one named part of it and answers for that review.  A curator
+% is never listed in \manualauthors -- check_curator_parity refuses it -- and
+% appears here only after consenting, which AUTHORS records.
+\newcommand{\manualcuratorblock}{%
+  \ifdefined\eduToolsAuthors
+    \noindent Curators: M\'{o}nica Faria, Departamento de Engenharia
+    Qu\'{\i}mica, Instituto Superior T\'{e}cnico
+    \textemdash\ the batch UF/NF membrane tool.\\[0.3cm]
+    \noindent A curator reviews one named part of this guide and answers for
+    that review. Curation in this sense is not authorship: curators hold no
+    copyright in this work and are deliberately absent from the lines
+    above.\\[0.3cm]
+  \fi}
 
 % OpenFOAM-style manual front matter: title page, then a copyright/licence
 % notice page.  No source-code banner belongs on manual covers.
@@ -308,6 +330,7 @@
   \vspace*{1.2cm}
   \noindent Copyright \textcopyright{} 2026 \manualauthors.\\[0.3cm]
   \noindent Authors: \manualauthors.\\[0.3cm]
+  \manualcuratorblock
   \noindent This work is licensed under a Creative Commons
   Attribution-ShareAlike 4.0 International License.\\[0.3cm]
   \noindent Code examples, Choupo case files, and other machine-readable

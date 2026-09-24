@@ -1,4 +1,4 @@
-# flash01_benzene_toluene — the canonical first run
+# flash01_benzene_toluene — the temperature is declared, not computed
 
 The same 40/60 benzene/toluene feed (100 kmol/h) as `adiabaticFlash01`,
 this time **held at 370 K** and 1 bar.  Raoult's law, ideal vapour, the

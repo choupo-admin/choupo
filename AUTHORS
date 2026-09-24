@@ -25,6 +25,21 @@ Properties Guide and Theory Guide
   Pedro Mendes
   Miguel Rodrigues
 
+EduTools Guide
+  Vítor Geraldes
+
+Curators
+  A curator reviews one named part of a guide or tool for correctness and
+  answers for that review. Curation in this sense is not authorship: a curator
+  holds no copyright in the work, makes no claim to it, and is deliberately
+  absent from the author lists above and from every guide's copyright line. A
+  name appears here only after the person has consented; the consent itself is
+  a fact outside this repository and no check can verify it.
+
+  Mónica Faria, Departamento de Engenharia Química, Instituto Superior Técnico
+    EduTools Guide — the batch UF/NF membrane tool. Consent given to the
+    project lead and recorded here 2026-09-24.
+
 AI-assisted implementation
   Anthropic Claude Code / Claude Opus and Fable models
   Used as software-generation tools; not treated as human authors or

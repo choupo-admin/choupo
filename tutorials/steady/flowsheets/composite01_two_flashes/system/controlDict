@@ -16,6 +16,7 @@
   above the leaf node (leaf01_flash), the level below the plant.
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "Composite node: two flashes in series (fractal step 2)";
 

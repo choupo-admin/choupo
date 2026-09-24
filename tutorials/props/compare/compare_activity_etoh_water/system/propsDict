@@ -11,14 +11,17 @@
   ===========================
 
   COMPARE 3 activity-coefficient models for γ_ethanol in an equimolar
-  ethanol/water mixture, T = 280 K to 360 K, P = 1 atm.
+  ethanol/water mixture, T = 280 K to 360 K, P = 1 bar (as all three ops
+  below declare; this line said 1 atm, which is 1.01325 bar).
 
     * ideal  : γ = 1 always (Raoult's law assumption).
     * NRTL   : strong non-ideality, γ_ethanol > 1 (azeotrope behaviour).
     * Wilson : similar to NRTL for this binary, slightly different curve.
 
   Pedagogical point: a student studying ethanol/water VLE will see that
-  "ideal" is a bad approximation here (γ_ethanol grows to ~2-3 at low T),
+  "ideal" is a bad approximation here (γ_ethanol reaches 1.267 under NRTL
+  and 1.377 under Wilson at 280 K, the coldest and most non-ideal end of
+  this scan, against exactly 1 for ideal), 
   and that NRTL/Wilson give similar non-ideal corrections.  The choice
   between the two is then decided by which fits the project's
   experimental data better (workflow Mode B, see tutorials/props/README.md).

@@ -9,10 +9,20 @@
   the author's, and refuses an undeclared backward edge by name.  With one
   cycle there is only one honest cut, and this is it.
 
-  Newton rather than Wegstein: acetone03 already records that Wegstein was
-  DEFEATED on cavett01's real conditions while Newton took 7 iterations, and
-  a loop whose recycle composition sits against an azeotrope is exactly the
-  shape where a scalar acceleration misbehaves.
+  WEGSTEIN, as `recycleSolver` below declares, and MEASURED ON THIS PLANT.
+  Newton's Jacobian perturbs the tear five times per iteration and every
+  perturbation triggers a full recovery search on C1 -- a nested cost that was
+  still grinding after eleven minutes at 200 % CPU.  Wegstein needs one search
+  per pass and converged in three (|r| 2.847 -> 2.13e-2 -> 1.785e-4).  The
+  case's own CLAUDE.md carries that comparison under `Decisions + why`.
+
+  This paragraph argued the OPPOSITE until 2026-09-24 -- "Newton rather than
+  Wegstein", citing acetone03's record that Wegstein was DEFEATED on
+  cavett01's conditions while Newton took 7 iterations -- six lines above a
+  declaration that says Wegstein.  The file told a reader one thing and the
+  engine did another, and the prose was the false half: acetone03's finding
+  was made on a different flowsheet, and this one was measured directly.
+  A solver aid is the student's to see, so the reason lives here.
 \*---------------------------------------------------------------------------*/
 tearStreams    ( ipaRecycle );
 recycleSolver  Wegstein;

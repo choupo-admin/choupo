@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
+tier          tutorial;
 application   choupoSolve;
 description   "Azeotropic distillation (ethanol/water, NRTL) by the rigorous simultaneous MESH method";
 verbosity     3;

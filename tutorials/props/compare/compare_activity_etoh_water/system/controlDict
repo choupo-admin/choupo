@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
+tier          tutorial;
 application   choupoProps;
 description   "Compare 3 activity models (ideal / NRTL / Wilson) for γ_ethanol in equimolar mixture with water vs T";
 

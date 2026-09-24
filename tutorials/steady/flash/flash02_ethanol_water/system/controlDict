@@ -10,6 +10,7 @@
   flash02_ethanol_water -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "Isothermal flash 50/50 ethanol/water at 355 K (NRTL)";
 

@@ -4033,6 +4033,27 @@ PYEOF
     fi
     rm -f /tmp/casetier.$$
 
+    #  ITS SIBLING, AND THE HALF THE TIER GATE DELIBERATELY DOES NOT CHECK.
+    #  `check_case_tiers` states in its own blind-spot list that it does NOT
+    #  check coverage -- "a gate demanding growth would defeat the doctrine",
+    #  since a new case is a WITNESS by default.  This gate demands no growth
+    #  either.  It holds one thing: the cases a HUMAN-WRITTEN curriculum
+    #  (docs/start-here.md) already teaches must carry the tier word that
+    #  makes them visible in the app's "start here: the first path" folder.
+    #  Measured 2026-09-24, before it existed: three of the nine did, and the
+    #  six that did not included tutorials/plant/acetonePlant, the plant the
+    #  whole document builds toward.  A student who read the document and a
+    #  student who clicked the folder were taught two different courses.
+    if "$ROOT/bin/curate/check_first_path_agrees.py" > /tmp/firstpath.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "first-path-gate" "$(head -1 /tmp/firstpath.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_first_path_agrees.py)\n" "first-path-gate"
+        cat /tmp/firstpath.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/firstpath.$$
+
     # Gibbs-Duhem gate (2026-08-07).  The first check in the tree that asks
     # whether a thermodynamic model is RIGHT rather than UNCHANGED.  A golden
     # preserves whatever error it was recorded with; Gibbs-Duhem is a
@@ -5184,6 +5205,27 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/gfresh.$$
+
+    #  WHO ANSWERS FOR A GUIDE, AND WHO MERELY REVIEWED PART OF ONE.
+    #  docs/preamble.tex's \manualauthors feeds three sentences on every
+    #  guide's front matter and the FIRST of them is the COPYRIGHT line, so a
+    #  name written there claims rights in the work.  A colleague who agrees
+    #  to review a chapter is not making that claim -- and on 2026-09-24 one
+    #  was written there anyway.  The curator channel is separate
+    #  (\manualcuratorblock); this gate refuses a curator in \manualauthors,
+    #  holds AUTHORS and preamble.tex to the same roster in both directions,
+    #  and requires every curator to state the SCOPE they answer for.
+    #  Its arm (c) also holds the guide AUTHOR lists, which had lived in both
+    #  files with nothing keeping them equal.
+    if "$ROOT/bin/curate/check_curator_parity.py" > /tmp/curator.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "curator-parity-gate" "$(head -1 /tmp/curator.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_curator_parity.py)\n" "curator-parity-gate"
+        cat /tmp/curator.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/curator.$$
 
     # Banner version-stamp gate (Vitor, 2026-08-04 -- the OpenFOAM.org
     # arrangement).  Every file in the tree carries the version of the LINE
