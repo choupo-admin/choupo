@@ -33,8 +33,11 @@ responses
 (
     flash01.V_over_F       // the S-curve: 0 below bubble, 1 above dew
     flash01.Q_kW           // duty that holds each T (crosses 0 near the feed T)
-    flash01.F_alpha        // liquid product, kmol/h
-    flash01.F_beta         // vapour product, kmol/h
+    flash01.F_alpha        // liquid product, kmol/s (canonical SI, as the
+                           //   CSV and the result JSON carry it; the run
+                           //   LOG prints kmol/h -- this comment said
+                           //   kmol/h and was wrong by 3600)
+    flash01.F_beta         // vapour product, kmol/s (same)
 );
 
 report

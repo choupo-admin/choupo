@@ -13,9 +13,15 @@ Rachford-Rice equation solved by Newton in one unknown.  The golden:
    `operation { T 370.0 K;  P 1.0 bar; }`.  That order is the grammar of
    every unit in Choupo.
 2. **K is a ratio of pressures here.**  With Raoult's law
-   `K_i = Psat_i(T) / P`.  The **Props** tab lets you read both vapour
-   pressures at 370 K and check the two K's by hand — a two-line
-   calculation a student should do once.
+   `K_i = Psat_i(T) / P`.  The **Log** tab prints both vapour pressures
+   with the K they give (`benzene Psat 1.6514 bar  K = 1.6514`), so you
+   can check the two K's by hand — a two-line calculation a student
+   should do once.  (This line used to send you to the **Props** tab.  It
+   cannot answer: that view is a ✓/✗ coverage matrix — its "Psat" column
+   means *a vapour-pressure model exists*, not a value — plus one pill per
+   operation the case declares in a `propsDict`, and this case has none.
+   For Psat as a NUMBER at a temperature you choose, the **Property
+   surfaces** view is the other home.)
 3. **Rachford-Rice has one root in (0, 1) when the feed is between its
    bubble and dew points.**  The **Log** tab prints each Newton iterate of
    V/F; count them.

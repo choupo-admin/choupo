@@ -26,9 +26,15 @@ taking **4.98 kW** to hold 365 K.
    entries and the engine refuses, naming the stream that would be read
    before it was produced.
 4. **Every balance is drawn from the engine, by default.**  The
-   **Reports** tab shows mass, per-element and energy closures for the
-   whole sheet — the flash's 4.98 kW and the reactor's −1.88 kW are both
-   in the ledger.
+   **Reports** tab carries the mass closure and the plant-boundary first
+   law (`Q_boundary 3.1026 kW` — the NET heat crossing the boundary, not
+   either unit's duty); the flash's 4.98 kW appears there under
+   **Utilities**, as the steamLP that serves it.  The **per-element**
+   closure is drawn in the **Plots** tab, not in Reports.  The reactor's
+   −1.88 kW is in neither: it is a per-unit duty, and the engine writes it
+   to `reports/balances/energyBalance_byUnit.csv`, which the CLI leaves in
+   the case directory.  Three numbers, three surfaces — worth knowing
+   before you go looking for one in the wrong place.
 
 ## What to try
 

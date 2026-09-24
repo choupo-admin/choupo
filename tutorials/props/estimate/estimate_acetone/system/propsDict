@@ -45,9 +45,15 @@ operations
             omega   0.307;
         }
         // Opt-in PROMOTE: write a component proposal .dat from the estimate.
-        // `auto` => constant/components/<component>.estimate-<date>.dat -- a
+        // `auto` => constant/components/<component>.estimated.dat -- ONE
+        // stable proposal, replaced per run (EstimateComponent.cpp), a
         // glass-box, reviewable file (ready fields active, gaps as TODOs);
-        // promote with `mv` once the gaps (Vliq, Psat, s_298) are filled.
+        // promote with `mv` once the gaps are filled.  The file NAMES its
+        // own remaining gaps rather than this comment guessing them: the
+        // run now fills Vliq (Rackett/Yamada-Gunn) and Psat
+        // (Ambrose-Walton), so on acetone only s_298 is left -- and this
+        // line used to list all three, plus a dated filename the engine
+        // stopped writing.
         output  { proposal auto; }
     }
 );

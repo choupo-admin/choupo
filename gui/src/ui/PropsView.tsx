@@ -1034,8 +1034,21 @@ function EstimatePanel({
           ? (op["reference"] as JsonDict) : null);
         // The promote proposal .dat this estimate produced (if `output {
         // proposal auto; }` was declared), matched by component name.
+        //
+        // BOTH SPELLINGS, and the second one is the live engine's (fixed
+        // 2026-09-24).  `EstimateComponent.cpp` writes `<comp>.estimated.dat`
+        // -- "ONE stable proposal, replaced per run", in its own comment --
+        // and this reader matched only the RETIRED dated form
+        // `<comp>.estimate-<date>.dat`.  The worker harvests both
+        // (solverWorker.js), so the file arrived and this lookup dropped it:
+        // `proposalName` stayed null, the "Preview the exact .dat bytes"
+        // accordion never rendered, and the download stayed disabled -- on a
+        // welcome card whose whole lesson is that the estimate is a RECORD
+        // YOU CAN READ.  The dated form is kept because a result carried over
+        // from an older engine still resolves; the day nothing writes it, it
+        // goes.
         const proposalEntry = Object.entries(proposals ?? {}).find(
-          ([path]) => new RegExp(`(^|/)${comp}\\.estimate-.*\\.dat$`).test(path));
+          ([path]) => new RegExp(`(^|/)${comp}\\.(estimated|estimate-.*)\\.dat$`).test(path));
         const proposalName = proposalEntry ? proposalEntry[0].split("/").pop()! : null;
         const proposalText = proposalEntry ? proposalEntry[1] : null;
         // SHADOW guard: a same-named component is already loaded in this case
@@ -1217,8 +1230,9 @@ function EstimatePanel({
                     <Accordion.Panel>
                       <Text size="11px" c="dimmed" mb={4}>
                         Read-only — the exact bytes downloaded. Active keys are usable now (EoS + energy);
-                        the commented GAP TODOs (Vliq, Psat, s_298) and the <code>mv</code> promote command
-                        are in the file. The download keeps the DATED name; promote with the <code>mv</code>.
+                        the commented GAP TODOs the method could not fill, and the <code>mv</code> promote
+                        command, are in the file. The download keeps the file's own name; promote with the
+                        <code>mv</code>.
                       </Text>
                       <ScrollArea h={260} type="auto"
                         style={{ border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))", borderRadius: 6,
