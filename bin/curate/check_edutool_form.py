@@ -35,7 +35,14 @@ WHAT THIS CHECKS, deliberately structural rather than editorial:
       its violation is a licence, and this project has retired a gate for
       being permanently green;
   (d) every CONVERTED tool carries the two things the form is for: a scroll
-      container and at least one equation block;
+      container and at least one equation block -- by ONE OF TWO ROUTES, and
+      the OK line reports which, because they do not prove the same thing
+      (SHARED_STEP_MARKERS / OWN_BLOCK_MARKERS below).  Route 1 is the shared
+      LaTeX step renderer, whose fields check_lesson_symbols also reads;
+      route 2 is a tool's own pre-LaTeX monospace block, and there this gate
+      proves a TYPEFACE and not an equation.  A count that did not say which
+      is how PonchonSavaritTool came to be held up by three numeric readbacks
+      while calling the shared renderer the gate could not see;
   (e) every Explorer view is reachable only through a component SELECTION;
   (f) the pellet is not an Explorer view.
 
@@ -49,6 +56,17 @@ WHAT IT CANNOT CHECK, said plainly: whether the prose is any GOOD, whether
 the equations are the right ones, whether the steps are in a sensible order.
 Those are teaching judgements and no gate can make them.  This buys only that
 the SHAPE cannot regress and the debt cannot be forgotten.
+
+ONE MORE BLIND SPOT, MEASURED RATHER THAN ASSERTED (2026-09-24).  Arm (d)'s
+route 1 proves that a tool DELEGATES to the shared step renderer, not that
+the delegate still draws anything.  Fired by hand: `{step.formula && (` in
+methods/lessonStep.tsx replaced by `{false && (` -- every equation on all 25
+route-1 lessons disappears from the page and this gate reports OK, because
+every tool still delegates.  It is stated rather than closed because closing
+it belongs one file over: check_lesson_symbols already refuses a lesson
+module in which it finds no equation, and gui/tests/lessonTex.test.ts parses
+every shipped formula.  A gate that implied it covered the renderer would be
+worse than one that names the gap.
 """
 import re
 import sys
@@ -65,10 +83,51 @@ EXPLORE_VIEWS = ROOT / "gui/src/case/exploreViews.ts"
 
 PANEL_MARKER = "MethodSetupRail"
 SCROLL_MARKER = 'overflowY: "auto"'
-EQUATION_MARKERS = ('ff="monospace"', "ff='monospace'")
-#  The shared step renderer draws the formula AND its `where`
-#  gloss; a tool that calls it carries equations by delegation.
-STEPPER_MARKER = "lessonStepper("
+#  ------------------------------------------------------------------------
+#  TWO ROUTES TO AN EQUATION, and they are not equally strong.  Naming them
+#  apart is the point: the OK line reports the split, so a reader can see how
+#  much of arm (d) rests on the weak one.
+#
+#  ROUTE 1 -- the LaTeX route (2026-09-22).  A tool that hands its steps to
+#  the shared renderer (methods/lessonStep.tsx) gets its `formula` and every
+#  `derivation[].eq` drawn by KaTeX, and check_lesson_symbols holds those same
+#  fields to an enumerated vocabulary.  BOTH entry points count, and that is
+#  a correction: `lessonStepper(steps)` is a factory that returns
+#  <LessonStepView/>, and a page may render the component directly.  This
+#  gate named only the factory, so PonchonSavaritTool -- which maps
+#  LessonStepView over its own steps -- was proved by ROUTE 2 instead, on
+#  three monospace spans that hold numeric readbacks (`R/(R+1) = 0.6000`) and
+#  not an equation.  A pass through the wrong arm is the check_true_ions
+#  shape.  check_lesson_symbols selects a lesson on the substring
+#  "LessonStep" for exactly this reason: two homes for one question, and they
+#  disagreed about one live tool.
+SHARED_STEP_MARKERS = ("lessonStepper(", "LessonStepView")
+
+#  ROUTE 2 -- the LEGACY route.  A tool that predates the shared step and
+#  draws its own equation block in the monospace typeface.  Thirteen live
+#  tools still do (the OK line names them), because the LaTeX migration
+#  covered the lesson MODULES and these carry their prose and their equations
+#  inline.
+#
+#  WHAT THIS MARKER PROVES, and it is less than its old name claimed: that
+#  the tool draws SOMETHING in the monospace typeface.  It cannot tell an
+#  equation from a table cell, a file path or a numeric readback, and after
+#  the LaTeX migration the migrated tools use the typeface far more for those
+#  than for equations -- so where ROUTE 1 also holds, this marker is carrying
+#  nothing.
+#
+#  A CONTENT TEST WAS TRIED AND REJECTED, because it accuses the innocent.
+#  The equation is usually bound in from a data array under a field name each
+#  tool chooses -- `{s.eq}` in ClausGibbsTool, `{m.line}` in
+#  FourWaysMixtureTool (`gamma_i = 1`), `{s.formula}` elsewhere -- so no test
+#  over the JSX literal can see it.  Measured before this comment was
+#  written: a relation-sign test read FourWaysMixtureTool as equation-free
+#  when the page shows five, and read PropertyOriginsTool's `cite` string
+#  `a(T) = a_c*alpha(Tr; omega)` as an equation when it is a citation.  Wrong
+#  in both directions, which is the shape this project retires a filter for.
+#  So the marker stays weak and the OK line SAYS it is weak, rather than a
+#  tightened one saying more than it can prove.
+OWN_BLOCK_MARKERS = ('ff="monospace"', "ff='monospace'")
 #  THE THIRD FORM (2026-09-02): an INDEX page.  RulesOfThumbTool scrolls and
 #  carries no equation on purpose -- every rule lives in the Design Guide and
 #  the page deep-links its chapters, because a quoted heuristic beside a named
@@ -178,31 +237,43 @@ def main():
         fail(f"pinned as panels but no live tool renders them: "
              f"{', '.join(ghosts)} -- the registry names something gone.")
 
+    shared_route, own_route = [], []
     for tid, label, src in lessons:
-        if SCROLL_MARKER not in src:
+        #  COMMENTS ARE NOT CODE, on every arm and not only the panel one.
+        #  The panel arm learnt this from TieTriangleTool's header describing
+        #  the chrome it USED to use; the same header could just as easily
+        #  name lessonStepper or the monospace typeface in a sentence about
+        #  the page's past and prove an equation block that is not there.
+        #  Measured when this was applied: no verdict changed today, which is
+        #  the state a guard should be put in before it is needed.
+        code = strip_comments(src)
+        if SCROLL_MARKER not in code:
             fail(f"{label} ({tid}) is not a panel and does not scroll either "
                  f"({SCROLL_MARKER!r} absent) -- it is neither form.")
-        #  TWO WAYS TO CARRY EQUATIONS, and the second is the stronger one.
-        #  A tool may draw its own monospace block, or it may hand its steps
-        #  to the SHARED renderer (methods/lessonStep.tsx), which draws the
-        #  formula and, since 2026-08-28, the `where` gloss under it.  This
-        #  arm used to accept only the first, so the day seventeen private
-        #  copies of that renderer were replaced by one shared home, a tool
-        #  that had gained a BETTER guarantee was reported as having lost the
-        #  point.  A check that reads presentation out of a caller's own file
-        #  measures where the code lives, not what the page shows.
-        if not any(m in src for m in EQUATION_MARKERS) \
-           and STEPPER_MARKER not in src and INDEX_MARKER in src:
+        #  TWO ROUTES TO EQUATIONS, and the first is the stronger one -- see
+        #  SHARED_STEP_MARKERS / OWN_BLOCK_MARKERS above for what each proves
+        #  and what neither can.  They are recorded apart rather than OR-ed
+        #  into one boolean, because a count of lessons that says nothing
+        #  about HOW each one is proved cannot be audited: this gate reported
+        #  "38 scrolling lessons, each with a scroll container and at least
+        #  one equation block" while one of them was held up by three numeric
+        #  readbacks.
+        shared = any(m in code for m in SHARED_STEP_MARKERS)
+        own = any(m in code for m in OWN_BLOCK_MARKERS)
+        if shared:
+            shared_route.append((tid, label))
+        elif own:
+            own_route.append((tid, label))
+        elif INDEX_MARKER in code:
             index_pages.append((tid, label))
-            continue
-        if not any(m in src for m in EQUATION_MARKERS) \
-           and STEPPER_MARKER not in src:
+        else:
             fail(f"{label} ({tid}) scrolls but carries no equation block: it "
-                 f"has no monospace Text of its own, does not call "
-                 f"{STEPPER_MARKER!r}, and is not an index page deep-linking "
-                 f"a guide ({INDEX_MARKER!r} absent).  The form exists to "
-                 "hold the equations, so a lesson without one kept the layout "
-                 "and dropped the point.")
+                 f"does not hand its steps to the shared LaTeX step renderer "
+                 f"({' / '.join(SHARED_STEP_MARKERS)}), has no monospace "
+                 f"block of its own, and is not an index page deep-linking a "
+                 f"guide ({INDEX_MARKER!r} absent).  The form exists to hold "
+                 "the equations, so a lesson without one kept the layout and "
+                 "dropped the point.")
 
     ev = strip_comments(EXPLORE_VIEWS.read_text(encoding="utf-8"))
     views = set(re.findall(r'out\.add\("([A-Za-z0-9_]+)"\)', ev))
@@ -226,8 +297,18 @@ def main():
         f"check_edutool_form: OK -- all {len(ids)} LIVE registry id(s) "
         f"resolve through the workspace to a source ({inline} defined inline "
         f"in MethodsWorkspace.tsx, which the file-glob this gate replaced "
-        f"could not see at all).  {len(lessons) - len(index_pages)} are scrolling lessons, each "
-        f"with a scroll container and at least one equation block; "
+        f"could not see at all).  "
+        f"{len(shared_route) + len(own_route)} are scrolling lessons, each "
+        f"with a scroll container and at least one equation block -- and the "
+        f"split is reported because the two routes do not prove the same "
+        f"thing: {len(shared_route)} hand their steps to the shared LaTeX "
+        f"step renderer, so their equations are the `formula` and "
+        f"`derivation[].eq` fields check_lesson_symbols holds to a glossed "
+        f"vocabulary, while {len(own_route)} draw their own pre-LaTeX "
+        f"monospace block ({', '.join(t for t, _ in own_route)}) and for "
+        f"those this gate proves only that the TYPEFACE is used -- it cannot "
+        f"tell an equation from a table cell, because the equation is bound "
+        f"in from a data field whose name each tool chooses.  "
         f"{len(index_pages)} are index pages whose equations live in the "
         f"guide they deep-link (quoting them on the page would be a second "
         f"home); "

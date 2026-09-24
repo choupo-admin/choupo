@@ -407,6 +407,17 @@ def main() -> int:
         #  this gate is not reading -- a renamed field, a reshaped module, or
         #  a file that should not be globbed as a lesson.  Whatever the cause,
         #  reporting OK over it is the failure this arm exists to prevent.
+        #
+        #  AND IT CATCHES A RENAMED FIELD ONLY WHEN THE COUNT REACHES ZERO,
+        #  measured 2026-09-24 rather than supposed: renaming `formula:` to
+        #  `formulaTex:` throughout bodeLesson.ts took the corpus from 192
+        #  equations to 185 and this gate still said OK, because that module
+        #  keeps its `derivation[].eq` entries and so never hits zero.  The
+        #  backstop there is the TYPE, not this arm -- `BODE_STEPS` is
+        #  declared `readonly LessonStep[]` and `formulaTex` is an excess
+        #  property, so `npm run typecheck` refuses it.  Written down because
+        #  the sentence above reads as though a renamed field were caught
+        #  here, and it is caught one file over.
         #  A `*Tool.tsx` legitimately has none once its steps live in a data
         #  module beside it.
         if n_eq == 0 and f.name.endswith("Lesson.ts"):
@@ -461,7 +472,12 @@ def main() -> int:
         f"other command must be one of the {len(OPERATORS)} enumerated "
         f"operators, {len(SYMBOL_COMMANDS)} symbol commands or "
         f"{len(PREFIX)} accents -- an unknown one REFUSES rather than being "
-        f"classed either way.  WHAT THIS DOES NOT CHECK, and it is the half "
+        f"classed either way.  THE DOMAIN, because '{done} of "
+        f"{len(lessons)}' reads as complete and is not: this is every module "
+        f"whose steps reach the SHARED step renderer, and a live EduTool that "
+        f"draws its own equation block instead is outside it -- how many, and "
+        f"which, is check_edutool_form's OK line, where the fact is derived "
+        f"rather than restated here.  WHAT THIS DOES NOT CHECK, and it is the half "
         f"that matters: whether a definition is CORRECT, whether it is "
         f"useful, or whether the symbol needed one -- 'X  the reflux ratio' "
         f"in the drying lesson would pass here and be nonsense on the page.  "
