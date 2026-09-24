@@ -194,7 +194,7 @@ was discipline, not invention.
 
 This chapter writes the discipline down so that no future author
 (or AI assistant) can reinvent it differently.  Anything in the
-manual that contradicts these five rules is a bug.
+manual that contradicts the five rules above is a bug.
 
 \subsection{Westerberg's classification of flowsheeting strategies}
 
@@ -248,9 +248,13 @@ computed results.
 
 \noindent The credo translated:
 
+% The three columns are sized to \textwidth (tabularx) rather than left to
+% their natural width: as an `lll' tabular the last row ran 80.76pt past the
+% right margin and printed `operation.lookupScalar(..' cut in half.  Reported
+% by Pedro Mendes, review of 2026-09-18, printed page 22.
 \medskip
 \begin{center}\small
-\begin{tabular}{@{}lll@{}}
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
 \toprule
                           & \textbf{Port}                              & \textbf{Parameter} \\
 \midrule
@@ -261,7 +265,7 @@ Who writes the value      & Upstream unit OR the engineer              & The eng
 Who reads it              & The unit op via the port handle            & The unit op via \code{operation.lookupScalar(\dots)} \\
 Physical meaning          & The actual fluid / energy crossing the boundary & A property of the equipment itself \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{center}
 
 \noindent Three kinds of port that CAPE-OPEN sanctions:
@@ -746,8 +750,11 @@ simulator uses, the parameters they need, and the boundaries within
 which they can be trusted --- followed by the numerical methods that
 glue them together into a working flowsheet.
 
+% Sized to \textwidth (tabularx): as an `ll' tabular the Part~V row ran
+% 96.29pt past the right margin and printed `mixture rules -- sh'.  Reported
+% by Pedro Mendes, review of 2026-09-18, printed page 25.
 \begin{center}\small
-\begin{tabular}{@{}ll@{}}
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X@{}}
 \toprule
 Part        & content \\
 \midrule
@@ -759,7 +766,7 @@ Part~V      & transport properties: viscosity (Chung), thermal conductivity (Euc
 Part~VI     & selected unit operations as they are wired  \\
 Part~VII    & equipment sizing and Guthrie/Turton costing \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{center}
 
 \noindent
@@ -1177,18 +1184,24 @@ state, no new data required.}
 \end{figure}
 
 
+% Sized to \textwidth (tabularx): as an `lll' tabular this ran 679.79pt --- a
+% whole text width --- past the right margin, printing the Sato-Riedel row as
+% `transport.liquid.the' and the Chapman-Enskog row as `ships since
+% 2026-09-06; rea'.  The worst overflow in the guide; same defect class as the
+% two Pedro Mendes reported on 2026-09-18 (printed pages 22 and 25), found on
+% printed page 32 while fixing those.
 \begin{center}\small
-\begin{tabular}{@{}lll@{}}
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
 \toprule
 which property uses it & how & in source code\\
 \midrule
 $\Delta h^{\mathrm{vap}}(T)$ via Watson         & $T_c$, $T_b$, $\Delta h^{\mathrm{vap}}_{T_b}$  & \code{Component::Hvap\_latent}\\
-$\kappa^{\mathrm{liq}}(T)$ via Sato-Riedel    & $T_c$, $T_b$, $M$                              & \code{SatoRiedel} (ships; \code{transport.liquid.thermalConductivity}) \\
+$\kappa^{\mathrm{liq}}(T)$ via Sato-Riedel    & $T_c$, $T_b$, $M$                              & \code{SatoRiedel} (ships; \code{transport.\allowbreak liquid.\allowbreak thermalConductivity}) \\
 $\varphi_i$ via cubic EOS                       & $T_c$, $P_c$, $\omega$                         & post-v1 \\
-$\mu^{\mathrm{gas}}(T)$ via Chapman-Enskog      & $\sigma$, $\epsilon/k$ (Lennard-Jones)  & \code{ChapmanEnskog} (ships since 2026-09-06; reads the record's \code{lennardJones\{\}} block, drafted from Svehla 1962 by \code{bin/curate/propose\_lennard\_jones.py}; \code{Chung} needs no such block) \\
+$\mu^{\mathrm{gas}}(T)$ via Chapman-Enskog      & $\sigma$, $\epsilon/k$ (Lennard-Jones)  & \code{ChapmanEnskog} (ships since 2026-09-06; reads the record's \code{lennardJones\{\}} block, drafted from Svehla 1962 by \code{bin/\allowbreak curate/\allowbreak propose\_lennard\_jones.py}; \code{Chung} needs no such block) \\
 $P^{\mathrm{sat}}(T)$ validity ceiling          & $T_c$ as the upper bound on Antoine \code{Trange} & data-file metadata \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{center}
 
 \begin{intuition}
@@ -1322,6 +1335,13 @@ across the laboratory range, Antoine (1888) proposed
    \;}
    \label{eq:antoine}
 \end{equation}
+
+\noindent The modern statement of \eqref{eq:antoine}, together with the
+constant tables the component data files follow, is Poling, Prausnitz and
+O'Connell, Chapter~6 \cite{RPP}.  Antoine's own 1888 note is not held
+anywhere in this project --- not in the bibliography, not in \file{src/},
+not in a data record --- so it is named above and deliberately not cited: a
+reference this project cannot check is a reference it does not make.
 
 \begin{figure}[ht]
 \centering
@@ -1511,13 +1531,19 @@ without the other.
     outx/.style={box, draw=blue!70!black, fill=blue!6, text width=30mm},
     flow/.style={->, >=latex, very thick},
 ]
+% The $\omega$ wire is routed BELOW the shape-function column and the two
+% annotations sit under it.  Drawn as `(om.east) -| (master.south)' the wire
+% ran horizontally at $y=-0.4$, which is inside the $f^{(2)}$ box and inside
+% the blue annotation: the arrow struck the word `departure' through and the
+% two notes overlapped each other.  Reported by Pedro Mendes, review of
+% 2026-09-18, printed pages 36--37.
 \node[inp] (tc) at (0,2.0) {$T_c$};
 \node[inp] (pc) at (0,0.8) {$P_c$};
 \node[inp] (om) at (0,-0.4) {$\omega$};
 \node[shpx] (red) at (3.4,1.4) {reduced coords\\ $T_r=T/T_c$\\ $\tau=1-T_r$};
-\node[shpx] (f0) at (7.0,2.5) {$f^{(0)}(\tau)$ \scriptsize simple fluid};
-\node[shpx] (f1) at (7.0,1.2) {$f^{(1)}(\tau)$ \scriptsize 1st departure};
-\node[shpx] (f2) at (7.0,-0.1) {$f^{(2)}(\tau)$ \scriptsize 2nd departure};
+\node[shpx] (f0) at (7.0,2.5) {$f^{(0)}(\tau)$\\ \scriptsize simple fluid};
+\node[shpx] (f1) at (7.0,1.2) {$f^{(1)}(\tau)$\\ \scriptsize 1st departure};
+\node[shpx] (f2) at (7.0,-0.1) {$f^{(2)}(\tau)$\\ \scriptsize 2nd departure};
 \node[outx] (master) at (11.0,1.4)
    {$\ln\!\dfrac{P^{\mathrm{sat}}}{P_c}=f^{(0)}+\omega f^{(1)}+\omega^2 f^{(2)}$};
 \draw[flow] (tc.east) -- (red.west);
@@ -1528,11 +1554,11 @@ without the other.
 \draw[flow] (f0.east) -- (master.west);
 \draw[flow] (f1.east) -- (master.west);
 \draw[flow] (f2.east) -- (master.west);
-\draw[flow] (om.east) -| (master.south);
+\draw[flow] (om.south) -- ++(0,-0.9) -| (master.south);
 \node[font=\footnotesize\itshape, text=gray!45!black, align=center]
-   at (9.0,-1.0) {$\omega$ weights the\\ departure terms};
+   at (4.9,-2.15) {$\omega$ weights the\\ departure terms};
 \node[font=\footnotesize, text=blue!55!black, align=center]
-   at (11.0,-0.4) {at $\tau=0$: $P^{\mathrm{sat}}=P_c$\\ (critical end-point built in)};
+   at (10.4,-2.15) {at $\tau=0$: $P^{\mathrm{sat}}=P_c$\\ (critical end-point built in)};
 \end{tikzpicture}
 \caption{Ambrose--Walton turns the \emph{three} corresponding-states
 constants an estimate already produces ($T_c, P_c, \omega$, teal) into the
@@ -3275,14 +3301,23 @@ $\approx 75.4$~J/(mol·K)), this evaluates to
 \]
 At 100~kmol/h that is a duty of about
 $7{,}212 \cdot 10^5 / 3600 \approx 200~\mathrm{kW}$ --- which is
-exactly what \code{tutorials/steady/heat/hx01\_heater} reports when you run it.
+% \code{} is \texttt{}, which forbids every line break, so this path was an
+% unbreakable 40.30pt-too-wide token at the end of its line and printed into
+% the right margin; the same token stretched the interword spacing of the
+% tutoriallink box below.  \allowbreak after each slash is the fix that makes
+% the content FIT (a path breaks after a slash with no hyphen, which is the
+% usual convention).  Reported by Pedro Mendes, review of 2026-09-18, printed
+% page 54.
+exactly what \code{tutorials/\allowbreak steady/\allowbreak heat/\allowbreak hx01\_heater}
+reports when you run it.
 Every step uses only Eqs.~\eqref{eq:integral-href}--\eqref{eq:integral-hmix}
 and the polynomial $c_p$ from the data file.
 
 \begin{tutoriallink}
-\code{runCase tutorials/steady/heat/hx01\_heater} executes the duty calculation
+\code{runCase tutorials/\allowbreak steady/\allowbreak heat/\allowbreak hx01\_heater}
+executes the duty calculation
 above end-to-end and writes the result to the run log.  Modify
-\file{tutorials/steady/heat/hx01\_heater/system/flowsheetDict} to change
+\file{tutorials/\allowbreak steady/\allowbreak heat/\allowbreak hx01\_heater/\allowbreak system/\allowbreak flowsheetDict} to change
 $T_{\mathrm{out}}$ and watch how $Q$ scales linearly with
 $\Delta T$ --- a direct consequence of constant $c_p$.
 \end{tutoriallink}
@@ -3306,7 +3341,7 @@ descending order of trust:
   \item \textbf{Literature pair coefficients.} NRTL
         $(a_{ij}, b_{ij}, a_{ji}, b_{ji}, \alpha_{ij})$ and Wilson
         $\Lambda_{ij}$ live in
-        \file{data/standards/parameters/<model>/<c1>-<c2>.dat},
+        \file{data/\allowbreak standards/\allowbreak parameters/\allowbreak <model>/\allowbreak <c1>-<c2>.dat},
         also with provenance. The same DECHEMA / RPP sources apply.
   \item \textbf{In-simulator regression.} For binary
         interaction parameters \emph{only}, the simulator can refit
@@ -23519,15 +23554,15 @@ Iterative Processes'', \emph{Comm. ACM}, 1(6), 9--13 (1958). The
 two-page paper that powers the simulator's outer activity-coefficient
 loop.
 
-\bibitem{Watson} Watson, K. M., ``Thermodynamics of the Liquid State'',
-\emph{Ind. Eng. Chem.}, 35, 398 (1943). The heat-of-vaporisation
-correlation.
-
 \bibitem{RPP} Poling, B. E., Prausnitz, J. M., \& O'Connell, J. P.,
 \emph{The Properties of Gases and Liquids}, 5th ed., McGraw-Hill,
 2001. The standard reference for pure-component property correlations
 and activity-coefficient models. Chapters 6 (vapour pressure), 8
 (activity coefficients), 9 (mixture properties).
+
+\bibitem{Watson} Watson, K. M., ``Thermodynamics of the Liquid State'',
+\emph{Ind. Eng. Chem.}, 35, 398 (1943). The heat-of-vaporisation
+correlation.
 
 \bibitem{Renon} Renon, H., \& Prausnitz, J. M., ``Local Compositions in
 Thermodynamic Excess Functions for Liquid Mixtures'', \emph{AIChE J.},
