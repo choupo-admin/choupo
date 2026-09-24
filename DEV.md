@@ -1118,6 +1118,39 @@ accepts today, and that is a policy call.
      NOT DONE: nothing was changed.  A second atom scope is a decision about
      what a report PRESENTS, and it moves what a gate can see -- Vitor's.
 
+**C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
+     EduTool that teaches it on the green ammonia plant (commissioned
+     2026-09-24).**  Vítor: build the case as best industrial practice builds
+     it, *"se for o caso, cria as várias simulações por sequência de maior
+     detalhe"*, and then an EduTool that walks that sequence with green
+     ammonia as the case study.  **His explicit instruction on method:
+     "perde o tempo que for necessário a esclarecer tudo primeiro, vê até
+     online como é feito."**  So this entry is opened BEFORE any research,
+     and the research is the first deliverable — not a design, not code.
+
+     WHY IT ARRIVED: the discussion about `gibbsReactor` publishing no volume.
+     That is not a defect — an equilibrium reactor has no length scale by
+     construction — but the case then types a literal volume into `postDict`
+     and costs 25 M EUR from it, which presents a later-stage answer when only
+     the early stage was done.  Vítor has never worked in industry and asked
+     how the staging is really done rather than accepting an answer from
+     memory.
+
+     WHAT THE TREE ALREADY CARRIES, measured before proposing anything:
+     `reports/economics/cashFlow.csv` already stamps `AACE_class 4` with an
+     `accuracyBand_pct -30,50`, so the corpus ALREADY declares a design stage
+     — it simply never says so anywhere a student reads, and nothing connects
+     that stamp to which reactor model the case used.  `pinchPass` exists, so
+     the heat-integration step of the sequence is present.  `pfr` and
+     `catalystLoading` exist, so a kinetic converter is buildable from parts
+     that exist; what is missing for ammonia is the RATE EXPRESSION and the
+     catalyst data, which is curation and physics, not a sizer.
+
+     NOT DECIDED, and deliberately not guessed: how many cases the sequence
+     should be, whether they are separate tutorial cases or one case with
+     staged `postDict` chains, and what each stage is ALLOWED to claim.  Those
+     follow the research, which is what was commissioned first.
+
 **C7. NO COMPETITOR IS NAMED IN THIS REPOSITORY (ruled 2026-09-24;
      PARTLY DONE, and the hardest part is not the scrub).**  Vítor:
      *"A comparação com [os outros] sou eu depois que a vou fazer no artigo!
