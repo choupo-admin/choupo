@@ -48,8 +48,26 @@ Coverage map, measured that day:
 |---|---|---|
 | mass, global | `check_mass_closure` | whole steady corpus |
 | mass, per unit | none | — |
-| atoms / elements | `check_element_balance` | one case |
+| atoms / elements | `check_element_closure` | **every published case** (210) — `check_element_balance` still holds its one case, and keeps its own arms |
 | energy, global | `check_energy_closure` (built that day) | whole steady corpus |
+
+**THE ATOM ROW WAS CLOSED ON 2026-09-24, SIXTEEN DAYS AFTER THIS TABLE NAMED
+IT.**  The energy row above was closed within the week; this one sat here with
+no task number and no entry in DEV.md's debts, which is this document's own
+lesson about itself -- *an absence that is named and not scheduled is an
+absence*.  `check_element_closure` reads the engine's own elementBalance over
+every publishing case, bands every element at 0.01 pp, and ratchets a MEASURED
+pin ledger both ways.  On the day it was built it found **16 of 210 outside
+the band, and 14 of those are membrane cases** -- the leak is a FAMILY, not a
+scatter, and the worst real one is `membrane10_dspmde_divalent` losing 0.3977
+pp of its magnesium in a desalination tutorial whose subject is where the
+magnesium goes.  One entry is NOT a leak and says so in the gate: a softener
+moves calcium onto a resin, and a resin is not a stream -- the atoms are
+conserved and the boundary is the wrong control volume for them.
+
+The row still open beside it is CHARGE: eight named cases of roughly
+twenty-eight that speciate, in `check_charge_balance`, which marks no claim
+line at all.
 | energy, per unit | none | — |
 | charge | not measured — do not repeat this row as fact | — |
 

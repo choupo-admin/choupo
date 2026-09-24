@@ -5574,6 +5574,25 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/energyclos.$$
 
+    #  THE THIRD CONSERVATION LAW, corpus-wide (2026-09-24).  The coverage map
+    #  in docs/design/what-a-passing-suite-does-not-say.md put two rows side by
+    #  side on 2026-09-08 and called them the same shape -- a law asserted on
+    #  ONE case and read as asserted on the corpus.  The energy row was closed
+    #  that week by the gate above.  The ATOM row was not, and it had no task
+    #  number and no entry in DEV.md's debts.  This is it: every published
+    #  elementBalance, every element, a measured pin ledger that ratchets both
+    #  ways.  It found 16 of 210 outside the band, 14 of them membrane cases --
+    #  a FAMILY, not a scatter.
+    if "$ROOT/bin/curate/check_element_closure.py" > /tmp/elemclos.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "element-closure-gate" "$(tail -1 /tmp/elemclos.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_element_closure.py)\n" "element-closure-gate"
+        cat /tmp/elemclos.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/elemclos.$$
+
     #  A UTILITY CIRCUIT DECLARED ON ONE END ONLY (2026-09-09).  The energy
     #  report subtracts a utility medium's supply and return enthalpies so its
     #  formation datum cancels and only the heat it carried remains -- and
