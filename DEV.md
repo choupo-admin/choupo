@@ -1251,10 +1251,35 @@ accepts today, and that is a policy call.
      **KNOWN GAPS against the ask, measured 2026-09-24:** the ammonia quench
      converter's three catalyst beds cannot be sized and are not costed (C2);
      `EconomicsPass` carries 14 undeclared defaults whose announcement is a
-     stopped campaign (`docs/design/a-default-nobody-declared.md`); there is
-     no annual P&L or investment-plan artefact anywhere in the tree; and the
+     stopped campaign (`docs/design/a-default-nobody-declared.md`); and the
      `design` and `economics` REPORT KINDS still do not run by default, which
      is reserved for Vitor (§4b).
+
+     **CORRECTED THE SAME DAY, and the correction is the useful half: THE
+     ANNUAL P&L AND THE INVESTMENT PLAN ALREADY EXIST.**  This entry said
+     "there is no annual P&L or investment-plan artefact anywhere in the
+     tree".  That was written from ASSUMPTION, not measurement, hours after
+     the rule about exactly that was added to this file.  MEASURED:
+     `reports/economics/cashFlow.csv` carries, per year, `investment_EUR`,
+     `revenue_EUR`, `operatingCost_EUR`, `depreciation_EUR`,
+     `taxableIncome_EUR`, `tax_EUR`, `afterTaxProfit_EUR`, `cashFlow_EUR`,
+     `discountFactor`, `discountedCF_EUR` and `cumulativeDCF_EUR`, headed
+     "Discounted-cash-flow appraisal (Perry / Turton Ch.10)" and stamped
+     `AACE_class 4` with an `accuracyBand_pct -30,50`.  On
+     `ammonia02_full_plant`: investment 77 495 037 EUR at year 0, revenue
+     239 167 295 EUR/yr, operating cost 215 099 839 EUR/yr, depreciation
+     7 487 443, tax at 21 %, cumulative DCF crossing zero in year 5.  SEVEN
+     corpus cases produce one.
+
+     **SO THE REAL GAP IS NARROWER AND SHARPER.**  What the appraisal is NOT
+     is a P&L that VARIES: revenue and operating cost are the same figure
+     every year, so there is no ramp-up, no escalation and no working
+     capital; and the investment is a single lump at year 0 rather than a
+     construction schedule — which is the `constructionPeriod 2;` finding
+     already on record in `the-key-nobody-read-in-the-postdict.md`, where
+     this same plant publishes an NPV discounted over a one-year
+     construction while declaring two.  Those are the things to build, and
+     they are a different and much smaller job than building an appraisal.
 
 **C5. What this file CANNOT recover.**  The assistant recovered C2-C4 by
      reading this session's own transcript on disk, which is why they are
