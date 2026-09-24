@@ -425,6 +425,80 @@ export interface OptimumScan {
 }
 
 /**
+ * THE AXIS THE PRODUCT CONCENTRATION IS DRAWN ON.
+ *
+ * The bench method reads g/L; the engine publishes kmol/m3, because that is
+ * the unit its material balances are carried in.  The bridge between them is
+ * the molar mass, and the ONLY molar mass this page will use is the one the
+ * RUN ITSELF published (`componentMolarMass`, stamped onto every result by
+ * src/result/ComponentIdentity from the package the run actually loaded).  It
+ * is not read out of a component record by this page, and it is never a
+ * constant: a number the run cannot support is a number the student cannot
+ * check against the run.
+ *
+ * THE ARITHMETIC IS AN IDENTITY, NOT A FACTOR.
+ *
+ *   c [kmol/m3] * MW [kg/kmol] = kg/m3,   and   1 kg/m3 = 1000 g / 1000 L
+ *                                              = 1 g/L exactly.
+ *
+ * so the scale IS the molar mass and there is no 1000 anywhere.  The product
+ * axis follows from the same multiplication:
+ *
+ *   C [g/L] * J_f [L/(m2 h)] = g/(m2 h)
+ *
+ * which is the unit step 8's gloss already teaches, and it agrees with the
+ * molar route as it must: C [kmol/m3] is C [mol/L], so C J_f is mol/(m2 h),
+ * and mol/(m2 h) * MW [g/mol] = g/(m2 h) with MW [kg/kmol] numerically equal
+ * to MW [g/mol].
+ *
+ * THE OPTIMUM DOES NOT MOVE.  The molar mass is one positive constant across
+ * the whole scan, so multiplying by it cannot change WHICH point carries the
+ * largest C J_f, nor whether that point is interior.  This is a relabelling
+ * of an axis, not a second optimisation, and the scan is therefore left in
+ * the engine's own unit and converted only where it is drawn.
+ *
+ * ABSENCE KEEPS ITS MEANING.  No published molar mass for the retained
+ * species -- an older result from before the identity was stamped, or a
+ * component whose record carries none -- and the axis stays in the run's own
+ * unit and says so.  Nothing is estimated in its place.
+ */
+export interface ConcentrationAxis {
+  /** kg/kmol for the retained species, from the run's own map; null when the
+   *  run published none for it. */
+  molarMass: number | null;
+  /** Multiply a concentration in kmol/m3 by this to reach `unit`. */
+  scale: number;
+  /** The concentration unit actually drawn. */
+  unit: string;
+  /** The unit of C J_f on that axis. */
+  productUnit: string;
+  /** true only when a molar mass was found and the axis is in mass units. */
+  converted: boolean;
+}
+
+/** The run's own unit, used whenever no molar mass is available. */
+const MOLAR_AXIS: ConcentrationAxis = {
+  molarMass: null, scale: 1, unit: "kmol/m³", productUnit: "mol/(m²·h)",
+  converted: false,
+};
+
+export function concentrationAxis(
+  retained: string | null,
+  molarMass: { [component: string]: number } | undefined,
+): ConcentrationAxis {
+  if (retained === null || molarMass === undefined) return MOLAR_AXIS;
+  const mw = molarMass[retained];
+  //  A zero or negative molar mass is not a molar mass; treat it exactly as
+  //  an absent one rather than dividing the student's axis by nothing.
+  if (typeof mw !== "number" || !Number.isFinite(mw) || mw <= 0)
+    return MOLAR_AXIS;
+  return {
+    molarMass: mw, scale: mw, unit: "g/L", productUnit: "g/(m²·h)",
+    converted: true,
+  };
+}
+
+/**
  * The classical diafiltration optimum, located on the RUN's own trajectory.
  *
  * A wash of N diavolumes at volume V takes t = N V/(A J_w).  For a fixed

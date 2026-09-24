@@ -23,11 +23,11 @@
   period + phase)`), the dynamic binary integrates the plant, and
   `frequencyResponse {}` least-squares fits `a + b sin(wt) + c cos(wt)` to the
   outlet after the start-up transient is discarded
-  (src/dynamicDriver/DynamicDriver.cpp:1575-1607): amplitude
-  `hypot(b, c)` at src/dynamicDriver/DynamicDriver.cpp:1588, phase
-  `atan2(c, b)` at src/dynamicDriver/DynamicDriver.cpp:1590, and the share of
+  (src/dynamicDriver/DynamicDriver.cpp:1582-1614): amplitude
+  `hypot(b, c)` at src/dynamicDriver/DynamicDriver.cpp:1595, phase
+  `atan2(c, b)` at src/dynamicDriver/DynamicDriver.cpp:1597, and the share of
   the output variance the single sinusoid does NOT explain at
-  src/dynamicDriver/DynamicDriver.cpp:1607.  One run is
+  src/dynamicDriver/DynamicDriver.cpp:1614.  One run is
   ONE POINT of a Bode diagram, measured.  Everything this module contributes
   to that plane is the EXPERIMENT DESIGN — which frequencies to ask for, and
   what time step and run length each one needs — plus arithmetic on the
@@ -40,7 +40,7 @@
   it — searched 2026-09-12 for bode / nyquist / transfer function / gain
   margin / phase margin / amplitude ratio across src/**, and EVERY hit is a
   COMMENT about the measurement above: src/control/signal/Signal.H:42 ("one
-  point of a Bode plot") and :94, src/dynamicDriver/DynamicDriver.cpp:660,
+  point of a Bode plot") and :94, src/dynamicDriver/DynamicDriver.cpp:661,
   and src/outerDriver/SweepDriver.H:85 (the linked-target mirror the Bode
   sweep case needs).  Not one of them computes anything.
 
@@ -75,7 +75,7 @@ import type { ScalarOverride } from "../../case/methodRun.js";
 /** One frequency's answer: how much bigger the output swing is, and how far
  *  behind it runs.  `phaseRad` is NEGATIVE for a lag, which is the sign
  *  convention the engine's own fit publishes (`out_phase_rad` at
- *  src/dynamicDriver/DynamicDriver.cpp:1602 is the lag of the outlet behind the drive). */
+ *  src/dynamicDriver/DynamicDriver.cpp:1609 is the lag of the outlet behind the drive). */
 export interface Response {
   mag: number;
   phaseRad: number;

@@ -63,7 +63,8 @@ vi.mock("../src/ui/plotting/plotly.js", () => ({
 
 import {
   type KpiMap, type Sample,
-  LMH_PER_MS, TB032_EXAMPLE, concentrationIdeal, conservativeOptimum,
+  LMH_PER_MS, TB032_EXAMPLE, concentrationAxis, concentrationIdeal,
+  conservativeOptimum,
   detectDiafilter, diafiltrationTime, gapDirection, groupForLoss, lossCurve,
   lossFromGroup, lossGroup, productLoss, readSamples, readSolute, readVessel,
   retainedIdeal, scanWashOptimum, solutesFromKpis, soluteVerdict, tb032Rows,
@@ -349,6 +350,70 @@ describe("scanWashOptimum -- the maximum of J_w c, located on the run", () => {
     const scan = sweep([1, 2, 3, 4, 5]);
     expect(scan!.points.length).toBe(5);
     expect(sweep([1, 2])).toBeNull();
+  });
+});
+
+// ---- The g/L axis, and the absence it must keep meaning ---------------------
+
+describe("concentrationAxis -- g/L only from the RUN's own molar mass", () => {
+  it("converts with the molar mass and NO other factor", () => {
+    //  kmol/m3 * kg/kmol = kg/m3, and 1 kg/m3 IS 1 g/L: the scale is the
+    //  molar mass itself.  0.1 kmol/m3 of NaCl (58.44 kg/kmol) is 5.844 g/L.
+    const a = concentrationAxis("NaCl", { NaCl: 58.44, water: 18.015 });
+    expect(a.converted).toBe(true);
+    expect(a.scale).toBe(58.44);
+    expect(a.unit).toBe("g/L");
+    expect(a.productUnit).toBe("g/(m²·h)");
+    expect(0.1 * a.scale).toBeCloseTo(5.844, 12);
+  });
+
+  it("the product axis agrees with the molar route, as the units demand", () => {
+    //  C [kmol/m3] is C [mol/L], so C J_f is mol/(m2 h); multiplying by the
+    //  molar mass in g/mol -- numerically kg/kmol -- gives g/(m2 h).  The
+    //  page scales C and C J_f by the SAME number, which is that statement.
+    const a = concentrationAxis("MgSO4", { MgSO4: 120.37 });
+    const c = 0.05;          // kmol/m3
+    const J = 200;           // L/(m2 h)
+    const Jc_molar = c * J;              // mol/(m2 h)
+    expect(Jc_molar * a.scale).toBeCloseTo(c * a.scale * J, 10);  // g/(m2 h)
+  });
+
+  it("cannot move the optimum: a positive constant preserves the argmax", () => {
+    const samples: Sample[] = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((c, k) => ({
+      t: k, V: 1 / c, vcf: c, J_LMH: 10 - c, Qp: 0, N: 0, Vperm: 0,
+      permeanceRatio: null,
+    }));
+    const scan = scanWashOptimum(samples, [1, 2, 3, 4, 5, 6, 7, 8, 9])!;
+    const a = concentrationAxis("NaCl", { NaCl: 58.44 });
+    let iMax = 0;
+    for (let k = 1; k < scan.points.length; k++)
+      if (scan.points[k]!.Jc * a.scale > scan.points[iMax]!.Jc * a.scale)
+        iMax = k;
+    expect(iMax).toBe(scan.iMax);
+  });
+
+  it("STAYS in the run's unit when the run published no molar mass", () => {
+    for (const a of [
+      concentrationAxis("NaCl", undefined),           // an older result
+      concentrationAxis(null, { NaCl: 58.44 }),       // no retained species
+      concentrationAxis("Protein", { NaCl: 58.44 }),  // none for THIS species
+    ]) {
+      expect(a.converted).toBe(false);
+      expect(a.molarMass).toBeNull();
+      expect(a.scale).toBe(1);
+      expect(a.unit).toBe("kmol/m³");
+      expect(a.productUnit).toBe("mol/(m²·h)");
+    }
+  });
+
+  it("a non-positive or non-finite molar mass is treated as ABSENT", () => {
+    //  NOTHING INVENTED: a zero is not a molar mass, and it must not become
+    //  an axis scaled by nothing.
+    for (const mw of [0, -1, NaN, Infinity]) {
+      const a = concentrationAxis("X", { X: mw });
+      expect(a.converted).toBe(false);
+      expect(a.scale).toBe(1);
+    }
   });
 });
 

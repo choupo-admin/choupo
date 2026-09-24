@@ -54,6 +54,7 @@ Description
 #include "core/DictAudit.H"
 #include "core/Dictionary.H"
 #include "core/DisplayUnits.H"
+#include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
 #include "core/Advisory.H"
 #include "core/AdvisorySummary.H"
@@ -301,24 +302,12 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     // consumption, independent of verbosity.
     if (announceProvenanceConsumption(r.thermoResolution))
         r.advisories = AdvisoryLog::instance().entries();   // refresh
-    r.componentNames.reserve(thermo.n());
-    for (std::size_t i = 0; i < thermo.n(); ++i)
-    {
-        const auto& c = thermo.comp(i);
-        r.componentNames.push_back(c.name());
-        r.componentMolarMass[c.name()] = c.MW();
-        // Thermo coverage: which capabilities this component actually carries,
-        // so the GUI can flag gaps (e.g. an estimate with no Antoine -> no VLE).
-        ComponentCoverage cc;
-        cc.name        = c.name();
-        cc.criticals   = c.Tc() > 0.0 && c.Pc() > 0.0;
-        cc.psat        = c.hasVaporPressure();
-        cc.vliq        = c.Vliq() > 0.0;
-        cc.cpIdealGas  = c.hasCpIdealGas();
-        cc.gibbs       = c.hasGibbsData();
-        cc.nonvolatile = c.isNonvolatile();
-        r.componentCoverage.push_back(cc);
-    }
+    //  The loaded component set's identity -- names, molar masses, thermo
+    //  coverage.  ONE home (result/ComponentIdentity), shared with the other
+    //  three binaries that emit a SimulationResult; it used to be this block,
+    //  here and nowhere else, so a batch or dynamic run published an empty
+    //  `components` array and no molar mass at all.
+    stampComponentIdentity(r, thermo);
 
     // Utility consumption aggregation.  Walk every stream
     // and bucket its mass flow by its `category` tag; streams with

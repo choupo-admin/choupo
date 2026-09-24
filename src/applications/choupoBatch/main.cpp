@@ -88,6 +88,7 @@ Description
 #include "unitOperations/batch/BatchUnitOperation.H"
 #include "io/SolutionWriter.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
+#include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
 
 #include <variant>
@@ -1404,6 +1405,13 @@ if (flowsheetDict->found("cycle"))
     {
         SimulationResult result;
         result.converged = true;
+        //  The component set this run loaded, on the same terms as every
+        //  other binary that emits a SimulationResult (result/
+        //  ComponentIdentity).  Without it the emitted `components` array
+        //  was EMPTY and no molar mass reached any reader, so a batch result
+        //  could be read only in the engine's molar units -- and an absent
+        //  map is indistinguishable from a package that carries none.
+        stampComponentIdentity(result, thermo);
         for (const auto& unit : units)
         {
             auto& k = result.kpis[unit->name()];

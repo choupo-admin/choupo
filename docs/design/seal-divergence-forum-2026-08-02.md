@@ -23,9 +23,9 @@ which diverged (built 2026-07-31). Before debating whether it should
 tree this morning:
 
 ```
-src/applications/choupoSolve/main.cpp:515:    records::verifySeal(verbosity);
+src/applications/choupoSolve/main.cpp:504:    records::verifySeal(verbosity);
 src/applications/choupoCtrl/main.cpp:268:    records::verifySeal(verbosity);
-src/applications/choupoBatch/main.cpp:222:    records::verifySeal(verbosity);
+src/applications/choupoBatch/main.cpp:223:    records::verifySeal(verbosity);
 ```
 
 `verifySeal` **returns the divergence count, and all three binaries throw

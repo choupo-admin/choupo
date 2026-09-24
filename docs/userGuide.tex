@@ -3562,7 +3562,7 @@ as first-class columns.
 The trajectory CSV carries every CV, MV and setpoint --- plot it and
 read the tuning off the page.
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:610-653 (declaration, the two
+% Source: src/dynamicDriver/DynamicDriver.cpp:611-654 (declaration, the two
 % refusals, the armed line), :735-757 (accepted-step trapezoid),
 % :1505-1559 (KPIs, reports/rtd/E.csv, the printed moments and spread).
 % Grammar as written by tutorials/ctrl/ctrl18_rtd_pulse_cstr/system/controlDict
@@ -3595,7 +3595,7 @@ dynamic unit, a \code{tracer} that is not a declared component, and a
 run in which no tracer ever left the outlet
 (\file{ctrl18\_rtd\_pulse\_cstr}).
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:655-732 (declaration,
+% Source: src/dynamicDriver/DynamicDriver.cpp:656-733 (declaration,
 % `frequency` XOR `reference`, the five refusals, the armed line),
 % :1562-1612 (the fit, its KPIs, the fewer-than-8-samples refusal).
 % Grammar as written by tutorials/ctrl/ctrl19_freq_response_cstr/system/controlDict;
@@ -3632,7 +3632,7 @@ division by the drive's declared amplitude.  A fit window that
 \code{linkedTargets ( controllers[1].signal.frequency );} so the carrier
 mirror moves in lockstep (\file{ctrl20\_bode\_cstr}).
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:766-785 (trajectory.csv
+% Source: src/dynamicDriver/DynamicDriver.cpp:767-786 (trajectory.csv
 % header and rows), :890-895 (console echo), :1468-1475 (the summary
 % line), :1490-1501 (SP_final / PV_final / MV_final);
 % src/control/ScheduleController.H:80 (hasPV() false) against

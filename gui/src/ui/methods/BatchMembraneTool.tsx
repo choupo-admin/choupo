@@ -105,9 +105,11 @@ import {
   BATCH_MEMBRANE_LIMITS, BATCH_MEMBRANE_STEPS,
 } from "./batchMembraneLesson.js";
 import {
-  type ConservativeOptimum, type KpiMap, type OptimumScan, type Sample,
+  type ConcentrationAxis, type ConservativeOptimum, type KpiMap,
+  type OptimumScan, type Sample,
   type SoluteVerdict, type VesselDeclaration,
-  LMH_PER_MS, TB032_EXAMPLE, conservativeOptimum, detectDiafilter,
+  LMH_PER_MS, TB032_EXAMPLE, concentrationAxis, conservativeOptimum,
+  detectDiafilter,
   diafiltrationTime, gapDirection, lossCurve, lossFromGroup, lossGroup,
   productLoss, readSamples, readSolute, readVessel, scanWashOptimum,
   soluteVerdict, tb032Rows, trapezoid,
@@ -232,6 +234,10 @@ export interface BatchMembraneView {
   dfOptimum: ConservativeOptimum | null;
   /** The bulk-concentration series of each solute, for the main plot. */
   series: { [solute: string]: { cb: number[]; R: number[] } };
+  /** The unit the product-concentration axis is DRAWN in: g/L when the run
+   *  published a molar mass for `retained`, otherwise the run's own kmol/m³.
+   *  The scan itself stays in the engine's unit -- see `concentrationAxis`. */
+  cAxis: ConcentrationAxis;
 }
 
 /**
@@ -241,6 +247,10 @@ export interface BatchMembraneView {
 export function buildView(
   trajectory: TrajectoryData | undefined, kpis: KpiMap | undefined,
   files: CaseFiles | null,
+  //  The RUN's own molar masses.  Optional because a result recorded before
+  //  the engine stamped them carries none, and that absence must keep
+  //  meaning what it meant rather than being filled in from elsewhere.
+  molarMass?: { [component: string]: number },
 ): BatchMembraneView | null {
   const det = detectDiafilter(
     trajectory ? Object.keys(trajectory.vars) : [], kpis);
@@ -293,6 +303,7 @@ export function buildView(
     VpermState: samples === null ? null
       : (samples[samples.length - 1]?.Vperm ?? null),
     retained, scan, dfOptimum, series,
+    cAxis: concentrationAxis(retained, molarMass),
   };
 }
 
@@ -342,8 +353,10 @@ export function BatchMembraneTool(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [src, appFiles, runKey]);
 
+  const molarMass = result?.componentMolarMass;
   const view = useMemo(
-    () => buildView(trajectory, kpis, files), [trajectory, kpis, files]);
+    () => buildView(trajectory, kpis, files, molarMass),
+    [trajectory, kpis, files, molarMass]);
 
   // ---- The setup column ----------------------------------------------------
   const controls = (
@@ -536,18 +549,27 @@ export function BatchMembraneTool(): JSX.Element {
   //  the measurement (the source's figure 12) and C J_f against the same
   //  concentration is what is maximised (its figure 13).  Drawing them apart
   //  would hide that the second is built from the first.
+  //  The scan is carried in the engine's kmol/m³ and drawn in whichever unit
+  //  `cAxis` resolved -- g/L when the run published a molar mass for the
+  //  retained species.  ONE scale, applied to BOTH axes at the one place the
+  //  numbers leave the view, because C and C·J_f are the same multiplication
+  //  (see `concentrationAxis`).  A constant positive factor cannot move an
+  //  argmax, so the marked point is the same point either way.
+  const cScale = view.cAxis.scale;
+  const cUnit = view.cAxis.unit;
+  const jcUnit = view.cAxis.productUnit;
   const optimumTraces: object[] = [];
   if (view.scan !== null) {
     const pts = view.scan.points;
-    const cs = pts.map((p) => p.c);
+    const cs = pts.map((p) => p.c * cScale);
     const vcfs = pts.map((p) => p.vcf);
     optimumTraces.push({
       type: "scatter", mode: "lines",
       name: `C · J_f  (${view.retained ?? ""})`,
-      x: cs, y: pts.map((p) => p.Jc),
+      x: cs, y: pts.map((p) => p.Jc * cScale),
       customdata: vcfs,
       hovertemplate:
-        "C = %{x:.4g} kmol/m³<br>C·J_f = %{y:.4g} mol/(m²·h)"
+        `C = %{x:.4g} ${cUnit}<br>C·J_f = %{y:.4g} ${jcUnit}`
         + "<br>VCF = %{customdata:.4g}<extra></extra>",
       line: { color: PLOT_COLORS.accent, width: 2 },
     });
@@ -557,7 +579,7 @@ export function BatchMembraneTool(): JSX.Element {
       x: cs, y: pts.map((p) => p.J_LMH),
       customdata: vcfs,
       hovertemplate:
-        "C = %{x:.4g} kmol/m³<br>J_f = %{y:.4g} L/(m²·h)"
+        `C = %{x:.4g} ${cUnit}<br>J_f = %{y:.4g} L/(m²·h)`
         + "<br>VCF = %{customdata:.4g}<extra></extra>",
       line: { color: PLOT_COLORS.warm2, width: 1.5, dash: "dot" },
     });
@@ -567,10 +589,10 @@ export function BatchMembraneTool(): JSX.Element {
         type: "scatter", mode: "markers",
         name: view.scan.interior
           ? "maximum (interior)" : "largest point (at an end)",
-        x: [best.c], y: [best.Jc],
+        x: [best.c * cScale], y: [best.Jc * cScale],
         customdata: [best.vcf],
         hovertemplate:
-          "C = %{x:.4g} kmol/m³<br>C·J_f = %{y:.4g} mol/(m²·h)"
+          `C = %{x:.4g} ${cUnit}<br>C·J_f = %{y:.4g} ${jcUnit}`
           + "<br>VCF = %{customdata:.4g}<extra></extra>",
         marker: { color: PLOT_COLORS.warm, size: 11, symbol: "diamond" },
       });
@@ -819,10 +841,10 @@ export function BatchMembraneTool(): JSX.Element {
                     xaxis: { ...darkLayout.xaxis,
                       title: { text:
                         `product concentration C (${view.retained ?? "—"})`
-                        + "  [kmol/m³]" },
+                        + `  [${cUnit}]` },
                       type: "log" },
                     yaxis: { ...darkLayout.yaxis,
-                      title: { text: "C · J_f  [mol/(m²·h)]" } },
+                      title: { text: `C · J_f  [${jcUnit}]` } },
                     yaxis2: { ...darkLayout.yaxis,
                       title: { text: "J_f  [L/(m²·h)]" },
                       overlaying: "y", side: "right", showgrid: false,
@@ -842,7 +864,8 @@ export function BatchMembraneTool(): JSX.Element {
                 highest initial rejection: {view.retained ?? "—"}.{" "}
                 {view.scan.interior
                   ? `The maximum is INSIDE the window this run swept: `
-                    + `C = ${fmt(best?.c, 4)} kmol/m³ `
+                    + `C = ${fmt(best === undefined ? null
+                        : best.c * cScale, 4)} ${cUnit} `
                     + `(VCF = ${fmt(best?.vcf, 4)}), `
                     + `J_f = ${fmt(best?.J_LMH, 4)} L/(m²·h). `
                     + "Pre-concentrate to there, then wash."
@@ -869,10 +892,22 @@ export function BatchMembraneTool(): JSX.Element {
                     + `in the corpus declares a second buffer's flux `
                     + `behaviour, so the curve is not drawn rather than `
                     + `guessed.`}{" "}
-                The bench method plots g/L against L/(m²·h); Choupo&apos;s
-                batch run publishes molar concentration (kmol/m³) and no
-                molar mass, so the axis is the run&apos;s own unit and nothing
-                is converted.
+                {view.cAxis.converted
+                  ? `The bench method plots g/L against L/(m²·h), and so does `
+                    + `the axis above: the run publishes the concentration in `
+                    + `kmol/m³ and the molar mass of ${view.retained} beside `
+                    + `it (${fmt(view.cAxis.molarMass, 4)} kg/kmol, this `
+                    + `run's own), and kmol/m³ × kg/kmol is kg/m³, which IS `
+                    + `g/L. The factor is the molar mass and nothing else, so `
+                    + `the marked maximum is the same point it would be on `
+                    + `the molar axis — a positive constant cannot move which `
+                    + `point is largest.`
+                  : "The bench method plots g/L against L/(m²·h). This run "
+                    + "published no molar mass for the retained species, so "
+                    + "the axis is the run's own unit (kmol/m³) and nothing "
+                    + "is converted — the conversion would need a number "
+                    + "this run cannot supply, and inventing one is worse "
+                    + "than the honest unit."}
               </Text>
               <Table withTableBorder withColumnBorders mt={8}
                 style={{ fontSize: 12 }} verticalSpacing={2}>

@@ -116,6 +116,7 @@ Description
 #include "io/SolutionWriter.H"
 #include "solver/NewtonND.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
+#include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
 
 #include <algorithm>
@@ -1478,6 +1479,12 @@ try
     {
         SimulationResult result;
         result.converged = true;
+        //  The component set this run loaded -- names, molar masses, coverage.
+        //  ONE home (result/ComponentIdentity), shared with choupoSolve and
+        //  choupoBatch; it serves BOTH binaries that run this driver
+        //  (choupoCtrl and choupoSemiContinuous), which is the whole reason
+        //  the driver was extracted.
+        stampComponentIdentity(result, thermo);
         for (const auto& u : units)
         {
             auto& k = result.kpis[u->name()];
