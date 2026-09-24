@@ -16,7 +16,7 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-import { resolveWorkspaceSearch } from "../src/state/workspaceUrl.js";
+import { literatureLink, literatureSeed, resolveWorkspaceSearch } from "../src/state/workspaceUrl.js";
 import { propertiesLink } from "../src/ui/explore/selectionLink.js";
 import { MODE_TABS } from "../src/ui/workspaces.js";
 
@@ -138,5 +138,25 @@ describe("one reader of ?workspace=", () => {
     expect(boot).toContain("canonical");
     expect(boot).toContain("replaceState");
     expect(boot).not.toContain("pushState");
+  });
+});
+
+describe("the literature address (2026-09-24)", () => {
+  it("?workspace=literature opens the literature -- it used to open NOTHING", () => {
+    expect(resolveWorkspaceSearch("?workspace=literature"))
+      .toEqual({ key: "literature", canonical: null });
+  });
+  it("the compound rides beside it and the ROUTER does not interpret it", () => {
+    expect(resolveWorkspaceSearch("?workspace=literature&compound=water"))
+      .toEqual({ key: "literature", canonical: null });
+  });
+  it("the link the inspector builds is the link the panel reads -- both ways", () => {
+    for (const name of ["water", "ethyl acetate", "2-propanol", "a&b=c"]) {
+      expect(literatureSeed(literatureLink(name))).toBe(name);
+    }
+  });
+  it("no compound asked for is an EMPTY seed, never a search for nothing", () => {
+    expect(literatureSeed("?workspace=literature")).toBe("");
+    expect(literatureSeed("?workspace=literature&compound=%20%20")).toBe("");
   });
 });

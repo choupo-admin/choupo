@@ -81,6 +81,21 @@ function withWorkspace(params: URLSearchParams, word: string): string {
   return "?" + out.toString().replace(/%2C/g, ",");
 }
 
+/** The address that opens the Literature workspace already searching for
+ *  `compound`.  ONE home for the spelling, so the inspector's button and the
+ *  panel's reader cannot drift apart. */
+export function literatureLink(compound: string): string {
+  return "?workspace=literature&compound=" + encodeURIComponent(compound);
+}
+
+/** The compound a Literature link asks for, or "" when it asks for none.
+ *  PURE, like `resolveWorkspaceSearch` beside it and for the same reason
+ *  that file already states: a routing decision nobody can test without a
+ *  browser is how a query parameter gets to choose a screen unnoticed. */
+export function literatureSeed(search: string): string {
+  return new URLSearchParams(search).get("compound")?.trim() ?? "";
+}
+
 export function resolveWorkspaceSearch(search: string): WorkspaceBoot {
   const params = new URLSearchParams(search);
   const w = params.get("workspace");
@@ -117,6 +132,13 @@ export function resolveWorkspaceSearch(search: string): WorkspaceBoot {
   //  one address would be a second home.
   if (params.get("explore") === "mccabe" && !params.has("key"))
     return { key: "methods", canonical: null };
+
+  //  THE LITERATURE, deep-linked as ?workspace=literature&compound=<name>.
+  //  The compound is read by LiteratureWorkspace itself, the same division
+  //  `?workspace=methods&tool=<id>` already draws: the router decides the
+  //  SCREEN, the screen reads its own data.  `literatureLink` below is the
+  //  one home that spells this address; nothing else builds it by hand.
+  if (w === "literature") return { key: "literature", canonical: null };
 
   //  The landing hero deep-links the Control Room on a ctrl case
   //  (?case=ctrl02_disturbance_rejection&view=control).

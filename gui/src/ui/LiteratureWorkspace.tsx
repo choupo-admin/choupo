@@ -31,6 +31,8 @@
  * common question -- "who measured MY system?" -- is zero typing.
  */
 import { useEffect, useMemo, useState } from "react";
+
+import { literatureSeed } from "../state/workspaceUrl.js";
 import {
   Anchor,
   Badge,
@@ -74,7 +76,12 @@ export function LiteratureWorkspace() {
     : [];
 
   const [mirror, setMirror] = useState<MirrorState>({ kind: "loading" });
-  const [query, setQuery] = useState("");
+  //  SEEDED, not controlled: a link may arrive asking for a compound
+    //  (?workspace=literature&compound=water), and after that the box is the
+    //  reader's.  Read ONCE, in a lazy initialiser.
+  const [query, setQuery] = useState(
+    () => (typeof window === "undefined"
+      ? "" : literatureSeed(window.location.search)));
   const [showN, setShowN] = useState(SHOW_STEP);
 
   useEffect(() => {

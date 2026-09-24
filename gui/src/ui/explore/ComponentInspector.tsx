@@ -31,6 +31,7 @@ import { useState } from "react";
 
 import type { ComponentRecord, CurationVerdict } from "../../case/componentRecord.js";
 import { dossierCorpusSize, dossiersFor } from "../../case/dossier.js";
+import { literatureLink } from "../../state/workspaceUrl.js";
 
 /** How each dossier verdict is drawn.  The GUI picks a COLOUR and a sentence;
  *  it does not pick the verdict, and it does not collapse two verdicts into one
@@ -275,13 +276,32 @@ export function ComponentInspector({ record, onClose }: {
         </Stack>
       </ScrollArea>
 
-      <Button size="compact-xs" variant="light" color="accent"
-        leftSection={<IconExternalLink size={13} />}
-        onClick={() => window.open(
-          `${window.location.pathname}?component=${encodeURIComponent(record.name)}`,
-          "_blank", "noopener")}>
-        open full
-      </Button>
+      <Group gap="xs" wrap="nowrap">
+        <Button size="compact-xs" variant="light" color="accent"
+          leftSection={<IconExternalLink size={13} />}
+          onClick={() => window.open(
+            `${window.location.pathname}?component=${encodeURIComponent(record.name)}`,
+            "_blank", "noopener")}>
+          open full
+        </Button>
+        {/*  WHO MEASURED THIS?  The Literature workspace searches the
+            reader's own ThermoML mirror, and until now the only way to ask
+            it about the component on screen was to retype the name there.
+            A new tab at an ADDRESS, never a stash: a name is a string and
+            re-derives, which is this file's own rule above.  Absent mirror
+            is that panel's business -- it answers with a STATUS and the
+            install command, and this button must not pretend to know.  */}
+        <Tooltip label="Search your ThermoML mirror for papers measuring this compound"
+          withArrow position="top">
+          <Button size="compact-xs" variant="subtle" color="gray"
+            leftSection={<IconFileText size={13} />}
+            onClick={() => window.open(
+              `${window.location.pathname}${literatureLink(record.name)}`,
+              "_blank", "noopener")}>
+            who measured this?
+          </Button>
+        </Tooltip>
+      </Group>
     </Stack>
   );
 }
