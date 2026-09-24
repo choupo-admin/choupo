@@ -889,6 +889,154 @@ accepts today, and that is a policy call.
 > retired `check_true_ions` shape.  Record:
 > [`verifying-the-catalogue-against-a-book.md`](docs/design/verifying-the-catalogue-against-a-book.md).
 
+## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
+
+> **2026-09-24 — THIS SECTION EXISTS BECAUSE A REQUEST WAS LOST.**  Vítor
+> asked, the week of 2026-09-15, for an EduTool on the least-squares
+> minimisation used in property estimation.  It was not built and it was not
+> written down, and when he raised it again nothing in the tree remembered
+> it.  His words: *"Devias ter um caderno de gestão das tarefas de
+> arquitetura do Choupo!  Estas coisas não se guardam de memória."*
+>
+> He is right, and the tree already said so twice: §4b and §5 both open by
+> recording that findings which lived in a session task list "lived nowhere",
+> because a session artefact dies with its container.  The rule was written
+> for FINDINGS and for DECISIONS.  It had no home for the third kind — WORK
+> VÍTOR COMMISSIONS — so a request was neither a debt (nobody had found a
+> defect) nor a decision (nothing was waiting on him), and it fell between
+> the two sections that exist.
+>
+> **THE RULE: a request from Vítor is written HERE in the same turn it is
+> made, before the work starts.**  Not after, not when it is finished.  A
+> commission differs from §4's roadmap in exactly one way that matters: a
+> candidate may be dropped on judgement, and this may not.  Entries leave
+> only when the work ships or when Vítor withdraws them.
+
+**C1. An EduTool on least-squares parameter estimation (asked ~2026-09-15;
+     NOT STARTED).**  The subject is already in the engine and no lesson
+     cites it: `src/propertyOps/FitParameters.cpp:232` solves
+     `(JᵀJ + λ·diag(JᵀJ))·dp = −Jᵀr` by Gauss-Jordan — **Levenberg-Marquardt**,
+     with `lambda0` declarable in the op's dict (`FitParameters.cpp:565`).
+     Measured 2026-09-24: the registry carries 39 tools and NONE is this.
+     The two that touch least squares answer different questions —
+     `active-set-qp` is the CONSTRAINED problem (reconciling a laboratory
+     water analysis, witness `analysis02_weighted_least_squares`) and `bode`
+     fits a sinusoid to a response trace.  Neither shows a student how a
+     property parameter set is fitted to measured data.
+     What makes it worth building HERE rather than anywhere else: the engine
+     already carries the honest apparatus around the optimiser — evidence
+     partitioned into fitted and held-out BEFORE the fit, an acceptance band
+     declared before the fit, and a verdict published as a word
+     (`check_fit_verdict_channel`).  So the lesson is not "here is a
+     minimiser" but "here is what a fitted parameter is worth", which is the
+     project's own differentiator.  `choupoProps` runs in the browser, so the
+     tool can drive the real optimiser rather than a re-implementation.
+     NOT DECIDED: which witness case it drives (`fitNRTL01_ethanol_water` is
+     the obvious candidate but is the one case flagged
+     `UNSUPPORTED_PATHS_IN_BROWSER`, so it cannot run in the app as it
+     stands — that has to be settled first, and it is the reason this entry
+     names no witness).
+
+**C2. The ammonia converter: a DESIGN module and a COST (asked 2026-09-21,
+     "os alunos precisam urgentemente disso"; PARTIALLY DONE).**
+     `tutorials/plant/ammonia03_quench_converter` exists and carries a
+     `system/postDict` with a `sizing` block, so the ASK was half met.  The
+     half that was not is the reactor itself, and the case's own header says
+     so: *"3 unit(s) could not be SIZED and are therefore absent from
+     `sizings` (and so from costing): bed1 bed2 bed3"*, and *"THERE IS NO
+     `costing` AND NO `economics` BLOCK HERE."*  The catalyst beds are the
+     equipment he asked to be able to size and price, and they are the three
+     that cannot be.  Closing it needs a sizer for a multi-bed quench
+     converter and a Guthrie set that covers it — and `Guthrie`'s eight sets
+     are all Turton's, which is the same wall the distillation TRAYS hit
+     (they refuse by name rather than invent a correlation).  Whether an
+     invented set is acceptable here is Vitor's, not the assistant's.
+
+**C3. Per-EQUATION citation audit of the Theory Guide (asked 2026-09-22;
+     NOT DONE at the granularity asked).**  He asked which of the guide's
+     equations carry no source, listing and never inventing.  What exists is
+     `check_theory_citations`, which is CHAPTER-granular and ratcheting: 43 of
+     81 chapters with numbered equations carry a citation, 38 pinned as owing
+     one.  Its own blind-spot line states the gap in its own words — *"NOT
+     CHECKED: ... the 534 numbered equation environments individually"*.  So
+     the campaign he authorised ran one level coarser than he asked.  The
+     per-equation list is a READING job, not a code job, and the rule that
+     makes it safe is already written: list, never invent a citation, because
+     inventing one converts *unsourced* into *falsely sourced*, which no
+     reader and no gate can detect.
+
+**C4. An electrodialysis case for WINE (asked 2026-09-21 as a question;
+     NOT DONE).**  He asked whether a typical wine electrodialysis case had
+     been made.  Measured: the corpus carries nine ED cases
+     (`ed01`-`ed07`, `edbatch01`, `edbatch02`) and NONE is wine.
+     `tutorials/plant/tartaricAcid` carries the right chemistry — tartaric
+     acid, potassium bitartrate, calcium hydroxide — and uses **no
+     electrodialysis at all**.  Tartrate stabilisation by ED is the standard
+     industrial application and the two halves already exist separately.
+     Recorded as a question he asked, not as a commission he placed; it
+     becomes one the day he says so.
+
+**C5. What this file CANNOT recover.**  The assistant recovered C2-C4 by
+     reading this session's own transcript on disk, which is why they are
+     stated with measurements rather than from memory.  That transcript
+     covers 2026-09-21 onward only: a session that ended before it is gone
+     from the container, so C1 — asked the week of 2026-09-15 — survived
+     only because Vítor repeated it.  This entry is NOT a placeholder to fill
+     by guessing: an invented commission is worse than a forgotten one,
+     because it cannot be told from a real one.
+
+**A REQUEST REPEATED IS A REQUEST THAT WAS DROPPED.**  The evidence is in
+this session: Vítor asked on 2026-09-21 whether the Explorer could search his
+local NIST mirror, and asked the SAME question again on 2026-09-24.  Nothing
+was done between the two and nothing was written down, so the second asking
+had to start from nothing.  When he repeats himself, the first asking is the
+defect — look for what else went with it.
+
+## 4d. DIAGNOSED AND REVERTED, ready to be redone from this record
+
+> **2026-09-24.**  The change below was written, compiled, RUN, and then
+> REVERTED deliberately — not abandoned.  It is correct and it is not
+> finished: it makes the engine refuse a real contradiction, and the refusal
+> then leaves one corpus case unable to converge, which needs a decision that
+> had not been taken.  Leaving it half-applied in the tree would hand the
+> next session a tree it cannot explain; deleting it without this entry would
+> lose a diagnosis that cost a morning.  So the tree is clean and the finding
+> is here, with enough detail to redo it in one sitting.  This entry IS the
+> §4c discipline applied to the assistant's own work.
+
+**D1. `resolveStreamThermalState` asks the EQUILIBRIUM, not the SPLIT.**
+   `src/unitOperations/flash/StreamEquilibrium.H`.  `twoPhaseSplit` discards
+   a converged SINGLE-PHASE answer, correctly for what it is asked; the
+   resolver read it anyway and fell back to the CARRIED vapour fraction,
+   whose default is zero.  So an unpinned stream that resolves single-phase
+   VAPOUR was labelled a liquid by a default — the opposite of R-E2, and the
+   shape CLAUDE.md §6 calls hardest to see: not two homes disagreeing, but no
+   home at all with a default answering.
+   MEASURED, on `column03_azeotrope_mesh`: its 30/70 ethanol/water feed at
+   363 K and 1.01325 bar is **single-phase VAPOUR, V/F = 1.0** — not the
+   "slightly superheated" liquid the case header claimed, and q = 0 against
+   the `feedQuality 1.0` it declared.  The energy report had been announcing
+   the contradiction on EVERY run (`g(V=0) = 0.393227 ... cannot hold that
+   label`) while nothing refused it.  With the fix the refusal fires by name.
+   THE COST, and it is the substantive half: removing the contradicting key
+   leaves the column with a vapour feed, and its declared specification
+   (16 stages, feed at 8, R = 2.5, D = 25 kmol/h) then **fails to converge** —
+   "a stage vapour/liquid flow went non-positive".  So the case's published
+   answer depended on the feed being priced as the wrong phase.
+   NOT YET DECIDED: whether the case's feed T moves to its true bubble point
+   (preserving the author's declared intent of a saturated liquid and the
+   column's specification) or the case keeps 363 K and is re-specified for a
+   vapour feed.  The first looks right — the author wrote `feedQuality 1.0`
+   and designed the column around a liquid — but the bubble point must be
+   ASKED OF THE ENGINE, not arithmetic in a head, and that had not been done
+   when this entry was written.
+   NOT YET MEASURED: the corpus-wide blast radius.  Any case whose stream
+   declares no `vaporFraction` and resolves single-phase VAPOUR is currently
+   priced as a liquid and will move.  `phasechange01_partial_condenser` is
+   named in CLAUDE.md §6 as exactly this shape, fixed once for the evaporator
+   alone.  **No golden has been re-recorded**, per Vítor's standing rule that
+   the list of what moves is shown to him first.
+
 ## 5. Known debts (severity-ish)
 
 **2026-09-07 — THE OPEN QUEUE, written down.**  Thirty-one actionable

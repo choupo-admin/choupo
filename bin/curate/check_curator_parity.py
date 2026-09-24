@@ -24,6 +24,16 @@ WHAT THIS GATE CHECKS
     AUTHORS carrying the same names.  AUTHORS was ALREADY a second home for
     those lists and nothing held the two together; a name could drift out of
     one and stay in the other with the suite green.
+(e) THE TOOL ITSELF.  A curator declared on an EduTool
+    (gui/src/ui/methods/registry.ts, the `curator` field, drawn as a badge on
+    the tool) must appear in AUTHORS with that tool's id backticked in their
+    scope line, and every backticked tool id in AUTHORS must be a tool that
+    declares that curator.  Vitor asked for this on 2026-09-24: a credit on
+    the guide's front matter is a credit a student never reaches, because a
+    student opens the TOOL.  Three homes in three languages, one gate -- the
+    check_verdict_parity precedent, and the reasoning is in
+    docs/design/how-a-curator-is-credited.md.
+
 (d) Each curator entry states a SCOPE -- what part of which guide they answer
     for.  A curator credited for "the guide" with no scope is a credit nobody
     can check, and the scope is the whole difference between a review and a
@@ -50,6 +60,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PREAMBLE = ROOT / "docs" / "preamble.tex"
 AUTHORS = ROOT / "AUTHORS"
+REGISTRY = ROOT / "gui" / "src" / "ui" / "methods" / "registry.ts"
 
 # The guide-author lists, keyed by the switch macro each guide declares.  The
 # VALUE is the heading AUTHORS uses for that same list -- the join between the
@@ -280,6 +291,45 @@ def main():
                          "says {%s}" % (heading, ", ".join(sorted(want)),
                                         ", ".join(sorted(have))))
 
+    # (e) the tool's own declaration, held against AUTHORS both ways
+    if REGISTRY.is_file():
+        rtext = REGISTRY.read_text(encoding="utf-8")
+        #  `id: "<tool>", ... curator: { name: "<name>", ...` -- the id and the
+        #  curator are in ONE entry, so pair them by scanning entries, never by
+        #  matching two independent patterns and hoping they line up.
+        entries = re.split(r'\n  \{\n', rtext)
+        declared = {}
+        for e in entries:
+            mid = re.search(r'id:\s*"([a-z0-9-]+)"', e)
+            mcu = re.search(r'curator:\s*\{\s*name:\s*"([^"]+)"', e)
+            if mid and mcu:
+                declared[mid.group(1)] = mcu.group(1)
+
+        # AUTHORS' backticked tool ids, per curator
+        claimed = {}
+        for n, lines in authors_curators.items():
+            for tid in re.findall(r"`([a-z0-9-]+)`", " ".join(lines)):
+                claimed[tid] = n
+
+        for tid, who in sorted(declared.items()):
+            if tid not in claimed:
+                fails.append("(e) EduTool `%s` declares curator %s in "
+                             "registry.ts, but no AUTHORS curator names that "
+                             "tool id in their scope." % (tid, who))
+            elif claimed[tid] != who:
+                fails.append("(e) EduTool `%s`: registry.ts says %s, AUTHORS "
+                             "says %s." % (tid, who, claimed[tid]))
+        for tid, who in sorted(claimed.items()):
+            if tid not in declared:
+                fails.append("(e) AUTHORS gives %s the scope `%s`, but that "
+                             "EduTool declares no curator in registry.ts -- so "
+                             "the student opening it sees no credit."
+                             % (who, tid))
+    else:
+        fails.append("(e) gui/src/ui/methods/registry.ts is missing -- the "
+                     "tool-side half of the roster cannot be checked, and a "
+                     "check that cannot run must not pass.")
+
     # (d) every curator states a scope
     for n, lines in sorted(authors_curators.items()):
         body = " ".join(lines)
@@ -301,16 +351,20 @@ def main():
         return 1
 
     n_cur = len(authors_curators)
+    n_tools = len(re.findall(r'curator:\s*\{', REGISTRY.read_text(encoding="utf-8"))) \
+        if REGISTRY.is_file() else 0
     n_guides = len(GUIDE_SECTIONS)
     print("check_curator_parity: OK -- %d curator%s named in BOTH docs/preamble.tex "
           "and AUTHORS, each with a stated scope, and none of them in "
           "\\manualauthors (the macro that feeds every guide's copyright line); "
+          "%d EduTool(s) declare a curator on the tool ITSELF and each agrees "
+          "with AUTHORS in both directions; "
           "the %d guide author list%s carried by \\manualauthors agree name for "
           "name with AUTHORS' own sections.  NOT CHECKED: whether consent was "
           "given (a fact outside the tree, recorded in AUTHORS and verifiable "
           "by no gate) and whether a scope string is true of the section it "
           "names."
-          % (n_cur, "" if n_cur == 1 else "s",
+          % (n_cur, "" if n_cur == 1 else "s", n_tools,
              n_guides, "" if n_guides == 1 else "s"))
     return 0
 

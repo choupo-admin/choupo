@@ -122,7 +122,7 @@ License
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import { lessonStepper } from "./methods/lessonStep.js";
 import {
-  ActionIcon, Alert, Box, Button, Code, Collapse, CopyButton,
+  ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton,
   Group, Loader, NumberInput, Select, Stack, Text, Title, Tooltip,
 } from "@mantine/core";
 import { IconBook, IconExternalLink } from "@tabler/icons-react";
@@ -609,6 +609,25 @@ function TeachesLine({ tool }: { tool: MethodTool }) {
           : { style: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } })}>
         {tool.teaches}
       </Text>
+      {/*  THE CURATOR, NAMED WHERE THE STUDENT IS.  Vitor, 2026-09-24: the
+          person who curates an EduTool should be mentioned on it, not only
+          on the guide's front matter -- a student opens the TOOL.  The name
+          is VISIBLE rather than hidden behind the hover, because being
+          mentioned is the whole point; the tooltip carries the affiliation
+          and what curation means.  Only tools that declare one draw it, so
+          silence keeps meaning "nobody has reviewed this".  */}
+      {tool.curator && (
+        <Tooltip withArrow multiline w={320}
+          label={`${tool.curator.name}, ${tool.curator.affiliation} — reviewed `
+            + "this tool for correctness and answers for that review.  "
+            + "Curation is not authorship: curators hold no copyright in "
+            + "this work."}>
+          <Badge size="xs" variant="light" color="gray" style={{ flexShrink: 0 }}
+            aria-label={`Curated by ${tool.curator.name}`}>
+            curated by {tool.curator.name}
+          </Badge>
+        </Tooltip>
+      )}
       {tool.theory && (
         <Tooltip label="Open the matching section of the Theory Guide" withArrow>
           <ActionIcon component="a" href={theoryUrl(tool.theory)} target="_blank"

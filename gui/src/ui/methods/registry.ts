@@ -130,6 +130,25 @@ export interface MethodTool {
   theory?: string;
   /** Planned entries: the engine output that will feed the tool. */
   fedBy?: string;
+  /** WHO REVIEWED THIS TOOL FOR CORRECTNESS, and answers for that review.
+   *
+   *  Vitor's ask, 2026-09-24: *"como isto tem grande potencial de expansao,
+   *  convinha que a pessoa que cura cada EDUTOOL estivesse mencionada"*.  A
+   *  curator was named on the GUIDE's front matter and nowhere a student
+   *  actually looks -- they open the TOOL.
+   *
+   *  CURATION IS NOT AUTHORSHIP.  A curator holds no copyright in the work
+   *  and is deliberately absent from `docs/preamble.tex`'s `\manualauthors`,
+   *  which feeds every guide's copyright line.  That separation is enforced:
+   *  `check_curator_parity` refuses a curator who appears in that macro, and
+   *  holds this field, `AUTHORS` and the guide's front matter to ONE roster.
+   *  Three homes in three languages, one gate -- the `check_verdict_parity`
+   *  precedent, taken because no single home is reachable from LaTeX, plain
+   *  text and TypeScript at once.
+   *
+   *  A name appears here only after the person has consented; `AUTHORS`
+   *  records that, and no check can verify it. */
+  curator?: { name: string; affiliation: string };
 }
 
 // ---- The method-tool registry ----------------------------------------------
@@ -667,6 +686,9 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "batch-membrane", label: "Batch membrane filtration (UF/NF)",
     discipline: "Separations & phase equilibria", kind: "construction",
     status: "live",
+    curator: { name: "Mónica Faria",
+               affiliation: "Departamento de Engenharia Química, "
+                          + "Instituto Superior Técnico" },
     teaches: "The two pure batch operations behind a UF/NF membrane and the "
       + "one line that differs between them (Q_d = 0 or Q_d = Q_p): each "
       + "mode's own clock -- the volume concentration factor and the "

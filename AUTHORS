@@ -36,9 +36,16 @@ Curators
   name appears here only after the person has consented; the consent itself is
   a fact outside this repository and no check can verify it.
 
+  A backticked name in a scope line is an EduTool id in
+  gui/src/ui/methods/registry.ts, where the same curator is declared and drawn
+  on the tool itself; check_curator_parity holds the two together. Choupo's
+  "curator" is CRediT *Validation*, not CRediT *Data curation* — see
+  docs/design/how-a-curator-is-credited.md for why the obvious mapping is the
+  wrong one.
+
   Mónica Faria, Departamento de Engenharia Química, Instituto Superior Técnico
-    EduTools Guide — the batch UF/NF membrane tool. Consent given to the
-    project lead and recorded here 2026-09-24.
+    EduTools Guide — the batch UF/NF membrane tool (`batch-membrane`).
+    Consent given to the project lead and recorded here 2026-09-24.
 
 AI-assisted implementation
   Anthropic Claude Code / Claude Opus and Fable models

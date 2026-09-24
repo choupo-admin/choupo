@@ -2929,6 +2929,27 @@ NO YES-MEN) is DEV.md's; this is the commander's own half.
 
 Corollaries, each paid for:
 
+* **A REQUEST FROM VÍTOR IS WRITTEN DOWN IN THE SAME TURN IT IS MADE**, in
+  `DEV.md` §4c, BEFORE the work starts — ruled 2026-09-24, after one was
+  lost: *"Devias ter um caderno de gestão das tarefas de arquitetura do
+  Choupo!  Estas coisas não se guardam de memória e tu devias saber isso!"*
+  The homes that existed covered DECISIONS he owes (§4b) and DEFECTS an audit
+  found (§5); work he COMMISSIONS was neither, so it fell between them.  A
+  commission differs from §4's roadmap in the one way that matters: a
+  candidate may be dropped on judgement, a commission may not.
+  Two corollaries, both paid for the same day:
+    - **A request repeated is a request that was dropped.**  He asked on
+      2026-09-21 whether the Explorer could search his local NIST mirror, and
+      asked again on 2026-09-24 having had no answer and no record.  When he
+      repeats himself, treat the FIRST asking as the defect and go looking
+      for what else went with it.
+    - **This session's transcript is on disk and is readable**
+      (`~/.claude/projects/<project>/<id>.jsonl`; the user turns are the
+      `type: "user"` records).  Before telling him you do not remember
+      something, READ IT — three open requests were recovered that way, each
+      then MEASURED against the tree rather than recalled.  What it cannot
+      reach is a session that ended: that transcript is gone with its
+      container, which is the whole reason §4c exists.
 * **Never edit `bin/runTests`, `src/` or `gui/` while a suite runs.**  A
   general stages per file, and a per-file stage sweeps in an unstaged edit of
   yours that no one reviewed.
