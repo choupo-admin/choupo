@@ -976,6 +976,54 @@ accepts today, and that is a policy call.
      Recorded as a question he asked, not as a commission he placed; it
      becomes one the day he says so.
 
+**C6. THE GREEN AMMONIA CASE STUDY (commissioned 2026-09-24; the largest
+     thing in this file).**  Vitor: put the generals to review the green
+     ammonia process from several angles; Choupo with every tool enabled must
+     DESIGN every unit operation, produce the specification sheets a chemical
+     engineering project expects, and carry a detailed economic analysis
+     (annual profit-and-loss statements, an investment plan).  It must "do
+     everything DWSIM does".  Target: a case study for a paper in
+     *Computers & Chemical Engineering*.  Motive, in his words: three student
+     groups are working in ASPEN and DWSIM and he wants to know Choupo holds
+     its own.
+
+     **ALREADY DONE, measured before any work was started on it** (the
+     CLAUDE.md rule: verify a claimed limitation against the engine before
+     repeating it).  He asked for utilities to be separated from the
+     calculated streams and for utility water to stop cluttering the global
+     mass balance.  That shipped 2026-09-08 and `ammonia02_full_plant`
+     already uses it: its `system/flowsheetDict` declares the `CW1`
+     cooling-water circuit, and `reports/balances/massBalance.csv` publishes
+     `PROCESS_TOTAL 70636.6200 kg/h` with `process_closure_pct 99.9975` --
+     the cooling water is already OUT of the process scope, while the TOTAL
+     scope keeps every stream for validation.  The three other utilities
+     (steamLP, electricity, refrigerationNH3) are ALLOCATED duties and were
+     never in that balance.  What may still be open is the MOLAR balance and
+     whether the GUI draws both scopes for this plant; that is a measurement,
+     not an assumption.
+
+     **THE PART THAT NEEDS A RULING BEFORE WORK, not after.**  "Everything
+     DWSIM does" contradicts this project's own constitution.  `CLAUDE.md` §1:
+     *"What it is not: not aiming for breadth or thermo-curation parity ...
+     The differentiator is transparency + customisation."*  A level-4 file
+     cannot overrule the philosophy, and a feature-parity campaign is the
+     opposite of the stated identity.  It also weakens the PAPER: "we
+     reimplemented an existing simulator" is not a contribution to
+     *Computers & Chemical Engineering*, whereas "every number in this plant
+     has an address, and the disagreements with the reference have been
+     measured unit by unit in advance" is one -- and it is what the acetone
+     plant already demonstrates.  The recommendation on record is therefore:
+     take the CAPABILITY list (design sheets, P&L, investment plan) which is
+     real and largely missing, and DROP parity as the goal.  Vitor's call.
+
+     **KNOWN GAPS against the ask, measured 2026-09-24:** the ammonia quench
+     converter's three catalyst beds cannot be sized and are not costed (C2);
+     `EconomicsPass` carries 14 undeclared defaults whose announcement is a
+     stopped campaign (`docs/design/a-default-nobody-declared.md`); there is
+     no annual P&L or investment-plan artefact anywhere in the tree; and the
+     `design` and `economics` REPORT KINDS still do not run by default, which
+     is reserved for Vitor (§4b).
+
 **C5. What this file CANNOT recover.**  The assistant recovered C2-C4 by
      reading this session's own transcript on disk, which is why they are
      stated with measurements rather than from memory.  That transcript
