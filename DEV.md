@@ -1049,6 +1049,75 @@ accepts today, and that is a policy call.
      stale — and the second is false anyway, because four units are not.
      `flowsheetDict` strategy point 4 repeats the false claim.
 
+**C6-R2. BALANCES REVIEW (2026-09-24, read-only).  Vitor's instinct about
+     the utility water was RIGHT, and it is right about the report he did not
+     name.**
+
+     **THE MASS BALANCE IS ALREADY CLEAN** -- confirmed verbatim:
+     `massBalance.csv` publishes `TOTAL 9078136.6200` and `PROCESS_TOTAL
+     70636.6200` at `process_closure_pct 99.9975`, and the golden pins the
+     PROCESS scope.  The cooling water is 99.222 % of the total and is
+     already set aside.  The GUI draws that scope.
+
+     **A MOLAR BALANCE DOES NOT EXIST, AND MUST NOT.**  Twelve report kinds
+     are registered and none is molar.  Measured from the converged boundary:
+     the process goes 8000 -> 4532 kmol/h (56.65 %), because N2 + 3H2 -> 2NH3
+     DESTROYS 43 % of the moles -- moles are not conserved and a molar
+     "closure" is not a law.  Adding the cooling water drags the same ratio to
+     99.3174 %, which LOOKS like a balance and is not one.  That is the
+     argument for never publishing it.  The conserved molar quantity is ATOMS.
+
+     **AND THE ATOM BALANCE IS THE ONE THAT IS DILUTED.**  `elementBalance.csv`
+     counts the declared circuit: `converged/cw` carries 500 000 kmol/h of
+     water = 1 000 000 kmol of atomic H, which is **98.826 % of the H row**
+     (the process H is 11 880, cross-checked against makeup H2 x 2).  The
+     **O row is 100 % cooling water** -- this process contains no oxygen at
+     all, and it closes perfectly because a conserving circuit always will.
+     THE CONSEQUENCE, and it is the finding: **a 1 % leak of process hydrogen
+     reads 0.0118 pp against `check_element_closure`'s 0.01 pp band -- a
+     margin of 1.18x, and below about 0.85 % it is INVISIBLE.**  Undiluted the
+     same leak reads 1.0000 pp.  So the gate built on 2026-09-24 is, on this
+     plant, roughly a hundred times less sensitive than its band claims.
+
+     **BY DESIGN, NOT A BUG, and the invariant does not forbid the fix.**
+     `utilityCircuits::read`/`excludedStreams` appear in exactly three places
+     in `src/` -- the mass report, the utility allocation and the flowsheet --
+     and ZERO times in `ElementBalanceReport.cpp`, `EnergyBalanceReport.cpp`
+     or `BalanceMath.H`.  `UtilityCircuit.H:37-45` states *"ONLY the
+     plant-level material SUMMARY gains a second scope"*, written for the
+     VALIDATION reading (every law keeps counting every stream).  Vitor's
+     objection is the PRESENTATION reading.  The invariant forbids REPLACING
+     the total scope, which the mass report does not do either, so it does not
+     block a second ATOM scope beside the total one.
+
+     **THE ENERGY BALANCE SOLVED DILUTION A DIFFERENT WAY -- by the
+     DENOMINATOR.**  `globalEnergyBoundary.csv` carries
+     `residual_denom_kW 65666.0890` on the basis "energy exchanged", so the
+     verdict (-1.528221 kW, -0.0023 %) is protected.  But the DISPLAYED
+     `H_feeds -39 777 909.9` and `H_products -39 787 541.5` that a student
+     reads are about 99.8 % cooling water.
+
+     **THE GUI DRAWS A SCOPED MASS CHART AND AN UNSCOPED ATOM CHART BESIDE
+     IT.**  `gui/src/case/elementBalanceSurface.ts` parses the CSV verbatim and
+     knows nothing of `utilityCircuit`.
+
+     **EVERY LAW ON THIS PLANT, and the gate verdicts:** mass 99.9975 %
+     (in band, not pinned), element all rows 100.0000 % (in band BECAUSE
+     diluted, not pinned), energy -0.0023 % (in band, not pinned), charge NOT
+     PUBLISHED and correctly so (a `diluteSolution` formulation with no
+     `aqueous {}`; it is not in `check_charge_balance`'s 8-case list and
+     should not be).  **ammonia02 is in NO `KNOWN_OPEN` list of any gate.**
+
+     **CHECKED BY NOTHING, on this plant:** any process-scope atom number (it
+     does not exist); that the `O` row is vacuous; PER-UNIT energy closure
+     (`check_energy_closure` names this blind spot and names ammonia02 in it);
+     the element balance has **ZERO golden rows**; and the utility allocation
+     writes no CSV here, so no per-utility cost figure can be quoted from any
+     file.
+
+     NOT DONE: nothing was changed.  A second atom scope is a decision about
+     what a report PRESENTS, and it moves what a gate can see -- Vitor's.
+
 **C7. NO COMPETITOR IS NAMED IN THIS REPOSITORY (ruled 2026-09-24;
      PARTLY DONE, and the hardest part is not the scrub).**  Vítor:
      *"A comparação com [os outros] sou eu depois que a vou fazer no artigo!
