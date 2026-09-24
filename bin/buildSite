@@ -99,9 +99,31 @@ if [ ! -d "$gui/dist" ]; then
     echo "[buildSite] ERROR: no app build at $gui/dist (run without --no-build first)" >&2
     exit 1
 fi
-if [ ! -f "$gui/public/wasm/choupoSolve.wasm" ]; then
-    echo "[buildSite] ERROR: no WASM at gui/public/wasm -- run \`make wasm-gui\` first." >&2
-    echo "[buildSite]        A site assembled without it serves an app that cannot solve." >&2
+#  EVERY BINARY, NOT THE FIRST ONE.  This guard named `choupoSolve.wasm`
+#  alone and its message said a site without it "cannot solve" -- true, and
+#  not the only way a site can arrive broken.  The app dispatches FIVE
+#  binaries in the browser (gui/src/case/engineSeries.ts types all five), and
+#  several EduTools run `choupoBatch` WASM: a site missing that one serves an
+#  app whose batch tools fail, while a guard anchored on Solve says nothing.
+#
+#  The list is DERIVED from `src/applications/`, which is where this project
+#  decides what binaries it has.  A hand-written list here would be a second
+#  home for that fact and would go stale the day a sixth binary arrives --
+#  which is exactly how `choupoSemiContinuous` (2026-09-20) reached the app
+#  with both of these guards still naming only Solve.
+wasm_missing=
+for app_dir in "$root"/src/applications/*/; do
+    app=$(basename "$app_dir")
+    for ext in wasm js; do
+        [ -f "$gui/public/wasm/$app.$ext" ] || wasm_missing="$wasm_missing $app.$ext"
+    done
+done
+if [ -n "$wasm_missing" ]; then
+    echo "[buildSite] ERROR: the WASM build is incomplete -- run \`make wasm-gui\`." >&2
+    echo "[buildSite]        missing from gui/public/wasm:$wasm_missing" >&2
+    echo "[buildSite]        The app dispatches every binary under src/applications/;" >&2
+    echo "[buildSite]        a site assembled without one serves an app whose cases of" >&2
+    echo "[buildSite]        that class fail in the browser and nowhere else." >&2
     exit 1
 fi
 
@@ -125,11 +147,22 @@ fi
 #  publish time is a check nobody reads.  `--stale-wasm-ok` exists for the
 #  deliberate case (publishing a doc-only change from a tree you have not
 #  rebuilt) and it has to be typed, which is the point.
+#  ANCHOR ON THE OLDEST BINARY, NOT ON choupoSolve.  This comparison used to
+#  read `choupoSolve.wasm`, and make/wasm.mk ships PARTIAL targets by design:
+#  `wasm-solve` relinks Solve alone and `wasm-steady-props` relinks Solve and
+#  Props.  Both leave the three dynamic binaries arbitrarily old -- and both
+#  refresh the very file this guard was reading, so it saw a fresh timestamp
+#  and passed.  A publisher who took the documented fast relink shipped a
+#  stale batch engine silently: the 2026-08-14 defect above, through a
+#  narrower door.  The oldest of them is the only honest anchor.
+oldest_wasm=$(ls -t "$gui"/public/wasm/*.wasm 2>/dev/null | tail -1)
 newest_src=$(find "$root/src" "$root/make" -type f \( -name '*.cpp' -o -name '*.H' -o -name '*.mk' \) \
-             -newer "$gui/public/wasm/choupoSolve.wasm" -print -quit 2>/dev/null)
+             -newer "$oldest_wasm" -print -quit 2>/dev/null)
 if [ -n "$newest_src" ] && [ "${STALE_WASM_OK:-0}" != 1 ]; then
     echo "[buildSite] ERROR: the WASM is OLDER than the engine sources." >&2
-    echo "[buildSite]        e.g. $newest_src is newer than gui/public/wasm/choupoSolve.wasm" >&2
+    echo "[buildSite]        e.g. $newest_src is newer than $oldest_wasm" >&2
+    echo "[buildSite]        (that is the OLDEST binary in gui/public/wasm; a partial" >&2
+    echo "[buildSite]         relink such as \`make wasm-solve\` leaves the others behind.)" >&2
     echo "[buildSite]        The site would serve an engine that disagrees with this tree;" >&2
     echo "[buildSite]        the symptom in the browser is an unknown unit type or a" >&2
     echo "[buildSite]        silently different answer.  Run \`make wasm-gui\`." >&2

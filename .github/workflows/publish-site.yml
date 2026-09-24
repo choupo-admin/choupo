@@ -129,12 +129,28 @@ jobs:
           set -e
           d=site/_dist
           for f in index.html app/index.html models/index.html \
-                   wasm/choupoSolve.wasm wasm/choupoProps.wasm sitemap.xml robots.txt CNAME; do
+                   sitemap.xml robots.txt CNAME; do
             [ -s "$d/$f" ] || { echo "MISSING or EMPTY: $f"; exit 1; }
           done
-          # the solver is megabytes; a stub or a git-lfs pointer is kilobytes
-          sz=$(stat -c%s "$d/wasm/choupoSolve.wasm")
-          [ "$sz" -gt 1000000 ] || { echo "choupoSolve.wasm is $sz B -- not a build"; exit 1; }
+          #  EVERY BINARY THE APP DISPATCHES, not two of the five.  This list
+          #  named choupoSolve and choupoProps only, and size-checked Solve
+          #  alone -- so a site missing choupoBatch.wasm (which several
+          #  EduTools run in the browser) published green.  The list is
+          #  DERIVED from src/applications/, the one place this project
+          #  decides what binaries it has; a literal list here would go stale
+          #  the day a sixth arrives, which is how choupoSemiContinuous
+          #  (2026-09-20) slipped past both this step and bin/buildSite.
+          for app_dir in src/applications/*/; do
+            app=$(basename "$app_dir")
+            for ext in wasm js; do
+              [ -s "$d/wasm/$app.$ext" ] \
+                || { echo "MISSING or EMPTY: wasm/$app.$ext"; exit 1; }
+            done
+            # a real engine is megabytes; a stub or a git-lfs pointer is kilobytes
+            sz=$(stat -c%s "$d/wasm/$app.wasm")
+            [ "$sz" -gt 1000000 ] \
+              || { echo "$app.wasm is $sz B -- not a build"; exit 1; }
+          done
           grep -q "www.choupo.org" "$d/CNAME" || { echo "CNAME does not name the site"; exit 1; }
           #  The site went 55 commits stale once without anyone noticing,
           #  because nothing compared what is BUILT against what is SERVED.
