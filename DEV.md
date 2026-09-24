@@ -976,16 +976,158 @@ accepts today, and that is a policy call.
      Recorded as a question he asked, not as a commission he placed; it
      becomes one the day he says so.
 
+**C6-R1. DESIGN REVIEW of the green ammonia plant (2026-09-24, read-only
+     survey; every claim below re-verified by the commander against the
+     named file).**
+
+     **COVERAGE: 7 of 11 units sized** on `ammonia02_full_plant`
+     (compressors x2, exchangers x2, converter, separator, let-down).
+     UNSIZED: `T101`, `T201`, `mixer`, `purgeSplit`.
+     On `ammonia03_quench_converter`: 6 of 16 sized, 3 refused, 7 never
+     declared.
+
+     **THE STRUCTURAL FINDING, and it is worse than any missing sizer.**
+     `SizingPass.cpp:70` reads an AUTHOR-DECLARED list in `postDict`'s
+     `sizing { units (...) }`, with the equipment type typed by the author.
+     There is no dispatch from a unit's TYPE to a sizer, and **a unit absent
+     from that list produces no refusal at all** — only a missing sheet.
+     Only declared-then-failed units are reported.  So "the plant is sized"
+     and "the author remembered to list every unit" are the same sentence,
+     which is the silent-absence shape this project refuses everywhere else.
+     `EquipmentSize::registerBuiltins()` registers exactly NINE kinds
+     (`stirredTank shellTubeHX evaporator crystalliser sprayDryer cyclone
+     compressor vessel distillationColumn`): no reactor, no tank, no pump,
+     no valve, no fired heater.
+
+     **NO DESIGN TEMPERATURE EXISTS IN THE ENGINE.**  `Material::maxT` is
+     parsed (`MaterialRegistry.cpp:58`, declared `Material.H:56`) and has
+     **no reader anywhere in `src/`** — verified independently.
+     `VesselMechanics.cpp:30` uses a flat `material.sigma_y`, so every wall
+     in the corpus is computed at a temperature-INDEPENDENT yield stress.
+     Consequence on this plant: the converter's shell is designed at 839.6 K
+     using cold-metal strength (`t_wall 0.2305 m`, `weight 229 625 kg`).
+     `SS316.dat` also declares `maxP 100` bar against this plant's 220 bar
+     design, and `VesselSize.cpp:130-140` WARNS and continues.  For a
+     published case study this is the most dangerous number in the plant.
+
+     **TWO HOMES FOR ONE QUANTITY, and it is material.**  The exchanger
+     PUBLISHES `area` and `LMTD` as KPIs (`HeatExchanger.cpp:926,930`) and
+     `ShellTubeHX::size` reads NEITHER — it costs from a hand-declared
+     `LMTD` in the dict.  On `waterCooler`: declared `LMTD 60` against the
+     run's own port temperatures giving **64.777 K**; the sheet's area is
+     8.0 % high, and 2.9x away from the `area 4000 m2` the same case declares
+     in `flowsheetDict`.  Three numbers for one exchanger.
+
+     **THE CATALYST BEDS: both ends are missing, not one.**  There is no
+     catalytic-reactor sizer at all, AND `GibbsReactor` publishes no volume,
+     no catalyst mass and no rate — an equilibrium reactor has no length
+     scale by construction.  So `ammonia02`'s converter volume is a LITERAL
+     typed into `postDict`, and it is the plant's largest single cost
+     (C_TM 25 085 881 EUR).  Sizing the reactor is NEW PHYSICS, not a sizer.
+
+     **`StorageTank` already computes its own answer and nobody reads it** —
+     it publishes `holdupVolume_m3`, `holdupMass_kg`, `vesselVolume_m3`
+     (`StorageTank.cpp:265-267`) and no sizer consumes any of them; there is
+     no `storageTank` sizer.  T201's ~4830 m3 ammonia tank exists only in a
+     prose comment.
+
+     **`VesselSize.cpp:73` computes volumetric flow with the IDEAL GAS LAW**
+     (its own comment says so) inside the plant whose entire thermo argument
+     is that 200 bar needs SRK — live on the separator at 250 K / 200 bar.
+
+     **THE SHEETS ARE NOT DATASHEETS.**  `DesignSheetWriter.cpp:139-146`
+     writes per port exactly `T`, `P`, `F`, `mdot`, `vapourFraction` — no
+     composition and no properties, all of which the engine holds.  Absent
+     entirely: nozzle schedule, heads/supports/internals (hoop formula only;
+     the heads' ~+15 % is explicitly ignored), insulation, TEMA/tube
+     geometry, compressor stages/head/driver, demister sizing.
+
+     **THREE PLACES THE TREE CONTRADICTS ITSELF**, all in case prose:
+     `ammonia02/system/postDict` says the converter and drums are "NOT sized
+     here" and, eleven lines later, that "EVERY unit in this loop is now
+     sized"; the `design/` tree settles it (they ARE sized) so the first is
+     stale — and the second is false anyway, because four units are not.
+     `flowsheetDict` strategy point 4 repeats the false claim.
+
+**C7. NO COMPETITOR IS NAMED IN THIS REPOSITORY (ruled 2026-09-24;
+     PARTLY DONE, and the hardest part is not the scrub).**  Vítor:
+     *"A comparação com [os outros] sou eu depois que a vou fazer no artigo!
+     Aqui não se menciona nada, por uma questão de boa educação e evitar
+     problemas legais!"*  This TIGHTENS the 2026-07-03 rule, which banned a
+     competitor only in the USER-FACING MANUALS and tolerated a
+     developer-facing exception.  The exception is closed.
+
+     **DONE:** C6 above was written naming two products and was rewritten the
+     same turn; DEV.md now names none in anything authored from here on.
+
+     **THE INVENTORY, measured 2026-09-24, and it has THREE categories that
+     must not be treated alike.**
+
+     1. STUDIES OF A COMPETITOR — the sharp exposure, and what he means.
+        `docs/design/dwsim-architecture-manual.md` (38 mentions; its own
+        subtitle calls it "a developer's manual" for that product) and
+        `docs/design/dwsim-solids-study.md` (19; read from a sparse clone of
+        their repository).  Both were commissioned by Vítor on 2026-08-07 and
+        both entered the tree on 2026-09-14 in commit `0b4cbcac8`.
+        Three further design records carry comparison prose:
+        `where-a-finding-record-lives.md` (12), `role-vocabulary-forum-
+        2026-08-02.md` (11), `theory-in-class-structure-study.md` (9), plus
+        the `aspen-like-*` archive records.
+
+     2. PROVENANCE AND CURATION FINDINGS — **these must NOT be scrubbed.**
+        `data/standards/species/K.dat` records that a named external database
+        "appears to carry [the value] sign-flipped"; that is a curation
+        finding about a NUMBER and deleting it destroys evidence.
+        `bin/curate/chemsep_to_choupo.py` and the electrolyte PROVENANCE.md /
+        VALIDATION.md name where values came from, which is a licence and
+        citation duty this project states in CLAUDE.md §10.  Removing a
+        citation converts *sourced* into *unsourced*, which is the mirror of
+        the error the project already refuses to make in the other direction.
+        What can change is PHRASING (name the source, never compare).
+
+     3. THE GATE ITSELF.  `bin/curate/check_doctrine.py` must name the banned
+        words in order to ban them.  Any repo-wide rule has to exempt it, or
+        the gate fails on its own ban list.
+
+     **WHY THEY SURVIVED: the gate never looked there.**  `check_doctrine`'s
+     `SCAN_ROOTS` cover the named manuals, `docs/ai/`, the tutorials and the
+     site — **not `docs/design/`**.  So the rule was true of every surface it
+     scanned and silent about the place the studies live.  A rule not enforced
+     is a sentence, so the structural half of this item is widening that gate,
+     with an allowlist for category 2 and for itself.
+
+     **THE THING A SCRUB DOES NOT FIX, and it must be said plainly.**  Those
+     files have been in a PUBLIC repository since 2026-09-14.  Removing them
+     from the tree stops future exposure; it does NOT remove them from the
+     published git history, where anyone can still read them.  Making history
+     match would mean rewriting a pushed public branch — a different act, with
+     its own costs (every clone diverges, every existing tag and link is
+     affected), and it is Vítor's decision, not the assistant's.  A scrub
+     presented as closing the legal question would be false comfort.
+
+     **NOT DONE, and why it was not fired off unattended:** the two studies
+     are referenced from FOUR places, two of which are not prose —
+     `bin/curate/check_ice_freezing.py` (a gate) and
+     `src/thermo/phase/SolidPhase.H` (engine source), plus
+     `docs/architecture/decision-records.md` and
+     `docs/design/solid-equilibrium-spike.md`.  Removing or renaming them
+     edits an engine header and a gate, which needs a full suite behind it,
+     and one was running.  The sequence is: rewrite the two studies so they
+     record the LESSON without the subject, update the four referrers, widen
+     `check_doctrine` with the category-2 allowlist, sabotage it, full suite.
+
 **C6. THE GREEN AMMONIA CASE STUDY (commissioned 2026-09-24; the largest
      thing in this file).**  Vitor: put the generals to review the green
      ammonia process from several angles; Choupo with every tool enabled must
      DESIGN every unit operation, produce the specification sheets a chemical
      engineering project expects, and carry a detailed economic analysis
-     (annual profit-and-loss statements, an investment plan).  It must "do
-     everything DWSIM does".  Target: a case study for a paper in
-     *Computers & Chemical Engineering*.  Motive, in his words: three student
-     groups are working in ASPEN and DWSIM and he wants to know Choupo holds
-     its own.
+     (annual profit-and-loss statements, an investment plan).  It must match the
+     capability of the established flowsheeting tools his students use.
+     Target: a case study for a paper in *Computers & Chemical Engineering*.
+     Motive: three student groups work in those tools and he wants to know
+     Choupo holds its own.  **THE TOOLS ARE NOT NAMED IN THIS REPOSITORY**,
+     ruled 2026-09-24 — the comparison is HIS to publish, and his reasons are
+     courtesy and legal exposure.
 
      **ALREADY DONE, measured before any work was started on it** (the
      CLAUDE.md rule: verify a claimed limitation against the engine before
@@ -1002,13 +1144,34 @@ accepts today, and that is a policy call.
      whether the GUI draws both scopes for this plant; that is a measurement,
      not an assumption.
 
-     **THE PART THAT NEEDS A RULING BEFORE WORK, not after.**  "Everything
-     DWSIM does" contradicts this project's own constitution.  `CLAUDE.md` §1:
+     **RULED BY VITOR, 2026-09-24, SAME DAY: PARITY IS THE GOAL.**  The
+     concern below was raised and he reaffirmed the ask, on the ground that the
+     capacity to close the gap now exists.  That is his decision and it
+     stands; the paragraph after it is KEPT as the record of
+     what was argued and answered, not as an open question.  Do NOT
+     relitigate it.  Two things the ruling does NOT change, because they are
+     separate rules rather than the same argument:
+       * **NO COMPETITOR IS NAMED ANYWHERE IN THIS REPOSITORY.**  Tightened
+         by Vitor on 2026-09-24 from the 2026-07-03 rule, which banned it in
+         the USER-FACING MANUALS only and tolerated a developer-facing
+         exception.  A capability survey is therefore a WORKING NOTE OUTSIDE
+         the tree; what the tree may carry is the gap in its own terms ("no
+         annual P&L artefact exists"), never a named rival.  This does NOT
+         reach PROVENANCE: a record that cites where a VALUE or a format came
+         from is a licence and citation duty, and removing it would be the
+         worse error.
+       * The PAPER's framing is a separate decision from the SOFTWARE's
+         scope.  Building parity does not oblige the case study to be
+         *about* parity, and the journal question stays open until Vitor
+         settles it.
+
+     **THE ARGUMENT THAT WAS RAISED AND OVERRULED, kept as the record.**
+     Feature parity with an existing tool contradicts this project's own constitution.  `CLAUDE.md` §1:
      *"What it is not: not aiming for breadth or thermo-curation parity ...
      The differentiator is transparency + customisation."*  A level-4 file
      cannot overrule the philosophy, and a feature-parity campaign is the
      opposite of the stated identity.  It also weakens the PAPER: "we
-     reimplemented an existing simulator" is not a contribution to
+     reimplemented an existing tool" is not a contribution to
      *Computers & Chemical Engineering*, whereas "every number in this plant
      has an address, and the disagreements with the reference have been
      measured unit by unit in advance" is one -- and it is what the acetone
