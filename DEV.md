@@ -1669,6 +1669,52 @@ usable input is the isothermal reaction enthalpy, and in ADIABATIC mode the
 engine emits no duty at all (`mode == "isothermal"` guard, line 313), so
 there a sign check has no input.
 
+**2026-09-25 -- THE GUI-TEST NOTE ABOVE WAS NARROWER THAN THE FAILURE, AND
+THE NOTE IS MINE.**  It says *"the four tests fail"* over `hunterNash` and
+`ternary.csv`.  Measured: **four test FILES** fail and only ONE of them reads
+`ternary.csv`.  `batchStaircase.test.ts` and `flashOperatingLineTool.test.ts`
+read `tutorials/props/molecular/flash01_operating_line/txy.csv`;
+`pumpSystemLesson.test.ts` reads `sweep_pumpSystem.csv`.  Same root cause
+(`.gitignore:116`, `tutorials/**/*.csv`, a declared run output never
+committed), same remedy shape two lines below it
+(`!tutorials/**/constant/experimental/*.csv`) -- but **three more files than
+the note named**.  A note that under-counts a defect is the same failure as a
+count taken once and remembered; it was written from one general's report
+instead of from a measurement.
+
+**2026-09-25 -- THE THEORY GUIDE AND THE ENGINE DISAGREE ABOUT chi-squared,
+BY A FACTOR OF TWO.**  `docs/theoryGuide.tex:9473` boxes
+`chi^2 = (1/2) sum r_i^2` as `eq:chi2`; the engine computes
+`chi2 = sum residual_i^2` (`FitParameters.cpp:128` states it, `:154` does
+it).  The MINIMISER is unaffected -- a constant factor moves no argmin -- but
+the NUMBER a student reads off a run is twice the number the guide's equation
+predicts, and the guide is where they go to check.  Verified by reading both,
+not reported.
+
+**2026-09-25 -- AND `ch:fittable` SENDS A READER TO A RETIRED DRIVER.**  It
+says binary parameters are refitted *"by the Levenberg-Marquardt OUTER DRIVER
+of Chapter ch:lm"*.  `fitBinaryPair` is retired engine-wide and its factory
+throws (CLAUDE.md section 5); the live path is the `fitParameters` props op.
+A shipped guide naming a driver that refuses to construct.  Both of these are
+C3's territory (the per-equation citation audit) and neither is fixed here.
+
+**2026-09-25 -- A BROWSER-SUPPORT PIN WHOSE STATED REASON IS FALSE IN BOTH
+HALVES.**  `gui/src/cases/tutorials.ts:137` carries
+`UNSUPPORTED_PATHS_IN_BROWSER`, a one-member set holding
+`steady/optimisation/fitNRTL01_ethanol_water`, with the comment: *"its
+outerDict fitBinaryPair requires INLINE pairs ... and it ships
+constant/experiments/ -- a genuine browser gap."*  Measured: **that case has
+no `outerDict` at all** (its `system/` holds `controlDict` and `propsDict`;
+`application choupoProps`), and the "subdirectories are not bundled" half is
+stale -- the same comment block already says so about a neighbour, the
+worker mkdir-p's nested paths into MEMFS
+(`gui/public/workers/solverWorker.js:150-175`) and the Vite glob does not
+exclude `constant/experiments/`.  **THE PIN WAS NOT REMOVED**, and that is
+the right call: the stated REASON was disproved, the CONCLUSION was not, and
+this container has no emscripten with which to prove it.  Removing a pin
+without proof is the invisible falsehood this project refuses.  Remove it in
+the same change as someone who can open the app.
+
 **2026-09-25 -- THE PATTERN BEHIND THE DAY: A CLAIM ABOUT THE ENGINE, MADE
 WHERE THE ENGINE CANNOT READ IT, GOES FALSE AND NOTHING CAN TELL.**  Written
 after reflecting across the day's findings rather than from any one of them.
