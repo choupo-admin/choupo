@@ -991,10 +991,13 @@ they declare NO PHASE on `0/Rin`, so `vf` defaults to 0 unpinned and the report
 has always priced a 623 K effluent as a liquid; one line (`phase gas;`) in a
 copy of each reproduces their shipped duty goldens to the last digit and closes
 acetone03's whole plant, separator included, from -602.18 to 0.0000 kW.  The
-unit's private answer was hiding which case was under-declared.  NOT done, and
-it is the architect's: no golden re-recorded (four cases FAIL), and
-`check_energy_closure.KNOWN_OPEN` untouched though `acetone02` and `hda` should
-LEAVE it and `acetone03` be re-pinned 33.308 -> 19.342 %.  Record:
+unit's private answer was hiding which case was under-declared.  Both cases
+now DECLARE `phase gas;` on `0/Rin` (the same change, landed with this one),
+the four goldens were re-recorded with the list shown to Vitor first -- nine
+rows, two of them residuals going to exactly zero -- and `hda`, `acetone02`
+and `acetone03` all LEFT `check_energy_closure.KNOWN_OPEN` (0.825 %, 0.000 %
+and 0.000 %; the engine fix alone would have left acetone03 at 19.342 %, the
+phase declaration is what closed it).  Record:
 [`docs/design/a-duty-on-a-surface-its-streams-are-not-on.md`](docs/design/a-duty-on-a-surface-its-streams-are-not-on.md).
 
 **AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED

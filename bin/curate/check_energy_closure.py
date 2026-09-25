@@ -341,9 +341,7 @@ def ratchet_kW(pin: float) -> float:
 KNOWN_OPEN = {
     "tutorials/plant/ChemicalPlantTutorial": 3.1710,
     "tutorials/plant/esterification2sector": 170.9790,
-    "tutorials/plant/hda": 4.2460,
     "tutorials/plant/polycaprolactonePlant": 20.0100,
-    "tutorials/steady/flowsheets/acetone03_luyben_reaction_section": 33.3080,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/credo01_valve_heater_drum": 2.0940,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
@@ -351,7 +349,6 @@ KNOWN_OPEN = {
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash": 150.7280,
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": 150.6790,
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas": 2.3240,
-    "tutorials/steady/reactors/acetone02_luyben_reactor": 25.1790,
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate": 37.9820,
     "tutorials/steady/reactors/pfr_polyesterification": 18.3420,
     "tutorials/steady/rotating/pump01_water": 65.0000,

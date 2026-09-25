@@ -359,8 +359,16 @@ SELF_CONTRADICTING_RECORDS = {}
 #  MEASURED 2026-09-18: all three print IMPOSSIBLE INLET PHASE exactly zero
 #  times.  Nothing about the remaining three changed; their residuals are
 #  re-measured by the gate on every run and are not transcribed here.
+#
+#  A FOURTH PIN CLEARED 2026-09-25, and the sentence above about a different
+#  file came true on the day it was read: `acetone03_luyben_reaction_section`
+#  declared no phase on `0/Rin`, so the report priced a 389 K vapour feed on
+#  the liquid leg and the engine printed the line this dict pins.  One line
+#  (`phase gas;`) closed its reactor, its separator and its whole plant at
+#  0.0000 kW -- and the debt was paid in `check_energy_closure.KNOWN_OPEN`,
+#  in the case's golden, and HERE, three ledgers in three files.  This one
+#  was the one the ratchet had to ask for.
 IMPOSSIBLE_PHASE_CASES = {
-    "acetone03_luyben_reaction_section": 390.606,
     "tsa01_co2_twin_bed":                  0.023239,
     "flash10_ch4propane_pcsaft":           2.4e-05,
 }
