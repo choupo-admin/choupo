@@ -1869,10 +1869,20 @@ whole site is built from it — whether it does C++20 well enough is a
 MEASUREMENT nobody has taken, not a guess to make.
 
 **A CITATION REQUIREMENT CHANGED WHAT THE READERS READ (2026-08-28/29).**
-Every EduTool lesson symbol needs a `file:line` citation into the ENGINE,
-verified mechanically (waiver dict kept EMPTY); a missing definition is
+Every EduTool lesson symbol needed a `file:line` citation into the ENGINE --
+an AUTHORING constraint on the eleven drafting agents, verified by the parent
+at the time, ONCE.  **This sentence used to read "verified mechanically
+(waiver dict kept EMPTY)" and that was false (corrected 2026-09-25).**
+`check_lesson_symbols` checks ONE thing: that every symbol a `formula` or a
+`derivation[].eq` uses appears in a `where: [{sym, means, unit}]` list.  It
+has no citation field and no way to see one; the waiver dict is real and is
+empty, and the CITATION half is enforced nowhere -- `check_theory_citations`'s
+own docstring repeats the same false claim, a second home for it.  So: keep
+the drafting discipline, and do NOT tell the next author a gate stands behind
+it.  The reason the constraint worked is intact -- a missing definition is
 visible and a WRONG one is not, and a test over a false claim is worse than no
-test.  Where two prose homes cannot share a variable, a gate that recomputes
+test -- and it is exactly why an unenforced rule must not be described as
+enforced.  Where two prose homes cannot share a variable, a gate that recomputes
 is the only available single source.  The pump/pipe liquid-density split named
 there as NOT fixed was CLOSED 2026-08-29 (Rackett anchored on the record's own
 declared `Vliq`) — a stale ABSENCE outliving the gap it named.  Gates:
