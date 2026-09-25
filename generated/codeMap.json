@@ -1184,6 +1184,9 @@
   "RotaryAtomizer": [
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.H"
   ],
+  "Row": [
+   "src/postProcessing/EstimateClass.H"
+  ],
   "RowlinsonBondi": [
    "src/thermo/heatCapacity/RowlinsonBondi.H"
   ],
@@ -3253,6 +3256,7 @@
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/postProcessing/EconomicsPass.H",
+   "src/postProcessing/EstimateClass.H",
    "src/postProcessing/PostProcessor.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -10003,6 +10007,9 @@
   "src/postProcessing/EconomicsPass.H": [
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PostProcessor.cpp"
+  ],
+  "src/postProcessing/EstimateClass.H": [
+   "src/postProcessing/EconomicsPass.cpp"
   ],
   "src/postProcessing/PinchPass.H": [
    "src/postProcessing/PinchPass.cpp",

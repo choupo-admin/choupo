@@ -669,13 +669,30 @@ Because raw materials dominate, a 1% yield gain often beats any utility optimisa
 
 **Estimate class governs everything.** Report the band, not a point:
 
-| AACE class | Maturity | Accuracy | Method |
+**The accuracy is a RANGE OF RANGES, not a pair** — the phrase is the
+standard's.  A Class 4 estimate does not have "the accuracy −30/+50"; it has
+*an* accuracy somewhere in [−15, −30] low and [+20, +50] high, and which
+point of that box it lands on is a property of *this* project rather than of
+the class.  18R-97: the range *"should always be determined through risk
+analysis of the specific project and should never be pre-determined."*  This
+table had carried a single pair per class and the pairs were wrong — see
+`src/postProcessing/EstimateClass.H`, which is the ONE home the engine reads
+and which this table is held against by `check_estimate_class`.
+
+| AACE class | Maturity | Accuracy (L / H ranges, 80 % CI) | Method |
 |---|---|---|---|
-| Class 5 | 0-2% | −30/+50% | Capacity-factored, six-tenths |
-| Class 4 | 1-15% | −20/+30% | Equipment-factored (Lang) |
-| Class 3 | 10-40% | −15/+20% | Bare-module / budget |
-| Class 2 | 30-70% | −10/+15% | Detailed, semi-quantitative |
-| Class 1 | 50-100% | −5/+10% | Definitive, quote-based |
+| Class 5 | 0-2% | L −20 to −50% · H +30 to +100% | Capacity factored, parametric, judgment or analogy |
+| Class 4 | 1-15% | L −15 to −30% · H +20 to +50% | Equipment factored or parametric |
+| Class 3 | 10-40% | L −10 to −20% · H +10 to +30% | Semi-detailed unit costs, assembly line items |
+| Class 2 | 30-75% | L −5 to −15% · H +5 to +20% | Detailed unit cost, forced detailed take-off |
+| Class 1 | 65-100% | L −3 to −10% · H +3 to +15% | Detailed unit cost, detailed take-off |
+
+**The bands OVERLAP across classes, deliberately.**  The standard's own
+example: a Class 5 estimate of a repeat project with good cost history may be
+as accurate as a Class 3 estimate of a project involving new technology.  Do
+not read a ranking of projects out of a ranking of classes.  Source: AACE
+International RP 18R-97 Table 1 (rev. 2020-08-07); the reading of both
+revisions is `docs/design/how-a-process-design-is-staged.md` §1.
 
 Quoting an NPV to four significant figures off a Class-5 estimate is the classic glass-box failure: the ±50% CAPEX band swamps the answer. Always run the case at both error bounds.
 

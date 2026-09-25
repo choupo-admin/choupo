@@ -5478,6 +5478,24 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/costprov.$$
 
+    # Estimate-class gate (2026-09-25): the AACE 18R-97 classification had TWO
+    # homes and they disagreed -- a hand-written table in docs/design-
+    # heuristics.md against a two-branch step in EconomicsPass whose
+    # comparison was INVERTED, so the crudest class printed the narrowest
+    # band and Classes 1-4 all printed the same one.  No case declares
+    # Class 5, so the wrong branch was never reached and no golden could see
+    # it.  The gate holds ONE home against the engine, against the doc table,
+    # and against the monotonicity the inversion violated.
+    if "$ROOT/bin/curate/check_estimate_class.py" > /tmp/estclass.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "estimate-class-gate" "$(tail -1 /tmp/estclass.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_estimate_class.py)\n" "estimate-class-gate"
+        cat /tmp/estclass.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/estclass.$$
+
     # Sector-hierarchy gate (2026-09-04): a fractal plant's SECTORS must reach
     # the design table, both CSVs and the capital-by-sector block -- carried as
     # DATA from the flatten seam, never recovered by splitting a dotted name --

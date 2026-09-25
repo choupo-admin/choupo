@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EconomicsPass.H"
+#include "EstimateClass.H"
 #include "core/Advisory.H"
 
 #include "core/Dictionary.H"
@@ -309,6 +310,16 @@ void writeCashFlowOds(const EconomicsSummary& e)
               << "  (1 sheet, coloured)\n";
 }
 
+//  A percentage as the standard prints it: no decimals, sign carried by the
+//  value itself.  The band is a convention, not a measurement, and printing
+//  it to two decimals would dress it as one.
+std::string fmtPct(scalar v)
+{
+    std::ostringstream os;
+    os << std::fixed << std::setprecision(0) << v;
+    return os.str();
+}
+
 } // anonymous namespace
 
 //  A POLICY CARRIED AS A FLOAT (2026-09-06).
@@ -381,6 +392,18 @@ int EconomicsPass::run(SimulationResult& result)
     const scalar N_np              = econDict_->lookupScalarOrDefault("N_np",                  7.0);
     const int    estimateClass     = static_cast<int>(
                                       econDict_->lookupScalarOrDefault("estimateClass",       4.0));
+    //  A DECLARED NUMBER THE ENGINE DISPATCHES ON MUST REFUSE ONE IT DOES NOT
+    //  KNOW (2026-09-07).  The old code branched on `estimateClass <= 4`, so
+    //  0, 9 or -3 selected a band by arithmetic accident and said nothing.
+    const Choupo::estimateClass::Row* const ecl =
+        Choupo::estimateClass::find(estimateClass);
+    if (!ecl)
+        throw std::runtime_error(
+            "economics: estimateClass " + std::to_string(estimateClass)
+            + " is not an AACE 18R-97 class.  Registered: "
+            + Choupo::estimateClass::registered()
+            + " (5 = concept screening, least defined; 1 = check estimate,"
+              " most defined).  See src/postProcessing/EstimateClass.H.");
     const bool   refuseOnMissing   = refuseOnMissingPriceOf(econDict_);
 
     //  `method` WAS DECORATIVE.  Three tutorial cases declare
@@ -771,8 +794,53 @@ int EconomicsPass::run(SimulationResult& result)
                                                       : std::nan("");
 
     // ---- 9.  Report (glass-box: every term on its own printed line) -----
-    const scalar acc_lo = (estimateClass <= 4) ? -30.0 : -15.0;
-    const scalar acc_hi = (estimateClass <= 4) ? +50.0 : +25.0;
+    //  THE ACCURACY BAND COMES FROM ONE HOME, AND A DECLARED ONE IS THE
+    //  AUTHOR'S (2026-09-25).  This used to be a two-branch step whose
+    //  comparison was INVERTED -- `estimateClass <= 4` selected the WIDE
+    //  band, so the crudest class printed the narrowest interval and
+    //  Classes 1 through 4 all printed the same one.  It also disagreed with
+    //  the hand-written table in `docs/design-heuristics.md`: two homes for
+    //  one fact, neither of them the standard.  `EstimateClass.H` is the one
+    //  home now and carries 18R-97's own RANGE OF RANGES; the standard says
+    //  the band "should always be determined through risk analysis of the
+    //  specific project and should never be pre-determined", so a case may
+    //  DECLARE it and the engine announces when it has supplied one instead.
+    scalar acc_lo = ecl->accLoWide;
+    scalar acc_hi = ecl->accHiWide;
+    if (econDict_ && econDict_->found("accuracyBand"))
+    {
+        const std::vector<scalar> band = econDict_->lookupList("accuracyBand");
+        if (band.size() != 2 || band[0] >= 0.0 || band[1] <= 0.0)
+            throw std::runtime_error(
+                "economics: `accuracyBand` must be a list of exactly two"
+                " numbers, a NEGATIVE low and a POSITIVE high, in per cent --"
+                " e.g. `accuracyBand ( -25 40 );`.  AACE 18R-97 gives Class-"
+                + std::to_string(ecl->cls) + " the ranges L "
+                + fmtPct(ecl->accLoNarrow) + " to " + fmtPct(ecl->accLoWide)
+                + " and H +" + fmtPct(ecl->accHiNarrow) + " to +"
+                + fmtPct(ecl->accHiWide)
+                + "; the point inside that box is this project's risk"
+                  " analysis, not the class's.");
+        acc_lo = band[0];
+        acc_hi = band[1];
+    }
+    else
+    {
+        const std::string m =
+            "accuracyBand was NOT declared, so this appraisal reports the"
+            " PESSIMISTIC CORNER of AACE 18R-97's Class-"
+            + std::to_string(ecl->cls) + " range of ranges ("
+            + fmtPct(acc_lo) + " % / +" + fmtPct(acc_hi) + " %).  The"
+            " standard gives a range of ranges, not a pair -- L "
+            + fmtPct(ecl->accLoNarrow) + " to " + fmtPct(ecl->accLoWide)
+            + " and H +" + fmtPct(ecl->accHiNarrow) + " to +"
+            + fmtPct(ecl->accHiWide) + " -- and says the accuracy \"should"
+            " always be determined through risk analysis of the specific"
+            " project and should never be pre-determined\".  Declare"
+            " `accuracyBand ( lo hi );` to own it.";
+        if (AdvisoryLog::instance().add("assumed", "warning", "economics", m))
+            std::cout << "  [assumed] economics: " << m << "\n";
+    }
 
     std::cout << std::fixed;
     std::cout << "\n=======================  Economic Appraisal  ========================\n";
