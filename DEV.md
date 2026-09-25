@@ -1588,6 +1588,118 @@ defect — look for what else went with it.
 
 ## 5. Known debts (severity-ish)
 
+**2026-09-25 -- ONE CONCEPT, TWO KEYS, IN ONE FUNCTION, AND THE DOCUMENTED
+ONE IS THE SILENT ONE.**  Found while building the C9 EduTool; every line
+below was verified twice, by the general that found it and again before it
+was written here.  **Nothing was changed: the engine is frozen and the
+remedy turns on a question that is Vitor's.**
+
+`GibbsReactor::solve` reads an approach to equilibrium TWICE, 76 lines apart,
+under two different names, with two different models, and they ADD.
+
+* `GibbsReactor.cpp:65` reads **`approachTemperature`** through
+  `lookupScalarOrDefault`.  It shifts the WHOLE `method->equilibrium(prob,
+  T + dT, ...)` argument, so Psat and the fugacity coefficients move with the
+  chemistry.  It prints NOTHING and publishes NO KPI.
+* `GibbsReactor.cpp:141` reads **`temperatureApproach`** through
+  `found`/`lookupScalar`.  It shifts only `g_pure_ig`
+  (`ElementPotential.cpp:47-48`), keeping Psat and phi at the physical T --
+  the separation the announcement describes.  It is announced at 143-149 and
+  publishes `kpis_["temperatureApproach_K"]` at 333.
+* **They compose silently.**  Measured on `gibbs01` at 800 K with 25 K
+  declared in BOTH keys: `y_CO2 = 0.317590043863`, which is the 850 K value,
+  while the banner reports only "T + 25.0000 K".
+* Measured on `gibbs10` at 200 bar under SRK, the two models part:
+  `approachTemperature 20` gives `y_NH3 = 0.280059287932` (byte-equal to
+  running the case at 720 K); `temperatureApproach 20` gives
+  `0.281595717361`.
+
+**THE SILENT KEY IS THE ACCIDENT THE LOUD KEY'S COMMENT EXISTS TO PREVENT.**
+`GibbsReactor.cpp:139-140` says the announcement is there because of the
+*"dT=50 survived in a copied dict for months"* accident.  The key that
+survives a copied dict unannounced is sitting 76 lines above it.
+
+**AND THE MACHINE-READABLE CONTRACT IS FALSE IN THREE WAYS AT ONCE.**
+`gui/schemas/operations/gibbsReactor.schema.json:75-81` declares
+`approachTemperature` and says:
+
+1. *"Solve the equilibrium at (T - this)"* -- **the sign is backwards.**  The
+   engine's own comment at `GibbsReactor.cpp:59` says `(T + approachTemperature)`.
+2. `"minimum": 0` -- **it forbids the negative approach an ENDOTHERMIC
+   reaction requires.**  A reformer under-predicts at a LOWER evaluation
+   temperature; the schema makes that undeclarable.
+3. *"is ANNOUNCED when non-zero"* -- **false.**  That key announces nothing.
+
+And `temperatureApproach`, the key that IS announced and DOES publish a KPI,
+is absent from the schema entirely.  `gibbsMap.schema.json:137-142` carries
+the same three errors.
+
+**WHY THIS IS WORSE THAN AN INTERNAL DEFECT: it is what we hand to an
+author.**  `docs/ai/schemas-reference.md` is GENERATED from these schemas and
+is what `bin/llmctx` ships to an assistant authoring a Choupo case;
+`docs/ai/unit-ops.md:301` documents only the silent key.  So an LLM writing a
+case for a student is told the wrong sign, told the sign a reformer needs is
+disallowed, and pointed at the variant that will never announce itself.
+
+**WHY NO GATE SAW IT.**  `check_schema_coverage`'s domain is the corpus --
+the corpus is the arbiter -- and **no case in the corpus declares either
+key**, so the gate cannot see that `temperatureApproach` is missing from the
+schema.  This is the 2026-08-18 shape again: a guard whose only case
+satisfies it is a guard nothing tests.  Here there is not even one case.
+
+**RESERVED for Vitor, and the three are separable:**
+(i) which of the two models is the one Choupo means -- they are different
+physics, not two spellings, and the answer decides which key survives;
+(ii) whether `minimum: 0` goes, which is the sign question itself;
+(iii) whether a wrong-signed approach should be ANNOUNCED.  The general's
+recommendation is announce-never-refuse, the `CatalystPellet` posture, and it
+found the argument against refusing that nobody here had stated: **"beyond
+equilibrium is impossible" holds only for a feed on the REACTANT side of
+equilibrium at the physical T.**  Feed an exothermic bed a gas equilibrated
+colder and it arrives past the hot equilibrium, the reaction runs backward,
+and the wanted sign flips -- which is a fact about the FLOWSHEET (quench
+stages, reheat between shift beds), not about the reaction.  A sign test
+needs two facts and the engine has easy access to one.
+
+Also measured, and it blocks the cheap version of (iii): the published
+`Q_kW` (`GibbsReactor.cpp:323`) is `H_out - H_in`, whose SIGN is the
+thermicity only when feed and reactor share a temperature -- the shift
+reactor at 1200 K with an 800 K feed reports +2.04 kW and is exothermic.  The
+usable input is the isothermal reaction enthalpy, and in ADIABATIC mode the
+engine emits no duty at all (`mode == "isothermal"` guard, line 313), so
+there a sign check has no input.
+
+**2026-09-25 -- A CITATION RULE THIS PROJECT BELIEVES IT ENFORCES AND DOES
+NOT.**  CLAUDE.md section 6 states that every EduTool lesson symbol carries a
+`file:line` citation into the engine, *"verified mechanically (waiver dict
+kept EMPTY)"*.  Read in full, `check_lesson_symbols` checks ONE thing: that
+every symbol a `formula` or a `derivation[].eq` uses appears in a `where:
+[{sym, means, unit}]` list.  It has no citation field and no way to see one.
+The waiver dict is real and is empty; **the citation half is enforced
+nowhere.**  The origin is
+`docs/design/what-a-citation-requirement-found.md` section 1: the citation
+was an AUTHORING constraint on the eleven drafting agents, verified by the
+parent at authoring time, once, in the past tense.  CLAUDE.md welded a
+one-off protocol to a gate that enforces a different rule, and
+`check_theory_citations`'s own docstring repeats the same sentence -- a
+second home for a false claim.  **This is exactly the corrupted-memory
+failure section 10 warns about, found in the paragraph that warns about it.**
+NOT fixed here: correcting CLAUDE.md is a one-line act and is held only until
+the tree is free of the general currently working in it.
+
+**2026-09-25 -- A GUI TEST THAT PASSES ONLY ON A MACHINE THAT HAS RUN THE
+CORPUS.**  `gui/tests/hunterNash.test.ts` reads
+`tutorials/props/scan/ternary03_lle_water_ethanol_benzene/ternary.csv`, a
+declared run output matched by `.gitignore:116` (`tutorials/**/*.csv`) and
+never committed on any branch.  The main tree has it because the case was run
+there; a fresh clone or worktree does not, and the four tests fail.  **The
+test's own header asserts the opposite** -- *"the witness ships its own
+`ternary.csv`"*.  So the suite is green here and red for a new contributor,
+which is the class of defect a green suite cannot report.  The remedy shape
+already exists two lines below in the same ignore rule
+(`!tutorials/**/constant/experimental/*.csv`).
+
+
 **2026-09-07 — THE OPEN QUEUE, written down.**  Thirty-one actionable
 findings from the September audit campaign, every one of them MEASURED
 against the tree and none of them fixed.  They lived in a session task list
