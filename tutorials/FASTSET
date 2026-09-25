@@ -116,6 +116,9 @@ tutorials/steady/electrodialysis/ed02_over_limiting_current
 tutorials/steady/electrodialysis/ed03_stack_record
 
 tutorials/plant/ChemicalPlantTutorial
+tutorials/plant/ammoniaStaged01_yield
+tutorials/plant/ammoniaStaged02_equilibrium
+tutorials/plant/ammoniaStaged03_approach
 tutorials/plant/esterification2sector
 tutorials/plant/greenAmmoniaIndustrialN2
 tutorials/plant/hda

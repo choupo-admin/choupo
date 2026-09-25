@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 415,
+  "cases": 418,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -1104,6 +1104,48 @@
   },
   "tutorials/plant/ammonia03_quench_converter": {
    "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/ammoniaStaged01_yield": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor",
+    "isothermalFlash",
+    "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/ammoniaStaged02_equilibrium": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor",
+    "isothermalFlash",
+    "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/ammoniaStaged03_approach": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor",
+    "isothermalFlash",
+    "mixer",
+    "splitter"
+   ],
    "thermo": {
     "formulation": "diluteSolution"
    },
@@ -6251,6 +6293,9 @@
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammonia02_full_plant",
     "tutorials/plant/ammonia03_quench_converter",
+    "tutorials/plant/ammoniaStaged01_yield",
+    "tutorials/plant/ammoniaStaged02_equilibrium",
+    "tutorials/plant/ammoniaStaged03_approach",
     "tutorials/plant/esterification2sector",
     "tutorials/plant/greenAmmoniaIndustrialN2",
     "tutorials/plant/hda",
@@ -6623,6 +6668,7 @@
    ],
    "conversionReactor": [
     "tutorials/plant/acetonePlant",
+    "tutorials/plant/ammoniaStaged01_yield",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/reactors/acetone02_luyben_reactor",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
@@ -6798,6 +6844,8 @@
     "tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd"
    ],
    "gibbsReactor": [
+    "tutorials/plant/ammoniaStaged02_equilibrium",
+    "tutorials/plant/ammoniaStaged03_approach",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/gibbs/claus01_thermal_stage",
@@ -6852,6 +6900,9 @@
    ],
    "isothermalFlash": [
     "tutorials/plant/acetonePlant",
+    "tutorials/plant/ammoniaStaged01_yield",
+    "tutorials/plant/ammoniaStaged02_equilibrium",
+    "tutorials/plant/ammoniaStaged03_approach",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/extraction01_waterButanol",
@@ -6910,6 +6961,9 @@
    ],
    "mixer": [
     "tutorials/plant/acetonePlant",
+    "tutorials/plant/ammoniaStaged01_yield",
+    "tutorials/plant/ammoniaStaged02_equilibrium",
+    "tutorials/plant/ammoniaStaged03_approach",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
@@ -6996,6 +7050,9 @@
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling"
    ],
    "splitter": [
+    "tutorials/plant/ammoniaStaged01_yield",
+    "tutorials/plant/ammoniaStaged02_equilibrium",
+    "tutorials/plant/ammoniaStaged03_approach",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",

@@ -300,6 +300,177 @@ CHANGED, and each change is a consequence of the converter: the INTERCHANGER fal
 \end{tutgolden}
 
 \clearpage
+\tutentry{ammoniaStaged01\_yield}{tutorials/plant/ammoniaStaged01\_yield}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (60.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (63.8,-0.0) {\textbf{converter}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (66.7,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (69.6,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (69.6,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(mixer.west)+(-1.05,0.00)$) -- ($(mixer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (mixer.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (mixer) -- (converter) node[midway, above, font=\tiny] {mixed};
+  \draw[->] (converter) -- (separator) node[midway, above, font=\tiny] {reacted};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] ($(letdown.east)+(0,-0.17)$) -- ($(letdown.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {productNH3};
+  \draw[->] ($(letdown.east)+(0,0.17)$) -- ($(letdown.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{STAGED DESIGN SEQUENCE, stage A of three -- YIELD. The ammonia synthesis loop with a conversionReactor on a DECLARED single-pass conversion of 25 \% of the nitrogen. Claims a converged MATERIAL balance and nothing else: no reactor size, no equipment cost -- and NOT a converged heat balance, which this reactor cannot deliver against an SRK-priced stream (README section 4). Diff the flowsheetDict against ammoniaStaged02\_equilibrium and the only block that moves is the converter.}
+\begin{tutnarrative}
+THE STAGED DESIGN SEQUENCE -- flowsheet, SHARED BY ALL THREE STAGES.
+
+Everything in this file except the `converter` block is BYTE-IDENTICAL across ammoniaStaged01\_yield, ammoniaStaged02\_equilibrium and ammoniaStaged03\_approach. Diff two of them and the only thing that moves is the reactor model -- which is the whole point: one rung of the fidelity ladder at a time, and nothing else.
+
+makeup (N2:H2 = 1:3 + 1 mol\% Ar) -+ v [mixer] <------- recycle <--------+ | | v | [converter] <-- THE ONLY | 700 K, 200 bar DIFFERENCE | v | [separator] isothermalFlash 250 K, 200 bar | | | | rawLiquid-+ +-- unreactedGas | | | | v [purgeSplit] splitter | [letdown] | | | flash 20 bar purge --+ +-- recycle ------------+ | | (5 \% bleed) (95 \%) productNH3+ +letdownGas
+
+SCALE. The makeup is 8000 kmol/h (N2 1980, H2 5940, Ar 80), which is 1 mol\% argon and H2:N2 exactly 3.0. This is NOT the scale of tutorials/steady/flowsheets/ammonia01\_synthesis\_loop, whose structure this flowsheet copies: that case runs 1 kmol/h of makeup, and at that rate the converter's catalyst charge is about 2 litres -- below the lower bound of every vessel cost correlation the engine carries, so stage C could not honestly cost it. The flowsheet is linear in flow (the flash and the reactor are both intensive), so the scale-up changes no intensive answer; compare this case's converter y\_NH3 against ammonia01's own golden and they agree.
+
+TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
+
+\end{tutnarrative}
+\tutreadme{A DECLARED CONVERSION AND NOTHING ELSE. The reactor is a conversionReactor: it converts 25 \% of the inlet nitrogen because this case's dictionary says so, and it would do the same at any temperature and any pressure, whether or not equilibrium allows it. That is what a yield reactor $\ast$is$\ast$.}
+\tutreadme{READ SECTION 4 BEFORE QUOTING ANY DUTY FROM THIS CASE. DEV.md's C8 entry gives this stage exactly one claim --- $\ast$"Claims a mass balance"$\ast$ --- and that wording is load-bearing rather than loose. This case cannot honestly claim a converged HEAT balance, and the reason is the engine rather than the stage: its first law is out by 2 278.14 kW. The engine announces it loudly on every run, and section 4 diagnoses it with a probe.}
+\tutreadme{Three cases form a ladder of reactor fidelity over one unchanged ammonia synthesis loop. Between consecutive stages exactly one thing moves: the reactor model. Feed, pressure, components, property package, recycle plan, tear seed, separator, let-down and purge are byte-identical across all three.}
+\tutreadme{Background: docs/design/how-a-process-design-is-staged.md, and DEV.md C8.}
+\tutreadme{A converged MATERIAL balance over the whole loop, and the consequences of one declared number.}
+\tutreadme{$\ast$ No reactor size. A declared conversion contains no length scale, no contact time and no catalyst. There is nothing here from which a volume follows. $\ast$ No cost --- and the reason is the METHODOLOGY, not squeamishness. This case carries no system/postDict. A stage-A estimate is AACE 18R-97 Class 5, whose methodology the standard states as $\ast$capacity factored, parametric models, judgment, or analogy$\ast$ --- the whole plant scaled from a reference plant, with no individual item sized at all. Choupo's costing chain is per-item Guthrie/Turton bare-module: equipment factored, which 18R-97 lists against Class 4, not Class 5. So the engine cannot produce the RIGHT KIND of cost at this stage. It could produce a $\ast$number$\ast$; the number would be a Class-4 answer wearing a Class-5 label. The class table is transcribed once, in src/postProcessing/EstimateClass.H --- read the bands there, never from prose. $\ast$ It does not claim the 25 \% is right. See section 5.}
+\begin{tutgolden}
+\goldrow{stream}{letdownGas}{F}{0.00738443277329}
+\goldrow{stream}{letdownGas}{T}{250}
+\goldrow{stream}{makeup}{F}{2.22222222222}
+\goldrow{stream}{makeup}{T}{300}
+\goldrow{stream}{mixed}{F}{7.92134251385}
+\goldrow{stream}{mixed}{T}{263.765269439}
+\goldrow{stream}{productNH3}{F}{0.961408970465}
+\goldrow{stream}{productNH3}{T}{250}
+\goldrow{stream}{purge}{F}{0.299953699801}
+\goldrow{stream}{purge}{T}{250}
+\goldrow{stream}{rawLiquid}{F}{0.968793403238}
+\goldrow{stream}{rawLiquid}{T}{250}
+\goldrow{stream}{reacted}{F}{6.96786739925}
+\goldrow{stream}{reacted}{T}{700}
+\goldmore{56}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ammoniaStaged02\_equilibrium}{tutorials/plant/ammoniaStaged02\_equilibrium}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (60.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (63.8,-0.0) {\textbf{converter}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (66.7,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (69.6,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (69.6,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(mixer.west)+(-1.05,0.00)$) -- ($(mixer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (mixer.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (mixer) -- (converter) node[midway, above, font=\tiny] {mixed};
+  \draw[->] (converter) -- (separator) node[midway, above, font=\tiny] {reacted};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] ($(letdown.east)+(0,-0.17)$) -- ($(letdown.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {productNH3};
+  \draw[->] ($(letdown.east)+(0,0.17)$) -- ($(letdown.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{STAGED DESIGN SEQUENCE, stage B of three -- THERMODYNAMIC CEILING. The same loop with a gibbsReactor at TRUE equilibrium (no approach declared), SRK fugacities at 700 K and 200 bar. The per-pass conversion it reports is a ceiling that no real converter reaches, so nothing downstream of it is sized or costed here.}
+\begin{tutnarrative}
+THE STAGED DESIGN SEQUENCE -- flowsheet, SHARED BY ALL THREE STAGES.
+
+Everything in this file except the `converter` block is BYTE-IDENTICAL across ammoniaStaged01\_yield, ammoniaStaged02\_equilibrium and ammoniaStaged03\_approach. Diff two of them and the only thing that moves is the reactor model -- which is the whole point: one rung of the fidelity ladder at a time, and nothing else.
+
+makeup (N2:H2 = 1:3 + 1 mol\% Ar) -+ v [mixer] <------- recycle <--------+ | | v | [converter] <-- THE ONLY | 700 K, 200 bar DIFFERENCE | v | [separator] isothermalFlash 250 K, 200 bar | | | | rawLiquid-+ +-- unreactedGas | | | | v [purgeSplit] splitter | [letdown] | | | flash 20 bar purge --+ +-- recycle ------------+ | | (5 \% bleed) (95 \%) productNH3+ +letdownGas
+
+SCALE. The makeup is 8000 kmol/h (N2 1980, H2 5940, Ar 80), which is 1 mol\% argon and H2:N2 exactly 3.0. This is NOT the scale of tutorials/steady/flowsheets/ammonia01\_synthesis\_loop, whose structure this flowsheet copies: that case runs 1 kmol/h of makeup, and at that rate the converter's catalyst charge is about 2 litres -- below the lower bound of every vessel cost correlation the engine carries, so stage C could not honestly cost it. The flowsheet is linear in flow (the flash and the reactor are both intensive), so the scale-up changes no intensive answer; compare this case's converter y\_NH3 against ammonia01's own golden and they agree.
+
+TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
+
+\end{tutnarrative}
+\tutreadme{THE THERMODYNAMIC CEILING. The per-pass conversion this case reports is a ceiling that no real converter reaches, and sizing anything downstream against it produces a fiction. That sentence is the case; the numbers below are the evidence for it.}
+\tutreadme{Three cases form a ladder of reactor fidelity over one unchanged ammonia synthesis loop. Between consecutive stages exactly one thing moves: the reactor model. Everything else --- feed, pressure, components, property package, recycle plan, tear seed, separator, let-down, purge --- is byte-identical. Diff two system/flowsheetDict files and the only block that differs is converter.}
+\tutreadme{Stage D does not exist. src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.\{H,cpp\} is included by its own .cpp and by AmmoniaRateBench.cpp, a props operation, and by no reactor. The rung is named here rather than implied, because a visible gap beats an invisible falsehood.}
+\tutreadme{Background: docs/design/how-a-process-design-is-staged.md, and DEV.md C8.}
+\tutreadme{One claim: the ceiling. With no conversion declared and no approach declared, the converter outlet is the composition that minimises the Gibbs energy of the four declared species at 700 K and 200 bar, subject to the feed's own element balance, with SRK fugacities.}
+\tutreadme{It also claims a converged heat and material balance, and here that claim holds: every unit closes at 100.00 \% and the plant boundary closes at 1.0e-6 \%.}
+\begin{tutgolden}
+\goldrow{stream}{letdownGas}{F}{0.00852264420893}
+\goldrow{stream}{letdownGas}{T}{250}
+\goldrow{stream}{makeup}{F}{2.22222222222}
+\goldrow{stream}{makeup}{T}{300}
+\goldrow{stream}{mixed}{F}{4.50147743743}
+\goldrow{stream}{mixed}{T}{274.381582952}
+\goldrow{stream}{productNH3}{F}{1.05400356221}
+\goldrow{stream}{productNH3}{T}{250}
+\goldrow{stream}{purge}{F}{0.119960800861}
+\goldrow{stream}{purge}{T}{250}
+\goldrow{stream}{rawLiquid}{F}{1.06252620642}
+\goldrow{stream}{rawLiquid}{T}{250}
+\goldrow{stream}{reacted}{F}{3.46174222365}
+\goldrow{stream}{reacted}{T}{700}
+\goldmore{61}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ammoniaStaged03\_approach}{tutorials/plant/ammoniaStaged03\_approach}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (60.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (63.8,-0.0) {\textbf{converter}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (66.7,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (69.6,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (69.6,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(mixer.west)+(-1.05,0.00)$) -- ($(mixer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (mixer.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (mixer) -- (converter) node[midway, above, font=\tiny] {mixed};
+  \draw[->] (converter) -- (separator) node[midway, above, font=\tiny] {reacted};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] ($(letdown.east)+(0,-0.17)$) -- ($(letdown.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {productNH3};
+  \draw[->] ($(letdown.east)+(0,0.17)$) -- ($(letdown.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{STAGED DESIGN SEQUENCE, stage C of three -- REALISTIC OUTLET. The same loop with the gibbsReactor detuned by a 5 K approach to equilibrium, the rung nothing else in this corpus exercises. The outlet is realistic enough to size downstream units against and to cost the converter from a DECLARED space velocity, which is an AACE 18R-97 Class-4 posture.}
+\begin{tutnarrative}
+THE STAGED DESIGN SEQUENCE -- flowsheet, SHARED BY ALL THREE STAGES.
+
+Everything in this file except the `converter` block is BYTE-IDENTICAL across ammoniaStaged01\_yield, ammoniaStaged02\_equilibrium and ammoniaStaged03\_approach. Diff two of them and the only thing that moves is the reactor model -- which is the whole point: one rung of the fidelity ladder at a time, and nothing else.
+
+makeup (N2:H2 = 1:3 + 1 mol\% Ar) -+ v [mixer] <------- recycle <--------+ | | v | [converter] <-- THE ONLY | 700 K, 200 bar DIFFERENCE | v | [separator] isothermalFlash 250 K, 200 bar | | | | rawLiquid-+ +-- unreactedGas | | | | v [purgeSplit] splitter | [letdown] | | | flash 20 bar purge --+ +-- recycle ------------+ | | (5 \% bleed) (95 \%) productNH3+ +letdownGas
+
+SCALE. The makeup is 8000 kmol/h (N2 1980, H2 5940, Ar 80), which is 1 mol\% argon and H2:N2 exactly 3.0. This is NOT the scale of tutorials/steady/flowsheets/ammonia01\_synthesis\_loop, whose structure this flowsheet copies: that case runs 1 kmol/h of makeup, and at that rate the converter's catalyst charge is about 2 litres -- below the lower bound of every vessel cost correlation the engine carries, so stage C could not honestly cost it. The flowsheet is linear in flow (the flash and the reactor are both intensive), so the scale-up changes no intensive answer; compare this case's converter y\_NH3 against ammonia01's own golden and they agree.
+
+TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
+
+\end{tutnarrative}
+\tutreadme{THE RUNG NOTHING ELSE IN THE CORPUS EXERCISES. gibbsReactor has read operation.temperatureApproach and announced it loudly since src/unitOperations/reactor/GibbsReactor.cpp:141, and before this case no flowsheet case in tutorials/ declared one --- only a props operation (tutorials/props/gibbs/nh3\_equilibrium\_map/system/propsDict) mentioned the key. A capability that exists, announces itself and is used by nothing is a capability no gate can see.}
+\tutreadme{Three cases form a ladder of reactor fidelity over one unchanged ammonia synthesis loop. Between consecutive stages exactly one thing moves: the reactor model. Against stage B the difference is literally one line.}
+\tutreadme{Background: docs/design/how-a-process-design-is-staged.md, and DEV.md C8.}
+\tutreadme{temperatureApproach 5; evaluates the reaction equilibrium at 705 K while the physical state, the enthalpy and the energy balance stay at 700 K. Ammonia synthesis is exothermic, so equilibrium ammonia falls as temperature rises: evaluating the chemistry 5 K hot is exactly $\ast$"the outlet is 5 K short of equilibrium"$\ast$.}
+\tutreadme{The sign convention is the source's own, and the word that carries it is $\ast$above$\ast$. US 5,352,428 (M. L. Bhakta and B. J. Grotz, CF Braun and Co, issued 4 October 1994), $\ast$High conversion ammonia synthesis$\ast$, verbatim:}
+\tutreadme{The patent calls the 5 $^\circ$C example's conditions "typical and optimum in many commercial process designs", so 5 is a sourced value, not a round number. It is declared bare because it is a temperature $\ast$difference$\ast$: 5 K and 5 $^\circ$C are the same interval.}
+\begin{tutgolden}
+\goldrow{stream}{letdownGas}{F}{0.00848002672666}
+\goldrow{stream}{letdownGas}{T}{250}
+\goldrow{stream}{makeup}{F}{2.22222222222}
+\goldrow{stream}{makeup}{T}{300}
+\goldrow{stream}{mixed}{F}{4.61740426542}
+\goldrow{stream}{mixed}{T}{273.760779212}
+\goldrow{stream}{productNH3}{F}{1.05085761439}
+\goldrow{stream}{productNH3}{T}{250}
+\goldrow{stream}{purge}{F}{0.126062212851}
+\goldrow{stream}{purge}{T}{250}
+\goldrow{stream}{rawLiquid}{F}{1.05933764112}
+\goldrow{stream}{rawLiquid}{T}{250}
+\goldrow{stream}{reacted}{F}{3.58058189813}
+\goldrow{stream}{reacted}{T}{700}
+\goldmore{98}
+\end{tutgolden}
+
+\clearpage
 \tutentry{esterification2sector}{tutorials/plant/esterification2sector}
 \tutwhat{Esterification plant -- two sectors (REACTION + SEPARATION) sharing components; per-sector constant/ data (S1 kinetics, S2 NRTL pair); ethanol-water pair inherited from the standard library}
 \tutreadme{A two-sector plant that exists to prove one thing: data lives with the sector that owns it, and a whole-plant run finds it there.}

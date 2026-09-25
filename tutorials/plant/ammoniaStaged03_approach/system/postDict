@@ -1,0 +1,138 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- STAGE C ONLY.  Stages A and B carry no postDict at all, and that
+  absence is the sequence's invariant working:
+
+      A STAGE MAY NOT COST WHAT IT DID NOT SIZE.
+
+  =========================================================================
+  WHY THE CONVERTER'S VOLUME IS NOT TYPED IN
+  =========================================================================
+  The flagship green-ammonia plant and `ammonia02_full_plant` both size this
+  converter with `designRules { volume <m3>; }` and put where the number came
+  from in a `//` comment beside it.  The design sheet then records the basis
+  as "volume (author-set)" and says nothing about a space velocity, because
+  there is nothing about a space velocity for it to read.  A fact a reader
+  must act on, living in a comment, is the shape this project has now found
+  five times.
+
+  This case declares the RULE instead, in grammar the engine already parses
+  (`src/postProcessing/sizing/VesselSize.cpp:83-85`):
+
+      spaceVelocity  ->  V = Q_gas / SV      basis "catalyst V = Q/SV"
+
+  so the volume becomes an ENGINE OUTPUT computed from this run's own
+  converter throughput, the rule reaches `design/<unit>/<tag>` in the sheet's
+  own `basis` field, and the volume tracks the flowsheet instead of standing
+  still while it moves.  `flowKey N_in_mol_s` puts the space velocity on the
+  INLET gas, which is the convention every published GHSV uses; the sizer's
+  own default is the OUTLET (`N_out_mol_s`), which for this reaction is 22 %
+  smaller because four moles become two.
+
+  =========================================================================
+  THE BASIS OF THE NUMBER, AND THE TRAP IN IT -- READ THIS BEFORE COPYING
+  =========================================================================
+  `VesselSize` builds Q_gas as `N * R * T / P` at THE UNIT'S OWN (T, P) --
+  700 K and 200 bar here.  So its `spaceVelocity` is on ACTUAL gas volume,
+  and `[1/h]` is the honest unit for it.
+
+  EVERY SPACE VELOCITY IN THE AMMONIA LITERATURE IS QUOTED ON NORMAL OR
+  STANDARD GAS VOLUME -- Nm3 of gas per m3 of catalyst per hour.  Typing an
+  industrial GHSV straight into this key is wrong by the density ratio, which
+  at these conditions is
+
+      Q_normal / Q_actual = (T_n * P_r) / (P_n * T_r)
+                          = (273.15 K * 2.0e7 Pa) / (101325 Pa * 700 K)
+                          = 77.022
+
+  -- a factor of 77, at exit 0, producing a plausible-looking volume.  The
+  engine has no grammar for declaring which basis a space velocity is on, and
+  nothing in it can detect the substitution.  That is a finding, recorded
+  here and reported, not worked around.
+
+  So the value below is stated in THE ENGINE'S OWN BASIS and the arithmetic
+  that produced it is here rather than in a reader's head:
+
+      20000 Nm3/(m3.h)  /  77.022  =  259.665 h^-1   (actual gas, 700 K, 200 bar)
+
+  WHERE 20000 Nm3/(m3.h) COMES FROM: IT IS A DECLARED ASSUMPTION.  Those are
+  the words.  The only primary source retrieved for this case that states a
+  range is US 4,568,530 (Mandelik, Cassata, Shires & van Dijk, MW Kellogg,
+  4 February 1986), "Ammonia synthesis", which says the catalyst space
+  velocities "are generally between 5000 and 150,000 m3 per hour of gas per
+  m3 of catalyst at standard conditions".  That band is a factor of 30 wide
+  and pins nothing; it brackets 20000 and does not source it.  The patent
+  does not say WHICH standard conditions, either, which is the same basis
+  ambiguity one level up.  That quotation also reached here through a
+  fetch-and-summarise of the patent page rather than a read of the raw
+  document -- weaker evidence than the approach-to-equilibrium sentences
+  quoted in the flowsheetDict, which were read out of the retrieved text
+  itself.
+
+  WHAT WOULD REPLACE IT: an integrated rate law with a pellet effectiveness
+  factor, which is stage D of this sequence and which the engine cannot run
+  today -- `AmmoniaSynthesisRate` is included by its own .cpp and by a props
+  bench, and by no reactor.  Until then this volume is a feasibility-class
+  number: enough to cost a vessel, not enough to build one.
+
+  =========================================================================
+  WHAT IS SIZED, AND WHAT IS NOT
+  =========================================================================
+  Sized: the CONVERTER (catalyst vessel, space velocity), the high-pressure
+  SEPARATOR and the product LET-DOWN drum (both on vapour residence time).
+  NOT sized, and so not costed: there are no compressors and no exchangers in
+  this flowsheet at all -- the loop is isobaric at 200 bar and the makeup
+  compression and feed/effluent interchange are folded into the unit duties,
+  which is the simplification this topology inherits from
+  `tutorials/steady/flowsheets/ammonia01_synthesis_loop`.  So this CAPEX is
+  PARTIAL IN UNITS, not only in provenance, and it is smaller than a real
+  loop's by the two largest rotating machines.  Read `ammonia02_full_plant`
+  for a loop that carries them.
+
+  `corrosionAllow` and `jointEfficiency` are DELIBERATELY NOT DECLARED here.
+  The engine supplies both from `sizing/DesignDefaults`, announces each one at
+  its site and in the end-of-run caveat block, and lists them in the design
+  sheet's `assumed ( ... )` block -- which is precisely the difference between
+  a number this case chose and a number the engine chose.  Declaring them
+  would silence that, and this is the one case in the corpus whose subject is
+  that distinction.
+\*---------------------------------------------------------------------------*/
+sizing
+{
+    units
+    (
+        //  THE CONVERTER.  The volume is NOT here; the RULE is.
+        { unitName converter;  type vessel;  material SS316;
+          designRules { spaceVelocity 259.665;      // 1/h, ACTUAL gas at 700 K / 200 bar
+                        flowKey N_in_mol_s;         // GHSV is on the INLET gas
+                        L_over_D 6.0;
+                        pressureDesign 220.0; } }
+
+        //  The high-pressure SEPARATOR: a knock-out drum, 45 s of vapour holdup.
+        { unitName separator;  type vessel;  material SS316;
+          designRules { residenceTime 45.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;
+                        pressureDesign 220.0; } }
+
+        //  The product LET-DOWN drum at 20 bar: smaller, and carbon steel.
+        { unitName letdown;    type vessel;  material carbonSteel;
+          designRules { residenceTime 60.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;
+                        pressureDesign 25.0; } }
+    );
+}
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;
+    cepci2001 397;
+    usdToEur  0.92;
+}
