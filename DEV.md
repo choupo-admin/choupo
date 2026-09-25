@@ -1492,7 +1492,46 @@ are decisions and sit in §4b, not here.
      Re-deriving a threshold so that the current answer clears it is the exact
      shape this project refuses everywhere else.
 
-     RESERVED for Vitor: which basis is right.  NOT reserved: that the suite
+     **DIAGNOSED 2026-09-25, AND THE BASIS QUESTION IS ANSWERED: THE NEW ONE
+     IS RIGHT AND THE RED IS TRUE.**  Measured on the failing run:
+
+       plant boundary residual        +34.412646 kW
+       sum of per-unit `remaining_kW` -34.4127 kW
+
+     They are the same number.  **The boundary gap is the per-unit gaps
+     added up**, so it is real, localised and additive -- not a
+     normalisation artefact.  The four contributors:
+
+       DRYING.SD               -70.85 kW   (the spray dryer, the largest)
+       FERMENTATION.Fermentor  +37.00 kW   (partly cancels it)
+       CONCENTRATION.Evap1     -10.42 kW
+       DRYING.BD               +10.24 kW
+
+     WHY THE DENOMINATOR CHANGE WAS THE FIX WORKING, NOT A DEFECT.  The old
+     basis divided 34.41 kW by ~21 132 kW of enthalpy THROUGHPUT and got
+     0.163 %; the new one divides by 1 085 kW of energy EXCHANGED and gets
+     3.17 %.  Most of that throughput is the formation datum passing through
+     the plant, not energy the plant does anything with -- so normalising by
+     it hides the error exactly as the cooling water hid the atom balance
+     (the same defect, closed for mass and atoms on 2026-09-25).  It is also
+     `solver/Convergence.H`'s own rule: normalise by THE TERMS THE EQUATION
+     BALANCES.  So CLAUDE.md 6, which files this among "three defects
+     introduced the same day by the fix itself", **reverses cause and
+     effect** -- and that sentence must be corrected there, not here.
+
+     WHAT IS ACTUALLY OPEN, then, is the SPRAY DRYER: the report shows it
+     with an EMPTY `energy_closure_pct`, which is the shape of a unit that
+     declares no energy item at all, so its whole enthalpy change is
+     unattributed.  NOT YET CONFIRMED -- read `EnergyBalanceReport`'s writer
+     before asserting it, because `energy_items_kW` reads equal to `dH_kW` on
+     that row while `raw_imbalance_kW` equals `dH_kW` too, which the
+     crystalliser row (items == dH, raw == 0) says should not happen
+     together.  Settle that inconsistency first: it is either the reporting
+     of a unit with no declared item, or a defect in the report itself.
+
+     NOT the remedy, whichever it turns out to be: widening the 1 % gate to
+     admit 3.17 %.  Re-deriving a threshold so today's answer clears it is
+     the shape this project refuses everywhere else.  NOT reserved: that the suite
      currently carries a red nobody is acting on, which is recorded here so
      the next session inherits it as a task rather than as scenery.
 

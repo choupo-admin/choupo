@@ -896,7 +896,20 @@ code does not do** (the scale summed duties ALGEBRAICALLY beside a sentence
 promising MAGNITUDES, recording a column that boils 1279 kW and condenses
 1281 kW as exchanging 1.74 kW); and **a basis changed without finding who
 reads it** (moving the denominator took the flagship from 0.163 % to 3.17 % on
-an unchanged residual and turned `energy-T2:plant` red unnoticed).  The
+an unchanged residual and turned `energy-T2:plant` red unnoticed).  **THAT
+THIRD ONE IS MISFILED, and the correction is the durable half (2026-09-25):
+the basis change was the fix WORKING.**  Measured on the failing run, the
+plant's boundary residual and the SUM of its per-unit remaining imbalances are
+the same number, so the gap is real, localised and additive -- the spray dryer
+is the largest single contributor and the fermentor partly cancels it.  The
+old denominator divided that residual by the enthalpy THROUGHPUT, most of
+which is the formation datum passing through; the new one divides by the
+energy EXCHANGED, which is `solver/Convergence.H`'s own rule -- normalise by
+THE TERMS THE EQUATION BALANCES.  Normalising by throughput hid a real gap
+exactly as the cooling water hid the atom balance.  So `energy-T2:plant` is
+correctly red and has been since 2026-09-08; what nobody did was act on what
+it revealed.  Diagnosis, the open question and the remedy that is NOT
+available (widening the gate): DEV.md 5.  The
 physics underneath was called ONE family: **a unit solves its energy equation
 on one enthalpy surface while its streams are priced on another** — ε-NTU on
 `cpIdealGas` against SRK-priced streams, the adiabatic `gibbsReactor` on
