@@ -66,7 +66,7 @@ export type MethodToolId =
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
   | "sour-water" | "rules-of-thumb" | "bode"
   | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
-  | "batch-membrane";
+  | "batch-membrane" | "approach-to-equilibrium";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -636,6 +636,30 @@ export const METHOD_TOOLS: MethodTool[] = [
     discipline: "Reaction engineering", kind: "construction", status: "live",
     teaches: "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
     theory: "ch:pfr",
+  },
+  //  COMMISSIONED 2026-09-25, and the origin is worth keeping beside the
+  //  entry: the architect of this project met the temperature approach to
+  //  equilibrium for the first time that day and asked for a page about it.
+  //  The engine has read the key since 2026-07-02 and announces it in three
+  //  sentences; nothing anywhere carried the teaching, and no flowsheet case
+  //  in the corpus declares an approach of any kind (measured the same day).
+  //
+  //  `notes` rather than `construction`: there is no classical graphical
+  //  construction here.  It is a chapter you scroll with the engine running
+  //  inside it, which is the shape `what-is-temperature` established.
+  {
+    id: "approach-to-equilibrium",
+    label: "Approach to equilibrium (Gibbs reactor)",
+    discipline: "Reaction engineering", kind: "notes", status: "live",
+    teaches: "That a Gibbs reactor declares NO reactions — it minimises G "
+      + "subject to the element balances, which is its power and its trap in "
+      + "one sentence; that it sits early because nobody has the KINETICS "
+      + "yet, not because of the project stage; that the approach to "
+      + "equilibrium evaluates the CHEMISTRY at T + ΔT while enthalpy, Psat "
+      + "and the energy balance stay at the physical T; and THE SIGN — "
+      + "positive is conservative only for an EXOTHERMIC reaction, so a "
+      + "reformer wants a negative one, and the engine constrains neither.",
+    theory: "sec:gibbs-maps",
   },
   {
     id: "vanheerden", label: "Ignition / extinction (Van Heerden)",

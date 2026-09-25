@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 39,
-  "registryTools": 39,
+  "liveTools": 40,
+  "registryTools": 40,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -202,6 +202,13 @@
       "discipline": "Reaction engineering",
       "teaches": "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
       "href": "/app/?workspace=methods&tool=levenspiel"
+    },
+    {
+      "id": "approach-to-equilibrium",
+      "label": "Approach to equilibrium (Gibbs reactor)",
+      "discipline": "Reaction engineering",
+      "teaches": "That a Gibbs reactor declares NO reactions — it minimises G subject to the element balances, which is its power and its trap in one sentence; that it sits early because nobody has the KINETICS yet, not because of the project stage; that the approach to equilibrium evaluates the CHEMISTRY at T + ΔT while enthalpy, Psat and the energy balance stay at the physical T; and THE SIGN — positive is conservative only for an EXOTHERMIC reaction, so a reformer wants a negative one, and the engine constrains neither.",
+      "href": "/app/?workspace=methods&tool=approach-to-equilibrium"
     },
     {
       "id": "vanheerden",
