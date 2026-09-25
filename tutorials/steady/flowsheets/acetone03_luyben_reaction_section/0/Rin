@@ -5,8 +5,16 @@
     component split is derived from his Rout in the flowsheetDict header and
     closes on his own total to 0.02 %.                                        */
 
-T   389 K;
-P   2.6 atm;
+/*  PHASE DECLARED (2026-09-25).  This file used to say only (T, P, z), and an
+    unpinned state MEANS its own equilibrium -- so `vf` resolved to the liquid
+    leg and the energy report priced a 389 K vapour feed as a liquid.  Nothing
+    in the case contradicted it, which is why it survived: an ABSENCE gives a
+    reader no second number to compare.  Declaring the phase is what the
+    author plainly meant, and it restores this case's own shipped duties.   */
+
+T     389 K;
+P     2.6 atm;
+phase gas;
 
 componentMolarFlows
 {

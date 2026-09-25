@@ -941,7 +941,9 @@ hold is the paragraph, which went on naming a paid debt — so a reader is
 told to fix something already fixed, which is the SAME failure the
 paragraph above this one describes about itself, one rung up.
 **AND THE FAMILY WAS NAMED ONE RUNG TOO LOW (2026-09-12).**  The heading above
-is a CLOSED SUBSET, not the family.  `column01` was filed under it and does not
+is a SUBSET, not the family -- and it was called a CLOSED subset for thirteen
+days while `conversionReactor` was still in it (corrected 2026-09-25; see the
+paragraph below).  A subset nobody ENUMERATED is not a subset anybody closed.  `column01` was filed under it and does not
 belong there at all: both sides price on `H_stream_formation`.  The family is:
 **THE STATE A UNIT COMPUTES WITH IS NOT THE STATE ITS STREAMS CARRY** — and the
 second home may be a dict key, a fixed correction applied to the stream and not
@@ -956,6 +958,47 @@ WORSE, from -0.394 kW to +620.91 kW.  A surface-unification campaign predicts
 monotone improvement; unifying the surface while leaving two homes for the
 STATE merely moves which pair disagrees.  Record:
 [`docs/design/what-a-passing-suite-does-not-say.md`](docs/design/what-a-passing-suite-does-not-say.md).
+
+**THE SUBSET HAD ONE MORE MEMBER, AND THE WAY IT WAS FOUND IS THE DURABLE HALF
+(2026-09-25).**  `conversionReactor` summed `h_pure_ig` for BOTH terms of its
+duty while the stream it publishes is priced by the package.  Nobody listed the
+units on the wrong surface when `GibbsReactor` was taken off it, so a reader of
+this file was told the subset was closed; **when you take one member off a
+family, ENUMERATE the rest in the same commit or say you did not.**  Both terms
+now go through the SAME resolve-then-price call the energy report applies to
+these very streams (`flashState::twoPhaseSplit` + `hOfState`, else
+`H_stream_formation` on the state the stream carries) -- NOT `GibbsReactor`'s
+plain `H_stream_formation`, because that is a quality blend at `z` and the
+report stopped using it for a split stream on 2026-09-12.  `dH_rxn` is
+untouched and is a DIFFERENT number by design (§5's rung); the `[rating]` line
+that announced the gap is deleted with the gap, and its guard could not have
+seen the witness anyway -- it required a non-vapour inlet, so a vapour priced
+by a cubic EoS was silent.  Three results, each measured.  (1) The witness, which is a staged ammonia
+synthesis case NOT IN THIS TREE (it is on the branch
+claude/choupo-simulator-new-session-s494v2, run here from a copy): its
+converter closed at 104.4687 % and its plant at -2278.1394 kW; the gap WAS the
+plant's first law to five decimals, the same case under `idealGas` closed
+both, and the plant now closes at +0.0064 kW.
+(2) Six of the ten corpus `conversionReactor` cases are unchanged to 1e-12 on
+every published number, measured against a build of the parent commit: three
+price ideal gas on an all-vapour inlet, which IS the sum the old code
+performed, and three publish no duty at all, so the suite says nothing about
+theirs either way.  (3) The negative result, again: `greenAmmoniaIndustrialN2` got
+WORSE (-12.70 -> -13.72 kW) BECAUSE its Deoxo now closes exactly and its
+1.0166 kW had been cancelling someone else's.  **And what the fix then made
+visible is not an engine defect at all**: `acetone02`/`acetone03` run no EoS --
+they declare NO PHASE on `0/Rin`, so `vf` defaults to 0 unpinned and the report
+has always priced a 623 K effluent as a liquid; one line (`phase gas;`) in a
+copy of each reproduces their shipped duty goldens to the last digit and closes
+acetone03's whole plant, separator included, from -602.18 to 0.0000 kW.  The
+unit's private answer was hiding which case was under-declared.  Both cases
+now DECLARE `phase gas;` on `0/Rin` (the same change, landed with this one),
+the four goldens were re-recorded with the list shown to Vitor first -- nine
+rows, two of them residuals going to exactly zero -- and `hda`, `acetone02`
+and `acetone03` all LEFT `check_energy_closure.KNOWN_OPEN` (0.825 %, 0.000 %
+and 0.000 %; the engine fix alone would have left acetone03 at 19.342 %, the
+phase declaration is what closed it).  Record:
+[`docs/design/a-duty-on-a-surface-its-streams-are-not-on.md`](docs/design/a-duty-on-a-surface-its-streams-are-not-on.md).
 
 **AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED
 (2026-09-12, same day).**  `column01`'s 631.956148 kW decomposed EXACTLY into

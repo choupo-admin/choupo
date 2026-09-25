@@ -37,7 +37,7 @@ kpi     Mixer                  n_in             4                1e-4
 kpi     Mixer                  vf               1                1e-4
 kpi     Reactor                F_in_kmol_h      2121.92086332    1e-4
 kpi     Reactor                F_out_kmol_h     2121.92086332    1e-4
-kpi     Reactor                Q_kW             18723.4756041    1e-4
+kpi     Reactor                Q_kW             20083.4794727    1e-4
 kpi     Reactor                T                900              1e-4
 kpi     Reactor                conversion       0.75             1e-4
 kpi     Reactor                dHrxn_kJ_per_mol -48.3683482303   1e-4
@@ -51,7 +51,7 @@ kpi     HPFlash                K_H2             49.6346614017    1e-4
 kpi     HPFlash                K_benzene        0.00915181037615 1e-4
 kpi     HPFlash                K_toluene        0.00306261662294 1e-4
 kpi     Reactor                Q_reaction_kW    -1338.38165111   1e-4
-kpi     Reactor                Q_sensible_kW    20061.8572552    1e-4
+kpi     Reactor                Q_sensible_kW    21421.8611238    1e-4
 stream  Benzene                T                320              1e-4
 stream  Effluent               T                900              1e-4
 stream  H2Makeup               T                300              1e-4
@@ -63,6 +63,6 @@ stream  hpLiquid               T                320              1e-4
 stream  hpVapor                T                320              1e-4
 stream  mixed                  T                330              1e-4
 boundary global                 H_feeds_kW       284.307970808    1e-4
-boundary global                 Q_boundary_kW    -2636.97973945   1e-4
+boundary global                 Q_boundary_kW    -1276.97587088   1e-4
 boundary global                 H_products_kW    -650.760557071   1e-4
-boundary global                 residual_kW      -1701.91121157   1e-4
+boundary global                 residual_kW      -341.907343001   1e-4

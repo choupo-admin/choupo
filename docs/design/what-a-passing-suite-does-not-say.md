@@ -88,6 +88,16 @@ violates the first law — a ledger of work owed, not a set of exemptions.
 One family, three units, one sentence: **a unit solves its energy equation on
 one enthalpy surface while its streams are priced on another.**
 
+**THREE WAS THE NUMBER THIS PAGE LOOKED AT, NOT THE NUMBER THERE WERE
+(2026-09-25).**  A fourth member, `conversionReactor`, summed `h_pure_ig` for
+both terms of its duty and was never listed here, so `GibbsReactor` being
+closed on 2026-09-08 read as the subset being closed and CLAUDE.md said so for
+thirteen days.  The rule that costs nothing and would have caught it: **when
+you take one member off a family, ENUMERATE the rest in the same commit, or
+say plainly that you did not.**  A list assembled by looking at one plant is a
+list of what that plant exercises.  Record:
+[`a-duty-on-a-surface-its-streams-are-not-on.md`](a-duty-on-a-surface-its-streams-are-not-on.md).
+
 * **`HeatExchanger` (ε-NTU).**  `streamCp` returns `cpIdealGas` for any stream
   with `vf >= 0.5` — no pressure, no departure function.  The model forms
   `C = n·Cp_ig`, takes `Q = ε·Cmin·ΔT_max`, and WRITES `T_out = T_in ∓ Q/C`.
@@ -138,6 +148,19 @@ one enthalpy surface while its streams are priced on another.**
   distillation case in the corpus except `column04` and `column08`, which are
   still undiagnosed.  Record:
   [`the-state-a-unit-computes-with.md`](the-state-a-unit-computes-with.md).
+
+* **`conversionReactor`** (added 2026-09-25).  Both terms of `Q_kW` were sums
+  of `h_pure_ig` while the stream the unit publishes is priced by the package.
+  `ammoniaStaged01_yield`'s converter, 200 bar under SRK: 104.4687 % closure,
+  2278.1457 kW apart, and that gap WAS the whole of the plant's -2278.1394 kW
+  first law.  **CLOSED the same day** — both terms now go through the report's
+  own resolve-then-price call, and the plant closes at +0.0064 kW.  Six of the
+  ten corpus cases carrying this unit are unchanged to 1e-12 on every published
+  number (three price ideal gas on an all-vapour inlet, which IS the sum the old
+  code performed; three publish no duty at all); the four that move are not
+  re-recorded.  The unit's `[rating]` line, which announced the gap, is
+  deleted with it — and its guard required a non-vapour inlet, so it could
+  never have fired on the witness.
 
 The instrument that separates "the model does not close in H" from "a duty is
 not being counted" is the same in every case: **the unit measures its own gap
