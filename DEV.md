@@ -1166,10 +1166,81 @@ accepts today, and that is a policy call.
      that exist; what is missing for ammonia is the RATE EXPRESSION and the
      catalyst data, which is curation and physics, not a sizer.
 
-     NOT DECIDED, and deliberately not guessed: how many cases the sequence
-     should be, whether they are separate tutorial cases or one case with
-     staged `postDict` chains, and what each stage is ALLOWED to claim.  Those
-     follow the research, which is what was commissioned first.
+     RESEARCH DELIVERED 2026-09-24:
+     `docs/design/how-a-process-design-is-staged.md` (9 sections, sources
+     separated into five tiers by how far each was actually read).  It
+     answers the three questions as asked and corrects the framing of two.
+
+     **THE SHAPE IS DECIDED 2026-09-25, on a stated default, and the decision
+     rests on three facts MEASURED in the tree rather than recalled.**
+
+     1. The flagship's converter runs at TRUE equilibrium.
+        `greenAmmoniaIndustrialN2/LOOP/Converter/system/flowsheetDict` declares
+        `mode adiabatic; P 200 bar; T 720 K;` and no approach of any kind, so
+        every unit downstream of it is sized against a conversion no real
+        converter reaches -- the fiction section 6 of the research names.
+     2. `temperatureApproach` is read by `GibbsReactor.cpp:141` and ANNOUNCED
+        there in a comment that names the accident it guards against, and it
+        is used by ZERO flowsheet cases in the corpus -- only by a README and
+        one props op.  **The rung the research calls the missing middle step,
+        the one that "matters more than either end", is the one rung nothing
+        exercises.**  A capability that exists, announces itself and is used
+        by nothing is a capability no gate can see.
+     3. `AmmoniaSynthesisRate.{H,cpp}` sits under
+        `src/unitOperations/reactor/kinetics/` and is included by exactly two
+        files: its own `.cpp` and `AmmoniaRateBench.cpp`, a PROPS op.  **No
+        reactor includes it.**  The kinetic rung cannot be built without
+        wiring, and the wiring is a decision, not a task (see the RESERVED
+        paragraph below).
+
+     **SEPARATE CASES, NOT A STAGED `postDict` CHAIN.**  A stage is a
+     different FLOWSHEET, not a different post-processing chain: the reactor
+     MODEL changes between stages, and no `postDict` can change a reactor.
+     The pedagogical test decides it -- a student must be able to diff two
+     stages and see exactly one thing move.
+
+     **FOUR RUNGS, AND THE SEQUENCE STOPS WHERE THE ENGINE STOPS.**  What
+     each stage may claim is the load-bearing half, and it is stated as a
+     PROHIBITION because that is the checkable direction:
+
+     A. Stoichiometric / yield (`conversionReactor`, registered at
+        `UnitOperation.cpp:151`).  Claims a mass balance.  **May NOT claim a
+        reactor size, and may NOT carry an equipment-factored cost** -- Class
+        5's own methodology is capacity-factored, which `CostingPass` does
+        not do.
+     B. Gibbs at true equilibrium.  Claims the THERMODYNAMIC CEILING, and
+        must say in those words that the conversion is a ceiling no converter
+        reaches.  **May NOT hand its outlet to a downstream sizer** without
+        that sentence travelling with it.
+     C. Gibbs detuned by an approach to equilibrium.  Claims a realistic
+        outlet; downstream units may be sized against it; the converter is
+        costed from a SPACE VELOCITY whose provenance is DECLARED, not typed
+        into a comment.  **This is where the flagship already is, minus the
+        approach** -- so stage C is also the flagship's own correction.
+     D. Kinetic PFR on Dyson & Simon.  Claims a bed volume the ENGINE
+        computed, comparable against C's space-velocity volume.  That
+        comparison is the whole pedagogical payoff, and it is the one number
+        in the sequence the engine cannot produce today.
+
+     The rung beyond D -- packed bed with a pellet effectiveness factor -- is
+     NOT built and the sequence SAYS so rather than implying it: `eta` is
+     announced as 1 and judged by nothing (CLAUDE.md section 6, 2026-08-18).
+     A visible gap beats an invisible falsehood.
+
+     **THE INVARIANT, and it is what a gate can hold: A STAGE MAY NOT COST
+     WHAT IT DID NOT SIZE.**  The flagship costs a 28 m3 vessel from a volume
+     typed into `postDict` whose provenance lives in a `//` comment -- the
+     fifth time this project has found a fact living in a comment that a
+     reader must act on.  A declared volume is legitimate at stage C and is
+     the WRONG answer at stage A; what makes it legitimate is that the
+     declaration says where it came from in a form the engine reads.
+
+     **SPLIT OF WORK, and the reason for the split.**  A, B and C need NO
+     engine change and are built first.  D needs the rate law wired into
+     `pfr`, which is not a new unit operation but IS new physics reaching a
+     reactor, and the engine has been frozen since 2026-09-02.
+     **RESERVED for Vitor:** whether that wiring is inside the freeze.  It is
+     named here rather than assumed either way.
 
 **C7. NO COMPETITOR IS NAMED IN THIS REPOSITORY (ruled 2026-09-24;
      PARTLY DONE, and the hardest part is not the scrub).**  Vítor:
