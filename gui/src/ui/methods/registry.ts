@@ -66,7 +66,7 @@ export type MethodToolId =
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
   | "sour-water" | "rules-of-thumb" | "bode"
   | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
-  | "batch-membrane" | "approach-to-equilibrium";
+  | "batch-membrane" | "approach-to-equilibrium" | "least-squares";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -866,6 +866,22 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "multiplier IS the number of standard deviations it moved each "
       + "measurement.",
     theory: "ch:active-set-qp",
+  },
+  {
+    id: "least-squares",
+    label: "Least squares: what a fitted parameter is worth",
+    discipline: "Flowsheeting & numerics", kind: "construction",
+    status: "live",
+    teaches: "That Levenberg-Marquardt is the easy half.  Watch the damping "
+      + "being repriced up and down on a real NRTL fit -- and then meet the "
+      + "apparatus that makes the answer worth quoting: three measurements "
+      + "withheld from the fitter by data flow rather than by rule, an "
+      + "acceptance band declared with its reason BEFORE anything was "
+      + "fitted, and a verdict published as a WORD.  Turn the band and watch "
+      + "that word change while the residual does not move -- which is "
+      + "exactly why a real curation declares it first.  The same run is "
+      + "`validated` and NOT individually identifiable at once.",
+    theory: "ch:lm",
   },
 ];
 

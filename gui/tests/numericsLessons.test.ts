@@ -53,6 +53,7 @@ import {
   WEGSTEIN_LIMITS, WEGSTEIN_STEPS,
 } from "../src/ui/methods/wegsteinLesson.js";
 import { QP_LIMITS, QP_STEPS } from "../src/ui/methods/activeSetQpLesson.js";
+import { LS_LIMITS, LS_STEPS } from "../src/ui/methods/leastSquaresLesson.js";
 import {
   RECYCLE_QMAX_DEFAULT, RECYCLE_QMIN_DEFAULT,
 } from "../src/ui/methods/wegsteinMath.js";
@@ -73,12 +74,19 @@ const MODULES = [
   "gui/src/ui/methods/activeSetQpMath.ts",
   "gui/src/ui/methods/activeSetQpLesson.ts",
   "gui/src/ui/methods/ActiveSetQpTool.tsx",
+  //  The least-squares page carries NO `*Math.ts`: it recomputes nothing (see
+  //  leastSquaresRun.ts's header for why), so its three modules are the lesson
+  //  data, the readers over the engine's own output, and the page.
+  "gui/src/ui/methods/leastSquaresLesson.ts",
+  "gui/src/ui/methods/leastSquaresRun.ts",
+  "gui/src/ui/methods/LeastSquaresTool.tsx",
 ];
 
 const PAGES: [string, readonly LessonStep[], readonly LessonLimit[]][] = [
   ["tear streams", TEAR_STEPS, TEAR_LIMITS],
   ["Wegstein", WEGSTEIN_STEPS, WEGSTEIN_LIMITS],
   ["active-set QP", QP_STEPS, QP_LIMITS],
+  ["least squares", LS_STEPS, LS_LIMITS],
 ];
 
 
@@ -210,6 +218,64 @@ describe("each page SAYS the engine fact it rests on", () => {
     expect(qp).toMatch(/identity, not (an attribution|a share)/i);
   });
 
+  const ls = pageText(LS_STEPS, LS_LIMITS);
+
+  it("least squares: the in-sample number is called one, and disclaimed", () => {
+    //  The whole page exists because a fit reproducing its own data proves
+    //  nothing, so that sentence must be in the prose and not only implied by
+    //  a panel heading.
+    expect(ls).toMatch(/IN-SAMPLE|in-sample/);
+    expect(ls).toMatch(/flexibility|says nothing at all|nothing about/i);
+  });
+
+  it("least squares: the ORDER of the contract is stated as an order", () => {
+    //  band -> partition -> fit -> verdict.  A band declared after the fit is
+    //  not a band, and the guarantee is a DATA-FLOW fact, never a rule.
+    expect(ls).toMatch(/before the fit/i);
+    expect(ls).toMatch(/never handed them|is never handed|data flow/i);
+    expect(ls).toMatch(/part\.fit\(\)/);
+    expect(ls).toMatch(/part\.validation\(\)/);
+    expect(ls).toMatch(/fingerprint/i);
+  });
+
+  it("least squares: names all five verdict words", () => {
+    for (const w of ["notClaimed", "validationRefused", "heldOutPerformed",
+      "notValidated", "validated"])
+      expect(ls, `the page names the verdict ladder but omits ${w}`)
+        .toContain(w);
+    //  ... and the refusal that makes the ladder honest: with evidence held
+    //  out and NO band declared the engine claims nothing rather than
+    //  choosing a threshold on the reader's behalf.
+    expect(ls).toMatch(/claims nothing|will not choose a threshold/i);
+  });
+
+  it("least squares: the Jacobian is named as FINITE-DIFFERENCED, with its price",
+    () => {
+      expect(ls).toMatch(/forward difference|finite[- ]difference/i);
+      expect(ls).toMatch(/fdStep/);
+      expect(ls).toMatch(/truncation/);
+      expect(ls).toMatch(/round-off/);
+    });
+
+  it("least squares: the damping rule is quoted as the engine runs it", () => {
+    expect(ls).toMatch(/lambda0/);
+    expect(ls).toMatch(/0\.7/);
+    expect(ls).toMatch(/2\.5/);
+    //  Marquardt's scaling, not Levenberg's identity -- the page must say
+    //  WHICH diagonal, because this fit's four parameters differ by three
+    //  orders of magnitude and identity damping would treat them alike.
+    expect(ls).toMatch(/diag/);
+  });
+
+  it("least squares: identifiability is named as a DIFFERENT question", () => {
+    expect(ls).toMatch(/identifiab/i);
+    expect(ls).toMatch(
+      /different question|two separate claims|separately determined/i);
+    //  ... and the assumption behind those intervals is admitted, because the
+    //  run does not test it.
+    expect(ls).toMatch(/error structure/i);
+  });
+
   it("QP: the one-way arrow of the reconciliation is stated", () => {
     expect(qp).toMatch(/analysis to reconciliation to equilibrium|one way/i);
     //  The limits block's own title is "Nothing in the reconciliation panel
@@ -222,7 +288,7 @@ describe("each page SAYS the engine fact it rests on", () => {
 // ---- the registry ----------------------------------------------------------
 
 describe("the three tools are registered and shelved", () => {
-  const ids = ["tear-streams", "wegstein", "active-set-qp"];
+  const ids = ["tear-streams", "wegstein", "active-set-qp", "least-squares"];
 
   it("each is live, a construction, on the numerics shelf", () => {
     for (const id of ids) {
@@ -378,6 +444,28 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/solver/SQP.cpp", 247, "activeSetQP(qp)"],
     ["src/outerDriver/OptimizationDriver.cpp", 484, "verifyActiveSetQP"],
     ["src/streams/AnalysisReconciler.cpp", 165, "solver::activeSetQP(qp)"],
+    // --- least squares: the optimiser
+    ["src/propertyOps/FitParameters.cpp", 128, "chi2 = "],
+    ["src/propertyOps/FitParameters.cpp", 232, "lambda*diag(J^T J)"],
+    ["src/propertyOps/FitParameters.cpp", 253, "A[i][i] *= (1.0 + lambda)"],
+    ["src/propertyOps/FitParameters.cpp", 888, "fdStep * std::max"],
+    ["src/propertyOps/FitParameters.cpp", 894, "(r_h[k] - r_curr[k]) / h"],
+    ["src/propertyOps/FitParameters.cpp", 901, "lambda *= 10.0"],
+    ["src/propertyOps/FitParameters.cpp", 906, "std::clamp(trial[j].value"],
+    ["src/propertyOps/FitParameters.cpp", 924, "lambda *= 0.7"],
+    ["src/propertyOps/FitParameters.cpp", 931, "lambda *= 2.5"],
+    ["src/propertyOps/FitParameters.cpp", 565, "lambda0"],
+    // --- least squares: the apparatus around it, which is the actual lesson
+    ["src/propertyOps/FitParameters.cpp", 444, "EvidencePartition::read"],
+    ["src/propertyOps/EvidencePartition.H", 225, "fit() const"],
+    ["src/propertyOps/EvidencePartition.H", 226, "validation() const"],
+    ["src/propertyOps/EvidencePartition.H", 288, "fingerprint() const"],
+    ["src/propertyOps/FitParameters.cpp", 218, "tCrit95(int dof)"],
+    ["src/propertyOps/FitParameters.cpp", 1075, "const bool identifiable ="],
+    ["src/propertyOps/FitParameters.cpp", 1372, "curationVerdict"],
+    ["src/propertyOps/CurationDossier.cpp", 59, "notClaimed"],
+    ["src/propertyOps/CurationDossier.cpp", 63, "notValidated"],
+    ["src/propertyOps/PropertyOperation.H", 116, "curation() const"],
   ];
 
   it("lands each load-bearing citation on the statement it claims", () => {

@@ -265,6 +265,9 @@ const LubScaleupTool = lazy(() =>
 const BatchMembraneTool = lazy(() =>
   import("./methods/BatchMembraneTool.js")
     .then((m) => ({ default: m.BatchMembraneTool })));
+const LeastSquaresTool = lazy(() =>
+  import("./methods/LeastSquaresTool.js")
+    .then((m) => ({ default: m.LeastSquaresTool })));
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -461,6 +464,7 @@ export function MethodsWorkspace() {
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />
             : tool === "batch-membrane" ? <BatchMembraneTool />
+            : tool === "least-squares" ? <LeastSquaresTool />
             : <UnmountedTool tool={active} />}
         </Suspense>
       </Box>

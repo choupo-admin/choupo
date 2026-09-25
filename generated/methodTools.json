@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 40,
-  "registryTools": 40,
+  "liveTools": 41,
+  "registryTools": 41,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -293,6 +293,13 @@
       "discipline": "Flowsheeting & numerics",
       "teaches": "The hard part of a constrained quadratic is not the algebra -- it is guessing which constraints the answer is pressed against.  Watch the working set change: a constraint ADDED when a step runs into it, DROPPED when its multiplier goes negative, on the very problem Choupo asserts to 1e-9 before every constrained optimisation.  Then meet it for real, reconciling a laboratory water analysis that does not balance on charge, where each law's Lagrange multiplier IS the number of standard deviations it moved each measurement.",
       "href": "/app/?workspace=methods&tool=active-set-qp"
+    },
+    {
+      "id": "least-squares",
+      "label": "Least squares: what a fitted parameter is worth",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "That Levenberg-Marquardt is the easy half.  Watch the damping being repriced up and down on a real NRTL fit -- and then meet the apparatus that makes the answer worth quoting: three measurements withheld from the fitter by data flow rather than by rule, an acceptance band declared with its reason BEFORE anything was fitted, and a verdict published as a WORD.  Turn the band and watch that word change while the residual does not move -- which is exactly why a real curation declares it first.  The same run is `validated` and NOT individually identifiable at once.",
+      "href": "/app/?workspace=methods&tool=least-squares"
     }
   ]
 }
