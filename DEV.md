@@ -1042,12 +1042,32 @@ accepts today, and that is a policy call.
      the heads' ~+15 % is explicitly ignored), insulation, TEMA/tube
      geometry, compressor stages/head/driver, demister sizing.
 
-     **THREE PLACES THE TREE CONTRADICTS ITSELF**, all in case prose:
-     `ammonia02/system/postDict` says the converter and drums are "NOT sized
-     here" and, eleven lines later, that "EVERY unit in this loop is now
-     sized"; the `design/` tree settles it (they ARE sized) so the first is
-     stale — and the second is false anyway, because four units are not.
-     `flowsheetDict` strategy point 4 repeats the false claim.
+     **THE CONTRADICTION IN `ammonia02/system/postDict` — FIXED 2026-09-25,
+     and the review's third site did NOT exist.**  The file said the converter
+     and drums are "NOT sized here" and, eleven lines later, that "EVERY unit
+     in this loop is now sized": **both false, in opposite directions** (the
+     `design/` tree settles that they ARE sized; four other units are not).
+     Rewritten, prose only, golden unmoved.  The review also claimed
+     `flowsheetDict` strategy point 4 repeated it — **measured false**: the
+     word `sized` appears in exactly ONE tracked file of that case, the
+     postDict.  A review's finding is a measurement and this one was not
+     taken; it is corrected here rather than left to be inherited.
+
+     **AND THE CORPUS ALREADY CARRIED THE RIGHT ANSWER, one case along.**
+     `ammonia03_quench_converter`'s postDict declares NO converter volume, has
+     no `costing` and no `economics` block, and says why in its own words: *"An
+     invented vessel volume converts `unsized` into `falsely sized`; a CAPEX
+     that quietly drops the reactor converts `uncosted` into `falsely costed`.
+     Neither a reader nor a gate can detect either."*  It then points the
+     reader at ammonia02 *"knowing where it came from"*.  So the two postures
+     are deliberate and coherent, and what was missing was ammonia02 SAYING
+     which one it takes.  It does now: the 80 m3 is named as AACE Class-4
+     method — a SPACE VELOCITY applied to this flowsheet's own throughput,
+     the first of the three volumes a converter gets in a real project
+     (space velocity at feasibility -> integrated rate law with an
+     effectiveness factor at FEED -> a licensor's guaranteed charge at
+     detailed design; `docs/design/how-a-process-design-is-staged.md` §6).
+     Enough to cost a vessel, not enough to build one, and the case says so.
 
 **C6-R2. BALANCES REVIEW (2026-09-24, read-only).  Vitor's instinct about
      the utility water was RIGHT, and it is right about the report he did not

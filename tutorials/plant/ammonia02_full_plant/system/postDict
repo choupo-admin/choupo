@@ -8,12 +8,15 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   postDict -- the ammonia plant's sizing -> costing -> economics chain.
-    1. sizing     -- the two COMPRESSORS (by shaft power) and the two HEAT
-                     EXCHANGERS (by area).  The converter and the flash drums
-                     need a catalyst-volume / residence-time design basis the
-                     equilibrium units do not emit, so they are NOT sized here
-                     (a separate vessel-design step) -- an HONEST partial CAPEX,
-                     announced.
+    1. sizing     -- the two COMPRESSORS (by shaft power), the two HEAT
+                     EXCHANGERS (by area), and -- through the `vessel` sizer on
+                     an AUTHOR-DECLARED basis -- the CONVERTER (catalyst volume)
+                     and the two flash DRUMS (vapour residence).  The
+                     equilibrium units emit no volume of their own, which is
+                     correct: an equilibrium reactor has no length scale.  What
+                     is NOT sized at all: T101, T201, the mixer and the purge
+                     splitter, so this CAPEX is PARTIAL in units as well as in
+                     provenance.
     2. costing    -- Guthrie/Turton purchased + bare-module cost, CEPCI-updated
                      to 2026, in EUR.  The syngas compressor is far above the
                      correlation's 3000 kW range -> the pass flags the
@@ -24,10 +27,25 @@
 
   READ THIS ABOUT THE RETURNS.  The OPEX + revenue side is realistic and
   feedstock-DOMINATED (raw materials the bulk of COM_d -- exactly why ammonia
-  margins track the gas price).  EVERY unit in this loop is now sized: the two
-  compressors (by power), the two exchangers (by area), and -- via the `vessel`
-  sizing -- the high-pressure CONVERTER (catalyst-volume basis) and the two flash
-  DRUMS (vapour-residence basis).  With every loop unit costed -- and the high-pressure CONVERTER + SEPARATOR
+  margins track the gas price).
+
+  WHAT STAGE OF DESIGN THIS IS, said where a reader audits rather than left to
+  be inferred.  The economics block declares `estimateClass 4` -- AACE 18R-97's
+  STUDY OR FEASIBILITY class, 1-15 % of complete project definition, method
+  "equipment factored or parametric".  The converter's 80 m3 is exactly that
+  method: a SPACE VELOCITY (~20000 Nm3/m3/h at a world-scale rate) applied to
+  this flowsheet's own throughput.  It is the first of the three volumes a
+  converter gets in a real project -- space velocity at feasibility, an
+  integrated rate law with an effectiveness factor at FEED, a licensor's
+  guaranteed charge at detailed design -- and it is enough to cost a vessel and
+  not enough to build one.  The design sheet says so in its own `basis` field
+  ("volume (author-set)"), and this paragraph says why that is the RIGHT answer
+  at this class rather than a gap.  Read `ammonia03_quench_converter` for the
+  opposite posture: it declares no volume, refuses to cost the converter, and
+  says that inventing one converts `unsized` into `falsely sized`.  Both are
+  honest; they answer different questions.
+
+  With the sized loop units costed -- and the high-pressure CONVERTER + SEPARATOR
   (thick ASME walls at 220 bar, F_P ~ 36) now DOMINATING the CAPEX -- the
   in-battery-limits FCI is ~68 MEUR; with the Henry-calibrated separator
   recovering more product (~59 t/h) the loop shows NPV ~ +185 MEUR at 10%,
