@@ -1193,8 +1193,11 @@ accepts today, and that is a policy call.
      student SCROLLS, in `gui/src/ui/methods/`, registered in
      `methods/registry.ts` and dispatched in `MethodsWorkspace.tsx`; the
      equations are LaTeX in a lesson module, every symbol glossed in a
-     `where` list of {sym, means, unit}, and every symbol carries a
-     `file:line` citation into the ENGINE, verified mechanically.  **It is
+     `where` list of {sym, means, unit} -- MEASURED in
+     `vanHeerdenLesson.ts:56`, which carries no citation field, so the
+     `file:line`-citation rule of CLAUDE.md section 6 binds some OTHER
+     surface and must be read off `check_lesson_symbols` itself rather than
+     assumed onto this one.  **It is
      NOT an instrument panel** -- a panel shows a reader who already knows
      the method what it does, and teaches a reader who does not exactly
      nothing (`check_edutool_form`, Vitor's ruling 2026-08-28).
