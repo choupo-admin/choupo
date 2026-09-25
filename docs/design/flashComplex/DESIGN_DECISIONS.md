@@ -192,9 +192,10 @@ The authority is a property of the **data available for that reaction**, not
 of its category. A badly measured acid-base constant with well-reconciled
 species should follow the species.
 
-Both industrial simulators do exactly this — Aspen's Chemistry lets each
-reaction choose K-vs-Gibbs, DWSIM's reaction sets the same — two independent
-implementations arriving at it without contact.
+Both the commercial and the open-source industrial simulators do exactly this
+— each lets a reaction choose K-vs-Gibbs, one through its chemistry form and
+the other through its reaction sets — two independent implementations arriving
+at it without contact.
 
 Where the rewrite differs from the first draft is in **how often the field is
 written**. The first draft put `authority measuredK` on every reaction. A

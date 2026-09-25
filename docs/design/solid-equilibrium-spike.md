@@ -99,7 +99,9 @@ production form is a review question, below.
 ## 6. Related
 
 `queue-ruling-2026-08-08.md` §C2 (the ruling and its amendment) ·
-`dwsim-solids-study.md` (the peer evidence that suggested unification) ·
+`no-competitor-is-named-here.md` (the peer solids study that suggested
+unification was removed from the tree 2026-09-24; its finding is carried in
+`src/thermo/phase/SolidPhase.H` and `check_ice_freezing.py`) ·
 `solid-formation-routes.md` (the two-route problem this dissolves) ·
 `ice-as-a-solid-phase-of-the-solvent.md` · `check_solid_equilibrium_spike.py`
 (the live evidence) · `check_ice_freezing.py` (the crystal's own gate).

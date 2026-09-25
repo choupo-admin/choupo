@@ -162,7 +162,8 @@ int EstimateComponent::run(const DictPtr& dict,
     // CURATED MOLECULAR RECORD (forum #57: written by a human once, reviewed --
     // not "identity", which nothing derives) -- it lives with the substance, so a
     // component that declares `groups (...)` is estimable with no ceremony
-    // (the Aspen STRUCTURES idea, glass-box: estimation stays a curation act).
+    // (the structure-based estimation idea, glass-box: estimation stays a
+    // curation act).
     std::vector<ConstantEstimator::GroupSpec> specs;
     if (dict->found("groups"))
     {

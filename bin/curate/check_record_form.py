@@ -10,8 +10,9 @@ Nothing caught it, and the reason is mechanical: the 25 check_* gates guard
 the one place with no net.  A doctrine without an executable gate regresses.
 
 WHAT IT CHECKS.  The rules are the six practices in
-`.claude/skills/choupo-record/SKILL.md`, which are standard in both Aspen
-Plus and DWSIM -- two independent industrial implementations.  Only the
+`.claude/skills/choupo-record/SKILL.md`, which are standard in both the
+commercial and the open-source process simulators in industrial use -- two
+independent lineages that arrived at them separately.  Only the
 mechanically checkable ones are here; the rest live in the skill, where they
 reach the author before the file is written.
 

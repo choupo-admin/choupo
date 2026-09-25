@@ -25,8 +25,8 @@ true, and is checked here:
        per-point bands.  Two things this pins that nothing else can:
          * the CURATION -- V0(Na)+V0(Cl) = 16.62 and V0(K)+V0(Cl) = 26.85
            reproduce the literature salt volumes, which is what a
-           sign-flipped single ion could not do (the DWSIM K+ = -9
-           precedent would give 8.83);
+           sign-flipped single ion could not do (the K+ = -9 that an
+           uncited secondary table in circulation carries would give 8.83);
          * the VALIDITY CLAIM, measured in BOTH directions: the model is
            within 0.15 % to 1 molal, and DEGRADES to ~+0.7 % at 3 molal.
            The 3 molal point is pinned as a FLOOR too -- if the error ever
@@ -42,7 +42,8 @@ true, and is checked here:
        and NOT a bit-level claim (Vitor's refinement, 2026-08-11).
 
   (V4) THE REFUSALS, each by name: a master with no volumetric block (the
-       DWSIM silent-zero-volume failure), a V0 with no convention, mixed
+       silent-zero-volume failure a peer database exhibits), a V0 with no
+       convention, mixed
        conventions in one sum, an unregistered method, `provenance derived`
        with no method declared, and the shared domain refusals.
 
@@ -60,8 +61,8 @@ WHAT THIS DOES **NOT** COVER, stated so the green line cannot imply it:
 
 SABOTAGE-VERIFIED 2026-08-11; OBSERVED output recorded, not predicted.
 
-Sabotage 1 -- K+ sign-flipped in the curated record (the DWSIM precedent
-reproduced deliberately):
+Sabotage 1 -- K+ sign-flipped in the curated record (the circulating
+sign-flip reproduced deliberately):
 
     check_volumetric_rung1: FAILED
       V2: KCl at 0.5 m: model 1029.69 kg/m3 vs measured 1020.6 (dev

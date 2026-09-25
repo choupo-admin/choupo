@@ -30,15 +30,21 @@ description: Use whenever authoring or editing a Choupo data record or case dict
 
 ## The six rules
 
-These are not house style. Each is standard practice in **both** Aspen Plus
-(proprietary) and DWSIM (open) — two independent industrial implementations
-converging on the same thing, which is the strongest evidence available that
-they are right.
+These are not house style. Each is standard practice in **both** a
+proprietary industrial process simulator and an open-source one — two
+independent lineages converging on the same thing without contact, which is
+the strongest evidence available that they are right.  (This project names no
+other simulator in its tree; see
+`docs/design/no-competitor-is-named-here.md`.  What is carried here is the
+practice, which is what the argument needs — not the product, which it does
+not.)
 
 ### 1. One quantity, one canonical name, one home
 
-Aspen has exactly one `DHFORM`, one `PLXANT`; DWSIM the same by XML schema.
-Never "sometimes the vapour pressure lives here, sometimes there".
+Each of them carries exactly ONE keyword for the formation enthalpy and ONE
+for the Antoine coefficients — in the proprietary case a fixed parameter
+name, in the open-source case a fixed schema element.  Never "sometimes the
+vapour pressure lives here, sometimes there".
 
 Consequences, and note that they follow by DEDUCTION — the rule is what
 matters, not this list:
@@ -53,8 +59,9 @@ matters, not this list:
 
 ### 2. Pair data lives in pair tables, never inside a component
 
-Aspen: `NRTL-1`, `UNIQ-1` indexed by pair.  DWSIM: the same.  Neither puts
-a binary parameter inside a substance record.
+Both lineages index their activity-model interaction parameters BY PAIR, in
+their own tables.  Neither puts a binary parameter inside a substance
+record.
 
 Consequence: a reaction coupling two component families (an ion pair such as
 `Ca+2 + HCO3- = CaHCO3+`) belongs to a shared home
@@ -64,9 +71,9 @@ value two homes.
 
 ### 3. The property method is ONE knob; reference states are its consequences
 
-Choosing ELECNRTL in Aspen settles the activity model, the standard states,
-the Henry treatment and the vapour EoS together.  There is no per-component
-place to declare a reference state, in either simulator.
+Selecting an electrolyte property method settles the activity model, the
+standard states, the Henry treatment and the vapour EoS together.  There is
+no per-component place to declare a reference state, in either lineage.
 
 Consequences:
 - No `reference` field inside a component's `standardStates`: the rung is
@@ -78,9 +85,9 @@ Consequences:
 ### 4. A reaction is defined once and referenced; its standard part declares
 its authority
 
-DWSIM's reaction sets and Aspen's Chemistry both let each reaction say
-whether K is given or computed from Gibbs energies.  Two independent
-implementations arrived at this without contact.
+The reaction-set construct in both lineages lets each reaction say whether
+K is given or computed from Gibbs energies.  Two independent implementations
+arrived at this without contact.
 
 In Choupo: `authority measuredK | speciesData | derivedFromReactions`, per
 reaction, never by reaction type.  Authority is a property of the DATA
@@ -90,17 +97,16 @@ is the point of the project.
 
 ### 5. Missing data is a named refusal, never a silent default
 
-Aspen names the missing parameter and stops.  So does Choupo, and the
-message must carry the curation remedy.
+The industrial practice is to name the missing parameter and stop.  So does
+Choupo, and the message must carry the curation remedy.
 
 Never: a fallback value, a zero that means "absent", a flat T-dependence
 that is not announced as flat.
 
 ### 6. Estimation and regression are CURATION, not runtime
 
-Aspen's Data Regression Run and DWSIM's fitting tools are separate
-activities producing reviewable parameters.  Nothing estimates during a
-simulation.
+In both lineages the data-regression facility is a SEPARATE activity
+producing reviewable parameters.  Nothing estimates during a simulation.
 
 ## The amplifier rule
 

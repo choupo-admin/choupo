@@ -23,8 +23,9 @@
  * commit's gate had already solved, so the coarseness was paid for a problem
  * that no longer existed.  42 drawings, one per engine class.
  *
- * ROUND THREE, and it is the honest half.  Held against how Aspen and DWSIM
- * actually draw a sheet, three things were wrong:
+ * ROUND THREE, and it is the honest half.  Held against how a process
+ * flowsheet is actually drawn on an engineering sheet, three things were
+ * wrong:
  *
  *   1. NO NOZZLES.  A PFD symbol carries its connections; without them a
  *      drawing is an icon, not a process block.  Short stubs now, on the

@@ -811,7 +811,7 @@ at 1 m, +0.69 % at 3 m, against rung 0's +1.8 % at 1 m.  The 3 molal point
 is pinned **both ways** — a floor as well as a ceiling — so the declared
 ~1 mol/kg validity cannot silently drift into a claim nobody re-derived.
 
-**Refusals** (never DWSIM's silent zero volume): a master with no
+**Refusals** (never the silent zero volume a peer database exhibits): a master with no
 volumetric block, a V° with no convention, mixed conventions in one sum,
 an unregistered method, and `provenance derived` with no method — each by
 name, with both remedies where two exist.

@@ -427,15 +427,18 @@ business knowing what a stream *is*.
 finding record lives** — the engine produces it, the result carries it, and
 filed only with the result it sat in band 2 where nothing below could name it.
 
-Settled against DWSIM rather than argued from taste, and that repository gave
-both halves of the answer.  `DWSIM.Interfaces` has **zero** project
-references — a pure contracts assembly at the bottom, which is what `core` is
-here.  And `DWSIM.FlowsheetSolver` references `DWSIM.Inspector`, whose same
-assembly holds `Window.vb` (`Imports System.Windows.Forms`) and references
-`DWSIM.Controls.DockPanel` — so **DWSIM's flowsheet solver has a compile-time
-path to a docking-panel GUI toolkit**, because the diagnostics subsystem was
-allowed to own its own presentation and the solver had to reach it.  That is
-the mature form of the defect Choupo had.
+Settled against a large open-source process simulator rather than argued
+from taste, and that codebase gave both halves of the answer.  (This project
+names no other simulator in its tree — see
+[`../design/no-competitor-is-named-here.md`](../design/no-competitor-is-named-here.md)
+— so what is carried here is the architecture fact.)  Its CONTRACTS assembly
+has **zero** project references — a pure contracts layer at the bottom, which
+is what `core` is here.  And its FLOWSHEET SOLVER references its DIAGNOSTICS
+assembly, which holds its collector beside a window class importing a desktop
+GUI framework and a docking-panel control library — so **that flowsheet solver
+has a compile-time path to a GUI toolkit**, because the diagnostics subsystem
+was allowed to own its own presentation and the solver had to reach it.  That
+is the mature form of the defect Choupo had.
 
 So: the eight plain records moved to `core/ResultRecords.H` (all verified pure
 data), and the AUDIT moved to `unitOperations/flowsheet/` beside its only

@@ -8,8 +8,8 @@ between measurement, estimation, fitting, validation and curation.*
 
 That framing is right, and it is worth saying why before answering the seven
 questions: **the differentiator is not discovery, it is refusal.**  A tool that
-finds data and regresses parameters is a solved problem and DWSIM's PhaseQ
-solves it.  A tool that can say *"no independent evidence remains after
+finds data and regresses parameters is a solved problem and an existing
+open-source curation tool solves it.  A tool that can say *"no independent evidence remains after
 fitting, so I will not report a validation"* is not, and it is the same
 sentence this engine already says about a missing enthalpy datum, a
 convention-mixed volume sum and an iteration whose update ignores its iterate.

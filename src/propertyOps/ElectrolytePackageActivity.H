@@ -13,7 +13,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  ElectrolytePackageActivity -- the CONSUME side of the Aspen property
+  ElectrolytePackageActivity -- the CONSUME side of the property-package
   architecture.  It reports gamma_pm(m), phi(m), a_w(m) for the electrolyte that
   the ThermoPackageBuilder ALREADY assembled, reading ONLY `thermo.electrolyte()`
   -- no `cation`/`anion` keys, no loadSalt, no file path.  The salt was resolved

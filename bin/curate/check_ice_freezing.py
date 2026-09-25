@@ -423,8 +423,8 @@ def main() -> int:
     #  THE NEGLECTED HEAT-CAPACITY TERM MUST BE ANNOUNCED (2026-08-07).
     #  dHfus is measured AT Tfus, so dG_fus = dHfus(1 - T/Tfus) drops the
     #  liquid/solid Cp difference and degrades away from the melting point.
-    #  DWSIM writes that term and disables it with a stated data reason
-    #  (docs/design/dwsim-solids-study.md §3); Choupo omits it too, and the
+    #  An open-source peer writes that term and disables it with a stated
+    #  data reason; Choupo omits it too, and the
     #  difference worth having is that Choupo says so at the point of use.
     #  An unannounced approximation is indistinguishable from one nobody knew
     #  about.
@@ -432,7 +432,8 @@ def main() -> int:
         fail.append(
             "the crystal does not announce that dG_fus omits the liquid/solid "
             "heat-capacity term.  The omission is legitimate and shared with "
-            "DWSIM, which disables the same term for a data reason -- but a "
+            "an open-source peer, which disables the same term for a data "
+            "reason -- but a "
             "silent approximation is one no student can weigh, and this "
             "project's own doctrine is that a declared approximation must be "
             "visible where it is used.")
@@ -465,7 +466,8 @@ def main() -> int:
         "refusals fire by name, each carrying a remedy, the sub-freezing "
         "Psat extrapolation is announced, and the crystal states that its "
         "dG_fus omits the liquid/solid heat-capacity term (quoting |T - Tfus|; "
-        "DWSIM disables the same term for a data reason).  The phase's case "
+        "an open-source peer disables the same term for a data reason).  The "
+        "phase's case "
         "consumers are fpd01_nacl_freezing (the freezingPoint op, 2026-08-08) "
         "and the flash's SLE branch since S4b (flash21, whose identity is "
         "asserted by check_solid_service A10, not here); the solute side "

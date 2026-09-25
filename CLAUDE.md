@@ -835,7 +835,7 @@ species duplication, mixed-solvent as a 5th rung.  Full contract + the 10 valida
 systems + implementation status (F1–F4 done, 202/0 byte-exact):
 [`docs/architecture/electrolyte-data-architecture.md`](docs/architecture/electrolyte-data-architecture.md).
 Supersedes the `basisMaps`/`apparent-true` layout in the older
-`docs/architecture/{aspen-like-data-architecture,data-ontology}.md`.
+the two superseded architecture records under `docs/architecture/archive/`.
 
 ---
 

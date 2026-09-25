@@ -24,7 +24,8 @@ Siblings, each isolating one unit on Luyben's OWN published inlet:
   cannot. The gap IS the deliverable.
 
 - **What it is not:** a validation. Every number in Luyben's table is the
-  output of *his* Aspen/UNIQUAC simulation, not a measurement. This is a
+  output of *his own* simulation, run in a commercial simulator on UNIQUAC,
+not a measurement. This is a
   comparison with a published reference.
 
 ### The converged plant, against Luyben's Figure 1 (2026-08-13)

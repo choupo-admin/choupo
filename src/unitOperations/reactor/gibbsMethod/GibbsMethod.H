@@ -78,7 +78,8 @@ struct GibbsProblem
     std::vector<std::size_t>         compIdx;    // N -> thermo component index
     std::vector<bool>                condensable;// N (species with a vapour-pressure model)
     scalar                           P = 0.0;    // reactor pressure [Pa]
-    // Temperature approach to equilibrium (Aspen-style, forum-ratified
+    // Temperature approach to equilibrium (the standard construct,
+    // forum-ratified
     // 2026-07-02): the REACTION equilibrium (chemical potentials g/RT) is
     // evaluated at T + dTapproach while the PHYSICAL state -- enthalpy,
     // Psat/condensation, the energy balance -- stays at T.  The outlet is a

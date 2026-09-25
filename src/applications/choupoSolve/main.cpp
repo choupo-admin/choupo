@@ -584,7 +584,7 @@ try
 
     thermoAnnounceLevel() = verbosity;
 
-    // Aspen property architecture: a case SELECTS a propertyPackage (the builder
+    // Property-package architecture: a case SELECTS a propertyPackage (the builder
     // assembles the ThermoPackage from the new records, reads zero old salt files)
     // XOR carries a thermoPackage (the legacy reader).  Mirrors choupoProps.
     DictPtr packageDict;

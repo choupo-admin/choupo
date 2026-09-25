@@ -48,7 +48,10 @@ volumetric
     //  STANDARD-STATE (infinite-dilution) partial molar volume,
     //  CONVENTIONAL scale V0(H+) = 0 (see the convention profile:
     //  only electroneutral sums are physical).
-    //  the value the DWSIM database appears to carry sign-flipped (-9).
+    //  CAUTION: an uncited secondary electrolyte table in circulation
+    //  carries this value SIGN-FLIPPED (-9) while six of its neighbours match
+    //  the primary to the printed digit.  Do not copy a -9 you find
+    //  elsewhere; the sign here is the primary's.
     V0          { value 9.02; unit cm3/mol; }
     convention  MilleroConventional-v1;
     Trange      ( 293 303 );   // 25 C table; +-5 K working band, extrapolation announced by the consumer's domain refusals

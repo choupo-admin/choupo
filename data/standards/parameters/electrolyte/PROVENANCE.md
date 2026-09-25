@@ -1,6 +1,6 @@
 # Electrolyte catalogue — provenance & licence manifest
 
-> **DATA MIGRATED 2026-06-30 — Aspen-like layout.** The electrolyte catalogue this
+> **DATA MIGRATED 2026-06-30 — the kind-by-kind layout.** The electrolyte catalogue this
 > document covers was consolidated kind-by-kind into the ratified layout: Pitzer
 > pairs -> `parameters/Pitzer/pairs/`, mixing -> `.../pitzer/mixing/`,
 > eNRTL -> `parameters/eNRTL/` (this folder); aqueous ions -> `species/aqueous/`;

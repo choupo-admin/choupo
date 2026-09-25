@@ -29,7 +29,8 @@ Class
     Choupo::MultiStreamHX
 
 Description
-    Multi-stream heat exchanger (the Aspen MHeatX analogue): N hot + M cold
+    Multi-stream heat exchanger (the standard multi-stream block): N hot +
+    M cold
     process streams exchanging heat inside ONE adiabatic shell.
 
     THE SPEC (glass-box, "information follows the streams"):  every inlet

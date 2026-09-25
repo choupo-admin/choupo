@@ -44,22 +44,25 @@ Description
     `reporting`, and it is the same shape `FlatUnit` had: a header declaring
     two unlike things, one of which dragged the other's dependencies along.
 
-    THE ANSWER WAS CHECKED AGAINST DWSIM RATHER THAN ARGUED FROM TASTE, and
-    that repository supplies both halves of it.
+    THE ANSWER WAS CHECKED AGAINST A LARGE OPEN-SOURCE PROCESS SIMULATOR
+    RATHER THAN ARGUED FROM TASTE, and that codebase supplies both halves of
+    it.  (This project names no other simulator in its tree -- see
+    `docs/design/no-competitor-is-named-here.md` -- so what follows is the
+    architecture fact and not the product.)
 
-    The pattern: `DWSIM.Interfaces` has **zero** project references.  It is a
-    pure contracts assembly at the bottom that everything depends on and that
-    depends on nothing.  `core` is Choupo's equivalent, and these records
+    The pattern: its CONTRACTS assembly has **zero** project references.  It
+    is a pure contracts layer at the bottom that everything depends on and
+    that depends on nothing.  `core` is Choupo's equivalent, and these records
     belong in it for the same reason.
 
-    The warning, which is the more useful half: `DWSIM.FlowsheetSolver`
-    references `DWSIM.Inspector` and calls it from inside `SolveFlowsheet`
-    (`Inspector.Host.GetNewInspectorItem()`).  The same assembly that holds the
-    collector also holds `Window.vb` -- `Imports System.Windows.Forms` -- and
-    references `DWSIM.Controls.DockPanel`.  So DWSIM's flowsheet solver has a
-    compile-time path to a docking-panel GUI toolkit.  Nobody decided that; the
-    diagnostics subsystem was allowed to own its own PRESENTATION, and the
-    solver had to reach it to record anything.
+    The warning, which is the more useful half: its FLOWSHEET SOLVER assembly
+    references its DIAGNOSTICS assembly and calls it from inside the solve
+    entry point.  The same assembly that holds the collector also holds a
+    window class -- importing a desktop GUI framework -- and references a
+    docking-panel control library.  So that solver has a compile-time path to
+    a GUI toolkit.  Nobody decided that; the diagnostics subsystem was allowed
+    to own its own PRESENTATION, and the solver had to reach it to record
+    anything.
 
     That is the mature form of the defect Choupo had: `Flowsheet.cpp` reaching
     into `reporting/`.  The remedy is this file (the record is neutral and sits

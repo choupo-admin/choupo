@@ -3,12 +3,14 @@
 > **KIND: STUDY (no decision, no code).** Commissioned by Vítor 2026-08-06:
 > *"this should be done in a very structured way, because the future
 > scalability depends on this … I think you can get more insight from
-> openfoam.org than from dwsim, albeit analysing the two of them (and others
+> openfoam.org than from […], albeit analysing the two of them (and others
 > like cantera) is the way to go. So I ask you first to do a learning process
-> before changing the code."*
+> before changing the code."*  (One simulator name elided 2026-09-24 — see
+> [`no-competitor-is-named-here.md`](no-competitor-is-named-here.md).)
 >
 > Sources read from clones, not from memory: `OpenFOAM/OpenFOAM-dev`,
-> `Cantera/cantera`, `DanWBR/dwsim`, all at depth 1 on 2026-08-06.
+> `Cantera/cantera` and a large open-source process simulator, all at depth 1
+> on 2026-08-06.
 > **Nothing here is a proposal.** §7 states what the findings imply; the
 > decision is a separate act.
 
@@ -115,25 +117,28 @@ Two consequences worth stating plainly:
 
 ---
 
-## 4. DWSIM — the counter-example, already recorded
+## 4. A large open-source process simulator — the counter-example, already recorded
 
 Read on 2026-08-05 and written up in
-[`where-a-finding-record-lives.md`](where-a-finding-record-lives.md).
+[`where-a-finding-record-lives.md`](where-a-finding-record-lives.md).  (The
+project is not named here; see
+[`no-competitor-is-named-here.md`](no-competitor-is-named-here.md), the
+2026-09-24 ruling.)
 
-`DWSIM.Interfaces` has **zero** project references — a pure contracts
-assembly at the bottom, which is the pattern. But `DWSIM.FlowsheetSolver`
-references `DWSIM.Inspector`, whose same assembly holds `Window.vb`
-(`Imports System.Windows.Forms`) and references `DWSIM.Controls.DockPanel`.
-**The flowsheet solver has a compile-time path to a docking-panel GUI
-toolkit**, because a diagnostics subsystem was allowed to own its own
+Its CONTRACTS assembly has **zero** project references — a pure contracts
+layer at the bottom, which is the pattern. But its FLOWSHEET-SOLVER assembly
+references its DIAGNOSTICS assembly, which holds its collector beside a
+window class importing a desktop GUI framework and a docking-panel control
+library.  **The flowsheet solver has a compile-time path to a docking-panel
+GUI toolkit**, because a diagnostics subsystem was allowed to own its own
 presentation.
 
-For *this* study DWSIM's thermo contributes less: its `PropertyPackage` is a
-broad base class per package (NRTL, Peng-Robinson, …) rather than a
-composition of physical layers, so a new model means a new package rather than
-a new layer. That is closer to Choupo's present shape than to OpenFOAM's.
-Vítor's instinct that OpenFOAM has more to teach here is correct, and the
-reason is specific: **OpenFOAM composes, DWSIM and Choupo subclass.**
+For *this* study its thermo contributes less: its property-package base is a
+broad class per package (NRTL, Peng-Robinson, …) rather than a composition of
+physical layers, so a new model means a new package rather than a new layer.
+That is closer to Choupo's present shape than to OpenFOAM's. Vítor's instinct
+that OpenFOAM has more to teach here is correct, and the reason is specific:
+**OpenFOAM composes; that project and Choupo subclass.**
 
 ---
 

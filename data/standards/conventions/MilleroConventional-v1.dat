@@ -13,9 +13,9 @@
   Ca2+, OH-) are artifacts of the H+ = 0 anchor plus real electrostriction;
   they are not "negative volumes of matter".
 
-  CAUTIONARY PRECEDENT, recorded where the numbers live: the open-source
-  DWSIM electrolyte database carries this same table UNCITED, with K+
-  apparently SIGN-FLIPPED (-9 against the primary's +9.02 cm3/mol) --
+  CAUTIONARY PRECEDENT, recorded where the numbers live: an uncited
+  secondary electrolyte table in circulation carries this same set, with K+
+  SIGN-FLIPPED (-9 against the primary's +9.02 cm3/mol) --
   six neighbouring values matching the primary to the printed digit.  An
   uncited value cannot be audited; every V0 on this profile cites the
   primary, and the check_derived_density gate anchors electroneutral sums

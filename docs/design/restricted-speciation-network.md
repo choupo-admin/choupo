@@ -113,10 +113,11 @@ instead of a hand-copied reaction list.
 
 ## 6. Compatibility note (dev-facing)
 
-Both DWSIM and Aspen treat the reaction set of an electrolyte/chemistry package
-as an **explicit enumerated list** the user edits — Aspen's Electrolyte Wizard
-generates a set which is then editable in the Chemistry form; DWSIM's reaction
-manager holds reaction sets as named lists.  Neither infers the set and neither
+The commercial and the open-source simulators alike treat the reaction set of
+an electrolyte/chemistry package as an **explicit enumerated list** the user
+edits — in the commercial case a wizard generates a set which is then editable
+in a chemistry form; in the open-source case a reaction manager holds reaction
+sets as named lists.  Neither infers the set and neither
 offers a subtractive knob.  An admitted-list declaration is therefore the
 compatible shape; the only Choupo-specific part is that the *default* stays the
 full reachable closure rather than a hand-built list, which is what keeps the

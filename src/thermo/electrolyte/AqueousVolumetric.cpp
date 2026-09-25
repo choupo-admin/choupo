@@ -136,7 +136,7 @@ public:
                       " master '" + master + "' and none resolves"
                       " (case constant/species/, ions.dat overlay, or"
                       " standards species/<name>.dat).");
-            //  THE REFUSAL THE DWSIM COMPARISON PAID FOR: a species without
+            //  THE REFUSAL THE PEER-DATABASE AUDIT PAID FOR: a species without
             //  volumetric data must never silently contribute zero volume
             //  (mass counted, volume dropped is rung 0 wearing rung 1's
             //  name).  Refuse with both remedies.

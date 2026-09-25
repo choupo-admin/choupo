@@ -19,7 +19,7 @@ the cooperation between NIST TRC and five journals from ~2003 through 2019:
 - Thermochimica Acta (Elsevier)
 - International Journal of Thermophysics (Springer)
 
-Scale (as reported by DWSIM's integration announcement, not independently
+Scale (as reported by a third-party integration announcement, not independently
 counted): >120 000 phase-equilibrium datasets plus pure-compound property
 records.  **Each dataset carries the citation of the article it came from**
 — which is the property everything below turns on.
@@ -136,13 +136,13 @@ base of a record, and a mass translation would be curation by machinery.
 ## 5. What was verified vs what was not
 
 Verified on 2026-08-25 over live network: the three quotations above; the
-PDR record's type, licence and access fields; that DWSIM's
-`Databases.vb` (branch `windows`) contains no ThermoML code (its
+PDR record's type, licence and access fields; that the integrating
+project's database module on its main branch contains no ThermoML code (its
 integration presumably lives elsewhere in that repository — not chased
 further, since Choupo needs nothing from their implementation).
 
 NOT verified: the archive's actual dataset count (the 120k figure is
-DWSIM's marketing claim); the terms of each publisher's cooperation
+that project's own announcement); the terms of each publisher's cooperation
 agreement with NIST (not public, as far as searched); any EU-law analysis.
 
 ---

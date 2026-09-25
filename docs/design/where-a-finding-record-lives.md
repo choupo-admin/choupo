@@ -1,9 +1,16 @@
-# Where a finding record lives — D7, and what DWSIM shows about it
+# Where a finding record lives — D7, and what a peer codebase shows about it
 
 > **KIND: ADR · STATUS: DECIDED and IMPLEMENTED 2026-08-05.**  Delegated by
 > Vítor ("this is so complex that you should care of it. If necessary see how
-> dwsim deals with it").  The DWSIM evidence below was read from a clone, not
-> recalled.
+> [a named open-source simulator] deals with it").  The evidence below was
+> read from a clone of that project, not recalled.
+>
+> **REDACTED 2026-09-24.**  Vítor ruled that no competing simulator is named
+> in this repository — *"Aqui não se menciona nada, por uma questão de boa
+> educação e evitar problemas legais"*.  The product name, its assembly names
+> and the source excerpt below were removed; the architecture facts they
+> supported are unchanged and are what this record is for.  Record:
+> [`no-competitor-is-named-here.md`](no-competitor-is-named-here.md).
 
 ---
 
@@ -31,31 +38,29 @@ subsystem graph, and the last unaccepted cycle. It could not be paid by moving
 the audit down, because the audit returns `ModelBoundaryFinding`, which lived
 above it.
 
-## 2. What DWSIM does, both halves
+## 2. What the peer codebase does, both halves
 
-Read from `DanWBR/dwsim` at depth 1, 2026-08-05.
+Read from a shallow clone of a large open-source process simulator,
+2026-08-05.
 
-**The pattern — `DWSIM.Interfaces` has zero project references.** Not few:
-none. It is a pure contracts assembly at the bottom that everything depends on
-and that depends on nothing. Choupo's equivalent is `core`, and `FlatUnit`
+**The pattern — its CONTRACTS assembly has zero project references.** Not
+few: none. It is a pure contracts layer at the bottom that everything depends
+on and that depends on nothing. Choupo's equivalent is `core`, and `FlatUnit`
 had already been moved there hours earlier for exactly this reason.
 
-**The warning — and it is the more useful half.** `DWSIM.FlowsheetSolver`
-references `DWSIM.Inspector`, and calls into it from inside the solve:
-
-```vb
-' DWSIM.FlowsheetSolver/FlowsheetSolver.vb
-Dim IObj As Inspector.InspectorItem = Inspector.Host.GetNewInspectorItem()
-Inspector.Host.CheckAndAdd(IObj, "", "SolveFlowsheet", "Solver Call", ...)
-```
+**The warning — and it is the more useful half.** Its FLOWSHEET-SOLVER
+assembly references its DIAGNOSTICS assembly, and calls into it from inside
+the solve entry point: the solver asks the diagnostics host for a new
+inspector item and registers the solver call against it, in the body of the
+routine that solves the flowsheet.
 
 That is precisely Choupo's D7 edge: a solver reaching into a diagnostics
-subsystem. And `DWSIM.Inspector` holds the collector (`Host`, `InspectorItem`)
-**in the same assembly as its window** — `Window.vb`, `Imports
-System.Windows.Forms` — and references `DWSIM.Controls.DockPanel` and
-`DWSIM.ExtensionMethods.Eto`.
+subsystem. And that diagnostics assembly holds the collector **in the same
+assembly as its window** — a window class importing a desktop GUI framework
+— and references a docking-panel control library and a GUI-toolkit extension
+library.
 
-**So DWSIM's flowsheet solver has a compile-time path to a docking-panel GUI
+**So that flowsheet solver has a compile-time path to a docking-panel GUI
 toolkit.** Nobody chose that. The diagnostics subsystem was allowed to own its
 own *presentation*, the solver had to reach the subsystem to record anything,
 and the GUI came along by transitivity.

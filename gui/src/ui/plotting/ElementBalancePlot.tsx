@@ -27,7 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  ElementBalancePlot -- THE element balance view (Aspen's "atom balance":
+  ElementBalancePlot -- THE element balance view (also called the "atom
+  balance":
   atomic and elemental are operational synonyms, ONE surface).  Main
   summary: total atoms IN vs OUT [kmol-atom/h] with residual and the
   "all elements conserved" seal -- which demands that EVERY element

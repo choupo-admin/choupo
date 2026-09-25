@@ -159,7 +159,8 @@ next one written by hand will drift exactly as these did.
 ## 3a · Its predecessor, and a difference in evidence that matters
 
 [`theory-in-class-structure-study.md`](theory-in-class-structure-study.md)
-(2026-08-06) asked five deeper questions of OpenFOAM, Cantera and DWSIM — the
+(2026-08-06) asked five deeper questions of OpenFOAM, Cantera and a large
+open-source process simulator — the
 phase primitive (μ, f or G), whether the standard state is an object, whether
 the equilibrium criterion is written once, extensibility, and how a size
 distribution is represented.  It does not overlap this study, which is about
@@ -168,8 +169,8 @@ it first for anything touching the thermo spine.
 
 **It is also better-evidenced than this one, and the difference should be
 stated rather than left for a reader to discover.**  That study read
-`OpenFOAM/OpenFOAM-dev`, `Cantera/cantera` and `DanWBR/dwsim` from clones at
-depth 1.  This study read documentation pages, one tutorial dictionary and one
+`OpenFOAM/OpenFOAM-dev`, `Cantera/cantera` and a large open-source process
+simulator from clones at depth 1.  This study read documentation pages, one tutorial dictionary and one
 header, over the web.  For §1 that is adequate — a tutorial's
 `phaseProperties` IS the declaration surface, and the surface is the subject.
 For §2 it is thinner: the `FatalIOErrorInLookup` pattern is confirmed from the

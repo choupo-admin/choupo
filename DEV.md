@@ -1166,15 +1166,18 @@ accepts today, and that is a policy call.
      must not be treated alike.**
 
      1. STUDIES OF A COMPETITOR — the sharp exposure, and what he means.
-        `docs/design/dwsim-architecture-manual.md` (38 mentions; its own
-        subtitle calls it "a developer's manual" for that product) and
-        `docs/design/dwsim-solids-study.md` (19; read from a sparse clone of
-        their repository).  Both were commissioned by Vítor on 2026-08-07 and
-        both entered the tree on 2026-09-14 in commit `0b4cbcac8`.
-        Three further design records carry comparison prose:
-        `where-a-finding-record-lives.md` (12), `role-vocabulary-forum-
-        2026-08-02.md` (11), `theory-in-class-structure-study.md` (9), plus
-        the `aspen-like-*` archive records.
+        **REMOVED 2026-09-24**: the two studies of a named product (a
+        304-line "developer's manual" and a 130-line solids study), both
+        commissioned 2026-08-07 and both entered on 2026-09-14 in
+        `0b4cbcac8`, are out of the tree and retrievable from git history;
+        the findings they carried were restated as Choupo's own architecture
+        facts in the four places that act on them.  Three further design
+        records carried comparison prose and were REDACTED in place
+        (`where-a-finding-record-lives.md`, `role-vocabulary-forum-
+        2026-08-02.md`, `theory-in-class-structure-study.md`), two of them
+        containing verbatim quotations of Vítor's own instructions, where the
+        elision is MARKED rather than silently reworded.  Record:
+        `docs/design/no-competitor-is-named-here.md`.
 
      2. PROVENANCE AND CURATION FINDINGS — **these must NOT be scrubbed.**
         `data/standards/species/K.dat` records that a named external database
@@ -1195,8 +1198,57 @@ accepts today, and that is a policy call.
      `SCAN_ROOTS` cover the named manuals, `docs/ai/`, the tutorials and the
      site — **not `docs/design/`**.  So the rule was true of every surface it
      scanned and silent about the place the studies live.  A rule not enforced
-     is a sentence, so the structural half of this item is widening that gate,
-     with an allowlist for category 2 and for itself.
+     is a sentence.
+
+     **EXECUTED 2026-09-24, and the inventory was WRONG ABOUT ITS OWN SIZE.**
+     It counted one product's name and never counted the other family, so
+     what it called 33 files was 44 files and 93 sites the moment the gate
+     could see the whole tree.  *An inventory taken with one grep is a
+     measurement of the grep.*  The gate now runs the competitor rule over
+     every TRACKED file, keyed on `git ls-files` rather than a hand-kept root
+     list (a root list here is a second home for "what is in this
+     repository"), and it lands at 40 493 files in 5.6 s.
+
+     **WHAT WAS DONE:** the two studies REMOVED (git history keeps them);
+     ~20 files redacted in place with the finding restated and the product
+     described by what it is; two verbatim quotations of Vítor's own words
+     REDACTED with the elision MARKED, never silently reworded; four narrow
+     exemptions where the name IS the evidence (the gate's own ban list, a
+     licence statement attributable to whoever made it, one private ignored
+     path, the ruling record).  The value-provenance cautions did NOT qualify
+     and were rephrased: the name added nothing a curator could act on and
+     read as an accusation.  Record:
+     `docs/design/no-competitor-is-named-here.md`.
+
+     **WHAT IS PINNED, and it is the scheduled remainder — 65 sites in 22
+     files, MEASURED, ratcheting two-sided, class per file:**
+
+       (A) 19 ARCHIVED or SUPERSEDED architecture records, four of whose
+           FILENAMES carry the word (the four superseded conceptual-architecture
+           records under `docs/architecture/archive/`).  Renaming
+           them breaks every cross-link in the tree, and rewriting superseded
+           history is not redaction but a forgery of the record of how this
+           project decided things.  **NEXT STEP, concrete:** a
+           rename-with-redirect migration — measure the inbound links first
+           (they reach CLAUDE.md, `decision-records.md` and a dozen design
+           records), rename, leave a stub at the old path, rewrite the prose
+           inside.  One slice, no engine change.
+       (B) `docs/slides/farelo_choupo.tex`, 3 sites: the HISTORY OF THE FIELD
+           (the 1976 project at MIT, the 1981 company, the proprietary era).
+           That is history, not comparison, and it is **Vítor's own deck** —
+           RESERVED for him.
+       (C) `chemsep_to_choupo.py`'s `EXCLUDED` list, 2 sites: FUNCTIONAL CODE,
+           the source words the importer refuses to import from.  Permanent.
+
+     The live claim is therefore **NO NEW SITE**, which is what the ruling
+     binds — it governs what the tree carries from here on.  An unpinned file
+     may carry zero; a pinned one that GROWS fails, and one that SHRINKS fails
+     asking for its pin back.  **Six sabotages, all caught, and the sixth is
+     worth keeping:** disarming the ban list itself makes the gate FAIL rather
+     than go green, because every pin then measures zero and the SHRANK arm
+     fires.  A one-sided pin ledger would have gone quietly green with its
+     claim still printing — the `check_wasm_dialect` S2 shape, closed here by
+     construction rather than by vigilance.
 
      **THE THING A SCRUB DOES NOT FIX, and it must be said plainly.**  Those
      files have been in a PUBLIC repository since 2026-09-14.  Removing them
@@ -1384,6 +1436,46 @@ until today, which is to say they lived nowhere: a session artefact dies with
 its container, and `CLAUDE.md` §10's rule that this tree is the next
 session's memory applies to WORK as much as to facts.  Eight further items
 are decisions and sit in §4b, not here.
+
+**D-ET2. `energy-T2:plant` HAS BEEN RED SINCE 2026-09-08, AND CLAUDE.md SAYS
+     SO (measured 2026-09-24: 3.1709 %).**  `bin/runTests` runs the T2 rule
+     over `tutorials/plant/ChemicalPlantTutorial` and requires the global
+     boundary |in-out|/in below 1 %; it reads 3.1709 % today.  That is not a
+     new defect and not a physics regression -- CLAUDE.md 6 records it in its
+     own words, as one of three defects the 2026-09-08 energy-closure fix
+     introduced: *"a basis changed without finding who reads it (moving the
+     denominator took the flagship from 0.163 % to 3.17 % on an unchanged
+     residual and turned `energy-T2:plant` red unnoticed)"*.
+
+     THE RESIDUAL DID NOT MOVE.  The DENOMINATOR did.  So the engine's
+     arithmetic is not under suspicion here; what is under suspicion is that
+     one gate's threshold was calibrated against one basis and the basis was
+     replaced underneath it.
+
+     WHY IT MATTERS MORE THAN ITS SIZE.  CLAUDE.md 10 states that an absence
+     which is NAMED AND NOT SCHEDULED is an absence, and 6 states that when
+     you fix a thing this file calls broken you fix the sentence in the same
+     commit.  This is the mirror case and nobody had a rule for it: a thing
+     the file calls BROKEN, correctly, that then stays broken for sixteen days
+     while every suite run reports it and every reader steps over it.  A red
+     that is expected stops being read, which is how `check_true_ions` went
+     permanently green in the other direction.
+
+     WHAT MUST BE DECIDED BEFORE IT IS TOUCHED, and it is not obvious which
+     way it goes:
+       * if the NEW denominator is the right basis, the 1 % threshold is
+         calibrated against the OLD one and must be re-derived -- from what
+         the basis now measures, never from what makes the flagship pass;
+       * if the OLD denominator was right, the 2026-09-08 change moved a basis
+         nobody had found the readers of, and the readers are the thing to fix;
+       * either way the gate must not be widened to admit today's number.
+     Re-deriving a threshold so that the current answer clears it is the exact
+     shape this project refuses everywhere else.
+
+     RESERVED for Vitor: which basis is right.  NOT reserved: that the suite
+     currently carries a red nobody is acting on, which is recorded here so
+     the next session inherits it as a task rather than as scenery.
+
 
 Each line states the DEFECT, not the feature.  Where a general owns the area
 (§5b), the name is given.  Ordered by damage to a student, not by area.
@@ -1662,8 +1754,8 @@ constant.
    shape `bin/buildSite` records for the site copy, one artefact inwards.
    The second arm found the sharper case: `docs/theoryGuide-STIFF-METHODS.pdf`,
    a v0.2.0 Theory Guide built 2026-06-18, tracked, referenced by nothing,
-   with no source in the tree — and naming Aspen and HYSYS in its text and a
-   trademark line, which the manuals doctrine forbids (settled 2026-07-03,
+   with no source in the tree — and naming two commercial simulators in its
+   text and a trademark line, which the manuals doctrine forbids (settled 2026-07-03,
    after that build).  `check_doctrine` was right about every surface it can
    see; a sourceless binary is outside every source gate at once.  Deleted —
    git keeps the record, and a withdrawal is not an erasure.

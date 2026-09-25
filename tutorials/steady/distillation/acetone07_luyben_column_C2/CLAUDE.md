@@ -106,7 +106,8 @@ different fixes and they carry different risk.
   smaller one. The plant's isopropanol inventory has to go somewhere, and the
   honest question is what quality it comes back at.
 - **No `anchor` rows**, for the third time and the same reason: every number
-  in his table is his Aspen/UNIQUAC output, not a measurement. The golden's
+  in his table is his own output from a commercial simulator on UNIQUAC, not a
+measurement. The golden's
   claim is regression.
 
 ### Announced along the way

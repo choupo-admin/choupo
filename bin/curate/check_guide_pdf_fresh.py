@@ -23,8 +23,9 @@ THE SECOND ARM, and what it found the same day.  A top-level `docs/*.pdf` that
 no rule in `docs/Makefile` builds is a manual WITH NO SOURCE: it can be neither
 rebuilt, nor corrected, nor audited by any gate this project owns.
 `docs/theoryGuide-STIFF-METHODS.pdf` was exactly that -- a v0.2.0 Theory Guide
-built on 2026-06-18, still tracked, referenced by nothing, and naming Aspen and
-HYSYS in its text and a trademark line, which the manuals doctrine (settled
+built on 2026-06-18, still tracked, referenced by nothing, and naming two
+commercial simulators in its text and a trademark line, which the manuals
+doctrine (settled
 2026-07-03, philosophy section 4) forbids.  `check_doctrine` reported 374
 teaching surfaces clean and was right about every one it could see; this file
 was not one of them.  A sourceless binary is outside every source gate at once.

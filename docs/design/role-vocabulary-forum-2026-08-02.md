@@ -1,11 +1,20 @@
 # Professors' forum — the `role` vocabulary, and what the reference simulators actually do (2026-08-02)
 
+> **REDACTED 2026-09-24.**  Vítor ruled that no competing simulator is named
+> in this repository — *"Aqui não se menciona nada, por uma questão de boa
+> educação e evitar problemas legais"*.  Two product names were removed
+> below, including two inside a verbatim quotation of his own instruction,
+> where the elision is marked as an elision rather than silently reworded.
+> The findings are unchanged.  Record:
+> [`no-competitor-is-named-here.md`](no-competitor-is-named-here.md).
+
 **Convened by:** Vítor, on decision #2 of the DEV.md §4b queue:
 *"convene a forum with a top-notch MIT thermodynamics professor, look at how
 the reference commercial simulators do it, and settle it, because this really
 matters."*  (Translated from the Portuguese original: *"cria um forum de um
-professor top notch de termodinamica do MIT e ve como faz o DWSIM e o ASPEN e
-resolve, porque isso é mesmo importante."*)
+professor top notch de termodinamica do MIT e ve como faz o […] e o […] e
+resolve, porque isso é mesmo importante."* — two simulator names elided,
+2026-09-24.)
 
 **Panel.** The chair is an MIT-style molecular/applied-thermodynamics
 professor (the archetype used in the earlier grammar fora); beside her,
@@ -65,9 +74,9 @@ in the curated tier, not a staging accident.
 **The practitioner reports (verified against public documentation and the
 open-source codebase, 2026-08-02):**
 
-**Aspen Plus** has a component **Type** — `Conventional` / `Solid` /
-`Nonconventional` — and, ORTHOGONALLY, a case-scoped **Henry Components
-list** attached to a property method. The Type is a *participation
+**The commercial simulator** has a component **Type** — `Conventional` /
+`Solid` / `Nonconventional` — and, ORTHOGONALLY, a case-scoped **Henry
+components list** attached to a property method. The Type is a *participation
 class*: nonconventional solids "do not participate in phase and chemical
 equilibrium calculations" and are characterised only by enthalpy and
 density models, described by proximate/ultimate analysis attributes. It
@@ -76,12 +85,12 @@ liquid cannot evaporate."** When a user needs one, the documented
 community practice is to **type `1e-10` into the vapour-pressure
 parameter table by hand.**
 
-**DWSIM** (GPL, source public) carries on `ICompoundConstantProperties` a
-set of **orthogonal boolean FACTS** — `IsSolid`, `IsIon`, `IsSalt`,
-`IsHydratedSalt` — alongside stored constants including `NBP` (normal
-boiling point), and separately the correlation objects. There is again no
-role word carrying volatility. When a vapour-pressure correlation is
-missing, DWSIM **estimates it** (Lee-Kesler) and proceeds.
+**The open-source simulator** (copyleft, source public) carries on its
+compound-constants interface a set of **orthogonal boolean FACTS** — is it a
+solid, an ion, a salt, a hydrated salt — alongside stored constants including
+the normal boiling point, and separately the correlation objects. There is
+again no role word carrying volatility. When a vapour-pressure correlation is
+missing, it **estimates one** (Lee-Kesler) and proceeds.
 
 **The chair's reading, which the panel ratifies:**
 
@@ -90,12 +99,12 @@ missing, DWSIM **estimates it** (Lee-Kesler) and proceeds.
 > correlations exist for the substance and which convention the case
 > selected (Henry list, property method). What Choupo calls `role` is
 > really two variables wearing one name: *what class of thing is this*
-> (Aspen's Type, DWSIM's Is* flags) and *how does this case choose to
-> model it* (Aspen's Henry list).
+> (the commercial simulator's Type, the open-source one's boolean facts) and
+> *how does this case choose to model it* (the Henry components list).
 
-**And both fill the data hole by manufacturing a number.** Aspen's
-`1e-10` is fabricated by hand; DWSIM's Lee-Kesler is fabricated
-automatically. Neither refuses. **This is precisely where Choupo must not
+**And both fill the data hole by manufacturing a number.** The hand-typed
+`1e-10` is fabricated by the user; the automatic Lee-Kesler is fabricated by
+the program. Neither refuses. **This is precisely where Choupo must not
 follow them.** The project's standing doctrine — *no silent crutch*, and
 the phase-3 refusal to fit Clausius-Clapeyron through a single point
 because "that manufactures a correlation to satisfy a validation rule, a
@@ -146,8 +155,8 @@ fifth knob."
 
 1. **`role` narrows to what it always was: the case's modelling class.**
    Four words, unchanged, no migration. Its meaning becomes *how this
-   component participates in this case's VLE machinery* — Aspen's Type,
-   not a physical assertion.
+   component participates in this case's VLE machinery* — the commercial
+   simulator's Type, not a physical assertion.
 
 2. **A new intrinsic block states the physics, arity-1, cited:**
 
@@ -197,11 +206,11 @@ physical work.
 
 ## 4. What the panel explicitly rejects
 
-* **Aspen's `1e-10`.** A fabricated vapour pressure is a wrong answer with
+* **The hand-typed `1e-10`.** A fabricated vapour pressure is a wrong answer with
   a confidence interval of zero. Rejected by the no-silent-crutch
   doctrine; rejected again by the pedagogy — a student who reads
   `1e-10` learns nothing about why the number is missing.
-* **DWSIM's automatic Lee-Kesler substitution** *in this role*.
+* **The automatic Lee-Kesler substitution** *in this role*.
   Choupo already ships Lee-Kesler estimates — under
   `data/groupEstimative/`, **flagged as estimates**, as a curation-time
   act the student reviews and promotes. The objection is not to the

@@ -15,7 +15,7 @@ solution/<solute>-<solvent>.dat
 A heat of solution is defined as `crystal → species dissolved IN water`. The
 definition forces you to name a **second species** (water), so it fails the
 arity-1 intrinsic test. Putting it in `sucrose.dat` with water *implied* is
-the Aspen black-box sin in miniature: a student opening `sucrose.dat` cannot
+the black-box sin in miniature: a student opening `sucrose.dat` cannot
 see that a second species was silently assumed, then runs an ethanol-solvent
 case and inherits a water number with no warning. **Forbidden.** The component
 `.dat` keeps only arity-1 intrinsics (crystalline `standardThermochemistry`,

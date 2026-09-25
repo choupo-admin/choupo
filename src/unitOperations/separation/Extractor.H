@@ -30,7 +30,8 @@ Class
 
 Description
     Counter-current multistage LIQUID-LIQUID EXTRACTION column (the
-    Aspen "Extract" analogue).  A feed enters one end (stage 1); a fresh
+    the standard countercurrent "extract" block).  A feed enters one end
+    (stage 1); a fresh
     solvent enters the other (stage N).  Over N theoretical stages the
     solute transfers OUT of the feed-derived RAFFINATE phase INTO the
     solvent-derived EXTRACT phase.  The two liquid phases pass each other

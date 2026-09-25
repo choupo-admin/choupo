@@ -228,9 +228,9 @@ where a student is already served.
 | **Wolfram Demonstrations** — <https://demonstrations.wolfram.com/HunterNashMethodForLiquidLiquidExtractionLLE/> and <https://demonstrations.wolfram.com/LiquidLiquidExtractionLLEOnARightTriangleTernaryPhaseDiagram/> | Two independent Hunter-Nash / ternary LLE interactives | [T] |
 | **University of Manchester** interactive teaching apps — <https://www.training.itservices.manchester.ac.uk/public/gced/fluids.html> and <https://www.training.itservices.manchester.ac.uk/public/gced/llternary/index.html> | An interactive **Moody chart** and an interactive **LL ternary** application | [T] |
 | **Iowa State open textbook**, *Chemical Engineering Separations: A Handbook for Students* — <https://iastate.pressbooks.pub/chemicalengineeringseparations/chapter/liquid-liquid-extraction-2/> | Open-licensed LLE chapter | [T] |
-| **DWSIM** — <https://dwsim.org/>, FOSSEE/IIT Bombay <https://dwsim.fossee.org/home> | Open-source CAPE-OPEN flowsheet simulator, full unit-operation suite and thermodynamic packages, cross-platform; **IIT Bombay has run adoption workshops**; used in process-engineering training in Mexican higher-education institutions | [T] |
+| **An open-source CAPE-OPEN flowsheet simulator** (name elided 2026-09-24 — see [`no-competitor-is-named-here.md`](no-competitor-is-named-here.md); the evidence below was verified against its own site and its academic-partner site) | Full unit-operation suite and thermodynamic packages, cross-platform; **an Indian institute of technology has run adoption workshops**; used in process-engineering training in Mexican higher-education institutions | [T] |
 | **COCO** | Free flowsheet simulator; **named ON the FEUP Processos de Separação I syllabus itself** as the tool the multicomponent-distillation material uses | [S] |
-| **Commercial flowsheet simulators** | UWA ENSC3018 teaches multicomponent distillation "using HYSYS"; UWA ENSC3005 requires PFD construction "using commercial software" | [S] |
+| **Commercial flowsheet simulators** | UWA ENSC3018 teaches multicomponent distillation using a named commercial simulator (name elided 2026-09-24); UWA ENSC3005 requires PFD construction "using commercial software" | [S] |
 
 **The two conclusions that bear on the Pareto:**
 

@@ -2234,14 +2234,17 @@ curation tool must never have.
 
 \subsection{Why it is worth a gate}
 
-DWSIM is the cautionary example, and it is instructive precisely because DWSIM
-is otherwise competently built. Its \code{DWSIM.Interfaces} assembly has
-\emph{zero} project references --- a pure contracts layer at the bottom, which
-is the pattern \code{core} follows here. But its flowsheet solver references
-\code{DWSIM.Inspector} to record diagnostics, and \code{DWSIM.Inspector} holds
-its collector in the same assembly as its window. So DWSIM's flowsheet solver
-has a compile-time path to a docking-panel GUI toolkit. Nobody chose that; it
-arrived by transitivity, one reasonable-looking include at a time.
+A large open-source process simulator is the cautionary example, and it is
+instructive precisely because that project is otherwise competently built.
+(This manual names no other simulator; the architecture fact is what is worth
+carrying, and the product name is not.) Its contracts assembly has \emph{zero}
+project references --- a pure contracts layer at the bottom, which is the
+pattern \code{core} follows here. But its flowsheet solver references the
+diagnostics assembly in order to record anything, and that assembly holds its
+collector beside a window class that imports a desktop GUI framework. So that
+flowsheet solver has a compile-time path to a docking-panel GUI toolkit.
+Nobody chose that; it arrived by transitivity, one reasonable-looking include
+at a time.
 
 Choupo had the same edge in miniature: \code{Flowsheet.cpp} included
 \code{reporting/ModelBoundaryAudit.H}, because the audit returned a record

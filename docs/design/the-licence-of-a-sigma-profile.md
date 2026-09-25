@@ -194,7 +194,8 @@ decision on the tree's behalf.
 
   **SETTLED THE SAME DAY, on the evidence rather than on the label.**  Vítor
   read the first framing and pushed back — *"não sejas mais papista que o
-  DWSIM"* — and he was right, so the two halves were separated and each
+  […]"*, naming an open-source peer (elided 2026-09-24) — and he was right,
+  so the two halves were separated and each
   decided on what it IS.
 
   * The **16 CSVs** stay.  A sigma profile is a computed physical fact, not

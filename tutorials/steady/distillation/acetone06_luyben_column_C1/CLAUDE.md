@@ -148,7 +148,8 @@ intuition that a converged energy balance is the solid part.
   four rows were added by hand. Same defect class as the `aad`/`closure`/
   `utility` kinds, one layer down.
 
-- **No `anchor` rows.** Luyben's 0.999 is the output of *his* Aspen/UNIQUAC
+- **No `anchor` rows.** Luyben's 0.999 is the output of *his own* simulation,
+  run in a commercial simulator on UNIQUAC,
   simulation, not a measurement. Anchoring against it would claim a validation
   that no experiment supports, and here it would additionally pin a number the
   model disagrees with. The comparison is with **a published reference**, and

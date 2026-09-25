@@ -13,7 +13,8 @@
 CHOUPO's position is **reproducibility infrastructure for thermodynamic and
 process calculation**, not "another open-source simulator".
 
-> **The opponent is the black box in the Methods section, not DWSIM.**
+> **The opponent is the black box in the Methods section, not another
+> simulator.**
 
 That sentence is load-bearing for prioritisation: it is why provenance
 outranks breadth, why an honest disagreement is an asset rather than an

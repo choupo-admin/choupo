@@ -307,7 +307,8 @@ int HeatExchanger::solve(const DictPtr& dict,
         auto shellCorr = pickCorr("shellSide", "Kern");
 
         // ================================================================
-        //  DESIGN MODE (Aspen-EDR "Sizing" equivalent): the DUTY is given,
+        //  DESIGN MODE (the "sizing" question, as against rating): the DUTY
+        //  is given,
         //  the GEOMETRY is the unknown.  Glass-box Kern procedure -- fix the
         //  tube choices (OD/ID/length/pitch/passes/material, above), then
         //  SOLVE for the number of tubes (and the shell diameter it implies)
