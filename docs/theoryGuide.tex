@@ -3346,7 +3346,9 @@ descending order of trust:
   \item \textbf{In-simulator regression.} For binary
         interaction parameters \emph{only}, the simulator can refit
         $(a, b)$ against an experimental $T_b$-vs-$x$ dataset by
-        the Levenberg-Marquardt outer driver of Chapter~\ref{ch:lm}.
+        the Levenberg-Marquardt \code{fitParameters} property operation
+        of Chapter~\ref{ch:lm} (a \code{choupoProps} run; the earlier
+        outer driver is retired and its factory refuses by name).
         Pure-component properties cannot be refitted by the simulator
         --- if your candidate fluid is missing Antoine constants, you
         must either find them in the literature or estimate them by a
@@ -9486,6 +9488,20 @@ $\tfrac{1}{2}$ is bookkeeping --- it cancels the $2$ that drops out
 of $\frac{d}{dp_j}(r_i^2) = 2\,r_i\,\partial r_i/\partial p_j$ in
 the gradient.
 \end{intuition}
+
+\begin{pitfall}
+\textbf{The engine prints $\chi^2$ WITHOUT the $\tfrac{1}{2}$.}
+\code{FitParameters.cpp} states \code{chi2 = \textrm{sum} residual\_i\textasciicircum 2}
+and accumulates exactly that, so the number in \code{fit\_history.csv}
+and on the console is \emph{twice} the boxed definition above.  The
+minimiser is unaffected --- a constant factor moves no minimum, and the
+$\tfrac{1}{2}$ is chosen here only so that the gradient below carries no
+stray $2$ --- but a student checking a printed $\chi^2$ against
+Eq.~\eqref{eq:chi2} by hand will find a factor of two, and it is this
+convention, not an error in the fit.  (Stated 2026-09-25, when the two
+were found to disagree; the derivation was left on its own convention
+rather than rewritten.)
+\end{pitfall}
 
 \subsection{The gradient of $\chi^2$: deriving $\Jac^{\!\top}\rv$}
 
@@ -24355,7 +24371,7 @@ Components in the public database     & 180                              & 9 \\
 Activity-coefficient models           & van Laar, NRTL, others           & ideal, NRTL, Wilson \\
 Distillation methods                  & matrix (rigorous) + shortcuts    & Wang-Henke bubble-point \\
 Recycle convergence                   & bounded Wegstein                 & bounded Wegstein \\
-Parameter estimation                  & companion program (VLE fitting)  & in-simulator Levenberg-Marquardt outer driver \\
+Parameter estimation                  & companion program (VLE fitting)  & in-simulator Levenberg-Marquardt (\code{fitParameters} op) \\
 Equipment sizing + costing            & 20+ blocks built in              & two equipment + Guthrie costing \\
 LOC (source)                          & $\sim$35\,000 FORTRAN-66 (est.)  & $\sim$10\,000 C++17 \\
 Equivalent C++ LOC                    & (FORTRAN-66 $\to$ modern C++ compresses $\sim 3\!\times$) $\Rightarrow$ $\sim$12\,000 & 10\,000 (direct) \\
