@@ -555,7 +555,7 @@ Equilibrium map over a (T, P) grid by Gibbs minimisation: at every grid point th
 | `Tgrid` | ✓ | object | — |  |
 | `Pgrid` | ✓ | object | — | `{ from ...; to ...; n ...; log true; }` — `log` spaces the axis logarithmically, the natural spacing for a pressure map. |
 | `metric` | ✓ | object | — | What each grid point reports: `{ type moleFraction; species NH3; }` or an element-recovery metric with `element`. |
-| `temperatureApproach` |   | number | K | Solve at (T − this), the standard admission that a real reactor does not reach equilibrium; announced when non-zero. |
+| `temperatureApproach` |   | number | K | Detune the equilibrium: solved at (T + this), the standard admission that a real reactor does not reach it; announced when non-zero. THE … |
 | `industrialWindow` |   | object | — | A rectangle drawn on the map with its label — raw SI (K, Pa). |
 | `kineticBand` |   | object | — | A rectangle drawn on the map with its label — raw SI (K, Pa). |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
@@ -573,7 +573,8 @@ Gibbs reactor: equilibrium composition from minimising the total Gibbs free ener
 | `species` | ✓ | array[object] | — | Candidate species in the equilibrium mixture, each with its atom counts (one per element). |
 | `mode` |   | string | - | isothermal (default; `T` holds and the duty is the result) or adiabatic. In adiabatic mode `T` is the Newton's SEED, not the answer. |
 | `Q` |   | number | kJ/kmol | Heat added per kmol of feed, for a non-adiabatic non-isothermal case; defaults to 0. |
-| `approachTemperature` |   | number | K | Solve the equilibrium at (T − this), the standard way of admitting that a real reactor does not reach it. Defaults to 0 (full equilibrium… |
+| `temperatureApproach` |   | number | K | Detune the equilibrium: the REACTION is evaluated at (T + this) while the physical state stays at T — enthalpy, Psat and the energy balan… |
+| `approachTemperature` |   | number | K | A SECOND approach key read by the same solve (GibbsReactor.cpp:65), and a DIFFERENT model: it shifts the whole equilibrium evaluation to … |
 
 ## `hConsistency`  (hConsistency operation)
 

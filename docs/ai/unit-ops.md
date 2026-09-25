@@ -298,12 +298,43 @@ operation
     );
 }
 ```
-Optional `approachTemperature  <ΔT K>;` evaluates the equilibrium at
-`T + ΔT` (streams stay at the physical `T`) — models an **incomplete
+Optional **`temperatureApproach  <ΔT K>;`** evaluates the REACTION
+equilibrium at `T + ΔT` while the physical state stays at `T` — enthalpy,
+Psat and the energy balance do not move.  It models an **incomplete
 approach to equilibrium** for reversible reactions (WGS / reforming /
 ammonia) without kinetics; default 0 = full equilibrium.  (No effect on
 an essentially irreversible reaction whose K is huge — use
-`conversionReactor` there.)
+`conversionReactor` there.)  It is ANNOUNCED on every run and published as
+the KPI `temperatureApproach_K`.
+
+**THE SIGN FOLLOWS THE HEAT OF REACTION, NOT A CONVENTION.**  A real
+reactor falls SHORT of equilibrium, and which direction under-predicts
+depends on the thermochemistry: an **exothermic** reaction (ammonia
+synthesis) converts less as temperature rises, so it under-predicts at a
+HIGHER evaluation temperature — **positive ΔT**; an **endothermic** one
+(steam reforming) converts more as temperature rises, so it under-predicts
+at a LOWER one — **negative ΔT**.  Positive is conservative only for an
+exothermic reaction.  Both signs are accepted and the engine constrains
+neither.
+
+Three limits the engine states itself: the parameter is EMPIRICAL
+(calibrated against a real unit, never predicted); it is GLOBAL (one number
+for the whole reactor, so it cannot resolve per-reaction approaches such as
+shift inside reforming); and at high pressure **it will absorb missing
+fugacity corrections**, so on a 200 bar converter it can silently become a
+correction for a poor equation of state rather than the
+closeness-to-equilibrium it claims to be.
+
+A SECOND key, **`approachTemperature`**, is read by the same solve and is a
+DIFFERENT model — it shifts the whole equilibrium evaluation, so Psat and
+the fugacity coefficients move with the chemistry.  It announces nothing,
+publishes no KPI, and the two ADD when both are declared.  Prefer
+`temperatureApproach`.  (This file used to name only `approachTemperature`;
+corrected 2026-09-25.)
+
+Choupo has **no FRACTIONAL (extent) approach to equilibrium** — a different
+definition, not interchangeable with the temperature one — and no pellet
+effectiveness factor: η is announced as 1 and judged by nothing.
 
 For an adiabatic Gibbs reactor (the flame temperature problem), wrap
 in a DesignSpec that varies `$T` to make `H_out = H_in`.

@@ -136,9 +136,8 @@
     },
     "temperatureApproach": {
       "type": "number",
-      "minimum": 0,
       "title": "Equilibrium approach",
-      "description": "Solve at (T − this), the standard admission that a real reactor does not reach equilibrium; announced when non-zero.",
+      "description": "Detune the equilibrium: solved at (T + this), the standard admission that a real reactor does not reach it; announced when non-zero. THE SIGN FOLLOWS THE HEAT OF REACTION — positive for an exothermic reaction, negative for an endothermic one — so there is deliberately no lower bound of zero. This description previously said \"(T − this)\" and carried a minimum of 0; both were wrong and are corrected here (2026-09-25).",
       "unit": "K"
     },
     "industrialWindow": {

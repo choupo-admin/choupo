@@ -72,11 +72,16 @@
       "description": "Heat added per kmol of feed, for a non-adiabatic non-isothermal case; defaults to 0.",
       "unit": "kJ/kmol"
     },
+    "temperatureApproach": {
+      "type": "number",
+      "title": "Equilibrium approach (announced)",
+      "description": "Detune the equilibrium: the REACTION is evaluated at (T + this) while the physical state stays at T — enthalpy, Psat and the energy balance do not move. ANNOUNCED on every run and published as the KPI temperatureApproach_K. THE SIGN FOLLOWS THE HEAT OF REACTION, NOT A CONVENTION: an exothermic reaction (ammonia synthesis) under-predicts when the equilibrium is evaluated at a HIGHER temperature, so positive; an endothermic one (steam reforming) at a LOWER one, so negative. There is deliberately no lower bound of zero. It is EMPIRICAL (calibrated, never predicted) and GLOBAL (one number; it cannot resolve per-reaction approaches), and at high pressure it will absorb missing fugacity corrections.",
+      "unit": "K"
+    },
     "approachTemperature": {
       "type": "number",
-      "minimum": 0,
-      "title": "Equilibrium approach",
-      "description": "Solve the equilibrium at (T − this), the standard way of admitting that a real reactor does not reach it. Defaults to 0 (full equilibrium) and is ANNOUNCED when non-zero.",
+      "title": "Equilibrium approach (second key, unannounced)",
+      "description": "A SECOND approach key read by the same solve (GibbsReactor.cpp:65), and a DIFFERENT model: it shifts the whole equilibrium evaluation to (T + this), so Psat and the fugacity coefficients move with the chemistry, where temperatureApproach shifts the chemistry alone. It announces nothing and publishes no KPI, and the two ADD when both are declared. Prefer temperatureApproach. This description previously said \"Solve the equilibrium at (T − this)\" and \"is ANNOUNCED when non-zero\", and carried a minimum of 0; all three were false and are corrected here (2026-09-25).",
       "unit": "K"
     }
   },
