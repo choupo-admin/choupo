@@ -1669,6 +1669,71 @@ usable input is the isothermal reaction enthalpy, and in ADIABATIC mode the
 engine emits no duty at all (`mode == "isothermal"` guard, line 313), so
 there a sign check has no input.
 
+**2026-09-25 -- THE PATTERN BEHIND THE DAY: A CLAIM ABOUT THE ENGINE, MADE
+WHERE THE ENGINE CANNOT READ IT, GOES FALSE AND NOTHING CAN TELL.**  Written
+after reflecting across the day's findings rather than from any one of them.
+Six of them are one shape:
+
+  * `gibbsReactor.schema.json` describes the engine; the engine never reads
+    the schema.  False three ways.
+  * CLAUDE.md section 6 describes `check_lesson_symbols`; the gate never
+    reads CLAUDE.md.  False.
+  * `check_theory_citations`'s own docstring repeats that false claim.
+  * `how-a-process-design-is-staged.md` section 7.3 describes
+    `EquilibriumReactor`; it reads no approach key.  False.
+  * `gui/tests/hunterNash.test.ts`'s header says the witness ships its own
+    CSV; it does not.  False.
+  * the flagship's `postDict` comment carries the provenance of a 28 m3
+    volume where no reader can act on it.
+
+This project has many gates over the engine's BEHAVIOUR, several over data
+PROVENANCE, several over doctrine WORDS -- and close to nothing over a
+DESCRIPTION of the engine.  That is the uncovered class.
+
+**MEASURED, and narrowed three times until the claim survived.**  Two
+hypotheses died on the way and both deaths are worth keeping:
+
+  1. *"The schemas are full of ghost keys."*  **FALSE.  Zero.**  Every key
+     any operation schema declares appears as a string literal somewhere in
+     `src/`.
+  2. *"Count the keys the engine reads that the schema omits."*  **318 --
+     and the number is worthless**, because the sweep caught every dict read
+     in the file (kinetics `A`/`Ea`, stream `T`/`P`/`F`, solver keys) while
+     an operation schema describes only the `operation` block.  A count taken
+     at the wrong resolution is not evidence, and this project has paid four
+     times for a hand-compiled count.
+
+The measurement that survives reads keys off the OPERATION DICTIONARY
+specifically (`operDict->lookup*`/`found`/`subDict`) and compares them with
+that unit's own schema: **6 undeclared keys across 4 of the operation
+schemas**, of which
+
+  * 3 are the legacy `model` fallback, a slot that lives one level ABOVE
+    `operation` (CLAUDE.md section 5) -- not a defect;
+  * 1 is `cyclone.geometry`, an optional sub-dict CONTAINER, not a value;
+  * 1 is `heater.Tout`, read ONLY in order to REFUSE it
+    (`Heater.cpp:69-76`) -- the schema is right not to declare it;
+  * **1 is `gibbsReactor.temperatureApproach`, the confirmed defect above.**
+
+So a check costing four lines finds, unaided, the defect that cost a general
+half an hour by hand -- at 1 signal in 6 raw, and at 1 in 1 with three narrow
+exemptions (the `model` slot, a refusal-only key, a sub-dict container).
+Whether that is worth a gate is a judgement; the exemptions are the whole
+question, because **a gate that accuses the innocent teaches the reader to
+ignore it** (2026-09-04).
+
+**THE PRECEDENT IS ALREADY IN THE TREE, AND IT NAMES THE VICTIM.**
+`Heater.cpp:83` explains why it refuses a dead key rather than ignoring it:
+the stale reading is *"actively harmful to an LLM-assisted author, who reads
+'T_out is a spec'"*.  That is EXACTLY the reader the `gibbsReactor` schema
+misleads -- `docs/ai/schemas-reference.md` is generated from these schemas
+and `bin/llmctx` ships it to precisely that author.  **The project diagnosed
+this reader once, built the protection in one unit, and never generalised
+it.**
+
+NOT PROPOSED as a task, because the exemption list is a judgement Vitor
+owns.  What is offered is the measurement and its uncertainty.
+
 **2026-09-25 -- A CITATION RULE THIS PROJECT BELIEVES IT ENFORCES AND DOES
 NOT.**  CLAUDE.md section 6 states that every EduTool lesson symbol carries a
 `file:line` citation into the engine, *"verified mechanically (waiver dict
