@@ -1138,6 +1138,71 @@ accepts today, and that is a policy call.
      NOT DONE: nothing was changed.  A second atom scope is a decision about
      what a report PRESENTS, and it moves what a gate can see -- Vitor's.
 
+**C9. AN EDUTOOL ON THE GIBBS REACTOR, AND ON THE APPROACH TO EQUILIBRIUM
+     (commissioned 2026-09-25).**  Vitor asked what the temperature approach
+     is FOR and whether it may be negative; the answer was explained in
+     conversation and his reply was *"E a primeira vez que percebo isso!"*
+     He then commissioned an EduTool covering it.  Written down here in the
+     turn it was asked, before any work.
+
+     **WHY IT MATTERS MORE THAN ITS SIZE SUGGESTS.**  The architect of this
+     project met this concept for the first time today.  A student will meet
+     it never, because nothing teaches it: measured 2026-09-25, no flowsheet
+     case in the corpus declares an approach of any kind, and the flagship
+     green ammonia converter runs at true equilibrium.  The engine reads the
+     key, announces it in three sentences that are each worth a paragraph of
+     teaching, and no surface anywhere carries that teaching.
+
+     WHAT THE LESSON MUST COVER, in this order:
+
+     1. What a Gibbs reactor IS: minimise G subject to the ELEMENT balances.
+        The student declares no reactions and no stoichiometry -- that is the
+        whole point and it is also the trap, because a reactor that needs no
+        mechanism also cannot be told one it should respect.
+     2. Why it sits early in a design, and the correction that matters: the
+        driver is DATA AVAILABILITY, not project stage
+        (`how-a-process-design-is-staged.md` section 6).  A licensor holding
+        its own kinetics may run a kinetic model from the first screening
+        flowsheet.
+     3. The approach to equilibrium: a real reactor falls short, and early in
+        a project nobody has the kinetics to say why, so the equilibrium is
+        DETUNED by one calibrated number.  The separation the engine keeps
+        is the teaching point -- **the chemistry goes to T+dT, the physical
+        state stays at T** (`GibbsReactor.cpp:136-141`); enthalpy, Psat and
+        the energy balance never move.
+     4. **THE SIGN, which is what he had never been told.**  Both signs are
+        accepted and the engine constrains neither.  Which one is wanted
+        follows the sign of the heat of reaction, not a convention:
+        exothermic (ammonia) under-predicts at a HIGHER evaluation
+        temperature, so positive; endothermic (reforming) at a LOWER one, so
+        negative.  Positive is conservative only for an exothermic reaction.
+     5. The three caveats the engine prints itself
+        (`GibbsReactor.cpp:150-154`) and each is a lesson: it is EMPIRICAL
+        (calibrated, never predicted); it is GLOBAL (one number, no
+        per-reaction approach); and **at high pressure it absorbs missing
+        fugacity corrections** -- which on a 200 bar ammonia converter means
+        the parameter can silently become a correction for a poor equation of
+        state instead of the closeness-to-equilibrium it claims to be.
+     6. What the engine does NOT have, said rather than implied: the
+        FRACTIONAL / extent approach, which is a different definition and is
+        not interchangeable with the temperature one (research section 3.1;
+        absent from both reactors per section 7.3); and the pellet
+        effectiveness factor, announced as 1 and judged by nothing.
+
+     FORM, measured 2026-09-25 rather than assumed: an EduTool is a page a
+     student SCROLLS, in `gui/src/ui/methods/`, registered in
+     `methods/registry.ts` and dispatched in `MethodsWorkspace.tsx`; the
+     equations are LaTeX in a lesson module, every symbol glossed in a
+     `where` list of {sym, means, unit}, and every symbol carries a
+     `file:line` citation into the ENGINE, verified mechanically.  **It is
+     NOT an instrument panel** -- a panel shows a reader who already knows
+     the method what it does, and teaches a reader who does not exactly
+     nothing (`check_edutool_form`, Vitor's ruling 2026-08-28).
+
+     RELATION TO C8: this is the teaching surface for the rung C8's stage C
+     builds.  The two are separate deliverables and neither blocks the other,
+     but a claim made in one must not contradict the other.
+
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds
