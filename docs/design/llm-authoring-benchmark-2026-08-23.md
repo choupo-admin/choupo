@@ -86,6 +86,14 @@ Measured on the liquid esterification: the reactor's ledger row closes at
 latent-heat residual; the six vapour-fed corpus cases are byte-identical
 (vf carried = vf 1); the flash's separate, case-declared residual is
 untouched by A/B measurement.
+**CORRECTION 2026-09-25: "the duty stays gas-basis, announced whenever the
+inlet is not one" stopped being true of the engine.**  Pricing the duty on a
+rung the streams are not on was the other half of the same defect, and the
+announcement could not even see the worst case of it (its guard required a
+non-vapour inlet, so a vapour under a cubic EoS was silent).  The duty is on
+the package's own enthalpy surface now and the announcement is deleted with
+the gap.  Record:
+[`a-duty-on-a-surface-its-streams-are-not-on.md`](a-duty-on-a-surface-its-streams-are-not-on.md).
 
 **F3 — the electrolyte D-list (one campaign, one slice each):** the missing
 worked speciate example (propsDict + thermoPhysPropDict pair); `volatiles`;

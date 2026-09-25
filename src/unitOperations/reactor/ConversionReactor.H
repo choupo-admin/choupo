@@ -52,17 +52,32 @@ namespace Choupo {
 // ISOTHERMAL means the OUTLET is at T -- the INLET need not be, and the duty
 // has to say so.  `Q_kW` used to carry the heat of reaction ALONE, so a reactor
 // fed at 389 K and held at 623 K reported a duty that did not move when its
-// feed temperature did.  It is now the enthalpy difference the first law asks
+// feed temperature did.  It is the enthalpy difference the first law asks
 // for, published beside its two exact parts:
 //
-//     Q_kW           = SUM n_out h(T_out) - SUM n_in h(T_in)
-//     Q_reaction_kW  = xi * dH_rxn(T_out)          (the reaction, run at T_out)
-//     Q_sensible_kW  = SUM n_in [h(T_out) - h(T_in)]   (the FEED, heated)
+//     Q_kW           = H(outlet state) - H(inlet state)
+//     Q_reaction_kW  = H(outlet) - H(feed composition carried to T_out)
+//     Q_sensible_kW  = H(feed composition at T_out) - H(inlet)
 //
-// The split is Hess's law and is EXACT, not an apportionment.  When the feed
-// already enters at T the sensible term is identically zero and `Q_kW` is what
-// it always was, which is why no case whose feed sits at the reactor
-// temperature moved.
+// The split is Hess's law and is EXACT, not an apportionment: the middle state
+// cancels.  When the feed already enters at T the sensible term is identically
+// zero and `Q_kW` is the reaction term alone.
+//
+// EVERY H ABOVE IS THE PACKAGE'S OWN (2026-09-25), obtained through the same
+// resolve-then-price call the energy report applies to these very streams
+// (`flashState::twoPhaseSplit` + `hOfState`, else `H_stream_formation` on the
+// state the stream carries).  Both terms used to be sums of `h_pure_ig` --
+// IDEAL GAS -- while the stream this unit publishes is priced by the package,
+// so under a cubic EoS the unit and the report described the same reactor with
+// two different enthalpies.  That is the family CLAUDE.md §6 names, and
+// `GibbsReactor` was taken off it on 2026-09-08.
+//
+// `dHrxn_kJ_per_mol` is a DIFFERENT number and deliberately keeps the
+// doctrine's rung: the heat of reaction is `SUM nu_i h_i(T)` on the
+// elements/formation datum (CLAUDE.md §5, ONE enthalpy base).  It equals
+// `Q_reaction_kW / xi` exactly when the package is an ideal gas and does not
+// otherwise -- the difference is the departure function, which belongs to the
+// fluid and not to the reaction.
 class ConversionReactor : public UnitOperation
 {
 public:

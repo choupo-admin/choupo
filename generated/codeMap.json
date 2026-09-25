@@ -7325,6 +7325,7 @@
    "src/unitOperations/reactor/CatalystPellet.H"
   ],
   "src/unitOperations/reactor/ConversionReactor.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -7337,6 +7338,8 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/ConversionReactor.H"
   ],
   "src/unitOperations/reactor/EquilibriumReactor.cpp": [
@@ -8054,6 +8057,7 @@
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/reactor/CatalystPellet.cpp",
+   "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Pump.cpp",
@@ -13048,6 +13052,7 @@
    "src/unitOperations/heatTransfer/Heater.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
+   "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -13061,7 +13066,8 @@
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
-   "src/unitOperations/heatTransfer/Heater.cpp"
+   "src/unitOperations/heatTransfer/Heater.cpp",
+   "src/unitOperations/reactor/ConversionReactor.cpp"
   ],
   "src/unitOperations/flowsheet/Flowsheet.H": [
    "src/applications/choupoSolve/main.cpp",

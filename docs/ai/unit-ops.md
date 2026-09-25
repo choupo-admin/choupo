@@ -233,10 +233,19 @@ unit is a stoichiometric bookkeeper with no phase model, so it forwards the
 feed's `vf` unchanged instead of inventing a vapour (it used to hard-stamp
 `phase gas;`, which put a spurious ENERGY BALANCE FAILED banner on
 perfectly-authored liquid-phase duties).  A downstream flash owns any
-split.  The DUTY is still priced on the ideal-gas rung (`dHrxn` is the
-GAS-phase value), and the run announces that whenever the inlet is not a
-vapour -- on liquid-phase use read `Q_reaction` as a gas-basis number and
-expect the announced rung difference, not a red banner.
+split.
+
+**THE DUTY IS PRICED ON THE PACKAGE'S OWN ENTHALPY SURFACE (2026-09-25)** --
+`Q_kW`, `Q_reaction_kW` and `Q_sensible_kW` are enthalpy differences taken
+through the SAME resolve-then-price rule the energy report applies to these
+streams, so a liquid inlet keeps its latent heat inside the duty and a
+cubic-EoS package keeps its departure function there.  Both terms used to be
+ideal-gas sums (`h_pure_ig`) while the stream the unit publishes was priced by
+the package, which is why this unit used to print a `[rating]` line warning
+that its own ledger would not reconcile; that line is gone with the gap.
+`dHrxn_kJ_per_mol` is a DIFFERENT number and deliberately keeps the doctrine's
+rung -- the heat of reaction is `SUM nu_i h_i(T)` on the elements datum -- so
+`Q_reaction_kW / extent` equals it under an ideal gas and not otherwise.
 ```
 operation                                     // MULTI -- a PARALLEL network
 {

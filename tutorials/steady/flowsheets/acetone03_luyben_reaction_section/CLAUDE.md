@@ -52,9 +52,37 @@ before.** `conversionReactor` used to report the heat of reaction alone —
 470.5 kW, 49 % of Luyben's 960 kW, and invariant to its own feed temperature.
 It now reports the first law over the unit, 840.3 kW = 470.5 kW of reaction at
 623 K plus 369.8 kW heating the feed from 389 K, and lands at 87.5 % of the
-paper. See `acetone02`'s §3 for the defect, the fix, and the 602 kW that
-remains — the feed's latent heat, which a gas-basis reactor does not price and
-now says so.
+paper. See `acetone02`'s §3 for the defect and the fix.
+
+**And on 2026-09-25 the second half of the same defect was closed**: that duty
+was summed on the IDEAL-GAS rung while the streams the unit publishes are
+priced by the package, so the unit and the energy report described one reactor
+with two enthalpies. Both are now the package's, through the report's own
+resolve-then-price call.
+
+**WHAT THAT MADE VISIBLE HERE, and it is the whole −602.18 kW.** This section
+declares no phase on `0/Rin`, so `vf` defaults to 0, unpinned, and the report
+has always priced a 389 K feed and a 623 K effluent on the LIQUID leg. Running
+a copy of this case with ONE line added to `0/Rin` (`phase gas;`) and nothing
+else changed:
+
+| | `reactor` closure | `separator` closure | plant first law |
+|---|---:|---:|---:|
+| as shipped | 100.00 % | 59.63 % (−390.61 kW) | −390.61 kW |
+| + `phase gas;` | **100.00 %** | **100.00 %** | **0.0000 kW** |
+
+Both duty goldens come back exactly — `reactor.Q_kW` 840.263235 and
+`separator.Q_kW` −967.612951 — and so does `Q_boundary_kW` (−127.349716) and
+`H_products_kW` (−4124.388379). What moves under the pin is `H_feeds_kW`
+(−4599.214607 → −3997.038663), which is the re-priced inlet itself, and
+`residual_kW` (−602.175944 → 0).
+
+So the 602.18 kW was never the reactor's physics and never the separator's: it
+was one undeclared phase, read by two units and the report in three different
+ways. The surface fix is what removed the reactor's share of the disagreement
+(211.57 kW, leaving −390.61 kW on the separator alone) and so localised it.
+**The one-line case fix is NOT made**, because it moves golden rows and
+re-recording is the architect's act.
 
 ### The separator pressure: argued, not fitted
 
@@ -94,5 +122,8 @@ solvent is the principled route and is the deferred D3 transfer term.
   - the three UNIQUAC pairs, which is what would actually close the split;
   - a curated isopropanol;
   - the absorber and the two columns (the rest of Figure 1);
-  - the gas-basis reactor's liquid inlet, inherited from `acetone02` §3:
-    the duty defect is fixed, the latent-heat term is announced and open.
+  - the reactor's liquid-priced inlet, inherited from `acetone02` §3: the
+    DUTY half is closed (2026-09-25) and what remains is `phase gas;` in
+    `0/Rin`, measured above to close this whole section's first law;
+  - this case's goldens predate 2026-09-25, so `bin/runTests` FAILS it on
+    five rows until the architect re-records.

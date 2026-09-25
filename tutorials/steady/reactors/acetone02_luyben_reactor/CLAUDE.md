@@ -75,13 +75,14 @@ temperature and watching the declared duty *not move*:
 in this engine `Q_kW` on a unit means the heat crossing its boundary.
 
 *What it is now.* `Q_kW` is the first law over the unit,
-Σn_out·h(T_out) − Σn_in·h(T_in), published beside its two exact parts:
+H(outlet state) − H(inlet state), published beside its two exact parts:
 
-> `dH_rxn = 48.7 kJ/mol -> duty Q = 840.3 kW  (net added)`
-> `  = reaction 470.5 kW at 623.00 K + sensible 369.8 kW heating the feed from 389.00 K`
+> `dH_rxn = 48.7 kJ/mol  (ideal-gas/formation rung -- the reaction's own property)`
+> `duty Q = 840.3 kW  (net added)`
+> `  = reaction 470.5 kW at 623.00 K  +  sensible 369.8 kW heating the feed from 389.00 K`
 
 The split is Hess's law and is exact, not an apportionment. Against Luyben's
-reactor duty of **0.960 MW** this case now reads **0.840 MW — 87.5 %**, where
+reactor duty of **0.960 MW** this case reads **0.840 MW — 87.5 %**, where
 it read **49 %** before. Nothing was tuned; a term that belonged in the sum
 was put in it.
 
@@ -93,30 +94,62 @@ defect at plant scale — its flowsheet has no feed preheater, so the reactor
 itself is heating 2122 kmol/h from 330 K to 900 K, and the old number hid a
 20 MW furnace load.
 
-*What is still open, and it is now NAMED rather than lumped.* The residual did
-not go to zero — it went from 972 kW to **602 kW** — and the run says why, at
-the site:
+### The SURFACE was the second half of it — closed 2026-09-25
 
-> `[rating] the duty above is priced on the IDEAL-GAS rung (this reactor is
-> gas-basis and emits vf = 1) while this inlet arrives at vf = 0.00 — the
-> sensible term omits its latent heat`
+Between 2026-08-13 and 2026-09-25 both terms of that duty were sums of
+`h_pure_ig` — IDEAL GAS — while the stream this unit publishes is priced by
+the package. One reactor, two enthalpy surfaces; the family CLAUDE.md §6
+names, and the shape `gibbsReactor` was taken off on 2026-09-08. The run
+announced it rather than hiding it, in a `[rating]` line saying its own ledger
+would not reconcile — which is better than silence and worse than not having
+the gap. Both terms now go through the SAME resolve-then-price call the energy
+report applies to these very streams, so the `[rating]` line is gone with the
+thing it warned about, and `dH_rxn` (the reaction's own property, on the
+elements datum) is printed as the separate quantity it always was.
 
-That is checkable rather than asserted: 602.18 kW over 57.82 kmol/h is
-**37.5 kJ/mol**, against a feed whose components carry ΔH_vap of 38.6
-(isopropanol) and ~40.6 (water) kJ/mol at their boiling points. **The residual
-is the vaporisation of the feed**, to the accuracy the arithmetic allows.
+*And the surface fix is what finally showed where the residual really lives.*
+The 2026-08-13 note above said the remaining gap was the feed's latent heat.
+It was — but not because a reactor refuses to price one. **This case never
+declares the phase of its streams.** `0/Rin` and `0/Rout` carry no
+`vaporFraction` and no `phase`, so `vf` defaults to 0 and is *unpinned*; the
+energy report has always priced both of them on the LIQUID leg, at 389 K and
+at 623 K, and a superheated 623 K stream is not a liquid. The unit's ideal-gas
+duty and the report's liquid pricing disagreed by exactly that, and the gap
+had a name only in the unit's warning.
 
-Closing it means deciding what a gas-basis reactor should do with a liquid
-inlet — price the latent heat itself, or refuse the inlet — and that is a
-question about the unit's phase contract, not about its duty. It is left
-open, announced, and no longer inside a number.
+MEASURED, by running a copy of this case with one line added to `0/Rin`
+(`phase gas;`) and nothing else changed:
+
+| `0/Rin` | `Q_kW` | `Q_reaction_kW` | `Q_sensible_kW` | plant residual |
+|---|---:|---:|---:|---:|
+| as shipped (no phase declared) | 1051.833460 | 247.477646 | 804.355814 | **0.000000 kW** |
+| + `phase gas;` | **840.263235** | **470.487528** | **369.775707** | **4.5e-13 kW** |
+
+The three duty columns of the second row are this case's shipped goldens
+**to the last recorded digit** (840.263234652 / 470.487527672 / 369.77570698);
+its boundary rows move, because pinning the inlet also re-prices `H_feeds_kW`
+(−4599.214607 → −3997.038663) and `H_products_kW` (−3547.381147 →
+−3156.775428).  So the surface fix moves no duty that the case's own
+declaration would have settled: what it does is make the unit say the same thing as the report, and
+then the *case* becomes the thing that decides which of the two answers is
+right. `docs/ai/pitfalls.md` already carries this rule — *any feed that is not
+a liquid at its (T, P) needs its phase pinned* — and this case does not follow
+it.
+
+**The one-line case fix is NOT made here**, because it moves further golden
+rows and re-recording is the architect's act. Until it is, this case ships
+goldens recorded under the ideal-gas duty and `bin/runTests` FAILS it on five
+rows.
 
 - **Pending / in curation:**
   - a curated `isopropanol` in `data/standards/` (would close most of the
     ΔH_rxn gap) — Vítor's call, curation is reserved;
-  - the gas-basis reactor's LIQUID INLET (§3): the duty is now the first
-    law on the ideal-gas rung and the remaining 602 kW residual is the
-    feed's latent heat, announced at its site and not yet priced;
+  - the reactor's LIQUID-PRICED INLET (§3): the DUTY half is closed
+    (2026-09-25, the duty is on the package's own surface), and what is left
+    is one declared line in `0/Rin` — `phase gas;` — which the measurement in
+    §3 shows reproduces this case's shipped goldens exactly and closes the
+    first law at 4.5e-13 kW.  Not made: it moves golden rows, and
+    re-recording is the architect's act;
   - the reactor's SIZE: Luyben specifies 450 tubes and a 624 K jacket, but the
     design record has no tube dimensions, so a `pfr` on his kinetics cannot be
     dimensioned from what is in hand. The kinetics are transcribed in the
