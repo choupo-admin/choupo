@@ -913,8 +913,19 @@ accepts today, and that is a policy call.
 > only when the work ships or when Vítor withdraws them.
 
 **C1. An EduTool on least-squares parameter estimation (asked ~2026-09-15;
-     NOT STARTED).**  The subject is already in the engine and no lesson
-     cites it: `src/propertyOps/FitParameters.cpp:232` solves
+     asked again 2026-09-24 and a THIRD time 2026-09-25; DONE 2026-09-25,
+     registry id `least-squares`, on main in `680faf6d0`).**  The witness
+     question this entry left open was settled by measurement and the answer
+     was NOT the obvious case: `fitNRTL01` uses the legacy single-dataset form
+     (no partition, `verdict notClaimed`) and cannot teach the half the page
+     exists for, so the lesson drives `curate02_vle_heldout_ethanol_water`
+     (8 fitted, 3 withheld, band with origin, `verdict validated`).  The
+     teaching move is measured: at `maxAAD 0.1 %` the held-out AAD is
+     0.0737 % and the word is `validated`; at `0.05 %` the AAD is 0.0737 %
+     and the word is `notValidated`.  NOT established: no browser rendered
+     it (no emscripten here); the page fails loudly rather than substituting.
+     What the entry said before it was built, kept for the record -- the
+     subject is already in the engine and no lesson cited it: `src/propertyOps/FitParameters.cpp:232` solves
      `(JᵀJ + λ·diag(JᵀJ))·dp = −Jᵀr` by Gauss-Jordan — **Levenberg-Marquardt**,
      with `lambda0` declarable in the op's dict (`FitParameters.cpp:565`).
      Measured 2026-09-24: the registry carries 39 tools and NONE is this.
@@ -1139,7 +1150,12 @@ accepts today, and that is a policy call.
      what a report PRESENTS, and it moves what a gate can see -- Vitor's.
 
 **C9. AN EDUTOOL ON THE GIBBS REACTOR, AND ON THE APPROACH TO EQUILIBRIUM
-     (commissioned 2026-09-25).**  Vitor asked what the temperature approach
+     (commissioned 2026-09-25; DONE the same day, registry id
+     `approach-to-equilibrium`, on main in `680faf6d0`).**  Building it found
+     the two-key defect and the false citation rule recorded in section 5;
+     the schemas were repaired on main in `dd8da3656`.  The three rulings the
+     defect needs (which model survives, the sign floor, announce-or-refuse)
+     are still Vitor's and still open.  Vitor asked what the temperature approach
      is FOR and whether it may be negative; the answer was explained in
      conversation and his reply was *"E a primeira vez que percebo isso!"*
      He then commissioned an EduTool covering it.  Written down here in the
@@ -1309,6 +1325,26 @@ accepts today, and that is a policy call.
      reactor, and the engine has been frozen since 2026-09-02.
      **RESERVED for Vitor:** whether that wiring is inside the freeze.  It is
      named here rather than assumed either way.
+
+     **A, B AND C ARE BUILT AND ON MAIN (2026-09-25).**
+     `tutorials/plant/ammoniaStaged01_yield` / `02_equilibrium` /
+     `03_approach`, one skeleton, one feed, one package; with comments
+     stripped the B-to-C flowsheetDict diff is ONE line.  The ladder as
+     numbers: converter y(NH3) 0.149843 / 0.310807 / 0.300194; per-pass N2
+     conversion 25.0 (declared) / 47.93 / 46.60 %; recycle-to-makeup 2.565 /
+     1.026 / 1.078.  Stage C is the first flowsheet case in the corpus to
+     declare an approach and the first to use `designRules { spaceVelocity }`.
+     Two assumptions are DECLARED as such with their sourced bands: A's 25 %
+     per-pass conversion and C's 20 000 Nm3/(m3 h).  Building A exposed the
+     `ConversionReactor` duty-surface defect (section 5, now fixed on main);
+     building C exposed the two-key defect (section 5) and a BASIS trap that
+     is still open: `VesselSize` computes Q on ACTUAL gas volume while every
+     published GHSV is on a normal basis -- at 700 K / 200 bar the ratio is
+     77, so an industrial GHSV typed straight into `designRules` under-sizes
+     the bed 77x at exit 0.  Also measured from the flagship's own golden:
+     its comment says 20 000 Nm3/(m3 h) and the number is ~10 200 -- the
+     comment overstates by 1.8x, which is the whole argument for the rule
+     being engine-visible.  D remains as above.
 
 **C7. NO COMPETITOR IS NAMED IN THIS REPOSITORY (ruled 2026-09-24;
      PARTLY DONE, and the hardest part is not the scrub).**  Vítor:
