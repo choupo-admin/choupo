@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  reactions -- ammoniaStaged01_yield.  STOICHIOMETRY ONLY: a conversionReactor
+  needs no kinetics, because its extent is SPECIFIED rather than computed.
+
+  N2 + 3 H2 -> 2 NH3
+
+  dH_rxn is NOT declared here, and must not be.  Every one of N2, H2 and NH3
+  carries a standardThermochemistry block, so the engine derives the
+  authoritative dH_rxn(T) = SUM nu_i * h_i(T) from the elements/formation
+  datum (CLAUDE.md, "Heat of reaction -- ONE enthalpy base").  A dH_rxn key
+  here would be a SECOND source of truth for a number that is already
+  derivable, and the engine treats it as an announced override rather than an
+  input.  It belongs only where a species lacks formation data.
+
+  THE LIMITING REACTANT IS NITROGEN, and that is a modelling choice worth
+  stating.  The loop's makeup is stoichiometric (H2:N2 = 3.0), so at the
+  MAKEUP neither is limiting; inside the loop the recycle sets the converter
+  inlet ratio, and `conversion` in the operation block is then read as the
+  fraction of the inlet NITROGEN that reacts.  Per-pass conversion in the
+  ammonia literature is normally quoted on nitrogen, so this is the reading a
+  reader expects -- but it IS a reading, and the engine refuses a
+  limitingReactant whose stoichiometric coefficient is not negative rather
+  than guessing one.
+\*---------------------------------------------------------------------------*/
+ammoniaSynthesis
+{
+    limitingReactant  N2;
+    stoichiometry
+    (
+        { component N2;   nu -1; }
+        { component H2;   nu -3; }
+        { component NH3;  nu  2; }
+    );
+}

@@ -1,0 +1,134 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE STAGED DESIGN SEQUENCE -- flowsheet, SHARED BY ALL THREE STAGES.
+
+  Everything in this file except the `converter` block is BYTE-IDENTICAL
+  across ammoniaStaged01_yield, ammoniaStaged02_equilibrium and
+  ammoniaStaged03_approach.  Diff two of them and the only thing that moves
+  is the reactor model -- which is the whole point: one rung of the fidelity
+  ladder at a time, and nothing else.
+
+        makeup (N2:H2 = 1:3 + 1 mol% Ar) -+
+                                          v
+                                     [mixer] <------- recycle <--------+
+                                          |                            |
+                                          v                            |
+                                    [converter]   <-- THE ONLY         |
+                                    700 K, 200 bar     DIFFERENCE      |
+                                          v                            |
+                        [separator]  isothermalFlash 250 K, 200 bar    |
+                          |      |                                     |
+                rawLiquid-+      +-- unreactedGas                      |
+                    |                    |                             |
+                    v               [purgeSplit] splitter              |
+               [letdown]              |        |                       |
+              flash 20 bar    purge --+        +-- recycle ------------+
+                |       |      (5 % bleed)          (95 %)
+      productNH3+       +letdownGas
+
+  SCALE.  The makeup is 8000 kmol/h (N2 1980, H2 5940, Ar 80), which is
+  1 mol% argon and H2:N2 exactly 3.0.  This is NOT the scale of
+  tutorials/steady/flowsheets/ammonia01_synthesis_loop, whose structure this
+  flowsheet copies: that case runs 1 kmol/h of makeup, and at that rate the
+  converter's catalyst charge is about 2 litres -- below the lower bound of
+  every vessel cost correlation the engine carries, so stage C could not
+  honestly cost it.  The flowsheet is linear in flow (the flash and the
+  reactor are both intensive), so the scale-up changes no intensive answer;
+  compare this case's converter y_NH3 against ammonia01's own golden and they
+  agree.
+
+  TOPOLOGY ONLY.  Stream state lives on disk in 0/, one file per stream.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    {
+        name     mixer;
+        type     mixer;
+        inputs   ( makeup  recycle );
+        outputs  ( mixed );
+    }
+    {
+        //  ===================================================================
+        //  STAGE C -- GIBBS REACTOR DETUNED BY AN APPROACH TO EQUILIBRIUM.
+        //
+        //  One key more than stage B, and it is the rung the rest of this
+        //  corpus never climbs.  `temperatureApproach 5` evaluates the
+        //  REACTION equilibrium at 705 K while the physical state, the
+        //  enthalpy and the energy balance stay at 700 K.  Ammonia synthesis
+        //  is exothermic, so the equilibrium ammonia content falls as the
+        //  temperature rises: evaluating the chemistry 5 K HOT is exactly
+        //  "the outlet is 5 K short of equilibrium".
+        //
+        //  THE SIGN IS THE SOURCE'S OWN.  US 5,352,428 (Bhakta & Grotz, CF
+        //  Braun and Co, 4 October 1994), "High conversion ammonia synthesis",
+        //  defines the quantity in the same direction, verbatim:
+        //
+        //      "The effluent from each bed has an approach to equilibrium of
+        //       5 C., i.e., the ammonia concentration corresponds to the
+        //       equilibrium concentration at a temperature 5 C. above the
+        //       actual temperature."
+        //
+        //  and states the design range, verbatim:
+        //
+        //      "The approach to equilibrium in any catalyst bed is 0 C. to
+        //       30 C. and preferably 1 C. to 10 C."
+        //
+        //  The patent calls the 5 C. case's conditions "typical and optimum in
+        //  many commercial process designs", so 5 is a sourced value and not a
+        //  round number.  It is declared BARE because it is a temperature
+        //  DIFFERENCE: 5 K and 5 C. are the same interval.
+        //
+        //  WHAT IT IS NOT.  It is an empirical closeness-to-equilibrium
+        //  parameter -- calibrated, never predicted -- and it is GLOBAL over
+        //  the converter.  It stands in for a rate law that this case does not
+        //  have.  The engine says so itself, loudly, on every run; the README
+        //  must agree with that announcement and not soften it.
+        //  ===================================================================
+        name       converter;
+        type       gibbsReactor;
+        in         mixed;
+        outputs    ( reacted );
+        operation
+        {
+            T 700.0 K;  P 200.0 bar;
+            temperatureApproach 5;              // K (= C), a DIFFERENCE
+            elements ( N  H  Ar );
+            species
+            (
+                { name N2;  atoms ( 2 0 0 ); }
+                { name H2;  atoms ( 0 2 0 ); }
+                { name NH3; atoms ( 1 3 0 ); }
+                { name Ar;  atoms ( 0 0 1 ); }
+            );
+        }
+    }
+    {
+        name     separator;
+        type     isothermalFlash;
+        in       reacted;
+        outputs  ( rawLiquid  unreactedGas );
+        operation { T 250.0 K;  P 200.0 bar; }
+    }
+    {
+        name     letdown;
+        type     isothermalFlash;
+        in       rawLiquid;
+        outputs  ( productNH3  letdownGas );
+        operation { T 250.0 K;  P 20.0 bar; }   // let-down drum: flash off the dissolved N2/H2
+    }
+    {
+        name     purgeSplit;
+        type     splitter;
+        in       unreactedGas;
+        outputs  ( purge  recycle );
+        operation { fractions ( 0.05  0.95 ); }
+    }
+);

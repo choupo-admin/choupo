@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solverDict -- numerical strategy.  IDENTICAL in all three stages: the ladder
+  is about the REACTOR MODEL, so the recycle plan must not move with it.
+\*---------------------------------------------------------------------------*/
+
+// ---- Recycle plan: the tear CUT + the outer solver (numerical strategy --
+//      the topology stays in flowsheetDict) ----
+tearStreams          ( recycle );
+recycleSolver         Newton;
+recycleTol            1e-5;
+recycleMaxIter        200;

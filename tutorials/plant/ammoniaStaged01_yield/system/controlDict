@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+tier          tutorial;
+application  choupoSolve;
+description  "STAGED DESIGN SEQUENCE, stage A of three -- YIELD. The ammonia synthesis loop with a conversionReactor on a DECLARED single-pass conversion of 25 % of the nitrogen. Claims a converged MATERIAL balance and nothing else: no reactor size, no equipment cost -- and NOT a converged heat balance, which this reactor cannot deliver against an SRK-priced stream (README section 4). Diff the flowsheetDict against ammoniaStaged02_equilibrium and the only block that moves is the converter.";
+verbosity    3;

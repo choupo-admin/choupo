@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+tier          tutorial;
+application  choupoSolve;
+description  "STAGED DESIGN SEQUENCE, stage B of three -- THERMODYNAMIC CEILING. The same loop with a gibbsReactor at TRUE equilibrium (no approach declared), SRK fugacities at 700 K and 200 bar. The per-pass conversion it reports is a ceiling that no real converter reaches, so nothing downstream of it is sized or costed here.";
+verbosity    3;
