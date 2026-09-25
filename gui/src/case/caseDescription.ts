@@ -56,7 +56,7 @@ export interface CaseDescription {
  * The first sentence, if there is one short enough to lead with.
  *
  * A Choupo description opens with a naming clause far more often than with a
- * full stop -- "Green ammonia, 500 t/day (Sines), with INDUSTRIAL-GRADE
+ * full stop -- "Green ammonia, 500 t/day, with INDUSTRIAL-GRADE
  * nitrogen..." has no sentence end for ninety words -- so a sentence split
  * alone is not enough and the length cap is what actually does the work on
  * the corpus.  Both are here because a case that DOES open with a short
@@ -66,7 +66,7 @@ export interface CaseDescription {
 function firstSentence(text: string): string | null {
   //  A full stop that ends a sentence: followed by a space and a capital, or
   //  by the end of the text.  This deliberately does NOT try to understand
-  //  abbreviations -- "500 t/day (Sines)" has no full stop, and a decimal
+  //  abbreviations -- "500 t/day" has no full stop, and a decimal
   //  point is never followed by a space and a capital.
   const m = /^(.+?[.!?])(\s+[A-Z(]|$)/.exec(text);
   if (!m) return null;

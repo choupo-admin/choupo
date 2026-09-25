@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, Sines          |
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia                 |
 |      \\|//   H eat-transfer |  SECTORED case, industrial-grade nitrogen     |
 |     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
 \*-----------------------------------------------------------------------------*/
@@ -95,3 +95,49 @@ variables
     dryer_utilisation   { compute "PURIFICATION.Dryer.capacity_utilisation_water"; }
     Q_regeneration_kW     { compute "PURIFICATION.Dryer.Q_regeneration_kW"; }
 }
+
+//  THE AUXILIARY CIRCUITS, DECLARED (2026-09-25).
+//
+//  Without this block the plant's global material summary was 99.40 % cooling
+//  water: 3 513 143 kg/h of it against 21 306 kg/h of process feed, so the
+//  ammonia this plant exists to make was a rounding sliver on its own balance
+//  and every per-component chart drew one bar.  A declaration is TOPOLOGY --
+//  which EDGES form the circuit -- so the report publishes a PROCESS closure
+//  beside the TOTAL one it always did, and the separation is PRESENTATION,
+//  never validation scope: every law keeps counting every stream.
+//
+//  WATER IS BOTH HERE, and that is why the criterion is the EDGE and not the
+//  component.  The Pd deoxo runs O2 + 2 H2 -> 2 H2O and the knock-out drum
+//  takes the condensate out, so 93.5 kg/h of water is PROCESS water; it stays
+//  in the process scope exactly as it should, visible instead of buried under
+//  three and a half million kilograms of coolant.
+//
+//  WashWater is NOT a circuit: it absorbs ammonia into AqueousNH3, so it
+//  transfers matter across the process boundary and is process material.  The
+//  engine checks that test itself on each pair declared here (boundary inlet,
+//  boundary outlet, one served unit, component-wise conservation) and refuses
+//  a declaration that fails it.
+utilities
+(
+    {
+        name     CW_LOOP;
+        service  coolingWater;
+        supply   Cw;
+        return   LOOP.CwOut;
+        note     "synthesis-loop cooling water: condenses the converter effluent";
+    }
+    {
+        name     CW_PURIF;
+        service  coolingWater;
+        supply   CwA;
+        return   PURIFICATION.CwAOut;
+        note     "purification cooling water: removes the deoxo reaction heat";
+    }
+    {
+        name     CHW_PURIF;
+        service  chilledWater;
+        supply   Chw;
+        return   PURIFICATION.ChwOut;
+        note     "chilled water to 279 K before the knock-out drum and dryer";
+    }
+);

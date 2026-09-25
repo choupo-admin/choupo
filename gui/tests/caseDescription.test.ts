@@ -22,7 +22,7 @@ import { caseDescription, LEAD_MAX_CHARS } from "../src/case/caseDescription";
 //  not have folded it -- and the real description is LONGER still, so this
 //  fixture is the easy case, not the worst one.
 const FLAGSHIP =
-  "Green ammonia, 500 t/day (Sines), with INDUSTRIAL-GRADE nitrogen (99.5 %"
+  "Green ammonia, 500 t/day, with INDUSTRIAL-GRADE nitrogen (99.5 %"
   + " N2 / 0.40 % O2 / 0.10 % Ar), laid out in three sectors: PURIFICATION"
   + " (nitrogen booster, 3:1 mixing, Pd deoxo, chilling to 279 K, knock-out"
   + " drum, 4A molecular-sieve dryer and the synthesis compressor), LOOP"

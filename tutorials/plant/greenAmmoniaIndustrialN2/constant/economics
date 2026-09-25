@@ -1,6 +1,6 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
   constant/economics -- prices for the PEQ 2026-27 project (green ammonia,
-  Sines).  BASE SCENARIO.  The required sensitivity scenarios are run by
+  BASE SCENARIO.  The required sensitivity scenarios are run by
   changing the H2 price (2 / 4 / 6 EUR/kg) and the ammonia price
   (0.60 / 0.90 EUR/kg).
 \*---------------------------------------------------------------------------*/

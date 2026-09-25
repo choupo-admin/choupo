@@ -50,6 +50,10 @@ export interface ElementBalanceSurface {
   partial: { species: string; unaccounted: number }[];
   missingStreams: string[];
   rows: ElementBalanceRow[];
+  /** The PROCESS scope, present only when the case declares utility
+   *  circuits: the same elements with the declared auxiliary circuits left
+   *  out.  EMPTY is a fact, not a gap -- it means the case declared none. */
+  processRows: ElementBalanceRow[];
 }
 
 /** The GLOBAL ATOMIC view of an element-balance surface: total kmol-atom/h
@@ -92,6 +96,7 @@ export function elementBalanceSurface(
   const out: ElementBalanceSurface = {
     present: false, status: "UNAVAILABLE",
     refused: [], partial: [], missingStreams: [], rows: [],
+    processRows: [],
   };
   if (!csv && !meta) return out;
   out.present = true;
@@ -115,6 +120,8 @@ export function elementBalanceSurface(
           out.malformedReason = `malformed sidecar (partialSpecies.`
             + `${key.slice(15)} = ${val})`;
           out.rows = [];
+          out.processRows = [];
+          out.processRows = [];
           return out;
         }
         out.partial.push({ species: key.slice(15), unaccounted: un });
@@ -157,10 +164,25 @@ export function elementBalanceSurface(
           out.malformedReason =
             `malformed elementBalance.csv (row ${li + 1})`;
           out.rows = [];
+          out.processRows = [];
           return out;
         }
-        out.rows.push({ element: c[iE]!, inKmolAtomH: inV,
-                        outKmolAtomH: outV, closurePct: cl });
+        //  THE PROCESS SCOPE RIDES THE SAME TABLE under a qualified key
+        //  (2026-09-25), exactly as the mass summary writes `utility.<name>`
+        //  and `PROCESS_TOTAL` in its own component column.  It is
+        //  PARTITIONED here rather than pushed into `rows`: a `process.H`
+        //  entry among the elements would draw as an element that does not
+        //  exist AND would double-count every seal computed over `rows`.
+        //  `rows` therefore keeps meaning exactly what it always meant -- the
+        //  TOTAL scope, every stream counted -- so a case that declares no
+        //  utility circuit parses byte-identically.
+        const sym = c[iE]!;
+        if (sym.startsWith("process."))
+          out.processRows.push({ element: sym.slice(8), inKmolAtomH: inV,
+                                 outKmolAtomH: outV, closurePct: cl });
+        else
+          out.rows.push({ element: sym, inKmolAtomH: inV,
+                          outKmolAtomH: outV, closurePct: cl });
       }
     }
   }

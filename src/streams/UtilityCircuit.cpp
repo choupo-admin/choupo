@@ -318,7 +318,8 @@ void validateConservation(const std::vector<UtilityCircuit>&          circuits,
 
 
 std::map<std::string, std::string>
-circuitOfStream(const std::vector<UtilityCircuit>& circuits)
+circuitOfStream(const std::vector<UtilityCircuit>& circuits,
+                const std::map<std::string, std::string>& aliasOf)
 {
     std::map<std::string, std::string> out;
     for (const auto& c : circuits)
@@ -326,14 +327,27 @@ circuitOfStream(const std::vector<UtilityCircuit>& circuits)
         out[c.supply] = c.name;
         out[c.ret]    = c.name;
     }
+    //  EVERY NAME THE STREAM ANSWERS TO.  `aliasOf` maps a boundary label to
+    //  the identity it renames; a circuit is declared on the identity, and a
+    //  balance report holds a product under the label.  Adding the label here
+    //  is not widening the circuit -- it is the same pipe under the author's
+    //  own word -- and doing it in this ONE home keeps the GUI's grouping
+    //  stamp and the report's exclusion set the same answer.
+    for (const auto& [alias, identity] : aliasOf)
+    {
+        auto it = out.find(identity);
+        if (it != out.end()) out[alias] = it->second;
+    }
     return out;
 }
 
 
-std::set<std::string> excludedStreams(const std::vector<UtilityCircuit>& circuits)
+std::set<std::string> excludedStreams(
+    const std::vector<UtilityCircuit>& circuits,
+    const std::map<std::string, std::string>& aliasOf)
 {
     std::set<std::string> out;
-    for (const auto& kv : circuitOfStream(circuits)) out.insert(kv.first);
+    for (const auto& kv : circuitOfStream(circuits, aliasOf)) out.insert(kv.first);
     return out;
 }
 

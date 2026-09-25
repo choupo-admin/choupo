@@ -1,4 +1,4 @@
-# Green ammonia, 500 t/day, Sines — sectored case, **industrial-grade N₂**
+# Green ammonia, 500 t/day — sectored case, **industrial-grade N₂**
 
 A fractal (sectored) Choupo case: read it as **PLANT → SECTOR → UNIT**.
 

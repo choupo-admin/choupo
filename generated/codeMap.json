@@ -4584,6 +4584,7 @@
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
    "src/streams/StreamMass.H",
+   "src/streams/UtilityCircuit.H",
    "src/thermo/Component.H",
    "src/thermo/ElementComposition.H",
    "src/thermo/PackageAudit.H",
@@ -11093,6 +11094,7 @@
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/streams/UtilityCircuit.H": [
+   "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/MassBalanceReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
    "src/streams/UtilityCircuit.cpp",

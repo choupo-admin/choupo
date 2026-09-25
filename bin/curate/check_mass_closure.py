@@ -259,6 +259,112 @@ def refusal_arm():
     return out
 
 
+#  ---- The ATOM scope arm (2026-09-25) ------------------------------------
+def atom_scope_arm():
+    """The declared circuits must come OUT of the atom balance too.
+
+    WHY THIS ARM EXISTS.  Vitor's instruction of 2026-09-24 was that the
+    utility water should not clutter the global mass AND MOLAR balance.  The
+    mass summary gained a process scope on 2026-09-08; the ATOM balance did
+    not, and that was the half that mattered -- on the green ammonia plant
+    the H row was 99.04 % cooling water and the O row was 99.991 %, so an
+    atom row that is almost entirely a CONSERVING circuit closes perfectly
+    whatever the process does.  That is a LOSS OF SENSITIVITY, not an
+    aesthetic complaint: a leak of process hydrogen is measured against a
+    denominator a hundred times too large.
+
+    WHAT IT ASSERTS, and the second one is the load-bearing half:
+
+      (a) PRESENCE, both ways.  A case that declares `utilities ( ... )` must
+          publish `process.<element>` rows, and a case that declares none must
+          publish none.  Silence must keep meaning "nothing was declared".
+
+      (b) THE SCOPE MUST ACTUALLY REMOVE SOMETHING.  On at least one element
+          the process flow must be materially below the total.  **A scope
+          that reproduces the total is a scope that removes nothing, and that
+          is the failure that looks exactly like success** -- it is what a
+          one-sided exclusion produces, which is precisely the defect this
+          slice found (the supply side excluded, the return side counted, and
+          a process closure of 16 421 %).  Asserting a PROPERTY rather than a
+          transcription keeps the arm true when the numbers move.
+
+    WHAT IT DOES NOT ASSERT, so the green line cannot imply it: that the
+    process figures are RIGHT (they are a derived view of streams the goldens
+    already pin -- pinning them again would be a second home for one physics,
+    and *trees never store derivatives*), nor that a plant which declares no
+    circuit OUGHT to, which is the same blind spot the refusal arm states.
+    """
+    out = []
+    seen = 0
+    for case in sorted(ROOT.glob("tutorials/plant/*")):
+        mb = case / "reports" / "balances" / "massBalance.csv"
+        eb = case / "reports" / "balances" / "elementBalance.csv"
+        if not mb.is_file() or not eb.is_file():
+            continue
+        #  ASK THE ENGINE, DO NOT RE-READ THE DICT.  The first version of this
+        #  arm decided `declares` by looking for the word `utilities` in the
+        #  flowsheetDict, and sabotage S3 -- renaming the block to
+        #  `utilitiesXX` -- left it GREEN, because the substring survives the
+        #  rename AND because the block's own comment uses the word in prose
+        #  several times.  Tightening the pattern would only move the guess;
+        #  the mass summary already carries the ENGINE's answer as
+        #  `utility.<name>` rows, written from `utilityCircuits::read`, so the
+        #  gate reads a decision instead of re-deriving one.  Same rule the
+        #  GUI follows: the engine decides, the reader groups.
+        declares = any(
+            line.startswith("utility.")
+            for line in mb.read_text(encoding="utf-8",
+                                     errors="replace").splitlines())
+        rel = case.relative_to(ROOT).as_posix()
+        total, proc = {}, {}
+        for line in eb.read_text(encoding="utf-8", errors="replace").splitlines()[1:]:
+            c = line.split(",")
+            if len(c) < 2:
+                continue
+            try:
+                v = float(c[1])
+            except ValueError:
+                continue
+            if c[0].startswith("process."):
+                proc[c[0][8:]] = v
+            else:
+                total[c[0]] = v
+        if declares and not proc:
+            out.append(
+                "%s declares `utilities ( ... )` and its elementBalance.csv "
+                "carries NO `process.<element>` rows.  The atom balance is "
+                "then presented diluted by the very circuit the case went to "
+                "the trouble of declaring." % rel)
+            continue
+        if not declares and proc:
+            out.append(
+                "%s declares no utility circuit and yet publishes a process "
+                "atom scope.  Silence must keep meaning `nothing was "
+                "declared`." % rel)
+            continue
+        if not proc:
+            continue
+        seen += 1
+        #  (b) the scope must remove something on at least one element.
+        removed = any(
+            sym in total and total[sym] > 0.0 and v < 0.99 * total[sym]
+            for sym, v in proc.items())
+        if not removed:
+            out.append(
+                "%s publishes a process atom scope that is within 1 %% of the "
+                "total on EVERY element -- it removes nothing.  A scope that "
+                "reproduces the total is the failure that looks like success: "
+                "check that BOTH ends of each circuit are excluded, not only "
+                "the supply (the return answers to a second name on a "
+                "sectored plant)." % rel)
+    if seen == 0 and not out:
+        out.append(
+            "the atom-scope arm found NO plant publishing a process atom "
+            "scope.  It was built because two plants published one; a count "
+            "of zero means the scan went blind, not that the tree is clean.")
+    return out
+
+
 def main() -> int:
     #  FOUR STATES, and the first version of this gate collapsed them into two
     #  and accused three honest cases.  Each is a different fact about the run:
@@ -336,6 +442,7 @@ def main() -> int:
                  "retire the check.\n"))
         return 1
     bad += refusal_arm()
+    bad += atom_scope_arm()
 
     if bad:
         print("check_mass_closure: FAILED")
@@ -362,7 +469,15 @@ def main() -> int:
           "LISTED rather than skipped, because an absence nobody counts is not "
           "a finding -- and a case that DECLARES the report and never gets it "
           "FAILS by name, which is how a 113 %% closure shipped unseen until "
-          "2026-09-04.  NOT CHECKED: energy closure, and PER-UNIT closure (two "
+          "2026-09-04.  THE ATOM BALANCE CARRIES THE SAME SEPARATION and is "
+          "held here too: a plant that DECLARES a circuit must publish "
+          "`process.<element>` rows, one that declares none must publish "
+          "none, and the scope must ACTUALLY REMOVE something -- below 99 %% "
+          "of the total on at least one element, because a scope that "
+          "reproduces the total removes nothing and is the failure that "
+          "looks like success.  NOT CHECKED: whether those process figures "
+          "are RIGHT (they are a derived view of streams the goldens already "
+          "pin), energy closure, and PER-UNIT closure (two "
           "units can cancel and this arm would not see it).%s"
           % (checked, BAND, processScope, len(PROBES), len(noBoundary),
              len(announced), len(unrun), len(silent),

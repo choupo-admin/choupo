@@ -69,10 +69,12 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     //  raised, by `streams/UtilityCircuit` at the flowsheet seam; here it is
     //  only a set of names to present apart.
     const auto circuits = utilityCircuits::read(ctx.flowsheetDict);
-    const auto excluded = utilityCircuits::excludedStreams(circuits);
+    const auto excluded =
+        utilityCircuits::excludedStreams(circuits, ctx.result.boundaryAliasOf);
     //  THE ENGINE DECIDES, THE READER GROUPS: the attribution travels on the
     //  result so a presenting surface never re-derives it from the block.
-    ctx.result.utilityCircuitOf = utilityCircuits::circuitOfStream(circuits);
+    ctx.result.utilityCircuitOf =
+        utilityCircuits::circuitOfStream(circuits, ctx.result.boundaryAliasOf);
 
     std::vector<scalar> in(n, 0.0), out(n, 0.0);
     std::vector<scalar> inProc(n, 0.0), outProc(n, 0.0);

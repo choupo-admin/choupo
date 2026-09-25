@@ -155,13 +155,29 @@ void validateConservation(const std::vector<UtilityCircuit>&       circuits,
 //  separately -- the GUI's plant material balance is the first -- groups by
 //  what the engine decided instead of re-reading the `utilities` block and
 //  matching names for itself.  Empty when nothing is declared.
+//
+//  A STREAM ANSWERS TO MORE THAN ONE NAME, and this map must carry every one
+//  of them (2026-09-25).  A circuit is DECLARED over the graph's own edges,
+//  so its `return` is the qualified identity (`LOOP.CwOut`) -- the validator
+//  refuses anything else, because it resolves against the units' own ports.
+//  But a plant also LABELS its outlets, and `reporting::Topology` holds a
+//  product under the author's boundary vocabulary (`CwOut`), which the
+//  2026-09-07 record names in its own "NOT done" list.  So a sectored plant
+//  that declared its circuits had the SUPPLY side excluded and the RETURN
+//  side counted, and its process closure came out at 16 421 %.
+//  `aliasOf` is the DECLARED bridge (alias -> source identity); passing it
+//  here resolves the two vocabularies in the ONE home, rather than leaving
+//  each presenting surface to match a tail for itself.
 std::map<std::string, std::string>
-circuitOfStream(const std::vector<UtilityCircuit>& circuits);
+circuitOfStream(const std::vector<UtilityCircuit>& circuits,
+                const std::map<std::string, std::string>& aliasOf = {});
 
 //- The stream names a PRESENTED process balance leaves out.  Nothing else
 //  may use this to skip a stream -- see the invariant at the top.  Derived
 //  from `circuitOfStream` so the two answers cannot drift apart.
-std::set<std::string> excludedStreams(const std::vector<UtilityCircuit>& circuits);
+std::set<std::string> excludedStreams(
+    const std::vector<UtilityCircuit>& circuits,
+    const std::map<std::string, std::string>& aliasOf = {});
 
 //- Which declared circuit a unit's utility side belongs to, keyed by unit
 //  name -- for the utility report, so a circuit served by an explicit stream

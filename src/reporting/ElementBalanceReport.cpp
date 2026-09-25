@@ -30,6 +30,7 @@ License
 
 #include "reporting/BalanceAlarm.H"
 #include "reporting/BalanceMath.H"
+#include "streams/UtilityCircuit.H"
 #include "reporting/Topology.H"
 #include "thermo/ElementComposition.H"
 #include "thermo/ThermoPackage.H"
@@ -37,6 +38,7 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <set>
 #include <map>
 #include <stdexcept>
 
@@ -63,6 +65,40 @@ void ElementBalanceReport::run(const DictPtr& /*dict*/,
     // classification has ONE home, reporting::Topology.
     const auto eb = reporting::elementBoundaryBalance(
         topo.balanceFeeds, topo.products, ctx.result, ctx.thermo);
+
+    //  THE SECOND SCOPE, ON THE ATOMS TOO (2026-09-25, Vitor's instruction of
+    //  2026-09-24: the utility water should not be cluttering the global mass
+    //  AND MOLAR balance).  The mass summary gained a process scope on
+    //  2026-09-08 and the ATOM balance did not, which left the sharper half
+    //  undone: on the green ammonia plant the cooling water is 3 513 143 kg/h
+    //  against 21 306 kg/h of process feed, so the H row was ~99 % coolant and
+    //  the O row was ENTIRELY coolant -- and an atom row that is mostly a
+    //  conserving circuit closes perfectly whatever the process does.  That is
+    //  not a cosmetic complaint: it is a LOSS OF SENSITIVITY, because a leak
+    //  of process hydrogen is measured against a denominator a hundred times
+    //  too large.
+    //
+    //  THE SEPARATION IS PRESENTATION, NEVER VALIDATION SCOPE -- the same
+    //  sentence the mass report carries, and it binds here identically: the
+    //  TOTAL rows below are unchanged, the alarm is still raised on them, and
+    //  a case declaring no circuit writes byte-identical output.
+    const auto excluded =
+        utilityCircuits::excludedStreams(
+            utilityCircuits::read(ctx.flowsheetDict),
+            ctx.result.boundaryAliasOf);
+    reporting::ElementBoundaryBalance ebProc;
+    bool haveProcessScope = false;
+    if (!excluded.empty())
+    {
+        std::set<std::string> procFeeds, procProducts;
+        for (const auto& s : topo.balanceFeeds)
+            if (!excluded.count(s)) procFeeds.insert(s);
+        for (const auto& s : topo.products)
+            if (!excluded.count(s)) procProducts.insert(s);
+        ebProc = reporting::elementBoundaryBalance(
+            procFeeds, procProducts, ctx.result, ctx.thermo);
+        haveProcessScope = ebProc.available;
+    }
 
     // Data/metadata separation: the CSV stays a REGULAR table (one header,
     // homogeneous rows); status + reasons live in the narrow .meta sidecar
@@ -138,6 +174,22 @@ void ElementBalanceReport::run(const DictPtr& /*dict*/,
           << aInH << "," << aOutH << "," << (aOutH - aInH) << ","
           << std::fixed << std::setprecision(4) << cl << "\n";
     }
+    //  The PROCESS scope rides the same table under a qualified key, exactly
+    //  as the mass summary writes `utility.<name>` and `PROCESS_TOTAL` in its
+    //  own component column: one header, homogeneous rows, and one vocabulary
+    //  across the two sibling reports.  Every reader that partitions on it is
+    //  named in the record; `gui/src/case/elementBalanceSurface.ts` is the
+    //  first, and it keeps `rows` meaning what it always meant.
+    if (haveProcessScope)
+        for (const auto& [sym, ain] : ebProc.elemIn)
+        {
+            const scalar aInH  = ain * 3600.0;
+            const scalar aOutH = ebProc.elemOut.at(sym) * 3600.0;
+            f << "process." << sym << "," << std::scientific
+              << std::setprecision(6) << aInH << "," << aOutH << ","
+              << (aOutH - aInH) << "," << std::fixed << std::setprecision(4)
+              << reporting::closurePct(aInH, aOutH) << "\n";
+        }
     f.close();
     //  ATOMS ARE NOT CREATED.  An element that does not close is the gravest
     //  error this diagnostic exists to catch (a chemically wrong operation),
