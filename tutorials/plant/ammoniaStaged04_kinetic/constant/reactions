@@ -1,0 +1,76 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  reactions -- STAGE D ONLY.  Stages A, B and C carry no reactions library:
+  A declares a conversion, B and C minimise Gibbs energy.  A rate law is what
+  stage D adds, and it is the ONE thing this file declares.
+
+  THE RATE LAW IS NOT WRITTEN HERE.  `type dysonSimon1968;` selects the
+  correlation object curated in
+  src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}:
+
+      D. C. Dyson and J. M. Simon, "A kinetic expression with diffusion
+      correction for ammonia synthesis on industrial catalyst", Ind. Eng.
+      Chem. Fundam. 7 (1968) 605-610 -- Eqs 2, 6-8, 18, 19, 39 + Table I, 40.
+
+  Every constant (the Arrhenius pair of Eq 18/19, Gillespie & Beattie's Ka of
+  Eq 2, the fugacity-coefficient correlations of Eqs 6-8, the 21 constants of
+  Table I) is the paper's own and lives in that one file with its citation,
+  its validity window and five verification anchors; the engine prints the
+  citation and the window on every run.  A case may not re-type them, and
+  this block REFUSES a key the law does not read -- an `A`, an `Ea`, an
+  `order`, a `reversible` -- because a number the engine does not read is a
+  comment that looks like a declaration.  Read the props bench first:
+  tutorials/props/kinetics/ammoniaRate01_dyson_simon.
+
+  WHAT IS DECLARED, and why each is a declaration and not a default:
+
+    roles {}             WHICH of this case's components play the law's N2,
+                         H2 and NH3.  The engine will not infer them from
+                         names; everything else (argon here) is inert to
+                         Eq 19.
+
+    effectivenessFactor  `intrinsic` = Equation 19 alone: the effectiveness
+                         factor is taken as 1, and the engine says on every
+                         run that this is UNPRICED -- the paper's own
+                         diffusion correction (Eq 39 with Table I, for 6-10 mm
+                         particles at 150-300 atm) exists in the engine and is
+                         NOT applied here.  That is deliberate and it is stage
+                         D's stated limit: the pellet is the rung beyond D
+                         (DEV.md C8).  `dysonSimonEq39` prices it and needs
+                         `operation { catalyst { particleDiameter ...; } }` on
+                         the reactor; the README measures what it changes.
+
+  UNITS.  Equation 19 returns kg-mol of NH3 per cubic metre of catalyst BED
+  per hour, so the reactor's `V_R` IS the catalyst volume and there is no
+  `catalystLoading` (the engine refuses one under this law).  The pressure
+  the law needs, in atmospheres, is read off the inlet stream and converted
+  at the reactor; nothing here is typed in the paper's units.
+
+  THE STOICHIOMETRY is checked against the law: it must be N2 + 3 H2 -> 2 NH3
+  up to a positive factor, with no other component carrying a nu, because
+  the law is that reaction's rate and no other's.
+\*---------------------------------------------------------------------------*/
+
+ammoniaSynthesis
+{
+    stoichiometry
+    (
+        { component N2;   nu -1; }
+        { component H2;   nu -3; }
+        { component NH3;  nu  2; }
+    );
+
+    kinetics
+    {
+        type                 dysonSimon1968;
+        roles { N2 N2;  H2 H2;  NH3 NH3; }
+        effectivenessFactor  intrinsic;       // Eq 19; xi = 1 UNPRICED (announced)
+    }
+}

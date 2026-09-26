@@ -1071,14 +1071,16 @@ and nothing should.
 | Equilibrium / Gibbs reactor | **Yes.**  `gibbsReactor`, `equilibriumReactor` |
 | **Temperature approach to equilibrium** | **Yes, on both.**  `gibbsReactor` reads `operation.temperatureApproach` (`GibbsReactor.cpp:141-147`), announces it, and publishes `kpis_["temperatureApproach_K"]`.  `equilibriumReactor` reads `operation.approachTemperature` (`EquilibriumReactor.cpp:65`) |
 | Fractional / extent approach | **No.**  Neither reactor exposes the §3.1(ii) definition |
-| Kinetic PFR | **Yes.**  `pfr`, with multi-reaction support, non-isothermal operation, hot-spot tracking (`T_max`, `hotSpot_dT`) |
+| Kinetic PFR | **Yes.**  `pfr`, with multi-reaction support, non-isothermal operation, hot-spot tracking (`T_max`, `hotSpot_dT`) — and, since 2026-09-26, a GAS-phase bed on a cited rate law: `kinetics { type dysonSimon1968; }` (stage D, `tutorials/plant/ammoniaStaged04_kinetic`) |
 | `catalystLoading` | **Yes**, on `cstr`, `pfr`, `batchReactor`, `dynamicCSTR` — a kg-catalyst-per-m³ unit conversion |
 | Pellet effectiveness factor η | **No — announced as absent.**  `CatalystPellet.{H,cpp}` announces that η is being taken as 1 and judges nothing (CLAUDE.md §6, 2026-08-18).  It does not multiply the rate |
-| **Reactor volume as an ENGINE OUTPUT** | **No.**  `pfr` publishes `kpis_["V_R"]` but `V_R` is the *declared* `operation.volume` — a rating model.  `gibbsReactor` publishes no volume at all (verified: no `V` key among its 20 KPIs) |
+| **Reactor volume as an ENGINE OUTPUT** | **Yes, by a DesignSpec (2026-09-26).**  `pfr` is a rating model (`V_R` is what it is given), so the engine-computed volume is the outer driver's answer: stage D varies `$V_bed` until the bed's own `approach_K` KPI hits the per-bed 5 K of US 5,352,428 — 6.9898 m³ on the loop of stages A–C, beside stage C's 18.6290 m³ space-velocity vessel.  `gibbsReactor` still publishes no volume at all (verified: no `V` key among its 20 KPIs), which is right: an equilibrium reactor has no length scale |
 | **A reactor SIZER** | **No.**  `EquipmentSize::registerBuiltins` registers exactly nine sizers — `stirredTank`, `shellTubeHX`, `evaporator`, `crystalliser`, `sprayDryer`, `cyclone`, `compressor`, `vessel`, `distillationColumn`.  No reactor of any kind |
-| Dyson & Simon correlation | **Yes**, as a verified correlation object with citation, validity window and five labelled anchors — but in the **props bench**, not wired into any reactor |
+| Dyson & Simon correlation | **Yes**, as a verified correlation object with citation, validity window and five labelled anchors — in the **props bench** AND, since 2026-09-26, wired into `pfr` (`kinetics { type dysonSimon1968; }`; the pellet correction of Eq 39 is a declared route, `effectivenessFactor intrinsic | dysonSimonEq39`, with no default) |
 
-**The gap is exactly §6's step (2).**  Measured on the flagship: the green
+**The gap named below WAS exactly §6's step (2), and stage D closes it on
+the staged loop (2026-09-26; the flagship itself is unchanged and still sizes
+its converter the way this paragraph describes).**  Measured on the flagship: the green
 ammonia plant's converter is sized as a **`vessel`** with a hand-declared
 volume, in `tutorials/plant/greenAmmoniaIndustrialN2/system/postDict`:
 

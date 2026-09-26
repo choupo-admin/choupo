@@ -25,7 +25,7 @@ tear seed, separator, let-down and purge are byte-identical across all three.
 | **A** *this case* | `conversionReactor`, declared conversion | a material balance | a reactor size; an equipment-factored cost |
 | **B** `ammoniaStaged02_equilibrium` | `gibbsReactor`, true equilibrium | the thermodynamic ceiling | any size, any cost |
 | **C** `ammoniaStaged03_approach` | `gibbsReactor` + 5 K approach | a realistic outlet | a bed volume the engine computed |
-| D (**not built**) | kinetic PFR on a rate law | a bed volume the engine computed | — |
+| **D** `ammoniaStaged04_kinetic` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the engine computed | a pellet effectiveness factor (announced as unpriced); a cost |
 
 Background: `docs/design/how-a-process-design-is-staged.md`, and DEV.md C8.
 

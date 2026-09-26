@@ -187,7 +187,36 @@ datum the heat of reaction is already inside `H`, and an adiabatic reactor conse
 elements datum → refused, loudly).  Example: `pfr04_adiabatic` (esterification, +105 K).
 NOTE: `cstr`/`pfr` compute concentration on the **liquid** molar volume
 (Vliq) — a liquid-basis model.  For a GAS-phase reactor prefer
-`conversionReactor` (below).
+`conversionReactor` (below) — with ONE exception, next.
+
+**A GAS-PHASE CATALYST BED on a cited rate law: `kinetics { type dysonSimon1968; }`**
+(multi-reaction path only, since 2026-09-26).  The Dyson & Simon (1968) ammonia
+synthesis rate (`src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`,
+Ind. Eng. Chem. Fundam. 7 (1968) 605) is selected by name in the reaction's
+`kinetics {}` block; its constants are the paper's and are NOT typed into the
+case.  The rate is in T, P and mole fractions per m³ of catalyst BED, so the
+bed reads no `Vliq`, `V_R` IS the catalyst volume, and `catalystLoading` is
+REFUSED under it.  The block declares exactly three things:
+```
+kinetics
+{
+    type                 dysonSimon1968;
+    roles { N2 <comp>;  H2 <comp>;  NH3 <comp>; }   // WHICH components play the law's species; all others inert
+    effectivenessFactor  intrinsic;                  // Eq 19 alone, xi = 1 UNPRICED (announced)
+    //                   dysonSimonEq39;             // Eq 40: xi from Eq 39 + Table I; needs
+    //                                               // operation { catalyst { particleDiameter <length>; } }
+}
+```
+No default on any of them; `order`, `reversible`, `A`/`Ea` beside it are refused (the
+law does not read them), the stoichiometry must be N2 + 3 H2 -> 2 NH3 up to a factor,
+and the feed stream must carry P (the law is written in atm).  The bed publishes
+`X_N2`, `y_NH3_out`, `approach_K` (the effluent's temperature approach to the LAW's
+own equilibrium, US 5,352,428's per-bed definition — not the package's Gibbs surface),
+`T_eq_outlet_K`, `GHSV_normal_h` (0 °C, 1 atm ideal-gas basis), `tau_gas_s`, the rate
+at both ends, the inlet ratio of the law's fugacity coefficients to the package's
+(`phi_law_over_pkg_*_in`) and, on the Eq 40 route, `xi_min`/`xi_max`.  Wire the
+volume to a DesignSpec on `approach_K` to SIZE the bed.  Example:
+`tutorials/plant/ammoniaStaged04_kinetic` (stage D of the staged design sequence).
 
 ### `conversionReactor`
 Stoichiometric reactor: you **specify the per-pass conversion** of the

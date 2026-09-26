@@ -1,0 +1,83 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  outerDict -- STAGE D ONLY.  THIS IS WHERE THE BED VOLUME IS COMPUTED.
+
+  The PFR is a RATING model: it integrates the volume it is given.  Stage D's
+  claim -- "a bed volume the ENGINE computed" -- is therefore the answer of
+  this DesignSpec, a Newton on one case variable against one target:
+
+      $V_bed  ->  converter.approach_K  =  5 K
+
+  THE TARGET is the same source and the same number stage C declares, read
+  the way the source itself defines it PER BED.  US 5,352,428 (Bhakta &
+  Grotz, CF Braun and Co, 4 October 1994), verbatim: "The effluent from each
+  bed has an approach to equilibrium of 5 C., i.e., the ammonia concentration
+  corresponds to the equilibrium concentration at a temperature 5 C. above
+  the actual temperature."  Stage C IMPOSED that number on an isothermal
+  Gibbs converter; here the engine SOLVES for the bed volume at which an
+  adiabatic kinetic bed's effluent actually reaches it.  `approach_K` is the
+  PFR's own KPI: T* - T_out, where T* is the temperature at which the outlet
+  gas would be at equilibrium under the rate law's own Ka (Gillespie &
+  Beattie, Eq 2) -- NOT the package's Gibbs surface; the README states how far
+  the two equilibria sit apart.
+
+  WHY NOT STAGE C's 46.60 % PER-PASS CONVERSION AS THE TARGET.  It is not
+  reachable by this bed at any volume: a single ADIABATIC bed's conversion is
+  capped where its adiabatic line crosses the retreating equilibrium curve,
+  and that cap is far below an isothermal 700 K converter's.  The README
+  measures the cap with a volume sweep.  A DesignSpec aimed at an unreachable
+  value diverges; aiming it there and reporting the divergence would be
+  honest but would size nothing.  The sourced, reachable, per-bed criterion
+  is the one above.
+
+  WHY ONE UNKNOWN AND NOT TWO.  The bed's inlet temperature is landed by the
+  preheater's own inverse solve (`phaseChanger { outletT 700 K; }` returns
+  its duty), so it is not an outer unknown -- and it could not be one: a
+  fixed-duty `heater` in front of this bed makes the recycle open-loop
+  unstable (measured; see the flowsheetDict header), so an outer Newton
+  varying that duty would have every inner evaluation run away from the
+  answer it was asked to hold still.
+
+  WHAT DOES NOT RUN UNDER THIS DRIVER, said plainly: `system/postDict` is
+  NOT applied to the representative pass (the sizing/costing chain is Layer
+  3 of the single-pass path only), so this case carries no postDict, no
+  vessel sheet and no cost.  Stage D sizes the BED; the vessel around it
+  stays stage C's, and a cost of stage D's converter would have to be built
+  from this run's own V_bed in a case of its own.  The balance REPORTS do run
+  on the representative pass (choupoSolve/main.cpp, Layer 3b), so the plant
+  first law and mass closure below are checked -- on that pass alone.
+\*---------------------------------------------------------------------------*/
+
+type         designSpec;
+
+manipulate
+(
+    //  Bounds are advisory clips on the Newton step, not physics: the lower
+    //  bound keeps the FD Jacobian off a bed so short that the approach is
+    //  hundreds of kelvin and the residual flat.
+    { variable V_bed;   initial 6.0;    min 1.0;   max 60.0; }    // m3 of catalyst bed
+);
+
+targets
+(
+    { path converter.approach_K;   value 5.0;   tol 0.02; }   // K, US 5,352,428 per-bed approach
+);
+
+options
+{
+    maxIter      40;
+    tolF         1.0;        // |F|_2 < 1: the residual within its own tol
+    fdStep       1.0e-3;
+}
+
+report
+{
+    file     designspec_history.csv;
+}

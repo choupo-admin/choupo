@@ -215,10 +215,14 @@ scalar DysonSimon1968::toLbmolPerFt3h(scalar kmol_per_m3_h)
     return kmol_per_m3_h * (2.2046226218 / 35.3146667215);
 }
 
-AmmoniaRateResult DysonSimon1968::evaluate(const AmmoniaRateContext& c)
-{
-    AmmoniaRateResult r;
+namespace {
 
+//  Eqs 2-8, 18 and 19 -- everything BEFORE the particle question.  ONE body
+//  serving both `evaluate()` (which then forms Eq 39/40) and
+//  `evaluateIntrinsic()` (which does not), so the two can never price the
+//  intrinsic rate two different ways.
+void evaluateIntrinsicInto(const AmmoniaRateContext& c, AmmoniaRateResult& r)
+{
     if (!(c.T_K > 0.0) || !(c.P_atm > 0.0))
         throw std::runtime_error("DysonSimon1968: temperature and pressure"
             " must both be positive; the pressure is in ATMOSPHERES here,"
@@ -244,10 +248,10 @@ AmmoniaRateResult DysonSimon1968::evaluate(const AmmoniaRateContext& c)
         throw std::runtime_error(os.str());
     }
 
-    r.Ka        = equilibriumConstant(c.T_K);
-    r.gamma_N2  = gammaN2 (c.T_K, c.P_atm);
-    r.gamma_H2  = gammaH2 (c.T_K, c.P_atm);
-    r.gamma_NH3 = gammaNH3(c.T_K, c.P_atm);
+    r.Ka        = DysonSimon1968::equilibriumConstant(c.T_K);
+    r.gamma_N2  = DysonSimon1968::gammaN2 (c.T_K, c.P_atm);
+    r.gamma_H2  = DysonSimon1968::gammaH2 (c.T_K, c.P_atm);
+    r.gamma_NH3 = DysonSimon1968::gammaNH3(c.T_K, c.P_atm);
 
     //  Eqs 3-5: a_i = X_i f_i^0 with f_i^0 = gamma_i P (Lewis & Randall).
     r.a_N2  = c.x_N2  * r.gamma_N2  * c.P_atm;
@@ -297,6 +301,72 @@ AmmoniaRateResult DysonSimon1968::evaluate(const AmmoniaRateContext& c)
               " application, and it is repeated here as theirs.";
         r.announcements.push_back(os.str());
     }
+}
+
+} // namespace
+
+AmmoniaRateResult DysonSimon1968::evaluateIntrinsic(const AmmoniaRateContext& c)
+{
+    AmmoniaRateResult r;
+    evaluateIntrinsicInto(c, r);
+    //  xi = 1 here means UNPRICED: Eq 39 was not formed.  Said in the route so
+    //  a reader of the result cannot mistake it for the sub-6 mm branch of
+    //  `evaluate()`, where the same number is the authors' own finding.
+    r.xi = 1.0;
+    r.xiAvailable = false;
+    r.xiRoute = "Eq 39 NOT evaluated: the INTRINSIC rate (Eq 19) was asked"
+        " for, so xi = 1 here is UNPRICED -- the diffusion correction the"
+        " paper supplies (Eq 39 + Table I, 6-10 mm particles, 150-300 atm)"
+        " exists and was not applied. Declare a particle and ask for Eq 40"
+        " to price it.";
+    r.rate_kmolNH3_per_m3bed_h = r.rateIntrinsic_kmolNH3_per_m3bed_h;
+    return r;
+}
+
+scalar DysonSimon1968::equilibriumTemperatureOf(const AmmoniaRateContext& c,
+                                                scalar Tlo, scalar Thi)
+{
+    if (!(Thi > Tlo) || !(Tlo > 0.0))
+        throw std::runtime_error("DysonSimon1968::equilibriumTemperatureOf:"
+            " the bracket must satisfy 0 < Tlo < Thi.");
+    auto imbalance = [&](scalar T) -> scalar
+    {
+        AmmoniaRateContext cc = c;
+        cc.T_K = T;
+        const AmmoniaRateResult r = evaluateIntrinsic(cc);
+        return r.forwardTerm - r.reverseTerm;       // > 0: below equilibrium T
+    };
+    scalar lo = Tlo, hi = Thi;
+    scalar flo = imbalance(lo);
+    const scalar fhi = imbalance(hi);
+    if ((flo > 0.0) == (fhi > 0.0))
+    {
+        std::ostringstream os;
+        os << "DysonSimon1968::equilibriumTemperatureOf: Eq 19's forward and"
+              " reverse terms do not cross between " << Tlo << " K and "
+           << Thi << " K for this composition (imbalance " << flo << " at the"
+              " low end, " << fhi << " at the high end), so no equilibrium"
+              " temperature lies in the bracket. Widen it, or accept that this"
+              " gas is at equilibrium at no temperature the bracket covers.";
+        throw std::runtime_error(os.str());
+    }
+    //  Bisection: Ka is monotone in T (Eq 2), and Eqs 6-8 move slowly, so the
+    //  imbalance changes sign exactly once; 100 halvings of a 1000 K bracket
+    //  is 1e-27 K, far below anything the result is quoted to.
+    for (int i = 0; i < 100; ++i)
+    {
+        const scalar mid = 0.5 * (lo + hi);
+        const scalar fm = imbalance(mid);
+        if ((fm > 0.0) == (flo > 0.0)) { lo = mid; flo = fm; }
+        else hi = mid;
+    }
+    return 0.5 * (lo + hi);
+}
+
+AmmoniaRateResult DysonSimon1968::evaluate(const AmmoniaRateContext& c)
+{
+    AmmoniaRateResult r;
+    evaluateIntrinsicInto(c, r);
 
     //  ---- xi: Eq 39 + Table I, and every branch of it is named ----
     if (!(c.particleDiameter_mm > 0.0))

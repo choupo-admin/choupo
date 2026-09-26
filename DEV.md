@@ -1271,11 +1271,12 @@ accepts today, and that is a policy call.
         exercises.**  A capability that exists, announces itself and is used
         by nothing is a capability no gate can see.
      3. `AmmoniaSynthesisRate.{H,cpp}` sits under
-        `src/unitOperations/reactor/kinetics/` and is included by exactly two
-        files: its own `.cpp` and `AmmoniaRateBench.cpp`, a PROPS op.  **No
-        reactor includes it.**  The kinetic rung cannot be built without
-        wiring, and the wiring is a decision, not a task (see the RESERVED
-        paragraph below).
+        `src/unitOperations/reactor/kinetics/` and WAS included by exactly two
+        files: its own `.cpp` and `AmmoniaRateBench.cpp`, a PROPS op -- no
+        reactor included it when this was measured.  The kinetic rung could
+        not be built without wiring, and the wiring was a decision, not a
+        task (see the RESERVED paragraph below, and the paragraph after it
+        that records the decision and the wiring).
 
      **SEPARATE CASES, NOT A STAGED `postDict` CHAIN.**  A stage is a
      different FLOWSHEET, not a different post-processing chain: the reactor
@@ -1303,8 +1304,9 @@ accepts today, and that is a policy call.
         approach** -- so stage C is also the flagship's own correction.
      D. Kinetic PFR on Dyson & Simon.  Claims a bed volume the ENGINE
         computed, comparable against C's space-velocity volume.  That
-        comparison is the whole pedagogical payoff, and it is the one number
-        in the sequence the engine cannot produce today.
+        comparison is the whole pedagogical payoff, and it was the one number
+        in the sequence the engine could not produce until 2026-09-26 (built;
+        see the D paragraph at the end of this entry).
 
      The rung beyond D -- packed bed with a pellet effectiveness factor -- is
      NOT built and the sequence SAYS so rather than implying it: `eta` is
@@ -1344,7 +1346,41 @@ accepts today, and that is a policy call.
      the bed 77x at exit 0.  Also measured from the flagship's own golden:
      its comment says 20 000 Nm3/(m3 h) and the number is ~10 200 -- the
      comment overstates by 1.8x, which is the whole argument for the rule
-     being engine-visible.  D remains as above.
+     being engine-visible.
+
+     **D IS BUILT (2026-09-26, in an isolated worktree, under Vitor's
+     authorisation of the same day).**  `tutorials/plant/ammoniaStaged04_kinetic`:
+     the same loop, the converter an ADIABATIC `pfr` on the Dyson & Simon
+     (1968) law, wired into the PFR's multi-reaction path as the third word
+     of `kinetics.type` (`Arrhenius | LHHW | dysonSimon1968`, refused by name
+     otherwise), with `roles {}` naming which components play N2/H2/NH3 and
+     `effectivenessFactor intrinsic | dysonSimonEq39` a declared word with no
+     default; `catalystLoading`, `order` and `reversible` REFUSE under it
+     because Eq 19 is already per m3 of bed with its own reverse term.  The
+     bed volume is a `designSpec` on the PFR's new `approach_K` KPI (the
+     effluent's temperature approach to the LAW's own equilibrium, the patent's
+     per-bed definition): **6.9898 m3 at a 5 K approach against C's 18.6290 m3
+     space-velocity vessel** -- and the second gap is the larger lesson:
+     **a single adiabatic bed converts 16.60 % per pass against C's isothermal
+     46.60 %**, capped at 16.91 % where its adiabatic line meets the
+     equilibrium curve (measured by a 0.5-200 m3 sweep), so the loop
+     recirculates 3.9x the makeup and makes 16 % less ammonia through its
+     purge.  TWO blocks differ from C, not one: C's `T 700 K` hid the preheat
+     inside the Gibbs duty, and a kinetic bed cannot impose a temperature, so
+     a `phaseChanger { outletT 700 K; }` stands in front of it -- a fixed-duty
+     `heater` there was MEASURED to make the recycle open-loop unstable (both
+     solvers ran away to extinction), which is the real reason loops preheat
+     through a controlled feed-effluent exchanger.  eta stays 1 and is
+     announced as UNPRICED; switched to Eq 40 with an 8 mm particle the same
+     target needs 15.04 m3 (xi 0.32-0.49), the rung beyond D, measured in the
+     README and not shipped.  FOUND, not fixed (out of the slice's scope,
+     `IsothermalFlash.cpp`): the separator's duty re-resolves its 845 K feed
+     and ACCEPTS a two-phase root above every component's Tc while the energy
+     report discards that same root and says so -- the plant first law is
+     open by -22 274.7 kW (5.918 %), all of it on that unit, pinned in
+     `check_energy_closure.KNOWN_OPEN` from the engine's own printed line.
+     Also found: under an outer driver the postDict chain does not run, so D
+     ships no vessel sheet and no cost, said in its outerDict.
 
 **C7. NO COMPETITOR IS NAMED IN THIS REPOSITORY (ruled 2026-09-24;
      PARTLY DONE, and the hardest part is not the scrub).**  Vítor:

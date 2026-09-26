@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+tier          tutorial;
+application  choupoSolve;
+description  "STAGED DESIGN SEQUENCE, stage D of four -- THE KINETIC BED. The same loop as stages A-C with the converter as an ADIABATIC plug-flow catalyst bed on the Dyson & Simon (1968) rate law, and the bed VOLUME computed by the engine: a DesignSpec solves V_bed so the effluent is 5 K short of the rate law's own equilibrium (US 5,352,428's per-bed definition, the same source and value stage C imposed), with a preheater landing the loop gas at stage C's 700 K by its own inverse solve. The volume the engine computes sits beside stage C's space-velocity volume, and the per-pass conversion a single adiabatic bed can reach sits beside stage C's isothermal 46.60 % -- both gaps are the lesson.";
+verbosity    3;
