@@ -1683,8 +1683,16 @@ key**, so the gate cannot see that `temperatureApproach` is missing from the
 schema.  This is the 2026-08-18 shape again: a guard whose only case
 satisfies it is a guard nothing tests.  Here there is not even one case.
 
-**RESERVED for Vitor, and the three are separable:**
-(i) which of the two models is the one Choupo means -- they are different
+**(i) TAKEN ON A STATED DEFAULT, 2026-09-26 (section 10's 2026-08-08 rule;
+reversible by Vitor with one word).**  `temperatureApproach` is the model
+Choupo means -- an approach to equilibrium is about the REACTION's extent,
+not the phase behaviour, and shifting Psat and phi with it changes the flash,
+which is not what the word means.  `approachTemperature` is RETIRED the way
+`fitBinaryPair` and the heater's `Tout` were: read only to REFUSE by name,
+naming the surviving key.  Blast radius measured before deciding: zero corpus
+cases declare either key.  What stays reserved is below.
+**RESERVED for Vitor, and the two are separable:**
+(i, as it stood) which of the two models is the one Choupo means -- they are different
 physics, not two spellings, and the answer decides which key survives;
 (ii) whether `minimum: 0` goes, which is the sign question itself;
 (iii) whether a wrong-signed approach should be ANNOUNCED.  The general's
