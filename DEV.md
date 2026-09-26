@@ -1009,6 +1009,19 @@ accepts today, and that is a policy call.
      no citation invented), or UNSOURCED -- and writes the list as a
      design record.  Nothing in `docs/*.tex` is edited; the list is the
      deliverable and Vitor decides what each unsourced equation gets.
+     **DONE 2026-09-26.**  `bin/curate/theory_equation_inventory.py` (a
+     tool, wired nowhere; its chapter keys equal `check_theory_citations`'s)
+     enumerates the numbered environments, and
+     `docs/design/theory-guide-equation-citations-2026-09-26.md` gives every
+     one a verdict, the UNSOURCED list first.  Read the record for the
+     counts; the durable finding is that most unsourced rows are a MOVE,
+     not a search -- the guide names the author in prose (Ambrose-Walton,
+     Rackett, Merkel, Molokanov, Murphree, Lapple, Chisholm, Flory, ...) and
+     lacks only the `\cite`/`\bibitem`; a few are forms-with-constants
+     attributed to nobody; two bib keys are TRAPS (`Hansen1991` is the
+     UNIFAC Hansen, `Wilson` is the 1964 activity model).  No `.tex` was
+     edited.  WAITING ON VITOR (4b): source, mark as identity, or delete,
+     per row.
 
 **C4. An electrodialysis case for WINE (asked 2026-09-21 as a question;
      NOT DONE).**  He asked whether a typical wine electrodialysis case had
