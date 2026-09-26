@@ -20,7 +20,7 @@ reactor model.**  Against stage B the difference is literally one line.
 | A `ammoniaStaged01_yield` | `conversionReactor`, declared conversion | a material balance | a reactor size; an equipment-factored cost |
 | B `ammoniaStaged02_equilibrium` | `gibbsReactor`, true equilibrium | the thermodynamic ceiling | any size, any cost |
 | **C** *this case* | `gibbsReactor` **+ 5 K approach** | a realistic outlet; downstream units may be sized; the converter may be costed | a bed volume the **engine** computed |
-| D (**not built**) | kinetic PFR on a rate law | a bed volume the engine computed | — |
+| **D** `ammoniaStaged04_kinetic` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the engine computed | a pellet effectiveness factor (announced as unpriced); a cost |
 
 ```bash
 diff tutorials/plant/ammoniaStaged02_equilibrium/system/flowsheetDict \
@@ -132,7 +132,11 @@ That last clause bites here: this package declares no SRK binary interaction
 parameters, so all six pairs run k_ij = 0.  **Some unknown part of a 5 K
 approach at 200 bar is paying for that, not for catalyst kinetics.**  The
 approach is a stand-in for a rate law this case does not have — which is
-stage D, and stage D is not built.
+stage D, `ammoniaStaged04_kinetic`, built 2026-09-26.  Its measured answer
+sharpens this paragraph: a single ADIABATIC bed on the Dyson & Simon law
+reaches a 5 K approach at only 16.60 % per-pass conversion, because it heats
+itself to 845 K on the way, so this case's 46.60 % is the conversion of an
+ISOTHERMAL 700 K converter, which no single bed is.
 
 It is also **not** the *fractional* approach (outlet mole fraction divided by
 the equilibrium value at the same T and P), which is a different quantity and
@@ -250,11 +254,17 @@ a fetch-and-summarise of the patent page and was NOT verified by reading the
 raw document.  A curator who wants to rely on it should retrieve US 4,568,530
 and check the sentence before quoting it onward.
 
-**What would replace it:** an integrated rate law with a pellet effectiveness
-factor, which is stage D.  `AmmoniaSynthesisRate.{H,cpp}` exists under
-`src/unitOperations/reactor/kinetics/` and is included by its own `.cpp` and by
-a props bench — **by no reactor**.  Until that is wired, this volume is a
-feasibility-class number: enough to cost a vessel, not enough to build one.
+**What replaces it:** an integrated rate law, which is stage D
+(`ammoniaStaged04_kinetic`, built 2026-09-26).  `AmmoniaSynthesisRate.{H,cpp}`
+under `src/unitOperations/reactor/kinetics/` is read by `pfr` through
+`kinetics { type dysonSimon1968; }`, and a DesignSpec on the bed's own
+approach-to-equilibrium KPI computes **6.9898 m³** for a 5 K per-bed approach
+— against this case's 18.63 m³ — at 16.60 % per-pass conversion, because a
+single adiabatic bed cannot be the isothermal converter this case assumes.
+The pellet effectiveness factor is the rung beyond D (announced there as
+unpriced; the paper's own correction, switched on with an 8 mm particle, makes
+the same bed 15.04 m³).  This volume stays a feasibility-class number: enough
+to cost a vessel, not enough to build one.
 
 ## 5. What this case REFUSES to claim
 

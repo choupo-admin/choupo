@@ -76,11 +76,13 @@
   quoted in the flowsheetDict, which were read out of the retrieved text
   itself.
 
-  WHAT WOULD REPLACE IT: an integrated rate law with a pellet effectiveness
-  factor, which is stage D of this sequence and which the engine cannot run
-  today -- `AmmoniaSynthesisRate` is included by its own .cpp and by a props
-  bench, and by no reactor.  Until then this volume is a feasibility-class
-  number: enough to cost a vessel, not enough to build one.
+  WHAT REPLACES IT: an integrated rate law, which is stage D of this
+  sequence (tutorials/plant/ammoniaStaged04_kinetic, built 2026-09-26 --
+  `pfr` reads `AmmoniaSynthesisRate` through `kinetics { type
+  dysonSimon1968; }` and a DesignSpec computes the bed volume from the
+  effluent's approach to equilibrium).  The pellet effectiveness factor is
+  the rung beyond D.  This volume stays a feasibility-class number: enough to
+  cost a vessel, not enough to build one.
 
   =========================================================================
   WHAT IS SIZED, AND WHAT IS NOT

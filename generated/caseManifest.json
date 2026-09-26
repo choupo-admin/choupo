@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 418,
+  "cases": 419,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -1144,6 +1144,21 @@
     "gibbsReactor",
     "isothermalFlash",
     "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/ammoniaStaged04_kinetic": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash",
+    "mixer",
+    "pfr",
+    "phaseChanger",
     "splitter"
    ],
    "thermo": {
@@ -6296,6 +6311,7 @@
     "tutorials/plant/ammoniaStaged01_yield",
     "tutorials/plant/ammoniaStaged02_equilibrium",
     "tutorials/plant/ammoniaStaged03_approach",
+    "tutorials/plant/ammoniaStaged04_kinetic",
     "tutorials/plant/esterification2sector",
     "tutorials/plant/greenAmmoniaIndustrialN2",
     "tutorials/plant/hda",
@@ -6903,6 +6919,7 @@
     "tutorials/plant/ammoniaStaged01_yield",
     "tutorials/plant/ammoniaStaged02_equilibrium",
     "tutorials/plant/ammoniaStaged03_approach",
+    "tutorials/plant/ammoniaStaged04_kinetic",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/extraction01_waterButanol",
@@ -6964,6 +6981,7 @@
     "tutorials/plant/ammoniaStaged01_yield",
     "tutorials/plant/ammoniaStaged02_equilibrium",
     "tutorials/plant/ammoniaStaged03_approach",
+    "tutorials/plant/ammoniaStaged04_kinetic",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
@@ -6980,6 +6998,7 @@
     "tutorials/steady/heat/mheatx01_two_hot_one_cold"
    ],
    "pfr": [
+    "tutorials/plant/ammoniaStaged04_kinetic",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
@@ -6988,7 +7007,8 @@
     "tutorials/steady/reactors/pfr_polyesterification"
    ],
    "phaseChanger": [
-    "tutorials/plant/acetonePlant"
+    "tutorials/plant/acetonePlant",
+    "tutorials/plant/ammoniaStaged04_kinetic"
    ],
    "pipe": [
     "tutorials/steady/hydraulics/pipe01_water_line",
@@ -7053,6 +7073,7 @@
     "tutorials/plant/ammoniaStaged01_yield",
     "tutorials/plant/ammoniaStaged02_equilibrium",
     "tutorials/plant/ammoniaStaged03_approach",
+    "tutorials/plant/ammoniaStaged04_kinetic",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",

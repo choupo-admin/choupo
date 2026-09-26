@@ -391,7 +391,7 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \end{tutnarrative}
 \tutreadme{THE THERMODYNAMIC CEILING. The per-pass conversion this case reports is a ceiling that no real converter reaches, and sizing anything downstream against it produces a fiction. That sentence is the case; the numbers below are the evidence for it.}
 \tutreadme{Three cases form a ladder of reactor fidelity over one unchanged ammonia synthesis loop. Between consecutive stages exactly one thing moves: the reactor model. Everything else --- feed, pressure, components, property package, recycle plan, tear seed, separator, let-down, purge --- is byte-identical. Diff two system/flowsheetDict files and the only block that differs is converter.}
-\tutreadme{Stage D does not exist. src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.\{H,cpp\} is included by its own .cpp and by AmmoniaRateBench.cpp, a props operation, and by no reactor. The rung is named here rather than implied, because a visible gap beats an invisible falsehood.}
+\tutreadme{Stage D exists since 2026-09-26. src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.\{H,cpp\} used to be included by its own .cpp and by AmmoniaRateBench.cpp alone, and this README named that gap rather than implying it; PFR.cpp now reads the law through kinetics \{ type dysonSimon1968; \}, and stage D's README carries what the wiring found.}
 \tutreadme{Background: docs/design/how-a-process-design-is-staged.md, and DEV.md C8.}
 \tutreadme{One claim: the ceiling. With no conversion declared and no approach declared, the converter outlet is the composition that minimises the Gibbs energy of the four declared species at 700 K and 200 bar, subject to the feed's own element balance, with SRK fugacities.}
 \tutreadme{It also claims a converged heat and material balance, and here that claim holds: every unit closes at 100.00 \% and the plant boundary closes at 1.0e-6 \%.}
@@ -468,6 +468,71 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \goldrow{stream}{reacted}{F}{3.58058189813}
 \goldrow{stream}{reacted}{T}{700}
 \goldmore{98}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ammoniaStaged04\_kinetic}{tutorials/plant/ammoniaStaged04\_kinetic}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (89.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (feedPreheat) at (92.8,-0.0) {\textbf{feedPreheat}\\[-1pt]{\tiny phaseChanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (95.7,-0.0) {\textbf{converter}\\[-1pt]{\tiny pfr}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (98.6,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (101.5,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (101.5,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(mixer.west)+(-1.05,0.00)$) -- ($(mixer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (mixer.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (mixer) -- (feedPreheat) node[midway, above, font=\tiny] {mixed};
+  \draw[->] (feedPreheat) -- (converter) node[midway, above, font=\tiny] {preheated};
+  \draw[->] (converter) -- (separator) node[midway, above, font=\tiny] {reacted};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] ($(letdown.east)+(0,-0.17)$) -- ($(letdown.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {productNH3};
+  \draw[->] ($(letdown.east)+(0,0.17)$) -- ($(letdown.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{STAGED DESIGN SEQUENCE, stage D of four -- THE KINETIC BED. The same loop as stages A-C with the converter as an ADIABATIC plug-flow catalyst bed on the Dyson \& Simon (1968) rate law, and the bed VOLUME computed by the engine: a DesignSpec solves V\_bed so the effluent is 5 K short of the rate law's own equilibrium (US 5,352,428's per-bed definition, the same source and value stage C imposed), with a preheater landing the loop gas at stage C's 700 K by its own inverse solve. The volume the engine computes sits beside stage C's space-velocity volume, and the per-pass conversion a single adiabatic bed can reach sits beside stage C's isothermal 46.60 \% -- both gaps are the lesson.}
+\begin{tutnarrative}
+THE STAGED DESIGN SEQUENCE -- STAGE D: THE KINETIC BED.
+
+The same loop as stages A, B and C (`ammoniaStaged01\_yield`, `ammoniaStaged02\_equilibrium`, `ammoniaStaged03\_approach`): the makeup, the pressure, the components, the property package, the recycle plan and the tear seed are byte-identical. What moves is the CONVERTER: it is now an ADIABATIC plug-flow catalyst bed integrating the Dyson \& Simon (1968) rate law, and its volume is what the engine COMPUTES (system/outerDict).
+
+TWO BLOCKS DIFFER FROM STAGE C, NOT ONE, AND THE SECOND IS A CONSEQUENCE OF THE FIRST. Stage C's `gibbsReactor` declares `T 700 K`: it IMPOSES the converter temperature, and the duty it reports silently includes heating the loop gas from the mixer's \textasciitilde{}274 K to 700 K. A kinetic bed cannot impose a temperature -- it integrates from the state it is fed -- so the preheat that stage C folded into the reactor's duty becomes a unit of its own here (`feedPreheat`), whose duty is a RESULT. Diff this file against stage C's and that is what you will see: the converter block replaced, and one preheater inserted in front of it.
+
+makeup (N2:H2 = 1:3 + 1 mol\% Ar) -+ v [mixer] <------- recycle <--------+ | | v | [feedPreheat] <-- NEW: lands the | | loop gas at | v 700 K, Q result | [converter] <-- THE CHANGE: | adiabatic pfr, Dyson \& Simon | V solved by (1968), V a | the outer driver RESULT | v | [separator] isothermalFlash 250 K, 200 bar | | | | rawLiquid-+ +-- unreactedGas | | | | v [purgeSplit] splitter | [letdown] | | | flash 20 bar purge --+ +-- recycle ------------+ | | (5 \% bleed) (95 \%) productNH3+ +letdownGas
+
+WHY THE PREHEATER IS A `phaseChanger` AND NOT A `heater`, measured. The `heater` takes a DUTY and returns T\_out (docs/ai/unit-ops.md); a fixed duty in front of a kinetic bed inside a recycle is OPEN-LOOP UNSTABLE: a larger recycle is heated less, the colder bed converts less, the recycle grows again, and the loop runs away to extinction -- measured here with both recycle solvers (Newton: the letdown drum received an empty stream on a trial step; Wegstein: recycle 12 998 $\to$ 15 378 $\to$ 23 475 kmol/h in three passes while the bed inlet fell 697 $\to$ 597 $\to$ 480 K). That is real physics and it is why an industrial loop preheats through a feed-effluent exchanger with a temperature controller, never through a fixed-duty heater. The engine's unit that TAKES a target outlet temperature and RETURNS the duty is `phaseChanger \{ outletT \}` (a built-in inverse solve, announced as SELF-TARGET); the gas enters and leaves as superheated vapour, so the duty is entirely sensible (`Q\_latent\_kW 0`) and the unit's emergent role label ("boiler" for Q > 0 on the vapour side) is a label, not a claim that anything boils.
+
+WHAT THE OUTER DRIVER SOLVES (system/outerDict, a 1 x 1 DesignSpec): \$V\_bed so that converter.approach\_K = 5 K (US 5,352,428's per-bed approach, the SAME source and value as stage C's) The manipulated volume lives in `variables \{\}` below; the unit reads it through `\$V\_bed`. Nothing here types a volume.
+
+WHY THE TARGET IS AN APPROACH AND NOT STAGE C's 46.60 \% CONVERSION. Stage C's converter is ISOTHERMAL at 700 K. A single ADIABATIC bed heats itself as it converts, and ammonia equilibrium retreats as it heats, so the bed's conversion is capped where its adiabatic line meets the equilibrium curve -- far below what an isothermal converter at 700 K reaches. That cap is MEASURED in the README (a volume sweep), and it is why no volume of this bed can hit stage C's number: the target would be unreachable, and a DesignSpec asked for it would diverge honestly. The reachable, sourced target is the one the patent states PER BED.
+
+SCALE, TOPOLOGY, SEED: read stage C's flowsheetDict; nothing about them moved. TOPOLOGY ONLY here -- stream state lives on disk in 0/.
+
+\end{tutnarrative}
+\tutreadme{THE FIRST BED VOLUME IN THIS CORPUS THAT THE ENGINE COMPUTED. The same ammonia synthesis loop as stages A, B and C, with the converter as an adiabatic plug-flow catalyst bed integrating the Dyson \& Simon (1968) rate law, and the bed volume the answer of a designSpec rather than a number anybody typed. Until this case that rate law (src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.\{H,cpp\}) was reachable only from the props bench (tutorials/props/kinetics/ammoniaRate01\_dyson\_simon); pfr reads it now through kinetics \{ type dysonSimon1968; \} in constant/reactions.}
+\tutreadme{Background: docs/design/how-a-process-design-is-staged.md ?3.4, ?6 and ?7.3, and DEV.md C8.}
+\tutreadme{Comments aside, the diff is exactly: a variables \{ V\_bed \} block, a feedPreheat unit inserted between the mixer and the converter, and the converter block (gibbsReactor with T 700 K; P 200 bar; temperatureApproach 5; and its species list $\to$ pfr with V\_R \$V\_bed; nSteps 400; thermalMode adiabatic; and reactions ( ammoniaSynthesis )). Makeup, pressure, components, sealed property package, separator, let-down, purge, recycle plan (system/solverDict) and the tear seed (0/recycle) are byte-identical to stage C except for the comments in 0/makeup, 0/recycle and system/solverDict that now say "four stages" instead of "three". Stage D adds two files C has no counterpart for --- constant/reactions (the rate law selection) and system/outerDict (the DesignSpec) --- and drops C's system/postDict (?6 says why).}
+\tutreadme{Why the second block is a consequence of the first. Stage C's gibbsReactor declares T 700 K: it IMPOSES the converter temperature, and the 3 287 kW duty it reports silently includes heating the loop gas from the mixer's 274 K to 700 K. A kinetic bed cannot impose a temperature --- it integrates from the state it is fed --- so the preheat C hid inside its reactor becomes a unit of its own here. It is a phaseChanger \{ outletT 700 K; \} (the engine's unit that TAKES a target outlet temperature and RETURNS the duty, a built-in inverse solve it announces as SELF-TARGET) and not a heater, and that choice was measured, not preferred:}
+\tutreadme{$\ast$ A heater takes a DUTY and returns T\_out. A fixed duty in front of a kinetic bed inside a recycle is open-loop unstable: a larger recycle is heated less, the colder bed converts less, the recycle grows again. With the Wegstein recycle solver the loop ran away in three passes --- recycle 12 998 $\to$ 15 378 $\to$ 23 475 kmol/h while the bed inlet fell 697 $\to$ 597 $\to$ 532 $\to$ 480 K --- and with the Newton solver a trial step fed the let-down drum an empty stream and the run stopped. That is real physics, and it is why an industrial loop preheats through a feed-effluent exchanger under temperature control, never through a fixed-duty heater. $\ast$ The phaseChanger's emergent role label reads boiler (Q > 0 on the vapour side); the gas enters and leaves as superheated vapour and the duty is entirely sensible (Q\_latent\_kW 0). The Tsat 150 K it prints is the bracket centre of its inverse solve on a gas far above every critical temperature, not a claim about anything boiling.}
+\tutreadme{The 700 K inlet is inherited from stage C: it is the one thermal fact C states about its converter, and inheriting it keeps the ladder's rule --- one thing moves per rung --- as close as a kinetic bed allows. It was a declared assumption there and is one here.}
+\begin{tutgolden}
+\goldrow{stream}{letdownGas}{F}{0.00653101627192}
+\goldrow{stream}{letdownGas}{T}{250}
+\goldrow{stream}{makeup}{F}{2.22222222222}
+\goldrow{stream}{makeup}{T}{300}
+\goldrow{stream}{mixed}{F}{10.9531095178}
+\goldrow{stream}{mixed}{T}{259.9302829}
+\goldrow{stream}{preheated}{F}{10.9531095178}
+\goldrow{stream}{preheated}{T}{700}
+\goldrow{stream}{productNH3}{F}{0.879606224653}
+\goldrow{stream}{productNH3}{T}{250}
+\goldrow{stream}{purge}{F}{0.459520384245}
+\goldrow{stream}{purge}{T}{250}
+\goldrow{stream}{rawLiquid}{F}{0.886137240925}
+\goldrow{stream}{rawLiquid}{T}{250}
+\goldmore{84}
 \end{tutgolden}
 
 \clearpage

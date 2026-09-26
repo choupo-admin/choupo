@@ -7387,25 +7387,30 @@
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
   "src/unitOperations/reactor/PFR.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/RegistryRefusal.H",
    "src/core/Types.H",
+   "src/core/Units.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/reactor/CatalystPellet.H",
    "src/unitOperations/reactor/PFR.H",
    "src/unitOperations/reactor/PolymerKPIs.H",
-   "src/unitOperations/reactor/ReactionHeat.H"
+   "src/unitOperations/reactor/ReactionHeat.H",
+   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
   ],
   "src/unitOperations/reactor/PolymerKPIs.cpp": [
    "src/core/Dictionary.H",
@@ -8070,6 +8075,7 @@
    "src/unitOperations/reactor/CatalystPellet.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Pump.cpp",
@@ -9409,7 +9415,8 @@
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
-   "src/unitOperations/membrane/transport/TransportModel.cpp"
+   "src/unitOperations/membrane/transport/TransportModel.cpp",
+   "src/unitOperations/reactor/PFR.cpp"
   ],
   "src/core/RegistryScan.H": [
    "src/core/RegistryScan.cpp",
@@ -9886,7 +9893,8 @@
    "src/thermo/electrochem/EDStack.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/vaporPressure/Antoine.cpp",
-   "src/unitOperations/membrane/SpiralWoundModule.cpp"
+   "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/reactor/PFR.cpp"
   ],
   "src/core/distribution/LogNormalSize.H": [
    "src/core/distribution/LogNormalSize.cpp",
@@ -12425,6 +12433,7 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp"
   ],
   "src/thermo/equationOfState/IdealGas.H": [
@@ -13352,6 +13361,7 @@
   ],
   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H": [
    "src/propertyOps/AmmoniaRateBench.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp"
   ],
   "src/unitOperations/reactor/pellet/Catalyst.H": [

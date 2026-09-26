@@ -165,12 +165,18 @@ and found it unity.  Same number, opposite claims, and the engine keeps them
 apart in words.
 
 
-## 6. What is still missing — and it is most of a converter
+## 6. What is still missing — and it is much of a converter
 
-This is a rate law, not a reactor.  Nothing here is wired into any unit, and
-`ammonia03`'s beds still reach equilibrium.  To size a bed you would still need
-an axial integration, a pressure drop, a bulk density and a space velocity,
-none of which this case carries and none of which may be invented.
+This is a rate law, not a reactor.  Since 2026-09-26 it IS wired into one:
+`pfr` reads it through `kinetics { type dysonSimon1968; }` and integrates it
+along an adiabatic bed, and `tutorials/plant/ammoniaStaged04_kinetic` sizes
+that bed from the effluent's approach to equilibrium (6.99 m³ at 5 K, on a
+loop whose earlier stage assumed 18.63 m³ from a space velocity).
+`ammonia03`'s beds still reach equilibrium — that case was not rebuilt.  What
+a bed still does not carry: a pressure drop, a bulk density, catalyst ageing,
+and a pellet whose effectiveness factor is MODELLED rather than read off Table
+I; none of those may be invented, and stage D announces which of them it
+leaves unpriced.
 
 And the authors say themselves what Equation 40 leaves out: **corrections for
 the effect of particle size on reduction, on poisoning and on catalyst

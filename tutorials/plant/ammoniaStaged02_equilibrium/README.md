@@ -19,12 +19,13 @@ differs is `converter`.
 | **A** `ammoniaStaged01_yield` | `conversionReactor`, declared conversion | a material balance | a reactor size; an equipment-factored cost |
 | **B** *this case* | `gibbsReactor`, **true equilibrium** | the thermodynamic **ceiling** | any size, any cost, anything sized against its outlet |
 | **C** `ammoniaStaged03_approach` | `gibbsReactor` **+ 5 K approach** | a realistic outlet | a bed volume the engine computed |
-| D (**not built**) | kinetic PFR on a rate law | a bed volume the ENGINE computed | — |
+| **D** `ammoniaStaged04_kinetic` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the ENGINE computed | a pellet effectiveness factor (announced as unpriced); a cost |
 
-Stage D does not exist.  `src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`
-is included by its own `.cpp` and by `AmmoniaRateBench.cpp`, a props operation,
-and **by no reactor**.  The rung is named here rather than implied, because a
-visible gap beats an invisible falsehood.
+Stage D exists since 2026-09-26.  `src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`
+used to be included by its own `.cpp` and by `AmmoniaRateBench.cpp` alone,
+and this README named that gap rather than implying it; `PFR.cpp` now reads
+the law through `kinetics { type dysonSimon1968; }`, and stage D's README
+carries what the wiring found.
 
 Background: `docs/design/how-a-process-design-is-staged.md`, and DEV.md C8.
 

@@ -68,16 +68,23 @@ Description
     effectiveness factor and size a bed several-fold wrong, silently.
     ==========================================================================
 
-    WHAT THIS DOES NOT DO, and it is deliberate: NOTHING HERE IS WIRED INTO A
-    REACTOR.  The four reactors that read `catalystLoading` still evaluate
-    their rate at bulk conditions and still ANNOUNCE that they are taking the
-    effectiveness factor as 1 (the 2026-08-18 pellet slice).  That
-    announcement's meaning is unchanged by this file: it is still true, still
-    printed, and still says what it always said.  Wiring this expression into
-    a bed is NEW PHYSICS with a catalyst volume, a pressure drop and an axial
-    integration behind it, and it is not this slice.  The BENCH is the wire --
-    exactly as it is for the friction and transport families, and for the same
-    reason: an unwired self-check is a no-silent-crutch violation.
+    WHERE THIS IS WIRED, and where it is not.  Two callers: the props BENCH
+    (`propertyOps/AmmoniaRateBench.cpp`, the self-check surface every
+    correlation family here has) and, since 2026-09-26, the `pfr` unit
+    operation's multi-reaction path (`reactor/PFR.cpp`), which selects it with
+    `kinetics { type dysonSimon1968; }` in a case's constant/reactions and
+    integrates Eq 19 or Eq 40 along an adiabatic or isothermal bed -- the
+    stage-D rung of the staged design sequence
+    (tutorials/plant/ammoniaStaged04_kinetic, DEV.md C8).  The PFR reads Eq 19
+    as ALREADY per cubic metre of catalyst bed and refuses `catalystLoading`
+    under this law; whether Eq 39's diffusion correction is applied is a
+    DECLARED word (`effectivenessFactor intrinsic | dysonSimonEq39`), never a
+    default, and the intrinsic route announces that xi = 1 is UNPRICED there.
+    Still NOT wired: any other reactor, a pressure drop, catalyst ageing (see
+    `freshCatalystCaveat`), and the pellet as a modelled object (the rung
+    beyond D).  The announcement the four `catalystLoading` reactors make
+    about eta = 1 is unchanged by this file and does not fire on a
+    Dyson-Simon bed, because that bed declares no loading.
 
     UNITS, AND THERE ARE TWO SYSTEMS IN ONE PAPER.
       * Equation 19 returns KILOGRAM-MOLES of ammonia per CUBIC METRE of
@@ -184,6 +191,27 @@ public:
 
     //  Eqs 2-8, 18, 19, 39, 40 together.
     static AmmoniaRateResult evaluate(const AmmoniaRateContext& c);
+
+    //  Eqs 2-8, 18 and 19 ONLY -- the INTRINSIC rate, with Eq 39 NOT formed.
+    //  Needs no particle.  The result carries xi = 1 with `xiAvailable`
+    //  false and a `xiRoute` that says, in words, that the correction was
+    //  NOT priced -- which is a different statement from the sub-6 mm branch
+    //  of `evaluate()`, where the authors priced it and found it unity.
+    static AmmoniaRateResult evaluateIntrinsic(const AmmoniaRateContext& c);
+
+    //  THE TEMPERATURE AT WHICH THIS GAS IS AT EQUILIBRIUM under Eq 2 with
+    //  Eqs 6-8 -- the T* where Eq 19's forward and reverse terms are equal for
+    //  the composition in `c` (its own T_K is ignored).  Bisection on
+    //  [Tlo, Thi]; throws by name when the bracket holds no sign change.
+    //  T* - T_actual is the TEMPERATURE APPROACH TO EQUILIBRIUM of a bed
+    //  effluent as US 5,352,428 defines it ("the ammonia concentration
+    //  corresponds to the equilibrium concentration at a temperature 5 C.
+    //  above the actual temperature"), measured against THIS rate law's own
+    //  equilibrium -- which is Gillespie & Beattie's, not the package's
+    //  Gibbs surface; the two differ, and a caller comparing against a
+    //  `gibbsReactor` must say which one it is quoting.
+    static scalar equilibriumTemperatureOf(const AmmoniaRateContext& c,
+                                           scalar Tlo, scalar Thi);
 
     //  The reference mixture Eq 39's eta is measured on: 3:1 H2/N2 with
     //  12.7 % inerts at eta = 0.  Returns the mole fractions at conversion

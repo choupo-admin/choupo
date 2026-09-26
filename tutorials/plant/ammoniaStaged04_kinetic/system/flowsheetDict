@@ -1,0 +1,187 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE STAGED DESIGN SEQUENCE -- STAGE D: THE KINETIC BED.
+
+  The same loop as stages A, B and C (`ammoniaStaged01_yield`,
+  `ammoniaStaged02_equilibrium`, `ammoniaStaged03_approach`): the makeup, the
+  pressure, the components, the property package, the recycle plan and the
+  tear seed are byte-identical.  What moves is the CONVERTER: it is now an
+  ADIABATIC plug-flow catalyst bed integrating the Dyson & Simon (1968) rate
+  law, and its volume is what the engine COMPUTES (system/outerDict).
+
+  TWO BLOCKS DIFFER FROM STAGE C, NOT ONE, AND THE SECOND IS A CONSEQUENCE OF
+  THE FIRST.  Stage C's `gibbsReactor` declares `T 700 K`: it IMPOSES the
+  converter temperature, and the duty it reports silently includes heating
+  the loop gas from the mixer's ~274 K to 700 K.  A kinetic bed cannot impose
+  a temperature -- it integrates from the state it is fed -- so the preheat
+  that stage C folded into the reactor's duty becomes a unit of its own here
+  (`feedPreheat`), whose duty is a RESULT.  Diff this file against stage C's
+  and that is what you will see: the converter block replaced, and one
+  preheater inserted in front of it.
+
+        makeup (N2:H2 = 1:3 + 1 mol% Ar) -+
+                                          v
+                                     [mixer] <------- recycle <--------+
+                                          |                            |
+                                          v                            |
+                                   [feedPreheat]  <-- NEW: lands the   |
+                                          |           loop gas at      |
+                                          v           700 K, Q result  |
+                                    [converter]   <-- THE CHANGE:      |
+                                    adiabatic pfr,    Dyson & Simon    |
+                                    V solved by       (1968), V a      |
+                                    the outer driver  RESULT           |
+                                          v                            |
+                        [separator]  isothermalFlash 250 K, 200 bar    |
+                          |      |                                     |
+                rawLiquid-+      +-- unreactedGas                      |
+                    |                    |                             |
+                    v               [purgeSplit] splitter              |
+               [letdown]              |        |                       |
+              flash 20 bar    purge --+        +-- recycle ------------+
+                |       |      (5 % bleed)          (95 %)
+      productNH3+       +letdownGas
+
+  WHY THE PREHEATER IS A `phaseChanger` AND NOT A `heater`, measured.  The
+  `heater` takes a DUTY and returns T_out (docs/ai/unit-ops.md); a fixed duty
+  in front of a kinetic bed inside a recycle is OPEN-LOOP UNSTABLE: a larger
+  recycle is heated less, the colder bed converts less, the recycle grows
+  again, and the loop runs away to extinction -- measured here with both
+  recycle solvers (Newton: the letdown drum received an empty stream on a
+  trial step; Wegstein: recycle 12 998 -> 15 378 -> 23 475 kmol/h in three
+  passes while the bed inlet fell 697 -> 597 -> 480 K).  That is real physics
+  and it is why an industrial loop preheats through a feed-effluent exchanger
+  with a temperature controller, never through a fixed-duty heater.  The
+  engine's unit that TAKES a target outlet temperature and RETURNS the duty
+  is `phaseChanger { outletT }` (a built-in inverse solve, announced as
+  SELF-TARGET); the gas enters and leaves as superheated vapour, so the duty
+  is entirely sensible (`Q_latent_kW 0`) and the unit's emergent role label
+  ("boiler" for Q > 0 on the vapour side) is a label, not a claim that
+  anything boils.
+
+  WHAT THE OUTER DRIVER SOLVES (system/outerDict, a 1 x 1 DesignSpec):
+      $V_bed      so that  converter.approach_K = 5 K     (US 5,352,428's per-bed
+                                                           approach, the SAME
+                                                           source and value as
+                                                           stage C's)
+  The manipulated volume lives in `variables {}` below; the unit reads it
+  through `$V_bed`.  Nothing here types a volume.
+
+  WHY THE TARGET IS AN APPROACH AND NOT STAGE C's 46.60 % CONVERSION.  Stage
+  C's converter is ISOTHERMAL at 700 K.  A single ADIABATIC bed heats itself
+  as it converts, and ammonia equilibrium retreats as it heats, so the bed's
+  conversion is capped where its adiabatic line meets the equilibrium curve
+  -- far below what an isothermal converter at 700 K reaches.  That cap is
+  MEASURED in the README (a volume sweep), and it is why no volume of this bed
+  can hit stage C's number: the target would be unreachable, and a
+  DesignSpec asked for it would diverge honestly.  The reachable, sourced
+  target is the one the patent states PER BED.
+
+  SCALE, TOPOLOGY, SEED: read stage C's flowsheetDict; nothing about them
+  moved.  TOPOLOGY ONLY here -- stream state lives on disk in 0/.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+//  THE ONE NUMBER THE OUTER DRIVER OWNS.  The DesignSpec in system/outerDict
+//  OVERWRITES this value on every evaluation, starting from its own
+//  `initial` (kept equal to the number below so the case has one starting
+//  point, not two); the value written here is never a specification.  Run
+//  the case without the outerDict and you RATE a bed of exactly this volume
+//  -- a legitimate use, and the README's volume sweep is exactly that, at
+//  sixteen volumes.
+variables
+{
+    V_bed       6.0;        // m3 of catalyst bed; stage C's space-velocity bed is 18.63 m3
+}
+
+units
+(
+    {
+        name     mixer;
+        type     mixer;
+        inputs   ( makeup  recycle );
+        outputs  ( mixed );
+    }
+    {
+        //  THE PREHEAT STAGE C HID INSIDE ITS REACTOR.  `outletT 700 K` is the
+        //  ONE thermal fact stage C states about its converter (its declared
+        //  isothermal temperature), inherited so the ladder's rule -- one
+        //  thing moves per rung -- holds as closely as a kinetic bed allows:
+        //  the same inlet temperature, now declared on the stream that
+        //  carries it rather than imposed by the reactor.  The duty is a
+        //  RESULT of the unit's own inverse solve (see the header for why a
+        //  fixed-duty `heater` cannot stand here).
+        name     feedPreheat;
+        type     phaseChanger;
+        in       mixed;
+        outputs  ( preheated );
+        operation { outletT 700 K; }
+    }
+    {
+        //  ===================================================================
+        //  STAGE D -- THE KINETIC BED.
+        //
+        //  An adiabatic plug-flow reactor over ONE reaction, `ammoniaSynthesis`
+        //  in constant/reactions, whose rate law is `dysonSimon1968`: the
+        //  Dyson & Simon (1968) expression already curated in
+        //  src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}
+        //  with its citation, its validity window and its five anchors --
+        //  until this case reachable only from the props bench
+        //  (tutorials/props/kinetics/ammoniaRate01_dyson_simon).
+        //
+        //  V_R IS NOT A NUMBER HERE; IT IS $V_bed, AND THE OUTER DRIVER SOLVES
+        //  IT.  The PFR is a rating model (it integrates a declared volume),
+        //  so "the bed volume the engine computed" is the DesignSpec's answer:
+        //  the volume at which the bed's outlet is 5 K short of the rate law's
+        //  own equilibrium.  Compare it with stage C's 18.63 m3, which is
+        //  arithmetic on an assumed space velocity.
+        //
+        //  NO `catalystLoading`: Equation 19 is already per cubic metre of
+        //  catalyst BED (the paper's own unit), so a loading would be a
+        //  second conversion applied to a rate that needs none -- the engine
+        //  REFUSES the key under this law.  NO pellet: the rate law's own
+        //  diffusion correction (Eq 39) exists and is NOT applied
+        //  (`effectivenessFactor intrinsic;` in constant/reactions), which
+        //  the engine announces on every run.  That is the rung beyond D.
+        //  ===================================================================
+        name       converter;
+        type       pfr;
+        in         preheated;
+        outputs    ( reacted );
+        operation
+        {
+            V_R          $V_bed;        // m3 of catalyst bed -- SOLVED, see outerDict
+            nSteps       400;           // RK4 axial steps (the rate collapses ~100x along the bed)
+            thermalMode  adiabatic;     // T is a RESULT: the bed heats itself
+        }
+        reactions  ( ammoniaSynthesis );
+    }
+    {
+        name     separator;
+        type     isothermalFlash;
+        in       reacted;
+        outputs  ( rawLiquid  unreactedGas );
+        operation { T 250.0 K;  P 200.0 bar; }
+    }
+    {
+        name     letdown;
+        type     isothermalFlash;
+        in       rawLiquid;
+        outputs  ( productNH3  letdownGas );
+        operation { T 250.0 K;  P 20.0 bar; }   // let-down drum: flash off the dissolved N2/H2
+    }
+    {
+        name     purgeSplit;
+        type     splitter;
+        in       unreactedGas;
+        outputs  ( purge  recycle );
+        operation { fractions ( 0.05  0.95 ); }
+    }
+);

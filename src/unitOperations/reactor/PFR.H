@@ -47,6 +47,20 @@ Description
          F_A(V_R) / F_A,in = exp(-k τ)
     is recovered to machine precision with ~100 RK4 steps, which is
     the canonical regression check.
+
+    THE MULTI-REACTION PATH (`reactions ( ... )`) is the general one: any
+    number of reactions, each on its own rate law (power law, LHHW, or --
+    since 2026-09-26 -- the Dyson & Simon (1968) ammonia synthesis bed,
+    `kinetics { type dysonSimon1968; }`, whose rate is in T, P and mole
+    fractions per cubic metre of catalyst BED and needs no liquid molar
+    volume), isothermal, adiabatic or jacketed, the temperature marched as
+    total enthalpy on the package's own surface.  A reactor whose only
+    reaction is a Dyson-Simon bed is a GAS bed: it reads no Vliq, publishes
+    no liquid-basis `tau_s`, and publishes instead its per-pass N2 conversion,
+    the effluent's temperature approach to the law's own equilibrium, the
+    normal-basis GHSV and the actual-gas residence time.  The description
+    above this paragraph is the single-reaction path's and is still true of
+    it.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
