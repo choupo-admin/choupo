@@ -1708,6 +1708,13 @@ what counts as a phase.  NOT FIXED: the remedy is in `IsothermalFlash.cpp`
 (refuse or discard a two-phase root whose T exceeds every Tc, the way the
 report does), it moves this case's golden and possibly others, and it was
 out of the slice's scope.  Record of the finding: the case's README, section 7.
+**TAKEN ON A STATED DEFAULT, 2026-09-26 (section 10's 2026-08-08 rule),
+the same afternoon:** the unit adopts the report's own rule -- a resolution
+that returns two phases at a temperature above every present component's
+critical temperature is not a phase split and is DISCARDED, announced, the
+state priced single-phase.  Same family as the two fixes Vitor authorised
+today, same one-home remedy, blast radius measured before the golden list is
+shown: no re-record without the list.
 
 **2026-09-25 -- ONE CONCEPT, TWO KEYS, IN ONE FUNCTION, AND THE DOCUMENTED
 ONE IS THE SILENT ONE.**  Found while building the C9 EduTool; every line
