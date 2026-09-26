@@ -223,7 +223,7 @@ would send the recovered H₂ back to the synthesis compressor suction, in
 | `PURIFICATION/GasChiller/system/flowsheetDict` | how cold to go; it sizes the dryer |
 | `PURIFICATION/Dryer/system/flowsheetDict` | `mAdsPerColumn`, `tCycle`, `purgeRatio` |
 | `constant/parameters/adsorption/.../water.dat` | the isotherm — replace with the vendor's |
-| `LOOP/Converter/system/flowsheetDict` | loop pressure, mode, `approachTemperature` |
+| `LOOP/Converter/system/flowsheetDict` | loop pressure, mode, `temperatureApproach` (the one approach key; `approachTemperature` is retired and refused) |
 | `0/MAIN/WashWater` | wash-water rate: separation is easy, but it sets whether Henry is still valid |
 | `RECOVERY/Scrubber/system/flowsheetDict` | number of stages |
 | `constant/economics` | H₂ and NH₃ price scenarios |

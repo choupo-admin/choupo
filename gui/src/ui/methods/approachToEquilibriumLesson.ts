@@ -55,8 +55,8 @@ export const APPROACH_STEPS: readonly LessonStep[] = [
       + "conserving every atom that came in.  Whatever reactions would have "
       + "been written are implied by the species list and never appear "
       + "anywhere.  In Choupo the atom inventory b is built from the feed "
-      + "itself (GibbsReactor.cpp:125–127) and an element the feed does not "
-      + "contain is refused by name (GibbsReactor.cpp:128–131).",
+      + "itself (GibbsReactor.cpp:214–218) and an element the feed does not "
+      + "contain is refused by name (GibbsReactor.cpp:261–264).",
     formula: String.raw`\min_{n \ge 0}\; G(T,P,n) = \sum_i n_i\,\mu_i(T,P,n)
 \qquad \text{subject to} \qquad A\,n = b`,
     where: [
@@ -175,36 +175,53 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
       + "fourteen lines below (ElementPotential.cpp:61) — and the run says so "
       + "out loud: \"REACTION equilibrium evaluated at T + ΔT; enthalpy, Psat "
       + "and the energy balance stay at the physical T\" "
-      + "(GibbsReactor.cpp:143–149).  The outlet is therefore a legitimate "
+      + "(GibbsReactor.cpp:343–349).  The outlet is therefore a legitimate "
       + "NON-EQUILIBRIUM state: its composition belongs to one temperature and "
       + "its enthalpy to another, its affinity at T is not zero, and that "
       + "nonzero affinity IS the distance from equilibrium rather than a bug.",
   },
   {
     n: 4,
-    title: "The sign, which is the part nobody is told",
-    body: "Both signs are accepted and the engine constrains neither — it "
-      + "prints \"T + \" or \"T − \" from the sign it was given and solves "
-      + "(GibbsReactor.cpp:143–147).  Which sign you WANT is not a convention "
-      + "to memorise; it follows from the thermicity of the reaction, through "
-      + "van 't Hoff.  An exothermic equilibrium loses ground as it heats, so "
-      + "asking the chemistry a HIGHER temperature under-predicts, and the "
-      + "approach is POSITIVE: ammonia, methanol, the shift converters.  An "
-      + "endothermic one gains ground as it heats, so under-predicting it "
-      + "means asking a LOWER temperature, and the approach is NEGATIVE: "
-      + "steam reforming.  Say that plainly, because the half-memory is "
-      + "worse than no memory: POSITIVE IS CONSERVATIVE ONLY FOR AN "
-      + "EXOTHERMIC REACTION.  Put the wrong sign on a reformer and the model "
-      + "does not merely flatter it — it reports a conversion above the "
-      + "equilibrium the same model just computed.  ONE QUALIFIER, and it is "
-      + "not a quibble: \"above equilibrium is impossible\" holds for a "
-      + "reactor whose FEED is on the reactant side of equilibrium at the "
-      + "physical T, which is the ordinary case and is the case on both "
+    title: "The sign, which is the engine's to assign",
+    body: "You never choose it.  `temperatureApproach` is declared as a "
+      + "MAGNITUDE — a negative value is refused by name "
+      + "(GibbsReactor.cpp:278–289) — and the ENGINE assigns the direction: "
+      + "it solves the true equilibrium from your feed at the physical T once "
+      + "more, reads the isothermal enthalpy change between the feed and that "
+      + "equilibrium on the package's own surface, and evaluates the reaction "
+      + "at T + ΔT when that transformation is exothermic and at T − ΔT when "
+      + "it is endothermic (GibbsReactor.cpp:67–106, `approachDirection`; "
+      + "the reactor calls it at 340 and the gibbsMap at every cell).  It "
+      + "prints which way it went and the number it read, and logs the same "
+      + "sentence as an advisory, so a copied dict cannot carry a direction "
+      + "nobody was told about.  WHY THAT DIRECTION is not a convention to "
+      + "memorise; it follows from the thermicity through van 't Hoff.  An "
+      + "exothermic equilibrium loses ground as it heats, so asking the "
+      + "chemistry a HIGHER temperature under-predicts it: ammonia, methanol, "
+      + "the shift converters get T + ΔT.  An endothermic one gains ground as "
+      + "it heats, so under-predicting it means asking a LOWER temperature: "
+      + "steam reforming gets T − ΔT, and nobody types a minus.  Say it "
+      + "plainly, because the half-memory is worse than no memory: POSITIVE IS "
+      + "CONSERVATIVE ONLY FOR AN EXOTHERMIC REACTION — which is exactly why "
+      + "the sign was taken away from the author (ruled 2026-09-26): put the "
+      + "sign that flatters ammonia on a reformer and the model does not "
+      + "merely flatter it, it reports a conversion above the equilibrium the "
+      + "same model just computed.  Why the engine reads the DUTY-FREE number: "
+      + "the published `Q_kW` is H_out − H_in with the feed at ITS temperature, "
+      + "so with a cold feed its sign carries sensible heat and stops being "
+      + "the thermicity (measured: the shift reactor at 1200 K with an 800 K "
+      + "feed reports +2.04 kW and is exothermic).  ONE QUALIFIER, announced by "
+      + "the engine and never judged: \"above equilibrium is impossible\" "
+      + "holds for a reactor whose FEED is on the reactant side of equilibrium "
+      + "at the physical T, which is the ordinary case and the case on both "
       + "witnesses here.  Feed an exothermic bed a gas that was already "
       + "equilibrated COLDER and it arrives past the hot equilibrium; the "
-      + "reaction then runs backward, the approach is made from the other "
-      + "side, and the wanted sign flips with it.  Which side the feed sits "
-      + "on is a fact about the flowsheet, not about the reaction.",
+      + "transformation then runs backward, the engine reads THAT "
+      + "transformation's enthalpy (the only extent a stoichiometry-free "
+      + "reactor has is the one from its own feed), and the approach lands on "
+      + "the feed's side — where a real quench bed's outlet sits.  Which side "
+      + "the feed is on is a fact about the flowsheet, not about the "
+      + "reaction, and the announcement says so.",
     formula: String.raw`\begin{aligned}
 \Delta H_\mathrm{rxn} < 0 \;&\implies\; \frac{\partial X_\mathrm{eq}}{\partial T} < 0
   \;&&\implies\; \Delta T > 0 \quad \text{(exothermic)}\\
@@ -213,11 +230,15 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
 \end{aligned}`,
     where: [
       { sym: "\\Delta H_\\mathrm{rxn}",
-        means: "the enthalpy change of the overall transformation the reactor "
-        + "performs — negative when it releases heat.  A Gibbs reactor never "
-        + "sees this as an input, because it is told no reactions; but an "
-        + "ISOTHERMAL one publishes its sign, as the duty the surroundings "
-        + "must supply to hold T (`Q_kW`, GibbsReactor.cpp:323)",
+        means: "the enthalpy change of the overall transformation from the "
+        + "feed to its equilibrium at the physical T — negative when it "
+        + "releases heat.  A Gibbs reactor never sees this as an input, "
+        + "because it is told no reactions; the engine READS it, isothermally "
+        + "and on the package's surface, to assign the direction "
+        + "(`approachDirection`, GibbsReactor.cpp:67–106).  An ISOTHERMAL run "
+        + "with feed and reactor at one temperature also publishes its sign as "
+        + "the duty the surroundings must supply to hold T (`Q_kW`, "
+        + "GibbsReactor.cpp:482)",
         unit: "J/mol" },
       { sym: "X_\\mathrm{eq}",
         means: "the equilibrium conversion — or any monotone stand-in for it, "
@@ -241,9 +262,10 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
       { step: "So an exothermic K falls with temperature, an endothermic K "
           + "rises, and the equilibrium conversion follows K." },
       { step: "A real reactor falls SHORT of equilibrium.  To make the model "
-          + "fall short you must move the evaluation temperature in whichever "
+          + "fall short the evaluation temperature must move in whichever "
           + "direction makes the equilibrium WORSE — up for exothermic, down "
-          + "for endothermic." },
+          + "for endothermic.  The ENGINE makes that move from the thermicity "
+          + "it reads; the author supplies only how far." },
     ],
     note: "ONE MORE GLOSS, because the letters are overloaded across these "
       + "pages: K here is the equilibrium constant and R is the gas constant. "
@@ -254,7 +276,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
     n: 5,
     title: "The three caveats the engine prints on its own",
     body: "A run that declares an approach prints them every time "
-      + "(GibbsReactor.cpp:150–154), and each of the three is a lesson rather "
+      + "(GibbsReactor.cpp:350–354), and each of the three is a lesson rather "
       + "than a disclaimer.  FIRST, it is EMPIRICAL — calibrated, never "
       + "predicted.  It lumps catalyst activity, bed geometry, transport and "
       + "age into one number you fit against a plant measurement, which also "

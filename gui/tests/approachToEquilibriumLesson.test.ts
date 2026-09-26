@@ -40,7 +40,8 @@ import {
 } from "../src/ui/methods/approachToEquilibriumLesson.js";
 import {
   APPROACH_WITNESSES, approachOverrides, thermicityOf, verdictOf,
-  wantedSignOf,
+  engineSignOf,
+  DT_KNOB,
 } from "../src/ui/methods/ApproachToEquilibriumTool.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 
@@ -85,7 +86,7 @@ describe("the Gibbs-reactor approach lesson", () => {
   });
 
   it("keeps the two temperatures apart, which is the teachable line", () => {
-    //  GibbsReactor.cpp:143-149 announces exactly this, and the page must not
+    //  GibbsReactor.cpp:343-349 announces exactly this, and the page must not
     //  round it off into "the reactor runs hotter".
     const f = prose(step(3).formula!);
     expect(f).toContain(String.raw`n_\mathrm{eq}(T + \Delta T,\; P)`);
@@ -101,8 +102,12 @@ describe("the Gibbs-reactor approach lesson", () => {
     const s = all(4);
     expect(s).toContain(
       "POSITIVE IS CONSERVATIVE ONLY FOR AN EXOTHERMIC REACTION");
-    expect(s).toContain("Both signs are accepted and the engine constrains "
-      + "neither");
+    //  Ruled 2026-09-26: the author declares a MAGNITUDE, the engine assigns
+    //  the sign and announces it, and a negative declaration is refused.
+    expect(s).toContain("declared as a MAGNITUDE");
+    expect(s).toContain("refused by name");
+    expect(s).toContain("the ENGINE assigns the direction");
+    expect(s).not.toContain("Both signs are accepted");
     expect(s).toMatch(/steam reforming/);
     const f = prose(step(4).formula!);
     expect(f).toContain(String.raw`\Delta H_\mathrm{rxn} < 0`);
@@ -190,8 +195,9 @@ describe("the tool's one piece of arithmetic", () => {
     //  published values at 800 K and 850 K.
     expect(verdictOf(0.33590768315, 0.317590043863, 50, true)).toBe("short");
     //  and the same pair the other way round is the reactor beating
-    //  equilibrium, which is what a negative approach does to an exothermic
-    //  reaction.
+    //  equilibrium, which is what the OTHER direction does to an exothermic
+    //  reaction -- the one the engine never takes and this panel shows only
+    //  on request.
     expect(verdictOf(0.33590768315, 0.354, -50, true)).toBe("beyond");
   });
 
@@ -206,17 +212,27 @@ describe("the tool's one piece of arithmetic", () => {
   });
 
   it("reads the thermicity off the engine's duty sign, not off a name", () => {
-    //  GibbsReactor.cpp:323 -- Q_kW is heat ADDED to hold T.
+    //  GibbsReactor.cpp:482 -- Q_kW is heat ADDED to hold T.
     expect(thermicityOf(-3.44038833106)).toBe("exothermic");   // shift at 800 K
     expect(thermicityOf(57.7812038582)).toBe("endothermic");   // reformer, 1000 K
     expect(thermicityOf(0)).toBe("thermally neutral");
     expect(thermicityOf(null)).toBeNull();
   });
 
-  it("derives the WANTED sign from the thermicity and from nothing else", () => {
-    expect(wantedSignOf(thermicityOf(-3.44))).toBe("positive");
-    expect(wantedSignOf(thermicityOf(57.78))).toBe("negative");
-    expect(wantedSignOf(thermicityOf(0))).toBeNull();
+  it("derives the sign the ENGINE assigns from the thermicity and nothing else", () => {
+    //  The same rule as GibbsReactor::approachDirection: exothermic -> T + |dT|,
+    //  endothermic -> T - |dT|, undecidable -> null (the engine then takes +
+    //  and announces the default).
+    expect(engineSignOf(thermicityOf(-3.44))).toBe("positive");
+    expect(engineSignOf(thermicityOf(57.78))).toBe("negative");
+    expect(engineSignOf(thermicityOf(0))).toBeNull();
+  });
+
+  it("offers no negative magnitude, because the engine refuses one", () => {
+    //  A slider whose floor is below zero would teach a declaration the
+    //  engine rejects by name (GibbsReactor.cpp:278-289).
+    expect(DT_KNOB.min).toBe(0);
+    expect(DT_KNOB.label).toMatch(/MAGNITUDE/);
   });
 
   it("moves the feed temperature with the reactor, and asserts the unit", () => {

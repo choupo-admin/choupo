@@ -307,24 +307,35 @@ operation
     );
 }
 ```
-Optional **`temperatureApproach  <ΔT K>;`** evaluates the REACTION
-equilibrium at `T + ΔT` while the physical state stays at `T` — enthalpy,
-Psat and the energy balance do not move.  It models an **incomplete
-approach to equilibrium** for reversible reactions (WGS / reforming /
-ammonia) without kinetics; default 0 = full equilibrium.  (No effect on
-an essentially irreversible reaction whose K is huge — use
-`conversionReactor` there.)  It is ANNOUNCED on every run and published as
-the KPI `temperatureApproach_K`.
+Optional **`temperatureApproach  <|ΔT| K>;`** — a MAGNITUDE — evaluates
+the REACTION equilibrium at `T ± ΔT` while the physical state stays at `T`
+— enthalpy, Psat and the energy balance do not move.  It models an
+**incomplete approach to equilibrium** for reversible reactions (WGS /
+reforming / ammonia) without kinetics; default 0 = full equilibrium.  (No
+effect on an essentially irreversible reaction whose K is huge — use
+`conversionReactor` there.)  It is ANNOUNCED on every run and the SIGNED
+value the engine used is published as the KPI `temperatureApproach_K`.
 
-**THE SIGN FOLLOWS THE HEAT OF REACTION, NOT A CONVENTION.**  A real
-reactor falls SHORT of equilibrium, and which direction under-predicts
-depends on the thermochemistry: an **exothermic** reaction (ammonia
-synthesis) converts less as temperature rises, so it under-predicts at a
-HIGHER evaluation temperature — **positive ΔT**; an **endothermic** one
-(steam reforming) converts more as temperature rises, so it under-predicts
-at a LOWER one — **negative ΔT**.  Positive is conservative only for an
-exothermic reaction.  Both signs are accepted and the engine constrains
-neither.
+**YOU DECLARE THE MAGNITUDE; THE ENGINE ASSIGNS THE SIGN (ruled
+2026-09-26).**  A real reactor falls SHORT of equilibrium, and which
+direction under-predicts depends on the thermochemistry: an **exothermic**
+reaction (ammonia synthesis) converts less as temperature rises, so it
+under-predicts at a HIGHER evaluation temperature — the engine evaluates at
+**T + ΔT**; an **endothermic** one (steam reforming) converts more as
+temperature rises, so it under-predicts at a LOWER one — the engine
+evaluates at **T − ΔT**.  Positive is conservative only for an exothermic
+reaction, which is exactly why the sign is not the author's to choose.  The
+engine reads the thermicity of the OVERALL transformation from the feed to
+its equilibrium at the physical T (the isothermal enthalpy change on the
+package's surface — never the published `Q_kW`, whose sign carries the
+feed's sensible heat when feed and reactor differ in T), announces the
+direction and the number it read (console + advisories), and where it
+cannot decide (no conversion at all) takes `T + ΔT` and says so.  **A
+negative value is REFUSED by name** — a bed never crosses its own
+equilibrium curve, so the approach has no sign of its own.  Announced, never
+judged: a feed already past the equilibrium at T (a quench stage) runs the
+transformation the other way, and the approach then lands on the feed's
+side.  A `gibbsMap` applies the same rule at every cell.
 
 Three limits the engine states itself: the parameter is EMPIRICAL
 (calibrated against a real unit, never predicted); it is GLOBAL (one number
@@ -334,12 +345,15 @@ fugacity corrections**, so on a 200 bar converter it can silently become a
 correction for a poor equation of state rather than the
 closeness-to-equilibrium it claims to be.
 
-A SECOND key, **`approachTemperature`**, is read by the same solve and is a
-DIFFERENT model — it shifts the whole equilibrium evaluation, so Psat and
-the fugacity coefficients move with the chemistry.  It announces nothing,
-publishes no KPI, and the two ADD when both are declared.  Prefer
-`temperatureApproach`.  (This file used to name only `approachTemperature`;
-corrected 2026-09-25.)
+**`approachTemperature` is RETIRED (2026-09-26) and REFUSED by name.**  It
+was a second key read by the same solve and a DIFFERENT model — it shifted
+the whole equilibrium evaluation, so Psat and the fugacity coefficients
+moved with the chemistry — and it announced nothing, published no KPI, and
+ADDED to `temperatureApproach` when both were declared.  A case declaring it
+now stops with a message naming `temperatureApproach`, the difference
+between the two models and the sign convention; nothing reads it as a
+value.  `temperatureApproach` is the one approach key.  (This file used to
+name only `approachTemperature`; it named both on 2026-09-25.)
 
 Choupo has **no FRACTIONAL (extent) approach to equilibrium** — a different
 definition, not interchangeable with the temperature one — and no pellet

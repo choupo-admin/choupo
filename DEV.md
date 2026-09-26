@@ -116,6 +116,19 @@ ones for day-to-day work:
 
 ## 4. Roadmap for the development line (candidate work, priority-ish)
 
+**DEFERRED BY VITOR 2026-09-26 -- a hand-rolled SQP with finite-difference
+gradients ("vamos deixar isso para mais tarde").**  A candidate, not a
+commission.  The shape is settled enough to write down so it is not re-argued:
+BFGS-damped SQP, l1 merit line search, the QP subproblem on the EXISTING
+`solver/ActiveSetQP` (the weighted-least-squares reconciler already is a
+constrained QP solver), no external library, glass-box announcements for an
+infeasible QP, a rejected step, and a finite-difference step below the inner
+solver's tolerance -- the last being the noise that makes SQP over a recycled
+flowsheet stall, which is the reason it is not offered lightly anywhere.
+FIRST STEP when it is taken up: Hock-Schittkowski witnesses (public, known
+optima) run on `ActiveSetQP` before any SQP line is written; a gate sabotaged
+by hand; students breaking it.  Nothing built.
+
 **SEPTEMBER 2026 — THE ENGINE IS FROZEN, BY DEFAULT (architect, 2026-09-02;
 DELEGATE-WITH-DEFAULT under philosophy §4, reversible by one line here).**
 Students adopt this month.  Measured before deciding: in the 30 days to
@@ -1184,16 +1197,20 @@ accepts today, and that is a policy call.
         a project nobody has the kinetics to say why, so the equilibrium is
         DETUNED by one calibrated number.  The separation the engine keeps
         is the teaching point -- **the chemistry goes to T+dT, the physical
-        state stays at T** (`GibbsReactor.cpp:136-141`); enthalpy, Psat and
+        state stays at T** (the `[gibbs] temperatureApproach` announcement in `GibbsReactor.cpp`); enthalpy, Psat and
         the energy balance never move.
-     4. **THE SIGN, which is what he had never been told.**  Both signs are
-        accepted and the engine constrains neither.  Which one is wanted
-        follows the sign of the heat of reaction, not a convention:
-        exothermic (ammonia) under-predicts at a HIGHER evaluation
-        temperature, so positive; endothermic (reforming) at a LOWER one, so
-        negative.  Positive is conservative only for an exothermic reaction.
+     4. **THE SIGN, which is what he had never been told.**  As built on
+        2026-09-25 the lesson taught both signs as the author's; **ruled
+        2026-09-26 (section 5): the author declares a MAGNITUDE and the ENGINE
+        assigns the sign** from the thermicity of the overall transformation
+        at the physical T, announcing it -- exothermic (ammonia)
+        under-predicts at a HIGHER evaluation temperature, so T + dT;
+        endothermic (reforming) at a LOWER one, so T - dT; a negative
+        declaration is refused.  Positive is conservative only for an
+        exothermic reaction, which is exactly why the sign is the engine's.
+        The page and its test were rewritten to teach that the same day.
      5. The three caveats the engine prints itself
-        (`GibbsReactor.cpp:150-154`) and each is a lesson: it is EMPIRICAL
+        (the same announcement's caveat lines) and each is a lesson: it is EMPIRICAL
         (calibrated, never predicted); it is GLOBAL (one number, no
         per-reaction approach); and **at high pressure it absorbs missing
         fugacity corrections** -- which on a 200 bar ammonia converter means
@@ -1323,8 +1340,18 @@ accepts today, and that is a policy call.
      engine change and are built first.  D needs the rate law wired into
      `pfr`, which is not a new unit operation but IS new physics reaching a
      reactor, and the engine has been frozen since 2026-09-02.
-     **RESERVED for Vitor:** whether that wiring is inside the freeze.  It is
-     named here rather than assumed either way.
+     **AUTHORISED BY VITOR 2026-09-26 ("2: faz"): the wiring is inside the
+     freeze's exception.**  Stage D is `ammoniaStaged04_kinetic`: the same
+     loop with the converter as an adiabatic `pfr` on the Dyson & Simon
+     (1968) rate law already curated in
+     `src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}` --
+     until today reachable only from the props bench.  The PFR is a RATING
+     model, so the bed volume the ENGINE computes comes from a `DesignSpec`
+     on `operation.volume` hitting stage C's outlet conversion: that is the
+     number to set beside C's space-velocity volume, and the comparison is
+     the whole pedagogical payoff.  eta stays 1 and announced (the pellet is
+     the rung beyond D, still not built).  Dispatched in an isolated worktree
+     because the approach-key retirement owns the main tree.
 
      **A, B AND C ARE BUILT AND ON MAIN (2026-09-25).**
      `tutorials/plant/ammoniaStaged01_yield` / `02_equilibrium` /
@@ -1708,7 +1735,39 @@ the engine: the quench case, where a feed already past the hot equilibrium
 approaches from the other side; the parameter is GLOBAL and the engine says
 so.  The EduTool `approach-to-equilibrium` and `docs/ai/unit-ops.md` teach
 the sign as the ENGINE's act, not the author's.
-**RESERVED for Vitor:**
+**EXECUTED 2026-09-26, both (i) and the ruling, in one change.**
+`approachTemperature` is read only to REFUSE by name (naming
+`temperatureApproach`, the two models and the rule; the `Heater` `Tout`
+shape) and the three `method->equilibrium(prob, T + dT, ...)` call sites
+pass the physical T.  `temperatureApproach` < 0 REFUSES by name; > 0 is a
+magnitude whose direction `GibbsReactor::approachDirection` assigns -- ONE
+home, called by the reactor and by `gibbsMap` at every cell -- from the
+isothermal enthalpy change between the feed and its TRUE equilibrium at the
+physical T (one extra dT = 0 solve, on the package surface via the new
+`stateEnthalpy_W`, which the adiabatic Newton now also calls), announced on
+the console and on `AdvisoryLog`, the SIGNED value published as
+`temperatureApproach_K` (the map publishes the tally
+`approachDirection_*Solves` beside it).  Measured: `gibbs01` at 800 K reads
+-12385.40 kJ/kmol feed and goes to T + 25; `gibbs02` at 1000 K reads
++52003.08 and goes to T - 25 with no sign in its dict; the Haber map at 25 K
+tallies 629/629 exothermic.  `ammoniaStaged03_approach` (+5, exothermic)
+and the other five Gibbs goldens PASS unchanged.  **ONE DEVIATION FROM THE
+RULING TEXT, stated rather than hidden:** the thermicity is read from the
+transformation AS IT RUNS from THIS feed (the only extent a
+stoichiometry-free reactor has), so a quench feed already past the
+equilibrium at T reads as the reverse transformation and the approach lands
+on the feed's side BY CONSTRUCTION -- the engine does detect that case; what
+it does not do is JUDGE it, and the announcement says so.  The undetermined
+case (no conversion, dH = 0, probe unconverged) takes + and is logged as a
+`warning`.  Also corrected: `how-a-process-design-is-staged.md` section 7.3
+claimed `equilibriumReactor` reads `operation.approachTemperature` at
+`EquilibriumReactor.cpp:65`; that file reads no approach key.  Two schema
+descriptions, `docs/ai/unit-ops.md`, `docs/userGuide.tex`, the two plant
+READMEs, `ammoniaStaged03`'s dict comment and the EduTool page teach the
+magnitude rule; the sentence above saying "zero corpus cases declare either
+key" was stale when written (`ammoniaStaged03` declares the surviving one)
+and no golden moved.  (iii) is moot as the ruling says.
+**RESERVED for Vitor (as it stood before the ruling; kept for the record):**
 (i, as it stood) which of the two models is the one Choupo means -- they are different
 physics, not two spellings, and the answer decides which key survives;
 (ii) whether `minimum: 0` goes, which is the sign question itself;

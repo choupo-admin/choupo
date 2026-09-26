@@ -60,16 +60,21 @@ units
         //  STAGE C -- GIBBS REACTOR DETUNED BY AN APPROACH TO EQUILIBRIUM.
         //
         //  One key more than stage B, and it is the rung the rest of this
-        //  corpus never climbs.  `temperatureApproach 5` evaluates the
-        //  REACTION equilibrium at 705 K while the physical state, the
-        //  enthalpy and the energy balance stay at 700 K.  Ammonia synthesis
-        //  is exothermic, so the equilibrium ammonia content falls as the
-        //  temperature rises: evaluating the chemistry 5 K HOT is exactly
-        //  "the outlet is 5 K short of equilibrium".
+        //  corpus never climbs.  `temperatureApproach 5` declares a MAGNITUDE;
+        //  the engine reads the thermicity of the transformation from this
+        //  feed to its equilibrium at 700 K, finds it exothermic, and
+        //  evaluates the REACTION equilibrium at 705 K while the physical
+        //  state, the enthalpy and the energy balance stay at 700 K --
+        //  announcing the choice (ruled 2026-09-26; a negative value is
+        //  refused by name).  Ammonia synthesis is exothermic, so the
+        //  equilibrium ammonia content falls as the temperature rises:
+        //  evaluating the chemistry 5 K HOT is exactly "the outlet is 5 K
+        //  short of equilibrium".
         //
-        //  THE SIGN IS THE SOURCE'S OWN.  US 5,352,428 (Bhakta & Grotz, CF
-        //  Braun and Co, 4 October 1994), "High conversion ammonia synthesis",
-        //  defines the quantity in the same direction, verbatim:
+        //  THE DIRECTION THE ENGINE ASSIGNS IS THE SOURCE'S OWN.  US
+        //  5,352,428 (Bhakta & Grotz, CF Braun and Co, 4 October 1994), "High
+        //  conversion ammonia synthesis", defines the quantity in the same
+        //  direction, verbatim:
         //
         //      "The effluent from each bed has an approach to equilibrium of
         //       5 C., i.e., the ammonia concentration corresponds to the
@@ -99,7 +104,7 @@ units
         operation
         {
             T 700.0 K;  P 200.0 bar;
-            temperatureApproach 5;              // K (= C), a DIFFERENCE
+            temperatureApproach 5;              // K (= C), a MAGNITUDE; the engine assigns the sign
             elements ( N  H  Ar );
             species
             (

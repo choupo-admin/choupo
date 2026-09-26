@@ -136,8 +136,9 @@
     },
     "temperatureApproach": {
       "type": "number",
-      "title": "Equilibrium approach",
-      "description": "Detune the equilibrium: solved at (T + this), the standard admission that a real reactor does not reach it; announced when non-zero. THE SIGN FOLLOWS THE HEAT OF REACTION — positive for an exothermic reaction, negative for an endothermic one — so there is deliberately no lower bound of zero. This description previously said \"(T − this)\" and carried a minimum of 0; both were wrong and are corrected here (2026-09-25).",
+      "minimum": 0,
+      "title": "Equilibrium approach magnitude (direction assigned by the engine)",
+      "description": "Detune the equilibrium by THIS MANY kelvin at every cell of the map — the standard admission that a real reactor does not reach it; announced when non-zero. THE VALUE IS A MAGNITUDE AND THE ENGINE ASSIGNS THE SIGN AT EACH CELL (ruled 2026-09-26, the same rule and the same code as gibbsReactor): T + dT where the overall transformation at that cell's T is exothermic, T − dT where it is endothermic, with the tally of solves per direction announced and published (approachDirection_*Solves) and each cell's SIGNED value in the CSV's deltaT_K column. A negative declaration is REFUSED by name; minimum 0 is that rule. The anchor KPI names carry the declared magnitude (_dT<n>). It is EMPIRICAL (calibrated against a real unit, never predicted) and GLOBAL (one number; it cannot resolve per-reaction approaches, so the OVERALL thermicity decides the direction), and at high pressure it will absorb missing fugacity corrections. (The 2026-09-25 description said the sign was the author's and deliberately had no lower bound; superseded by the ruling.)",
       "unit": "K"
     },
     "industrialWindow": {

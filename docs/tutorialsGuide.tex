@@ -121,9 +121,11 @@ gives an equilibrium map -- iso-lines of a product fraction over the
 operating plane -- which shows why an industrial reactor fixes $T$ and $P$
 in a narrow window (equilibrium wants one corner, the catalyst works in
 another; the gap is the compromise).  The \code{temperatureApproach}
-$\Delta T$ evaluates the \emph{reaction} equilibrium at $T+\Delta T$ while
-enthalpy and the energy balance stay at the physical $T$ -- an empirical,
-calibrated closeness-to-equilibrium knob (never predicted).
+$\Delta T$ -- declared as a magnitude; the engine assigns the sign from the
+reaction's thermicity and announces it -- evaluates the \emph{reaction}
+equilibrium at $T\pm\Delta T$ while enthalpy and the energy balance stay at
+the physical $T$ -- an empirical, calibrated closeness-to-equilibrium knob
+(never predicted).
 \emph{Gradeable exercise (ammonia):} on \code{nh3\_equilibrium\_map},
 at $P = 200$\,bar and $\Delta T = 0$, find the temperature at which the
 equilibrium NH$_3$ mole fraction crosses 30\,\%; report $T$ to the grid

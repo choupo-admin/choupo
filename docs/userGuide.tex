@@ -1534,9 +1534,18 @@ operation
 }
 \end{lstlisting}
 
-An optional \code{approachTemperature <dT>;} evaluates the equilibrium
-at $T + \Delta T$ --- the classical way to model an incomplete approach
-for reversible systems without kinetics.  For the adiabatic flame
+An optional \code{temperatureApproach <dT>;} --- a \emph{magnitude} ---
+evaluates the \emph{reaction} equilibrium at $T \pm \Delta T$ while
+enthalpy, vapour pressure and the energy balance stay at the physical $T$
+--- the classical way to model an incomplete approach for reversible
+systems without kinetics.  The engine assigns the sign from the reaction's
+thermochemistry (a higher evaluation temperature under-predicts an
+exothermic reaction, so $T + \Delta T$; a lower one an endothermic
+reaction, so $T - \Delta T$), announces its choice and the isothermal
+reaction enthalpy it read, and publishes the signed value it used as the
+KPI \code{temperatureApproach\_K}; a negative declaration is refused by
+name.  The older key \code{approachTemperature} is retired and refused by
+name.  For the adiabatic flame
 problem, wrap the reactor in a DesignSpec that varies \code{\$T} until
 $H_{\mathrm{out}} = H_{\mathrm{in}}$
 (\file{gibbs05\_adiabatic\_flame}: lean CH$_4$/air $\to$ 1492 K).

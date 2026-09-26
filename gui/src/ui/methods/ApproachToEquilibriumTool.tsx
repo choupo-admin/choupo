@@ -40,9 +40,23 @@ License
   and the reason is a contract rather than an omission: methodRun's override
   channel replaces the NUMBER of a DECLARED scalar and deliberately cannot add
   a key ("a knob that needs one is a knob the witness case should declare"),
-  and -- measured 2026-09-25 -- no case in the corpus declares an approach of
-  any kind.  Inventing a witness was not available either: tutorials/ belongs
-  to another author this session.
+  and -- measured 2026-09-25 -- no case in the corpus then declared an
+  approach of any kind (`ammoniaStaged03_approach` declares one since that
+  day; it runs at 200 bar under SRK, where the equivalence below does NOT
+  hold, so it is named in the prose and is not a witness).
+
+  THE SIGN IS THE ENGINE'S (ruled 2026-09-26).  A case declares
+  `temperatureApproach` as a MAGNITUDE; a negative value is refused by name
+  (GibbsReactor.cpp:278-289), and the engine assigns the direction from the
+  isothermal enthalpy change between the feed and its true equilibrium at the
+  physical T (`GibbsReactor::approachDirection`, :67-106).  This panel reads
+  the SAME quantity the same way -- on these witnesses the feed and the
+  reactor share a temperature, so the published `Q_kW` IS that isothermal
+  change -- and moves the second run in the direction the engine would take.
+  The other direction is still SHOWN, on request, because seeing the model
+  beat its own equilibrium is the lesson; it is labelled as the direction the
+  engine never takes, and this panel can only show it because it runs the
+  case at a different temperature rather than declaring an approach.
 
   So the panel runs the SAME case TWICE, at T and at T + dT, and reads the
   composition off the second.  That is not a stand-in for the engine's
@@ -68,7 +82,7 @@ License
   prose and is NOT a witness here.  The divergence IS the third caveat.
 
   THE FEED TEMPERATURE MOVES WITH THE REACTOR, and that is what makes `Q_kW`
-  readable.  GibbsReactor.cpp:323 publishes `Q_kW = H_out - H_in` with H_in at
+  readable.  GibbsReactor.cpp:482 publishes `Q_kW = H_out - H_in` with H_in at
   the FEED temperature, so with a feed left behind it carries sensible heat and
   its sign stops being the thermicity (measured: the shift reactor at 1200 K
   with an 800 K feed reports +2.04 kW and is exothermic).  With both at the
@@ -189,7 +203,7 @@ export function verdictOf(
 }
 
 /** The thermicity WORD the engine's own duty carries, or null when the run
- *  published none.  Sign convention is GibbsReactor.cpp:323 — `Q_kW` is heat
+ *  published none.  Sign convention is GibbsReactor.cpp:482 — `Q_kW` is heat
  *  ADDED to the process to hold T, so a negative duty is heat removed. */
 export function thermicityOf(Q_kW: number | null):
   "exothermic" | "endothermic" | "thermally neutral" | null {
@@ -199,8 +213,11 @@ export function thermicityOf(Q_kW: number | null):
   return "thermally neutral";
 }
 
-/** The sign a reader should WANT, from the thermicity alone (step 4). */
-export function wantedSignOf(
+/** The sign the ENGINE assigns, from the thermicity alone (step 4): the
+ *  same rule `GibbsReactor::approachDirection` applies -- T + |ΔT| for an
+ *  exothermic transformation, T − |ΔT| for an endothermic one, and `null`
+ *  where it cannot decide (the engine then takes + and says so). */
+export function engineSignOf(
   t: ReturnType<typeof thermicityOf>,
 ): "positive" | "negative" | null {
   if (t === "exothermic") return "positive";
@@ -208,14 +225,21 @@ export function wantedSignOf(
   return null;
 }
 
-const DT_KNOB: PanelKnob = {
-  id: "dT", label: "approach ΔT — the temperature the CHEMISTRY is asked at",
-  min: -100, max: 100, step: 5, unit: "K",
-  why: "Both signs are accepted and the engine constrains neither.  Which one "
-    + "you want follows the thermicity: positive for an exothermic reaction, "
-    + "negative for an endothermic one.  Drag it past zero in the wrong "
-    + "direction and watch the verdict below change.",
+/** The magnitude knob.  Its floor is 0 because the engine's is: a negative
+ *  `temperatureApproach` is refused by name (GibbsReactor.cpp:278-289), so a
+ *  slider that offered one would teach a declaration the engine rejects. */
+export const DT_KNOB: PanelKnob = {
+  id: "dT", label: "approach |ΔT| — a MAGNITUDE; the engine picks the direction",
+  min: 0, max: 100, step: 5, unit: "K",
+  why: "You declare only how FAR from equilibrium the outlet sits.  The "
+    + "engine reads the thermicity of your feed's transformation at the "
+    + "physical T and moves the chemistry the way that under-predicts it: "
+    + "T + |ΔT| for exothermic, T − |ΔT| for endothermic.  The readout says "
+    + "which it chose; the switch below lets you SEE the other direction, "
+    + "which the engine never takes.",
 };
+
+export type DirectionShown = "engine" | "other";
 
 function fmt(v: number | null, digits: number): string {
   return v === null ? "—" : v.toFixed(digits);
@@ -225,7 +249,8 @@ export function ApproachToEquilibriumTool(): JSX.Element {
   const [witnessId, setWitnessId] = useState(WGS.id);
   const w = APPROACH_WITNESSES.find((x) => x.id === witnessId) ?? WGS;
   const [T, setT] = useState(WGS.T0);
-  const [dT, setDT] = useState(0);
+  const [dTmag, setDTmag] = useState(0);
+  const [shown, setShown] = useState<DirectionShown>("engine");
 
   //  A witness swap carries its own base temperature: 800 K is inside the
   //  reformer's window but is not its case, and a slider left behind would
@@ -238,15 +263,12 @@ export function ApproachToEquilibriumTool(): JSX.Element {
   };
 
   const Tbase = Math.min(Math.max(T, w.Tmin), w.Tmax);
-  const Tshift = Tbase + dT;
 
+  //  The base run comes first: the direction is READ off it, exactly as the
+  //  engine reads the direction off its own dT = 0 probe.
   const baseOv = useMemo(() => approachOverrides(Tbase), [Tbase]);
-  const shiftOv = useMemo(() => approachOverrides(Tshift), [Tshift]);
-
   const baseRun = useMethodRun(
     w.witness, baseOv, JSON.stringify([w.id, Tbase]), "choupoSolve");
-  const shiftRun = useMethodRun(
-    w.witness, shiftOv, JSON.stringify([w.id, Tshift]), "choupoSolve");
 
   const rowOf = (r: typeof baseRun) => r.result?.kpis?.[w.unit] ?? null;
   const pick = (r: typeof baseRun, key: string): number | null => {
@@ -254,13 +276,22 @@ export function ApproachToEquilibriumTool(): JSX.Element {
     return typeof v === "number" && Number.isFinite(v) ? v : null;
   };
 
+  const Q_kW = pick(baseRun, "Q_kW");
+  const thermicity = thermicityOf(Q_kW);
+  const engineSign = engineSignOf(thermicity);
+  //  Undecidable -> + is the engine's announced default (approachDirection).
+  const engineDir = engineSign === "negative" ? -1 : +1;
+  const dT = (shown === "engine" ? engineDir : -engineDir) * dTmag;
+  const Tshift = Tbase + dT;
+
+  const shiftOv = useMemo(() => approachOverrides(Tshift), [Tshift]);
+  const shiftRun = useMethodRun(
+    w.witness, shiftOv, JSON.stringify([w.id, Tshift]), "choupoSolve");
+
   const metricBase = pick(baseRun, w.metricKpi);
   const metricShift = pick(shiftRun, w.metricKpi);
-  const Q_kW = pick(baseRun, "Q_kW");
 
   const verdict = verdictOf(metricBase, metricShift, dT, w.moreIsMoreConverted);
-  const thermicity = thermicityOf(Q_kW);
-  const wanted = wantedSignOf(thermicity);
 
   const busy = baseRun.busy || shiftRun.busy;
   const err = baseRun.err ?? shiftRun.err;
@@ -305,7 +336,7 @@ export function ApproachToEquilibriumTool(): JSX.Element {
           T = {Tbase.toFixed(0)} K
         </text>
         <text x={x1} y={y1 + 18} fontSize={10} fill={INK} textAnchor="middle">
-          T + ΔT = {Tshift.toFixed(0)} K
+          T {dT < 0 ? "−" : "+"} |ΔT| = {Tshift.toFixed(0)} K
         </text>
       </svg>
     );
@@ -322,10 +353,19 @@ export function ApproachToEquilibriumTool(): JSX.Element {
             + "moves it.",
         }}
         value={Tbase} onChange={setT} showWhy />
-      <KnobSlider knob={DT_KNOB} value={dT} onChange={setDT} showWhy />
+      <KnobSlider knob={DT_KNOB} value={dTmag} onChange={setDTmag} showWhy />
+      <Text size="xs" fw={600} mt={4}>direction shown</Text>
+      <SegmentedControl size="xs" fullWidth value={shown}
+        onChange={(v) => setShown(v as DirectionShown)}
+        data={[
+          { value: "engine", label: "the engine's" },
+          { value: "other", label: "the other way" },
+        ]} />
       <PanelNote>
         Runs <code>tutorials/{w.witness}</code> twice, in your browser, on the
-        WASM build of <code>choupoSolve</code> — once at T and once at T + ΔT.
+        WASM build of <code>choupoSolve</code> — once at T and once at
+        T ± |ΔT|, the sign read off the first run&apos;s isothermal duty
+        exactly as the engine reads it off its own probe.
         Nothing here writes <code>temperatureApproach</code> into a dict;
         on this witness the shifted run&apos;s COMPOSITION is the same
         computation, and its temperature and duty are not.  {w.conditions}.
@@ -341,8 +381,8 @@ export function ApproachToEquilibriumTool(): JSX.Element {
           {fmt(metricBase, 6)}
         </Badge>
         <Badge variant="light" color="orange">
-          at T + ΔT = {Tshift.toFixed(0)} K · {w.metricKpi} ={" "}
-          {fmt(metricShift, 6)}
+          at T {dT < 0 ? "−" : "+"} |ΔT| = {Tshift.toFixed(0)} K ·{" "}
+          {w.metricKpi} = {fmt(metricShift, 6)}
         </Badge>
         <Badge variant="light" color="gray">
           Q_kW at T = {fmt(Q_kW, 3)} kW
@@ -357,15 +397,20 @@ export function ApproachToEquilibriumTool(): JSX.Element {
               <b>{fmt(Q_kW, 3)} kW</b>
               {thermicity === "thermally neutral"
                 ? <>, so no heat crosses the boundary to hold T: this
-                    transformation is <b>{thermicity}</b>, and the approach
-                    has no sign to prefer.</>
+                    transformation is <b>{thermicity}</b>, the thermicity
+                    cannot decide a direction, and the engine takes
+                    T + |ΔT| and says so.</>
                 : (
                   <>
                     , so heat must be{" "}
                     <b>{Q_kW !== null && Q_kW < 0 ? "REMOVED" : "ADDED"}</b>
                     {" "}to hold T: this transformation is <b>{thermicity}</b>
-                    {wanted
-                      ? <> — the approach you want is <b>{wanted}</b>.</>
+                    {engineSign
+                      ? <> — so the engine assigns{" "}
+                          <b>T {engineSign === "positive" ? "+" : "−"} |ΔT|</b>
+                          {shown === "other"
+                            ? <>; you are looking at the OTHER direction.</>
+                            : "."}</>
                       : "."}
                   </>
                 )}
@@ -382,23 +427,24 @@ export function ApproachToEquilibriumTool(): JSX.Element {
               ? "This ΔT puts the reported outlet SHORT of the equilibrium at "
                 + "the physical T — which is what a real bed does, and what "
                 + "the parameter is for."
-              : "This ΔT reports an outlet BEYOND the equilibrium the same "
-                + "model just computed at the physical T.  Both witnesses "
+              : "This direction reports an outlet BEYOND the equilibrium the "
+                + "same model just computed at the physical T.  Both witnesses "
                 + "here are fed on the reactant side, so for a single "
-                + "dominant reaction that is thermodynamically impossible — "
-                + "and the engine accepts it without complaint."}
+                + "dominant reaction that is thermodynamically impossible."}
       </Text>
       {verdict === "beyond" && (
         <Alert color="yellow" variant="light" mt={8}
-          title="The engine does not refuse this">
-          Neither sign is constrained anywhere in <code>GibbsReactor.cpp</code>.
-          A Gibbs reactor is told no reactions, so it has no stoichiometry to
-          take a thermicity from before it solves; the duty above is a RESULT,
-          available only afterwards — and a test would also have to know which
-          side of equilibrium the FEED sits on, which is a fact about the
-          flowsheet rather than the reaction. Whether the engine should say
-          something here is an open question recorded for the architect, not a
-          decision this page takes.
+          title="This is the direction the engine never takes">
+          Since 2026-09-26 the author declares only a MAGNITUDE and the engine
+          assigns the sign from the thermicity you see above; a negative
+          <code>temperatureApproach</code> is refused by name
+          (<code>GibbsReactor.cpp:278–289</code>). A Gibbs reactor is told no
+          reactions, so it takes its thermicity from the one extent it has —
+          the transformation from its own feed to the true equilibrium at T,
+          solved once more before the detuned solve
+          (<code>approachDirection</code>). This panel can still show the
+          other direction because it runs the case at a different
+          temperature rather than declaring an approach.
         </Alert>
       )}
     </Box>
@@ -414,9 +460,9 @@ export function ApproachToEquilibriumTool(): JSX.Element {
           <Text size="sm" c="dimmed" mt={4}>
             A reactor that is told no reactions, and the one calibrated number
             that stops it from handing the flowsheet a conversion no real
-            converter achieves. Read the four steps, then move ΔT and watch
-            which way the answer goes — and which sign takes it somewhere no
-            reactor can be.
+            converter achieves. Read the four steps, then move |ΔT| and watch
+            which way the engine points it — and, on request, the other way,
+            which takes the model somewhere no reactor can be.
           </Text>
         </Box>
 
@@ -433,8 +479,8 @@ export function ApproachToEquilibriumTool(): JSX.Element {
             is asked. The two witnesses are different chemistries — they are
             here because their reaction enthalpies have opposite SIGNS, and
             the one slider, the one verdict rule and the one comparison are
-            identical for both, so the only thing that changes with the sign
-            is which way ΔT has to point.
+            identical for both, so the only thing that changes between them
+            is which way the engine points ΔT.
           </Text>
           <SegmentedControl mt={8} fullWidth value={witnessId}
             onChange={onWitness}

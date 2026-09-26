@@ -641,8 +641,13 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  entry: the architect of this project met the temperature approach to
   //  equilibrium for the first time that day and asked for a page about it.
   //  The engine has read the key since 2026-07-02 and announces it in three
-  //  sentences; nothing anywhere carried the teaching, and no flowsheet case
-  //  in the corpus declares an approach of any kind (measured the same day).
+  //  sentences; nothing anywhere carried the teaching, and on that day no
+  //  flowsheet case in the corpus declared an approach of any kind
+  //  (`ammoniaStaged03_approach` declares one since; it runs at 200 bar
+  //  under SRK, where the page's two-run equivalence does not hold, so it is
+  //  named in the prose and is not a witness).  Since 2026-09-26 the author
+  //  declares a MAGNITUDE and the ENGINE assigns the sign; the page teaches
+  //  that.
   //
   //  `notes` rather than `construction`: there is no classical graphical
   //  construction here.  It is a chapter you scroll with the engine running
@@ -657,8 +662,10 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "yet, not because of the project stage; that the approach to "
       + "equilibrium evaluates the CHEMISTRY at T + ΔT while enthalpy, Psat "
       + "and the energy balance stay at the physical T; and THE SIGN — "
-      + "positive is conservative only for an EXOTHERMIC reaction, so a "
-      + "reformer wants a negative one, and the engine constrains neither.",
+      + "positive is conservative only for an EXOTHERMIC reaction, which is "
+      + "why the author declares a MAGNITUDE and the ENGINE assigns the "
+      + "direction from the reaction's thermicity and announces it: a "
+      + "reformer gets T − ΔT without anyone typing a minus.",
     theory: "sec:gibbs-maps",
   },
   {
