@@ -1691,7 +1691,24 @@ which is not what the word means.  `approachTemperature` is RETIRED the way
 `fitBinaryPair` and the heater's `Tout` were: read only to REFUSE by name,
 naming the surviving key.  Blast radius measured before deciding: zero corpus
 cases declare either key.  What stays reserved is below.
-**RESERVED for Vitor, and the two are separable:**
+**(ii) AND (iii) RULED BY VITOR, 2026-09-26, in one sentence: "O delta T e
+dado sempre positivo e tu e que vais atribuir sinal dependendo da reacao
+quimica."**  The case declares the MAGNITUDE, always positive; the ENGINE
+assigns the direction from the reaction's thermochemistry -- an exothermic
+overall reaction evaluates the equilibrium at T + dT, an endothermic one at
+T - dT -- and ANNOUNCES which it chose and why.  Consequences: `minimum: 0`
+goes BACK into both Gibbs schemas with the right description (it left them on
+2026-09-25 under the reading that the sign was the author's); a negative
+declaration is not a sign to be judged but an invalid magnitude, REFUSED by
+name; the sign question of (iii) is therefore moot as posed.  The thermicity
+is read off the isothermal reaction enthalpy at the physical T, never off the
+published `Q_kW` (whose sign carries the feed's sensible heat when feed and
+reactor differ in T -- measured 2026-09-25).  Announced, never decided by
+the engine: the quench case, where a feed already past the hot equilibrium
+approaches from the other side; the parameter is GLOBAL and the engine says
+so.  The EduTool `approach-to-equilibrium` and `docs/ai/unit-ops.md` teach
+the sign as the ENGINE's act, not the author's.
+**RESERVED for Vitor:**
 (i, as it stood) which of the two models is the one Choupo means -- they are different
 physics, not two spellings, and the answer decides which key survives;
 (ii) whether `minimum: 0` goes, which is the sign question itself;
