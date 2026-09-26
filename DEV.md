@@ -1715,6 +1715,36 @@ critical temperature is not a phase split and is DISCARDED, announced, the
 state priced single-phase.  Same family as the two fixes Vitor authorised
 today, same one-home remedy, blast radius measured before the golden list is
 shown: no re-record without the list.
+**DONE, the same day, on that default.**  ONE home:
+`flashState::supercriticalSplitDiscarded` (StreamEquilibrium.H) now holds
+the two-phase test, the pure-Tc bound (`aboveEveryCriticalT`, unchanged:
+present = z > 1e-12, an undeclared Tc does not vote) and the sentence;
+`equilibriumAt` calls it where its inline block used to be, and
+`IsothermalFlash.cpp`'s duty calls it on the feed re-flash it runs through
+`solveCore` -- discard, price the CARRIED state, announce at the site and
+once on `AdvisoryLog` under `feed '<stream>' of an isothermalFlash` (the
+first build filed 18 copies, one per trial T; the unit's advisory therefore
+names the stream and not the temperature, the site line carries T).
+Measured on stage D: separator 90.32 -> 100.00 %, plant -22 274.7 kW
+(5.918 %) -> +0.0141 kW (0.000 %); remaining: mixer -0.0087 kW, separator
+-0.0054 kW.  Gate: `check_inlet_resolution` arm (h), four parts, the arity
+part source-checked.  **Golden NOT re-recorded and `KNOWN_OPEN` NOT edited**
+(the list is in the general's report for Vitor): what moves is stage D's
+separator `Q`/`Q_kW` and its three `refrigerationNH3` utility rows;
+`check_energy_closure` asks for the 5.9180 pin back.  ENUMERATED, per the
+2026-09-25 rule -- other units that re-resolve an INLET and could accept the
+same root: through the one home (already discarding since 2026-09-08) the
+report, the model-boundary ledger, `heater`, `heatExchanger`,
+`conversionReactor`, the column's feed, the evaporator's chest; through
+`solveCore` DIRECTLY and NOT guarded, named not fixed: `phaseChanger`'s
+H_in (three sites, `PhaseChanger.cpp` ~188/790/1275), `pipe`'s inlet regime
+detection (`Pipe.cpp` ~129), and every OUTLET search (`valve`,
+`adiabaticFlash`, `phaseChanger`'s `flashAt(T)`, and `IsothermalFlash`'s
+own operating resolution -- a flash OPERATED above every Tc would publish a
+liquid product).  `Flowsheet.cpp`'s stream-H re-flash runs only on a
+CARRIED vf strictly inside (0, 1), so it cannot reach a vf = 1 stream.  No
+corpus case reaches any of those with a supercritical feed today, measured
+by the suite (only stage D moved).
 
 **2026-09-25 -- ONE CONCEPT, TWO KEYS, IN ONE FUNCTION, AND THE DOCUMENTED
 ONE IS THE SILENT ONE.**  Found while building the C9 EduTool; every line

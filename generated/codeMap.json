@@ -6783,7 +6783,8 @@
    "src/thermo/solidEquilibrium/SolidEquilibrium.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
-   "src/unitOperations/flash/IsothermalFlash.H"
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/unitOperations/flowsheet/Flowsheet.cpp": [
    "src/core/Advisory.H",
@@ -13088,6 +13089,7 @@
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",

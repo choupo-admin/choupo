@@ -118,6 +118,65 @@ inline bool aboveEveryCriticalT(scalar T, const sVector& z,
     return (TcMax > 0.0 && T > TcMax);
 }
 
+//  A TWO-PHASE ROOT ABOVE EVERY Tc IS NOT A SPLIT -- discard it, and SAY so.
+//
+//  The ONE home of the discard (2026-09-26).  `equilibriumAt` below had it
+//  inline since 2026-09-08, which served every reader that resolves a stream
+//  THROUGH this header -- the balance report, the heater, the exchanger, the
+//  column, the evaporator, the conversion reactor, the model-boundary ledger.
+//  `IsothermalFlash`'s duty does not: it re-resolves its feed through
+//  `solveCore` directly (R-E1, with the unit's own phase set), so the report
+//  discarded the root and the unit blended it -- two readers of one state
+//  disagreeing about what counts as a phase.  Measured on
+//  `ammoniaStaged04_kinetic`: the separator, fed at 844.86 K and 200 bar,
+//  closed at 90.32 % and the whole plant residual, -22 274.7 kW (5.918 %),
+//  was that one unit.
+//
+//  Returns the sentence when the root was discarded (the caller may print it
+//  at its own site), nothing when `fs` is single-phase or the state is not
+//  above every present component's Tc.  The advisory rides `AdvisoryLog`
+//  under `category` / `locus`, or is handed to `deferTo` for a caller that
+//  evaluates the same state many times.  Judges nothing about the case: it
+//  says what was found and what was done.
+//
+//  `nameT`: whether the sentence quotes the temperature.  `AdvisoryLog`
+//  dedups on the exact message, so a reader that resolves ONE accepted state
+//  (the balance report) names T and gets one line; a reader re-solved on
+//  every recycle pass and Jacobian perturbation (a unit's duty) must NOT, or
+//  each trial T is a new entry -- measured: 18 lines for one fact in
+//  ammoniaStaged04's caveat block on the first build.  Such a caller prints T
+//  at its own site instead and puts the stream's identity in `locus`.
+inline std::optional<std::string>
+supercriticalSplitDiscarded(const FlashSolution& fs,
+                            scalar               T,
+                            const sVector&       z,
+                            const ThermoPackage& thermo,
+                            const std::string&   locus,
+                            const char*          category,
+                            std::string*         deferTo = nullptr,
+                            bool                 nameT   = true)
+{
+    if (!(fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9))
+        return std::nullopt;
+    scalar TcMax = 0.0;
+    if (!aboveEveryCriticalT(T, z, thermo, &TcMax))
+        return std::nullopt;
+    const std::string msg =
+        std::string("resolved TWO-PHASE ")
+        + (nameT ? "at T = " + std::to_string(T) + " K, which is"
+                 : std::string("at a temperature"))
+        + " above the highest critical temperature of any"
+          " component present (" + std::to_string(TcMax) + " K): no"
+          " liquid can exist there, so the split is DISCARDED and this"
+          " stream is priced on the state it carries.  A root like"
+          " this comes from a correlation evaluated far outside its"
+          " declared window -- read the [henry] and [psat]"
+          " extrapolation lines for this run";
+    if (deferTo) *deferTo = msg;
+    else AdvisoryLog::instance().add(category, "warning", locus, msg);
+    return msg;
+}
+
 inline std::optional<FlashSolution> equilibriumAt(scalar               T,
                                                   scalar               P,
                                                   const sVector&       z,
@@ -186,25 +245,14 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
     //
     //  What happens then: the SPLIT is discarded and the caller prices the
     //  state the stream carries, announced -- never a silent substitution.
-    if (fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9)
-    {
-        scalar TcMax = 0.0;
-        if (aboveEveryCriticalT(T, z, thermo, &TcMax))
-        {
-            const std::string msg =
-                "resolved TWO-PHASE at T = " + std::to_string(T)
-                + " K, which is above the highest critical temperature of any"
-                  " component present (" + std::to_string(TcMax) + " K): no"
-                  " liquid can exist there, so the split is DISCARDED and this"
-                  " stream is priced on the state it carries.  A root like"
-                  " this comes from a correlation evaluated far outside its"
-                  " declared window -- read the [henry] and [psat]"
-                  " extrapolation lines for this run";
-            if (deferTo) *deferTo = msg;
-            else AdvisoryLog::instance().add(category, "warning", locus, msg);
-            return std::nullopt;
-        }
-    }
+    //
+    //  THE DISCARD ITSELF LIVES ONE FUNCTION UP (`supercriticalSplitDiscarded`,
+    //  2026-09-26): `IsothermalFlash`'s duty re-resolves its feed through
+    //  `solveCore` directly and needed the SAME sentence, and the day it had
+    //  its own copy of the test it had none -- ammoniaStaged04's separator
+    //  accepted the root this block discards and the plant lost 22 274.7 kW.
+    if (supercriticalSplitDiscarded(fs, T, z, thermo, locus, category, deferTo))
+        return std::nullopt;
     return fs;
 }
 

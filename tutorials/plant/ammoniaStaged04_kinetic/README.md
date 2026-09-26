@@ -223,21 +223,26 @@ and the result JSON; this README must agree with it and not soften it.
   this run's own `V_R` in a case of its own, and the invariant of the
   sequence — *a stage may not cost what it did not size* — is why it is not
   typed into a `designRules { volume }` here.
-* **It does not claim the plant's first law closes.**  The balance reports
-  DO run on the representative pass (Layer 3b), and the material side
-  closes (99.998 % global, every element to 0.0000 %) — but the
-  `globalEnergyBoundary` is **−22 274.7 kW (5.918 %)**, and all of it sits
-  on the SEPARATOR: its published duty is −230 170.6 kW against a stream
-  enthalpy difference of −207 895.9 kW (90.32 % closure), while the
-  preheater and the converter close at 0.0000 kW.  See §7.
+* **It claims the plant's first law closes only since 2026-09-26, and says
+  what closed it.**  The balance reports DO run on the representative pass
+  (Layer 3b); the material side closes (99.998 % global, every element to
+  0.0000 %), and the `globalEnergyBoundary` is **+0.0141 kW (0.000 %)**.  On
+  the day this case was recorded it was **−22 274.7 kW (5.918 %)**, all of it
+  on the SEPARATOR — a published duty of −230 170.6 kW against a stream
+  enthalpy difference of −207 895.9 kW (90.32 % closure) — while the
+  preheater and the converter closed at 0.0000 kW.  See §7 for what that
+  was and how it was closed.
 * **It does not claim the loop's conversion is the ammonia industry's.**
   Stage C's README §7 lists the inherited causes (a 250 K separator, kᵢⱼ = 0);
   they are unchanged here, and the single adiabatic bed is a further
   simplification no plant makes.
 
-## 7. A finding carried, not fixed: the separator's duty on a supercritical root
+## 7. A finding carried, then closed: the separator's duty on a supercritical root
 
-The −22 274.7 kW is the engine disagreeing with itself about ONE stream.
+**THE FINDING, as recorded on the day the case was built (kept as history;
+the numbers below are the ones the engine printed then).**
+
+The −22 274.7 kW was the engine disagreeing with itself about ONE stream.
 `IsothermalFlash` prices its duty on its feed's OWN re-resolved equilibrium
 (R-E1, `IsothermalFlash.cpp` §"Q = F·(H_out − H_in)"); at 844.86 K and 200
 bar the diluteSolution/Henry world, extrapolated 500 K beyond every fitted
@@ -249,11 +254,48 @@ above the highest critical temperature of any component present (405.4 K):
 no liquid can exist there, so the split is DISCARDED and this stream is
 priced on the state it carries."*  Stage C did not show this because its
 separator feed was 700 K; the hotter effluent of an adiabatic bed is what
-reached the seam.  The guard the report has and the unit lacks is a defect
-in `IsothermalFlash.cpp`, outside this slice's scope; the residual is pinned
+reached the seam.  The guard the report had and the unit lacked was a defect
+in `IsothermalFlash.cpp`, outside that slice's scope; the residual was pinned
 in `check_energy_closure.KNOWN_OPEN` at the value the engine printed, and
-the pin asks to be removed the day the flash guards its feed the way the
+the pin asked to be removed the day the flash guarded its feed the way the
 report does.
+
+**THE FIX (2026-09-26, taken on a stated default — DEV.md §5).**  The
+criterion and the sentence now have ONE home,
+`flashState::supercriticalSplitDiscarded` in
+`src/unitOperations/flash/StreamEquilibrium.H`: a two-phase resolution at a
+temperature above the highest critical temperature of any component PRESENT
+(z > 1e-12; a component with no declared Tc does not vote) is not a split.
+`equilibriumAt` — the report's reader — calls it exactly as before, and
+`IsothermalFlash`'s duty now calls it on its own feed re-flash: the root is
+DISCARDED, the feed is priced on the state it CARRIES (`reacted` carries
+vf = 1, so a vapour), and the discard is announced at the site
+(`[duty] the feed at T = 844.8582 K resolved TWO-PHASE at a temperature above
+the highest critical temperature of any component present (405.400000 K): no
+liquid can exist there, so the split is DISCARDED …`) and ONCE on
+`AdvisoryLog` under `feed 'reacted' of an isothermalFlash` — once, because
+the unit is re-solved on every recycle pass and the first build filed
+eighteen copies with eighteen trial temperatures.  Measured on this case,
+before → after: separator duty −230 170.59 → −207 895.87 kW, separator
+closure 90.32 → 100.00 %, plant residual −22 274.7 kW (5.918 %) → +0.0141 kW
+(0.000 %); what remains is the mixer at −0.0087 kW and the separator at
+−0.0054 kW, both round-off against a 10^5 kW duty.  The caveat block now
+carries two lines for the one fact — the unit's and the report's — and they
+say the same thing.  Sabotaged by hand (the call removed, rebuilt): the
+residual returns to −22 274.7 kW and `check_inlet_resolution` arm (h)
+refuses.  Gate: `check_inlet_resolution` (h1)–(h4).
+
+**What the criterion is, said plainly.**  "Above every PURE Tc present" is a
+sufficient condition for "no liquid", not a necessary one: a mixture's
+critical locus can rise above the highest pure Tc (a maximum in T on the
+locus is known for some strongly non-ideal pairs), so a root a few kelvin
+past the maximum could in principle be real.  This case sits 439 K past it,
+and the root came from Henry constants read ~500 K beyond their declared
+windows under a `diluteSolution` formulation that has no critical locus at
+all — the model cannot even pose the mixture-critical question.  The engine
+had already adopted the pure-Tc bound in two readers on 2026-09-08 (the
+report's discard and its incipient-phase silence); the fix here applies the
+SAME bound in a third and invents no tighter one.
 
 ## 8. Assumptions, each declared with its source or its absence
 

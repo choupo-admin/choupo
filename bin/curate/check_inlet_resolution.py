@@ -61,6 +61,31 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
       and the pass named both the moment it was allowed to run everywhere.
       This arm requires them ABSENT: a check that accuses the innocent
       teaches the reader to ignore it (2026-09-04).
+  (h) THE UNIT DISCARDS THE SAME ROOT THE REPORT DISCARDS (2026-09-26).
+      `IsothermalFlash`'s duty re-resolves its feed through `solveCore`
+      directly (R-E1, with the unit's own phase set) and, until this arm,
+      ACCEPTED a two-phase root at a temperature above every present
+      component's Tc -- blending a liquid that cannot exist into H_in --
+      while the balance report, resolving the SAME feed through
+      `flashState::equilibriumAt`, discarded it and said so.  Two readers of
+      one state, two answers: ammoniaStaged04_kinetic's separator, fed at
+      844.86 K and 200 bar (N2/H2/NH3/Ar, highest Tc present 405.4 K), closed
+      at 90.32 % and carried the WHOLE plant residual, -22 274.7 kW (5.918 %).
+      Four parts, read from a fresh run of that case:
+        (h1) ARITY, source: `flashState::supercriticalSplitDiscarded` is
+             DEFINED once, and BOTH `equilibriumAt` and the flash duty CALL
+             it (comments stripped -- prose is not a call).
+        (h2) SITE: the `[duty]` line says the feed's root was DISCARDED and
+             names the Tc it was measured against.
+        (h3) ANNOUNCED: the finding reaches the result JSON under the
+             `feed '<stream>' of an isothermalFlash` locus EXACTLY ONCE --
+             the unit is re-solved on every recycle pass, and the first build
+             put 18 copies of it in the caveat block (each with its trial T),
+             which is the wall of text the block exists to prevent.
+        (h4) OUTPUT: the separator's energy closure, read from the engine's
+             own report, is 100 +- 0.5 %, and the report's own discard line
+             for `reacted` is STILL there -- the two readers agree by saying
+             the same thing, not by one of them falling silent.
   (e) flash13_acetic_ethanol_vacuum_flash keeps a LARGE duty -- the
       negative control.  Its feed is at 1 atm and it operates at 0.65 atm,
       so its 669 kW is genuine pressure-drop work; a gate that drove every
@@ -130,6 +155,13 @@ IDENTITY = [
 ]
 CONTROL = "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash"
 BAND_KW = 0.5
+#  (h) the supercritical-feed witness: the first corpus case to put a stream
+#  above every component's Tc through an isothermalFlash on the duty path.
+SUPERCRITICAL = "tutorials/plant/ammoniaStaged04_kinetic"
+SUPERCRITICAL_UNIT = "separator"
+SUPERCRITICAL_FEED = "reacted"
+ONE_HOME = ROOT / "src/unitOperations/flash/StreamEquilibrium.H"
+FLASH_SRC = ROOT / "src/unitOperations/flash/IsothermalFlash.cpp"
 
 
 def run(case: pathlib.Path):
@@ -158,6 +190,27 @@ def closure(case: pathlib.Path):
             except ValueError:
                 return None
     return None
+
+
+def closure_of(case: pathlib.Path, unit: str):
+    f = case / "reports" / "balances" / "energyBalance_byUnit.csv"
+    if not f.is_file():
+        return None
+    for line in f.read_text().splitlines()[1:]:
+        p = line.split(",")
+        if len(p) >= 6 and p[0] == unit:
+            try:
+                return float(p[5])
+            except ValueError:
+                return None
+    return None
+
+
+def strip_comments(text: str) -> str:
+    """Drop // and /* */ comments so a symbol named in prose is not a call
+    (check_sector_hierarchy arm (g) paid for that)."""
+    text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
+    return re.sub(r"//[^\n]*", "", text)
 
 
 def main() -> int:
@@ -287,6 +340,78 @@ def main() -> int:
                         "round-off and the pass is now crying wolf at every "
                         "converged flash outlet in the corpus.")
 
+        # (h1) ARITY, source: one definition, two callers, comments stripped.
+        home = strip_comments(ONE_HOME.read_text())
+        flash = strip_comments(FLASH_SRC.read_text())
+        n_def = len(re.findall(r"\bsupercriticalSplitDiscarded\s*\(", home))
+        #  the definition plus the call inside equilibriumAt
+        if n_def != 2:
+            fail.append(
+                f"(h1) `supercriticalSplitDiscarded` appears {n_def} time(s) "
+                "in StreamEquilibrium.H outside comments; expected exactly 2 "
+                "-- its ONE definition and the call from `equilibriumAt`.  "
+                "The discard has a second home, or the report's reader lost "
+                "it.")
+        if not re.search(r"flashState::supercriticalSplitDiscarded\s*\(", flash):
+            fail.append(
+                "(h1) IsothermalFlash.cpp does not CALL "
+                "`flashState::supercriticalSplitDiscarded` -- the duty is "
+                "back to accepting a two-phase root above every Tc that the "
+                "balance report discards (ammoniaStaged04: -22 274.7 kW on "
+                "one separator).")
+        if re.search(r"aboveEveryCriticalT\s*\(", flash):
+            fail.append(
+                "(h1) IsothermalFlash.cpp calls `aboveEveryCriticalT` "
+                "directly -- a second copy of the two-phase test around the "
+                "one-home criterion.  Call `supercriticalSplitDiscarded`, "
+                "which holds the test AND the sentence.")
+
+        # (h2)-(h4) the supercritical witness, run fresh
+        sc = tmp / "ammoniaStaged04"
+        shutil.copytree(ROOT / SUPERCRITICAL, sc)
+        rc, log = run(sc)
+        if rc != 0:
+            fail.append("(h) ammoniaStaged04_kinetic did not run -- the "
+                        "supercritical-feed arm cannot judge")
+        else:
+            #  (h2) the site line
+            if not re.search(r"\[duty\] the feed at T = [0-9.]+ K resolved "
+                             r"TWO-PHASE .*DISCARDED", log):
+                fail.append(
+                    "(h2) the separator's duty printed no `[duty] ... "
+                    "DISCARDED` line for its 844.86 K feed: the two-phase "
+                    "root above every Tc was either accepted or discarded in "
+                    "silence.  Silence at the site is the crutch.")
+            #  (h3) announced, ONCE, under the stream-named locus
+            locus = f'"locus": "feed \'{SUPERCRITICAL_FEED}\' of an isothermalFlash"'
+            n_adv = len(re.findall(re.escape(locus) + r'.*?TWO-PHASE', log))
+            if n_adv != 1:
+                fail.append(
+                    f"(h3) the discard reached the result JSON {n_adv} "
+                    f"time(s) under {locus}; expected exactly 1.  Zero means "
+                    "it no longer rides AdvisoryLog (the site line is the "
+                    "slightly-louder form of silence); more than one means the "
+                    "trial T is back in the message and every recycle pass "
+                    "files a new caveat -- 18 on the first build.")
+            #  (h4) the unit and the report agree, each saying so
+            c = closure_of(sc, SUPERCRITICAL_UNIT)
+            if c is None:
+                fail.append("(h4) no energy closure row for the separator")
+            elif abs(c - 100.0) > 0.5:
+                fail.append(
+                    f"(h4) ammoniaStaged04's separator closes at {c:.2f} % -- "
+                    "its duty and the balance report are pricing the 844.86 K "
+                    "feed on different phase sets (R-E5).  Before 2026-09-26 "
+                    "this read 90.32 %, and it was the whole plant residual.")
+            if not re.search(r"stream '" + SUPERCRITICAL_FEED
+                             + r"': resolved TWO-PHASE at T = [0-9.]+ K.*DISCARDED",
+                             log):
+                fail.append(
+                    "(h4) the balance report no longer says it discarded "
+                    f"`{SUPERCRITICAL_FEED}`'s supercritical root -- the two "
+                    "readers must agree by both saying so, not by one going "
+                    "silent.")
+
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
         shutil.copytree(ROOT / CONTROL, ctrl)
@@ -314,7 +439,12 @@ def main() -> int:
           "(source) and DOES NOT ACCUSE a supercritical vapour: ammonia02's "
           "converter outlet at 839.6 K -- 434 K above the highest pure Tc "
           "present -- draws no accusation, and neither do the two saturated "
-          "separator outlets.  NOT "
+          "separator outlets.  THE FLASH DUTY DISCARDS THE "
+          "SAME SUPERCRITICAL ROOT THE REPORT DISCARDS, through ONE home "
+          "(`flashState::supercriticalSplitDiscarded`, source-checked): "
+          "ammoniaStaged04's separator, fed at 844.86 K, announces the "
+          "discard at its site and ONCE on AdvisoryLog and closes at 100 +- "
+          "0.5 % beside the report's own discard line.  NOT "
           "CHECKED: whether a NON-zero duty is right (only the identity has a "
           "closed form); the multi-condition cases' duties, which ride their "
           "goldens; whether the 1e-3 incipient band is the right number (it "

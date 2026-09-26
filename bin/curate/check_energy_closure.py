@@ -340,13 +340,6 @@ def ratchet_kW(pin: float) -> float:
 #  docs/design/the-state-a-unit-computes-with.md.
 KNOWN_OPEN = {
     "tutorials/plant/ChemicalPlantTutorial": 3.1710,
-    #  ammoniaStaged04_kinetic (2026-09-26): the whole residual is the
-    #  separator's -- IsothermalFlash re-resolves its 845 K feed for the duty
-    #  and ACCEPTS a two-phase root above every component's Tc, while the
-    #  energy report discards that same root and says so (docs: the case's
-    #  README section 7).  Measured from the engine's own printed line on the
-    #  day the case was recorded; the converter and the preheater close at 0.
-    "tutorials/plant/ammoniaStaged04_kinetic": 5.9180,
     "tutorials/plant/esterification2sector": 170.9790,
     "tutorials/plant/polycaprolactonePlant": 20.0100,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,

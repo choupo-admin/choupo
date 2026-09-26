@@ -44,6 +44,7 @@ License
 #include <memory>
 #include <stdexcept>
 #include "streams/SpeciationBlock.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/equationOfState/EquationOfState.H"
@@ -1620,6 +1621,44 @@ int IsothermalFlash::solve(const DictPtr& dict,
                     + std::to_string(vf_feed) + "): its own equilibrium at "
                     "(T, P, z) could not be resolved -- " + fe.what());
                 feedSplit = false;
+            }
+            //  A TWO-PHASE ROOT ABOVE EVERY Tc IS NOT A SPLIT (2026-09-26).
+            //  The balance report resolves this same feed through
+            //  `flashState::equilibriumAt`, which has discarded such a root
+            //  since 2026-09-08 and said so; this duty resolved it through
+            //  `solveCore` directly and ACCEPTED it -- blending a liquid
+            //  that cannot exist into H_in.  Two readers of one state, two
+            //  answers: ammoniaStaged04's separator, fed at 844.86 K and
+            //  200 bar (N2/H2/NH3/Ar, highest Tc present 405.4 K), closed at
+            //  90.32 % and carried the whole plant residual, -22 274.7 kW.
+            //  ONE home for the criterion and the sentence; the unit does
+            //  what the report does: the split is discarded, the feed is
+            //  priced on the state it CARRIES (its `vf`), and the discard is
+            //  announced at the site and on AdvisoryLog.  Judged: nothing --
+            //  the root is a correlation's answer far outside its window,
+            //  and the [henry]/[psat] lines for this run say which.
+            //  The advisory names the STREAM (the report's own locus shape,
+            //  `stream '<name>'`) and not the trial T: this duty is re-solved
+            //  on every recycle pass, and `AdvisoryLog` dedups on the exact
+            //  message -- with T in it, one fact became 18 caveat lines.  The
+            //  site line below carries T, once per pass, like [psat] does.
+            if (feedSol.converged)
+            {
+                const std::string feedName =
+                    feedDict->lookupWordOrDefault("streamName", "");
+                if (const auto said = flashState::supercriticalSplitDiscarded(
+                        feedSol, T_feed, in.z, thermo,
+                        "feed" + (feedName.empty() ? std::string()
+                                                   : " '" + feedName + "'")
+                            + " of an isothermalFlash",
+                        "duty", nullptr, /*nameT=*/false))
+                {
+                    if (opts.verbosity >= 1)
+                        std::cout << "  [duty] the feed at T = " << T_feed
+                                  << " K " << *said << "\n";
+                    feedSol = FlashSolution{};   // not a split: nothing of it
+                                                 // may reach the pricing below
+                }
             }
             feedSplit = feedSol.converged
                      && feedSol.V_over_F > 1.0e-9

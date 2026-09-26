@@ -1000,6 +1000,22 @@ and 0.000 %; the engine fix alone would have left acetone03 at 19.342 %, the
 phase declaration is what closed it).  Record:
 [`docs/design/a-duty-on-a-surface-its-streams-are-not-on.md`](docs/design/a-duty-on-a-surface-its-streams-are-not-on.md).
 
+**AND ONE MORE, WHERE THE TWO HOMES WERE TWO READERS OF ONE RESOLUTION
+(2026-09-26).**  `IsothermalFlash` re-resolved its feed through `solveCore`
+and ACCEPTED a two-phase root above every present component's Tc while the
+report, resolving the same feed through `flashState::equilibriumAt`,
+discarded it -- the whole -22 274.7 kW of `ammoniaStaged04_kinetic` on one
+separator; the discard is ONE home now (`flashState::supercriticalSplitDiscarded`,
+both readers call it, gate `check_inlet_resolution` arm (h)).  Enumerated in
+the same commit, per the 2026-09-25 rule: every reader that goes THROUGH
+`StreamEquilibrium.H` (report, model-boundary ledger, `heater`,
+`heatExchanger`, `conversionReactor`, column feed, evaporator chest) already
+discarded; `phaseChanger`'s H_in (three sites), `pipe`'s inlet regime and
+every OUTLET search (`valve`, `adiabaticFlash`, `phaseChanger`, the flash's
+own operating resolution) still call `solveCore` bare and are NAMED, not
+fixed -- no corpus case reaches them with a supercritical feed today
+(DEV.md §5, 2026-09-26).
+
 **AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED
 (2026-09-12, same day).**  `column01`'s 631.956148 kW decomposed EXACTLY into
 three state mismatches, none of them a surface mismatch and none of them CMO —
