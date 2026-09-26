@@ -28,6 +28,8 @@ License
 
 #include "GibbsMapOp.H"
 #include "unitOperations/reactor/gibbsMethod/ElementPotential.H"
+#include "unitOperations/reactor/GibbsReactor.H"   // approachDirection: ONE home for the sign rule
+#include "core/Advisory.H"
 
 #include "thermo/RecordResolver.H"
 #include <cmath>
@@ -95,13 +97,46 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
     const bool   logP = Pg->found("log")
                       && Pg->lookupWordOrDefault("log", "false") == "true";
 
-    prob.dTapproach = dict->lookupScalarOrDefault("temperatureApproach", 0.0);
-    const int dTtag = static_cast<int>(std::lround(prob.dTapproach));
-    if (prob.dTapproach != 0.0 && verbosity >= 1)
-        std::cout << "  [gibbsMap] temperatureApproach = " << prob.dTapproach
-                  << " K -- REACTION equilibrium at T+dT, physical state at T."
-                     "  Empirical, calibrated, GLOBAL (cannot resolve"
-                     " per-reaction approaches); 0 = true equilibrium.\n";
+    ElementPotential solver;
+
+    //  THE CASE DECLARES A MAGNITUDE; THE ENGINE ASSIGNS THE DIRECTION, per
+    //  cell (Vitor, 2026-09-26; the rule has ONE home,
+    //  `GibbsReactor::approachDirection`, and the map calls it at every
+    //  (T, P) because the thermicity is read at each cell's own T).  A
+    //  negative value is an invalid magnitude, refused by name; the KPI
+    //  suffix `_dT<n>` carries the DECLARED magnitude, and the CSV's
+    //  `deltaT_K` column carries the SIGNED value each cell was solved with.
+    const scalar dTmagnitude = dict->lookupScalarOrDefault("temperatureApproach", 0.0);
+    if (dTmagnitude < 0.0)
+    {
+        std::ostringstream m;
+        m << "gibbsMap: 'temperatureApproach' must be a MAGNITUDE (>= 0 K);"
+             " got " << dTmagnitude << ".  Declare the SIZE of the approach;"
+             " the engine assigns its sign from the reaction's thermochemistry"
+             " at each cell (T + dT for an exothermic overall transformation,"
+             " T - dT for an endothermic one) and announces which it chose.";
+        throw std::runtime_error(m.str());
+    }
+    prob.dTapproach = 0.0;
+    const int dTtag = static_cast<int>(std::lround(dTmagnitude));
+    if (dTmagnitude != 0.0 && verbosity >= 1)
+        std::cout << "  [gibbsMap] temperatureApproach = " << dTmagnitude
+                  << " K (a MAGNITUDE; the engine assigns the direction at"
+                     " each cell from the thermicity of the overall"
+                     " transformation at that cell's T, and reports the tally"
+                     " below) -- REACTION equilibrium at T +/- dT, physical"
+                     " state at T.  Empirical, calibrated, GLOBAL (cannot"
+                     " resolve per-reaction approaches); 0 = true"
+                     " equilibrium.\n";
+    int nExo = 0, nEndo = 0, nUndet = 0;
+    std::string firstDirectionMessage;
+    auto resolveDirection = [&](scalar T) {
+        if (dTmagnitude <= 0.0) { prob.dTapproach = 0.0; return; }
+        const auto dir = GibbsReactor::approachDirection(solver, prob, T, dTmagnitude);
+        prob.dTapproach = dir.sign * dTmagnitude;
+        if (!dir.determined) ++nUndet; else if (dir.sign > 0) ++nExo; else ++nEndo;
+        if (firstDirectionMessage.empty()) firstDirectionMessage = dir.message;
+    };
 
     // ---- metric ---------------------------------------------------------------
     auto met = dict->subDict("metric");
@@ -143,7 +178,6 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
     };
 
     // ---- the sweep -------------------------------------------------------------
-    ElementPotential solver;
     const std::string outFile_ = dict->subDict("output")->lookupWord("file");
     records::refuseStandardsWrite("gibbsMap", "file", outFile_);
     std::ofstream csv(outFile_);
@@ -162,6 +196,7 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
             const scalar P = logP ? P0 * std::pow(P1 / P0, f)
                                   : P0 + (P1 - P0) * f;
             prob.P = P;
+            resolveDirection(T);
             GibbsEquilibrium eq = solver.equilibrium(prob, T, {});
             csv << T << "," << P << "," << prob.dTapproach << ","
                 << (eq.converged ? 1 : 0) << ",";
@@ -217,6 +252,7 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
             const scalar Ta = a->lookupScalar("T");
             const scalar Pa = a->lookupScalar("P");
             prob.P = Pa;
+            resolveDirection(Ta);
             GibbsEquilibrium eq = solver.equilibrium(prob, Ta, {});
             std::ostringstream key;
             key << "metric_T" << static_cast<int>(std::lround(Ta - 273.15))
@@ -229,7 +265,32 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
     }
     diag_["n_cells"]       = static_cast<scalar>(nT * nP);
     diag_["n_unconverged"] = static_cast<scalar>(nBad);
-    if (prob.dTapproach != 0.0) diag_["temperatureApproach_K"] = prob.dTapproach;
+    if (dTmagnitude != 0.0)
+    {
+        //  The SIGNED value the engine used where every solve agreed on a
+        //  direction; the declared magnitude, with the tally beside it, where
+        //  the map crossed a thermicity boundary -- a single signed number
+        //  would then be true of some cells and false of the rest.
+        const bool uniform = (nEndo == 0 && nUndet == 0) || (nExo == 0 && nUndet == 0);
+        diag_["temperatureApproach_K"] = uniform && nExo == 0 && nEndo > 0
+                                       ? -dTmagnitude : dTmagnitude;
+        diag_["approachDirection_exothermicSolves"]   = static_cast<scalar>(nExo);
+        diag_["approachDirection_endothermicSolves"]  = static_cast<scalar>(nEndo);
+        diag_["approachDirection_undeterminedSolves"] = static_cast<scalar>(nUndet);
+        std::ostringstream tally;
+        tally << "temperatureApproach " << dTmagnitude << " K is a MAGNITUDE;"
+                 " the engine assigned its direction at each of the "
+              << (nExo + nEndo + nUndet) << " solves: " << nExo
+              << " exothermic (T + dT), " << nEndo << " endothermic (T - dT), "
+              << nUndet << " undetermined (T + dT by announced default)."
+              << (uniform ? "" : "  The map CROSSES a thermicity boundary, so"
+                                 " no single signed value describes it; the CSV"
+                                 " deltaT_K column carries each cell's own.")
+              << "  First solve: " << firstDirectionMessage;
+        if (verbosity >= 1) std::cout << "  [gibbsMap] " << tally.str() << "\n";
+        AdvisoryLog::instance().add("model", uniform && nUndet == 0 ? "info" : "warning",
+                                    "gibbsMap", tally.str());
+    }
     headline_.push_back("n_unconverged");
 
     if (verbosity >= 2)

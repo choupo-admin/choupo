@@ -1069,7 +1069,7 @@ and nothing should.
 | Capability | Status in the tree |
 |---|---|
 | Equilibrium / Gibbs reactor | **Yes.**  `gibbsReactor`, `equilibriumReactor` |
-| **Temperature approach to equilibrium** | **Yes, on both.**  `gibbsReactor` reads `operation.temperatureApproach` (`GibbsReactor.cpp:141-147`), announces it, and publishes `kpis_["temperatureApproach_K"]`.  `equilibriumReactor` reads `operation.approachTemperature` (`EquilibriumReactor.cpp:65`) |
+| **Temperature approach to equilibrium** | **Yes, on `gibbsReactor` only.**  It reads `operation.temperatureApproach` (`GibbsReactor.cpp`, the `[gibbs] temperatureApproach` announcement), announces it, and publishes `kpis_["temperatureApproach_K"]`.  `equilibriumReactor` reads NO approach key (this row used to say it read `operation.approachTemperature` at `EquilibriumReactor.cpp:65`; that file reads no such key -- corrected 2026-09-26).  `gibbsReactor`'s own second key, `approachTemperature`, was retired the same day and is refused by name |
 | Fractional / extent approach | **No.**  Neither reactor exposes the §3.1(ii) definition |
 | Kinetic PFR | **Yes.**  `pfr`, with multi-reaction support, non-isothermal operation, hot-spot tracking (`T_max`, `hotSpot_dT`) |
 | `catalystLoading` | **Yes**, on `cstr`, `pfr`, `batchReactor`, `dynamicCSTR` — a kg-catalyst-per-m³ unit conversion |

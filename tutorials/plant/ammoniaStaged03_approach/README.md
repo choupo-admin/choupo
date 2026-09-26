@@ -2,7 +2,8 @@
 
 **THE RUNG NOTHING ELSE IN THE CORPUS EXERCISES.**  `gibbsReactor` has read
 `operation.temperatureApproach` and announced it loudly since
-`src/unitOperations/reactor/GibbsReactor.cpp:141`, and before this case **no
+`src/unitOperations/reactor/GibbsReactor.cpp` (the `[gibbs] temperatureApproach`
+announcement), and before this case **no
 flowsheet case in `tutorials/` declared one** — only a props operation
 (`tutorials/props/gibbs/nh3_equilibrium_map/system/propsDict`) mentioned the
 key.  A capability that exists, announces itself and is used by nothing is a
@@ -30,14 +31,19 @@ Background: `docs/design/how-a-process-design-is-staged.md`, and DEV.md C8.
 
 ## 2. The approach to equilibrium, and its sign
 
-`temperatureApproach 5;` evaluates the **reaction** equilibrium at 705 K while
-the physical state, the enthalpy and the energy balance stay at 700 K.  Ammonia
-synthesis is exothermic, so equilibrium ammonia falls as temperature rises:
-evaluating the chemistry 5 K **hot** is exactly *"the outlet is 5 K short of
-equilibrium"*.
+`temperatureApproach 5;` declares a MAGNITUDE.  The engine reads the
+thermicity of the transformation from this feed to its equilibrium at 700 K,
+finds it exothermic, and evaluates the **reaction** equilibrium at 705 K while
+the physical state, the enthalpy and the energy balance stay at 700 K —
+announcing that choice and the isothermal reaction enthalpy it read on every
+run (ruled 2026-09-26: *"O delta T é dado sempre positivo e tu é que vais
+atribuir sinal dependendo da reacção química"*; a negative declaration is
+refused by name).  Ammonia synthesis is exothermic, so equilibrium ammonia
+falls as temperature rises: evaluating the chemistry 5 K **hot** is exactly
+*"the outlet is 5 K short of equilibrium"*.
 
-**The sign convention is the source's own**, and the word that carries it is
-*above*.  US 5,352,428 (M. L. Bhakta and B. J. Grotz, CF Braun and Co, issued
+**The direction the engine assigns is the source's own**, and the word that
+carries it is *above*.  US 5,352,428 (M. L. Bhakta and B. J. Grotz, CF Braun and Co, issued
 4 October 1994), *High conversion ammonia synthesis*, verbatim:
 
 ```
@@ -69,44 +75,45 @@ not done is a reading of the whole patent: the claims, the examples beyond
 Case A and the prior-art discussion were not read, and nothing is asserted
 about them.
 
-### THE KEY IS `temperatureApproach`, AND FOUR SURFACES NAME A DIFFERENT ONE
+### THE KEY IS `temperatureApproach`, AND THE SECOND KEY IS RETIRED
 
-Read this before copying the key from anywhere else.  `gibbsReactor` reads
-**two** keys for this one quantity, in two places, and they are not the same
-knob:
+Read this before copying the key from anywhere older than 2026-09-26.  Until
+that day `gibbsReactor` read **two** keys for this one quantity, in two
+places, and they were not the same knob:
 
-* `temperatureApproach` (`GibbsReactor.cpp:141`) travels on the problem and is
-  applied INSIDE each Gibbs method as `g_pure_ig(T + dT)` — the CHEMISTRY
-  alone.  It is ANNOUNCED on every run and published as the
-  `temperatureApproach_K` KPI.  **It is what this case declares.**
-* `approachTemperature` (`GibbsReactor.cpp:65`) is added to the temperature
-  ARGUMENT handed to the method, so everything the method prices at that
-  temperature moves with it, not only the chemistry.  It is announced by
-  NOTHING and publishes no KPI.
+* `temperatureApproach` (the `[gibbs] temperatureApproach` announcement in
+  `GibbsReactor.cpp`) travels on the problem and is applied INSIDE each Gibbs
+  method as `g_pure_ig(T + dT)` — the CHEMISTRY alone.  It is ANNOUNCED on
+  every run and published as the `temperatureApproach_K` KPI.  **It is what
+  this case declares, and it is now the only key.**
+* `approachTemperature` was added to the temperature ARGUMENT handed to the
+  method, so everything the method priced at that temperature moved with it,
+  not only the chemistry.  It was announced by NOTHING, published no KPI, and
+  the two ADDED when both were declared.
 
-They give different answers.  Measured, by running this case unchanged except
-for the key:
+They gave different answers.  Measured on 2026-09-25, by running this case
+unchanged except for the key, against the engine as it then stood:
 
 | declared | converter outlet y(NH₃) | converter Q_kW | announced | KPI |
 |---|---|---|---|---|
 | `temperatureApproach 5` | 0.300193618107 | 3 287.27 | yes | yes |
 | `approachTemperature 5` | 0.299769866866 | 3 360.07 | **no** | **no** |
 
-**And the silent one is the key every surface names.**
-`gui/schemas/operations/gibbsReactor.schema.json` lists `approachTemperature`
-and not `temperatureApproach` — with `"minimum": 0` and the description
-*"Solve the equilibrium at (T − this)"*, where the code does `T + this`;
-`docs/ai/schemas-reference.md` is generated from that schema and inherits both
-errors; `docs/ai/unit-ops.md` names `approachTemperature` for this unit; and
-`tutorials/plant/greenAmmoniaIndustrialN2`'s README sends a reader to a
-`approachTemperature` its own `flowsheetDict` does not carry.  A reader who
-follows any of them gets a number nothing announces.
+**And the silent one was the key every surface named** — the GUI schema
+(with a wrong sign and a `minimum: 0` that forbade the endothermic case),
+the generated `docs/ai/schemas-reference.md`, `docs/ai/unit-ops.md`, and
+`tutorials/plant/greenAmmoniaIndustrialN2`'s README.  A reader who followed
+any of them got a number nothing announced.  This case was the witness.
 
-NOTHING HERE IS FIXED — this case is the witness, not the repair.  The schema
-is also why `check_schema_coverage` FAILS on this case today: it reports
-`temperatureApproach` as a key `gibbsReactor.schema.json` does not list, and
-the schema is `additionalProperties: false`, so it would reject a case the
-engine runs.  The gate is right and the schema is wrong.
+**RETIRED 2026-09-26, on a stated default (DEV.md section 5, the 2026-09-25
+entry).**  An approach to equilibrium is about the REACTION's extent, not the
+phase behaviour, so `temperatureApproach` is the model Choupo means.
+`approachTemperature` is now read only to REFUSE by name — the message names
+the surviving key, the difference between the two models and the sign
+convention — exactly as the heater refuses `Tout`.  The schema no longer
+declares it (a refused key is not declared), the docs name it only as
+retired, and the second row of the table above can no longer be produced.
+No corpus case declared the retired key, so no golden moved.
 
 ### What this number is NOT
 

@@ -28,16 +28,127 @@ License
 
 #include "GibbsReactor.H"
 
+#include "core/Advisory.H"
 #include "core/Constants.H"
 #include "gibbsMethod/GibbsMethod.H"
 #include "solver/NewtonRaphson.H"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo {
+
+scalar GibbsReactor::stateEnthalpy_W(const GibbsProblem&     prob,
+                                     const GibbsEquilibrium& eq,
+                                     scalar                  T)
+{
+    const ThermoPackage& thermo = *prob.thermo;
+    const std::size_t    N      = prob.N();
+    scalar Ng = 0.0, Nl = 0.0;
+    for (std::size_t i = 0; i < N; ++i)
+    {
+        Ng += eq.nGas[i];
+        if (!eq.nLiq.empty()) Nl += eq.nLiq[i];
+    }
+    const scalar Ntot = Ng + Nl;
+    if (!(Ntot > 0.0)) return 0.0;
+    sVector zz(thermo.n(), 0.0);
+    for (std::size_t i = 0; i < N; ++i)
+        zz[prob.compIdx[i]] = (eq.nGas[i]
+                             + (eq.nLiq.empty() ? 0.0 : eq.nLiq[i])) / Ntot;
+    return Ntot * thermo.H_stream_formation(T, prob.P, Ng / Ntot, zz);
+}
+
+GibbsReactor::ApproachDirection
+GibbsReactor::approachDirection(const GibbsMethod&  method,
+                                const GibbsProblem& prob,
+                                scalar              T,
+                                scalar              magnitude,
+                                bool                atSeed)
+{
+    ApproachDirection d;
+    const ThermoPackage& thermo = *prob.thermo;
+    const std::size_t    N      = prob.N();
+
+    //  The probe: the TRUE equilibrium from this feed at the physical T.
+    //  The extent it reaches is the only extent a stoichiometry-free reactor
+    //  has, and the isothermal enthalpy change over it is the thermicity of
+    //  the transformation AS IT RUNS from this feed -- which is what decides
+    //  the direction a real bed falls short in.
+    GibbsProblem probe = prob;
+    probe.dTapproach = 0.0;
+    const GibbsEquilibrium e0 = method.equilibrium(probe, T, {});
+
+    scalar Nin = 0.0;
+    for (auto v : prob.nIn) Nin += v;
+    scalar extent = 0.0;     // max |n_out - n_in| / N_in, dimensionless
+    if (e0.converged && Nin > 0.0)
+    {
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            const scalar nOut = e0.nGas[i] + (e0.nLiq.empty() ? 0.0 : e0.nLiq[i]);
+            extent = std::max(extent, std::abs(nOut - prob.nIn[i]) / Nin);
+        }
+        sVector zIn(thermo.n(), 0.0);
+        for (std::size_t i = 0; i < N; ++i) zIn[prob.compIdx[i]] = prob.nIn[i] / Nin;
+        const scalar H_in_W  = Nin * thermo.H_stream_formation(T, prob.P, 1.0, zIn);
+        const scalar H_eq_W  = stateEnthalpy_W(prob, e0, T);
+        d.dH_kJ_per_kmolFeed = (H_eq_W - H_in_W) / Nin;   // J/mol == kJ/kmol
+    }
+
+    d.determined = e0.converged && extent > 1.0e-12 && d.dH_kJ_per_kmolFeed != 0.0;
+    if (d.determined)
+    {
+        d.sign = (d.dH_kJ_per_kmolFeed < 0.0) ? +1 : -1;
+        d.word = (d.sign > 0) ? "exothermic" : "endothermic";
+    }
+    else
+    {
+        d.sign = +1;
+        d.word = "undetermined";
+    }
+
+    std::ostringstream m;
+    m << std::fixed << std::setprecision(2);
+    m << "temperatureApproach " << magnitude << " K is a MAGNITUDE; the engine"
+         " assigned its direction";
+    if (atSeed) m << " (adiabatic mode: read at the seed T, the physical T being the answer)";
+    m << ": the overall transformation from THIS feed to its equilibrium at T = "
+      << T << " K is ";
+    if (d.determined)
+    {
+        m << (d.sign > 0 ? "EXOTHERMIC" : "ENDOTHERMIC")
+          << " (dH = " << d.dH_kJ_per_kmolFeed
+          << " kJ per kmol of feed, isothermal, on the package's enthalpy"
+             " surface -- never the published Q_kW), so the REACTION"
+             " equilibrium is evaluated at T "
+          << (d.sign > 0 ? "+ " : "- ") << magnitude << " K -- a "
+          << (d.sign > 0 ? "HIGHER" : "LOWER")
+          << " evaluation temperature is the one that under-predicts an "
+          << d.word << " reaction.";
+    }
+    else
+    {
+        m << "thermally UNDETERMINED ("
+          << (!e0.converged ? "the equilibrium probe did not converge"
+              : extent <= 1.0e-12 ? "the feed is already at equilibrium: no conversion"
+              : "dH = 0 exactly")
+          << "), so the direction takes the DEFAULT, T + " << magnitude
+          << " K, and says so.";
+    }
+    m << "  The reading is GLOBAL (the OVERALL thermicity decided; a reaction"
+         " of the other thermicity riding inside it -- a shift inside a"
+         " reformer -- is not resolved) and is taken from THIS FEED: a feed"
+         " already past the equilibrium at T (a quench stage) runs the"
+         " transformation the other way, and the approach then lands on the"
+         " feed's own side, which the engine reads and does not judge.";
+    d.message = m.str();
+    return d;
+}
 
 int GibbsReactor::solve(const DictPtr& dict,
                         const ThermoPackage& thermo,
@@ -56,13 +167,35 @@ int GibbsReactor::solve(const DictPtr& dict,
             + "' (expected 'isothermal' or 'adiabatic')");
     const scalar Q_kJ_per_kmol = operDict->lookupScalarOrDefault("Q", 0.0);
 
-    // Approach to equilibrium: evaluate the equilibrium at (T + approachTemperature)
-    // while the streams stay at the physical T.  A positive ΔT de-rates an
-    // exothermic reaction (less conversion) -- the standard way to model
-    // INCOMPLETE approach to equilibrium for reversible reactions (WGS,
-    // reforming, ammonia) without kinetics.  Default 0 = full equilibrium.
-    // (No effect on an essentially irreversible reaction whose K is huge.)
-    const scalar dTapproach = operDict->lookupScalarOrDefault("approachTemperature", 0.0);
+    // `approachTemperature` is RETIRED (2026-09-26).  It was a SECOND approach
+    // key read by this same solve, 76 lines above the one that announces
+    // itself, and a DIFFERENT model: it shifted the temperature ARGUMENT
+    // handed to the Gibbs method, so Psat and the fugacity coefficients moved
+    // with the chemistry, while `temperatureApproach` (below) shifts the
+    // reaction alone and keeps enthalpy, Psat and the energy balance at the
+    // physical T.  It printed nothing, published no KPI, and the two ADDED
+    // when both were declared -- the "dT survived in a copied dict" accident
+    // the announcement below exists to prevent, sitting unannounced above it.
+    // The key is read ONLY to refuse by name (the `Heater` `Tout` posture).
+    if (operDict->found("approachTemperature"))
+    {
+        throw std::runtime_error(
+            "GibbsReactor: 'approachTemperature' is no longer a valid operation "
+            "key (retired 2026-09-26).  Declare 'temperatureApproach <dT>;' "
+            "instead.\n"
+            "  The two were DIFFERENT models, not two spellings of one: "
+            "'approachTemperature' shifted the whole equilibrium evaluation to "
+            "(T + dT), so Psat and the fugacity coefficients moved with the "
+            "chemistry, silently and with no KPI; 'temperatureApproach' "
+            "evaluates the REACTION equilibrium at (T + dT) and keeps enthalpy, "
+            "Psat and the energy balance at the physical T, is ANNOUNCED on "
+            "every run and published as the KPI temperatureApproach_K.\n"
+            "  Declare 'temperatureApproach' as a MAGNITUDE (>= 0 K): the "
+            "engine assigns its direction from the reaction's thermochemistry "
+            "-- T + dT for an exothermic overall transformation (ammonia "
+            "synthesis, shift), T - dT for an endothermic one (steam "
+            "reforming) -- and announces which it chose and why.");
+    }
 
     // Solution method: selectable sub-model, default elementPotential
     // (ideal gas + ideal liquid).  In the `model` slot right after `type`,
@@ -134,24 +267,28 @@ int GibbsReactor::solve(const DictPtr& dict,
     prob.thermo = &thermo;
     prob.A = A; prob.b = b; prob.nIn = nIn; prob.compIdx = compIdx;
     prob.condensable = condensable; prob.P = P;
-    // temperature approach to equilibrium (forum-ratified 2026-07-02):
-    // chemistry at T+dT, physical state at T.  Announced LOUD here AND at
-    // the point of consumption (a KPI carries it into every results block --
-    // the "dT=50 survived in a copied dict for months" accident).
-    prob.dTapproach = operDict->found("temperatureApproach")
-                    ? operDict->lookupScalar("temperatureApproach") : 0.0;
-    if (prob.dTapproach != 0.0)
-        std::cout << "  [gibbs] temperatureApproach = " << prob.dTapproach
-                  << " K: REACTION equilibrium evaluated at T "
-                  << (prob.dTapproach > 0 ? "+ " : "- ")
-                  << std::abs(prob.dTapproach)
-                  << " K; enthalpy, Psat and the energy balance stay at the"
-                     " physical T.\n"
-                     "          This is an EMPIRICAL closeness-to-equilibrium"
-                     " parameter (calibrated, never predicted); 0 = true"
-                     " equilibrium.  GLOBAL: it cannot resolve per-reaction"
-                     " approaches (e.g. WGS vs methanol), and at high P it"
-                     " will absorb missing fugacity corrections.\n";
+    //  `temperatureApproach` is the ONE approach key: the method receives
+    //  the physical T and applies `prob.dTapproach` to g_pure_ig alone
+    //  (ElementPotential.cpp).  THE CASE DECLARES A MAGNITUDE; THE ENGINE ASSIGNS THE DIRECTION
+    //  (Vitor, 2026-09-26).  A negative value is not a sign to be judged but
+    //  an invalid magnitude, refused by name.  The direction is resolved
+    //  below, once the enthalpy surface is in hand (`approachDirection`).
+    const scalar dTmagnitude = operDict->found("temperatureApproach")
+                             ? operDict->lookupScalar("temperatureApproach") : 0.0;
+    if (dTmagnitude < 0.0)
+    {
+        std::ostringstream m;
+        m << "GibbsReactor: 'temperatureApproach' must be a MAGNITUDE (>= 0 K);"
+             " got " << dTmagnitude << ".  Declare the SIZE of the approach"
+             " to equilibrium; the engine assigns its sign from the reaction's"
+             " thermochemistry -- the REACTION equilibrium is evaluated at"
+             " T + dT for an exothermic overall transformation and at T - dT"
+             " for an endothermic one -- and announces which it chose and why."
+             "  A real bed never crosses its own equilibrium curve, so the"
+             " approach has no sign of its own to declare.";
+        throw std::runtime_error(m.str());
+    }
+    prob.dTapproach = 0.0;   // resolved (signed) below when a magnitude is declared
 
     scalar N0 = 0.0; for (auto v : nIn) N0 += v;
 
@@ -183,21 +320,43 @@ int GibbsReactor::solve(const DictPtr& dict,
     //  SCOPE, unchanged and stated: the balance is over the reactor's OWN
     //  declared species (`compIdx`).  A feed component outside that list is
     //  not in `nIn` and is not in this balance -- as before.
+    //  The arithmetic lives in `stateEnthalpy_W` (one home) because the
+    //  approach DIRECTION reads the same surface (below).
     auto enthalpy = [&](const GibbsEquilibrium& eq, scalar T) -> scalar {
-        scalar Ng = 0.0, Nl = 0.0;
-        for (std::size_t i = 0; i < N; ++i)
-        {
-            Ng += eq.nGas[i];
-            if (!eq.nLiq.empty()) Nl += eq.nLiq[i];
-        }
-        const scalar Ntot = Ng + Nl;
-        if (!(Ntot > 0.0)) return 0.0;
-        sVector zz(thermo.n(), 0.0);
-        for (std::size_t i = 0; i < N; ++i)
-            zz[compIdx[i]] = (eq.nGas[i]
-                            + (eq.nLiq.empty() ? 0.0 : eq.nLiq[i])) / Ntot;
-        return Ntot * thermo.H_stream_formation(T, P, Ng / Ntot, zz);
+        return stateEnthalpy_W(prob, eq, T);
     };
+
+    //  ---- THE DIRECTION OF THE APPROACH, ASSIGNED HERE AND ANNOUNCED ------
+    //
+    //  Forum-ratified 2026-07-02: chemistry at T+dT, physical state at T,
+    //  announced LOUD here AND at the point of consumption (a KPI carries it
+    //  into every results block -- the "dT=50 survived in a copied dict for
+    //  months" accident).  Ruled 2026-09-26: the SIGN is the engine's, read
+    //  off the thermicity of the overall transformation from this feed at the
+    //  physical T (see `approachDirection`).  In adiabatic mode the physical
+    //  T is the answer, so the reading is taken at the seed and says so.
+    if (dTmagnitude > 0.0)
+    {
+        const auto dir = approachDirection(*method, prob, T_guess, dTmagnitude,
+                                           mode == "adiabatic");
+        prob.dTapproach = dir.sign * dTmagnitude;
+        std::cout << "  [gibbs] temperatureApproach = " << dTmagnitude
+                  << " K: REACTION equilibrium evaluated at T "
+                  << (prob.dTapproach > 0 ? "+ " : "- ")
+                  << std::abs(prob.dTapproach)
+                  << " K; enthalpy, Psat and the energy balance stay at the"
+                     " physical T.\n"
+                     "          " << dir.message << "\n"
+                     "          This is an EMPIRICAL closeness-to-equilibrium"
+                     " parameter (calibrated, never predicted); 0 = true"
+                     " equilibrium.  GLOBAL: it cannot resolve per-reaction"
+                     " approaches (e.g. WGS vs methanol), and at high P it"
+                     " will absorb missing fugacity corrections.\n";
+        AdvisoryLog::instance().add("model", dir.determined ? "info" : "warning",
+                                    "gibbsReactor "
+                                    + dict->lookupWordOrDefault("name", "(unnamed)"),
+                                    dir.message);
+    }
 
     // -- Mode dispatch ------------------------------------------------------
     scalar T_final = T_guess;
@@ -224,7 +383,7 @@ int GibbsReactor::solve(const DictPtr& dict,
         const scalar Q_J_s = Q_kJ_per_kmol * F_mol_s;
 
         auto fT = [&](scalar Tt) -> scalar {
-            auto e = method->equilibrium(prob, Tt + dTapproach, {});
+            auto e = method->equilibrium(prob, Tt, {});
             if (!e.converged) return 1.0e30;
             return enthalpy(e, Tt) - H_in - Q_J_s;
         };
@@ -241,7 +400,7 @@ int GibbsReactor::solve(const DictPtr& dict,
         auto rT = solver::newton1D(fT, dfT, T_guess, nro);
         outerIter = rT.iterations;
         T_final = rT.x;
-        eq = method->equilibrium(prob, T_final + dTapproach, {});
+        eq = method->equilibrium(prob, T_final, {});
         if (!rT.converged)
             std::cerr << "GibbsReactor: outer Newton on T did NOT converge\n";
     }
@@ -251,7 +410,7 @@ int GibbsReactor::solve(const DictPtr& dict,
             std::cout << "GibbsReactor (" << modelName << ") at T = " << T_guess
                       << " K, P = " << (P * 1.0e-5) << " bar; " << N
                       << " species over " << M << " elements\n";
-        eq = method->equilibrium(prob, T_final + dTapproach, makeHook(true));
+        eq = method->equilibrium(prob, T_final, makeHook(true));
         if (!eq.converged)
             std::cerr << "GibbsReactor: did NOT converge (final |F| = "
                       << eq.residual << ")\n";

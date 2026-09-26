@@ -207,7 +207,7 @@
       "id": "approach-to-equilibrium",
       "label": "Approach to equilibrium (Gibbs reactor)",
       "discipline": "Reaction engineering",
-      "teaches": "That a Gibbs reactor declares NO reactions — it minimises G subject to the element balances, which is its power and its trap in one sentence; that it sits early because nobody has the KINETICS yet, not because of the project stage; that the approach to equilibrium evaluates the CHEMISTRY at T + ΔT while enthalpy, Psat and the energy balance stay at the physical T; and THE SIGN — positive is conservative only for an EXOTHERMIC reaction, so a reformer wants a negative one, and the engine constrains neither.",
+      "teaches": "That a Gibbs reactor declares NO reactions — it minimises G subject to the element balances, which is its power and its trap in one sentence; that it sits early because nobody has the KINETICS yet, not because of the project stage; that the approach to equilibrium evaluates the CHEMISTRY at T + ΔT while enthalpy, Psat and the energy balance stay at the physical T; and THE SIGN — positive is conservative only for an EXOTHERMIC reaction, which is why the author declares a MAGNITUDE and the ENGINE assigns the direction from the reaction's thermicity and announces it: a reformer gets T − ΔT without anyone typing a minus.",
       "href": "/app/?workspace=methods&tool=approach-to-equilibrium"
     },
     {

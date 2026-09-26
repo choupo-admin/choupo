@@ -102,6 +102,9 @@
   "Antoine": [
    "src/thermo/vaporPressure/Antoine.H"
   ],
+  "ApproachDirection": [
+   "src/unitOperations/reactor/GibbsReactor.H"
+  ],
   "ApproximationAuthorisation": [
    "src/thermo/ApproximationAuthorisation.H"
   ],
@@ -3897,6 +3900,7 @@
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
   "src/propertyOps/GibbsMapOp.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -3904,12 +3908,16 @@
    "src/core/Types.H",
    "src/propertyOps/GibbsMapOp.H",
    "src/propertyOps/PropertyOperation.H",
+   "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/reactor/GibbsReactor.H",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
@@ -6170,6 +6178,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.H",
    "src/unitOperations/reactor/GibbsReactor.H",
    "src/unitOperations/reactor/PFR.H",
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/rotating/Compressor.H",
    "src/unitOperations/rotating/ElectricLoad.H",
    "src/unitOperations/rotating/Pump.H",
@@ -7359,6 +7368,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.H"
   ],
   "src/unitOperations/reactor/GibbsReactor.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -7974,6 +7984,7 @@
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -8058,6 +8069,7 @@
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/reactor/CatalystPellet.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
+   "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Pump.cpp",
@@ -10569,6 +10581,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
@@ -10975,6 +10988,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
@@ -12843,6 +12857,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
@@ -13294,6 +13309,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.cpp"
   ],
   "src/unitOperations/reactor/GibbsReactor.H": [
+   "src/propertyOps/GibbsMapOp.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp"
   ],
@@ -13323,6 +13339,7 @@
   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",

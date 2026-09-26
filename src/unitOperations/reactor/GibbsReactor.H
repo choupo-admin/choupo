@@ -79,6 +79,7 @@ Description
 #include "core/Dictionary.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
+#include "gibbsMethod/GibbsMethod.H"
 
 #include <map>
 #include <string>
@@ -103,6 +104,40 @@ public:
     }
 
     std::map<std::string, scalar> kpis() const override { return kpis_; }
+
+    //- THE DIRECTION OF A TEMPERATURE APPROACH IS THE ENGINE'S ACT, NOT THE
+    //  AUTHOR'S (Vitor's ruling, 2026-09-26: "O delta T e dado sempre
+    //  positivo e tu e que vais atribuir sinal dependendo da reacao
+    //  quimica").  A case declares `temperatureApproach` as a MAGNITUDE; the
+    //  engine reads the thermicity of the OVERALL transformation from this
+    //  feed to its equilibrium at the physical T -- the isothermal enthalpy
+    //  change on the package's own surface, never the published `Q_kW`,
+    //  whose sign carries the feed's sensible heat when feed and reactor
+    //  differ in T -- and evaluates the REACTION equilibrium at T + |dT| for
+    //  an exothermic transformation (a higher temperature under-predicts it)
+    //  and at T - |dT| for an endothermic one.  ONE home for the rule: the
+    //  reactor and the `gibbsMap` props op both call this, so the two cannot
+    //  drift apart.  It costs one extra equilibrium solve at dT = 0.
+    struct ApproachDirection
+    {
+        int         sign = +1;          // +1: T + |dT|;  -1: T - |dT|
+        bool        determined = false; // false -> + is an ANNOUNCED default
+        scalar      dH_kJ_per_kmolFeed = 0.0;   // isothermal, on the package surface
+        std::string word;               // "exothermic" | "endothermic" | "undetermined"
+        std::string message;            // the ONE sentence every caller prints and logs
+    };
+    static ApproachDirection approachDirection(const GibbsMethod&  method,
+                                               const GibbsProblem& prob,
+                                               scalar              T,
+                                               scalar              magnitude,
+                                               bool                atSeed = false);
+
+    //- Enthalpy flow [W] of an equilibrium state at temperature T on the
+    //  package's own surface (the SAME arithmetic the adiabatic Newton and
+    //  the approach direction both use; one home, see solve()).
+    static scalar stateEnthalpy_W(const GibbsProblem&     prob,
+                                  const GibbsEquilibrium& eq,
+                                  scalar                  T);
 
 private:
     inline static const std::string type_ = "gibbsReactor";

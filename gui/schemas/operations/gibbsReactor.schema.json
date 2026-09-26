@@ -74,14 +74,9 @@
     },
     "temperatureApproach": {
       "type": "number",
-      "title": "Equilibrium approach (announced)",
-      "description": "Detune the equilibrium: the REACTION is evaluated at (T + this) while the physical state stays at T — enthalpy, Psat and the energy balance do not move. ANNOUNCED on every run and published as the KPI temperatureApproach_K. THE SIGN FOLLOWS THE HEAT OF REACTION, NOT A CONVENTION: an exothermic reaction (ammonia synthesis) under-predicts when the equilibrium is evaluated at a HIGHER temperature, so positive; an endothermic one (steam reforming) at a LOWER one, so negative. There is deliberately no lower bound of zero. It is EMPIRICAL (calibrated, never predicted) and GLOBAL (one number; it cannot resolve per-reaction approaches), and at high pressure it will absorb missing fugacity corrections.",
-      "unit": "K"
-    },
-    "approachTemperature": {
-      "type": "number",
-      "title": "Equilibrium approach (second key, unannounced)",
-      "description": "A SECOND approach key read by the same solve (GibbsReactor.cpp:65), and a DIFFERENT model: it shifts the whole equilibrium evaluation to (T + this), so Psat and the fugacity coefficients move with the chemistry, where temperatureApproach shifts the chemistry alone. It announces nothing and publishes no KPI, and the two ADD when both are declared. Prefer temperatureApproach. This description previously said \"Solve the equilibrium at (T − this)\" and \"is ANNOUNCED when non-zero\", and carried a minimum of 0; all three were false and are corrected here (2026-09-25).",
+      "minimum": 0,
+      "title": "Equilibrium approach magnitude (direction assigned by the engine)",
+      "description": "Detune the equilibrium by THIS MANY kelvin: the REACTION is evaluated at a shifted temperature while the physical state stays at T — enthalpy, Psat and the energy balance do not move. THE VALUE IS A MAGNITUDE AND THE ENGINE ASSIGNS THE SIGN (ruled 2026-09-26): it reads the thermicity of the overall transformation from the feed to its equilibrium at the physical T — the isothermal enthalpy change on the package's surface, never the published Q_kW — and evaluates at T + dT for an exothermic transformation (ammonia synthesis, shift: a higher temperature under-predicts it) and at T − dT for an endothermic one (steam reforming). It ANNOUNCES the direction and the thermicity it read, on the console and in the run's advisories, and publishes the SIGNED value it used as the KPI temperatureApproach_K. A negative declaration is REFUSED by name (a real bed never crosses its own equilibrium curve, so the approach has no sign of its own); minimum 0 is that rule. Announced, never judged: a feed already past the equilibrium at T (a quench stage) runs the transformation the other way and the approach lands on the feed's side. It is EMPIRICAL (calibrated against a real unit, never predicted) and GLOBAL (one number; it cannot resolve per-reaction approaches, so the OVERALL thermicity decides the direction), and at high pressure it will absorb missing fugacity corrections. (The 2026-09-25 description said the sign was the author's and deliberately had no lower bound; superseded by the ruling.)",
       "unit": "K"
     }
   },
