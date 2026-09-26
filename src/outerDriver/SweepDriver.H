@@ -75,6 +75,13 @@ public:
     explicit SweepDriver(const DictPtr& outerDict);
 
     const std::string& type() const override { return type_; }
+    //  Honoured in `run()`: the chain runs at every CONVERGED point with its
+    //  console table silenced (the diagnostics on stderr are not), so a
+    //  response can read a cost or economics KPI.
+    std::string postDictPolicy() const override
+    { return "applied per CONVERGED sweep point (console table silenced,"
+             " KPIs land in each point's result); there is no representative"
+             " pass"; }
     int                run () override;
 
 private:

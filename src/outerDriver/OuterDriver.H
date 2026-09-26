@@ -105,6 +105,29 @@ public:
     // concrete drivers decide whether to build a chain from it.
     void setPostDict(DictPtr d) { postDict_ = std::move(d); }
 
+    //  WHAT THIS DRIVER DOES WITH A `system/postDict` -- said by the driver,
+    //  because only the driver knows (2026-09-26).
+    //
+    //  `main.cpp` used to print `postDict: loaded -- post-processing active`
+    //  for every case that carried the file, and under a `designSpec` that
+    //  sentence was FALSE: the driver stored the dict and never built a
+    //  chain from it, so a case with a sizing block ran to exit 0 with no
+    //  sizing table, no cost and no `design/` tree -- a banner describing a
+    //  chain that was not running (the 2026-08-04 banner trap).  Measured on
+    //  `ammoniaStaged04_kinetic`, whose own outerDict header had recorded
+    //  the gap as a fact about the engine.
+    //
+    //  PURE VIRTUAL, not a base default, so that a new driver must STATE its
+    //  policy: a default of "not applied" would let a driver that does run
+    //  the chain inherit a false sentence in silence, and a default of
+    //  "applied" is the defect this replaces.  The sentence completes
+    //  `postDict: loaded -- ` on the run header, and it is a claim the
+    //  driver's own `run()` must honour: SweepDriver runs the chain per
+    //  converged point, OptimizationDriver and DesignSpec on the replay at
+    //  their answer, ParetoSweepDriver through the OptimizationDriver it
+    //  builds per point, GridSweepDriver not at all.
+    virtual std::string postDictPolicy() const = 0;
+
     // The main entry point: execute the algorithm.  Reads config from the
     // outerDict it was constructed with.
     virtual int run() = 0;

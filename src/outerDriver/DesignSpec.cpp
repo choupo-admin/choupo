@@ -30,6 +30,7 @@ License
 #include "ResponseExtractor.H"
 #include "core/Dictionary.H"
 #include "result/ResultEmitter.H"
+#include "postProcessing/PostProcessor.H"
 #include "solver/NewtonND.H"
 #include "streams/StreamOverrides.H"
 
@@ -295,6 +296,22 @@ int DesignSpec::run()
             clone->setScalarAtPath("variables." + vars_[i].variable, xi);
     }
     auto finalResult = simulator_(clone, ov);
+    //  THE POST-PROCESSING CHAIN RUNS ON THE REPRESENTATIVE PASS (2026-09-26,
+    //  taken on a stated default -- DEV.md 4c C2).  Until today this driver
+    //  stored `postDict_` and never read it, while the run header announced
+    //  `post-processing active` and `main.cpp` wrote the design sheets from
+    //  a result that had never been sized: a declared file that is neither
+    //  honoured nor refused.  Mirrors `OptimizationDriver`'s replay at the
+    //  optimum, in the DRIVER and not in `main.cpp`'s representative branch,
+    //  because that driver has already run its chain on `finalResult` when
+    //  `main.cpp` sees it and would run it twice.  The design point is the
+    //  answer the run is about, so it is the pass a size and a cost belong
+    //  to; the passes before it are the Newton's path, not the answer.
+    if (postDict_)
+    {
+        auto chain = PostProcessor::buildChain(postDict_);
+        for (auto& pp : chain) pp->run(finalResult);
+    }
     setFinalResult(finalResult);          // expose for the reports{} chain
     emitResultJson(std::cout, finalResult);
 

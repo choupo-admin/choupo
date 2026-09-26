@@ -19,6 +19,19 @@ as they ship; the section is renamed to `## [Choupo-YYMM] — <date>` on the
 day it is cut, which is the form `bin/curate/release_inventory.py` reads to
 decide what the storefront announces as the latest release.
 
+* **A plug-flow catalyst bed is sized and costed from its own kinetic volume
+  (2026-09-26, commission C2).**  `type pfr` in a postDict's `sizing {}`
+  reads the unit's `V_R` and returns two items: the shell as a vessel on the
+  existing Guthrie set, and the catalyst charge priced ONLY from a declared
+  bulk density and unit price (`declared-unit-price` -- no index, no module
+  factor; refused by name and the total INCOMPLETE when either is absent).
+  Witness `ammoniaStaged04_kinetic`.  Found on the way and closed: the
+  post-processing chain did not run on a `designSpec`'s representative pass
+  while the run header said it did; it runs on the replay at the design
+  point now, and the `postDict:` header line prints what the loaded driver
+  actually does with the file.  Record:
+  `docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md`.
+
 ## [Choupo-2608] — 2026-09-02 — the August line
 
 **Tag note (2026-09-03).**  `v2608` names the commit the published

@@ -770,15 +770,39 @@ try
     DisplayUnits::instance().readFrom(controlDict);
     DisplayUnits::instance().readPrecision(controlDict);
 
+    //  THE OUTER DRIVER IS BUILT BEFORE THE RUN HEADER, so that the header
+    //  can say what the driver will DO with a postDict -- a fact only the
+    //  driver knows (`OuterDriver::postDictPolicy`).  Construction reads the
+    //  outerDict and nothing else; the simulator functor and the dicts are
+    //  handed over in the outerDict branch below, exactly as before.
+    std::unique_ptr<OuterDriver> driver;
+    if (outerDict) driver = OuterDriver::New(outerDict);
+
     std::cout << "Application:       " << application << "\n";
     if (!description.empty())
         std::cout << "Description:       " << description << "\n";
     std::cout << "Verbosity:         " << verbosity << "\n";
     std::cout << "outerDict:         "
               << (outerDict ? "loaded — outer driver active" : "not present (single pass)")
-              << "\npostDict:          "
-              << (postDict  ? "loaded — post-processing active" : "not present")
-              << "\nsolverDict:        "
+              << "\npostDict:          ";
+    //  A SENTENCE THAT IS TRUE FOR THE DRIVER ACTUALLY LOADED (2026-09-26).
+    //  This line read `loaded -- post-processing active` for every case that
+    //  carried the file, and under a `designSpec` the chain was never built:
+    //  the case ran to exit 0 with no sizing, no cost and no `design/`, under
+    //  a header saying the opposite -- the 2026-08-04 banner trap (a banner
+    //  describing a model that is not running).  The single-pass path runs
+    //  the chain once on its one result; every outer driver states its own
+    //  policy, and a driver that does not run the chain SAYS so here rather
+    //  than being described by a word it does not honour.
+    if (!postDict)
+        std::cout << "not present";
+    else if (!driver)
+        std::cout << "loaded — post-processing chain applied once, on the"
+                     " single pass";
+    else
+        std::cout << "loaded — post-processing chain " << driver->postDictPolicy()
+                  << " (`" << driver->type() << "` driver)";
+    std::cout << "\nsolverDict:        "
               << (solverDict ? "loaded" : "not present (built-in defaults)")
               << "\nreactions library: "
               << (reactionsDict ? ("loaded — " + reactionsOrigin) : "not present")
@@ -1138,7 +1162,7 @@ try
         // mutate the flowsheetDict only.  Fitting drivers that vary property
         // PARAMETERS between passes are a separate feature (they will
         // deepCopy the manifest and rebuild per evaluation, same semantics).
-        auto driver = OuterDriver::New(outerDict);
+        //  `driver` was constructed above the run header (see there).
         driver->setSimulator     (simulate);
         driver->setFlowsheetDict (flowsheetDict);
         driver->setPostDict      (postDict);   // may be null; drivers that don't need it ignore
@@ -1255,6 +1279,21 @@ try
             printProblemDivergence(outerDivergences);
             printAdvisorySummary(outerAdvisories);
         }
+
+        //  THE POSTDICT IS AUDITED UNDER AN OUTER DRIVER TOO (2026-09-26).
+        //  The audit below the direct path was the ONLY site, so a postDict
+        //  under any outer driver was never audited: a dead key in a sizing
+        //  block of a swept or design-spec'd case read as an active setting.
+        //  The audit is over KEYS, not over a result, so it does not depend
+        //  on which pass ran the chain -- the reads accumulate on this one
+        //  DictPtr across every pass the driver made (the same reason the
+        //  direct path audits once, after the chain, and not inside
+        //  `buildChain`).  Under a driver that does NOT run the chain
+        //  (gridSweep) every key is unread and the audit says so, which is
+        //  the true statement about that run.
+        if (postDict)
+            dictAudit::report(dictAudit::auditTree(*postDict, "postDict"),
+                              verbosity);
     }
     else
     {

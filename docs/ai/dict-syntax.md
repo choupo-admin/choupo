@@ -745,6 +745,13 @@ P/T exceeds the element's catalogue `P_max`/`T_max`; vessel sizing WARNs (no
 longer aborts) if the design pressure exceeds the material rating.  These are
 WARN-only — a rating never clamps a stream.
 
+**Sizing `designRules {}` keys** live with the postDict grammar in
+[`case-layout.md`](case-layout.md) (§`system/postDict`), one block per sizer
+word -- `distillationColumn` and, since 2026-09-26, `pfr` (`pressureDesign`
+REQUIRED; `L_over_D` else announced default; `catalystBulkDensity` and
+`catalystPrice` optional, each enabling one half of the catalyst charge and
+refused by name at cost time when absent).
+
 Auto-init and ratings are emitted in the result JSON (`advisories`) and
 surfaced by the GUI (an amber run-complete toast + a list in the Streams
 summary band), not just printed to the log — alongside the durable caveat

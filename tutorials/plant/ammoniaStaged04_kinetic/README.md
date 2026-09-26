@@ -17,7 +17,7 @@ through `kinetics { type dysonSimon1968; }` in `constant/reactions`.
 | A `ammoniaStaged01_yield` | `conversionReactor`, declared conversion | a material balance | a reactor size; an equipment-factored cost |
 | B `ammoniaStaged02_equilibrium` | `gibbsReactor`, true equilibrium | the thermodynamic ceiling | any size, any cost |
 | C `ammoniaStaged03_approach` | `gibbsReactor` + 5 K approach | a realistic outlet; the converter may be costed from a DECLARED space velocity | a bed volume the engine computed |
-| **D** *this case* | adiabatic `pfr` on Dyson & Simon (1968), volume solved by a DesignSpec | **a bed volume the ENGINE computed** | a pellet effectiveness factor (announced as **unpriced**); a cost |
+| **D** *this case* | adiabatic `pfr` on Dyson & Simon (1968), volume solved by a DesignSpec | **a bed volume the ENGINE computed**; a shell sized around THAT volume and costed as a vessel; the catalyst charge priced at a DECLARED bulk density and unit price (since 2026-09-26, §6) | a pellet effectiveness factor (announced as **unpriced**); a catalyst price with a source (the two catalyst numbers are declared assumptions) |
 
 Background: `docs/design/how-a-process-design-is-staged.md` §3.4, §6 and
 §7.3, and DEV.md C8.
@@ -39,8 +39,9 @@ plan (`system/solverDict`) and the tear seed (`0/recycle`) are byte-identical
 to stage C except for the comments in `0/makeup`, `0/recycle` and
 `system/solverDict` that now say "four stages" instead of "three".  Stage D
 adds two files C has no counterpart for — `constant/reactions` (the rate law
-selection) and `system/outerDict` (the DesignSpec) — and drops C's
-`system/postDict` (§6 says why).
+selection) and `system/outerDict` (the DesignSpec) — and carries a
+`system/postDict` of its own, which since 2026-09-26 runs on the
+DesignSpec's representative pass and sizes the converter as a `pfr` (§6).
 
 **Why the second block is a consequence of the first.**  Stage C's
 `gibbsReactor` declares `T 700 K`: it IMPOSES the converter temperature, and
@@ -214,15 +215,32 @@ and the result JSON; this README must agree with it and not soften it.
 
 ## 6. What this case does NOT claim
 
-* **It does not cost anything, and it sizes no vessel.**  Under an
-  `outerDict` the engine does not apply `system/postDict` to the
-  representative pass (the sizing/costing chain is Layer 3 of the
-  single-pass path only), so the case carries no postDict, no
-  `design/converter/vessel` sheet and no CAPEX; it computes the BED, and the
-  vessel around it stays stage C's.  Costing stage D's converter would take
-  this run's own `V_R` in a case of its own, and the invariant of the
-  sequence — *a stage may not cost what it did not size* — is why it is not
-  typed into a `designRules { volume }` here.
+* **It costs the bed it sized, and nothing it did not size.**  Until
+  2026-09-26 this bullet said the opposite — under an `outerDict` the engine
+  did not apply `system/postDict` to the representative pass — and that was
+  measured true: a `designSpec` stored the dict and never built the chain,
+  while the run header announced post-processing as active.  The chain runs
+  on the replay at the design point now (`DesignSpec.cpp`, the optimisation
+  driver's precedent), so `system/postDict` here declares the converter as
+  `type pfr`: a sizer that READS the solved `V_R` off the unit (basis:
+  *catalyst volume V_R read from the unit (rating model)* — the sizing pass
+  cannot see the outer driver and does not claim to know the number was
+  solved; this README and the postDict header are where that is said) and
+  returns TWO items under `design/converter/` — the `shell` (a straight
+  cylinder of that volume at L/D 6, ASME wall at 220 bar, costed on the
+  existing Guthrie vessel set) and the `catalystCharge` (`m = V_R x
+  catalystBulkDensity`, priced at `catalystPrice x m` in today's EUR with NO
+  index and NO module factor, the costing line naming the shape
+  `declared-unit-price`).  The sequence's invariant — *a stage may not cost
+  what it did not size* — is exactly why the volume is still not typed into
+  a `designRules { volume }`.  **The two catalyst numbers (2500 kg/m3,
+  15 EUR/kg) are AUTHOR-SET ASSUMPTIONS**, declared in those words in the
+  postDict header, with no source retrieved and none invented; remove the
+  price and the run REFUSES the charge by name and prints `TOTALS (EUR) --
+  INCOMPLETE`.  NOT sized: the preheater (no exchanger geometry), the mixer,
+  the splitter, and the compressors and interchanger this topology omits;
+  the pellet effectiveness factor stays UNPRICED, so the bed and its charge
+  are a fresh, clean, fully reduced bed's.
 * **It claims the plant's first law closes only since 2026-09-26, and says
   what closed it.**  The balance reports DO run on the representative pass
   (Layer 3b); the material side closes (99.998 % global, every element to

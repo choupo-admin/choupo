@@ -316,6 +316,87 @@ std::map<std::string, scalar> Guthrie::pricingFactors() const
 
 CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) const
 {
+    //  A CATALYST CHARGE IS PRICED FROM A DECLARED UNIT PRICE, AND THE LINE
+    //  SAYS SO (2026-09-26).  This is the SECOND cost shape in this file and
+    //  it is deliberately not a ninth coefficient set: a catalyst is bought
+    //  by the kilogram at a vendor's price in TODAY's money, so
+    //
+    //      C_p = catalystPrice x m_catalyst        [case currency, no index]
+    //      C_BM = C_TM = C_p                         (F_BM = 1, no contingency)
+    //
+    //  -- no CEPCI rebasing (the price is not a 2001-USD correlation), no
+    //  currency conversion (it is declared in the currency the run totals
+    //  in), no bare-module or total-module factor (those install a fabricated
+    //  item; a charge is loaded into a vessel that carries its own).  Every
+    //  one of those "no"s is a fact a reader must be able to see on the
+    //  printed line, so `correlation` carries its own word and the pass
+    //  prints the price where the other shapes print K1..K3.
+    //
+    //  ABSENT THE PRICE OR THE MASS, THIS REFUSES BY NAME, and the costing
+    //  pass's INCOMPLETE mechanism -- the one home, the tray precedent --
+    //  names the item under the total.  A default price would be a number
+    //  with no source, costed into a capital total as though somebody had
+    //  chosen it.
+    if (dim.equipmentType == "catalystCharge")
+    {
+        auto pit = dim.costInputs.find("catalystPrice");
+        auto mit = dim.values.find("m_catalyst_kg");
+        if (mit == dim.values.end())
+            throw std::runtime_error("Guthrie: the CATALYST CHARGE of '"
+                + dim.unitName + "' has no mass to price: the sizer derived"
+                  " none (its basis reads \"" + dim.basis + "\").\n  Declare"
+                  " `catalystBulkDensity <kg/m3>;` in this unit's designRules"
+                  " so m_catalyst = V_R x rho_bulk exists.  Until then the"
+                  " total below is INCOMPLETE by exactly this charge.");
+        if (pit == dim.costInputs.end())
+            throw std::runtime_error("Guthrie: the CATALYST CHARGE of '"
+                + dim.unitName + "' is not costed: no `catalystPrice` is"
+                  " declared in this unit's designRules, and Choupo carries no"
+                  " catalyst price and will not invent one.\n  Declare"
+                  " `catalystPrice <" + std::string("EUR") + " per kg>;` -- a"
+                  " vendor quotation or a stated assumption, in the currency"
+                  " this run totals in, today's money (no index is applied)."
+                  "\n  Until then this bed's capital cost is its shell alone,"
+                  " and the `TOTALS (EUR) -- INCOMPLETE` line above says so.");
+        const scalar price = pit->second;
+        const scalar m_kg  = mit->second;
+        if (!(price >= 0.0) || !(m_kg > 0.0))
+            throw std::runtime_error("Guthrie: the CATALYST CHARGE of '"
+                + dim.unitName + "' has a negative price or a non-positive"
+                  " mass -- nothing is priced from that");
+        const scalar Cp = price * m_kg;
+
+        CostBreakdown out;
+        out.unitName        = dim.unitName;
+        out.purchasedCost   = Cp;
+        out.bareModuleCost  = Cp;
+        out.totalModuleCost = Cp;
+        //  THE FACTORS THAT ARE NOT APPLIED, STATED AS ONES.  A reader of
+        //  the row sees `F_M 1.00  F_P 1.00` beside a shell at 3.05 / 36 and
+        //  the provenance line names the reason; a blank would read as a
+        //  factor the pass forgot.
+        out.factors["F_M"]            = 1.0;
+        out.factors["F_P"]            = 1.0;
+        out.factors["B1"]             = 1.0;
+        out.factors["B2"]             = 0.0;
+        out.factors["C_TM_over_C_BM"] = 1.0;
+        out.factors["S"]              = m_kg;
+        out.factors["catalystPrice"]  = price;      // the DECLARED input, republished
+        //  The four index constants ride along UNAPPLIED so that the header
+        //  and `costs.csv` still carry the run's index beside every row --
+        //  the reader is told the index and told, by the shape word, that
+        //  this row did not use it.
+        out.factors["cepci"]    = cepci_;
+        out.factors["cepci2001"]= cepci2001_;
+        out.factors["usdToEur"] = usdToEur_;
+        out.factors["year"]     = year_;
+        out.sizeKey     = "m_catalyst_kg";
+        out.correlation = "declared-unit-price";
+        out.material    = "none: catalyst priced per kg";
+        out.currency    = "EUR";
+        return out;
+    }
+
     const auto& c = coeffsFor(dim.equipmentType);
 
     auto getS = [&]() -> scalar {

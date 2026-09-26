@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- STAGE D.  THE BED THE ENGINE SIZED IS COSTED FROM ITS OWN VOLUME.
+
+  The sequence's invariant -- A STAGE MAY NOT COST WHAT IT DID NOT SIZE --
+  is what kept this file out of stage D until 2026-09-26, and it is what
+  lets it in now: the converter's volume is `V_R`, the PFR's own KPI, SOLVED
+  by system/outerDict's DesignSpec against the effluent's 5 K approach.  No
+  volume is typed here.  The `pfr` sizer READS that KPI from the
+  representative pass (the replay at the design point -- the pass the
+  post-processing chain runs on under a `designSpec`, since 2026-09-26) and
+  passes it through; its basis on the design sheet says "read from the unit"
+  and nothing more, because the sizing pass has no view of the outer driver
+  and does not pretend to know whether the number was solved or typed.  Here
+  it was solved, and this header is where that is said.
+
+  =========================================================================
+  WHAT IS SIZED, WHAT IS COSTED, AND WHAT IS NOT
+  =========================================================================
+  The CONVERTER is TWO physical items under one unit (design/converter/):
+
+    shell           the pressure vessel around the bed: a straight cylinder
+                    of the bed's own volume at the declared L/D, ASME
+                    thin-wall at pressureDesign.  COSTED as a `vessel` on the
+                    Guthrie vessel set already in Choupo (Turton App. A), the
+                    same way stage C, ammonia02 and the flagship cost theirs.
+                    NO head space, distributor, support grid or internals: the
+                    shell is the bed's envelope, not a vendor drawing.
+
+    catalystCharge  the catalyst: m = V_R x catalystBulkDensity, priced at
+                    catalystPrice x m in the run's own currency (EUR), today's
+                    money.  NO index, NO material factor, NO module factor,
+                    NO 1.18 -- the costing line prints the shape word
+                    `declared-unit-price` and the price beside it so it cannot
+                    be read as a Turton correlation.  THERE IS NO GUTHRIE SET
+                    FOR A CATALYST BED and none was invented; remove
+                    `catalystPrice` below and the run REFUSES the charge by
+                    name and prints `TOTALS (EUR) -- INCOMPLETE`.
+
+  Also sized and costed, exactly as stage C sizes them: the high-pressure
+  SEPARATOR and the LET-DOWN drum (vapour residence time; vessel set).
+
+  NOT sized, NOT costed: the preheater (`feedPreheat` is a `phaseChanger`, a
+  duty with no exchanger geometry declared -- an area would need U and an
+  approach nobody has stated for it), the mixer and the splitter (no
+  equipment), and everything stage C's postDict lists as absent from this
+  topology (no compressors, no feed/effluent interchanger).  This CAPEX is
+  therefore PARTIAL IN UNITS as C's is, and the pellet effectiveness factor
+  the README calls UNPRICED stays unpriced: the bed here is the fresh, clean,
+  fully reduced bed of Eq 19, and a real charge is larger.
+
+  =========================================================================
+  THE TWO CATALYST NUMBERS ARE AUTHOR-SET ASSUMPTIONS.  THOSE ARE THE WORDS.
+  =========================================================================
+  `catalystBulkDensity` and `catalystPrice` below were NOT read from a
+  primary source that this file can cite: no vendor data sheet, paper or
+  price list was retrieved for them, and a citation invented to dress a
+  round number would convert `unsourced` into `falsely sourced`, which no
+  reader and no gate can detect.  They are round, they are declared as
+  assumptions in this comment, and they are the two numbers a reader
+  replaces first -- with a catalyst vendor's bulk density (a dense
+  magnetite-based charge is heavier than a light supported one; the number
+  moves the charge mass one-for-one) and a quotation in the currency and
+  year of the report.  Every other number in this file follows the same
+  rule as stage C's: pressureDesign is the 200 bar loop plus a 10 % margin
+  (220 bar, as C, ammonia02 and ammonia03 declare), and `L_over_D 6.0` is
+  the tall-vessel ratio the same three cases use for their converters.
+
+  `corrosionAllow` and `jointEfficiency` are DELIBERATELY NOT DECLARED, as in
+  stage C: the engine supplies both from `sizing/DesignDefaults`, announces
+  each at its site and in the end-of-run caveat block, and lists them on the
+  shell's sheet under `assumed ( ... )` -- the difference between a number
+  this case chose and a number the engine chose, made visible.
+\*---------------------------------------------------------------------------*/
+sizing
+{
+    units
+    (
+        //  THE KINETIC BED.  The volume is NOT here and no rule for it is:
+        //  it is the unit's own solved V_R.  `type pfr` selects the
+        //  catalyst-bed sizer (shell + catalystCharge).
+        { unitName converter;  type pfr;  material SS316;
+          designRules { pressureDesign       220.0;    // bar: 200 bar loop + 10 % margin
+                        L_over_D             6.0;      // tall vessel, as stage C's converter
+                        catalystBulkDensity  2500.0;   // kg/m3 -- AUTHOR-SET ASSUMPTION, see header
+                        catalystPrice        15.0; } } // EUR/kg, today's money -- AUTHOR-SET ASSUMPTION, see header
+
+        //  The high-pressure SEPARATOR: a knock-out drum, 45 s of vapour holdup.
+        { unitName separator;  type vessel;  material SS316;
+          designRules { residenceTime 45.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;
+                        pressureDesign 220.0; } }
+
+        //  The product LET-DOWN drum at 20 bar: smaller, and carbon steel.
+        { unitName letdown;    type vessel;  material carbonSteel;
+          designRules { residenceTime 60.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;
+                        pressureDesign 25.0; } }
+    );
+}
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;
+    cepci2001 397;
+    usdToEur  0.92;
+}

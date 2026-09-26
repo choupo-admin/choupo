@@ -408,7 +408,12 @@ empty role overlay is forbidden the same way.
 
 ## `system/postDict` — the post-processing chain
 
-Optional; steady only.  Each TOP-LEVEL key names a pass type and its
+Optional; steady only.  Under an outer driver the chain is applied the way
+the LOADED DRIVER states on the run header's `postDict:` line -- `designSpec`
+and `optimization` on the representative pass (the replay at the answer),
+`sweep` per converged point, `gridSweep` not at all (2026-09-26; before that
+a `designSpec` case silently ran no chain under a header that said it did).
+Each TOP-LEVEL key names a pass type and its
 sub-dict is that pass's configuration; the passes run in order after
 convergence and augment the result (they never change the solution):
 
@@ -468,6 +473,42 @@ costed** -- Choupo carries no purchased-cost correlation for trays and will not
 invent one -- so that item refuses by name and the capital total reads
 `TOTALS (EUR) -- INCOMPLETE`.  Worked case:
 `tutorials/steady/distillation/column09_tray_hydraulics`.
+
+**A PLUG-FLOW CATALYST BED IS A SHELL AND A CATALYST CHARGE (2026-09-26).**
+`type pfr` sizes the unit's OWN `V_R` -- the volume the PFR integrated, which
+is the outer driver's answer when a `designSpec` solves it -- and never
+rebuilds it from a throughput; its `designRules {}`:
+
+```
+{
+    unitName    converter;
+    type        pfr;
+    material    SS316;                  // the SHELL's material
+    designRules
+    {
+        pressureDesign        220.0;    // bar -- REQUIRED, refused by name if absent
+        L_over_D              6.0;      // else the engine default, ANNOUNCED
+        catalystBulkDensity   2500.0;   // kg/m3 -- optional; enables m_catalyst_kg
+        catalystPrice         15.0;     // EUR per kg, today's money -- optional; enables the cost line
+    }
+}
+```
+
+Two items under `design/<unit>/`: `shell` (a straight cylinder of the bed
+volume at L/D, ASME wall at `pressureDesign`, costed as a `vessel` on the
+existing Guthrie set) and `catalystCharge` (`m = V_R x catalystBulkDensity`,
+costed at `catalystPrice x m` with NO price index, NO material or module
+factor and NO contingency -- the costing table prints the shape word
+`declared-unit-price` and the price beside it).  Absent the density the charge
+publishes no mass and its basis says `mass not derivable`; absent the price
+the charge is REFUSED BY NAME at costing time and the total reads `TOTALS
+(EUR) -- INCOMPLETE` naming it.  The basis reads *catalyst volume V_R read
+from the unit* and nothing more: the sizing pass cannot see the outer driver,
+so whether the volume was solved or typed is said in the case, not by the
+sizer.  There is no Guthrie set for a catalyst bed and none is invented; a
+density or a price you cannot source is declared as an assumption in a
+comment, in those words.  Worked case:
+`tutorials/plant/ammoniaStaged04_kinetic`.
 
 ## Where a numerical option lives — the four homes are INTENTIONAL
 

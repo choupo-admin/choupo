@@ -130,7 +130,16 @@ int CostingPass::run(SimulationResult& result)
     for (const auto& [item, dim] : result.sizings)
     {
         try {
-            const auto& mat = MaterialRegistry::byName(dim.material);
+            //  AN ITEM WITH NO CONSTRUCTION MATERIAL IS NOT A REGISTRY
+            //  ERROR (2026-09-26): a catalyst charge is not built of one,
+            //  and its sizer leaves the word empty on purpose.  The model
+            //  receives a nameless material and prices the kind on its own
+            //  rule (F_M = 1, said on the line); a registry lookup on the
+            //  empty word would refuse the item for the wrong reason.
+            static const Material noMaterial{};
+            const auto& mat = dim.material.empty()
+                            ? noMaterial
+                            : MaterialRegistry::byName(dim.material);
             auto cb         = model->cost(dim, mat);
             //  THE THREE IDENTITY FIELDS COME FROM THE SIZING THAT WAS
             //  PRICED, never from the map key: the key is an item id and
@@ -282,7 +291,16 @@ int CostingPass::run(SimulationResult& result)
                      "     [power-law, where declared]\n"
                      "  C_p           = C_p(2001) x CEPCI/CEPCI_2001 x EUR/USD\n"
                      "  C_BM          = C_p x ( B1 + B2 F_M F_P )\n"
-                     "  C_TM          = 1.18 x C_BM      (contingency + fee)\n";
+                     "  C_TM          = 1.18 x C_BM      (contingency + fee)\n"
+                     //  THE THIRD SHAPE, so a reader meeting a
+                     //  `declared-unit-price` row below knows that NONE of
+                     //  the three lines above was applied to it.
+                     "  C_p = C_BM = C_TM = price x mass                       "
+                     "     [declared-unit-price: the CASE's own price, in"
+                     " the run's currency,\n"
+                     "                                                          "
+                     "      today's money -- NO index, NO F_M/F_P, NO 1.18;"
+                     " a catalyst charge]\n";
         std::cout << "  index: CEPCI " << std::fixed << std::setprecision(1)
                   << cepci << " / " << cepci2001;
         if (cepci2001 > 0.0)
@@ -290,13 +308,19 @@ int CostingPass::run(SimulationResult& result)
         std::cout << "     currency: " << std::setprecision(4) << fx
                   << " EUR/USD     basis: 2001 USD\n\n";
 
+        //  Column widths hold the widest row of the three shapes: the
+        //  `declared-unit-price` word, a `m_catalyst_kg = ...` driver and
+        //  its `price ... EUR/kg, DECLARED` cell would otherwise run into
+        //  their neighbours (measured: they did).  Wider for every case,
+        //  because a table whose columns move with its content is not one
+        //  table.
         std::cout << "  " << std::left
                   << std::setw(int(wName)) << "unit"
-                  << std::setw(16) << "correlation"
-                  << std::setw(20) << "size driver S"
-                  << std::setw(26) << "coefficients"
+                  << std::setw(22) << "correlation"
+                  << std::setw(28) << "size driver S"
+                  << std::setw(38) << "coefficients"
                   << std::setw(12) << "B1, B2"
-                  << "F_M (material)\n  " << std::string(103 + wName - 14, '-') << "\n";
+                  << "F_M (material)\n  " << std::string(129 + wName - 14, '-') << "\n";
 
         for (const auto& [item, entry] : result.costs)
         {
@@ -333,6 +357,12 @@ int CostingPass::run(SimulationResult& result)
                 //  the power-law row keeps significant digits by design.
                 co << std::setprecision(6) << f("Cp_ref") << ", "
                    << f("S_ref") << ", " << f("n_exp");
+            else if (cb.correlation == "declared-unit-price")
+                //  The DECLARED price, with the words that tell this row
+                //  from the two correlation shapes: it is the case's number,
+                //  not Turton's, and no index touched it.
+                co << "price " << std::defaultfloat << std::setprecision(6)
+                   << f("catalystPrice") << " EUR/kg, DECLARED, no index";
             else
                 co << std::fixed << std::setprecision(4) << f("K1") << ", "
                    << f("K2") << ", " << f("K3");
@@ -347,9 +377,9 @@ int CostingPass::run(SimulationResult& result)
                       << std::setw(int(wName)) << (cb.equipmentTag.empty()
                                     ? cb.unitName
                                     : cb.unitName + "/" + cb.equipmentTag)
-                      << std::setw(16) << cb.correlation
-                      << std::setw(20) << sz.str()
-                      << std::setw(26) << co.str()
+                      << std::setw(22) << cb.correlation
+                      << std::setw(28) << sz.str()
+                      << std::setw(38) << co.str()
                       << std::setw(12) << bb.str()
                       << fm.str() << "\n";
         }
