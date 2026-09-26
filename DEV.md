@@ -975,6 +975,20 @@ accepts today, and that is a policy call.
      are all Turton's, which is the same wall the distillation TRAYS hit
      (they refuse by name rather than invent a correlation).  Whether an
      invented set is acceptable here is Vitor's, not the assistant's.
+     **DECIDED 2026-09-26 by the commander (Vitor: "a decisao e tua"):
+     CLOSE IT ON THE KINETIC CASE, WITHOUT INVENTING A SET.**  The blocker
+     above dissolved on 2026-09-26: `ammoniaStaged04_kinetic` runs a `pfr`
+     on Dyson-Simon kinetics whose `V_R` is SOLVED by a designSpec, so the
+     bed volume is a kinetic result, which is exactly what ammonia03's
+     postDict said a bed's size must be.  Slice: a `pfr` sizer that READS
+     the unit's own `V_R` (the crystalliser pass-through precedent, basis
+     stating whether it was solved or author-set), builds the SHELL with
+     `VesselMechanics` at a declared `pressureDesign`, costs the shell on
+     the EXISTING `vessel` Guthrie set, and prices the catalyst charge only
+     from a DECLARED bulk density and price -- absent, the catalyst line
+     refuses by name and the total says INCOMPLETE (the tray precedent).
+     No Guthrie set is invented; that question stays Vitor's and is no
+     longer on the path.  Dispatched as a general's brief the same turn.
 
 **C3. Per-EQUATION citation audit of the Theory Guide (asked 2026-09-22;
      NOT DONE at the granularity asked).**  He asked which of the guide's
@@ -988,6 +1002,13 @@ accepts today, and that is a policy call.
      makes it safe is already written: list, never invent a citation, because
      inventing one converts *unsourced* into *falsely sourced*, which no
      reader and no gate can detect.
+     **DECIDED 2026-09-26 by the commander: RUN THE READING JOB, in a
+     worktree, read-only.**  A general lists every numbered equation of
+     the Theory Guide with one of four verdicts -- cited at the equation,
+     derived in-text from a cited one, a standard identity (named as such,
+     no citation invented), or UNSOURCED -- and writes the list as a
+     design record.  Nothing in `docs/*.tex` is edited; the list is the
+     deliverable and Vitor decides what each unsourced equation gets.
 
 **C4. An electrodialysis case for WINE (asked 2026-09-21 as a question;
      NOT DONE).**  He asked whether a typical wine electrodialysis case had
