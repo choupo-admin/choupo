@@ -3288,6 +3288,22 @@ domains like membranes).
   even on silent NaN — this caught the membrane bug) AND **reference-KPI
   comparison** for any case shipping an `expected` file.  Never reintroduce the
   bare `binary > /dev/null && PASS` check.
+* **A GOLDEN RE-RECORD IS A CLAIM, AND THE CLAIM IS THE LIST (Vítor's
+  standing instruction, written here 2026-09-26).**  A golden pins what a run
+  PRINTS, so an engine change followed by a blanket `--record` teaches the
+  suite to accept exactly the error the change introduced (the 2026-09-04
+  dryer shape).  So: `--record` is run only AFTER the list of moved rows has
+  been shown to Vítor, each row with the physical or numerical reason it
+  moved; the commit names them; a row that moves for a reason nobody can
+  state is a regression until proven otherwise, and stays unrecorded.
+  `--record-append` (adds only) for a new row kind; never a corpus-wide
+  `--record` sweep, which re-pins any drift within tolerance in silence.
+  The gates that can see a wrong-but-stable golden are the conservation
+  ones (`check_energy_closure` RATCHETS: a pinned debt that grows fails), and
+  the validation subset (`docs/architecture/verification-and-validation.md`
+  §3, recounted by `check_validation_subset`) is the only layer that says an
+  answer is RIGHT rather than unmoved -- keep both in mind before quoting a
+  green suite as evidence about physics.
 * **Add KPIs** when adding new unit ops (they feed sensitivity, optim, sizing,
   costing).
 * **Update this CLAUDE.md** when adding a major capability (and the relevant
