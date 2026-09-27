@@ -2605,9 +2605,47 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      `check_v2_refusals` advice-read arm (6 by-hand sabotages; S16, a second
      reader of the slot, is caught STRUCTURALLY only).  Also corrected:
      `property-architecture.md` still taught the retired masters block.
-     NOT done, named: `aqueous { apparentComponents ( ... ); }` is written
-     in 20 electrolyte cases and read by nothing (a comment the parser
-     keeps); refusing it is a corpus migration, not this slice.
+     NOT done then, named: `aqueous { apparentComponents ( ... ); }`,
+     written in 20 electrolyte cases and read by nothing.
+     **THAT REMAINDER IS CLOSED 2026-09-27, as a REFUSAL, not a reader.**
+     MEASURED first.  No reader anywhere: `src/`, `gui/src` and `bin/` never
+     name the key (grep, whole tree); it lived in 20 case
+     `thermoPhysPropDict`s (19 SEALED -- the manifests claim only the
+     imported records, never the authored dict, so the seal is untouched),
+     in `docs/ai/thermo.md` + `docs/ai/patterns.md` (what `bin/llmctx`
+     ships to an assistant authoring a case) and in the Developer and Props
+     guides' listings; no fractal unit folder, per-unit `thermo {}` or
+     sealed mirror elsewhere carried it.  The brief's premise that it
+     repeated `components ( ... )` was FALSE: every list named only the
+     SALT (NaCl 15, KCl 2, NaOH 3).  So the question was whether it ever
+     disagreed with the salt the ENGINE activates -- and on all 20, run with
+     the announcement on, the builder's `[electrolyte] active salt:` names
+     the same salt, "the only component carrying dissociatesTo".  It agreed
+     by coincidence and nothing checked it; the day a case listed the wrong
+     salt it would have run the right one in silence.  DECISION: the
+     facts it seemed to state each already have ONE home (the apparent
+     basis IS `components`; the active salt is decided in
+     `buildElectrolyte` b1 from `dissociatesTo` and the declared solid
+     phase; the ions from `dissociatesTo`), so reading it would make a
+     SECOND home for the active-salt decision.  `refuseUnreadAqueousKeys`
+     (called in `ThermoPackageBuilder::build()` beside
+     `refuseRetiredTopLevel`, so every binary and the sector/unit override
+     route reach it) REFUSES it by name, quoting the list and saying where
+     each fact lives; the line is removed from the 20 cases (crystalliser12
+     and batch14 keep their "ethanol is the ANTISOLVENT" note, moved to the
+     `components` line it describes), from the two `docs/ai` pages and the
+     two guides (PDFs rebuilt).  All 20 pass against their goldens, no row
+     moved.  Gate: `check_v2_refusals` unread-apparent arm (choupoProps
+     against a clean control, choupoSolve on sealed crystalliser05, the
+     lithium plant's BRINE sector through `thermoFor`, and no docs/ai page
+     or guide .tex teaching it; S17-S19 by hand, and S18's first attempt
+     did not land -- recorded in the gate).  FOR VITOR'S AUDIT: the
+     2026-09-06 record (`the-errors-a-student-makes.md` §6a) had deferred
+     this key, with `root`/`fugacityRoute`, as a thermo-grammar decision of
+     his; this slice was dispatched as authorised, on the measurement above
+     that the key states nothing the engine does not hold elsewhere.  It is
+     one reversible commit; the `root`/`fugacityRoute` siblings are
+     untouched and remain his.
  A6. **`bin/choupo-drill` fails on 2 of the flagship's 4 sectors** and blames
      the parent for state it has — an inbound stream looked up by the
      CONSUMING port's name instead of the declared identity.  [HARNESS]

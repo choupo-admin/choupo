@@ -714,6 +714,103 @@ def advice_read_arm(tmp):
     return fails
 
 
+# ---- UNREAD_APPARENT: `aqueous { apparentComponents ( ... ); }` REFUSES -----
+#  Added 2026-09-27 (DEV.md 5 A5 remainder).  Twenty electrolyte cases wrote
+#  the list and nothing in src/, gui/ or bin/ read it; measured on all twenty
+#  before the refusal, each list named exactly the salt the builder had chosen
+#  for its own reasons ("the only component carrying dissociatesTo"), so it
+#  agreed by coincidence and a student who edited it changed nothing.  The
+#  builder now refuses it by name (refuseUnreadAqueousKeys, in build()), and
+#  this arm holds that on every route a thermophysicalPropertySystem reaches
+#  the builder by: choupoProps on a single-salt system (against a control that
+#  runs clean WITHOUT the line), choupoSolve on a SEALED corpus case with the
+#  line put back, and a SECTOR's own system inside a fractal plant (the
+#  thermoFor route).  A DOCS part keeps the pages a reader copies a case from
+#  (docs/ai, which bin/llmctx ships to an assistant, and the guides' .tex)
+#  from teaching the line again: a refused key in a listing is advice that
+#  produces a refusal.
+#
+# SABOTAGES PERFORMED BY HAND on 2026-09-27 against this arm, each restored by
+# cp from a saved copy and `make all`.  The lines are what the gate printed:
+#   S17 refuseUnreadAqueousKeys no longer called from build() -> the three
+#       "unread-apparent-<route>: ACCEPTED (exit 0)" lines -- which is also
+#       the measurement that nothing reads the key on any of the three
+#       routes: without the refusal every one of them runs to exit 0.
+#   S18 the refusal's message loses "read by NOTHING" -> the three
+#       "... refused but WITHOUT the named message" lines.  Its FIRST
+#       attempt proved nothing: the message is split across two string
+#       literals, the sed matched none of them, and the gate ran against the
+#       S17 binary still in place.  A sabotage is checked to have LANDED
+#       before its result is read.
+#   S19 the listing put back into docs/ai/thermo.md -> "unread-apparent-docs:
+#       docs/ai/thermo.md teaches `apparentComponents`".
+C05 = (ROOT / "tutorials" / "steady" / "crystallisation"
+       / "crystalliser05_nacl_pitzer")
+APPARENT_FRAG = "apparentComponents ( NaCl )` is read by NOTHING"
+APPARENT_LINE = "apparentComponents ( NaCl );"
+APPARENT_DOCS = [ROOT / "docs" / "ai", ROOT / "docs"]
+
+
+def unread_apparent_arm(tmp):
+    fails = []
+
+    def _judge(tag, rc, out):
+        if rc is None:
+            fails.append(f"unread-apparent-{tag}: " + out)
+        elif rc == 0:
+            fails.append(f"unread-apparent-{tag}: ACCEPTED (exit 0) -- a list"
+                         " nothing reads is tolerated as a declaration again")
+        elif APPARENT_FRAG not in out:
+            fails.append(f"unread-apparent-{tag}: refused but WITHOUT the"
+                         f" named message ('{APPARENT_FRAG}' absent)")
+
+    #  (a) choupoProps, single-salt system; the control runs clean first.
+    rc, out = _props_case(tmp, "apparent-control", ELECTROLYTE_SYSTEM,
+                          BRINE_PROPS)
+    if rc != 0:
+        fails.append(f"unread-apparent-control: the single-salt NaCl system"
+                     f" without the line did not run clean (exit {rc}) --"
+                     " the refusals below would prove nothing")
+    sysA = ELECTROLYTE_SYSTEM.replace("aqueous {",
+                                      "aqueous { " + APPARENT_LINE, 1)
+    rc, out = _props_case(tmp, "apparent-props", sysA, BRINE_PROPS)
+    _judge("props", rc, out)
+
+    #  (b) choupoSolve on a SEALED corpus case -- the thermoPhysPropDict is
+    #      authored (the manifest claims only the imported records), so the
+    #      edit reaches the builder with the seal intact.
+    rc, out = _solve_copy(tmp, "apparent-c05", C05, lambda s: s.replace(
+        "    aqueous\n    {\n",
+        "    aqueous\n    {\n        " + APPARENT_LINE + "\n", 1))
+    _judge("solve", rc, out)
+
+    #  (c) a SECTOR's own system, reached through Flowsheet::thermoFor.
+    def _brine(case):
+        p = case / "sectors" / "BRINE" / "constant" / "thermoPhysPropDict"
+        s = p.read_text()
+        s2 = s.replace("    aqueous\n    {\n",
+                       "    aqueous\n    {\n        " + APPARENT_LINE + "\n",
+                       1)
+        if s2 == s:
+            raise RuntimeError("the BRINE sector's aqueous block moved")
+        p.write_text(s2)
+    try:
+        rc, out = _solve_copy(tmp, "apparent-sector", LITHIUM, None, _brine)
+    except RuntimeError as e:
+        rc, out = None, str(e)
+    _judge("sector", rc, out)
+
+    #  (d) DOCS: the pages a case is copied from do not teach the line.
+    for d in APPARENT_DOCS:
+        for p in sorted(d.glob("*.md" if d.name == "ai" else "*.tex")):
+            if "apparentComponents" in p.read_text():
+                fails.append(f"unread-apparent-docs: {p.relative_to(ROOT)}"
+                             " teaches `apparentComponents` -- a key the"
+                             " builder refuses; a listing that carries it is"
+                             " advice that produces a refusal")
+    return fails
+
+
 def run_grammar_negative(tmp, name, layout, binary, frag):
     case = Path(tmp) / name
     (case / "system").mkdir(parents=True)
@@ -765,6 +862,7 @@ def main():
         fails.extend(solid_phase_arm(tmp))
         fails.extend(active_salt_arm(tmp))
         fails.extend(advice_read_arm(tmp))
+        fails.extend(unread_apparent_arm(tmp))
     if fails:
         print("V2 NEGATIVE-PARITY GATE FAILED (%d):" % len(fails))
         for f in fails: print("  " + f)
@@ -788,7 +886,11 @@ def main():
           " literally no longer returns the same refusal, both keys together"
           " refuse naming both words, the mediator-only bridge advises no"
           " retired block, a top-level `volatiles` refuses; ONE `ionic`"
-          " reader in the builder)."
+          " reader in the builder), plus the unread-apparent arm"
+          " (`equilibrium.aqueous.apparentComponents` REFUSES by name through"
+          " choupoProps on a single-salt system against a clean control,"
+          " choupoSolve on a sealed corpus case and a fractal plant's sector"
+          " system; no docs/ai page or guide .tex teaches it)."
           "  DOMAIN: the v2"
           " grammar's own refusals, driven through choupoProps/choupoSolve on"
           " temp cases.  LIMITS: it proves each refusal FIRES with its"

@@ -697,8 +697,7 @@ equilibrium
     formulation electrolyteGammaPhi;    // aqueous electrolyte x ideal vapour
     aqueous
     {
-        solvent            water;
-        apparentComponents ( NaCl );    // the stream carries the salt
+        solvent            water;       // the stream carries the salt
         activityModel { ionic davies; } // the REACTIVE ionic rung: davies or
                                         // pitzerHMW (served since 2026-08-24;
                                         // edwardsPitzer is refused here -- its

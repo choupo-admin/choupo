@@ -279,6 +279,15 @@ and the corpus was walked — every `choupoSolve` case under `tutorials/steady`,
 > * `caloric.liquid.root` / `caloric.vapour.root` — the same 3 cases.
 >   `departureRoute` beside it IS verified; `root` is not.
 
+**The first class is CLOSED (2026-09-27, DEV.md §5 A5).**  Measured then on
+all 20 cases that carried it (the 15 above plus five outside this walk's
+reach): every list named exactly the salt the builder had already activated
+from `dissociatesTo`, so it stated nothing the engine did not hold
+elsewhere.  The builder now REFUSES `apparentComponents` by name
+(`refuseUnreadAqueousKeys`) and the line is gone from every case; gate
+`check_v2_refusals`, unread-apparent arm.  The `root` / `fugacityRoute`
+classes below are untouched and are still a grammar question.
+
 The second and third classes are the substantive finding: a `phiPhi` case
 **declares which cubic root each phase takes** and the engine decides for
 itself.  That is not a typo, it is a grammar question.
@@ -375,8 +384,8 @@ sowing the key are fixed instead, which removes the regression path.
 * The `phase`/`referenceState` **engine half** — reserved (§3).
 * The **`dGf_298` unread key** in 58 records — the same reserved decision (§3).
 * **Wiring the `thermoPhysPropDict` audit** — measured, clean, one line, waiting
-  on a grammar decision about `root` / `fugacityRoute` / `apparentComponents`
-  (§6).
+  on a grammar decision about `root` / `fugacityRoute` (§6;
+  `apparentComponents` was closed separately on 2026-09-27 as a refusal).
 * **Auditing the unit-level dict** — measured and rejected on the evidence
   (§6).
 * **Refusing a mistyped model name in the four if-chain units** (§7).

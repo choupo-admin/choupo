@@ -1084,9 +1084,8 @@ equilibrium
 
     aqueous
     {
-        solvent            water;
-        apparentComponents ( NaCl );  // stream carries the salt; the model
-        activityModel { model Pitzer; }        //   activates its ions
+        solvent            water;      // the stream carries the salt
+        activityModel { model Pitzer; }       //   as a component
         compositionBasis molality;
     }
 

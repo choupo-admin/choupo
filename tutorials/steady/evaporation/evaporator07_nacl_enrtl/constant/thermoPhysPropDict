@@ -26,8 +26,6 @@ equilibrium
 
     aqueous
     {
-        apparentComponents ( NaCl );  // stream carries the salt; the model
-                                        //   activates its ions (dissociatesTo)
         activityModel
         {
             model eNRTL;

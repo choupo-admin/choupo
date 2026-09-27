@@ -25,8 +25,6 @@ equilibrium
 
     aqueous
     {
-        apparentComponents ( NaOH );  // stream carries the salt; the model
-                                        //   activates its ions (dissociatesTo)
         activityModel
         {
             model Pitzer;

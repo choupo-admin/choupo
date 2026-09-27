@@ -227,6 +227,50 @@ static void refuseRetiredTopLevel(const DictPtr& pkg)
                 " top-level `") + r.key + "` is a RETIRED form -- " + r.why);
 }
 
+//  ---- `aqueous { apparentComponents ( ... ); }` REFUSES BY NAME -----------
+//  (2026-09-27, DEV.md 5 A5 remainder.)  Twenty electrolyte cases wrote this
+//  list and NOTHING read it -- not this builder, not a unit, not the GUI, not
+//  a tool.  Measured on all twenty before it was refused: every list named
+//  exactly the salt the builder had already chosen, for its own reasons.  So
+//  it agreed by coincidence and would have gone on agreeing with nothing
+//  checking it: a student who edits it changes nothing, and a declaration
+//  that does not bind is a comment dressed as one.  The facts it seemed to
+//  state each have ONE home already:
+//    * the apparent (component) basis IS `components ( ... )` -- the stream
+//      carries every component in it, salts included;
+//    * WHICH salt the single-salt adapter activates is decided in
+//      buildElectrolyte (b1): the only component whose record carries
+//      `dissociatesTo`, else the owner of the solid phase
+//      constant/chemistryDict declares -- announced as
+//      `[electrolyte] active salt:`;
+//    * the ions come from that record's `dissociatesTo`.
+//  Reading the list instead would make it a SECOND home for the active-salt
+//  decision, which is the arity sin, not a fix.
+static void refuseUnreadAqueousKeys(const DictPtr& pkg)
+{
+    if (!pkg->found("equilibrium")) return;
+    auto eq = pkg->subDict("equilibrium");
+    if (!eq->found("aqueous")) return;
+    auto aq = eq->subDict("aqueous");
+    if (!aq->found("apparentComponents")) return;
+    std::string listed;
+    try
+    {
+        for (const auto& w : aq->lookupWordList("apparentComponents"))
+            listed += (listed.empty() ? "" : " ") + w;
+    }
+    catch (const std::exception&) { /* named below without its words */ }
+    throw std::runtime_error("thermophysicalPropertySystem:"
+        " `equilibrium.aqueous.apparentComponents ( " + listed + " )` is"
+        " read by NOTHING in the engine -- editing it would change nothing,"
+        " so it is refused rather than kept as a declaration that does not"
+        " bind.  The apparent basis IS `components ( ... )`; the salt the"
+        " electrolyte model activates is the component whose record carries"
+        " `dissociatesTo` (with more than one, the owner of the solid phase"
+        " constant/chemistryDict declares), and its ions come from that"
+        " `dissociatesTo`.  Remove the line.");
+}
+
 // ---- ELECTROLYTE path: assemble a PitzerSingleSalt directly from the unified
 //      substance records (no readFromDict, no loadSalt, no old catalogue) ----
 static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
@@ -1963,6 +2007,7 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
     // The active-chemistry SELECTION lives in constant/chemistryDict and
     // arrives as the `chem` object -- never inside the system dict.
     refuseRetiredTopLevel(pkg);
+    refuseUnreadAqueousKeys(pkg);
     if (pkg->found("chemistry"))
         throw std::runtime_error("thermophysicalPropertySystem: the"
             " active-chemistry selection is not declared here -- it lives in"

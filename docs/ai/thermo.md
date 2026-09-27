@@ -257,9 +257,9 @@ equilibrium
 
     aqueous
     {
-        solvent            water;
-        apparentComponents ( NaCl );    // stream carries the salt; the model
-                                        //   activates its ions (dissociatesTo)
+        solvent            water;       // the stream carries the salt as a
+                                        //   component; its record's
+                                        //   dissociatesTo names the ions
         activityModel { model Pitzer; } // single-salt VLE adapter
         compositionBasis molality;
     }
