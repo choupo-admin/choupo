@@ -47,6 +47,40 @@ because it does NOT merely assert that an announcement exists:
       should report: that is a stated design decision (the last pass, never a
       union), not something a gate can derive.
 
+  (f) A ONCE-PER-PROCESS FACT IS IN THE PASS THAT CONSUMED IT (2026-09-27).
+      The block under an outer driver describes one pass and the log is
+      cleared per pass; six sites put their advisory INSIDE a once-per-process
+      console latch, so every pass after the first lost it -- `cavett01`
+      listed UNVERIFIED DATA (7) run directly and NONE under a 2-point sweep.
+      This arm runs both, in scratch copies (the sweep's last point is the
+      design point), and requires the swept block to list every unverified
+      record the direct run lists.
+
+  (g) THE DYNAMIC DRIVER PARTITIONS TOO.  `ctrl20_bode_cstr` (a choupoCtrl
+      sweep over the synthetic component compA -- the case whose block said
+      "none raised" when a per-pass reset was first tried) must name "the LAST
+      pass only" and still list compA.
+
+  (h) NO ADVISORY BEHIND A PROCESS-LIFETIME LATCH, as a SOURCE scan over
+      every src/**/*.{cpp,H}: an `AdvisoryLog::instance().add(` governed by an
+      `announceOnce(` (in the `if` condition, its statement, or the rest of
+      the block after `if (!announceOnce(...)) return;`).  It carries a probe
+      of the three shapes that were in the tree, which must be flagged, and of
+      the replacement, which must not.
+
+SABOTAGES PERFORMED BY HAND on 2026-09-27 against (f)-(h), each restored and
+the engine rebuilt:
+
+  S1  Database's interim site back inside its `announceOnce` latch -> (f)
+      "cavett01_recycle_train under a 2-point sweep lists 0 of the 7 ..." and
+      (h) "... latch at src/thermo/Database.cpp:600".
+  S2  the synthetic site back to `announceOnce(...) && add(...)` -> (g)
+      "ctrl20_bode_cstr runs on the SYNTHETIC component compA and its
+      last-pass block does not list it" and (h) naming Database.cpp.
+  S3  `addAnnouncedOnce` returning before it records when the key is not new
+      to the PROCESS (the loss moved into the log itself) -> (f) and (g); (h)
+      stays green, as it must: the sites are right and the log is wrong.
+
   (d) ALL FIVE BINARIES emit it.  A caveat surface present in one application
       and absent from three teaches the reader that its absence means "nothing
       to report".  `choupoProps` was in fact MISSED when the block was first
@@ -75,9 +109,12 @@ are curation judgements, and each has its own gate (`check_cp_range_announced`,
 `check_review_status`).  This gate checks the SURFACE, not the physics.
 """
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -131,6 +168,26 @@ SWEPT     = "tutorials/steady/gibbs/gibbs04_wgs_temperature_sweep"
 REPRESENT = "tutorials/steady/rotating/compressor02_designspec_pout"
 SCOPE     = "[caveats] this run made"
 
+#  (f) A case whose records announce ONCE PER PROCESS (seven interim imports),
+#  run directly and under a 2-point sweep whose LAST point is the case's own
+#  design point -- so the swept block, which describes the last pass only,
+#  must list the same unverified records the direct run lists.
+PERPASS   = "tutorials/steady/flowsheets/cavett01_recycle_train"
+PERPASS_SWEEP = """type    sweep;
+parameter
+{
+    target    units[0].operation.T;
+    range     ( 320  322.039 );
+    nPoints   2;
+}
+responses ( FL2.T );
+"""
+#  (g) The dynamic driver under an outer driver: a Bode sweep over a
+#  SYNTHETIC component, the case whose block said "none raised" when a
+#  per-pass reset was first tried there.
+DYN_SWEPT = "tutorials/ctrl/ctrl20_bode_cstr"
+CTRL      = ROOT / "choupoCtrl"
+
 HEADER = "ASSUMPTIONS AND CAVEATS"
 NONE_LINE = "ASSUMPTIONS AND CAVEATS: none raised."
 BINARIES = ["choupoSolve", "choupoBatch", "choupoCtrl", "choupoSemiContinuous",
@@ -141,6 +198,157 @@ def run(case):
     p = subprocess.run([str(SOLVE), "."], cwd=str(ROOT / case),
                        capture_output=True, text=True, timeout=600)
     return p.returncode, p.stdout + p.stderr
+
+
+def run_copy(case, binary, outer=None):
+    """Run a COPY of `case` (so an added outerDict never touches the tree)."""
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+    with tempfile.TemporaryDirectory(prefix="caveat_") as tmp:
+        dst = Path(tmp) / Path(case).name
+        shutil.copytree(ROOT / case, dst)
+        if outer is not None:
+            (dst / "system" / "outerDict").write_text(outer)
+        p = subprocess.run([str(binary), "."], cwd=str(dst), env=env,
+                           capture_output=True, text=True, timeout=600)
+        return p.returncode, p.stdout + p.stderr
+
+
+def unverified_items(out, after=None):
+    """The UNVERIFIED DATA lines of the (last) caveat block, as a set."""
+    if after is not None:
+        i = out.rfind(after)
+        if i < 0:
+            return None
+        out = out[i:]
+    i = out.rfind(HEADER)
+    if i < 0:
+        return None
+    block = out[i:]
+    j = block.find("UNVERIFIED DATA")
+    if j < 0:
+        return set()
+    items = set()
+    for line in block[j:].splitlines()[1:]:
+        m = re.match(r'^\s{4}- (.+)$', line)
+        if not m:
+            break
+        items.add(m.group(1))
+    return items
+
+
+def strip_code(text):
+    """Blank out comments and string/char literal CONTENTS, keeping offsets,
+    so parenthesis and brace matching is not fooled by a message such as
+    "(standards beats local; local fills gaps)"."""
+    out, i, n = list(text), 0, len(text)
+    while i < n:
+        c = text[i]
+        if text.startswith("//", i):
+            j = text.find("\n", i)
+            j = n if j < 0 else j
+            for k in range(i, j):
+                out[k] = " "
+            i = j
+        elif text.startswith("/*", i):
+            j = text.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            for k in range(i, j):
+                if out[k] != "\n":
+                    out[k] = " "
+            i = j
+        elif c in "\"'":
+            j = i + 1
+            while j < n and text[j] != c:
+                j += 2 if text[j] == "\\" else 1
+            for k in range(i + 1, min(j, n)):
+                if out[k] != "\n":
+                    out[k] = " "
+            i = j + 1
+        else:
+            i += 1
+    return "".join(out)
+
+
+def match_close(s, i, op, cl):
+    """Index of the bracket closing the one at s[i] (== op)."""
+    depth = 0
+    for k in range(i, len(s)):
+        if s[k] == op:
+            depth += 1
+        elif s[k] == cl:
+            depth -= 1
+            if depth == 0:
+                return k
+    return len(s) - 1
+
+
+LATCH = "announceOnce("
+ADD = "AdvisoryLog::instance().add("
+
+
+def latched_adds(text):
+    """Every `AdvisoryLog::instance().add(` governed by a process-lifetime
+    `announceOnce(` latch -- the shape that erased a fact from every pass
+    after the first.  Two governing forms are recognised:
+      * `if (... announceOnce(...) ...) <statement>` -- the add is in the
+        condition or the statement;
+      * `if (!announceOnce(...)) return|continue;` -- the add is anywhere in
+        the rest of the enclosing block."""
+    s = strip_code(text)
+    hits = []
+    for m in re.finditer(r'\bif\s*\(', s):
+        open_ = m.end() - 1
+        close = match_close(s, open_, "(", ")")
+        cond = s[open_:close + 1]
+        if LATCH not in cond:
+            continue
+        k = close + 1
+        while k < len(s) and s[k].isspace():
+            k += 1
+        if k < len(s) and s[k] == "{":
+            end = match_close(s, k, "{", "}")
+        else:
+            end = s.find(";", k)
+            end = len(s) - 1 if end < 0 else end
+        body = s[k:end + 1]
+        region = cond + body
+        if re.match(r'\s*(return|continue)\b', body) and "!" + LATCH in cond.replace(" ", ""):
+            depth, e = 0, end + 1
+            while e < len(s):
+                if s[e] == "{":
+                    depth += 1
+                elif s[e] == "}":
+                    if depth == 0:
+                        break
+                    depth -= 1
+                e += 1
+            region = s[end + 1:e]
+        if ADD in region:
+            hits.append(text.count("\n", 0, m.start()) + 1)
+    return hits
+
+
+#  The scanner's own probe: the two shapes that were in the tree on
+#  2026-09-27 (Database's in-gate add, HenrysLaw's early-return latch) MUST
+#  be flagged, and the shape that replaced them MUST NOT.  A scanner that
+#  cannot see its own subject passes everything.
+PROBE_BAD = [
+    'void a() { if (announceOnce("interim:" + n))\n'
+    '  { AdvisoryLog::instance().add("provenance", "w", "c (x)", "m");\n'
+    '    std::cerr << "[unreviewed] (not checked)\\n"; } }',
+    'void b() { if (!announceOnce("henryTrange:" + p)) return;\n'
+    '  std::string m = "evaluated (x)";\n'
+    '  AdvisoryLog::instance().add("validity", "w", "Henry", m); }',
+    'void c() { if (announceOnce("hxHgap:" + s)\n'
+    '    && AdvisoryLog::instance().add("balance", "w", "hx", m))\n'
+    '  std::cerr << "[hx]\\n"; }',
+]
+PROBE_GOOD = [
+    'void d() { if (AdvisoryLog::instance().addAnnouncedOnce("interim:" + n,\n'
+    '    "provenance", "w", "c", "m")) std::cerr << "[unreviewed]\\n"; }',
+    'void e() { if (announceOnce("unmarked:" + n)) std::cerr << "x\\n";\n'
+    '  AdvisoryLog::instance().add("provenance", "w", "c", "unrelated"); }',
+]
 
 
 def block_items(out):
@@ -252,6 +460,102 @@ def main() -> int:
             checked.append(f"outer-driver run {name} prints the block and"
                            f" names its pass ({word})")
 
+    # ---- (f) a once-per-process fact is in the pass that consumed it -----
+    #  The block under an outer driver describes ONE pass.  A record whose
+    #  console line is printed once per PROCESS used to put its advisory
+    #  inside that latch, so the per-pass clear erased it from every pass
+    #  after the first: cavett01 listed UNVERIFIED DATA (7) run directly and
+    #  NONE under a 2-point sweep, whose last pass consumed the same seven
+    #  records.  The sweep's last point IS the design point, so its block must
+    #  list exactly the unverified records the direct run lists.
+    rc_d, out_d = run_copy(PERPASS, SOLVE)
+    rc_s, out_s = run_copy(PERPASS, SOLVE, PERPASS_SWEEP)
+    name = Path(PERPASS).name
+    if rc_d != 0 or rc_s != 0:
+        fail.append(f"{name} does not run (direct exit {rc_d}, swept exit {rc_s})")
+    else:
+        direct = unverified_items(out_d)
+        swept = unverified_items(out_s, after=SCOPE)
+        if not direct:
+            fail.append(f"{name} run directly lists no UNVERIFIED DATA -- the "
+                        "witness has lost its subject (seven interim records), "
+                        "so this arm could not see the loss it exists for.  "
+                        "Repoint it at a case whose records announce once per "
+                        "process.")
+        elif swept is None:
+            fail.append(f"{name} under a sweep printed no caveat block after "
+                        "its scope line")
+        elif direct - swept:
+            lost = sorted(direct - swept)
+            fail.append(
+                f"{name} under a 2-point sweep lists {len(swept)} of the "
+                f"{len(direct)} unverified records its LAST pass consumed; "
+                f"missing e.g. {lost[0]!r}.  A fact whose console line is "
+                "printed once per process must still be RECORDED by every "
+                "pass that consumes it (AdvisoryLog::addAnnouncedOnce) -- "
+                "otherwise the block that describes one pass lists only what "
+                "that pass happened to raise first.")
+        else:
+            checked.append(f"a swept run's last-pass block lists all "
+                           f"{len(direct)} once-per-process records its direct "
+                           f"twin lists ({name})")
+
+    # ---- (g) the dynamic driver partitions per pass too ------------------
+    if not CTRL.exists():
+        fail.append("choupoCtrl is not built -- arm (g) cannot run, and a "
+                    "check that cannot run must not pass")
+    else:
+        rc, out = run_copy(DYN_SWEPT, CTRL)
+        name = Path(DYN_SWEPT).name
+        items = unverified_items(out, after=SCOPE)
+        if rc != 0:
+            fail.append(f"{name} does not run (exit {rc})")
+        elif SCOPE not in out or "the LAST pass only" not in out:
+            fail.append(f"{name} (choupoCtrl, sweep) does not say its block "
+                        "describes 'the LAST pass only'.  The dynamic driver "
+                        "clears its log per pass, as choupoSolve does, and "
+                        "must name the pass it reports.")
+        elif not items or not any("'compA'" in it for it in items):
+            fail.append(f"{name} runs on the SYNTHETIC component compA and its "
+                        "last-pass block does not list it.  This is the loss "
+                        "that made the first per-pass reset here be reverted: "
+                        "a once-per-process fact dropped from every pass after "
+                        "the first.")
+        else:
+            checked.append(f"the dynamic driver's last-pass block keeps the "
+                           f"once-per-process synthetic-record fact ({name})")
+
+    # ---- (h) no advisory behind a process-lifetime latch (source) --------
+    #  The behavioural arms see the witnesses; this sees the SHAPE everywhere.
+    #  It carries a probe: the two shapes that were in the tree must be
+    #  flagged and the replacement must not, or the scanner is blind.
+    probe_miss = [p for p in PROBE_BAD if not latched_adds(p)]
+    probe_false = [p for p in PROBE_GOOD if latched_adds(p)]
+    if probe_miss or probe_false:
+        fail.append(f"the latch scanner failed its own probe ({len(probe_miss)} "
+                    f"known-bad shape(s) not flagged, {len(probe_false)} good "
+                    "shape(s) flagged) -- it cannot be trusted on the tree")
+    else:
+        found = []
+        nfiles = 0
+        for p in sorted((ROOT / "src").rglob("*")):
+            if p.suffix not in (".cpp", ".H") or not p.is_file():
+                continue
+            nfiles += 1
+            for line in latched_adds(p.read_text(errors="replace")):
+                found.append(f"{p.relative_to(ROOT)}:{line}")
+        if found:
+            fail.append(
+                "an AdvisoryLog add sits behind a process-lifetime "
+                f"announceOnce latch at {', '.join(found)}.  The per-pass "
+                "clear then erases the fact from every pass after the first; "
+                "use AdvisoryLog::addAnnouncedOnce(key, ...), which records "
+                "the entry per pass and returns true once per process for the "
+                "console line.")
+        else:
+            checked.append(f"no advisory behind an announceOnce latch in "
+                           f"{nfiles} source files (source scan, probe passed)")
+
     # ---- (d) every binary emits it -------------------------------------
     #  MATCH THE CALL, not the header name.  A first version looked for
     #  "AdvisorySummary" anywhere in the file -- which the call
@@ -299,13 +603,20 @@ def main() -> int:
             "an advisory is JUSTIFIED -- that is curation, and "
             "check_cp_range_announced and check_review_status own those "
             "judgements.  DOMAIN: choupoSolve's own output on five corpus "
-            "cases plus a source scan of the five binaries' main.cpp (and the driver two of them delegate to).  "
+            "cases (cavett01 both directly and under a scratch 2-point sweep), "
+            "choupoCtrl's on one, a source scan of the five binaries' main.cpp "
+            "(and the driver two of them delegate to), and a source scan of "
+            "src/ for an advisory behind an announceOnce latch.  "
             "LIMITS: arm (d) is a source check and cannot see an enclosing "
             "`if` -- which is how the outerDict silence survived it -- and "
             "arm (e) requires the block to RUN under an outer driver and to "
             "name its pass, never that the pass it names is the right one to "
             "report (that is a stated decision, recorded in main.cpp and in "
-            "docs/design/three-silences-at-exit-zero.md).")
+            "docs/design/three-silences-at-exit-zero.md); arm (h) sees "
+            "`announceOnce` latches only, not a `static bool` or a once_flag; "
+            "arm (g) cannot see a MISSING per-pass clear in the dynamic driver, "
+            "because on ctrl20 the union and the last pass hold the same "
+            "entry (docs/design/a-fact-raised-once-per-process.md).")
     return 0
 
 

@@ -48,6 +48,37 @@ Description
     exceedance, auto-init) -- transient per-iteration cage clips stay log-only
     so the structured list is not flooded.
 
+    THE LOG IS PER PASS; THE CONSOLE LINE MAY BE PER PROCESS (2026-09-27).
+
+    Some sites print their console line ONCE PER PROCESS -- an unreviewed
+    record, a component read from the local tier, a Henry pair extrapolated --
+    because a sweep reloads every record on every pass and the same sentence
+    repeated forty times is read by nobody.  Those sites used to put their
+    `add()` INSIDE that once-per-process gate, and so the per-pass `clear()`
+    erased the fact from every pass after the first: `cavett01` run directly
+    listed `UNVERIFIED DATA (7)`, and the same case under a 2-point sweep
+    announced all seven `[unreviewed]` lines at their site and then closed
+    with a caveat block, "the LAST pass only", that listed NONE of them.  The
+    last pass consumed exactly those seven records.  Silence there did not
+    mean "nothing raised"; it meant "raised in an earlier pass".
+
+    The two questions have two answers and now have two latches, both HERE:
+
+        the ENTRY   is recorded by every pass that raises it -- the log
+                    describes the pass, so a record the pass consumed is in
+                    that pass's list;
+        the LINE    is printed once per process -- `addAnnouncedOnce`
+                    returns true only the first time its KEY is raised in
+                    this process, and the caller prints on that answer.
+
+    `clear()` resets the per-pass key set and keeps the process set, which is
+    the whole partition in one sentence.  A site that repeats its console
+    line per pass, or never gates it, keeps calling plain `add()`.  What must
+    not happen is an `add()` gated by a process-lifetime latch of the site's
+    own -- the log cannot see such a latch, and the fact then belongs to
+    whichever pass came first.  `check_caveat_surface` arm (g) reads the
+    source for that shape.
+
     ATTRIBUTION: WHICH STATE IS THIS ADVISORY ABOUT?  (added 2026-08-24)
 
     The sink above records WHAT was announced and says nothing about WHERE in
@@ -115,6 +146,7 @@ Description
 #pragma once
 
 #include <mutex>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -140,11 +172,15 @@ public:
         return inst;
     }
 
+    //  Start a new PASS.  The entries, the open frames and the per-pass keys
+    //  go; the PROCESS keys stay, because they answer "has this console line
+    //  been printed?", and a new pass has not un-printed it.
     void clear()
     {
         std::lock_guard<std::mutex> lk(mutex_);
         entries_.clear();
         frames_.clear();
+        passKeys_.clear();
     }
 
     // Returns true if the advisory was NEW (added), false if it was a
@@ -160,7 +196,61 @@ public:
              std::string locus, std::string message)
     {
         std::lock_guard<std::mutex> lk(mutex_);
+        return addLocked(std::move(category), std::move(severity),
+                         std::move(locus), std::move(message));
+    }
 
+    //  A fact whose CONSOLE LINE is printed once per process (see "THE LOG IS
+    //  PER PASS" in the header).  `key` names the fact the way the site's
+    //  once-per-process latch used to ("interim:<component>").
+    //
+    //    * The FIRST raise of `key` in a pass records the entry exactly as
+    //      `add()` would (same dedup, same stamping, same promotion rule).
+    //      Later raises of the same key in the SAME pass change nothing --
+    //      which is precisely what the old in-gate `add()` did within its
+    //      one pass, so a single-pass run records the same list as before.
+    //    * Returns true only when the key is new to the PROCESS and the entry
+    //      was new to the log -- the caller prints its site line on that
+    //      answer and on no other, so the line appears once per run exactly
+    //      as it always has.
+    bool addAnnouncedOnce(const std::string& key,
+                          std::string category, std::string severity,
+                          std::string locus, std::string message)
+    {
+        std::lock_guard<std::mutex> lk(mutex_);
+        if (!passKeys_.insert(key).second) return false;   // this pass has it
+        const bool firstInProcess = processKeys_.insert(key).second;
+        const bool isNew = addLocked(std::move(category), std::move(severity),
+                                     std::move(locus), std::move(message));
+        return firstInProcess && isNew;
+    }
+
+    //  Has THIS pass already recorded `key`?  For a site in a hot loop that
+    //  wants to stop before building its sentence (a Henry constant is asked
+    //  for on every K evaluation).  Purely an early exit: `addAnnouncedOnce`
+    //  makes the same decision on its own, under the lock.
+    bool passHas(const std::string& key) const
+    {
+        std::lock_guard<std::mutex> lk(mutex_);
+        return passKeys_.count(key) != 0;
+    }
+
+    //  A copy, not a reference: the caller may read while a solver is still
+    //  running, and handing out a reference to a vector this class mutates
+    //  under a mutex would hand out the race the mutex just closed.
+    std::vector<Advisory> entries() const
+    {
+        std::lock_guard<std::mutex> lk(mutex_);
+        return entries_;
+    }
+
+private:
+    friend class AdvisoryFrame;
+
+    //  The one recording path; the caller holds `mutex_`.
+    bool addLocked(std::string category, std::string severity,
+                   std::string locus, std::string message)
+    {
         std::string where;
         bool trial = false;
         for (const auto& f : frames_)
@@ -192,18 +282,6 @@ public:
         return true;
     }
 
-    //  A copy, not a reference: the caller may read while a solver is still
-    //  running, and handing out a reference to a vector this class mutates
-    //  under a mutex would hand out the race the mutex just closed.
-    std::vector<Advisory> entries() const
-    {
-        std::lock_guard<std::mutex> lk(mutex_);
-        return entries_;
-    }
-
-private:
-    friend class AdvisoryFrame;
-
     struct Frame { std::string label; bool trial; unsigned long long id; };
 
     unsigned long long pushFrame(std::string label, bool trial)
@@ -234,6 +312,8 @@ private:
     std::vector<Advisory> entries_;
     std::vector<Frame>    frames_;
     unsigned long long    nextFrameId_{0};
+    std::set<std::string> passKeys_;      // keys raised in THIS pass
+    std::set<std::string> processKeys_;   // keys whose line was printed; never cleared
 };
 
 //  The solver's declaration of what it is doing to the physics right now.

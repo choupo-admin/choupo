@@ -2523,6 +2523,21 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
        (it is choupoSolve's `runSimulation`, a path every case takes).  Also
        seen, not touched: choupoCtrl + `optimization` emits the result JSON
        TWICE (the driver's own emit and the dynamic driver's), identical.
+     - **The partition is CLOSED (2026-09-27, the next slice).**  The log
+       now holds both latches: `AdvisoryLog::addAnnouncedOnce(key, ...)`
+       records the entry in EVERY pass that raises it and returns true once
+       per PROCESS for the console line; `clear()` keeps only the process
+       keys.  Six sites had an `add()` behind their own latch (Database
+       `[local]`/`[synthetic]`/`[unreviewed]`, the D0 `[estimate]`, the Henry
+       Trange extrapolation, the exchanger H gap) and all six call it now.
+       `cavett01` under the 2-point sweep lists all seven records again; the
+       dynamic driver clears per pass too and names its pass in
+       choupoSolve's words (the UNION header is gone), with `ctrl20` keeping
+       `compA`.  Gate: `check_caveat_surface` arms (f)-(h).  NAMED, not
+       fixed: choupoSolve's representative block reads the LOG after the
+       reports, so an integer enumeration's block describes the last replay,
+       not the best one (identical on `optim06` today).  Record:
+       [`docs/design/a-fact-raised-once-per-process.md`](docs/design/a-fact-raised-once-per-process.md).
  A5. **The composite refusal advises a keyword the engine does not read**,
      and a retired top-level form runs silently at exit 0.  [THERMO]
      **CLOSED 2026-09-27; BOTH halves reproduced, and the filing was

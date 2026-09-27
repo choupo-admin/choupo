@@ -393,13 +393,18 @@ Component Database::loadComponent(const std::string& name) const
     // LOUD proposal use (no silent crutch): an UNVERIFIED proposal is supplying the
     // values -- say so unmistakably; and if a verified standard shadowed a proposal
     // of the same name, announce that too.
+    //
+    //  The ENTRY goes on this pass's log every time the record is consumed;
+    //  the console LINE is printed once per process.  Both latches live in
+    //  `core/Advisory.H` (addAnnouncedOnce) -- see "THE LOG IS PER PASS"
+    //  there for the sweep that lost these facts from every pass after the
+    //  first.  The same holds for [synthetic] and [unreviewed] below.
     if (usingProposed)
-        if (announceOnce("proposed:" + name))
-        {
-            AdvisoryLog::instance().add(
+        if (AdvisoryLog::instance().addAnnouncedOnce("proposed:" + name,
                 "provenance", "warning", "component '" + name + "'",
                 "read from data/local/ -- UNVERIFIED, not part of the curated "
-                "catalogue");
+                "catalogue"))
+        {
             std::cerr << "[local] component '" << name
                   << "': loaded from data/local/ -- UNVERIFIED; a student must review"
                      " and promote it to data/standards/ before the result is trusted.\n";
@@ -537,14 +542,14 @@ Component Database::loadComponent(const std::string& name) const
     if (dict->found("provenance")
         && dict->subDict("provenance")->lookupWordOrDefault("source", "")
            == "synthetic")
-        if (announceOnce("synthetic:" + name))
-        {
-            const std::string why = dict->subDict("provenance")
-                                        ->lookupWordOrDefault("reason", "");
-            AdvisoryLog::instance().add(
+    {
+        const std::string why = dict->subDict("provenance")
+                                    ->lookupWordOrDefault("reason", "");
+        if (AdvisoryLog::instance().addAnnouncedOnce("synthetic:" + name,
                 "provenance", "warning", "component '" + name + "'",
                 "provenance source synthetic -- NOT a real substance"
-                + (why.empty() ? std::string() : " (" + why + ")"));
+                + (why.empty() ? std::string() : " (" + why + ")")))
+        {
             std::cerr << "[synthetic] component '" << name
                       << "' is NOT a real substance: it is a numerical"
                          " stand-in with no physical primary"
@@ -552,6 +557,7 @@ Component Database::loadComponent(const std::string& name) const
                       << ".  Any number computed with it describes the"
                          " algorithm, never a chemical.\n";
         }
+    }
 
     //  AN UNREVIEWED RECORD SAYS SO AT RUN TIME (AP2, 2026-08-05).
     //  67 standard records carried "PROPOSAL TIER -- UNVERIFIED" in the
@@ -591,12 +597,11 @@ Component Database::loadComponent(const std::string& name) const
     //  It claims nothing about the values -- only that the file makes no
     //  claim, which is exactly what is true of it.
     if (dict->lookupWordOrDefault("reviewStatus", "") == "interim")
-        if (announceOnce("interim:" + name))
-        {
-            AdvisoryLog::instance().add(
+        if (AdvisoryLog::instance().addAnnouncedOnce("interim:" + name,
                 "provenance", "warning", "component '" + name + "'",
                 "reviewStatus interim -- imported, not yet checked against "
-                "primary sources");
+                "primary sources"))
+        {
             std::cerr << "[unreviewed] component '" << name
                       << "': reviewStatus interim -- imported, not yet checked"
                          " against primary sources"

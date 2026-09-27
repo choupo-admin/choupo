@@ -102,14 +102,18 @@ inline scalar ionD0(const SpeciesId& id)
     //  by every consumer of this accessor -- the electrodialysis units, the
     //  DSPM-DE and polarisation models -- and each of them would otherwise
     //  price a guessed diffusivity in the same silence as a measured one.
-    //  Once per run per species (announceOnce), on the same channel the
+    //  Printed once per run per species, on the same channel the
     //  component tier's [estimate] line uses, and into AdvisoryLog so it
     //  reaches the end-of-run caveat block and the result JSON.  A record
     //  declaring no provenance produces no line: silence keeps meaning
     //  "nothing was assumed".
+    //
+    //  The ENTRY rides every pass that reads the estimate; the console LINE
+    //  is printed once per process (`addAnnouncedOnce`, core/Advisory.H --
+    //  "THE LOG IS PER PASS").  A process-lifetime latch of our own around
+    //  the add would leave the fact in the first pass of a sweep only.
     const std::string origin = row->lookupWordOrDefault("D0origin", "");
-    if ((origin == "estimated" || origin == "estimate")
-        && announceOnce("estimateD0:" + species))
+    if (origin == "estimated" || origin == "estimate")
     {
         const std::string status = row->lookupWordOrDefault("D0reviewStatus", "");
         const std::string method = row->lookupWordOrDefault("D0method", "");
@@ -120,9 +124,10 @@ inline scalar ionD0(const SpeciesId& id)
             + (method.empty() ? "" : " (" + method + ")")
             + (status.empty() ? "" : ", reviewStatus " + status)
             + (notes.empty()  ? "" : " -- " + notes);
-        std::cerr << "[estimate] species '" << species << "': " << msg << "\n";
-        AdvisoryLog::instance().add("provenance", "warning",
-                                    "species '" + species + "'", msg);
+        if (AdvisoryLog::instance().addAnnouncedOnce("estimateD0:" + species,
+                "provenance", "warning", "species '" + species + "'", msg))
+            std::cerr << "[estimate] species '" << species << "': " << msg
+                      << "\n";
     }
     return D0;
 }

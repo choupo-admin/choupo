@@ -106,7 +106,15 @@ void HenrysLaw::announceOutsideWindow(scalar T) const
     const scalar edge  = above ? T_max_ : T_min_;
     const std::string pair = solute_ + "-" + solvent_;
 
-    if (!announceOnce("henryTrange:" + pair + (above ? ":above" : ":below")))
+    //  ONE KEY PER (pair, side), as before -- but the key is held by the log
+    //  (`addAnnouncedOnce`, core/Advisory.H, "THE LOG IS PER PASS"): the
+    //  first extrapolated evaluation of each PASS is recorded, so a sweep's
+    //  last pass carries its own, and the console line is still printed once
+    //  per process.  A pass that has already recorded this key stops here,
+    //  before the sentence is built, exactly as the old latch did.
+    const std::string key =
+        "henryTrange:" + pair + (above ? ":above" : ":below");
+    if (AdvisoryLog::instance().passHas(key))
         return;
 
     //  A COMPUTED consequence, not an adjective: how far the van't Hoff form
@@ -125,7 +133,7 @@ void HenrysLaw::announceOutsideWindow(scalar T) const
          " still returned; H(T) is " << ratio << "x the fitted H_ref, and every"
          " K-value computed from it inherits that";
 
-    if (!AdvisoryLog::instance().add("validity", "warning",
+    if (!AdvisoryLog::instance().addAnnouncedOnce(key, "validity", "warning",
                                      "Henry pair '" + pair + "'", m.str()))
         return;
 

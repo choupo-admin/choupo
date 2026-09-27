@@ -918,11 +918,15 @@ int HeatExchanger::solve(const DictPtr& dict,
             //  the FIRST pass that exceeded the band, not the converged one.
             //  The KPI `H_closure_gap_kW` beside it IS the converged value --
             //  read it, not the sentence, when the case has a recycle.
-            if (announceOnce("hxHgap:" + s0.name + "+" + s1.name)
-                && AdvisoryLog::instance().add("balance", "warning",
-                                            "heatExchanger on ('" + s0.name
-                                                + "' + '" + s1.name + "')",
-                                            m.str()))
+            //  The key is held by the LOG (`addAnnouncedOnce`,
+            //  core/Advisory.H): the entry is recorded once per simulator
+            //  pass, so an outer driver's last pass carries its own, and the
+            //  console line is still printed once per process.
+            if (AdvisoryLog::instance().addAnnouncedOnce(
+                    "hxHgap:" + s0.name + "+" + s1.name,
+                    "balance", "warning",
+                    "heatExchanger on ('" + s0.name + "' + '" + s1.name + "')",
+                    m.str()))
                 std::cerr << "[hx] (" << s0.name << " + " << s1.name
                           << ") " << m.str() << ".\n";
         }

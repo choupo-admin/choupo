@@ -2510,7 +2510,13 @@ machinery that enforces it got its own arity treatment.**
   nothing to say says so — silence must mean "nothing raised", never "the
   block did not run".  All five binaries emit it (the two dynamic ones
   through `src/dynamicDriver/`, which is why `check_caveat_surface` arm (d)
-  scans each main AND the driver it includes).
+  scans each main AND the driver it includes).  **The log is per PASS; a
+  console line may be per PROCESS** (2026-09-27): a site that prints once
+  per run raises through `AdvisoryLog::addAnnouncedOnce(key, …)`, never an
+  `add()` behind a latch of its own — the per-pass clear erased such a fact
+  from every pass after the first, so a sweep's one-pass block listed NONE
+  of `cavett01`'s seven unreviewed records.  Arms (f)-(h); record
+  [`docs/design/a-fact-raised-once-per-process.md`](docs/design/a-fact-raised-once-per-process.md).
 * **`Trange unknown;` (AP3).**  Three states, not two: a declared window, a
   DECLARED absence, or no key at all.  An impossible interval (`hi <= lo`)
   now REFUSES at construction — extrapolation needs a real domain to

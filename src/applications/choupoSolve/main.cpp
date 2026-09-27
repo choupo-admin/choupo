@@ -156,6 +156,16 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     // advisories, and the result carries this pass's).  Cleared BEFORE the
     // thermo build so a thermo-level advisory (e.g. NRTL ideal-defaulted pairs)
     // is captured.
+    //
+    // The clear starts a new PASS, not a new PROCESS.  A record-level fact
+    // whose console line is printed once per process (an unreviewed record,
+    // a local-tier component, an estimated D0) is re-RECORDED by every pass
+    // that consumes the record -- `AdvisoryLog::addAnnouncedOnce` keeps the
+    // per-process latch for the line and a per-pass one for the entry, and
+    // this clear resets only the second.  So the caveat block an outer
+    // driver prints for ONE named pass lists every fact that pass consumed,
+    // not only those it happened to raise first (core/Advisory.H, "THE LOG
+    // IS PER PASS"; docs/design/a-fact-raised-once-per-process.md).
     AdvisoryLog::instance().clear();
     ThermoResolutionLog::instance().clear();   // per-pass binary-pair provenance
     //  The divergence record is per-pass for the same reason: an outer
