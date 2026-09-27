@@ -8839,7 +8839,7 @@ Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3). At 1100 K, 1 bar the 
 \goldrow{kpi}{reformer}{extent\_smr\_kmol\_h}{0.998691254363}
 \goldrow{kpi}{reformer}{extent\_wgs\_kmol\_h}{0.329306020923}
 \goldrow{kpi}{reformer}{nReactions}{2}
-\goldrow{kpi}{reformer}{newtonResidual}{3.2596148003e-13}
+\goldrow{kpi}{reformer}{newtonResidual}{8.881784197e-16}
 \goldmore{6}
 \end{tutgolden}
 
@@ -8912,6 +8912,23 @@ WHY THIS CASE EXISTS. ln Kp = 121.5 puts the unconverted ammonia near 1e-14 of t
 NOT here, and said: the NO $\to$ NO2 oxidation downstream of the burner (NO2 is not in this species list), non-ideal fugacities, any rate, and any reactor that is not isothermal.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{1100}
+\goldrow{stream}{feedComplete}{F}{0.00694444444444}
+\goldrow{stream}{feedComplete}{T}{1100}
+\goldrow{stream}{feedDeclared}{F}{0.00694444444444}
+\goldrow{stream}{feedDeclared}{T}{1100}
+\goldrow{stream}{feedGibbs}{F}{0.0138888888889}
+\goldrow{stream}{feedGibbs}{T}{1100}
+\goldrow{stream}{outComplete}{F}{0.00711805555556}
+\goldrow{stream}{outComplete}{T}{1100}
+\goldrow{stream}{outDeclared}{F}{0.00711805555556}
+\goldrow{stream}{outDeclared}{T}{1100}
+\goldrow{stream}{outGibbs}{F}{0.0142361111111}
+\goldrow{stream}{outGibbs}{T}{1100}
+\goldmore{42}
+\end{tutgolden}
 
 \clearpage
 \tutentry{equil04\_reforming\_carbon\_declared\_pathways}{tutorials/steady/reactors/equil04\_reforming\_carbon\_declared\_pathways}
