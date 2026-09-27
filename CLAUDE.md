@@ -27,6 +27,12 @@ it.  Six rules; the corollaries that make them concrete are in §10.
    SIZED BY WHAT THE CHANGE CAN REACH*): fast checks while developing, the
    validation the slice requires before integration, evidence reused while
    it stays valid and retaken when something invalidates it.
+   **For now, a FULL regression needs a written reason and Vítor's
+   authorisation before it is launched** (his request, 2026-09-27, so he
+   can audit that validation is being sized as agreed; in force until he
+   lifts it).  The reason says what changed since the last validation,
+   which shared path it reaches, and why the targeted checks are not
+   enough.  This binds the commander and every general.
 5. **Do not change a permanent rule as a reflex to criticism.**  Change it
    when Vítor asks, or when there is a durable technical reason -- and
    state the reason in the change.
@@ -3151,7 +3157,8 @@ Corollaries, each paid for:
       `--fast` when a factory's registration is the only shared path
       touched (one case per family exercises every factory);
     - a change to a path every case goes through (a solver, the thermo
-      package, the flowsheet, a report, `ResultEmitter`): the full sweep.
+      package, the flowsheet, a report, `ResultEmitter`): the full sweep,
+      launched only with Vítor's authorisation while §0.4 requires it.
   Evidence already taken is REUSED while it still describes what enters
   `main` -- a merge whose executable content equals what was tested needs
   no new run -- and is RETAKEN when something invalidates it: a fix after
