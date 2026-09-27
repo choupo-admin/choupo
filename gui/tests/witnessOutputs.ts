@@ -52,9 +52,13 @@
   below the ignore rule)?  Three reasons, each sufficient.  A committed run
   output is a SECOND GOLDEN with no tolerance, rewritten by every run of its
   case, so the tree goes dirty the first time the engine moves a digit.  The
-  GUI bundle's eager glob (`src/cases/tutorials.ts`) inlines every tutorial
-  file present when the site is built, so a committed one would ship to every
-  visitor as a raw string from every clean build.  And the
+  GUI bundle's eager glob (`src/cases/tutorials.ts`) refuses these files by
+  the SAME location rule `.gitignore` uses (every `tutorials/**/*.csv` except
+  `constant/experimental/*.csv`), because the worker harvests every case-root
+  `*.csv` as a RUN output -- a bundled one would be drawn as a run's answer.
+  A committed copy would therefore be a file the site deliberately refuses to
+  carry, and moving it under `constant/experimental/` to get it bundled would
+  file an engine output as measured data.  And the
   tests' own premise is that they read the ENGINE, which a file frozen on one
   day is not.
 

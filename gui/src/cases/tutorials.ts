@@ -89,7 +89,26 @@ const CASE_FILES = import.meta.glob(
     // and the browser must read it exactly as the native run does.
     "!../../../tutorials/**/.build/**",
     "!../../../tutorials/**/log.*",
-    "!../../../tutorials/**/trajectory.csv",
+    // Solver-generated CSVs, by the SAME rule `.gitignore` uses for them:
+    // every `tutorials/**/*.csv` is a run output EXCEPT a dataset shipped at
+    // `constant/experimental/*.csv` (a case INPUT -- membrane12's digitised
+    // figures, the Farelo solubilities, a measured breakthrough curve the Lub
+    // scale-up tool reads through `extraFiles`).  The filename is chosen in
+    // each case's dicts (`ternary.csv`, `txy.csv`, a sweep's output), so no
+    // list of names can be complete; only the location rule is.  Fast-glob
+    // cannot re-include after an ignore, so the exception is written as the
+    // two ignores it implies: a CSV is dropped unless its parent is
+    // `experimental` AND that folder's parent is `constant`.
+    // Why it matters beyond size: every bundled file is written verbatim into
+    // MEMFS before a run, and the worker harvests EVERY `*.csv` under the case
+    // root as a run output -- so a stale `txy.csv` from one machine's native
+    // run would be drawn as this run's answer, even by a run that wrote none.
+    // (`trajectory.csv` was the one name excluded before; the rule covers it.)
+    "!../../../tutorials/**/!(experimental)/*.csv",
+    "!../../../tutorials/**/!(constant)/experimental/*.csv",
+    // The sidecar of balanceTrajectory.csv, gitignored beside it and harvested
+    // by the worker the same way.
+    "!../../../tutorials/**/balanceTrajectory.meta",
     // Golden-master KPI files (bin/runTests --record): regression fodder,
     // never a case input the solver reads -- keep them out of the bundle.
     "!../../../tutorials/**/expected",
