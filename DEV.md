@@ -1652,6 +1652,42 @@ accepts today, and that is a policy call.
      verbosity 3); if not, the engine publishes it and the page draws it --
      the page recomputes nothing.  Dispatch waits for the 900 K diagnosis,
      because step 5 and any engine channel both touch `ElementPotential.cpp`.
+
+**C16. MORE MIXTURES WITH TRACEABLE BINARY DATA: import what is cleanly
+     reusable, FIT the rest to ThermoML (commissioned 2026-09-27).**  Vítor
+     pasted a request (drafted with another assistant) and asked for it to be
+     done after the pending integrations: widen Choupo's binary-parameter
+     coverage from free, open sources while keeping provenance, commercial
+     use and redistribution.  Two routes: (1) import parameters already
+     published (ChemSep's tables, the `thermo` package's ChemSep NRTL/PR
+     tables by CAS), converting only after checking both equations -- units,
+     sign, i->j order, T dependence, the NRTL alpha -- and never turning an
+     absent value into zero; (2) FIT new parameters to NIST ThermoML
+     experimental data with a reproducible chain (download -> identify by
+     CAS/InChI, never by name -> select -> fit with the existing regression
+     -> verify -> export to native records), Python for preparation only,
+     the engine and the shipped cases independent of it and of the network;
+     start with ~5 low-pressure binary VLE systems useful to the tutorials;
+     NRTL first, UNIQUAC/Wilson where apt (Wilson cannot represent LLE);
+     fit/validation split by publication; an honest verdict when there is no
+     independent data; every accepted set carrying source, DOI, version,
+     reuse terms, equation, conventions, validity, method and errors.
+     Deliverable: a working end-to-end path, a few useful pairs integrated,
+     graphical comparison with experiment, runnable cases, coverage before
+     and after.  Measured before dispatch: the public tree carries 2 NRTL
+     pairs (`parameters/NRTL/`: benzene-toluene, ethanol-water) and 3
+     UNIQUAC pairs; `bin/choupo-thermoml` (sync/index/search/extract/
+     extract-vle, cache in `thirdParty/thermoml/`), `bin/curate/
+     chemsep_to_choupo.py` and the `fitParameters` op (`src/propertyOps/
+     FitParameters.cpp`, promotable record with a held-out verdict) already
+     exist; `check_source_licence` accepts ChemSep's PURE-COMPONENT database
+     (Artistic-2.0) and nothing else from it; and
+     `docs/design/state-of-the-art-property-study-2026-07-17.md:41` records
+     that ChemSep's interaction-parameter tables are DECHEMA-derived -- the
+     reason the bulk of the NRTL/UNIQUAC pairs went to `data/local/` in the
+     legal scrub.  So route (1) may end as a LOCAL import only (CLAUDE.md §10
+     "provenance laundering"), and route (2) is the one that can grow the
+     public tree.
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds
