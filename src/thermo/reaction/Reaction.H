@@ -114,8 +114,9 @@ public:
                                 scalar               T);
 
     // -- The same computation, broken out for a glass-box report ----------
-    //    Kp (pressure basis), Σν, and Kc = Kp·(P°/(R_u T))^Σν.
-    struct Equilibrium { scalar Kp; scalar sumNu; scalar Kc; };
+    //    Kp (pressure basis), Σν, and Kc = Kp·(P°/(R_u T))^Σν; lnKp = −ΔG°/RT
+    //    itself, for a caller that must not lose it to exp over/underflow.
+    struct Equilibrium { scalar Kp; scalar sumNu; scalar Kc; scalar lnKp; };
     static Equilibrium equilibrium(const ThermoPackage& thermo,
                                    const sVector&       nu,
                                    scalar               T);

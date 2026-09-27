@@ -296,8 +296,12 @@ Stoichiometric **equilibrium** reactor (the "REquil" of process simulators): you
 **set of reactions**, each driven to **simultaneous** chemical equilibrium via its
 `Kp(T)` (from the species' `standardThermochemistry`, `K = exp(-ΔG°/RT)`) — **no kinetics, no
 residence time**.  The R extents are a **result**: the coupled gas-phase ideal system
-`Kp_j = ∏_i (p_i/P°)^ν_ij`, `n_i = n_i0 + Σ_j ν_ij ξ_j`, is solved in log form by the
-multivariate Newton.  The reforming / shift / synthesis workhorse.  Distinct from
+`Kp_j = ∏_i (p_i/P°)^ν_ij`, `n_i = n_i0 + Σ_j ν_ij ξ_j`, is solved by a Newton on
+`ln n_i` (since 2026-09-27), so a reaction that runs almost to completion is solved like
+any other: ammonia burned to NO at 1100 K (ln K 121.5) leaves its NH3 at 1e-14 of the
+outlet, and that number is resolved, not lost to a subtraction.  A species below the
+smallest double (ln n < about -745) is published as 0 and ANNOUNCED with its ln n.  The
+reforming / shift / synthesis workhorse.  Distinct from
 `conversionReactor` (extent **given**), `gibbsReactor` (Gibbs minimisation, **no reactions
 specified** — cannot restrict *which* reactions equilibrate), and `cstr`/`pfr` (equilibrium
 reached only **kinetically**, needing rate data + residence).
@@ -327,13 +331,16 @@ reaction RUNS from this feed; exothermic as it runs -> Kp at `T + dT`, endotherm
 running BACKWARD takes the opposite side from its as-written thermicity).  The reactor stays
 ISOTHERMAL at T -- the outlet and the duty stay at the physical T.  A negative value is
 REFUSED by name.  NOT here: an adiabatic mode, and any Kp beyond the ideal-gas rung.
-KPIs: `Kp_<name>` (the Kp actually used), `extent_<name>_kmol_h`, `conversion_<name>`,
+KPIs: `Kp_<name>` (the Kp actually used; withheld, and announced with its ln Kp, when a
+double cannot carry it), `extent_<name>_kmol_h`, `conversion_<name>`,
 `Q_kW`, `newtonResidual`; with an approach, `T_Kp_<name>` (where each Kp was evaluated)
 and `temperatureApproach_K` (the global magnitude, when declared).
 Examples: `tutorials/steady/reactors/equil01_reforming` (SMR + water-gas-shift together);
 `tutorials/steady/reactors/equil02_methanol_declared_pathways` (one syngas, three
 equilibria: Gibbs over every species makes methane, the declared list without methanation
-makes methanol, the complete list reproduces Gibbs).
+makes methanol, the complete list reproduces Gibbs);
+`tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways` (ammonia in air:
+Gibbs burns it to N2, the NO route declared alone makes NO, its NH3 left at 1e-14).
 
 ### `gibbsReactor`
 Equilibrium by direct Gibbs minimisation with atom-balance

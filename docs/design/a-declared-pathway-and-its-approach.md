@@ -56,7 +56,11 @@ temperature as the second knob, one cross-link from `equilibrium-landscapes`.
   the feed, below the interior floor of 1e-12 of the feed every logged
   species is held above (EquilibriumReactor.cpp:172) and below what extents
   subtracted from a feed resolve in double precision.  NOT buildable on this
-  engine; recorded, not forced.
+  engine; recorded, not forced.  **BUILT THE SAME DAY (2026-09-27), and this
+  bullet is kept as the record of why it was not built first:** the reactor
+  now solves on ln n instead of on the extents, and the witness is
+  `equil03_ammonia_oxidation_declared_pathways` (record
+  [`an-equilibrium-that-runs-to-completion.md`](an-equilibrium-that-runs-to-completion.md)).
 * The methanol candidate (CO + 2 H2 ⇌ CH3OH and the shift declared,
   methanation CO + 3 H2 ⇌ CH4 + H2O excluded) IS buildable: every species
   carries a formation datum and an ideal-gas Cp, and all three reactors
@@ -128,7 +132,12 @@ runs → Kp at 505 K; conversion 0.442082369415.  At 625 K the declared
 conversion is 0.0565.  At 500 K the COMPLETE reactor's Newton stalls
 (residual 20.7), although the Gibbs trace species there sit above the
 interior floor — MEASURED, NOT DIAGNOSED, and the page's slider stops at
-525 K.  Sealed (Choupo-2608, 14 records).  The case declares
+525 K.  **Diagnosed the same day:** it was the extent formulation (its
+subtraction and its floor), and the ln n solver converges from 350 to 1200 K
+at 1, 50 and 200 bar
+([`an-equilibrium-that-runs-to-completion.md`](an-equilibrium-that-runs-to-completion.md) §5);
+the slider stays at 525 K because the Gibbs reactor condenses water below
+about 450 K at 50 bar.  Sealed (Choupo-2608, 14 records).  The case declares
 `fugacityModel idealGas` so both reactors answer the same question at 50 bar.
 
 The exclusion is the student's premise.  Nothing in the tree cites the
@@ -172,6 +181,8 @@ stdout including the result JSON, and `converged/` trees, identical in 29 of
   would convert unsourced into falsely sourced.
 * Forcing the Ostwald witness by loosening the interior floor — the floor is
   what makes the reactor refuse rather than publish a wrong equilibrium.
+  (The witness was then built by changing the unknowns, not the floor; the
+  floor is gone with the formulation that needed it.)
 
 ## 6. Gate and sabotages
 
@@ -197,7 +208,9 @@ is why arm (c) exists.
 An adiabatic `equilibriumReactor`; any Kp beyond the ideal-gas rung
 (fugacity coefficients at 50 bar); carbon deposition (§2 -- in the
 `gibbsReactor` since 2026-09-27, C14; in this reactor, C14 slice 2); the Ostwald
-witness (§2); a diagnosis of the complete set's stall at 500 K; the duty of
+witness (§2) and a diagnosis of the complete set's stall at 500 K -- BOTH
+DONE the same day, see
+[`an-equilibrium-that-runs-to-completion.md`](an-equilibrium-that-runs-to-completion.md); the duty of
 `equilibriumReactor`, which still sums `h_pure_ig` while its outlet is priced
 by the package — the 2026-09-25 surface family, NOT enumerated when
 `conversionReactor` was taken off it, harmless on every ideal-gas case in

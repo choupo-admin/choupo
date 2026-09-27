@@ -91,7 +91,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
 
         const auto eq = Reaction::equilibrium(thermo, nu[j], T);         // Kp from dG°(T)
         Kp[j]   = eq.Kp;
-        lnKp[j] = std::log(std::max(1.0e-300, eq.Kp));
+        lnKp[j] = eq.lnKp;   // -dG/RT itself: exp may over/underflow, ln K does not
 
         // Forward limit (a reactant runs out) -- sets the start + the KPI conversion.
         scalar m = std::numeric_limits<scalar>::infinity();
@@ -147,12 +147,33 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         if (dTmag[j] > 0.0) anyApproach = true;
     }
 
-    // ---- Equilibrium residual: g_j(xi) = ln Q_j - ln Kp_j ---------------
-    //   n_i(xi) = n_i0 + Sum_j nu_ij xi_j EXACTLY -- no floors: flooring a
-    //   negative inventory silently changes the equation being solved
-    //   (design forum #87-P0).  The residual is only ever EVALUATED at
-    //   interior points; feasibility n(xi) >= 0 is enforced by the Newton's
-    //   fraction-to-boundary step limit below, never by clamping.
+    // ---- The unknowns are ln n_i, not the extents (2026-09-27) -----------
+    //  The equilibrium of a DECLARED reaction set is the point on the
+    //  reaction subspace n = n0 + Sum_j nu_j xi_j where every declared
+    //  residual g_j = ln Q_j - ln Kp_j vanishes.  Solving for the EXTENTS
+    //  xi puts every amount behind a subtraction, n_i = n0_i - |nu_ij| xi_j,
+    //  and a reaction that runs almost to completion leaves its limiting
+    //  reactant as the difference of two nearly equal numbers: ammonia
+    //  oxidation to NO at 1100 K (ln K 121.5) leaves NH3 near 1e-14 of the
+    //  feed, which the old extent Newton could neither reach (it held every
+    //  species above a 1e-12 floor) nor resolve (double precision carries
+    //  16 digits of n0, not of what is left of it).  It stalled at residual
+    //  17.86 and refused -- honest, but it was the formulation that failed,
+    //  not the chemistry.
+    //
+    //  So the unknowns are x_i = ln n_i for every species a reaction touches
+    //  (the LOGGED species), and the reaction subspace is written as what it
+    //  is: the invariants of the declared set, W (n - n0) = 0, one row per
+    //  vector w with nu w = 0 (for a COMPLETE set they are the element
+    //  balances; for a subset there are more of them, one per closed
+    //  pathway).  R equilibrium equations, L - R invariants, L unknowns:
+    //    g_j = Sum_i nu_ij (x_i - ln n_tot + ln P/P0) - ln Kp_j  = 0
+    //    h_k = Sum_i w_ki (exp(x_i) - n0_i) / F_in               = 0
+    //  A species at 1e-30 of the feed is x = ln(1e-30 F), an ordinary number;
+    //  no floor is held under any amount, and the equilibrium equation reads
+    //  its logarithm directly.  The extents are RECOVERED afterwards by least
+    //  squares on n - n0 (the KPIs, the duty and the approach probe read
+    //  them).  Record: docs/design/an-equilibrium-that-runs-to-completion.md.
     auto molesAt = [&](const sVector& xi) -> sVector
     {
         sVector ni(n, 0.0);
@@ -169,48 +190,127 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     for (std::size_t j = 0; j < R; ++j)
         for (std::size_t i = 0; i < n; ++i)
             if (nu[j][i] != 0.0) logged[i] = true;
-    const scalar interiorEps = 1.0e-12 * std::max(F_in, 1.0e-30);
-    auto isInterior = [&](const sVector& ni) -> bool
+    std::vector<std::size_t> Lx;             // the logged species, in order
+    scalar nInert = 0.0;                     // what no reaction touches
+    for (std::size_t i = 0; i < n; ++i)
     {
-        for (std::size_t i = 0; i < n; ++i)
-            if (logged[i] && ni[i] <= interiorEps) return false;
-        return true;
-    };
-    auto residualAt = [&](const sVector& ni) -> sVector
+        if (logged[i]) Lx.push_back(i);
+        else           nInert += n0[i];
+    }
+    const std::size_t nL = Lx.size();
+    std::vector<sVector> nuL(R, sVector(nL, 0.0));
+    for (std::size_t j = 0; j < R; ++j)
+        for (std::size_t a = 0; a < nL; ++a) nuL[j][a] = nu[j][Lx[a]];
+
+    // ---- The declared set must be independent: checked on nu, up front --
+    //  Rows are reduced IN DECLARED ORDER, so the reaction named is the first
+    //  one the earlier ones already span -- a dependent set has no unique
+    //  extent vector, and there is nothing to iterate on.  The reduced rows
+    //  then give the invariants W (the null space of nu).
+    std::vector<sVector>     E;              // reduced rows, pivot entry 1
+    std::vector<std::size_t> pivCol;
     {
-        scalar ntot = 0.0;
-        for (auto v : ni) ntot += v;
-        sVector g(R, 0.0);
+        scalar maxNu = 0.0;
+        for (const auto& row : nuL) for (auto v : row) maxNu = std::max(maxNu, std::abs(v));
+        for (std::size_t j = 0; j < R; ++j)
+        {
+            sVector r = nuL[j];
+            for (std::size_t p = 0; p < E.size(); ++p)
+            {
+                const scalar f = r[pivCol[p]];
+                if (f != 0.0) for (std::size_t a = 0; a < nL; ++a) r[a] -= f * E[p][a];
+            }
+            std::size_t c = nL;
+            for (std::size_t a = 0; a < nL; ++a)
+                if (std::abs(r[a]) > 1.0e-9 * std::max(maxNu, 1.0e-30)
+                    && (c == nL || std::abs(r[a]) > std::abs(r[c]))) c = a;
+            if (c == nL)
+                throw std::runtime_error("equilibriumReactor: the reaction set is "
+                    "LINEARLY DEPENDENT (reaction '" + rname[j] + "' is a combination "
+                    "of the reactions declared before it) -- remove the redundant "
+                    "reaction; a dependent set has no unique extent vector.");
+            const scalar pv = r[c];
+            for (auto& v : r) v /= pv;
+            for (std::size_t p = 0; p < E.size(); ++p)          // keep E reduced
+            {
+                const scalar f = E[p][c];
+                if (f != 0.0) for (std::size_t a = 0; a < nL; ++a) E[p][a] -= f * r[a];
+            }
+            E.push_back(r); pivCol.push_back(c);
+        }
+    }
+    std::vector<sVector> W;                   // invariants, nu w = 0, max|w| = 1
+    for (std::size_t f = 0; f < nL; ++f)
+    {
+        bool isPivot = false;
+        for (auto c : pivCol) if (c == f) isPivot = true;
+        if (isPivot) continue;
+        sVector w(nL, 0.0);
+        w[f] = 1.0;
+        for (std::size_t p = 0; p < E.size(); ++p) w[pivCol[p]] = -E[p][f];
+        scalar m = 0.0;
+        for (auto v : w) m = std::max(m, std::abs(v));
+        for (auto& v : w) v /= m;
+        W.push_back(w);
+    }
+    const std::size_t nW = W.size();          // == nL - R
+    const scalar Fs    = std::max(F_in, 1.0e-30);
+    const scalar lnPP  = std::log(P / P_STD);
+    sVector dnu(R, 0.0);
+    for (std::size_t j = 0; j < R; ++j) for (auto v : nuL[j]) dnu[j] += v;
+
+    //  Residual at x = ln n (logged species): g (ln units) then h (/F_in).
+    struct State { sVector nLv; scalar ntot = 0.0; sVector F; bool finite = true; };
+    auto evalAt = [&](const sVector& x) -> State
+    {
+        State s;
+        s.nLv.assign(nL, 0.0);
+        s.ntot = nInert;
+        for (std::size_t a = 0; a < nL; ++a) { s.nLv[a] = std::exp(x[a]); s.ntot += s.nLv[a]; }
+        s.F.assign(R + nW, 0.0);
+        if (!(std::isfinite(s.ntot) && s.ntot > 0.0)) { s.finite = false; return s; }
+        const scalar lnt = std::log(s.ntot);
         for (std::size_t j = 0; j < R; ++j)
         {
             scalar q = 0.0;
-            for (std::size_t i = 0; i < n; ++i)
-                if (nu[j][i] != 0.0) q += nu[j][i] * std::log(ni[i] / ntot * P / P_STD);
-            g[j] = q - lnKp[j];
+            for (std::size_t a = 0; a < nL; ++a)
+                if (nuL[j][a] != 0.0) q += nuL[j][a] * (x[a] - lnt + lnPP);
+            s.F[j] = q - lnKp[j];
         }
-        return g;
+        for (std::size_t k = 0; k < nW; ++k)
+        {
+            scalar h = 0.0;
+            for (std::size_t a = 0; a < nL; ++a) h += W[k][a] * (s.nLv[a] - n0[Lx[a]]);
+            s.F[R + k] = h / Fs;
+        }
+        for (auto v : s.F) if (!std::isfinite(v)) s.finite = false;
+        return s;
     };
-    auto normInf = [](const sVector& v)
+    auto normInf = [](const sVector& v, std::size_t b, std::size_t e)
     {
         scalar m = 0.0;
-        for (auto x : v) m = std::max(m, std::abs(x));
+        for (std::size_t k = b; k < e; ++k) m = std::max(m, std::abs(v[k]));
         return m;
     };
 
-    // ---- The solve: interior start + damped Newton on the CURRENT lnKp ---
+    // ---- The solve: an interior SEED, then Newton on x = ln n -------------
     //  A lambda because a declared approach solves TWICE: once at the
     //  physical T (the probe that tells each reaction which way it runs from
     //  this feed) and once on the shifted Kp.  Absent an approach it is
-    //  called once, and the arithmetic is the one it always was.
-    struct Solved { sVector xi; sVector niCur; scalar gNorm = 0.0; int iters = 0; };
+    //  called once.
+    struct Solved { sVector xi; sVector niCur; scalar gNorm = 0.0; int iters = 0;
+                    sVector lnN; };   // ln n of the logged species (0 elsewhere)
     auto solveExtents = [&]() -> Solved
     {
-        // ---- Interior start: every logged species needs a foothold ----------
+        // ---- The seed: every logged species needs a first logarithm ---------
         //  Forward AND backward limits per reaction (a feed missing a REACTANT is
-        //  legitimate -- the reaction runs BACKWARD, xi_j < 0; the old 10 %-forward
-        //  start put such a species at n = 0 and the floored log solved a
-        //  different problem).  Then a repair loop nudges any still-empty species
-        //  along a reaction that produces it.
+        //  legitimate -- the reaction runs BACKWARD, xi_j < 0), 5 % of each, then
+        //  a repair loop gives any still-empty species a 1e-6-of-feed foothold
+        //  along a reaction that produces it.  `seedFoothold` is the level a
+        //  SEED must clear to have a logarithm at all; it is a starting point,
+        //  never a bound: the Newton below works in ln n and goes wherever the
+        //  equilibrium is, far below it if that is where the answer lies.
+        const scalar seedFoothold = 1.0e-12 * Fs;
         sVector xiMaxBack(R, 0.0);
         for (std::size_t j = 0; j < R; ++j)
         {
@@ -219,23 +319,24 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
                 if (nu[j][i] > 0.0 && n0[i] > 0.0) m = std::min(m, n0[i] / nu[j][i]);
             xiMaxBack[j] = std::isfinite(m) ? m : 0.0;
         }
-        sVector xi(R, 0.0);
+        sVector xiSeed(R, 0.0);
         for (std::size_t j = 0; j < R; ++j)
-            xi[j] = 0.05 * xiMax[j] - 0.05 * xiMaxBack[j];
+            xiSeed[j] = 0.05 * xiMax[j] - 0.05 * xiMaxBack[j];
         for (int pass = 0; pass < 32; ++pass)
         {
-            const sVector ni = molesAt(xi);
-            if (isInterior(ni)) break;
+            const sVector ni = molesAt(xiSeed);
+            bool interior = true;
+            for (std::size_t i = 0; i < n; ++i)
+                if (logged[i] && ni[i] <= seedFoothold) interior = false;
+            if (interior) break;
             bool repaired = false;
             for (std::size_t i = 0; i < n && !repaired; ++i)
             {
-                if (!logged[i] || ni[i] > interiorEps) continue;
+                if (!logged[i] || ni[i] > seedFoothold) continue;
                 for (std::size_t j = 0; j < R; ++j)
                     if (nu[j][i] != 0.0)
                     {
-                        // Move reaction j in the direction that CREATES species i,
-                        // by enough to give it a 1e-6-of-feed foothold.
-                        xi[j] += (1.0e-6 * F_in + interiorEps - ni[i]) / nu[j][i];
+                        xiSeed[j] += (1.0e-6 * F_in + seedFoothold - ni[i]) / nu[j][i];
                         repaired = true;
                         break;
                     }
@@ -246,115 +347,173 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
                     "inventory and no reaction path can give it a foothold from this "
                     "feed.  Check the feed composition against the reaction set.");
         }
+        sVector x(nL, 0.0);
+        { const sVector ns = molesAt(xiSeed);
+          for (std::size_t a = 0; a < nL; ++a) x[a] = std::log(ns[Lx[a]]); }
 
-        // ---- Damped Newton with EXACT linear feasibility ---------------------
-        //  n(xi) is linear in xi, so the largest feasible step along dxi has a
-        //  closed form; the fraction-to-boundary rule (tau = 0.99) keeps every
-        //  iterate strictly interior -- the residual is never evaluated at a
-        //  clamped point, and the solved equation is the real one.  A singular
-        //  Jacobian pivot names the LINEARLY DEPENDENT reaction set instead of
-        //  producing garbage; non-convergence THROWS (a warning that returns
-        //  success let an infeasible network turn the corpus green, #87-P0).
-        constexpr scalar tolG   = 1.0e-10;
-        constexpr int    maxIt  = 200;
-        sVector niCur = molesAt(xi);
-        sVector g     = residualAt(niCur);
-        scalar  gNorm = normInf(g);
-        int     iters = 0;
-        bool    converged = (gNorm < tolG);
+        // ---- Newton on ln n, analytic Jacobian, backtracking on ||F||^2 ------
+        //  Converged when every declared ln Q_j is within 1e-10 of ln Kp_j AND
+        //  every invariant closes to 1e-12 of the feed.  A step that overflows
+        //  exp or does not decrease the merit is halved; forty halvings
+        //  without a decrease is a genuine failure and THROWS (a warning that
+        //  returns success let an infeasible network turn the corpus green,
+        //  #87-P0).
+        constexpr scalar tolG  = 1.0e-10;
+        constexpr scalar tolH  = 1.0e-12;
+        constexpr int    maxIt = 200;
+        State  s = evalAt(x);
+        if (!s.finite)
+            throw std::runtime_error("equilibriumReactor: the seed gives a "
+                "non-finite residual -- check the feed against the reaction set.");
+        auto conv = [&](const State& st)
+        { return normInf(st.F, 0, R) < tolG && normInf(st.F, R, R + nW) < tolH; };
+        auto merit = [](const State& st)
+        { scalar m = 0.0; for (auto v : st.F) m += v * v; return m; };
+        int  iters = 0;
+        bool converged = conv(s);
         for (int it = 0; it < maxIt && !converged; ++it, ++iters)
         {
-            // FD Jacobian, evaluated at interior points only (step direction is
-            // flipped toward the interior when the forward probe would leave it).
-            std::vector<sVector> J(R, sVector(R, 0.0));
+            //  J: rows g_j then h_k, one column per logged species.
+            std::vector<sVector> A(nL, sVector(nL, 0.0));
             for (std::size_t j = 0; j < R; ++j)
-            {
-                scalar h = 1.0e-7 * std::max(std::abs(xi[j]), 1.0e-3 * F_in);
-                sVector xp = xi; xp[j] += h;
-                if (!isInterior(molesAt(xp))) { h = -h; xp[j] = xi[j] + h; }
-                if (!isInterior(molesAt(xp)))
-                    throw std::runtime_error("equilibriumReactor: reaction '"
-                        + rname[j] + "' cannot move in EITHER direction from the "
-                        "current iterate -- the feasible region is degenerate "
-                        "(check the reaction set against the feed).");
-                const sVector gp = residualAt(molesAt(xp));
-                for (std::size_t r2 = 0; r2 < R; ++r2) J[r2][j] = (gp[r2] - g[r2]) / h;
-            }
-            // Gauss elimination WITH a pivot check: a vanishing pivot means the
-            // reaction set is linearly dependent (two rows of nu span the same
-            // direction) -- name it, never divide by it.
-            std::vector<sVector> A = J;
-            sVector rhs(R);
-            for (std::size_t r2 = 0; r2 < R; ++r2) rhs[r2] = -g[r2];
-            scalar maxA = 0.0;
-            for (const auto& row : A) for (auto v : row) maxA = std::max(maxA, std::abs(v));
-            for (std::size_t k = 0; k < R; ++k)
+                for (std::size_t a = 0; a < nL; ++a)
+                    A[j][a] = nuL[j][a] - dnu[j] * s.nLv[a] / s.ntot;
+            for (std::size_t k = 0; k < nW; ++k)
+                for (std::size_t a = 0; a < nL; ++a)
+                    A[R + k][a] = W[k][a] * s.nLv[a] / Fs;
+            sVector rhs(nL);
+            for (std::size_t r = 0; r < nL; ++r) rhs[r] = -s.F[r];
+            //  Gauss with partial pivoting; per-row scaled pivot test, because
+            //  an h row carries n_i/F and a trace species makes its entries
+            //  small without making the system singular.
+            for (std::size_t k = 0; k < nL; ++k)
             {
                 std::size_t piv = k;
-                for (std::size_t r2 = k + 1; r2 < R; ++r2)
+                for (std::size_t r2 = k + 1; r2 < nL; ++r2)
                     if (std::abs(A[r2][k]) > std::abs(A[piv][k])) piv = r2;
-                if (std::abs(A[piv][k]) < 1.0e-12 * std::max(maxA, 1.0e-30))
-                    throw std::runtime_error("equilibriumReactor: the reaction set is "
-                        "LINEARLY DEPENDENT (singular Jacobian pivot at reaction '"
-                        + rname[k] + "') -- remove the redundant reaction; a dependent "
-                        "set has no unique extent vector.");
+                if (!(std::abs(A[piv][k]) > 0.0) || !std::isfinite(A[piv][k]))
+                    throw std::runtime_error("equilibriumReactor: singular Jacobian "
+                        "on ln n at iteration " + std::to_string(it) + " -- the "
+                        "declared set and the feed leave a direction undetermined.");
                 std::swap(A[piv], A[k]); std::swap(rhs[piv], rhs[k]);
-                for (std::size_t r2 = k + 1; r2 < R; ++r2)
+                for (std::size_t r2 = k + 1; r2 < nL; ++r2)
                 {
                     const scalar f = A[r2][k] / A[k][k];
-                    for (std::size_t c = k; c < R; ++c) A[r2][c] -= f * A[k][c];
+                    if (f == 0.0) continue;
+                    for (std::size_t c = k; c < nL; ++c) A[r2][c] -= f * A[k][c];
                     rhs[r2] -= f * rhs[k];
                 }
             }
-            sVector dxi(R, 0.0);
-            for (std::size_t k = R; k-- > 0;)
+            sVector dx(nL, 0.0);
+            for (std::size_t k = nL; k-- > 0;)
             {
-                scalar s = rhs[k];
-                for (std::size_t c = k + 1; c < R; ++c) s -= A[k][c] * dxi[c];
-                dxi[k] = s / A[k][k];
+                scalar v = rhs[k];
+                for (std::size_t c = k + 1; c < nL; ++c) v -= A[k][c] * dx[c];
+                dx[k] = v / A[k][k];
             }
-            // Fraction-to-boundary: n(xi + a*dxi) = n(xi) + a*(Nu dxi) is linear,
-            // so the exact feasible ceiling is a closed form over the decreasing
-            // species; tau = 0.99 keeps the iterate strictly interior.
-            scalar aMax = 1.0;
-            for (std::size_t i = 0; i < n; ++i)
+            //  Step control on ln n, adapted from the control factor of
+            //  Gordon & McBride's CEA (NASA RP-1311, 1994; CEA also caps by
+            //  the change of ln n_total, omitted here): a SIGNIFICANT species (y > 1e-8)
+            //  moves by at most a factor e^2 per iteration, in either
+            //  direction; a TRACE species that rises may not rise past
+            //  y = 1e-4 in one step; a trace species that falls is not held
+            //  at all -- that is the whole point of solving in ln n.  The
+            //  linear model of exp is only good near the iterate, and
+            //  without this a strongly favoured reaction overshoots its
+            //  products by orders of magnitude on the first step.  It
+            //  shortens steps; it never bounds where the solution may lie.
+            const scalar m0 = merit(s);
+            scalar dlnt = 0.0;
+            for (std::size_t a = 0; a < nL; ++a) dlnt += s.nLv[a] * dx[a];
+            dlnt /= s.ntot;
+            scalar lam = 1.0;
+            for (std::size_t a = 0; a < nL; ++a)
             {
-                if (!logged[i]) continue;
-                scalar dn = 0.0;
-                for (std::size_t j = 0; j < R; ++j) dn += nu[j][i] * dxi[j];
-                if (dn < 0.0) aMax = std::min(aMax, 0.99 * (niCur[i] - interiorEps) / (-dn));
-            }
-            // Backtracking on ||g||: accept the first step that DECREASES the
-            // residual; twelve halvings without decrease = a genuine failure.
-            scalar a = std::max(std::min(1.0, aMax), 0.0);
-            bool stepped = false;
-            for (int bt = 0; bt < 12 && a > 0.0; ++bt, a *= 0.5)
-            {
-                sVector xt = xi;
-                for (std::size_t j = 0; j < R; ++j) xt[j] += a * dxi[j];
-                const sVector nt = molesAt(xt);
-                if (!isInterior(nt)) continue;
-                const sVector gt = residualAt(nt);
-                const scalar  gn = normInf(gt);
-                if (gn < gNorm || gn < tolG)
+                const scalar y = s.nLv[a] / s.ntot;
+                if (y > 1.0e-8)
                 {
-                    xi = xt; niCur = nt; g = gt; gNorm = gn; stepped = true;
+                    if (std::abs(dx[a]) > 0.0) lam = std::min(lam, 2.0 / std::abs(dx[a]));
+                }
+                else if (dx[a] - dlnt > 0.0)
+                    lam = std::min(lam, std::abs((-std::log(y) - std::log(1.0e4))
+                                                 / (dx[a] - dlnt)));
+            }
+            bool stepped = false;
+            for (int bt = 0; bt < 40; ++bt, lam *= 0.5)
+            {
+                sVector xt = x;
+                for (std::size_t a = 0; a < nL; ++a) xt[a] += lam * dx[a];
+                const State st = evalAt(xt);
+                if (!st.finite) continue;
+                if (merit(st) <= (1.0 - 1.0e-4 * lam) * m0 || conv(st))
+                {
+                    x = xt; s = st; stepped = true;
                     break;
                 }
             }
             if (!stepped)
-                throw std::runtime_error("equilibriumReactor: Newton stalled at "
-                    "residual " + std::to_string(gNorm) + " (no feasible descent "
-                    "step) -- the reaction set may be infeasible at this T, P, feed.");
-            converged = (gNorm < tolG);
+                throw std::runtime_error("equilibriumReactor: Newton on ln n stalled "
+                    "at residual " + std::to_string(std::max(normInf(s.F, 0, R),
+                    normInf(s.F, R, R + nW))) + " (no descent step) -- the reaction "
+                    "set may be infeasible at this T, P, feed.");
+            converged = conv(s);
         }
         if (!converged)
             throw std::runtime_error("equilibriumReactor: did NOT converge in "
                 + std::to_string(maxIt) + " iterations (residual "
-                + std::to_string(gNorm) + ") -- refusing to publish a "
-                "non-equilibrium state as a solution.  Check the reaction set "
-                "against the feed at this T and P.");
-        return Solved{ xi, niCur, gNorm, iters };
+                + std::to_string(std::max(normInf(s.F, 0, R), normInf(s.F, R, R + nW)))
+                + ") -- refusing to publish a non-equilibrium state as a solution.  "
+                "Check the reaction set against the feed at this T and P.");
+
+        // ---- The outlet, and the extents recovered from it ------------------
+        //  n_i = exp(x_i) for the logged species (a trace species is published
+        //  at its own value, not as a difference), n0_i for the inert ones.
+        //  The extents solve (nu D nu^T) xi = nu D (n - n0): n - n0 lies in the
+        //  span of nu to the invariant tolerance, so any weighting returns the
+        //  same extents up to round-off, and D = 1/(n + n0) picks WHICH
+        //  round-off -- each species' change is weighted by its own size, so
+        //  a trace product (methanol at 1e-10 in the complete set) sets its
+        //  reaction's extent to its own sixteen digits instead of inheriting
+        //  the absolute noise of the major species.
+        sVector niCur = n0;
+        for (std::size_t a = 0; a < nL; ++a) niCur[Lx[a]] = s.nLv[a];
+        sVector D(nL, 0.0);
+        for (std::size_t a = 0; a < nL; ++a)
+            D[a] = 1.0 / std::max(s.nLv[a] + n0[Lx[a]], 1.0e-300);
+        std::vector<sVector> M(R, sVector(R, 0.0));
+        sVector b(R, 0.0);
+        for (std::size_t j = 0; j < R; ++j)
+        {
+            for (std::size_t a = 0; a < nL; ++a)
+                b[j] += nuL[j][a] * D[a] * (s.nLv[a] - n0[Lx[a]]);
+            for (std::size_t l = 0; l < R; ++l)
+                for (std::size_t a = 0; a < nL; ++a)
+                    M[j][l] += nuL[j][a] * D[a] * nuL[l][a];
+        }
+        for (std::size_t k = 0; k < R; ++k)                    // M is SPD
+        {
+            std::size_t piv = k;
+            for (std::size_t r2 = k + 1; r2 < R; ++r2)
+                if (std::abs(M[r2][k]) > std::abs(M[piv][k])) piv = r2;
+            std::swap(M[piv], M[k]); std::swap(b[piv], b[k]);
+            for (std::size_t r2 = k + 1; r2 < R; ++r2)
+            {
+                const scalar f = M[r2][k] / M[k][k];
+                for (std::size_t c = k; c < R; ++c) M[r2][c] -= f * M[k][c];
+                b[r2] -= f * b[k];
+            }
+        }
+        sVector xi(R, 0.0);
+        for (std::size_t k = R; k-- > 0;)
+        {
+            scalar v = b[k];
+            for (std::size_t c = k + 1; c < R; ++c) v -= M[k][c] * xi[c];
+            xi[k] = v / M[k][k];
+        }
+        const scalar gN = std::max(normInf(s.F, 0, R), normInf(s.F, R, R + nW));
+        sVector lnN(n, 0.0);
+        for (std::size_t a = 0; a < nL; ++a) lnN[Lx[a]] = x[a];
+        return Solved{ xi, niCur, gN, iters, lnN };
     };
     Solved sol = solveExtents();
 
@@ -420,7 +579,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
             const scalar Kp0 = Kp[j];
             const auto eqShift = Reaction::equilibrium(thermo, nu[j], T_Kp[j]);
             Kp[j]   = eqShift.Kp;
-            lnKp[j] = std::log(std::max(1.0e-300, eqShift.Kp));
+            lnKp[j] = eqShift.lnKp;
 
             std::ostringstream m;
             m << std::setprecision(6);
@@ -463,22 +622,28 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     const int      iters = sol.iters;
 
     // ---- Outlet moles + composition -------------------------------------
-    //  EXACT linear combination -- the interior Newton guarantees n >= 0, so
-    //  there is nothing to clamp (a clamp here silently altered mass,
-    //  #87-P0).  Only sub-round-off noise is snapped, and a genuine negative
-    //  is a solver bug that must SURFACE, not be laundered.
-    sVector nOut(n, 0.0); scalar F_out = 0.0;
+    //  The solved amounts THEMSELVES: exp(ln n) for every logged species, the
+    //  feed for the inert ones -- nothing is clamped or snapped, and nothing
+    //  is recomputed as a difference.  ONE representation limit remains and
+    //  it is said when it binds: a ln n below about -745 has no double, so
+    //  that species leaves as exactly 0 and its logarithm is announced.
+    sVector nOut = sol.niCur; scalar F_out = 0.0;
     for (std::size_t i = 0; i < n; ++i)
     {
-        scalar v = n0[i];
-        for (std::size_t j = 0; j < R; ++j) v += nu[j][i] * xi[j];
-        if (v < -1.0e-9 * std::max(F_in, 1.0e-30))
-            throw std::runtime_error("equilibriumReactor: internal error -- "
-                "converged extents give negative moles of '"
-                + thermo.comp(i).name() + "' (" + std::to_string(v)
-                + " kmol/s); the feasibility guard failed.");
-        nOut[i] = std::max(v, 0.0);            // sub-round-off snap only
-        F_out  += nOut[i];
+        F_out += nOut[i];
+        if (logged[i] && !(nOut[i] > 0.0))
+        {
+            std::ostringstream m;
+            m << std::setprecision(6) << "species '" << thermo.comp(i).name()
+              << "' is at ln n = " << sol.lnN[i] << " (n in kmol/s) at"
+                 " equilibrium: below the smallest double, so it is published"
+                 " as exactly 0.  The equilibrium itself was solved on ln n and"
+                 " is not affected; the stream table cannot carry the number.";
+            std::cout << "  [equilibriumReactor] " << m.str() << "\n";
+            AdvisoryLog::instance().add("model", "info",
+                dict->found("name") ? "equilibriumReactor " + dict->lookupWord("name")
+                                    : "equilibriumReactor", m.str());
+        }
     }
     sVector zout(n, 0.0);
     if (F_out > 0.0) for (std::size_t i = 0; i < n; ++i) zout[i] = nOut[i] / F_out;
@@ -503,7 +668,23 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     for (std::size_t j = 0; j < R; ++j)
     {
         kpis_["extent_" + rname[j] + "_kmol_h"] = xi[j] * 3600.0;
-        kpis_["Kp_" + rname[j]]                 = Kp[j];
+        //  Kp itself only where a double can carry it: the solve reads ln Kp,
+        //  so a reaction with |ln Kp| beyond ~709 is solved all the same,
+        //  and the KPI is withheld and SAID rather than published as inf/0.
+        if (std::isfinite(Kp[j]) && Kp[j] > 0.0)
+            kpis_["Kp_" + rname[j]] = Kp[j];
+        else
+        {
+            std::ostringstream m;
+            m << std::setprecision(6) << "reaction '" << rname[j] << "': ln Kp = "
+              << lnKp[j] << " at " << T_Kp[j] << " K, beyond what a double"
+                 " carries as Kp; the equilibrium was solved on ln Kp, and the"
+                 " KPI Kp_" << rname[j] << " is not published.";
+            std::cout << "  [equilibriumReactor] " << m.str() << "\n";
+            AdvisoryLog::instance().add("model", "info",
+                dict->found("name") ? "equilibriumReactor " + dict->lookupWord("name")
+                                    : "equilibriumReactor", m.str());
+        }
         if (xiMax[j] > 0.0)
             kpis_["conversion_" + rname[j]] = xi[j] / xiMax[j];
     }

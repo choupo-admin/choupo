@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Reaction library for ammonia burned in air.  Stoichiometry only: each Kp(T)
+  comes from the species' standardThermochemistry (K = exp(-dG/RT)).
+  Balanced by atom count (N, H, O):
+      ammoniaToNO   4 NH3 + 5 O2  <->  4 NO + 6 H2O    N 4=4  H 12=12  O 10=10
+      ammoniaToN2   4 NH3 + 3 O2  <->  2 N2 + 6 H2O    N 4=4  H 12=12  O  6=6
+  The two are independent (five species, three elements: 5 - 3 = 2).  Which
+  of them a reactor may use is declared by the unit's `reactions ( ... );`
+  list, not here: a library entry is a pathway that EXISTS; the list says
+  which ones are OPEN.
+\*---------------------------------------------------------------------------*/
+
+ammoniaToNO             // 4 NH3 + 5 O2 <-> 4 NO + 6 H2O
+{
+    stoichiometry
+    (
+        { component NH3;    nu -4; }
+        { component O2;     nu -5; }
+        { component NO;     nu  4; }
+        { component water;  nu  6; }
+    );
+}
+
+ammoniaToN2             // 4 NH3 + 3 O2 <-> 2 N2 + 6 H2O
+{
+    stoichiometry
+    (
+        { component NH3;    nu -4; }
+        { component O2;     nu -3; }
+        { component N2;     nu  2; }
+        { component water;  nu  6; }
+    );
+}

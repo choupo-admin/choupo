@@ -33,8 +33,13 @@ Description
     (K = exp(-dG deg/RT)) -- NO kinetics, NO residence time.  The R extents are a
     RESULT: the coupled gas-phase (ideal) equilibrium system
         Kp_j = PROD_i (p_i/P deg)^nu_ij,   n_i = n_i0 + SUM_j nu_ij xi_j
-    is solved for xi by a multivariate Newton (finite-difference Jacobian), in
-    log form for conditioning.  This is the reforming/shift/synthesis workhorse
+    is solved by a Newton on x_i = ln n_i (analytic Jacobian), with the
+    reaction subspace written as the invariants of the declared set, so a
+    reaction that runs almost to completion leaves its limiting species at
+    its own value (1e-14, 1e-300) instead of behind a subtraction; the
+    extents are recovered from the solved amounts (record
+    docs/design/an-equilibrium-that-runs-to-completion.md).  This is the
+    reforming/shift/synthesis workhorse
     (e.g. water-gas-shift + methanation together).  Distinct from
     `conversionReactor` (extent SPECIFIED), `gibbsReactor` (Gibbs minimisation,
     NO reactions given -- cannot restrict which reactions equilibrate), and

@@ -59,6 +59,31 @@ WHAT THIS GATE CHECKS.
       Gibbs reactor's methanol.  The difference is the exclusion, not the
       solver.
   (i) THE ANNOUNCEMENT REACHES THE CAVEAT BLOCK, not only its site.
+  (j) A DECLARED REACTION THAT RUNS TO COMPLETION (added 2026-09-27, record
+      docs/design/an-equilibrium-that-runs-to-completion.md).  The witness
+      equil03_ammonia_oxidation_declared_pathways: `complete` reproduces the
+      Gibbs outlet on EVERY species above 1e-30, the NH3 at ~6e-18 included
+      (1e-6 relative); `declared` (the NO route alone) leaves the fed N2
+      untouched, and its unconverted NH3 -- below the old solver's 1e-12
+      interior floor and behind its subtraction -- is RECOMPUTED here from
+      the declared equilibrium, 4 ln y_NH3 = 4 ln y_NO + 6 ln y_H2O
+      - 5 ln y_O2 + ln(P/P0) - ln Kp, with Kp read off the run (1e-6).  An
+      extent solver stalls on both reactors (measured: residuals 16.26 and
+      69.77 at f5e5cf3f1).
+  (k) A DEPENDENT SET REFUSES NAMING THE REACTION: equil03's complete list
+      plus the NO route written twice over refuses, naming the doubled
+      reaction as the one the earlier ones already span.  A regression guard,
+      not a discriminator: the extent solver refused this set too, by the
+      pivot of its Jacobian.
+  (l) BEYOND A DOUBLE, SAID.  A built fixture (unsealed, catalogue records):
+      2 C16H34 + 49 O2 <-> 32 CO2 + 34 H2O at 300 K, ln Kp ~ 8243.  The
+      reactor must CONVERGE (it needs the step control on ln n: without it
+      the first Newton step overshoots the products by orders of magnitude
+      and the iteration ends on a singular Jacobian -- by-hand sabotage S4),
+      publish the hexadecane as exactly 0 and ANNOUNCE its ln n (below the
+      smallest double), and withhold the KPI Kp_burn while announcing its
+      ln Kp.  No corpus case reaches either limit, which is why the fixture
+      is built here rather than read from a witness.
 
 WHAT THIS GATE DOES NOT COVER, stated so its green line cannot imply it.
 It does not judge whether any approach magnitude is RIGHT for any bed (the
@@ -75,6 +100,8 @@ sabotages and the output each produced.
 """
 
 import json
+import math
+import os
 import re
 import shutil
 import subprocess
@@ -88,14 +115,19 @@ SRC = ROOT / "src" / "unitOperations" / "reactor"
 EQUIL01 = ROOT / "tutorials" / "steady" / "reactors" / "equil01_reforming"
 EQUIL02 = (ROOT / "tutorials" / "steady" / "reactors"
            / "equil02_methanol_declared_pathways")
+EQUIL03 = (ROOT / "tutorials" / "steady" / "reactors"
+           / "equil03_ammonia_oxidation_declared_pathways")
 
 OP_LINE = "operation   { T 1100 K; }"
 fails = []
 
 
-def run(case: Path):
+def run(case: Path, catalogue: bool = False):
+    #  A sealed witness runs from its own constant/; an unsealed fixture
+    #  (arm l) is TOLD where the catalogue is, never left to find one.
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT)) if catalogue else None
     p = subprocess.run([str(BIN)], cwd=str(case), capture_output=True,
-                       text=True, timeout=600)
+                       text=True, timeout=600, env=env)
     out = p.stdout + p.stderr
     js = None
     m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>",
@@ -373,6 +405,117 @@ def main() -> int:
                              f"where Gibbs does not ({zd.get('methanol')} vs "
                              f"{zg.get('methanol')})")
 
+        # ---- (j) a declared reaction that runs to completion --------------
+        co = Path(td) / "ostwald"
+        shutil.copytree(EQUIL03, co, ignore=shutil.ignore_patterns(
+            "converged", "reports", "iterations", "design"))
+        rco3, outo, jso = run(co)
+        if rco3 != 0:
+            err = re.findall(r"ERROR:.*", outo)
+            fails.append(f"(j) the witness equil03 did not run (exit {rco3}"
+                         f"{': ' + err[-1][:120] if err else ''})")
+        else:
+            streams = (jso or {}).get("streams") or {}
+            zg = (streams.get("outGibbs") or {}).get("composition", {})
+            zc = (streams.get("outComplete") or {}).get("composition", {})
+            zd = (streams.get("outDeclared") or {}).get("composition", {})
+            for sp, yg in zg.items():
+                if yg > 1e-30 and not close(yg, zc.get(sp, -1.0), 1e-6):
+                    fails.append(f"(j) the COMPLETE set does not reproduce the "
+                                 f"Gibbs reactor on {sp} ({zc.get(sp)} vs {yg})")
+            if not 0.0 < zg.get("NH3", 0.0) < 1e-15:
+                fails.append(f"(j) the probe is STALE: Gibbs NH3 is "
+                             f"{zg.get('NH3')}, no longer a deep trace")
+            fd = streams.get("feedDeclared") or {}
+            od = streams.get("outDeclared") or {}
+            n2_in = fd.get("F", 0.0) * (fd.get("composition") or {}).get("N2", 0.0)
+            n2_out = od.get("F", 0.0) * zd.get("N2", 0.0)
+            if not close(n2_in, n2_out, 1e-9):
+                fails.append(f"(j) the declared list excludes the N2 route, "
+                             f"yet N2 moved ({n2_in} -> {n2_out} kmol/s)")
+            Kp = kpis(jso, "declared").get("Kp_ammoniaToNO")
+            P = (od.get("P") or 0.0) / 1.0e5
+            if not (Kp and P and all(zd.get(k, 0.0) > 0.0
+                                     for k in ("NH3", "NO", "water", "O2"))):
+                fails.append(f"(j) the declared outlet cannot be recomputed "
+                             f"(Kp {Kp}, P {P}, y {zd})")
+            else:
+                y_nh3 = math.exp((4 * math.log(zd["NO"])
+                                  + 6 * math.log(zd["water"])
+                                  - 5 * math.log(zd["O2"]) + math.log(P)
+                                  - math.log(Kp)) / 4.0)
+                if not close(y_nh3, zd["NH3"], 1e-6):
+                    fails.append(f"(j) the declared NH3 ({zd['NH3']}) is not "
+                                 f"the declared equilibrium's ({y_nh3})")
+                if not zd["NH3"] < 1e-12:
+                    fails.append(f"(j) the probe is STALE: declared NH3 "
+                                 f"{zd['NH3']} is no longer below the old "
+                                 f"1e-12 floor")
+
+        # ---- (k) a dependent set refuses naming the reaction --------------
+        twice = ("ammoniaToNOtwice\n{\n    stoichiometry\n    (\n"
+                 "        { component NH3;    nu -8; }\n"
+                 "        { component O2;     nu -10; }\n"
+                 "        { component NO;     nu  8; }\n"
+                 "        { component water;  nu  12; }\n    );\n}\n\n")
+        cd = fixture(td, "dependent", src=EQUIL03,
+                     fs=[("reactions   ( ammoniaToNO ammoniaToN2 );",
+                          "reactions   ( ammoniaToNO ammoniaToN2 "
+                          "ammoniaToNOtwice );")],
+                     rxn=[("ammoniaToN2             // 4 NH3 + 3 O2",
+                           twice + "ammoniaToN2             // 4 NH3 + 3 O2")])
+        rcd, outd, _ = run(cd)
+        if rcd == 0 or "LINEARLY DEPENDENT" not in outd \
+                or "reaction 'ammoniaToNOtwice'" not in outd:
+            fails.append(f"(k) a dependent declared set was not refused naming "
+                         f"the redundant reaction (exit {rcd})")
+
+        # ---- (l) beyond a double, said -----------------------------------
+        cl = Path(td) / "beyondDouble"
+        for sub in ("system", "constant", "0"):
+            (cl / sub).mkdir(parents=True)
+        (cl / "system" / "controlDict").write_text(
+            "application choupoSolve;\ndescription \"gate fixture\";\n"
+            "verbosity 3;\n")
+        (cl / "constant" / "thermoPhysPropDict").write_text(
+            "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+            "components ( nHexadecane O2 N2 CO2 water );\n"
+            "equilibrium { formulation gammaPhi;\n"
+            "  liquid { activityModel ideal; standardState pureLiquid; }\n"
+            "  vapour { fugacityModel idealGas; } }\n")
+        (cl / "constant" / "reactions").write_text(
+            "burn { stoichiometry ( { component nHexadecane; nu -2; }\n"
+            "  { component O2; nu -49; } { component CO2; nu 32; }\n"
+            "  { component water; nu 34; } ); }\n")
+        (cl / "system" / "flowsheetDict").write_text(
+            "units ( { name burner; type equilibriumReactor; in feed;\n"
+            "  outputs ( out ); operation { T 300 K; }\n"
+            "  reactions ( burn ); } );\n")
+        state = ("componentMolarFlows { nHexadecane 1.0 kmol/h; O2 30 kmol/h;"
+                 " N2 70 kmol/h; }\nT 300 K;\nP 1 bar;\nphase gas;\n")
+        (cl / "0" / "feed").write_text(state)
+        (cl / "0" / "out").write_text(state)
+        rcl, outl, jsl = run(cl, catalogue=True)
+        if rcl != 0:
+            err = re.findall(r"ERROR:.*", outl)
+            fails.append(f"(l) the ln Kp ~ 8243 fixture did not converge "
+                         f"(exit {rcl}{': ' + err[-1][:120] if err else ''})")
+        else:
+            kl = kpis(jsl, "burner")
+            zl = (((jsl or {}).get("streams") or {}).get("out") or {}) \
+                .get("composition", {})
+            if not re.search(r"species 'nHexadecane' is at ln n = -\d+", outl):
+                fails.append("(l) the hexadecane below the smallest double "
+                             "was not announced with its ln n")
+            if zl.get("nHexadecane", -1.0) != 0.0:
+                fails.append(f"(l) the hexadecane was published as "
+                             f"{zl.get('nHexadecane')}, not as exactly 0")
+            if "Kp_burn" in kl:
+                fails.append(f"(l) Kp_burn was published ({kl['Kp_burn']}) "
+                             f"although a double cannot carry it")
+            if "KPI Kp_burn is not published" not in outl:
+                fails.append("(l) the withheld Kp_burn was not announced")
+
     # ---- (g) one home for the rule (source arm) ----------------------------
     def code(path: Path) -> str:
         t = path.read_text()
@@ -404,7 +547,13 @@ def main() -> int:
           "values refused by name, globally and per reaction; the rule has "
           "one home (both reactors call it); the announcement reaches the "
           "caveat block; equil02's complete set reproduces the Gibbs "
-          "reactor and the declared subset makes methanol and no methane.  "
+          "reactor and the declared subset makes methanol and no methane; "
+          "equil03's complete set reproduces the Gibbs reactor down to its "
+          "NH3 at ~6e-18, and the declared NO route's unconverted NH3 "
+          "(below 1e-12) is the declared equilibrium recomputed by hand; a "
+          "dependent set refuses naming the redundant reaction; a "
+          "ln Kp ~ 8243 fixture converges and SAYS what a double cannot "
+          "carry (its ln n, its ln Kp).  "
           "NOT checked: whether any magnitude is right for a bed, coupled "
           "effects, adiabatic operation, non-ideal Kp")
     return 0

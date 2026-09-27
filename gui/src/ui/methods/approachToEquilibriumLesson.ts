@@ -329,7 +329,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
       + "`gibbsReactor` unit, the `gibbsMap` property operation and, since "
       + "2026-09-27, `equilibriumReactor`, which takes a DECLARED reaction "
       + "list and reads the approach PER REACTION on the same sign rule "
-      + "(EquilibriumReactor.cpp:361–459; the EduTool `declared-pathways` "
+      + "(EquilibriumReactor.cpp:520–618; the EduTool `declared-pathways` "
       + "is its page) — so a case that declares an approach should say "
       + "which definition it means and can only mean this one.  (ii) The PELLET EFFECTIVENESS FACTOR is absent and announced "
       + "as absent: Choupo's kinetic reactors evaluate the rate at bulk "

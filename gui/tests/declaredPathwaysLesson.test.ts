@@ -124,13 +124,28 @@ describe("the declared-pathways lesson", () => {
 });
 
 describe("what the page declines to claim", () => {
-  it("names the two witnesses that could NOT be built, with the reason", () => {
+  it("names the witness that could NOT be built, with the reason", () => {
     const carbon = PATHWAYS_LIMITS.find((x) => x.id === "carbon-not-buildable")!;
     expect(prose(carbon.body)).toContain("no solid-carbon record");
-    const ext = PATHWAYS_LIMITS.find((x) => x.id === "extent-resolution")!;
-    expect(prose(ext.body)).toContain("ln K = 121.5");
-    expect(prose(ext.body)).toContain("EquilibriumReactor.cpp:172");
-    expect(prose(ext.body)).toContain("not yet diagnosed");
+  });
+
+  it("gives the ammonia example the reaction lists its witness declares", () => {
+    //  Built 2026-09-27 once the reactor solved on ln n: the page names the
+    //  witness, and the witness must declare what the page says it declares.
+    const l = PATHWAYS_LIMITS.find((x) => x.id === "ammonia-oxidation")!;
+    const body = prose(l.body);
+    expect(body).toContain("equil03_ammonia_oxidation_declared_pathways");
+    expect(body).toContain("ln K = 121.5");
+    expect(body).toContain("cites no catalyst");
+    expect(body).not.toContain("not yet diagnosed");
+    const fs = readFileSync(new URL("../../tutorials/steady/reactors/"
+      + "equil03_ammonia_oxidation_declared_pathways/system/flowsheetDict",
+      import.meta.url), "utf-8");
+    const list = (unit: string) => fs.match(new RegExp(
+      `name\\s+${unit};[\\s\\S]*?reactions\\s*\\(([^)]*)\\)`))?.[1]
+      ?.trim().split(/\s+/);
+    expect(list("declared")).toEqual(["ammoniaToNO"]);
+    expect(list("complete")).toEqual(["ammoniaToNO", "ammoniaToN2"]);
   });
 
   it("says no ΔT on the page is calibrated", () => {

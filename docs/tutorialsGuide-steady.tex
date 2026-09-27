@@ -8879,6 +8879,41 @@ NOT here, and said: carbon deposition (the equilibriumReactor has no pure-solid 
 \end{tutnarrative}
 
 \clearpage
+\tutentry{equil03\_ammonia\_oxidation\_declared\_pathways}{tutorials/steady/reactors/equil03\_ammonia\_oxidation\_declared\_pathways}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (split) at (0.0,-0.0) {\textbf{split}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (gibbs) at (2.9,-0.0) {\textbf{gibbs}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (declared) at (2.9,-1.7) {\textbf{declared}\\[-1pt]{\tiny equilibriumReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (complete) at (2.9,-3.4) {\textbf{complete}\\[-1pt]{\tiny equilibriumReactor}};
+  \draw[->] ($(split.west)+(-1.05,0.00)$) -- ($(split.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (split) -- (gibbs) node[midway, above, font=\tiny] {feedGibbs};
+  \draw[->] (split) -- (declared) node[midway, above, font=\tiny] {feedDeclared};
+  \draw[->] (split) -- (complete) node[midway, above, font=\tiny] {feedComplete};
+  \draw[->] ($(gibbs.east)+(0,0.00)$) -- ($(gibbs.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outGibbs};
+  \draw[->] ($(declared.east)+(0,0.00)$) -- ($(declared.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outDeclared};
+  \draw[->] ($(complete.east)+(0,0.00)$) -- ($(complete.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outComplete};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Declared pathways, a reaction that runs to completion: ammonia in air, three equilibria -- Gibbs over every species, the NO route alone (the N2 route excluded), and the complete reaction set}
+\begin{tutnarrative}
+a declared reaction that runs to COMPLETION.
+
+The companion of equil02 (same shape, same lesson, a harder number). Ten per cent ammonia in air, 1100 K, 5 bar, ideal gas, goes to three equilibrium reactors side by side; every answer is read as MOLE FRACTIONS, so the split is bookkeeping.
+
+gibbs gibbsReactor over EVERY species (NH3 O2 N2 NO water): no reaction declared, the minimum of G under the N, H and O balances. declared equilibriumReactor over ONE reaction: ammoniaToNO 4 NH3 + 5 O2 <$\to$ 4 NO + 6 H2O and nothing else. The N2 route (4 NH3 + 3 O2 <$\to$ 2 N2 + 6 H2O) is left OUT -- and with it every path to N2, including the decomposition of NO itself (2 NO <$\to$ N2 + O2 is a combination of the two library reactions). complete equilibriumReactor over both reactions: a COMPLETE set of independent reactions for five species over three elements (5 - 3 = 2).
+
+THE PREMISE IS YOURS. Leaving the N2 route out states that, over the catalyst this reactor carries, ammonia burns to NO and neither ammonia nor NO finds its way to nitrogen. That is kinetic knowledge; the engine cannot check it and does not try. It computes what FOLLOWS from it.
+
+WHAT THE THREE ANSWERS SHOW (measured with this case, 2026-09-27): gibbs y\_N2 = 0.7424, y\_NO = 6.78e-5, y\_NH3 = 5.66e-18: with every pathway open, ammonia burns to NITROGEN and water. complete the SAME outlet, every species to the last printed digit, NH3 at 5.66e-18 included: a complete set of independent reactions IS the Gibbs reactor. declared y\_NO = 0.0976, every mole of ammonia to NO (conversion 1 to the printed digits), and y\_NH3 = 1.68e-14 left unconverted. Recompute it by hand from the declared equilibrium: 4 ln y\_NH3 = 4 ln y\_NO + 6 ln y\_H2O - 5 ln y\_O2 + ln(P/P0) - ln Kp, ln Kp = 121.515
+
+WHY THIS CASE EXISTS. ln Kp = 121.5 puts the unconverted ammonia near 1e-14 of the outlet. Until 2026-09-27 the equilibrium reactor solved for the reaction EXTENTS, so every amount was the feed minus a multiple of an extent, and a species that small is the difference of two nearly equal numbers; it also held every species above a floor of 1e-12 of the feed. Both the declared and the complete reactor here stalled ("Newton stalled at residual 16.26" and "69.77") and refused. The unknowns are now the LOGARITHMS of the amounts (src/unitOperations/reactor/EquilibriumReactor.cpp, record docs/design/an-equilibrium-that-runs-to-completion.md), and 1e-14, or 1e-300, is an ordinary number for a logarithm.
+
+NOT here, and said: the NO $\to$ NO2 oxidation downstream of the burner (NO2 is not in this species list), non-ideal fugacities, any rate, and any reactor that is not isothermal.
+
+\end{tutnarrative}
+
+\clearpage
 \tutentry{pfr01\_first\_order}{tutorials/steady/reactors/pfr01\_first\_order}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

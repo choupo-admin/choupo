@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  equil03_ammonia_oxidation_declared_pathways  --  a declared reaction that
+                                                   runs to COMPLETION.
+
+  The companion of equil02 (same shape, same lesson, a harder number).  Ten
+  per cent ammonia in air, 1100 K, 5 bar, ideal gas, goes to three
+  equilibrium reactors side by side; every answer is read as MOLE
+  FRACTIONS, so the split is bookkeeping.
+
+    gibbs     gibbsReactor over EVERY species (NH3 O2 N2 NO water): no
+              reaction declared, the minimum of G under the N, H and O
+              balances.
+    declared  equilibriumReactor over ONE reaction:
+                  ammoniaToNO   4 NH3 + 5 O2  <->  4 NO + 6 H2O
+              and nothing else.  The N2 route (4 NH3 + 3 O2 <-> 2 N2 +
+              6 H2O) is left OUT -- and with it every path to N2, including
+              the decomposition of NO itself (2 NO <-> N2 + O2 is a
+              combination of the two library reactions).
+    complete  equilibriumReactor over both reactions: a COMPLETE set of
+              independent reactions for five species over three elements
+              (5 - 3 = 2).
+
+  THE PREMISE IS YOURS.  Leaving the N2 route out states that, over the
+  catalyst this reactor carries, ammonia burns to NO and neither ammonia nor
+  NO finds its way to nitrogen.  That is kinetic knowledge; the engine
+  cannot check it and does not try.  It computes what FOLLOWS from it.
+
+  WHAT THE THREE ANSWERS SHOW (measured with this case, 2026-09-27):
+    gibbs      y_N2 = 0.7424, y_NO = 6.78e-5, y_NH3 = 5.66e-18: with every
+               pathway open, ammonia burns to NITROGEN and water.
+    complete   the SAME outlet, every species to the last printed digit,
+               NH3 at 5.66e-18 included: a complete set of independent
+               reactions IS the Gibbs reactor.
+    declared   y_NO = 0.0976, every mole of ammonia to NO (conversion 1 to
+               the printed digits), and y_NH3 = 1.68e-14 left unconverted.
+               Recompute it by hand from the declared equilibrium:
+                 4 ln y_NH3 = 4 ln y_NO + 6 ln y_H2O - 5 ln y_O2
+                              + ln(P/P0) - ln Kp,   ln Kp = 121.515
+
+  WHY THIS CASE EXISTS.  ln Kp = 121.5 puts the unconverted ammonia near
+  1e-14 of the outlet.  Until 2026-09-27 the equilibrium reactor solved for
+  the reaction EXTENTS, so every amount was the feed minus a multiple of an
+  extent, and a species that small is the difference of two nearly equal
+  numbers; it also held every species above a floor of 1e-12 of the feed.
+  Both the declared and the complete reactor here stalled ("Newton stalled
+  at residual 16.26" and "69.77") and refused.  The unknowns are now the
+  LOGARITHMS of the amounts (src/unitOperations/reactor/EquilibriumReactor.cpp,
+  record docs/design/an-equilibrium-that-runs-to-completion.md), and 1e-14,
+  or 1e-300, is an ordinary number for a logarithm.
+
+  NOT here, and said: the NO -> NO2 oxidation downstream of the burner
+  (NO2 is not in this species list), non-ideal fugacities, any rate, and
+  any reactor that is not isothermal.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        split;
+        type        splitter;
+        in          feed;
+        outputs     ( feedGibbs feedDeclared feedComplete );
+        operation   { fractions ( 0.5 0.25 0.25 ); }
+    }
+    {
+        name        gibbs;
+        type        gibbsReactor;
+        in          feedGibbs;
+        outputs     ( outGibbs );
+        operation
+        {
+            T          1100 K;
+            P          5 bar;
+            elements   ( N  H  O );
+            species
+            (
+                { name  NH3;    atoms  ( 1  3  0 ); }
+                { name  O2;     atoms  ( 0  0  2 ); }
+                { name  N2;     atoms  ( 2  0  0 ); }
+                { name  NO;     atoms  ( 1  0  1 ); }
+                { name  water;  atoms  ( 0  2  1 ); }
+            );
+        }
+    }
+    {
+        name        declared;
+        type        equilibriumReactor;
+        in          feedDeclared;
+        outputs     ( outDeclared );
+        operation
+        {
+            T          1100 K;
+        }
+        reactions   ( ammoniaToNO );                // the N2 route EXCLUDED
+    }
+    {
+        name        complete;
+        type        equilibriumReactor;
+        in          feedComplete;
+        outputs     ( outComplete );
+        operation
+        {
+            T          1100 K;
+        }
+        reactions   ( ammoniaToNO ammoniaToN2 );
+    }
+);

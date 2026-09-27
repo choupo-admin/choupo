@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  Ammonia mixed into air: 10 kmol/h of NH3 and 90 kmol/h of air taken as
+//  21 % O2 and 79 % N2 (argon and CO2 lumped into the nitrogen).  The
+//  composition is this case's premise, chosen to make the lesson visible,
+//  not a quoted plant specification.  Oxygen is in excess of what either
+//  route needs: 18.9 against 12.5 (NO route) or 7.5 (N2 route) per 10 NH3.
+componentMolarFlows
+{
+    NH3      10.0 kmol/h;
+    O2       18.9 kmol/h;
+    N2       71.1 kmol/h;
+}
+
+T               1100 K;
+P               5 bar;
+phase           gas;

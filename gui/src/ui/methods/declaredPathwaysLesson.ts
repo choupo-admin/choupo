@@ -32,12 +32,16 @@
   premise the student DECLARES and cites nothing for it -- an invented
   citation turns an unsourced claim into a falsely sourced one.
 
-  EVERY ENGINE CLAIM CARRIES A file:line, read in the source on 2026-09-27.
-  That is a drafting discipline, not a gate: `check_lesson_symbols` holds the
-  `where` glosses and nothing parses a citation out of a lesson.  Every
-  number quoted in the prose was measured on the witness
-  `equil02_methanol_declared_pathways` with the native build the same day;
-  the numbers the PANEL shows are the engine's, read live.
+  EVERY ENGINE CLAIM CARRIES A file:line, read in the source on 2026-09-27
+  (re-read the same day when the equilibrium reactor moved to ln n; record
+  docs/design/an-equilibrium-that-runs-to-completion.md).  That is a
+  drafting discipline, not a gate: `check_lesson_symbols` holds the `where`
+  glosses and nothing parses a citation out of a lesson.  Every number
+  quoted in the prose was measured on the witnesses
+  `equil02_methanol_declared_pathways` and
+  `equil03_ammonia_oxidation_declared_pathways` with the native build the
+  same day; the numbers the PANEL shows are the engine's, read live (the
+  panel runs equil02; equil03 is the second example, run as a case).
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, LessonLimit } from "./lessonStep.js";
@@ -54,10 +58,11 @@ export const PATHWAYS_STEPS: readonly LessonStep[] = [
       + "is open to it (the atom inventory is built from the feed, "
       + "GibbsReactor.cpp:260).  An equilibrium reactor is told REACTIONS: a "
       + "list of names from constant/reactions, each a stoichiometry.  The "
-      + "outlet can move only along those reactions, n = n0 + Σ ν ξ "
-      + "(EquilibriumReactor.cpp:162), and each declared reaction is driven "
-      + "to its own equilibrium constant, the residual ln Q − ln K "
-      + "(EquilibriumReactor.cpp:188–189), with every K from the same "
+      + "outlet can move only along those reactions, n = n0 + Σ ν ξ (the "
+      + "engine writes it as the conservation laws the declared set leaves "
+      + "intact, EquilibriumReactor.cpp:242–254), and each declared reaction "
+      + "is driven to its own equilibrium constant, the residual ln Q − ln K "
+      + "(EquilibriumReactor.cpp:277–278), with every K from the same "
       + "formation data the Gibbs reactor minimises over "
       + "(Reaction::equilibrium, EquilibriumReactor.cpp:92).  Same "
       + "thermodynamics, same data, two different questions.",
@@ -84,8 +89,11 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ij}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
         + "reactions: one row per reaction, one column per species, negative "
         + "for a reactant and positive for a product" },
       { sym: "\\xi", means: "the vector of reaction EXTENTS, one per declared "
-        + "reaction: the UNKNOWN of the equilibrium reactor.  Negative when a "
-        + "reaction runs backward from the feed", unit: "mol/s" },
+        + "reaction: how far each has run.  Negative when a reaction runs "
+        + "backward from the feed.  The engine solves for the LOGARITHMS of "
+        + "the outlet amounts and recovers ξ from them "
+        + "(EquilibriumReactor.cpp:468–511), so a species left at 10⁻¹⁴ of the "
+        + "feed is resolved, not lost to a subtraction", unit: "mol/s" },
       { sym: "\\nu_{ij}", means: "the stoichiometric coefficient of species i "
         + "in reaction j" },
       { sym: "i", means: "the species index" },
@@ -183,7 +191,7 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ij}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
       + "a MAGNITUDE — a negative value is refused by name "
       + "(EquilibriumReactor.cpp:134 and :145) — and the ENGINE assigns the "
       + "direction to each declared reaction separately "
-      + "(EquilibriumReactor.cpp:361–459).  It first solves the true "
+      + "(EquilibriumReactor.cpp:520–618).  It first solves the true "
       + "equilibrium at the physical T, reads which way each reaction RUNS "
       + "from this feed, and multiplies that direction by the reaction's "
       + "enthalpy as written: exothermic AS IT RUNS, Kp is taken at T + ΔT; "
@@ -195,7 +203,7 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ij}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
       + "running forward, is taken above it: with 20 K the conversion falls "
       + "from 0.610 to 0.442.  The reactor itself stays at T; only each K "
       + "moves, and each reaction's evaluation temperature is published as "
-      + "`T_Kp_<name>` (EquilibriumReactor.cpp:523).",
+      + "`T_Kp_<name>` (EquilibriumReactor.cpp:704).",
     formula: String.raw`K_j \;\to\; K_j\!\left(T + s_j\,\lvert\Delta T\rvert\right),
 \qquad
 s_j = \begin{cases} +1 & \xi_j^{\,0}\,\Delta H_j < 0 \\ -1 & \xi_j^{\,0}\,\Delta H_j > 0 \end{cases}`,
@@ -260,24 +268,39 @@ export const PATHWAYS_LIMITS: readonly LessonLimit[] = [
       + "would need new thermochemistry and new physics.  None was invented.",
   },
   {
-    id: "extent-resolution",
-    title: "A pathway that runs to completion is out of reach of the extent formulation.",
-    body: "Ammonia oxidation was the other classic candidate — declare 4 NH₃ "
-      + "+ 5 O₂ → 4 NO + 6 H₂O and leave the nitrogen route out.  The Gibbs "
-      + "reactor, which works in logarithms of amounts, solves it at 1100 K "
-      + "and 1 bar (ten per cent ammonia in air) and sends the ammonia to N₂, "
-      + "with NO at 6.8 × 10⁻⁵.  The declared NO route alone is priced by the "
-      + "engine at ln K = 121.5 at 1100 K (`reactionGibbs`), which at full "
-      + "conversion leaves an ammonia mole fraction near 10⁻¹⁴ — below the "
-      + "interior floor of 10⁻¹² of the feed that the equilibrium reactor "
-      + "holds every participating species above (EquilibriumReactor.cpp:172), "
-      + "and far below what extents subtracted from the feed can resolve in "
-      + "double precision.  The reactor stalls and refuses to publish rather "
-      + "than print a wrong equilibrium.  This panel's temperature slider "
-      + "stops at 525 K for a related reason that is MEASURED and not yet "
-      + "diagnosed: at 500 K the COMPLETE set's Newton stalls too, although "
-      + "the Gibbs reactor's trace species there (CO near 10⁻⁶, methanol "
-      + "near 4 × 10⁻¹¹ of the feed) sit above that floor.",
+    id: "ammonia-oxidation",
+    title: "A second example: ammonia oxidation, where the declared route runs to completion.",
+    body: "The witness `equil03_ammonia_oxidation_declared_pathways` asks the "
+      + "same three questions of ten per cent ammonia in air at 1100 K and "
+      + "5 bar.  With every pathway open the Gibbs reactor burns the ammonia "
+      + "to NITROGEN — y_N₂ = 0.742, NO at 6.8 × 10⁻⁵ — and the complete set "
+      + "(both routes, 5 − 3 = 2) reproduces it to the last printed digit, "
+      + "the ammonia at 5.7 × 10⁻¹⁸ included.  Declare the NO route alone, "
+      + "4 NH₃ + 5 O₂ → 4 NO + 6 H₂O, and leave the N₂ route off — and with "
+      + "it every path to nitrogen, the decomposition of NO included — and "
+      + "the answer is NO: y_NO = 0.098, all of the ammonia converted.  The "
+      + "exclusion is again your premise, and this page cites no catalyst "
+      + "for it.  The engine prices the declared route at ln K = 121.5 at "
+      + "1100 K (`Reaction::equilibrium`), and the ammonia it leaves is "
+      + "1.7 × 10⁻¹⁴ of the outlet; recompute it by hand from "
+      + "4 ln y_NH₃ = 4 ln y_NO + 6 ln y_H₂O − 5 ln y_O₂ + ln(P/P°) − ln K.  "
+      + "Until 2026-09-27 this example could not be built: the equilibrium "
+      + "reactor solved for the extents, so every amount was the feed minus a "
+      + "multiple of an extent, and it held every species above 10⁻¹² of the "
+      + "feed — it stalled and refused rather than print a wrong equilibrium.  "
+      + "It now solves for the logarithms of the amounts "
+      + "(EquilibriumReactor.cpp:150–176), where 10⁻¹⁴, or 10⁻³⁰⁰, is an "
+      + "ordinary number.",
+  },
+  {
+    id: "slider-range",
+    title: "The temperature slider stays between 525 and 625 K.",
+    body: "Below about 450 K at 50 bar the Gibbs reactor condenses water — "
+      + "its gas + liquid method emits a condensate stream — while the "
+      + "equilibrium reactor is gas-only, so the columns would stop answering "
+      + "the same question.  (This page once reported that the complete set's "
+      + "Newton stalled at 500 K; that was the extent formulation, and it is "
+      + "gone.)",
   },
   {
     id: "ideal-gas-at-fifty-bar",

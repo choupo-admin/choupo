@@ -1444,12 +1444,19 @@ accepts today, and that is a policy call.
      buildable: no solid-carbon record (`C.dat` is atomic carbon gas) and no
      pure-solid phase.  (b) NOT buildable: Gibbs solves it, but the declared
      NO route (ln K 121.5 at 1100 K) leaves NH3 below the extent formulation's
-     resolution and `equilibriumReactor` stalls.  Gate
+     resolution and `equilibriumReactor` stalls.  **(b) BUILT the same day by a
+     follow-up general:** the reactor solves on ln n with the invariants of the
+     declared set, witness `equil03_ammonia_oxidation_declared_pathways`
+     (declared NO route: NH3 1.68e-14; complete set = Gibbs down to NH3
+     5.7e-18); the 500 K stall below was the same formulation, now gone.
+     Record: docs/design/an-equilibrium-that-runs-to-completion.md.  One
+     golden row moves (equil01 `newtonIterations` 10 -> 12), NOT re-recorded:
+     it waits for Vitor.  Gate
      `check_reaction_subset_approach` (7 sabotages).  Record:
      docs/design/a-declared-pathway-and-its-approach.md.  NOT done: an
      adiabatic mode, non-ideal Kp, the `equilibriumReactor` duty still on
-     `h_pure_ig` (the 2026-09-25 surface family, not enumerated then), the
-     complete set's unexplained stall at 500 K, goldens for equil02.
+     `h_pure_ig` (the 2026-09-25 surface family, not enumerated then),
+     goldens for equil02 (and now equil03).
 
 **C12. WATER IS A RECORD A STUDENT CAN TRUST OVER THE WHOLE RANGE THE CORPUS
      USES IT IN (asked 2026-09-27; Vitor: "a gap in water's properties is

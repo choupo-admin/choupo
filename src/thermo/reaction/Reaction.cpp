@@ -146,7 +146,7 @@ Reaction::Equilibrium Reaction::equilibrium(const ThermoPackage& thermo,
             sumNu += nu[i];
         }
     const scalar Kp = std::exp(-dG / (constant::R * T));
-    return { Kp, sumNu, Kp * concentrationFactor(sumNu, T) };
+    return { Kp, sumNu, Kp * concentrationFactor(sumNu, T), -dG / (constant::R * T) };
 }
 
 scalar Reaction::forwardOrder(const Dictionary&  entry,
