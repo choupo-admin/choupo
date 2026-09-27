@@ -46,19 +46,36 @@ WHAT IT CHECKS
       stream in the result JSON), the SAME column with its reverse rate
       constant set to zero.  Before the fix the reverse leg priced the absent
       product at unit activity and the two runs parted (measured on the
-      parent commit: reactionExtent 1.02570912736e-09 against
-      1.02743439018e-09 kmol/s).  The probe's catalyst charge is small enough
-      that the column converges; see CAT_MASS for why it must be.
+      parent commit, at the 0.001 g the arm then ran: reactionExtent
+      1.02570912736e-09 against 1.02743439018e-09 kmol/s).  Since the A7
+      convergence fix the arm runs at CAT_MASS = 1 g, a charge that converts
+      ~12 % of the acid -- the reaction MOVES the profile it is compared on.
   A5  (D06) the two refusals the fix brought with it: a kinetic reactant with
       no declared `order` refuses through Reaction::forwardOrder, and an
       `adsorption` law whose reacting species declares no K refuses by name.
+  A6  (A7) the kinetic reactive column CONVERGES at charges that move its
+      profile and its answer SATISFIES the balances it was solved on.  At
+      1 g and 10 g (both runs exit 0): every component closes over the
+      column, out - in = nu_i * reactionExtent, to 1e-9 of the total feed
+      (measured ~1e-12), recomputed here from the result JSON's streams and
+      the column's own reactionExtent (which the engine re-evaluates from the
+      rate on the converged profile); the charge actually reacts (> 5 % of
+      the acid at 1 g); and conversion RISES with the charge.  The closure is
+      the arm that sees the defect: the column used to mix balances in
+      kmol/s with the dimensionless Sum(y)-1 rows under one absolute
+      tolerance, so a charge whose imbalance stayed under 1e-9 kmol/s was
+      "converged" without a single Newton iteration -- a balance off by the
+      whole reaction -- and a larger one stalled, refused by the line search.
+      The run must also ANNOUNCE the balance scaling (a solver aid reports
+      aloud).
 
 WHAT IT DOES NOT CHECK, stated so nothing is implied:
   * N >= 2 absorbers and strippers (the corpus goldens pin those);
-  * whether the kinetic reactive column CONVERGES at a catalyst charge that
-    moves its profile -- on column05's system it does not at 0.01 g or
-    above, identically on the parent commit (DEV.md §5 A7), so the probe
-    runs at a charge where the reaction stays inside the Newton tolerance;
+  * that the kinetic profile is RIGHT -- no measured or published kinetic
+    column is reproduced; A6 holds convergence, closure and monotonicity;
+  * the equilibrium and non-reactive columns' tolerance, which stays an
+    ABSOLUTE 1e-9 on kmol/s balances (DEV.md §5 A7 names why and the
+    remedy);
   * a Newton TRIAL that drives a product's x to zero -- the same limit, but
     no output can show which trials the solver took.
 
@@ -72,7 +89,19 @@ SABOTAGES, performed by hand on 2026-09-27, restored by `cp` then `make all`:
       against 1.02743439018e-09 kmol/s.
   All three in ONE rebuild: each fired its own arm and no other (A5 stayed
   green), which is what makes one rebuild enough.  The PARENT commit's
-  engine fails all five arms.
+  engine fails all five arms.  (S1-S3 were performed with A4 at 0.001 g.)
+  S4  (A7, same day) DistillationColumn.cpp's kinetic balance scale set back
+      to 1 -> A4 FAILED, "the kinetic probe 'withReverse' did not converge
+      (exit 2)", and nothing else (A6 needs A4's run).  The same build on the
+      OLD 0.001 g probe exits 0 with every component balance off by
+      5.44e-5 of the feed -- exactly reactionExtent/F, the whole reaction --
+      at the reactionExtent 1.02743439018e-09 kmol/s A4 used to compare.
+  S5  the published reactionExtent multiplied by (1 + 1e-6) -> A6 FAILED on
+      all four components at both charges (5.31e-8 and 2.63e-7 of the feed
+      against 1e-9), A4 green (both runs perturbed alike): the closure arm
+      resolves a 1 ppm error in the extent.
+  S4 and S5 in separate rebuilds, since S4 masks A6; restored by `cp`, then
+  `make all`.
 
 Exit 0 = every probe reproduces its hand calculation.
 """
@@ -308,16 +337,76 @@ def reactive_arms():
                             " declares no K did not refuse by name -- its"
                             " reverse leg would vanish on a number nobody"
                             " declared")
-        return prof["withReverse"][2]
+        return prof["withReverse"][2], outs["withReverse"]
 
 
-#  Small enough that the probe CONVERGES: on this system the kinetic mode does
-#  not converge at 0.01 g or above, identically before and after D06 (a
-#  pre-existing finding, DEV.md §5 A7).  At 0.001 g the reaction does not move
-#  the profile past the Newton tolerance, so A4 tests the rate the column
-#  EVALUATES and REPORTS (reactionExtent is recomputed from rateAt on the
-#  converged profile) -- which is exactly where D06 lived.
-CAT_MASS = "0.001 g"
+#  A charge that MOVES the profile: ~12 % of the acid converts at 1 g.  Until
+#  the A7 fix (2026-09-27) the kinetic mode converged on this system at
+#  nothing >= 0.01 g, so A4 ran at 0.001 g, where the reaction stayed inside
+#  the absolute tolerance and the column returned its non-reactive profile
+#  untouched -- A4 then compared the rate the column EVALUATED on a profile
+#  the rate had not shaped.  A4's identity is exact at any charge (a'_water
+#  = 0 makes both runs compute the same doubles), so it now holds on a
+#  profile the reaction shaped.
+CAT_MASS = "1 g"
+#  A6's second charge: ~58 % conversion, 13 Newton iterations at full charge.
+CAT_MASS_HIGH = "10 g"
+CLOSURE_TOL = 1.0e-9      # of the total feed; measured ~1e-12 after the fix
+NU = {"methanol": -1.0, "aceticAcid": -1.0, "methylAcetate": 1.0, "water": 1.0}
+
+
+def kinetic_closure_arm(prof_1g):
+    """A6: the kinetic column converges where the reaction moves it, and its
+    answer satisfies the balances it was solved on."""
+    runs = {CAT_MASS: prof_1g}
+    with tempfile.TemporaryDirectory() as tds:
+        rc, out = run(rd_probe(Path(tds), "high", "6.127e5", CAT_MASS_HIGH))
+        if rc != 0:
+            failures.append(f"A6: the kinetic column at {CAT_MASS_HIGH} did not"
+                            f" converge (exit {rc}) -- a charge that moves the"
+                            f" profile must be solvable (DEV.md §5 A7)")
+            return None
+        runs[CAT_MASS_HIGH] = out
+    conv = {}
+    for cat, out in runs.items():
+        if "each component balance is divided by the total feed" not in out:
+            failures.append(f"A6: the kinetic column at {cat} did not announce"
+                            " its balance scaling -- a solver aid reports aloud")
+        js = result_json(out)
+        st = js.get("streams", {})
+        kp = js.get("kpis", {}).get("rdColumn", {})
+        need = ("feed", "acidFeed", "distillate", "bottoms")
+        if "reactionExtent" not in kp or "conversion" not in kp \
+                or any(s not in st for s in need):
+            failures.append(f"A6: the run at {cat} published no reactionExtent,"
+                            " conversion or port streams -- nothing to close")
+            return None
+        xi = kp["reactionExtent"]
+        F_in = st["feed"]["F"] + st["acidFeed"]["F"]
+        for c, nu in NU.items():
+            gen = (flow(st["distillate"], c) + flow(st["bottoms"], c)
+                   - flow(st["feed"], c) - flow(st["acidFeed"], c))
+            err = abs(gen - nu * xi) / F_in
+            if err > CLOSURE_TOL:
+                failures.append(
+                    f"A6: at {cat} the kinetic column does not satisfy its own"
+                    f" balance for {c}: out - in = {gen*3600:.9g} kmol/h against"
+                    f" nu*xi = {nu*xi*3600:.9g} kmol/h, off by {err:.3g} of the"
+                    f" feed (tolerance {CLOSURE_TOL:.0e}).  Either the profile"
+                    f" was not solved to the balances (a column stopping on an"
+                    f" ABSOLUTE tolerance in kmol/s calls a profile the"
+                    f" reaction never shaped 'converged') or the published"
+                    f" extent is not the rate on that profile")
+        conv[cat] = kp["conversion"]
+    if conv[CAT_MASS] <= 0.05:
+        failures.append(f"A6: at {CAT_MASS} only {conv[CAT_MASS]:.3%} of the acid"
+                        " converts -- the probe no longer moves the profile it"
+                        " claims to test")
+    if not conv[CAT_MASS] < conv[CAT_MASS_HIGH] < 1.0:
+        failures.append(f"A6: conversion does not rise with the charge"
+                        f" ({CAT_MASS}: {conv[CAT_MASS]:.6g}, {CAT_MASS_HIGH}:"
+                        f" {conv[CAT_MASS_HIGH]:.6g})")
+    return conv
 
 
 def main() -> int:
@@ -330,6 +419,7 @@ def main() -> int:
     a2 = one_stage("A2", STRIPPER, "stripper", "liquidFeed", "strippingGas",
                    "strippedLiquid", "richGas", None)
     rx = reactive_arms()
+    conv = kinetic_closure_arm(rx[1]) if rx else None
 
     if failures:
         print("check_degenerate_limits: FAIL")
@@ -343,13 +433,18 @@ def main() -> int:
           " combined feeds to %.0e of the solute, both probes provably on the"
           " one-stage isothermal branch; a kinetic reactive column whose"
           " product adsorbs with K 0 reproduces the same column with no"
-          " reverse rate EXACTLY, every KPI and stream (%s); a kinetic reactant"
-          " with no `order` and an adsorbing product with no K both refuse by"
-          " name.  NOT checked: N >= 2 (the goldens pin those), whether a"
-          " kinetic reactive column converges at a catalyst charge that"
-          " moves its profile (on this system it does not, before or after"
-          " the fix), or a Newton trial crossing a zero activity."
-          % (a1[0] * 3600, a1[1], a2[0] * 3600, a2[1], REL_TOL, rx))
+          " reverse rate EXACTLY at %s, every KPI and stream (%s); a kinetic"
+          " reactant with no `order` and an adsorbing product with no K both"
+          " refuse by name; the kinetic column converges at %s and %s"
+          " (conversion %.4g -> %.4g), announces its balance scaling and"
+          " closes every component balance to %.0e of the feed.  NOT checked:"
+          " N >= 2 (the goldens pin those), that a kinetic profile is RIGHT"
+          " (nothing measured is reproduced), the equilibrium and"
+          " non-reactive columns' absolute tolerance, or a Newton trial"
+          " crossing a zero activity."
+          % (a1[0] * 3600, a1[1], a2[0] * 3600, a2[1], REL_TOL, CAT_MASS,
+             rx[0], CAT_MASS, CAT_MASS_HIGH, conv[CAT_MASS],
+             conv[CAT_MASS_HIGH], CLOSURE_TOL))
     return 0
 
 

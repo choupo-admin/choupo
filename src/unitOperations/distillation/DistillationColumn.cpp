@@ -1603,6 +1603,45 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     const std::size_t nExtents = kinetic ? 0 : nRx; // kinetic: extent is COMPUTED, not an unknown
     const std::size_t nU = N * nv + nExtents;
 
+    //  THE KINETIC COLUMN SOLVES ON DIMENSIONLESS COMPONENT BALANCES (DEV.md
+    //  §5 A7, 2026-09-27).  A component balance is a molar flow (kmol/s); the
+    //  bubble-point row beside it, Sum(y) - 1, is a pure number.  newtonND
+    //  takes ONE absolute tolerance and ONE line-search merit, ||F||_2, over
+    //  both, so on a small column (column05's feeds are ~1e-5 kmol/s) the
+    //  balances weigh 1e-5 of the Sum(y) rows.  A kinetic rate enters ONLY
+    //  through the balances (the extent is computed, not an unknown), and
+    //  that mismatch then fails twice, measured on column05's system:
+    //    * a charge whose imbalance stays under 1e-9 kmol/s is never solved
+    //      at all -- the 0.01 g probe's first two continuation steps took
+    //      ZERO Newton iterations, the profile left exactly non-reactive;
+    //    * a charge above it is REFUSED by the line search: the Newton step
+    //      that fixes a 1e-10 kmol/s imbalance moves x by ~2e-4, whose
+    //      second-order error on the Sum(y) rows of the end stages exceeds
+    //      the whole starting norm, so alpha fell to 1/32 and the run
+    //      stalled at a floor proportional to the charge (0.01 g: |F| from
+    //      5.1e-9 to 5.8e-7 across the ramp; every charge >= 0.01 g failed).
+    //  Dividing the balances by the column's total feed makes every row a
+    //  fraction, so the tolerance is RELATIVE and the merit weighs the rows
+    //  alike; the Newton DIRECTION is unchanged (a constant row scale), only
+    //  what counts as progress.  Measured after: 0.1, 1, 10 and 100 g all
+    //  converge, 2-13 iterations per continuation step.  NOT applied to the
+    //  equilibrium or non-reactive columns, and that is a measurement, not a
+    //  preference: the same scale on every column made column05's
+    //  EQUILIBRIUM phase 2 diverge (its path runs through alpha 1/8 and
+    //  dT = 134 K steps even unscaled) and moved column12's cancellation-level
+    //  boundary residual -- the general remedy is recorded in DEV.md §5 A7.
+    const scalar balanceScale =
+        (kinetic && totFeed > 0.0) ? 1.0 / totFeed : 1.0;
+    if (kinetic && verbosity >= 2)
+    {
+        std::ostringstream f;                      // leave std::cout's format as found
+        f << std::scientific << std::setprecision(4) << totFeed;
+        std::cout << "  [solver] kinetic reactive column: each component balance"
+                     " is divided by the total feed (" << f.str() << " kmol/s),"
+                     " so it is a fraction like the Sum(y) - 1 row beside it and"
+                     " the 1e-9 tolerance is relative\n";
+    }
+
     // Reaction rate r [mol/(g_cat·s)] at a stage (pseudo-homogeneous or adsorption
     // LHHW).  a_i = γ_i x_i; for the adsorption model a'_i = K_i a_i / M_i and the
     // rate is divided by (Σ a'_i)².  Forward over the declared forward orders
@@ -1691,7 +1730,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                     m = (L[j] + Udraw[j])*x[j][i] + (V[j] + Wdraw[j])*y[j][i]
                         - L[j-1]*x[j-1][i] - V[j+1]*y[j+1][i] - Ffeed[j]*zfeed[j][i];
                 if (ext >= 0) m -= nu[i] * xi;              // reaction generation ν_i·ξ_j
-                g[j*nv + i] = m;
+                g[j*nv + i] = m * balanceScale;             // kinetic: a fraction of the feed
             }
             scalar sy = 0.0;                                // E_j: Σ y − 1
             for (std::size_t i = 0; i < n; ++i) sy += y[j][i];

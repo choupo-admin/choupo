@@ -2679,7 +2679,7 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      turned kinetic (pseudo-homogeneous, 1 g, its own product-free feeds)
      takes a different Newton path before and after the fix (Sum xi 6.854e-3
      against 6.843e-3 kmol/h after 80 iterations), though neither build
-     converges -- see (1) below.  Fixed at the root by the rule every other rate
+     converged then -- see (1) below, closed the same day.  Fixed at the root by the rule every other rate
      in the engine already uses (`RateLaw::netRate`, CSTR, PFR,
      BatchReactor, DynamicCSTR -- all raise with `std::pow` and no special
      case): a^p with p > 0 is 0 at a = 0 on BOTH legs.  ONE home was not
@@ -2713,15 +2713,69 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      refusals).  Sabotaged by hand (S1 absorber `=`, S2 stripper `=`, S3 the
      positive-only multiply): each fired its own arm and only its own, and
      the parent build fails all five arms.
-     **FOUND, NOT FIXED, each measured:** (1) the KINETIC reactive column
+     **FOUND, NOT FIXED, each measured:** (1) ~~the KINETIC reactive column
      does not converge on column05's system at any catalyst charge >= 0.01
-     g -- IDENTICALLY on the parent build, so it is not D06: phase 1 lands at
-     |F| 7.9e-10 against a 1e-9 tolerance and the continuation stalls with a
-     residual floor proportional to the catalyst scale, on the Sum(y)-1 rows
-     of NON-reactive stages; neither the parallel Jacobian nor the
-     block-tridiagonal coloring is the cause (both switched off, same
-     numbers).  Undiagnosed; the gate runs at 0.001 g, where the reaction
-     stays inside the tolerance, and says so.  (2) the stripper still
+     g~~ **CLOSED 2026-09-27, diagnosis below.**  ROOT CAUSE: the
+     simultaneous MESH residual mixes the component balances, in kmol/s,
+     with the Sum(y) - 1 rows, pure numbers, and `newtonND` judges both with
+     ONE absolute tolerance (1e-9) and ONE line-search merit (||F||_2).  On
+     column05's system the feeds are ~1.9e-5 kmol/s, so a balance row
+     weighs ~1e-5 of a Sum(y) row, and a kinetic rate enters ONLY through
+     the balances (the extent is computed, not an unknown).  Two failures
+     follow, both measured on the 0.01 g probe: (a) the first two
+     continuation steps (0.01 and 0.05 of the charge) put a reaction
+     imbalance of 5.9e-11 and 3.0e-10 on the rows -- under the tolerance --
+     and returned after ZERO Newton iterations, the profile untouched;
+     (b) from 0.2 on, the Newton step that removes a ~1e-10 kmol/s
+     imbalance moves x by ~2e-4 and T by ~7e-3 K at stages 24-25, whose
+     SECOND-order error on the end stages' Sum(y) rows exceeds the whole
+     starting norm, so the line search cut alpha to 1/16-1/64 and the run
+     crawled -- the residual floor proportional to the charge (5.1e-9,
+     2.7e-8, 1.1e-7, 2.9e-7, 5.8e-7 across the 1 g ramp) on the Sum(y) rows
+     of stages 1, 2, 24, 25, exactly as filed.  (The filed "phase 1 lands at
+     |F| 7.9e-10" did not reproduce on the gate's probe: phase 1 lands at
+     7.7e-15 in 9 iterations.)  THE SAME DEFECT AT EXIT 0: the old engine
+     on the gate's 0.001 g probe "converged" with every component balance
+     off by 5.44e-5 of the feed -- exactly reactionExtent/F, the whole
+     reaction -- so the D06 A4 identity was being checked on a profile the
+     reaction had never shaped.  HYPOTHESES, each measured:
+     *balance/Sum(y) scaling* -- CONFIRMED: dividing the balances by the
+     total feed (so every row is a fraction), with nothing else changed,
+     converges 0.01 g in 2 iterations per continuation step, and 0.1, 1, 10
+     and 100 g in 2-13 (conversion of acid 1.2, 11.7, 58.1, 80.4 %, every
+     balance closed to ~1e-12 of the feed); *FD step too coarse for the
+     rate* -- RULED OUT: fdStep 1e-5, 1e-7, 1e-9 give the same stall to
+     three digits (|F| 2.80e-9, 2.80e-9, 2.94e-9 after 80 iterations);
+     *continuation re-entering with a stale state* -- RULED OUT: each step
+     starts from the previous converged x (checked), and jumping straight
+     to the full charge stalls the same unscaled (5.1e-9) and converges
+     scaled (2 iterations); *a row whose normalisation ignores the catalyst
+     term* -- there is NO normalisation in the MESH at all (`Convergence.H`
+     is not wired there, §5 of CLAUDE.md), which is the scaling finding
+     under another name.  THE FIX (`DistillationColumn.cpp`, `balanceScale`
+     beside `nU`): in KINETIC mode each component balance is divided by the
+     total feed, announced at verbosity >= 2; the Newton direction is
+     unchanged (a constant row scale), only what the tolerance and the line
+     search count as progress.  **Deliberately NOT applied to the
+     equilibrium and non-reactive columns, measured:** the same scale on
+     every column made column05's EQUILIBRIUM phase 2 diverge (exit 2 --
+     its homotopy starts at |F| = 2.2e3, the ln Q - ln K_a rows evaluated on
+     a phase-1 profile that carries no product, and runs through alpha 1/8
+     and dT = 134 K steps even unscaled) and moved column12's boundary residual
+     (-5.66e-6 against a pinned -8.38e-6 kW, cancellation round-off); the
+     other 28 column cases passed.  **PROPOSED REMEDY, not taken:**
+     dimensionless balances on EVERY MESH (the `Convergence.H` rule --
+     normalise by the terms the equation balances), which needs first a
+     robust equilibrium homotopy (seed the products off zero, or ramp K_a
+     as the kinetic mode ramps the charge) and a re-record of column12's
+     round-off pin with the list shown to Vítor; until then the equilibrium
+     and non-reactive columns keep an ABSOLUTE 1e-9 kmol/s tolerance, which
+     on a column as small as column05 is ~5e-5 of its feed.  Gate:
+     `check_degenerate_limits` -- A4 now at 1 g, new arm A6 (convergence at
+     1 g and 10 g, the scaling announced, every component balance closed to
+     1e-9 of the feed, conversion rising with the charge); sabotages S4 (the
+     scale reverted: A4 exit 2) and S5 (the extent 1 ppm off: A6 on all
+     four components) in its docstring.  (2) the stripper still
      DELETES solvent that arrives with the stripping gas -- the 2026-08-12
      absorber fix (`liqMol = L x_in + V y_in` for the solvent) was never
      carried to its twin; latent (stripper01's gas is pure N2).  Where
