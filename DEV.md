@@ -1587,7 +1587,8 @@ accepts today, and that is a policy call.
 **C15. AN EDUTOOL FOR THE ELEMENT-POTENTIAL METHOD -- how the Gibbs reactor
      SOLVES, not what it is (commissioned 2026-09-27).**  Vítor asked which
      minimisation the Gibbs reactor uses (answered from the source: three
-     methods registered at `gibbsMethod/GibbsMethod.cpp:229-236`, selected by
+     methods registered at
+     `src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp:229-236`, selected by
      `model` at `GibbsReactor.cpp:206`, default `elementPotential`, the
      Lagrangian RAND / Brinkley-White method of `ElementPotential.H`), then
      whether an EduTool for it would be good, and on the proposed scope:
