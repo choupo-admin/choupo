@@ -3085,7 +3085,7 @@ Corollaries, each paid for:
   general stages per file, and a per-file stage sweeps in an unstaged edit of
   yours that no one reviewed.
 * **One general owns the tree at a time**, and **a commit lands only on FAIL
-  0** of the full suite.
+  0** of the validation its slice requires (the rule below).
 * **Launch a background suite under the harness's own supervision.**  A plain
   `nohup … &` from a tool call is killed when the call returns — it happened
   twice in one day, losing two 30-minute runs.
@@ -3098,15 +3098,17 @@ Corollaries, each paid for:
   inputs rather than the engine's source where the arm allows it.  (Costed
   once, 2026-09-22: a restored `ResultEmitter.cpp` with an unchanged md5
   aborted a run that had already started.)
-* **ONE FULL SUITE PER SLICE, NOT TWO** (Vítor, 2026-09-27: forty minutes
-  for a change that did not need them twice).  The general's full suite on
-  its branch IS the integration suite when the branch sits on the current
-  `main`, so the commander does not re-run it after the merge; if `main`
-  moved only in files no case reads (a doc, this file), the commander runs
-  the gates that read those files and nothing else; only a `main` that
-  moved in `src/`, `tutorials/`, `data/` or `gui/` needs a second sweep.
-  During development the rungs are `--gui`, `--fast`, the affected cases
-  and the affected gates -- the full suite runs ONCE, at the end.
+* **A NEW FEATURE IS TESTED ON THE CASES THAT USE IT** (ruled by Vítor,
+  2026-09-27, twice in one hour and the second time sharply).  A slice
+  that ADDS -- a new unit, op, sizer, lesson or case, plus the one
+  registration line that reaches it -- is validated by: the build, the
+  cases that exercise the new code and the existing cases whose surfaces
+  the slice edited, `--gui` when `gui/` moved, and the gates that READ the
+  files it touched.  Not the corpus.  The full sweep is for a slice that
+  CHANGES a shared path every case goes through (a solver, the thermo
+  package, the flowsheet, a report, `ResultEmitter`) -- and then it runs
+  ONCE, on the branch that is merged, never again after the merge unless
+  `main` moved in code meanwhile.
 * **Do not block the turn waiting for a suite.**  The commander's job is to
   coordinate AND to stay reachable; a ten-minute blocking wait is neither.
   Check in short calls and REFLECT in between — Vítor has said this twice,
@@ -3411,7 +3413,7 @@ domains like membranes).
 | Full regression | `bin/runTests` |
 | "Has any FAMILY of the corpus gone dark?" | `bin/runTests --fast` — one representative case per tutorial FAMILY (`tutorials/FASTSET`, a DECLARED list whose COMPLETENESS is gated by `check_fastset`) with the sweep's own per-case checks, then four CONSERVATION gates SCOPED to that same pass — conservation is the class of defect no golden can see, because a golden pins what a run PRINTS.  Seconds, not minutes.  It is the rung BETWEEN `--witnesses` (one case per EXECUTION CLASS) and the sweep, because 12 architectural classes do not cover the corpus's shape: an adsorber, psychrometrics or hydraulics change passes `--witnesses` untouched.  It authorises NO commit and says so in its own verdict line |
 | Where the suite's wall clock goes | `build/suiteTimings.csv` — written by every check-mode `bin/runTests` (item, kind, seconds); the ten slowest are printed after the tally.  A measurement, not a gate: the item's seconds are the gap since the previous result line |
-| A change confined to `gui/` | `bin/runTests --gui` — the app's tests + typecheck + every gate that READS `gui/` (list DERIVED from the gate sources, never hand-kept).  ~3 min against ~30: no corpus case runs and no C++ is compiled, so it says nothing about the solver.  The moment a commit also touches `src/`, `tutorials/` or `data/`, the full sweep is the check |
+| A change confined to `gui/` | `bin/runTests --gui` — the app's tests + typecheck + every gate that READS `gui/` (list DERIVED from the gate sources, never hand-kept).  ~3 min against ~30: no corpus case runs and no C++ is compiled, so it says nothing about the solver.  A commit that also touches `src/`, `tutorials/` or `data/` adds the cases that exercise what it touched; the full sweep only when it changes a path every case goes through (§10) |
 | Materialise a case's `0/` | `bin/choupo-init0 <case>` (propagates from authored inlets + tear seeds; `--force` regenerates estimates; refuses $variable streams{}) |
 | Validate a case WITHOUT solving | `bin/choupo-lint <case>` (read-only: load+compose+0/-completeness+unit-type/duplicate checks + topology-inferred stream roles; bails at the same `Flowsheet::solve` seam as `-init0`) |
 | Build / debug / clean | `make all` / `make MODE=debug` / `make clean` (current) · `make distclean` (all) |
