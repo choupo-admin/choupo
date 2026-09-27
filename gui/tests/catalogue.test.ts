@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { CATALOGUE, type ComponentMeta, formulaIfDistinct, metaByName, searchCatalogue } from "../src/case/catalogue.js";
+import { CATALOGUE, canonicalName, type ComponentMeta, formulaIfDistinct, metaByName, rawRecordFor, searchCatalogue } from "../src/case/catalogue.js";
 
 const mk = (name: string, formula: string): ComponentMeta =>
-  ({ name, formula, kind: "volatile", vleAble: true, isElectrolyte: false, isPermanentGas: false, isSynthetic: false, hasThermochem: false, hasUnifac: false, unifacGroups: [], deltaAble: false, isRadical: false, isSaltOrMineral: false, isCombustion: false, isRoomTemperatureGas: false });
+  ({ name, formula, kind: "volatile", vleAble: true, isElectrolyte: false, isPermanentGas: false, isSynthetic: false, aliases: [], hasThermochem: false, hasUnifac: false, unifacGroups: [], deltaAble: false, isRadical: false, isSaltOrMineral: false, isCombustion: false, isRoomTemperatureGas: false });
 
 describe("standard component catalogue (Property Explorer browser)", () => {
   it("harvests the standard components from data/standards/components/*.dat", () => {
@@ -26,6 +26,22 @@ describe("standard component catalogue (Property Explorer browser)", () => {
       expect(nacl.vleAble).toBe(false);
       expect(nacl.kind).toBe("nonvolatile");
     }
+  });
+
+  it("finds a component by the alias its own record declares, as the engine does", () => {
+    // O2.dat declares `aliases ( oxygen );` -- the same line the engine's
+    // ALIASES index is generated from.  Vitor searched for "oxygen" on the
+    // live site (2026-09-27) and found nothing: the search read name + formula.
+    const o2 = metaByName("O2");
+    expect(o2).toBeDefined();
+    expect(o2!.aliases).toContain("oxygen");
+    expect(searchCatalogue("oxygen").map((m) => m.name)).toContain("O2");
+    expect(canonicalName("oxygen")).toBe("O2");
+    expect(rawRecordFor("oxygen")).toBe(rawRecordFor("O2"));
+    // exact name wins, and an unknown token comes back unchanged
+    expect(canonicalName("O2")).toBe("O2");
+    expect(canonicalName("noSuchThing")).toBe("noSuchThing");
+    expect(rawRecordFor("noSuchThing")).toBeNull();
   });
 
   it("formulaIfDistinct hides a formula that merely repeats the name", () => {

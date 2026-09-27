@@ -65,6 +65,12 @@ export interface ComponentMeta {
    *  test stand-in, not a chemical.  Read, never inferred: a CAS of 00-00-0
    *  would have been a fair guess, and guessing is what philosophy 3c forbids. */
   isSynthetic: boolean;
+  /** The record's own `aliases ( ... );` line (`O2.dat` declares `oxygen`).
+   *  Read from the record, the ONE home the engine's alias index is
+   *  generated from (bin/curate/genAliases.py -> data/standards/components/
+   *  ALIASES, resolved by Database::canonicalName), so the browser finds
+   *  "oxygen" exactly where a case that writes `components ( oxygen )` runs. */
+  aliases: string[];
   /** Carries a `standardThermochemistry {}` block — the formation datum the
    *  Gibbs minimiser prices a species with.  Read STRUCTURALLY (the block is
    *  present), never from a name list: NaCl is the catalogue's own counter-
@@ -110,9 +116,24 @@ const RAW = import.meta.glob("../../../data/standards/components/*.dat", {
 // gaps).  A case-local file overrides both, and reaches the inspector through
 // the open case's own files, not through this map.
 const RAW_BY_NAME = new Map<string, string>();
+//  alias -> canonical name, from each record's own `aliases ( ... );` line.
+//  Exact name ALWAYS wins over an alias, as in Database::canonicalName.
+const ALIAS_TO_NAME = new Map<string, string>();
 function rememberRaw(body: string): void {
   const m = /^\s*name\s+([^;\s]+)\s*;/m.exec(body);
   if (m && !RAW_BY_NAME.has(m[1]!)) RAW_BY_NAME.set(m[1]!, body);
+  const a = /^\s*aliases\s*\(([^)]*)\)\s*;/m.exec(body);
+  if (m && a)
+    for (const al of a[1]!.trim().split(/\s+/))
+      if (al && !ALIAS_TO_NAME.has(al)) ALIAS_TO_NAME.set(al, m[1]!);
+}
+
+/** The canonical catalogue name a token resolves to: itself when a record
+ *  carries that exact name, else the record that declares it as an alias,
+ *  else the token unchanged (the caller's not-found path still fires). */
+export function canonicalName(token: string): string {
+  if (RAW_BY_NAME.has(token)) return token;
+  return ALIAS_TO_NAME.get(token) ?? token;
 }
 
 //  Catalogue mixture STEMS (mixtures/<stem>.dat are EXPANSION TABLES, not
@@ -156,7 +177,7 @@ export function mixtureShadowedBodies(names: string[]): Record<string, string> {
 /** The verbatim `.dat` behind a catalogue name, or null when the name is not in
  *  the shared catalogue (a case-local component is resolved by its caller). */
 export function rawRecordFor(name: string): string | null {
-  return RAW_BY_NAME.get(name) ?? null;
+  return RAW_BY_NAME.get(canonicalName(name)) ?? null;
 }
 
 function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard"): ComponentMeta | null {
@@ -193,6 +214,8 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
   const isRoomTemperatureGas = typeof j.Tb === "number" && j.Tb > 0 && j.Tb < 298.15;
   const prov = j.provenance as Record<string, unknown> | undefined;
   const isSynthetic = !!prov && prov.source === "synthetic";
+  const aliases: string[] = Array.isArray(j.aliases) ? (j.aliases as unknown[]).map(String)
+    : typeof j.aliases === "string" ? [j.aliases] : [];
   const grp = j.groups as Record<string, unknown> | undefined;
   const hasUnifac = !!grp && grp.unifac !== undefined && grp.unifac !== null;
   const unifacGroups: string[] = hasUnifac && Array.isArray(grp!.unifac)
@@ -209,7 +232,7 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
     && typeof j.HvapTb === "number" && j.HvapTb > 0
     && typeof j.Vliq === "number" && j.Vliq > 0
     && !nonvol;
-  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isRadical, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, hasThermochem, hasUnifac, unifacGroups,
+  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isRadical, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, aliases, hasThermochem, hasUnifac, unifacGroups,
     deltaAble, origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb) };
 }
 
@@ -304,13 +327,15 @@ export function mergeCatalogue(rawFiles?: { [relPath: string]: string }): Compon
   return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
-/** Substring search over name + formula (case-insensitive). Empty -> all.
+/** Substring search over name + formula + the record's declared aliases
+ *  (case-insensitive). Empty -> all.
  *  `pool` defaults to the standard catalogue; pass a merged pool for an open case. */
 export function searchCatalogue(query: string, pool: ComponentMeta[] = CATALOGUE): ComponentMeta[] {
   const q = query.trim().toLowerCase();
   if (!q) return pool;
   return pool.filter(
-    (m) => m.name.toLowerCase().includes(q) || m.formula.toLowerCase().includes(q),
+    (m) => m.name.toLowerCase().includes(q) || m.formula.toLowerCase().includes(q)
+      || (m.aliases ?? []).some((a) => a.toLowerCase().includes(q)),
   );
 }
 

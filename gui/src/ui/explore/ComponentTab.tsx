@@ -56,8 +56,9 @@ export function ComponentTab() {
             {name
               ? <>No component named <Code>{name}</Code> is in the shared catalogue
                   (<Code>data/standards/</Code> or your <Code>data/local/</Code>).
-                  Names resolve EXACTLY — the engine looks for <Code>{name}.dat</Code>,
-                  and neither CAS numbers nor aliases are resolved here.</>
+                  A name resolves to <Code>{name}.dat</Code>, or to the record that
+                  declares it in its own <Code>aliases</Code> line (as the engine
+                  does); CAS numbers are not resolved here.</>
               : <>This tab needs a component name: <Code>?component=&lt;name&gt;</Code>.</>}
           </Text>
           <Text size="xs" c="dimmed">
