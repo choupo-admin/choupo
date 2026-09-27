@@ -479,7 +479,7 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
       + "the vapour fraction sitting on the torn stream is whatever the "
       + "previous sweep left there — the engine says so in its own words on "
       + "the Newton side, calling it the phase proxy "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3529-3532). So the state "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3537-3540). So the state "
       + "handed to the first consumer of a tear is an assumption about three "
       + "quantities carrying a fourth along for the ride, and only at "
       + "convergence, when the assumption and its image agree, is it a state "

@@ -413,25 +413,25 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 2036, "z /= zsum"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3424, "s.F * (i < s.z.size()"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3467, "latent under-convergence"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3492, "/ scale[i]"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3493, "/ scale[i]"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 2067, "mixes flows and"],
     //  291, not 290: the engine gained a comment line above it and the
     //  anchor was left behind.  The lesson's own citation is the RANGE
     //  288-291 and still covers it; this list holds the ONE line that must
     //  carry the string.  (Drift found 2026-09-16 by an unrelated slice --
     //  a pre-existing red that had nothing to do with it.)
-    ["src/applications/choupoSolve/main.cpp", 292, "Mass balance (global)"],
+    ["src/applications/choupoSolve/main.cpp", 302, "Mass balance (global)"],
     ["src/streams/ProcessStream.H", 78, "kmol/s"],
     // --- tear streams: the plan contract
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4339, "Flowsheet::validateSequentialPlan"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4429, "MISSING TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4437, "INVALID ORDER"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4465, "INLET TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4472, "UNCONSUMED TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4483, "FORWARD TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4495, "OFF-CYCLE TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4552, "[plan] material recycle"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4480, "c <= p->second"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4347, "Flowsheet::validateSequentialPlan"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4437, "MISSING TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4445, "INVALID ORDER"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4473, "INLET TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4480, "UNCONSUMED TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4491, "FORWARD TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4503, "OFF-CYCLE TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4560, "[plan] material recycle"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4488, "c <= p->second"],
     // --- the QP
     ["src/solver/ActiveSetQP.cpp", 151, "N&W Algorithm 16.3"],
     ["src/solver/ActiveSetQP.cpp", 270, "N&W eq. 16.41"],
