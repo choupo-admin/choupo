@@ -1304,6 +1304,32 @@ accepts today, and that is a policy call.
      builds.  The two are separate deliverables and neither blocks the other,
      but a claim made in one must not contradict the other.
 
+**C10. AN EDUTOOL ON WHAT THE EQUILIBRIUM MODEL WITH AN APPROACH CAN REACH
+     (asked 2026-09-27, in Vitor's words: "seria bom pesquisar mais
+     possibilidades usando o modelo de equilibrio com delta T de aproximacao
+     ... podes fazer um EduTool sobre este tema?").**  Context he gave: the
+     C9 tool gave him, for the first time, the insight of the Gibbs reactor
+     under an approach temperature; and he saw that biological ammonia
+     production can be attacked thermodynamically too.  MEASURED before
+     anything was promised: the corpus carries 22 `gibbsReactor` units
+     (ammonia loop x6, water-gas shift x6, steam reforming, methane
+     combustion, Claus, thermal NOx, H2 flame radicals, adiabatic flame, two
+     Brayton-Rankine burners, a proxy gas loop), and NOTHING in the tree
+     mentions nitrogenase or biological nitrogen fixation -- that angle is
+     new and is his.  Scope, as the commander reads it: not a second tool on
+     the Gibbs reactor (C9 is that), but a SURVEY tool over reaction systems
+     the same engine already solves -- the equilibrium landscape of each
+     (conversion against T and P, the sign the approach takes from the
+     system's own thermicity, where the approach matters and where it does
+     not) -- with the biological fixation as the lesson's contrast case:
+     N2 + 3 H2 -> 2 NH3 is thermodynamically favourable at ambient
+     conditions and kinetically forbidden, which is what the enzyme pays for
+     with ATP and what Haber-Bosch pays for with temperature, losing
+     equilibrium to gain rate; the approach temperature is the empirical
+     bridge between the two.  Every number in the tool must come from the
+     engine (`gibbsMap` / `gibbsReactor` runs), never typed.  DISPATCHED
+     after the C2 integration lands (one general owns the tree at a time).
+
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds
