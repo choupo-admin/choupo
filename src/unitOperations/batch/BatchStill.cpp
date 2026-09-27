@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BatchStill.H"
+#include "core/RegistryRefusal.H"
 #include "streams/Composition.H"
 #include "solver/NewtonND.H"
 #include "unitOperations/saturation/BubblePoint.H"
@@ -80,16 +81,20 @@ void BatchStill::initialise(const DictPtr&       unitDict,
 
     // ---- model slot (top level, next to `type` -- house convention) ------
     model_ = unitDict->lookupWordOrDefault("model", "rayleigh");
+    //  This chain always refused a word it did not know; since 2026-09-27 it
+    //  does so through the ONE home for that sentence (core/RegistryRefusal.H),
+    //  which adds the closest-name suggestion and the case-sensitivity line.
     if (model_ != "rayleigh" && model_ != "rectifier")
-        throw std::runtime_error("BatchStill '" + name_ + "': model must be"
-            " `rayleigh` (default) or `rectifier` (got '" + model_ + "')");
+        throw std::runtime_error("BatchStill '" + name_ + "': "
+            + registryRefusal::message("batch still model", model_,
+                  {"rayleigh", "rectifier"}, "Accepted"));
     if (model_ == "rectifier")
     {
         policy_ = opDict->lookupWordOrDefault("refluxPolicy", "constantReflux");
         if (policy_ != "constantReflux" && policy_ != "constantComposition")
-            throw std::runtime_error("BatchStill '" + name_ + "': refluxPolicy"
-                " must be `constantReflux` or `constantComposition` (got '"
-                + policy_ + "')");
+            throw std::runtime_error("BatchStill '" + name_ + "': "
+                + registryRefusal::message("batch still refluxPolicy", policy_,
+                      {"constantReflux", "constantComposition"}, "Accepted"));
         nStages_ = static_cast<int>(opDict->lookupScalarOrDefault("nStages", 0.0));
         if (nStages_ < 0)
             throw std::runtime_error("BatchStill '" + name_ + "': nStages must"

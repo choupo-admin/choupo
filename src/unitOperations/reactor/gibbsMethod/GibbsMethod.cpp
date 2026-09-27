@@ -31,6 +31,7 @@ License
 #include "ReactiveFlash.H"
 #include "DirectMin.H"
 
+#include "core/Advisory.H"
 #include "core/Constants.H"
 #include "solver/NewtonND.H"
 #include "thermo/Component.H"
@@ -41,6 +42,7 @@ License
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include <string>
 #include <iostream>
 #include "thermo/equationOfState/EquationOfState.H"
 
@@ -141,12 +143,33 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
         eq.nGas.assign(N, 0.0);
         eq.nLiq.assign(N, 0.0);
         const scalar ln_N = r.x[M];
+        //  THE RESIDUAL CLAMPS ITS EXPONENT; THE ANSWER DOES NOT (2026-09-27,
+        //  DEV.md §5 A3).  `clampArg` caps the argument at +/-50 inside the
+        //  residual so a wild Newton trial cannot overflow.  Where it BINDS at
+        //  the returned point, the equation the Newton solved is not the one
+        //  the published moles satisfy.  The LOWER cap is immaterial and is
+        //  not announced: it stands in e^-50 ~ 2e-22 for each trace species,
+        //  far under the 1e-8 tolerance on the element balance.  The UPPER cap
+        //  is announced -- it would mean a species the residual counted at
+        //  e^50 is published at more.
+        std::string upperBound;
         for (std::size_t i = 0; i < N; ++i)
         {
             scalar arg = ln_N - ln_P - g_eff[i];
             for (std::size_t k = 0; k < M; ++k) arg += r.x[k] * A[k][i];
+            if (arg > 50.0)
+                upperBound += (upperBound.empty() ? "" : ", ")
+                            + (p.thermo ? p.thermo->comp(p.compIdx[i]).name()
+                                        : "species #" + std::to_string(i));
             eq.nGas[i] = std::exp(arg);     // NO clamp: keep deep-underflow values
         }
+        if (!upperBound.empty()
+         && AdvisoryLog::instance().add("solver", "warning", "gibbs RAND",
+                "the element-potential residual capped exp(argument) at e^50"
+                " for " + upperBound + " AT THE RETURNED POINT: the equation"
+                " solved there is not the one the published moles satisfy."))
+            std::cerr << "[solver] gibbs RAND: exponent cap bound at the"
+                         " answer for " << upperBound << " (announced).\n";
         scalar Nt = 0.0; for (auto v : eq.nGas) Nt += v;
         eq.Ntotal_gas = Nt; eq.Ntotal_liq = 0.0;
         eq.pi.assign(M, 0.0);

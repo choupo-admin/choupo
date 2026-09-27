@@ -79,6 +79,7 @@ Description
 #include "core/Advisory.H"
 #include "core/AdvisorySummary.H"
 #include "core/DivergenceSummary.H"
+#include "core/ProblemDivergence.H"
 #include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
 #include "core/Dictionary.H"
@@ -1775,11 +1776,24 @@ try
         //  binary prints it: a caveat surface that exists in one application
         //  and not the others teaches the reader that its ABSENCE means
         //  "nothing to report", which is false in the three that never had it.
+        //
+        //  UNDER AN OUTER DRIVER THE BLOCK IS PRINTED ONCE, BY THE DRIVER
+        //  BRANCH BELOW, NAMING THE PASS IT DESCRIBES (2026-09-27, DEV.md §5
+        //  A4).  Until then every pass printed its own block -- a Bode sweep
+        //  printed four, each headed "what this run announced" and none
+        //  saying which of the four passes it was about -- and, because the
+        //  log was never cleared between passes, each block was the UNION of
+        //  every pass so far, which `AdvisorySummary.H` rules out in its own
+        //  words ("a PARTITION, NOT A DEDUPLICATION").  `writeOutputs` is
+        //  exactly the direct-path flag (every outer evaluation passes false).
         result.advisories = AdvisoryLog::instance().entries();
         result.divergences = ProblemDivergence::instance().entries();
-        printProblemDivergence(ProblemDivergence::instance().entries());
-        printAdvisorySummary(result.advisories);
-        if (writeOutputs) emitResultJson(std::cout, result);
+        if (writeOutputs)
+        {
+            printProblemDivergence(ProblemDivergence::instance().entries());
+            printAdvisorySummary(result.advisories);
+            emitResultJson(std::cout, result);
+        }
         return result;
     }
     };  // runCampaign
@@ -1796,11 +1810,60 @@ try
         auto outerDict = Dictionary::fromFile("system/outerDict");
         OuterDriver::registerBuiltins();
         auto driver = OuterDriver::New(outerDict);
+        //  ONE PASS, ONE CAVEAT LIST (2026-09-27).  choupoSolve clears its
+        //  sinks at the top of every pass; this driver never did, so a pass's
+        //  `result.advisories` carried every pass before it.  The sinks are
+        //  now reset per pass to what the run had raised BEFORE the driver
+        //  started (the database load, the seal -- facts about every pass,
+        //  raised once), and the pass then adds its own.
+        const std::vector<Advisory>   preDriverAdvisories =
+            AdvisoryLog::instance().entries();
+        const std::vector<Divergence> preDriverDivergences =
+            ProblemDivergence::instance().entries();
+        std::size_t nPasses = 0;
         driver->setSimulator([&](const DictPtr& d, const StreamOverrides&)
-            { return runCampaign(d, false, std::min(verbosity, 1)); });
+        {
+            ++nPasses;
+            AdvisoryLog::instance().clear();
+            for (const auto& a : preDriverAdvisories)
+                AdvisoryLog::instance().add(a.category, a.severity,
+                                            a.locus, a.message);
+            ProblemDivergence::instance().clear();
+            for (const auto& dv : preDriverDivergences)
+                ProblemDivergence::instance().add(dv.kind, dv.locus,
+                    dv.requested, dv.solved, dv.reason);
+            return runCampaign(d, false, std::min(verbosity, 1));
+        });
         driver->setFlowsheetDict(flowsheetDict);
         const int rc = driver->run();
-        if (driver->hasFinalResult())
+        //  WHICH PASS THE BLOCK DESCRIBES -- the same sentence choupoSolve
+        //  prints under an outer driver.  The representative pass's list is
+        //  read off ITS OWN RESULT, never off the log: a driver may make
+        //  passes after the one it reports (an integer enumeration reports
+        //  its best value, not its last), and the log holds the last.
+        const bool haveRepresentative = driver->hasFinalResult();
+        const std::vector<Advisory> blockAdvisories = haveRepresentative
+            ? driver->finalResult().advisories
+            : AdvisoryLog::instance().entries();
+        const std::vector<Divergence> blockDivergences = haveRepresentative
+            ? driver->finalResult().divergences
+            : ProblemDivergence::instance().entries();
+        if (verbosity >= 1)
+        {
+            std::cout << "\n  [caveats] this run made " << nPasses
+                      << " simulator pass" << (nPasses == 1 ? "" : "es")
+                      << " under the `" << driver->type() << "` outer driver."
+                         "  What follows describes "
+                      << (haveRepresentative
+                            ? "the REPRESENTATIVE pass (the one the driver"
+                              " reports as its answer)"
+                            : "the LAST pass only")
+                      << "; every other pass's advisories ride in that pass's"
+                         " own result block.\n";
+            printProblemDivergence(blockDivergences);
+            printAdvisorySummary(blockAdvisories);
+        }
+        if (haveRepresentative)
             emitResultJson(std::cout, driver->finalResult());
         return rc;
     }

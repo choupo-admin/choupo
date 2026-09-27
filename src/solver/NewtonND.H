@@ -79,6 +79,14 @@ struct NDResult
     //- Residual evaluations spent building Jacobians (the number the
     //  coloring exists to shrink; dense: n per Jacobian).
     long      jacobianEvals = 0;
+    //- WHY the solve stopped when it stopped early (empty on convergence and
+    //  on an ordinary maxIter exhaustion).  Before 2026-09-27 a failed linear
+    //  solve and an exhausted line search both returned `converged = false`
+    //  with the cause discarded -- the exception's own message included -- so
+    //  a caller could report THAT the Newton failed and never WHY.  Every such
+    //  stop is also raised on the AdvisoryLog by newtonND itself (DEV.md §5
+    //  A3), because no caller printed it.
+    std::string stopReason;
 };
 
 //- A DECLARED block-tridiagonal structure: unknowns grouped in nBlocks

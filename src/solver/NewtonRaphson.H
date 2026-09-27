@@ -58,6 +58,15 @@ struct NRResult
     scalar residual;
     int    iterations;
     bool   converged;
+    //- HOW OFTEN THE SOLVER'S OWN AIDS BOUND (2026-09-27, DEV.md §5 A3).
+    //  Counted, never acted on: newton1D is called from ~30 sites, most of
+    //  them inside other solves, so it announces nothing itself -- a caller
+    //  that owns a console and a verbosity reads these and says so.  Before
+    //  this, a seed moved into [lower, upper], a step cut to maxStep and a
+    //  step replaced by the bracket midpoint all happened with no trace.
+    bool   seedClamped = false;   // x0 lay outside [lower, upper]
+    int    stepsLimited = 0;      // |dx| capped at maxStep
+    int    bisections   = 0;      // step left the bracket -> midpoint taken
 };
 
 struct NROptions

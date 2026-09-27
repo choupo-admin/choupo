@@ -33,6 +33,7 @@ License
 #include "thermo/ThermoPackage.H"
 #include "thermo/ThermoAnnounce.H"
 #include "core/Advisory.H"
+#include "core/RegistryRefusal.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include <limits>
 
@@ -163,7 +164,16 @@ int HeatExchanger::solve(const DictPtr& dict,
     // directly.  `model geometry;` instead COMPUTES U and area from the tube
     // bundle geometry + per-side convective correlations (slot between the
     // read and the unchanged eps-NTU loop below).
+    //  A chain that dispatches on a declared word must refuse a word it does
+    //  not know (2026-09-07 rule, CLAUDE.md §6).  Before 2026-09-27 this chain
+    //  had a catch-all else: `model geometri;` ran the U + area eps-NTU spec at
+    //  exit 0, so a case that asked for its U to be COMPUTED from the tube
+    //  bundle got the declared U instead and never said so.
     const std::string model = dict->lookupWordOrDefault("model", "epsNTU");
+    if (model != "epsNTU" && model != "geometry" && model != "design")
+        throw std::runtime_error("HeatExchanger: "
+            + registryRefusal::message("heat exchanger model", model,
+                  {"epsNTU", "geometry", "design"}, "Accepted"));
     scalar A = 0.0, U = 0.0;
     int    tubePasses = 1;   // 1 = counter/co; >=2 -> 1-shell/2-tube-pass eps-NTU
     std::string controllingResistance = "n/a";

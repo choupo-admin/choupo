@@ -40,6 +40,7 @@ License
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -189,7 +190,7 @@ int DesignSpec::run()
     csv << "iter";
     for (std::size_t i = 0; i < n; ++i) csv << ",$" << vars_[i].variable;
     for (std::size_t j = 0; j < n; ++j) csv << ",F" << j;
-    csv << ",normF\n";
+    csv << ",normF,alpha\n";
 
     int evalCounter = 0;
     auto residual = [&](const sVector& x) -> sVector
@@ -250,17 +251,24 @@ int DesignSpec::run()
     opts.backtracking = true;
     opts.onIter = [&](const solver::NDTrace& tr)
     {
+        //  The backtracking factor is printed with the step it scaled
+        //  (2026-09-27, DEV.md §5 A3): newtonND hands it to every trace and
+        //  this printer dropped it, so a step the line search cut to 1/64
+        //  read exactly like a full Newton step.  A solver aid reports aloud.
         std::cout << "  " << std::setw(3) << tr.iteration
                   << "  " << std::scientific << std::setprecision(4)
                   << tr.normF;
         for (std::size_t i = 0; i < tr.x.size(); ++i)
             std::cout << "  " << std::scientific << std::setprecision(6)
                       << std::setw(14) << tr.x[i];
-        std::cout << "\n";
+        {   // own stream: the console's format state stays as it was
+            std::ostringstream a; a << tr.alpha;
+            std::cout << "  alpha " << a.str() << "\n";
+        }
         csv << tr.iteration;
         for (std::size_t i = 0; i < tr.x.size(); ++i) csv << "," << tr.x[i];
         for (std::size_t j = 0; j < tr.F.size(); ++j) csv << "," << tr.F[j];
-        csv << "," << tr.normF << "\n";
+        csv << "," << tr.normF << "," << tr.alpha << "\n";
     };
 
     sVector x0(n, 0.0);

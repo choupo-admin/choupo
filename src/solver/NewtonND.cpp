@@ -26,6 +26,7 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
+#include "core/Advisory.H"
 #include "core/InfeasibleTrial.H"
 #include "NewtonND.H"
 #include "LU.H"
@@ -37,7 +38,9 @@ License
 #include <cstdio>
 #include <cstdlib>
 #include <functional>
+#include <iostream>
 #include <limits>
+#include <string>
 #include <mutex>
 #include <stdexcept>
 #include <thread>
@@ -373,6 +376,32 @@ sVector gaussSolve(std::vector<sVector> A, sVector b)
 // ---------------------------------------------------------------------------
 //  Newton n-D with backtracking
 // ---------------------------------------------------------------------------
+//  A NEWTON THAT STOPS EARLY SAYS WHY (2026-09-27, DEV.md §5 A3).  The
+//  no-silent-crutch rule (2026-05-30) asks a solver to announce what it does
+//  to converge; the three early exits below -- a block-Thomas solve that
+//  threw, a singular dense Jacobian, a line search that found no feasible
+//  step -- used to return `converged = false` and DROP the cause, the
+//  exception's own message included.  They now carry it in
+//  `NDResult::stopReason` and raise it on the AdvisoryLog, which stamps the
+//  innermost open frame and its trial/accepted status, so a stop inside a
+//  discarded search is filed as the PATH and not as the answer.  The advisory
+//  text omits the iteration and |F| so the SAME cause raised on every trial of
+//  an outer search is one entry, not a hundred; the console line (printed only
+//  when the entry is new) carries them.
+namespace
+{
+std::string announceStop(const std::string& cause, int it, scalar normF)
+{
+    const std::string msg = "the Newton solve STOPPED NOT converged: " + cause
+        + ".  The caller received the last good iterate.";
+    if (AdvisoryLog::instance().add("solver", "warning", "newtonND", msg))
+        std::cerr << "[solver] newtonND: " << cause << " (iteration " << it
+                  << ", |F| = " << normF << ") -- stopped NOT converged,"
+                     " last good iterate returned (announced).\n";
+    return cause;
+}
+} // namespace
+
 NDResult newtonND(const std::function<sVector(const sVector&)>& F,
     sVector                                       x0,
     const NDOptions&                              opts)
@@ -387,7 +416,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
     for (; it < opts.maxIter; ++it)
     {
         if (normF < opts.tolerance)
-            return {x, Fx, normF, it, true, offBand, jacEvals};
+            return {x, Fx, normF, it, true, offBand, jacEvals, {}};
 
         // Build J(x) and solve J · dx = -F
         sVector minusFx(Fx.size());
@@ -434,10 +463,13 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
                         " silently wrong answer.");
             }
             try { dx = blockThomasSolve(colored.bands, minusFx); }
-            catch (const std::exception&)
+            catch (const std::exception& e)
             {
                 if (opts.onIter) opts.onIter({it, x, Fx, normF, 0.0});
-                return {x, Fx, normF, it, false, offBand, jacEvals};
+                return {x, Fx, normF, it, false, offBand, jacEvals,
+                        announceStop(std::string("the block-Thomas linear"
+                            " solve of the Newton step failed (")
+                            + e.what() + ")", it, normF)};
             }
         }
         else
@@ -445,11 +477,14 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
             auto J = fdJacobian(F, x, Fx, opts.fdStep, opts.parallel);
             jacEvals += 2 * long(x.size());
             try { dx = gaussSolve(J, minusFx); }
-            catch (const std::exception&)
+            catch (const std::exception& e)
             {
-                // Singular Jacobian — bail with last iterate.
+                // Singular Jacobian — bail with last iterate, and SAY so.
                 if (opts.onIter) opts.onIter({it, x, Fx, normF, 0.0});
-                return {x, Fx, normF, it, false, offBand, jacEvals};
+                return {x, Fx, normF, it, false, offBand, jacEvals,
+                        announceStop(std::string("the dense linear solve of"
+                            " the Newton step failed (") + e.what() + ")",
+                            it, normF)};
             }
         }
 
@@ -499,7 +534,10 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
         if (FxNew.empty() || !std::isfinite(normFNew))
         {
             if (opts.onIter) opts.onIter({it, x, Fx, normF, alpha});
-            return {x, Fx, normF, it, false, offBand, jacEvals};
+            return {x, Fx, normF, it, false, offBand, jacEvals,
+                    announceStop("the line search found no evaluable step"
+                        " (every trial infeasible or non-finite down to the"
+                        " minimum backtracking factor)", it, normF)};
         }
 
         if (opts.onIter) opts.onIter({it, x, Fx, normF, alpha});
@@ -509,7 +547,10 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
         normF = normFNew;
     }
 
-    return {x, Fx, normF, it, normF < opts.tolerance};
+    //  maxIter reached: the structure measurement and the Jacobian count
+    //  travel with this exit too (they were dropped here, so a column that
+    //  hit maxIter lost its `block-tridiagonal structure VERIFIED` line).
+    return {x, Fx, normF, it, normF < opts.tolerance, offBand, jacEvals, {}};
 }
 
 } // namespace Choupo::solver

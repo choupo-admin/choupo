@@ -43,6 +43,8 @@ NRResult newton1D(const std::function<scalar(scalar)>& f,
     scalar x_lo = opts.lower;
     scalar x_hi = opts.upper;
     scalar x    = std::clamp(x0, x_lo, x_hi);
+    const bool seedClamped = (x != x0);
+    int stepsLimited = 0, bisections = 0;
 
     scalar residual = 0.0;
     int    it       = 0;
@@ -79,12 +81,18 @@ NRResult newton1D(const std::function<scalar(scalar)>& f,
         }
 
         scalar dx = (std::abs(dfx) > 1e-30) ? -fx / dfx : 0.0;
-        if (opts.maxStep > 0.0)
+        if (opts.maxStep > 0.0 && std::abs(dx) > opts.maxStep)
+        {
             dx = std::clamp(dx, -opts.maxStep, opts.maxStep);
+            ++stepsLimited;
+        }
 
         scalar x_new = x + dx;
         if (opts.bracket && (x_new <= x_lo || x_new >= x_hi))
+        {
             x_new = 0.5 * (x_lo + x_hi);
+            ++bisections;
+        }
 
         if (opts.onIter)
             opts.onIter(NRTrace{it, x, fx, dfx, x_new - x});
@@ -92,7 +100,8 @@ NRResult newton1D(const std::function<scalar(scalar)>& f,
         x = x_new;
     }
 
-    return NRResult{x, residual, it, residual < opts.tolerance};
+    return NRResult{x, residual, it, residual < opts.tolerance,
+                    seedClamped, stepsLimited, bisections};
 }
 
 } // namespace Choupo::solver

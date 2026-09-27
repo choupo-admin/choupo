@@ -3482,7 +3482,8 @@ int Flowsheet::solve(const DictPtr& dict,
             }
             std::cout << "Recycle outer loop (Newton over " << tears.size()
                       << " tear stream(s), " << x0.size() << " variables):\n"
-                      << "   it    |r|2 (relative)\n  ----  -----------\n";
+                      << "   it    |r|2 (relative)  alpha\n"
+                         "  ----  -----------  -----\n";
             auto residual = [&](const sVector& x) -> sVector {
                 unpackFlow(x);
                 sweep(/*quiet=*/true);
@@ -3496,9 +3497,16 @@ int Flowsheet::solve(const DictPtr& dict,
             ndo.tolerance = tearTol;
             ndo.maxIter   = maxOuter;
             ndo.onIter = [&](const solver::NDTrace& tr) {
+                //  alpha = the backtracking factor newtonND applied to the
+                //  step taken FROM this iterate (1 = the full Newton step).
+                //  Dropped here until 2026-09-27 (DEV.md §5 A3).
                 std::cout << "  " << std::setw(4) << tr.iteration
                           << "  " << std::scientific << std::setprecision(3)
-                          << std::setw(11) << tr.normF << "\n";
+                          << std::setw(11) << tr.normF;
+                {   // own stream: the console's format state stays as it was
+                    std::ostringstream a; a << tr.alpha;
+                    std::cout << "  " << a.str() << "\n";
+                }
                 // GLOBAL closure residual.  `tr.normF` describes the iterate
                 // `tr.x`; the last residual call inside newtonND left streams_
                 // at a line-search probe, NOT at tr.x.  Re-sync to tr.x (one

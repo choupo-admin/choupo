@@ -127,13 +127,21 @@ GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
         return true;
     };
 
+    //  THE PENALTY IS A WALL, AND THE WALL IS ANNOUNCED (2026-09-27, DEV.md
+    //  §5 A3).  A vertex with a negative mole number or an empty vapour has
+    //  no Gibbs energy; the objective returns 1e30 there so the simplex
+    //  retreats.  Unlike the same number inside a Newton residual this does
+    //  not corrupt a derivative -- Nelder-Mead only compares values -- but it
+    //  is still a solver aid acting on the search, so every evaluation it
+    //  answered is counted and the run says so once below.
     const scalar PENALTY = 1.0e30;
+    long nPenalised = 0;
     auto Gobj = [&](const sVector& x) -> scalar {
         sVector nV, nL;
-        if (!unpack(x, nV, nL)) return PENALTY;
+        if (!unpack(x, nV, nL)) { ++nPenalised; return PENALTY; }
         scalar NV = 0.0, NL = 0.0;
         for (std::size_t i = 0; i < N; ++i) { NV += nV[i]; NL += nL[i]; }
-        if (NV <= 0.0) return PENALTY;
+        if (NV <= 0.0) { ++nPenalised; return PENALTY; }
         sVector x_liq(N, 0.0);
         if (NL > 0.0) for (std::size_t i = 0; i < N; ++i) x_liq[i] = nL[i] / NL;
         sVector gam = (NL > 0.0) ? thermo.activity().gamma(T, x_liq) : sVector(N, 1.0);
@@ -204,6 +212,17 @@ GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
         auto res = solver::nelderMead(Gobj, s, lo, hi, nmo);
         if (res.f < fBest) { fBest = res.f; xBest = res.x; best = res; }
     }
+
+    if (nPenalised > 0
+     && AdvisoryLog::instance().add("solver", "info", "gibbs directMin",
+            "the simplex met an infeasible region (a negative mole number or"
+            " an empty vapour) and was walled off from it by a 1e30 PENALTY"
+            " objective -- a barrier, not a Gibbs energy.  The answer is the"
+            " best FEASIBLE vertex found."))
+        std::cerr << "[solver] gibbs directMin: " << nPenalised
+                  << " objective evaluation(s) answered by the 1e30 infeasibility"
+                     " penalty -- the simplex was walled off, the answer is the"
+                     " best feasible vertex (announced).\n";
 
     // ---- Reconstruct the answer ----------------------------------------
     sVector nV, nL;

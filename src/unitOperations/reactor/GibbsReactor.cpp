@@ -39,6 +39,8 @@ License
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -382,9 +384,19 @@ int GibbsReactor::solve(const DictPtr& dict,
             ? Nin * thermo.H_stream_formation(T_in, P_in, 1.0, zIn) : 0.0;
         const scalar Q_J_s = Q_kJ_per_kmol * F_mol_s;
 
+        //  A PENALTY INSIDE A NEWTON RESIDUAL IS A SOLVER AID, AND IT IS
+        //  ANNOUNCED (2026-09-27, DEV.md §5 A3).  Where the inner equilibrium
+        //  does not converge there is no enthalpy to balance, so the residual
+        //  returns 1e30 -- which is not an energy balance, and which the
+        //  central-difference derivative below then differences into a slope
+        //  of order 1e30.  The value is unchanged (changing it would move
+        //  every adiabatic Gibbs answer that ever touched it); what changed is
+        //  that each temperature at which it was returned is counted and the
+        //  run says so below, instead of stepping on a penalty in silence.
+        std::vector<scalar> penalisedT;
         auto fT = [&](scalar Tt) -> scalar {
             auto e = method->equilibrium(prob, Tt, {});
-            if (!e.converged) return 1.0e30;
+            if (!e.converged) { penalisedT.push_back(Tt); return 1.0e30; }
             return enthalpy(e, Tt) - H_in - Q_J_s;
         };
         auto dfT = [&](scalar Tt){ const scalar h=0.5; return (fT(Tt+h)-fT(Tt-h))/(2.0*h); };
@@ -403,6 +415,34 @@ int GibbsReactor::solve(const DictPtr& dict,
         eq = method->equilibrium(prob, T_final, {});
         if (!rT.converged)
             std::cerr << "GibbsReactor: outer Newton on T did NOT converge\n";
+        const std::string unitLocus = "gibbsReactor "
+            + dict->lookupWordOrDefault("name", "(unnamed)");
+        if (!penalisedT.empty())
+        {
+            scalar tLo = penalisedT.front(), tHi = penalisedT.front();
+            for (scalar t : penalisedT)
+            { tLo = std::min(tLo, t); tHi = std::max(tHi, t); }
+            std::ostringstream m;
+            m << "adiabatic outer Newton on T: the inner equilibrium did NOT"
+                 " converge at " << penalisedT.size() << " trial temperature"
+              << (penalisedT.size() == 1 ? "" : "s") << " (T in [" << tLo
+              << ", " << tHi << "] K); the energy residual there was replaced"
+                 " by a 1e30 PENALTY, so those Newton steps followed the"
+                 " penalty, not the energy balance";
+            AdvisoryLog::instance().add("solver", "warning", unitLocus,
+                m.str() + ".");
+            std::cout << "  [solver] " << unitLocus << ": " << m.str()
+                      << " (announced).\n";
+        }
+        if (verbosity >= 2 && (rT.seedClamped || rT.stepsLimited > 0))
+            std::cout << "  [solver] " << unitLocus << ": outer Newton on T"
+                      << (rT.seedClamped
+                            ? " -- the seed was moved into [250, 5000] K" : "")
+                      << (rT.stepsLimited > 0
+                            ? " -- " + std::to_string(rT.stepsLimited)
+                              + " step(s) capped at the 200 K step limit"
+                            : std::string())
+                      << " (solver aids, announced).\n";
     }
     else
     {
