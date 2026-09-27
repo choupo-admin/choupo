@@ -3067,6 +3067,20 @@ Corollaries, each paid for:
       then MEASURED against the tree rather than recalled.  What it cannot
       reach is a session that ended: that transcript is gone with its
       container, which is the whole reason §4c exists.
+* **A BRIEF IS A SET OF CLAIMS, AND EVERY CLAIM IN IT IS MEASURED BEFORE
+  IT IS SENT** (Vítor, 2026-09-27, after three in one day).  A general
+  builds on the brief, so a false premise in it becomes work on sand: the
+  C2 brief assumed the postDict chain ran under a `designSpec` (it did
+  not, and the case's own header said so); the C10 brief wrote biological
+  nitrogen fixation as N2 + 3 H2 (the biological route has NO H2 -- the
+  electrons come from the organism's substrate); and the commander then
+  recorded a reaction-subset equilibrium as a missing feature while
+  `equilibriumReactor` (`REquil`) had shipped it all along.  So: every
+  engine fact in a brief carries the `file:line` it was READ at, every
+  chemical equation is balanced and checked against the process it names,
+  and a PEDAGOGICAL scope (an EduTool, a lesson, what a student is told)
+  is put to Vítor BEFORE it is dispatched -- the pedagogy is his, and the
+  C10 scope went out without that conversation.
 * **Never edit `bin/runTests`, `src/` or `gui/` while a suite runs.**  A
   general stages per file, and a per-file stage sweeps in an unstaged edit of
   yours that no one reviewed.
