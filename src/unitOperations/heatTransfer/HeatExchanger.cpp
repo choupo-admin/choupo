@@ -166,9 +166,11 @@ int HeatExchanger::solve(const DictPtr& dict,
     // read and the unchanged eps-NTU loop below).
     //  A chain that dispatches on a declared word must refuse a word it does
     //  not know (2026-09-07 rule, CLAUDE.md §6).  Before 2026-09-27 this chain
-    //  had a catch-all else: `model geometri;` ran the U + area eps-NTU spec at
-    //  exit 0, so a case that asked for its U to be COMPUTED from the tube
-    //  bundle got the declared U instead and never said so.
+    //  had a catch-all else: `model geometri;` was dispatched to the U + area
+    //  eps-NTU spec -- which, on a case declaring only its tube bundle, died
+    //  asking for an `area` the author never meant to write, and on a case
+    //  that also carries U and area ran the wrong model to exit 0 (measured:
+    //  heatExchanger01 with `model geometri;` inserted, parent build).
     const std::string model = dict->lookupWordOrDefault("model", "epsNTU");
     if (model != "epsNTU" && model != "geometry" && model != "design")
         throw std::runtime_error("HeatExchanger: "

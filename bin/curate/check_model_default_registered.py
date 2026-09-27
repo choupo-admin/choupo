@@ -69,7 +69,30 @@ WHAT IT CHECKS
         pneumaticConveyor02_bends    a bend's `type longRadius;` -> `longRadus;`
             priced a long-radius sweep and PRINTED the mistyped word beside it.
 
-      So this arm RUNS each of those five cases twice from a scratch copy:
+      Two more were added on 2026-09-27 (DEV.md §5 A4), which this docstring
+      had named as NOT covered:
+
+        heatExchanger02_geometry_U  `model geometry;` -> `geometri;`
+            MEASURED against a build of the parent commit: the catch-all
+            dispatched the mistyped word to the declared-U eps-NTU spec, which
+            then died with `missing scalar entry 'area'` -- a refusal about a
+            key the author never meant to write, naming nothing about the
+            word they mistyped (hxWorkflow2_rate_designed behaves the same).
+            It reached no exit 0 here only because neither geometry case also
+            carries `U` and `area`.  One that does, does: heatExchanger01
+            (U + area) with `model geometri;` inserted ran the eps-NTU spec to
+            EXIT 0 on the parent build, the mistyped word never mentioned.
+            The alias half swaps in `epsNTU`, which the
+            chain dispatches and which then asks for its own inputs (`area`);
+            the half passes because that refusal does not name `epsNTU`;
+        still04_rectifier_benzene_toluene  `model rectifier;` -> `rectifer;`
+            MEASURED: this chain ALREADY refused (BatchStill.cpp), in a
+            hand-written sentence; it now refuses through
+            core/RegistryRefusal.H like the others, so the row pins both the
+            refusal and the candidate list.  It is a choupoBatch case, which is
+            why the arm reads each case's own `application`.
+
+      So this arm RUNS each of those cases twice from a scratch copy:
       once with the word mutated (the run must refuse, naming the word AND
       listing what the site accepts) and once with the word replaced by a
       DIFFERENT ACCEPTED ALIAS (the run must not refuse for that reason).  The
@@ -86,11 +109,10 @@ WHAT IT DOES NOT CHECK, said plainly rather than implied:
   * Whether the list a site hands `registryRefusal::message` is the list its
     branches really accept.  That is a hand-written enumeration beside the
     branches it enumerates, and only a reader can hold the two together.
-  * Every if-chain in the tree.  Arm (d) covers the five sites named above.
-    `HeatExchanger` (`epsNTU`) and `BatchStill` (`rayleigh`) read a word the
-    same way and are NOT covered here; they were out of the slice that built
-    this arm and are named so the next reader does not mistake this list for
-    the whole population.
+  * Every if-chain in the tree.  Arm (d) covers the seven sites named above
+    (HeatExchanger and BatchStill joined on 2026-09-27).  No census of the
+    remaining if-chains has been taken, so this list is the population the
+    gate has SEEN, not the population that exists.
 
 SABOTAGES PERFORMED BY HAND on 2026-09-07, each restored and the engine
 rebuilt afterwards.  The lines are what the gate actually printed:
@@ -109,6 +131,16 @@ rebuilt afterwards.  The lines are what the gate actually printed:
       model: the ACCEPTED alias `msmpr` was refused too.  A site that refuses
       every word passes the first half of this arm while accepting none of its
       own vocabulary."
+
+SABOTAGES PERFORMED BY HAND on 2026-09-27 for the two rows added then, each
+restored with `cp` and the engine rebuilt:
+
+  S10 both refusals disarmed (`if (false)`) -> "BatchStill model: `rectifer`
+      was ACCEPTED (exit 0). ..." and "HeatExchanger model: refused
+      `geometri` without naming the word the reader wrote" -- the HX case
+      dies on its missing `area` instead, which the naming check catches.
+  S11 `epsNTU` dropped from the HX accept condition -> "HeatExchanger model:
+      the ACCEPTED alias `epsNTU` was refused too. ..."
 
 S2 also corrected the gate: its first failure message quoted the crystalliser's
 "+42 % yield" for EVERY site, which was false of four of the five.  A failure
@@ -229,7 +261,20 @@ CHAINS = [
   "tutorials/steady/solids/pneumaticConveyor02_bends",
   r'(\{\s*RoverD[^}\n]*type\s+)longRadius(\s*;)', "shortRadus",
   "shortRadius"),
+ ("HeatExchanger model",
+  "tutorials/steady/heat/heatExchanger02_geometry_U",
+  r'^(\s*model\s+)geometry(\s*;)', "geometri", "epsNTU"),
+ ("BatchStill model",
+  "tutorials/batch/still/still04_rectifier_benzene_toluene",
+  r'^(\s*model\s+)rectifier(\s*;)', "rectifer", "rayleigh"),
 ]
+
+
+def application_of(case_dir):
+    """The binary a case names in its own controlDict (choupoSolve if none)."""
+    text = (case_dir / "system" / "controlDict").read_text(encoding="utf-8")
+    m = re.search(r'^\s*application\s+(\w+)\s*;', text, re.M)
+    return m.group(1) if m else "choupoSolve"
 
 
 def run_chain_case(tmp, label, case, pattern, word, tag):
@@ -246,7 +291,7 @@ def run_chain_case(tmp, label, case, pattern, word, tag):
                       f"its subject does not live is a check that cannot fire "
                       f"-- repoint it at the entry the case really writes.")
     fd.write_text(new, encoding="utf-8")
-    r = subprocess.run([str(ROOT / "choupoSolve"), "."], cwd=str(dst),
+    r = subprocess.run([str(ROOT / application_of(dst)), "."], cwd=str(dst),
                        capture_output=True, text=True, timeout=600)
     return (r.returncode, r.stdout + r.stderr), None
 
@@ -340,14 +385,15 @@ def main():
         f"{', '.join(chain_ok)} -- were each RUN twice from a scratch copy of "
         f"a corpus case: a mistyped word refuses naming the word and listing "
         f"what the site accepts, and an accepted alias does not.  DOMAIN: "
-        f"literal factory defaults across src/, plus those five if-chains.  "
+        f"literal factory defaults across src/, plus those {len(CHAINS)} "
+        f"if-chains.  "
         f"LIMITS: a default built from a variable rather than a literal is "
         f"invisible to arm (a); whether a registered default is the RIGHT one "
         f"for the physics is judgement, not reachability; whether the list a "
         f"site hands registryRefusal is the list its branches accept can only "
-        f"be read, not derived; and arm (d) covers five if-chains, not every "
-        f"one in the tree -- HeatExchanger (`epsNTU`) and BatchStill "
-        f"(`rayleigh`) read a word the same way and are NOT covered.")
+        f"be read, not derived; and arm (d) covers {len(CHAINS)} if-chains, "
+        f"not every one in the tree -- no census of the rest has been "
+        f"taken.")
 
 
 if __name__ == "__main__":

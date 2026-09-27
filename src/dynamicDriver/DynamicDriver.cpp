@@ -1778,14 +1778,15 @@ try
         //  "nothing to report", which is false in the three that never had it.
         //
         //  UNDER AN OUTER DRIVER THE BLOCK IS PRINTED ONCE, BY THE DRIVER
-        //  BRANCH BELOW, NAMING THE PASS IT DESCRIBES (2026-09-27, DEV.md §5
-        //  A4).  Until then every pass printed its own block -- a Bode sweep
-        //  printed four, each headed "what this run announced" and none
-        //  saying which of the four passes it was about -- and, because the
-        //  log was never cleared between passes, each block was the UNION of
-        //  every pass so far, which `AdvisorySummary.H` rules out in its own
-        //  words ("a PARTITION, NOT A DEDUPLICATION").  `writeOutputs` is
-        //  exactly the direct-path flag (every outer evaluation passes false).
+        //  BRANCH BELOW, SAYING WHAT IT COVERS (2026-09-27, DEV.md §5 A4).
+        //  Until then every pass printed its own block -- a Bode sweep printed
+        //  four, each headed "what this run announced" and none saying which
+        //  pass it was about -- and, because the log is never cleared between
+        //  passes, each was in fact the UNION of every pass so far.  It still
+        //  is a union (see the driver branch for why a per-pass reset would
+        //  lose facts); what changed is that it is printed once and CALLED
+        //  one.  `writeOutputs` is exactly the direct-path flag (every outer
+        //  evaluation passes false), so the direct path is untouched.
         result.advisories = AdvisoryLog::instance().entries();
         result.divergences = ProblemDivergence::instance().entries();
         if (writeOutputs)
@@ -1810,58 +1811,42 @@ try
         auto outerDict = Dictionary::fromFile("system/outerDict");
         OuterDriver::registerBuiltins();
         auto driver = OuterDriver::New(outerDict);
-        //  ONE PASS, ONE CAVEAT LIST (2026-09-27).  choupoSolve clears its
-        //  sinks at the top of every pass; this driver never did, so a pass's
-        //  `result.advisories` carried every pass before it.  The sinks are
-        //  now reset per pass to what the run had raised BEFORE the driver
-        //  started (the database load, the seal -- facts about every pass,
-        //  raised once), and the pass then adds its own.
-        const std::vector<Advisory>   preDriverAdvisories =
-            AdvisoryLog::instance().entries();
-        const std::vector<Divergence> preDriverDivergences =
-            ProblemDivergence::instance().entries();
+        //  THE CAVEAT BLOCK UNDER AN OUTER DRIVER IS PRINTED ONCE AND SAYS
+        //  WHAT IT COVERS (2026-09-27, DEV.md §5 A4).  This binary's advisory
+        //  log is NOT partitioned per pass, and it cannot be by a clear at the
+        //  top of each pass the way choupoSolve does it: several records
+        //  announce ONCE PER PROCESS (Database's `announceOnce` -- a synthetic
+        //  component, an unreviewed record), so a per-pass reset would drop
+        //  them from every pass after the first.  MEASURED on ctrl20: a reset
+        //  made its block say "none raised" about a run on a synthetic
+        //  component.  So the block is the run's CUMULATIVE log, and the header
+        //  says exactly that -- a union, named as one, rather than a pass it is
+        //  not.  A true per-pass partition needs the log to know which entries
+        //  are once-per-process facts; that is named in DEV.md §5 A4, not built.
         std::size_t nPasses = 0;
         driver->setSimulator([&](const DictPtr& d, const StreamOverrides&)
         {
             ++nPasses;
-            AdvisoryLog::instance().clear();
-            for (const auto& a : preDriverAdvisories)
-                AdvisoryLog::instance().add(a.category, a.severity,
-                                            a.locus, a.message);
-            ProblemDivergence::instance().clear();
-            for (const auto& dv : preDriverDivergences)
-                ProblemDivergence::instance().add(dv.kind, dv.locus,
-                    dv.requested, dv.solved, dv.reason);
             return runCampaign(d, false, std::min(verbosity, 1));
         });
         driver->setFlowsheetDict(flowsheetDict);
         const int rc = driver->run();
-        //  WHICH PASS THE BLOCK DESCRIBES -- the same sentence choupoSolve
-        //  prints under an outer driver.  The representative pass's list is
-        //  read off ITS OWN RESULT, never off the log: a driver may make
-        //  passes after the one it reports (an integer enumeration reports
-        //  its best value, not its last), and the log holds the last.
         const bool haveRepresentative = driver->hasFinalResult();
-        const std::vector<Advisory> blockAdvisories = haveRepresentative
-            ? driver->finalResult().advisories
-            : AdvisoryLog::instance().entries();
-        const std::vector<Divergence> blockDivergences = haveRepresentative
-            ? driver->finalResult().divergences
-            : ProblemDivergence::instance().entries();
         if (verbosity >= 1)
         {
             std::cout << "\n  [caveats] this run made " << nPasses
                       << " simulator pass" << (nPasses == 1 ? "" : "es")
-                      << " under the `" << driver->type() << "` outer driver."
-                         "  What follows describes "
+                      << " under the `" << driver->type() << "` outer driver"
                       << (haveRepresentative
-                            ? "the REPRESENTATIVE pass (the one the driver"
-                              " reports as its answer)"
-                            : "the LAST pass only")
-                      << "; every other pass's advisories ride in that pass's"
-                         " own result block.\n";
-            printProblemDivergence(blockDivergences);
-            printAdvisorySummary(blockAdvisories);
+                            ? " and reports ONE of them as its answer"
+                            : ", none of which it reports as its answer")
+                      << ".  What follows is EVERY advisory raised across all "
+                      << nPasses << " pass" << (nPasses == 1 ? "" : "es")
+                      << " -- a UNION, not one pass: this binary's log is"
+                         " cumulative, because some records announce once per"
+                         " process and a per-pass reset would lose them.\n";
+            printProblemDivergence(ProblemDivergence::instance().entries());
+            printAdvisorySummary(AdvisoryLog::instance().entries());
         }
         if (haveRepresentative)
             emitResultJson(std::cout, driver->finalResult());

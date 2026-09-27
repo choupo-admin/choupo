@@ -415,8 +415,13 @@ int GibbsReactor::solve(const DictPtr& dict,
         eq = method->equilibrium(prob, T_final, {});
         if (!rT.converged)
             std::cerr << "GibbsReactor: outer Newton on T did NOT converge\n";
-        const std::string unitLocus = "gibbsReactor "
-            + dict->lookupWordOrDefault("name", "(unnamed)");
+        //  The augmented dict carries the unit's name as the DICTIONARY'S OWN
+        //  name and strips the `name` entry (DistillationColumn.cpp records
+        //  the same finding), so a `name` lookup would say "(unnamed)".
+        const std::string unitLocus = "gibbsReactor '"
+            + (dict->name().empty()
+                   ? dict->lookupWordOrDefault("name", "(unnamed)")
+                   : dict->name()) + "'";
         if (!penalisedT.empty())
         {
             scalar tLo = penalisedT.front(), tHi = penalisedT.front();

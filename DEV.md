@@ -2427,9 +2427,102 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      a Newton residual, silent clamps, a swallowed block-Thomas failure, and
      a backtracking factor two printers drop.  Each is the 2026-05-30
      no-silent-crutch rule broken in a different place.  [UNITS]
+     **ANNOUNCED 2026-09-27; no published number moved.**  Each site, what
+     happens there now:
+     - `GibbsReactor.cpp` adiabatic outer Newton on T: every trial T at which
+       the inner equilibrium did not converge is COUNTED, and after the solve
+       the run says how many and over which T range the residual was the
+       1e30 penalty (console + `AdvisoryLog`, `solver`/warning).  The penalty
+       VALUE is unchanged -- replacing it moves any answer that ever touched
+       it.  No corpus case reaches it today; `gibbs05_adiabatic_flame` with
+       its T seed set to 100 K does, and fires FOUR of this entry's
+       announcements in one run (90 penalised trials in [249.5, 250.5] K, the
+       seed clamp, a singular dense `newtonND` Jacobian, the RAND e^50 cap)
+       before refusing as it always did.  The seed clamp into
+       [250, 5000] K and the 200 K step cap are announced at verbosity >= 2
+       from the new `NRResult` counters (below).
+     - `DirectMin.cpp` Nelder-Mead objective: the 1e30 wall is counted and
+       announced once (`solver`/info) -- a barrier in a derivative-free
+       minimiser corrupts no derivative, but it acts on the search.  Fires on
+       `gibbs09_wgs_cooled_directmin` (143 evaluations).
+     - `NewtonND.cpp` early exits -- a block-Thomas solve that threw, a
+       singular DENSE Jacobian (the same shape, one branch over, also
+       swallowed), and a line search with no evaluable step -- now carry the
+       cause in `NDResult::stopReason` (the exception's own text included)
+       and raise it on `AdvisoryLog` (`solver`/warning, locus `newtonND`),
+       with a console line when the entry is new.  The advisory omits the
+       iteration and |F| so one cause raised on every trial of a search is
+       one entry.  No corpus case reaches any of the three today; all three
+       fired by a probe program linked against the engine.  The maxIter exit
+       also stopped dropping `offBandMax`/`jacobianEvals`.
+     - The backtracking factor: `DesignSpec.cpp`'s iteration printer and
+       `Flowsheet.cpp`'s recycle-Newton printer both dropped `NDTrace::alpha`
+       (`GibbsMethod.cpp` already forwarded it).  Both print it now, and
+       `designspec_history.csv` gains a trailing `alpha` column.
+     - Clamps, enumerated in `solver/` and `reactor/` (CSTR/ConversionReactor
+       excluded -- another branch owns them).  COUNTED now, announced by the
+       one caller that owns a console (GibbsReactor): `newton1D`'s seed clamp,
+       `maxStep` cap and bracket-midpoint fallback (`NRResult::seedClamped`,
+       `stepsLimited`, `bisections`; ~30 callers, most inside other solves,
+       so newton1D itself announces nothing).  ANNOUNCED when it binds at the
+       answer: `GibbsMethod.cpp`'s `clampArg` UPPER cap (e^50) on the RAND
+       residual.  LISTED, not announced: the LOWER cap (e^-50 ~ 2e-22 per
+       trace species, under the 1e-8 element tolerance); `Wegstein.cpp` q
+       clamp to [qMin, qMax] (`qLast_` exists for logging, nothing prints
+       it); `DirectMin.cpp` `max(nt,0)` / f in [0,1] (inside the simplex box);
+       `PFR.cpp` `max(y,0)` in the RK stage derivatives (the COMMITTED step
+       uses fraction-to-boundary, not a clamp); `EquilibriumReactor.cpp:480`
+       sub-round-off snap; the log/division floors in `StabilityTest`,
+       `ODE/Jacobian`, `Rosenbrock23`, `ReactiveFlash`, `GibbsMethod` (guards,
+       not aids).
+     Validation: result JSON, `converged/` and `design/` byte-identical
+     against a build of 189b5da73 on 115 case roots (every root running
+     `heatExchanger`, `gibbsReactor`, `batchStill`, a `distillationColumn`,
+     `cstr`, a declared tear, a `designSpec` or any outerDict, fractal unit
+     folders included), the only console differences being the new `alpha`
+     column, the directMin wall line, and ctrl16/ctrl20's single block.
+     By-hand sabotages, each restored with `cp` and rebuilt: the penalty
+     counter, the `newtonND` advisory and the directMin counter removed each
+     silenced its witness (gibbs05@100 K, a probe program, gibbs09).
+     NOT done, named: `newtonND`'s backtracking loop that EXHAUSTS with every
+     trial finite but none reducing |F| still TAKES the last tiny step in
+     silence (the comment above it says an exhausted search bails; only the
+     infeasible half does) -- fixing it can move numbers, so it is a separate
+     slice; and the GibbsReactor outer non-convergence is a bare `cerr` line
+     with no `AdvisoryLog` entry.
  A4. **Two more if-chain `model` slots unfixed** (`HeatExchanger` epsNTU,
      `BatchStill` rayleigh) after the 2026-09-07 sweep, and choupoCtrl's
      caveat block never says WHICH pass it describes.  [UNITS]
+     **CLOSED 2026-09-27, and one third of it measured FALSE.**
+     - `HeatExchanger.cpp` `model`: refuses an unknown word through
+       `registryRefusal::message` (Accepted: epsNTU geometry design).
+       Measured on the parent build: `heatExchanger01` (U + area) with
+       `model geometri;` inserted ran eps-NTU to EXIT 0; the geometry cases
+       died asking for an `area` nobody meant to write.
+     - `BatchStill` was ALREADY refusing (`BatchStill.cpp`, a hand-written
+       sentence) -- the filing was false for it.  It now refuses through the
+       one home too (model and `refluxPolicy`).
+     - Both joined `check_model_default_registered` arm (d), which now reads
+       each case's own `application` so a choupoBatch row can run.
+     - The caveat block: MEASURED real, and wider than filed.  Under an outer
+       driver choupoCtrl/choupoSemiContinuous printed one block PER PASS
+       (ctrl20's Bode sweep printed four), none naming a pass, and each was
+       the cumulative log -- a union.  Now ONE block after the driver, headed
+       with the pass count, whether the driver reports one as its answer, and
+       the word UNION.  A true per-pass partition was built and REVERTED: a
+       reset at the top of each pass (choupoSolve's shape) dropped Database's
+       once-per-process advisories, so ctrl20's block said "none raised" about
+       a run on a synthetic component.  NOT done, named: a partition needs the
+       log to know which entries are once-per-process facts; and choupoSolve
+       HAS that loss today -- its per-pass clear drops every `announceOnce`
+       advisory from any pass after the first.  MEASURED: `cavett01` run
+       directly lists `UNVERIFIED DATA (7)` (its interim records); the same
+       case under a 2-point `sweep` outerDict announces all seven
+       `[unreviewed]` lines at their site and its end-of-run block, "the LAST
+       pass only", lists NONE of them.  RESERVED/next slice, not fixed here
+       (it is choupoSolve's `runSimulation`, a path every case takes).  Also
+       seen, not touched: choupoCtrl + `optimization` emits the result JSON
+       TWICE (the driver's own emit and the dynamic driver's), identical.
  A5. **The composite refusal advises a keyword the engine does not read**,
      and a retired top-level form runs silently at exit 0.  [THERMO]
  A6. **`bin/choupo-drill` fails on 2 of the flagship's 4 sectors** and blames
