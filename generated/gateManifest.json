@@ -1085,6 +1085,11 @@
       "exit": 0,
       "claim": "check_reaction_subset_approach: OK -- equilibriumReactor's temperatureApproach: absent and declared-0 runs identical; per reaction the sign follows the thermicity AS IT RUNS (forward smr at T-10, wgs at T+10; backward both flipped, extents shrink); a reaction's own value overrides (0 exempts, said); the shifted Kp is Kp at the shifted T and the reactor stays at T; negative values refused by name, globally and per reaction; the rule has one home (both reactors call it); the announcement reaches the caveat block; equil02's complete set reproduces the Gibbs reactor and the declared subset makes methanol and no methane.  NOT checked: whether any magnitude is right for a bed, coupled effects, adiabatic operation, non-ideal Kp",
       "seconds": 0.2
+    },
+    "check_degenerate_limits": {
+      "exit": 0,
+      "claim": "check_degenerate_limits: OK -- a ONE-STAGE absorber (semi-lean solvent, NH3 in both feeds: 12 kmol/h, K 0.977054) and a ONE-STAGE stripper (5 kmol/h, K 0.977054) each reproduce the flash of their combined feeds to 1e-09 of the solute, both probes provably on the one-stage isothermal branch; a kinetic reactive column whose product adsorbs with K 0 reproduces the same column with no reverse rate EXACTLY, every KPI and stream (Reaction: \u03a3\u03be = 3.699e-06 kmol/h,  conversion of aceticAcid = 0.0 %  (adsorption (LHHW) kinetics, 9 reactive stages)); a kinetic reactant with no `order` and an adsorbing product with no K both refuse by name.  NOT checked: N >= 2 (the goldens pin those), whether a kinetic reactive column converges at a catalyst charge that moves its profile (on this system it does not, before or after the fix), or a Newton trial crossing a zero activity.",
+      "seconds": 1.9
     }
   }
 }

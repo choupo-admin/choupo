@@ -1620,7 +1620,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  one RateLaw::netRate and every reactor in reactor/, batch/ and
     //  dynamic/ already use: a^p with p > 0 is 0 at a = 0, on BOTH legs, by
     //  std::pow and with no special case -- so the two legs cannot be
-    //  patched apart again.  For a > 0 the arithmetic is unchanged.
+    //  patched apart again.  For a > 0 and a mass-action order (order = |nu|)
+    //  the arithmetic is unchanged.
     auto rateAt = [&](const sVector& xj, scalar Tj, const sVector& gam) -> scalar {
         const scalar Rg = 8.314462;
         const scalar kf = kfA * std::exp(-kfEa / (Rg * Tj));

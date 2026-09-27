@@ -709,15 +709,26 @@ A **kinetic (rate-limited)** alternative replaces `equilibrium {}` with a
 `kinetics {}` block (pseudo-homogeneous or adsorption LHHW); the per-stage extent
 becomes `rate × catalyst mass` (no extent unknown):
 ```
+stoichiometry ( { component methanol;   nu -1; order 1; }   // forward order: REQUIRED
+                { component aceticAcid; nu -1; order 1; }   //   on every reactant
+                { component methylAcetate; nu 1; } { component water; nu 1; } );
 kinetics
 {
-    model adsorption;                       // or pseudoHomogeneous
+    model adsorption;                       // or pseudoHomogeneous (any other word refuses)
     forward { A 8.497e6; Ea 60470; }        // mol/(g_cat·s), J/mol
     reverse { A 6.127e5; Ea 63730; }
     adsorption ( { component aceticAcid; K 3.15; } ... );   // K_i for a'_i = K_i a_i / M_i
     catalystMass 0.45 kg;                   // total over the reactive stages
 }
 ```
+The forward order is a fact about the mechanism, read through the same rule as
+every reactor (`Reaction::forwardOrder`): a reactant with no `order` refuses.
+The reverse leg is mass action on the products at their stoichiometry.  Under
+`model adsorption` every species with `nu ≠ 0` must declare its `K` (an explicit
+`K 0;` is honoured); a missing one refuses rather than switching a rate leg off.
+A species whose activity is zero contributes zero to its leg — forward AND
+reverse (fixed 2026-09-27; the reverse leg used to price an absent product at
+unit activity).
 Caveat: for a **fast** rate (catalyst-rich, near-equilibrium) the explicit rate is
 stiff and the FD-Jacobian Newton is slow / may not converge — use `equilibrium {}`
 there; the kinetic mode is for genuinely rate-limited columns.  A Σν ≠ 0 reaction

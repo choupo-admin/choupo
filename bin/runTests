@@ -4375,6 +4375,23 @@ PYEOF
     fi
     rm -f /tmp/lcp.$$
 
+    # A model's degenerate limit is the LIMIT: a one-stage absorber/stripper
+    # is a flash of its combined feeds, and an absent product contributes
+    # nothing to the reverse leg of the kinetic reactive column (DEV.md §5
+    # A7).  Both defects were latent -- no corpus case reaches either -- so
+    # the gate builds its probes itself.  ~2 s.
+    if "$ROOT/bin/curate/check_degenerate_limits.py" > /tmp/dgl.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_degenerate_limits" \
+            "$(gate_claim check_degenerate_limits /tmp/dgl.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (a degenerate limit is no longer the limit)\n" \
+            "check_degenerate_limits"
+        cat /tmp/dgl.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dgl.$$
+
     # A manual must still COMPILE.  theoryGuide.tex opened three `warning`
     # environments that are defined nowhere, so `make -C docs all` had been
     # dying since the commit that added them and nothing said so -- no gate

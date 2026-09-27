@@ -36,6 +36,13 @@ illegal in a batch vessel, so the requirement was dropped.  The diagnosis
 was right and the remedy was backwards -- it made the loose reading uniform
 instead of the strict one.  All five now call Reaction::forwardOrder.
 
+THERE WAS A SIXTH, and nobody had enumerated it (found 2026-09-27, DEV.md §5
+A7).  The KINETIC reactive distillation column (DistillationColumn.cpp,
+`reaction { kinetics {} }`) never read `order` at all: it raised every
+reactant to |nu|.  It calls Reaction::forwardOrder now too.  Its refusal is
+held by check_degenerate_limits arm A5, not here -- this gate's arms are
+reactor tutorials, and no corpus case runs a kinetic column.
+
 WHAT THIS GATE CHECKS.
 
   (a) THE REFUSAL FIRES IN ALL FOUR REACTORS.  Each negative takes a real

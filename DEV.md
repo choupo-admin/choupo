@@ -2441,6 +2441,73 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      had unit activity; D08, `Absorber`/`Stripper` write both feeds into the
      same array slot and at N = 1 the second overwrites the first (LATENT —
      the corpus uses 6, 8 and 9 stages).  Six unread.  [UNITS]
+     **D06 AND D08 CLOSED 2026-09-27; the other six are still not in the
+     repository and were not guessed.**  BOTH WERE LATENT, and D06 more so
+     than filed: `rateAt` is reached only by a `reaction { kinetics {} }`
+     column, and the corpus's one reactive column (`column05`) is
+     EQUILIBRIUM mode -- no corpus case evaluates the kinetic rate at all.
+     *D06* (`DistillationColumn.cpp`, the kinetic `rateAt`): the loop
+     multiplied an activity into a leg only when it was positive and then
+     patched the FORWARD leg alone (`else if (nu < 0) af = 0`), so an absent
+     product left `ar` at 1.0.  Reachable two ways: a Newton trial clamping a
+     product's x to 0 (the residual jumped by `kr * PROD(others)` across that
+     boundary -- a discontinuity, not a kink) and an adsorption law whose
+     product declares no K.  The first route is REACHED, measured: column05
+     turned kinetic (pseudo-homogeneous, 1 g, its own product-free feeds)
+     takes a different Newton path before and after the fix (Sum xi 6.854e-3
+     against 6.843e-3 kmol/h after 80 iterations), though neither build
+     converges -- see (1) below.  Fixed at the root by the rule every other rate
+     in the engine already uses (`RateLaw::netRate`, CSTR, PFR,
+     BatchReactor, DynamicCSTR -- all raise with `std::pow` and no special
+     case): a^p with p > 0 is 0 at a = 0 on BOTH legs.  ONE home was not
+     available -- the column's `forward {}`/`reverse {}`/`K_i a_i / M_i`
+     grammar is not RateLaw's, and migrating it is a grammar decision -- so
+     the loop now has RateLaw's shape rather than calling it.  **Enumerated,
+     per the 2026-09-25 rule: no other rate in the tree has the defect.**
+     Found beside it and fixed in the same lambda: the column was a SIXTH
+     reader of the forward order, raising every reactant to |nu| without
+     reading `order` -- it calls `Reaction::forwardOrder` now (a kinetic
+     reactant with no `order` refuses); an `adsorption` law whose reacting
+     species declares no K refuses by name (it made a whole rate leg vanish
+     on a number nobody declared; an explicit `K 0;` is honoured); and the
+     kinetics `model` word refuses an unknown word instead of running
+     pseudo-homogeneous (the 2026-09-07 rule).  `docs/ai/unit-ops.md`
+     shows `order` in the kinetic example.
+     *D08* (`Absorber.cpp`, `Stripper.cpp`): `d[0] = L x_in` then
+     `d[N-1] = V y_in` -- at N = 1 one slot, the second write erased the
+     first.  Now `+=` on both rows of both units.  Measured on the parent
+     commit at N = 1: the stripper (clean stripping gas) published NO NH3 in
+     either outlet, 5 kmol/h vanished; the absorber with a semi-lean solvent
+     lost exactly the solvent's 2 kmol/h.  The `Extractor` (N >= 1 allowed)
+     sums its two inlets with `addMol` and never had the shape; the
+     Wang-Henke column's first/last rows cannot coincide (its guard keeps
+     N >= 2).  **Zero golden rows moved**: the six corpus cases that reach
+     these units (column05, absorber01, acetone05, stripper01, acetonePlant,
+     greenAmmoniaIndustrialN2) publish a result JSON IDENTICAL to the parent
+     build's, measured.  Gate: `check_degenerate_limits` (one-stage flash of
+     the combined feeds by hand, both units, the branch proved reached; the
+     `K 0` product against the no-reverse column, EXACT; the three
+     refusals).  Sabotaged by hand (S1 absorber `=`, S2 stripper `=`, S3 the
+     positive-only multiply): each fired its own arm and only its own, and
+     the parent build fails all five arms.
+     **FOUND, NOT FIXED, each measured:** (1) the KINETIC reactive column
+     does not converge on column05's system at any catalyst charge >= 0.01
+     g -- IDENTICALLY on the parent build, so it is not D06: phase 1 lands at
+     |F| 7.9e-10 against a 1e-9 tolerance and the continuation stalls with a
+     residual floor proportional to the catalyst scale, on the Sum(y)-1 rows
+     of NON-reactive stages; neither the parallel Jacobian nor the
+     block-tridiagonal coloring is the cause (both switched off, same
+     numbers).  Undiagnosed; the gate runs at 0.001 g, where the reaction
+     stays inside the tolerance, and says so.  (2) the stripper still
+     DELETES solvent that arrives with the stripping gas -- the 2026-08-12
+     absorber fix (`liqMol = L x_in + V y_in` for the solvent) was never
+     carried to its twin; latent (stripper01's gas is pure N2).  Where
+     steam-stripping solvent should go is a physics choice, so it was not
+     taken here.  (3) in BOTH units a non-solute, non-solvent component that
+     arrives in the LIQUID feed is deleted (the inert branch counts only
+     `V y_in`); latent -- every corpus wash liquid is pure water and
+     stripper01's liquid carries only NH3 (a solute) and water.  (4) the kinetic column reads no
+     `orderRev`, while `forwardOrder`'s shared refusal message names it.
 
 *The engine publishes something nothing checks:*
 
