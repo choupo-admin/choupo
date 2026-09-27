@@ -53,9 +53,10 @@
   output is a SECOND GOLDEN with no tolerance, rewritten by every run of its
   case, so the tree goes dirty the first time the engine moves a digit.  The
   GUI bundle's eager glob (`src/cases/tutorials.ts`) refuses these files by
-  the SAME location rule `.gitignore` uses (every `tutorials/**/*.csv` except
-  `constant/experimental/*.csv`), because the worker harvests every case-root
-  `*.csv` as a RUN output -- a bundled one would be drawn as a run's answer.
+  the SAME location rule `.gitignore` uses (every CSV under `tutorials/`
+  except one sitting directly in a case's `constant/experimental/`), because
+  the worker harvests every CSV under the case root as a RUN output -- a
+  bundled one would be drawn as a run's answer.
   A committed copy would therefore be a file the site deliberately refuses to
   carry, and moving it under `constant/experimental/` to get it bundled would
   file an engine output as measured data.  And the
