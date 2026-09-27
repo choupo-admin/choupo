@@ -1408,6 +1408,23 @@ accepts today, and that is a policy call.
      request; AFTER C10 lands, one general at a time.  C10's page names the
      unit and its witness in prose (zero cost) and runs nothing of it.
 
+     **DISPATCHED 2026-09-27, and (c) became its OWN EduTool the same day.**
+     Vitor, having looked for it on the live site: *assume equilibrium, but
+     now declare which reaction pathways are the only ones possible -- an
+     engineer knows that certain reactions are kinetically limited in the
+     operating region and can be excluded, which combines experiential
+     heuristics with thermodynamics*; "eventually a new EduTool, if you think
+     it convenient".  The commander decided it is: a separate tool (working
+     id `declared-pathways`, one cross-link from `equilibrium-landscapes`),
+     Gibbs over every species beside `equilibriumReactor` over a declared
+     subset, the approach temperature as the second knob.  Candidate
+     witnesses, each built only if the catalogue carries its species with
+     formation data: steam reforming without carbon formation; ammonia
+     oxidation (4 NH3 + 5 O2 -> 4 NO + 6 H2O declared, the N2-forming route
+     excluded -- full Gibbs goes to N2); methanol synthesis without
+     methanation (full Gibbs goes to CH4).  The witness choice was the
+     commander's on a stated default; Vitor may reverse it.
+
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds
