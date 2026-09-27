@@ -3098,17 +3098,29 @@ Corollaries, each paid for:
   inputs rather than the engine's source where the arm allows it.  (Costed
   once, 2026-09-22: a restored `ResultEmitter.cpp` with an unchanged md5
   aborted a run that had already started.)
-* **A NEW FEATURE IS TESTED ON THE CASES THAT USE IT** (ruled by Vítor,
-  2026-09-27, twice in one hour and the second time sharply).  A slice
-  that ADDS -- a new unit, op, sizer, lesson or case, plus the one
-  registration line that reaches it -- is validated by: the build, the
-  cases that exercise the new code and the existing cases whose surfaces
-  the slice edited, `--gui` when `gui/` moved, and the gates that READ the
-  files it touched.  Not the corpus.  The full sweep is for a slice that
-  CHANGES a shared path every case goes through (a solver, the thermo
-  package, the flowsheet, a report, `ResultEmitter`) -- and then it runs
-  ONCE, on the branch that is merged, never again after the merge unless
-  `main` moved in code meanwhile.
+* **VALIDATION IS SIZED BY WHAT THE CHANGE CAN REACH, AND EVIDENCE IS
+  REUSED WHILE IT STAYS VALID** (Vítor's ruling, 2026-09-27, refined the
+  same hour with a second opinion; the commander decides the shape).
+  Before any suite, the one who launches it states in a sentence WHAT
+  CHANGED since the last validation and WHICH SHARED PATH it can reach --
+  "I touched `src/`" is not a reason, and a file count is not a risk: one
+  line in a shared thermodynamic model reaches hundreds of cases, twenty
+  files of prose reach none.  Then:
+    - text or comments, no effect on execution: the gates that read them;
+    - a NEW feature (a unit, op, sizer, lesson or case, plus the one
+      registration line that reaches it): the build, the cases that
+      exercise it, the existing cases whose surfaces the slice edited,
+      `--gui` if `gui/` moved, the gates that read the touched files, and
+      `--fast` when a factory's registration is the only shared path
+      touched (one case per family exercises every factory);
+    - a change to a path every case goes through (a solver, the thermo
+      package, the flowsheet, a report, `ResultEmitter`): the full sweep.
+  Evidence already taken is REUSED while it still describes what enters
+  `main` -- a merge whose executable content equals what was tested needs
+  no new run -- and is RETAKEN when something invalidates it: a fix after
+  a failure, or `main` having moved in code meanwhile (two slices that
+  pass apart can fail together; with one general at a time the
+  combination is the branch on top of the current `main`).
 * **Do not block the turn waiting for a suite.**  The commander's job is to
   coordinate AND to stay reachable; a ten-minute blocking wait is neither.
   Check in short calls and REFLECT in between — Vítor has said this twice,
