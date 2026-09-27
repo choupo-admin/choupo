@@ -14,8 +14,8 @@ kpi     reformer               conversion_wgs   0.109768673641   1e-4
 kpi     reformer               extent_smr_kmol_h 0.998691254363   1e-4
 kpi     reformer               extent_wgs_kmol_h 0.329306020923   1e-4
 kpi     reformer               nReactions       2                1e-4
-kpi     reformer               newtonResidual   3.2596148003e-13 1e-4
-kpi     reformer               newtonIterations 10               1e-4
+kpi     reformer               newtonResidual   8.881784197e-16  1e-4
+kpi     reformer               newtonIterations 12               1e-4
 stream  feed                   T                1100             1e-4
 stream  syngas                 T                1100             1e-4
 boundary global                 H_feeds_kW       -184.338218869   1e-4
