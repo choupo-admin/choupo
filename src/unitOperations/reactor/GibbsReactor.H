@@ -80,6 +80,7 @@ Description
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
 #include "gibbsMethod/GibbsMethod.H"
+#include "TemperatureApproach.H"      // the approach sign rule, one home
 
 #include <map>
 #include <string>

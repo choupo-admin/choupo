@@ -302,15 +302,38 @@ multivariate Newton.  The reforming / shift / synthesis workhorse.  Distinct fro
 specified** — cannot restrict *which* reactions equilibrate), and `cstr`/`pfr` (equilibrium
 reached only **kinetically**, needing rate data + residence).
 ```
-operation   { T <K>; }        // isothermal (default = feed T)
-reactions   ( r1 r2 ... );    // names from constant/reactions (stoichiometry only;
-                              // NO kinetics needed -- Kp(T) comes from standardThermochemistry)
+operation
+{
+    T                    <K>;   // isothermal (default = feed T)
+    temperatureApproach  <K>;   // optional MAGNITUDE >= 0; the sign is the engine's, per reaction
+}
+reactions   ( r1 r2 ... );      // names from constant/reactions (stoichiometry only;
+                                // NO kinetics needed -- Kp(T) comes from standardThermochemistry)
 ```
 The `reactions ( ... )` list is the **one multi-reaction grammar** across the engine
 (the `batchReactor` / `dynamicCSTR` take the same); stoichiometry lives in the reactions
-library, never repeated inside a unit.
-KPIs: `Kp_<name>`, `extent_<name>_kmol_h`, `conversion_<name>`, `Q_kW`, `newtonResidual`.
-Example: `tutorials/steady/reactors/equil01_reforming` (SMR + water-gas-shift together).
+library, never repeated inside a unit.  **The list is kinetic knowledge**: a reaction left
+out is one the author declares too slow to matter here, and leaving it out changes the
+answer -- a `gibbsReactor` over the same species runs every pathway the species list
+permits, and a COMPLETE set of independent reactions reproduces it exactly.
+
+**Temperature approach (2026-09-27).**  `temperatureApproach <dT>;` is a MAGNITUDE; a
+reaction's own entry in constant/reactions may carry `temperatureApproach <dT>;`,
+overriding the global value for that reaction (0 exempts it, and the run says so).  The
+direction is assigned PER REACTION on the rule `gibbsReactor` uses (one home,
+`src/unitOperations/reactor/TemperatureApproach.H`): a probe solve at the physical T says which way each
+reaction RUNS from this feed; exothermic as it runs -> Kp at `T + dT`, endothermic ->
+`T - dT`, so every shift pushes Kp against the direction its reaction runs (a reaction
+running BACKWARD takes the opposite side from its as-written thermicity).  The reactor stays
+ISOTHERMAL at T -- the outlet and the duty stay at the physical T.  A negative value is
+REFUSED by name.  NOT here: an adiabatic mode, and any Kp beyond the ideal-gas rung.
+KPIs: `Kp_<name>` (the Kp actually used), `extent_<name>_kmol_h`, `conversion_<name>`,
+`Q_kW`, `newtonResidual`; with an approach, `T_Kp_<name>` (where each Kp was evaluated)
+and `temperatureApproach_K` (the global magnitude, when declared).
+Examples: `tutorials/steady/reactors/equil01_reforming` (SMR + water-gas-shift together);
+`tutorials/steady/reactors/equil02_methanol_declared_pathways` (one syngas, three
+equilibria: Gibbs over every species makes methane, the declared list without methanation
+makes methanol, the complete list reproduces Gibbs).
 
 ### `gibbsReactor`
 Equilibrium by direct Gibbs minimisation with atom-balance
@@ -369,7 +392,8 @@ side.  A `gibbsMap` applies the same rule at every cell.
 Three limits the engine states itself: the parameter is EMPIRICAL
 (calibrated against a real unit, never predicted); it is GLOBAL (one number
 for the whole reactor, so it cannot resolve per-reaction approaches such as
-shift inside reforming); and at high pressure **it will absorb missing
+shift inside reforming -- `equilibriumReactor`, which DECLARES its reactions,
+reads the approach per reaction); and at high pressure **it will absorb missing
 fugacity corrections**, so on a 200 bar converter it can silently become a
 correction for a poor equation of state rather than the
 closeness-to-equilibrium it claims to be.

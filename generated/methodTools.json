@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 42,
-  "registryTools": 42,
+  "liveTools": 43,
+  "registryTools": 43,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -216,6 +216,13 @@
       "discipline": "Reaction engineering",
       "teaches": "That an ideal-gas equilibrium landscape is fixed by two signs you can read off the reaction — the thermicity (van 't Hoff) and the mole change (pressure) — and the engine draws the five cases of that table from the same Gibbs kernel; that a temperature approach is a HORIZONTAL move along the curve whose effect is the local slope, so one magnitude is a large shortfall on ammonia and nothing on a combustion plateau; that the sign is assigned per cell from the feed's OVERALL thermicity, so a minor endothermic product inside an exothermic feed (thermal NO) is moved BEYOND its equilibrium — the GLOBAL caveat as a curve; and that the three overall routes to fixed nitrogen — a sugar as the electron donor, water as the donor, hydrogen as the donor — price on ONE formation surface with every species on a declared standard state (`reactionGibbs`), the biological routes carrying no H₂ at all; the equilibrium limit and the extent bookkeeping transfer to an enzyme, the temperature approach does not.",
       "href": "/app/?workspace=methods&tool=equilibrium-landscapes"
+    },
+    {
+      "id": "declared-pathways",
+      "label": "Declared pathways (equilibrium over the reactions you allow)",
+      "discipline": "Reaction engineering",
+      "teaches": "That \"equilibrium\" answers two different questions: a Gibbs reactor is told SPECIES and opens every pathway they permit, an equilibrium reactor is told REACTIONS and moves only along them; that declaring every independent reaction (R = N − rank A) reproduces the Gibbs reactor, so leaving ONE off the list is a claim about the catalyst — on one syngas at 525 K and 50 bar, methane with every pathway open and methanol with methanation closed; that the declared answer is a constrained minimum of the same Gibbs energy, the Gibbs answer its bound; and that the approach temperature is the second knob, its sign assigned PER REACTION from the way each one runs — a shift running backward takes its K below T while the synthesis beside it takes its K above.",
+      "href": "/app/?workspace=methods&tool=declared-pathways"
     },
     {
       "id": "vanheerden",

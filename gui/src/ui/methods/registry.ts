@@ -67,6 +67,7 @@ export type MethodToolId =
   | "sour-water" | "rules-of-thumb" | "bode"
   | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
+  | "declared-pathways"
   | "least-squares";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
@@ -700,6 +701,35 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "(`reactionGibbs`), the biological routes carrying no H₂ at all; the "
       + "equilibrium limit and the extent bookkeeping transfer to an enzyme, "
       + "the temperature approach does not.",
+    theory: "sec:gibbs-maps",
+  },
+  //  COMMISSIONED 2026-09-27 (C11), in the architect's words: "assume
+  //  equilibrium, but now declare which reaction pathways are the ONLY ones
+  //  possible".  The level above the species list: `equilibriumReactor`
+  //  takes a DECLARED reaction list, and since the same day reads the
+  //  temperature approach PER REACTION.  One witness, one syngas, three
+  //  reactors side by side -- Gibbs over every species makes methane, the
+  //  complete reaction set reproduces it, the list without methanation
+  //  makes methanol.  The exclusion is the student's premise, cited to
+  //  nothing, because nothing in the tree documents a catalyst's
+  //  selectivity.
+  {
+    id: "declared-pathways",
+    label: "Declared pathways (equilibrium over the reactions you allow)",
+    discipline: "Reaction engineering", kind: "notes", status: "live",
+    teaches: "That \"equilibrium\" answers two different questions: a "
+      + "Gibbs reactor is told SPECIES and opens every pathway they permit, "
+      + "an equilibrium reactor is told REACTIONS and moves only along them; "
+      + "that declaring every independent reaction (R = N − rank A) "
+      + "reproduces the Gibbs reactor, so leaving ONE off the list is a "
+      + "claim about the catalyst — on one syngas at 525 K and 50 bar, "
+      + "methane with every pathway open and methanol with methanation "
+      + "closed; that the declared answer is a constrained minimum of the "
+      + "same Gibbs energy, the Gibbs answer its bound; and that the "
+      + "approach temperature is the second knob, its sign assigned PER "
+      + "REACTION from the way each one runs — a shift running backward "
+      + "takes its K below T while the synthesis beside it takes its K "
+      + "above.",
     theory: "sec:gibbs-maps",
   },
   {

@@ -11,6 +11,13 @@
       "title": "Reactor temperature",
       "description": "Isothermal operating temperature (a fired reformer holds it). Omit to hold the feed temperature.",
       "unit": "K"
+    },
+    "temperatureApproach": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Equilibrium approach magnitude (direction assigned per reaction by the engine)",
+      "description": "Detune each declared reaction's equilibrium by THIS MANY kelvin: its Kp is evaluated at a shifted temperature while the reactor stays ISOTHERMAL at T -- the outlet state and the duty do not move off the physical T. THE VALUE IS A MAGNITUDE AND THE ENGINE ASSIGNS THE SIGN, PER REACTION (the rule gibbsReactor uses, one home: src/unitOperations/reactor/TemperatureApproach.H): a probe solve at the physical T says which way each reaction RUNS from this feed, and its thermicity AS IT RUNS decides -- Kp at T + dT when exothermic as it runs, at T - dT when endothermic, both of which push Kp against the direction the reaction runs. A reaction's own entry in constant/reactions may carry `temperatureApproach <dT>;`, overriding this global value for that reaction alone (0 exempts it). Announced per reaction on the console and in the run's advisories; KPIs temperatureApproach_K (this global magnitude, unsigned, published only when declared) and T_Kp_<name> (where each Kp was evaluated). A negative declaration is REFUSED by name; minimum 0 is that rule. EMPIRICAL (calibrated, never predicted); ideal-gas Kp only; absent or 0, the run is the one it always was.",
+      "unit": "K"
     }
   },
   "required": [],

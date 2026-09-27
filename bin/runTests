@@ -2701,6 +2701,29 @@ PYEOF
     fi
     rm -f /tmp/pellet.$$
 
+    # reaction-subset approach gate (2026-09-27, commission C11).
+    # `equilibriumReactor` equilibrates a DECLARED reaction list and, until
+    # this day, read no approach key.  It reads `temperatureApproach` now, as a
+    # MAGNITUDE (global, or per reaction in constant/reactions), with the
+    # sign assigned PER REACTION from that reaction's thermicity AS IT RUNS
+    # -- the rule `gibbsReactor` already used, now in ONE home both call
+    # (reactor/TemperatureApproach.H).  Arms: absence and a declared zero
+    # byte-identical; the sign forward AND backward (the backward arm is the
+    # one that tells "as it runs" from "as written"); the override; the
+    # shifted Kp equal to Kp at the shifted T with the reactor still at T;
+    # both refusals; the one-home source arm; the caveat block; and the
+    # witness equil02, whose complete reaction set reproduces the Gibbs
+    # reactor while the declared subset makes methanol.
+    if "$ROOT/bin/curate/check_reaction_subset_approach.py" > /tmp/rsapproach.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "reaction-subset-approach-gate" "$(tail -1 /tmp/rsapproach.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_reaction_subset_approach.py)\n" "reaction-subset-approach-gate"
+        cat /tmp/rsapproach.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rsapproach.$$
+
     # feed-thermal-state gate (2026-09-12).  `operation.feedQuality` was a
     # SECOND HOME for a fact the feed stream already carries, and the
     # single-feed solver paths never reconciled the two: column01_benzene_

@@ -105,6 +105,9 @@
   "ApproachDirection": [
    "src/unitOperations/reactor/GibbsReactor.H"
   ],
+  "ApproachSign": [
+   "src/unitOperations/reactor/TemperatureApproach.H"
+  ],
   "ApproximationAuthorisation": [
    "src/thermo/ApproximationAuthorisation.H"
   ],
@@ -1540,6 +1543,9 @@
   ],
   "VolumetricTerm": [
    "src/streams/ProcessStream.H"
+  ],
+  "Wagner": [
+   "src/thermo/vaporPressure/Wagner.H"
   ],
   "Wall": [
    "src/postProcessing/sizing/VesselMechanics.H"
@@ -3960,6 +3966,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/reactor/GibbsReactor.H",
+   "src/unitOperations/reactor/TemperatureApproach.H",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
@@ -6238,6 +6245,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.H",
    "src/unitOperations/reactor/GibbsReactor.H",
    "src/unitOperations/reactor/PFR.H",
+   "src/unitOperations/reactor/TemperatureApproach.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/rotating/Compressor.H",
    "src/unitOperations/rotating/ElectricLoad.H",
@@ -7413,6 +7421,7 @@
    "src/unitOperations/reactor/ConversionReactor.H"
   ],
   "src/unitOperations/reactor/EquilibriumReactor.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -7426,7 +7435,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
-   "src/unitOperations/reactor/EquilibriumReactor.H"
+   "src/unitOperations/reactor/EquilibriumReactor.H",
+   "src/unitOperations/reactor/TemperatureApproach.H"
   ],
   "src/unitOperations/reactor/GibbsReactor.cpp": [
    "src/core/Advisory.H",
@@ -7445,6 +7455,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/reactor/GibbsReactor.H",
+   "src/unitOperations/reactor/TemperatureApproach.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
   "src/unitOperations/reactor/PFR.cpp": [
@@ -8137,6 +8148,7 @@
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/reactor/CatalystPellet.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
@@ -13443,6 +13455,12 @@
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp"
+  ],
+  "src/unitOperations/reactor/TemperatureApproach.H": [
+   "src/propertyOps/GibbsMapOp.cpp",
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
+   "src/unitOperations/reactor/GibbsReactor.cpp"
   ],
   "src/unitOperations/reactor/gibbsMethod/DirectMin.H": [
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",

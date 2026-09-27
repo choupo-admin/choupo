@@ -1,0 +1,306 @@
+/*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+    SPDX-License-Identifier: GPL-3.0-or-later
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  Declared pathways, as DATA: equilibrium, but only along the reactions you
+  say are possible.
+
+  WHY THIS PAGE EXISTS.  Commissioned 2026-09-27 (C11), in the architect's
+  words: "assume equilibrium, but now declare which reaction pathways are the
+  ONLY ones possible".  In the operating region an engineer knows that some
+  reactions are kinetically limited, so they can be excluded, and the
+  exclusion combines experiential heuristics with thermodynamics.  The
+  companion pages carry the species-list level (`approach-to-equilibrium`,
+  `equilibrium-landscapes`); this one carries the level above it, where the
+  author writes the REACTIONS, and sets the two side by side on one feed.
+
+  THE PREMISE IS THE STUDENT'S, AND THE PAGE SAYS SO.  Which reaction a
+  catalyst makes fast and which it leaves frozen is kinetic knowledge the
+  engine cannot check.  Nothing in this tree cites a source for the
+  selectivity of any methanol catalyst, so the page states the exclusion as a
+  premise the student DECLARES and cites nothing for it -- an invented
+  citation turns an unsourced claim into a falsely sourced one.
+
+  EVERY ENGINE CLAIM CARRIES A file:line, read in the source on 2026-09-27.
+  That is a drafting discipline, not a gate: `check_lesson_symbols` holds the
+  `where` glosses and nothing parses a citation out of a lesson.  Every
+  number quoted in the prose was measured on the witness
+  `equil02_methanol_declared_pathways` with the native build the same day;
+  the numbers the PANEL shows are the engine's, read live.
+\*---------------------------------------------------------------------------*/
+
+import type { LessonStep, LessonLimit } from "./lessonStep.js";
+export type { LessonStep, LessonLimit };
+
+export const PATHWAYS_STEPS: readonly LessonStep[] = [
+  {
+    n: 1,
+    title: "Two questions that both answer to the word “equilibrium”",
+    body: "A Gibbs reactor is told SPECIES: the elements, the candidate "
+      + "species with their atom counts, a temperature and a pressure.  It "
+      + "returns the composition of least Gibbs energy that conserves every "
+      + "atom of the feed, and every transformation the species list permits "
+      + "is open to it (the atom inventory is built from the feed, "
+      + "GibbsReactor.cpp:260).  An equilibrium reactor is told REACTIONS: a "
+      + "list of names from constant/reactions, each a stoichiometry.  The "
+      + "outlet can move only along those reactions, n = n0 + Σ ν ξ "
+      + "(EquilibriumReactor.cpp:162), and each declared reaction is driven "
+      + "to its own equilibrium constant, the residual ln Q − ln K "
+      + "(EquilibriumReactor.cpp:188–189), with every K from the same "
+      + "formation data the Gibbs reactor minimises over "
+      + "(Reaction::equilibrium, EquilibriumReactor.cpp:92).  Same "
+      + "thermodynamics, same data, two different questions.",
+    formula: String.raw`\min_{n \ge 0}\; G(T,P,n) \quad \text{subject to} \quad A\,n = b
+\qquad\text{versus}\qquad
+n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ij}\,\ln\frac{y_i\,P}{P^{\circ}} = \ln K_j(T)`,
+    where: [
+      { sym: "G", means: "the total Gibbs energy of the outlet mixture — what "
+        + "the Gibbs reactor minimises", unit: "J/s" },
+      { sym: "T", means: "the PHYSICAL temperature of the reactor and of the "
+        + "stream that leaves it", unit: "K" },
+      { sym: "P", means: "the reactor pressure", unit: "Pa" },
+      { sym: "n", means: "the vector of outlet molar flows, one entry per "
+        + "species", unit: "mol/s" },
+      { sym: "A", means: "the atom matrix: one row per element, one column "
+        + "per species, each entry the count of that element in that "
+        + "species — the `atoms ( ... )` list the case declares",
+        unit: "atoms per molecule" },
+      { sym: "b", means: "the atom inventory of the FEED, element by element",
+        unit: "mol/s of atoms" },
+      { sym: "n_0", means: "the feed's molar flows, species by species",
+        unit: "mol/s" },
+      { sym: "\\nu", means: "the stoichiometric matrix of the DECLARED "
+        + "reactions: one row per reaction, one column per species, negative "
+        + "for a reactant and positive for a product" },
+      { sym: "\\xi", means: "the vector of reaction EXTENTS, one per declared "
+        + "reaction: the UNKNOWN of the equilibrium reactor.  Negative when a "
+        + "reaction runs backward from the feed", unit: "mol/s" },
+      { sym: "\\nu_{ij}", means: "the stoichiometric coefficient of species i "
+        + "in reaction j" },
+      { sym: "i", means: "the species index" },
+      { sym: "j", means: "the reaction index, over the DECLARED reactions "
+        + "only" },
+      { sym: "y_i", means: "the outlet mole fraction of species i" },
+      { sym: "P^{\\circ}", means: "the standard pressure of the formation "
+        + "data, 1 bar", unit: "Pa" },
+      { sym: "K_j", means: "the equilibrium constant of reaction j at T, "
+        + "exp(−ΔG°_j / RT), from the species' formation data on the "
+        + "ideal-gas rung" },
+    ],
+    note: "THE SPECIES LIST AND THE REACTION LIST ARE BOTH KINETIC "
+      + "STATEMENTS, at two different resolutions.  A species left off the "
+      + "Gibbs list cannot form however favourable it is; a reaction left off "
+      + "the equilibrium reactor's list cannot run however favourable it is, "
+      + "even when every species it would touch is present.  The second is "
+      + "the finer knife: it can keep methane in the problem and still say "
+      + "that the pathway which MAKES it is closed.",
+  },
+  {
+    n: 2,
+    title: "Declare every independent reaction and you have the Gibbs reactor",
+    body: "How many reactions does a set of species admit?  As many as the "
+      + "species exceed the independent element balances: R = N − rank(A).  "
+      + "The witness carries six species (CO, H₂, methanol, water, CO₂, CH₄) "
+      + "over three elements, so three independent reactions — methanol "
+      + "synthesis, the water–gas shift and methanation.  Its `complete` "
+      + "reactor declares all three, and its outlet is the Gibbs reactor's "
+      + "outlet: the same methanol mole fraction, 1.76 × 10⁻¹⁰, the same "
+      + "outlet flow per mole fed, every species agreeing to ten significant "
+      + "figures.  So when the next step removes one reaction and the answer "
+      + "changes, the change is the EXCLUSION — not a difference between two "
+      + "solvers.",
+    formula: String.raw`R = N - \mathrm{rank}(A) = 6 - 3 = 3`,
+    where: [
+      { sym: "R", means: "the number of independent reactions a species set "
+        + "admits.  Not the gas constant, and not the reflux ratio of the "
+        + "distillation pages" },
+      { sym: "N", means: "the number of species in the list" },
+      { sym: "\\mathrm{rank}", means: "the rank of a matrix: here, how many "
+        + "of the element balances are independent" },
+    ],
+    note: "The equality is a check on the engine, not a theorem you must take "
+      + "on trust: the gate `check_reaction_subset_approach` re-runs the "
+      + "witness and requires the two outlets to agree on every species "
+      + "above 10⁻⁸.",
+  },
+  {
+    n: 3,
+    title: "Close one pathway: the premise is yours, the consequence is the engine's",
+    body: "The `declared` reactor keeps methanol synthesis and the shift and "
+      + "leaves METHANATION off its list.  That single word is a claim about "
+      + "the catalyst: at these conditions, over this bed, the pathway that "
+      + "makes methane is too slow to matter.  Experience supplies it; the "
+      + "engine cannot check it and does not try.  What it does is compute "
+      + "what FOLLOWS: equilibrium, but only along the pathways you declared "
+      + "possible.  On the witness, 525 K and 50 bar, the difference is not "
+      + "a correction, it is a different product.  Every pathway open: "
+      + "methane and water, y_CH₄ = 0.451, methanol 1.8 × 10⁻¹⁰.  Methanation "
+      + "closed: methanol, 61 % of the carbon monoxide fed converted to it, "
+      + "and no methane at all.  An equilibrium calculation that ignores which reactions a "
+      + "catalyst actually runs does not merely lose accuracy — it can point "
+      + "the plant at the wrong molecule.",
+    formula: String.raw`\xi_\mathrm{methanation} \equiv 0
+\qquad\implies\qquad
+\min_{\xi}\; G\!\left(T,P,\,n_0 + \nu^{\top}\xi\right) \;\ge\; \min_{n \ge 0,\; A n = b} G(T,P,n)`,
+    where: [
+      { sym: "\\xi_\\mathrm{methanation}", means: "the extent of the "
+        + "methanation reaction — fixed at zero by LEAVING IT OFF THE LIST, "
+        + "not by any number you type", unit: "mol/s" },
+    ],
+    derivation: [
+      { step: "Every outlet the declared list can reach is an outlet the "
+          + "Gibbs reactor could also reach: moving along a reaction "
+          + "conserves every atom." },
+      { step: "The reverse is not true once a reaction is excluded: the "
+          + "reachable compositions are a subset of the atom-conserving "
+          + "ones.  A minimum over a subset can never sit below the minimum "
+          + "over the whole set — so the declared equilibrium is a "
+          + "CONSTRAINED minimum of the same G, and the Gibbs reactor's "
+          + "answer is its lower bound, never its competitor." },
+    ],
+    note: "HEURISTICS AND THERMODYNAMICS, EACH DOING ITS OWN JOB.  The "
+      + "heuristic decides which pathways exist; thermodynamics decides where "
+      + "each of them stops.  Neither can do the other's job: no amount of "
+      + "equilibrium arithmetic says a catalyst is selective, and no amount "
+      + "of plant experience says where a reaction's equilibrium lies.",
+  },
+  {
+    n: 4,
+    title: "The second knob: an approach temperature, read reaction by reaction",
+    body: "A real bed does not reach even the equilibrium of its OWN "
+      + "pathways.  `temperatureApproach` declares how far it falls short, as "
+      + "a MAGNITUDE — a negative value is refused by name "
+      + "(EquilibriumReactor.cpp:134 and :145) — and the ENGINE assigns the "
+      + "direction to each declared reaction separately "
+      + "(EquilibriumReactor.cpp:361–459).  It first solves the true "
+      + "equilibrium at the physical T, reads which way each reaction RUNS "
+      + "from this feed, and multiplies that direction by the reaction's "
+      + "enthalpy as written: exothermic AS IT RUNS, Kp is taken at T + ΔT; "
+      + "endothermic as it runs, at T − ΔT.  The rule has one home, shared "
+      + "with the Gibbs reactor (TemperatureApproach.H:87, "
+      + "`fromThermicity`).  On the witness the shift runs BACKWARD — the "
+      + "feed carries CO₂ and no water — so as it runs it is endothermic and "
+      + "its Kp is taken BELOW T while methanol synthesis, exothermic and "
+      + "running forward, is taken above it: with 20 K the conversion falls "
+      + "from 0.610 to 0.442.  The reactor itself stays at T; only each K "
+      + "moves, and each reaction's evaluation temperature is published as "
+      + "`T_Kp_<name>` (EquilibriumReactor.cpp:523).",
+    formula: String.raw`K_j \;\to\; K_j\!\left(T + s_j\,\lvert\Delta T\rvert\right),
+\qquad
+s_j = \begin{cases} +1 & \xi_j^{\,0}\,\Delta H_j < 0 \\ -1 & \xi_j^{\,0}\,\Delta H_j > 0 \end{cases}`,
+    where: [
+      { sym: "\\Delta T", means: "the declared approach: a MAGNITUDE, global "
+        + "on the unit or per reaction in constant/reactions (0 exempts a "
+        + "reaction)", unit: "K" },
+      { sym: "s_j", means: "the sign the ENGINE assigns reaction j, never "
+        + "declared by the author" },
+      { sym: "\\xi_j^{\\,0}", means: "the extent reaction j reaches at the "
+        + "TRUE equilibrium at the physical T — the probe solve.  Its sign is "
+        + "the direction the reaction runs from this feed", unit: "mol/s" },
+      { sym: "\\Delta H_j", means: "the enthalpy of reaction j AS WRITTEN, at "
+        + "the physical T, on the ideal-gas rung — the rung its K is priced "
+        + "on, so by van 't Hoff its sign is exactly the sign of d ln K_j / "
+        + "dT", unit: "J/mol" },
+    ],
+    note: "READ PER REACTION, NOT JOINTLY.  In a coupled set a shift on one "
+      + "reaction moves the extents of the others too, and the engine says "
+      + "so in every announcement rather than pretending to resolve it.  "
+      + "This is exactly what the Gibbs reactor's approach cannot do: told "
+      + "no reactions, it reads ONE thermicity for the whole transformation "
+      + "and applies one sign to all of it.",
+  },
+  {
+    n: 5,
+    title: "What a declared list can and cannot tell you",
+    body: "It can tell you the consequence of a premise, exactly.  It cannot "
+      + "tell you the premise is true.  If methanation does run on your bed — "
+      + "a different catalyst, a hotter spot, a poisoned promoter — the "
+      + "declared equilibrium is not a conservative estimate, it is the "
+      + "answer to a question the plant is not asking.  The Gibbs reactor on "
+      + "the same feed is therefore not a rival to ignore: it is the bound "
+      + "that says what the thermodynamics would do if the kinetics stopped "
+      + "protecting you, and the distance between the two columns of the "
+      + "panel is the size of the bet the declared list makes.",
+    note: "The companion page `equilibrium-landscapes` draws where a single "
+      + "reaction's equilibrium lies across temperature and pressure; this "
+      + "page is the level above it, where the choice of WHICH reactions "
+      + "equilibrate is made by you.",
+  },
+];
+
+export const PATHWAYS_LIMITS: readonly LessonLimit[] = [
+  {
+    id: "premise-not-cited",
+    title: "The exclusion on this page is a premise, cited to nothing.",
+    body: "Nothing in this repository documents the selectivity of a methanol "
+      + "catalyst, so the page does not claim one.  Methanation is left off "
+      + "the list because the lesson needs a pathway to close, and the "
+      + "witness says so in its own header.  A real design would cite the "
+      + "catalyst's measured selectivity at the operating point.",
+  },
+  {
+    id: "carbon-not-buildable",
+    title: "Carbon formation in a reformer cannot be shown here yet.",
+    body: "The classic exclusion — Boudouard and methane cracking left out of "
+      + "a steam reformer — needs SOLID carbon.  The catalogue has no "
+      + "solid-carbon record (its `C` is atomic carbon GAS, formed at "
+      + "716.7 kJ/mol), and neither the Gibbs reactor nor the equilibrium "
+      + "reactor carries a pure-solid phase, so a carbon-forming witness "
+      + "would need new thermochemistry and new physics.  None was invented.",
+  },
+  {
+    id: "extent-resolution",
+    title: "A pathway that runs to completion is out of reach of the extent formulation.",
+    body: "Ammonia oxidation was the other classic candidate — declare 4 NH₃ "
+      + "+ 5 O₂ → 4 NO + 6 H₂O and leave the nitrogen route out.  The Gibbs "
+      + "reactor, which works in logarithms of amounts, solves it at 1100 K "
+      + "and 1 bar (ten per cent ammonia in air) and sends the ammonia to N₂, "
+      + "with NO at 6.8 × 10⁻⁵.  The declared NO route alone is priced by the "
+      + "engine at ln K = 121.5 at 1100 K (`reactionGibbs`), which at full "
+      + "conversion leaves an ammonia mole fraction near 10⁻¹⁴ — below the "
+      + "interior floor of 10⁻¹² of the feed that the equilibrium reactor "
+      + "holds every participating species above (EquilibriumReactor.cpp:172), "
+      + "and far below what extents subtracted from the feed can resolve in "
+      + "double precision.  The reactor stalls and refuses to publish rather "
+      + "than print a wrong equilibrium.  This panel's temperature slider "
+      + "stops at 525 K for a related reason that is MEASURED and not yet "
+      + "diagnosed: at 500 K the COMPLETE set's Newton stalls too, although "
+      + "the Gibbs reactor's trace species there (CO near 10⁻⁶, methanol "
+      + "near 4 × 10⁻¹¹ of the feed) sit above that floor.",
+  },
+  {
+    id: "ideal-gas-at-fifty-bar",
+    title: "Fifty bar, priced as an ideal gas.",
+    body: "Every equilibrium constant the declared reactor uses is on the "
+      + "ideal-gas rung, so the witness declares `fugacityModel idealGas` for "
+      + "both reactors: a real equation of state in the Gibbs reactor alone "
+      + "would make the two columns answer two different questions.  At 50 "
+      + "bar that is an approximation, and the case says so.",
+  },
+  {
+    id: "no-number-here-is-calibrated",
+    title: "No ΔT on this page is fitted to anything.",
+    body: "The approach slider demonstrates the mechanism; a real approach "
+      + "comes from a plant measurement on a specific catalyst at a specific "
+      + "point in its life, and there is no measurement anywhere in this "
+      + "tool.",
+  },
+  {
+    id: "isothermal-only",
+    title: "Isothermal only.",
+    body: "The equilibrium reactor holds T and publishes the duty that holds "
+      + "it; it has no adiabatic mode.  A methanol converter's temperature "
+      + "rise, and the equilibrium limit it imposes, is not on this page.",
+  },
+];

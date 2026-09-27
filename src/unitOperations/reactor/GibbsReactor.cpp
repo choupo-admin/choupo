@@ -100,17 +100,17 @@ GibbsReactor::approachDirection(const GibbsMethod&  method,
         d.dH_kJ_per_kmolFeed = (H_eq_W - H_in_W) / Nin;   // J/mol == kJ/kmol
     }
 
-    d.determined = e0.converged && extent > 1.0e-12 && d.dH_kJ_per_kmolFeed != 0.0;
-    if (d.determined)
-    {
-        d.sign = (d.dH_kJ_per_kmolFeed < 0.0) ? +1 : -1;
-        d.word = (d.sign > 0) ? "exothermic" : "endothermic";
-    }
-    else
-    {
-        d.sign = +1;
-        d.word = "undetermined";
-    }
+    //  The RULE has ONE home, TemperatureApproach.H (included by the header),
+    //  shared with the per-reaction reading of `equilibriumReactor`: this
+    //  function only reads the one thermicity a stoichiometry-free reactor
+    //  has -- the overall transformation from this feed -- and hands it over.
+    //  (Eleven lines, as the code they replace: EduTool lessons cite this
+    //  file by line number, so its numbering is kept.)
+    const temperatureApproach::ApproachSign s = temperatureApproach::fromThermicity(
+        d.dH_kJ_per_kmolFeed, e0.converged && extent > 1.0e-12);
+    d.determined = s.determined;
+    d.sign       = s.sign;
+    d.word       = s.word;
 
     std::ostringstream m;
     m << std::fixed << std::setprecision(2);

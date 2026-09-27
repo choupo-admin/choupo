@@ -102,7 +102,8 @@ License
 import { useMemo, useState } from "react";
 
 import {
-  Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
+  Alert, Anchor, Badge, Box, Group, Loader, SegmentedControl, Stack, Text,
+  Title,
 } from "@mantine/core";
 
 import { useMethodRun, type DictOverride } from "../../case/methodRun.js";
@@ -111,6 +112,7 @@ import { parseGibbsMapCsv, type GibbsMapData } from "../plotting/gibbsMapCsv.js"
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import { LANDSCAPE_LIMITS, LANDSCAPE_STEPS } from "./equilibriumLandscapesLesson.js";
+import { setActiveMethodTool } from "./registry.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -713,6 +715,16 @@ export function EquilibriumLandscapesTool(): JSX.Element {
         {contrast}
 
         <LessonLimits limits={LANDSCAPE_LIMITS} />
+
+        <Text size="sm">
+          The level above this one — where you declare the REACTIONS a
+          catalyst runs, leave the kinetically frozen ones off the list, and
+          give each declared reaction its own approach — is the page{" "}
+          <Anchor component="button" type="button"
+            onClick={() => setActiveMethodTool("declared-pathways")}>
+            Declared pathways
+          </Anchor>.
+        </Text>
       </Stack>
     </Box>
   );

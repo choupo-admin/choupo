@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 425,
+  "cases": 426,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -5766,6 +5766,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/equil02_methanol_declared_pathways": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "equilibriumReactor",
+    "gibbsReactor",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
   "tutorials/steady/reactors/pfr01_first_order": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -6615,6 +6631,7 @@
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate",
     "tutorials/steady/reactors/equil01_reforming",
+    "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
     "tutorials/steady/reactors/pfr03_series_selectivity",
@@ -6903,7 +6920,8 @@
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed"
    ],
    "equilibriumReactor": [
-    "tutorials/steady/reactors/equil01_reforming"
+    "tutorials/steady/reactors/equil01_reforming",
+    "tutorials/steady/reactors/equil02_methanol_declared_pathways"
    ],
    "evaporativeDryer": [
     "tutorials/steady/drying/evapDryer01_nacl",
@@ -6967,7 +6985,8 @@
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/power/combined01_brayton_rankine",
-    "tutorials/steady/power/combined02_brayton_rankine_shaft"
+    "tutorials/steady/power/combined02_brayton_rankine_shaft",
+    "tutorials/steady/reactors/equil02_methanol_declared_pathways"
    ],
    "heatExchanger": [
     "tutorials/steady/flowsheets/proxy01_gas_loop",
@@ -7170,6 +7189,7 @@
     "tutorials/steady/flowsheets/process03_recycle",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/thermo/basis01_two_unit_chain"
    ],
    "sprayDryer": [
@@ -7618,6 +7638,7 @@
     "tutorials/steady/reactors/cstr05_multiplicity",
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/reactors/equil01_reforming",
+    "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
     "tutorials/steady/reactors/pfr03_series_selectivity",

@@ -39,6 +39,25 @@ Description
     `conversionReactor` (extent SPECIFIED), `gibbsReactor` (Gibbs minimisation,
     NO reactions given -- cannot restrict which reactions equilibrate), and
     `cstr`/`pfr` (equilibrium reached only KINETICALLY, needing rate data).
+
+    The declared SET is the kinetic knowledge: a reaction left out of the list
+    is one the author knows is too slow to matter here, and leaving it out
+    changes the answer (a Gibbs reactor over the same species would run it).
+
+    TEMPERATURE APPROACH (C11, 2026-09-27) -- the second knob.
+    `operation { temperatureApproach <dT>; }` is a GLOBAL MAGNITUDE (>= 0 K);
+    a reaction's own entry in constant/reactions may carry
+    `temperatureApproach <dT>;`, overriding it for that reaction (0 exempts
+    it).  The engine assigns the DIRECTION per reaction on the one rule
+    (TemperatureApproach.H, shared with `gibbsReactor`): a probe solve at the
+    physical T says which way each reaction RUNS from this feed; exothermic as
+    it runs -> Kp_j at T + |dT|, endothermic -> Kp_j at T - |dT|, both of
+    which push Kp_j against the direction the reaction runs.  Announced per
+    reaction; KPIs `temperatureApproach_K` (the global magnitude) and
+    `T_Kp_<name>` (where each Kp was evaluated).  The reactor stays
+    ISOTHERMAL at T: outlet state and duty are at the physical T.  A negative
+    magnitude REFUSES by name; absent the key the run is the one it always
+    was.  NOT here: an adiabatic mode, and any Kp beyond the ideal-gas rung.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

@@ -100,15 +100,16 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
       + "and nothing in the minimisation knows which of them is the truer "
       + "flame.  A species that is not listed cannot form, however "
       + "favourable; a species that is listed will form wherever the "
-      + "minimisation finds it lower.  THERE IS A SECOND LEVEL, and it is "
-      + "not on this page: `equilibriumReactor` takes a DECLARED reaction "
-      + "list from constant/reactions and drives only those to equilibrium "
-      + "(EquilibriumReactor.cpp:66–90; witness `equil01_reforming`, "
-      + "`reactions ( smr wgs )`), so an empirical exclusion — a reaction "
-      + "known to be kinetically irrelevant, left off the list — can be "
-      + "declared.  It carries no approach temperature today and runs "
-      + "isothermally only; a page setting the two levels side by side is "
-      + "a separate commission.",
+      + "minimisation finds it lower.  THERE IS A SECOND LEVEL, and it has "
+      + "its own page, the EduTool `declared-pathways`: "
+      + "`equilibriumReactor` takes a DECLARED reaction list from "
+      + "constant/reactions and drives only those to equilibrium "
+      + "(EquilibriumReactor.cpp:69–92; witnesses `equil01_reforming`, "
+      + "`reactions ( smr wgs )`, and `equil02_methanol_declared_pathways`), "
+      + "so an empirical exclusion — a reaction known to be kinetically "
+      + "irrelevant, left off the list — can be declared.  It reads the "
+      + "approach temperature PER REACTION since 2026-09-27 and runs "
+      + "isothermally only.",
   },
   {
     n: 2,

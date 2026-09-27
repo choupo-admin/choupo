@@ -1080,6 +1080,11 @@
       "exit": 0,
       "claim": "check_workspace_truth: OK -- HEAD 5c4e073758 is SYNCED with origin/main (freshly fetched), and the poisoned overlay is absent.  NOT GUARANTEED: the recycler itself, and the window between this proof and the action it guards -- git's own non-fast-forward refusal is the backstop there.",
       "seconds": 0.9
+    },
+    "check_reaction_subset_approach": {
+      "exit": 0,
+      "claim": "check_reaction_subset_approach: OK -- equilibriumReactor's temperatureApproach: absent and declared-0 runs identical; per reaction the sign follows the thermicity AS IT RUNS (forward smr at T-10, wgs at T+10; backward both flipped, extents shrink); a reaction's own value overrides (0 exempts, said); the shifted Kp is Kp at the shifted T and the reactor stays at T; negative values refused by name, globally and per reaction; the rule has one home (both reactors call it); the announcement reaches the caveat block; equil02's complete set reproduces the Gibbs reactor and the declared subset makes methanol and no methane.  NOT checked: whether any magnitude is right for a bed, coupled effects, adiabatic operation, non-ideal Kp",
+      "seconds": 0.2
     }
   }
 }

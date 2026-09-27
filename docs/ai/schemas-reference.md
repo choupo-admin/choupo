@@ -48,6 +48,7 @@ Equilibrium reactor — the SAME unit as `equilibriumReactor` under its compact 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `T` |   | number | K | Isothermal operating temperature (a fired reformer holds it). Omit to hold the feed temperature. |
+| `temperatureApproach` |   | number | K | Detune each declared reaction's equilibrium by THIS MANY kelvin: its Kp is evaluated at a shifted temperature while the reactor stays ISO… |
 
 ## `absorber`  (absorber operation)
 
@@ -397,6 +398,7 @@ Reactor taken to CHEMICAL EQUILIBRIUM over the reactions the unit names in its `
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `T` |   | number | K | Isothermal operating temperature (a fired reformer holds it). Omit to hold the feed temperature. |
+| `temperatureApproach` |   | number | K | Detune each declared reaction's equilibrium by THIS MANY kelvin: its Kp is evaluated at a shifted temperature while the reactor stays ISO… |
 
 ## `estimateComponent`  (estimateComponent operation)
 

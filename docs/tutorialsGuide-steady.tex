@@ -8789,6 +8789,41 @@ Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3). At 1100 K, 1 bar the 
 \end{tutgolden}
 
 \clearpage
+\tutentry{equil02\_methanol\_declared\_pathways}{tutorials/steady/reactors/equil02\_methanol\_declared\_pathways}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (split) at (0.0,-0.0) {\textbf{split}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (gibbs) at (2.9,-0.0) {\textbf{gibbs}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (declared) at (2.9,-1.7) {\textbf{declared}\\[-1pt]{\tiny equilibriumReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (complete) at (2.9,-3.4) {\textbf{complete}\\[-1pt]{\tiny equilibriumReactor}};
+  \draw[->] ($(split.west)+(-1.05,0.00)$) -- ($(split.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (split) -- (gibbs) node[midway, above, font=\tiny] {feedGibbs};
+  \draw[->] (split) -- (declared) node[midway, above, font=\tiny] {feedDeclared};
+  \draw[->] (split) -- (complete) node[midway, above, font=\tiny] {feedComplete};
+  \draw[->] ($(gibbs.east)+(0,0.00)$) -- ($(gibbs.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outGibbs};
+  \draw[->] ($(declared.east)+(0,0.00)$) -- ($(declared.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outDeclared};
+  \draw[->] ($(complete.east)+(0,0.00)$) -- ($(complete.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outComplete};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Declared pathways: one syngas, three equilibria -- Gibbs over every species, a declared reaction subset (methanation excluded), and the complete reaction set}
+\begin{tutnarrative}
+ONE feed, three equilibrium answers: what a DECLARED reaction list is.
+
+The same synthesis gas (70 H2 : 25 CO : 5 CO2, 525 K, 50 bar, ideal gas) goes to three equilibrium reactors side by side. A splitter divides it; every answer below is read as MOLE FRACTIONS, which do not depend on how much of the feed each reactor received, so the split is bookkeeping.
+
+gibbs gibbsReactor over EVERY species (CO H2 methanol water CO2 CH4): no reaction is declared, the mixture finds the minimum of G subject to the element balances. Every pathway the species list permits is open. declared equilibriumReactor over a DECLARED subset: methanolSynthesis CO + 2 H2 <$\to$ CH3OH waterGasShift CO + H2O <$\to$ CO2 + H2 and NOTHING else. Methanation (CO + 3 H2 <$\to$ CH4 + H2O) is left OUT of the list. complete equilibriumReactor over all three reactions, methanation included -- a COMPLETE set of independent reactions for these six species over three elements (6 - 3 = 3).
+
+THE PREMISE IS YOURS. Leaving methanation out states that, over the catalyst this reactor carries and at these conditions, methane formation is too slow to matter. That is kinetic knowledge; the engine cannot check it and does not try. It computes what FOLLOWS from it: equilibrium, but only along the pathways you declared possible.
+
+WHAT THE THREE ANSWERS SHOW (measured with this case, 2026-09-27): gibbs y\_CH4 = 0.4513, y\_methanol = 1.76e-10: with every pathway open, equilibrium at 525 K and 50 bar is methane and water. complete the SAME outlet as gibbs (y\_methanol 1.76e-10 again, the flow 13.14 kmol/h per 25 in, as gibbs has 26.28 per 50): a complete set of independent reactions IS the Gibbs reactor. So the difference below is the exclusion, not the solver. declared methanol conversion 0.610 of the CO: remove ONE reaction and the answer is a different product. And the water-gas shift runs BACKWARD in `declared` (the feed carries CO2 and no water), which the approach knob below reads.
+
+THE SECOND KNOB. `declared` carries `temperatureApproach 0;` -- a MAGNITUDE the engine gives a sign PER REACTION from that reaction's own thermicity as it runs (src/unitOperations/reactor/TemperatureApproach.H): methanol synthesis is exothermic and runs forward, so its Kp is taken at (T + dT); the shift runs backward, so as it runs it is endothermic and its Kp is taken at (T - dT). Both push against the direction the reaction runs. With 20 K: methanol conversion 0.610 $\to$ 0.442. The key is declared at 0 so the EduTool `declared-pathways` can move it, and every key a knob moves sits on its own line (the EduTool's override channel matches a key at the start of a line).
+
+NOT here, and said: carbon deposition (the catalogue carries no solid carbon record, and neither reactor has a pure-solid phase), non-ideal fugacities at 50 bar (every Kp is on the ideal-gas rung; the case declares `fugacityModel idealGas`), and any reactor that is not isothermal.
+
+\end{tutnarrative}
+
+\clearpage
 \tutentry{pfr01\_first\_order}{tutorials/steady/reactors/pfr01\_first\_order}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

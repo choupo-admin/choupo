@@ -1,0 +1,25 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  A synthesis gas: hydrogen, carbon monoxide and some carbon dioxide, no
+//  water and no methane.  The composition is this case's premise, chosen to
+//  make the lesson visible, not a quoted plant specification.
+componentMolarFlows
+{
+    H2       70.0 kmol/h;
+    CO       25.0 kmol/h;
+    CO2       5.0 kmol/h;
+}
+
+T               525 K;
+P               50 bar;
+phase           gas;

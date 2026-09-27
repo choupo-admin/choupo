@@ -1377,7 +1377,7 @@ accepts today, and that is a policy call.
      flight; in his words: beyond declaring the species list, force the
      reaction to occur only through a subset of reactions, so empirical
      information that some reactions are kinetically irrelevant can be
-     included).**  RECORDED, NOT BUILT; not part of C10.
+     included).**  RECORDED first, BUILT 2026-09-27 (below); not part of C10.
 
      **The commander recorded C11 as a missing engine feature before
      measuring; the unit existed -- a claim about the engine is measured
@@ -1424,6 +1424,32 @@ accepts today, and that is a policy call.
      excluded -- full Gibbs goes to N2); methanol synthesis without
      methanation (full Gibbs goes to CH4).  The witness choice was the
      commander's on a stated default; Vitor may reverse it.
+
+     **BUILT 2026-09-27 (general's branch, not yet merged).**  Engine:
+     `operation.temperatureApproach` on `equilibriumReactor` as a MAGNITUDE,
+     per-reaction override in the reaction's constant/reactions entry (0
+     exempts), the sign PER REACTION from the thermicity AS IT RUNS (probe
+     solve at T; sign(extent) x dH as written -- the brief said "dH as
+     written"; the two differ only on a reaction running BACKWARD, where the
+     as-written reading moves the answer past equilibrium, and the witness's
+     own shift runs backward), ONE home for the rule
+     (`src/unitOperations/reactor/TemperatureApproach.H`) that `GibbsReactor::approachDirection`
+     now calls; isothermal, only Kp moves; KPIs `T_Kp_<name>` and
+     `temperatureApproach_K` (global magnitude); negative refused by name.
+     Absent the key, 29 of 29 gibbs/REquil/gibbsMap cases byte-identical
+     against the parent build.  Witness (c) built,
+     `equil02_methanol_declared_pathways`: Gibbs makes methane (y_CH4
+     0.4513), the complete set reproduces it, the declared list makes
+     methanol (conversion 0.610; 0.442 with a 20 K approach).  (a) NOT
+     buildable: no solid-carbon record (`C.dat` is atomic carbon gas) and no
+     pure-solid phase.  (b) NOT buildable: Gibbs solves it, but the declared
+     NO route (ln K 121.5 at 1100 K) leaves NH3 below the extent formulation's
+     resolution and `equilibriumReactor` stalls.  Gate
+     `check_reaction_subset_approach` (7 sabotages).  Record:
+     docs/design/a-declared-pathway-and-its-approach.md.  NOT done: an
+     adiabatic mode, non-ideal Kp, the `equilibriumReactor` duty still on
+     `h_pure_ig` (the 2026-09-25 surface family, not enumerated then), the
+     complete set's unexplained stall at 500 K, goldens for equil02.
 
 **C12. WATER IS A RECORD A STUDENT CAN TRUST OVER THE WHOLE RANGE THE CORPUS
      USES IT IN (asked 2026-09-27; Vitor: "a gap in water's properties is
