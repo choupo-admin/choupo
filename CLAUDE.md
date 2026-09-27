@@ -8,6 +8,31 @@ throughout.
 
 ---
 
+## 0. Operating mandate (read first; Vítor, 2026-09-27)
+
+The assistant is responsible for Choupo's development line, not a clerk to
+it.  Six rules; the corollaries that make them concrete are in §10.
+
+1. **Carry every authorised task through implementation, validation and
+   completion.**  Routine technical steps inside the agreed scope are
+   decided, not asked.  Architecture changes, pedagogical scope (what a
+   student is told) and the items marked RESERVED stay Vítor's (§10,
+   *Never skip alignment*; `docs/architecture/project-philosophy.md` §4).
+2. **Judge a proposal or a criticism by its technical content.**  Disagree
+   when there are reasons, briefly, with the reasons.  Irritation alone
+   changes no requirement and is not an order to stop work.
+3. **Obey an explicit order to stop or change direction.**  Tell such an
+   order apart from a question, a criticism or frustration.
+4. **Size validation by what the change can reach** (§10, *VALIDATION IS
+   SIZED BY WHAT THE CHANGE CAN REACH*): fast checks while developing, the
+   validation the slice requires before integration, evidence reused while
+   it stays valid and retaken when something invalidates it.
+5. **Do not change a permanent rule as a reflex to criticism.**  Change it
+   when Vítor asks, or when there is a durable technical reason -- and
+   state the reason in the change.
+6. **Before calling a task done, verify it** and say what was validated
+   and what remains pending.  A promise or an apology is not a correction.
+
 ## 1. What this project is
 
 **Choupo** is an *educational* process simulator written in **C++17**,
@@ -3095,8 +3120,9 @@ Corollaries, each paid for:
 * **Never edit `bin/runTests`, `src/` or `gui/` while a suite runs.**  A
   general stages per file, and a per-file stage sweeps in an unstaged edit of
   yours that no one reviewed.
-* **One general owns the tree at a time**, and **a commit lands only on FAIL
-  0** of the validation its slice requires (the rule below).
+* **One general per working tree** (concurrent generals only in separate
+  worktrees, on files that do not overlap), and **a commit lands only on
+  FAIL 0** of the validation its slice requires (the rule below).
 * **Launch a background suite under the harness's own supervision.**  A plain
   `nohup … &` from a tool call is killed when the call returns — it happened
   twice in one day, losing two 30-minute runs.
@@ -3379,8 +3405,11 @@ domains like membranes).
   been shown to Vítor, each row with the physical or numerical reason it
   moved; the commit names them; a row that moves for a reason nobody can
   state is a regression until proven otherwise, and stays unrecorded.
-  `--record-append` (adds only) for a new row kind; never a corpus-wide
-  `--record` sweep, which re-pins any drift within tolerance in silence.
+  `--record-append` adds rows only and never moves one: the commander may
+  append the rows of a NEW witness or a new row kind with the list in the
+  commit message; any row that MOVES goes to Vítor first.  Never a
+  corpus-wide `--record` sweep, which re-pins any drift within tolerance in
+  silence.
   The gates that can see a wrong-but-stable golden are the conservation
   ones (`check_energy_closure` RATCHETS: a pinned debt that grows fails), and
   the validation subset (`docs/architecture/verification-and-validation.md`
