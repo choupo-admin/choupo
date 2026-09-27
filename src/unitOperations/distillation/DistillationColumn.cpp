@@ -40,10 +40,12 @@ License
 #include "thermo/reaction/Reaction.H"   // Reaction::forwardOrder -- the ONE home of the forward order
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <limits>
 #include <map>
 #include <optional>
@@ -1603,40 +1605,43 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     const std::size_t nExtents = kinetic ? 0 : nRx; // kinetic: extent is COMPUTED, not an unknown
     const std::size_t nU = N * nv + nExtents;
 
-    //  THE KINETIC COLUMN SOLVES ON DIMENSIONLESS COMPONENT BALANCES (DEV.md
-    //  §5 A7, 2026-09-27).  A component balance is a molar flow (kmol/s); the
-    //  bubble-point row beside it, Sum(y) - 1, is a pure number.  newtonND
-    //  takes ONE absolute tolerance and ONE line-search merit, ||F||_2, over
-    //  both, so on a small column (column05's feeds are ~1e-5 kmol/s) the
-    //  balances weigh 1e-5 of the Sum(y) rows.  A kinetic rate enters ONLY
-    //  through the balances (the extent is computed, not an unknown), and
-    //  that mismatch then fails twice, measured on column05's system:
-    //    * a charge whose imbalance stays under 1e-9 kmol/s is never solved
-    //      at all -- the 0.01 g probe's first two continuation steps took
-    //      ZERO Newton iterations, the profile left exactly non-reactive;
-    //    * a charge above it is REFUSED by the line search: the Newton step
-    //      that fixes a 1e-10 kmol/s imbalance moves x by ~2e-4, whose
-    //      second-order error on the Sum(y) rows of the end stages exceeds
-    //      the whole starting norm, so alpha fell to 1/32 and the run
-    //      stalled at a floor proportional to the charge (0.01 g: |F| from
-    //      5.1e-9 to 5.8e-7 across the ramp; every charge >= 0.01 g failed).
-    //  Dividing the balances by the column's total feed makes every row a
-    //  fraction, so the tolerance is RELATIVE and the merit weighs the rows
-    //  alike; the Newton DIRECTION is unchanged (a constant row scale), only
-    //  what counts as progress.  Measured after: 0.1, 1, 10 and 100 g all
-    //  converge, 2-13 iterations per continuation step.  NOT applied to the
-    //  equilibrium or non-reactive columns, and that is a measurement, not a
-    //  preference: the same scale on every column made column05's
-    //  EQUILIBRIUM phase 2 diverge (its path runs through alpha 1/8 and
-    //  dT = 134 K steps even unscaled) and moved column12's cancellation-level
-    //  boundary residual -- the general remedy is recorded in DEV.md §5 A7.
-    const scalar balanceScale =
-        (kinetic && totFeed > 0.0) ? 1.0 / totFeed : 1.0;
-    if (kinetic && verbosity >= 2)
+    //  EVERY MESH SOLVES ON DIMENSIONLESS BALANCES (DEV.md §5 A7, 2026-09-27;
+    //  taken first for the kinetic column alone, then for every column).  A
+    //  component balance is a molar flow (kmol/s); the bubble-point row beside
+    //  it, Sum(y) - 1, is a pure number.  newtonND takes ONE absolute
+    //  tolerance and ONE line-search merit, ||F||_2, over both, so on a small
+    //  column (column05's feeds are ~1e-5 kmol/s) the balances weighed 1e-5
+    //  of the Sum(y) rows and the 1e-9 tolerance let a balance stay open by
+    //  ~5e-5 of the feed.  On the kinetic column that failed twice, measured
+    //  on column05's system: a charge whose imbalance stayed under 1e-9
+    //  kmol/s was never solved at all (ZERO Newton iterations, the profile
+    //  left non-reactive), and a larger one was refused by the line search
+    //  (alpha fell to 1/32 and the run stalled at a floor proportional to the
+    //  charge).  The same absolute tolerance on a column fed 1e-8 kmol/s is
+    //  met by the SEED wherever the seed already satisfies the other rows --
+    //  which is what `check_degenerate_limits` A8 runs to see it.
+    //
+    //  WHICH SCALE, and why not a per-row one.  src/solver/Convergence.H
+    //  normalises a residual by the terms its equation balances.  Summed over
+    //  the stages a column's component balances TELESCOPE: the internal L and
+    //  V cancel and what is left is feed = products, so what the column
+    //  balances is its feed.  Dividing every balance row by the total feed
+    //  makes it a fraction of what enters -- exactly the closure a reader
+    //  checks -- and it is a CONSTANT row scale, so the Newton direction and
+    //  the root are unchanged; only what the tolerance and the line search
+    //  count as progress moves.  The per-row alternative (each row over the
+    //  sum of its own |terms|) was measured and rejected: it inflates a trace
+    //  component's row by the inverse of its own ~1e-10 flows, asking for a
+    //  relative precision the finite-difference Jacobian cannot resolve, and
+    //  it moves with the iterate -- 11 of the corpus's 15 MESH cases failed
+    //  to converge under it, and the other four took 13-60 iterations where
+    //  the feed scale takes 5-20 on all but stripper02.
+    const scalar balanceScale = 1.0 / totFeed;     // totFeed > Bf > 0 (above)
+    if (verbosity >= 2)
     {
         std::ostringstream f;                      // leave std::cout's format as found
         f << std::scientific << std::setprecision(4) << totFeed;
-        std::cout << "  [solver] kinetic reactive column: each component balance"
+        std::cout << "  [solver] MESH: each component balance"
                      " is divided by the total feed (" << f.str() << " kmol/s),"
                      " so it is a fraction like the Sum(y) - 1 row beside it and"
                      " the 1e-9 tolerance is relative\n";
@@ -1695,12 +1700,64 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  profile.  This is the standard way to converge reactive distillation.
     bool rxnActive = false;
     scalar mCatScale = 1.0;                            // catalyst-mass continuation (kinetic mode)
+    //  The equilibrium-mode K_a continuation (phase 2, below): the reactive
+    //  row reads  ln Q - ln K_a - (1 - s) * lnOffset_k,  so s = 1 is the
+    //  column the case declared and s = 0 is the seed's own quotient.
+    scalar homotopyS = 1.0;
+    sVector lnOffset(nRx, 0.0);
+
+    //  A STAGE REFUSAL ON A NEWTON TRIAL IS A FACT ABOUT THE TRIAL.  After
+    //  the seed has been priced, every stage model has shown it can price
+    //  this column; a refusal the Newton provokes later (the line search
+    //  probing a full step that puts a reactive stage at 63 K, or its
+    //  solvent below zero) says the TRIAL is not a state, and it becomes an
+    //  InfeasibleTrial -- the solver's own "shorten the step", never an
+    //  answer.  Found by this slice on stripper02: with the balances
+    //  dimensionless its Newton sat on the same |F| ~ 0.012 plateau the old
+    //  one sat on, probed the same absurd full step, and the old run survived
+    //  it only because its accept/reject pattern happened to differ.  A
+    //  refusal at the SEED still propagates (a missing record refuses there),
+    //  and the converged profile is re-priced below with no such catch, so
+    //  nothing refused is ever inside an answer.  Announced once, after the
+    //  search, like every stage aid.
+    std::atomic<bool> seedPriced{false};
+    std::atomic<bool> trialRefused{false};
+    std::string       trialRefusal;                    // first message, for the announcement
+    std::mutex        trialRefusalLock;
+    auto stageKOnTrial = [&](scalar Tj, const sVector& xj) -> sVector
+    {
+        try { return thermo.stageK(Tj, P, xj, xj, xj); }
+        catch (const InfeasibleTrial&) { throw; }
+        catch (const std::exception& e)
+        {
+            if (!seedPriced.load()) throw;
+            if (!trialRefused.exchange(true))
+            {
+                std::lock_guard<std::mutex> g(trialRefusalLock);
+                const std::string w = e.what();
+                trialRefusal = w.substr(0, w.find('\n'));
+            }
+            throw InfeasibleTrial(std::string("a stage could not price this"
+                " MESH trial: ") + e.what());
+        }
+    };
+    auto announceTrialRefusals = [&]()
+    {
+        if (!trialRefused.load() || verbosity < 1) return;
+        std::cout << "  [solver] a MESH line-search trial could not be priced by"
+                     " a stage model (first: \"" << trialRefusal << "\") -- each"
+                     " such trial was treated as INFEASIBLE and the step"
+                     " shortened.  A solver aid on the PATH only: the seed and"
+                     " the converged profile are priced without it.\n";
+        trialRefused.store(false);
+    };
+
     auto residual = [&](const sVector& u) -> sVector {
         std::vector<sVector> x(N), y(N), K(N);
         sVector T(N);
         for (std::size_t j = 0; j < N; ++j) {
             unpack(u, j, x[j], T[j]);
-            K[j] = thermo.stageK(T[j], P, x[j], x[j], x[j]);
+            K[j] = stageKOnTrial(T[j], x[j]);
             y[j].assign(n, 0.0);
             for (std::size_t i = 0; i < n; ++i) y[j][i] = K[j][i] * x[j][i];
         }
@@ -1730,7 +1787,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                     m = (L[j] + Udraw[j])*x[j][i] + (V[j] + Wdraw[j])*y[j][i]
                         - L[j-1]*x[j-1][i] - V[j+1]*y[j+1][i] - Ffeed[j]*zfeed[j][i];
                 if (ext >= 0) m -= nu[i] * xi;              // reaction generation ν_i·ξ_j
-                g[j*nv + i] = m * balanceScale;             // kinetic: a fraction of the feed
+                g[j*nv + i] = m * balanceScale;             // a fraction of the feed
             }
             scalar sy = 0.0;                                // E_j: Σ y − 1
             for (std::size_t i = 0; i < n; ++i) sy += y[j][i];
@@ -1748,8 +1805,10 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 for (std::size_t i = 0; i < n; ++i)
                     if (nu[i] != 0.0)
                         lnQ += nu[i] * std::log(std::max(gam[i] * x[j][i], 1.0e-300));
-                g[N*nv + k] = lnQ - std::log(KaAt(T[j]));
+                g[N*nv + k] = lnQ - std::log(KaAt(T[j]))
+                            - (1.0 - homotopyS) * lnOffset[k];
             }
+        seedPriced.store(true);
         return g;
     };
 
@@ -1850,8 +1909,105 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             for (scalar s : {0.01, 0.05, 0.2, 0.5, 1.0})   // a fast rate is stiff if switched on whole
             { mCatScale = s; res = solver::newtonND(residual, res.x, opts); }
         else
-            res = solver::newtonND(residual, res.x, opts);
+        {
+            //  THE EQUILIBRIUM PHASE 2: SEED THE QUOTIENT OFF ZERO, THEN RAMP
+            //  K_a FROM WHERE THE SEED STANDS (DEV.md §5 A7, 2026-09-27).
+            //
+            //  Phase 1 carries no reaction, so a product nobody feeds leaves it
+            //  at x = 0 -- measured on column05, slightly BELOW zero (-4e-15)
+            //  -- and ln(gamma x) is clamped at ln(1e-300) = -690.8.  The row
+            //  ln Q - ln K_a then starts at ~730 on every reactive stage and,
+            //  worse, is FLAT there: the clamp gives the Jacobian no column for
+            //  the product, so a Newton cannot see which way to move it.  With
+            //  the balances in kmol/s the old run got through anyway, because
+            //  a balance weighing 1e-5 of the other rows let the line search
+            //  ignore them (|F| 2.2e3 at the start, alpha 1/8, dT = 134 K
+            //  steps); with dimensionless balances the same start diverged
+            //  (exit 2, |F| 9e21).
+            //
+            //  Three routes were measured on column05 and on a 3 x 3 grid
+            //  around it (Ka298 5 / 38.7 / 500 x reflux 1.5 / 2.1 / 4; the old
+            //  engine converged 2 of the 9):
+            //    * RAMP K_a alone (K = s K_a, s = 1e-6 ... 1): converged on 6
+            //      of 9, and its first step spent 30 iterations climbing out of
+            //      the clamp -- the ramp works AROUND the flat row, not on it;
+            //    * SEED the quotient's species to 1e-4 alone: 5 of 9 (16
+            //      iterations on column05 -- fewer than the old 29);
+            //    * seed each stage to its own local chemical equilibrium: 50
+            //      iterations on column05 with alpha crawling at 1/64.
+            //  What is taken is the pair: every species in the quotient is
+            //  raised to at least 1e-4 on each reactive stage (renormalised;
+            //  the balances it disturbs are the Newton's to close), then the
+            //  target is K_eff = K_a exp(-(1 - s) lnOffset), where lnOffset is
+            //  the SEED's own ln Q - ln K_a -- so s = 0 is satisfied by the
+            //  seed and s = 1 is the declared column.  The full step s = 1 is
+            //  tried FIRST (16 iterations on column05, the shipped case); a
+            //  step that fails is halved and retried from the last accepted
+            //  s, a step that succeeds doubles.  9 of 9 on the grid, the SAME
+            //  conversion wherever the older routes also converged.  Below
+            //  1/64 it gives up and says so -- the column is then NOT
+            //  converged, never quietly returned.
+            constexpr scalar kQuotientSeedFloor = 1.0e-4;
+            sVector uDone = res.x;
+            for (std::size_t k = 0; k < nRx; ++k)
+            {
+                const std::size_t j = rxStages[k];
+                sVector xj;
+                scalar  Tj;
+                unpack(uDone, j, xj, Tj);
+                scalar sx = 0.0;
+                for (std::size_t i = 0; i < n; ++i)
+                {
+                    if (nu[i] != 0.0) xj[i] = std::max(xj[i], kQuotientSeedFloor);
+                    sx += xj[i];
+                }
+                for (std::size_t i = 0; i + 1 < n; ++i) uDone[j*nv + i] = xj[i] / sx;
+            }
+            homotopyS = 1.0;                           // lnOffset is the seed's own quotient gap
+            {
+                const sVector g0 = residual(uDone);
+                for (std::size_t k = 0; k < nRx; ++k) lnOffset[k] = g0[N*nv + k];
+            }
+            scalar sDone = 0.0, ds = 1.0;
+            int    phase2Iters = 0;
+            std::vector<scalar> accepted;
+            while (sDone < 1.0 && ds >= 1.0 / 64.0)
+            {
+                homotopyS = std::min(1.0, sDone + ds);
+                auto r = solver::newtonND(residual, uDone, opts);
+                phase2Iters += r.iterations;
+                if (r.converged)
+                {
+                    uDone = r.x;
+                    sDone = homotopyS;
+                    accepted.push_back(sDone);
+                    ds    = std::min(2.0 * ds, 1.0 - sDone);
+                }
+                else
+                    ds *= 0.5;
+                res = r;
+            }
+            homotopyS = 1.0;
+            res.converged  = res.converged && sDone >= 1.0;
+            res.iterations = phase2Iters;
+            if (verbosity >= 2)
+            {
+                std::ostringstream m;                  // leave std::cout's format as found
+                m << "  [solver] equilibrium reactive column: every species"
+                     " in the quotient seeded to >= " << kQuotientSeedFloor
+                  << " on the reactive stages, then K_a reached from the"
+                     " seed's own quotient in " << accepted.size()
+                  << " continuation step(s) (s =";
+                for (scalar a : accepted) m << " " << a;
+                m << "; " << phase2Iters << " Newton iterations)"
+                  << (sDone >= 1.0 ? "" : " -- NOT reached: the step fell"
+                                          " below 1/64")
+                  << "\n";
+                std::cout << m.str();
+            }
+        }
     }
+    announceTrialRefusals();
 
     if (verbosity >= 2 && std::isfinite(res.offBandMax))
         std::cout << "  [solver] block-tridiagonal structure VERIFIED on the"
@@ -1887,12 +2043,47 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             xj[n-1] = 1.0 - s;
             Tj = w[j*mv + (n-1)]; Vj = w[j*mv + n]; Lj = w[j*mv + n+1];
         };
+        //  EVERY ROW DIMENSIONLESS HERE TOO (DEV.md §5 A7, 2026-09-27).  The
+        //  material rows (component, total, the reflux and bottoms specs) are
+        //  divided by the total feed, as in the CMO MESH above; the ENERGY
+        //  rows by the total feed times the mean latent heat of the CMO
+        //  profile's stage liquids, lambda = mean_j [hV(x_j) - hL(x_j)] --
+        //  evaluated at ONE composition, so the enthalpy datum cancels and
+        //  the scale is the heat that moves the column, per mole of feed.
+        //  An energy row is then a fraction of the heat it takes to vaporise
+        //  the feed.  In kW the energy rows had dominated the merit and a
+        //  1e-7 kW tolerance meant a different thing on every column (1e-10
+        //  of column06's latent load, 1e-11 of column07's); the material rows
+        //  carried 1e-7 kmol/s, up to 3.6e-6 of column06's feed.  One
+        //  tolerance, 1e-9, now means the same fraction on every row of every
+        //  MESH.  Measured on the three fullMESH cases: 3-4 iterations as
+        //  before, every golden row unmoved.
+        scalar lambdaMean = 0.0;
+        for (std::size_t j = 0; j < N; ++j)
+            lambdaMean += std::abs(thermo.Hvapour(T[j], x[j]) - thermo.Hliquid(T[j], x[j]));
+        lambdaMean /= static_cast<scalar>(N);
+        if (!(lambdaMean > 0.0))
+            throw std::runtime_error("DistillationColumn(fullMESH): the stage"
+                " liquids' mean latent heat is not positive ("
+                + std::to_string(lambdaMean) + " kJ/kmol) -- the energy rows"
+                " have no scale to be measured against.");
+        const scalar energyScale = balanceScale / lambdaMean;
+        if (verbosity >= 2)
+        {
+            std::ostringstream f;
+            f << std::scientific << std::setprecision(4) << lambdaMean;
+            std::cout << "  [solver] full-MESH: the material rows are divided by"
+                         " the total feed and the energy rows by the total feed"
+                         " times the stage liquids' mean latent heat ("
+                      << f.str() << " kJ/kmol), so every row is a fraction and"
+                         " the 1e-9 tolerance is relative\n";
+        }
         auto residualF = [&](const sVector& w) -> sVector {
             std::vector<sVector> xs(N), ys(N);
             sVector Ts(N), Vs(N), Ls(N);
             for (std::size_t j = 0; j < N; ++j) {
                 unpackF(w, j, xs[j], Ts[j], Vs[j], Ls[j]);
-                const auto Kj = thermo.stageK(Ts[j], P, xs[j], xs[j], xs[j]);
+                const auto Kj = stageKOnTrial(Ts[j], xs[j]);
                 ys[j].assign(n, 0.0);
                 for (std::size_t i = 0; i < n; ++i) ys[j][i] = Kj[i]*xs[j][i];
             }
@@ -1911,30 +2102,30 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                     else
                         m = (Ls[j]+Udraw[j])*xs[j][i] + (Vs[j]+Wdraw[j])*ys[j][i]
                             - Ls[j-1]*xs[j-1][i] - Vs[j+1]*ys[j+1][i] - Ffeed[j]*zfeed[j][i];
-                    g[j*mv + i] = m;
+                    g[j*mv + i] = m * balanceScale;
                 }
                 scalar sy = 0.0; for (std::size_t i = 0; i < n; ++i) sy += ys[j][i];
                 g[j*mv + (n-1)] = sy - 1.0;                       // summation
                 if (j == 0)                                       // total mass / condenser V_0=0
-                    g[j*mv + n] = Vs[0];
+                    g[j*mv + n] = Vs[0] * balanceScale;
                 else if (j == N-1)
-                    g[j*mv + n] = Vs[N-1] + Ls[N-1] + Udraw[N-1] + Wdraw[N-1]
-                                - Ls[N-2] - Ffeed[N-1];
+                    g[j*mv + n] = (Vs[N-1] + Ls[N-1] + Udraw[N-1] + Wdraw[N-1]
+                                - Ls[N-2] - Ffeed[N-1]) * balanceScale;
                 else
-                    g[j*mv + n] = Ls[j] + Vs[j] + Udraw[j] + Wdraw[j]
-                                - Ls[j-1] - Vs[j+1] - Ffeed[j];
+                    g[j*mv + n] = (Ls[j] + Vs[j] + Udraw[j] + Wdraw[j]
+                                - Ls[j-1] - Vs[j+1] - Ffeed[j]) * balanceScale;
                 if (j == 0)                                        // energy / flow specs
-                    g[j*mv + n+1] = Ls[0] - R*D;                   // reflux spec
+                    g[j*mv + n+1] = (Ls[0] - R*D) * balanceScale;  // reflux spec
                 else if (j == N-1)
-                    g[j*mv + n+1] = Ls[N-1] - Bf;                  // bottoms spec
+                    g[j*mv + n+1] = (Ls[N-1] - Bf) * balanceScale; // bottoms spec
                 else {                                             // ENERGY balance (enthalpy residual)
                     const scalar hFj = (Ffeed[j] > 0.0)
                         ? qfeed[j]*hL(zfeed[j], feedT[j]) + (1.0-qfeed[j])*hV(zfeed[j], feedT[j])
                         : 0.0;
-                    g[j*mv + n+1] =
+                    g[j*mv + n+1] = energyScale * (
                           Ls[j-1]*hL(xs[j-1],Ts[j-1]) + Vs[j+1]*hV(ys[j+1],Ts[j+1])
                         + Ffeed[j]*hFj
-                        - (Ls[j]+Udraw[j])*hL(xs[j],Ts[j]) - (Vs[j]+Wdraw[j])*hV(ys[j],Ts[j]);
+                        - (Ls[j]+Udraw[j])*hL(xs[j],Ts[j]) - (Vs[j]+Wdraw[j])*hV(ys[j],Ts[j]));
                 }
             }
             return g;
@@ -1945,10 +2136,11 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             w0[j*mv + (n-1)] = T[j];  w0[j*mv + n] = V[j];  w0[j*mv + n+1] = L[j];
         }
         solver::NDOptions optsF;
-        optsF.tolerance = 1.0e-7; optsF.maxIter = 60; optsF.parallel = true;
+        optsF.tolerance = 1.0e-9; optsF.maxIter = 60; optsF.parallel = true;
         if (verbosity >= 3)
             optsF.onIter = [this](const solver::NDTrace& tr){ recordResidual(tr.normF); };
         auto resF = solver::newtonND(residualF, w0, optsF);
+        announceTrialRefusals();
         for (std::size_t j = 0; j < N; ++j) unpackF(resF.x, j, x[j], T[j], V[j], L[j]);
         if (!resF.converged) res.converged = false;
         if (verbosity >= 2)

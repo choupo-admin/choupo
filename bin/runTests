@@ -4436,22 +4436,8 @@ PYEOF
     fi
     rm -f /tmp/lcp.$$
 
-    # A model's degenerate limit is the LIMIT: a one-stage absorber/stripper
-    # is a flash of its combined feeds, and an absent product contributes
-    # nothing to the reverse leg of the kinetic reactive column (DEV.md §5
-    # A7).  Both defects were latent -- no corpus case reaches either -- so
-    # the gate builds its probes itself.  ~2 s.
-    if "$ROOT/bin/curate/check_degenerate_limits.py" > /tmp/dgl.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "check_degenerate_limits" \
-            "$(gate_claim check_degenerate_limits /tmp/dgl.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (a degenerate limit is no longer the limit)\n" \
-            "check_degenerate_limits"
-        cat /tmp/dgl.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/dgl.$$
+    # check_degenerate_limits runs AFTER the case loop now (2026-09-27): its
+    # arm A7 reads every MESH column case, and the loop's own pass is cached.
 
     # A manual must still COMPILE.  theoryGuide.tex opened three `warning`
     # environments that are defined nowhere, so `make -C docs all` had been
@@ -5535,6 +5521,27 @@ if [ "$#" -eq 0 ]; then
     #  written by the loop above; anything the cache lacks they run live.
     #  Their witness and sabotage arms are untouched -- always live.
     [ -n "$SUITE_OUT_DIR" ] && export CHOUPO_SUITE_OUTPUTS="$SUITE_OUT_DIR"
+
+    # A model's degenerate limit is the LIMIT: a one-stage absorber/stripper
+    # is a flash of its combined feeds, and an absent product contributes
+    # nothing to the reverse leg of the kinetic reactive column (DEV.md §5
+    # A7).  Both defects were latent -- no corpus case reaches either -- so
+    # the gate builds its probes itself.  Since 2026-09-27 it also holds
+    # every MESH column in the corpus to a closure of 1e-9 of its feed (A7)
+    # and to scale invariance (A8); A7 reads this loop's cached pass, which
+    # is why the gate sits here and not with the pre-loop gates.  Measured:
+    # ~12 s for A1-A6 alone before; now ~23 s on the cache, ~70 s standalone.
+    if "$ROOT/bin/curate/check_degenerate_limits.py" > /tmp/dgl.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_degenerate_limits" \
+            "$(gate_claim check_degenerate_limits /tmp/dgl.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (a degenerate limit is no longer the limit)\n" \
+            "check_degenerate_limits"
+        cat /tmp/dgl.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dgl.$$
 
     # Unread-key gate: a key written and never read is a value that did
     # nothing while the author believes it did.  `murphreeEficiency` -- one

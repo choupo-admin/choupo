@@ -2870,19 +2870,81 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      a phase-1 profile that carries no product, and runs through alpha 1/8
      and dT = 134 K steps even unscaled) and moved column12's boundary residual
      (-5.66e-6 against a pinned -8.38e-6 kW, cancellation round-off); the
-     other 28 column cases passed.  **PROPOSED REMEDY, not taken:**
-     dimensionless balances on EVERY MESH (the `Convergence.H` rule --
-     normalise by the terms the equation balances), which needs first a
-     robust equilibrium homotopy (seed the products off zero, or ramp K_a
-     as the kinetic mode ramps the charge) and a re-record of column12's
-     round-off pin with the list shown to Vítor; until then the equilibrium
-     and non-reactive columns keep an ABSOLUTE 1e-9 kmol/s tolerance, which
-     on a column as small as column05 is ~5e-5 of its feed.  Gate:
+     other 28 column cases passed.  Gate (first slice):
      `check_degenerate_limits` -- A4 now at 1 g, new arm A6 (convergence at
      1 g and 10 g, the scaling announced, every component balance closed to
      1e-9 of the feed, conversion rising with the charge); sabotages S4 (the
      scale reverted: A4 exit 2) and S5 (the extent 1 ppm off: A6 on all
-     four components) in its docstring.  (2) the stripper still
+     four components) in its docstring.  ~~**PROPOSED REMEDY, not taken:**
+     dimensionless balances on EVERY MESH~~ **TAKEN 2026-09-27, the same
+     day, second slice.**  MEASURED FIRST, and the measurement contradicts
+     the premise it was filed on: over all 30 column cases in the corpus
+     (every flowsheetDict at any depth), the worst component-balance
+     closure of any SIMULTANEOUS or full-MESH column, recomputed from the
+     result JSON against its own feed, was 4.4e-11 (stripper01; column05
+     4.9e-13).  The absolute tolerance was hiding nothing on the corpus AS
+     SHIPPED -- a Newton's direction is scale-free, so from a linear-T seed
+     it closes the balances with the bubble points and overshoots the
+     tolerance quadratically.  It hides a balance only where the seed
+     already satisfies the scale-free rows: the full-MESH's CMO seed, or a
+     declared interior -- and there it was demonstrated, not argued (below).
+     The open balances the corpus DOES publish are all WANG-HENKE, which is
+     not a Newton at all -- see (5).  What was done:
+     *(a) every MESH row dimensionless.*  Each component balance over the
+     total feed (the `Convergence.H` rule by hand: summed over the stages
+     the balances telescope to feed = products, so the terms a column
+     balances are its feed); under `fullMESH` the material rows the same
+     way and each ENERGY row over the feed times the stage liquids' mean
+     latent heat (hV(x) - hL(x) at one composition, so the datum cancels),
+     tolerance 1e-7 -> 1e-9 so one number means one fraction on every row.
+     A per-row scale (each row over the sum of its own |terms|) was
+     measured and REJECTED: 11 of the 15 MESH cases stopped converging.
+     *(b) a robust equilibrium phase 2.*  The diagnosis: phase 1 leaves an
+     unfed product at x = -4e-15, the ln Q row is CLAMPED at ln 1e-300 and
+     so FLAT -- the Jacobian has no column for the product.  Measured on a
+     3 x 3 grid (Ka298 5 / 38.7 / 500 x reflux 1.5 / 2.1 / 4): the old
+     engine converged 2 of 9, the scale alone 2 of 9, a K_a ramp alone
+     (K = s K_a from 1e-6) 6 of 9 (its first step spends 30 iterations
+     climbing out of the clamp), a floor seed alone 5 of 9, a local-
+     equilibrium seed 50 iterations on column05 with alpha at 1/64.  Taken:
+     every species in the quotient floored at 1e-4 on the reactive stages,
+     then K_a reached from the SEED'S OWN quotient (s = 0 satisfied by the
+     seed), the full step first, halved on failure -- 9 of 9, the same
+     conversion wherever an older route also converged, column05 in 16
+     iterations (was 29), announced with its steps.  *(c) found on the
+     way, stripper02:* with dimensionless balances its Newton sat on the
+     same |F| ~ 0.012 plateau (the bottom stages' Sum(y) rows, alpha at
+     6e-5 for ten iterations) the old one sat on, probed the same absurd
+     full step (T = -98 K, water -1.16) and hit a ReactiveVLE refusal the
+     old run had dodged by chance.  Rule taken: once the SEED has been
+     priced, a stage refusal on a Newton TRIAL is an InfeasibleTrial (the
+     solver shortens the step); a refusal at the seed still propagates and
+     the converged profile is re-priced without the catch.  Announced once.
+     The plateau itself is NOT fixed and is named: stripper02 converges in
+     43 iterations (was 30) and escapes it by an exhausted line search's
+     tiny accepted step, both before and after.  **Golden rows moved:
+     NONE** -- all 30 column cases PASS their goldens; column12's
+     cancellation-level residual reads -8.37907373e-6 against the pinned
+     -8.37907351e-6 kW (the -5.66e-6 filed above did not reproduce).
+     Measured against a build of the parent on every numeric leaf of the
+     30 result JSONs: no stream or KPI moved by more than 1.7e-8 relative
+     (column04's bottoms benzene), the Wang-Henke and outer-driver cases
+     are bit-identical, and the unpinned `iterations` KPI moved on five
+     (column05 29 -> 16, column08 25 -> 20, acetone06 16 -> 15, column04
+     6 -> 7, stripper02 30 -> 43; column05's now counts the whole phase-2
+     continuation).  Gate:
+     `check_degenerate_limits` A7 (every MESH column in the corpus, derived
+     from the flowsheets, closes to 1e-9 of its feed) and A8 (SCALE
+     INVARIANCE: column06 x1e-8 and x1e4, column05 x1e-8, and column02 seeded
+     with its own converged interior at a reflux 1.2x higher, x1e-8, must
+     reproduce their full-size answer to 1e-6); sabotages S6 (scale back to
+     1: A4 + A8 -- the interior probe returned its seed after zero
+     iterations, x_D 0.98125 against 0.98721), S7 (energy rows back in kW:
+     survived x1e-8, so x1e4 was added -- exit 2, stalled at |F| 4.9e-8
+     kW), S8 (no seed floor: column05 exit 2) and S9 (no trial rule:
+     stripper02 exit 2) in its docstring.  The gate moved AFTER the case
+     loop in `bin/runTests` so A7 reads the sweep's cached pass: ~23 s
+     there, ~70 s standalone, against ~12 s before.  (2) the stripper still
      DELETES solvent that arrives with the stripping gas -- the 2026-08-12
      absorber fix (`liqMol = L x_in + V y_in` for the solvent) was never
      carried to its twin; latent (stripper01's gas is pure N2).  Where
@@ -2892,6 +2954,17 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      `V y_in`); latent -- every corpus wash liquid is pure water and
      stripper01's liquid carries only NH3 (a solute) and water.  (4) the kinetic column reads no
      `orderRev`, while `forwardOrder`'s shared refusal message names it.
+     (5) **FOUND, NOT FIXED: Wang-Henke closes its component balances only
+     to its step tolerance.** It stops when max|dx| between passes <
+     `compositionTol` (1e-6), not on a residual, and a slowly contracting
+     close-boiling column leaves its balances open by far more than the
+     step: measured on the base engine, column15 6.3e-8, column14 4.2e-8,
+     column11 3.7e-8, column01/09/10 and heatlink01 2.5e-8, column16 1.4e-8
+     of the feed, and 4.8e-7 - 8.6e-7 on the representative passes of
+     optim01, optim06, pareto01 and sensitivity01/02. Remedy proposed, NOT
+     taken: stop on the balance residual (or on max|dx| scaled by the
+     contraction rate) -- it moves every Wang-Henke golden and outer-driver
+     path, so it is a separate decision.
 
 *The engine publishes something nothing checks:*
 

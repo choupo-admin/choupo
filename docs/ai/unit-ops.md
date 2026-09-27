@@ -709,8 +709,18 @@ named catalytic stages.  Restricted to **mole-conserving (Σν = 0)** reactions
 (esterification, transesterification, metathesis) so the CMO flow profile is
 untouched; each reactive stage gains a molar extent ξ_j closed by the
 activity-based equilibrium `Σ_i ν_i ln(γ_i x_i) = ln K_a`.  Converged by homotopy
-(solve non-reactive, then switch the reaction on).  The reaction heat is not fed
-back into the flows — an honest bubble-point screening model.
+(solve non-reactive, then switch the reaction on): every species in the quotient is
+seeded to at least 1e-4 on the reactive stages, and K_a is reached from the seed's
+own quotient in continuation steps (the full step first, halved on failure) —
+announced with the steps it took.  The reaction heat is not fed back into the
+flows — an honest bubble-point screening model.
+
+**Every MESH row is dimensionless.**  Each component balance is divided by the
+column's total feed (and, under `fullMESH`, each energy row by the feed times the
+stage liquids' mean latent heat), so the 1e-9 tolerance is a fraction of what the
+column balances — the same on a 1e-5 kmol/s laboratory column as on a plant one.
+Announced at verbosity ≥ 2.  The Wang–Henke path is not a Newton and keeps its
+`compositionTol` on the composition step.
 ```
 reaction
 {
