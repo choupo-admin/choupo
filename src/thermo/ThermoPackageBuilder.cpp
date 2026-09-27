@@ -101,7 +101,129 @@ DictPtr speciesMapOf(const DictPtr& rec)
 }
 bool hasSpeciesMap(const DictPtr& rec) { return speciesMapOf(rec) != nullptr; }
 
+//  ---- THE aqueous activityModel, read in ONE place (2026-09-27) ----------
+//  `equilibrium { aqueous { activityModel ... } }` had THREE readers -- the
+//  reactive assembly, the single-salt Pitzer/eNRTL assembly and the declared
+//  aqueous chemistry buildV2 attaches -- each parsing the slot its own way.
+//  Two defects lived in the gaps, both measured (DEV.md 5 A5):
+//
+//    * `model <w>;` and `ionic <w>;` name the SAME slot (the ionic rung;
+//      `model` is the older spelling the single-salt path still uses).  With
+//      both present `model` won and `ionic` was never read -- so the
+//      composite refusal's own advice, "declare `ionic davies;` with the
+//      backbone", followed literally on a case written `model pitzerHMW;`
+//      returned the SAME refusal, and `{ model davies; ionic pitzerHMW; }`
+//      ran Davies at exit 0 under a pitzerHMW declaration.  Both keys
+//      together now REFUSE, naming both words.
+//    * `molecular <w>;` -- the composite backbone -- is served by the
+//      REACTIVE shape alone; the single-salt adapter read `model` and
+//      dropped `molecular NRTL;` in silence.  It says which route it read
+//      (`molecular`) so the caller can refuse it where nothing serves it.
+//
+//  The word form `activityModel <w>;` is the ionic rung too, for every
+//  reader (two of the three had crashed on it with a missing-dict error).
+struct AqueousActivityDeclaration
+{
+    bool        declared = false;   // the slot is present at all
+    std::string ionic;              // "" = none named (reader decides)
+    std::string molecular;          // "" = no backbone declared
+};
+
+AqueousActivityDeclaration readAqueousActivity(const DictPtr& aq)
+{
+    AqueousActivityDeclaration d;
+    if (!aq || !aq->found("activityModel")) return d;
+    d.declared = true;
+    const EntryValue& ev = aq->entryValue("activityModel");
+    if (std::holds_alternative<std::string>(ev))
+    {
+        d.ionic = std::get<std::string>(ev);
+        return d;
+    }
+    auto am = aq->subDict("activityModel");
+    const bool hasModel = am->found("model");
+    const bool hasIonic = am->found("ionic");
+    if (hasModel && hasIonic)
+        throw std::runtime_error("thermophysicalPropertySystem:"
+            " equilibrium.aqueous.activityModel declares BOTH `model "
+            + am->lookupWord("model") + ";` and `ionic "
+            + am->lookupWord("ionic") + ";` -- two names for the ONE ionic"
+            " rung, and only one could ever be read (`model` shadowed"
+            " `ionic`).  Keep exactly one: the composite form is"
+            " `activityModel { ionic <word>; molecular <word>; }`, the"
+            " single-salt form `activityModel { model Pitzer|eNRTL; }`.");
+    if      (hasModel) d.ionic = am->lookupWord("model");
+    else if (hasIonic) d.ionic = am->lookupWord("ionic");
+    if (am->found("molecular")) d.molecular = am->lookupWord("molecular");
+    return d;
+}
+
 } // namespace
+
+//  ---- RETIRED TOP-LEVEL FORMS REFUSE BY NAME (2026-09-27, DEV.md 5 A5) ---
+//  The top level of a thermophysicalPropertySystem is read key by key, and a
+//  key nobody asks for is simply never seen -- so a retired form ran to exit
+//  0 while the case said something the engine did not do.  Measured before
+//  this was written, each on a corpus case at exit 0: `package <name>;` (the
+//  selector retired 2026-07-15, whose refusal the v2 clean-slate purge
+//  deleted with the v1 reader -- the property architecture went on saying
+//  the runtime refuses it), `propertyPackage {}` / `thermoPackage` (v1
+//  manifests), `electrolyteModel {}` (never a case block), a flat top-level
+//  `activityModel` / `equationOfState` (the v1 form the thermo{} override
+//  fragment already refuses by name), and `volatiles ( ... );` -- which the
+//  reactive assembly READ from the top level as a fallback, a second home
+//  the grammar never documented, and which it ignored in silence when
+//  equilibrium{} declared its own.  A named list, not a closed key set:
+//  the top level is also read by readers outside this file
+//  (acceptUnverified, inherits, ...), and a closed set nobody enumerated
+//  would refuse a correct case.
+static void refuseRetiredTopLevel(const DictPtr& pkg)
+{
+    struct Retired { const char* key; const char* why; };
+    static const Retired retired[] = {
+        { "package",
+          "`package <name>;` selected from the shared propertyPackages"
+          " catalogue, RETIRED 2026-07-15 -- nothing reads the line, so the"
+          " case would run on its inline declaration while naming another."
+          "  This file IS the system: remove the line." },
+        { "propertyPackage",
+          "`propertyPackage` is the v1 manifest; the case grammar declares"
+          " components / equilibrium { formulation ...; } / caloric /"
+          " transport at the top level of this file"
+          " (bin/curate/migrate_thermoPhysProp.py converts an old case)." },
+        { "thermoPackage",
+          "`thermoPackage` is the v1 grammar; the case grammar declares"
+          " components / equilibrium { formulation ...; } / caloric /"
+          " transport at the top level of this file"
+          " (bin/curate/migrate_thermoPhysProp.py converts an old case)." },
+        { "electrolyteModel",
+          "there is no `electrolyteModel {}` block -- an electrolyte's model"
+          " is declared where its formulation reads it:"
+          " `equilibrium { formulation electrolyteGammaPhi; aqueous {"
+          " activityModel { ... } } }`, or `activityModel <word>;` on a"
+          " props-bench speciate op." },
+        { "activityModel",
+          "a top-level `activityModel` is the retired flat v1 form; declare"
+          " it where the formulation reads it: `equilibrium { liquid {"
+          " activityModel ...; } }` (gammaPhi / gammaGamma) or"
+          " `equilibrium { aqueous { activityModel { ... } } }`"
+          " (electrolyteGammaPhi)." },
+        { "equationOfState",
+          "a top-level `equationOfState` is the retired flat v1 form; declare"
+          " it where the formulation reads it: `equilibrium { formulation"
+          " phiPhi; equationOfState { model ...; } }`." },
+        { "volatiles",
+          "`volatiles ( ... );` belongs INSIDE `equilibrium { ... }`, beside"
+          " `formulation` -- the top-level copy was a second home the"
+          " reactive assembly read as a fallback and ignored whenever"
+          " equilibrium{} declared its own.  Move the line into"
+          " equilibrium{}." },
+    };
+    for (const auto& r : retired)
+        if (pkg->found(r.key))
+            throw std::runtime_error(std::string("thermophysicalPropertySystem:"
+                " top-level `") + r.key + "` is not read -- " + r.why);
+}
 
 // ---- ELECTROLYTE path: assemble a PitzerSingleSalt directly from the unified
 //      substance records (no readFromDict, no loadSalt, no old catalogue) ----
@@ -727,11 +849,17 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
 //
 //          aqueous
 //          {
-//              activityModel { model davies; }     // this slice's rung
-//              speciation    { masters ( NH4 ); }  // aqueous master families
+//              activityModel { ionic davies; }     // the ionic rung (+ an
+//                                                  //   optional `molecular`
+//                                                  //   backbone)
 //          }
 //          vapour    { fugacityModel idealGas; }
 //          volatiles ( NH3 water );                // gas-liquid records serve these
+//
+//      The reactive shape and its master families are DERIVED from the
+//      components' own `aqueousSpeciation` / `aqueousMapping` facts; the
+//      `speciation { masters ( ... ); }` block that once declared them is
+//      RETIRED and refused (buildV2Dispatch).
 //
 //      Streams stay on the APPARENT component basis; the package carries a
 //      ReactiveVLE engine the flash delegates to.  Every mapping is VERIFIED
@@ -767,21 +895,18 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     //     -- serving it would mix standard states silently, which is the
     //     D2 identity contract's one unforgivable (a hybrid nobody
     //     published).
-    std::string actModel = "davies";
-    std::string molecularModel;                    // "" = none declared
-    {
-        const EntryValue& ev = aq->entryValue("activityModel");
-        if (std::holds_alternative<std::string>(ev))
-            actModel = std::get<std::string>(ev);
-        else
-        {
-            auto am = aq->subDict("activityModel");
-            if      (am->found("model")) actModel = am->lookupWord("model");
-            else if (am->found("ionic")) actModel = am->lookupWord("ionic");
-            if (am->found("molecular"))
-                molecularModel = am->lookupWord("molecular");
-        }
-    }
+    //  ONE reader of the slot (readAqueousActivity): `model` and `ionic`
+    //  together refuse, so the advice below -- "declare `ionic ...;`" -- is
+    //  read whichever spelling the case started from.
+    const AqueousActivityDeclaration aqDecl = readAqueousActivity(aq);
+    if (!aqDecl.declared)
+        throw std::runtime_error("thermophysicalPropertySystem: the REACTIVE"
+            " electrolyteGammaPhi shape declares no"
+            " `equilibrium.aqueous.activityModel` -- declare the ionic rung,"
+            " `activityModel { ionic davies; }` or `{ ionic pitzerHMW; }`.");
+    const std::string actModel =
+        aqDecl.ionic.empty() ? std::string("davies") : aqDecl.ionic;
+    const std::string molecularModel = aqDecl.molecular;   // "" = none
     if (actModel == "edwardsPitzer")
         throw std::runtime_error("thermophysicalPropertySystem: the REACTIVE"
             " electrolyteGammaPhi slice does not serve edwardsPitzer, and"
@@ -936,8 +1061,9 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                     " `activityModel { ionic davies; molecular NRTL; }`) and"
                     " the ideal molecular VLE approximation is NOT authorised"
                     " for '" + cc.name + "' -- declare the model, authorise"
-                    " the approximation (approximations { idealMolecularVLE {"
-                    " components ( " + cc.name + " ); } }), or remove the"
+                    " the approximation at the TOP LEVEL of the system"
+                    " (approximations { idealMolecularVLE { components ( "
+                    + cc.name + " ); } }, beside `components`), or remove the"
                     " component.");
     //  The approximation is a DELIBERATE case override of the recommended
     //  composite mixed-solvent electrolyte v1 route -- announced as such
@@ -1130,9 +1256,14 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             if (bridge.empty())
                 throw std::runtime_error("reactive electrolyteGammaPhi:"
                     " component '" + names[i] + "' declares an aqueousMapping,"
-                    " but none of its mapped species is a declared master --"
-                    " add its family master to speciation { masters (...) }"
-                    " (mediators H/OH cannot anchor a family).");
+                    " but every species it maps onto is a mediator (H/OH),"
+                    " and a mediator anchors no family -- the masters are"
+                    " DERIVED from the components' bridges, so name the"
+                    " family's own species in this component's bridge:"
+                    " `aqueousMapping ( { species <master>; nu <n>; } ... );`"
+                    " on its record or its case overlay.  (The old"
+                    " `speciation { masters ( ... ); }` block is RETIRED and"
+                    " refused.)");
             for (const auto& [m, nu] : bridge)
             {
                 (void)nu;
@@ -1140,7 +1271,8 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                 // O2(aq)) -- findIon is the ion-physics wrapper, not this seam
                 if (!electrolyte::findAqueousSpecies(m.key))
                     throw std::runtime_error("reactive electrolyteGammaPhi:"
-                        " declared master '" + m.key + "' has no species record"
+                        " master '" + m.key + "' (derived from the"
+                        " component's aqueousMapping) has no species record"
                         " (species/<name>.dat).");
             }
             cfg.families.push_back({ i, std::string(), std::move(bridge) });
@@ -1184,7 +1316,7 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             auto rec = electrolyte::findAqueousSpecies(m);
             if (!rec)
                 throw std::runtime_error("reactive electrolyteGammaPhi:"
-                    " declared master '" + m + "' has no species record"
+                    " derived master '" + m + "' has no species record"
                     " (species/<name>.dat).");
             const auto mec = parseElementalFormula([&]{
                 // the bridged species row exposes its formula as `ion`
@@ -1199,12 +1331,12 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
         if (carrying.empty())
             throw std::runtime_error("ThermoPackage build refused: chemistry"
                 " set cannot map all aqueous species back to the declared"
-                " apparent-component basis -- no declared master carries the"
+                " apparent-component basis -- no derived master carries the"
                 " marker element '" + marker + "' of apparent component '"
                 + names[i] + "'.");
         if (carrying.size() > 1)
             throw std::runtime_error("reactive electrolyteGammaPhi: two"
-                " declared masters (" + carrying[0] + ", " + carrying[1]
+                " derived masters (" + carrying[0] + ", " + carrying[1]
                 + ") carry the marker element '" + marker + "' of apparent"
                 " component '" + names[i] + "' -- element inference cannot"
                 " tell them apart; declare the typed bridge on the component"
@@ -1276,7 +1408,7 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                 " `molecular` backbone model -- the two liquids are coupled"
                 " by equality of ACTIVITY, so both must be priced by the SAME"
                 " model.  Declare activityModel { ionic davies; molecular"
-                " <NRTL|UNIFAC>; } on the aqueous phase.");
+                " <NRTL|UNIQUAC|UNIFAC>; } on the aqueous phase.");
         if (!organicModel.empty() && organicModel != molecularModel)
             throw std::runtime_error("thermophysicalPropertySystem: the"
                 " organic phase declares activityModel '" + organicModel
@@ -1699,9 +1831,13 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
 
     // (d) volatiles: each is an apparent component served by a gas-liquid
     //     record keyed by the component's FORMULA (water -> H2O).
+    //  ONE home: `equilibrium { volatiles ( ... ); }`.  The top-level copy
+    //  this loop used to fall back on is refused by name in build()
+    //  (refuseRetiredTopLevel), so an absent list is simply empty here and
+    //  the named refusal below fires.
     for (const auto& vn : eq->found("volatiles")
                               ? eq->lookupWordList("volatiles")
-                              : v2->lookupWordList("volatiles"))
+                              : std::vector<std::string>{})
     {
         std::size_t idx = names.size();
         for (std::size_t i = 0; i < names.size(); ++i)
@@ -1718,8 +1854,9 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     }
     if (cfg.volatiles.empty())
         throw std::runtime_error("reactive electrolyteGammaPhi: no volatiles"
-            " declared -- a reactive VLE with no transferable species is a"
-            " speciation-only problem (use the props speciate op).");
+            " declared in `equilibrium { volatiles ( ... ); }` -- a reactive"
+            " VLE with no transferable species is a speciation-only problem"
+            " (use the props speciate op).");
 
     //  The banner states the model that RUNS, never a fixed word (the
     //  Edwards lesson, 2026-08-04: a banner keyed on one model and
@@ -1782,17 +1919,14 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
         if (hasAq)
         {
             auto a = eq->subDict("aqueous");
-            if (a->found("activityModel"))
-            {
-                auto am = a->subDict("activityModel");
-                // legacy `model <w>;` == mixed-solvent `ionic <w>;` -- the
-                // aqueous chemistry's model is the IONIC surface either way
-                // (the molecular backbone is phase VLE, not speciation).
+            //  `model <w>;` == `ionic <w>;` -- the aqueous chemistry's model
+            //  is the IONIC surface either way (the molecular backbone is
+            //  phase VLE, not speciation).  ONE reader of the slot, so both
+            //  keys together refuse here exactly as in the assemblies.
+            const AqueousActivityDeclaration decl = readAqueousActivity(a);
+            if (decl.declared)
                 aq.activityModel =
-                    am->found("model") ? am->lookupWord("model")
-                  : am->found("ionic") ? am->lookupWord("ionic")
-                                       : "davies";
-            }
+                    decl.ionic.empty() ? std::string("davies") : decl.ionic;
             if (a->found("speciation"))
             {
                 auto sp = a->subDict("speciation");
@@ -1824,6 +1958,7 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
 {
     // The active-chemistry SELECTION lives in constant/chemistryDict and
     // arrives as the `chem` object -- never inside the system dict.
+    refuseRetiredTopLevel(pkg);
     if (pkg->found("chemistry"))
         throw std::runtime_error("thermophysicalPropertySystem: the"
             " active-chemistry selection is not declared here -- it lives in"
@@ -2185,8 +2320,29 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         {
             return buildReactiveElectrolyte(v2, db, eq, aq, chem);
         }
-        auto am = aq->subDict("activityModel");
-        const std::string model = am->lookupWord("model");
+        //  ONE reader of the slot.  The single-salt Pitzer/eNRTL adapter has
+        //  no molecular backbone -- the composite `molecular <w>;` is served
+        //  by the REACTIVE shape alone -- so a declared backbone here was
+        //  dropped in silence (measured: `{ model Pitzer; molecular NRTL; }`
+        //  ran Pitzer alone at exit 0).  It refuses now, naming the route
+        //  that does serve it.
+        const AqueousActivityDeclaration decl = readAqueousActivity(aq);
+        if (!decl.declared || decl.ionic.empty())
+            throw std::runtime_error("thermophysicalPropertySystem:"
+                " electrolyteGammaPhi needs its aqueous model declared --"
+                " `aqueous { activityModel { model Pitzer|eNRTL; } }`.");
+        if (!decl.molecular.empty())
+            throw std::runtime_error("thermophysicalPropertySystem: the"
+                " aqueous activityModel declares `molecular "
+                + decl.molecular + ";`, but this system is not REACTIVE (no"
+                " component declares `aqueousSpeciation <setName>;`), so it"
+                " runs on the single-salt " + decl.ionic + " adapter, which"
+                " has no molecular backbone and would drop the key.  The"
+                " composite mixed-solvent route (`ionic davies; molecular"
+                " <NRTL|UNIQUAC|UNIFAC>;`) is served by the reactive shape"
+                " only -- remove `molecular`, or model the system on that"
+                " route.");
+        const std::string model = decl.ionic;
         if (model != "Pitzer" && model != "eNRTL")
             throw std::runtime_error("thermophysicalPropertySystem: "
                 "electrolyteGammaPhi activityModel '" + model
