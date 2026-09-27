@@ -2708,6 +2708,32 @@ are decisions and sit in §4b, not here.
      currently carries a red nobody is acting on, which is recorded here so
      the next session inherits it as a task rather than as scenery.
 
+     **SETTLED AND ACTED ON 2026-09-27 (branch
+     claude/det2-flagship-first-law; goldens PENDING Vítor).**  The
+     "inconsistency" above is the report's deliberate shape, not a defect:
+     `EnergyBalanceReport.cpp`'s `declares` branch gives a unit that declares
+     no energy item `items = dH` (its implied duty), no closure, and
+     `raw_imbalance_kW = dH`; the crystalliser declares `Q_kW` and so gets
+     `raw = dH - Q`.  For an ADIABATIC unit that declares nothing the whole
+     dH is unattributed, which is what the balance forbids.  Three of the
+     four terms were one family (the state a unit computes with is not the
+     state its streams carry) and are CLOSED, each to 0.0000 kW:
+       DRYING.SD   a hand balance (constant-Cp air, Watson latent) that
+                   charged the latent heat of water the powder kept, and
+                   omitted the solid, the superheat and the crystallisation;
+       DRYING.BD   the same, plus a T_out floor that evaporated water no heat
+                   paid for;
+       Fermentor   the CSTR priced its duty on a quality blend where the
+                   report resolves the CO2 split.
+     All three now price through `flashState::priceState` (moved from
+     ConversionReactor, one home).  The plant reads **+10.7949 kW, 1.0298 %**
+     -- `energy-T2:plant` STAYS RED by 0.03 pp.  The remainder is
+     CONCENTRATION.Evap1 (-10.4180) + Evap2 (-0.3773): the evaporator's
+     Watson latent against `H_stream_formation`, which CLAUDE.md 6 already
+     RESERVES for Vítor.  So D-ET2 is now a Vítor decision, not a diagnosis:
+     the evaporator surface is the whole of what keeps the flagship red.
+     Record: docs/design/three-units-and-the-flagship-first-law.md.
+
 
 Each line states the DEFECT, not the feature.  Where a general owns the area
 (§5b), the name is given.  Ordered by damage to a student, not by area.

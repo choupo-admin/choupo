@@ -223,6 +223,14 @@ in neither the accepted-items list nor the internal-medium exclusion list of
 the balance is not established here.  `DRYING.BD` publishes no energy KPI at
 all.
 
+*Corrected 2026-09-27.*  Established since: they do NOT belong.  The dryer
+is adiabatic, `duty` is the heat the air hands the droplets inside the unit,
+and counting it at the boundary would double-count what the streams carry.
+`DRYING.SD`'s -70.85 kW was the unit's energy balance being solved on a
+surface its streams are not priced on, and it is CLOSED (0.0000 kW), with
+`DRYING.BD`'s +10.24 kW beside it; the column's 631.96 kW was closed on
+2026-09-12.  Record: `docs/design/three-units-and-the-flagship-first-law.md`.
+
 ---
 
 ## 7. Records

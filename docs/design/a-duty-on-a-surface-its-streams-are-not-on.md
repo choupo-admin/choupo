@@ -54,7 +54,9 @@ and the remaining 6.4 W is the separator's own pre-existing -0.0064 kW.
 
 `src/unitOperations/reactor/ConversionReactor.cpp` -- one file, one new
 anonymous-namespace helper used by BOTH reaction paths (single-reaction and
-`reactions ( ... )`), so the rule has one home:
+`reactions ( ... )`), so the rule has one home (*moved verbatim to
+`flashState::priceState` in `StreamEquilibrium.H` on 2026-09-27, when three
+more units needed it -- `docs/design/three-units-and-the-flagship-first-law.md`*):
 
     Q_kW          = H(outlet state) - H(inlet state)
     Q_sensible_kW = H(feed composition at T_out) - H(inlet)

@@ -105,9 +105,34 @@ WHAT THIS DOES NOT CHECK, said plainly:
   * WHETHER A PINNED RESIDUAL IS ACCEPTABLE.  It is not.  Every entry in
     KNOWN_OPEN is a plant that violates the first law, and the list is a
     ledger of work owed, not a set of exemptions.
-  * PER-UNIT closure.  A plant can close globally with two units cancelling.
-    `energyBalance_byUnit.csv` localises it and ammonia02 is the proof that
-    the localisation itself can be wrong; named as the next slice.
+  * PER-UNIT closure IN GENERAL.  A plant can close globally with two units
+    cancelling.  `energyBalance_byUnit.csv` localises it and ammonia02 is the
+    proof that the localisation itself can be wrong.  ONE per-unit arm exists
+    since 2026-09-27 (below): the units whose energy balance is H_out = H_in
+    BY CONSTRUCTION -- an adiabatic sprayDryer/solidDryer, and a
+    cstr/conversionReactor that published Q_kW -- must leave nothing
+    unattributed.  Every other unit is judged only through the plant sum.
+
+THE UNIT ARM, SABOTAGE-VERIFIED 2026-09-27 by hand on a SCOPED run (a cache
+of seven cases: the flagship, sprayDryer01/05, solidDryer01, cstr07, cstr01,
+acetone02), each sabotage restored with `cp` and `make all` after any src/
+restore:
+
+  U1  put the spray dryer back on the hand balance (publish the seed T_out
+      instead of the root) -> "unit 'DRYING.SD' (sprayDryer) leaves -37.3116
+      kW of its energy balance unattributed", and the same on sprayDryer01
+      (+2.5965) and sprayDryer05 (+18.2299).
+  U2  restore the pre-2026-09-27 SolidDryer.cpp whole -> solidDryer01 +6.8764
+      kW, the flagship's DRYING.BD +0.4128 kW.  AND THE PLANT ARM ALONE WOULD
+      HAVE CALLED IT AN IMPROVEMENT: with the old solid dryer the flagship
+      reads 0.9900 % -- inside the 1 % band, `energy-T2:plant` GREEN -- because
+      BD's error cancels part of the evaporators'.  Only this arm sees that
+      the green would be a cancellation.
+  U3  restore the pre-2026-09-27 CSTR.cpp (the blend) -> the Fermentor
+      +36.9987 kW and cstr07 +0.7958 kW.
+  U4  break the gate's own header pattern (`>>>  UNIT`) -> five "the unit arm
+      did not READ its witness" failures: an arm that reads nothing does not
+      pass.
   * A CASE THE REPORT NEVER RUNS FOR (under an outerDict the chain does not
     run).  Those are LISTED, never silently skipped.
   * A CASE WHOSE ENERGY BALANCE THE ENGINE REFUSED for want of an enthalpy
@@ -276,6 +301,7 @@ line prints the ratio without its scale -- and a gate that recomputed the kW
 for itself would be the second home the balance was taken out of on
 2026-09-05.
 """
+import json
 import re
 import subprocess
 import sys
@@ -339,7 +365,7 @@ def ratchet_kW(pin: float) -> float:
 #  close at 0.0000 %.  The debt is PAID, not waived; the record is
 #  docs/design/the-state-a-unit-computes-with.md.
 KNOWN_OPEN = {
-    "tutorials/plant/ChemicalPlantTutorial": 3.1710,
+    "tutorials/plant/ChemicalPlantTutorial": 1.0300,
     "tutorials/plant/esterification2sector": 170.9790,
     "tutorials/plant/polycaprolactonePlant": 20.0100,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
@@ -349,7 +375,6 @@ KNOWN_OPEN = {
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash": 150.7280,
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": 150.6790,
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas": 2.3240,
-    "tutorials/steady/reactors/cstr07_lhhw_methylAcetate": 37.9820,
     "tutorials/steady/reactors/pfr_polyesterification": 18.3420,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,
@@ -364,6 +389,12 @@ KNOWN_OPEN = {
 #  way the plant leaks and costs nothing to carry; the band and the ratchet
 #  read the MAGNITUDE.  EVERY ENTRY IS A PLANT THAT DOES NOT CONSERVE ENERGY
 #  AND THAT NOBODY HAS YET LOOKED AT -- a ledger of work owed, not exemptions.
+#  SEVEN ENTRIES LEFT IT ON 2026-09-27 (sprayDryer01/03/04/05/06/07 and
+#  solidDryer01), with cstr07 from KNOWN_OPEN and the flagship re-measured
+#  3.1710 -> 1.0300: the dryers and the CSTR priced their energy balance on a
+#  surface their streams are not priced on (and solidDryer01's hot air
+#  declared no phase).  PAID, not waived: docs/design/three-units-and-the-
+#  flagship-first-law.md.
 KNOWN_OPEN_KW = {
     "tutorials/steady/absorption/absorber01_NH3_water": -27.9838,
     "tutorials/steady/absorption/acetone05_luyben_absorber": -40.5770,
@@ -372,13 +403,6 @@ KNOWN_OPEN_KW = {
     "tutorials/steady/distillation/column04_multifeed_sidedraw": -78.6939,
     "tutorials/steady/distillation/column08_radfrac_multidraw": -891.9801,
     "tutorials/steady/distillation/shortcut01_benzene_toluene": -1.0804,
-    "tutorials/steady/drying/solidDryer01_sugar": 372.6562,
-    "tutorials/steady/drying/sprayDryer01_sugar": -2.6584,
-    "tutorials/steady/drying/sprayDryer03_pressure_nozzle": -2.6584,
-    "tutorials/steady/drying/sprayDryer04_profiles": -2.6584,
-    "tutorials/steady/drying/sprayDryer05_whey": -18.3191,
-    "tutorials/steady/drying/sprayDryer06_rea": -2.6584,
-    "tutorials/steady/drying/sprayDryer07_design": -2.6584,
     "tutorials/steady/evaporation/evaporator02_triple_effect_sugar": 134.1741,
     "tutorials/steady/evaporation/evaporator06_nacl_pitzer": 17.8991,
     "tutorials/steady/evaporation/evaporator07_nacl_enrtl": 17.6269,
@@ -389,6 +413,101 @@ KNOWN_OPEN_KW = {
     "tutorials/steady/thermoTest/model2_pitzer_evaporator": 17.8991,
     "tutorials/steady/userops/userOp01_yield_reactor": -3.7126,
 }
+
+
+#  ---- THE UNIT ARM (2026-09-27): a unit whose energy balance is H_out = H_in
+#  (plus a duty it publishes) must close ON THE REPORT'S OWN SURFACE -------------
+#
+#  The plant-boundary residual is the SUM of the per-unit remainders, so a
+#  plant can be red because one unit computes its energy balance on a surface
+#  its streams are not priced on -- the family CLAUDE.md 6 names, THE STATE A
+#  UNIT COMPUTES WITH IS NOT THE STATE ITS STREAMS CARRY.  On 2026-09-27 the
+#  flagship's +34.4126 kW was three such units: the spray dryer (-70.8516 kW,
+#  a constant-Cp air balance and a Watson latent heat), the solid dryer
+#  (+10.2352 kW, the same plus a temperature floor that evaporated water no
+#  heat paid for) and the fermentor's CSTR (+36.9987 kW, a quality blend at
+#  the overall z where the report resolves a CO2 split).  All three now price
+#  through `flashState::priceState`, the call the report's own rule is, so for
+#  them the report's `remaining_kW` is ZERO BY CONSTRUCTION -- and that is a
+#  claim this arm can check on every case that runs one, where the global arm
+#  above can only see the sum.
+#
+#    * ADIABATIC: an adiabatic dryer declares no energy item, so the report's
+#      remainder for it IS the enthalpy change across its streams, and it
+#      must be zero;
+#    * DUTY IS dH: a reactor whose published `Q_kW` is H_out - H_in on the
+#      streams it publishes must leave nothing unattributed.  Only a unit that
+#      PUBLISHED a `Q_kW` is judged: one with a species lacking an enthalpy
+#      route publishes no duty (ConversionReactor's `haveDuty`), declares no
+#      item, and its row is the implied duty, not a disagreement.
+#
+#  Precision: the report prints kW to four decimals, so a remainder below
+#  UNIT_TOL_KW is zero to the report's own precision; the units solve their
+#  balances to a microwatt.
+UNIT_ADIABATIC = {"sprayDryer", "solidDryer"}
+UNIT_DUTY_IS_DH = {"cstr", "conversionReactor"}
+UNIT_TOL_KW = 1.0e-4
+#  WITNESSES the arm must READ whenever their case is in scope, so it cannot
+#  go green by reading nothing (the check_true_ions shape): the flagship's two
+#  dryers and fermentor, and one standalone case of each dryer type.
+UNIT_WITNESSES = {
+    ("tutorials/plant/ChemicalPlantTutorial", "DRYING.SD"),
+    ("tutorials/plant/ChemicalPlantTutorial", "DRYING.BD"),
+    ("tutorials/plant/ChemicalPlantTutorial", "FERMENTATION.Fermentor"),
+    ("tutorials/steady/drying/sprayDryer01_sugar", "dryer"),
+    ("tutorials/steady/drying/solidDryer01_sugar", "solidDryer"),
+}
+UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
+
+
+def json_block(txt: str, key: str):
+    """The value of a top-level `"key": <json>` in the engine's result JSON on
+    stdout, parsed by the JSON parser rather than by a pattern -- or None."""
+    at = txt.find('"%s": ' % key)
+    if at < 0:
+        return None
+    try:
+        return json.JSONDecoder().raw_decode(txt, at + len(key) + 4)[0]
+    except ValueError:
+        return None
+
+
+def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
+    """The unit arm, on one case's stdout.  Adds (rel, unit) to `seen` for
+    every unit it JUDGED, so the witness check can tell read from unread."""
+    types = dict(UNIT_HEADER.findall(txt))
+    if not any(t in UNIT_ADIABATIC or t in UNIT_DUTY_IS_DH
+               for t in types.values()):
+        return
+    closures = json_block(txt, "energyClosures")
+    kpis = json_block(txt, "kpis") or {}
+    if not isinstance(closures, list):
+        stats["noLedger"] += 1          # the report did not run (outer driver)
+        return
+    for row in closures:
+        unit = row.get("unit")
+        t = types.get(unit)
+        if t in UNIT_ADIABATIC:
+            why = ("an ADIABATIC %s declares no energy item, so this is the "
+                   "enthalpy change across its own streams" % t)
+        elif t in UNIT_DUTY_IS_DH and "Q_kW" in kpis.get(unit, {}):
+            why = ("a %s publishes Q_kW = H_out - H_in on the streams it "
+                   "publishes, so nothing may remain unattributed" % t)
+        else:
+            continue
+        rem = float(row.get("remaining_kW", 0.0))
+        seen.add((rel, unit))
+        stats["judged"] += 1
+        if abs(rem) > UNIT_TOL_KW:
+            bad.append(
+                "%s: unit '%s' (%s) leaves %+.4f kW of its energy balance "
+                "unattributed in the engine's own report -- %s.  The unit is "
+                "computing its energy balance on a state or surface its "
+                "streams are not priced on (CLAUDE.md 6, THE STATE A UNIT "
+                "COMPUTES WITH IS NOT THE STATE ITS STREAMS CARRY).  Price "
+                "every term through flashState::priceState (+ priceSolids), "
+                "the call the report's own rule is; never widen %.0e kW."
+                % (rel, unit, t, rem, why, UNIT_TOL_KW))
 
 
 LINE = re.compile(r"globalEnergyBoundary[^\n]*?\|in-out\|/in\s*=\s*([0-9.]+)\s*%")
@@ -512,6 +631,8 @@ def main() -> int:
     #  name a case the gate never read and nothing notices -- see the
     #  unanswered-pin arm below, which sabotage S7 exists to prove.
     discovered, bucket = set(), {}
+    unitSeen, unitStats = set(), {"judged": 0, "noLedger": 0}
+    ranClean = set()
 
     for case in steady_cases():
         rel = case.relative_to(ROOT).as_posix()
@@ -523,6 +644,8 @@ def main() -> int:
         if not ranOk:
             unrun.append(rel)
             continue
+        ranClean.add(rel)
+        judge_units(rel, txt, unitSeen, unitStats, bad)
         m = LINE.search(txt)
         if m is None:
             mk = LINE_KW.search(txt)
@@ -647,6 +770,20 @@ def main() -> int:
                     "nothing is a debt nobody can pay."
                     % (rel, ledger))
 
+    #  THE UNIT ARM MUST HAVE READ ITS WITNESSES.  A witness case that ran
+    #  clean in scope and whose unit was not judged means the arm lost its
+    #  subject -- the header it reads types from, or the ledger it reads
+    #  remainders from, changed shape -- and a green verdict over nothing is
+    #  the check_true_ions failure.
+    for rel, unit in sorted(UNIT_WITNESSES):
+        if rel in ranClean and (rel, unit) not in unitSeen:
+            bad.append(
+                "%s: the unit arm did not READ its witness '%s' -- the case "
+                "ran clean, but no `>>>  Unit ... (type = ...)` header with a "
+                "judged type and no `energyClosures` row reached it.  THIS IS "
+                "A DEFECT IN THE GATE (or the witness was renamed): an arm "
+                "that reads nothing passes forever." % (rel, unit))
+
     if seed:
         where = ("under CHOUPO_SUITE_SCOPE (--fast)" if SCOPED
                  else "over the full steady corpus")
@@ -712,12 +849,23 @@ def main() -> int:
           "(%d of those declare a system/outerDict, whose report chain does "
           "not run), %d that exit non-zero and belong to the suite's exit-code "
           "check.  NOT CHECKED: whether a pinned residual is acceptable (it is "
-          "not); PER-UNIT closure, where a plant can close globally with two "
-          "units cancelling.%s"
+          "not); PER-UNIT closure in general, where a plant can close globally "
+          "with two units cancelling -- EXCEPT the unit arm: %d unit(s) whose "
+          "energy balance is H_out = H_in by construction (adiabatic "
+          "sprayDryer/solidDryer; a cstr/conversionReactor that published "
+          "Q_kW) leave no more than %.0e kW unattributed in the report, "
+          "every in-scope witness among %d was read, and %d case(s) running "
+          "such a unit published no per-unit ledger (the report did not run "
+          "under an outer driver) and are unjudged.  The arm reads unit "
+          "types from the console header, so a unit run at a verbosity that "
+          "prints none is unjudged too, and the witnesses are what keep that "
+          "from going silent.%s"
           % (ok, BAND, len(KNOWN_OPEN), okKW, BAND_KW, len(KNOWN_OPEN_KW),
              RATCHET, RATCHET_KW_ABS, 100.0 * RATCHET_KW_REL,
              len(refused), len(announced), len(noReport), noReportOuter,
              len(unrun),
+             unitStats["judged"], UNIT_TOL_KW, len(UNIT_WITNESSES),
+             unitStats["noLedger"],
              scope_sentence(len(measured) + len(measuredKW) + len(refused)
                             + len(noReport) + len(announced),
                             len(outOfScope))))

@@ -72,6 +72,7 @@ Description
 #include <exception>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 namespace flashState {
@@ -384,6 +385,61 @@ inline StreamThermalState resolveStreamThermalState(const DictPtr&       streamD
                            : "carried by the stream (single phase)";
     }
     return st;
+}
+
+//  ---- PRICE A STATE EXACTLY AS THE ENERGY REPORT PRICES IT -----------------
+//
+//  THE THIRD CALLER MOVED IT HERE (2026-09-27).  This function was written on
+//  2026-09-25 inside `ConversionReactor.cpp`'s anonymous namespace, the day
+//  that reactor was taken off the ideal-gas surface.  Two days later the
+//  flagship plant's first law was traced to THREE more units computing their
+//  energy balance on a surface their streams are not priced on -- the spray
+//  dryer (a constant-Cp air balance and a Watson latent heat), the solid
+//  dryer (the same, plus a temperature floor that evaporated water nobody
+//  paid for) and the CSTR (a quality blend at the overall z where the report
+//  resolves the split).  Four copies of "price it the way the report does"
+//  would be the arity sin in the machinery that ends it, so there is one.
+//
+//  What it does is the `streamH_elements` rule of `reporting/BalanceMath.H`,
+//  which `unitOperations` may not include: resolve the state
+//  (`twoPhaseSplit`), price the EQUILIBRIUM phases (`hOfState`) when it is a
+//  split, else price the state the stream carries (`H_stream_formation` at the
+//  carried vapour fraction).  NOT `H_stream_formation(T, P, vf, z)` alone: that
+//  is a quality blend at the overall composition, exact only for a pure fluid
+//  (the 5.509232 kW `column01` paid for on 2026-09-12).
+//
+//  kW when F is in kmol/s (kJ/kmol x kmol/s).  The advisory the resolution may
+//  raise is DEFERRED into `notes` rather than logged: a recycle solves a unit
+//  against states it does not end on, and the report raises the same note
+//  about the same stream at the answer, where it is true.
+inline scalar priceState(scalar                    T,
+                         scalar                    P,
+                         const sVector&            z,
+                         scalar                    F,
+                         bool                      pinned,
+                         scalar                    vfCarried,
+                         const ThermoPackage&      thermo,
+                         const std::string&        locus,
+                         std::vector<std::string>* notes)
+{
+    std::string deferred;
+    auto sp = twoPhaseSplit(T, P, z, pinned, vfCarried, thermo,
+                            locus, "model", &deferred);
+    if (!deferred.empty() && notes) notes->push_back(locus + ": " + deferred);
+    if (sp) return F * hOfState(*sp, T, P, z, thermo);
+    return F * thermo.H_stream_formation(T, P, vfCarried, z);
+}
+
+//  The CRYSTALLINE phase a stream carries in `s[]` (kmol/s), on the solid
+//  formation rung -- the leg `reporting/BalanceMath.H::solidH_elements` adds
+//  to every stream it prices.  kW.  A unit whose streams carry crystals must
+//  add it to `priceState` or its balance and the report's part by the solid.
+inline scalar priceSolids(const sVector& s, scalar T, const ThermoPackage& thermo)
+{
+    scalar h = 0.0;
+    for (std::size_t i = 0; i < s.size() && i < thermo.n(); ++i)
+        if (s[i] > 0.0) h += s[i] * thermo.comp(i).h_formation(T, "solid");
+    return h;
 }
 
 } // namespace flashState
