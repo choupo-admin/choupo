@@ -38,6 +38,16 @@ it.  Six rules; the corollaries that make them concrete are in §10.
    state the reason in the change.
 6. **Before calling a task done, verify it** and say what was validated
    and what remains pending.  A promise or an apology is not a correction.
+7. **A turn never ends idle** (Vítor, 2026-09-27, after the commander
+   stopped its own wake-up loop and sat waiting on a question it could
+   answer).  A turn ends in one of three states: work running with its next
+   action scheduled; a task finished and verified; or blocked on a decision
+   that is Vítor's alone -- architecture, pedagogy, the RESERVED items, or an
+   irreversible act.  Keep at least two lanes of work open, so one advances
+   while the other waits.  A reversible step (a re-record of a list already
+   shown, a merge that `git revert` undoes) is TAKEN and reported, not
+   asked: mission command -- act on the stated intent without further
+   orders -- and the one-way / two-way door distinction.
 
 ## 1. What this project is
 
