@@ -1583,6 +1583,29 @@ accepts today, and that is a policy call.
      `carbon-not-buildable` note is REPLACED by what the witness shows.
      Pedagogical scope of that lesson row is Vítor's before dispatch.
 
+
+**C15. AN EDUTOOL FOR THE ELEMENT-POTENTIAL METHOD -- how the Gibbs reactor
+     SOLVES, not what it is (commissioned 2026-09-27).**  Vítor asked which
+     minimisation the Gibbs reactor uses (answered from the source: three
+     methods registered at `gibbsMethod/GibbsMethod.cpp:229-236`, selected by
+     `model` at `GibbsReactor.cpp:206`, default `elementPotential`, the
+     Lagrangian RAND / Brinkley-White method of `ElementPotential.H`), then
+     whether an EduTool for it would be good, and on the proposed scope:
+     *"Avança como achares melhor."*  NOT a second home for `claus-gibbs`,
+     which already teaches what a Gibbs reactor is and the collapse to one
+     potential per element.  Scope proposed and accepted: (1) the change of
+     variables, N amounts -> M+1 unknowns (pi_k, ln N); (2) the Newton,
+     iteration by iteration, and why an amount can never go negative;
+     (3) what the pi_k MEAN at the answer (g_i/RT = sum_k pi_k A_ki for every
+     species present, checkable by hand); (4) a new phase -- the liquid
+     (M+2 system when y_i P > Psat_i) and the solid (C14's activity test and
+     bisection); (5) where the method fails, from the diagnosis of the
+     gibbsReactor's non-convergence below 900 K on equil03's feed (in
+     flight).  To measure first: whether the per-iteration pi history
+     reaches the result on a structured channel (today it is printed at
+     verbosity 3); if not, the engine publishes it and the page draws it --
+     the page recomputes nothing.  Dispatch waits for the 900 K diagnosis,
+     because step 5 and any engine channel both touch `ElementPotential.cpp`.
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds
