@@ -1499,6 +1499,28 @@ accepts today, and that is a policy call.
      read from the record's own line (the home the engine's index is
      generated from), searched, and resolved by `rawRecordFor`.
 
+**C14. SOLID CARBON IS A COMPONENT, AND A REFORMER CAN FORM IT (commissioned
+     2026-09-27).**  Vítor, reading the declared-pathways EduTool's closing
+     note that carbon formation "cannot be shown here yet": *"Não dá para
+     criar o componente de Carbono sólido? É muito importante para não estar
+     nos componentes!"*  Measured before dispatch: the only carbon record is
+     `components/C.dat`, atomic carbon GAS (dHf 716.7 kJ/mol, NASA-7 via the
+     pinned Burcat route, and it carries graphite's element CAS 7440-44-0);
+     16 curated `referenceState pureSolid;` records exist (`CaO.dat:37`) and
+     `Component.cpp:707` and `ReactionGibbs.cpp:55` read the word, so the
+     RECORD grammar exists; `GibbsReactor.cpp` and `EquilibriumReactor.cpp`
+     carry no pure condensed phase at all (no `solid` anywhere in either),
+     so the PHYSICS does not.  The lesson note is
+     `gui/src/ui/methods/declaredPathwaysLesson.ts` `carbon-not-buildable`.
+     Two slices, in order: (1) the graphite record from a public-domain or
+     open primary, plus a pure-solid phase (activity 1, amount >= 0) in the
+     `gibbsReactor`, with a steam-reforming witness that forms carbon at low
+     steam-to-carbon and not at high; (2) the same phase in
+     `equilibriumReactor`, the declared-pathways witness (Boudouard and
+     methane cracking declared or left out), and the lesson note BURIED --
+     slice 2 waits for the equilibriumReactor floor general (A-Ostwald)
+     because both edit `EquilibriumReactor.cpp`.
+
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds
