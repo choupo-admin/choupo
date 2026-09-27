@@ -3098,6 +3098,15 @@ Corollaries, each paid for:
   inputs rather than the engine's source where the arm allows it.  (Costed
   once, 2026-09-22: a restored `ResultEmitter.cpp` with an unchanged md5
   aborted a run that had already started.)
+* **ONE FULL SUITE PER SLICE, NOT TWO** (Vítor, 2026-09-27: forty minutes
+  for a change that did not need them twice).  The general's full suite on
+  its branch IS the integration suite when the branch sits on the current
+  `main`, so the commander does not re-run it after the merge; if `main`
+  moved only in files no case reads (a doc, this file), the commander runs
+  the gates that read those files and nothing else; only a `main` that
+  moved in `src/`, `tutorials/`, `data/` or `gui/` needs a second sweep.
+  During development the rungs are `--gui`, `--fast`, the affected cases
+  and the affected gates -- the full suite runs ONCE, at the end.
 * **Do not block the turn waiting for a suite.**  The commander's job is to
   coordinate AND to stay reachable; a ten-minute blocking wait is neither.
   Check in short calls and REFLECT in between — Vítor has said this twice,
