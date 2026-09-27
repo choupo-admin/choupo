@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 426,
+  "cases": 427,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -4814,6 +4814,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/gibbs/gibbs11_carbon_deposition": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/heat/condenser01_film_nusselt": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -6572,6 +6586,7 @@
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
+    "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/heat/condenser01_film_nusselt",
     "tutorials/steady/heat/coolingTower01_merkel",
     "tutorials/steady/heat/heatExchanger01_water_water",
@@ -6984,6 +6999,7 @@
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
+    "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways"
@@ -7580,6 +7596,7 @@
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
+    "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/heat/condenser01_film_nusselt",
     "tutorials/steady/heat/coolingTower01_merkel",
     "tutorials/steady/heat/heatExchanger01_water_water",

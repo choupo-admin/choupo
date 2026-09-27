@@ -1286,6 +1286,9 @@
   "SolidPhase": [
    "src/thermo/phase/SolidPhase.H"
   ],
+  "SolidVerdict": [
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
+  ],
   "SolubilityParameter": [
    "src/propertyOps/SolubilityParameter.H"
   ],
@@ -7570,6 +7573,19 @@
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.H"
   ],
+  "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
+  ],
   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -8261,6 +8277,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -8543,6 +8560,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/reactor/pellet/Catalyst.cpp",
    "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
@@ -8839,6 +8857,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/reactor/pellet/Catalyst.cpp",
    "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
@@ -9157,6 +9176,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
@@ -9402,6 +9422,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
@@ -9956,6 +9977,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp",
    "src/unitOperations/reactor/pellet/Catalyst.cpp",
@@ -10948,6 +10970,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
@@ -11488,6 +11511,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
@@ -11771,6 +11795,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
@@ -12156,6 +12181,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
@@ -13505,6 +13531,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp"
   ],
   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.H": [

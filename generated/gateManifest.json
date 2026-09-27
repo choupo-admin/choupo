@@ -1090,6 +1090,11 @@
       "exit": 0,
       "claim": "check_degenerate_limits: OK -- a ONE-STAGE absorber (semi-lean solvent, NH3 in both feeds: 12 kmol/h, K 0.977054) and a ONE-STAGE stripper (5 kmol/h, K 0.977054) each reproduce the flash of their combined feeds to 1e-09 of the solute, both probes provably on the one-stage isothermal branch; a kinetic reactive column whose product adsorbs with K 0 reproduces the same column with no reverse rate EXACTLY at 1 g, every KPI and stream (Reaction: \u03a3\u03be = 3.609e-03 kmol/h,  conversion of aceticAcid = 11.7 %  (adsorption (LHHW) kinetics, 9 reactive stages)); a kinetic reactant with no `order` and an adsorbing product with no K both refuse by name; the kinetic column converges at 1 g and 10 g (conversion 0.1172 -> 0.5814), announces its balance scaling and closes every component balance to 1e-09 of the feed.  NOT checked: N >= 2 (the goldens pin those), that a kinetic profile is RIGHT (nothing measured is reproduced), the equilibrium and non-reactive columns' absolute tolerance, or a Newton trial crossing a zero activity.",
       "seconds": 12.4
+    },
+    "check_gibbs_solid_phase": {
+      "exit": 0,
+      "claim": "gibbs-solid-phase: OK -- graphite APPEARS at S/C 0.8 (0.0690265 mol/s, a = 1) and is ABSENT at S/C 3 (a = 0.08126); a reaction-based recomputation agrees to 1e-6, C/H/O close to 1e-7, both duties recompute on the solid rung, the absent solid leaves gibbs02's answer untouched, directMin refuses by name, and the adiabatic path closes its first law.  NOT checked: two solids at once, reactiveFlash with a solid, gibbsMap, real-gas fugacity.",
+      "seconds": 0.6
     }
   }
 }

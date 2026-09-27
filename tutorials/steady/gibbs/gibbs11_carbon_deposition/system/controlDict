@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Carbon deposition in a steam reformer: the same methane feed at 1000 K and
+  1 bar, at two steam-to-carbon ratios, side by side.  See flowsheetDict.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Gibbs reactor with a pure solid phase: graphite forms at S/C 0.8, not at S/C 3";
+
+verbosity     3;

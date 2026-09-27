@@ -343,7 +343,7 @@ export function WhatIsEntropyTool(): JSX.Element {
             crossed on the way (the very ∫Cp/T structure the ledger below
             reuses).  That number is the
             {" "}<Text span ff="monospace">s_298</Text> in a component’s
-            data file — in 516 of the catalogue’s 603 records, not all of
+            data file — in 517 of the catalogue’s 604 records, not all of
             them.  The salts, minerals and polymers priced on a different
             route carry no thermochemistry block at all, and a further
             twelve carry the block without this particular datum; asking

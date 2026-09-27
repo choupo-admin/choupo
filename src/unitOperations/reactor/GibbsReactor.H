@@ -29,8 +29,8 @@ Class
     Choupo::GibbsReactor
 
 Description
-    Constrained Gibbs-energy minimisation reactor for a single-phase
-    ideal-gas mixture.  Given a feed, target temperature and pressure,
+    Constrained Gibbs-energy minimisation reactor for a gas mixture (plus
+    a liquid and a pure solid -- see below).  Given a feed, T and P,
     and an explicit atom-balance matrix declared in the operation
     block, solves
 
@@ -72,6 +72,15 @@ Description
     KPIs:
         T, P, F_out_kmol_h, N_in_mol_s, N_out_mol_s,
         y_<species> for each species in the operation block.
+
+    PURE SOLID PHASES (2026-09-27, C14).  A species whose record declares
+    `referenceState pureSolid;` (graphite) is its own phase -- activity 1,
+    amount >= 0 -- and never a member of the gas mixture.  It is tested on
+    the solid-free equilibrium, deposited only where its activity there
+    exceeds one, announced either way, carried out in the outlet's solids
+    and priced on the solid rung (gibbsMethod/GibbsSolidPhase.cpp,
+    `GibbsMethod::solve`).  Extra KPIs: n_solid_<name>_mol_s,
+    activity_<name>, F_solid_kmol_h.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

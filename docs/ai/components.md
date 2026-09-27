@@ -57,7 +57,7 @@ level up.)
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
 
-## Components (603 entries)
+## Components (604 entries)
 
 ### Volatile (curated for VLE)
 
@@ -575,6 +575,7 @@ level up.)
 | `CS2` | 76.131 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `dowthermA` | 165.8 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
 | `glucose` | 180.16 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
+| `graphite` | 12.011 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `H` | 1.008 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HCCO` | 41.029 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HCO` | 29.018 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
@@ -922,6 +923,7 @@ A component name is resolved EXACT-FIRST against the table above; on a miss, the
 | `C4H10` | `nButane` |
 | `C8H18` | `nOctane` |
 | `butane` | `nButane` |
+| `carbon` | `graphite` |
 | `carbonDioxide` | `CO2` |
 | `carbonMonoxide` | `CO` |
 | `chlorine` | `Cl2` |
@@ -934,6 +936,7 @@ A component name is resolved EXACT-FIRST against the table above; on a miss, the
 | `octane` | `nOctane` |
 | `oxygen` | `O2` |
 | `propene` | `propylene` |
+| `solidCarbon` | `graphite` |
 
 ## SRK binary-interaction (kij) pairs
 

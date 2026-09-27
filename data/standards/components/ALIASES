@@ -11,6 +11,7 @@ aliases
     C4H10                  nButane;
     C8H18                  nOctane;
     butane                 nButane;
+    carbon                 graphite;
     carbonDioxide          CO2;
     carbonMonoxide         CO;
     chlorine               Cl2;
@@ -25,4 +26,5 @@ aliases
     octane                 nOctane;
     oxygen                 O2;
     propene                propylene;
+    solidCarbon            graphite;
 }

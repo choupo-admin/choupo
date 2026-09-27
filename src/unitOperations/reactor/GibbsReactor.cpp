@@ -62,7 +62,7 @@ scalar GibbsReactor::stateEnthalpy_W(const GibbsProblem&     prob,
     for (std::size_t i = 0; i < N; ++i)
         zz[prob.compIdx[i]] = (eq.nGas[i]
                              + (eq.nLiq.empty() ? 0.0 : eq.nLiq[i])) / Ntot;
-    return Ntot * thermo.H_stream_formation(T, prob.P, Ng / Ntot, zz);
+    return Ntot * thermo.H_stream_formation(T, prob.P, Ng / Ntot, zz) + pureSolidEnthalpy_W(prob, eq, T);
 }
 
 GibbsReactor::ApproachDirection
@@ -83,7 +83,7 @@ GibbsReactor::approachDirection(const GibbsMethod&  method,
     //  the direction a real bed falls short in.
     GibbsProblem probe = prob;
     probe.dTapproach = 0.0;
-    const GibbsEquilibrium e0 = method.equilibrium(probe, T, {});
+    const GibbsEquilibrium e0 = method.solve(probe, T, {});
 
     scalar Nin = 0.0;
     for (auto v : prob.nIn) Nin += v;
@@ -395,7 +395,7 @@ int GibbsReactor::solve(const DictPtr& dict,
         //  run says so below, instead of stepping on a penalty in silence.
         std::vector<scalar> penalisedT;
         auto fT = [&](scalar Tt) -> scalar {
-            auto e = method->equilibrium(prob, Tt, {});
+            auto e = method->solve(prob, Tt, {});
             if (!e.converged) { penalisedT.push_back(Tt); return 1.0e30; }
             return enthalpy(e, Tt) - H_in - Q_J_s;
         };
@@ -412,7 +412,7 @@ int GibbsReactor::solve(const DictPtr& dict,
         auto rT = solver::newton1D(fT, dfT, T_guess, nro);
         outerIter = rT.iterations;
         T_final = rT.x;
-        eq = method->equilibrium(prob, T_final, {});
+        eq = method->solve(prob, T_final, {});
         if (!rT.converged)
             std::cerr << "GibbsReactor: outer Newton on T did NOT converge\n";
         //  The augmented dict carries the unit's name as the DICTIONARY'S OWN
@@ -455,7 +455,7 @@ int GibbsReactor::solve(const DictPtr& dict,
             std::cout << "GibbsReactor (" << modelName << ") at T = " << T_guess
                       << " K, P = " << (P * 1.0e-5) << " bar; " << N
                       << " species over " << M << " elements\n";
-        eq = method->equilibrium(prob, T_final, makeHook(true));
+        eq = method->solve(prob, T_final, makeHook(true));
         if (!eq.converged)
             std::cerr << "GibbsReactor: did NOT converge (final |F| = "
                       << eq.residual << ")\n";
@@ -472,7 +472,49 @@ int GibbsReactor::solve(const DictPtr& dict,
     gasOut.z.assign(thermo.n(), 0.0);
     for (std::size_t i = 0; i < N; ++i)
         gasOut.z[compIdx[i]] = (Ng > 0.0) ? eq.nGas[i] / Ng : 0.0;
+    //  A PURE SOLID LEAVES IN THE SAME OUTLET, AS ITS SOLID PHASE (C14).
+    //  `F`/`z` stay the fluid; `s[]` carries the deposit [kmol/s], which the
+    //  energy report prices on the solid rung and the mass and element
+    //  balances count -- the crystalliser's magma convention.  A separate
+    //  outlet port would bind positionally and move with whether a
+    //  condensate formed; a coke deposit does not leave by its own pipe.
+    scalar Ns = 0.0;
+    for (std::size_t i = 0; i < eq.nSolid.size() && i < N; ++i)
+        if (eq.nSolid[i] > 0.0)
+        {
+            if (gasOut.s.empty()) gasOut.s.assign(thermo.n(), 0.0);
+            gasOut.s[compIdx[i]] += eq.nSolid[i] / 1000.0;
+            Ns += eq.nSolid[i];
+        }
     produced_.push_back(gasOut);
+
+    //  THE PHASE SET IS ANNOUNCED, EITHER WAY.  A declared pure solid is
+    //  tested on the solid-free equilibrium (ln a_s > 0 there means it
+    //  deposits) and the verdict, with the activity that decided it, is
+    //  printed and logged -- a coke-free reformer says WHY it is coke-free.
+    for (const auto& v : eq.solids)
+    {
+        const std::string sname = specNames[v.i];
+        std::ostringstream m;
+        m << std::setprecision(6);
+        m << "pure solid phase '" << sname << "': activity in the solid-free"
+             " equilibrium a = " << std::exp(v.lnActivityWithout);
+        if (v.present)
+            m << " > 1, so the solid-free answer is NOT the Gibbs minimum --"
+                 " the solid APPEARS: n = " << eq.nSolid[v.i] << " mol/s, and"
+                 " the fluid is re-equilibrated to a = "
+              << std::exp(v.lnActivity) << " (" << v.bisections
+              << " fluid solves in the bisection on n_s).";
+        else
+            m << " <= 1, so depositing it would RAISE G -- the solid is ABSENT"
+                 " (n = 0).";
+        std::cout << "  [gibbs] " << m.str() << "\n";
+        AdvisoryLog::instance().add("model", "info",
+            "gibbsReactor " + (dict->name().empty()
+                                   ? dict->lookupWordOrDefault("name", "(unnamed)")
+                                   : dict->name()),
+            m.str());
+    }
 
     if (eq.twoPhase && Nl > 0.0)
     {
@@ -494,7 +536,7 @@ int GibbsReactor::solve(const DictPtr& dict,
     kpis_["F_in_kmol_h"]  = F_in_kmols * 3600.0;
     kpis_["F_out_kmol_h"] = gasOut.F * 3600.0;
     kpis_["N_in_mol_s"]   = N0;
-    kpis_["N_out_mol_s"]  = Ng + Nl;
+    kpis_["N_out_mol_s"]  = Ng + Nl + Ns;
     kpis_["converged"]    = eq.converged ? 1.0 : 0.0;
     kpis_["iterations"]   = static_cast<scalar>(eq.iterations);
     if (mode == "adiabatic") kpis_["outerIterations"] = static_cast<scalar>(outerIter);
@@ -524,6 +566,8 @@ int GibbsReactor::solve(const DictPtr& dict,
         scalar H_out_kW = 0.0;
         for (const auto& s : produced_)
             H_out_kW += s.F * thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
+        //  The deposit on the SOLID rung -- the report's own leg for `s[]`.
+        H_out_kW += pureSolidEnthalpy_W(prob, eq, T_final) / 1000.0;
         kpis_["Q_kW"] = H_out_kW - H_in_kW;   // F[kmol/s]*h[kJ/kmol] = kW
     }
 
@@ -537,6 +581,16 @@ int GibbsReactor::solve(const DictPtr& dict,
         kpis_["temperatureApproach_K"] = prob.dTapproach;
     for (std::size_t i = 0; i < N; ++i)
         kpis_["y_" + specNames[i]] = (Ng > 0.0) ? eq.nGas[i] / Ng : 0.0;
+    //  A declared pure solid publishes its amount and its ACTIVITY at the
+    //  answer (1 when present, < 1 when absent): the carbon activity is the
+    //  number a reformer's coking margin is read from.
+    for (const auto& v : eq.solids)
+    {
+        kpis_["n_solid_" + specNames[v.i] + "_mol_s"] = eq.nSolid[v.i];
+        kpis_["activity_" + specNames[v.i]]           = std::exp(v.lnActivity);
+    }
+    if (!eq.solids.empty())
+        kpis_["F_solid_kmol_h"] = (Ns / 1000.0) * 3600.0;
     if (eq.twoPhase && Nl > 0.0)
     {
         kpis_["twoPhase"]            = 1.0;
@@ -550,7 +604,10 @@ int GibbsReactor::solve(const DictPtr& dict,
     // -- Report ------------------------------------------------------------
     std::cout << "\n=======================  Gibbs reactor  =========================\n"
               << "  Method:       " << modelName
-              << (eq.twoPhase ? "   (gas + liquid)" : "   (single gas phase)") << "\n"
+              << (Ns > 0.0 ? (eq.twoPhase ? "   (gas + liquid + pure solid)"
+                                          : "   (gas + pure solid)")
+                           : (eq.twoPhase ? "   (gas + liquid)" : "   (single gas phase)"))
+              << "\n"
               << "  Mode:         " << mode
               << "    P = " << std::fixed << std::setprecision(3) << (P * 1.0e-5) << " bar\n"
               << "  T:            " << std::setprecision(2) << T_final << " K"
@@ -566,19 +623,30 @@ int GibbsReactor::solve(const DictPtr& dict,
                   << std::setprecision(3) << eq.residual << "\n\n";
     else   // a derivative-free route has no |F|; print the claim it earned
         std::cout << "  Stop:         " << eq.stopReason << "\n\n";
-    std::cout << "  Species         n_in [mol/s]    n_gas [mol/s]   n_liq [mol/s]\n"
-              << "  ----------------------------------------------------------------\n";
+    const bool solidCol = !eq.solids.empty();
+    std::cout << "  Species         n_in [mol/s]    n_gas [mol/s]   n_liq [mol/s]"
+              << (solidCol ? "   n_sol [mol/s]" : "") << "\n"
+              << "  ----------------------------------------------------------------"
+              << (solidCol ? "----------------" : "") << "\n";
     for (std::size_t i = 0; i < N; ++i)
+    {
         std::cout << "  " << std::left << std::setw(14) << specNames[i]
                   << std::right << std::scientific << std::setprecision(4)
                   << "  " << std::setw(13) << nIn[i]
                   << "  " << std::setw(13) << eq.nGas[i]
-                  << "  " << std::setw(13) << (eq.nLiq.empty() ? 0.0 : eq.nLiq[i]) << "\n";
+                  << "  " << std::setw(13) << (eq.nLiq.empty() ? 0.0 : eq.nLiq[i]);
+        if (solidCol)
+            std::cout << "  " << std::setw(13)
+                      << (i < eq.nSolid.size() ? eq.nSolid[i] : 0.0);
+        std::cout << "\n";
+    }
     std::cout << "  " << std::left << std::setw(14) << "Total"
               << std::right << std::scientific << std::setprecision(4)
               << "  " << std::setw(13) << N0
               << "  " << std::setw(13) << Ng
-              << "  " << std::setw(13) << Nl << "\n";
+              << "  " << std::setw(13) << Nl;
+    if (solidCol) std::cout << "  " << std::setw(13) << Ns;
+    std::cout << "\n";
     if (eq.twoPhase)
         std::cout << "  Liquid fraction: " << std::fixed << std::setprecision(4)
                   << (Nl / (Ng + Nl)) << "  (condensate stream emitted)\n";

@@ -42,6 +42,11 @@ temperature as the second knob, one cross-link from `equilibrium-landscapes`.
   reformer witness (Boudouard and CH4 cracking excluded) is therefore NOT
   buildable without new thermochemistry and new physics, and the brief said
   to stop and report rather than invent.  It was not built.
+  **Superseded in part 2026-09-27 (commission C14, slice 1):**
+  `components/graphite.dat` now exists (NASA TM-4513, public domain,
+  `referenceState pureSolid;`) and the `gibbsReactor` carries a pure-solid
+  phase (`GibbsMethod::solve`, witness `gibbs11_carbon_deposition`).  The
+  `equilibriumReactor` still has none -- that is C14 slice 2.
 * The Ostwald candidate (4 NH3 + 5 O2 → 4 NO + 6 H2O declared; 4 NH3 + 3 O2
   → 2 N2 + 6 H2O excluded; both balanced N/H/O by atom count) runs under
   `gibbsReactor` at 1100 K, 1 bar, 10 % NH3 in air: N2 as expected, NO
@@ -190,7 +195,8 @@ is why arm (c) exists.
 ## 7. NOT done
 
 An adiabatic `equilibriumReactor`; any Kp beyond the ideal-gas rung
-(fugacity coefficients at 50 bar); carbon deposition (§2); the Ostwald
+(fugacity coefficients at 50 bar); carbon deposition (§2 -- in the
+`gibbsReactor` since 2026-09-27, C14; in this reactor, C14 slice 2); the Ostwald
 witness (§2); a diagnosis of the complete set's stall at 500 K; the duty of
 `equilibriumReactor`, which still sums `h_pure_ig` while its outlet is priced
 by the package — the 2026-09-25 surface family, NOT enumerated when

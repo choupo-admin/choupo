@@ -708,11 +708,12 @@
         "name": "Gibbs free-energy minimisation reactor",
         "source": "src/unitOperations/reactor/GibbsReactor.cpp",
         "engine": "choupoSolve",
-        "phases": "vapour/liquid",
+        "phases": "vapour/liquid/solid",
         "tutorials": [
           "ammonia01_synthesis_loop",
           "gibbs06_h2_flame_radicals",
-          "gibbs10_ammonia_fugacity"
+          "gibbs10_ammonia_fugacity",
+          "gibbs11_carbon_deposition"
         ]
       },
       {
@@ -1058,7 +1059,7 @@
         "key": "components",
         "name": "Pure-component property records",
         "source": "data/standards/components/",
-        "count": 603
+        "count": 604
       },
       {
         "key": "species",

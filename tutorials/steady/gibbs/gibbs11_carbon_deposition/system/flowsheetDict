@@ -1,0 +1,106 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  CARBON DEPOSITION IN A STEAM REFORMER -- a Gibbs reactor with a PURE SOLID.
+
+  Two reformers see the same methane at 1000 K and 1 bar; only the
+  steam-to-carbon ratio differs:
+
+        reformerLow   S/C = 0.8   (steam-lean: the reformer COKES)
+        reformerHigh  S/C = 3.0   (a steam margin: no carbon -- the same
+                                   feed and conditions as gibbs02)
+
+  Six species over three elements (C H O), so R = N - M = 3 independent
+  reactions.  A convenient set is
+
+        CH4 + H2O  <->  CO + 3 H2       (reforming)
+        CO  + H2O  <->  CO2 + H2        (water-gas shift)
+        CH4        <->  C(gr) + 2 H2    (methane cracking)
+
+  and the Boudouard reaction, 2 CO <-> C(gr) + CO2, is a combination of
+  the three (cracking - reforming - shift, rearranged), so it adds nothing.
+  A Gibbs reactor needs no reaction list at all: the element balance is
+  the whole constraint.
+
+  GRAPHITE IS NOT A GAS.  Its record says `referenceState pureSolid;`, so the
+  reactor gives it its OWN phase: activity 1, chemical potential equal to
+  its pure-solid standard potential, amount >= 0.  The reactor first solves
+  the gas WITHOUT the solid and reads the carbon activity there,
+
+        a_C = exp( pi_C - g_C(gr)/RT )     (pi_C: the carbon element potential)
+            = K_cracking * p_CH4 / p_H2^2  (partial pressures in bar),
+
+  a_C > 1 means depositing carbon LOWERS the Gibbs energy, so the solid
+  appears and the gas is re-equilibrated to a_C = 1; a_C <= 1 means it
+  does not.  Both verdicts are printed with the activity that decided them
+  and published as KPIs (n_solid_graphite_mol_s, activity_graphite).
+
+  Expected, recomputed INDEPENDENTLY by bin/curate/check_gibbs_solid_phase.py
+  from a reaction-based formulation on this case's own records:
+      S/C 0.8:  a_C (carbon-free) = 2.33 -> about 0.25 mol graphite / mol CH4
+      S/C 3.0:  a_C (carbon-free) = 0.08 -> no graphite; gibbs02's answer.
+
+  The deposit leaves in the reactor's outlet as its SOLID phase, priced on
+  the solid rung by the energy report and counted by the mass and element
+  balances -- a coke deposit does not leave by a pipe of its own.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        reformerLow;
+        type        gibbsReactor;
+        in          feedLow;
+        outputs     ( syngasLow );
+
+        operation
+        {
+            T          1000.0 K;
+            P          1.0 bar;
+
+            elements   ( C  H  O );
+
+            species
+            (
+                { name  CH4;       atoms  ( 1  4  0 ); }
+                { name  water;     atoms  ( 0  2  1 ); }
+                { name  CO;        atoms  ( 1  0  1 ); }
+                { name  CO2;       atoms  ( 1  0  2 ); }
+                { name  H2;        atoms  ( 0  2  0 ); }
+                { name  graphite;  atoms  ( 1  0  0 ); }
+            );
+        }
+    }
+    {
+        name        reformerHigh;
+        type        gibbsReactor;
+        in          feedHigh;
+        outputs     ( syngasHigh );
+
+        operation
+        {
+            T          1000.0 K;
+            P          1.0 bar;
+
+            elements   ( C  H  O );
+
+            species
+            (
+                { name  CH4;       atoms  ( 1  4  0 ); }
+                { name  water;     atoms  ( 0  2  1 ); }
+                { name  CO;        atoms  ( 1  0  1 ); }
+                { name  CO2;       atoms  ( 1  0  2 ); }
+                { name  H2;        atoms  ( 0  2  0 ); }
+                { name  graphite;  atoms  ( 1  0  0 ); }
+            );
+        }
+    }
+);

@@ -108,6 +108,21 @@ struct GibbsEquilibrium
     // residual -- the consumer prints whichever claim the method actually
     // earned (2026-08-22; directMin used to assert converged/0 iters/|F|=0).
     std::string         stopReason;
+
+    //  PURE SOLID PHASES (2026-09-27, C14).  Filled ONLY by
+    //  `GibbsMethod::solve` when the problem declares a species whose record
+    //  is `referenceState pureSolid;` -- empty otherwise, so every case that
+    //  declares none sees exactly the structure it always saw.
+    std::vector<scalar> nSolid;          // N  [mol/s]; > 0 only for a present solid
+    struct SolidVerdict
+    {
+        std::size_t i = 0;               // species index in the problem
+        scalar      lnActivity = 0.0;    // ln a_s = sum_k pi_k A_ks - g_s/RT at the ANSWER
+        scalar      lnActivityWithout = 0.0;  // ...in the solid-FREE equilibrium (the test)
+        bool        present = false;
+        int         bisections = 0;      // outer iterations on n_s (0 when absent)
+    };
+    std::vector<SolidVerdict> solids;
 };
 
 // Shared single-gas-phase Gibbs solve (the element-potential Newton),
@@ -118,6 +133,12 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T_K,
                                const std::vector<scalar>& g_over_RT,
                                const std::vector<scalar>& b,
                                const std::function<void(int,scalar,scalar)>& onIter = {});
+
+// Enthalpy flow [W] of the pure solid phase(s) of an equilibrium at T, on
+// the SOLID rung (`Component::h_formation(T, "solid")`, the leg the energy
+// report prices a stream's `s[]` on).  Zero when `eq.nSolid` is empty.
+scalar pureSolidEnthalpy_W(const GibbsProblem& p, const GibbsEquilibrium& eq,
+                           scalar T_K);
 
 class GibbsMethod
 {
@@ -131,6 +152,15 @@ public:
     using IterHook = std::function<void(int iter, scalar normF, scalar alpha)>;
     virtual GibbsEquilibrium equilibrium(const GibbsProblem& p, scalar T_K,
                                          const IterHook& onIter = {}) const = 0;
+
+    //- The equilibrium INCLUDING any pure solid phase (GibbsSolidPhase.cpp).
+    //  A species whose record declares `referenceState pureSolid;` does not
+    //  enter the fluid mixture: it is its own phase, activity 1, amount >= 0.
+    //  With no such species this IS `equilibrium(p, T, onIter)`, the same
+    //  call and the same answer.  Every caller that may meet a solid calls
+    //  this; `equilibrium` stays the fluid-only method each model implements.
+    GibbsEquilibrium solve(const GibbsProblem& p, scalar T_K,
+                           const IterHook& onIter = {}) const;
 
     // ---- Run-time selection (explicit registry) ------------------------
     using Factory = std::function<std::unique_ptr<GibbsMethod>()>;

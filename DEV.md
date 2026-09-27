@@ -1521,6 +1521,68 @@ accepts today, and that is a policy call.
      slice 2 waits for the equilibriumReactor floor general (A-Ostwald)
      because both edit `EquilibriumReactor.cpp`.
 
+     **SLICE 1 CLOSED 2026-09-27.**  (a) `components/graphite.dat`, C(gr),
+     CAS 7782-42-5, `referenceState pureSolid;`, dHf_298 = 0 by definition,
+     s_298 = 5.734 and a NASA-7 solid Cp 200-1000-5000 K, all from ONE
+     primary: NASA TM-4513 (McBride, Gordon & Reno 1993) Table II, public
+     domain, read from the PAGE IMAGE because the PDF's OCR layer had five
+     of sixteen numbers wrong (the record's header names them and the two
+     self-checks -- H(298.15) = 0 and continuity at 1000 K -- that catch
+     them).  Aliases `carbon` and `solidCarbon` resolve to it; the exact
+     name `C` still reaches the atomic gas.  `reviewStatus interim;` (no
+     curator has read it back).  No `volatility{}` block: no vapour-pressure
+     source was read, so the engine announces the class as unknown.
+     (b) `GibbsMethod::solve`
+     (`src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp`): a
+     `pureSolid` species is removed from the fluid problem, tested on the
+     solid-free equilibrium by its activity `exp(sum pi_k A_ks - g_s/RT)`
+     (at T + dTapproach, the chemistry temperature), deposited only where
+     that exceeds 1, then n_s is found by BISECTION on the monotone residual
+     (d pi/d b is PSD, so ln a_s falls as n_s rises) with the proven fluid
+     Newton inside each trial.  Refused by name: `directMin` (no element
+     potentials), an element carried only by solids, two solids
+     supersaturated at once.  The reactor announces APPEARS/ABSENT with the
+     deciding activity, carries the deposit in the outlet's `s[]`, prices it
+     on the solid rung in Q_kW AND in `stateEnthalpy_W` (adiabatic + the
+     approach direction), and publishes `n_solid_<s>_mol_s`,
+     `activity_<s>`, `F_solid_kmol_h`.  With no pureSolid species the path
+     is the old call: all 24 existing gibbsReactor cases and the 7 gibbsMap
+     props cases print byte-identical output against a build of aa0ee750c
+     (only the banner's commit hash differs).  (c) Witness
+     `gibbs11_carbon_deposition`: 1000 K, 1 bar, S/C 0.8 deposits
+     0.0690 mol/s of graphite (carbon activity 2.33 in the solid-free gas),
+     S/C 3.0 deposits none (a_C 0.081) and reproduces gibbs02 to 1e-10;
+     mass, C/H/O and the plant first law close at 0.0000.  (d) Gate
+     `check_gibbs_solid_phase`: a REACTION-based recomputation (three K's,
+     nested bisections) agrees to 1e-6, element and first-law closure, the
+     absent-solid identity with gibbs02, the directMin refusal, and an
+     adiabatic probe; 6 by-hand sabotages, all caught (in its docstring).
+     NOT done, named: two solids at once; the `gibbsMap` op (calls the
+     fluid-only `equilibrium`, so a pureSolid species refuses there on the
+     reference rung); real-gas fugacity with a solid is untested.  LEFT
+     STALE BY INSTRUCTION: `gui/src/ui/methods/declaredPathwaysLesson.ts`
+     `carbon-not-buildable` still says the catalogue has no solid-carbon
+     record -- half false since this slice; slice 2 buries it.  FINDING,
+     not fixed: `C.dat`'s CAS 7440-44-0 is the registry number of carbon
+     THE ELEMENT (PubChem files charcoal and carbon black under it too), not
+     of the monatomic gas and not graphite's (7782-42-5); nothing reads it
+     as identity today, so it was left, and this entry's own opening
+     sentence ("graphite's element CAS") was half right.
+
+     **SLICE 2 PLAN (after A-Ostwald lands).**  `equilibriumReactor` gets
+     the same phase through the same seam: a declared reaction whose
+     product or reactant is `pureSolid` (Boudouard, methane cracking) takes
+     `a = 1` for that species in its `ln Q` (it has no mixing term), the
+     solid's amount is an extent-carried unknown bounded below by zero, and
+     the phase set is decided by the SAME test (a reaction set that would
+     need a negative deposit drops the solid and re-solves, announced).
+     The Gibbs route and the declared route must agree when the declared
+     list spans the same space -- the declared-pathways witness gains a
+     carbon row (Boudouard/cracking declared vs left out), a gate arm holds
+     the two reactors to each other on gibbs11's feed, and the lesson's
+     `carbon-not-buildable` note is REPLACED by what the witness shows.
+     Pedagogical scope of that lesson row is Vítor's before dispatch.
+
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds

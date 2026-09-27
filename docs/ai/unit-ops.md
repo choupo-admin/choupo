@@ -339,7 +339,7 @@ makes methanol, the complete list reproduces Gibbs).
 Equilibrium by direct Gibbs minimisation with atom-balance
 constraints.  Three selectable `model`s:
 - `elementPotential` (default; Lagrange multipliers; gas + 1 ideal
-  condensable).
+  condensable; + a pure solid, see below).
 - `reactiveFlash`     (multi-condensable + NRTL).
 - `directMin`         (multi-start Nelder-Mead on the reaction-extent
   null space).
@@ -412,8 +412,29 @@ Choupo has **no FRACTIONAL (extent) approach to equilibrium** — a different
 definition, not interchangeable with the temperature one — and no pellet
 effectiveness factor: η is announced as 1 and judged by nothing.
 
-For an adiabatic Gibbs reactor (the flame temperature problem), wrap
-in a DesignSpec that varies `$T` to make `H_out = H_in`.
+**A PURE SOLID IS ITS OWN PHASE (2026-09-27, C14).**  A species whose record
+declares `referenceState pureSolid;` — `graphite` (solid carbon, alias
+`carbon`) is the one this was built for — is listed in `species ( … )` like
+any other, but it never enters the gas or liquid mixture: it is a phase of
+its own, activity 1, chemical potential = its pure-solid standard potential,
+amount ≥ 0.  The reactor solves the fluid WITHOUT it, reads its activity
+there (`a = exp(Σ π_k A_ks − g_s/RT)`; for graphite in a reformer,
+`a_C = K_cracking·p_CH4/p_H2²`), and deposits it only where `a > 1`, then
+re-equilibrates the fluid to `a = 1`.  Both verdicts — APPEARS / ABSENT, with
+the activity that decided them — are printed and logged, and published as
+KPIs `n_solid_<name>_mol_s`, `activity_<name>`, `F_solid_kmol_h`.  The
+deposit leaves in the SAME outlet as its solid phase (the stream's solids,
+priced on the solid rung by the energy report and counted by the mass and
+element balances).  Limits, refused or unbuilt: one solid present at a time
+(two supersaturated at once REFUSES by name); `directMin` REFUSES (it
+publishes no element potentials, so the test has nothing to read); the
+`gibbsMap` props op does not carry the phase; `equilibriumReactor` does not
+yet either.  Witness `tutorials/steady/gibbs/gibbs11_carbon_deposition`
+(S/C 0.8 cokes, S/C 3 does not); gate `check_gibbs_solid_phase`.
+
+For an adiabatic Gibbs reactor (the flame temperature problem), declare
+`mode adiabatic;` (an outer Newton on T balances `H_out = H_in + Q`), or wrap
+in a DesignSpec that varies `$T`.
 
 ## Heat transfer
 

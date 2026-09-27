@@ -6169,6 +6169,61 @@ N2 + 3 H2 <$\to$ 2 NH3 at 700 K and 200 bar, a stoichiometric feed. The Gibbs re
 \goldmore{6}
 \end{tutgolden}
 
+\clearpage
+\tutentry{gibbs11\_carbon\_deposition}{tutorials/steady/gibbs/gibbs11\_carbon\_deposition}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reformerLow) at (0.0,-0.0) {\textbf{reformerLow}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reformerHigh) at (0.0,-1.7) {\textbf{reformerHigh}\\[-1pt]{\tiny gibbsReactor}};
+  \draw[->] ($(reformerLow.west)+(-1.05,0.00)$) -- ($(reformerLow.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedLow};
+  \draw[->] ($(reformerHigh.west)+(-1.05,0.00)$) -- ($(reformerHigh.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedHigh};
+  \draw[->] ($(reformerLow.east)+(0,0.00)$) -- ($(reformerLow.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {syngasLow};
+  \draw[->] ($(reformerHigh.east)+(0,0.00)$) -- ($(reformerHigh.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {syngasHigh};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Gibbs reactor with a pure solid phase: graphite forms at S/C 0.8, not at S/C 3}
+\begin{tutnarrative}
+CARBON DEPOSITION IN A STEAM REFORMER -- a Gibbs reactor with a PURE SOLID.
+
+Two reformers see the same methane at 1000 K and 1 bar; only the steam-to-carbon ratio differs:
+
+reformerLow S/C = 0.8 (steam-lean: the reformer COKES) reformerHigh S/C = 3.0 (a steam margin: no carbon -- the same feed and conditions as gibbs02)
+
+Six species over three elements (C H O), so R = N - M = 3 independent reactions. A convenient set is
+
+CH4 + H2O <$\to$ CO + 3 H2 (reforming) CO + H2O <$\to$ CO2 + H2 (water-gas shift) CH4 <$\to$ C(gr) + 2 H2 (methane cracking)
+
+and the Boudouard reaction, 2 CO <$\to$ C(gr) + CO2, is a combination of the three (cracking - reforming - shift, rearranged), so it adds nothing. A Gibbs reactor needs no reaction list at all: the element balance is the whole constraint.
+
+GRAPHITE IS NOT A GAS. Its record says `referenceState pureSolid;`, so the reactor gives it its OWN phase: activity 1, chemical potential equal to its pure-solid standard potential, amount >= 0. The reactor first solves the gas WITHOUT the solid and reads the carbon activity there,
+
+a\_C = exp( pi\_C - g\_C(gr)/RT ) (pi\_C: the carbon element potential) = K\_cracking $\ast$ p\_CH4 / p\_H2\textasciicircum{}2 (partial pressures in bar),
+
+a\_C > 1 means depositing carbon LOWERS the Gibbs energy, so the solid appears and the gas is re-equilibrated to a\_C = 1; a\_C <= 1 means it does not. Both verdicts are printed with the activity that decided them and published as KPIs (n\_solid\_graphite\_mol\_s, activity\_graphite).
+
+Expected, recomputed INDEPENDENTLY by bin/curate/check\_gibbs\_solid\_phase.py from a reaction-based formulation on this case's own records: S/C 0.8: a\_C (carbon-free) = 2.33 $\to$ about 0.25 mol graphite / mol CH4 S/C 3.0: a\_C (carbon-free) = 0.08 $\to$ no graphite; gibbs02's answer.
+
+The deposit leaves in the reactor's outlet as its SOLID phase, priced on the solid rung by the energy report and counted by the mass and element balances -- a coke deposit does not leave by a pipe of its own.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feedHigh}{F}{0.00111111111111}
+\goldrow{stream}{feedHigh}{T}{1000}
+\goldrow{stream}{feedLow}{F}{0.0005}
+\goldrow{stream}{feedLow}{T}{1000}
+\goldrow{stream}{syngasHigh}{F}{0.0016586091548}
+\goldrow{stream}{syngasHigh}{T}{1000}
+\goldrow{stream}{syngasLow}{F}{0.000967550025636}
+\goldrow{stream}{syngasLow}{T}{1000}
+\goldrow{kpi}{reformerHigh}{F\_in\_kmol\_h}{4}
+\goldrow{kpi}{reformerHigh}{F\_out\_kmol\_h}{5.97099295728}
+\goldrow{kpi}{reformerHigh}{F\_solid\_kmol\_h}{0}
+\goldrow{kpi}{reformerHigh}{N\_in\_mol\_s}{1.11111111111}
+\goldrow{kpi}{reformerHigh}{N\_out\_mol\_s}{1.6586091548}
+\goldrow{kpi}{reformerHigh}{P}{100000}
+\goldmore{37}
+\end{tutgolden}
+
 \subsection{heat}
 \grouptheory{heat}
 \clearpage
@@ -8819,7 +8874,7 @@ WHAT THE THREE ANSWERS SHOW (measured with this case, 2026-09-27): gibbs y\_CH4 
 
 THE SECOND KNOB. `declared` carries `temperatureApproach 0;` -- a MAGNITUDE the engine gives a sign PER REACTION from that reaction's own thermicity as it runs (src/unitOperations/reactor/TemperatureApproach.H): methanol synthesis is exothermic and runs forward, so its Kp is taken at (T + dT); the shift runs backward, so as it runs it is endothermic and its Kp is taken at (T - dT). Both push against the direction the reaction runs. With 20 K: methanol conversion 0.610 $\to$ 0.442. The key is declared at 0 so the EduTool `declared-pathways` can move it, and every key a knob moves sits on its own line (the EduTool's override channel matches a key at the start of a line).
 
-NOT here, and said: carbon deposition (the catalogue carries no solid carbon record, and neither reactor has a pure-solid phase), non-ideal fugacities at 50 bar (every Kp is on the ideal-gas rung; the case declares `fugacityModel idealGas`), and any reactor that is not isothermal.
+NOT here, and said: carbon deposition (the equilibriumReactor has no pure-solid phase yet; the gibbsReactor has one since 2026-09-27 and forms graphite in gibbs11\_carbon\_deposition), non-ideal fugacities at 50 bar (every Kp is on the ideal-gas rung; the case declares `fugacityModel idealGas`), and any reactor that is not isothermal.
 
 \end{tutnarrative}
 
