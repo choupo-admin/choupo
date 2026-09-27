@@ -1425,6 +1425,35 @@ accepts today, and that is a policy call.
      methanation (full Gibbs goes to CH4).  The witness choice was the
      commander's on a stated default; Vitor may reverse it.
 
+**C12. WATER IS A RECORD A STUDENT CAN TRUST OVER THE WHOLE RANGE THE CORPUS
+     USES IT IN (asked 2026-09-27; Vitor: "a gap in water's properties is
+     unacceptable -- water is very important").**  DISPATCHED the same turn,
+     one general in its own worktree.  MEASURED by the commander at
+     741b759aa, before dispatch: `vaporPressure` is Antoine with
+     `Trange (273 373)` (water.dat:52-57) against Tc 647.14 K, so every
+     steam / evaporator / boiler case above 373 K extrapolates;
+     `liquidHeatCapacity` is a constant 75.5 J/(mol K) on 273-373 K
+     (:66-71); `standardThermochemistry` carries only the ideal-gas datum
+     (:45-51), the missing second datum CLAUDE.md 6 names; no
+     `liquidThermalConductivity` although 345 component records carry one;
+     no gas transport and no `lennardJones`; K_b/K_f "primary re-citation
+     pending".  The tree already holds an IAPWS-IF97 kernel
+     (src/thermo/iapws/IF97.{H,cpp}).  Order: an inventory record with each
+     gap's readers, primary source, licence and MEASURED blast radius; then
+     fill what moves no golden; then build the golden-moving fills behind a
+     choice or on the branch, with the moved-row list for Vitor.
+
+**C13. "oxygen" FOUND NOTHING IN THE PROPERTY EXPLORER (reported 2026-09-27).**
+     The ENGINE resolves it: `O2.dat:53` declares `aliases ( oxygen );`,
+     `data/standards/components/ALIASES:26` maps it, and
+     `ThermoPackage.cpp:267` canonicalises every case token through
+     `Database::canonicalName`, announced `[alias]`.  The GUI did not: its
+     catalogue search read name + formula only (`catalogue.ts`
+     `searchCatalogue`) and the component tab said aliases were not
+     resolved.  Fixed by the commander in the same turn: the aliases are
+     read from the record's own line (the home the engine's index is
+     generated from), searched, and resolved by `rawRecordFor`.
+
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds
