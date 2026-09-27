@@ -149,6 +149,13 @@ public:
                                   const GibbsEquilibrium& eq,
                                   scalar                  T);
 
+    //- The adiabatic outer Newton on T that did not converge, ANNOUNCED
+    //  (console + AdvisoryLog) with the energy residual at the published T.
+    static void announceOuterNotConverged(const std::string& unitLocus,
+                                          scalar             T_last,
+                                          scalar             residual_W,
+                                          int                iterations);
+
 private:
     inline static const std::string type_ = "gibbsReactor";
     std::vector<ProcessStream>     produced_;

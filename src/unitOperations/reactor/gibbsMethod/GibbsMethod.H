@@ -109,6 +109,11 @@ struct GibbsEquilibrium
     // residual -- the consumer prints whichever claim the method actually
     // earned (2026-08-22; directMin used to assert converged/0 iters/|F|=0).
     std::string         stopReason;
+    //  WHY a Newton route did NOT converge, when it did not (empty
+    //  otherwise).  Kept apart from `stopReason`, which is the claim a
+    //  derivative-free route earned INSTEAD of a residual and which the
+    //  reactor's report reads as "this was a simplex".
+    std::string         notConvergedCause;
 
     //  PURE SOLID PHASES (2026-09-27, C14).  Filled ONLY by
     //  `GibbsMethod::solve` when the problem declares a species whose record
@@ -134,6 +139,50 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T_K,
                                const std::vector<scalar>& g_over_RT,
                                const std::vector<scalar>& b,
                                const std::function<void(int,scalar,scalar)>& onIter = {});
+
+//  THE PRIMAL SEED OF THE ELEMENT-POTENTIAL NEWTON (2026-09-27).
+//
+//  `gibbsGasSolve` solves for the M element potentials pi and ln N, seeded by
+//  a least-squares fit AT THE FEED COMPOSITION.  From a feed far from its
+//  equilibrium that seed is not a poor guess but an unusable one: 10 %
+//  ammonia in air at 500 K and 5 bar seeds water -- absent from the feed --
+//  at 1.4e11 mol/s against 2.8e1 mol/s of feed, because the seed inherits
+//  the whole affinity of the reaction that makes it.  At such a point two
+//  species carry every atom, the (M+1) Jacobian is singular in double
+//  precision, and the Newton stops at iteration 0 on a singular matrix.  An
+//  exact (analytic) Jacobian does NOT cure it -- measured: with one, the
+//  Newton still stopped on a singular matrix at every T sampled up to 600 K
+//  (500 K at 50 bar) -- because the defect is the POINT, not the derivative.
+//
+//  This is the seed that does not inherit it: a damped Newton on ln n_j
+//  (the reduced Gibbs iteration equations of Gordon & McBride, NASA
+//  Reference Publication 1311, 1994) started from EQUAL amounts of every
+//  species.  Its (M+1) matrix is weighted by the CURRENT amounts, not by
+//  exp(pi.A), so it is well conditioned wherever the amounts are, and a
+//  species on its way to 1e-300 simply stops contributing.  Every step is
+//  limited so that no major species changes by more than a factor e^2 and a
+//  trace species is not carried past 1e-4 of the total in one step; the
+//  limit is the ONLY aid, and it is the method's, not a clamp on the answer.
+//
+//  It returns pi and ln N for the element-potential Newton to START from.
+//  The answer is still that Newton's, on the same residual and the same
+//  1e-8 tolerance: the seed is a solver aid and the caller ANNOUNCES it.
+struct GibbsPrimalSeed
+{
+    bool                converged  = false;
+    int                 iterations = 0;
+    sVector             pi;               // M element potentials (dimensionless)
+    scalar              lnN        = 0.0; // ln(total moles [mol/s])
+    std::string         reason;           // why it stopped, when it did not converge
+};
+
+//  `gTilde_i` = g_i/RT + ln(P/P0) (+ ln phi_i): the full standard-state term
+//  of mu_i/RT = gTilde_i + ln(n_i/N).  `N0` sets the scale of the start.
+GibbsPrimalSeed gibbsPrimalSeed(const std::vector<std::vector<scalar>>& A,
+                                const std::vector<scalar>&              b,
+                                const std::vector<scalar>&              gTilde,
+                                scalar                                  N0,
+                                int                                     maxIter = 200);
 
 // Enthalpy flow [W] of the pure solid phase(s) of an equilibrium at T, on
 // the SOLID rung (`Component::h_formation(T, "solid")`, the leg the energy

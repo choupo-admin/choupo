@@ -138,6 +138,62 @@ which shares no line of code with either reactor.
     S7 EquilibriumReactor.cpp: the observer's activity withheld
        -> (n) activity None; (r) declared activity None.
 
+THE GIBBS REACTOR ON A FEED FAR FROM ITS EQUILIBRIUM (added 2026-09-27).
+equil03's feed (10 % NH3 in air) through its `gibbsReactor` failed at every T
+from 300 to 750 K, at 1, 5 and 50 bar ("unit 'gibbs' failed to converge"),
+and converged from 800 K up.  Measured cause: the element-potential Newton's
+least-squares seed is taken AT THE FEED COMPOSITION, and a feed this far from
+its equilibrium hands the seed the whole affinity of the reaction that makes
+water -- water, absent from the feed, seeded at e^17.5 mol/s at 700 K, e^25
+at 500 K, e^44.9 at 300 K, against 4.17 at the answer.  Two species then
+carry every atom and the (M+1) Jacobian is singular in double precision at
+iteration 0 (an analytic Jacobian moved the boundary only 100-200 K: the
+defect is the POINT, not the derivative).  Fix: when that route stops, the
+same Newton is RE-SEEDED from a primal Gibbs iteration on ln n from equal
+amounts (GibbsMethod.cpp, `gibbsPrimalSeed`) and ANNOUNCED.
+  (u) at six of the formerly failing points (300 K at 1 and 50 bar, water
+      condensing; 500, 700, 750 K single gas) the reactor converges; N, H
+      and O close against the feed, gas + condensate (1e-8); the two
+      independent equilibria (N2 + O2 <-> 2 NO and 4 NH3 + 3 O2 <-> 2 N2 +
+      6 H2O) hold on the published mole fractions to 1e-6 in ln K, K
+      recomputed here from the case's own records by check_gibbs_solid_
+      phase's `Gas` (no engine code) -- with the element balances they fix
+      the answer uniquely; where water condensed, y_water P equals the
+      record's own Antoine Psat (1e-6) and the liquid is water; the re-seed
+      is announced at its site AND in the caveat block; and the first
+      route's newtonND stop is filed as a TRIAL (the path), never as a
+      caveat about the answer.
+  (v) THE PATH NOT TAKEN: at equil03's own 1100 K the least-squares route
+      converges and nothing about a re-seed is said.
+  (w) THE CAUSE TRAVELS: a solve no route converges (T = -100 K, the only
+      input measured to defeat both; a future T <= 0 refusal makes it STALE
+      by design) refuses with the unit's line naming BOTH stops; and the
+      adiabatic outer Newton that does not converge (gibbs05 given Q = 2e5
+      kJ/kmol: exit 0 at a state ~990 kW off its energy balance, measured)
+      is announced in the caveat block and the result JSON -- DEV.md 5 A3
+      had it as a bare cerr line.
+  By-hand sabotages (2026-09-27, each restored by copy + touch + make; all
+  seven CAUGHT, results as measured):
+    U1 GibbsMethod.cpp: the second route never taken (`if (false)`)
+       -> (u) all six points refuse (|F| 9.1e19 at 300 K / 1 bar ... 2.8e7 at
+          750 K); (w) the refusal loses its cause.
+    U2 GibbsMethod.cpp: the re-seed announcement dropped
+       -> (u) six times: not announced at its site and in the caveat block.
+    U3 GibbsMethod.cpp: the trial frame around the first route removed
+       -> (u) six times: the newtonND stop filed `accepted` -- the caveat
+          block would tell the reader a converged answer did not converge.
+    U4 GibbsMethod.cpp: the primal step limit removed (lambda = 1)
+       -> (u) all six refuse: the primal iteration itself diverges, so the
+          limit is load-bearing, not decoration.
+    U5 GibbsMethod.cpp: NO published 1 % high
+       -> (u) N2 + O2 <-> 2 NO off by 1.990e-2 in ln K at every point (the
+          element balance sees it at ONE point only, 750 K / 1 bar: NO is a
+          trace) -- and (h), (j), (m) catch it on the shipped witnesses.
+    U6 GibbsReactor.cpp: the outer-non-convergence announcement dropped
+       -> (w).
+    U7 GibbsReactor.cpp: the cause left off the "did NOT converge" line
+       -> (w).
+
 WHAT THIS GATE DOES NOT COVER, stated so its green line cannot imply it.
 It does not judge whether any approach magnitude is RIGHT for any bed (the
 key is empirical, calibrated, never predicted).  It does not check a
@@ -438,6 +494,179 @@ def carbon_arms(td: str) -> None:
             if literal in src:
                 fails.append(f"(t) {f} writes {literal} itself -- the verdict "
                              "and the KPI names have one home, PureSolidPhase")
+
+
+# ---- (u)-(w): the Gibbs reactor on a feed far from its equilibrium --------
+GIBBS05 = ROOT / "tutorials" / "steady" / "gibbs" / "gibbs05_adiabatic_flame"
+GIBBS_ONLY = """units
+(
+    {
+        name        gibbs;
+        type        gibbsReactor;
+        in          feed;
+        outputs     ( outGibbs );
+        operation
+        {
+            T          %s K;
+            P          %s bar;
+            elements   ( N  H  O );
+            species
+            (
+                { name  NH3;    atoms  ( 1  3  0 ); }
+                { name  O2;     atoms  ( 0  0  2 ); }
+                { name  N2;     atoms  ( 2  0  0 ); }
+                { name  NO;     atoms  ( 1  0  1 ); }
+                { name  water;  atoms  ( 0  2  1 ); }
+            );
+        }
+    }
+);
+"""
+ATOMS = {"NH3": (1, 3, 0), "O2": (0, 0, 2), "N2": (2, 0, 0),
+         "NO": (1, 0, 1), "water": (0, 2, 1)}
+#  The formerly failing points (measured at b0150c9aa: every T from 300 to
+#  750 K failed at 1, 5 and 50 bar; 800 K and above converged).  300 K
+#  condenses water at every pressure; 500 and 700 K are single gas phase.
+FAR_POINTS = ((300.0, 1.0), (300.0, 50.0), (500.0, 5.0), (700.0, 5.0),
+              (750.0, 1.0), (700.0, 50.0))
+
+
+def gibbs_only(td: str, name: str, T: float, P: float) -> Path:
+    """equil03's case and feed, the Gibbs reactor alone at (T, P)."""
+    dst = Path(td) / name
+    shutil.copytree(EQUIL03, dst, ignore=shutil.ignore_patterns(
+        "converged", "reports", "iterations", "design"))
+    for s in ("feedGibbs", "feedDeclared", "feedComplete", "outDeclared",
+              "outComplete"):
+        (dst / "0" / s).unlink()
+    fs = dst / "system" / "flowsheetDict"
+    t = fs.read_text()
+    if t.count("units\n(") != 1:
+        raise SystemExit("check_reaction_subset_approach: equil03's "
+                         "flowsheetDict has no single `units (` block -- the "
+                         "fixture is STALE")
+    fs.write_text(t[:t.index("units\n(")] + GIBBS_ONLY % (repr(T), repr(P)))
+    return dst
+
+
+def caveat_block(out: str) -> str:
+    i = out.find("ASSUMPTIONS AND CAVEATS")
+    j = out.find("<<<Choupo:result-begin>>>")
+    return out[i:j] if 0 <= i < j else ""
+
+
+def feed_far_arms(td: str) -> None:
+    import check_gibbs_solid_phase as gsp
+    sp = {k: gsp.Gas(k, EQUIL03) for k in ATOMS}
+    wt = gsp.record("water", EQUIL03)
+    A, B, C = gsp.vec(gsp.block(wt, "vaporPressure"), "coefficients")[:3]
+    R = gsp.R
+    for T, P in FAR_POINTS:
+        tag = f"{T:g} K / {P:g} bar"
+        case = gibbs_only(td, f"far_{T:g}_{P:g}", T, P)
+        rc, out, js = run(case)
+        k = kpis(js, "gibbs")
+        if rc != 0 or k.get("converged") != 1:
+            err = re.findall(r"(did NOT converge.*|ERROR:.*)", out)
+            fails.append(f"(u) {tag}: the Gibbs reactor did not converge "
+                         f"(exit {rc}{': ' + err[0][:160] if err else ''})")
+            continue
+        # (u) the element balance, gas + condensate, against the feed.
+        feed = (js.get("streams") or {}).get("feed") or {}
+        nIn = {c: feed["F"] * 1e3 * x
+               for c, x in (feed.get("composition") or {}).items()}
+        Ng = k["F_out_kmol_h"] / 3.6
+        Nl = k.get("N_liq_mol_s", 0.0)
+        y = {c: k[f"y_{c}"] for c in ATOMS}
+        x = {c: k.get(f"x_{c}", 0.0) for c in ATOMS}
+        for j, el in enumerate("NHO"):
+            bin_ = sum(ATOMS[c][j] * nIn.get(c, 0.0) for c in ATOMS)
+            bout = sum(ATOMS[c][j] * (Ng * y[c] + Nl * x[c]) for c in ATOMS)
+            if not close(bin_, bout, 1e-8):
+                fails.append(f"(u) {tag}: element {el} in {bin_:.12e} out "
+                             f"{bout:.12e} mol/s")
+        # (u) the two independent equilibria, recomputed from the records.
+        g = {c: sp[c].g(T) / (R * T) for c in ATOMS}
+        lnP = math.log(P)
+        if not all(y[c] > 0.0 for c in ATOMS):
+            fails.append(f"(u) {tag}: a species at exactly zero ({y}) -- the "
+                         "equilibria cannot be recomputed in logarithms")
+            continue
+        ly = {c: math.log(y[c]) for c in ATOMS}
+        rNO = (2*ly["NO"] - ly["N2"] - ly["O2"]) \
+            + (2*g["NO"] - g["N2"] - g["O2"])
+        rN2 = (2*ly["N2"] + 6*ly["water"] - 4*ly["NH3"] - 3*ly["O2"] + lnP) \
+            + (2*g["N2"] + 6*g["water"] - 4*g["NH3"] - 3*g["O2"])
+        for nm, r in (("N2 + O2 <-> 2 NO", rNO),
+                      ("4 NH3 + 3 O2 <-> 2 N2 + 6 H2O", rN2)):
+            if abs(r) > 1e-6:
+                fails.append(f"(u) {tag}: {nm} is off its equilibrium by "
+                             f"{r:.3e} in ln K (records recomputed here)")
+        # (u) where water condensed, the gas is saturated on the record's own
+        #     Antoine and the liquid is water alone.
+        if k.get("twoPhase") == 1:
+            psat = 10.0 ** (A - B / (T + C))
+            if not close(y["water"] * P, psat, 1e-6) or x["water"] != 1.0:
+                fails.append(f"(u) {tag}: y_water P = {y['water'] * P:.9e} bar"
+                             f" against Psat {psat:.9e} (x_water "
+                             f"{x['water']})")
+        elif T <= 300.0:
+            fails.append(f"(u) {tag}: the probe is STALE -- water no longer "
+                         "condenses here")
+        # (u) THE AID IS ANNOUNCED, at its site and in the caveat block, and
+        #     the first route's stop is filed as the PATH, not the answer.
+        if "re-seeded by" not in out or \
+                "RE-SEEDED from a primal Gibbs iteration" not in caveat_block(out):
+            fails.append(f"(u) {tag}: the primal re-seed was not announced at "
+                         "its site AND in the caveat block (or the probe is "
+                         "STALE: the least-squares seed converges here now)")
+        stops = [a for a in (js.get("advisories") or [])
+                 if a.get("locus") == "newtonND"]
+        if not stops or any(a.get("status") != "trial" for a in stops):
+            fails.append(f"(u) {tag}: the least-squares route's newtonND stop "
+                         f"is not filed as a TRIAL ({[a.get('status') for a in stops]})"
+                         " -- a caveat about the answer would say it did not"
+                         " converge")
+
+    # (v) THE PATH NOT TAKEN: at equil03's own 1100 K the least-squares route
+    #     converges, and a run that needed no aid says none.
+    rc, out, js = run(gibbs_only(td, "far_1100_5", 1100.0, 5.0))
+    if rc != 0 or kpis(js, "gibbs").get("converged") != 1:
+        fails.append(f"(v) equil03's feed at 1100 K did not converge (exit {rc})")
+    elif "re-seeded" in out or "RE-SEEDED" in out:
+        fails.append("(v) the re-seed is announced at 1100 K, where the "
+                     "least-squares route converges -- an aid said where none "
+                     "was used")
+
+    # (w) THE REFUSAL NAMES ITS CAUSE.  A declared T of -100 K defeats both
+    #     routes (the only input measured to do so); the unit's line must
+    #     carry WHY, not a bare "did NOT converge".  A future refusal of
+    #     T <= 0 K by name would make this probe STALE, by design.
+    rc, out, _ = run(gibbs_only(td, "far_neg", -100.0, 1.0))
+    if rc == 0 or not re.search(r"did NOT converge \(final \|F\| = [^)]*\): "
+                                r"the element-potential Newton stopped from "
+                                r"its least-squares seed", out):
+        fails.append(f"(w) a Gibbs solve that no route converges did not "
+                     f"refuse naming the cause (exit {rc})")
+    #     THE ADIABATIC OUTER NEWTON THAT DOES NOT CONVERGE IS ANNOUNCED
+    #     (DEV.md 5 A3: it was a bare cerr line).  gibbs05 given a duty of
+    #     2e5 kJ per kmol of feed: the outer Newton stops at its 30th step,
+    #     the equilibrium at that trial T converges, and the run exits 0 with
+    #     a state ~990 kW off its own energy balance (measured) -- which is
+    #     why the announcement must reach the caveat block and the JSON.
+    ca = fixture(td, "outerNotConverged", src=GIBBS05,
+                 fs=[("T          1500.0 K;", "T          1500.0 K;  Q 2.0e5;")])
+    rca, outa, jsa = run(ca)
+    hit = [a for a in ((jsa or {}).get("advisories") or [])
+           if a.get("locus") == "gibbsReactor 'burner'"
+           and "outer Newton on T did NOT converge" in a.get("message", "")]
+    if rca != 0:
+        fails.append(f"(w) the outer-non-convergence probe is STALE: it no "
+                     f"longer publishes an answer (exit {rca})")
+    elif not hit or "adiabatic outer Newton on T did NOT converge" \
+            not in caveat_block(outa):
+        fails.append("(w) the adiabatic outer Newton's non-convergence was "
+                     "not announced in the caveat block and the result JSON")
 
 
 def main() -> int:
@@ -760,6 +989,9 @@ def main() -> int:
         # ---- (m)-(r) a pure solid in a declared set (C14 slice 2) ---------
         carbon_arms(td)
 
+        # ---- (u)-(w) the Gibbs reactor on a feed far from equilibrium -----
+        feed_far_arms(td)
+
     # ---- (g) one home for the rule (source arm) ----------------------------
     def code(path: Path) -> str:
         t = path.read_text()
@@ -805,7 +1037,14 @@ def main() -> int:
           "plant first law), C/H/O close, Boudouard and cracking give one "
           "answer and all four refuse, S/C 3 leaves it absent, a gas with "
           "an unequilibrated species gets no activity, and both reactors "
-          "speak through PureSolidPhase.  "
+          "speak through PureSolidPhase; equil03's feed through the Gibbs "
+          "reactor alone converges at six points where it used to refuse "
+          "(300-750 K, 1-50 bar, water condensing at 300 K), closes N/H/O, "
+          "holds both independent equilibria recomputed from the records "
+          "and the record's own Psat, and ANNOUNCES the primal re-seed with "
+          "the first route's stop filed as the path; at 1100 K no re-seed is "
+          "said; a solve no route converges names both causes, and an "
+          "unconverged adiabatic outer Newton is announced.  "
           "NOT checked: whether any magnitude is right for a bed, coupled "
           "effects, adiabatic operation, non-ideal Kp, two solids at once, "
           "a solid in the feed")

@@ -413,8 +413,6 @@ int GibbsReactor::solve(const DictPtr& dict,
         outerIter = rT.iterations;
         T_final = rT.x;
         eq = method->solve(prob, T_final, {});
-        if (!rT.converged)
-            std::cerr << "GibbsReactor: outer Newton on T did NOT converge\n";
         //  The augmented dict carries the unit's name as the DICTIONARY'S OWN
         //  name and strips the `name` entry (DistillationColumn.cpp records
         //  the same finding), so a `name` lookup would say "(unnamed)".
@@ -422,6 +420,8 @@ int GibbsReactor::solve(const DictPtr& dict,
             + (dict->name().empty()
                    ? dict->lookupWordOrDefault("name", "(unnamed)")
                    : dict->name()) + "'";
+        if (!rT.converged)   // ANNOUNCED, not a bare cerr line (DEV.md §5 A3)
+            announceOuterNotConverged(unitLocus, rT.x, rT.residual, rT.iterations);
         if (!penalisedT.empty())
         {
             scalar tLo = penalisedT.front(), tHi = penalisedT.front();
@@ -456,9 +456,9 @@ int GibbsReactor::solve(const DictPtr& dict,
                       << " K, P = " << (P * 1.0e-5) << " bar; " << N
                       << " species over " << M << " elements\n";
         eq = method->solve(prob, T_final, makeHook(true));
-        if (!eq.converged)
-            std::cerr << "GibbsReactor: did NOT converge (final |F| = "
-                      << eq.residual << ")\n";
+        if (!eq.converged)   // WHY, when a Newton route says (GibbsMethod.cpp)
+            std::cerr << "GibbsReactor: did NOT converge (final |F| = " << eq.residual
+                      << ")" << (eq.notConvergedCause.empty() ? "" : ": " + eq.notConvergedCause) << "\n";
     }
 
     // -- Outputs -----------------------------------------------------------
@@ -641,6 +641,31 @@ int GibbsReactor::solve(const DictPtr& dict,
     std::cout << "==================================================================\n\n";
 
     return eq.converged ? 0 : 1;
+}
+
+//  THE ADIABATIC OUTER NEWTON THAT DID NOT CONVERGE (DEV.md §5 A3, the item
+//  it named "a bare cerr line with no AdvisoryLog entry").  What the reactor
+//  then publishes is the equilibrium at the LAST TRIAL temperature, where the
+//  energy balance H_out - H_in - Q is the residual printed here -- not the
+//  adiabatic answer the mode promises.  The run is not refused (it never
+//  was, and whether it should be is named in DEV.md, not decided here); it
+//  is SAID, at its site and in the end-of-run caveat block, with the number
+//  that tells the reader how far from adiabatic the published state is.
+void GibbsReactor::announceOuterNotConverged(const std::string& unitLocus,
+                                             scalar             T_last,
+                                             scalar             residual_W,
+                                             int                iterations)
+{
+    std::ostringstream m;
+    m << "adiabatic outer Newton on T did NOT converge in " << iterations
+      << " iterations: the reactor publishes the equilibrium at the LAST"
+         " TRIAL T = " << std::fixed << std::setprecision(2) << T_last
+      << " K, where the energy balance H_out - H_in - Q is still "
+      << std::scientific << std::setprecision(4) << residual_W * 1.0e-3
+      << " kW -- that state is NOT the adiabatic answer";
+    if (AdvisoryLog::instance().add("solver", "warning", unitLocus, m.str() + "."))
+        std::cerr << "  [solver] " << unitLocus << ": " << m.str()
+                  << " (announced).\n";
 }
 
 } // namespace Choupo

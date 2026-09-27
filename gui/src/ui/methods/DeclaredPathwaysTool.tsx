@@ -63,8 +63,11 @@ License
         declared  T_Kp_methanolSynthesis 545, T_Kp_waterGasShift 505,
                   conversion_methanolSynthesis 0.442082369415
       625 K: declared conversion 0.0565289611462; gibbs y_CH4 0.446936366161
-      the corners 525/625 K x 0/50 K all run; 500 K does not (the complete
-      set's Newton stalls -- the lesson's limits say so).
+      the corners 525/625 K x 0/50 K all run.  (500 K did not when this was
+      written -- the complete set's extent Newton stalled; on the ln n solver
+      it runs, measured 2026-09-27 at 350-525 K.  The slider keeps its range
+      for the reason the lesson's limits give: water condensing in the Gibbs
+      column below about 450 K.)
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
@@ -139,8 +142,8 @@ export const T_KNOB: PanelKnob = {
   min: 525, max: 625, step: 25, unit: "K",
   why: "The physical temperature, held by every reactor.  The Gibbs column "
     + "stays methane across the range; watch what the declared column does.  "
-    + "The slider stops at 525 K because at 500 K the complete set's Newton "
-    + "stalls (the limits below say so).",
+    + "The slider stops at 525 K, clear of where water condenses in the "
+    + "Gibbs column (the limits below say so).",
 };
 
 export const DT_KNOB: PanelKnob = {

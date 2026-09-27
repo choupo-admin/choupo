@@ -648,6 +648,9 @@
   "GibbsMethod": [
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
+  "GibbsPrimalSeed": [
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
+  ],
   "GibbsProblem": [
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],

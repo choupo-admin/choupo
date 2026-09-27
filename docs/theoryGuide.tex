@@ -16380,6 +16380,21 @@ and solving by \code{solver::gaussSolve}.  After this seed the
 Newton iteration converges with visibly quadratic decay in five to
 ten steps.
 
+\paragraph{When the feed is far from its equilibrium.}  The fit
+treats the feed as if it were the answer, so it inherits the whole
+affinity of the reactions that separate the two.  Ten per cent
+ammonia in air below 800~K is such a feed: water, absent from it, is
+seeded at $e^{17}$ to $e^{45}$~mol/s against about 4~mol/s at the
+answer, two species then carry every atom, the $(M+1)$ Jacobian is
+singular in double precision, and the Newton stops at its first
+iteration.  The simulator then re-seeds the \emph{same} Newton from a
+primal iteration on $\ln n_i$ started from equal amounts (the reduced
+iteration equations of Gordon and McBride, NASA Reference Publication
+1311, 1994), whose linear system is weighted by the current amounts
+rather than by $\exp(\boldsymbol{\pi}\cdot\mathbf{A}_i)$, and says so
+in the run's caveat block.  The answer is still the Newton's, on the
+same residual and to the same tolerance.
+
 \subsection{Worked example: water-gas shift at 800~K}
 
 The water-gas shift reaction

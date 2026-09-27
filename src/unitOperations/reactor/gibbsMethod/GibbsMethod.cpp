@@ -137,7 +137,68 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
     const int maxOuter = nonIdeal ? 30 : 1;
     for (int outer = 0; outer < maxOuter; ++outer)
     {
-        auto r = solver::newtonND(residual, x0, ndo);
+        //  THE FIRST ROUTE: the least-squares seed (from the second fugacity
+        //  pass on, the previous pass).  Framed as a TRIAL, because if it
+        //  stops, what it raised is about a path the solve then discards.
+        solver::NDResult r;
+        {
+            AdvisoryFrame firstRoute("gibbs RAND, least-squares seed", true);
+            r = solver::newtonND(residual, x0, ndo);
+        }
+        //  THE SECOND ROUTE, taken only when the first stopped: the primal
+        //  seed (GibbsMethod.H), then the SAME Newton on the SAME residual to
+        //  the SAME tolerance.  Announced; and if it too fails, the cause of
+        //  BOTH failures travels with the answer instead of a bare "no".
+        std::string notConverged;
+        if (!r.converged)
+        {
+            sVector gTilde(N);
+            for (std::size_t i = 0; i < N; ++i) gTilde[i] = g_eff[i] + ln_P;
+            const GibbsPrimalSeed ps = gibbsPrimalSeed(A, b, gTilde, N0);
+            const std::string firstStop = r.stopReason.empty()
+                ? "it ended at |F| = " + std::to_string(r.residual) + " after "
+                  + std::to_string(r.iterations) + " iterations"
+                : r.stopReason;
+            if (ps.converged)
+            {
+                sVector xs(M + 1, 0.0);
+                for (std::size_t j = 0; j < M; ++j) xs[j] = ps.pi[j];
+                xs[M] = ps.lnN;
+                solver::NDResult r2 = solver::newtonND(residual, xs, ndo);
+                if (r2.converged)
+                {
+                    if (AdvisoryLog::instance().add("solver", "info", "gibbs RAND",
+                            "the element-potential Newton from its least-squares"
+                            " seed at the FEED composition stopped NOT converged"
+                            " (a feed far from its equilibrium: the seed inherits"
+                            " the whole affinity of the reaction that makes the"
+                            " products); it was RE-SEEDED from a primal Gibbs"
+                            " iteration on ln n from equal amounts (the reduced"
+                            " equations of Gordon & McBride, NASA RP-1311), and"
+                            " the SAME Newton then converged on the SAME residual"
+                            " to the SAME tolerance.  The seed is a solver aid;"
+                            " the answer is the Newton's."))
+                        std::cerr << "[solver] gibbs RAND at T = " << T
+                                  << " K: least-squares seed stopped (" << firstStop
+                                  << "); re-seeded by " << ps.iterations
+                                  << " primal Gibbs iterations, then converged in "
+                                  << r2.iterations << " Newton iterations,"
+                                     " |F| = " << r2.residual
+                                  << " (announced once per run).\n";
+                    r = std::move(r2);
+                }
+                else
+                    notConverged = "the element-potential Newton stopped from"
+                        " its least-squares seed (" + firstStop + ") AND from"
+                        " the primal re-seed (" + (r2.stopReason.empty()
+                            ? "it ended at |F| = " + std::to_string(r2.residual)
+                            : r2.stopReason) + ")";
+            }
+            else
+                notConverged = "the element-potential Newton stopped from its"
+                    " least-squares seed (" + firstStop + ") and the primal"
+                    " re-seed did not converge either (" + ps.reason + ")";
+        }
 
         eq = GibbsEquilibrium{};
         eq.nGas.assign(N, 0.0);
@@ -178,6 +239,7 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
         eq.converged  = r.converged;
         eq.iterations = r.iterations;
         eq.residual   = r.residual;
+        eq.notConvergedCause = notConverged;
 
         if (!nonIdeal || Nt <= 0.0) break;   // ideal: single, identical pass
 
@@ -241,6 +303,145 @@ std::vector<std::string> GibbsMethod::availableTypes()
     std::vector<std::string> v;
     for (const auto& [k, _] : registry()) v.push_back(k);
     return v;
+}
+
+//  THE PRIMAL SEED (see GibbsMethod.H).  One iteration, at fixed T and P, in
+//  the reduced form: with mu_j = gTilde_j + ln(n_j/n) at the current amounts,
+//
+//    sum_i pi_i sum_j a_kj a_ij n_j + dln n sum_j a_kj n_j
+//                               = b_k - sum_j a_kj n_j + sum_j a_kj n_j mu_j
+//    sum_i pi_i sum_j a_ij n_j  + dln n (sum_j n_j - n)
+//                               = n - sum_j n_j + sum_j n_j mu_j
+//
+//  then dln n_j = -mu_j + sum_i a_ij pi_i + dln n.  The first rows are the
+//  element balances linearised in ln n_j; the last is the definition of the
+//  total n linearised the same way.  At convergence every dln n_j is zero,
+//  so mu_j = sum_i a_ij pi_i: the pi here ARE the element potentials of the
+//  Newton this seeds, and n is its N.
+GibbsPrimalSeed gibbsPrimalSeed(const std::vector<std::vector<scalar>>& A,
+                                const std::vector<scalar>&              b,
+                                const std::vector<scalar>&              gTilde,
+                                scalar                                  N0,
+                                int                                     maxIter)
+{
+    const std::size_t M = b.size();
+    const std::size_t N = gTilde.size();
+    GibbsPrimalSeed out;
+    if (!(N0 > 0.0)) N0 = 1.0;
+
+    //  Equal amounts of every species, the feed's total: no species is
+    //  favoured before the thermodynamics has been asked.
+    sVector lnn(N, std::log(N0 / static_cast<scalar>(N)));
+    scalar  lnTot = std::log(N0);
+    scalar  bMax  = 0.0;
+    for (auto v : b) bMax = std::max(bMax, std::abs(v));
+
+    //  A species below 1e-8 of the total is TRACE (ln 1e-8 = -18.42): it
+    //  does not set the step, and a trace species that grows is not carried
+    //  past 1e-4 of the total (ln 1e-4 = -9.21) in one step.
+    const scalar lnTrace = std::log(1.0e-8);
+    const scalar lnCap   = std::log(1.0e-4);
+
+    for (int it = 0; it < maxIter; ++it)
+    {
+        out.iterations = it + 1;
+        sVector n(N), mu(N);
+        scalar  sumN = 0.0;
+        for (std::size_t j = 0; j < N; ++j)
+        {
+            n[j]  = std::exp(lnn[j]);        // underflow to 0 is harmless here
+            mu[j] = gTilde[j] + lnn[j] - lnTot;
+            sumN += n[j];
+        }
+        const scalar nTot = std::exp(lnTot);
+
+        std::vector<sVector> G(M + 1, sVector(M + 1, 0.0));
+        sVector rhs(M + 1, 0.0);
+        for (std::size_t k = 0; k < M; ++k)
+        {
+            scalar bk = 0.0, bmu = 0.0;
+            for (std::size_t j = 0; j < N; ++j)
+            {
+                if (A[k][j] == 0.0) continue;
+                for (std::size_t i = 0; i < M; ++i)
+                    G[k][i] += A[k][j] * A[i][j] * n[j];
+                bk  += A[k][j] * n[j];
+                bmu += A[k][j] * n[j] * mu[j];
+            }
+            G[k][M]  = bk;
+            G[M][k]  = bk;
+            rhs[k]   = b[k] - bk + bmu;
+        }
+        scalar nmu = 0.0;
+        for (std::size_t j = 0; j < N; ++j) nmu += n[j] * mu[j];
+        G[M][M]  = sumN - nTot;
+        rhs[M]   = nTot - sumN + nmu;
+
+        sVector sol;
+        try { sol = solver::gaussSolve(G, rhs); }
+        catch (const std::exception& e)
+        {
+            out.reason = std::string("its linear system was singular at"
+                " iteration ") + std::to_string(it + 1) + " (" + e.what() + ")";
+            return out;
+        }
+        const scalar dlnTot = sol[M];
+        sVector dlnn(N);
+        for (std::size_t j = 0; j < N; ++j)
+        {
+            scalar s = -mu[j] + dlnTot;
+            for (std::size_t i = 0; i < M; ++i) s += A[i][j] * sol[i];
+            dlnn[j] = s;
+        }
+
+        //  CONVERGED: every major species and the total moved by less than
+        //  5e-6 of the total, and the element balances hold to 1e-6 of the
+        //  largest element total.  Loose on purpose -- it is a SEED; the
+        //  element-potential Newton owns the 1e-8 answer.
+        scalar corr = sumN > 0.0 ? nTot * std::abs(dlnTot) / sumN : 1.0;
+        for (std::size_t j = 0; j < N; ++j)
+            corr = std::max(corr, sumN > 0.0 ? n[j] * std::abs(dlnn[j]) / sumN : 1.0);
+        scalar elem = 0.0;
+        for (std::size_t k = 0; k < M; ++k)
+        {
+            scalar bk = 0.0;
+            for (std::size_t j = 0; j < N; ++j) bk += A[k][j] * n[j];
+            elem = std::max(elem, std::abs(bk - b[k]));
+        }
+        if (!std::isfinite(corr) || !std::isfinite(elem))
+        {
+            out.reason = "a non-finite amount at iteration "
+                       + std::to_string(it + 1);
+            return out;
+        }
+        if (corr <= 5.0e-6 && elem <= 1.0e-6 * bMax)
+        {
+            out.converged = true;
+            out.pi.assign(sol.begin(), sol.begin() + static_cast<long>(M));
+            out.lnN = lnTot;
+            return out;
+        }
+
+        //  THE STEP LIMIT, the method's only aid: no major species (nor the
+        //  total, weighted 5x) changes by more than a factor e^2, and no
+        //  growing trace species is carried past 1e-4 of the total.
+        scalar big = 5.0 * std::abs(dlnTot);
+        for (std::size_t j = 0; j < N; ++j)
+            if (lnn[j] - lnTot > lnTrace) big = std::max(big, std::abs(dlnn[j]));
+        scalar lambda = (big > 2.0) ? 2.0 / big : 1.0;
+        for (std::size_t j = 0; j < N; ++j)
+        {
+            const scalar rel = lnn[j] - lnTot;
+            const scalar up  = dlnn[j] - dlnTot;
+            if (rel <= lnTrace && dlnn[j] >= 0.0 && up > 0.0)
+                lambda = std::min(lambda, std::abs((lnCap - rel) / up));
+        }
+        for (std::size_t j = 0; j < N; ++j) lnn[j] += lambda * dlnn[j];
+        lnTot += lambda * dlnTot;
+    }
+    out.reason = "it did not converge in " + std::to_string(maxIter)
+               + " iterations";
+    return out;
 }
 
 } // namespace Choupo

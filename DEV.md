@@ -2102,6 +2102,55 @@ defect — look for what else went with it.
 
 ## 5. Known debts (severity-ish)
 
+**2026-09-27 -- THE GIBBS REACTOR REFUSED A FEED FAR FROM ITS EQUILIBRIUM.
+CLOSED, with four things named.**  Reported by the general who built
+`equil03_ammonia_oxidation_declared_pathways`, then MEASURED: its feed (10 %
+NH3 in air) through the `gibbsReactor` alone refused ("unit 'gibbs' failed to
+converge") at EVERY T from 300 to 750 K, at 1, 5 and 50 bar alike, and
+converged from 800 K up.  Not the condensing nest (400-750 K condenses
+nothing and still failed), not the outer loop (isothermal), not the e^+-50
+clamp (nothing bound at the failure), not a tolerance (the Newton stopped at
+ITERATION 0).  The cause is the SEED: `gibbsGasSolve` fits the element
+potentials by least squares AT THE FEED COMPOSITION, and a feed this far from
+its equilibrium hands the seed the whole affinity of the reaction that makes
+the products -- water, absent from the feed, seeded at e^17.5 mol/s at
+700 K, e^25 at 500 K, e^44.9 at 300 K, against 4.17 at the answer.  Two
+species then carry every atom and the (M+1) Jacobian is singular in double
+precision: `luFactor` singular at iteration 0.  An exact analytic Jacobian
+was tried and moved the boundary only to 700 K (600 K at 50 bar): the defect
+is the POINT, not the derivative.  **Fix** (`GibbsMethod.cpp`,
+`gibbsPrimalSeed`): when the least-squares route stops, the SAME Newton is
+re-seeded from a primal Gibbs iteration on ln n from equal amounts (the
+reduced equations of Gordon & McBride, NASA RP-1311, with a step limit that
+is load-bearing -- without it the primal diverges at all six gate points),
+and it is ANNOUNCED (console + caveat block), the first route's stop filed as
+a TRIAL.  The answer is still the Newton's, on the same residual, to the same
+1e-8.  A run the least-squares route converges is byte-identical: all 36
+`gibbsReactor` / `equilibriumReactor` / `gibbsMap` case roots, output files
+and logs, against a build of b0150c9aa; the one log difference is
+`landscape01`'s caveat block, whose single `newtonND` stop -- one the map's
+answer never used (0 unconverged cells, `map.csv` byte-identical) -- is now
+filed under THE SOLVER'S PATH instead of MODEL ASSUMPTIONS.  No golden row moved.  A refusal that no
+route can avoid now names BOTH stops on the unit's line.  Gate
+`check_reaction_subset_approach` arms (u)-(w), 7 by-hand sabotages.
+NAMED, NOT DONE:
+  (1) A declared T <= 0 K is not refused: `T -100 K` runs into the solver
+      and dies on a non-finite amount.  And the adiabatic outer Newton's
+      trials go BELOW 0 K: `nro.lower = 250` binds only the seed because
+      `bracket = false` -- gibbs05 given `Q -2.0e5;` walks to T = -100 K.
+  (2) An adiabatic outer Newton that does not converge still EXITS 0 when
+      the equilibrium at its last trial T converges: gibbs05 given
+      `Q 2.0e5;` publishes a state 990 kW off its own energy balance.  It is
+      ANNOUNCED now (section A3 below); whether it should REFUSE is RESERVED
+      for Vitor -- it would change what a recycle pass that strays there does.
+  (3) The residual history the unit publishes (`convergence`) is the FIRST
+      route's: at 700 K / 5 bar it is [9.47e7] while the certifying Newton
+      converged in 0 iterations from the primal seed.  The count of primal
+      iterations is in the announcement, not in the history.
+  (4) The primal seed runs only as a SECOND route.  Making it the first
+      route everywhere would be simpler and moves every Gibbs trace (not
+      measured on the goldens); the least invasive fix was taken.
+
 **2026-09-26 -- A FLASH THAT ACCEPTS A TWO-PHASE ROOT ABOVE EVERY COMPONENT'S
 Tc, AND THE REPORT THAT REFUSES THE SAME ROOT.**  Found by stage D of the
 staged ammonia sequence, whose adiabatic bed hands the separator an 845 K
@@ -2613,10 +2662,15 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
        1e30 penalty (console + `AdvisoryLog`, `solver`/warning).  The penalty
        VALUE is unchanged -- replacing it moves any answer that ever touched
        it.  No corpus case reaches it today; `gibbs05_adiabatic_flame` with
-       its T seed set to 100 K does, and fires FOUR of this entry's
+       its T seed set to 100 K did, and fired FOUR of this entry's
        announcements in one run (90 penalised trials in [249.5, 250.5] K, the
        seed clamp, a singular dense `newtonND` Jacobian, the RAND e^50 cap)
-       before refusing as it always did.  The seed clamp into
+       before refusing.  **No longer (2026-09-27):** the inner equilibrium at
+       250 K was the least-squares-seed failure closed at the top of this
+       section, and with the primal re-seed that probe now CONVERGES, to
+       1491.58 K -- gibbs05's own golden T.  The probe that still reaches the
+       penalty is gibbs05 with `Q -2.0e5;` (66 penalised trials, all at
+       T in [-100.5, -99.5] K -- see the negative-T item there).  The seed clamp into
        [250, 5000] K and the 200 K step cap are announced at verbosity >= 2
        from the new `NRResult` counters (below).
      - `DirectMin.cpp` Nelder-Mead objective: the 1e30 wall is counted and
@@ -2667,7 +2721,14 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      silence (the comment above it says an exhausted search bails; only the
      infeasible half does) -- fixing it can move numbers, so it is a separate
      slice; and the GibbsReactor outer non-convergence is a bare `cerr` line
-     with no `AdvisoryLog` entry.
+     with no `AdvisoryLog` entry -- **ANNOUNCED 2026-09-27**
+     (`GibbsReactor::announceOuterNotConverged`: console + `AdvisoryLog`
+     warning under the unit's locus, with the last trial T and the energy
+     residual still standing there; gate `check_reaction_subset_approach`
+     arm (w)).  What it did NOT decide is whether such a run should REFUSE:
+     measured, gibbs05 given `Q 2.0e5;` exits 0 publishing a state 990 kW
+     off its own energy balance -- the exit code is RESERVED for Vitor, see
+     the 2026-09-27 entry at the top of this section.
  A4. **Two more if-chain `model` slots unfixed** (`HeatExchanger` epsNTU,
      `BatchStill` rayleigh) after the 2026-09-07 sweep, and choupoCtrl's
      caveat block never says WHICH pass it describes.  [UNITS]

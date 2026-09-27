@@ -5810,7 +5810,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways": {
    "application": "choupoSolve",
