@@ -167,8 +167,12 @@ speciation world is separate from the ThermoPackage.  Programme, in order:
    flash-once/speciate-once).  The engine: `electrolyte::ReactiveVLE`,
    reached ONLY through `ThermoPackage::equilibrate()` (units implement no
    chemistry; the flash delegates).  Grammar: the REACTIVE shape of
-   `electrolyteGammaPhi` — `aqueous { speciation { masters (...) } }` +
-   `volatiles (...)`, each volatile served by its gas-liquid record
+   `electrolyteGammaPhi` — derived from the components' own
+   `aqueousSpeciation` / `aqueousMapping` facts (the
+   `aqueous { speciation { masters (...) } }` block this line first named
+   was RETIRED 2026-07-27 and is refused) + `equilibrium { volatiles (...) }`
+   (a top-level copy is refused by name since 2026-09-27), each volatile
+   served by its gas-liquid record
    (water's own record supplies the solvent VLE; no separate Antoine
    wiring).  Collapse: marker-element contract (refused when not closable,
    the ratified wording).  Reference: `steady/flash/flash09_nh3_water_reactive`

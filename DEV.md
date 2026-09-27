@@ -2525,9 +2525,61 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
        TWICE (the driver's own emit and the dynamic driver's), identical.
  A5. **The composite refusal advises a keyword the engine does not read**,
      and a retired top-level form runs silently at exit 0.  [THERMO]
+     **CLOSED 2026-09-27; BOTH halves reproduced, and the filing was
+     narrower than the defect.**  The filing gave no site, and the
+     composite refusal's text at `ThermoPackageBuilder.cpp:797-830` reads
+     correctly on its own -- the defect was in the READER, not the
+     sentence.  `model <w>;` and `ionic <w>;` name one slot, and every
+     reader took `model` first, so the advice "declare `ionic davies;` with
+     the backbone", followed literally on a case written `model pitzerHMW;`
+     (flash13 so edited), returned the SAME refusal; and flash09 with
+     `{ model davies; ionic pitzerHMW; }` ran DAVIES at exit 0 under a
+     pitzerHMW declaration.  Three more of the family, measured the same
+     way: the mediator-only-bridge refusal advised `speciation { masters
+     (...) }`, a block the dispatch refuses as RETIRED (following it gave a
+     second refusal); a single-salt `{ model Pitzer; molecular NRTL; }` ran
+     Pitzer alone at exit 0, the backbone dropped; and the resolver refusal
+     advised `approximations {}` without saying where, and the block put
+     inside `equilibrium {}` was never read.  The retired top-level forms:
+     `package <name>;` (whose refusal the v2 purge deleted with the v1
+     reader, while `property-architecture.md` went on saying the runtime
+     refuses it), `propertyPackage`, `thermoPackage`, `electrolyteModel`,
+     a flat top-level `activityModel` / `equationOfState`, and a top-level
+     `volatiles` -- which the reactive assembly READ as a fallback, a second
+     home no document named, and ignored whenever equilibrium{} carried its
+     own -- all ran at exit 0.  Now: ONE reader of the aqueous slot
+     (`readAqueousActivity`, used by the reactive assembly, the single-salt
+     assembly and the declared chemistry buildV2 attaches), `model`+`ionic`
+     together REFUSE naming both words, `ionic <w>;` is read on the
+     single-salt route too, a single-salt `molecular` REFUSES naming the
+     route that serves it, the advice says IN PLACE OF the rejected word
+     and where `approximations {}` goes, the mediator advice names the
+     component's `aqueousMapping`, and the seven retired top-level keys
+     plus a misplaced `approximations {}` REFUSE by name
+     (`refuseRetiredTopLevel`, called first in `build()`).  A NAMED list,
+     not a closed key set: the top level has readers outside the builder
+     (`acceptUnverified`, `inherits`) and a closed set nobody enumerated
+     would refuse a correct case.  No corpus case declared any refused
+     form; the 60 case roots on the electrolyte and aqueous-chemistry
+     routes and `--fast` pass with no golden moved.  Gate:
+     `check_v2_refusals` advice-read arm (6 by-hand sabotages; S16, a second
+     reader of the slot, is caught STRUCTURALLY only).  Also corrected:
+     `property-architecture.md` still taught the retired masters block.
+     NOT done, named: `aqueous { apparentComponents ( ... ); }` is written
+     in 20 electrolyte cases and read by nothing (a comment the parser
+     keeps); refusing it is a corpus migration, not this slice.
  A6. **`bin/choupo-drill` fails on 2 of the flagship's 4 sectors** and blames
      the parent for state it has — an inbound stream looked up by the
      CONSUMING port's name instead of the declared identity.  [HARNESS]
+     **CLOSED -- superseded by the 2026-09-07 `choupoSolve --manifest` fix
+     (CLAUDE.md 6, "A STREAM BELONGS TO THE GRAPH THAT CONTAINS BOTH ITS
+     ENDS"), which made the tool ask the engine where a stream's file lives
+     instead of re-deriving it.  MEASURED, not inferred: at d9a906f94 the
+     commander ran `bin/choupo-drill tutorials/plant/ChemicalPlantTutorial
+     <SECTOR> <out>` for CONCENTRATION, DRYING, FERMENTATION and MAIN and
+     each exited 0; re-run on 2026-09-27 on the A5 branch (after running
+     the plant to write its `converged/`, which the tool requires and
+     refuses without), the same four exit 0.**
  A7. **ASTRA's distillation review: 8 findings** (external second opinion,
      2026-09-07).  Two VERIFIED by reading the source: D06, the reverse-rate
      branch has no mirror for an absent PRODUCT so `ar` stays 1.0 as if it

@@ -468,6 +468,252 @@ def active_salt_arm(tmp):
     return fails
 
 
+# ---- ADVICE_READ: a refusal's advice, FOLLOWED LITERALLY, must be read ------
+#  Added 2026-09-27 (DEV.md 5 A5).  This gate used to state as its own LIMIT
+#  that it "proves each refusal FIRES with its message, never that the message
+#  is the right advice" -- and that is exactly where the defect lived.  Every
+#  part below builds the case a reader produces by DOING what a refusal says,
+#  and requires the engine to READ what it was told to declare (or to refuse
+#  the combination by name), never to answer with the same refusal or to run
+#  in silence.  Measured on the parent build (d9a906f94), each on the shipped
+#  corpus case named:
+#    * flash13 with `model pitzerHMW;` refuses the composite and advised
+#      "declare `ionic davies;` with the backbone"; ADDING that line returned
+#      the SAME refusal, because `model` shadowed `ionic` in the reader;
+#    * flash09 with `{ model davies; ionic pitzerHMW; }` ran DAVIES at exit 0
+#      under a pitzerHMW declaration;
+#    * the mediator-only-bridge refusal advised `speciation { masters }`, a
+#      block the dispatch REFUSES as retired;
+#    * a single-salt `{ model Pitzer; molecular NRTL; }` ran Pitzer alone at
+#      exit 0, the backbone dropped;
+#    * `package <name>;`, `propertyPackage`, `thermoPackage`,
+#      `electrolyteModel`, a top-level `activityModel` / `equationOfState`
+#      and a top-level `volatiles` all ran at exit 0 (the last one READ as a
+#      fallback), and `approximations {}` inside equilibrium{} was never read.
+#  SOURCE part: the builder keeps ONE reader of the `ionic` key, so a second
+#  parse cannot come back with its own precedence.
+#
+# SABOTAGES PERFORMED BY HAND on 2026-09-27 against this arm, each restored by
+# cp from a saved copy and the engine rebuilt.  The lines are what the gate
+# printed:
+#   S11 the both-keys refusal disarmed (`model` shadows `ionic` again) ->
+#       "single-salt-both: ... ACCEPTED (exit 0)", "reactive-both: flash09
+#       ... ACCEPTED (exit 0)" and "composite-advice-followed: the refusal's
+#       own advice (`ionic davies;`) ... returned the SAME refusal".
+#   S12 refuseRetiredTopLevel no longer called -> the seven
+#       "retired-top-<key>: ACCEPTED (exit 0)" lines and "reactive-top-
+#       volatiles: refused but WITHOUT the named message" (the fallback reader
+#       is gone, so the list is simply absent and a DIFFERENT refusal fires --
+#       which is why that part checks the message, not only the exit code).
+#   S13 the mediator refusal's old advice restored -> "mediator-bridge: the
+#       refusal still advises the RETIRED `speciation { masters }` block".
+#   S14 the single-salt `molecular` refusal disarmed -> "single-salt-
+#       molecular: `molecular NRTL;` ACCEPTED ... (exit 0)".
+#   S15 the misplaced-approximations refusal disarmed -> "approximations-in-
+#       equilibrium: ACCEPTED (exit 0)".
+#   S16 buildV2's own parse of the slot restored (a SECOND reader) -> ONLY
+#       "one-reader: ... reads the `ionic` key at 2 sites".  Caught
+#       STRUCTURALLY and not behaviourally: every behavioural part reaches an
+#       assembly reader first, which refuses the pair before buildV2 attaches
+#       the declared chemistry -- so the source part is the one that sees it.
+F09 = ROOT / "tutorials" / "steady" / "flash" / "flash09_nh3_water_reactive"
+F13 = (ROOT / "tutorials" / "steady" / "flash"
+       / "flash13_acetic_ethanol_vacuum_flash")
+BUILDER = ROOT / "src" / "thermo" / "ThermoPackageBuilder.cpp"
+GAMMAPHI_WATER = (
+    "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+    "components ( water );\n%sequilibrium { formulation gammaPhi;"
+    " liquid { activityModel ideal; } vapour { fugacityModel idealGas; }"
+    " %s}\n")
+RETIRED_TOP = [
+    ("package", "package waterIdeal;\n"),
+    ("propertyPackage", "propertyPackage { components ( water ); }\n"),
+    ("thermoPackage", "thermoPackage waterIdeal;\n"),
+    ("electrolyteModel", "electrolyteModel { model pitzerHMW; }\n"),
+    ("activityModel", "activityModel { model NRTL; }\n"),
+    ("equationOfState", "equationOfState { model SRK; }\n"),
+    ("volatiles", "volatiles ( water );\n"),
+]
+BOTH_FRAG = "declares BOTH"
+COMPOSITE_FRAG = "is ratified on ionic davies"
+
+
+def _solve_copy(tmp, tag, base, edit_tppd=None, extra=None):
+    case = Path(tmp) / ("advice-" + tag)
+    subprocess.run(["cp", "-r", str(base), str(case)], check=True)
+    for d in ("converged", "iterations", "reports"):
+        subprocess.run(["rm", "-rf", str(case / d)], check=True)
+    if edit_tppd:
+        p = case / "constant" / "thermoPhysPropDict"
+        s = p.read_text()
+        s2 = edit_tppd(s)
+        if s2 == s:
+            return None, f"the edit for '{tag}' found nothing to change"
+        p.write_text(s2)
+    if extra:
+        extra(case)
+    #  CHOUPO_HOME: the mediator part UNSEALS its copy, and an unsealed case
+    #  outside the tree finds the catalogue only through it.
+    r = subprocess.run([str(SOLVE), str(case)], capture_output=True,
+                       text=True, cwd=case,
+                       env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
+    return r.returncode, r.stdout + r.stderr
+
+
+def _props_case(tmp, tag, system, props):
+    case = Path(tmp) / ("advice-" + tag)
+    (case / "system").mkdir(parents=True)
+    (case / "constant").mkdir()
+    (case / "system" / "controlDict").write_text(CTRL)
+    (case / "system" / "propsDict").write_text(props)
+    (case / "constant" / "thermoPhysPropDict").write_text(system)
+    r = subprocess.run([str(PROPS), str(case)], capture_output=True,
+                       text=True, cwd=ROOT)
+    return r.returncode, r.stdout + r.stderr
+
+
+def advice_read_arm(tmp):
+    fails = []
+
+    #  (a) the retired top-level forms.  The control first: the same system
+    #      WITHOUT the key must run clean, or a refusal below proves nothing.
+    rc, out = _props_case(tmp, "top-control", GAMMAPHI_WATER % ("", ""),
+                          BASE_PROPS)
+    if rc != 0:
+        fails.append(f"advice-top-control: the plain gammaPhi water system "
+                     f"did not run clean (exit {rc}) -- the retired-key "
+                     "negatives below would prove nothing")
+    for key, line in RETIRED_TOP:
+        rc, out = _props_case(tmp, "top-" + key,
+                              GAMMAPHI_WATER % (line, ""), BASE_PROPS)
+        frag = f"top-level `{key}` is a RETIRED form"
+        if rc == 0:
+            fails.append(f"retired-top-{key}: ACCEPTED (exit 0) -- the "
+                         "retired form runs in silence again")
+        elif frag not in out:
+            fails.append(f"retired-top-{key}: refused but WITHOUT the named "
+                         f"message ('{frag}' absent)")
+    rc, out = _props_case(
+        tmp, "approx-in-eq",
+        GAMMAPHI_WATER % ("", "approximations { idealMolecularVLE"
+                              " { components ( water ); } } "), BASE_PROPS)
+    if rc == 0:
+        fails.append("approximations-in-equilibrium: ACCEPTED (exit 0) -- "
+                     "a block nothing reads is tolerated again")
+    elif "inside `equilibrium {}`" not in out:
+        fails.append("approximations-in-equilibrium: refused but WITHOUT "
+                     "naming where the block was put")
+
+    #  (b) the single-salt route: `ionic` IS read there (it is the same
+    #      slot as `model`), both together refuse, `molecular` refuses.
+    salt = ELECTROLYTE_SYSTEM
+    rc, out = _props_case(tmp, "salt-ionic",
+                          salt.replace("model Pitzer;", "ionic Pitzer;"),
+                          BRINE_PROPS)
+    if rc != 0:
+        fails.append(f"single-salt-ionic: `activityModel {{ ionic Pitzer; }}` "
+                     f"did not run clean (exit {rc}) -- the key the "
+                     "refusals advise is not read on this route")
+    rc, out = _props_case(tmp, "salt-both",
+                          salt.replace("model Pitzer;",
+                                       "model Pitzer; ionic eNRTL;"),
+                          BRINE_PROPS)
+    if rc == 0:
+        fails.append("single-salt-both: `{ model Pitzer; ionic eNRTL; }` "
+                     "ACCEPTED (exit 0) -- one of the two words is dropped "
+                     "in silence")
+    elif BOTH_FRAG not in out or "eNRTL" not in out:
+        fails.append("single-salt-both: refused but without naming BOTH "
+                     "words")
+    rc, out = _props_case(tmp, "salt-molecular",
+                          salt.replace("model Pitzer;",
+                                       "model Pitzer; molecular NRTL;"),
+                          BRINE_PROPS)
+    if rc == 0:
+        fails.append("single-salt-molecular: `molecular NRTL;` ACCEPTED on "
+                     "the single-salt adapter (exit 0) -- the backbone is "
+                     "dropped in silence again")
+    elif "has no molecular backbone" not in out:
+        fails.append("single-salt-molecular: refused but WITHOUT the named "
+                     "message ('has no molecular backbone' absent)")
+
+    #  (c) the reactive route, on the shipped witnesses.
+    rc, out = _solve_copy(tmp, "f09-both", F09, lambda s: s.replace(
+        "model davies;", "model davies; ionic pitzerHMW;"))
+    if rc is None:
+        fails.append("reactive-both: " + out)
+    elif rc == 0:
+        fails.append("reactive-both: flash09 with `{ model davies; ionic "
+                     "pitzerHMW; }` ACCEPTED (exit 0) -- it runs one of the "
+                     "two models under a declaration naming the other")
+    elif BOTH_FRAG not in out or "pitzerHMW" not in out:
+        fails.append("reactive-both: refused but without naming BOTH words")
+    #  the composite refusal, then its advice followed LITERALLY
+    rc, out = _solve_copy(tmp, "f13-hmw", F13, lambda s: s.replace(
+        "ionic davies;", "model pitzerHMW;"))
+    if rc is None:
+        fails.append("composite-advice: " + out)
+    elif rc == 0 or COMPOSITE_FRAG not in out:
+        fails.append("composite-advice: flash13 with `model pitzerHMW;` and "
+                     "the NRTL backbone did not give the composite refusal")
+    rc, out = _solve_copy(tmp, "f13-follow", F13, lambda s: s.replace(
+        "ionic davies;", "model pitzerHMW; ionic davies;"))
+    if rc is None:
+        fails.append("composite-advice-followed: " + out)
+    elif rc == 0:
+        fails.append("composite-advice-followed: `{ model pitzerHMW; ionic "
+                     "davies; molecular NRTL; }` ACCEPTED (exit 0)")
+    elif COMPOSITE_FRAG in out:
+        fails.append("composite-advice-followed: the refusal's own advice "
+                     "(`ionic davies;`), added to a case written `model "
+                     "pitzerHMW;`, returned the SAME refusal -- the engine "
+                     "does not read the key it tells the reader to declare")
+    elif BOTH_FRAG not in out:
+        fails.append("composite-advice-followed: refused but without naming "
+                     "the two keys")
+
+    #  the mediator-only bridge: its advice must not name a retired block
+    def _mediators(case):
+        p = case / "constant" / "components" / "NH3.dat"
+        s = p.read_text()
+        old = ("aqueousMapping ( { species NH4; nu 1; }"
+               " { species H; nu -1; } );")
+        p.write_text(s.replace(old,
+                               "aqueousMapping ( { species H; nu -1; } );"))
+        (case / "constant" / "propertyManifest").unlink()
+    rc, out = _solve_copy(tmp, "f09-mediators", F09, None, _mediators)
+    if rc == 0:
+        fails.append("mediator-bridge: a bridge onto H/OH alone was ACCEPTED")
+    elif "a mediator anchors no family" not in out:
+        fails.append("mediator-bridge: refused but WITHOUT the named message "
+                     "('a mediator anchors no family' absent)")
+    elif "speciation { masters (...) }" in out:
+        fails.append("mediator-bridge: the refusal still advises the RETIRED "
+                     "`speciation { masters }` block")
+
+    #  a top-level `volatiles` on the one route that USED to read it
+    rc, out = _solve_copy(tmp, "f09-topvol", F09, lambda s: s.replace(
+        "volatiles ( NH3  water );", "") + "\nvolatiles ( NH3 water );\n")
+    if rc is None:
+        fails.append("reactive-top-volatiles: " + out)
+    elif rc == 0:
+        fails.append("reactive-top-volatiles: a top-level `volatiles` was "
+                     "READ again as a fallback (exit 0)")
+    elif "top-level `volatiles` is a RETIRED form" not in out:
+        fails.append("reactive-top-volatiles: refused but WITHOUT the named "
+                     "message")
+
+    #  (d) SOURCE: ONE reader of the `ionic` key in the builder.
+    src = BUILDER.read_text()
+    n = src.count('found("ionic")')
+    if n != 1:
+        fails.append(f"one-reader: ThermoPackageBuilder.cpp reads the `ionic` "
+                     f"key at {n} sites; the slot has ONE reader "
+                     "(readAqueousActivity), so a second parse would bring "
+                     "back its own precedence")
+    return fails
+
+
 def run_grammar_negative(tmp, name, layout, binary, frag):
     case = Path(tmp) / name
     (case / "system").mkdir(parents=True)
@@ -518,6 +764,7 @@ def main():
                 fails.append(bad)
         fails.extend(solid_phase_arm(tmp))
         fails.extend(active_salt_arm(tmp))
+        fails.extend(advice_read_arm(tmp))
     if fails:
         print("V2 NEGATIVE-PARITY GATE FAILED (%d):" % len(fails))
         for f in fails: print("  " + f)
@@ -532,11 +779,21 @@ def main():
           " names its owner in either list order and the choice is"
           " ANNOUNCED; the lithium plant's BRINE sector announces NaCl and"
           " reproduces every stream and KPI, by name to 1e-9, with NaCl and"
-          " LiCl reversed in the global component list that reaches it)."
+          " LiCl reversed in the global component list that reaches it),"
+          " plus the advice-read arm (seven retired top-level forms and a"
+          " misplaced approximations{} REFUSE by name against a control that"
+          " runs clean; `ionic` is READ on the single-salt route and"
+          " `model`+`ionic` together, or a `molecular` backbone there, REFUSE;"
+          " on flash09/flash13 the composite refusal's own advice followed"
+          " literally no longer returns the same refusal, both keys together"
+          " refuse naming both words, the mediator-only bridge advises no"
+          " retired block, a top-level `volatiles` refuses; ONE `ionic`"
+          " reader in the builder)."
           "  DOMAIN: the v2"
           " grammar's own refusals, driven through choupoProps/choupoSolve on"
           " temp cases.  LIMITS: it proves each refusal FIRES with its"
-          " message, never that the message is the right advice; the"
+          " message; that the advice is RIGHT is held only for the refusals"
+          " the advice-read arm follows -- the others are not followed; the"
           " solid-phase arm covers the single-salt electrolyte adapter only --"
           " the gammaPhi and reactive paths read the phase list elsewhere and"
           " are not tested here; the active-salt arm does not exercise the"

@@ -121,7 +121,9 @@ bool hasSpeciesMap(const DictPtr& rec) { return speciesMapOf(rec) != nullptr; }
 //      (`molecular`) so the caller can refuse it where nothing serves it.
 //
 //  The word form `activityModel <w>;` is the ionic rung too, for every
-//  reader (two of the three had crashed on it with a missing-dict error).
+//  reader (read from the source: two of the three called subDict() on it
+//  and threw "is not a sub-dictionary", after the reactive assembly had
+//  already accepted it).
 struct AqueousActivityDeclaration
 {
     bool        declared = false;   // the slot is present at all
@@ -222,7 +224,7 @@ static void refuseRetiredTopLevel(const DictPtr& pkg)
     for (const auto& r : retired)
         if (pkg->found(r.key))
             throw std::runtime_error(std::string("thermophysicalPropertySystem:"
-                " top-level `") + r.key + "` is not read -- " + r.why);
+                " top-level `") + r.key + "` is a RETIRED form -- " + r.why);
 }
 
 // ---- ELECTROLYTE path: assemble a PitzerSingleSalt directly from the unified
@@ -918,7 +920,8 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             " mixing them would price a hybrid nobody published.  For the"
             " Edwards stack use a choupoProps speciate op with a vapour{}"
             " block (see edwards02_table7_vle); for this path declare"
-            " `ionic davies;` or `ionic pitzerHMW;`.");
+            " `ionic davies;` or `ionic pitzerHMW;` IN PLACE OF the"
+            " edwardsPitzer word.");
     if (actModel != "davies" && actModel != "pitzerHMW")
         throw std::runtime_error("thermophysicalPropertySystem: the REACTIVE"
             " electrolyteGammaPhi slice serves ionic davies or ionic"
@@ -934,13 +937,14 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             " mixed-solvent route (`activityModel { ionic ...; molecular"
             " ...; }`) is ratified on ionic davies; pitzerHMW under the"
             " molecular backbone is its own slice (unvalidated) -- declare"
-            " `ionic davies;` with the backbone, or drop the backbone.");
+            " `ionic davies;` IN PLACE OF the pitzerHMW word (one ionic key,"
+            " `model` or `ionic`, never both), or drop the backbone.");
     if (actModel == "pitzerHMW" && eq->found("organic"))
         throw std::runtime_error("thermophysicalPropertySystem: the reactive"
             " second liquid (`equilibrium { organic {...} }`) is ratified on"
             " ionic davies; pitzerHMW under the organic split is its own"
-            " slice (unvalidated) -- declare `ionic davies;` with the"
-            " organic block, or drop it.");
+            " slice (unvalidated) -- declare `ionic davies;` IN PLACE OF the"
+            " pitzerHMW word, with the organic block, or drop it.");
     //  The backbone serves the models it can actually WIRE.  NRTL and
     //  UNIQUAC need a curated record per pair (parameters/NRTL/ and
     //  parameters/UNIQUAC/ -- UNIQUAC added 2026-08-10 for the Marcilla S5b
@@ -2066,6 +2070,18 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             " 'components' is absent");
     auto eq = v2->subDict("equilibrium");
     const std::string form = eq->lookupWord("formulation");
+
+    //  The authorisation has ONE home, the TOP LEVEL (parsed just above).
+    //  Written inside equilibrium{} -- the natural place to put it, beside
+    //  the models it qualifies -- it was never read: measured, the resolver
+    //  refusal that advises the block kept firing, and on a case that needed
+    //  no authorisation the block sat there in silence.  Refused by name.
+    if (eq->found("approximations"))
+        throw std::runtime_error("thermophysicalPropertySystem:"
+            " `approximations { ... }` is declared inside `equilibrium {}`,"
+            " where nothing reads it -- it lives at the TOP LEVEL of the"
+            " system, beside `components`.  Move the block out of"
+            " equilibrium{}.");
 
     // Declared caloric routes must state what runs (declared+verified).
     DictPtr cal = v2->found("caloric") ? v2->subDict("caloric") : nullptr;
