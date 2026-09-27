@@ -94,11 +94,11 @@ int SizingPass::run(SimulationResult& result)
               << std::setw(int(wName)) << "unit"
               << std::setw(16) << "equipment"
               << std::setw(12) << "material"
-              << std::setw(10) << "size"
+              << std::setw(20) << "size"
               << std::setw(12) << "value"
               << std::setw(10) << "wall (mm)"
               << std::setw(12) << "weight (kg)"
-              << "\n  " << std::string(86 + wName - 14, '-') << "\n";
+              << "\n  " << std::string(96 + wName - 14, '-') << "\n";
 
     int failures = 0;
 
@@ -185,6 +185,11 @@ int SizingPass::run(SimulationResult& result)
                 bool        haveSize = true;
                 if      (dims.values.count("V_R")) { sizeKey = sized("V_R"); sizeVal = dims.values.at("V_R"); }
                 else if (dims.values.count("A"))   { sizeKey = sized("A");   sizeVal = dims.values.at("A");   }
+                //  A CATALYST CHARGE'S SIZE IS ITS MASS (2026-09-26): the
+                //  one item in the corpus whose Guthrie size driver is
+                //  neither a volume nor an area.
+                else if (dims.values.count("m_catalyst_kg"))
+                { sizeKey = sized("m_catalyst_kg"); sizeVal = dims.values.at("m_catalyst_kg"); }
                 //  NO CANONICAL SIZE IS SAID, NOT PRINTED AS ZERO.  This column
                 //  used to fall through to an empty key and `0.0000`, and a zero
                 //  volume is a CLAIM -- the same reason a port with no state is
@@ -221,8 +226,15 @@ int SizingPass::run(SimulationResult& result)
                           //  one-item unit prints the declared type, as always.
                           << std::setw(16) << (dims.equipmentTag.empty()
                                                   ? utype : dims.equipmentTag)
-                          << std::setw(12) << matName
-                          << std::setw(10) << sizeKey
+                          //  THE ITEM'S material, not the postDict word: a
+                          //  catalyst charge is built of no construction
+                          //  material and its sizer leaves the field empty,
+                          //  while the entry's `material` names the SHELL's.
+                          << std::setw(12) << (dims.material.empty() ? std::string("-")
+                                                                     : matName)
+                          //  20, not 10: `m_catalyst_kg [kg]` is the widest
+                          //  size word and ran into its value (measured).
+                          << std::setw(20) << sizeKey
                           << std::setw(12) << std::fixed << std::setprecision(4);
                 if (haveSize) std::cout << sizeVal; else std::cout << " ";
                 std::cout << std::setw(10) << std::fixed << std::setprecision(2) << t_mm

@@ -143,6 +143,13 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
             return it == c.factors.end() ? 0.0 : it->second;
         };
         const bool pw = (c.correlation == "power-law");
+        //  THE THIRD SHAPE (2026-09-26): a `declared-unit-price` row carries
+        //  the declared price in the `K1_or_CpRef` slot and zeros in the two
+        //  beside it.  The `correlation` column is what tells the three
+        //  shapes apart -- exactly as it already told K1 from Cp_ref in the
+        //  same slot -- so no column is added and every costs.csv already
+        //  written keeps its header.
+        const bool dp = (c.correlation == "declared-unit-price");
         //  THE OWNING UNIT, from the record; the ITEM is the column beside
         //  it.  The map key is the item id since a column realises five, and
         //  it is never split back apart here.
@@ -159,9 +166,9 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
           << "," << (c.correlation.empty() ? "(not stated)" : c.correlation)
           << "," << (c.sizeKey.empty() ? "(not stated)" : c.sizeKey)
           << "," << std::setprecision(6) << fac("S")
-          << "," << (pw ? fac("Cp_ref") : fac("K1"))
-          << "," << (pw ? fac("S_ref")  : fac("K2"))
-          << "," << (pw ? fac("n_exp")  : fac("K3"))
+          << "," << (dp ? fac("catalystPrice") : pw ? fac("Cp_ref") : fac("K1"))
+          << "," << (dp ? 0.0 : pw ? fac("S_ref")  : fac("K2"))
+          << "," << (dp ? 0.0 : pw ? fac("n_exp")  : fac("K3"))
           << "," << fac("B1") << "," << fac("B2")
           << "," << fac("F_M") << "," << fac("F_P")
           << "," << (c.material.empty() ? "(not stated)" : c.material)

@@ -45,14 +45,19 @@
   varying that duty would have every inner evaluation run away from the
   answer it was asked to hold still.
 
-  WHAT DOES NOT RUN UNDER THIS DRIVER, said plainly: `system/postDict` is
-  NOT applied to the representative pass (the sizing/costing chain is Layer
-  3 of the single-pass path only), so this case carries no postDict, no
-  vessel sheet and no cost.  Stage D sizes the BED; the vessel around it
-  stays stage C's, and a cost of stage D's converter would have to be built
-  from this run's own V_bed in a case of its own.  The balance REPORTS do run
-  on the representative pass (choupoSolve/main.cpp, Layer 3b), so the plant
-  first law and mass closure below are checked -- on that pass alone.
+  WHAT RUNS UNDER THIS DRIVER, said plainly.  The balance REPORTS run on the
+  representative pass (choupoSolve/main.cpp, Layer 3b), so the plant first
+  law and mass closure are checked -- on that pass alone.  Since 2026-09-26
+  `system/postDict` runs on that SAME pass (DesignSpec.cpp, the replay at
+  the design point, mirroring the optimisation driver's replay at its
+  optimum): this file used to say the chain was "Layer 3 of the single-pass
+  path only", and it was -- a designSpec stored the postDict and never read
+  it, while the run header announced post-processing as active.  So the bed
+  the engine sizes here is also the bed it COSTS: `system/postDict` reads
+  the solved V_R off the unit (a `pfr` sizer: shell + catalyst charge) and
+  its header says what is costed, what is not, and which two numbers are
+  author-set assumptions.  The run header's `postDict:` line states, for
+  every driver, whether and where the chain is applied.
 \*---------------------------------------------------------------------------*/
 
 type         designSpec;

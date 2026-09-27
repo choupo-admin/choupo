@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EquipmentSize.H"
+#include "CatalystBedSize.H"
 #include "ColumnSize.H"
 #include "CrystalliserSize.H"
 #include "CycloneSize.H"
@@ -89,6 +90,11 @@ void EquipmentSize::registerBuiltins()
     //  is a shell, a tray stack, a condenser, a reboiler and a reflux drum.
     registerType("distillationColumn",
         []{ return std::make_unique<ColumnSize>(); });
+    //  THE SECOND (2026-09-26): a plug-flow catalyst bed is a shell and a
+    //  catalyst charge.  The word is the UNIT type, as `distillationColumn`
+    //  and `crystalliser` are, because the sizer reads that unit's own KPI.
+    registerType("pfr",
+        []{ return std::make_unique<CatalystBedSize>(); });
 }
 
 } // namespace Choupo

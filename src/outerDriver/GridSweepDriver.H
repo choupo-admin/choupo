@@ -68,6 +68,13 @@ public:
     explicit GridSweepDriver(const DictPtr& outerDict);
 
     const std::string& type() const override { return type_; }
+    //  NOT honoured anywhere in `run()`, and this sentence says so rather
+    //  than letting the run header claim a chain that is not built: a grid
+    //  point's responses are read off the simulator result alone.
+    std::string postDictPolicy() const override
+    { return "NOT applied by the `gridSweep` driver -- no grid point runs"
+             " the sizing/costing chain, so a response naming a cost or"
+             " economics KPI is unreachable here"; }
     int                run () override;
 
     // One swept axis (public so the file-local reader helper can return it).

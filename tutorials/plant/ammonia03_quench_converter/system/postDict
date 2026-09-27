@@ -39,7 +39,13 @@
   vessel volume converts `unsized` into `falsely sized`; a CAPEX that quietly
   drops the reactor converts `uncosted` into `falsely costed`.  Neither a
   reader nor a gate can detect either.  For the loop appraisal, read
-  ammonia02 -- and read its 80 m3 knowing where it came from.
+  ammonia02 -- and read its 80 m3 knowing where it came from.  For the bed
+  that CAN be sized, read `ammoniaStaged04_kinetic` (2026-09-26): its
+  converter is a `pfr` whose volume a DesignSpec solves, and `type pfr` in
+  its postDict sizes that volume as a shell and a catalyst charge -- the
+  kinetic result this header says a bed's size must be.  The three beds
+  below are still equilibrium beds, still without a volume, and this file's
+  refusal is still right.
 
   WHAT IS SIZED: the two compressors (by shaft power), the two exchangers (by
   area) and the two drums (by vapour residence).  The interchanger is the one

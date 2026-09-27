@@ -1788,6 +1788,41 @@ DONE: the column schematic (task #134), deliberately after the cost rather than
 before it.  Record:
 [`docs/design/one-unit-five-items-the-column-gets-a-size.md`](docs/design/one-unit-five-items-the-column-gets-a-size.md).
 
+**A CATALYST BED IS SIZED BY ITS KINETICS, AND THE CHAIN NOW RUNS WHERE THE
+HEADER SAID IT DID (2026-09-26, commission C2).**  Rule: **a sizer for a
+RATING model READS the unit's own size and passes it through** -- the `pfr`
+sizer (`CatalystBedSize`, registered `pfr`) reads the bed's `V_R`, which is
+the outer driver's answer when a `designSpec` solves it, sizes the SHELL
+around it as a `vessel` on the EXISTING Guthrie set, and prices the CATALYST
+CHARGE as a SECOND ITEM only from a DECLARED bulk density and unit price
+(`declared-unit-price`: the case's own money, NO index, NO F_BM, NO 1.18 --
+said on the printed line so the two cost shapes can be told apart; absent
+either input the charge REFUSES BY NAME through the one INCOMPLETE home the
+trays use).  No Guthrie set was invented and the basis claims only what the
+pass can see (*read from the unit*; the sizing pass has no view of the outer
+driver).  **The trap, and the measurement that stopped the slice first:**
+the post-processing chain did NOT run on a `designSpec`'s representative
+pass -- the driver stored the postDict and never read it, `main.cpp` built
+the chain only in the single-pass branch, and the run header printed
+`post-processing active` over a run that sized nothing (the 2026-08-04
+banner trap, again).  Taken on a stated default (Vítor can reverse it): the
+chain runs on the replay at the design point, in the DRIVER (the
+optimisation driver already ran its own; a generic call in `main.cpp` would
+run it twice); `OuterDriver::postDictPolicy()` is PURE VIRTUAL so every
+driver states its own policy on the header and `gridSweep` says NOT applied;
+the postDict `dictAudit` runs under an outer driver too.  Blast radius
+measured, not argued: zero corpus cases carry both a `designSpec` and a
+`postDict`; `SizingPass` dispatches on the postDict entry's `type` word, and
+no postDict named `pfr`.  A declared price is a COST INPUT, not a size
+(`EquipmentSizing::costInputs`; money has no dimension `core/Units.cpp` can
+spell, and a factor is what the model computes).  The witness's two catalyst
+numbers are author-set assumptions declared in those words -- a citation
+invented for a round number converts unsourced into falsely sourced.  Gate:
+`check_design_sheet` arm (n) (5 by-hand sabotages; the first probe deleted a
+whole postDict line and took the entry's braces with it, refusing the RUN --
+a probe must remove the statement, not the line).  Record:
+[`docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md`](docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md).
+
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
 The doctrine says a check that cannot run must not PASS; the MIRROR is just as
 bad — **it must not FAIL either, it must REFUSE.**  `bin/drive-app` filed "no

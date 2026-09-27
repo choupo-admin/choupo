@@ -85,6 +85,12 @@ public:
     explicit ParetoSweepDriver(const DictPtr& outerDict);
 
     const std::string& type() const override { return type_; }
+    //  Honoured through the `OptimizationDriver` built per Pareto point,
+    //  which receives the same dict (`solveAt` in the .cpp).
+    std::string postDictPolicy() const override
+    { return "applied by the optimisation solved at each Pareto point (per"
+             " evaluation and at that point's optimum); there is no single"
+             " representative pass"; }
     int                run () override;
 
 private:

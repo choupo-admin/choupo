@@ -989,6 +989,37 @@ accepts today, and that is a policy call.
      refuses by name and the total says INCOMPLETE (the tray precedent).
      No Guthrie set is invented; that question stays Vitor's and is no
      longer on the path.  Dispatched as a general's brief the same turn.
+     **DONE 2026-09-26, on branch `claude/c2-converter-sizer`, and ONE
+     DEFAULT WAS TAKEN ON THE WAY -- TAKEN ON A STATED DEFAULT, 2026-09-26
+     (philosophy 4, DELEGATE-WITH-DEFAULT), and Vitor can reverse it.**  The
+     general measured first and stopped: the post-processing chain did NOT
+     run on a `designSpec`'s representative pass (the driver stored the
+     postDict and never read it; `main.cpp` built the chain only in the
+     single-pass branch) while the run header printed `post-processing
+     active` -- so a sizer for stage D would have run on nothing.  The
+     default: a declared file the run header announces as active must be
+     honoured or refused, never silently ignored, so the chain now runs on
+     the replay at the design point (`DesignSpec.cpp`, mirroring the
+     optimisation driver's replay at its optimum, in the DRIVER so the
+     optimisation driver does not run it twice).  Measured blast radius:
+     ZERO corpus cases carry both a `designSpec` and a `postDict`, so no
+     golden moves.  Same commit: `OuterDriver::postDictPolicy()` (pure
+     virtual; the run header's `postDict:` line now states what the LOADED
+     driver does with the file -- `gridSweep` says NOT applied), and the
+     postDict `dictAudit` runs under an outer driver too.  The slice itself:
+     `CatalystBedSize` registered `pfr` (shell as `vessel` on the existing
+     Guthrie set + `catalystCharge` at a DECLARED bulk density and unit
+     price, `declared-unit-price` -- no index, no F_BM, refused by name and
+     INCOMPLETE through the one existing home when either is absent);
+     witness `ammoniaStaged04_kinetic/system/postDict` (the two catalyst
+     numbers are author-set assumptions, said in those words); gate
+     `check_design_sheet` arm (n).  The 41 new `equipment` golden rows were
+     APPENDED by the commander on the integrated main (`--record-append`,
+     adds only): every one is a row of a NEW witness, no existing row moved,
+     and 15 of 15 corpus postDict cases were byte-identical against the
+     parent build -- an addition with nothing moved is within the
+     commander's authority; a MOVED row still goes to Vitor first.  Record:
+     `docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md`.
 
 **C3. Per-EQUATION citation audit of the Theory Guide (asked 2026-09-22;
      NOT DONE at the granularity asked).**  He asked which of the guide's
@@ -1440,8 +1471,10 @@ accepts today, and that is a policy call.
      report discards that same root and says so -- the plant first law is
      open by -22 274.7 kW (5.918 %), all of it on that unit, pinned in
      `check_energy_closure.KNOWN_OPEN` from the engine's own printed line.
-     Also found: under an outer driver the postDict chain does not run, so D
-     ships no vessel sheet and no cost, said in its outerDict.
+     Also found: under an outer driver the postDict chain did not run, so D
+     shipped no vessel sheet and no cost, said in its outerDict -- CLOSED
+     2026-09-26 under C2 (the chain runs on the designSpec's representative
+     pass; D now sizes and costs its bed).
 
 **C7. NO COMPETITOR IS NAMED IN THIS REPOSITORY (ruled 2026-09-24;
      PARTLY DONE, and the hardest part is not the scrub).**  Vítor:

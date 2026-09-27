@@ -182,6 +182,24 @@ struct EquipmentSizing
         return it == units.end() ? std::string() : it->second;
     }
 
+    //  A DECLARED PRICE THE COSTING MODEL READS (2026-09-26).  A catalyst
+    //  charge is priced from a unit price the CASE declares (`designRules {
+    //  catalystPrice ...; }`), and that number belongs to neither map above:
+    //  it is not a SIZE -- `values` carry a physical dimension the dict
+    //  grammar can spell, and money is not one (there is no `EUR/kg` in
+    //  `core/Units.cpp`, and inventing a currency dimension to fit a table is
+    //  the wrong end of the problem) -- and it is not a `CostBreakdown::
+    //  factors` entry, because a factor is what the MODEL computed and this
+    //  is what the AUTHOR declared.  It is carried here, keyed by the
+    //  designRules word it came from, in the costing currency the run
+    //  totals in, and the costing model that consumes it publishes it under
+    //  the same word in its `factors` so the provenance line and the sheet's
+    //  cost block show the number that priced the item.  It is NOT emitted
+    //  under the result JSON's `equipment.values` (which the golden
+    //  `equipment` kind pins as sizes) -- a declaration reaching the output
+    //  is pinned, if at all, through the cost total it produces.
+    std::map<std::string, scalar>                costInputs;
+
     //  WHICH RULE PRODUCED THE SIZE.  `VesselSize` computed exactly this
     //  string in three careful branches ("drum V = Q*tau", "catalyst V =
     //  Q/SV", "volume (author-set)") and then discarded it with `(void)basis`

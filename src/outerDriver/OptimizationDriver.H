@@ -99,6 +99,12 @@ public:
     explicit OptimizationDriver(const DictPtr& outerDict);
 
     const std::string& type() const override { return type_; }
+    //  Honoured in `run()` (both back-ends): per evaluation when the case
+    //  ships a postDict or the objective is a cost, and on the replay at the
+    //  optimum before `setFinalResult`.
+    std::string postDictPolicy() const override
+    { return "applied per evaluation AND on the REPRESENTATIVE pass (the"
+             " replay at the optimum), before the reports"; }
     int                run () override;
 
     // ---- Programmatic hooks (the paretoSweep driver, forum #102.6/#103) --

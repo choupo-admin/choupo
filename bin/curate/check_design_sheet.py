@@ -135,6 +135,32 @@ WHAT THIS CHECKS:
       `SHEET_UNIT_WORDS_UNPARSEABLE` with remedy and blocker, and
       the stale-pin half fails if either stops appearing.
 
+  (n) A CATALYST BED IS SIZED FROM ITS OWN KINETIC VOLUME, AND ITS CHARGE
+      IS PRICED ONLY FROM WHAT THE CASE DECLARES (2026-09-26).  On
+      `ammoniaStaged04_kinetic` -- a `pfr` whose `V_R` a designSpec SOLVES,
+      the first case where the post-processing chain runs on an outer
+      driver's representative pass -- the converter's `shell` sheet carries
+      the SAME `V_R` the unit's own KPI publishes in the result JSON (to the
+      sheet's own printed precision); its `catalystCharge` sheet's mass is
+      RECOMPUTED here as V_R x the `catalystBulkDensity` read from the case
+      postDict; its purchased cost is RECOMPUTED as that mass x the declared
+      `catalystPrice`, and equals its bare-module and total-module costs (no
+      index, no F_BM), while the shell's total-module cost EXCEEDS its
+      purchased cost -- the two cost SHAPES told apart on the numbers, and
+      the provenance row names `declared-unit-price`.  Then two copies of
+      the case are run from a temp directory: one WITHOUT `catalystPrice`,
+      which must REFUSE the charge by name (`catalystPrice` in the FAILED
+      line), keep the shell costed, and print `TOTALS (EUR) -- INCOMPLETE`
+      naming `converter/catalystCharge` (the tray precedent, ONE home); one
+      WITHOUT `catalystBulkDensity`, whose charge sheet must publish NO mass,
+      state `mass not derivable` in its basis, and refuse at cost time
+      naming the density.  Sabotage-verified BY HAND, restored with `cp`;
+      the five sabotages and their observed lines are in the arm's own
+      docstring (`check_catalyst_bed`).
+      NOT CHECKED: whether 2500 kg/m3 or 15 EUR/kg are sensible -- they are
+      the case's declared assumptions (its header says so in those words)
+      and this arm only proves they reached the arithmetic unchanged.
+
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
@@ -185,6 +211,7 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 import sys
 from pathlib import Path
 
@@ -203,6 +230,12 @@ FLAT    = "tutorials/steady/flowsheets/process02_with_design"
 #  they carry realises exactly one item -- so without this one the sibling
 #  sheets would be written and checked by nothing.
 COLUMN  = "tutorials/steady/distillation/column09_tray_hydraulics"
+#  THE KINETIC-BED WITNESS (2026-09-26).  A `pfr` sized as a shell and a
+#  catalyst charge, from a volume a `designSpec` solved -- the first case in
+#  the corpus where the post-processing chain runs on an outer driver's
+#  representative pass at all, and the only one whose second item is priced
+#  from a DECLARED unit price rather than a Turton correlation.
+KINETIC = "tutorials/plant/ammoniaStaged04_kinetic"
 
 TOL = 1.0e-6      # relative, between two projections of the same number
 
@@ -1082,6 +1115,243 @@ def check_column_items(problems, notes):
         notes.append("trays sized, NOT costed, and the total says INCOMPLETE")
 
 
+def _sig_digits(tok: str) -> int:
+    """Significant digits of a printed decimal token, so a comparison can be
+    made at the coarser surface's OWN precision instead of a tolerance
+    somebody typed."""
+    m = tok.lower().split("e")[0].lstrip("-+").replace(".", "").lstrip("0")
+    return max(len(m), 1)
+
+
+def _run_copy(src: Path, edit):
+    """Run a COPY of a case whose postDict `edit` rewrites, from a temp
+    directory the arm owns.  The copy is the probe surface: the shipped case
+    stays exactly as shipped, and `design/` is regenerated whole by the run,
+    so the probe is the DECLARATION and never a sheet edited beforehand."""
+    tmp = Path(tempfile.mkdtemp(prefix="design_sheet_n_"))
+    dst = tmp / src.name
+    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+        "design", "reports", "converged", "postProcessing"))
+    pd = dst / "system" / "postDict"
+    pd.write_text(edit(pd.read_text(errors="replace")))
+    proc = subprocess.run([str(ROOT / "choupoSolve"), str(dst)],
+                          capture_output=True, text=True)
+    return dst, proc.returncode, proc.stdout, proc.stderr
+
+
+def check_catalyst_bed(problems, notes):
+    """(n) -- see the module docstring.  The RECOMPUTATIONS are the point: a
+    golden pins what the run PRINTS, and only a recomputation from the
+    DECLARATION (the postDict's density and price) and from the unit's OWN
+    KPI can see a shell sized on a volume that is not the bed's, or a charge
+    priced through an index the case never asked for.
+
+    SABOTAGES, BY HAND, each restored with `cp` and the engine rebuilt:
+      S1  CatalystBedSize.cpp: the shell's V_R set to 1.01 x the KPI.
+      S2  Guthrie.cpp: the missing-price refusal replaced by price = 0.
+      S3  Guthrie.cpp: Cp multiplied by cepci_/cepci2001_ for the charge.
+      S4  Guthrie.cpp: C_BM = Cp x (2.25 + 1.82) and C_TM = 1.18 C_BM for
+          the charge (the vessel factors applied to a catalyst).
+      S5  CatalystBedSize.cpp: m_catalyst = V_R x rho / 1000.
+    OBSERVED, each with the shipped case and both probe copies re-run:
+      S1  FAILED -- "the shell sheet says V_R = 7.0597241 m3 while the
+          unit's own KPI is 6.98982587075 m3".
+      S2  FAILED, three lines -- the charge is not refused BY NAME, the
+          total is not marked INCOMPLETE, and the charge sheet still carries
+          a `cost {}` block (costed at 0: a zero is a claim).
+      S3  FAILED -- "costed at 541403.39, not price x mass = 15 x 17474.565
+          = 262118.47".
+      S4  FAILED -- "bareModule / totalModule (1066822.2 / 1258850.2)
+          differ from its purchased cost 262118.47".
+      S5  FAILED -- "m_catalyst_kg = 17.474565, but V_R x the case's own
+          catalystBulkDensity (6.98982587075 x 2500) is 17474.564677 kg".
+    All five restored with `cp` (md5 verified) and the engine rebuilt; the
+    gate then returned OK.  Also paid for: the FIRST version of the price
+    probe deleted the whole `catalystPrice` LINE, which carried the entry's
+    closing braces, so the copy refused the RUN with a parse error and the
+    arm reported the engine broken -- the probe removes the STATEMENT now.
+    """
+    rc, out, err = run_case(KINETIC)
+    if rc != 0:
+        problems.append("check_design_sheet(n): %s failed (rc=%d).\n    %s"
+                        % (KINETIC, rc, err.strip()[:300]))
+        return
+
+    base = ROOT / KINETIC / "design" / "converter"
+    got = sorted(p.name for p in base.iterdir()) if base.is_dir() else []
+    if got != ["catalystCharge", "shell"]:
+        problems.append(
+            "check_design_sheet(n): %s writes %s under design/converter/, not "
+            "the two items a catalyst bed realises (catalystCharge, shell)."
+            % (KINETIC, got or "nothing"))
+        return
+    shell_txt  = (base / "shell").read_text(errors="replace")
+    charge_txt = (base / "catalystCharge").read_text(errors="replace")
+    shell, charge = parse_sheet(shell_txt), parse_sheet(charge_txt)
+
+    #  ---- the unit's OWN V_R, off the result JSON, as a printed token -----
+    kpiLine = ""
+    for line in out.splitlines():
+        if '"converter": {' in line:
+            kpiLine = line
+            break
+    m = re.search(r'"V_R": *(-?[0-9][0-9.eE+-]*)', kpiLine)
+    if not m:
+        problems.append("check_design_sheet(n): the run publishes no V_R KPI "
+                        "for `converter`, so the bed volume cannot be held to "
+                        "anything.")
+        return
+    V_kpi = float(m.group(1))
+    sheet_tok = re.search(r'^\s*V_R\s+([-\d.eE+]+)', shell_txt, re.M)
+    sv = shell["sizing"].get("V_R", (None, ""))
+    if sv[0] is None or sheet_tok is None:
+        problems.append("check_design_sheet(n): the shell sheet publishes no V_R.")
+        return
+    #  Compared at the SHEET's own printed precision (8 significant digits
+    #  today; read off the token, never assumed), the coarser of the two.
+    tol = 10.0 ** (-(_sig_digits(sheet_tok.group(1)) - 1))
+    if not close(sv[0], V_kpi, tol) or sv[1] != "m3":
+        problems.append(
+            "check_design_sheet(n): the shell sheet says V_R = %s %s while the "
+            "unit's own KPI is %.12g m3 -- the sizer must READ the bed volume "
+            "the unit integrated (here: the designSpec's answer), never "
+            "rebuild or rescale it." % (sv[0], sv[1], V_kpi))
+    if "read from the unit" not in shell_txt:
+        problems.append("check_design_sheet(n): the shell's basis does not say "
+                        "the volume was READ FROM THE UNIT -- a pass-through "
+                        "that does not say it is one reads as a derivation.")
+
+    #  ---- the charge: mass and price RECOMPUTED from the DECLARATION ------
+    post = (ROOT / KINETIC / "system" / "postDict").read_text(errors="replace")
+    post_nc = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', post, flags=re.S))
+    dens = re.search(r'\bcatalystBulkDensity\s+([0-9.eE+-]+)', post_nc)
+    price = re.search(r'\bcatalystPrice\s+([0-9.eE+-]+)', post_nc)
+    if not dens or not price:
+        problems.append("check_design_sheet(n): the witness postDict declares "
+                        "no catalystBulkDensity / catalystPrice, so nothing "
+                        "here can be recomputed -- this arm CANNOT RUN and "
+                        "must not pass.")
+        return
+    rho, pr = float(dens.group(1)), float(price.group(1))
+    m_sheet = charge["sizing"].get("m_catalyst_kg", (None, ""))
+    if m_sheet[0] is None or m_sheet[1] != "kg":
+        problems.append("check_design_sheet(n): the charge sheet publishes no "
+                        "m_catalyst_kg in kg.")
+        return
+    if not close(m_sheet[0], V_kpi * rho, 1.0e-6):
+        problems.append(
+            "check_design_sheet(n): the charge sheet says m_catalyst_kg = %s, "
+            "but V_R x the case's own catalystBulkDensity (%.12g x %g) is "
+            "%.6f kg." % (m_sheet[0], V_kpi, rho, V_kpi * rho))
+    c = charge["cost"]
+    if not c:
+        problems.append("check_design_sheet(n): the charge sheet carries no "
+                        "`cost {}` block although the case declares a price.")
+    else:
+        want = pr * m_sheet[0]
+        if not close(c.get("purchased", 0.0), want, 1.0e-6):
+            problems.append(
+                "check_design_sheet(n): the charge is costed at %s, not "
+                "price x mass = %g x %s = %.2f.  A declared unit price is the "
+                "case's money and no index or factor may touch it."
+                % (c.get("purchased"), pr, m_sheet[0], want))
+        if not (close(c.get("bareModule", -1.0), c.get("purchased", 0.0), 1e-12)
+                and close(c.get("totalModule", -1.0), c.get("purchased", 0.0), 1e-12)):
+            problems.append(
+                "check_design_sheet(n): the charge's bareModule / totalModule "
+                "(%s / %s) differ from its purchased cost %s -- a module factor "
+                "or the 1.18 was applied to a catalyst charge."
+                % (c.get("bareModule"), c.get("totalModule"), c.get("purchased")))
+    sc = shell["cost"]
+    if not sc or not sc.get("totalModule", 0.0) > sc.get("purchased", 0.0):
+        problems.append("check_design_sheet(n): the shell's total-module cost "
+                        "does not exceed its purchased cost -- the vessel shape "
+                        "(F_BM, 1.18) is what tells it from the charge, and it "
+                        "is not there.")
+    if not re.search(r'converter/catalystCharge\s+declared-unit-price\b', out):
+        problems.append("check_design_sheet(n): the costing provenance table "
+                        "does not name the charge's shape `declared-unit-price` "
+                        "-- a reader cannot tell the declared price from a "
+                        "Turton correlation on the printed line.")
+    if not re.search(r'converter/catalystCharge[^\n]*DECLARED', out):
+        problems.append("check_design_sheet(n): the charge's provenance row "
+                        "does not say the price was DECLARED.")
+    notes.append("catalyst bed: V_R %.4f m3 read from the unit, %.1f kg x %g "
+                 "EUR/kg recomputed" % (V_kpi, m_sheet[0], pr))
+
+    #  ---- WITHOUT a price: refused by name, total INCOMPLETE --------------
+    #  The probe deletes the STATEMENT and nothing else: the first cut took
+    #  the whole line, and with it the entry's closing braces, so the copy
+    #  refused the RUN with a parse error -- the probe broken, not the engine.
+    src = ROOT / KINETIC
+    dst, rc2, out2, err2 = _run_copy(
+        src, lambda t: re.sub(r'\bcatalystPrice\s+[^;]*;', '', t))
+    if rc2 != 0:
+        problems.append("check_design_sheet(n): the copy without catalystPrice "
+                        "failed (rc=%d) -- a missing price must refuse the "
+                        "ITEM, never the run.\n    %s" % (rc2, err2.strip()[:300]))
+    else:
+        both = out2 + err2
+        if not re.search(r'converter/catalystCharge\s+FAILED:[^\n]*catalystPrice', both):
+            problems.append("check_design_sheet(n): without catalystPrice the "
+                            "charge is not refused BY NAME (no FAILED line "
+                            "naming `catalystPrice`).")
+        if "TOTALS (EUR) -- INCOMPLETE" not in out2 or \
+           not re.search(r'could not be costed:[^\n]*converter/catalystCharge', out2):
+            problems.append("check_design_sheet(n): without catalystPrice the "
+                            "costing total is not marked INCOMPLETE naming "
+                            "`converter/catalystCharge` -- a total that omits "
+                            "the charge and does not say so reads as complete.")
+        sh2 = dst / "design" / "converter" / "shell"
+        if not sh2.is_file() or not parse_sheet(sh2.read_text(errors="replace"))["cost"]:
+            problems.append("check_design_sheet(n): without catalystPrice the "
+                            "SHELL lost its cost too -- one refused item must "
+                            "not cost the other.")
+        ch2 = dst / "design" / "converter" / "catalystCharge"
+        if ch2.is_file() and parse_sheet(ch2.read_text(errors="replace"))["cost"]:
+            problems.append("check_design_sheet(n): without catalystPrice the "
+                            "charge sheet still carries a `cost {}` block.")
+    shutil.rmtree(dst.parent, ignore_errors=True)
+
+    #  ---- WITHOUT a density: no mass, said in the basis, refused at cost --
+    dst, rc3, out3, err3 = _run_copy(
+        src, lambda t: re.sub(r'\bcatalystBulkDensity\s+[^;]*;', '', t))
+    if rc3 != 0:
+        problems.append("check_design_sheet(n): the copy without "
+                        "catalystBulkDensity failed (rc=%d).\n    %s"
+                        % (rc3, err3.strip()[:300]))
+    else:
+        ch3 = dst / "design" / "converter" / "catalystCharge"
+        t3 = ch3.read_text(errors="replace") if ch3.is_file() else None
+        if t3 is None:
+            problems.append("check_design_sheet(n): without catalystBulkDensity "
+                            "no charge sheet is written -- the item exists, "
+                            "its mass does not, and the sheet must say which.")
+        else:
+            s3 = parse_sheet(t3)
+            if "m_catalyst_kg" in s3["sizing"]:
+                problems.append("check_design_sheet(n): without a density the "
+                                "charge still publishes a mass -- from what?")
+            if "mass not derivable" not in t3:
+                problems.append("check_design_sheet(n): without a density the "
+                                "charge's basis does not say `mass not "
+                                "derivable`.")
+            if s3["cost"]:
+                problems.append("check_design_sheet(n): without a density the "
+                                "charge is costed anyway.")
+        if not re.search(r'converter/catalystCharge\s+FAILED:[^\n]*catalystBulkDensity',
+                         out3 + err3):
+            problems.append("check_design_sheet(n): without catalystBulkDensity "
+                            "the charge is not refused at cost time naming the "
+                            "density.")
+        if "TOTALS (EUR) -- INCOMPLETE" not in out3:
+            problems.append("check_design_sheet(n): without catalystBulkDensity "
+                            "the total is not marked INCOMPLETE.")
+    shutil.rmtree(dst.parent, ignore_errors=True)
+    notes.append("charge refused by name without a price and without a "
+                 "density; total INCOMPLETE both times")
+
+
 def main() -> int:
     problems, notes = [], []
 
@@ -1099,6 +1369,7 @@ def main() -> int:
         problems.append("%s: no sheet was checked at all -- the 1:N address "
                         "is then exercised by nothing." % COLUMN)
     check_column_items(problems, notes)
+    check_catalyst_bed(problems, notes)
 
     check_ignored(problems)
     check_refusal(problems)
@@ -1118,7 +1389,13 @@ def main() -> int:
           "condenser, reboiler, reflux drum -- whose two exchanger areas, "
           "tower height, per-section diameters and swage gap are RECOMPUTED "
           "here from the case declaration and the run KPIs, and whose tray "
-          "stack is sized, uncosted and named INCOMPLETE on the total), each "
+          "stack is sized, uncosted and named INCOMPLETE on the total) and on "
+          "the kinetic-bed witness (one `pfr`, two items: the SHELL's V_R is "
+          "the unit's own solved KPI to the sheet's printed precision, the "
+          "CHARGE's mass and price are RECOMPUTED from the case's declared "
+          "density and unit price with no index and no module factor, and two "
+          "copies run without the price and without the density each refuse "
+          "the charge BY NAME and mark the total INCOMPLETE), each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
           "sector, NO extra level where it does not); every `sizing {}` entry "

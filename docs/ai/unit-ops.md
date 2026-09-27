@@ -1915,7 +1915,11 @@ objective  { kind kpi; path units[0].V_strip;  sense minimize; }
 report     { file opt_history.csv; }
 ```
 `objective.kind` can be `kpi`, `stream`, `cost`, `costTotal` (the last
-two run the postDict chain on each evaluation).
+two run the postDict chain on each evaluation).  Whether and where a
+`system/postDict` is applied is the loaded driver's own statement, printed on
+the run header's `postDict:` line: `optimization` and `designSpec` run the
+chain on their representative pass (the replay at the answer; `designSpec`
+since 2026-09-26), `sweep` per converged point, `gridSweep` not at all.
 
 ### `designSpec`  (Newton on `$variables` against targets)
 ```

@@ -117,6 +117,12 @@ public:
     explicit DesignSpec(const DictPtr& outerDict);
 
     const std::string& type() const override { return type_; }
+    //  Honoured in `run()`: the chain is built from `postDict_` and run on
+    //  the replay at the design point, before `setFinalResult`, exactly as
+    //  `OptimizationDriver` does at its optimum.
+    std::string postDictPolicy() const override
+    { return "applied on the REPRESENTATIVE pass (the replay at the"
+             " design point), before the reports"; }
     int                run () override;
 
 private:
