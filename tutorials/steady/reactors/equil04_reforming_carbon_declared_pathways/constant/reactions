@@ -1,0 +1,66 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Reaction library for a steam reformer that can form carbon.  Stoichiometry
+  only: each Kp(T) comes from the species' standardThermochemistry (K =
+  exp(-dG/RT)); graphite enters it through its pure-solid standard potential,
+  at activity one.  Balanced by atom count (C, H, O):
+      steamReforming    CH4 + H2O  <->  CO + 3 H2     C 1=1  H 6=6  O 1=1
+      waterGasShift     CO + H2O   <->  CO2 + H2      C 1=1  H 2=2  O 2=2
+      methaneCracking   CH4        <->  C(gr) + 2 H2  C 1=1  H 4=4
+      boudouard         2 CO       <->  C(gr) + CO2   C 2=2  O 2=2
+  Six species over three elements admit THREE independent reactions, so the
+  four are not independent: boudouard = methaneCracking - steamReforming +
+  waterGasShift.  A unit that declares all four is refused, naming boudouard
+  as the reaction the other three already span.  Which of them a reactor may
+  use is declared by the unit's `reactions ( ... );` list, not here: a
+  library entry is a pathway that EXISTS; the list says which ones are OPEN.
+\*---------------------------------------------------------------------------*/
+
+steamReforming          // CH4 + H2O <-> CO + 3 H2
+{
+    stoichiometry
+    (
+        { component CH4;    nu -1; }
+        { component water;  nu -1; }
+        { component CO;     nu  1; }
+        { component H2;     nu  3; }
+    );
+}
+
+waterGasShift           // CO + H2O <-> CO2 + H2
+{
+    stoichiometry
+    (
+        { component CO;     nu -1; }
+        { component water;  nu -1; }
+        { component CO2;    nu  1; }
+        { component H2;     nu  1; }
+    );
+}
+
+methaneCracking         // CH4 <-> C(gr) + 2 H2
+{
+    stoichiometry
+    (
+        { component CH4;       nu -1; }
+        { component graphite;  nu  1; }
+        { component H2;        nu  2; }
+    );
+}
+
+boudouard               // 2 CO <-> C(gr) + CO2
+{
+    stoichiometry
+    (
+        { component CO;        nu -2; }
+        { component graphite;  nu  1; }
+        { component CO2;       nu  1; }
+    );
+}

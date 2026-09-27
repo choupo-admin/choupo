@@ -1,0 +1,126 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  equil04_reforming_carbon_declared_pathways  --  a reformer that cokes at
+                                                  equilibrium, and a declared
+                                                  list that says it does not.
+
+  The third of the declared-pathways witnesses (equil02 methanol, equil03
+  ammonia oxidation), and the one with a SOLID.  Methane and steam at a
+  steam-to-carbon ratio of 1.0, 900 K, 1 bar, ideal gas, go to three
+  equilibrium reactors side by side; every gas answer is read as MOLE
+  FRACTIONS of the fluid and every solid answer per mole of methane fed, so
+  the split is bookkeeping.
+
+    gibbs     gibbsReactor over EVERY species (CH4 water CO CO2 H2
+              graphite): no reaction declared, the minimum of G under the
+              C, H and O balances, graphite given its own pure-solid phase.
+    complete  equilibriumReactor over a COMPLETE set of independent
+              reactions for six species over three elements (6 - 3 = 3):
+                  steamReforming    CH4 + H2O  <->  CO + 3 H2
+                  waterGasShift     CO + H2O   <->  CO2 + H2
+                  methaneCracking   CH4        <->  C(gr) + 2 H2
+              Boudouard (2 CO <-> C(gr) + CO2) is NOT added: it is
+              cracking - reforming + shift, and a fourth reaction would be
+              refused as linearly dependent.  Declaring it IN PLACE of
+              cracking gives the same outlet -- an equilibrium does not care
+              which route reaches it.
+    declared  equilibriumReactor over reforming and the shift ONLY:
+              Boudouard and methane cracking are left OUT, and with them
+              every pathway to carbon.
+
+  THE PREMISE IS YOURS.  Leaving the carbon routes out states that, over
+  the catalyst this reactor carries, carbon does not form at these
+  conditions.  That is kinetic knowledge; the engine cannot check it and does
+  not try.  It does NOT say carbon cannot form thermodynamically -- the
+  outlet says the opposite, and says how much the premise is asserting.
+
+  WHAT THE THREE ANSWERS SHOW (measured with this case, 2026-09-27):
+    gibbs      graphite DEPOSITS: 0.2168 mol per mol of methane fed (21.7 %
+               of the carbon).  The solid-free gas had carbon activity
+               a = 1.580 > 1, so it was not the minimum of G.  Gas left:
+               y_CH4 0.1146, y_H2O 0.1374, y_CO 0.0923, y_CO2 0.0476,
+               y_H2 0.6081.
+    complete   the SAME outlet, gas and graphite, to the printed digits
+               (a solid participant: absent in the first solve, activity
+               1.580 read off it, then present at activity 1).
+    declared   NO graphite, and the gas is the solid-free equilibrium:
+               y_CH4 0.1568, y_H2O 0.1056, y_CO 0.1204, y_CO2 0.0512,
+               y_H2 0.5660.  Its carbon activity is published,
+               activity_graphite = 1.580: the outlet is SUPERSATURATED in
+               carbon, a metastable state the declared list asserts.
+               Recompute it by hand, by either route the list leaves out:
+                 a_C = Kp_crack * p_CH4 / p_H2^2      (p in bar)
+                     = Kp_boud  * p_CO^2 / p_CO2
+               with Kp_crack = 3.2283 and Kp_boud = 5.5887 at 900 K -- both
+               give 1.580, because reforming and the shift are the complete
+               set for the five gases, so the gas is fully equilibrated.
+  Raise the steam to S/C 3.0 and a_C falls to 0.294: carbon is absent
+  everywhere and the three reactors agree -- the declared list then costs
+  nothing.
+
+  NOT here, and said: any rate (whisker and encapsulating carbon and their
+  kinetics are not modelled), a second solid, a solid in the feed (refused
+  by name), non-ideal fugacities, and any reactor that is not isothermal.
+  Record: docs/design/a-solid-in-a-declared-reaction-set.md.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        split;
+        type        splitter;
+        in          feed;
+        outputs     ( feedGibbs feedDeclared feedComplete );
+        operation   { fractions ( 0.5 0.25 0.25 ); }
+    }
+    {
+        name        gibbs;
+        type        gibbsReactor;
+        in          feedGibbs;
+        outputs     ( outGibbs );
+        operation
+        {
+            T          900 K;
+            P          1 bar;
+            elements   ( C  H  O );
+            species
+            (
+                { name  CH4;       atoms  ( 1  4  0 ); }
+                { name  water;     atoms  ( 0  2  1 ); }
+                { name  CO;        atoms  ( 1  0  1 ); }
+                { name  CO2;       atoms  ( 1  0  2 ); }
+                { name  H2;        atoms  ( 0  2  0 ); }
+                { name  graphite;  atoms  ( 1  0  0 ); }
+            );
+        }
+    }
+    {
+        name        declared;
+        type        equilibriumReactor;
+        in          feedDeclared;
+        outputs     ( outDeclared );
+        operation
+        {
+            T          900 K;
+        }
+        reactions   ( steamReforming waterGasShift );   // Boudouard and cracking EXCLUDED
+    }
+    {
+        name        complete;
+        type        equilibriumReactor;
+        in          feedComplete;
+        outputs     ( outComplete );
+        operation
+        {
+            T          900 K;
+        }
+        reactions   ( steamReforming waterGasShift methaneCracking );
+    }
+);

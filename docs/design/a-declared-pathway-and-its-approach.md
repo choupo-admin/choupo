@@ -45,8 +45,11 @@ temperature as the second knob, one cross-link from `equilibrium-landscapes`.
   **Superseded in part 2026-09-27 (commission C14, slice 1):**
   `components/graphite.dat` now exists (NASA TM-4513, public domain,
   `referenceState pureSolid;`) and the `gibbsReactor` carries a pure-solid
-  phase (`GibbsMethod::solve`, witness `gibbs11_carbon_deposition`).  The
-  `equilibriumReactor` still has none -- that is C14 slice 2.
+  phase (`GibbsMethod::solve`, witness `gibbs11_carbon_deposition`).
+  **And in full the same day (C14 slice 2):** the `equilibriumReactor`
+  carries the same phase, and the carbon-forming reformer witness this
+  bullet could not build is `equil04_reforming_carbon_declared_pathways`
+  (record [`a-solid-in-a-declared-reaction-set.md`](a-solid-in-a-declared-reaction-set.md)).
 * The Ostwald candidate (4 NH3 + 5 O2 → 4 NO + 6 H2O declared; 4 NH3 + 3 O2
   → 2 N2 + 6 H2O excluded; both balanced N/H/O by atom count) runs under
   `gibbsReactor` at 1100 K, 1 bar, 10 % NH3 in air: N2 as expected, NO
@@ -207,7 +210,8 @@ is why arm (c) exists.
 
 An adiabatic `equilibriumReactor`; any Kp beyond the ideal-gas rung
 (fugacity coefficients at 50 bar); carbon deposition (§2 -- in the
-`gibbsReactor` since 2026-09-27, C14; in this reactor, C14 slice 2); the Ostwald
+`gibbsReactor` since 2026-09-27, C14; in this reactor too since C14 slice 2 the
+same day, see [`a-solid-in-a-declared-reaction-set.md`](a-solid-in-a-declared-reaction-set.md)); the Ostwald
 witness (§2) and a diagnosis of the complete set's stall at 500 K -- BOTH
 DONE the same day, see
 [`an-equilibrium-that-runs-to-completion.md`](an-equilibrium-that-runs-to-completion.md); the duty of

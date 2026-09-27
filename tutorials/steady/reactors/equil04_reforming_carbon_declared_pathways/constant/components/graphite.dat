@@ -1,0 +1,84 @@
+// [imported] origin "data/standards/components/graphite.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: GRAPHITE -- solid carbon, C(gr).  CAS 7782-42-5.
+
+  The REFERENCE STATE of the element carbon: its formation enthalpy is
+  ZERO BY DEFINITION at 298.15 K and 1 bar, so dHf_298 below is not a
+  measurement but the convention every other carbon-bearing record in the
+  catalogue is referenced to.  Modelled NON-VOLATILE (`role nonvolatile;`):
+  it never enters the vapour, and in a Gibbs reactor it is its OWN pure
+  phase (activity 1), never a member of the gas mixture.  No volatility{}
+  block is declared: no vapour-pressure source was read for this record,
+  so the engine announces the class as unknown rather than being told it.  This is the carbon a steam reformer deposits when the
+  steam-to-carbon ratio is too low (coking), and the carbon of the
+  Boudouard reaction (2 CO = C + CO2) and of methane cracking
+  (CH4 = C + 2 H2).
+
+  NOT to be confused with `C.dat`, which is ATOMIC carbon GAS
+  (dHf_298 = +716.7 kJ/mol, a flame radical).  The alias `carbon` below
+  resolves HERE, deliberately: a student who writes "carbon" in a reformer
+  means the solid, and the exact name `C` still reaches the atomic gas.
+
+  PRIMARY (the whole record, one coherent source):
+    McBride, B.J., Gordon, S. & Reno, M.A., "Coefficients for Calculating
+    Thermodynamic and Transport Properties of Individual Species",
+    NASA TM-4513 (1993), Table II, entry `C(gr)` (date code X 4/83,
+    reference McBride (1993); the fit's own data column reads TRC 4/83).
+    A U.S. Government work -- PUBLIC DOMAIN (17 U.S.C. 105).  Retrieved
+    from the NASA Technical Reports Server, document 19940013151.
+
+  TRANSCRIPTION (2026-09-27): read from the PAGE IMAGE, not from the PDF's
+  text layer.  The text layer is OCR and got five of the sixteen numbers
+  wrong (Thigh read 8000 for 5000; a3/a5 of the high range and a6/a7 of the
+  low range each had one digit changed).  What was checked, all against
+  the coefficients themselves (no second source needed for these):
+    * H(298.15) from the low range = -1.5e-6 J/mol (the element reference: 0)
+    * Cp/R, H/RT and S/R continuous at the 1000 K breakpoint to 1e-9
+    * the OCR digits break both checks by five orders of magnitude more
+      (H298 = -0.249 J/mol; Cp/R and S/R jump by 1e-4 and 5e-5 at 1000 K),
+      so the checks discriminate a mis-transcription from rounding.
+  Derived from the transcribed coefficients (the SAME arithmetic the NASA7
+  model runs): Cp(298.15) = 8.528 J/(mol K), S(298.15) = 5.734 J/(mol K),
+  Cp(1000) = 21.62, Cp(2000) = 25.17 J/(mol K).
+\*---------------------------------------------------------------------------*/
+
+name        graphite;
+formula     C;
+CAS         7782-42-5;
+
+MW          12.011;            // kg/kmol  [NASA TM-4513 Table II, C(gr)]
+
+reviewStatus interim;          // transcribed and self-checked; not yet read back by a curator
+
+role        nonvolatile;       // never goes to the vapour (K = 0)
+
+// Friendly-name aliases -- resolved to this file via the generated ALIASES index.
+// `C` is NOT an alias: it is the exact name of the atomic-gas record.
+aliases ( carbon solidCarbon );
+
+standardThermochemistry
+{
+    dHf_298   0.0;             // J/mol  the element's reference state (by definition)
+    s_298     5.734;           // J/(mol*K) third-law, from TM-4513's own a7 (low range)
+    referenceState     pureSolid;
+}
+
+//  The NASA 7-coefficient form, Cp/R = a1 + a2 T + a3 T^2 + a4 T^3 + a5 T^4,
+//  two ranges meeting at 1000 K.  a6 and a7 are the fit's own enthalpy and
+//  entropy constants: carried so the card is transcribed WHOLE and checkable,
+//  and NOT read by the engine (the datum lives above, once).
+solidHeatCapacity
+{
+    model    NASA7;
+    low      ( -3.10872072e-01  4.40353686e-03  1.90394118e-06 -6.38546966e-09  2.98964248e-12 -1.08650794e+02  1.11382953e+00 );
+    high     (  1.45571829e+00  1.71702216e-03 -6.97562786e-07  1.35277032e-10 -9.67590652e-15 -6.95138814e+02 -8.52583033e+00 );
+    Tlow     200.0;
+    Tcommon  1000.0;
+    Thigh    5000.0;
+}
+
+provenance
+{
+    standardThermochemistry { origin literature; method "dHf_298 = 0 by definition (reference state of the element); s_298 = the third-law S(298.15) implied by NASA TM-4513 (1993) Table II C(gr) low-range a7 (TRC 4/83)"; }
+    solidHeatCapacity { origin literature; method "NASA TM-4513 (McBride, Gordon & Reno 1993) Table II C(gr), NASA-7, 200-1000-5000 K, transcribed from the page image"; }
+}

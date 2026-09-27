@@ -340,7 +340,28 @@ Examples: `tutorials/steady/reactors/equil01_reforming` (SMR + water-gas-shift t
 equilibria: Gibbs over every species makes methane, the declared list without methanation
 makes methanol, the complete list reproduces Gibbs);
 `tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways` (ammonia in air:
-Gibbs burns it to N2, the NO route declared alone makes NO, its NH3 left at 1e-14).
+Gibbs burns it to N2, the NO route declared alone makes NO, its NH3 left at 1e-14);
+`tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways` (a reformer that
+cokes: see below).
+
+**A PURE SOLID IN A DECLARED REACTION (2026-09-27, C14).**  A reaction may name a
+component whose record declares `referenceState pureSolid;` -- `graphite` in methane
+cracking (`CH4 <-> C(gr) + 2 H2`) or Boudouard (`2 CO <-> C(gr) + CO2`).  The solid is
+its own phase: activity 1, no mole fraction, it leaves ln Q and enters ln Kp through its
+pure-solid standard potential, and its amount may be zero.  The phase set is decided as
+the `gibbsReactor` decides it: the declared set is solved with the solid ABSENT, the
+activity that leaves is read, and the solid APPEARS (the set re-solved with it present,
+at activity 1) only where that activity exceeds 1; both verdicts are printed, logged and
+published in the `gibbsReactor`'s own KPIs (`n_solid_<name>_mol_s`, `activity_<name>`,
+`F_solid_kmol_h`), and the deposit leaves in the outlet's solid phase, priced on the
+solid rung.  A pure-solid COMPONENT that no declared reaction touches cannot form; its
+activity is still read off the outlet's element potentials and published -- above one,
+the declared list is holding a gas SUPERSATURATED in it, a metastable state the
+declaration asserts.  That activity exists only where the outlet's fluid is in complete
+internal equilibrium; where a species present is not equilibrated (fed past a list that
+declares no reaction touching it), it depends on the route and is refused by name.
+Refused by name: two solids supersaturated at once, a solid in the feed.  The same
+rules, one home: `src/unitOperations/reactor/PureSolidPhase.H`.
 
 ### `gibbsReactor`
 Equilibrium by direct Gibbs minimisation with atom-balance
@@ -435,8 +456,8 @@ priced on the solid rung by the energy report and counted by the mass and
 element balances).  Limits, refused or unbuilt: one solid present at a time
 (two supersaturated at once REFUSES by name); `directMin` REFUSES (it
 publishes no element potentials, so the test has nothing to read); the
-`gibbsMap` props op does not carry the phase; `equilibriumReactor` does not
-yet either.  Witness `tutorials/steady/gibbs/gibbs11_carbon_deposition`
+`gibbsMap` props op does not carry the phase (`equilibriumReactor` does, since
+C14 slice 2 -- see its section).  Witness `tutorials/steady/gibbs/gibbs11_carbon_deposition`
 (S/C 0.8 cokes, S/C 3 does not); gate `check_gibbs_solid_phase`.
 
 For an adiabatic Gibbs reactor (the flame temperature problem), declare

@@ -494,26 +494,16 @@ int GibbsReactor::solve(const DictPtr& dict,
     //  printed and logged -- a coke-free reformer says WHY it is coke-free.
     for (const auto& v : eq.solids)
     {
-        const std::string sname = specNames[v.i];
-        std::ostringstream m;
-        m << std::setprecision(6);
-        m << "pure solid phase '" << sname << "': activity in the solid-free"
-             " equilibrium a = " << std::exp(v.lnActivityWithout);
-        if (v.present)
-            m << " > 1, so the solid-free answer is NOT the Gibbs minimum --"
-                 " the solid APPEARS: n = " << eq.nSolid[v.i] << " mol/s, and"
-                 " the fluid is re-equilibrated to a = "
-              << std::exp(v.lnActivity) << " (" << v.bisections
-              << " fluid solves in the bisection on n_s).";
-        else
-            m << " <= 1, so depositing it would RAISE G -- the solid is ABSENT"
-                 " (n = 0).";
-        std::cout << "  [gibbs] " << m.str() << "\n";
+        const std::string m = pureSolidPhase::verdict(specNames[v.i],
+            v.lnActivityWithout, v.present, eq.nSolid[v.i], v.lnActivity,
+            "the Gibbs minimum", std::to_string(v.bisections)
+                + " fluid solves in the bisection on n_s");
+        std::cout << "  [gibbs] " << m << "\n";
         AdvisoryLog::instance().add("model", "info",
             "gibbsReactor " + (dict->name().empty()
                                    ? dict->lookupWordOrDefault("name", "(unnamed)")
                                    : dict->name()),
-            m.str());
+            m);
     }
 
     if (eq.twoPhase && Nl > 0.0)
@@ -585,12 +575,10 @@ int GibbsReactor::solve(const DictPtr& dict,
     //  answer (1 when present, < 1 when absent): the carbon activity is the
     //  number a reformer's coking margin is read from.
     for (const auto& v : eq.solids)
-    {
-        kpis_["n_solid_" + specNames[v.i] + "_mol_s"] = eq.nSolid[v.i];
-        kpis_["activity_" + specNames[v.i]]           = std::exp(v.lnActivity);
-    }
+        pureSolidPhase::publishKpis(kpis_, specNames[v.i], eq.nSolid[v.i],
+                                    std::exp(v.lnActivity));
     if (!eq.solids.empty())
-        kpis_["F_solid_kmol_h"] = (Ns / 1000.0) * 3600.0;
+        pureSolidPhase::publishSolidFlow(kpis_, Ns / 1000.0);
     if (eq.twoPhase && Nl > 0.0)
     {
         kpis_["twoPhase"]            = 1.0;

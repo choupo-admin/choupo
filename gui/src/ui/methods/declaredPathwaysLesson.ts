@@ -33,15 +33,18 @@
   citation turns an unsourced claim into a falsely sourced one.
 
   EVERY ENGINE CLAIM CARRIES A file:line, read in the source on 2026-09-27
-  (re-read the same day when the equilibrium reactor moved to ln n; record
-  docs/design/an-equilibrium-that-runs-to-completion.md).  That is a
-  drafting discipline, not a gate: `check_lesson_symbols` holds the `where`
-  glosses and nothing parses a citation out of a lesson.  Every number
-  quoted in the prose was measured on the witnesses
-  `equil02_methanol_declared_pathways` and
-  `equil03_ammonia_oxidation_declared_pathways` with the native build the
+  (re-read the same day when the equilibrium reactor moved to ln n, and
+  again when it gained a pure-solid phase; records
+  docs/design/an-equilibrium-that-runs-to-completion.md and
+  docs/design/a-solid-in-a-declared-reaction-set.md).  That is a drafting
+  discipline, not a gate: `check_lesson_symbols` holds the `where` glosses
+  and nothing parses a citation out of a lesson.  Every number quoted in the
+  prose was measured on the witnesses `equil02_methanol_declared_pathways`,
+  `equil03_ammonia_oxidation_declared_pathways` and
+  `equil04_reforming_carbon_declared_pathways` with the native build the
   same day; the numbers the PANEL shows are the engine's, read live (the
-  panel runs equil02; equil03 is the second example, run as a case).
+  panel runs equil02; equil03 and equil04 are further examples, run as
+  cases).
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, LessonLimit } from "./lessonStep.js";
@@ -60,11 +63,13 @@ export const PATHWAYS_STEPS: readonly LessonStep[] = [
       + "list of names from constant/reactions, each a stoichiometry.  The "
       + "outlet can move only along those reactions, n = n0 + Σ ν ξ (the "
       + "engine writes it as the conservation laws the declared set leaves "
-      + "intact, EquilibriumReactor.cpp:242–254), and each declared reaction "
+      + "intact, EquilibriumReactor.cpp:276–288), and each declared reaction "
       + "is driven to its own equilibrium constant, the residual ln Q − ln K "
-      + "(EquilibriumReactor.cpp:277–278), with every K from the same "
+      + "(EquilibriumReactor.cpp:333–336), with every K from the same "
       + "formation data the Gibbs reactor minimises over "
-      + "(Reaction::equilibrium, EquilibriumReactor.cpp:92).  Same "
+      + "(`pureSolidPhase::reactionEquilibrium`, which is "
+      + "`Reaction::equilibrium` itself for a reaction with no pure solid, "
+      + "EquilibriumReactor.cpp:116).  Same "
       + "thermodynamics, same data, two different questions.",
     formula: String.raw`\min_{n \ge 0}\; G(T,P,n) \quad \text{subject to} \quad A\,n = b
 \qquad\text{versus}\qquad
@@ -92,7 +97,7 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ij}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
         + "reaction: how far each has run.  Negative when a reaction runs "
         + "backward from the feed.  The engine solves for the LOGARITHMS of "
         + "the outlet amounts and recovers ξ from them "
-        + "(EquilibriumReactor.cpp:468–511), so a species left at 10⁻¹⁴ of the "
+        + "(EquilibriumReactor.cpp:532–576), so a species left at 10⁻¹⁴ of the "
         + "feed is resolved, not lost to a subtraction", unit: "mol/s" },
       { sym: "\\nu_{ij}", means: "the stoichiometric coefficient of species i "
         + "in reaction j" },
@@ -189,9 +194,9 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ij}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
     body: "A real bed does not reach even the equilibrium of its OWN "
       + "pathways.  `temperatureApproach` declares how far it falls short, as "
       + "a MAGNITUDE — a negative value is refused by name "
-      + "(EquilibriumReactor.cpp:134 and :145) — and the ENGINE assigns the "
+      + "(EquilibriumReactor.cpp:159 and :170) — and the ENGINE assigns the "
       + "direction to each declared reaction separately "
-      + "(EquilibriumReactor.cpp:520–618).  It first solves the true "
+      + "(EquilibriumReactor.cpp:671–769).  It first solves the true "
       + "equilibrium at the physical T, reads which way each reaction RUNS "
       + "from this feed, and multiplies that direction by the reaction's "
       + "enthalpy as written: exothermic AS IT RUNS, Kp is taken at T + ΔT; "
@@ -203,7 +208,7 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ij}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
       + "running forward, is taken above it: with 20 K the conversion falls "
       + "from 0.610 to 0.442.  The reactor itself stays at T; only each K "
       + "moves, and each reaction's evaluation temperature is published as "
-      + "`T_Kp_<name>` (EquilibriumReactor.cpp:704).",
+      + "`T_Kp_<name>` (EquilibriumReactor.cpp:935).",
     formula: String.raw`K_j \;\to\; K_j\!\left(T + s_j\,\lvert\Delta T\rvert\right),
 \qquad
 s_j = \begin{cases} +1 & \xi_j^{\,0}\,\Delta H_j < 0 \\ -1 & \xi_j^{\,0}\,\Delta H_j > 0 \end{cases}`,
@@ -258,16 +263,6 @@ export const PATHWAYS_LIMITS: readonly LessonLimit[] = [
       + "catalyst's measured selectivity at the operating point.",
   },
   {
-    id: "carbon-not-buildable",
-    title: "Carbon formation in a reformer cannot be shown here yet.",
-    body: "The classic exclusion — Boudouard and methane cracking left out of "
-      + "a steam reformer — needs SOLID carbon.  The catalogue has no "
-      + "solid-carbon record (its `C` is atomic carbon GAS, formed at "
-      + "716.7 kJ/mol), and neither the Gibbs reactor nor the equilibrium "
-      + "reactor carries a pure-solid phase, so a carbon-forming witness "
-      + "would need new thermochemistry and new physics.  None was invented.",
-  },
-  {
     id: "ammonia-oxidation",
     title: "A second example: ammonia oxidation, where the declared route runs to completion.",
     body: "The witness `equil03_ammonia_oxidation_declared_pathways` asks the "
@@ -289,8 +284,55 @@ export const PATHWAYS_LIMITS: readonly LessonLimit[] = [
       + "multiple of an extent, and it held every species above 10⁻¹² of the "
       + "feed — it stalled and refused rather than print a wrong equilibrium.  "
       + "It now solves for the logarithms of the amounts "
-      + "(EquilibriumReactor.cpp:150–176), where 10⁻¹⁴, or 10⁻³⁰⁰, is an "
+      + "(EquilibriumReactor.cpp:175–201), where 10⁻¹⁴, or 10⁻³⁰⁰, is an "
       + "ordinary number.",
+  },
+  {
+    id: "carbon-formation",
+    title: "A third example: a steam reformer, where the declared list keeps carbon out.",
+    body: "The witness `equil04_reforming_carbon_declared_pathways` asks the "
+      + "same three questions of methane and steam at a steam-to-carbon ratio "
+      + "of 1.0, 900 K and 1 bar.  Graphite is a species with a phase of its "
+      + "own: its record says `referenceState pureSolid;`, so it is priced "
+      + "at ACTIVITY ONE — no mole fraction, no mixing term — and enters "
+      + "each equilibrium constant only through its pure-solid standard "
+      + "Gibbs energy (PureSolidPhase.cpp:68–94; the residual that leaves it "
+      + "out of ln Q, EquilibriumReactor.cpp:333–336).  With every pathway "
+      + "open the Gibbs reactor DEPOSITS it: 0.217 mol of graphite per mol "
+      + "of methane fed, 21.7 % of the carbon.  The complete set — reforming, "
+      + "the shift and methane cracking, CH₄ → C + 2 H₂ (6 − 3 = 3) — "
+      + "reproduces it, gas and graphite, to the printed digits; the "
+      + "Boudouard reaction, 2 CO → C + CO₂, is cracking − reforming + shift, "
+      + "so declaring it as well is refused as linearly dependent, and "
+      + "declaring it INSTEAD of cracking gives the same outlet.  The engine "
+      + "decides whether the solid appears exactly as the Gibbs reactor does: "
+      + "it first solves with no solid, reads the carbon activity a_C that "
+      + "gas leaves, and deposits graphite only if a_C > 1 "
+      + "(EquilibriumReactor.cpp:584–669).  Here a_C = exp[(μ_C − g_C)/RT], "
+      + "where μ_C is the chemical potential of carbon that the equilibrated "
+      + "gas implies, g_C the molar Gibbs energy of pure graphite, R the gas "
+      + "constant and T the reactor temperature: above one, depositing "
+      + "carbon LOWERS the Gibbs energy.  Now leave Boudouard and cracking OFF the "
+      + "list, keeping reforming and the shift, and no graphite forms — but "
+      + "the gas it leaves has a_C = 1.580, published as "
+      + "`activity_graphite` (EquilibriumReactor.cpp:849–883).  Recompute it "
+      + "by hand by either route the list excludes: a_C = K_crack · p_CH₄ / "
+      + "p_H₂², or a_C = K_boud · p_CO² / p_CO₂, where each p is the "
+      + "outlet mole fraction times P / 1 bar and each K is that reaction's "
+      + "equilibrium constant with graphite at activity one — K_crack = "
+      + "3.228 at 900 K is the complete reactor's published "
+      + "`Kp_methaneCracking`, and K_boud = 5.589 is what the same reactor "
+      + "publishes as `Kp_boudouard` when Boudouard is declared in "
+      + "cracking's place.  Both give 1.580, because reforming and the shift are the "
+      + "complete set for the five gases.  READ WHAT THE PREMISE SAYS.  The "
+      + "declared list does not say carbon cannot form: the outlet says the "
+      + "opposite, a gas SUPERSATURATED in carbon by a factor of 1.58.  It "
+      + "says the catalyst is assumed not to form it — a metastable state "
+      + "the declaration asserts, and a_C is the size of that bet.  Whether "
+      + "a real catalyst keeps that promise is not on this page, and the "
+      + "page cites no catalyst for it.  Raise the steam to S/C 3.0 and a_C "
+      + "falls to 0.294: no carbon anywhere, and the declared list then "
+      + "costs nothing.",
   },
   {
     id: "slider-range",

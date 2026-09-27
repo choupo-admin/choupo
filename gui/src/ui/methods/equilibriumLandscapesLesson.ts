@@ -104,7 +104,7 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
       + "its own page, the EduTool `declared-pathways`: "
       + "`equilibriumReactor` takes a DECLARED reaction list from "
       + "constant/reactions and drives only those to equilibrium "
-      + "(EquilibriumReactor.cpp:69–92; witnesses `equil01_reforming`, "
+      + "(EquilibriumReactor.cpp:93–116; witnesses `equil01_reforming`, "
       + "`reactions ( smr wgs )`, and `equil02_methanol_declared_pathways`), "
       + "so an empirical exclusion — a reaction known to be kinetically "
       + "irrelevant, left off the list — can be declared.  It reads the "

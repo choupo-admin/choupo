@@ -606,6 +606,9 @@
   "Flowsheet": [
    "src/unitOperations/flowsheet/Flowsheet.H"
   ],
+  "FluidActivity": [
+   "src/unitOperations/reactor/PureSolidPhase.H"
+  ],
   "Fluxes": [
    "src/unitOperations/batch/BatchDiafilter.H"
   ],
@@ -2689,6 +2692,7 @@
    "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/reaction/Reaction.H",
    "src/thermo/solution/SolutionPair.H",
    "src/thermo/solution/SolutionRegistry.H",
    "src/thermo/transport/CorrelationVerify.H",
@@ -2704,6 +2708,7 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flowsheet/Flowsheet.H",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/separation/cycloneModel/CycloneModel.H"
   ],
@@ -3967,8 +3972,10 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
+   "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/reactor/GibbsReactor.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/TemperatureApproach.H",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
@@ -6227,6 +6234,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/crystallisation/Crystalliser.H",
    "src/unitOperations/distillation/DistillationColumn.H",
@@ -6257,6 +6265,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.H",
    "src/unitOperations/reactor/GibbsReactor.H",
    "src/unitOperations/reactor/PFR.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/TemperatureApproach.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/rotating/Compressor.H",
@@ -7451,6 +7460,7 @@
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/reactor/EquilibriumReactor.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/TemperatureApproach.H"
   ],
   "src/unitOperations/reactor/GibbsReactor.cpp": [
@@ -7468,8 +7478,10 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/reactor/GibbsReactor.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/TemperatureApproach.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
@@ -7508,6 +7520,21 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/reactor/PolymerKPIs.H"
   ],
+  "src/unitOperations/reactor/PureSolidPhase.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/ElementComposition.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/reaction/Reaction.H",
+   "src/unitOperations/reactor/PureSolidPhase.H"
+  ],
   "src/unitOperations/reactor/ReactionHeat.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -7535,7 +7562,9 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/reaction/Reaction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
@@ -7550,7 +7579,9 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/thermo/reaction/Reaction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
@@ -7568,13 +7599,14 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/equationOfState/EquationOfState.H",
+   "src/thermo/reaction/Reaction.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.H",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.H"
   ],
   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp": [
-   "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -7584,6 +7616,8 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/thermo/reaction/Reaction.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp": [
@@ -7599,7 +7633,9 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/reaction/Reaction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.H"
   ],
@@ -8274,10 +8310,10 @@
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
-   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -8556,6 +8592,7 @@
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PolymerKPIs.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
@@ -8853,6 +8890,7 @@
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PolymerKPIs.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
@@ -9172,6 +9210,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
@@ -9418,6 +9457,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
@@ -9973,6 +10013,7 @@
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PolymerKPIs.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
@@ -10966,6 +11007,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
@@ -11507,6 +11549,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
@@ -11639,7 +11682,8 @@
    "src/streams/StreamStateIO.cpp",
    "src/thermo/Component.cpp",
    "src/thermo/ElementComposition.cpp",
-   "src/thermo/ThermoPackageBuilder.cpp"
+   "src/thermo/ThermoPackageBuilder.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp"
   ],
   "src/thermo/EnthalpyDatum.H": [
    "src/reporting/EnergyBalanceReport.cpp",
@@ -11791,6 +11835,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
@@ -12177,6 +12222,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
@@ -12777,14 +12823,24 @@
    "src/unitOperations/reactor/PFR.cpp"
   ],
   "src/thermo/reaction/Reaction.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/propertyOps/GibbsMapOp.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
+   "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
-   "src/unitOperations/reactor/PFR.cpp"
+   "src/unitOperations/reactor/GibbsReactor.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
+   "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
+   "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
+   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp"
   ],
   "src/thermo/solidEquilibrium/SolidEquilibrium.H": [
    "src/propertyOps/ScalingScan.cpp",
@@ -13501,6 +13557,19 @@
   "src/unitOperations/reactor/PolymerKPIs.H": [
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PolymerKPIs.cpp"
+  ],
+  "src/unitOperations/reactor/PureSolidPhase.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/propertyOps/GibbsMapOp.cpp",
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
+   "src/unitOperations/reactor/GibbsReactor.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
+   "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
+   "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
+   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp"
   ],
   "src/unitOperations/reactor/ReactionHeat.H": [
    "src/unitOperations/batch/BatchReactor.cpp",

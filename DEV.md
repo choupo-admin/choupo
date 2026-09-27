@@ -1442,7 +1442,8 @@ accepts today, and that is a policy call.
      0.4513), the complete set reproduces it, the declared list makes
      methanol (conversion 0.610; 0.442 with a 20 K approach).  (a) NOT
      buildable: no solid-carbon record (`C.dat` is atomic carbon gas) and no
-     pure-solid phase.  (b) NOT buildable: Gibbs solves it, but the declared
+     pure-solid phase -- **BUILT the same day by C14 (both slices), witness
+     `equil04_reforming_carbon_declared_pathways`, see C14 below.**  (b) NOT buildable: Gibbs solves it, but the declared
      NO route (ln K 121.5 at 1100 K) leaves NH3 below the extent formulation's
      resolution and `equilibriumReactor` stalls.  **(b) BUILT the same day by a
      follow-up general:** the reactor solves on ln n with the invariants of the
@@ -1590,6 +1591,43 @@ accepts today, and that is a policy call.
      `carbon-not-buildable` note is REPLACED by what the witness shows.
      Pedagogical scope of that lesson row is Vítor's before dispatch.
 
+     **SLICE 2 CLOSED 2026-09-27, and with it C14** (record
+     docs/design/a-solid-in-a-declared-reaction-set.md).  Built on the ln-n
+     solver (43c0238bc), not on extents as the plan above assumed: a solid
+     participant leaves ln Q and enters ln K through its pure-solid standard
+     potential (`pureSolidPhase::reactionEquilibrium`, which IS
+     `Reaction::equilibrium` for a reaction with no solid), and its column
+     of nu and of the invariants carries ln a_s while ABSENT and n_s/F while
+     PRESENT -- one unknown either way, the Newton square, no floor.  The
+     phase set is slice 1's test: solid-free solve, activity read, APPEARS
+     above one (re-solve with it present, n_s > 0 checked), two at once
+     refused.  A pureSolid component NO declared reaction touches publishes
+     its activity from the outlet's element potentials (the observer), and
+     is refused by name where the fluid has none (a species present that no
+     reaction equilibrates).  ONE HOME for both reactors:
+     `src/unitOperations/reactor/PureSolidPhase.{H,cpp}` (the record word,
+     the threshold, the rung, the verdict sentence, the KPI names); slice
+     1's code was moved onto it and all 33 gibbs/REquil/gibbsMap cases are
+     byte-identical against 43c0238bc.  Witness
+     `equil04_reforming_carbon_declared_pathways` (NOT gibbs11's feed, as the
+     plan said: a new three-reactor case in the equil02/03 shape, CH4/steam
+     S/C 1.0, 900 K, 1 bar; golden created, 72 rows): Gibbs and the complete
+     set (reforming, shift, cracking) deposit 0.2168 mol graphite / mol CH4
+     and agree within 1e-9; the list without Boudouard and cracking forms
+     none and publishes a_C 1.580, recomputed by hand by either excluded
+     route.  **The brief asked for a complete set of FOUR (reforming, shift,
+     Boudouard, cracking); that set is linearly dependent (Boudouard =
+     cracking - reforming + shift) and the reactor refuses it, naming
+     boudouard** -- the case uses three, and Boudouard in cracking's place
+     gives the same outlet.  Gate `check_reaction_subset_approach` arms
+     (m)-(t) against slice 1's reaction-route recomputation (7 by-hand
+     sabotages, all caught).  EduTool: `carbon-not-buildable` BURIED,
+     `carbon-formation` example added (the premise read honestly: the list
+     does not say carbon cannot form, it says the catalyst is assumed not to
+     form it).  The pedagogical scope of that row was set in the commander's
+     brief, not put to Vítor first -- his to revise.  NOT done: two solids
+     at once, a solid in the feed (both refused by name), the fluid duty
+     still on `h_pure_ig` (the C11 item), `gibbsMap` with a solid.
 
 **C15. AN EDUTOOL FOR THE ELEMENT-POTENTIAL METHOD -- how the Gibbs reactor
      SOLVES, not what it is (commissioned 2026-09-27).**  Vítor asked which

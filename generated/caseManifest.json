@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 428,
+  "cases": 429,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -5812,6 +5812,22 @@
    "roles": [],
    "hasGolden": false
   },
+  "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "equilibriumReactor",
+    "gibbsReactor",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/pfr01_first_order": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -6664,6 +6680,7 @@
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
+    "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
     "tutorials/steady/reactors/pfr03_series_selectivity",
@@ -6954,7 +6971,8 @@
    "equilibriumReactor": [
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
-    "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways"
+    "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
+    "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways"
    ],
    "evaporativeDryer": [
     "tutorials/steady/drying/evapDryer01_nacl",
@@ -7021,7 +7039,8 @@
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
-    "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways"
+    "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
+    "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways"
    ],
    "heatExchanger": [
     "tutorials/steady/flowsheets/proxy01_gas_loop",
@@ -7226,6 +7245,7 @@
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
+    "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
     "tutorials/steady/thermo/basis01_two_unit_chain"
    ],
    "sprayDryer": [
@@ -7677,6 +7697,7 @@
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
+    "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
     "tutorials/steady/reactors/pfr03_series_selectivity",

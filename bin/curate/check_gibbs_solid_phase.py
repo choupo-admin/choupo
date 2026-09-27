@@ -132,9 +132,9 @@ def vec(t, key):
             re.search(r"\b" + key + r"\s*\(([^)]*)\)", t).group(1).split()]
 
 
-def record(name):
+def record(name, case=None):
     """The case's own sealed copy first -- the one the run reads."""
-    for p in (CASE / "constant/components" / f"{name}.dat",
+    for p in ((case or CASE) / "constant/components" / f"{name}.dat",
               ROOT / "data/standards/components" / f"{name}.dat"):
         if p.exists():
             return strip(p.read_text())
@@ -142,8 +142,8 @@ def record(name):
 
 
 class Gas:
-    def __init__(self, name):
-        t = record(name)
+    def __init__(self, name, case=None):
+        t = record(name, case)
         st = block(t, "standardThermochemistry")
         self.Hf, self.S = num(st, "dHf_298"), num(st, "s_298")
         cp = block(t, "idealGasHeatCapacity")
@@ -163,8 +163,8 @@ class Gas:
 
 
 class Graphite:
-    def __init__(self):
-        t = record("graphite")
+    def __init__(self, case=None):
+        t = record("graphite", case)
         st = block(t, "standardThermochemistry")
         if not re.search(r"referenceState\s+pureSolid\s*;", st):
             raise RuntimeError("graphite.dat is not on the pureSolid rung")
@@ -210,9 +210,14 @@ def bisect(f, lo, hi, it=64):
     return 0.5 * (lo + hi)
 
 
-def reaction_route(sp, gr, T, P_bar, s):
+def reaction_route(sp, gr, T, P_bar, s, solid_free=False):
     """Feed 1 mol CH4 + s mol H2O.  Extents: x1 reforming, x2 shift,
-    x3 cracking (CH4 -> C(gr) + 2 H2).  Returns moles per mol CH4."""
+    x3 cracking (CH4 -> C(gr) + 2 H2).  Returns moles per mol CH4 and the
+    carbon activity of the solid-free equilibrium; with `solid_free`, the
+    solid-free equilibrium itself (x3 = 0) in place of the answer -- the
+    outlet of a reactor whose declared reactions cannot form carbon.
+    Shared with check_reaction_subset_approach arms (m)-(r), which hold the
+    equilibriumReactor's carbon to the same recomputation."""
     g = {k: sp[k].g(T) / (R * T) for k in GASES}
     lnK1 = -(g["CO"] + 3*g["H2"] - g["CH4"] - g["water"])
     lnK2 = -(g["CO2"] + g["H2"] - g["CO"] - g["water"])
@@ -252,7 +257,7 @@ def reaction_route(sp, gr, T, P_bar, s):
 
     la0, n = lnaC(0.0)
     x3 = 0.0
-    if la0 > 0:
+    if la0 > 0 and not solid_free:
         x3 = bisect(lambda z: lnaC(z)[0], 0.0, 0.999999)
         n = lnaC(x3)[1]
     n = dict(n)

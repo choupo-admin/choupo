@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EquilibriumReactor.H"
+#include "PureSolidPhase.H"
 #include "TemperatureApproach.H"
 #include "thermo/reaction/Reaction.H"
 #include "core/Advisory.H"
@@ -66,6 +67,29 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     sVector n0(n, 0.0);
     for (std::size_t i = 0; i < n; ++i) n0[i] = z[i] * F_in;
 
+    // ---- Pure solids (C14): which components ARE one, by their record ------
+    //  A `referenceState pureSolid;` component (graphite) is its own phase:
+    //  activity one, no mixing term, amount >= 0.  It enters no mole fraction
+    //  and no n_total, and it leaves in the outlet's SOLID phase `s[]`.  A
+    //  solid arriving with the FEED is not implemented: it would have to be
+    //  carried apart from the fluid composition this unit reads, and dropping
+    //  it would destroy matter at exit 0 -- so it refuses, by name.
+    std::vector<bool> isSolid(n, false);
+    for (std::size_t i = 0; i < n; ++i)
+        if (pureSolidPhase::isPureSolid(thermo.comp(i)))
+        {
+            isSolid[i] = true;
+            if (n0[i] > 0.0)
+                throw std::runtime_error("equilibriumReactor: the feed carries pure"
+                    " solid '" + thermo.comp(i).name() + "' in its fluid composition"
+                    " -- a solid in the feed is not implemented; the solid phase here"
+                    " is only what the declared reactions deposit.");
+        }
+    if (dict->found("solids"))
+        throw std::runtime_error("equilibriumReactor: the feed carries a SOLID"
+            " phase -- a solid in the feed is not implemented (the unit reads the"
+            " fluid composition only, and would drop the solid).");
+
     // ---- The SET of R reactions: stoichiometry nu_j + Kp_j(T) -----------
     //  Declared as `reactions ( r1 r2 ... );` on the unit -- the ONE multi-reaction
     //  grammar (batch/dynamic take the same); the Flowsheet resolves each name from
@@ -89,7 +113,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         for (const auto& s : rxnList[j]->lookupDictList("stoichiometry"))
             nu[j][thermo.indexOf(s->lookupWord("component"))] = s->lookupScalar("nu");
 
-        const auto eq = Reaction::equilibrium(thermo, nu[j], T);         // Kp from dG°(T)
+        const auto eq = pureSolidPhase::reactionEquilibrium(thermo, nu[j], T);   // Kp from dG°(T)
         Kp[j]   = eq.Kp;
         lnKp[j] = eq.lnKp;   // -dG/RT itself: exp may over/underflow, ln K does not
 
@@ -100,7 +124,8 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         xiMax[j] = std::isfinite(m) ? m : 0.0;
 
         try { for (std::size_t i = 0; i < n; ++i)
-                  if (nu[j][i] != 0.0) dHrxn[j] += nu[j][i] * thermo.comp(i).h_pure_ig(T); }
+                  if (nu[j][i] != 0.0)
+                      dHrxn[j] += nu[j][i] * pureSolidPhase::speciesEnthalpy(thermo.comp(i), T); }
         catch (const std::exception&) { haveDuty = false; dHok[j] = false; }
     }
 
@@ -201,6 +226,15 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     std::vector<sVector> nuL(R, sVector(nL, 0.0));
     for (std::size_t j = 0; j < R; ++j)
         for (std::size_t a = 0; a < nL; ++a) nuL[j][a] = nu[j][Lx[a]];
+    //  A PURE SOLID a declared reaction touches (C14) is a column of nu and of
+    //  the invariants like any participant, but its unknown is not ln n: it
+    //  has no mole fraction and may be absent.  Its column carries ln a_s
+    //  while it is absent (n_s = 0) and n_s/F while it is present (a_s = 1);
+    //  see "The pure-solid phase" below.
+    std::vector<bool>        solidAt(nL, false);
+    std::vector<std::size_t> solidPos;
+    for (std::size_t a = 0; a < nL; ++a)
+        if (isSolid[Lx[a]]) { solidAt[a] = true; solidPos.push_back(a); }
 
     // ---- The declared set must be independent: checked on nu, up front --
     //  Rows are reduced IN DECLARED ORDER, so the reaction named is the first
@@ -257,7 +291,25 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     const scalar Fs    = std::max(F_in, 1.0e-30);
     const scalar lnPP  = std::log(P / P_STD);
     sVector dnu(R, 0.0);
-    for (std::size_t j = 0; j < R; ++j) for (auto v : nuL[j]) dnu[j] += v;
+    for (std::size_t j = 0; j < R; ++j)            // the FLUID Sum nu
+        for (std::size_t a = 0; a < nL; ++a) if (!solidAt[a]) dnu[j] += nuL[j][a];
+
+    // ---- The pure-solid phase (C14) ---------------------------------------
+    //  A solid participant s is at activity one when PRESENT and has no
+    //  mixing term, so it leaves ln Q; its standard potential is inside ln Kp
+    //  (pureSolidPhase::reactionEquilibrium).  Two modes, one unknown each:
+    //    ABSENT   n_s = 0, and the unknown is lambda_s = ln a_s: every
+    //             reaction that touches s reads g_j += nu_sj lambda_s, so the
+    //             declared set equilibrates along every combination that
+    //             deposits no s and says what activity of s that leaves;
+    //    PRESENT  a_s = 1 (lambda_s = 0), and the unknown is v_s = n_s / F.
+    //  The count is the same either way, so the Newton stays square.  The
+    //  phase set is decided as the gibbsReactor decides it: solve with every
+    //  solid absent, read ln a_s; a solid with ln a_s > kLnActivityAppears
+    //  APPEARS and the set is re-solved with it present (the declared
+    //  equilibrium is a constrained minimum of a convex G, so a_s > 1 in the
+    //  solid-free answer means depositing s lowers G, and n_s > 0 follows).
+    std::vector<bool> present(nL, false);
 
     //  Residual at x = ln n (logged species): g (ln units) then h (/F_in).
     struct State { sVector nLv; scalar ntot = 0.0; sVector F; bool finite = true; };
@@ -266,7 +318,11 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         State s;
         s.nLv.assign(nL, 0.0);
         s.ntot = nInert;
-        for (std::size_t a = 0; a < nL; ++a) { s.nLv[a] = std::exp(x[a]); s.ntot += s.nLv[a]; }
+        for (std::size_t a = 0; a < nL; ++a)
+        {
+            if (solidAt[a]) { s.nLv[a] = present[a] ? x[a] * Fs : 0.0; continue; }
+            s.nLv[a] = std::exp(x[a]); s.ntot += s.nLv[a];
+        }
         s.F.assign(R + nW, 0.0);
         if (!(std::isfinite(s.ntot) && s.ntot > 0.0)) { s.finite = false; return s; }
         const scalar lnt = std::log(s.ntot);
@@ -274,7 +330,9 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         {
             scalar q = 0.0;
             for (std::size_t a = 0; a < nL; ++a)
-                if (nuL[j][a] != 0.0) q += nuL[j][a] * (x[a] - lnt + lnPP);
+                if (nuL[j][a] != 0.0)
+                    q += solidAt[a] ? (present[a] ? 0.0 : nuL[j][a] * x[a])
+                                    : nuL[j][a] * (x[a] - lnt + lnPP);
             s.F[j] = q - lnKp[j];
         }
         for (std::size_t k = 0; k < nW; ++k)
@@ -299,8 +357,9 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     //  this feed) and once on the shifted Kp.  Absent an approach it is
     //  called once.
     struct Solved { sVector xi; sVector niCur; scalar gNorm = 0.0; int iters = 0;
-                    sVector lnN; };   // ln n of the logged species (0 elsewhere)
-    auto solveExtents = [&]() -> Solved
+                    sVector lnN;      // ln n of the logged species (0 elsewhere)
+                    sVector x; };     // the unknowns themselves (a warm start)
+    auto solveOnce = [&](const sVector* warm) -> Solved
     {
         // ---- The seed: every logged species needs a first logarithm ---------
         //  Forward AND backward limits per reaction (a feed missing a REACTANT is
@@ -327,12 +386,12 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
             const sVector ni = molesAt(xiSeed);
             bool interior = true;
             for (std::size_t i = 0; i < n; ++i)
-                if (logged[i] && ni[i] <= seedFoothold) interior = false;
+                if (logged[i] && !isSolid[i] && ni[i] <= seedFoothold) interior = false;
             if (interior) break;
             bool repaired = false;
             for (std::size_t i = 0; i < n && !repaired; ++i)
             {
-                if (!logged[i] || ni[i] > seedFoothold) continue;
+                if (!logged[i] || isSolid[i] || ni[i] > seedFoothold) continue;
                 for (std::size_t j = 0; j < R; ++j)
                     if (nu[j][i] != 0.0)
                     {
@@ -347,9 +406,11 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
                     "inventory and no reaction path can give it a foothold from this "
                     "feed.  Check the feed composition against the reaction set.");
         }
-        sVector x(nL, 0.0);
+        sVector x(nL, 0.0);                    // a solid's unknown starts at 0
         { const sVector ns = molesAt(xiSeed);
-          for (std::size_t a = 0; a < nL; ++a) x[a] = std::log(ns[Lx[a]]); }
+          for (std::size_t a = 0; a < nL; ++a)
+              if (!solidAt[a]) x[a] = std::log(ns[Lx[a]]); }
+        if (warm) x = *warm;
 
         // ---- Newton on ln n, analytic Jacobian, backtracking on ||F||^2 ------
         //  Converged when every declared ln Q_j is within 1e-10 of ln Kp_j AND
@@ -377,10 +438,12 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
             std::vector<sVector> A(nL, sVector(nL, 0.0));
             for (std::size_t j = 0; j < R; ++j)
                 for (std::size_t a = 0; a < nL; ++a)
-                    A[j][a] = nuL[j][a] - dnu[j] * s.nLv[a] / s.ntot;
+                    A[j][a] = solidAt[a] ? (present[a] ? 0.0 : nuL[j][a])
+                                         : nuL[j][a] - dnu[j] * s.nLv[a] / s.ntot;
             for (std::size_t k = 0; k < nW; ++k)
                 for (std::size_t a = 0; a < nL; ++a)
-                    A[R + k][a] = W[k][a] * s.nLv[a] / Fs;
+                    A[R + k][a] = solidAt[a] ? (present[a] ? W[k][a] : 0.0)
+                                             : W[k][a] * s.nLv[a] / Fs;
             sVector rhs(nL);
             for (std::size_t r = 0; r < nL; ++r) rhs[r] = -s.F[r];
             //  Gauss with partial pivoting; per-row scaled pivot test, because
@@ -424,11 +487,12 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
             //  shortens steps; it never bounds where the solution may lie.
             const scalar m0 = merit(s);
             scalar dlnt = 0.0;
-            for (std::size_t a = 0; a < nL; ++a) dlnt += s.nLv[a] * dx[a];
+            for (std::size_t a = 0; a < nL; ++a) if (!solidAt[a]) dlnt += s.nLv[a] * dx[a];
             dlnt /= s.ntot;
             scalar lam = 1.0;
             for (std::size_t a = 0; a < nL; ++a)
             {
+                if (solidAt[a]) continue;   // ln a_s or n_s/F: linear in the residual
                 const scalar y = s.nLv[a] / s.ntot;
                 if (y > 1.0e-8)
                 {
@@ -479,7 +543,8 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         for (std::size_t a = 0; a < nL; ++a) niCur[Lx[a]] = s.nLv[a];
         sVector D(nL, 0.0);
         for (std::size_t a = 0; a < nL; ++a)
-            D[a] = 1.0 / std::max(s.nLv[a] + n0[Lx[a]], 1.0e-300);
+            D[a] = solidAt[a] ? 1.0 / Fs                      // a solid may be 0
+                              : 1.0 / std::max(s.nLv[a] + n0[Lx[a]], 1.0e-300);
         std::vector<sVector> M(R, sVector(R, 0.0));
         sVector b(R, 0.0);
         for (std::size_t j = 0; j < R; ++j)
@@ -512,8 +577,94 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         }
         const scalar gN = std::max(normInf(s.F, 0, R), normInf(s.F, R, R + nW));
         sVector lnN(n, 0.0);
-        for (std::size_t a = 0; a < nL; ++a) lnN[Lx[a]] = x[a];
-        return Solved{ xi, niCur, gN, iters, lnN };
+        for (std::size_t a = 0; a < nL; ++a) if (!solidAt[a]) lnN[Lx[a]] = x[a];
+        return Solved{ xi, niCur, gN, iters, lnN, x };
+    };
+
+    // ---- The phase set of the pure solids, decided on the solid-free answer --
+    //  No solid participant: the one solve above, exactly as before.  With
+    //  one: every solid absent first; a supersaturated solid (ln a_s above
+    //  the shared threshold) is made present and the set re-solved from that
+    //  answer; the re-solve must deposit a positive amount, and every solid
+    //  still absent must stay undersaturated at the new answer.  Two solids
+    //  supersaturated at once is a multi-solid active set, refused by name
+    //  -- as in the gibbsReactor, whose rule this is (PureSolidPhase.H).
+    struct SolidVerdict { std::size_t a = 0; scalar lnAWithout = 0.0;
+                          scalar lnA = 0.0; bool present = false; };
+    std::vector<SolidVerdict> solidVerdicts;
+    int solidFreeIters = 0;
+    auto solveExtents = [&]() -> Solved
+    {
+        solidVerdicts.clear();
+        solidFreeIters = 0;
+        if (solidPos.empty()) return solveOnce(nullptr);
+        std::fill(present.begin(), present.end(), false);
+        const std::string solidNames = [&] {
+            std::string s;
+            for (auto a : solidPos) s += (s.empty() ? "" : ", ") + thermo.comp(Lx[a]).name();
+            return s; }();
+        Solved s0;
+        try { s0 = solveOnce(nullptr); }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error(std::string(e.what()) + "  [while solving the"
+                " SOLID-FREE equilibrium along the declared reactions, which decides"
+                " whether pure solid " + solidNames + " appears]");
+        }
+        std::vector<std::size_t> supersaturated;
+        for (auto a : solidPos)
+        {
+            SolidVerdict v;
+            v.a = a;
+            v.lnAWithout = v.lnA = s0.x[a];
+            solidVerdicts.push_back(v);
+            if (v.lnAWithout > pureSolidPhase::kLnActivityAppears) supersaturated.push_back(a);
+        }
+        if (supersaturated.empty()) return s0;
+        if (supersaturated.size() > 1)
+        {
+            std::string names;
+            for (auto a : supersaturated)
+                names += (names.empty() ? "" : ", ") + thermo.comp(Lx[a]).name();
+            throw std::runtime_error("equilibriumReactor: " + std::to_string(
+                supersaturated.size()) + " pure solid phases are supersaturated at"
+                " once (" + names + ") -- a multi-solid active set is not"
+                " implemented, and picking one would answer a different question."
+                "  Declare reactions for only the solid the exercise is about.");
+        }
+        const std::size_t c = supersaturated.front();
+        const std::string cname = thermo.comp(Lx[c]).name();
+        present[c] = true;
+        sVector warm = s0.x;
+        warm[c] = 0.0;                       // n_s/F starts at zero
+        Solved s1;
+        try { s1 = solveOnce(&warm); }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error(std::string(e.what()) + "  [while re-solving"
+                " the declared equilibrium with pure solid " + cname + " PRESENT]");
+        }
+        if (!(s1.niCur[Lx[c]] > 0.0))
+        {
+            std::ostringstream m;
+            m << std::setprecision(6) << "equilibriumReactor: pure solid '" << cname
+              << "' is supersaturated in the solid-free answer (a = "
+              << std::exp(s0.x[c]) << ") but the declared equilibrium with it"
+                 " present deposits n = " << (s1.niCur[Lx[c]] * 1000.0)
+              << " mol/s, not a positive amount -- no answer is published.";
+            throw std::runtime_error(m.str());
+        }
+        for (auto& v : solidVerdicts)
+        {
+            v.present = (v.a == c);
+            v.lnA = v.present ? 0.0 : s1.x[v.a];
+            if (!v.present && v.lnA > pureSolidPhase::kLnActivityAppears)
+                throw std::runtime_error("equilibriumReactor: depositing " + cname
+                    + " leaves " + thermo.comp(Lx[v.a]).name() + " supersaturated --"
+                      " a multi-solid active set is not implemented.");
+        }
+        solidFreeIters = s0.iters;
+        return s1;
     };
     Solved sol = solveExtents();
 
@@ -577,7 +728,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
                 throw std::runtime_error(m.str());
             }
             const scalar Kp0 = Kp[j];
-            const auto eqShift = Reaction::equilibrium(thermo, nu[j], T_Kp[j]);
+            const auto eqShift = pureSolidPhase::reactionEquilibrium(thermo, nu[j], T_Kp[j]);
             Kp[j]   = eqShift.Kp;
             lnKp[j] = eqShift.lnKp;
 
@@ -619,7 +770,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     }
     const sVector& xi    = sol.xi;
     const scalar   gNorm = sol.gNorm;
-    const int      iters = sol.iters;
+    const int      iters = sol.iters + solidFreeIters;   // both solves, when a solid appears
 
     // ---- Outlet moles + composition -------------------------------------
     //  The solved amounts THEMSELVES: exp(ln n) for every logged species, the
@@ -628,8 +779,10 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     //  it is said when it binds: a ln n below about -745 has no double, so
     //  that species leaves as exactly 0 and its logarithm is announced.
     sVector nOut = sol.niCur; scalar F_out = 0.0;
+    sVector nSolidOut(n, 0.0);                 // [kmol/s]; the SOLID phase
     for (std::size_t i = 0; i < n; ++i)
     {
+        if (isSolid[i]) { nSolidOut[i] = nOut[i]; nOut[i] = 0.0; continue; }
         F_out += nOut[i];
         if (logged[i] && !(nOut[i] > 0.0))
         {
@@ -656,7 +809,78 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     produced_.clear();
     ProcessStream out;
     out.name = "out"; out.F = F_out; out.T = T; out.P = P; out.z = zout; out.vf = 1.0;
+    //  A deposited pure solid leaves in the SAME outlet, as its solid phase
+    //  (the gibbsReactor's convention, C14): `F`/`z` stay the fluid, `s[]`
+    //  carries the deposit, which the energy report prices on the solid rung
+    //  and the mass and element balances count.
+    scalar Ns = 0.0;                           // [kmol/s]
+    for (std::size_t i = 0; i < n; ++i)
+        if (nSolidOut[i] > 0.0)
+        {
+            if (out.s.empty()) out.s.assign(n, 0.0);
+            out.s[i] = nSolidOut[i];
+            Ns += nSolidOut[i];
+        }
     produced_.push_back(out);
+
+    // ---- The pure solids, announced either way (C14) ----------------------
+    //  A PARTICIPANT (a declared reaction touches it): the verdict of the
+    //  phase test above, in the gibbsReactor's own sentence.  An OBSERVER (a
+    //  pureSolid component no declared reaction touches): it cannot form
+    //  here, and its activity is read off the outlet's element potentials
+    //  where the fluid has them -- above one, the declared list is holding
+    //  a SUPERSATURATED outlet, a metastable state the declaration asserts.
+    const std::string solidLocus = "equilibriumReactor " + (dict->name().empty()
+        ? dict->lookupWordOrDefault("name", "(unnamed)") : dict->name());
+    struct SolidReport { std::size_t i; scalar n_mol_s; bool haveA; scalar a; };
+    std::vector<SolidReport> solidReports;
+    for (const auto& v : solidVerdicts)
+    {
+        const std::size_t i = Lx[v.a];
+        const std::string m = pureSolidPhase::verdict(thermo.comp(i).name(),
+            v.lnAWithout, v.present, nSolidOut[i] * 1000.0, v.lnA,
+            "the minimum of G along the declared reactions",
+            "its amount an unknown of the same Newton on the declared set, "
+            + std::to_string(sol.iters) + " iterations from the solid-free answer");
+        std::cout << "  [equilibriumReactor] " << m << "\n";
+        AdvisoryLog::instance().add("model", "info", solidLocus, m);
+        solidReports.push_back({ i, nSolidOut[i] * 1000.0, true, std::exp(v.lnA) });
+    }
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        if (!isSolid[i] || logged[i]) continue;
+        //  EVERY fluid species present, the ones no reaction touches
+        //  included: an unequilibrated inert (CO2 fed past a list without
+        //  the shift) is exactly what makes a carbon activity route-dependent.
+        std::vector<std::size_t> fluidIdx;
+        for (std::size_t k = 0; k < n; ++k)
+            if (!isSolid[k] && nOut[k] > 0.0) fluidIdx.push_back(k);
+        const auto fa = pureSolidPhase::activityFromFluid(thermo, fluidIdx, nOut,
+                                                          F_out, T, P, i);
+        std::ostringstream m;
+        m << std::setprecision(6) << "pure solid phase '" << thermo.comp(i).name()
+          << "': no declared reaction forms or consumes it, so it cannot appear"
+             " here (n = 0).  ";
+        if (fa.defined)
+        {
+            const scalar a = std::exp(fa.lnActivity);
+            m << "The outlet's element potentials price it at activity a = " << a;
+            if (fa.lnActivity > pureSolidPhase::kLnActivityAppears)
+                m << " > 1: depositing it would LOWER G, so the outlet is"
+                     " SUPERSATURATED in it -- a metastable state the declared"
+                     " reaction list ASSERTS (it declares that no pathway to it"
+                     " runs).";
+            else
+                m << " <= 1: the outlet is not supersaturated in it.";
+        }
+        else
+            m << "Its activity is not defined here: " << fa.reason << ".";
+        std::cout << "  [equilibriumReactor] " << m.str() << "\n";
+        AdvisoryLog::instance().add("model", fa.defined ? "info" : "warning",
+                                    solidLocus, m.str());
+        solidReports.push_back({ i, 0.0, fa.defined,
+                                 fa.defined ? std::exp(fa.lnActivity) : 0.0 });
+    }
 
     // ---- KPIs -----------------------------------------------------------
     kpis_["F_in_kmol_h"]    = F_in  * 3600.0;
@@ -665,6 +889,13 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     kpis_["nReactions"]     = static_cast<scalar>(R);
     kpis_["newtonResidual"]   = gNorm;
     kpis_["newtonIterations"] = static_cast<scalar>(iters);
+    //  A tested pure solid publishes the gibbsReactor's KPIs: its amount
+    //  [mol/s] and its activity (1 present, < 1 absent, and possibly > 1
+    //  for one the declared reactions cannot form; withheld where undefined).
+    for (const auto& r : solidReports)
+        pureSolidPhase::publishKpis(kpis_, thermo.comp(r.i).name(), r.n_mol_s,
+                                    r.a, r.haveA);
+    if (!solidReports.empty()) pureSolidPhase::publishSolidFlow(kpis_, Ns);
     for (std::size_t j = 0; j < R; ++j)
     {
         kpis_["extent_" + rname[j] + "_kmol_h"] = xi[j] * 3600.0;

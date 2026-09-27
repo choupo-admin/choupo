@@ -8874,7 +8874,7 @@ WHAT THE THREE ANSWERS SHOW (measured with this case, 2026-09-27): gibbs y\_CH4 
 
 THE SECOND KNOB. `declared` carries `temperatureApproach 0;` -- a MAGNITUDE the engine gives a sign PER REACTION from that reaction's own thermicity as it runs (src/unitOperations/reactor/TemperatureApproach.H): methanol synthesis is exothermic and runs forward, so its Kp is taken at (T + dT); the shift runs backward, so as it runs it is endothermic and its Kp is taken at (T - dT). Both push against the direction the reaction runs. With 20 K: methanol conversion 0.610 $\to$ 0.442. The key is declared at 0 so the EduTool `declared-pathways` can move it, and every key a knob moves sits on its own line (the EduTool's override channel matches a key at the start of a line).
 
-NOT here, and said: carbon deposition (the equilibriumReactor has no pure-solid phase yet; the gibbsReactor has one since 2026-09-27 and forms graphite in gibbs11\_carbon\_deposition), non-ideal fugacities at 50 bar (every Kp is on the ideal-gas rung; the case declares `fugacityModel idealGas`), and any reactor that is not isothermal.
+NOT here, and said: carbon deposition (no carbon species in this list; both reactors carry a pure-solid phase since 2026-09-27 -- the declared pathways with graphite are equil04\_reforming\_carbon\_declared\_pathways, the Gibbs reactor alone is gibbs11\_carbon\_deposition), non-ideal fugacities at 50 bar (every Kp is on the ideal-gas rung; the case declares `fugacityModel idealGas`), and any reactor that is not isothermal.
 
 \end{tutnarrative}
 
@@ -8912,6 +8912,56 @@ WHY THIS CASE EXISTS. ln Kp = 121.5 puts the unconverted ammonia near 1e-14 of t
 NOT here, and said: the NO $\to$ NO2 oxidation downstream of the burner (NO2 is not in this species list), non-ideal fugacities, any rate, and any reactor that is not isothermal.
 
 \end{tutnarrative}
+
+\clearpage
+\tutentry{equil04\_reforming\_carbon\_declared\_pathways}{tutorials/steady/reactors/equil04\_reforming\_carbon\_declared\_pathways}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (split) at (0.0,-0.0) {\textbf{split}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (gibbs) at (2.9,-0.0) {\textbf{gibbs}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (declared) at (2.9,-1.7) {\textbf{declared}\\[-1pt]{\tiny equilibriumReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (complete) at (2.9,-3.4) {\textbf{complete}\\[-1pt]{\tiny equilibriumReactor}};
+  \draw[->] ($(split.west)+(-1.05,0.00)$) -- ($(split.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (split) -- (gibbs) node[midway, above, font=\tiny] {feedGibbs};
+  \draw[->] (split) -- (declared) node[midway, above, font=\tiny] {feedDeclared};
+  \draw[->] (split) -- (complete) node[midway, above, font=\tiny] {feedComplete};
+  \draw[->] ($(gibbs.east)+(0,0.00)$) -- ($(gibbs.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outGibbs};
+  \draw[->] ($(declared.east)+(0,0.00)$) -- ($(declared.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outDeclared};
+  \draw[->] ($(complete.east)+(0,0.00)$) -- ($(complete.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outComplete};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Declared pathways, a reformer that cokes: one feed, three equilibria -- Gibbs over every species (graphite included), the complete reaction set with methane cracking, and the declared set with Boudouard and cracking left out}
+\begin{tutnarrative}
+a reformer that cokes at equilibrium, and a declared list that says it does not.
+
+The third of the declared-pathways witnesses (equil02 methanol, equil03 ammonia oxidation), and the one with a SOLID. Methane and steam at a steam-to-carbon ratio of 1.0, 900 K, 1 bar, ideal gas, go to three equilibrium reactors side by side; every gas answer is read as MOLE FRACTIONS of the fluid and every solid answer per mole of methane fed, so the split is bookkeeping.
+
+gibbs gibbsReactor over EVERY species (CH4 water CO CO2 H2 graphite): no reaction declared, the minimum of G under the C, H and O balances, graphite given its own pure-solid phase. complete equilibriumReactor over a COMPLETE set of independent reactions for six species over three elements (6 - 3 = 3): steamReforming CH4 + H2O <$\to$ CO + 3 H2 waterGasShift CO + H2O <$\to$ CO2 + H2 methaneCracking CH4 <$\to$ C(gr) + 2 H2 Boudouard (2 CO <$\to$ C(gr) + CO2) is NOT added: it is cracking - reforming + shift, and a fourth reaction would be refused as linearly dependent. Declaring it IN PLACE of cracking gives the same outlet -- an equilibrium does not care which route reaches it. declared equilibriumReactor over reforming and the shift ONLY: Boudouard and methane cracking are left OUT, and with them every pathway to carbon.
+
+THE PREMISE IS YOURS. Leaving the carbon routes out states that, over the catalyst this reactor carries, carbon does not form at these conditions. That is kinetic knowledge; the engine cannot check it and does not try. It does NOT say carbon cannot form thermodynamically -- the outlet says the opposite, and says how much the premise is asserting.
+
+WHAT THE THREE ANSWERS SHOW (measured with this case, 2026-09-27): gibbs graphite DEPOSITS: 0.2168 mol per mol of methane fed (21.7 \% of the carbon). The solid-free gas had carbon activity a = 1.580 > 1, so it was not the minimum of G. Gas left: y\_CH4 0.1146, y\_H2O 0.1374, y\_CO 0.0923, y\_CO2 0.0476, y\_H2 0.6081. complete the SAME outlet, gas and graphite, to the printed digits (a solid participant: absent in the first solve, activity 1.580 read off it, then present at activity 1). declared NO graphite, and the gas is the solid-free equilibrium: y\_CH4 0.1568, y\_H2O 0.1056, y\_CO 0.1204, y\_CO2 0.0512, y\_H2 0.5660. Its carbon activity is published, activity\_graphite = 1.580: the outlet is SUPERSATURATED in carbon, a metastable state the declared list asserts. Recompute it by hand, by either route the list leaves out: a\_C = Kp\_crack $\ast$ p\_CH4 / p\_H2\textasciicircum{}2 (p in bar) = Kp\_boud $\ast$ p\_CO\textasciicircum{}2 / p\_CO2 with Kp\_crack = 3.2283 and Kp\_boud = 5.5887 at 900 K -- both give 1.580, because reforming and the shift are the complete set for the five gases, so the gas is fully equilibrated. Raise the steam to S/C 3.0 and a\_C falls to 0.294: carbon is absent everywhere and the three reactors agree -- the declared list then costs nothing.
+
+NOT here, and said: any rate (whisker and encapsulating carbon and their kinetics are not modelled), a second solid, a solid in the feed (refused by name), non-ideal fugacities, and any reactor that is not isothermal. Record: docs/design/a-solid-in-a-declared-reaction-set.md.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.00555555555556}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{feedComplete}{F}{0.00138888888889}
+\goldrow{stream}{feedComplete}{T}{900}
+\goldrow{stream}{feedDeclared}{F}{0.00138888888889}
+\goldrow{stream}{feedDeclared}{T}{900}
+\goldrow{stream}{feedGibbs}{F}{0.00277777777778}
+\goldrow{stream}{feedGibbs}{T}{900}
+\goldrow{stream}{outComplete}{F}{0.00228803991324}
+\goldrow{stream}{outComplete}{T}{900}
+\goldrow{stream}{outDeclared}{F}{0.00211460671012}
+\goldrow{stream}{outDeclared}{T}{900}
+\goldrow{stream}{outGibbs}{F}{0.00457607982775}
+\goldrow{stream}{outGibbs}{T}{900}
+\goldmore{58}
+\end{tutgolden}
 
 \clearpage
 \tutentry{pfr01\_first\_order}{tutorials/steady/reactors/pfr01\_first\_order}

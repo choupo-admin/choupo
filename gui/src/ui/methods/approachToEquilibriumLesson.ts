@@ -238,7 +238,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
         + "(`approachDirection`, GibbsReactor.cpp:67–106).  An ISOTHERMAL run "
         + "with feed and reactor at one temperature also publishes its sign as "
         + "the duty the surroundings must supply to hold T (`Q_kW`, "
-        + "GibbsReactor.cpp:482)",
+        + "GibbsReactor.cpp:561)",
         unit: "J/mol" },
       { sym: "X_\\mathrm{eq}",
         means: "the equilibrium conversion — or any monotone stand-in for it, "
@@ -329,7 +329,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
       + "`gibbsReactor` unit, the `gibbsMap` property operation and, since "
       + "2026-09-27, `equilibriumReactor`, which takes a DECLARED reaction "
       + "list and reads the approach PER REACTION on the same sign rule "
-      + "(EquilibriumReactor.cpp:520–618; the EduTool `declared-pathways` "
+      + "(EquilibriumReactor.cpp:671–769; the EduTool `declared-pathways` "
       + "is its page) — so a case that declares an approach should say "
       + "which definition it means and can only mean this one.  (ii) The PELLET EFFECTIVENESS FACTOR is absent and announced "
       + "as absent: Choupo's kinetic reactors evaluate the rate at bulk "

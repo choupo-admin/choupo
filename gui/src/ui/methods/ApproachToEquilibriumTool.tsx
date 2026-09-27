@@ -82,7 +82,7 @@ License
   prose and is NOT a witness here.  The divergence IS the third caveat.
 
   THE FEED TEMPERATURE MOVES WITH THE REACTOR, and that is what makes `Q_kW`
-  readable.  GibbsReactor.cpp:482 publishes `Q_kW = H_out - H_in` with H_in at
+  readable.  GibbsReactor.cpp:561 publishes `Q_kW = H_out - H_in` with H_in at
   the FEED temperature, so with a feed left behind it carries sensible heat and
   its sign stops being the thermicity (measured: the shift reactor at 1200 K
   with an 800 K feed reports +2.04 kW and is exothermic).  With both at the
@@ -203,7 +203,7 @@ export function verdictOf(
 }
 
 /** The thermicity WORD the engine's own duty carries, or null when the run
- *  published none.  Sign convention is GibbsReactor.cpp:482 — `Q_kW` is heat
+ *  published none.  Sign convention is GibbsReactor.cpp:561 — `Q_kW` is heat
  *  ADDED to the process to hold T, so a negative duty is heat removed. */
 export function thermicityOf(Q_kW: number | null):
   "exothermic" | "endothermic" | "thermally neutral" | null {

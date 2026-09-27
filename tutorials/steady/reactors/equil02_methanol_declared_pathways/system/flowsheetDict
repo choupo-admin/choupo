@@ -57,9 +57,10 @@
   moves sits on its own line (the EduTool's override channel matches a key
   at the start of a line).
 
-  NOT here, and said: carbon deposition (the equilibriumReactor has no
-  pure-solid phase yet; the gibbsReactor has one since 2026-09-27 and
-  forms graphite in gibbs11_carbon_deposition), non-ideal
+  NOT here, and said: carbon deposition (no carbon species in this list;
+  both reactors carry a pure-solid phase since 2026-09-27 -- the declared
+  pathways with graphite are equil04_reforming_carbon_declared_pathways,
+  the Gibbs reactor alone is gibbs11_carbon_deposition), non-ideal
   fugacities at 50 bar (every Kp is on the ideal-gas rung; the case declares
   `fugacityModel idealGas`), and any reactor that is not isothermal.
 \*---------------------------------------------------------------------------*/

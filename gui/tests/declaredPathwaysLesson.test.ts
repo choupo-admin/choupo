@@ -124,9 +124,36 @@ describe("the declared-pathways lesson", () => {
 });
 
 describe("what the page declines to claim", () => {
-  it("names the witness that could NOT be built, with the reason", () => {
-    const carbon = PATHWAYS_LIMITS.find((x) => x.id === "carbon-not-buildable")!;
-    expect(prose(carbon.body)).toContain("no solid-carbon record");
+  it("gives the carbon example the lists its witness declares, and the premise its honest reading", () => {
+    //  Built 2026-09-27 (C14 slice 2) once graphite was a component and the
+    //  equilibrium reactor carried a pure-solid phase; the old limit that
+    //  said carbon could not be shown is gone, not left beside it.
+    expect(PATHWAYS_LIMITS.find((x) => x.id === "carbon-not-buildable"))
+      .toBeUndefined();
+    const l = PATHWAYS_LIMITS.find((x) => x.id === "carbon-formation")!;
+    const body = prose(l.body);
+    expect(body).toContain("equil04_reforming_carbon_declared_pathways");
+    expect(body).toContain("a_C = 1.580");
+    expect(body).toContain("The declared list does not say carbon cannot form");
+    expect(body).toContain("the catalyst is assumed not to form it");
+    expect(body).toContain("cites no catalyst");
+    const base = "../../tutorials/steady/reactors/"
+      + "equil04_reforming_carbon_declared_pathways/";
+    const fs = readFileSync(new URL(base + "system/flowsheetDict",
+      import.meta.url), "utf-8");
+    const list = (unit: string) => fs.match(new RegExp(
+      `name\\s+${unit};[\\s\\S]*?reactions\\s*\\(([^)]*)\\)`))?.[1]
+      ?.trim().split(/\s+/);
+    expect(list("declared")).toEqual(["steamReforming", "waterGasShift"]);
+    expect(list("complete")).toEqual(
+      ["steamReforming", "waterGasShift", "methaneCracking"]);
+    //  Both carbon routes the page names exist in the library, each with
+    //  graphite as a product.
+    const rx = readFileSync(new URL(base + "constant/reactions",
+      import.meta.url), "utf-8");
+    for (const r of ["methaneCracking", "boudouard"])
+      expect(rx).toMatch(new RegExp(
+        `^${r}\\b[^{]*\\{[\\s\\S]*?component graphite;\\s*nu\\s+1;`, "m"));
   });
 
   it("gives the ammonia example the reaction lists its witness declares", () => {

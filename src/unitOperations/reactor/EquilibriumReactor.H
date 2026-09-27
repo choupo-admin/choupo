@@ -63,6 +63,20 @@ Description
     ISOTHERMAL at T: outlet state and duty are at the physical T.  A negative
     magnitude REFUSES by name; absent the key the run is the one it always
     was.  NOT here: an adiabatic mode, and any Kp beyond the ideal-gas rung.
+
+    A PURE SOLID (C14 slice 2, 2026-09-27).  A declared reaction may name a
+    `referenceState pureSolid;` component (graphite in methane cracking or
+    Boudouard).  It is its own phase -- activity one, no mole fraction, out
+    of ln Q, into ln Kp through its pure-solid standard potential -- and its
+    amount may be zero.  The phase set is decided as the gibbsReactor
+    decides it: solved with the solid absent, its activity read, deposited
+    only where that exceeds one; the deposit leaves in the outlet's `s[]`
+    on the solid rung.  A pure-solid component NO declared reaction touches
+    cannot form; its activity is read off the outlet's element potentials
+    and published (above one: a supersaturated, metastable outlet the
+    declaration asserts), or refused by name where the fluid has none.
+    One home for everything the two reactors share: PureSolidPhase.H.
+    Record: docs/design/a-solid-in-a-declared-reaction-set.md.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

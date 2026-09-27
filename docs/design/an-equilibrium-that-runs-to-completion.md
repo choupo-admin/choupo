@@ -247,4 +247,9 @@ the source was touched and rebuilt.  Restore with a NEW mtime.
 * Convergence.H (§3).
 * A liquid phase: `equilibriumReactor` stays gas-only, which is where the
   Gibbs reactor and the complete set part company below about 450 K at
-  50 bar on equil02.
+  50 bar on equil02.  (A PURE SOLID phase is not a liquid and was added
+  the same day on top of this formulation, C14 slice 2: a solid
+  participant's column carries ln a_s while it is absent and n_s/F while
+  it is present, and a case with no solid takes the path described here,
+  byte for byte -- record
+  [`a-solid-in-a-declared-reaction-set.md`](a-solid-in-a-declared-reaction-set.md).)

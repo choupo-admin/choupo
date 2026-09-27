@@ -75,11 +75,15 @@ Description
     the SOLID rung, `Component::h_formation(T, "solid")` -- the same leg the
     energy report applies to a stream's `s[]` -- and never `h_pure_ig`,
     which a pureSolid record refuses (the reference rung).
+
+    ONE HOME WITH THE EQUILIBRIUM REACTOR (slice 2, 2026-09-27): what a pure
+    solid IS, its rung, the appearance threshold, the verdict sentence and
+    the KPI names live in `unitOperations/reactor/PureSolidPhase.H`, which
+    `equilibriumReactor` reads too.
 \*---------------------------------------------------------------------------*/
 
 #include "GibbsMethod.H"
 
-#include "core/Constants.H"
 #include "thermo/Component.H"
 
 #include <algorithm>
@@ -112,7 +116,7 @@ scalar pureSolidEnthalpy_W(const GibbsProblem& p, const GibbsEquilibrium& eq,
     for (std::size_t i = 0; i < eq.nSolid.size() && i < p.N(); ++i)
         if (eq.nSolid[i] > 0.0)
             H += eq.nSolid[i]
-               * p.thermo->comp(p.compIdx[i]).h_formation(T, "solid");
+               * pureSolidPhase::enthalpy(p.thermo->comp(p.compIdx[i]), T);
     return H;                          // mol/s x J/mol = W
 }
 
@@ -125,7 +129,7 @@ GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
     std::vector<std::size_t> solid, fluid;
     for (std::size_t i = 0; i < N; ++i)
     {
-        if (thermo.comp(p.compIdx[i]).referenceStateWord() == "pureSolid")
+        if (pureSolidPhase::isPureSolid(thermo.comp(p.compIdx[i])))
             solid.push_back(i);
         else
             fluid.push_back(i);
@@ -173,8 +177,7 @@ GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
     const scalar Tchem = T + p.dTapproach;
     std::vector<scalar> gS(N, 0.0);
     for (std::size_t s : solid)
-        gS[s] = thermo.comp(p.compIdx[s]).g_formation(Tchem, "solid")
-              / (constant::R * Tchem);
+        gS[s] = pureSolidPhase::gOverRT(thermo.comp(p.compIdx[s]), Tchem);
 
     //  Map a fluid answer back onto the full species list.
     auto expand = [&](const GibbsEquilibrium& e, const std::vector<scalar>& nS)
@@ -215,7 +218,8 @@ GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
         v.lnActivityWithout = lnActivity(p, e0, s, gS[s]);
         v.lnActivity        = v.lnActivityWithout;
         verdicts.push_back(v);
-        if (v.lnActivityWithout > 1.0e-10) supersaturated.push_back(s);
+        if (v.lnActivityWithout > pureSolidPhase::kLnActivityAppears)
+            supersaturated.push_back(s);
     }
     if (supersaturated.empty())
     {
@@ -300,7 +304,7 @@ GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
         v.lnActivity = lnActivity(p, trial, v.i, gS[v.i]);
         v.present    = (v.i == c);
         v.bisections = v.present ? evaluations : 0;
-        if (!v.present && v.lnActivity > 1.0e-10)
+        if (!v.present && v.lnActivity > pureSolidPhase::kLnActivityAppears)
             throw std::runtime_error("GibbsReactor: depositing " + nameOf(c)
                 + " leaves " + nameOf(v.i) + " supersaturated -- a"
                   " multi-solid active set is not implemented.");

@@ -212,7 +212,7 @@ describe("the tool's one piece of arithmetic", () => {
   });
 
   it("reads the thermicity off the engine's duty sign, not off a name", () => {
-    //  GibbsReactor.cpp:482 -- Q_kW is heat ADDED to hold T.
+    //  GibbsReactor.cpp:561 -- Q_kW is heat ADDED to hold T.
     expect(thermicityOf(-3.44038833106)).toBe("exothermic");   // shift at 800 K
     expect(thermicityOf(57.7812038582)).toBe("endothermic");   // reformer, 1000 K
     expect(thermicityOf(0)).toBe("thermally neutral");

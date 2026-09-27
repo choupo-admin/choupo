@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- ideal gamma-phi, IDEAL GAS declared, plus
+  graphite.  Every equilibriumReactor Kp is on the ideal-gas rung (a pure
+  solid on its own solid rung, at activity one), so the Gibbs reactor here
+  is priced on the same rungs: a real equation of state in one reactor alone
+  would make the columns answer two different questions.  Graphite's record
+  says `referenceState pureSolid;`: it never enters the vapour or the liquid
+  mixture, and both reactors give it a phase of its own.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( CH4  water  CO  CO2  H2  graphite );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

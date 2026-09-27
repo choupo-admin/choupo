@@ -59,6 +59,7 @@ Description
 
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
+#include "unitOperations/reactor/PureSolidPhase.H"
 
 #include <functional>
 #include <map>

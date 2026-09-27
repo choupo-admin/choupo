@@ -85,6 +85,59 @@ WHAT THIS GATE CHECKS.
       ln Kp.  No corpus case reaches either limit, which is why the fixture
       is built here rather than read from a witness.
 
+A PURE SOLID IN A DECLARED SET (added 2026-09-27, commission C14 slice 2;
+record docs/design/a-solid-in-a-declared-reaction-set.md).  The witness
+equil04_reforming_carbon_declared_pathways (CH4 + H2O at S/C 1.0, 900 K,
+1 bar) is held to an INDEPENDENT recomputation: the reaction-based route of
+check_gibbs_solid_phase.py (three K's from the case's own records, nested
+bisections on the extents, the carbon test a_C = K_crack p_CH4 / p_H2^2),
+which shares no line of code with either reactor.
+  (m) the COMPLETE set (reforming, shift, cracking) and the Gibbs reactor
+      both reproduce the route on every species, graphite included (1e-6);
+      the complete set deposits at activity 1 and says APPEARS.
+  (n) the DECLARED set (Boudouard and cracking left out) carries no
+      graphite, its gas is the route's SOLID-FREE equilibrium (1e-6), and
+      its published activity_graphite is > 1 and equals the route's
+      solid-free carbon activity (1e-6); the supersaturation is announced,
+      and reaches the caveat block under the unit's name.
+  (o) the solid on its SOLID rung: the complete set's Q_kW recomputed as
+      H_out - H_in on the records, graphite by its NASA-7 solid Cp (1e-6);
+      the plant first law closes (1e-6 kW).
+  (p) C, H and O close on both equilibriumReactors, the deposit counted
+      (1e-9).
+  (q) THE ROUTE DOES NOT MATTER: Boudouard in place of cracking gives the
+      same outlet (1e-9); all four together refuse, naming boudouard as the
+      reaction the other three span.
+  (r) A STEAM MARGIN: at S/C 3.0 the complete set leaves graphite ABSENT
+      (said) and both equilibriumReactors publish the route's activity < 1.
+  (s) NO ACTIVITY WITHOUT ELEMENT POTENTIALS: CO2 fed past a list that
+      declares only reforming is an unequilibrated species, so the carbon
+      activity would depend on the route; it is refused by name and not
+      published.
+  (t) ONE HOME (source arm): both reactors call pureSolidPhase::verdict,
+      publishKpis and publishSolidFlow, and neither writes the verdict
+      sentence or a solid KPI name itself.
+
+  By-hand sabotages (2026-09-27, each restored by copy + touch + make; all
+  seven CAUGHT, results as measured):
+    S1 EquilibriumReactor.cpp: appearance threshold 1e10 (never appears)
+       -> (m) every species off, graphite 0 against 1.506e-4 kmol/s, a =
+          1.58 with nothing deposited; (o) Q 77.378 against 76.595.
+    S2 PureSolidPhase.cpp: speciesEnthalpy prices the solid at 0
+       -> (o) Q 75.139 against 76.595, plant residual -1.4565 kW.
+    S3 EquilibriumReactor.cpp: the deposit not written to the outlet's s[]
+       -> (m) graphite 0; (o) residual +1.4565 kW; (p) C in 6.944e-4 out
+          5.439e-4 kmol/s.
+    S4 EquilibriumReactor.cpp: the activity fit over the reacting species
+       only (the unequilibrated CO2 left out)
+       -> (s) activity 1.623 published for a route-dependent quantity.
+    S5 PureSolidPhase.cpp: the solid's standard potential left out of ln K
+       -> (m) no deposit (a = 0.398); (o); (r) activity 0.074 against 0.294.
+    S6 GibbsReactor.cpp: F_solid_kmol_h written inline again
+       -> (t) twice (no publishSolidFlow call; the literal).
+    S7 EquilibriumReactor.cpp: the observer's activity withheld
+       -> (n) activity None; (r) declared activity None.
+
 WHAT THIS GATE DOES NOT COVER, stated so its green line cannot imply it.
 It does not judge whether any approach magnitude is RIGHT for any bed (the
 key is empirical, calibrated, never predicted).  It does not check a
@@ -117,6 +170,9 @@ EQUIL02 = (ROOT / "tutorials" / "steady" / "reactors"
            / "equil02_methanol_declared_pathways")
 EQUIL03 = (ROOT / "tutorials" / "steady" / "reactors"
            / "equil03_ammonia_oxidation_declared_pathways")
+EQUIL04 = (ROOT / "tutorials" / "steady" / "reactors"
+           / "equil04_reforming_carbon_declared_pathways")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 OP_LINE = "operation   { T 1100 K; }"
 fails = []
@@ -197,6 +253,191 @@ def reaction_sign_298(case: Path, rxn: str) -> int:
 
 def neutral(out: str, path: Path) -> str:
     return out.replace(str(path), "CASE")
+
+
+# ---- (m)-(r): the pure solid in a declared set (C14 slice 2) ---------------
+def outlet_moles(streams, name):
+    """kmol/s of every species in a stream, FLUID AND SOLID (the result
+    JSON's F and composition are the overall material incl. solids)."""
+    st = streams.get(name) or {}
+    return {c: st.get("F", 0.0) * x for c, x in
+            (st.get("composition") or {}).items()}
+
+
+def carbon_arms(td: str) -> None:
+    import check_gibbs_solid_phase as gsp
+    sp = {k: gsp.Gas(k, EQUIL04) for k in gsp.GASES}
+    gr = gsp.Graphite(EQUIL04)
+    T, P_BAR, SC = 900.0, 1.0, 1.0
+
+    cw = Path(td) / "carbon"
+    shutil.copytree(EQUIL04, cw, ignore=shutil.ignore_patterns(
+        "converged", "reports", "iterations", "design"))
+    rc, out, js = run(cw)
+    if rc != 0 or js is None:
+        err = re.findall(r"ERROR:.*", out)
+        fails.append(f"(m) the witness equil04 did not run (exit {rc}"
+                     f"{': ' + err[-1][:160] if err else ''})")
+        return
+    S = js.get("streams") or {}
+    K = js.get("kpis") or {}
+    n_ref, aC0 = gsp.reaction_route(sp, gr, T, P_BAR, SC)
+    n_free, _ = gsp.reaction_route(sp, gr, T, P_BAR, SC, solid_free=True)
+    species = gsp.GASES + ("graphite",)
+
+    # (m) complete set == Gibbs == the reaction route, graphite included.
+    for unit, fin, fout in (("complete", "feedComplete", "outComplete"),
+                            ("gibbs", "feedGibbs", "outGibbs")):
+        ch4 = outlet_moles(S, fin).get("CH4", 0.0)
+        got = outlet_moles(S, fout)
+        for c in species:
+            ref = n_ref[c] * ch4
+            if not close(got.get(c, -1.0), ref, 1e-6):
+                fails.append(f"(m) {unit} {c}: {got.get(c)} kmol/s, the "
+                             f"reaction route gives {ref}")
+    kc = K.get("complete", {})
+    if not (kc.get("n_solid_graphite_mol_s", 0.0) > 0.0
+            and close(kc.get("activity_graphite", 0.0), 1.0, 1e-12)):
+        fails.append("(m) the complete set did not deposit graphite at "
+                     f"activity 1 (n = {kc.get('n_solid_graphite_mol_s')}, "
+                     f"a = {kc.get('activity_graphite')})")
+    if not ("[equilibriumReactor] pure solid phase 'graphite': activity in "
+            "the solid-free equilibrium" in out and "APPEARS" in out):
+        fails.append("(m) the complete set did not announce graphite APPEARS")
+
+    # (n) the declared set: NO carbon, the solid-free gas, and a > 1 said.
+    kd = K.get("declared", {})
+    god = outlet_moles(S, "outDeclared")
+    ch4d = outlet_moles(S, "feedDeclared").get("CH4", 0.0)
+    if god.get("graphite", -1.0) != 0.0 or kd.get("n_solid_graphite_mol_s") != 0.0 \
+            or "solids" in (S.get("outDeclared") or {}):
+        fails.append("(n) the declared set (Boudouard and cracking left out) "
+                     "carries graphite")
+    for c in gsp.GASES:
+        if not close(god.get(c, -1.0), n_free[c] * ch4d, 1e-6):
+            fails.append(f"(n) declared {c}: {god.get(c)} kmol/s, the "
+                         f"solid-free route gives {n_free[c] * ch4d}")
+    a_d = kd.get("activity_graphite")
+    if a_d is None or not a_d > 1.0 or not close(a_d, aC0, 1e-6):
+        fails.append(f"(n) the declared outlet's carbon activity is {a_d}; "
+                     f"the solid-free route gives {aC0} (must be > 1 here)")
+    if "SUPERSATURATED in it -- a metastable state the declared reaction " \
+            "list ASSERTS" not in out:
+        fails.append("(n) the declared set's supersaturation was not announced")
+    tail = out.split("ASSUMPTIONS AND CAVEATS", 1)
+    if len(tail) < 2 or "equilibriumReactor declared: pure solid phase " \
+            "'graphite'" not in tail[1]:
+        fails.append("(n) the declared set's carbon verdict did not reach the "
+                     "caveat block under the unit's name")
+
+    # (o) the solid on its SOLID rung: the complete duty recomputed on the
+    #     records, and the plant first law.
+    ch4 = outlet_moles(S, "feedComplete").get("CH4", 0.0) * 1000.0   # mol/s
+    H_in = sp["CH4"].h(T) + SC * sp["water"].h(T)
+    H_out = sum(n_ref[c] * sp[c].h(T) for c in gsp.GASES) \
+        + n_ref["graphite"] * gr.h(T)
+    Q = (H_out - H_in) * ch4 / 1000.0
+    if not close(kc.get("Q_kW", 0.0), Q, 1e-6):
+        fails.append(f"(o) complete Q_kW {kc.get('Q_kW')}, recomputed on the "
+                     f"records {Q} (graphite on its solid rung)")
+    res = (js.get("globalEnergyBoundary") or {}).get("residual_kW", 1e9)
+    if abs(res) > 1e-6:
+        fails.append(f"(o) plant first-law residual {res} kW")
+
+    # (p) C/H/O close on each equilibriumReactor, the deposit counted.
+    atoms = {"CH4": (1, 4, 0), "water": (0, 2, 1), "CO": (1, 0, 1),
+             "CO2": (1, 0, 2), "H2": (0, 2, 0), "graphite": (1, 0, 0)}
+    for unit, fin, fout in (("complete", "feedComplete", "outComplete"),
+                            ("declared", "feedDeclared", "outDeclared")):
+        e = []
+        for nm in (fin, fout):
+            m = outlet_moles(S, nm)
+            e.append([sum(m.get(c, 0.0) * atoms[c][j] for c in atoms)
+                      for j in range(3)])
+        for j, el in enumerate("CHO"):
+            if not close(e[1][j], e[0][j], 1e-9):
+                fails.append(f"(p) {unit}: element {el} in {e[0][j]} out "
+                             f"{e[1][j]} kmol/s")
+
+    CR = "reactions   ( steamReforming waterGasShift methaneCracking );"
+    # (q) the route does not matter: Boudouard in place of cracking gives the
+    #     same outlet; all four together refuse, naming Boudouard.
+    cb = fixture(td, "boudouard", src=EQUIL04, fs=[(CR,
+                 "reactions   ( steamReforming waterGasShift boudouard );")])
+    rcb, outb, jsb = run(cb)
+    if rcb != 0:
+        fails.append(f"(q) the Boudouard route did not run (exit {rcb})")
+    else:
+        gb = outlet_moles((jsb or {}).get("streams") or {}, "outComplete")
+        got = outlet_moles(S, "outComplete")
+        for c in species:
+            if not close(gb.get(c, -1.0), got.get(c, -2.0), 1e-9):
+                fails.append(f"(q) {c}: Boudouard route {gb.get(c)}, "
+                             f"cracking route {got.get(c)}")
+    c4 = fixture(td, "allFour", src=EQUIL04, fs=[(CR,
+                 "reactions   ( steamReforming waterGasShift methaneCracking "
+                 "boudouard );")])
+    rc4, out4, _ = run(c4)
+    if rc4 == 0 or "LINEARLY DEPENDENT" not in out4 \
+            or "reaction 'boudouard'" not in out4:
+        fails.append(f"(q) all four reactions were not refused naming "
+                     f"boudouard (exit {rc4})")
+
+    # (r) a steam margin: S/C 3.  The complete set's graphite is ABSENT, at
+    #     the activity the reaction route gives, and the declared set's
+    #     observer reads the same number (the gas is fully equilibrated).
+    c3 = fixture(td, "sc3", src=EQUIL04, feed=[("    water    10.0 kmol/h;",
+                                               "    water    30.0 kmol/h;")])
+    rc3, out3, js3 = run(c3)
+    if rc3 != 0:
+        fails.append(f"(r) the S/C 3 probe did not run (exit {rc3})")
+    else:
+        _, a3 = gsp.reaction_route(sp, gr, T, P_BAR, 3.0)
+        k3 = (js3 or {}).get("kpis") or {}
+        for unit in ("complete", "declared"):
+            a = k3.get(unit, {}).get("activity_graphite")
+            if a is None or not a < 1.0 or not close(a, a3, 1e-6):
+                fails.append(f"(r) {unit} at S/C 3: activity {a}, the route "
+                             f"gives {a3} (< 1)")
+            if k3.get(unit, {}).get("n_solid_graphite_mol_s") != 0.0:
+                fails.append(f"(r) {unit} deposits graphite at S/C 3")
+        if "the solid is ABSENT (n = 0)" not in out3:
+            fails.append("(r) the complete set's ABSENT verdict was not said")
+
+    # (s) a gas NOT fully equilibrated has no carbon activity: CO2 fed past a
+    #     list that declares no reaction touching it (the shift left out) is
+    #     an unequilibrated species, so the carbon activity depends on the
+    #     route and is refused by name and not published.  (Reforming alone
+    #     on a CH4 + H2O feed is NOT such a case: CO2 is then absent, and
+    #     reforming is the complete set for the four species present.)
+    cs = fixture(td, "noShift", src=EQUIL04, fs=[(
+        "reactions   ( steamReforming waterGasShift );",
+        "reactions   ( steamReforming );")],
+        feed=[("    water    10.0 kmol/h;",
+               "    water    10.0 kmol/h;\n    CO2       2.0 kmol/h;")])
+    rcs, outs, jss = run(cs)
+    ks = (((jss or {}).get("kpis") or {}).get("declared") or {})
+    if rcs != 0 or "activity_graphite" in ks \
+            or "not in complete internal equilibrium" not in outs:
+        fails.append(f"(s) a declared set that leaves a fluid pathway closed "
+                     f"did not withhold the carbon activity by name (exit "
+                     f"{rcs}, published {ks.get('activity_graphite')})")
+
+    # (t) ONE HOME (source arm): both reactors say the verdict and publish the
+    #     KPIs through PureSolidPhase.H; neither writes the sentence itself.
+    for f in ("GibbsReactor.cpp", "EquilibriumReactor.cpp"):
+        src = re.sub(r"//[^\n]*", "", re.sub(r"/\*.*?\*/", "",
+                     (SRC / f).read_text(), flags=re.S))
+        if "pureSolidPhase::verdict" not in src \
+                or "pureSolidPhase::publishKpis" not in src \
+                or "pureSolidPhase::publishSolidFlow" not in src:
+            fails.append(f"(t) {f} does not speak through pureSolidPhase::"
+                         "verdict / publishKpis -- a second home for them")
+        for literal in ("the solid APPEARS", '"n_solid_"', '"activity_"',
+                        '"F_solid_kmol_h"'):
+            if literal in src:
+                fails.append(f"(t) {f} writes {literal} itself -- the verdict "
+                             "and the KPI names have one home, PureSolidPhase")
 
 
 def main() -> int:
@@ -516,6 +757,9 @@ def main() -> int:
             if "KPI Kp_burn is not published" not in outl:
                 fails.append("(l) the withheld Kp_burn was not announced")
 
+        # ---- (m)-(r) a pure solid in a declared set (C14 slice 2) ---------
+        carbon_arms(td)
+
     # ---- (g) one home for the rule (source arm) ----------------------------
     def code(path: Path) -> str:
         t = path.read_text()
@@ -553,9 +797,18 @@ def main() -> int:
           "(below 1e-12) is the declared equilibrium recomputed by hand; a "
           "dependent set refuses naming the redundant reaction; a "
           "ln Kp ~ 8243 fixture converges and SAYS what a double cannot "
-          "carry (its ln n, its ln Kp).  "
+          "carry (its ln n, its ln Kp); equil04's complete set deposits "
+          "graphite and reproduces the Gibbs reactor and an independent "
+          "reaction route (gas and solid, 1e-6), its declared set (carbon "
+          "routes left out) forms none and publishes the route's carbon "
+          "activity > 1, the solid is priced on its solid rung (duty and "
+          "plant first law), C/H/O close, Boudouard and cracking give one "
+          "answer and all four refuse, S/C 3 leaves it absent, a gas with "
+          "an unequilibrated species gets no activity, and both reactors "
+          "speak through PureSolidPhase.  "
           "NOT checked: whether any magnitude is right for a bed, coupled "
-          "effects, adiabatic operation, non-ideal Kp")
+          "effects, adiabatic operation, non-ideal Kp, two solids at once, "
+          "a solid in the feed")
     return 0
 
 
