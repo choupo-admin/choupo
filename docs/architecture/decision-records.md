@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 143 records already exist
+## 1. Why an index, when 145 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 143 design records, **97 state a rejected alternative and 46 do not** —
+- Of 145 design records, **98 state a rejected alternative and 47 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -245,6 +245,8 @@ is this index failing its own purpose; they move below with their rulings.
 | [`props-component-curator-assessment.md`](../design/props-component-curator-assessment.md) | STUDY | assessment of the proposed `curateComponent` op; concluded the natural output is a curation DOSSIER, not a resurrected `data/proposed/` tier.  Decides nothing by itself |
 | [`verifying-the-catalogue-against-a-book.md`](../design/verifying-the-catalogue-against-a-book.md) | STUDY | 2026-08-25 — the component catalogue read back against Poling App. A from Vítor's own copy (`bin/curate/verify_against_poling.py`, matched by CAS never by name).  Of 158 CAS-bearing records the appendix lists 75: **238 values reproduce it to its printed precision, 105 differ by under 1 %, 37 by more**, and 19 Vliq comparisons are REFUSED rather than counted because the appendix states its volume at the measurement temperature.  Per quantity: MW agrees everywhere and **no Tc disagrees by as much as 1 %** — every notable difference is in Pc, ω or ΔHvap, the hard-to-measure and the derived.  Deliberately NOT a gate (the book cannot live here, so a skip-when-absent check would be permanently green — the retired `check_true_ions` shape) and deliberately CHANGES NOTHING: the notable disagreements are mostly ours being NEWER.  Puts evidence under the reserved CoolProp-provenance question; **decides it not at all** |
 | [`properties-gui-task-orientation-2026-08-11.md`](../design/properties-gui-task-orientation-2026-08-11.md) | STUDY | measured the Properties GUI against a task-orientation critique: the flow is already substance-first and one-click-to-a-curve, and the real gap is that a component is not an inspectable object.  Item 1 (the Component Inspector) shipped from it |
+| [`the-salt-chosen-by-its-position.md`](../design/the-salt-chosen-by-its-position.md) | ADR | no | **SHIPPED 2026-09-27** (DEV.md §5 A1) -- the single-salt electrolyte adapter picked its active salt through a formula read from the retired `chemistry/salts/<phase>.dat` home, and an empty formula let the FIRST `dissociatesTo` component in the list win.  Measured first: the filing's example (the lithium plant's BRINE sector) was not positional and its engine answer was right.  RULE: the active salt is DECLARED -- the candidate whose own `solidPhases {}` owns the phase `constant/chemistryDict` declares -- never positional, announced in one line; a legacy `salts/` record is honoured and announced, and refused where it disagrees; anything else refuses naming every candidate.  Gate `check_v2_refusals` (the active-salt arm).  Indexed 2026-09-27 by the water.dat slice, which found this gate failing on it at `741b759aa` |
+| [`what-water-dat-does-not-say.md`](../design/what-water-dat-does-not-say.md) | STUDY | yes | **INVENTORY + PARTIAL FILL 2026-09-27** (Vítor: "a gap in [water's] properties is unacceptable") -- every property a unit reads off `water.dat`, measured against IAPWS SR1-86(1992), R15-11, R12-08, R1-76, IF97 and the CODATA Key Values.  The record's Antoine fit is +2.47 % at 373.15 K INSIDE its declared window (its own normal boiling point is 372.45 K) and +18 % at 573 K; the liquid Cp is -6.7 % at 473 K; Watson and the enthalpy surface carry two latent heats 3.30 % apart at 401.63 K; BrockBird's water surface tension is +48 % at 298 K.  263 of the 264 water cases read a SEALED mirror, so a catalogue edit moves goldens at re-import, not today.  BUILT: an IAPWS-R15-11-derived `liquidThermalConductivity` (no reader in the corpus, no golden moves) and an opt-in `Wagner` vapour-pressure model with REQUIRED reducing constants.  MEASURED, NOT TAKEN: the vapour-pressure flip on 102 staged cases moves 268 rows in 37 and stops `column05` converging.  REJECTED: storing the CODATA liquid datum (`check_record_form` refuses a second formation datum; the error is the Watson derivation, not the datum) and AmbroseWalton as the fix (-24 % on water at 298 K) |
 
 ### Historical
 
@@ -297,7 +299,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**46 of 143 records state no rejected alternative.**  For a FORUM or a STUDY
+**47 of 145 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

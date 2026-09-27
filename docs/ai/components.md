@@ -991,11 +991,22 @@ Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
 - `Antoine { ... }` — `log10(Psat [bar]) = A − B/(T + C)` for VLE (a
   coefficient checked or fitted on ln is off by ln 10; the engine is
   log10, src/thermo/vaporPressure/Antoine.cpp).
+- `vaporPressure { model Wagner; reducing { T <K>; P <pressure>; }
+  exponents ( ... ); coefficients ( ... ); Trange ( ... ); }` —
+  `ln(Psat/Pr) = (Tr/T) Σ a_i τ^e_i`, τ = 1 − T/Tr.  The reducing constants
+  are REQUIRED and are never taken from the component's Tc/Pc: a Wagner fit
+  means something only with the constants it was fitted with.  Water's IAPWS
+  saturation equation (SR1-86(1992), Eq. 1) is one instance; a case opts in
+  with a `constant/components/water.dat` overlay (`overlayOf water;`) —
+  see docs/design/what-water-dat-does-not-say.md §3.2.
 - `idealGasHeatCapacity { coefficients (a1 a2 ... ); }` — for H_ig, S_ig.
 - `liquidHeatCapacity { coefficients ( ... ); }` — for sensible H_liq.
 - `standardThermochemistry { dHf_298; s_298; }` — for K_eq + adiabatic flames.
 - `diffusionVolume <Sigma_v>;` — for Fuller diffusivity.
 - `liquidViscosity { andrade { ... } vogel { ... } }` — model-specific.
+- `liquidThermalConductivity { chemsepEq16 { A; B; C; D; E; Tmin; Tmax; } }`
+  — `k = A + exp(B/T + C + D T + E T²)` W/(m K), read when the case selects
+  `transport { liquid { thermalConductivity { model chemsepEq16; } } }`.
 - `associationFactor <phi>;` — for Wilke-Chang liquid diffusivity.
 - `solubility { coefficients ( a b c ); dHcryst; }` — c_sat(T), for crystalliser.
 - `solid { rho_p; k_v; }` — for solids (cyclone / crystalliser / sprayDryer).

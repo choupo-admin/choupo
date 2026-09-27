@@ -173,6 +173,15 @@ T_OUT_MARGIN = 50.0
 #  A component with none of the three blocks, for arms (f) and (g).  Water is
 #  hand-curated, predates the import and is never rewritten by it.
 BARE = "water"
+#  ...EXCEPT that since 2026-09-27 water carries a `liquidThermalConductivity {
+#  chemsepEq16 }` block of its own (derived from IAPWS R15-11,
+#  docs/design/what-water-dat-does-not-say.md §3.1), so it can no longer be the
+#  NEGATIVE for the conductivity arm: this gate went red on the fill, which is
+#  the absence being buried rather than a defect.  The conductivity negative is
+#  methanol, which declares no conductivity block at all (so its refusal must
+#  name the predictive SatoRiedel).  One home per arm, chosen by what the
+#  record lacks -- never by name similarity.
+BARE_FOR = {"chemsepEq16": "methanol", "chemsepEq101": BARE}
 
 
 def scalars(text: str, block: str, keys) -> dict:
@@ -414,16 +423,17 @@ def main() -> int:
                  "thermalConductivity", "SatoRiedel"),
                 ("chemsepEq101", "viscosity_liquid", "viscosity", "andrade")):
             case = tmp / f"bare_{model}"
-            write_case(case, BARE, scan(
-                "bare", BARE, prop,
+            bare = BARE_FOR[model]
+            write_case(case, bare, scan(
+                "bare", bare, prop,
                 f"transport {{ liquid {{ {block} {{ model {model}; }} }} }}", T_IN))
             rc, out = run_props(case)
             if rc == 0:
-                fails.append(f"`{model}` answered for {BARE}, which carries no"
+                fails.append(f"`{model}` answered for {bare}, which carries no"
                              " block for it -- a property model with no data must"
                              " refuse, never return a number")
-            elif BARE not in out or model not in out:
-                fails.append(f"`{model}` refused for {BARE} without naming both"
+            elif bare not in out or model not in out:
+                fails.append(f"`{model}` refused for {bare} without naming both"
                              " the component and the model")
             elif alt not in out:
                 fails.append(f"`{model}`'s refusal does not name `{alt}` -- a"
@@ -431,7 +441,7 @@ def main() -> int:
                              " would fill it teaches only unease, and this one"
                              " is supposed to read the remedy off the record")
             else:
-                notes.append(f"{model} refuses for {BARE} naming {alt}")
+                notes.append(f"{model} refuses for {bare} naming {alt}")
 
         case = tmp / "fallback"
         write_case(case, BARE, scan(
