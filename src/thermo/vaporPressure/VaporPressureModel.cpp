@@ -29,6 +29,7 @@ License
 #include "VaporPressureModel.H"
 #include "Antoine.H"
 #include "AmbroseWalton.H"
+#include "Wagner.H"
 
 #include "core/Advisory.H"
 
@@ -181,6 +182,10 @@ void VaporPressureModel::registerBuiltins()
     registerModel("AmbroseWalton",
         [](const DictPtr& d) -> std::unique_ptr<VaporPressureModel>
         { return std::make_unique<AmbroseWalton>(d); });
+
+    registerModel("Wagner",
+        [](const DictPtr& d) -> std::unique_ptr<VaporPressureModel>
+        { return std::make_unique<Wagner>(d); });
 }
 
 } // namespace Choupo
