@@ -3081,6 +3081,17 @@ Corollaries, each paid for:
   and a PEDAGOGICAL scope (an EduTool, a lesson, what a student is told)
   is put to Vítor BEFORE it is dispatched -- the pedagogy is his, and the
   C10 scope went out without that conversation.
+* **EVERY GENERAL WORKS IN ITS OWN WORKTREE; THE PRIMARY CHECKOUT STAYS ON
+  A CLEAN `main`** (2026-09-27).  The session's stop hook checks the
+  primary checkout and asks for a commit and push whenever it holds
+  uncommitted work; a general working there made it fire on every turn,
+  and the answer each time -- "that is a general's unvalidated work, I will
+  not commit it" -- was right and was noise.  With `isolation: worktree` on
+  every dispatch, work in progress lives on the general's own branch in its
+  own directory, the primary checkout only ever moves by a validated merge,
+  and the hook fires only when something the commander did is genuinely
+  left uncommitted.  The commander's own edits go through a worktree too
+  when a general is running.
 * **Never edit `bin/runTests`, `src/` or `gui/` while a suite runs.**  A
   general stages per file, and a per-file stage sweeps in an unstaged edit of
   yours that no one reviewed.
