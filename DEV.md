@@ -1443,6 +1443,25 @@ accepts today, and that is a policy call.
      fill what moves no golden; then build the golden-moving fills behind a
      choice or on the branch, with the moved-row list for Vitor.
 
+     **DONE 2026-09-27 for everything that moves no golden** (record
+     docs/design/what-water-dat-does-not-say.md, which carries the full
+     measured table).  Two premises of this entry were FALSE, measured by the
+     general: the liquid datum is not "missing" -- ONE formation datum per
+     component is the rule (`check_record_form`), and the 0.57 kJ/mol error is
+     the Watson crossing, not a stored value; and the catalogue record reaches
+     ONE case (`overlay01_nacl_ksp`) -- the other 270 water cases read a sealed
+     or adopted mirror (re-measured by the commander), so a catalogue fix moves
+     goldens only on re-import.  BUILT: an IAPWS R15-11-derived liquid thermal
+     conductivity (0.14 % RMS on 273-573 K) and an opt-in `Wagner`
+     vapour-pressure model reproducing SR1-86 Table 1.  MEASURED, NOT TAKEN:
+     flipping water's Psat to IAPWS moves 268 rows in 37 of 102 staged cases
+     and stops `column05_reactive_methylacetate` converging.  RESERVED for
+     Vitor: that flip, an Hvap(T) grammar (it also settles the two latent
+     heats behind the evaporator residual), a T-dependent liquid Cp, Tc
+     647.14 -> 647.096, BrockBird -> IAPWS R1-76 surface tension on seven
+     cases, promoting the Svehla Lennard-Jones pair, and the second home of
+     Vliq in `SolventProperties.H:78`.
+
 **C13. "oxygen" FOUND NOTHING IN THE PROPERTY EXPLORER (reported 2026-09-27).**
      The ENGINE resolves it: `O2.dat:53` declares `aliases ( oxygen );`,
      `data/standards/components/ALIASES:26` maps it, and

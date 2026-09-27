@@ -2458,8 +2458,15 @@ have — no corpus case declares `catalystLoading` on a `pfr`).
 `standardThermochemistry.referenceState` before the Cp check, quoting the
 record's own word and naming `h_formation` as the remedy — the old message was
 advice that creates the bug; `datumOnIdealGasRung()` is kept SEPARATE from
-`hasCpIdealGas()`.  NOT closed: `water.dat` carries only the ideal-gas datum
-(a MISSING SECOND DATUM, gating `gStd`).  Gate: `check_reference_rung`.
+`hasCpIdealGas()`.  `water.dat` carries ONE formation datum, the ideal gas's,
+BY RULE (`check_record_form`: one datum per component, the other phases
+derive) -- this sentence used to call it a MISSING SECOND DATUM, and a
+`pureLiquid {}` block added on that reading was taken out again.  What is
+open is the DERIVATION: the liquid rung crosses through the Watson latent
+heat, 0.57 kJ/mol off CODATA's H2O(l) at 298.15 K; the remedy is an Hvap(T)
+grammar, RESERVED for Vítor (record
+[`docs/design/what-water-dat-does-not-say.md`](docs/design/what-water-dat-does-not-say.md)).
+Gate: `check_reference_rung`.
 Record: [`docs/design/reference-rung-refusal.md`](docs/design/reference-rung-refusal.md).
 
 **ICE IS A PHASE, NOT A SPECIAL CASE (2026-08-07).**  `SolidPhase::fEffective`
