@@ -20,6 +20,13 @@
   on the pot again.  Checked against the engine's OWN trajectory, at every
   instant of it -- so the drawing is answerable to the solver rather than to a
   number someone recorded once.
+
+  Both engine files are RUN OUTPUTS (gitignored, never committed).  The vitest
+  globalSetup generates them from this tree's native build before this file
+  loads, and `witnessOutput()` refuses by name, with the remedy, when it could
+  not (tests/witnessOutputs.ts).  They are read LAZILY, inside the tests that
+  need them, so a refusal fails those tests by name and leaves the geometry
+  and source tests below to run.
 \*---------------------------------------------------------------------------*/
 
 import { readFileSync } from "node:fs";
@@ -30,18 +37,15 @@ import {
   batchRectifierStaircase, constantAlphaCurve, eqCurveFromTxyCsv, rectifyingLine,
   yStar,
 } from "../src/case/mccabeThiele.js";
+import { witnessOutput } from "./witnessRead.js";
 
-const TXY = readFileSync(new URL(
-  "../../tutorials/props/molecular/flash01_operating_line/txy.csv",
-  import.meta.url), "utf-8");
-const TRAJ = readFileSync(new URL(
-  "../../tutorials/batch/still/still04_rectifier_benzene_toluene/trajectory.csv",
-  import.meta.url), "utf-8");
-
-const curve = eqCurveFromTxyCsv(TXY, "benzene")!;
+const curve = () => eqCurveFromTxyCsv(witnessOutput(
+  "tutorials/props/molecular/flash01_operating_line", "txy.csv"), "benzene")!;
 
 /** The engine's own run: pot composition, distillate and reflux per instant. */
 function trajectory(): { xW: number; xD: number; R: number }[] {
+  const TRAJ = witnessOutput(
+    "tutorials/batch/still/still04_rectifier_benzene_toluene", "trajectory.csv");
   const lines = TRAJ.trim().split(/\r?\n/);
   const head = lines[0]!.split(",").map((s) => s.trim());
   const col = (n: string) => head.indexOf(n);
@@ -62,8 +66,9 @@ function trajectory(): { xW: number; xD: number; R: number }[] {
 
 describe("the curve and the run are both there", () => {
   it("reads the equilibrium curve", () => {
-    expect(curve).toBeTruthy();
-    expect(curve.pts.length).toBeGreaterThan(20);
+    const eq = curve();
+    expect(eq).toBeTruthy();
+    expect(eq.pts.length).toBeGreaterThan(20);
   });
   it("reads the engine's rectifier trajectory", () => {
     const t = trajectory();
@@ -81,8 +86,9 @@ describe("the staircase lands on the pot the engine solved", () => {
 
   it("closes to better than 0.001 at EVERY instant of the run", () => {
     let worst = 0;
+    const eq = curve();
     for (const p of trajectory()) {
-      const s = batchRectifierStaircase(curve, p.xD, p.R, TRAYS);
+      const s = batchRectifierStaircase(eq, p.xD, p.R, TRAYS);
       worst = Math.max(worst, Math.abs(s.xBottom - p.xW));
     }
     expect(worst).toBeLessThan(1e-3);
@@ -94,8 +100,9 @@ describe("the staircase lands on the pot the engine solved", () => {
     //  more than a tenth of a mole fraction -- so this is settled by
     //  measurement and cannot drift back to an assumption.
     const p = trajectory()[0]!;
+    const eq = curve();
     const err = (n: number) =>
-      Math.abs(batchRectifierStaircase(curve, p.xD, p.R, n).xBottom - p.xW);
+      Math.abs(batchRectifierStaircase(eq, p.xD, p.R, n).xBottom - p.xW);
     expect(err(TRAYS)).toBeLessThan(1e-3);
     expect(err(TRAYS - 1)).toBeGreaterThan(0.1);
     expect(err(TRAYS + 1)).toBeGreaterThan(0.05);

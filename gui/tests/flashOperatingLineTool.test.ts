@@ -35,6 +35,7 @@ import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import {
   ENGINE_CHECK, FLASH_CSV, FLASH_LIMITS, FLASH_STEPS, FLASH_WITNESS,
 } from "../src/ui/methods/FlashOperatingLineTool.js";
+import { witnessOutput } from "./witnessRead.js";
 
 const PROPS = "system/propsDict";
 
@@ -73,10 +74,14 @@ describe("the operating line, as an identity", () => {
   it("puts the engine's own flash answer ON the line", () => {
     //  The solved (x, y) must satisfy the balance the line expresses -- that
     //  is what makes the intersection the answer rather than a coincidence.
-    const csv = tutorialByName(FLASH_WITNESS)!.files.rawFiles?.[FLASH_CSV];
-    const curve = eqCurveFromTxyCsv(csv ?? readFileSync(
-      new URL("../../tutorials/props/molecular/flash01_operating_line/txy.csv",
-        import.meta.url), "utf-8"))!;
+    //  txy.csv is a RUN OUTPUT (gitignored): the globalSetup generates it
+    //  from this tree's build, and witnessOutput() refuses by name when it
+    //  could not.  It used to prefer a copy INLINED in the bundle -- which
+    //  existed only on a machine that had run the witness, i.e. whatever
+    //  binary ran last -- and fall back to the disk file, so a fresh clone
+    //  failed here with a bare ENOENT that read like a regression.
+    const curve = eqCurveFromTxyCsv(
+      witnessOutput(`tutorials/${FLASH_WITNESS}`, FLASH_CSV))!;
     expect(curve).toBeTruthy();
     for (const psi of [0.15, 0.3, 0.55, 0.8]) {
       const sol = flashAtVF(curve, 0.4, psi);

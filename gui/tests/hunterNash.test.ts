@@ -31,13 +31,17 @@ License
 
   WHAT THIS SUITE CANNOT SEE, stated first because it is the larger half:
 
-  * IT NEVER RUNS THE ENGINE.  The WASM binaries need a browser; node cannot
+  * IT NEVER RUNS THE COLUMN.  The WASM binaries need a browser; node cannot
     load them.  The cascade numbers below are a RECORDED run of
     `./choupoSolve tutorials/steady/absorption/extract01_ethanol_water_benzene`
     taken on 2026-08-18 on the tree's own build, transcribed from the result
-    JSON.  The map side needs no transcription at all: the witness ships its
-    own `ternary.csv`, the committed output reproduces the fresh run
-    byte-for-byte, and this suite reads THAT file out of the bundled corpus.
+    JSON.  The map side needs no transcription at all: `ternary.csv` is a RUN
+    OUTPUT of the map witness -- gitignored and never committed (this header
+    used to say the witness "ships" it; it never did, so this suite was red in
+    every fresh clone) -- and the vitest globalSetup GENERATES it with this
+    tree's native choupoProps before this file loads.  It is read through
+    `witnessOutput()`, which refuses by name, with the remedy, when the setup
+    could not produce it (tests/witnessOutputs.ts).
   * IT NEVER RENDERS THE TOOL.  jsdom gives every box a zero size, so a test
     that mounted the SVG would be pinning a picture nobody can see.  The
     component is deliberately thin: the reading and the construction are in
@@ -67,6 +71,7 @@ import {
   pointLineDistance, project, readStageTies, readTernaryScan, worstResidual,
   type KpiMap, type Tri,
 } from "../src/case/hunterNash.js";
+import { witnessOutput } from "./witnessRead.js";
 
 const rawOf = (witness: string): { [rel: string]: string } => {
   const entry = tutorialByName(witness);
@@ -228,21 +233,18 @@ describe("the knob map — every target resolves against the real raw text", () 
   });
 });
 
-// ---- The scan reader, against the REAL bundled CSV --------------------------
+// ---- The scan reader, against the REAL generated CSV ------------------------
 
-const mapCsv = (): string => {
-  const csv = rawOf(MAP_WITNESS)[MAP_CSV];
-  expect(csv, `${MAP_WITNESS} does not ship ${MAP_CSV} — this suite reads the `
-    + "engine's own committed output and cannot substitute one").toBeDefined();
-  return csv!;
-};
+//  The engine's own output, generated from THIS tree's build before the file
+//  loads; never a substitute and never a skip (tests/witnessOutputs.ts).
+const mapCsv = (): string => witnessOutput(`tutorials/${MAP_WITNESS}`, MAP_CSV);
 
-describe("readTernaryScan — over the engine's own committed phase map", () => {
+describe("readTernaryScan — over the engine's own generated phase map", () => {
   it("reads every row: nodes, paired tie-lines, nothing skipped", () => {
     const r = readTernaryScan(mapCsv());
     expect(r.ok).toBe(true);
     if (!r.ok) return;
-    // Counts as the committed CSV carries them (tieStride 4, grid n 16).
+    // Counts as the witness's run writes them (tieStride 4, grid n 16).
     // They move if the witness is re-run with different settings — which is a
     // change worth noticing, not a flake.
     expect(r.read.nodes.length).toBe(105);

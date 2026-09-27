@@ -33,6 +33,7 @@ import {
   DEFAULT_PUMP_KNOBS, findOperatingPoint, findPumpSystemSweep,
 } from "../src/ui/methods/PumpSystemTool.js";
 import { PUMP_LIMITS, PUMP_STEPS } from "../src/ui/methods/pumpSystemLesson.js";
+import { witnessOutput } from "./witnessRead.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, "..", "..");
@@ -46,13 +47,22 @@ const SRC = readFileSync(
  *  normalised, never against one particular wrapping. */
 const prose = (s: string): string => s.replace(/\s+/g, " ");
 
-// ---- The witness's own engine output, read from the repository -------------
+// ---- The witness's own engine output, generated for this run ---------------
+//  `sweep_pumpSystem.csv` is a RUN OUTPUT (gitignored, never committed): the
+//  vitest globalSetup generates it from this tree's native choupoSolve, and
+//  `witnessOutput()` refuses by name, with the remedy, when it could not
+//  (tests/witnessOutputs.ts).  Read LAZILY, inside the tests that need it, so
+//  a refusal fails those tests by name and the source-honesty tests below
+//  still run.  It used to be read at module load, straight off disk, so a
+//  fresh clone lost the whole file to a bare ENOENT.
 
-const sweep = findPumpSystemSweep({
-  "sweep_pumpSystem.csv":
-    readFileSync(join(WITNESS, "sweep_pumpSystem.csv"), "utf-8"),
+let sweepMemo: NonNullable<ReturnType<typeof findPumpSystemSweep>> | undefined;
+const sweepOf = () => sweepMemo ??= findPumpSystemSweep({
+  "sweep_pumpSystem.csv": witnessOutput(
+    "tutorials/steady/hydraulics/pumpSystem01_operating_point",
+    "sweep_pumpSystem.csv"),
 })!;
-const col = (name: string): number[] => sweep.columns[name]!;
+const col = (name: string): number[] => sweepOf().columns[name]!;
 
 /** Least-squares slope of ln(y) against ln(x) — the exponent of a power law,
  *  measured over the whole swept window rather than from its two ends. */
@@ -159,6 +169,7 @@ describe("the consequences an engineer acts on", () => {
 
 describe("the claims are true of the run the page draws", () => {
   it("the pump curve really does fall, and the system curve really does rise", () => {
+    const sweep = sweepOf();
     for (let i = 1; i < sweep.F.length; ++i) {
       expect(sweep.pumpDP[i]!).toBeLessThan(sweep.pumpDP[i - 1]!);
       expect(sweep.systemDP[i]!).toBeGreaterThan(sweep.systemDP[i - 1]!);
@@ -168,6 +179,7 @@ describe("the claims are true of the run the page draws", () => {
   it("they cross EXACTLY once inside the swept window", () => {
     //  Step 1 says "exactly one place".  One sign change, and the tool's own
     //  bracket sits inside the window rather than at an end.
+    const sweep = sweepOf();
     let changes = 0;
     for (let i = 1; i < sweep.F.length; ++i) {
       const a = sweep.pumpDP[i - 1]! - sweep.systemDP[i - 1]!;
@@ -188,7 +200,7 @@ describe("the claims are true of the run the page draws", () => {
     //  page claims is that it is flat in FLOW, and 2e-5 against a demand that
     //  grows six-fold is that claim measured.
     expect(spread).toBeLessThan(1e-4);
-    const demand = sweep.systemDP;
+    const demand = sweepOf().systemDP;
     //  The BAND, not the claim, moved on 2026-08-29: the liquid-density fix
     //  (the record's own Vliq anchoring Rackett) raised rho from 877 to
     //  ~997 kg/m3, which grows the static term and shrinks the velocity at
@@ -203,7 +215,7 @@ describe("the claims are true of the run the page draws", () => {
     //  Step 2 says the friction term grows a little less steeply than Q^2,
     //  because f falls as Re rises.  Measured over the whole window: the
     //  exponent is below 2 and not far below it.
-    const n = logLogSlope(sweep.F, col("P1.dP_friction"));
+    const n = logLogSlope(sweepOf().F, col("P1.dP_friction"));
     expect(n).toBeLessThan(2);
     expect(n).toBeGreaterThan(1.8);
     //  And the mechanism the step names: Reynolds really does rise with flow
@@ -224,6 +236,7 @@ describe("the claims are true of the run the page draws", () => {
     // W_shaft is declared in kW and F in kmol/s; Q = F·1000·vliq  [m3/s].
     const predicted = (DEFAULT_PUMP_KNOBS.eta * DEFAULT_PUMP_KNOBS.W_shaft * 1000)
       / (1000 * vliq);
+    const sweep = sweepOf();
     for (let i = 0; i < sweep.F.length; ++i)
       expect(sweep.pumpDP[i]! * sweep.F[i]!).toBeCloseTo(predicted, -1);
   });
