@@ -1085,7 +1085,7 @@ report's reading of an under-declared stream, so the case now declares
 `phase gas;`.  ENUMERATED, not fixed (none is in the flagship):
 `evaporativeDryer`, `evaporator` (reserved), `coolingTower`, `absorber`,
 `stripper`, `pfr`, the CSTR's adiabatic/jacketed T-solves, `phaseChanger`,
-`mixer`, `adiabaticFlash`; and `reporting/BalanceMath.H` still holds its own
+`mixer`, `adiabaticFlash`; and `src/reporting/BalanceMath.H` still holds its own
 copy of the rule `priceState` holds.  Gate: `check_energy_closure`'s UNIT ARM
 (an adiabatic dryer, and a cstr/conversionReactor that publishes `Q_kW`, must
 leave <= 1e-4 kW unattributed; five witnesses must be read).  Record:
