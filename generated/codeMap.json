@@ -6200,7 +6200,15 @@
    "src/core/Types.H",
    "src/thermo/vaporPressure/AmbroseWalton.H",
    "src/thermo/vaporPressure/Antoine.H",
-   "src/thermo/vaporPressure/VaporPressureModel.H"
+   "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/thermo/vaporPressure/Wagner.H"
+  ],
+  "src/thermo/vaporPressure/Wagner.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/thermo/vaporPressure/Wagner.H"
   ],
   "src/unitOperations/UnitOperation.cpp": [
    "src/core/Dictionary.H",
@@ -8463,6 +8471,7 @@
    "src/thermo/vaporPressure/AmbroseWalton.cpp",
    "src/thermo/vaporPressure/Antoine.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
+   "src/thermo/vaporPressure/Wagner.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -8758,6 +8767,7 @@
    "src/thermo/vaporPressure/AmbroseWalton.cpp",
    "src/thermo/vaporPressure/Antoine.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
+   "src/thermo/vaporPressure/Wagner.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -9871,6 +9881,7 @@
    "src/thermo/vaporPressure/AmbroseWalton.cpp",
    "src/thermo/vaporPressure/Antoine.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
+   "src/thermo/vaporPressure/Wagner.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -12967,6 +12978,7 @@
    "src/thermo/vaporPressure/AmbroseWalton.cpp",
    "src/thermo/vaporPressure/Antoine.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
+   "src/thermo/vaporPressure/Wagner.cpp",
    "src/unitOperations/batch/BatchDryer.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
@@ -12980,6 +12992,10 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp"
+  ],
+  "src/thermo/vaporPressure/Wagner.H": [
+   "src/thermo/vaporPressure/VaporPressureModel.cpp",
+   "src/thermo/vaporPressure/Wagner.cpp"
   ],
   "src/unitOperations/UnitOperation.H": [
    "src/applications/choupoSolve/main.cpp",
