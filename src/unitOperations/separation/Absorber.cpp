@@ -203,8 +203,14 @@ int Absorber::solve(const DictPtr& dict,
             std::vector<scalar> a(N, -L_in), b(N, 0.0), c(N, 0.0), d(N, 0.0);
             for (int j = 0; j < N; ++j)     b[j] = L_in + V_in * Kstage[j][i];
             for (int j = 0; j < N - 1; ++j) c[j] = -V_in * Kstage[j + 1][i];
-            d[0]     = L_in * x_in[i];      // lean solvent feed (top)
-            d[N - 1] = V_in * y_in[i];      // gas feed (bottom)
+            //  ACCUMULATE, never assign (D08, 2026-09-27): with ONE stage the
+            //  top and the bottom are the same slot, and `d[N-1] = ...`
+            //  overwrote the solvent's solute -- a semi-lean solvent's load
+            //  vanished from both outlets at exit 0.  The energy rows below
+            //  always used `+=`; the component rows now do too, so N = 1 is
+            //  a flash of the combined feeds, as a single stage must be.
+            d[0]     += L_in * x_in[i];     // lean solvent feed (top)
+            d[N - 1] += V_in * y_in[i];     // gas feed (bottom)
             xs[i] = thomasSolve(a, b, c, d);
             for (int j = 0; j < N; ++j) ys[i][j] = Kstage[j][i] * xs[i][j];
         }

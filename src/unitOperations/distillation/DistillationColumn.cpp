@@ -37,6 +37,7 @@ License
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "solver/NewtonND.H"
 #include "thermo/SaturationCurves.H"
+#include "thermo/reaction/Reaction.H"   // Reaction::forwardOrder -- the ONE home of the forward order
 
 #include <algorithm>
 #include <cmath>
@@ -1496,6 +1497,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     bool   kinetic = false, adsorption = false;    // kinetic (rate) vs equilibrium mode
     scalar kfA = 0.0, kfEa = 0.0, krA = 0.0, krEa = 0.0, mCatPerStage = 0.0;
     sVector Kads(n, 0.0);                           // adsorption equilibrium constants
+    sVector order(n, 0.0);                          // FORWARD order (kinetic mode only)
     const bool reactive = dict->found("reaction");
     if (reactive)
     {
@@ -1514,12 +1516,70 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         {
             kinetic = true;
             auto kin = rx->subDict("kinetics");
-            adsorption = (kin->lookupWordOrDefault("model", "pseudoHomogeneous") == "adsorption");
+            //  A declared word the site dispatches on refuses a word it does
+            //  not know (the 2026-09-07 rule): this was `== "adsorption"` with
+            //  every other word -- a typo included -- silently running the
+            //  pseudo-homogeneous law.
+            const std::string kinModel =
+                kin->lookupWordOrDefault("model", "pseudoHomogeneous");
+            if (kinModel != "pseudoHomogeneous" && kinModel != "adsorption")
+                throw std::runtime_error("DistillationColumn: "
+                    + registryRefusal::message("reaction kinetics model", kinModel,
+                        {"pseudoHomogeneous", "adsorption"}, "Accepted"));
+            adsorption = (kinModel == "adsorption");
             auto fwd = kin->subDict("forward"); kfA = fwd->lookupScalar("A"); kfEa = fwd->lookupScalar("Ea");
             auto rev = kin->subDict("reverse"); krA = rev->lookupScalar("A"); krEa = rev->lookupScalar("Ea");
+            //  THE FORWARD ORDER HAS ONE HOME, and this reader had escaped it
+            //  (found 2026-09-27, beside D06): the rate used |nu| as the
+            //  exponent of every reactant without reading `order` at all --
+            //  a sixth reader of the decision §5 says has one home.  It now
+            //  goes through Reaction::forwardOrder like the CSTR, the PFR, the
+            //  batch reactor, the dynamic CSTR and RateLaw: a declared order is
+            //  honoured, a reactant with none REFUSES by name.  The REVERSE leg
+            //  stays mass-action on the products (nu > 0), the order detailed
+            //  balance fixes.  The equilibrium mode reads no order.
+            for (const auto& s : rx->lookupDictList("stoichiometry"))
+            {
+                const std::string c = s->lookupWord("component");
+                const std::size_t i = thermo.indexOf(c);
+                order[i] = Reaction::forwardOrder(*s, nu[i], c,
+                    "DistillationColumn (kinetic reaction)");
+            }
             if (adsorption)
+            {
+                std::vector<bool> declaredK(n, false);
                 for (const auto& a : kin->lookupDictList("adsorption"))
-                    Kads[thermo.indexOf(a->lookupWord("component"))] = a->lookupScalar("K");
+                {
+                    const std::size_t i = thermo.indexOf(a->lookupWord("component"));
+                    Kads[i] = a->lookupScalar("K");
+                    declaredK[i] = true;
+                }
+                //  An UNDECLARED K on a species that is IN the rate law makes
+                //  its adsorbed activity a'_i = K_i a_i / M_i identically zero
+                //  and switches a whole leg of the rate off -- the forward leg
+                //  for a reactant, the reverse leg for a product.  Until D06
+                //  (2026-09-27) the product case was worse still: the reverse
+                //  leg skipped a zero activity and priced the product at unit
+                //  activity.  Either way it is a number nobody declared, so a
+                //  reacting species without its K refuses.  (An explicit
+                //  `K 0;` is a claim and is honoured; an INERT species with no
+                //  K adsorbs nothing, which is what its absence says.)
+                for (std::size_t i = 0; i < n; ++i)
+                    if (nu[i] != 0.0 && !declaredK[i])
+                        throw std::runtime_error("DistillationColumn: the"
+                            " `adsorption` kinetics give every species in the"
+                            " rate law an adsorbed activity a'_i = K_i a_i / M_i,"
+                            " and '" + thermo.comp(i).name() + "' (nu = "
+                            + std::to_string(nu[i]) + ") declares no K in"
+                            " `kinetics.adsorption`.\n"
+                            "    Without it a'_i is zero and the "
+                            + std::string(nu[i] < 0.0 ? "FORWARD" : "REVERSE")
+                            + " leg of the rate vanishes -- a number nobody"
+                            " declared.\n"
+                            "    REMEDY: add `{ component " + thermo.comp(i).name()
+                            + "; K <value>; }` to `kinetics.adsorption`"
+                            " (an explicit `K 0;` is honoured as a claim).");
+            }
             const scalar mCatTot = kin->lookupScalar("catalystMass", Dims::mass);   // kg total
             mCatPerStage = (!rxStages.empty()) ? mCatTot * 1000.0 / rxStages.size() : 0.0;  // g/stage
         }
@@ -1545,8 +1605,22 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
 
     // Reaction rate r [mol/(g_cat·s)] at a stage (pseudo-homogeneous or adsorption
     // LHHW).  a_i = γ_i x_i; for the adsorption model a'_i = K_i a_i / M_i and the
-    // rate is divided by (Σ a'_i)².  Forward over reactants (ν<0), reverse over
-    // products (ν>0).  The stage extent is then r · m_cat (per stage).
+    // rate is divided by (Σ a'_i)².  Forward over the declared forward orders
+    // (Reaction::forwardOrder), reverse over the products (ν>0) at their
+    // stoichiometry.  The stage extent is then r · m_cat (per stage).
+    //
+    //  AN ABSENT SPECIES IS THE SAME LIMIT ON BOTH LEGS (D06, 2026-09-27).
+    //  This loop used to multiply only when a > 0 and then patch the forward
+    //  leg alone -- `else if (nu < 0) af = 0` -- so an ABSENT PRODUCT left
+    //  `ar` at 1.0: the reverse rate priced as though that product sat at
+    //  unit activity.  Reachable two ways: a Newton trial that drives a
+    //  product's x to or below zero (the clamp below makes it exactly zero,
+    //  and the residual then jumped by kr·Π(others) across that boundary),
+    //  and an adsorption law whose product had no K.  The rule is now the
+    //  one RateLaw::netRate and every reactor in reactor/, batch/ and
+    //  dynamic/ already use: a^p with p > 0 is 0 at a = 0, on BOTH legs, by
+    //  std::pow and with no special case -- so the two legs cannot be
+    //  patched apart again.  For a > 0 the arithmetic is unchanged.
     auto rateAt = [&](const sVector& xj, scalar Tj, const sVector& gam) -> scalar {
         const scalar Rg = 8.314462;
         const scalar kf = kfA * std::exp(-kfEa / (Rg * Tj));
@@ -1557,12 +1631,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             scalar a = std::max(gam[i] * xj[i], 0.0);
             if (adsorption) a = Kads[i] * a / thermo.comp(i).MW();   // a'_i
             sumA += a;
-            if (a > 0.0)
-            {
-                if (nu[i] < 0.0) af *= std::pow(a, -nu[i]);
-                if (nu[i] > 0.0) ar *= std::pow(a,  nu[i]);
-            }
-            else if (nu[i] < 0.0) af = 0.0;        // a reactant absent -> no forward rate
+            if (order[i] != 0.0) af *= std::pow(a, order[i]);
+            if (nu[i]    >  0.0) ar *= std::pow(a, nu[i]);
         }
         scalar r = kf * af - kr * ar;
         if (adsorption) r /= std::max(sumA * sumA, 1.0e-300);
