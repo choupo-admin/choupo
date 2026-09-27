@@ -34,6 +34,7 @@ License
 #include "streams/StreamMass.H"
 #include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
