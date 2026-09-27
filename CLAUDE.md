@@ -3179,7 +3179,11 @@ Corollaries, each paid for:
     - a NEW feature (a unit, op, sizer, lesson or case, plus the one
       registration line that reaches it): the build, the cases that
       exercise it, the existing cases whose surfaces the slice edited,
-      `--gui` if `gui/` moved, the gates that read the touched files, and
+      `--gui` if `gui/` moved OR if lines moved in a `src/` file an EduTool
+      lesson cites by `file:line` (the lesson tests hold the citation to
+      the line, so an engine edit breaks a GUI test -- paid for 2026-09-27,
+      two A3/A4 slices integrated without it left two lesson tests red on
+      `main`), the gates that read the touched files, and
       `--fast` when a factory's registration is the only shared path
       touched (one case per family exercises every factory);
     - a change to a path every case goes through (a solver, the thermo
