@@ -1035,7 +1035,8 @@ void Component::readFromDict(const DictPtr& d)
     // Ion decomposition for electrolyte-aware unit ops (DSPM-DE membrane): derive
     // cation/anion from `dissociatesTo` (the formula-like ion stoichiometry) by
     // charge sign, resolved through species/aqueous.  (The old `electrolyte{}`
-    // block is gone; dHsoln/solubility live in chemistry/salts, read via the model.)
+    // block is gone; dHsoln/solubility live in the salt's own
+    // solidPhases.<phase>.calorimetric block, read via the model.)
     if (d->found("dissociatesTo"))
     {
         auto d2t = d->subDict("dissociatesTo");

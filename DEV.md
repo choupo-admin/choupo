@@ -2308,6 +2308,27 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      Cp line, never as the decision itself.  So the fix has two halves and the
      second is the durable one: resolve the disambiguator against a path that
      exists, and ANNOUNCE the choice.  [THERMO]
+     **CLOSED 2026-09-27, and the flagship half of this entry measured
+     FALSE.**  The BRINE sector's subject is HALITE (`crystNaCl`, outlets
+     `halite`/`liquor`, `solidPhases ( halite )`): NaCl is its correct
+     active salt.  And it was not chosen by order there -- the sealed plant
+     still ships the retired snapshot `constant/chemistry/salts/halite.dat`,
+     which the resolver found case-locally; nor is the sector's own list the
+     one that reaches the builder (`thermoFor` substitutes the plant's
+     global list).  The defect was live for every case WITHOUT the
+     snapshot: `components ( water LiCl NaCl )` against `( water NaCl LiCl )`
+     gave gamma_pm(1 m) 0.7897 against 0.6572, both at exit 0.  The active
+     salt is now the only candidate, else the one whose own `solidPhases {}`
+     OWNS the declared chemistryDict phase, else a `[legacy]` snapshot's
+     formula (announced; refused if it disagrees), else a REFUSAL naming
+     every candidate and the key -- and every choice is announced
+     (`[electrolyte] active salt: ...`).  42 electrolyte case roots
+     byte-identical against the parent build; no golden moved.  Gate:
+     `check_v2_refusals` (active-salt arm).  Record:
+     [`docs/design/the-salt-chosen-by-its-position.md`](docs/design/the-salt-chosen-by-its-position.md).
+     NOT done, named there: a sector's `components ( ... )` line is
+     discarded in favour of the global list (a declaration nobody reads),
+     and no key can make a salt that owns no phase the active one.
  A2. **The spray dryer invents a particle density of 1500 kg/m3** where the
      crystalliser REFUSES by name on the identical absence.  Two answers to
      one question, and the silent one prices a sizing.  [UNITS]

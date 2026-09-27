@@ -9,13 +9,15 @@
 /*---------------------------------------------------------------------------*\
   BRINE property context (v2).  Inherits the plant root and REPLACES the
   equilibrium whole: the brine liquid is an aqueous electrolyte on the
-  Pitzer molality surface (halite SLE activates via chemistry.salts; Ksp
-  from the component's solidPhases{}).
+  Pitzer molality surface (halite SLE activates via constant/chemistryDict;
+  Ksp from the component's solidPhases{}).
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 inherits "../../../constant";
 
+// Active salt NaCl: named by chemistryDict's `halite`, which NaCl's record owns -- never
+// by list order (the builder gets the plant's global list); LiCl is an ideal spectator.
 components ( water NaCl LiCl );
 
 

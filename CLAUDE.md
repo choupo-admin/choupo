@@ -2676,8 +2676,11 @@ A flowsheet may run units in DIFFERENT thermo WORLDS on ONE global component set
 each unit computing in its own world via a per-unit `thermo {}` override —
 including MANIFEST worlds (electrolyte Pitzer), not only flat activity/eos:
 `thermoFor` routes an electrolyte override through the `ThermoPackageBuilder`
-(subset-aware — it picks its active salt from the package's `chemistry.salts`,
-treating other salts as spectators).  The `IsothermalFlash` LL Gibbs minimisation
+(subset-aware — it picks its active salt through the component record that OWNS
+the solid phase `constant/chemistryDict` declares, never by list order, refuses
+naming the candidates when nothing declares one, and announces the choice;
+other salts are spectators — 2026-09-27, record
+[`docs/design/the-salt-chosen-by-its-position.md`](docs/design/the-salt-chosen-by-its-position.md)).  The `IsothermalFlash` LL Gibbs minimisation
 restricts to the ACTIVE components (feed `z > 0`) so a sparse stream in a big
 flowsheet still splits — inactive species stay 0 in both phases (mass conserved
 exactly; identical to the full search when all species are active).  Reference

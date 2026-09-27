@@ -203,7 +203,8 @@ int Crystalliser::solveEquilibrium(const DictPtr& dict,
                   << std::fixed << std::setprecision(1) << (T_op - 273.15)
                   << " C changes gamma_pm(T) + the cooling DUTY but not Ksp.  For NaCl this is "
                      "physical (dHsol ~ +3.9 kJ/mol, solubility nearly T-flat); add dissolutionEnthalpy "
-                     "to chemistry/salts/<mineral>.dat for a T-sensitive salt (e.g. KNO3).\n";
+                     "to the salt record's solidPhases { <mineral> { calorimetric { ... } } } "
+                     "block for a T-sensitive salt (e.g. KNO3).\n";
 
     // ---- Yield at T_op: mother liquor leaves SATURATED (c_sat from the helper);
     //  all solvent stays liquid (no boil-off).

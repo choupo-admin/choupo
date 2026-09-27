@@ -145,47 +145,73 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
     // (a) component list -----------------------------------------------------
     if (compNames.empty()) absent("components", "propertyPackage");
 
-    // (b) identify the salt: the ONE component whose STANDARDS record carries a
-    //     `dissociatesTo` block (formula-like ion stoichiometry).  Its identity
-    //     (MW, role) comes from components/<salt>.dat, read from STANDARDS (raw, no
-    //     case-local overlay) so it is byte-identical to the retired
-    //     components/apparent overlay (deleted layout).  EVERY OTHER component
-    //     -- the water solvent, an ethanol
-    //     antisolvent, a curve-solute -- is a full molecular component loaded by
-    //     name (overlay honoured), so the crystalliser reads its eps/Mw/v.
+    // (b0) the DECLARED solid phase.  Read BEFORE the salt is chosen, because
+    //      it is what the case says about WHICH salt is active (b1).
+    std::string phaseName;
+    if (chem && chem->present && !chem->solidPhases.empty())
+    {
+        const auto& salts = chem->solidPhases;
+        //  REFUSAL, not a warning (2026-07-27).  This adapter honours ONE
+        //  salt, so a longer list can only be served by dropping the rest --
+        //  and that makes the ORDER of the words decide the physics, with a
+        //  warning nobody reads standing between a wrong answer and exit 0.
+        //  Name every phase and stop; the remedy is the multi-salt op or a
+        //  shorter list.  (Scoped to this adapter: `formulation gammaPhi`
+        //  reads the whole list through aq.solidPhases and is unaffected --
+        //  the four two-solid scaling tutorials all take that path.)
+        if (salts.size() > 1)
+        {
+            std::string all;
+            for (const auto& s : salts) all += (all.empty() ? "" : ", ") + s;
+            throw std::runtime_error("chemistryDict declares "
+                + std::to_string(salts.size()) + " solid phases (" + all
+                + ") but the single-salt electrolyte adapter represents"
+                " exactly ONE.  Honouring the first and ignoring the rest"
+                " would let the ORDER of the list decide the answer -- so it"
+                " refuses.  Remedy: declare one solid phase here, or move to"
+                " the multi-salt op (eNRTL) which represents them together.");
+        }
+        phaseName = salts.front();
+    }
+
+    // (b1) THE ACTIVE SALT IS DECLARED, NEVER POSITIONAL (2026-09-27).
+    //
+    //  SUBSET-AWARE (general solver): a flowsheet may run this electrolyte
+    //  world on a GLOBAL component union that carries MORE than one salt (a
+    //  brine unit in a plant that also carries LiCl).  Exactly ONE salt is
+    //  ACTIVE -- the single-salt Pitzer/eNRTL engine treats only it; every
+    //  OTHER `dissociatesTo` component is a molecular SPECTATOR (present in
+    //  the stream, ideal contribution, announced).
+    //
+    //  Which one used to be decided by a formula read from
+    //  `data/standards/chemistry/salts/<phase>.dat` -- a directory that has
+    //  not existed since chemistry/ went flat on 2026-07-01.  Outside the one
+    //  case that still ships the retired snapshot, the read found nothing,
+    //  the formula stayed empty, and the FIRST `dissociatesTo` component in
+    //  `components ( ... )` won: the order of a word list decided the
+    //  physics, at exit 0, and the choice never reached the console as a
+    //  decision.  Now, in this order:
+    //    1. ONE candidate: it is the salt (nothing to decide; announced).
+    //    2. The declared solid phase (constant/chemistryDict `equilibria {
+    //       solidPhases ( <phase> ); }`) names the active salt through the
+    //       record that OWNS it -- the candidate whose own `solidPhases {}`
+    //       block carries that phase.  Ownership, never name similarity.
+    //    3. [legacy] an external case that still ships the retired
+    //       `chemistry/salts/<phase>.dat` snapshot names its salt through
+    //       that record's `formula` -- honoured, ANNOUNCED as legacy, and
+    //       refused if it disagrees with rule 2.
+    //    4. Anything else REFUSES, naming every candidate and the phases
+    //       each owns.  Never the first in the list.
+    //
     // Component BASE records keep the doctrine (records::componentBase): the
     // hand-authored constant/components/ overlay tier must NOT serve as the
     // raw base of an unsealed case -- only a legacy snapshot or a STRICTLY
     // sealed one-home record replaces the catalogue base here.
     auto stdCompPath = [&](const std::string& cn)
         { return records::componentBase(cn); };
-
-    // SUBSET-AWARE (general solver): a flowsheet may run this electrolyte world
-    // on a GLOBAL component union that carries MORE than one salt (a brine unit
-    // in a plant that also has, say, a Li2CO3 sector).  The ACTIVE salt is the
-    // one the package's chemistry.salts declares (its formula maps to a
-    // component); any OTHER dissociatesTo component is a molecular SPECTATOR
-    // (present in the stream, ideal contribution -- the single-salt Pitzer
-    // engine treats only the active salt, announced).  With no chemistry.salts
-    // and a single salt, this is byte-identical to the old "exactly one" rule.
-    std::string activeSaltFormula;
-    if (chem && chem->present && !chem->solidPhases.empty())
-    {
-        const auto& slist = chem->solidPhases;
-        {
-            const fs::path sf = resolve("data/standards/chemistry/salts/" + slist.front() + ".dat");
-            if (fs::exists(sf))
-            {
-                auto sr = Dictionary::fromFile(sf.string());
-                if (sr->found("formula")) activeSaltFormula = sr->lookupWord("formula");
-            }
-        }
-    }
-
-    std::vector<Component> comps;
-    std::size_t solventIdx = compNames.size(), soluteIdx = compNames.size();
-    std::string saltName;
-    DictPtr saltRec;
+    std::vector<DictPtr> compRecs;
+    compRecs.reserve(compNames.size());
+    std::vector<std::string> saltCandidates;
     for (const auto& cn : compNames)
     {
         const fs::path sp = stdCompPath(cn);
@@ -194,12 +220,157 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
         // case-local `overlayOf` partial over the standard, so a case-recalibrated
         // calorimetric/crystal datum reaches the crystalliser too.
         if (rec) rec = Database::applyCaseOverlay(cn, rec, sp.string()).dict;
-        // Is THIS component the active salt?  Yes if it is the only dissociatesTo
-        // component, or if it matches the chemistry-declared active salt formula.
-        const bool isSalt = rec && hasSpeciesMap(rec)
-            && (activeSaltFormula.empty() || cn == activeSaltFormula
-                || (rec->found("formula") && rec->lookupWord("formula") == activeSaltFormula));
-        if (isSalt && saltName.empty())
+        compRecs.push_back(rec);
+        if (rec && hasSpeciesMap(rec)) saltCandidates.push_back(cn);
+    }
+    auto recOf = [&](const std::string& cn) -> DictPtr
+    {
+        for (std::size_t i = 0; i < compNames.size(); ++i)
+            if (compNames[i] == cn) return compRecs[i];
+        return nullptr;
+    };
+    auto ownsPhase = [&](const std::string& cn, const std::string& ph)
+    {
+        const DictPtr r = recOf(cn);
+        return r && r->found("solidPhases")
+            && r->subDict("solidPhases")->found(ph);
+    };
+
+    std::string activeSalt, activeWhy;
+    if (saltCandidates.size() == 1)
+    {
+        activeSalt = saltCandidates.front();
+        activeWhy  = "the only component carrying dissociatesTo";
+    }
+    else if (saltCandidates.size() > 1)
+    {
+        std::vector<std::string> owners;
+        if (!phaseName.empty())
+            for (const auto& cn : saltCandidates)
+                if (ownsPhase(cn, phaseName)) owners.push_back(cn);
+        //  The retired snapshot, read only where an external case still ships
+        //  one (the resolver walks the case's own constant/ first; a strictly
+        //  sealed case never probes the catalogue).
+        std::string legacyOwner, legacyFormula;
+        if (!phaseName.empty())
+        {
+            const fs::path sf =
+                resolve("data/standards/chemistry/salts/" + phaseName + ".dat");
+            if (!sf.empty() && fs::exists(sf))
+            {
+                auto sr = Dictionary::fromFile(sf.string());
+                if (sr->found("formula"))
+                {
+                    legacyFormula = sr->lookupWord("formula");
+                    for (const auto& cn : saltCandidates)
+                    {
+                        const DictPtr r = recOf(cn);
+                        if (cn == legacyFormula
+                            || (r && r->found("formula")
+                                && r->lookupWord("formula") == legacyFormula))
+                        { legacyOwner = cn; break; }
+                    }
+                }
+            }
+        }
+        if (owners.size() > 1)
+        {
+            std::string all;
+            for (const auto& o : owners) all += (all.empty() ? "" : ", ") + o;
+            throw std::runtime_error("electrolyte package: the declared solid"
+                " phase '" + phaseName + "' is owned by MORE than one salt in"
+                " components ( ... ): " + all + ".  A phase names ONE active"
+                " salt; two records claiming it would leave the choice to the"
+                " order of the list, which this builder refuses to use.  Remedy:"
+                " keep the phase in exactly one of those records.");
+        }
+        if (owners.size() == 1)
+        {
+            if (!legacyOwner.empty() && legacyOwner != owners.front())
+                throw std::runtime_error("electrolyte package: two homes"
+                    " disagree about the active salt.  '" + owners.front()
+                    + "' owns the declared solid phase '" + phaseName
+                    + "' in its own solidPhases {} block, while the retired"
+                    " snapshot chemistry/salts/" + phaseName + ".dat names"
+                    " formula '" + legacyFormula + "' (component '"
+                    + legacyOwner + "').  Remedy: delete the legacy snapshot"
+                    " (the component record is the one home).");
+            activeSalt = owners.front();
+            activeWhy  = "declared by constant/chemistryDict solidPhases ( "
+                + phaseName + " ), a phase " + activeSalt
+                + "'s own record owns";
+        }
+        else if (!legacyOwner.empty())
+        {
+            activeSalt = legacyOwner;
+            activeWhy  = "[legacy] named by the retired snapshot"
+                " chemistry/salts/" + phaseName + ".dat (formula "
+                + legacyFormula + "); move the phase into " + legacyOwner
+                + "'s solidPhases {} block";
+        }
+        else
+        {
+            std::string cands;
+            for (const auto& cn : saltCandidates)
+            {
+                std::string owned;
+                const DictPtr r = recOf(cn);
+                if (r && r->found("solidPhases"))
+                    for (const auto& k : r->subDict("solidPhases")->keys())
+                        owned += (owned.empty() ? "" : " ") + k;
+                cands += "\n    " + cn + "  (owns solid phases: "
+                    + (owned.empty() ? std::string("none") : owned) + ")";
+            }
+            throw std::runtime_error("electrolyte package: "
+                + std::to_string(saltCandidates.size()) + " components carry"
+                " dissociatesTo and nothing the case declares says which one"
+                " is the ACTIVE salt of this single-salt adapter -- "
+                + (phaseName.empty()
+                     ? std::string("constant/chemistryDict declares no solid"
+                                   " phase")
+                     : "the declared solid phase '" + phaseName
+                       + "' is owned by none of them")
+                + ".  Candidates:" + cands + "\n  Choosing the first one in"
+                " components ( ... ) would let the ORDER of a word list decide"
+                " the physics, so the builder refuses.  The key that settles"
+                " it: constant/chemistryDict `equilibria { solidPhases ("
+                " <phase> ); }` naming a phase the intended salt's record"
+                " owns.  A salt that owns no phase cannot be named this way:"
+                " curate a solidPhases {} block on its record, or remove the"
+                " other salt(s) from components ( ... ).");
+        }
+    }
+    if (!activeSalt.empty() && thermoAnnounce()
+        && announceOnce("activeSalt:" + activeSalt + "|" + activeWhy))
+    {
+        std::string spect;
+        for (const auto& cn : saltCandidates)
+            if (cn != activeSalt) spect += (spect.empty() ? "" : " ") + cn;
+        std::cout << "[electrolyte] active salt: " << activeSalt << " ("
+                  << activeWhy << ")";
+        if (!spect.empty())
+            std::cout << "; spectator salt(s), ideal molecular contribution: "
+                      << spect;
+        std::cout << "\n";
+    }
+
+    // (b2) mint the components.  The salt's identity (MW, role) comes from its
+    //      components/<salt>.dat record (the component base, plus a declared
+    //      `overlayOf` partial) so it is byte-identical to the retired
+    //      components/apparent overlay (deleted layout).  EVERY OTHER
+    //      component -- the water solvent, an ethanol antisolvent, a
+    //      curve-solute, a spectator salt -- is a full molecular component
+    //      loaded by name (overlay honoured), so the crystalliser reads its
+    //      eps/Mw/v.
+    std::vector<Component> comps;
+    std::size_t solventIdx = compNames.size(), soluteIdx = compNames.size();
+    std::string saltName;
+    DictPtr saltRec;
+    for (std::size_t ci = 0; ci < compNames.size(); ++ci)
+    {
+        const std::string& cn = compNames[ci];
+        const DictPtr& rec = compRecs[ci];
+        if (!activeSalt.empty() && cn == activeSalt && saltName.empty())
         {
             saltName  = cn;
             saltRec   = rec;
@@ -255,35 +426,12 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
     if (catName.empty() || anName.empty())
         absent("exactly one cation and one anion", saltName + ".dissociatesTo");
 
-    // The salt's solid phase + saturation anchor are resolved by the phase NAME the
-    // package declares in chemistry.salts -> phases/solid/<phase>.dat (rho_p,k_v)
-    // and chemistry/salts/<phase>.dat (anchor).  Absence-tolerant.
-    std::string phaseName;
-    if (chem && chem->present && !chem->solidPhases.empty())
-    {
-        const auto& salts = chem->solidPhases;
-        //  REFUSAL, not a warning (2026-07-27).  This adapter honours ONE
-        //  salt, so a longer list can only be served by dropping the rest --
-        //  and that makes the ORDER of the words decide the physics, with a
-        //  warning nobody reads standing between a wrong answer and exit 0.
-        //  Name every phase and stop; the remedy is the multi-salt op or a
-        //  shorter list.  (Scoped to this adapter: `formulation gammaPhi`
-        //  reads the whole list through aq.solidPhases and is unaffected --
-        //  the four two-solid scaling tutorials all take that path.)
-        if (salts.size() > 1)
-        {
-            std::string all;
-            for (const auto& s : salts) all += (all.empty() ? "" : ", ") + s;
-            throw std::runtime_error("chemistryDict declares "
-                + std::to_string(salts.size()) + " solid phases (" + all
-                + ") but the single-salt electrolyte adapter represents"
-                " exactly ONE.  Honouring the first and ignoring the rest"
-                " would let the ORDER of the list decide the answer -- so it"
-                " refuses.  Remedy: declare one solid phase here, or move to"
-                " the multi-salt op (eNRTL) which represents them together.");
-        }
-        phaseName = salts.front();
-    }
+    // The salt's solid phase + saturation anchor are resolved by the phase NAME
+    // the case declares (b0): from the salt record's own solidPhases.<phase>
+    // block, else from the LEGACY homes phases/solid/<phase>.dat (rho_p, k_v)
+    // and chemistry/salts/<phase>.dat (anchor), which exist in no shipped
+    // standards tree and are read only for an external case that still
+    // carries them -- announced when they are what served.
 
     //  A DECLARED SOLID PHASE MUST BE OWNED BY A RECORD (2026-09-07).  Both
     //  consumers below -- the crystal properties (c2) and the saturation
@@ -374,8 +522,10 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
         }
     }
 
-    // (c2) particulate-solid properties (rho_p, k_v) from phases/solid/<phase>.dat
-    //      -- the MSMPR/PSD crystalliser reads them off the salt component.
+    // (c2) particulate-solid properties (rho_p, k_v) from the salt record's
+    //      solidPhases.<phase>.crystal block (legacy phases/solid/<phase>.dat
+    //      only when an external case still ships one, announced) -- the
+    //      MSMPR/PSD crystalliser reads them off the salt component.
     //      Absence-tolerant (no phase -> identity defaults, fine for non-PSD cases).
     if (!phaseName.empty())
     {
@@ -405,6 +555,13 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
                 if (sd->found("shape") && sd->subDict("shape")->found("k_v"))
                     kv = sd->subDict("shape")->subDict("k_v")->lookupScalar("value");
                 comps[soluteIdx].setSolid(rho, kv);
+                if (thermoAnnounce()
+                    && announceOnce("legacyCrystal:" + phaseName))
+                    std::cout << "[legacy] crystal properties of '" << phaseName
+                              << "' read from the retired phases/solid/"
+                              << phaseName << ".dat -- move them into "
+                              << saltName << "'s solidPhases { " << phaseName
+                              << " { crystal { ... } } } block.\n";
             }
         }
     }
@@ -483,9 +640,11 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
             pr ? pr->lookupScalarOrDefault("lphiValidityMax", 0.0) : 0.0;
     }
 
-    // (f) the saturation/dissolution anchor from chemistry/salts/<phase>.dat
-    //     (measuredSolubilityAnchor).  Absence-tolerant: no anchor -> solubility 0
-    //     (Ksp short-circuits to 0).
+    // (f) the saturation/dissolution anchor from the salt record's
+    //     solidPhases.<phase>.calorimetric block (the legacy
+    //     chemistry/salts/<phase>.dat measuredSolubilityAnchor only when an
+    //     external case still ships one, announced).  Absence-tolerant: no
+    //     anchor -> solubility 0 (Ksp short-circuits to 0), announced above.
     if (!phaseName.empty())
     {
         // UNIFIED: the anchor from the salt record's solidPhases.<phase>.calorimetric
@@ -503,7 +662,17 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
             {
                 auto cd = Dictionary::fromFile(cf.string());
                 if (cd->found("measuredSolubilityAnchor"))
+                {
                     a = cd->subDict("measuredSolubilityAnchor");
+                    if (thermoAnnounce()
+                        && announceOnce("legacyAnchor:" + phaseName))
+                        std::cout << "[legacy] solubility anchor of '"
+                                  << phaseName << "' read from the retired"
+                                     " chemistry/salts/" << phaseName
+                                  << ".dat -- move it into " << saltName
+                                  << "'s solidPhases { " << phaseName
+                                  << " { calorimetric { ... } } } block.\n";
+                }
             }
         }
         if (a)

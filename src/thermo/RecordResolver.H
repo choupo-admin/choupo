@@ -339,7 +339,7 @@ inline void note(const std::string& sub, bool found)
 }
 
 // THE resolver -- one record by its standards-relative subpath, for the
-// absence-TOLERANT consumers (chemistry/salts anchors, phases/solid,
+// absence-TOLERANT consumers (the LEGACY chemistry/salts + phases/solid homes,
 // crissCobble, method echoes): returns the case-local file (mirrored home,
 // then legacy snapshot), else the standards path -- or an EMPTY path when
 // the case is STRICTLY sealed and the record is absent locally (the
