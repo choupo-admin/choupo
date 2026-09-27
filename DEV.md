@@ -1330,6 +1330,84 @@ accepts today, and that is a policy call.
      engine (`gibbsMap` / `gibbsReactor` runs), never typed.  DISPATCHED
      after the C2 integration lands (one general owns the tree at a time).
 
+     **CORRECTED BY VITOR 2026-09-27, while the general was building: NO H2
+     ON THE BIOLOGICAL ROUTE.**  Nitrogenase reduces N2 with protons and
+     electrons, and the electrons come from the organism's substrate, so
+     "N2 + 3 H2 at 298 K" is Haber-Bosch chemistry at ambient conditions --
+     a different and weaker lesson -- and the page must not show it as the
+     biological reaction.  The thermodynamics the engine can attack is the
+     OVERALL reaction with the real electron donor, balanced by electron
+     count: heterotrophic `C6H12O6(s) + 4 N2 + 6 H2O(l) -> 6 CO2 + 8 NH3`
+     (24 e- per glucose, 6 per N2; expected exergonic, respiration pays) and
+     phototrophic `N2 + 3 H2O(l) -> 2 NH3 + 3/2 O2` (expected endergonic,
+     light pays).  The approach temperature does NOT transfer to an enzyme;
+     what transfers is the equilibrium limit and the extent bookkeeping; a
+     bioreactor here is a `batchReactor`/`dynamicCSTR` with declared
+     kinetics, never a Gibbs reactor.
+
+     **DONE 2026-09-27, registry id `equilibrium-landscapes`, branch
+     `claude/c10-equilibrium-landscapes`.**  What was MEASURED first, and
+     what it decided: every reactor's route to a reaction's Gibbs energy
+     (`Reaction::equilibrium`, Reaction.cpp:136-149) prices the ideal-gas
+     rung and REFUSES glucose's `referenceState pureSolid` by name
+     (reproduced on a gibbsMap: "wrong by a heat of sublimation"); no props
+     op summed a declared reaction over the phase-aware
+     `h_formation`/`s_formation` surface the Component already carried.  So
+     ONE small op was built, `reactionGibbs` (src/propertyOps/ReactionGibbs),
+     every species on a DECLARED standard state, each datum's rung named,
+     the vaporisation crossing for liquid water announced; the three routes
+     price on one surface at 298.15 K (sugar route -165.3 kJ/mol as
+     written, water route +678.6, industrial -32.8; at 700 K the industrial
+     route is +54.3 -- numbers here are the run's, pinned in the witness
+     header and the tool's, NOT typed into the lesson).  The sugar route
+     at 310 K REFUSES ("Component 'glucose': h_formation liquid leg needs
+     liquidHeatCapacity" -- glucose.dat carries no Cp on any rung, its own
+     "FLAGGED, NOT FABRICATED"), and the page quotes the refusal instead of
+     inventing a heat capacity.  Five `gibbsMap` witnesses under
+     tutorials/props/gibbs/ (ammonia, shift, reforming, combustion, thermal
+     NO; Claus and the adiabatic flames EXCLUDED -- T is their answer, and
+     Claus needs case-local records) carry the survey, read live in the
+     browser on C9's data path, no generated JSON.  Goldens NOT recorded
+     (none of the six ships an `expected`; the proposed rows are in the
+     general's report).  Record:
+     docs/design/what-the-approach-model-can-reach.md.
+
+**C11. THE THIRD LEVEL OF TINKERING WITH GIBBS: EQUILIBRIUM RESTRICTED TO A
+     DECLARED REACTION SUBSET (asked by Vitor 2026-09-27, while C10 was in
+     flight; in his words: beyond declaring the species list, force the
+     reaction to occur only through a subset of reactions, so empirical
+     information that some reactions are kinetically irrelevant can be
+     included).**  RECORDED, NOT BUILT; not part of C10.
+
+     **The commander recorded C11 as a missing engine feature before
+     measuring; the unit existed -- a claim about the engine is measured
+     before it is written, even in a notebook** (Vitor caught it the same
+     day).  The reaction-subset level ALREADY EXISTS: `equilibriumReactor`
+     (alias `REquil`, src/unitOperations/reactor/EquilibriumReactor.{H,cpp},
+     registered in UnitOperation.cpp:154-155) -- stoichiometric, R declared
+     reactions from constant/reactions driven to simultaneous equilibrium
+     via Kp_j(T) from the Gibbs-of-formation data, witness
+     tutorials/steady/reactors/equil01_reforming (`reactions ( smr wgs )`).
+     The `gibbsReactor` is the non-stoichiometric level (elements + species
+     atom matrix, element-potential minimisation; a listed species is always
+     reachable).
+
+     WHAT IS MISSING THERE, measured from its keys
+     (EquilibriumReactor.cpp:52-86): NO approach temperature, neither global
+     nor per reaction; isothermal ONLY (`operation.T`, defaulting to the feed
+     T; no adiabatic mode); ideal-gas Kp only (`Reaction::equilibrium` prices
+     `g_pure_ig`).  So C11 is NOT a new restriction feature.  It is (a)
+     `temperatureApproach` on `equilibriumReactor`, PER REACTION with the C9
+     sign rule applied per reaction from that reaction's own thermicity,
+     plus a global form; possibly (b) an adiabatic mode; and (c) the third
+     page of the C10 tool using `equilibriumReactor` beside `gibbsReactor`
+     on the same system, so the student sees the species-list level and the
+     reaction-subset level side by side, with the empirical exclusion (e.g.
+     Boudouard left out of the reforming list, said why) as the lesson.  An
+     ENGINE change on a frozen engine, Vitor's authorisation by this
+     request; AFTER C10 lands, one general at a time.  C10's page names the
+     unit and its witness in prose (zero cost) and runs nothing of it.
+
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds

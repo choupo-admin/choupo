@@ -1,0 +1,121 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  landscape06_nitrogen_fixation_routes
+  ====================================
+
+  THREE OVERALL ROUTES TO FIXED NITROGEN, PRICED ON ONE SURFACE.  The sixth
+  witness of the EduTool `equilibrium-landscapes`
+  (gui/src/ui/methods/EquilibriumLandscapesTool.tsx) and the first case of
+  the `reactionGibbs` property operation (src/propertyOps/ReactionGibbs.cpp),
+  which exists because of it.
+
+  WHY A NEW OP WAS NEEDED, measured before it was written.  The engine's one
+  route to a reaction's Gibbs energy, `Reaction::equilibrium`
+  (src/thermo/reaction/Reaction.cpp), prices every species on the ideal-gas
+  rung with `g_pure_ig(T)`, and that rung REFUSES a record tabulated on the
+  solid standard state.  A gibbsMap with glucose beside the gases was run
+  and refused, verbatim: "Component 'glucose': h_pure_ig(T) evaluates the
+  IDEAL-GAS rung, but this record declares standardThermochemistry.
+  referenceState pureSolid -- dHf_298 and s_298 are tabulated on the solid
+  standard state, so reading them here would be wrong by a heat of
+  sublimation."  The same refusal binds `equilibriumReactor` and
+  `gibbsReactor`.  The biological routes are exactly a solid sugar and
+  liquid water beside gases, so no reactor and no existing op could price
+  them; `reactionGibbs` sums a DECLARED reaction over the phase-aware
+  `h_formation` / `s_formation` surface the Component already carried.
+
+  THE THREE ROUTES (constant/reactions), balanced by ELECTRON COUNT -- the
+  biological ones carry NO H2 (Vitor's correction, 2026-09-27: nitrogenase
+  reduces N2 with protons and electrons that come from the organism's
+  substrate):
+      heterotrophic   C6H12O6(s) + 4 N2 + 6 H2O(l) -> 6 CO2 + 8 NH3
+      phototrophic    N2 + 3 H2O(l) -> 2 NH3 + 3/2 O2
+      haberBosch      N2 + 3 H2 -> 2 NH3
+  Every species is priced on a DECLARED standard state (`phases {}`): the
+  sugar on its own pureSolid rung, water as a pure liquid reached by the
+  vaporisation crossing from its ideal-gas datum (announced), the gases on
+  idealGas.  The lesson's expectation, stated before the run: the sugar
+  route is EXERGONIC (respiration pays for fixation), the water route is
+  ENDERGONIC (light pays), the industrial route is exergonic at 298 K and
+  loses that with temperature -- the landscape witness beside this case
+  draws the loss.
+
+  TWO TEMPERATURES, AND WHY ONLY THE FIRST IS ASKED OF THE SUGAR ROUTE.
+  298.15 K is the datum temperature, where a declared rung answers with no
+  heat capacity integrated.  glucose.dat carries NO heat-capacity block on
+  any rung ("FLAGGED, NOT FABRICATED", its own words), so asking the
+  heterotrophic route at 310.15 K REFUSES by name -- measured, verbatim:
+  "Component 'glucose': h_formation liquid leg needs liquidHeatCapacity"
+  (the solid leg falls back to the liquid Cp and finds none).  The refusal
+  is the finding and is quoted on the page; this case therefore prices all
+  three routes at 298.15 K in one op and the two routes that can move in
+  temperature at 310.15 K in a second op, so that the run passes and the
+  gap is stated rather than papered over; a third op prices the industrial
+  route alone at 700 K, the converter temperature of gibbs10, where its dG
+  has changed sign -- which is the whole reason the converter needs its
+  pressure, and the landscape witness beside this case draws it.  Liquid
+  water is not asked at 700 K: a pure-liquid standard state above the
+  critical temperature is a number with no state behind it.
+
+  NOTHING HERE IS A RATE.  An exergonic route is one the equilibrium
+  permits; what makes each one go -- the enzyme's ATP, the light, the iron
+  catalyst's temperature -- is outside every record in this tree, and the
+  ATP stoichiometry of nitrogenase is deliberately NOT cited because no
+  reference for it exists in the repository.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name         routes298;
+        type         reactionGibbs;
+        reactions    ( heterotrophic phototrophic haberBosch );
+        phases
+        {
+            glucose  pureSolid;
+            water    pureLiquid;
+            N2       idealGas;
+            NH3      idealGas;
+            CO2      idealGas;
+            O2       idealGas;
+            H2       idealGas;
+        }
+        temperatures ( 298.15 );                    // K: the datum temperature
+        output       { file routes298.csv; }
+    }
+    {
+        name         routes310;
+        type         reactionGibbs;
+        reactions    ( phototrophic haberBosch );   // the sugar route refuses here (no Cp on glucose)
+        phases
+        {
+            water    pureLiquid;
+            N2       idealGas;
+            NH3      idealGas;
+            O2       idealGas;
+            H2       idealGas;
+        }
+        temperatures ( 310.15 );                    // K: body temperature
+        output       { file routes310.csv; }
+    }
+    {
+        name         haber700;
+        type         reactionGibbs;
+        reactions    ( haberBosch );                // the industrial route at its converter temperature
+        phases
+        {
+            N2       idealGas;
+            NH3      idealGas;
+            H2       idealGas;
+        }
+        temperatures ( 700 );                       // K: gibbs10's converter; the landscape witness draws the loss
+        output       { file haber700.csv; }
+    }
+);

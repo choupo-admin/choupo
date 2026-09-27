@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 419,
+  "cases": 425,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -1974,6 +1974,90 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/props/gibbs/landscape01_ammonia_synthesis": {
+   "application": "choupoProps",
+   "ops": [
+    "gibbsMap"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/gibbs/landscape02_water_gas_shift": {
+   "application": "choupoProps",
+   "ops": [
+    "gibbsMap"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/gibbs/landscape03_steam_reforming": {
+   "application": "choupoProps",
+   "ops": [
+    "gibbsMap"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/gibbs/landscape04_methane_combustion": {
+   "application": "choupoProps",
+   "ops": [
+    "gibbsMap"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/gibbs/landscape05_thermal_no": {
+   "application": "choupoProps",
+   "ops": [
+    "gibbsMap"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes": {
+   "application": "choupoProps",
+   "ops": [
+    "reactionGibbs"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
   },
   "tutorials/props/gibbs/nh3_equilibrium_map": {
    "application": "choupoProps",
@@ -6255,6 +6339,12 @@
     "tutorials/props/estimate/yang2020_Tg_pvc",
     "tutorials/props/fit/cp01_polynomial_recovery",
     "tutorials/props/fit/psat01_antoine_recovery",
+    "tutorials/props/gibbs/landscape01_ammonia_synthesis",
+    "tutorials/props/gibbs/landscape02_water_gas_shift",
+    "tutorials/props/gibbs/landscape03_steam_reforming",
+    "tutorials/props/gibbs/landscape04_methane_combustion",
+    "tutorials/props/gibbs/landscape05_thermal_no",
+    "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
@@ -7357,6 +7447,12 @@
     "tutorials/props/estimate/yang2020_Tg_pvc",
     "tutorials/props/fit/cp01_polynomial_recovery",
     "tutorials/props/fit/psat01_antoine_recovery",
+    "tutorials/props/gibbs/landscape01_ammonia_synthesis",
+    "tutorials/props/gibbs/landscape02_water_gas_shift",
+    "tutorials/props/gibbs/landscape03_steam_reforming",
+    "tutorials/props/gibbs/landscape04_methane_combustion",
+    "tutorials/props/gibbs/landscape05_thermal_no",
+    "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
@@ -7614,6 +7710,11 @@
     "tutorials/props/hydraulics/moody01_friction_correlations"
    ],
    "gibbsMap": [
+    "tutorials/props/gibbs/landscape01_ammonia_synthesis",
+    "tutorials/props/gibbs/landscape02_water_gas_shift",
+    "tutorials/props/gibbs/landscape03_steam_reforming",
+    "tutorials/props/gibbs/landscape04_methane_combustion",
+    "tutorials/props/gibbs/landscape05_thermal_no",
     "tutorials/props/gibbs/nh3_equilibrium_map"
    ],
    "hConsistency": [
@@ -7700,6 +7801,9 @@
    ],
    "reactionCurve": [
     "tutorials/ctrl/ctrl17_step_reaction_curve"
+   ],
+   "reactionGibbs": [
+    "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes"
    ],
    "scalingScan": [
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",

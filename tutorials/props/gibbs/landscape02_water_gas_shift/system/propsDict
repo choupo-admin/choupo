@@ -1,0 +1,70 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  landscape02_water_gas_shift
+  ===========================
+
+  THE SHIFT LANDSCAPE -- equimolar CO + H2O (gibbs01_water_gas_shift's own
+  feed and species set), the fraction of the feed carbon leaving as CO2
+  against temperature at 1, 10 and 100 bar.  `elementYield` on carbon with
+  CO2 as the product IS the CO conversion here, because every carbon atom
+  fed arrives as CO -- and it is the forum-permitted metric (species
+  "conversion" is banned where the species is also produced;
+  docs/design/gibbs-map-forum-2026-07-02.md).
+
+  WHAT THE THREE CURVES SHOW, and it is one curve.  Exothermic (the
+  conversion falls with T) and mole-CONSERVING (2 -> 2), so the three
+  pressures give the SAME equilibrium to every printed digit: the ideal-gas
+  equilibrium constant of a Delta_n = 0 reaction carries no P.  The page
+  draws the three curves on top of each other and says why.  MEASURED, not
+  assumed: no cell on this grid condenses -- the three pressures agree to
+  every printed digit at all 46 temperatures, which they could not if water
+  had left the gas anywhere (at 400 K the equilibrium leaves 2.5 % water in
+  the gas, 2.5 bar at 100 bar against a 2.46 bar Psat -- and the run's own
+  identity of the three columns is the proof, not this estimate).
+
+  WHY THE PRESSURES ARE 1, 10 AND 100 BAR.  `Pgrid` is `from / to / n / log`
+  (GibbsMapOp.cpp reads no list form), and three log-spaced points from 1 to
+  100 bar land on the decades a textbook draws.  Ideal-gas validity is the
+  same caveat as nh3_equilibrium_map's: the high-pressure curve is the
+  SHAPE of the pressure dependence, not a quantitative prediction.
+
+  temperatureApproach IS DECLARED, AT ZERO.  The EduTool's slider replaces
+  the NUMBER of a declared scalar and can add no key (gui/src/case/
+  methodRun.ts), so the key must be here for the page to move it.  Zero is
+  true equilibrium and prints nothing; a magnitude > 0 makes the run assign
+  the sign at EVERY cell from the thermicity of the overall transformation
+  at that cell's T (GibbsMapOp.cpp, `resolveDirection`) and print the tally.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      wgs;
+        type      gibbsMap;
+        elements  ( C H O );
+        species
+        (
+            { name CO;    atoms ( 1 0 1 ); }
+            { name water; atoms ( 0 2 1 ); }
+            { name CO2;   atoms ( 1 0 2 ); }
+            { name H2;    atoms ( 0 2 0 ); }
+        );
+        feed      { CO 1.0;  water 1.0; }
+        Tgrid     { from 400; to 1300; n 46; }             // K
+        Pgrid     { from 1.0e5; to 1.0e7; n 3; log true; }  // Pa: 1, 10, 100 bar
+        temperatureApproach 0;                          // K, a MAGNITUDE; 0 = true equilibrium
+        metric    { type elementYield; element C; product CO2; }
+        anchors
+        (
+            { T 800;      P 1.0e5;   }   // gibbs01's operating point
+        );
+        output    { file map.csv; }
+    }
+);

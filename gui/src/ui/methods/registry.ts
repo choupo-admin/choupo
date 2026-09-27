@@ -66,7 +66,8 @@ export type MethodToolId =
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
   | "sour-water" | "rules-of-thumb" | "bode"
   | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
-  | "batch-membrane" | "approach-to-equilibrium" | "least-squares";
+  | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
+  | "least-squares";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -666,6 +667,39 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "why the author declares a MAGNITUDE and the ENGINE assigns the "
       + "direction from the reaction's thermicity and announces it: a "
       + "reformer gets T − ΔT without anyone typing a minus.",
+    theory: "sec:gibbs-maps",
+  },
+  //  COMMISSIONED 2026-09-27, the day after the page above shipped: the
+  //  architect saw the Gibbs reactor under an approach for the first time
+  //  and asked what else the same model can reach -- and that biological
+  //  ammonia production can be read off the same equilibrium.  Not a
+  //  second page on the reactor: a SURVEY over five reaction systems the
+  //  corpus already solves (five `gibbsMap` witnesses under
+  //  tutorials/props/gibbs/, each carrying a steady case's own species list
+  //  and feed), the whole curve at three pressures, the per-cell sign the
+  //  engine assigns, where the approach matters and where it cannot, the
+  //  GLOBAL caveat drawn on thermal NO, and the enzyme-versus-converter
+  //  contrast read off the ammonia witness's own anchor cells.
+  {
+    id: "equilibrium-landscapes",
+    label: "Equilibrium landscapes (what an approach can reach)",
+    discipline: "Reaction engineering", kind: "notes", status: "live",
+    teaches: "That an ideal-gas equilibrium landscape is fixed by two signs "
+      + "you can read off the reaction — the thermicity (van 't Hoff) and "
+      + "the mole change (pressure) — and the engine draws the five cases "
+      + "of that table from the same Gibbs kernel; that a temperature "
+      + "approach is a HORIZONTAL move along the curve whose effect is the "
+      + "local slope, so one magnitude is a large shortfall on ammonia and "
+      + "nothing on a combustion plateau; that the sign is assigned per "
+      + "cell from the feed's OVERALL thermicity, so a minor endothermic "
+      + "product inside an exothermic feed (thermal NO) is moved BEYOND its "
+      + "equilibrium — the GLOBAL caveat as a curve; and that the three "
+      + "overall routes to fixed nitrogen — a sugar as the electron donor, "
+      + "water as the donor, hydrogen as the donor — price on ONE formation "
+      + "surface with every species on a declared standard state "
+      + "(`reactionGibbs`), the biological routes carrying no H₂ at all; the "
+      + "equilibrium limit and the extent bookkeeping transfer to an enzyme, "
+      + "the temperature approach does not.",
     theory: "sec:gibbs-maps",
   },
   {

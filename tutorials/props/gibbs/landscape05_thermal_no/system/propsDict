@@ -1,0 +1,79 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  landscape05_thermal_no
+  ======================
+
+  THE THERMAL-NO LANDSCAPE -- CH4 in stoichiometric air with NO in the
+  species list (gibbs06_thermal_nox's own feed and species set), the
+  equilibrium NO mole fraction against temperature at 1, 10 and 100 bar,
+  1000 to 2500 K.  The page draws it on a LOG axis: it spans many decades (read the two ends off the CSV rather than off this sentence).
+
+  WHAT IT IS HERE FOR, and it is the sharpest thing on the page.  NO
+  formation (N2 + O2 -> 2 NO) is ENDOTHERMIC -- the curve RISES with T --
+  but it rides inside a feed whose OVERALL transformation, methane
+  burning, is exothermic.  The engine reads the direction from the overall
+  thermicity of THIS feed at each cell (GibbsReactor::approachDirection,
+  the one home; GibbsMapOp calls it per cell), finds every cell exothermic,
+  and evaluates the chemistry at T + dT.  For the combustion that is the
+  conservative direction.  For the NO riding inside it, T + dT sits HIGHER
+  on a rising curve: the declared approach reports MORE NO than the
+  equilibrium at the physical T -- an outlet beyond equilibrium for the
+  minor product.  That is the engine's own GLOBAL caveat ("it cannot
+  resolve per-reaction approaches") drawn as a curve rather than printed
+  as a sentence, and the page says it is a limitation of the single-number
+  model, not a finding about flames.
+
+  Pressure: 2 -> 2 for NO formation, so the 1 and 10 bar curves nearly
+  coincide; the small spread that remains comes from the combustion
+  products' own dissociation equilibria, which do carry P.
+
+  WHY THE PRESSURES ARE 1, 10 AND 100 BAR.  `Pgrid` is `from / to / n / log`
+  (GibbsMapOp.cpp reads no list form), and three log-spaced points from 1 to
+  100 bar land on the decades a textbook draws.  Ideal-gas validity is the
+  same caveat as nh3_equilibrium_map's: the high-pressure curve is the
+  SHAPE of the pressure dependence, not a quantitative prediction.
+
+  temperatureApproach IS DECLARED, AT ZERO.  The EduTool's slider replaces
+  the NUMBER of a declared scalar and can add no key (gui/src/case/
+  methodRun.ts), so the key must be here for the page to move it.  Zero is
+  true equilibrium and prints nothing; a magnitude > 0 makes the run assign
+  the sign at EVERY cell from the thermicity of the overall transformation
+  at that cell's T (GibbsMapOp.cpp, `resolveDirection`) and print the tally.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      burner;
+        type      gibbsMap;
+        elements  ( C H O N );
+        species
+        (
+            { name CH4;   atoms ( 1 4 0 0 ); }
+            { name O2;    atoms ( 0 0 2 0 ); }
+            { name N2;    atoms ( 0 0 0 2 ); }
+            { name CO;    atoms ( 1 0 1 0 ); }
+            { name CO2;   atoms ( 1 0 2 0 ); }
+            { name water; atoms ( 0 2 1 0 ); }
+            { name H2;    atoms ( 0 2 0 0 ); }
+            { name NO;    atoms ( 0 0 1 1 ); }
+        );
+        feed      { CH4 1.000452;  O2 1.999852;  N2 7.519696; }
+        Tgrid     { from 1000; to 2500; n 31; }             // K
+        Pgrid     { from 1.0e5; to 1.0e7; n 3; log true; }  // Pa: 1, 10, 100 bar
+        temperatureApproach 0;                          // K, a MAGNITUDE; 0 = true equilibrium
+        metric    { type moleFraction; species NO; }
+        anchors
+        (
+            { T 1800;     P 1.0e5;   }   // gibbs06_thermal_nox's operating point
+        );
+        output    { file map.csv; }
+    }
+);

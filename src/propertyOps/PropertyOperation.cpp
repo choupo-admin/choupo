@@ -59,6 +59,7 @@ License
 #include "ENRTLMixedSolventOp.H"
 #include "ENRTLMultiSaltOp.H"
 #include "GibbsMapOp.H"
+#include "ReactionGibbs.H"
 #include "ElectrolytePackageActivity.H"
 #include "MolecularActivity.H"
 #include "ScalingScan.H"
@@ -175,6 +176,7 @@ void PropertyOperation::registerBuiltins()
     reg("enrtlMixedSolvent", []{ return std::make_unique<ENRTLMixedSolventOp>(); });
     reg("enrtlMultiSalt", []{ return std::make_unique<ENRTLMultiSaltOp>(); });
     reg("gibbsMap", []{ return std::make_unique<GibbsMapOp>(); });
+    reg("reactionGibbs", []{ return std::make_unique<ReactionGibbs>(); });
     reg("electrolyteActivity", []{ return std::make_unique<ElectrolytePackageActivity>(); });
     reg("activityCoefficients", []{ return std::make_unique<MolecularActivity>(); });
     reg("speciate",       []{ return std::make_unique<Speciate>();       });

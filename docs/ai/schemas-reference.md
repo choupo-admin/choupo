@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*94 of 94 registered operations carry a schema and are documented below.*
+*95 of 95 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -944,6 +944,17 @@ OPEN-LOOP IDENTIFICATION off a trajectory somebody else recorded. Given a CSV wr
 | `reference` |   | integer | — | 1-based index into the step segments the record was cut into. THIS IS A CHOICE AND IT CHANGES THE ANSWER — a small step near the base ope… |
 | `tuning` |   | object | — | Applied to the identified triple of every settled segment. Omitting the block still runs Ziegler-Nichols and Cohen-Coon in PI and PID form. |
 | `output` |   | object | — | Where the three tables are written, relative to the case directory. Each is optional; a name omitted writes no file. |
+
+## `reactionGibbs`  (reactionGibbs operation)
+
+The standard reaction thermochemistry of declared reactions -- dH, dS, dG and ln K at each listed temperature -- priced on the catalogue's formation data with EVERY species on a DECLARED standard state (idealGas | pureLiquid | pureSolid) and every datum's rung named in the run. The ONE surface is the elements/formation convention at 298.15 K (dHf_298 + third-law s_298). At 298.15 K a species on a rung its record declares is priced from that rung's own pair with no heat capacity integrated (the integral is zero there), which is what lets a record with a datum and no Cp block answer at the datum temperature and nowhere else; at any other T, or on a phase the record does not declare, the potential comes from the phase-aware h_formation/s_formation walk, which REFUSES by name where the record lacks the leg. It solves no equilibrium and knows nothing about a rate: exergonic means the equilibrium permits it, not that anything makes it go. Built for the biological nitrogen-fixation routes (a solid sugar and liquid water beside gases), which the ideal-gas-rung route every reactor uses refuses.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `reactions` | ✓ | array[string] | — | Names defined in constant/reactions, each with a `stoichiometry ( { component ..; nu ..; } ... )` block. Stoichiometry lives in the libra… |
+| `phases` | ✓ | object | — | `{ glucose pureSolid; water pureLiquid; N2 idealGas; ... }` -- the standard state EACH species of every listed reaction is priced on. Req… |
+| `temperatures` | ✓ | array[number] | K | The temperatures at which each reaction is priced. 298.15 K is the datum temperature, where a declared rung answers without a heat capacity. |
+| `output` | ✓ | object | — | `{ file <name>.csv; }` -- one row per (reaction, temperature): dH_kJ_mol, dS_J_molK, dG_kJ_mol, lnK, and the route each species was price… |
 
 ## `scalingScan`  (scalingScan operation)
 

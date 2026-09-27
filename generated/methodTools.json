@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 41,
-  "registryTools": 41,
+  "liveTools": 42,
+  "registryTools": 42,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -209,6 +209,13 @@
       "discipline": "Reaction engineering",
       "teaches": "That a Gibbs reactor declares NO reactions — it minimises G subject to the element balances, which is its power and its trap in one sentence; that it sits early because nobody has the KINETICS yet, not because of the project stage; that the approach to equilibrium evaluates the CHEMISTRY at T + ΔT while enthalpy, Psat and the energy balance stay at the physical T; and THE SIGN — positive is conservative only for an EXOTHERMIC reaction, which is why the author declares a MAGNITUDE and the ENGINE assigns the direction from the reaction's thermicity and announces it: a reformer gets T − ΔT without anyone typing a minus.",
       "href": "/app/?workspace=methods&tool=approach-to-equilibrium"
+    },
+    {
+      "id": "equilibrium-landscapes",
+      "label": "Equilibrium landscapes (what an approach can reach)",
+      "discipline": "Reaction engineering",
+      "teaches": "That an ideal-gas equilibrium landscape is fixed by two signs you can read off the reaction — the thermicity (van 't Hoff) and the mole change (pressure) — and the engine draws the five cases of that table from the same Gibbs kernel; that a temperature approach is a HORIZONTAL move along the curve whose effect is the local slope, so one magnitude is a large shortfall on ammonia and nothing on a combustion plateau; that the sign is assigned per cell from the feed's OVERALL thermicity, so a minor endothermic product inside an exothermic feed (thermal NO) is moved BEYOND its equilibrium — the GLOBAL caveat as a curve; and that the three overall routes to fixed nitrogen — a sugar as the electron donor, water as the donor, hydrogen as the donor — price on ONE formation surface with every species on a declared standard state (`reactionGibbs`), the biological routes carrying no H₂ at all; the equilibrium limit and the extent bookkeeping transfer to an enzyme, the temperature approach does not.",
+      "href": "/app/?workspace=methods&tool=equilibrium-landscapes"
     },
     {
       "id": "vanheerden",

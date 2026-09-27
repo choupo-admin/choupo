@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Reaction library for the three nitrogen-fixation routes.  STOICHIOMETRY
+  ONLY -- `reactionGibbs` prices each reaction on the species' formation
+  data and declared standard states; no rate law, no kinetics block, and
+  none is implied.
+
+  The two biological routes are OVERALL reactions balanced by ELECTRON COUNT
+  (Vitor's correction of 2026-09-27: nitrogenase reduces N2 with protons and
+  electrons; the electrons come from the organism's substrate, never from
+  H2): a fully oxidised glucose gives up 24 electrons and a reduced N2 takes
+  6, so one sugar fixes four nitrogens; a water molecule oxidised to O2 gives
+  up 2, so three waters fix one N2.  The third route is the industrial one,
+  written for the same product count as the phototrophic one.  What each
+  route PAYS for its rate (ATP hydrolysis, light, temperature and pressure)
+  is not in this file and not in any record of this tree.
+\*---------------------------------------------------------------------------*/
+
+heterotrophic       // C6H12O6(s) + 4 N2 + 6 H2O(l) -> 6 CO2 + 8 NH3   (24 e- from the sugar)
+{
+    stoichiometry
+    (
+        { component glucose;  nu -1; }
+        { component N2;       nu -4; }
+        { component water;    nu -6; }
+        { component CO2;      nu  6; }
+        { component NH3;      nu  8; }
+    );
+}
+
+phototrophic        // N2 + 3 H2O(l) -> 2 NH3 + 3/2 O2   (6 e- from water, light pays)
+{
+    stoichiometry
+    (
+        { component N2;       nu -1; }
+        { component water;    nu -3; }
+        { component NH3;      nu  2; }
+        { component O2;       nu  1.5; }
+    );
+}
+
+haberBosch          // N2 + 3 H2 -> 2 NH3   (the industrial route, H2 as the donor)
+{
+    stoichiometry
+    (
+        { component N2;       nu -1; }
+        { component H2;       nu -3; }
+        { component NH3;      nu  2; }
+    );
+}

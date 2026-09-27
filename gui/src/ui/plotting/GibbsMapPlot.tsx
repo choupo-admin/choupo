@@ -17,49 +17,10 @@
  */
 import { Plot, PLOT_CONFIG, darkLayout } from "./plotly.js";
 
-export interface GibbsMapCell {
-  T_K: number;
-  P_Pa: number;
-  deltaT_K: number;
-  converged: boolean;
-  metric: number;
-  x: Record<string, number>;
-}
-
-export interface GibbsMapData {
-  cells: GibbsMapCell[];
-  Ts: number[];          // unique sorted T_K
-  Ps: number[];          // unique sorted P_Pa
-  species: string[];
-  deltaT: number;
-}
-
-export function parseGibbsMapCsv(csv: string): GibbsMapData | null {
-  const lines = csv.trim().split(/\r?\n/).filter((l) => l && !l.startsWith("#"));
-  if (lines.length < 2 || !lines[0]) return null;
-  const cols = lines[0]!.split(",").map((c) => c.trim());
-  const iT = cols.indexOf("T_K"), iP = cols.indexOf("P_Pa");
-  const iD = cols.indexOf("deltaT_K"), iC = cols.indexOf("converged");
-  const iM = cols.indexOf("metric");
-  if (iT < 0 || iP < 0 || iM < 0) return null;
-  const species = cols.filter((c) => c.startsWith("x_")).map((c) => c.slice(2));
-  const cells: GibbsMapCell[] = [];
-  for (const ln of lines.slice(1)) {
-    const v = ln.split(",");
-    const g = (i: number) => parseFloat(v[i] ?? "nan");
-    const x: Record<string, number> = {};
-    cols.forEach((c, i) => { if (c.startsWith("x_")) x[c.slice(2)] = g(i); });
-    cells.push({
-      T_K: g(iT), P_Pa: g(iP),
-      deltaT_K: iD >= 0 ? g(iD) : 0,
-      converged: iC >= 0 ? (v[iC] ?? "").trim() === "1" : true,
-      metric: g(iM), x,
-    });
-  }
-  const Ts = [...new Set(cells.map((c) => c.T_K))].sort((a, b) => a - b);
-  const Ps = [...new Set(cells.map((c) => c.P_Pa))].sort((a, b) => a - b);
-  return { cells, Ts, Ps, species, deltaT: cells[0]?.deltaT_K ?? 0 };
-}
+export type { GibbsMapCell, GibbsMapData } from "./gibbsMapCsv.js";
+export { parseGibbsMapCsv } from "./gibbsMapCsv.js";
+import { parseGibbsMapCsv as _parse, type GibbsMapCell, type GibbsMapData } from "./gibbsMapCsv.js";
+void _parse;
 
 export interface WindowBox { Tmin_C: number; Tmax_C: number; Pmin_bar: number; Pmax_bar: number; label: string; }
 

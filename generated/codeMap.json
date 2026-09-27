@@ -1132,6 +1132,9 @@
   "ReactionCurve": [
    "src/propertyOps/ReactionCurve.H"
   ],
+  "ReactionGibbs": [
+   "src/propertyOps/ReactionGibbs.H"
+  ],
   "ReactionSpec": [
    "src/unitOperations/batch/BatchReactor.H",
    "src/unitOperations/dynamic/DynamicCSTR.H"
@@ -1813,6 +1816,10 @@
    {
     "key": "gibbsMap",
     "type": "GibbsMapOp"
+   },
+   {
+    "key": "reactionGibbs",
+    "type": "ReactionGibbs"
    },
    {
     "key": "electrolyteActivity",
@@ -4191,6 +4198,7 @@
    "src/propertyOps/PsychrometricChart.H",
    "src/propertyOps/PurePhaseDiagram.H",
    "src/propertyOps/ReactionCurve.H",
+   "src/propertyOps/ReactionGibbs.H",
    "src/propertyOps/ScalingScan.H",
    "src/propertyOps/SolubilityParameter.H",
    "src/propertyOps/Speciate.H",
@@ -4348,6 +4356,23 @@
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/ReactionCurve.H",
    "src/solver/NelderMead.H"
+  ],
+  "src/propertyOps/ReactionGibbs.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/propertyOps/ReactionGibbs.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H"
   ],
   "src/propertyOps/RiaziDaubert.cpp": [
    "src/propertyOps/ConstantEstimator.H",
@@ -8032,6 +8057,7 @@
    "src/propertyOps/PropertyScan1D.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/ReactionCurve.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
@@ -8159,6 +8185,7 @@
    "src/propertyOps/PropertyScan2D.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
@@ -8314,6 +8341,7 @@
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -8608,6 +8636,7 @@
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -8963,6 +8992,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -9204,6 +9234,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -9700,6 +9731,7 @@
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -10359,6 +10391,7 @@
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -10399,6 +10432,10 @@
   "src/propertyOps/ReactionCurve.H": [
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/ReactionCurve.cpp"
+  ],
+  "src/propertyOps/ReactionGibbs.H": [
+   "src/propertyOps/PropertyOperation.cpp",
+   "src/propertyOps/ReactionGibbs.cpp"
   ],
   "src/propertyOps/RiaziDaubert.H": [
    "src/propertyOps/ConstantEstimator.cpp",
@@ -10790,6 +10827,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
@@ -11283,6 +11321,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -11474,6 +11513,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -11610,6 +11650,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
@@ -11760,6 +11801,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -11994,6 +12036,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",

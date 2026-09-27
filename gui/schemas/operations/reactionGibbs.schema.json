@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/reactionGibbs.schema.json",
+  "title": "reactionGibbs operation",
+  "description": "The standard reaction thermochemistry of declared reactions -- dH, dS, dG and ln K at each listed temperature -- priced on the catalogue's formation data with EVERY species on a DECLARED standard state (idealGas | pureLiquid | pureSolid) and every datum's rung named in the run. The ONE surface is the elements/formation convention at 298.15 K (dHf_298 + third-law s_298). At 298.15 K a species on a rung its record declares is priced from that rung's own pair with no heat capacity integrated (the integral is zero there), which is what lets a record with a datum and no Cp block answer at the datum temperature and nowhere else; at any other T, or on a phase the record does not declare, the potential comes from the phase-aware h_formation/s_formation walk, which REFUSES by name where the record lacks the leg. It solves no equilibrium and knows nothing about a rate: exergonic means the equilibrium permits it, not that anything makes it go. Built for the biological nitrogen-fixation routes (a solid sugar and liquid water beside gases), which the ideal-gas-rung route every reactor uses refuses.",
+  "type": "object",
+  "properties": {
+    "reactions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Reactions",
+      "description": "Names defined in constant/reactions, each with a `stoichiometry ( { component ..; nu ..; } ... )` block. Stoichiometry lives in the library, never here."
+    },
+    "phases": {
+      "type": "object",
+      "title": "Declared standard state per species",
+      "description": "`{ glucose pureSolid; water pureLiquid; N2 idealGas; ... }` -- the standard state EACH species of every listed reaction is priced on. Required for every species; the op will not guess a phase, because the choice fixes the reaction quotient's convention.",
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "idealGas",
+          "pureLiquid",
+          "pureSolid"
+        ]
+      }
+    },
+    "temperatures": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "minItems": 1,
+      "title": "Temperatures",
+      "unit": "K",
+      "description": "The temperatures at which each reaction is priced. 298.15 K is the datum temperature, where a declared rung answers without a heat capacity."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` -- one row per (reaction, temperature): dH_kJ_mol, dS_J_molK, dG_kJ_mol, lnK, and the route each species was priced by (datum: its own rung at 298.15 K; integrated: its own rung with Cp integrated; crossing: another phase, the transition taken at 298.15 K).",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "reactions",
+    "phases",
+    "temperatures",
+    "output"
+  ],
+  "additionalProperties": false
+}

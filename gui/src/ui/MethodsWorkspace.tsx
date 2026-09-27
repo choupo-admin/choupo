@@ -185,6 +185,9 @@ const VanHeerdenTool = lazy(() =>
 const ApproachToEquilibriumTool = lazy(() =>
   import("./methods/ApproachToEquilibriumTool.js")
     .then((m) => ({ default: m.ApproachToEquilibriumTool })));
+const EquilibriumLandscapesTool = lazy(() =>
+  import("./methods/EquilibriumLandscapesTool.js")
+    .then((m) => ({ default: m.EquilibriumLandscapesTool })));
 const DryingCurveTool = lazy(() =>
   import("./methods/DryingCurveTool.js").then((m) => ({ default: m.DryingCurveTool })));
 const TieTriangleTool = lazy(() =>
@@ -435,6 +438,7 @@ export function MethodsWorkspace() {
             : tool === "levenspiel" ? <LevenspielTool />
             : tool === "vanheerden" ? <VanHeerdenTool />
             : tool === "approach-to-equilibrium" ? <ApproachToEquilibriumTool />
+            : tool === "equilibrium-landscapes" ? <EquilibriumLandscapesTool />
             : tool === "drying" ? <DryingCurveTool />
             : tool === "breakthrough" ? <BreakthroughTool />
             : tool === "hunter-nash" ? <TieTriangleTool />

@@ -1,0 +1,69 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  landscape03_steam_reforming
+  ===========================
+
+  THE REFORMING LANDSCAPE -- CH4 + 3 H2O (gibbs02_steam_reforming's own feed
+  and species set), the fraction of the feed carbon STILL in methane against
+  temperature at 1, 10 and 100 bar.  Read it as 1 minus the methane
+  conversion: LESS is MORE converted, and the page labels it so rather than
+  subtracting -- the metric on the axis is exactly the number the engine
+  wrote.  (`elementYield` with CH4 as the "product" is the honest way to ask
+  for the unconverted feed; the metric slot accepts any listed species.)
+
+  WHAT THE THREE CURVES SHOW.  Endothermic (the slip falls as T rises) and
+  mole-INCREASING (CH4 + H2O -> CO + 3 H2, 2 -> 4), so pressure HURTS: the
+  100 bar curve sits far above the 1 bar one, which is why industrial
+  reformers run hot and why the shift on the same catalyst (exothermic,
+  Delta_n = 0) is the one the approach caveat calls GLOBAL -- one dT for
+  two reactions of opposite thermicity.  The engine reads the OVERALL
+  thermicity from this feed (endothermic at every cell of this grid, the
+  run's own tally) and evaluates the chemistry at T - dT.
+
+  WHY THE PRESSURES ARE 1, 10 AND 100 BAR.  `Pgrid` is `from / to / n / log`
+  (GibbsMapOp.cpp reads no list form), and three log-spaced points from 1 to
+  100 bar land on the decades a textbook draws.  Ideal-gas validity is the
+  same caveat as nh3_equilibrium_map's: the high-pressure curve is the
+  SHAPE of the pressure dependence, not a quantitative prediction.
+
+  temperatureApproach IS DECLARED, AT ZERO.  The EduTool's slider replaces
+  the NUMBER of a declared scalar and can add no key (gui/src/case/
+  methodRun.ts), so the key must be here for the page to move it.  Zero is
+  true equilibrium and prints nothing; a magnitude > 0 makes the run assign
+  the sign at EVERY cell from the thermicity of the overall transformation
+  at that cell's T (GibbsMapOp.cpp, `resolveDirection`) and print the tally.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      reformer;
+        type      gibbsMap;
+        elements  ( C H O );
+        species
+        (
+            { name CH4;   atoms ( 1 4 0 ); }
+            { name water; atoms ( 0 2 1 ); }
+            { name CO;    atoms ( 1 0 1 ); }
+            { name CO2;   atoms ( 1 0 2 ); }
+            { name H2;    atoms ( 0 2 0 ); }
+        );
+        feed      { CH4 1.0;  water 3.0; }
+        Tgrid     { from 600; to 1300; n 36; }             // K
+        Pgrid     { from 1.0e5; to 1.0e7; n 3; log true; }  // Pa: 1, 10, 100 bar
+        temperatureApproach 0;                          // K, a MAGNITUDE; 0 = true equilibrium
+        metric    { type elementYield; element C; product CH4; }
+        anchors
+        (
+            { T 1000;     P 1.0e5;   }   // gibbs02's operating point
+        );
+        output    { file map.csv; }
+    }
+);

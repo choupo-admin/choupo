@@ -1,0 +1,78 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  landscape04_methane_combustion
+  ==============================
+
+  THE COMBUSTION LANDSCAPE -- CH4 in stoichiometric air (gibbs03's own feed
+  and species set), the fraction of the feed carbon fully oxidised to CO2
+  against temperature at 1, 10 and 100 bar, 600 to 2500 K.
+
+  WHAT THE THREE CURVES SHOW, and it is where the approach is INDIFFERENT.
+  Below about 1500 K the equilibrium is complete conversion to better than
+  0.2 % (0.99996 at 600 K, 0.9987 at 1500 K and 1 bar) -- a flat line at 1
+  on any axis a plot can draw -- and a 50 K approach moves it by nothing
+  visible: the whole conversion-versus-temperature curve is flat, so
+  a HORIZONTAL shift along it changes nothing.  Only above ~1800 K, where
+  CO2 starts to dissociate to CO, does the curve acquire a slope and the
+  approach a visible effect, and pressure holds the CO2 together (the
+  dissociation makes moles).  This is the page's counterexample to the
+  ammonia and reforming systems, where the same 50 K moves the answer by a
+  great deal.
+
+  The grid starts at 600 K rather than 300 K by measurement: on a 300 K
+  start the cells at 300 and 350 K (every pressure), 400 K / 10 bar and
+  500 K / 100 bar did NOT converge -- the product water is far below its
+  dew point there and the gas-only Newton the kernel runs first does not
+  reach a root -- and a witness that ships hatched cells at its cold end
+  teaches nothing the 600 K plateau does not.  From 600 K up every cell
+  converges dry (y_H2O P stays below Psat on the whole grid).
+
+  WHY THE PRESSURES ARE 1, 10 AND 100 BAR.  `Pgrid` is `from / to / n / log`
+  (GibbsMapOp.cpp reads no list form), and three log-spaced points from 1 to
+  100 bar land on the decades a textbook draws.  Ideal-gas validity is the
+  same caveat as nh3_equilibrium_map's: the high-pressure curve is the
+  SHAPE of the pressure dependence, not a quantitative prediction.
+
+  temperatureApproach IS DECLARED, AT ZERO.  The EduTool's slider replaces
+  the NUMBER of a declared scalar and can add no key (gui/src/case/
+  methodRun.ts), so the key must be here for the page to move it.  Zero is
+  true equilibrium and prints nothing; a magnitude > 0 makes the run assign
+  the sign at EVERY cell from the thermicity of the overall transformation
+  at that cell's T (GibbsMapOp.cpp, `resolveDirection`) and print the tally.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      burner;
+        type      gibbsMap;
+        elements  ( C H O N );
+        species
+        (
+            { name CH4;   atoms ( 1 4 0 0 ); }
+            { name O2;    atoms ( 0 0 2 0 ); }
+            { name N2;    atoms ( 0 0 0 2 ); }
+            { name CO;    atoms ( 1 0 1 0 ); }
+            { name CO2;   atoms ( 1 0 2 0 ); }
+            { name water; atoms ( 0 2 1 0 ); }
+            { name H2;    atoms ( 0 2 0 0 ); }
+        );
+        feed      { CH4 1.000452;  O2 1.999852;  N2 7.519696; }
+        Tgrid     { from 600; to 2500; n 39; }             // K
+        Pgrid     { from 1.0e5; to 1.0e7; n 3; log true; }  // Pa: 1, 10, 100 bar
+        temperatureApproach 0;                          // K, a MAGNITUDE; 0 = true equilibrium
+        metric    { type elementYield; element C; product CO2; }
+        anchors
+        (
+            { T 1800;     P 1.0e5;   }   // gibbs03's operating point
+        );
+        output    { file map.csv; }
+    }
+);

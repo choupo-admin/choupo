@@ -399,8 +399,11 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
     body: "The slider is a demonstration of the mechanism, not a "
       + "recommendation.  A real approach comes from a plant measurement on a "
       + "specific catalyst at a specific point in its life; there is no "
-      + "measurement anywhere in this tool, and Choupo ships no case that "
-      + "declares an approach at all.",
+      + "measurement anywhere in this tool.  The corpus cases that declare "
+      + "an approach declare an UNCALIBRATED one: `ammoniaStaged03_approach` "
+      + "carries a magnitude chosen for the staged sequence, and the five "
+      + "`gibbsMap` witnesses of the companion survey page declare the key "
+      + "at zero so a slider can move it.",
   },
   {
     id: "equilibrium-is-not-the-only-shortfall",

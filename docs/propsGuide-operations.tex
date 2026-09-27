@@ -247,7 +247,8 @@ Equilibrium map over a (T, P) grid by Gibbs minimisation: at every grid point th
 
 
 \begin{tutoriallink}
-\file{tutorials/props/gibbs/nh3\_equilibrium\_map}
+\file{tutorials/props/gibbs/landscape01\_ammonia\_synthesis}
+\quad (and 5 more)
 \end{tutoriallink}
 
 \paragraph{\code{vleConsistency}}
@@ -715,6 +716,23 @@ OPEN-LOOP IDENTIFICATION off a trajectory somebody else recorded. Given a CSV wr
 
 \begin{tutoriallink}
 \file{tutorials/ctrl/ctrl17\_step\_reaction\_curve}
+\end{tutoriallink}
+
+\paragraph{\code{reactionGibbs}}
+The standard reaction thermochemistry of declared reactions -- dH, dS, dG and ln K at each listed temperature -- priced on the catalogue's formation data with EVERY species on a DECLARED standard state (idealGas | pureLiquid | pureSolid) and every datum's rung named in the run. The ONE surface is the elements/formation convention at 298.15 K (dHf\_298 + third-law s\_298). At 298.15 K a species on a rung its record declares is priced from that rung's own pair with no heat capacity integrated (the integral is zero there), which is what lets a record with a datum and no Cp block answer at the datum temperature and nowhere else; at any other T, or on a phase the record does not declare, the potential comes from the phase-aware h\_formation/s\_formation walk, which REFUSES by name where the record lacks the leg. It solves no equilibrium and knows nothing about a rate: exergonic means the equilibrium permits it, not that anything makes it go. Built for the biological nitrogen-fixation routes (a solid sugar and liquid water beside gases), which the ideal-gas-rung route every reactor uses refuses.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{output}\textbf{*} & CSV output \\
+\code{phases}\textbf{*} & Declared standard state per species \\
+\code{reactions}\textbf{*} & Reactions \\
+\code{temperatures}\textbf{*} & Temperatures [K] \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/gibbs/landscape06\_nitrogen\_fixation\_routes}
 \end{tutoriallink}
 
 \paragraph{\code{solubilityParameter}}

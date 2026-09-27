@@ -2018,6 +2018,132 @@ What to read in the output: A, B, C -- the recovered coefficients, against 5.402
 \subsection{gibbs}
 \grouptheory{gibbs}
 \clearpage
+\tutentry{landscape01\_ammonia\_synthesis}{tutorials/props/gibbs/landscape01\_ammonia\_synthesis}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{ammonia}\\[-1pt]{\tiny gibbsMap}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Equilibrium landscape: ammonia synthesis, NH3 mole fraction against T at 1, 10, 100 bar -- and the 298 K / 700 K contrast}
+\begin{tutnarrative}
+THE AMMONIA LANDSCAPE -- N2 + 3 H2 at stoichiometric feed, equilibrium NH3 mole fraction against temperature at 1, 10 and 100 bar (the ideal-gas element-potential kernel, the same one nh3\_equilibrium\_map contours over the whole plane). This is the first witness of the EduTool `equilibrium-landscapes` (gui/src/ui/methods/EquilibriumLandscapesTool.tsx): a SURVEY over reaction systems the engine already solves, read live from this case's `map.csv` and its anchor KPIs.
+
+WHAT THE THREE CURVES SHOW. Exothermic AND mole-reducing (4 $\to$ 2), so the equilibrium loves COLD and PRESSURE: every curve falls with T, and the 100 bar curve sits above the 1 bar one wherever the gas is dry. The grid starts at 300 K on purpose: from 300 to 380 K the 100 bar cells are a SATURATED gas -- the kernel finds NH3 supersaturated there and condenses it (ElementPotential.cpp, the one-condensable two-phase branch), and the mole fraction it reports is the GAS-phase Psat(T)/P. That is why the 100 bar curve RISES with T at its cold end: that leg is ammonia's vapour pressure, not its chemistry, and the curve joins the dry equilibrium at the dew point near 400 K (measured: 0.1047 at 300 K, 0.9311 at 400 K).
+
+THE CONTRAST THE PAGE CLOSES ON, computed here and never typed. Two anchor cells: 298.15 K / 1 bar -- ambient, where the reaction is thermodynamically favourable and nothing in this tree can make it go (the only ammonia rate law here, Dyson \& Simon 1968, REFUSES a pressure below 150 atm by name: src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp, `validityWindow`) -- and 700 K / 200 bar, the gibbs10\_ammonia\_fugacity operating point, which this ideal-gas kernel answers as the SHAPE and that SRK case answers with the fugacity correction folded in. The third anchor, 700 K / 1 bar, is what the same chemistry reaches at converter temperature without the pressure.
+
+Anchor KPI names carry the approach magnitude when one is declared (`metric\_T25C\_P1atm\_dT<n>`), so a changed approach breaks the golden loudly. Nothing here is validated against a measurement: the Larson \& Dodge (1923) pins live in nh3\_equilibrium\_map and are not repeated.
+
+WHY THE PRESSURES ARE 1, 10 AND 100 BAR. `Pgrid` is `from / to / n / log` (GibbsMapOp.cpp reads no list form), and three log-spaced points from 1 to 100 bar land on the decades a textbook draws. Ideal-gas validity is the same caveat as nh3\_equilibrium\_map's: the high-pressure curve is the SHAPE of the pressure dependence, not a quantitative prediction.
+
+temperatureApproach IS DECLARED, AT ZERO. The EduTool's slider replaces the NUMBER of a declared scalar and can add no key (gui/src/case/ methodRun.ts), so the key must be here for the page to move it. Zero is true equilibrium and prints nothing; a magnitude > 0 makes the run assign the sign at EVERY cell from the thermicity of the overall transformation at that cell's T (GibbsMapOp.cpp, `resolveDirection`) and print the tally.
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{landscape02\_water\_gas\_shift}{tutorials/props/gibbs/landscape02\_water\_gas\_shift}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{wgs}\\[-1pt]{\tiny gibbsMap}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Equilibrium landscape: water-gas shift, CO conversion (carbon in CO2) against T -- pressure-indifferent}
+\begin{tutnarrative}
+THE SHIFT LANDSCAPE -- equimolar CO + H2O (gibbs01\_water\_gas\_shift's own feed and species set), the fraction of the feed carbon leaving as CO2 against temperature at 1, 10 and 100 bar. `elementYield` on carbon with CO2 as the product IS the CO conversion here, because every carbon atom fed arrives as CO -- and it is the forum-permitted metric (species "conversion" is banned where the species is also produced; docs/design/gibbs-map-forum-2026-07-02.md).
+
+WHAT THE THREE CURVES SHOW, and it is one curve. Exothermic (the conversion falls with T) and mole-CONSERVING (2 $\to$ 2), so the three pressures give the SAME equilibrium to every printed digit: the ideal-gas equilibrium constant of a Delta\_n = 0 reaction carries no P. The page draws the three curves on top of each other and says why. MEASURED, not assumed: no cell on this grid condenses -- the three pressures agree to every printed digit at all 46 temperatures, which they could not if water had left the gas anywhere (at 400 K the equilibrium leaves 2.5 \% water in the gas, 2.5 bar at 100 bar against a 2.46 bar Psat -- and the run's own identity of the three columns is the proof, not this estimate).
+
+WHY THE PRESSURES ARE 1, 10 AND 100 BAR. `Pgrid` is `from / to / n / log` (GibbsMapOp.cpp reads no list form), and three log-spaced points from 1 to 100 bar land on the decades a textbook draws. Ideal-gas validity is the same caveat as nh3\_equilibrium\_map's: the high-pressure curve is the SHAPE of the pressure dependence, not a quantitative prediction.
+
+temperatureApproach IS DECLARED, AT ZERO. The EduTool's slider replaces the NUMBER of a declared scalar and can add no key (gui/src/case/ methodRun.ts), so the key must be here for the page to move it. Zero is true equilibrium and prints nothing; a magnitude > 0 makes the run assign the sign at EVERY cell from the thermicity of the overall transformation at that cell's T (GibbsMapOp.cpp, `resolveDirection`) and print the tally.
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{landscape03\_steam\_reforming}{tutorials/props/gibbs/landscape03\_steam\_reforming}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{reformer}\\[-1pt]{\tiny gibbsMap}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Equilibrium landscape: methane steam reforming (S/C 3), carbon left in CH4 against T -- pressure hurts}
+\begin{tutnarrative}
+THE REFORMING LANDSCAPE -- CH4 + 3 H2O (gibbs02\_steam\_reforming's own feed and species set), the fraction of the feed carbon STILL in methane against temperature at 1, 10 and 100 bar. Read it as 1 minus the methane conversion: LESS is MORE converted, and the page labels it so rather than subtracting -- the metric on the axis is exactly the number the engine wrote. (`elementYield` with CH4 as the "product" is the honest way to ask for the unconverted feed; the metric slot accepts any listed species.)
+
+WHAT THE THREE CURVES SHOW. Endothermic (the slip falls as T rises) and mole-INCREASING (CH4 + H2O $\to$ CO + 3 H2, 2 $\to$ 4), so pressure HURTS: the 100 bar curve sits far above the 1 bar one, which is why industrial reformers run hot and why the shift on the same catalyst (exothermic, Delta\_n = 0) is the one the approach caveat calls GLOBAL -- one dT for two reactions of opposite thermicity. The engine reads the OVERALL thermicity from this feed (endothermic at every cell of this grid, the run's own tally) and evaluates the chemistry at T - dT.
+
+WHY THE PRESSURES ARE 1, 10 AND 100 BAR. `Pgrid` is `from / to / n / log` (GibbsMapOp.cpp reads no list form), and three log-spaced points from 1 to 100 bar land on the decades a textbook draws. Ideal-gas validity is the same caveat as nh3\_equilibrium\_map's: the high-pressure curve is the SHAPE of the pressure dependence, not a quantitative prediction.
+
+temperatureApproach IS DECLARED, AT ZERO. The EduTool's slider replaces the NUMBER of a declared scalar and can add no key (gui/src/case/ methodRun.ts), so the key must be here for the page to move it. Zero is true equilibrium and prints nothing; a magnitude > 0 makes the run assign the sign at EVERY cell from the thermicity of the overall transformation at that cell's T (GibbsMapOp.cpp, `resolveDirection`) and print the tally.
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{landscape04\_methane\_combustion}{tutorials/props/gibbs/landscape04\_methane\_combustion}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{burner}\\[-1pt]{\tiny gibbsMap}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Equilibrium landscape: methane combustion in stoichiometric air, carbon in CO2 against T -- complete until dissociation}
+\begin{tutnarrative}
+THE COMBUSTION LANDSCAPE -- CH4 in stoichiometric air (gibbs03's own feed and species set), the fraction of the feed carbon fully oxidised to CO2 against temperature at 1, 10 and 100 bar, 600 to 2500 K.
+
+WHAT THE THREE CURVES SHOW, and it is where the approach is INDIFFERENT. Below about 1500 K the equilibrium is complete conversion to better than 0.2 \% (0.99996 at 600 K, 0.9987 at 1500 K and 1 bar) -- a flat line at 1 on any axis a plot can draw -- and a 50 K approach moves it by nothing visible: the whole conversion-versus-temperature curve is flat, so a HORIZONTAL shift along it changes nothing. Only above \textasciitilde{}1800 K, where CO2 starts to dissociate to CO, does the curve acquire a slope and the approach a visible effect, and pressure holds the CO2 together (the dissociation makes moles). This is the page's counterexample to the ammonia and reforming systems, where the same 50 K moves the answer by a great deal.
+
+The grid starts at 600 K rather than 300 K by measurement: on a 300 K start the cells at 300 and 350 K (every pressure), 400 K / 10 bar and 500 K / 100 bar did NOT converge -- the product water is far below its dew point there and the gas-only Newton the kernel runs first does not reach a root -- and a witness that ships hatched cells at its cold end teaches nothing the 600 K plateau does not. From 600 K up every cell converges dry (y\_H2O P stays below Psat on the whole grid).
+
+WHY THE PRESSURES ARE 1, 10 AND 100 BAR. `Pgrid` is `from / to / n / log` (GibbsMapOp.cpp reads no list form), and three log-spaced points from 1 to 100 bar land on the decades a textbook draws. Ideal-gas validity is the same caveat as nh3\_equilibrium\_map's: the high-pressure curve is the SHAPE of the pressure dependence, not a quantitative prediction.
+
+temperatureApproach IS DECLARED, AT ZERO. The EduTool's slider replaces the NUMBER of a declared scalar and can add no key (gui/src/case/ methodRun.ts), so the key must be here for the page to move it. Zero is true equilibrium and prints nothing; a magnitude > 0 makes the run assign the sign at EVERY cell from the thermicity of the overall transformation at that cell's T (GibbsMapOp.cpp, `resolveDirection`) and print the tally.
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{landscape05\_thermal\_no}{tutorials/props/gibbs/landscape05\_thermal\_no}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{burner}\\[-1pt]{\tiny gibbsMap}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Equilibrium landscape: thermal NO in methane-air combustion products against T -- the GLOBAL caveat, drawn}
+\begin{tutnarrative}
+THE THERMAL-NO LANDSCAPE -- CH4 in stoichiometric air with NO in the species list (gibbs06\_thermal\_nox's own feed and species set), the equilibrium NO mole fraction against temperature at 1, 10 and 100 bar, 1000 to 2500 K. The page draws it on a LOG axis: it spans many decades (read the two ends off the CSV rather than off this sentence).
+
+WHAT IT IS HERE FOR, and it is the sharpest thing on the page. NO formation (N2 + O2 $\to$ 2 NO) is ENDOTHERMIC -- the curve RISES with T -- but it rides inside a feed whose OVERALL transformation, methane burning, is exothermic. The engine reads the direction from the overall thermicity of THIS feed at each cell (GibbsReactor::approachDirection, the one home; GibbsMapOp calls it per cell), finds every cell exothermic, and evaluates the chemistry at T + dT. For the combustion that is the conservative direction. For the NO riding inside it, T + dT sits HIGHER on a rising curve: the declared approach reports MORE NO than the equilibrium at the physical T -- an outlet beyond equilibrium for the minor product. That is the engine's own GLOBAL caveat ("it cannot resolve per-reaction approaches") drawn as a curve rather than printed as a sentence, and the page says it is a limitation of the single-number model, not a finding about flames.
+
+Pressure: 2 $\to$ 2 for NO formation, so the 1 and 10 bar curves nearly coincide; the small spread that remains comes from the combustion products' own dissociation equilibria, which do carry P.
+
+WHY THE PRESSURES ARE 1, 10 AND 100 BAR. `Pgrid` is `from / to / n / log` (GibbsMapOp.cpp reads no list form), and three log-spaced points from 1 to 100 bar land on the decades a textbook draws. Ideal-gas validity is the same caveat as nh3\_equilibrium\_map's: the high-pressure curve is the SHAPE of the pressure dependence, not a quantitative prediction.
+
+temperatureApproach IS DECLARED, AT ZERO. The EduTool's slider replaces the NUMBER of a declared scalar and can add no key (gui/src/case/ methodRun.ts), so the key must be here for the page to move it. Zero is true equilibrium and prints nothing; a magnitude > 0 makes the run assign the sign at EVERY cell from the thermicity of the overall transformation at that cell's T (GibbsMapOp.cpp, `resolveDirection`) and print the tally.
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{landscape06\_nitrogen\_fixation\_routes}{tutorials/props/gibbs/landscape06\_nitrogen\_fixation\_routes}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{routes298}\\[-1pt]{\tiny reactionGibbs}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{routes310}\\[-1pt]{\tiny reactionGibbs}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{haber700}\\[-1pt]{\tiny reactionGibbs}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Nitrogen fixation, three overall routes on one formation surface: heterotrophic (sugar as the electron donor), phototrophic (water), and Haber-Bosch -- dG as the engine prices it}
+\begin{tutnarrative}
+THREE OVERALL ROUTES TO FIXED NITROGEN, PRICED ON ONE SURFACE. The sixth witness of the EduTool `equilibrium-landscapes` (gui/src/ui/methods/EquilibriumLandscapesTool.tsx) and the first case of the `reactionGibbs` property operation (src/propertyOps/ReactionGibbs.cpp), which exists because of it.
+
+WHY A NEW OP WAS NEEDED, measured before it was written. The engine's one route to a reaction's Gibbs energy, `Reaction::equilibrium` (src/thermo/reaction/Reaction.cpp), prices every species on the ideal-gas rung with `g\_pure\_ig(T)`, and that rung REFUSES a record tabulated on the solid standard state. A gibbsMap with glucose beside the gases was run and refused, verbatim: "Component 'glucose': h\_pure\_ig(T) evaluates the IDEAL-GAS rung, but this record declares standardThermochemistry. referenceState pureSolid -- dHf\_298 and s\_298 are tabulated on the solid standard state, so reading them here would be wrong by a heat of sublimation." The same refusal binds `equilibriumReactor` and `gibbsReactor`. The biological routes are exactly a solid sugar and liquid water beside gases, so no reactor and no existing op could price them; `reactionGibbs` sums a DECLARED reaction over the phase-aware `h\_formation` / `s\_formation` surface the Component already carried.
+
+THE THREE ROUTES (constant/reactions), balanced by ELECTRON COUNT -- the biological ones carry NO H2 (Vitor's correction, 2026-09-27: nitrogenase reduces N2 with protons and electrons that come from the organism's substrate): heterotrophic C6H12O6(s) + 4 N2 + 6 H2O(l) $\to$ 6 CO2 + 8 NH3 phototrophic N2 + 3 H2O(l) $\to$ 2 NH3 + 3/2 O2 haberBosch N2 + 3 H2 $\to$ 2 NH3 Every species is priced on a DECLARED standard state (`phases \{\}`): the sugar on its own pureSolid rung, water as a pure liquid reached by the vaporisation crossing from its ideal-gas datum (announced), the gases on idealGas. The lesson's expectation, stated before the run: the sugar route is EXERGONIC (respiration pays for fixation), the water route is ENDERGONIC (light pays), the industrial route is exergonic at 298 K and loses that with temperature -- the landscape witness beside this case draws the loss.
+
+TWO TEMPERATURES, AND WHY ONLY THE FIRST IS ASKED OF THE SUGAR ROUTE. 298.15 K is the datum temperature, where a declared rung answers with no heat capacity integrated. glucose.dat carries NO heat-capacity block on any rung ("FLAGGED, NOT FABRICATED", its own words), so asking the heterotrophic route at 310.15 K REFUSES by name -- measured, verbatim: "Component 'glucose': h\_formation liquid leg needs liquidHeatCapacity" (the solid leg falls back to the liquid Cp and finds none). The refusal is the finding and is quoted on the page; this case therefore prices all three routes at 298.15 K in one op and the two routes that can move in temperature at 310.15 K in a second op, so that the run passes and the gap is stated rather than papered over; a third op prices the industrial route alone at 700 K, the converter temperature of gibbs10, where its dG has changed sign -- which is the whole reason the converter needs its pressure, and the landscape witness beside this case draws it. Liquid water is not asked at 700 K: a pure-liquid standard state above the critical temperature is a number with no state behind it.
+
+NOTHING HERE IS A RATE. An exergonic route is one the equilibrium permits; what makes each one go -- the enzyme's ATP, the light, the iron catalyst's temperature -- is outside every record in this tree, and the ATP stoichiometry of nitrogenase is deliberately NOT cited because no reference for it exists in the repository.
+
+\end{tutnarrative}
+
+\clearpage
 \tutentry{nh3\_equilibrium\_map}{tutorials/props/gibbs/nh3\_equilibrium\_map}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
