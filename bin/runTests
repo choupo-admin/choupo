@@ -938,6 +938,41 @@ if [ "${1:-}" = "--fast" ]; then
     set -- "${FLIST[@]}"
 fi
 
+#  report_gui_tests <log> <tail-lines> -- ONE home for how a failed `npm test`
+#  is reported, used by the --gui path and by the full sweep alike.
+#
+#  WHY IT EXISTS (2026-09-27).  Four GUI test files read run outputs the
+#  engine WRITES -- txy.csv, ternary.csv, trajectory.csv, a sweep CSV --
+#  which are gitignored and were never committed, so in every fresh clone
+#  and worktree they failed with a bare ENOENT or an assertion that read like
+#  a regression, for a reason unrelated to the change under test.  A red
+#  whose meaning is "you have not run something" teaches its reader to ignore
+#  red.  Now the vitest globalSetup GENERATES them from this tree's native
+#  build (gui/tests/witnessOutputs.ts holds the list and the contract), and
+#  when it cannot -- no build, a build older than src/, a witness that fails
+#  -- each reading test throws an error that begins `WITNESS OUTPUT REFUSED`.
+#
+#  THE RULE HERE: a run whose EVERY failed test is such a refusal, and which
+#  has no failed suite and no unhandled error, is reported REFUSED -- by
+#  name, with the setup's own reason and remedy -- and STILL counts against
+#  the tally, because a check that cannot run must not pass.  ANY failure
+#  without the marker keeps the whole row a FAIL, so a real regression can
+#  never shelter behind a refusal.  Either way the caller counts a failure.
+report_gui_tests() {
+    local log="$1" n="$2" failed refused
+    failed=$(grep -oE 'Tests +[0-9]+ failed' "$log" | grep -oE '[0-9]+' | tail -1)
+    refused=$(grep -cE '^Error: WITNESS OUTPUT REFUSED' "$log" || true)
+    if [ -n "$failed" ] && [ "$failed" -gt 0 ] && [ "$refused" -eq "$failed" ] \
+       && ! grep -qE 'Failed Suites|Unhandled Error' "$log"; then
+        printf "REFUSED  %-37s  (%s test(s) read engine run outputs this checkout could not generate)\n" \
+            "gui-tests" "$refused"
+        grep -E '^\[witness outputs\] WITNESS OUTPUT REFUSED' "$log" | sed 's/^/    /'
+    else
+        printf "FAIL  %-40s  (cd gui && npm test)\n" "gui-tests"
+        tail -"$n" "$log"
+    fi
+}
+
 #  --gui: THE GUI-ONLY PATH (2026-09-04, Vitor: "precisas de correr a suite
 #  toda quando so muda a gui?!").  No.
 #
@@ -951,6 +986,15 @@ fi
 #  every gate that READS gui/ -- the registry/landing agreement, the EduTool
 #  shapes, the prose-vs-golden arms, the estimate marks, the doc references.
 #  Measured 2026-09-04: 142 s of npm test + ~11 s of gates, against ~30 min.
+#
+#  IT NEEDS A NATIVE BUILD, AND SAYS SO (2026-09-27).  Four GUI test files
+#  hold a construction to what the engine actually wrote, so `npm test`'s
+#  globalSetup RUNS four witness cases with this tree's binaries to generate
+#  those files (gui/tests/witnessOutputs.ts).  Nothing is COMPILED here and no
+#  golden is COMPARED -- the witnesses run only to produce what the tests
+#  read -- but in a checkout with no build, or a build older than src/, those
+#  tests REFUSE by name with `make all` as the remedy (report_gui_tests
+#  above), instead of failing with an assertion that reads like a regression.
 #
 #  THE GATE LIST IS DERIVED, NEVER WRITTEN HERE.  A hand-kept list is a second
 #  home for "which gates read the GUI", and it would go stale the first time
@@ -986,8 +1030,7 @@ if [ "${1:-}" = "--gui" ]; then
             "$(grep -oE 'Tests +[0-9]+ passed \([0-9]+\)' /tmp/guitest.$$ | tail -1)"
         gpass=$((gpass+1))
     else
-        printf "FAIL  %-40s  (cd gui && npm test)\n" "gui-tests"
-        tail -30 /tmp/guitest.$$
+        report_gui_tests /tmp/guitest.$$ 30
         gfail=$((gfail+1))
     fi
     rm -f /tmp/guitest.$$
@@ -1037,7 +1080,8 @@ if [ "${1:-}" = "--gui" ]; then
     echo
     echo "PASS $gpass / FAIL $gfail"
     echo "  ^ the gui/-ONLY path.  It says nothing about the solver: no corpus"
-    echo "    case ran, and no C++ was compiled.  If this commit also touches"
+    echo "    case was CHECKED (four witnesses ran only to generate the files the"
+    echo "    GUI tests read) and no C++ was compiled.  If this commit also touches"
     echo "    src/, tutorials/ or data/, run bin/runTests -- this is not it."
     [ "$gfail" -eq 0 ] || exit 1
     exit 0
@@ -1849,8 +1893,7 @@ if [ "$#" -eq 0 ]; then
                 "$(grep -Eo 'Tests +[0-9]+ passed \([0-9]+\)' /tmp/guitest.$$ | tail -1)"
             pass=$((pass+1))
         else
-            printf "FAIL  %-40s  (cd gui && npm test)\n" "gui-tests"
-            tail -25 /tmp/guitest.$$
+            report_gui_tests /tmp/guitest.$$ 25
             fail=$((fail+1))
         fi
         rm -f /tmp/guitest.$$

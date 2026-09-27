@@ -2287,6 +2287,29 @@ which is the class of defect a green suite cannot report.  The remedy shape
 already exists two lines below in the same ignore rule
 (`!tutorials/**/constant/experimental/*.csv`).
 
+**2026-09-27 -- CLOSED, and NOT by that remedy.**  The four files are still
+run outputs and are still never committed: a committed run output is a second
+golden with no tolerance that every run of its case rewrites, and the GUI
+bundle's eager glob inlines every tutorial file present at build time.  What
+changed is who produces them.  The vitest globalSetup
+(`gui/tests/witnessSetup.ts`) RUNS the four witnesses with this tree's native
+binaries before any test loads, after asking `check_build_fresh` whether the
+build is a build of this tree; a test reads a run output only through
+`witnessOutput()`, which refuses a path not declared in the one list
+(`gui/tests/witnessOutputs.ts`) and throws `WITNESS OUTPUT REFUSED`, with
+`make all` as the remedy, when the setup could not generate it.  It never
+skips.  `bin/runTests` reports a run whose every failure is such a refusal as
+REFUSED rather than FAIL, still counted against the tally.  So `--gui` now
+needs a native build, and says so.  The same fix reached
+`check_doc_references`, which went red in every fresh worktree on this
+section's two mentions of `txy.csv` and `ternary.csv`: a path git ignores
+whose producing case exists is now accepted as a RUN OUTPUT (a rule, like the
+private tier, not two allow-list entries -- the mentions stay, because a
+record of a defect must name what it was about), and the gate's stale-entry
+arm no longer fires on an entry git ignores -- it had been red in every
+checkout that ran `make wasm-gui`, over `gui/public/wasm/`, the same
+machine-dependent verdict one directory over.
+
 
 **2026-09-07 — THE OPEN QUEUE, written down.**  Thirty-one actionable
 findings from the September audit campaign, every one of them MEASURED

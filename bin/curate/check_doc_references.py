@@ -27,6 +27,7 @@ list is where that legitimacy is written down, not inferred.
 
 Exit 1 listing the dead references."""
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -56,6 +57,64 @@ PRIVATE_TIER = "data/local/"
 
 def in_private_tier(p: str) -> bool:
     return p.startswith(PRIVATE_TIER)
+
+
+#  A RUN OUTPUT IS A RULE TOO, and for the same reason (2026-09-27).  A doc
+#  that names `tutorials/<case>/txy.csv` is naming what that case WRITES when
+#  it runs: the file exists in a checkout where the case has run and in no
+#  fresh clone, because `.gitignore` keeps every run output out of the tree.
+#  So the gate went red on DEV.md in every fresh worktree and green wherever
+#  the witness had run -- a verdict about the reader's machine, not the doc.
+#  Listing the two paths in ALLOWED_PATHS would have been wrong twice over:
+#  a list of instances of a rule drifts (PRIVATE_TIER above), and the
+#  stale-entry arm below would then fire in exactly the checkouts where the
+#  file HAD been generated.  The rule, and what it still checks:
+#
+#    * the path is one git IGNORES (asked of git itself -- `check-ignore` --
+#      never re-derived from the patterns here), so its absence from a clean
+#      checkout is the repository's own declaration, not a guess; AND
+#    * the CASE that produces it exists -- the nearest ancestor holding
+#      `system/controlDict`.  A renamed or deleted witness therefore still
+#      reads as a dead reference, which is the defect this gate is for.
+#
+#  NOT CHECKED, said plainly: whether the prose DESCRIBES the path as a run
+#  output (no gate here can read that), and whether the case really writes a
+#  file of that name (only running it can say).
+RUN_OUTPUT_ROOT = "tutorials/"
+_ignored_cache: dict = {}
+
+
+def git_ignores(p: str) -> bool:
+    """True when git's own ignore rules match `p`.  A checkout with no git
+    cannot answer; that REFUSES rather than guessing either way."""
+    if p not in _ignored_cache:
+        try:
+            r = subprocess.run(["git", "-C", str(ROOT), "check-ignore", "-q",
+                                "--", p], capture_output=True, text=True)
+        except OSError as e:
+            raise SystemExit(f"check_doc_references: REFUSED -- cannot ask git"
+                             f" whether '{p}' is ignored ({e}); the run-output"
+                             " rule cannot be evaluated and must not pass")
+        if r.returncode not in (0, 1):
+            raise SystemExit(f"check_doc_references: REFUSED -- `git"
+                             f" check-ignore` failed on '{p}'"
+                             f" ({r.stderr.strip()}); the run-output rule"
+                             " cannot be evaluated and must not pass")
+        _ignored_cache[p] = (r.returncode == 0)
+    return _ignored_cache[p]
+
+
+def producing_case(p: str):
+    """The case directory whose run writes the ignored path `p`, or None."""
+    if not p.startswith(RUN_OUTPUT_ROOT) or not git_ignores(p):
+        return None
+    d = (ROOT / p).parent
+    stop = ROOT / RUN_OUTPUT_ROOT.rstrip("/")
+    while d != stop and d != ROOT:
+        if (d / "system" / "controlDict").is_file():
+            return d
+        d = d.parent
+    return None
 
 
 ALLOWED_PATHS = {
@@ -158,6 +217,7 @@ def main() -> int:
         return 1
 
     nPaths = nCases = 0
+    runOutputs = set()
     for doc in DOCS:
         if not doc.exists():
             dead.append(f"{doc.relative_to(ROOT)}: the doc itself is missing")
@@ -169,7 +229,14 @@ def main() -> int:
                          for m in PATH_RE.finditer(txt)}):
             nPaths += 1
             if PLACEHOLDER.search(p) or p in ALLOWED_PATHS \
-               or in_private_tier(p) or path_exists(p):
+               or in_private_tier(p):
+                continue
+            #  Decided BEFORE existence, so the verdict and the count are the
+            #  same whether or not the case has run in this checkout.
+            if producing_case(p) is not None:
+                runOutputs.add(p)
+                continue
+            if path_exists(p):
                 continue
             dead.append(f"{rel}: path '{p}' does not exist")
 
@@ -194,8 +261,13 @@ def main() -> int:
     #  An allow-list entry that has come TRUE is also rot -- the prose still
     #  says "retired" about something now on disk, or the placeholder collided
     #  with a real case.  Say so rather than let it sit.
+    #  EXCEPT an entry git IGNORES: that is a build or run output, whose
+    #  existence says whether a build ran here, not whether the prose went
+    #  stale.  `gui/public/wasm/` is the one today, and without this the arm
+    #  went red in every checkout that had run `make wasm-gui` -- the same
+    #  machine-dependent verdict the run-output rule above removes.
     for p, why in sorted(ALLOWED_PATHS.items()):
-        if path_exists(p):
+        if path_exists(p) and not git_ignores(p):
             dead.append(f"ALLOW-LIST: '{p}' now EXISTS but is listed as"
                         f" absent ({why}) -- update the prose and drop the"
                         " entry, or the docs are describing the opposite of"
@@ -209,7 +281,12 @@ def main() -> int:
     print(f"check_doc_references: OK -- {nPaths} path mention(s) and {nCases}"
           f" case name(s) across {len(DOCS)} AI-facing docs all resolve;"
           f" {len(ALLOWED_PATHS)} deliberate absences are listed with their"
-          " reason and none of them has quietly come true")
+          " reason and none of them has quietly come true (build outputs git"
+          f" ignores excepted); {len(runOutputs)} mention(s) of a RUN OUTPUT"
+          " are accepted as such -- git ignores the path and the case that"
+          " writes it exists -- whether or not it has run here.  NOT checked:"
+          " that the prose calls it a run output, or that the case really"
+          " writes that file")
     return 0
 
 
