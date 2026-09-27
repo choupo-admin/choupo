@@ -2299,8 +2299,10 @@ build is a build of this tree; a test reads a run output only through
 (`gui/tests/witnessOutputs.ts`) and throws `WITNESS OUTPUT REFUSED`, with
 `make all` as the remedy, when the setup could not generate it.  It never
 skips.  `bin/runTests` reports a run whose every failure is such a refusal as
-REFUSED rather than FAIL, still counted against the tally.  So `--gui` now
-needs a native build, and says so.  The same fix reached
+REFUSED rather than FAIL, still counted against the tally.  (`--gui` already
+aborted without a fresh build -- `check_build_fresh` is gate zero on every
+path -- so the four failures were only ever seen in a worktree that HAD a
+build and had not run the four cases.)  The same fix reached
 `check_doc_references`, which went red in every fresh worktree on this
 section's two mentions of `txy.csv` and `ternary.csv`: a path git ignores
 whose producing case exists is now accepted as a RUN OUTPUT (a rule, like the

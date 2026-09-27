@@ -987,14 +987,15 @@ report_gui_tests() {
 #  shapes, the prose-vs-golden arms, the estimate marks, the doc references.
 #  Measured 2026-09-04: 142 s of npm test + ~11 s of gates, against ~30 min.
 #
-#  IT NEEDS A NATIVE BUILD, AND SAYS SO (2026-09-27).  Four GUI test files
+#  IT RUNS FOUR WITNESSES, AND SAYS SO (2026-09-27).  Four GUI test files
 #  hold a construction to what the engine actually wrote, so `npm test`'s
 #  globalSetup RUNS four witness cases with this tree's binaries to generate
 #  those files (gui/tests/witnessOutputs.ts).  Nothing is COMPILED here and no
 #  golden is COMPARED -- the witnesses run only to produce what the tests
-#  read -- but in a checkout with no build, or a build older than src/, those
-#  tests REFUSE by name with `make all` as the remedy (report_gui_tests
-#  above), instead of failing with an assertion that reads like a regression.
+#  read.  This path already ABORTS without a fresh build (gate zero,
+#  check_build_fresh, above), so here a refusal can only come from a witness
+#  that fails; `npm test` run by hand gets the same refusal, by name with
+#  `make all` as the remedy, where it used to get a bare ENOENT.
 #
 #  THE GATE LIST IS DERIVED, NEVER WRITTEN HERE.  A hand-kept list is a second
 #  home for "which gates read the GUI", and it would go stale the first time
