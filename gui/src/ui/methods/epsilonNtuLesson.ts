@@ -139,9 +139,12 @@ Q_\mathrm{max} &= C_\mathrm{min} (T_{h,\mathrm{in}} - T_{c,\mathrm{in}})
         + "dimensionless against the stream that limits it.  It is the SIZE "
         + "variable of the method, as epsilon is its performance variable" },
     ],
-    note: "ε is not a thermodynamic efficiency: it is a fraction of a "
-      + "FIRST-LAW maximum, and an exchanger at ε = 1 still destroys plenty "
-      + "of availability across its temperature difference.  And NTU is a "
+    note: "ε is not a thermodynamic efficiency: it is a fraction of the "
+      + "largest duty the second law allows, and says nothing about how much "
+      + "availability is destroyed.  Only a balanced counter-current "
+      + "exchanger closes its temperature difference everywhere as ε → 1; "
+      + "any other arrangement at its limiting ε still transfers heat across "
+      + "a finite difference.  And NTU is a "
       + "size only relative to the flow it serves — the same shell is a large "
       + "exchanger for a trickle and a small one for a torrent.",
   },
@@ -247,7 +250,7 @@ export const ENTU_LIMITS: readonly { id: string; title: string; body: string }[]
   },
   {
     id: "arrangements",
-    title: "Three arrangements, and an unrecognised word becomes counter-current.",
+    title: "Three arrangements, and an unrecognised word is refused.",
     body: "Counter-current, co-current, and 1 shell pass / 2N tube passes "
       + "(reached by declaring passes ≥ 2). Crossflow — either fluid mixed or "
       + "unmixed — is not implemented, and neither is any multi-shell "

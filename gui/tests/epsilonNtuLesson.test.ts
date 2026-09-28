@@ -70,7 +70,12 @@ describe("the lesson runs end to end", () => {
     expect(s3.formula).toContain(String.raw`\varepsilon &= \frac{Q}{Q_\mathrm{max}}`);
     expect(s3.formula).toContain(String.raw`\mathrm{NTU} &= \frac{U A}{C_\mathrm{min}}`);
     expect(prose(s3.note!)).toContain("not a thermodynamic efficiency");
-    expect(prose(s3.note!)).toContain("FIRST-LAW maximum");
+    //  2026-09-28 (external review, verified): the cap on Q is the SECOND
+    //  law's, and eps = 1 destroys no availability for a balanced
+    //  counter-current exchanger.  This pin used to hold the wrong wording.
+    expect(prose(s3.note!)).not.toContain("FIRST-LAW maximum");
+    expect(prose(s3.note!)).toContain("largest duty the second law allows");
+    expect(prose(s3.note!)).toContain("Only a balanced counter-current");
   });
 
   it("gives C_r its own step and both bracketing limits", () => {

@@ -167,7 +167,9 @@ Q &= L\, \mathrm{cp}_L\, \text{range} &\qquad \text{range} &= T_\mathrm{water,in
         means: "The specific heat capacity of LIQUID water — "
         + "what turns a water temperature drop into heat the air must carry "
         + "away.  The engine evaluates it ONCE and holds it constant; see "
-        + "step 5 for where that approximation bites.", unit: "J/(kg·K)" },
+        + "step 5 for where that approximation bites.  Here in kJ/(kg·K), the "
+        + "same basis as h (kJ/kg dry air), so that (L/G)·cp_L·dT is an "
+        + "enthalpy change.", unit: "kJ/(kg·K)" },
       { sym: "T", means: "A water temperature ANYWHERE in the packing — the "
         + "running coordinate, not a terminal.  The operating line gives the "
         + "air enthalpy at the section where the water is at T.", unit: "K" },

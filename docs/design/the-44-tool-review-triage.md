@@ -182,6 +182,21 @@ reports that listed each with its condition were session output and are NOT
 in the repository; whoever fixes a page re-reads it for its absolutes, and
 they are applied with that page's confirmed fixes, never as a separate sweep.
 
+## Fixed
+
+**Slice 1 (2026-09-28), the physics stated backwards:** Ponchon–Savarit
+(reflux rises), approach to equilibrium (steep ⇒ large shortfall), element
+potentials (no LOWER), Wegstein (q = −1 is a double step; direct substitution
+converges only for |G′| < 1), McCabe–Thiele (q to saturated VAPOUR; the
+stripping liquid gains qF), psychrometrics (the floor is T_as, equal to T_wb
+only for Le ≈ 1), ε-NTU (second-law cap; ε = 1 is loss-free only balanced
+counter-current; the stale "becomes counter-current" title), LUB (a truncated
+curve makes LUB low but L_es and L_full LONG — lesson and tool), Merkel
+(cp_L in kJ/(kg·K)), Rayleigh (ln(W₀/W)), Levenspiel (rectangles over the
+curve).  Two tests had been PINNING the wrong wording (ε-NTU "FIRST-LAW
+maximum", psychrometrics "FLOOR for any adiabatic humidification"); both now
+pin the correction and forbid the old sentence.
+
 ## Order of work
 
 1. The confirmed text errors above, page by page, with each page's SOFTEN

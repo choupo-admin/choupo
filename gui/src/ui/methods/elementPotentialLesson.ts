@@ -280,7 +280,8 @@ export const EP_STEPS: readonly LessonStep[] = [
     ],
     note: "BOTH TESTS ARE THE SAME TEST.  A phase belongs at the minimum "
       + "exactly when its own chemical potential, read off the element "
-      + "potentials, is no higher than its standard state — the liquid's "
+      + "potentials, is no LOWER than its standard state (the solid's ln a_s ≥ "
+      + "0) — the liquid's "
       + "through Raoult (y_c P = Psat_c), the solid's through a_s = 1.  The "
       + "element potentials price a phase the gas does not yet contain, "
       + "and that is what makes the test possible without solving anything "

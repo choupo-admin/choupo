@@ -78,10 +78,14 @@ describe("the lesson runs end to end", () => {
     expect(prose(s2.note!)).toContain("DEW POINT");
   });
 
-  it("teaches wet bulb as a BALANCE and as the floor of evaporative cooling", () => {
+  it("teaches wet bulb as a BALANCE, and NOT as the general floor of evaporative cooling", () => {
     const s3 = PSYCHRO_STEPS.find((s) => s.n === 3)!;
     expect(prose(s3.body)).toContain("where the two rates cancel");
-    expect(prose(s3.body)).toContain("FLOOR for any adiabatic humidification");
+    //  2026-09-28 (external review, verified against PsychrometricChart.cpp,
+    //  which draws both families): the floor is T_as, and it equals T_wb
+    //  only for Le ~ 1.  This pin used to hold the wrong claim.
+    expect(prose(s3.body)).not.toContain("FLOOR for any adiabatic humidification");
+    expect(prose(s3.body)).toContain("the two coincide only when the Lewis number is close to one");
     //  The enthalpy argument is what makes an adiabatic line STRAIGHT.
     expect(prose(s3.body)).toContain("constant-enthalpy lines");
     const f = prose(s3.formula!);
@@ -116,7 +120,7 @@ describe("the lesson runs end to end", () => {
     expect(b).toContain("horizontal to the right");
     expect(b).toContain("horizontal to the left until the saturation curve");
     expect(b).toContain("dew point");
-    expect(b).toContain("UP a wet-bulb line");
+    expect(b).toContain("UP an adiabatic-saturation line");
     expect(b).toContain("straight segment");
     //  The same lever rule as the flash and the extraction triangle.
     expect(prose(s4.note!)).toContain("LEVER RULE");

@@ -146,8 +146,10 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "where the two rates cancel, and that steady value is the WET-BULB "
       + "temperature.  It is not the temperature of the gas — it is the "
       + "temperature a free liquid surface reaches while sitting in that gas "
-      + "— and it is the FLOOR for any adiabatic humidification: evaporating "
-      + "the condensable into the gas cannot cool the gas past it.  Enthalpy "
+      + "— and it is NOT, in general, the floor of adiabatic humidification: "
+      + "that floor is the adiabatic-saturation temperature of the next "
+      + "step, and the two coincide only when the Lewis number is close to "
+      + "one, as it happens to be for air and water.  Enthalpy "
       + "is why those lines are straight.  Counted per kilogram of the same "
       + "dry carrier, moist-gas enthalpy is sensible plus latent, and along "
       + "an adiabatic-saturation line the sensible heat given up is very "
@@ -243,7 +245,8 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "temperature while the difference in Y drops out as liquid.  That is "
       + "DEHUMIDIFICATION, and the chart gives the condensate directly: the "
       + "vertical drop, in kg per kg of dry gas.  ADIABATIC HUMIDIFICATION "
-      + "runs UP a wet-bulb line towards saturation — liquid evaporates, Y "
+      + "runs UP an adiabatic-saturation line towards saturation (for air "
+      + "and water, practically a wet-bulb line) — liquid evaporates, Y "
       + "rises, and the gas pays the latent heat out of its own temperature.  "
       + "MIXING two streams puts the mixed state on the straight segment "
       + "joining them, dividing it in the inverse ratio of the two dry-gas "
@@ -251,7 +254,7 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
     formula: String.raw`\begin{aligned}
 \text{heating / cooling:}\quad & Y \text{ constant, move along } T\\
 \text{dehumidification:}\quad & \text{condensate} = Y_\mathrm{in} - Y_\mathrm{sat}(T_\mathrm{surface})\\
-\text{adiabatic humidification:}\quad & \text{up a wet-bulb line, bounded below by } T_\mathrm{wb}\\
+\text{adiabatic humidification:}\quad & \text{up an adiabatic-saturation line, bounded below by } T_\mathrm{as}\\
 \text{mixing:}\quad & Y_m = \frac{G_1 Y_1 + G_2 Y_2}{G_1 + G_2}, \quad G = \text{dry-gas mass flow}
 \end{aligned}`,
     where: [
@@ -279,7 +282,8 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "so the true point sits a little off the chord when the two streams "
       + "differ in both temperature and humidity.  Two moves compose into a "
       + "DRYER: heat the gas (right), then pass it over the wet solid, where "
-      + "it picks up moisture along a wet-bulb line (up and left) — the "
+      + "it picks up moisture along an adiabatic-saturation line (up and "
+      + "left) — the "
       + "heater is paying in sensible heat for the evaporation the dryer "
       + "does.  Two more compose into a COOLING COIL: not all of the stream "
       + "reaches the cold surface, so the outlet sits on the mixing line "

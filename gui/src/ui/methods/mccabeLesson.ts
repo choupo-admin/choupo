@@ -50,7 +50,8 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "Two operating lines, because the column has two halves",
     body: "Above the feed, the liquid running down is reflux returned from "
-      + "the condenser.  Below it, the liquid is the feed plus that reflux.  "
+      + "the condenser.  Below it, the liquid is that reflux plus the liquid "
+      + "the feed brings (qF).  "
       + "The two halves therefore obey DIFFERENT material balances, and each "
       + "gets its own line.  The reflux ratio R = L/D is what sets the slope "
       + "of the upper one — which is why turning R moves the staircase.",
@@ -138,7 +139,7 @@ y &= \frac{\bar L}{\bar V}\,x - \frac{B}{\bar V}\,x_B
     title: "The q-line: what the feed's condition does to the column",
     body: "The two operating lines meet on a third, fixed by the feed alone: "
       + "how much of it arrives as liquid.  q is the heat needed to bring one "
-      + "mole of feed to saturated liquid, over the molar latent heat — so "
+      + "mole of feed to saturated VAPOUR, over the molar latent heat — so "
       + "q = 1 is a saturated liquid and q = 0 a saturated vapour.  Its slope "
       + "is q/(q−1), which is why a saturated-liquid feed gives a VERTICAL "
       + "q-line and a saturated vapour a horizontal one.",

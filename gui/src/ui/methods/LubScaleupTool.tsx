@@ -509,9 +509,10 @@ export function LubScaleupTool(): JSX.Element {
             <Text size="xs" c="orange">
               INCOMPLETE DATA: {incomplete.map((a) => `${a.label} curve ends at `
                 + `c_out/c_in = ${fmt(a.stoich.fEnd, 4)} (t = ${fmt(a.stoich.tEnd)} s)`)
-                .join("; ")} — below 0.95, so its t_st is a LOWER BOUND and
-              every length sized from it is too.  Extend the horizon (or the
-              experiment) until the outlet is at the feed value.
+                .join("; ")} — below 0.95, so its t_st is a LOWER BOUND: LUB
+              comes out low, while L_es and L_full, which divide by t_st,
+              come out too long.  Do not size from it; extend the horizon
+              (or the experiment) until the outlet is at the feed value.
             </Text>
           )}
         </Stack>

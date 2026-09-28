@@ -158,7 +158,7 @@ V H &= L h + D\, h_D - Q_C
         eq: String.raw`\frac{L}{V} = \frac{\Delta_D - H}{\Delta_D - h}`},
       { step: "So the reflux is not a number you carry alongside the "
           + "diagram — it IS the position of Δ_D.  Pull the difference "
-          + "point further from the curves and the reflux falls; push it "
+          + "point further from the curves and the reflux RISES (L/V → 1); push it "
           + "away to infinity and the rays become vertical, which is total "
           + "reflux and the minimum stage count.", eq: "" },
       { step: "And minimum reflux is where a ray coincides with a TIE LINE: "

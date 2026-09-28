@@ -61,8 +61,9 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
       { sym: "y^*(x)", means: "the vapour composition in EQUILIBRIUM with a "
         + "pot at x — the star marks equilibrium, not an operating value" },
     ],
-    note: "The area under 1/(y* − x) between the two pot compositions IS the "
-      + "logarithm of how much you boiled away.  The tool shades that area "
+    note: "The area under 1/(y* − x) between the two pot compositions IS "
+      + "ln(W₀/W) — the logarithm of the charge over what is left in the "
+      + "pot.  The tool shades that area "
       + "over the engine's own equilibrium points and compares it with the "
       + "engine's own holdups — two routes to one number, and the gap between "
       + "them is the price of trapezoids.",

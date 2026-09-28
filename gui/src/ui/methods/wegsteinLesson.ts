@@ -292,11 +292,13 @@ x_{i,\mathrm{next}} &= q_i x_i + (1 - q_i) g_i(x) \qquad \text{one } i \text{ at
           + "(recycleWegsteinQmin / recycleWegsteinQmax).",
         eq: String.raw`q = \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{max} \right)`},
       { step: "q_max = 0 forbids the wrong direction: whenever the secant "
-          + "says the loop is not contracting, the step falls back to plain "
-          + "direct substitution — slow, never wrong." },
-      { step: "q_min bounds the reach. With q_min = -1 the step is at most a "
-          + "50/50 blend; with q_min = -5 it travels at most six times "
-          + "further than direct substitution would." },
+          + "gives a q above it, the step falls back to plain direct "
+          + "substitution.  That removes the overshoot, and nothing more: "
+          + "direct substitution itself converges only where the loop "
+          + "contracts, |G′| < 1." },
+      { step: "q_min bounds the reach. With x_new = q·x + (1 − q)·G(x), q_min = "
+          + "-1 lets the step travel at most twice as far as direct "
+          + "substitution would, and q_min = -5 at most six times as far." },
       { step: "If the variable did not move at all between passes there is "
           + "no slope to form, so the coefficient is set to zero rather than "
           + "dividing by zero (src/solver/Wegstein.cpp:72-75)." },

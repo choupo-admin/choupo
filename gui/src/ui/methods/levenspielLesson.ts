@@ -145,7 +145,7 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
     ],
     note: "The same reading explains tanks in SERIES.  Each tank is its own "
       + "rectangle standing on the previous tank's conversion, so N tanks are "
-      + "a staircase of rectangles under one curve — always more than the "
+      + "a staircase of rectangles over one curve — always more than the "
       + "area, but less than one big tank, and closing on the area as N "
       + "grows.  An infinite chain of stirred tanks is a plug-flow reactor, "
       + "which is this same statement said twice.",
