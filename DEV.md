@@ -1626,6 +1626,20 @@ accepts today, and that is a policy call.
      (fix it) from what is the reviewer's TASTE in organisation (judge it
      against the rulings already made -- and the pedagogy is Vitor's).
 
+**C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
+     (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o
+     arquiteto responsavel").**  An archive of 44 per-tool analyses plus a
+     synthesis (not committed; it is the reviewer's text).  Method, as the
+     architect's: (1) every claim that our TEXT or CODE is wrong is VERIFIED
+     against the lesson source and the engine before anything moves --
+     confirmed errors are fixed, reviewer errors are recorded as such;
+     (2) organisation and progression proposals are weighed against the
+     rulings already made, and a uniform restructure of all 44 tools is NOT
+     taken on the reviewer's say-so: the review itself admits no student
+     was observed, and its own proposal -- test three tools with students
+     first -- is the one to follow.  Pedagogy is Vitor's.  01-04 and 11
+     were acted on the same day (C17-C21).  Status: verification running.
+
 **C21. PC-SAFT, DERIVED: THREE FALSE CLAIMS OUT, THE DERIVATION CLOSED
      (asked 2026-09-28; Vitor forwarded an external review of
      `pcsaft-theory`).**  Every claim checked against `PCSAFT.cpp` and the
