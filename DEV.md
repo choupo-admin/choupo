@@ -1628,6 +1628,31 @@ accepts today, and that is a policy call.
      (fix it) from what is the reviewer's TASTE in organisation (judge it
      against the rulings already made -- and the pedagogy is Vitor's).
 
+**C23. EDUTOOL: THE REACTOR LADDER -- stoichiometry, then the
+     thermodynamic limit, then kinetics (asked 2026-09-28, Vitor, after
+     seeing that industrial practice and the commercial simulator's reactor
+     models go in that order while Fogler and MIT 10.37 go the other way).**
+     One reaction solved on the three rungs the engine already has --
+     `conversionReactor` (stoichiometry), `equilibriumReactor` /
+     `gibbsReactor` (the limit, with the temperature approach), `pfr` /
+     `cstr` (kinetics) -- showing what each rung adds and what it needs.
+     Measured: the water-gas shift already runs on the Gibbs rung
+     (`gibbs01`, `gibbs04`) and the kinetic rung (`cstr02`, `pfr02`), in
+     separate cases with their own feeds; a single witness running the same
+     feed through all rungs does not exist yet.  Scope put to Vitor before
+     any build (pedagogy is his).  Not started.
+
+**C24. EDUTOOL: HEURISTICS FOR SCREENING REACTION PATHWAYS to a given
+     product (asked 2026-09-28, Vitor, same conversation).**  The industrial
+     funnel: known routes; paper screening by stoichiometric gross margin,
+     the equilibrium limit (Delta G at the catalyst's temperature window),
+     the heat of reaction, atom economy; then safety / environment / legal
+     filters (Butters et al., Chem. Rev. 106 (2006) 3002, SELECT); lab
+     screening of selectivity; kinetics last.  The gross margin needs
+     PRICES, which the tree does not curate -- the scope must say where
+     they come from (declared by the case, never invented).  Scope put to
+     Vitor before any build.  Not started.
+
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o
      arquiteto responsavel").**  An archive of 44 per-tool analyses plus a
