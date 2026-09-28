@@ -913,7 +913,8 @@ accepts today, and that is a policy call.
 >      163 rows move in 10 cases, list shown to Vítor 2026-09-27;
 >      `bin/runTests --record tutorials/plant/ChemicalPlantTutorial
 >      tutorials/steady/drying/solidDryer01_sugar
->      tutorials/steady/drying/sprayDryer0{1_sugar,2_residence_sweep,3_pressure_nozzle,4_profiles,5_whey,6_rea,7_design}
+>      tutorials/steady/drying/sprayDryer01_sugar ... sprayDryer07_design (all
+>      seven spray dryers)
 >      tutorials/steady/reactors/cstr07_lhhw_methylAcetate`.
 >   2. `claude/wanghenke-balance-stop` (§5 A7 item (5), Wang-Henke stops on
 >      its balances): 332 rows move in 15 cases, 6 beyond tolerance, list
