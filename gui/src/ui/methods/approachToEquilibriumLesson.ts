@@ -238,7 +238,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
         + "(`approachDirection`, GibbsReactor.cpp:67–106).  An ISOTHERMAL run "
         + "with feed and reactor at one temperature also publishes its sign as "
         + "the duty the surroundings must supply to hold T (`Q_kW`, "
-        + "GibbsReactor.cpp:561)",
+        + "GibbsReactor.cpp:594)",
         unit: "J/mol" },
       { sym: "X_\\mathrm{eq}",
         means: "the equilibrium conversion — or any monotone stand-in for it, "

@@ -55,8 +55,16 @@ Description
     point of a multi-phase Gibbs reactor).
 
     A gas-only solve runs first; only if a condensable species is
-    supersaturated (y_i P > Psat_i) is the larger M+2 two-phase system
-    solved.  So a case with no condensation takes the path verbatim.
+    supersaturated (y_i P > Psat_i) is the liquid added.  It is NOT solved
+    as a larger (M+2) Newton system, as this header said until 2026-09-27:
+    the implementation fixes the liquid amount L of the ONE supersaturated
+    species, solves the gas-only Newton on the element totals b - A_c L, and
+    BISECTS L until the gas leaves exactly saturated, y_c P = Psat_c (the
+    residual is monotone in L).  The equations above are what that search
+    converges to.  With SEVERAL species supersaturated the method returns
+    the gas-only answer (the reactiveFlash / directMin methods carry a
+    multi-component liquid).  So a case with no condensation takes the path
+    verbatim.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -70,7 +78,8 @@ class ElementPotential : public GibbsMethod
 public:
     const std::string& name() const override { return name_; }
     GibbsEquilibrium equilibrium(const GibbsProblem& p, scalar T_K,
-                                 const IterHook& onIter = {}) const override;
+                                 const IterHook& onIter = {},
+                                 const GibbsLog& log = {}) const override;
 
 private:
     inline static const std::string name_ = "elementPotential";

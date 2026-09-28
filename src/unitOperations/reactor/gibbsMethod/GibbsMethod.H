@@ -88,6 +88,9 @@ struct GibbsProblem
     // is the point).  An EMPIRICAL, CALIBRATED closeness-to-equilibrium
     // parameter -- never predicted, always announced.  0 = true equilibrium.
     scalar                           dTapproach = 0.0;   // [K]
+    //  The element NAMES, row by row of A (the case's `elements` list).
+    //  Read only to LABEL the structured log below; empty -> "1", "2", ...
+    std::vector<std::string>         elements;
     std::size_t M() const { return b.size(); }
     std::size_t N() const { return compIdx.size(); }
 };
@@ -131,6 +134,55 @@ struct GibbsEquilibrium
     std::vector<SolidVerdict> solids;
 };
 
+//  THE STRUCTURED LOG OF A SOLVE (2026-09-27, commission C15: the EduTool
+//  that shows how the element-potential method SOLVES).
+//
+//  The Newton's iterates used to reach nothing but the console (verbosity 3
+//  printed |F| and the backtracking factor) and the unit's residual history
+//  (|F| alone).  A lesson that walks the method iteration by iteration needs
+//  the UNKNOWNS -- pi_k and ln N -- each element-balance residual, the step,
+//  and every species' ln n_i, so it can say why no amount can go negative.
+//  A console is not a channel; this is.
+//
+//  One record = one number: (stage, iteration, quantity, value, unit), the
+//  LONG form, so the phase searches (liquid, solid) and the second route of
+//  the seed add rows rather than columns.  The log is an OBSERVER: the solve
+//  never reads it back, an empty sink changes nothing, and it is written
+//  only when a case DECLARES `newtonLog` (GibbsReactor.cpp) -- so no existing
+//  output grows.  Stages, in the order a solve can emit them:
+//
+//    standardState      g_i/RT (+ ln phi_i) and ln(P/P0), per fugacity pass
+//    leastSquaresSeed   the Newton from the least-squares seed at the feed
+//    primalSeed         the primal Gibbs re-seed (only when the first stopped)
+//    primalReseed       the SAME Newton from that seed
+//    warmStartPass<k>   fugacity pass k >= 2 of a real-gas package
+//    liquidTest         y_i P against Psat_i on the gas-only answer
+//    liquidBisection    each fluid solve of the 1-D search on the liquid L
+//    solidTest          ln a_s of each declared pure solid, solid-free answer
+//    solidBisection     each fluid solve of the 1-D search on n_s
+//
+//  Only the OUTERMOST solve is logged: the fluid solves nested inside a
+//  bisection pass no sink, so a stage's rows are that stage's own numbers.
+struct GibbsLogRecord
+{
+    std::string stage;
+    int         iteration = 0;
+    std::string quantity;
+    scalar      value = 0.0;
+    std::string unit;
+};
+using GibbsLog = std::function<void(const GibbsLogRecord&)>;
+
+//  The `newtonLog` file (GibbsLog.cpp).  `refuseGibbsLogPath` runs BEFORE the
+//  solve and refuses a path inside the frozen catalogue by the one shared
+//  rule (`records::refuseStandardsWrite`); `writeGibbsLogCsv` writes the
+//  records AFTER it, one per line, header `stage,iteration,quantity,value,
+//  unit`, 12 significant digits, and returns the number written (-1 when the
+//  file could not be opened -- said by the caller, never fatal).
+void refuseGibbsLogPath(const std::string& path);
+long writeGibbsLogCsv(const std::string& path,
+                      const std::vector<GibbsLogRecord>& records);
+
 // Shared single-gas-phase Gibbs solve (the element-potential Newton),
 // used by elementPotential and as the nested gas equilibrium of reactiveFlash.
 // `b` is the element-balance RHS to solve for (the reactive-flash loop passes
@@ -138,7 +190,8 @@ struct GibbsEquilibrium
 GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T_K,
                                const std::vector<scalar>& g_over_RT,
                                const std::vector<scalar>& b,
-                               const std::function<void(int,scalar,scalar)>& onIter = {});
+                               const std::function<void(int,scalar,scalar)>& onIter = {},
+                               const GibbsLog& log = {});
 
 //  THE PRIMAL SEED OF THE ELEMENT-POTENTIAL NEWTON (2026-09-27).
 //
@@ -200,8 +253,12 @@ public:
     // reactor record residuals / print the Newton trace without the method
     // depending on the unit-op.
     using IterHook = std::function<void(int iter, scalar normF, scalar alpha)>;
+    //  `log` (optional) receives the structured records above; the method
+    //  that does not implement them ignores it (the reactor refuses a
+    //  declared `newtonLog` for any method but elementPotential).
     virtual GibbsEquilibrium equilibrium(const GibbsProblem& p, scalar T_K,
-                                         const IterHook& onIter = {}) const = 0;
+                                         const IterHook& onIter = {},
+                                         const GibbsLog& log = {}) const = 0;
 
     //- The equilibrium INCLUDING any pure solid phase (GibbsSolidPhase.cpp).
     //  A species whose record declares `referenceState pureSolid;` does not
@@ -210,7 +267,8 @@ public:
     //  call and the same answer.  Every caller that may meet a solid calls
     //  this; `equilibrium` stays the fluid-only method each model implements.
     GibbsEquilibrium solve(const GibbsProblem& p, scalar T_K,
-                           const IterHook& onIter = {}) const;
+                           const IterHook& onIter = {},
+                           const GibbsLog& log = {}) const;
 
     // ---- Run-time selection (explicit registry) ------------------------
     using Factory = std::function<std::unique_ptr<GibbsMethod>()>;

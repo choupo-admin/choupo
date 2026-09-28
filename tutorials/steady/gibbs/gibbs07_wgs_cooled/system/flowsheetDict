@@ -35,6 +35,11 @@ units
         {
             T          350.0 K;
             P          1.0 bar;
+            //  The solve's structured log, drawn by the EduTool
+            //  `element-potential` (step 4: the liquid): the gas-only Newton,
+            //  the y_i P against Psat_i test, and every fluid solve of the
+            //  bisection on the liquid amount.  Opt-in; nothing else changes.
+            newtonLog  newtonLog.csv;
             elements   ( C  H  O );
             species
             (

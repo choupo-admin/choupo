@@ -37,7 +37,7 @@ License
 namespace Choupo {
 
 GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
-                                               const IterHook& onIter) const
+                                               const IterHook& onIter, const GibbsLog& log) const
 {
     const auto&       thermo = *p.thermo;
     const std::size_t N = p.N();
@@ -48,7 +48,7 @@ GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
                      / (constant::R * (T + p.dTapproach));   // chemistry at T+dT (approach); Psat/enthalpy stay at T
 
     // 1. Gas-only equilibrium (the path).
-    GibbsEquilibrium eq = gibbsGasSolve(p, T, g_over_RT, p.b, onIter);
+    GibbsEquilibrium eq = gibbsGasSolve(p, T, g_over_RT, p.b, onIter, log);
     if (!eq.converged) return eq;
 
     // 2. Is any condensable species supersaturated in the gas?
@@ -61,13 +61,13 @@ GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
         const scalar Psat = thermo.comp(p.compIdx[i]).vp().Psat_Pa(T);
         const scalar y_i  = eq.nGas[i] / eq.Ntotal_gas;
         if (y_i * P > Psat) { ++nSuper; cond = static_cast<int>(i); PsatC = Psat; }
+        if (log) { const std::string sp = thermo.comp(p.compIdx[i]).name();   // the test, as records
+                   log({"liquidTest", 0, "yP_" + sp, y_i * P, "Pa"}); log({"liquidTest", 0, "Psat_" + sp, Psat, "Pa"}); }
     }
     if (nSuper == 0) return eq;     // single gas phase is stable
 
-    // 3. Two-phase (V + L) for ONE condensable species (a pure liquid --- the
-    //    common reformer / WGS-with-steam case).  A multi-component condensed
-    //    liquid (several condensables, possibly non-ideal) is handled by the
-    //    reactiveFlash / directMin methods.
+    // 3. Two-phase (V + L) for ONE condensable (a pure liquid).  With SEVERAL
+    //    supersaturated this returns the gas-only answer; reactiveFlash / directMin do V+L.
     if (nSuper > 1) return eq;
 
     // Robust 1-D solve: find L (moles of the condensable in the liquid) such
@@ -78,12 +78,22 @@ GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
     const std::size_t c = static_cast<std::size_t>(cond);
     const scalar sat_y = PsatC / P;
 
+    //  Every fluid solve of this search is one record pair (L, r) in the
+    //  log, numbered in the order the search made them (bracket first).
+    int nResid = 0;
     auto resid = [&](scalar L, GibbsEquilibrium& g) -> scalar
     {
         sVector b_gas = p.b;
         for (std::size_t j = 0; j < M; ++j) b_gas[j] -= p.A[j][c] * L;
         g = gibbsGasSolve(p, T, g_over_RT, b_gas, {});
-        return g.nGas[c] - sat_y * g.Ntotal_gas;   // >0 supersaturated, <0 over-condensed
+        const scalar r = g.nGas[c] - sat_y * g.Ntotal_gas;   // >0 supersaturated, <0 over-condensed
+        if (log)
+        {
+            log({"liquidBisection", nResid, "L", L, "mol/s"});
+            log({"liquidBisection", nResid, "r", r, "mol/s"});
+        }
+        ++nResid;
+        return r;
     };
 
     GibbsEquilibrium gLo, gHi, gMid;

@@ -1,0 +1,122 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  gibbs12_element_potential_newton  --  HOW a Gibbs reactor SOLVES, logged.
+
+  The witness of the EduTool `element-potential`.  Three isothermal Gibbs
+  reactors side by side, each on its own feed, each a problem the corpus
+  already solves, and each writing its method's structured log
+  (`newtonLog <file>;`, GibbsReactor.cpp / GibbsMethod.H): every Newton
+  iterate's element potentials pi_k, ln N, element-balance residuals, step
+  and ln n_i, the seed route, and the phase searches.
+
+    shift    gibbs01's problem: CO + H2O <-> CO2 + H2, equimolar, 800 K,
+             1 bar.  Four species over three elements -> FOUR unknowns
+             (pi_C, pi_H, pi_O, ln N).  The least-squares seed converges in
+             six Newton iterations; the first step is cut to 1/64 by the
+             backtracking line search.
+    coking   gibbs11's steam-lean reformer: CH4 : H2O = 1 : 0.8, 1000 K,
+             1 bar, graphite declared.  The fluid Newton runs WITHOUT the
+             solid, reads a_C = exp(pi_C - g_C/RT) = 2.33 > 1, and bisects
+             the deposited amount (37 fluid solves) until a_C = 1.
+    ammonia  equil03's feed (10 % NH3 in air) at 700 K and 5 bar, where the
+             least-squares seed at the feed composition makes the Newton's
+             Jacobian singular at iteration 0; the engine re-seeds from a
+             primal Gibbs iteration on ln n and SAYS so (GibbsMethod.cpp).
+
+  Each reactor reproduces its source case's golden to every printed digit
+  (the package here is the union of the three source packages -- ideal gas,
+  ideal liquid -- and a Gibbs reactor reads only its own species list).
+  The LIQUID step of the lesson is read from gibbs07_wgs_cooled, which
+  declares its own `newtonLog`: a condensing reactor was left out of this
+  witness because its energy balance is a pinned open debt
+  (check_energy_closure.KNOWN_OPEN) and a new case must not copy one.
+
+  THE LOG IS AN OBSERVER.  Remove every `newtonLog` line and every number
+  this case publishes is unchanged; the CSVs it writes are run outputs,
+  gitignored like every CSV under tutorials/.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        shift;
+        type        gibbsReactor;
+        in          feedShift;
+        outputs     ( outShift );
+
+        operation
+        {
+            T          800 K;
+            P          1 bar;
+            newtonLog  newtonLog_shift.csv;
+
+            elements   ( C  H  O );
+
+            species
+            (
+                { name  CO;     atoms  ( 1  0  1 ); }
+                { name  water;  atoms  ( 0  2  1 ); }
+                { name  CO2;    atoms  ( 1  0  2 ); }
+                { name  H2;     atoms  ( 0  2  0 ); }
+            );
+        }
+    }
+    {
+        name        coking;
+        type        gibbsReactor;
+        in          feedCoking;
+        outputs     ( outCoking );
+
+        operation
+        {
+            T          1000 K;
+            P          1 bar;
+            newtonLog  newtonLog_coking.csv;
+
+            elements   ( C  H  O );
+
+            species
+            (
+                { name  CH4;       atoms  ( 1  4  0 ); }
+                { name  water;     atoms  ( 0  2  1 ); }
+                { name  CO;        atoms  ( 1  0  1 ); }
+                { name  CO2;       atoms  ( 1  0  2 ); }
+                { name  H2;        atoms  ( 0  2  0 ); }
+                { name  graphite;  atoms  ( 1  0  0 ); }
+            );
+        }
+    }
+    {
+        name        ammonia;
+        type        gibbsReactor;
+        in          feedAmmonia;
+        outputs     ( outAmmonia );
+
+        operation
+        {
+            T          700 K;
+            P          5 bar;
+            newtonLog  newtonLog_ammonia.csv;
+
+            elements   ( N  H  O );
+
+            species
+            (
+                { name  NH3;    atoms  ( 1  3  0 ); }
+                { name  O2;     atoms  ( 0  0  2 ); }
+                { name  N2;     atoms  ( 2  0  0 ); }
+                { name  NO;     atoms  ( 1  0  1 ); }
+                { name  water;  atoms  ( 0  2  1 ); }
+            );
+        }
+    }
+);

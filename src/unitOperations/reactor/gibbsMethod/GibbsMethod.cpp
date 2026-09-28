@@ -54,7 +54,7 @@ namespace { inline scalar clampArg(scalar a)
 GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
                                const std::vector<scalar>& g_over_RT,
                                const std::vector<scalar>& b,
-                               const std::function<void(int,scalar,scalar)>& onIter)
+                               const std::function<void(int,scalar,scalar)>& onIter, const GibbsLog& log)
 {
     const std::size_t M = p.M(), N = p.N();
     const auto& A = p.A;
@@ -127,8 +127,73 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
     solver::NDOptions ndo;
     ndo.tolerance = 1.0e-8;
     ndo.maxIter   = 80;
-    if (onIter) ndo.onIter = [&](const solver::NDTrace& tr)
-        { onIter(tr.iteration, tr.normF, tr.alpha); };
+    //  The iterates of the route in flight, kept ONLY when a log is asked
+    //  for; `logRoute` (below) turns them into records once the route ends.
+    std::vector<solver::NDTrace> routeTrace;
+    if (onIter || log) ndo.onIter = [&](const solver::NDTrace& tr)
+    {
+        if (onIter) onIter(tr.iteration, tr.normF, tr.alpha);
+        if (log)    routeTrace.push_back(tr);
+    };
+
+    //  ONE ROUTE OF THE NEWTON, AS RECORDS (GibbsMethod.H, the structured
+    //  log).  Per iterate k: the unknowns (pi_k, ln N), the residuals, |F|,
+    //  and ln n_i -- the exponent n_i = exp(ln n_i) is built from, printed
+    //  UNCLAMPED (the residual caps it at +/-50; the log shows what the
+    //  iterate asked for).  Where a step FOLLOWED, the backtracking factor
+    //  alpha and the step itself, x_(k+1) - x_k.  On the route's last iterate,
+    //  `converged` 1 or 0.  newtonND reports an iterate before it steps from
+    //  it and never reports the point it converges AT, so that point is
+    //  taken from the result.
+    const auto elemName = [&](std::size_t k) -> std::string {
+        return k < p.elements.size() ? p.elements[k] : std::to_string(k + 1);
+    };
+    const auto logRoute = [&](const std::string& stage,
+                              const solver::NDResult& res)
+    {
+        if (!log) return;
+        const auto rec = [&](int it, const std::string& q, scalar v,
+                             const std::string& u)
+            { log(GibbsLogRecord{stage, it, q, v, u}); };
+        const auto point = [&](int it, const sVector& x, const sVector& F,
+                               scalar normF)
+        {
+            for (std::size_t k = 0; k < M; ++k) rec(it, "pi_" + elemName(k), x[k], "-");
+            rec(it, "lnN", x[M], "ln(mol/s)");
+            for (std::size_t k = 0; k < M && k < F.size(); ++k)
+                rec(it, "f_" + elemName(k), F[k], "mol/s");
+            if (F.size() > M) rec(it, "f_total", F[M], "mol/s");
+            rec(it, "normF", normF, "mol/s");
+            for (std::size_t i = 0; i < N; ++i)
+            {
+                scalar arg = x[M] - ln_P - g_eff[i];
+                for (std::size_t k = 0; k < M; ++k) arg += x[k] * A[k][i];
+                rec(it, "lnn_" + (p.thermo ? p.thermo->comp(p.compIdx[i]).name()
+                                           : std::to_string(i + 1)),
+                    arg, "ln(mol/s)");
+            }
+        };
+        for (std::size_t t = 0; t < routeTrace.size(); ++t)
+        {
+            const solver::NDTrace& tr = routeTrace[t];
+            point(tr.iteration, tr.x, tr.F, tr.normF);
+            //  A step followed iff a LATER iterate exists: the next trace, or
+            //  the result when the route went on past this one.
+            const sVector* next = (t + 1 < routeTrace.size())
+                ? &routeTrace[t + 1].x
+                : (res.iterations > tr.iteration ? &res.x : nullptr);
+            if (!next) continue;
+            rec(tr.iteration, "alpha", tr.alpha, "-");
+            for (std::size_t k = 0; k < M; ++k)
+                rec(tr.iteration, "dpi_" + elemName(k), (*next)[k] - tr.x[k], "-");
+            rec(tr.iteration, "dlnN", (*next)[M] - tr.x[M], "-");
+        }
+        const bool lastTraced = !routeTrace.empty()
+                             && routeTrace.back().iteration == res.iterations;
+        if (!lastTraced) point(res.iterations, res.x, res.F, res.residual);
+        rec(res.iterations, "converged", res.converged ? 1.0 : 0.0, "-");
+        routeTrace.clear();
+    };
 
     // Outer fugacity loop: ONE pass for an ideal package (result identical to
     // before), a few passes for a real EoS as phi settles by successive
@@ -140,11 +205,23 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
         //  THE FIRST ROUTE: the least-squares seed (from the second fugacity
         //  pass on, the previous pass).  Framed as a TRIAL, because if it
         //  stops, what it raised is about a path the solve then discards.
+        //  The standard-state term every n_i is built from, once per pass
+        //  (it changes between passes only under a real-gas phi).
+        if (log)
+        {
+            for (std::size_t i = 0; i < N; ++i)
+                log(GibbsLogRecord{"standardState", outer, "gRT_"
+                    + (p.thermo ? p.thermo->comp(p.compIdx[i]).name()
+                                : std::to_string(i + 1)), g_eff[i], "-"});
+            log(GibbsLogRecord{"standardState", outer, "lnP", ln_P, "-"});
+        }
         solver::NDResult r;
         {
             AdvisoryFrame firstRoute("gibbs RAND, least-squares seed", true);
             r = solver::newtonND(residual, x0, ndo);
         }
+        logRoute(outer == 0 ? std::string("leastSquaresSeed")
+                            : "warmStartPass" + std::to_string(outer + 1), r);
         //  THE SECOND ROUTE, taken only when the first stopped: the primal
         //  seed (GibbsMethod.H), then the SAME Newton on the SAME residual to
         //  the SAME tolerance.  Announced; and if it too fails, the cause of
@@ -155,6 +232,16 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
             sVector gTilde(N);
             for (std::size_t i = 0; i < N; ++i) gTilde[i] = g_eff[i] + ln_P;
             const GibbsPrimalSeed ps = gibbsPrimalSeed(A, b, gTilde, N0);
+            if (log)
+            {
+                const auto rec = [&](const std::string& q, scalar v,
+                                     const std::string& u)
+                    { log(GibbsLogRecord{"primalSeed", ps.iterations, q, v, u}); };
+                rec("converged", ps.converged ? 1.0 : 0.0, "-");
+                for (std::size_t k = 0; k < M && k < ps.pi.size(); ++k)
+                    rec("pi_" + elemName(k), ps.pi[k], "-");
+                if (ps.converged) rec("lnN", ps.lnN, "ln(mol/s)");
+            }
             const std::string firstStop = r.stopReason.empty()
                 ? "it ended at |F| = " + std::to_string(r.residual) + " after "
                   + std::to_string(r.iterations) + " iterations"
@@ -165,6 +252,7 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
                 for (std::size_t j = 0; j < M; ++j) xs[j] = ps.pi[j];
                 xs[M] = ps.lnN;
                 solver::NDResult r2 = solver::newtonND(residual, xs, ndo);
+                logRoute("primalReseed", r2);
                 if (r2.converged)
                 {
                     if (AdvisoryLog::instance().add("solver", "info", "gibbs RAND",

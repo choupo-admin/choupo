@@ -121,7 +121,8 @@ scalar pureSolidEnthalpy_W(const GibbsProblem& p, const GibbsEquilibrium& eq,
 }
 
 GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
-                                    const IterHook& onIter) const
+                                    const IterHook& onIter,
+                                    const GibbsLog& log) const
 {
     const ThermoPackage& thermo = *p.thermo;
     const std::size_t    M = p.M(), N = p.N();
@@ -134,7 +135,7 @@ GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
         else
             fluid.push_back(i);
     }
-    if (solid.empty()) return equilibrium(p, T, onIter);     // the unchanged path
+    if (solid.empty()) return equilibrium(p, T, onIter, log);   // the unchanged path
 
     const auto nameOf = [&](std::size_t i) -> std::string
         { return thermo.comp(p.compIdx[i]).name(); };
@@ -148,6 +149,7 @@ GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
     fp.thermo = p.thermo;
     fp.P = p.P;
     fp.dTapproach = p.dTapproach;
+    fp.elements = p.elements;
     fp.b = p.b;
     fp.A.assign(M, std::vector<scalar>(fluid.size(), 0.0));
     for (std::size_t f = 0; f < fluid.size(); ++f)
@@ -204,7 +206,9 @@ GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
     };
 
     // 1. The solid-FREE equilibrium, and the test on it.
-    const GibbsEquilibrium e0 = equilibrium(fp, T, onIter);
+    //  Only this solve is logged (GibbsMethod.H): the fluid solves inside
+    //  the bisection below pass no sink; their (n_s, ln a_s) are the rows.
+    const GibbsEquilibrium e0 = equilibrium(fp, T, onIter, log);
     std::vector<scalar> nS(N, 0.0);
     if (!e0.converged) return expand(e0, nS);
     requirePi(e0);
@@ -216,6 +220,12 @@ GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
         GibbsEquilibrium::SolidVerdict v;
         v.i = s;
         v.lnActivityWithout = lnActivity(p, e0, s, gS[s]);
+        if (log)
+        {
+            log({"solidTest", 0, "gRT_" + nameOf(s), gS[s], "-"});
+            log({"solidTest", 0, "lnActivity_" + nameOf(s),
+                 v.lnActivityWithout, "-"});
+        }
         v.lnActivity        = v.lnActivityWithout;
         verdicts.push_back(v);
         if (v.lnActivityWithout > pureSolidPhase::kLnActivityAppears)
@@ -267,7 +277,13 @@ GibbsEquilibrium GibbsMethod::solve(const GibbsProblem& p, scalar T,
             throw std::runtime_error(m.str());
         }
         requirePi(trial);
-        return lnActivity(p, trial, c, gS[c]);
+        const scalar lnA = lnActivity(p, trial, c, gS[c]);
+        if (log)
+        {
+            log({"solidBisection", evaluations - 1, "n_" + nameOf(c), n, "mol/s"});
+            log({"solidBisection", evaluations - 1, "lnActivity_" + nameOf(c), lnA, "-"});
+        }
+        return lnA;
     };
 
     //  Bracket: r(0) > 0 is known; walk toward the exhaustion bound, where

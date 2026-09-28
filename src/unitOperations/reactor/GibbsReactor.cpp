@@ -268,7 +268,7 @@ int GibbsReactor::solve(const DictPtr& dict,
     GibbsProblem prob;
     prob.thermo = &thermo;
     prob.A = A; prob.b = b; prob.nIn = nIn; prob.compIdx = compIdx;
-    prob.condensable = condensable; prob.P = P;
+    prob.condensable = condensable; prob.P = P; prob.elements = elems;
     //  `temperatureApproach` is the ONE approach key: the method receives
     //  the physical T and applies `prob.dTapproach` to g_pure_ig alone
     //  (ElementPotential.cpp).  THE CASE DECLARES A MAGNITUDE; THE ENGINE ASSIGNS THE DIRECTION
@@ -360,6 +360,39 @@ int GibbsReactor::solve(const DictPtr& dict,
                                     dir.message);
     }
 
+    //  ---- THE NEWTON LOG, OPT-IN (2026-09-27, commission C15) ------------
+    //
+    //  `newtonLog <file>;` in the operation block writes the method's
+    //  structured log (GibbsMethod.H, `GibbsLogRecord`) as CSV once the solve
+    //  ends: every iterate's element potentials, ln N, residuals and ln n_i,
+    //  the step, the seed route, and the liquid / solid phase searches.  It
+    //  exists because a console is not a channel: the EduTool that walks the
+    //  element-potential method draws these rows, it does not recompute them.
+    //  Absent, nothing is collected and nothing is written.
+    //
+    //  WHAT IS LOGGED IS THE SOLVE THAT PRODUCED THE ANSWER: the isothermal
+    //  solve, or in adiabatic mode the final solve at the converged T (the
+    //  outer Newton's trial temperatures are not logged).  A method that
+    //  does not implement the log is REFUSED by name rather than handed a
+    //  file that looks complete and is not -- reactiveFlash's liquid loop and
+    //  directMin's simplex write nothing into it.
+    const std::string newtonLogPath =
+        operDict->lookupWordOrDefault("newtonLog", "");
+    std::vector<GibbsLogRecord> logRecords;
+    GibbsLog logSink;
+    if (!newtonLogPath.empty())
+    {
+        if (method->name() != "elementPotential")
+            throw std::runtime_error("GibbsReactor: `newtonLog` is written by"
+                " the elementPotential method only; model '" + modelName
+                + "' (" + method->name() + ") does not record its iterations"
+                ", so the log would look complete and not be.  Remove"
+                " `newtonLog`, or select `model elementPotential;`.");
+        refuseGibbsLogPath(newtonLogPath);
+        logSink = [&logRecords](const GibbsLogRecord& r)
+            { logRecords.push_back(r); };
+    }
+
     // -- Mode dispatch ------------------------------------------------------
     scalar T_final = T_guess;
     GibbsEquilibrium eq;
@@ -412,7 +445,7 @@ int GibbsReactor::solve(const DictPtr& dict,
         auto rT = solver::newton1D(fT, dfT, T_guess, nro);
         outerIter = rT.iterations;
         T_final = rT.x;
-        eq = method->solve(prob, T_final, {});
+        eq = method->solve(prob, T_final, {}, logSink);
         //  The augmented dict carries the unit's name as the DICTIONARY'S OWN
         //  name and strips the `name` entry (DistillationColumn.cpp records
         //  the same finding), so a `name` lookup would say "(unnamed)".
@@ -455,7 +488,7 @@ int GibbsReactor::solve(const DictPtr& dict,
             std::cout << "GibbsReactor (" << modelName << ") at T = " << T_guess
                       << " K, P = " << (P * 1.0e-5) << " bar; " << N
                       << " species over " << M << " elements\n";
-        eq = method->solve(prob, T_final, makeHook(true));
+        eq = method->solve(prob, T_final, makeHook(true), logSink);
         if (!eq.converged)   // WHY, when a Newton route says (GibbsMethod.cpp)
             std::cerr << "GibbsReactor: did NOT converge (final |F| = " << eq.residual
                       << ")" << (eq.notConvergedCause.empty() ? "" : ": " + eq.notConvergedCause) << "\n";
@@ -639,6 +672,22 @@ int GibbsReactor::solve(const DictPtr& dict,
         std::cout << "  Liquid fraction: " << std::fixed << std::setprecision(4)
                   << (Nl / (Ng + Nl)) << "  (condensate stream emitted)\n";
     std::cout << "==================================================================\n\n";
+
+    //  The declared log, written whether or not the solve converged: a
+    //  Newton that stopped is exactly the one whose iterates are worth
+    //  reading.  A file that cannot be opened is SAID, never fatal.
+    if (!newtonLogPath.empty())
+    {
+        const long n = writeGibbsLogCsv(newtonLogPath, logRecords);
+        if (n < 0)
+            std::cerr << "GibbsReactor: `newtonLog " << newtonLogPath
+                      << "` could not be opened for writing; no log written.\n";
+        else
+            std::cout << "  [gibbs] newtonLog: " << n << " records of the "
+                      << (mode == "adiabatic" ? "final solve at the converged T"
+                                              : "isothermal solve")
+                      << " written to " << newtonLogPath << "\n";
+    }
 
     return eq.converged ? 0 : 1;
 }

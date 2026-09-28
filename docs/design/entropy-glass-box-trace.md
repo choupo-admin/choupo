@@ -108,7 +108,7 @@ same vapour root).  Implemented by:
   `ln(yᵢ·P/P°)` of `EquilibriumReactor.cpp:141` and of `gibbsGasSolve`
   (`GibbsMethod.cpp:66-82`); `DirectMin.cpp:146` carries n·ln y inside
   the explicit total-G objective.  Real-gas equilibrium goes through
-  ln φᵢ folded into g_eff (`GibbsMethod.cpp:246-260`), never through an
+  ln φᵢ folded into g_eff (`GibbsMethod.cpp:334-348`), never through an
   explicit entropy departure.
 * **The props bench already exposes the pieces**: `S_ig`, `S_R`,
   `S_real` are requestable keys (`PropertyEvaluator.cpp:212,223,225`;

@@ -59,7 +59,8 @@ class DirectMin : public GibbsMethod
 public:
     const std::string& name() const override { return name_; }
     GibbsEquilibrium equilibrium(const GibbsProblem& p, scalar T_K,
-                                 const IterHook& onIter = {}) const override;
+                                 const IterHook& onIter = {},
+                                 const GibbsLog& log = {}) const override;
 
 private:
     inline static const std::string name_ = "directMin";

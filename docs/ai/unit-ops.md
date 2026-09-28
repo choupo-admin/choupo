@@ -460,6 +460,21 @@ publishes no element potentials, so the test has nothing to read); the
 C14 slice 2 -- see its section).  Witness `tutorials/steady/gibbs/gibbs11_carbon_deposition`
 (S/C 0.8 cokes, S/C 3 does not); gate `check_gibbs_solid_phase`.
 
+**THE SOLVE, LOGGED: `newtonLog <file>;` (2026-09-27, C15).**  Optional, in
+`operation`.  The reactor writes its method's structured log as a long-form
+CSV (`stage,iteration,quantity,value,unit`) once the solve ends, whether or
+not it converged: every Newton iterate's element potentials `pi_<element>`,
+`lnN`, residuals `f_<element>` / `f_total`, `normF`, `lnn_<species>`, the
+step (`alpha`, `dpi_*`, `dlnN`), the seed route (`leastSquaresSeed`,
+`primalSeed`, `primalReseed`), the standard-state terms, and the liquid /
+solid tests and searches.  Absent, nothing is collected and every output is
+unchanged.  Only `model elementPotential;` writes one (any other method
+REFUSES the key by name, because its log would look complete and not be); in
+adiabatic mode it covers the final solve at the converged T.  A path under
+`data/standards/` is refused.  Witness
+`tutorials/steady/gibbs/gibbs12_element_potential_newton`; the EduTool
+`element-potential` draws it.
+
 For an adiabatic Gibbs reactor (the flame temperature problem), declare
 `mode adiabatic;` (an outer Newton on T balances `H_out = H_in + Q`), or wrap
 in a DesignSpec that varies `$T`.

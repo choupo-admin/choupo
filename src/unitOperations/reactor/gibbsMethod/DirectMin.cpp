@@ -84,7 +84,7 @@ std::vector<sVector> nullSpaceBasis(std::vector<sVector> A)
 } // namespace
 
 GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
-                                        const IterHook& /*onIter*/) const
+                                        const IterHook& /*onIter*/, const GibbsLog& /*log*/) const
 {
     const auto&       thermo = *p.thermo;
     const std::size_t M = p.M(), N = p.N();

@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  How the element-potential method SOLVES: four Gibbs reactors, each one a
+  step of the EduTool `element-potential`.  See flowsheetDict.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "The element-potential Newton, logged: four Gibbs reactors -- a gas, a condensing liquid, a depositing solid, and a feed far from its equilibrium";
+
+verbosity     3;
