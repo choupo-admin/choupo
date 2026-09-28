@@ -1,0 +1,131 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*  ladder01_wgs_three_rungs  --  THE REACTOR LADDER on one feed.
+
+      CO + H2O  <->  CO2 + H2      equimolar, 600 K, 10 bar, ideal gas
+
+  The feed is split five ways and each fifth meets a different MODEL of the
+  same reactor.  They are ordered as a design proceeds, not as a textbook
+  does: what the stoichiometry allows, then what thermodynamics allows, then
+  what the rate delivers.
+
+    stoich    conversionReactor   rung 1 -- a DECLARED conversion.  Balances
+                                  only.  X = 0.90 is declared on purpose: it
+                                  is ABOVE this feed's equilibrium, and this
+                                  rung has no way to know.
+    limit     equilibriumReactor  rung 2 -- the thermodynamic LIMIT at 600 K.
+                                  K(T) from the species' Gibbs energies; no
+                                  rate, no volume.
+    approach  equilibriumReactor  rung 2 with a 25 K temperature APPROACH: the
+                                  exothermic shift is asked at 625 K, so the
+                                  design conversion sits below the limit by a
+                                  margin a designer chose, not one a rate
+                                  law computed.  The outlet stays at 600 K.
+    gibbs     gibbsReactor        rung 2 by the other road -- no reaction
+                                  written, only elements and species.  Over
+                                  exactly these four species it must agree
+                                  with "limit"; add a species (CH4) and it
+                                  would not (equil02 is that lesson).
+    kinetic   pfr                 rung 3 -- the rate law.  Its axial profile
+                                  rises toward the "limit" conversion and
+                                  never crosses it.  The volume is NOT a
+                                  physical gas volume: this reactor prices
+                                  concentrations on a liquid molar volume
+                                  (src/unitOperations/reactor/PFR.cpp, "Inlet
+                                  (mol/s) + liquid-basis volumetric flow"),
+                                  so read its profile against V_R as a
+                                  SHAPE, never as a size.
+
+  What each rung needs is the other half of the lesson: rung 1 a number
+  someone must supply, rung 2 formation data the catalogue already has,
+  rung 3 a rate law somebody had to MEASURE.  The ladder is climbed only as
+  far as the decision in hand requires.
+
+  EduTool: gui/src/ui/methods/ReactorLadderTool.tsx.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        split;
+        type        splitter;
+        in          feed;
+        outputs     ( feedStoich feedLimit feedApproach feedGibbs feedKinetic );
+        operation   { fractions ( 0.2 0.2 0.2 0.2 0.2 ); }
+    }
+    {
+        name        stoich;
+        type        conversionReactor;
+        in          feedStoich;
+        outputs     ( outStoich );
+        reaction    wgs;
+        operation
+        {
+            conversion  0.90;     // DECLARED -- above this feed's limit at 600 K
+        }
+    }
+    {
+        name        limit;
+        type        equilibriumReactor;
+        in          feedLimit;
+        outputs     ( outLimit );
+        operation
+        {
+            T                    600 K;
+            temperatureApproach  0;       // K, a MAGNITUDE; 0 = the limit itself
+        }
+        reactions   ( wgs );
+    }
+    {
+        name        approach;
+        type        equilibriumReactor;
+        in          feedApproach;
+        outputs     ( outApproach );
+        operation
+        {
+            T                    600 K;
+            temperatureApproach  25;      // K; direction chosen by the engine
+        }
+        reactions   ( wgs );
+    }
+    {
+        name        gibbs;
+        type        gibbsReactor;
+        in          feedGibbs;
+        outputs     ( outGibbs );
+        operation
+        {
+            T          600 K;
+            P          10 bar;
+            elements   ( C  H  O );
+            species
+            (
+                { name  CO;     atoms  ( 1  0  1 ); }
+                { name  water;  atoms  ( 0  2  1 ); }
+                { name  CO2;    atoms  ( 1  0  2 ); }
+                { name  H2;     atoms  ( 0  2  0 ); }
+            );
+        }
+    }
+    {
+        name        kinetic;
+        type        pfr;
+        in          feedKinetic;
+        outputs     ( outKinetic );
+        operation
+        {
+            V_R           1.0e-3;   // m3 -- a SHAPE axis, see the header
+            nSteps        200;
+            writeInterval 5;
+        }
+        reaction    wgs;
+    }
+);

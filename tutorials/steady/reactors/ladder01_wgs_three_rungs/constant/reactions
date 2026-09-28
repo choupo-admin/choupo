@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*  ONE reaction, read by all three rungs of the ladder:
+      CO + H2O  <->  CO2 + H2          (water-gas shift, exothermic)
+
+  Each rung reads only what it needs from this entry, and that is the
+  lesson in miniature:
+    conversionReactor   the stoichiometry and the limiting reactant;
+    equilibriumReactor  the stoichiometry alone -- K(T) comes from the
+                        species' Gibbs energies of formation, never from here;
+    gibbsReactor        nothing at all (it is given elements and species);
+    pfr                 the stoichiometry, the orders AND the rate constant.
+
+  The kinetics are pfr02's (ILLUSTRATIVE, Singh & Saraf 1977 form with a
+  small A); see that case's reactions file for why A is small.  A sets how
+  FAST the limit is approached, never WHERE the limit is.
+\*---------------------------------------------------------------------------*/
+
+wgs
+{
+    limitingReactant   CO;
+    reversible         true;
+
+    stoichiometry
+    (
+        { component CO;    nu -1;  order 1; }
+        { component water; nu -1;  order 1; }
+        { component CO2;   nu  1;  order 0; }
+        { component H2;    nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      60.0;           // ILLUSTRATIVE (pfr02)
+        Ea     8.0e4;          // J/mol
+    }
+}

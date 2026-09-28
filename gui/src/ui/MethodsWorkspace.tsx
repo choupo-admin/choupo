@@ -188,6 +188,9 @@ const ApproachToEquilibriumTool = lazy(() =>
 const EquilibriumLandscapesTool = lazy(() =>
   import("./methods/EquilibriumLandscapesTool.js")
     .then((m) => ({ default: m.EquilibriumLandscapesTool })));
+const ReactorLadderTool = lazy(() =>
+  import("./methods/ReactorLadderTool.js")
+    .then((m) => ({ default: m.ReactorLadderTool })));
 const DeclaredPathwaysTool = lazy(() =>
   import("./methods/DeclaredPathwaysTool.js")
     .then((m) => ({ default: m.DeclaredPathwaysTool })));
@@ -446,6 +449,7 @@ export function MethodsWorkspace() {
             : tool === "approach-to-equilibrium" ? <ApproachToEquilibriumTool />
             : tool === "equilibrium-landscapes" ? <EquilibriumLandscapesTool />
             : tool === "declared-pathways" ? <DeclaredPathwaysTool />
+            : tool === "reactor-ladder" ? <ReactorLadderTool />
             : tool === "element-potential" ? <ElementPotentialTool />
             : tool === "drying" ? <DryingCurveTool />
             : tool === "breakthrough" ? <BreakthroughTool />

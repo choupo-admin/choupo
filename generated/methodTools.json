@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 44,
-  "registryTools": 44,
+  "liveTools": 45,
+  "registryTools": 45,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -202,6 +202,13 @@
       "discipline": "Reaction engineering",
       "teaches": "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
       "href": "/app/?workspace=methods&tool=levenspiel"
+    },
+    {
+      "id": "reactor-ladder",
+      "label": "The reactor ladder (stoichiometry, limit, rate)",
+      "discipline": "Reaction engineering",
+      "teaches": "That a design climbs from what the atoms allow to what thermodynamics allows and only then to what the rate delivers, each rung needing more information than the last; that a declared conversion is accepted even when equilibrium forbids it, because nothing on that rung knows K; that the equilibrium and Gibbs reactors agree when the species permit one reaction; that the temperature approach places a design short of the limit before any rate law exists; and that a plug-flow bed rises toward the limit and cannot cross it, reaching it when hot and falling short when cool — on one water-gas-shift feed at 10 bar.",
+      "href": "/app/?workspace=methods&tool=reactor-ladder"
     },
     {
       "id": "approach-to-equilibrium",

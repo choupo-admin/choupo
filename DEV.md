@@ -1639,8 +1639,21 @@ accepts today, and that is a policy call.
      Measured: the water-gas shift already runs on the Gibbs rung
      (`gibbs01`, `gibbs04`) and the kinetic rung (`cstr02`, `pfr02`), in
      separate cases with their own feeds; a single witness running the same
-     feed through all rungs does not exist yet.  Scope put to Vitor before
-     any build (pedagogy is his).  Not started.
+     feed through all rungs does not exist yet.  Scope put to Vitor
+     2026-09-28 and taken on his "Podes continuar?".  BUILT the same day:
+     witness `tutorials/steady/reactors/ladder01_wgs_three_rungs` (one feed
+     split five ways: conversionReactor X = 0.90 DECLARED above the limit,
+     equilibriumReactor at dT 0 and 25 K, gibbsReactor over the four
+     species, pfr with its axial profile) and the EduTool `reactor-ladder`
+     (gui/src/ui/methods/ReactorLadderTool.tsx + reactorLadderLesson.ts,
+     KaTeX throughout).  Measured: 600 K limit 0.8414 (= sqrt K/(1+sqrt K)
+     by hand), approach 0.8196, Gibbs identical, PFR reaches the limit; at
+     550 K the limit is 0.884 and the same bed delivers 0.866 -- the rate
+     binds, which is the two-bed shift in one knob.  Stated on the page, not
+     fixed: the PFR prices concentrations on a LIQUID molar volume
+     (PFR.cpp:804), so its V axis is a shape, not a size; and nothing in the
+     engine compares a declared conversion with the equilibrium one (a
+     candidate, not commissioned).  DONE.
 
 **C24. EDUTOOL: HEURISTICS FOR SCREENING REACTION PATHWAYS to a given
      product (asked 2026-09-28, Vitor, same conversation).**  The industrial

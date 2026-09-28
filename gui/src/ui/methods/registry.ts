@@ -67,7 +67,7 @@ export type MethodToolId =
   | "sour-water" | "rules-of-thumb" | "bode"
   | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
-  | "declared-pathways"
+  | "declared-pathways" | "reactor-ladder"
   | "least-squares" | "element-potential";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
@@ -668,6 +668,26 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  `notes` rather than `construction`: there is no classical graphical
   //  construction here.  It is a chapter you scroll with the engine running
   //  inside it, which is the shape `what-is-temperature` established.
+  //  The reactor ladder (C23, 2026-09-28): one feed through the three rungs
+  //  a design climbs -- a declared conversion, the equilibrium limit (with
+  //  its approach temperature), the rate law -- in the order industry climbs
+  //  them rather than the order a rate-first course teaches them.
+  {
+    id: "reactor-ladder",
+    label: "The reactor ladder (stoichiometry, limit, rate)",
+    discipline: "Reaction engineering", kind: "notes", status: "live",
+    teaches: "That a design climbs from what the atoms allow to what "
+      + "thermodynamics allows and only then to what the rate delivers, each "
+      + "rung needing more information than the last; that a declared "
+      + "conversion is accepted even when equilibrium forbids it, because "
+      + "nothing on that rung knows K; that the equilibrium and Gibbs "
+      + "reactors agree when the species permit one reaction; that the "
+      + "temperature approach places a design short of the limit before any "
+      + "rate law exists; and that a plug-flow bed rises toward the limit and "
+      + "cannot cross it, reaching it when hot and falling short when cool — "
+      + "on one water-gas-shift feed at 10 bar.",
+    theory: "ch:conversion-reactor",
+  },
   {
     id: "approach-to-equilibrium",
     label: "Approach to equilibrium (Gibbs reactor)",
