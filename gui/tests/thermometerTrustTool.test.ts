@@ -34,6 +34,7 @@ import {
   T_PT_MELT_C, T_PT_MELT_K, TEMPERATURE_WITNESS,
   readZScan, worstDeparturePct,
 } from "../src/ui/methods/ThermometerTrustTool.js";
+import { texParses } from "../src/ui/methods/lessonTex.js";
 import { T_HOT_K, T_SILVER_K, T_SUBJECT_K }
   from "../src/ui/methods/WhatIsTemperatureTool.js";
 
@@ -240,5 +241,57 @@ describe("what the ruling deleted stays deleted", () => {
     //  return is the equation of the two.
     expect(SRC).not.toContain("Newton iteration");
     expect(SRC).not.toContain("Circle 4 is every solver");
+  });
+});
+
+describe("the absolutes an external review caught (2026-09-28)", () => {
+  const BODY = SRC.slice(SRC.indexOf("export function ThermometerTrustTool"));
+
+  it("platinum: no prohibition, a demand for source and budget", () => {
+    expect(prose(BODY)).not.toContain("cannot say it to a tenth of a degree");
+    expect(prose(SRC)).not.toContain("cannot carry the precision");
+    expect(prose(BODY)).toContain("says nothing, by itself, about how good the measurement is");
+    expect(prose(BODY)).toContain("uncertainty budget");
+  });
+
+  it("defining the scale is not the same as sensors existing", () => {
+    expect(prose(BODY)).not.toContain("where nothing can be touched");
+    expect(prose(BODY)).not.toContain("there is no RESISTOR");
+    expect(prose(BODY)).toContain("These are the instruments that <em>define</em> the scale");
+    expect(prose(BODY)).toContain("platinum–rhodium thermocouples");
+  });
+
+  it("Z = 1 at a finite pressure is a coincidence, not ideality", () => {
+    expect(prose(BODY)).not.toContain("leaves 1 the moment the pressure is real");
+    expect(prose(BODY)).toContain("that coincidence at one state does not make it ideal");
+  });
+
+  it("T_reading = Z T is the IDEALISED thermometer, said so", () => {
+    expect(SRC).toContain("T_{\\mathrm{reading}} = Z\\,T");
+    expect(prose(BODY)).toContain("That is a simplification, stated as one");
+    expect(prose(BODY)).toContain("pressure <em>ratios</em> against a reference state");
+  });
+
+  it("Chang's synthesis is labelled as his reading", () => {
+    expect(prose(BODY)).toContain("his reading in the philosophy of science, not a settled fact of metrology");
+  });
+
+  it("comparability's limit: agreement under a shared error", () => {
+    expect(prose(BODY)).toContain("Agreement is evidence of <em>consistency</em>");
+    expect(prose(BODY)).toContain("it cannot catch an error they all share");
+  });
+
+  it("the DECLINED re-layering stays declined: no second home for traceability", () => {
+    //  Repeatability, calibration and traceability are the main page's
+    //  (What is a temperature?, part B).  This is the epistemology deep dive.
+    expect(BODY).not.toContain('letter="A"');
+    expect(BODY).not.toContain("<strong>repeatability</strong>");
+  });
+
+  it("sets its variables and equations as mathematics, and every one parses", () => {
+    const tex = [...SRC.matchAll(/(?:<M t|src)="([^"]+)"/g)].map((m) => m[1]!);
+    expect(tex.length).toBeGreaterThan(8);
+    for (const t of tex) expect(texParses(t), `does not parse: ${t}`).toBe(true);
+    expect(SRC).not.toContain("T = P·v / R");
   });
 });

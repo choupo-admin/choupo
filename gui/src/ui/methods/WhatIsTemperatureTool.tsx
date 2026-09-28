@@ -114,14 +114,17 @@ function M({ t }: { t: string }): JSX.Element {
 export const T_SUBJECT_K = 500.012;
 
 /** The hot end, as the owner posed it: "what the hell is a temperature of
- *  1608.1 degC?"  Above the silver point, so contact thermometry is gone and
- *  the answer is radiation -- which is where the tenth of a degree dies. */
+ *  1608.1 degC?"  Above the silver point, where the SCALE is defined by
+ *  radiation thermometry (contact sensors still exist there, calibrated on
+ *  it) -- so a printed tenth of a degree needs its uncertainty budget. */
 export const T_HOT_C = 1608.1;
 export const T_HOT_K = T_HOT_C + 273.15;
 
-/** The silver point — the highest temperature ITS-90 still touches with a
- *  contact instrument.  Above it the scale itself is Planck radiation.  ONE
- *  number here; the full fixed-point table lives on the deep-dive page. */
+/** The silver point — the top of the range over which ITS-90 is DEFINED by
+ *  a contact instrument (the SPRT).  Above it the scale itself is defined
+ *  by radiation; that is about the definition, not about which sensors
+ *  exist.  ONE number here; the full fixed-point table lives on the
+ *  deep-dive page. */
 export const T_SILVER_K = 1234.93;
 
 /** Second radiation constant, um.K -- the one physical constant this page

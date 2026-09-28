@@ -128,6 +128,18 @@ SHARED_STEP_MARKERS = ("lessonStepper(", "LessonStepView")
 #  So the marker stays weak and the OK line SAYS it is weak, rather than a
 #  tightened one saying more than it can prove.
 OWN_BLOCK_MARKERS = ('ff="monospace"', "ff='monospace'")
+#  ROUTE 1b -- a DISPLAYED KaTeX equation of the page's own (2026-09-28).
+#  The owner's standing instruction of that day sets every variable in an
+#  EduTool as mathematics, through the lessons' one renderer (`Tex`, exported
+#  by methods/lessonStep.tsx).  A notes page that converted its equations
+#  from a monospace transcription to `<Tex mode="display" .../>` had nothing
+#  left for ROUTE 2 to see, and failed as "no equation block" -- a gate
+#  accusing the page of dropping the very thing it had just made real.  What
+#  this marker proves is stronger than ROUTE 2's typeface (the source goes
+#  through KaTeX, and each page's own test parses every literal under the
+#  lessons' strict settings) and weaker than ROUTE 1 (no check_lesson_symbols
+#  vocabulary reads it).  Reported apart, for that reason.
+TEX_DISPLAY_MARKER = '<Tex mode="display"'
 #  THE THIRD FORM (2026-09-02): an INDEX page.  RulesOfThumbTool scrolls and
 #  carries no equation on purpose -- every rule lives in the Design Guide and
 #  the page deep-links its chapters, because a quoted heuristic beside a named
@@ -237,7 +249,7 @@ def main():
         fail(f"pinned as panels but no live tool renders them: "
              f"{', '.join(ghosts)} -- the registry names something gone.")
 
-    shared_route, own_route = [], []
+    shared_route, tex_route, own_route = [], [], []
     for tid, label, src in lessons:
         #  COMMENTS ARE NOT CODE, on every arm and not only the panel one.
         #  The panel arm learnt this from TieTriangleTool's header describing
@@ -262,6 +274,8 @@ def main():
         own = any(m in code for m in OWN_BLOCK_MARKERS)
         if shared:
             shared_route.append((tid, label))
+        elif TEX_DISPLAY_MARKER in code:
+            tex_route.append((tid, label))
         elif own:
             own_route.append((tid, label))
         elif INDEX_MARKER in code:
@@ -269,8 +283,9 @@ def main():
         else:
             fail(f"{label} ({tid}) scrolls but carries no equation block: it "
                  f"does not hand its steps to the shared LaTeX step renderer "
-                 f"({' / '.join(SHARED_STEP_MARKERS)}), has no monospace "
-                 f"block of its own, and is not an index page deep-linking a "
+                 f"({' / '.join(SHARED_STEP_MARKERS)}), displays no KaTeX "
+                 f"equation of its own ({TEX_DISPLAY_MARKER!r}), has no "
+                 f"monospace block of its own, and is not an index page deep-linking a "
                  f"guide ({INDEX_MARKER!r} absent).  The form exists to hold "
                  "the equations, so a lesson without one kept the layout and "
                  "dropped the point.")
@@ -298,13 +313,17 @@ def main():
         f"resolve through the workspace to a source ({inline} defined inline "
         f"in MethodsWorkspace.tsx, which the file-glob this gate replaced "
         f"could not see at all).  "
-        f"{len(shared_route) + len(own_route)} are scrolling lessons, each "
+        f"{len(shared_route) + len(tex_route) + len(own_route)} are "
+        f"scrolling lessons, each "
         f"with a scroll container and at least one equation block -- and the "
-        f"split is reported because the two routes do not prove the same "
+        f"split is reported because the routes do not prove the same "
         f"thing: {len(shared_route)} hand their steps to the shared LaTeX "
         f"step renderer, so their equations are the `formula` and "
         f"`derivation[].eq` fields check_lesson_symbols holds to a glossed "
-        f"vocabulary, while {len(own_route)} draw their own pre-LaTeX "
+        f"vocabulary; {len(tex_route)} display their own KaTeX equations "
+        f"({', '.join(t for t, _ in tex_route)}), parsed by each page's own "
+        f"test but read by no vocabulary gate; while {len(own_route)} draw "
+        f"their own pre-LaTeX "
         f"monospace block ({', '.join(t for t, _ in own_route)}) and for "
         f"those this gate proves only that the TYPEFACE is used -- it cannot "
         f"tell an equation from a table cell, because the equation is bound "

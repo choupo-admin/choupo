@@ -255,9 +255,12 @@ export const METHOD_TOOLS: MethodTool[] = [
     teaches: "That a thermometer is never right by itself -- it is right the "
       + "way a witness is credible: agreeing with itself (Regnault's "
       + "comparability), agreeing with others (convergence), and being "
-      + "cross-examined.  ITS-90's own fixed points, the gas thermometer "
-      + "solved live by the engine, why platinum's melting point cannot "
-      + "carry a tenth of a degree, and Hasok Chang's four circles.",
+      + "cross-examined by something that does not share its errors.  "
+      + "The gas thermometer solved live by the engine (and why its "
+      + "idealised reading is Z times T), ITS-90's own fixed points and the "
+      + "instruments that DEFINE the scale (not the only ones that measure "
+      + "on it), what a quoted platinum melting point is worth, and Hasok "
+      + "Chang's four circles, labelled as his interpretation.",
     theory: "ch:criticals",
   },
   {

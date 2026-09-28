@@ -42,6 +42,25 @@ License
   Inventing Temperature), which is not a digression, because the reader has
   just watched every one of its circles happen in the two engine-run pages.
 
+  CORRECTED 2026-09-28, after an external review the owner forwarded.  Four
+  absolutes in the text were errors and are fixed: platinum's melting point
+  "cannot be said to a tenth of a degree" contradicted the page's own "the
+  digits may be earned" (not being a defining fixed point is not an
+  uncertainty -- the page asks for the source and the budget); "above silver
+  nothing can be touched / there is no resistor" confused how the scale is
+  DEFINED with which sensors EXIST; "Z leaves 1 the moment the pressure is
+  real" (Z can equal 1 at a finite pressure by compensation, which is not
+  ideality); and T_reading = Z T is now stated as the IDEALISED thermometer.
+  Chang's synthesis is labelled as his reading, and the review's
+  common-standard exercise joined the comparability argument.
+  DECLINED: re-layering the page into instrument basics / scale / history.
+  This is the deep dive the 2026-08-29 ruling split out precisely to hold
+  the epistemology whole; repeatability, calibration and traceability are
+  the MAIN page's (its part B, section 8), and restating them here would be
+  a second home.  Also declined: dropping the Sommerfeld epigraph -- it is
+  marked as an unverified attribution, and this page's reader chose to go
+  deeper.
+
   DELETED FROM THE OLD VERSION, by ruling, and recorded so it is not
   innocently reintroduced: the analogy equating a numerical solver's initial
   guess with Chang's epistemic iteration.  It was literarily neat and
@@ -57,11 +76,13 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { Alert, Badge, Box, Group, Loader, Slider, Stack, Text, Title }
   from "@mantine/core";
 
 import { useMethodRun } from "../../case/methodRun.js";
 import { KnobField } from "./knobPanel.js";
+import { Tex } from "./lessonStep.js";
 import { T_SUBJECT_K } from "./WhatIsTemperatureTool.js";
 
 const INK = "var(--mantine-color-dimmed)";
@@ -92,9 +113,10 @@ export const ITS90_ABOVE_WATER: readonly { what: string; T: number }[] = [
   { what: "copper (freezing)",   T: 1357.77 },
 ];
 
-/** The HIGHEST defining fixed point ITS-90 has.  Everything above it is
- *  extrapolated Planck radiation -- the reason a melting point quoted above
- *  here cannot carry the precision it is usually printed with. */
+/** The HIGHEST defining fixed point ITS-90 has.  Above it the scale is
+ *  realised by radiation thermometry referred back to silver, gold or
+ *  copper -- which says where a measurement's calibration is traced to, not,
+ *  by itself, how uncertain it is (corrected 2026-09-28). */
 export const ITS90_TOP_K = 1357.77;
 
 /** Platinum's melting point, as it is usually quoted.  It is NOT an ITS-90
@@ -296,6 +318,20 @@ function ZPlot({ rows }: { rows: readonly ZRow[] }): JSX.Element {
 
 // ---- the page ---------------------------------------------------------------
 
+function M({ t }: { t: string }): JSX.Element {
+  return <Tex src={t} mode="inline" />;
+}
+
+/** A question the reader answers before reading on, with its answer. */
+function Check({ q, a }: { q: ReactNode; a: ReactNode }): JSX.Element {
+  return (
+    <Box mt={6} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
+      <Text size="sm" fw={600}>{q}</Text>
+      <Text size="sm" c={INK} mt={2}><em>Answer:</em> {a}</Text>
+    </Box>
+  );
+}
+
 export function ThermometerTrustTool(): JSX.Element {
   const [pMaxMPa, setPMaxMPa] = useState(5);
 
@@ -351,20 +387,25 @@ export function ThermometerTrustTool(): JSX.Element {
           <Title order={5}>1 · The bridge instrument, and where it breaks</Title>
           <Text size="sm" mt={4}>
             Thermodynamic temperature was historically got at with a
-            constant-volume gas thermometer: hold the volume, measure the
-            pressure, and read the temperature off the gas law:
+            constant-volume gas thermometer.  In its simplest, idealised
+            form it reads the temperature straight off the gas law:
           </Text>
-          <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
-            <Text size="sm" ff="monospace">
-              T = P·v / R        (exact only in the limit P → 0)
-            </Text>
-          </Box>
+          <Tex mode="display"
+            src="T = \frac{P\,v}{R} \qquad \text{(exact only in the limit } P \to 0\text{)}" />
           <Text size="sm">
-            Except no real gas obeys that.  Below is nitrogen at{" "}
+            A real gas obeys that only in the limit.  At finite pressure
+            {" "}<M t="P\,v = Z\,R\,T" />, so an idealised thermometer that
+            used <M t="P v/R" /> directly would read
+            {" "}<M t="T_{\mathrm{reading}} = Z\,T" />.  That is a
+            simplification, stated as one: a real gas thermometer works from
+            pressure <em>ratios</em> against a reference state, with
+            corrections for the dead volume, the bulb’s thermal expansion
+            and the pressure head in the connecting tube, and extrapolates
+            to zero pressure.  Below is nitrogen at <M t="T" /> ={" "}
             {T_SUBJECT_K} K, solved in your browser by the same engine that
-            runs the simulator — drag the knob and watch the equation of
-            state answer: Z = Pv/RT leaves 1 the moment the pressure is real,
-            and the reading with it.
+            runs the simulator — drag the knob and watch
+            {" "}<M t="Z = P v/(R T)" /> move away from 1 as the pressure
+            rises, and the idealised reading with it.
           </Text>
         </Box>
 
@@ -393,7 +434,7 @@ export function ThermometerTrustTool(): JSX.Element {
             {errK !== null && (
               <Badge variant="light" color="orange">
                 which is {errK > 0 ? "+" : ""}{errK.toFixed(1)} K on the
-                reading: the thermometer says{" "}
+                idealised reading: it says{" "}
                 {(T_SUBJECT_K + errK).toFixed(1)} K
               </Badge>
             )}
@@ -406,20 +447,24 @@ export function ThermometerTrustTool(): JSX.Element {
         <Alert variant="light" title="The dogma, stated rather than buried">
           <Text size="sm">
             The ideal gas is not a substance.  It is a <strong>limit</strong>.
-            A gas thermometer reads thermodynamic temperature only as{" "}
-            <em>P → 0</em> — that is, only where you cannot actually take a
-            measurement.  Every real reading is an extrapolation towards a
-            place no experiment reaches.
+            A gas thermometer reads thermodynamic temperature exactly only as
+            {" "}<M t="P \to 0" /> — that is, only where you cannot actually
+            take a measurement.  Every real reading is an extrapolation
+            towards a place no experiment reaches.  A real gas can show
+            {" "}<M t="Z = 1" /> at some finite pressure, where its deviations
+            happen to compensate; that coincidence at one state does not make
+            it ideal.
           </Text>
         </Alert>
 
         <Box>
-          <Title order={5}>2 · How T₉₀ is realised, across the whole range</Title>
+          <Title order={5}>2 · How <M t="T_{90}" /> is realised, across the whole range</Title>
           <Text size="sm" mt={4}>
             One scale covers essentially all of practical thermometry —{" "}
-            <strong>ITS-90</strong>, from 0.65 K upwards — but it is not one
-            instrument.  It is four, each interpolating between fixed points,
-            and they <strong>overlap</strong> rather than meeting at points:
+            <strong>ITS-90</strong>, from 0.65 K upwards — but it is not
+            defined by one instrument.  It is defined by four, each
+            interpolating between fixed points, and their ranges
+            {" "}<strong>overlap</strong> rather than meeting at points:
           </Text>
           <Text size="sm" mt={6} component="div">
             <ul style={{ marginTop: 4, paddingLeft: 20 }}>
@@ -433,12 +478,17 @@ export function ThermometerTrustTool(): JSX.Element {
                 great middle, <strong>13.8033 K (the hydrogen triple point) to
                 1234.93 K (the silver point)</strong> — where essentially all
                 of chemical processing lives;</li>
-              <li>Planck’s radiation law above the silver point, where nothing
-                can be touched.</li>
+              <li>Planck’s radiation law above the silver point, where the
+                scale is <em>defined</em> by radiation thermometry.</li>
             </ul>
           </Text>
           <Text size="sm" mt={6}>
-            The overlaps are not untidiness, they are the design.  Where two
+            These are the instruments that <em>define</em> the scale — not
+            the only ones that can measure on it.  Contact thermometry goes
+            on above the silver point: platinum–rhodium thermocouples, for
+            one, are used well above it, calibrated on the
+            radiation-defined scale.  The overlaps are not untidiness, they
+            are the design.  Where two
             instruments both apply they can be compared, and a scale that
             handed over at bare points would have no way of checking itself at
             the joins.
@@ -485,24 +535,24 @@ export function ThermometerTrustTool(): JSX.Element {
           <Text size="sm" mt={10}>
             Now read the bottom of that table again.  <strong>It stops at
             copper, {ITS90_TOP_K} K.</strong>  ITS-90 defines no fixed point
-            above it.  Everything hotter is <strong>extrapolated</strong> —
-            Planck radiation, referred back to silver, gold or copper.
+            above it.  Hotter temperatures are realised by radiation
+            thermometry, referred back to the silver, gold or copper point.
           </Text>
         </Box>
 
         <Alert variant="light" color="orange"
-          title="So how can anyone say platinum melts at 1768.3 °C?">
+          title="So what is a quoted 1768.3 °C for platinum’s melting point worth?">
           <Text size="sm">
-            They can say it.  They cannot say it to a tenth of a degree, and
-            the reason is in the table you just read.  <strong>Platinum is not
-            an ITS-90 fixed point.</strong>  At{" "}
-            {T_PT_MELT_K.toFixed(2)} K it sits{" "}
-            {(T_PT_MELT_K - ITS90_TOP_K).toFixed(0)} K above the highest one
-            there is, deep in the extrapolated radiation region.  So its
-            melting point is a <em>measurement made on the scale</em>, not a
-            definition of it — and it inherits every uncertainty the
-            extrapolation carries, the assumed emissivity first among them
-            (the main page works that arithmetic).
+            <strong>Platinum is not an ITS-90 fixed point.</strong>  At
+            {" "}{T_PT_MELT_K.toFixed(2)} K it sits
+            {" "}{(T_PT_MELT_K - ITS90_TOP_K).toFixed(0)} K above the highest
+            one there is, in the region the scale defines by radiation.  So
+            its melting point is a <em>measurement made on the scale</em>,
+            not a definition of it — and that says nothing, by itself, about
+            how good the measurement is.  Its uncertainty is whatever the
+            measurement earned: the realisation of the scale at that
+            temperature, the assumed emissivity or the sensor’s calibration
+            (the main page works the emissivity arithmetic), and the sample.
           </Text>
           <Text size="sm" mt={8}>
             And a second thing the printed number does not carry: a melting
@@ -513,10 +563,9 @@ export function ThermometerTrustTool(): JSX.Element {
           <Text size="xs" c="dimmed" mt={8}>
             No ± is quoted for platinum here: none has been read back from a
             primary source, and an invented one would be worse than none.
-            Careful work at these temperatures has been done; the number may
-            well deserve its digits, or may not, and the quoted figure alone
-            cannot tell you which.  Ask where it came from and what its
-            budget was.
+            Careful work at these temperatures has been done, and the digits
+            may well be earned.  The quoted figure alone cannot tell you:
+            ask where it came from and what its uncertainty budget was.
           </Text>
         </Alert>
 
@@ -531,12 +580,14 @@ export function ThermometerTrustTool(): JSX.Element {
             Below hydrogen you are into helium refrigeration, which does
             leave the resistor — and almost nothing else in chemical
             processing goes there.{"  "}
-            <strong>Only the hot end leaves.</strong>  Above 1234.93 K there
-            is no RESISTOR — the platinum thermometer stops at silver and
-            the scale becomes Planck radiation, referred back to the silver,
-            gold or copper point.  Above copper ({ITS90_TOP_K} K) there is no
-            defining fixed point at all, and the physics changes completely.  What an engineer owes a number is knowing which side
-            of the silver point it came from.
+            <strong>Only the hot end leaves.</strong>  Above 1234.93 K the
+            platinum resistance thermometer no longer DEFINES the scale —
+            radiation thermometry does, referred back to the silver, gold or
+            copper point, and above copper ({ITS90_TOP_K} K) no defining
+            fixed point remains.  Sensors still exist there; what changes is
+            what their calibrations are traced to.  What an engineer owes a
+            number is knowing which side of the silver point it came from,
+            and what its calibration chain was.
           </Text>
         </Box>
 
@@ -557,7 +608,9 @@ export function ThermometerTrustTool(): JSX.Element {
             and to get a number out you carry Planck’s law, an assumed
             emissivity, the transmission of a dirty window and the geometry of
             a sight path — all at once.  When the answer comes out wrong,{" "}
-            <strong>nothing tells you which of them failed.</strong>
+            <strong>the reading alone does not tell you which of them
+            failed</strong> — only a comparison that does not share those
+            assumptions can.
           </Text>
         </Alert>
 
@@ -603,8 +656,9 @@ export function ThermometerTrustTool(): JSX.Element {
           ))}
 
           <Text size="sm" mt={14}>
-            And the synthesis, which is Chang’s chapter 5.  Measurement is
-            where <strong>foundationalism</strong> — the idea that knowledge
+            And the synthesis, which is Chang’s chapter 5 — his reading in
+            the philosophy of science, not a settled fact of metrology.
+            Measurement is where <strong>foundationalism</strong> — the idea that knowledge
             rests on self-justifying bedrock — fails most visibly, because
             empirical science needs observations that depend on theories while
             empiricism demands that theories be justified by observations.
@@ -642,15 +696,24 @@ export function ThermometerTrustTool(): JSX.Element {
           </Text>
         </Alert>
 
+        <Check
+          q="Two sensors agree to 0.02 K, but both were calibrated against the same reference, which carried a 0.4 K error. Are they right?"
+          a={<>No.  Agreement is evidence of <em>consistency</em>, not of
+            the absence of a systematic error: both inherited the same
+            0.4 K.  Comparability catches an instrument that disagrees with
+            its peers; it cannot catch an error they all share.  What exposes
+            it is a comparison that does not share their history — a fixed
+            point, or a reference calibrated along a different chain.</>} />
+
         <Alert variant="light" title="And the sentence to take away">
           <Text size="sm">
             A thermometer is never right by itself.  It is right the way a
             witness is credible — by agreeing with itself, agreeing with
             others, and being cross-examined.{"  "}
             <strong>Comparability, convergence, iteration</strong>: those are
-            the three tests, they are three hundred years old, and every gate
-            in this simulator’s own test suite is one of them wearing work
-            clothes.
+            the three tests, they are three hundred years old, and many of
+            the gates in this simulator’s own test suite are one of them
+            wearing work clothes.
           </Text>
           <Text size="xs" c="dimmed" mt={8}>
             Chang calls this way of working <em>complementary science</em>:
@@ -665,8 +728,8 @@ export function ThermometerTrustTool(): JSX.Element {
         <Box>
           <Title order={5}>What this page is not</Title>
           <Text size="xs" c={INK} mt={4}>
-            • SRK is not the truth about nitrogen.  It establishes that Z
-            leaves 1 and roughly by how much — not the third decimal of that.
+            • SRK is not the truth about nitrogen.  It establishes that
+            {" "}<M t="Z" /> leaves 1 and roughly by how much — not the third decimal of that.
             A better equation moves the number and leaves the argument alone.
             <br />• No number here is compared with a measurement: the corpus
             holds no primary Z data for nitrogen, so the plot is a structural

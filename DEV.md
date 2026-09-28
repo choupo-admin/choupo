@@ -1598,6 +1598,34 @@ accepts today, and that is a policy call.
      4.2262 J/(mol K).  NOT taken: removing the program's surfaces from the
      page -- they are the glass-box half and stay, at the end.
 
+**C20. THE THERMOMETER DEEP DIVE: FOUR ABSOLUTES CORRECTED, THE
+     RE-LAYERING DECLINED (asked 2026-09-28; Vitor forwarded an external
+     review of `thermometer-trust`).**  TAKEN, because each was an error in
+     the text whoever found it: platinum's melting point "cannot be said to
+     a tenth of a degree" contradicted the same page's "the digits may be
+     earned" -- not being a defining fixed point is not an uncertainty, so
+     the page asks for the source and the budget; "above silver nothing can
+     be touched / there is no resistor" confused how the scale is DEFINED
+     with which sensors EXIST (Pt-Rh thermocouples work above it); "Z leaves
+     1 the moment the pressure is real" (Z can equal 1 at a finite pressure
+     by compensation, which is not ideality); T_reading = Z T is stated as
+     the IDEALISED thermometer.  Also: Chang's synthesis labelled as his
+     reading, the review's common-standard exercise added where it belongs
+     (comparability cannot catch an error every instrument shares), math in
+     KaTeX, and the same absolute corrected in two comments of
+     `WhatIsTemperatureTool.tsx`.
+     DECLINED, after a first draft had taken it (Vitor, the same day: an
+     external tip is not an order): re-layering the page into instrument
+     basics / scale / history, and replacing its opening.  The 2026-08-29
+     ruling split this page out precisely to hold the epistemology whole;
+     repeatability, calibration and traceability already live on the MAIN
+     page (part B, section 8), and a part A here would have been a second
+     home for them.  The Sommerfeld epigraph also STAYS: it is marked as an
+     unverified attribution, and this page's reader chose to go deeper.
+     The lesson for the next review: separate what is an ERROR in our text
+     (fix it) from what is the reviewer's TASTE in organisation (judge it
+     against the rulings already made -- and the pedagogy is Vitor's).
+
 **C13. "oxygen" FOUND NOTHING IN THE PROPERTY EXPLORER (reported 2026-09-27).**
      The ENGINE resolves it: `O2.dat:53` declares `aliases ( oxygen );`,
      `data/standards/components/ALIASES:26` maps it, and
