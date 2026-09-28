@@ -1,0 +1,109 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       isopropanol + water   (x is isopropanol's liquid mole fraction)
+  pressure     100.0 kPa   (CONSTANT across the series)
+  points       29   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( isopropanol water );
+pressure     100.0 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Orchilles, A. V.; Miguel, P. J.; Gonzalez-Alfaro, V.; Llopis, F. J.; Vercher, E.; Martinez-Andreu, A. (2017). Isobaric vapor-liquid equilibria for the extractive distillation of 2-propanol + water mixtures using 1-ethyl-3-methylimidazolium dicyanamide ionic liquid. J. Chem. Thermodyn.. doi:10.1016/j.jct.2017.02.005";
+    archiveFile  "j.jct.2017.02.005.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        3;
+    doi          "10.1016/j.jct.2017.02.005";
+    sha256       "92b44d90896c814b6920d3dc41391cc18c29ecb274966b295e66d5d32758d7b5";
+    identity
+    {
+        isopropanol    { cas "67-63-0"; inchiKey "KFZMGEQAYNKOFK-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 1.35 1.34 0.96 0.59 0.4 0.29 0.19 0.15 0.14 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.14 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 372.81 K; }
+        { x 1; T_bubble 355.09 K; }
+    );
+}
+
+columns
+(
+    { name x[isopropanol];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_isopropanol;  unit -;  }
+);
+
+data
+(
+      0.0020  371.44  0.0500
+      0.0040  369.29  0.1020
+      0.0090  366.74  0.1790
+      0.0150  364.05  0.2590
+      0.0260  361.66  0.3460
+      0.0390  359.46  0.4150
+      0.0560  357.68  0.4640
+      0.0830  356.36  0.4940
+      0.1170  355.7  0.5120
+      0.1580  355.28  0.5240
+      0.1970  354.95  0.5310
+      0.2330  354.76  0.5390
+      0.2720  354.56  0.5460
+      0.3100  354.34  0.5560
+      0.3540  354.12  0.5620
+      0.3950  353.91  0.5710
+      0.4350  353.73  0.5810
+      0.4760  353.55  0.5920
+      0.5220  353.4  0.6080
+      0.5610  353.28  0.6220
+      0.6070  353.16  0.6430
+      0.6580  353.12  0.6700
+      0.7160  353.11  0.7020
+      0.7610  353.19  0.7340
+      0.8090  353.35  0.7720
+      0.8640  353.65  0.8260
+      0.9070  354.02  0.8720
+      0.9500  354.44  0.9280
+      0.9730  354.74  0.9610
+);

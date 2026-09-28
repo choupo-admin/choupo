@@ -18,6 +18,7 @@
 #include "core/Origin.H"
 #include "core/ThermoResolution.H"
 
+#include <iostream>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -52,6 +53,31 @@ inline void fillPairAudit(PairResolution&    r,
     r.method        = provDict->lookupWordOrDefault("method",
                           provDict->lookupWordOrDefault("algorithm", ""));
     r.methodVersion = provDict->lookupWordOrDefault("methodVersion", "");
+
+    //  A PAIR RECORD'S `reviewStatus` IS READ, AND `interim` IS ANNOUNCED
+    //  (2026-09-28).  The component loader has voiced it since 2026-08-05
+    //  (Database.cpp, the `[unreviewed]` line); the pair loaders parsed
+    //  nothing, so a pair record marked interim was indistinguishable at run
+    //  time from a reviewed one -- the field was a comment.  The SAME word,
+    //  the same once-per-process channel and the same tag, so a reader meets
+    //  one convention for "somebody stated this is not yet reviewed" whatever
+    //  kind of record carries it.  Only `interim` announces: an undeclared
+    //  status makes no claim (the component loader's `[unmarked]` note is a
+    //  catalogue fact, not a caveat on this run).
+    if (provDict->lookupWordOrDefault("reviewStatus", "") == "interim")
+    {
+        const std::string why = provDict->lookupWordOrDefault("reviewReason", "");
+        if (AdvisoryLog::instance().addAnnouncedOnce("interim:pair:" + pairName,
+                "provenance", "warning", "pair " + pairName,
+                "reviewStatus interim -- this pair record has not yet been"
+                " reviewed against its evidence"))
+            std::cerr << "[unreviewed] pair " << pairName
+                      << ": reviewStatus interim -- not yet reviewed against its"
+                         " evidence" << (why.empty() ? "" : " (" + why + ")")
+                      << ".  Read its provenance{} block and the held-out verdict"
+                         " it records before the result is cited, and mark"
+                         " `reviewStatus reviewed;` once a human has.\n";
+    }
 
     auto readRange = [&](const DictPtr& blk, const char* lo, const char* hi,
                          const Dimensions& dims) -> std::optional<Range>

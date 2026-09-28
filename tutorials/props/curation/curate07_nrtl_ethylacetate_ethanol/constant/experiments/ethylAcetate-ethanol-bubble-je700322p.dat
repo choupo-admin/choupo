@@ -1,0 +1,108 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       ethylAcetate + ethanol   (x is ethylAcetate's liquid mole fraction)
+  pressure     100.0 kPa   (CONSTANT across the series)
+  points       28   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( ethylAcetate ethanol );
+pressure     100.0 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Orchilles, A. V.; Miguel, P. J.; Vercher, E.; Martinez-Andreu, A. (2007). Isobaric Vapor-Liquid Equilibria for Ethyl Acetate + Ethanol + 1-Ethyl-3-methylimidazolium Trifluoromethanesulfonate at 100 kPa. J. Chem. Eng. Data. doi:10.1021/je700322p";
+    archiveFile  "je700322p.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        2;
+    doi          "10.1021/je700322p";
+    sha256       "298b7d115299d4653d3bb7dd81d875afd231861d4c689f2c8eb3e3beb5460810";
+    identity
+    {
+        ethylAcetate   { cas "141-78-6"; inchiKey "XEKOWRVHYACXOJ-UHFFFAOYSA-N"; }
+        ethanol        { cas "64-17-5"; inchiKey "LFQSCWFLJHTTHZ-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 351.21 K; }
+        { x 1; T_bubble 349.89 K; }
+    );
+}
+
+columns
+(
+    { name x[ethylAcetate];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_ethylAcetate;  unit -;  }
+);
+
+data
+(
+      0.0210  350.45  0.0480
+      0.0430  349.74  0.0910
+      0.0740  348.85  0.1470
+      0.1210  347.82  0.2120
+      0.1680  347.02  0.2720
+      0.2170  346.39  0.3170
+      0.2600  345.89  0.3580
+      0.3030  345.53  0.3920
+      0.3550  345.18  0.4280
+      0.4020  344.98  0.4580
+      0.4480  344.82  0.4860
+      0.4930  344.73  0.5140
+      0.5400  344.71  0.5420
+      0.5840  344.73  0.5680
+      0.6240  344.8  0.5930
+      0.6660  344.91  0.6210
+      0.6900  345.04  0.6370
+      0.7170  345.18  0.6570
+      0.7440  345.37  0.6790
+      0.7670  345.57  0.6990
+      0.7900  345.8  0.7200
+      0.8180  346.05  0.7400
+      0.8350  346.27  0.7590
+      0.8510  346.51  0.7740
+      0.8750  346.88  0.8030
+      0.9000  347.36  0.8330
+      0.9370  348.13  0.8880
+      0.9750  349.1  0.9510
+);

@@ -3913,6 +3913,7 @@
    "src/propertyOps/CurationDossier.H",
    "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/FitParameters.H",
+   "src/propertyOps/FitWeighting.H",
    "src/propertyOps/PropertyOperation.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3928,6 +3929,13 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H"
+  ],
+  "src/propertyOps/FitWeighting.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/FitWeighting.H"
   ],
   "src/propertyOps/FreezingPoint.cpp": [
    "src/core/Advisory.H",
@@ -8419,6 +8427,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -8718,6 +8727,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -9825,6 +9835,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -10395,6 +10406,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -10415,6 +10427,10 @@
   "src/propertyOps/FitParameters.H": [
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/PropertyOperation.cpp"
+  ],
+  "src/propertyOps/FitWeighting.H": [
+   "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitWeighting.cpp"
   ],
   "src/propertyOps/FreezingPoint.H": [
    "src/propertyOps/FreezingPoint.cpp",

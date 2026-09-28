@@ -883,8 +883,8 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 1172 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 359 record(s)).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (5 card(s)).",
-      "seconds": 0.3
+      "claim": "check_source_licence: OK -- 1177 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (6 card(s)).",
+      "seconds": 0.7
     },
     "check_species_citation": {
       "exit": 0,
@@ -1095,6 +1095,11 @@
       "exit": 0,
       "claim": "gibbs-solid-phase: OK -- graphite APPEARS at S/C 0.8 (0.0690265 mol/s, a = 1) and is ABSENT at S/C 3 (a = 0.08126); a reaction-based recomputation agrees to 1e-6, C/H/O close to 1e-7, both duties recompute on the solid rung, the absent solid leaves gibbs02's answer untouched, directMin refuses by name, and the adiabatic path closes its first law.  NOT checked: two solids at once, reactiveFlash with a solid, gibbsMap, real-gas fugacity.",
       "seconds": 0.6
+    },
+    "check_regressed_pairs": {
+      "exit": 0,
+      "claim": "check_regressed_pairs: OK -- 5 regressed NRTL record(s) reproduced by re-running the case each names (ethanol-ethylAcetate (catalogue, validated); isopropanol-water (catalogue, validated); methanol-methylAcetate (catalogue, validated); methanol-water (catalogue, validated); acetone-methanol (case-local, notValidated)): parameters, evidence identity, validity span and held-out verdict equal what the run regresses now; only validated fits are in the catalogue; `interim` is voiced at run time; every dataset carries DOI, archive sha256, CAS+InChIKey and per-point uncertainty.  NOT checked: whether the transcribed measurements agree with the articles (a curator's read-back) or whether the band was well chosen.",
+      "seconds": 1.1
     }
   }
 }

@@ -17,7 +17,9 @@
 #
 # WHERE it lands (STAGE-ONLY, never data/standards/, never committed blindly):
 #   * NEW component   -> data/local/components/<name>.dat
-#   * NEW binary pair -> data/local/binaryPairs/{NRTL,UNIQUAC,Wilson}/<a>-<b>.dat
+#   * NEW binary pair -> data/local/parameters/{NRTL,UNIQUAC,Wilson}/<a>-<b>.dat
+#                        (LOCAL ONLY: the .ipd tables are not Artistic-2.0 --
+#                        see IPD_LICENCE below)
 #   * COLLISION with an existing standards/ or proposed/ file
 #                     -> data/local/_chemsep_review/...   (non-destructive)
 #   * report          -> data/local/CHEMSEP-IMPORT.md
@@ -49,13 +51,31 @@ SRC       = ROOT / 'thirdParty' / 'chemsep'
 #  while the code kept writing to the dead one.
 PROPOSED  = ROOT / 'data' / 'local'
 COMP_OUT  = PROPOSED / 'components'
-PAIR_OUT  = PROPOSED / 'binaryPairs'
+#  `parameters/`, NOT `binaryPairs/` (2026-09-28).  Migration 2 renamed the
+#  pair home on 2026-07-16 and this constant was not moved with it, so every
+#  pair this tool staged landed in a directory NO loader reads -- the NRTL,
+#  UNIQUAC and Wilson loaders resolve `data/local/parameters/<MODEL>/`
+#  (src/thermo/activityCoefficient/NRTL.cpp, locatePairFile).  A local
+#  import that the runtime cannot reach is not an import.
+PAIR_OUT  = PROPOSED / 'parameters'
 REVIEW    = PROPOSED / '_chemsep_review'
 STD_COMP  = ROOT / 'data' / 'standards' / 'components'
-STD_PAIR  = ROOT / 'data' / 'standards' / 'binaryPairs'
+STD_PAIR  = ROOT / 'data' / 'standards' / 'parameters'
 REPORT    = PROPOSED / 'CHEMSEP-IMPORT.md'
 
 LICENSE   = 'Artistic-2.0'
+#  THE PAIR TABLES ARE NOT UNDER THAT LICENCE (read 2026-09-28).  ChemSep
+#  LITE's own licence file (help/chemsep.lic, ChemSep LITE 8.50) says:
+#      "Use of the ChemSep Pure Component Property Databank (and ONLY the
+#       ChemSep Pure Component Property Databank) is governed by the Artistic
+#       License of the Perl Foundation."   ...   "Sublicense of SOFTWARE to
+#       another party is not permitted."
+#  and the .ipd files' own headers name their origin: "DECHEMA NRTL at
+#  P=1atm", "DECHEMA UNIQUAC at P=1atm".  So a staged pair carries the LITE
+#  licence word and stays in data/local/ -- your own use of your own
+#  install, never promoted.  check_source_licence enforces the same
+#  decision (EXCLUDED_TABLES) for the public tree.
+IPD_LICENCE = 'ChemSep-LITE-no-sublicence'
 AUTHORS   = 'Harry Kooijman; Ross Taylor'
 
 # Sources that must NEVER enter the catalogue (policy: no NonCommercial, no
@@ -140,7 +160,8 @@ def prov_block(source_file: str, source_sha256: str, record: str,
              '    method        "DECHEMA parameters as tabulated by ChemSep";',
              '    methodVersion "chemsep-pcd-8.3";',
              f'    authors       "{AUTHORS}";',
-             f'    license       "{LICENSE}";',
+             f'    license       "{IPD_LICENCE}";',
+             '    redistribution "LOCAL ONLY -- the ChemSep LITE licence grants the Artistic-2.0 licence to the pure-component databank alone and forbids sublicensing; the values are DECHEMA-derived.  Never promote into data/standards/";',
              f'    sourceFile    "{source_file}";',
              f'    sourceSha256  "{source_sha256}";',
              f'    sourceRecord  "{record}";',

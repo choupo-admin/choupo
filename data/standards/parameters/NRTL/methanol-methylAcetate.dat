@@ -1,0 +1,125 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- methylAcetate(i) + methanol(j)
+
+  REGRESSED BY CHOUPO to measured bubble temperatures (DEV.md C16, record
+  docs/design/binary-pairs-from-open-measurements.md).  The two articles
+  named under `evidence` are the SOURCE of the measurements; the NIST/TRC
+  ThermoML Archive (ThermoML.v2020-09-30.tgz) was the finding aid that
+  located them and is not reproduced.  The PARAMETERS are Choupo's own
+  work, regressed and redistributed with the catalogue.
+
+  EQUATION AND CONVENTIONS (the ones src/thermo/activityCoefficient/NRTL.cpp
+  computes -- a record read under another convention is a different pair):
+      tau_ij = a_ij + b_ij / T      [b in K]      G_ij = exp(-alpha tau_ij)
+      ln gamma_i = sum_j tau_ji G_ji x_j / S_i
+                   + sum_j (x_j G_ij / S_j)(tau_ij - sum_k tau_kj G_kj x_k / S_j),
+      S_j = sum_k G_kj x_k.  Direction i->j as Renon & Prausnitz, AIChE J. 14
+      (1968) 135: tau_12 = (g_12 - g_22)/RT.  a_ij = a_ji = 0 and alpha = 0.30
+      were FIXED, not fitted: bubble temperatures alone do not identify them.
+
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own Antoine
+  records for both pure components.  A different vapour or pure-component
+  model changes what these numbers mean.
+
+  VALIDITY: the span of the fit evidence (`validity` below).  The held-out
+  test is `validation`.  reviewStatus interim: the measurements were
+  transcribed from the archive and have NOT been read back against the
+  articles; the fit has not been reviewed by a curator.  Promotion to
+  `reviewed` is Vitor's.
+
+  REPRODUCE: run tutorials/props/curation/curate08_nrtl_methylacetate_methanol -- its fit writes
+  methanol-methylAcetate.proposal.dat; its parameters, evidence, validity and validation
+  must equal this record's (bin/curate/check_regressed_pairs.py holds the
+  two to each other, so the record cannot drift from its evidence).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i methylAcetate; j methanol; }
+
+components  ( methylAcetate  methanol );
+model       NRTL;
+
+parameters
+{
+    i           methylAcetate;
+    j           methanol;
+    a_ij        0.00000000;
+    b_ij        182.85621460;
+    a_ji        0.00000000;
+    b_ji        185.62565058;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate08_nrtl_methylacetate_methanol";
+    reviewStatus  interim;
+    reviewReason  "regressed by Choupo from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression, redistributed with the catalogue; the measured points belong to the cited articles and are not reproduced in this record";
+    fitDate       "2026-09-28";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/methylAcetate-methanol-bubble-je600518s.dat";
+            doi       "10.1021/je600518s";
+            sha256    "b4f24cd832d654f01940355beb30f1814d3e6c7369d85faa91c3d0b1e974d798";
+            provenance measured;
+            archiveFile "je600518s.xml";
+            system    "methylAcetate + methanol";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/methylAcetate-methanol-bubble-j.fluid.2015.04.018.dat";
+            doi       "10.1016/j.fluid.2015.04.018";
+            sha256    "c46f1a33158ddf01e5f3566d683cc19f69885b9933857fa97986c4b0d08bbcf4";
+            provenance measured;
+            archiveFile "j.fluid.2015.04.018.xml";
+            system    "methylAcetate + methanol";
+            pressure  "101300.000000 Pa";
+        }
+    );
+    fingerprint "ca24b4e6cc9b65e8";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          0.73807387;
+    rms_K         0.02872998;
+    nDataPoints   27;
+    identifiable  true;
+    maxAbsCorr    0.99168510;
+
+    validity
+    {
+        temperature { min 326.32 K; max 335.44 K; }
+        pressure    { min 100000 Pa; max 100000 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validated;
+
+    heldOut
+    {
+        points      19;
+        aad_pct     0.045433;
+        aad_K       0.150139;
+        domain_x1   ( 0.010000 0.980000 );
+    }
+
+    acceptance
+    {
+        maxAAD      0.089000;   // per cent
+        origin      "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.17 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (methanol +0.003 K, methylAcetate -0.121 K; measured with no pair involved), as a percentage of the held-out mean T (330.04 K) = 0.0881 %, rounded UP to two significant figures";
+    }
+}

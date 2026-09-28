@@ -766,6 +766,29 @@ def closure_of(pp_path, caseDir, std, AQ):
         pt = re.sub(r'/\*.*?\*/', '', pt, flags=re.S)
         pt = re.sub(r'(^|\s)//.*$', '', pt, flags=re.M)
         unifac_texts.append(pt)
+        #  A per-op override naming a PAIR model with no inline numbers
+        #  reads that model's pair records -- the scan that draws a
+        #  catalogue pair against measured points (curate04..08, 2026-09-28)
+        #  sealed WITHOUT its record and the staged run refused, because the
+        #  case-level dict inlines the fit's starting pair and so the trace
+        #  above never looked.  Scoped to the OVERRIDES that carry no
+        #  `binaryParameters`, and existence-guarded like every trace here.
+        for m in re.finditer(r'\bthermo\s*\{', pt):
+            depth, k = 0, m.end() - 1
+            while k < len(pt):
+                depth += {'{': 1, '}': -1}.get(pt[k], 0)
+                if depth == 0:
+                    break
+                k += 1
+            ov = pt[m.end():k]
+            if re.search(r'\bbinaryParameters\b', ov):
+                continue
+            for mdl in ("NRTL", "Wilson", "UNIQUAC"):
+                if re.search(r'\bmodel\s+' + mdl + r'\s*;', ov):
+                    for i in range(len(comps)):
+                        for j in range(i + 1, len(comps)):
+                            a, b = sorted((comps[i], comps[j]))
+                            want("parameters/" + mdl + "/" + a + "-" + b + ".dat")
     #  `molecular UNIFAC;` (the mixed-solvent backbone) and a second liquid's
     #  `activityModel UNIFAC;` select the same singleton tables by a different
     #  keyword -- both must ride the closure or the sealed case refuses.

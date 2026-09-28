@@ -1,0 +1,141 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      isopropanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-water.b_ij  -69.6468774674;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-water.b_ji  968.222810349;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "75dbfc88425ad3b0";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/isopropanol-water-bubble-j.jct.2017.02.005.dat";
+            doi       "10.1016/j.jct.2017.02.005";
+            sha256    "92b44d90896c814b6920d3dc41391cc18c29ecb274966b295e66d5d32758d7b5";
+            provenance measured;
+            archiveFile "j.jct.2017.02.005.xml";
+            system    "isopropanol + water";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/isopropanol-water-bubble-acs.jced.7b00523.dat";
+            doi       "10.1021/acs.jced.7b00523";
+            sha256    "69bfa9914d8f5ad430241745a43628fc9476407e0c60a1ea50c38f700f93573b";
+            provenance measured;
+            archiveFile "acs.jced.7b00523.xml";
+            system    "isopropanol + water";
+            pressure  "101058.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.002; max 0.973; n 29; }
+            validation  { min 0.0172; max 0.9095; n 16; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.234200546209;
+        acceptanceMaxAADPct 0.63;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 1.7 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.519 K, isopropanol -0.246 K; measured with no pair involved), as a percentage of the held-out mean T (356.06 K) = 0.6231 %, rounded UP to two significant figures";
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-water.b_ij  -69.6466509851;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-water.b_ji  968.222107333;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "75dbfc88425ad3b0";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/isopropanol-water-bubble-j.jct.2017.02.005.dat";
+            doi       "10.1016/j.jct.2017.02.005";
+            sha256    "92b44d90896c814b6920d3dc41391cc18c29ecb274966b295e66d5d32758d7b5";
+            provenance measured;
+            archiveFile "j.jct.2017.02.005.xml";
+            system    "isopropanol + water";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/isopropanol-water-bubble-acs.jced.7b00523.dat";
+            doi       "10.1021/acs.jced.7b00523";
+            sha256    "69bfa9914d8f5ad430241745a43628fc9476407e0c60a1ea50c38f700f93573b";
+            provenance measured;
+            archiveFile "acs.jced.7b00523.xml";
+            system    "isopropanol + water";
+            pressure  "101058.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.002; max 0.973; n 29; }
+            validation  { min 0.0172; max 0.9095; n 16; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.234199936071;
+        acceptanceMaxAADPct 0.63;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 1.7 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.519 K, isopropanol -0.246 K; measured with no pair involved), as a percentage of the held-out mean T (356.06 K) = 0.6231 %, rounded UP to two significant figures";
+    }
+}
+
+);

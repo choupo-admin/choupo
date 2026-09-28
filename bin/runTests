@@ -3492,6 +3492,24 @@ PYEOF
     fi
     rm -f /tmp/pairrec.$$
 
+    # regressed-pairs gate (2026-09-28, C16).  A pair Choupo REGRESSED to
+    # published measurements sits in the public catalogue and names the case
+    # that regressed it; the gate re-runs that case and requires the record to
+    # equal what it regresses now (parameters, evidence identity, validity,
+    # held-out verdict), only validated fits in the catalogue, and `interim`
+    # voiced at run time.  Six by-hand sabotages; two SURVIVED the first draft
+    # because a regex read the header PROSE "reviewStatus interim: ..." as the
+    # field.
+    if "$ROOT/bin/curate/check_regressed_pairs.py" > /tmp/regpairs.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "regressed-pairs-gate" "$(head -1 /tmp/regpairs.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_regressed_pairs.py)\n" "regressed-pairs-gate"
+        cat /tmp/regpairs.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/regpairs.$$
+
     # solubility-parameter gate (2026-08-26).  delta is DERIVED from HvapTb,
     # Tc and Vliq -- the tree stores no derivative -- and 63 records carry an
     # independently published delta as an ANCHOR so the derivation has

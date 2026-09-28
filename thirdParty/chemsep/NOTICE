@@ -8,7 +8,12 @@ Original authors / copyright:
     Harry Kooijman and Ross Taylor
 
 License:
-    Artistic License 2.0 (a.k.a. Perl Artistic License v2).
+    Artistic License 2.0 (a.k.a. Perl Artistic License v2) -- for the
+    PURE-COMPONENT databank ONLY.  ChemSep LITE's own licence (help/chemsep.lic)
+    reads: "Use of the ChemSep Pure Component Property Databank (and ONLY the
+    ChemSep Pure Component Property Databank) is governed by the Artistic
+    License"; the binary interaction-parameter tables (.ipd) are NOT under it
+    (read 2026-09-28; see README.md).
     FSF-listed as GPL-compatible; aggregating Artistic-2.0 DATA alongside
     Choupo's GPL-3.0 CODE is permitted (the data keeps its own licence -- it
     is aggregation, not a derivative of the code).
@@ -20,9 +25,11 @@ Source:
     database files).
 
 Scope (IMPORTANT):
-    Choupo uses ONLY the public ChemSep DATABASE files (component properties +
-    binary interaction parameters).  Choupo does NOT include, link, or
-    redistribute ChemSep SIMULATOR source code.
+    Choupo uses ONLY the public ChemSep DATABASE files.  Component properties
+    may be imported per value under Artistic-2.0; binary interaction
+    parameters (.ipd, DECHEMA-derived by their own headers) are staged for
+    LOCAL use only and never redistributed.  Choupo does NOT include, link,
+    or redistribute ChemSep SIMULATOR source code.
 
 Place the canonical licence text next to this NOTICE as:
     thirdParty/chemsep/pcd/Artistic_license_2_0.txt
@@ -31,5 +38,5 @@ https://opensource.org/license/artistic-2-0 -- do not paraphrase a licence).
 
 Every value imported into Choupo from these files carries per-value provenance
 (origin = ChemSep, authors, licence, source file/record) and is STAGED in
-data/proposed/ for human review -- nothing is silently promoted to
-data/standards/.
+data/local/ for human review -- nothing is silently promoted to
+data/standards/, and an .ipd pair never is.

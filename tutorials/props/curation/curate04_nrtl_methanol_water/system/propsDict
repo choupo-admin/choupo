@@ -1,0 +1,277 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate04_nrtl_methanol_water -- AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, END TO END.
+
+  WHY THIS SYSTEM.  the commonest aqueous alcohol separation in a first distillation course; the fit set spans six isobars (15-95 kPa), so it can ask whether a SECOND temperature coefficient is identified.
+
+  THE CHAIN, EACH STEP A COMMAND (DEV.md C16; record
+  docs/design/binary-pairs-from-open-measurements.md):
+    1. bin/choupo-thermoml sync        the NIST/TRC ThermoML Archive
+                                       (ThermoML.v2020-09-30.tgz, doi
+                                       10.18434/mds2-2422, sha256-verified)
+    2. bin/choupo-thermoml identity    CAS -> InChIKey for the catalogue,
+                                       two resolvers that must agree
+    3. bin/choupo-thermoml vle-index   every binary VLE block, searchable
+    4. bin/choupo-thermoml vle-search methanol water --geometry bubbleT
+    5. bin/choupo-thermoml extract-vle <file> --block N --interior-only
+                                       -> the two files under constant/experiments/
+    6. choupoProps (this case)         fitParameters -> a proposal record
+    7. promotion (a human act)         -> data/standards/parameters/NRTL/methanol-water.dat
+    8. bin/choupo-import               the seal mirrors that record here
+
+  THE EVIDENCE.  FIT: doi 10.1016/j.jct.2009.11.020 (54 interior points, several isobars).
+  HELD OUT: doi 10.1021/je200341c (13 interior points, 101.32 kPa) -- a
+  different article, so the held-out AAD is a validation, not a slice of
+  the fit.  Each file names its article, its archive file and block, the
+  sha256 of the archive file, the two compounds' CAS and InChIKey, and the
+  per-point expanded uncertainty; each says `reviewStatus
+  transcribedNotCheckedAgainstArticle` because nobody has read the numbers
+  back against the paper yet, and the run announces it.  Pure-component
+  endpoints are set aside (they measure the vapour-pressure record, not the
+  pair) and kept in each file under `selection`.
+
+  THE FIT.  NRTL with a_ij = a_ji = 0 and alpha = 0.30 fixed: TWO
+  parameters (b_ij, b_ji), because bubble temperatures over the ranges
+  below do not identify more (fit_nrtl_ab in the methanol + water case asks
+  that question directly).  Each point is weighted by 1/U, U its OWN stated
+  expanded uncertainty (`weighting uncertainty;`), so a point measured to
+  0.1 K is not outvoted by one measured to 1 K.  The held-out AAD is plain
+  kelvin, unweighted.
+
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+    * fit_nrtl: b_ij = 165.0 K, b_ji = 41.8 K, in-sample rms 0.50 K over
+      54 points on six isobars.  fit_nrtl_start2, from (800, -400), lands
+      on the same pair to 0.01 K -- one minimum, not a start point's choice.
+    * HELD OUT (101.32 kPa, another laboratory): AAD 0.53 K (0.150 %)
+      against a band of 0.33 % declared before the fit -> `validated`, and
+      the pair is the catalogue record NRTL/methanol-water.dat.
+    * fit_nrtl_ab frees a_ij and a_ji too: the run says `NOT individually
+      identifiable` (a and b trade off, max|corr| 0.996) and its held-out
+      AAD is WORSE (0.64 K).  Six isobars over 15-95 kPa do not pay for a
+      second temperature coefficient -- which is why the record carries two.
+    * THE OVERLAY SAYS SOMETHING THE VERDICT DOES NOT: on the held-out set
+      UNIFAC (0.36 K) is closer than the fitted pair (0.53 K).  The pair was
+      regressed below atmospheric pressure and is validated, not best;
+      `validated` means inside the declared band, never better than every
+      alternative.  Ideal mixing misses by 2.8 K.
+    * Part of every residual here is not the pair's: the catalogue water
+      Antoine record boils 0.70 K low at 101.32 kPa (measured at this set's
+      own pure endpoint), and no pair can remove that.
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
+  frame (ideal-gas vapour, the catalogue's Antoine records); nothing here
+  tests it at high pressure, against LLE, or with another vapour model.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/methanol-water-bubble-j.jct.2009.11.020.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/methanol-water-bubble-je200341c.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.33 percent;
+            origin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.46 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.698 K, methanol -0.142 K; measured with no pair involved), as a percentage of the held-out mean T (352.05 K) = 0.3289 %, rounded UP to two significant figures";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( methanol water );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   methanol-water.proposal.dat;
+        }
+    }
+    //  THE SAME FIT FROM ANOTHER START.  A least-squares surface can hold
+    //  more than one minimum; if this lands where fit_nrtl landed, the pair
+    //  is the answer the data hold, not the answer a start point chose.
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/methanol-water-bubble-j.jct.2009.11.020.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/methanol-water-bubble-je200341c.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.33 percent;
+            origin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.46 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.698 K, methanol -0.142 K; measured with no pair involved), as a percentage of the held-out mean T (352.05 K) = 0.3289 %, rounded UP to two significant figures";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( methanol water );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+    //  DO THE DATA IDENTIFY A SECOND TEMPERATURE COEFFICIENT?  The fit set
+    //  spans six isobars; this op frees a_ij and a_ji as well and reads its
+    //  own `identifiable` flag.  It writes no proposal: it is a question.
+    {
+        name        fit_nrtl_ab;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-water.a_ij;  initial 0;  min -20;  max 20; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-water.a_ji;  initial 0;  min -20;  max 20; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/methanol-water-bubble-j.jct.2009.11.020.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/methanol-water-bubble-je200341c.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.33 percent;
+            origin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.46 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.698 K, methanol -0.142 K; measured with no pair involved), as a percentage of the held-out mean T (352.05 K) = 0.3289 %, rounded UP to two significant figures";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( methanol water );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_ab.csv;
+        }
+    }
+    {
+        name        txy_ideal;
+        type        propertyScan1D;
+        vary        { variable x[methanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.32 kPa;  composition { methanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_methanol );
+        output      { file txy_ideal.csv; }
+    }
+    {
+        name        txy_unifac;
+        type        propertyScan1D;
+        vary        { variable x[methanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.32 kPa;  composition { methanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFAC; } } }
+        }
+        properties  ( T_bubble  y_eq_methanol );
+        output      { file txy_unifac.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[methanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.32 kPa;  composition { methanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the catalogue record, sealed copy */ } } }
+        }
+        properties  ( T_bubble  y_eq_methanol );
+        output      { file txy_nrtl.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      heldout_methanol_water;
+        component methanol;
+        kind      txy;
+        models    ( txy_ideal  txy_unifac  txy_nrtl );
+        dataset   "constant/experiments/methanol-water-bubble-je200341c.dat";
+        source    "held out: doi 10.1021/je200341c";
+    }
+);

@@ -179,6 +179,59 @@ ACCEPTED_DATABANK = {
         "importer": "bin/curate/chemsep_to_choupo.py",
     },
 }
+#  THE ACCEPTANCE HAS A SCOPE, AND THE SCOPE IS A CONTRACT TOO (2026-09-28).
+#  The row above accepts ChemSep's PURE-COMPONENT databank.  ChemSep also
+#  ships binary interaction-parameter tables (the `.ipd` files), and the
+#  licence that ships WITH them says the Artistic grant does not reach them:
+#
+#      "Use of the ChemSep Pure Component Property Databank (and ONLY the
+#       ChemSep Pure Component Property Databank) is governed by the Artistic
+#       License of the Perl Foundation. [...] Sublicense of SOFTWARE to
+#       another party is not permitted."
+#                   -- help/chemsep.lic, ChemSep LITE 8.50 (lite.zip, sha256
+#                      69640c709f51ef89341ff1596b4fea4a37d9de774f4fac041934c0413958573c,
+#                      downloaded from www.chemsep.org and read 2026-09-28)
+#
+#  and the tables' own headers name where their numbers came from: "DECHEMA
+#  NRTL at P=1atm", "DECHEMA UNIQUAC at P=1atm" (nrtl.ipd, uniquac.ipd).
+#  DECHEMA transcription is on the protocol's NEVER list, so these tables
+#  may be used LOCALLY (data/local/, your own install) and never enter the
+#  public tree.  The `thermo` Python package (Caleb Bell, MIT) redistributes
+#  the same NRTL and Peng-Robinson tables by CAS under
+#  thermo/Interaction Parameters/ChemSep/ -- an MIT licence on the code does
+#  not relicense ChemSep's tables or DECHEMA's values, so that copy is the
+#  SAME exclusion, reached by another route (provenance laundering, CLAUDE.md
+#  section 10).  Its `IPDB.get_ip_specific` also returns a default (bij 0,
+#  alpha 0.3) for a pair it does not hold -- an absent value turned into a
+#  number -- which is a second reason no value may be taken from it.
+#
+#  A mention is allowed only as a CROSS-CHECK (the CHECK_MARKER words), which
+#  enters no value.  Each class names its card, so the prose and the gate
+#  cannot drift apart.
+EXCLUDED_TABLES = {
+    "ChemSep interaction-parameter tables (.ipd)": {
+        "pattern": re.compile(
+            r'\b(?:nrtl|uniquacp?|uniquac_ext|wilson|margules|vanlaar|pr|srk|'
+            r'apisrk|haydeno|henrys_law|wang_et_al)\.ipd\b'
+            r'|\bChemSep\s+(?:IPD|NRTL|UNIQUAC|Wilson|interaction[- ]parameters?)\b',
+            re.I),
+        "why": "ChemSep LITE licence: Artistic-2.0 covers ONLY the pure-component "
+               "databank, sublicensing forbidden; the tables are DECHEMA-derived "
+               "by their own headers",
+        "card": "thirdParty/chemsep/README.md",
+    },
+    "thermo (Python) ChemSep interaction-parameter copy": {
+        "pattern": re.compile(
+            r'\bIPDB\b|Interaction\s+Parameters/ChemSep|'
+            r'\bthermo\.interaction_parameters\b|\bChemSep\s+PR\s+kij\b',
+            re.I),
+        "why": "a copy of the ChemSep .ipd tables inside an MIT-licensed code "
+               "package; the MIT grant is Caleb Bell's, over his code, and does "
+               "not relicense the tables",
+        "card": "thirdParty/thermo-ipdb/README.md",
+    },
+}
+
 #  Databank names this gate KNOWS to look for.  A name here that is NOT in
 #  ACCEPTED_DATABANK fails as encumbered.  (The NEVER-list aggregators above
 #  stay in ENCUMBERED, which never has an accepted branch.)
@@ -224,6 +277,7 @@ KNOWN_PUBLIC_DOMAIN = re.compile(r'\b(NASA\s+TR\s+R-132)\b')
 #  gate started refusing Burcat as NonCommercial).
 CARDS = {
     "ChemSep":       "thirdParty/chemsep/README.md",
+    "thermo IPDB":   "thirdParty/thermo-ipdb/README.md",
     "NASA TR R-132": "thirdParty/svehla/README.md",
     "Burcat":        "thirdParty/README.md",   # one bulk file, no folder: its card is the index row
 }
@@ -318,7 +372,27 @@ def main() -> int:
                             f"value; the database is NonCommercial and no "
                             f"'via' rescues it\n        {line.strip()[:110]}")
                     break
+            #  AN EXCLUDED TABLE NAMED AS A VALUE'S ORIGIN.  Checked before
+            #  the accepted-databank arm, because "ChemSep" in the same line
+            #  would otherwise be counted as the ACCEPTED databank -- which is
+            #  exactly how a DECHEMA-derived pair would pass under the
+            #  pure-component databank's licence.
+            excluded_here = False
             for n, line in enumerate(lines, 1):
+                for cls, ex in EXCLUDED_TABLES.items():
+                    hit = ex["pattern"].search(line)
+                    if hit and not CHECK_MARKER.search(line[:hit.start()]):
+                        violations.append(
+                            f"{rel}:{n}  {hit.group(0)} -- {cls} is EXCLUDED "
+                            f"from the public tree ({ex['why']}); keep it in "
+                            f"data/local/\n        {line.strip()[:110]}")
+                        excluded_here = True
+                        break
+                if excluded_here:
+                    break
+            for n, line in enumerate(lines, 1):
+                if excluded_here:
+                    break
                 db = KNOWN_DATABANK.search(line)
                 if db and AUTHORITY_FIELD.search(line):
                     if db.group(0) in ACCEPTED_DATABANK:
@@ -415,6 +489,13 @@ def main() -> int:
                   "is cited by NO record; either the records were renamed "
                   "(re-point the pattern) or the row is dead (remove it).")
             return 1
+    for cls, ex in EXCLUDED_TABLES.items():
+        if ex["card"] not in CARDS.values():
+            print(f"check_source_licence: FAILED -- EXCLUDED_TABLES['{cls}'] "
+                  f"names card {ex['card']}, which CARDS does not carry; an "
+                  "exclusion whose card no gate names is a sentence, not a "
+                  "contract.")
+            return 1
     #  THE CARD ARM: published <=> pinned, between the gate and thirdParty/.
     for name, card in CARDS.items():
         if not (ROOT / card).is_file():
@@ -451,7 +532,10 @@ def main() -> int:
           f"as a value's origin; {len(NC_COMPILATION)} existing ones do and "
           f"are pinned.  Accepted third-party databanks, by CONTRACT here and "
           f"cross-checked against the importer's LICENSE constant: "
-          f"{accepted_txt}.  Every source ruled on here has a thirdParty/ card and "
+          f"{accepted_txt} -- and that acceptance has a SCOPE: "
+          f"{len(EXCLUDED_TABLES)} excluded interaction-parameter table "
+          f"classes (ChemSep .ipd, the thermo package's copy) are named as "
+          f"a value's origin by no record.  Every source ruled on here has a thirdParty/ card and "
           f"every card on disk is named by a gate ({len(on_disk)} card(s)).")
     #  THE MANIFEST READS ONLY THE FIRST LINE.  gate_manifest.py captures
     #  `line[0]` as the gate's claim, so a claim printed on a second line is

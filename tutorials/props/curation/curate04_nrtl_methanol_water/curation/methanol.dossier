@@ -1,0 +1,198 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij  165.006302662;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji  41.7648896834;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8214c067c8b72061";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/methanol-water-bubble-j.jct.2009.11.020.dat";
+            doi       "10.1016/j.jct.2009.11.020";
+            sha256    "6a858b6788994573a11e01315b96cb3eeb42603a2e20fc7b234ddb4d04c7bbaf";
+            provenance measured;
+            archiveFile "j.jct.2009.11.020.xml";
+            system    "methanol + water";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/methanol-water-bubble-je200341c.dat";
+            doi       "10.1021/je200341c";
+            sha256    "b88f3599ac1499ff81756c347c67a3d86f679783fceeabbf2ce1a64feb5b3b84";
+            provenance measured;
+            archiveFile "je200341c.xml";
+            system    "methanol + water";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1; max 0.9; n 54; }
+            validation  { min 0.005; max 0.969; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.150061425821;
+        acceptanceMaxAADPct 0.33;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.46 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.698 K, methanol -0.142 K; measured with no pair involved), as a percentage of the held-out mean T (352.05 K) = 0.3289 %, rounded UP to two significant figures";
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij  165.00990961;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji  41.7616624558;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8214c067c8b72061";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/methanol-water-bubble-j.jct.2009.11.020.dat";
+            doi       "10.1016/j.jct.2009.11.020";
+            sha256    "6a858b6788994573a11e01315b96cb3eeb42603a2e20fc7b234ddb4d04c7bbaf";
+            provenance measured;
+            archiveFile "j.jct.2009.11.020.xml";
+            system    "methanol + water";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/methanol-water-bubble-je200341c.dat";
+            doi       "10.1021/je200341c";
+            sha256    "b88f3599ac1499ff81756c347c67a3d86f679783fceeabbf2ce1a64feb5b3b84";
+            provenance measured;
+            archiveFile "je200341c.xml";
+            system    "methanol + water";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1; max 0.9; n 54; }
+            validation  { min 0.005; max 0.969; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.150062184661;
+        acceptanceMaxAADPct 0.33;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.46 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.698 K, methanol -0.142 K; measured with no pair involved), as a percentage of the held-out mean T (352.05 K) = 0.3289 %, rounded UP to two significant figures";
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_ab;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.a_ij  5.62628833304;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij  -1686.63416949;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.a_ji  -4.33114596763;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji  1470.88016213;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "8214c067c8b72061";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/methanol-water-bubble-j.jct.2009.11.020.dat";
+            doi       "10.1016/j.jct.2009.11.020";
+            sha256    "6a858b6788994573a11e01315b96cb3eeb42603a2e20fc7b234ddb4d04c7bbaf";
+            provenance measured;
+            archiveFile "j.jct.2009.11.020.xml";
+            system    "methanol + water";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/methanol-water-bubble-je200341c.dat";
+            doi       "10.1021/je200341c";
+            sha256    "b88f3599ac1499ff81756c347c67a3d86f679783fceeabbf2ce1a64feb5b3b84";
+            provenance measured;
+            archiveFile "je200341c.xml";
+            system    "methanol + water";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1; max 0.9; n 54; }
+            validation  { min 0.005; max 0.969; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.181111499184;
+        acceptanceMaxAADPct 0.33;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.46 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.698 K, methanol -0.142 K; measured with no pair involved), as a percentage of the held-out mean T (352.05 K) = 0.3289 %, rounded UP to two significant figures";
+    }
+}
+
+);

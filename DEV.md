@@ -1713,6 +1713,52 @@ accepts today, and that is a policy call.
      legal scrub.  So route (1) may end as a LOCAL import only (CLAUDE.md §10
      "provenance laundering"), and route (2) is the one that can grow the
      public tree.
+
+     **SLICE 1 CLOSED 2026-09-28** (record
+     `docs/design/binary-pairs-from-open-measurements.md`).  ROUTE 1,
+     licences READ, not remembered: ChemSep LITE 8.50's own `chemsep.lic`
+     grants Artistic-2.0 to "the ChemSep Pure Component Property Databank
+     (and ONLY [it])" and forbids sublicensing, and the `.ipd` headers say
+     "DECHEMA NRTL at P=1atm" -> the pair tables are LOCAL ONLY.  The `thermo`
+     package's `nrtl.ipd` is byte-identical to ChemSep's; MIT on Bell's code
+     does not relicense it -> EXCLUDED, and its API returns bij 0 / alpha 0.3
+     for a missing pair.  Both are now a CONTRACT in `check_source_licence`
+     (`EXCLUDED_TABLES`, run before the accepted-databank arm, which would
+     otherwise have accepted "ChemSep NRTL" under the pure-component licence;
+     cards `thirdParty/chemsep/`, new `thirdParty/thermo-ipdb/`).  The local
+     route itself was BROKEN -- the importer wrote `data/local/binaryPairs/`,
+     which no loader reads since Migration 2 -- and is fixed and verified
+     (758 pairs staged from the user's own install, audit 758/758, resolved
+     `[local]` at run time).  ROUTE 2: ThermoML.v2020-09-30 is the latest
+     (record v1.2.6; the API has no publication after 2019); the archive
+     carries NO CAS, so `choupo-thermoml identity` bridges CAS -> InChIKey
+     through two resolvers that must agree (477 resolved); `vle-index` /
+     `vle-search` index 12 993 binary VLE blocks (617 catalogue pairs have
+     low-pressure bubble-T data); `extract-vle` joins by InChIKey, keeps
+     per-point U, sets pure endpoints aside, refuses duplicated rows.  Five
+     systems, each fitted on one article and held out on another, NRTL with
+     two parameters (a four-parameter fit on six isobars was measured NOT
+     identifiable and predicts worse), weighted by 1/U (new opt-in
+     `weighting uncertainty;`), band declared before the fit by one rule:
+     methanol-water, isopropanol-water, ethanol-ethylAcetate,
+     methanol-methylAcetate VALIDATED and promoted to
+     `data/standards/parameters/NRTL/` as `reviewStatus interim` (public NRTL
+     pairs 2 -> 6); acetone-methanol NOT validated (the two studies disagree
+     by ~0.3 K) and kept in its own case.  Cases `curate04`..`curate08`,
+     overlay against both studies beside ideal and UNIFAC, AADs pinned.
+     Engine: fit reads the bench's column names, writes the fit span as
+     `validity`; `PairAudit` voices a pair's `reviewStatus interim`
+     (`[unreviewed] pair`); `choupo-import` traces per-op pair overrides.
+     Gate `check_regressed_pairs` (re-runs each record's case; 6 sabotages,
+     2 survived the first draft).  FINDINGS for Vítor: `water.dat`'s Antoine
+     boils 0.70 K low at 101.32 kPa; on methanol-water UNIFAC beats the
+     validated pair on the held-out set; the UNIFAC tables' "Artistic-2.0"
+     attribution does not match the LITE licence (values are Hansen 1991, a
+     primary -- RESERVED); `Cl`/`HOCl` records write `CL`/`HOCL`.
+     **NEXT (slice 2):** read the ten transcribed series back against their
+     articles (`checked`); settle acetone-methanol; a `P_bubble` residual so
+     isothermal P-x data count; UNIQUAC/Wilson where apt; then widen pair by
+     pair by the same rule.
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds

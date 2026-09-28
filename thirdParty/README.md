@@ -30,7 +30,9 @@ it.  A public-domain source may be fetched by a tool, and its card says so.
 
 | card | source | licence | shipped by Choupo? |
 |---|---|---|---|
-| [`chemsep/`](chemsep/README.md) | ChemSep pure-component databank + binary pairs | Artistic-2.0 | no — curated subsets go to `data/local/` |
+| [`chemsep/`](chemsep/README.md) | ChemSep pure-component databank | Artistic-2.0 | no — curated subsets go to `data/local/` |
+| [`chemsep/`](chemsep/README.md) | ChemSep binary interaction parameters (`.ipd`) | ChemSep LITE licence, no sublicence; DECHEMA-derived by their own headers | **never** — local use only (`check_source_licence` EXCLUDED_TABLES) |
+| [`thermo-ipdb/`](thermo-ipdb/README.md) | the `thermo` Python package's copy of the ChemSep NRTL / PR tables | MIT on the code; the tables keep ChemSep's terms | **never** — the same exclusion, another route |
 | [`thermoml/`](thermoml/README.md) | NIST/TRC ThermoML Archive (~11 900 article XMLs) | NIST open licence; third-party IP in the underlying articles disclaimed | no — a value enters only by a human citing the ORIGINAL ARTICLE |
 | [`svehla/`](svehla/README.md) | NASA TR R-132 (1962), Lennard-Jones σ and ε/k | US government work, public domain | the report no; the page-image transcription in `bin/curate/svehla1962/` yes, deliberately |
 | [`lvpp-sigma/`](lvpp-sigma/README.md) | LVPP open COSMO sigma-profile database (~2500) | MIT | no — and the reason is thermodynamic, not legal (read the card) |

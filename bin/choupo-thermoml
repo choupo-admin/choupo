@@ -67,6 +67,8 @@ import os
 import re
 import ssl
 import tarfile
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import pathlib
@@ -479,6 +481,7 @@ def extract_binary_bubble(root, path, block=None):
             refusals.append((block if block is not None else idx, str(ex)))
 
     if len(ok) == 1:
+        ok[0][1]["block"] = ok[0][0]
         return ok[0][1]
     if len(ok) > 1:
         listing = "\n".join(
@@ -589,6 +592,7 @@ def _one_bubble_block(root, pom, comps, doi):
                 f"today; a unit conversion here would be a silent one.")
 
     pressures, points, pressures_per_point = set(), [], []
+    uncert_per_point = []
     for nv in find_all(pom, "NumValues"):
         xs = {find_text(x, "nVarNumber"): find_text(x, "nVarValue")
               for x in find_all(nv, "VariableValue")}
@@ -598,16 +602,22 @@ def _one_bubble_block(root, pom, comps, doi):
                 "variables -- the series is not a bubble curve.")
         if pvar is None:
             xs = dict(xs, **{"__const_P__": str(pconst_kPa)})
-        tval = ""
+        tval, uval = "", ""
         for pv in find_all(nv, "PropertyValue"):
             if find_text(pv, "nPropNumber") == pnum:
                 tval = find_text(pv, "nPropValue")
+                #  THE DECLARED UNCERTAINTY TRAVELS WITH THE POINT (2026-09-28).
+                #  ThermoML carries a per-point expanded uncertainty beside the
+                #  value; it used to be read by nobody.  An absent one stays
+                #  ABSENT (None), never zero: zero is a claim of perfection.
+                uval = find_text(pv, "nCombExpandUncertValue")
         if not tval:
             continue
         pk = float(xs[pvar] if pvar is not None else xs["__const_P__"])
         pressures.add(round(pk, 6))
         points.append((float(xs[xvar]), float(tval)))
         pressures_per_point.append(pk)
+        uncert_per_point.append(float(uval) if uval else None)
 
     #  VARIABLE PRESSURE IS NOW READ (2026-08-25), and the refusal that
     #  stood here was right on the day it was written.  It said: "the
@@ -626,6 +636,26 @@ def _one_bubble_block(root, pom, comps, doi):
     #  next reader can tell which happened.
     if len(points) < 2:
         raise BubbleRefusal("fewer than two usable points")
+
+    #  A REPEATED OBSERVATION IS REFUSED, NOT DEDUPLICATED (2026-09-28).
+    #  Found on the first multi-isobar file chosen for a fit
+    #  (j.fluid.2015.12.029, block 9): every (x, P, T) row appears TWICE, so a
+    #  regression would weight each measurement double and report twice the
+    #  degrees of freedom it has.  Whether the article printed two identical
+    #  tables or the transcription doubled one is a question for the article;
+    #  silently keeping one copy would answer it without reading it.
+    seen, dup = set(), []
+    for (x, t), pk in zip(points, pressures_per_point):
+        key = (x, t, round(pk, 6))
+        if key in seen:
+            dup.append(key)
+        seen.add(key)
+    if dup:
+        raise BubbleRefusal(
+            f"{len(dup)} of {len(points)} (x, P, T) rows repeat an earlier "
+            f"row exactly (first: x = {dup[0][0]}, P = {dup[0][2]} kPa, "
+            f"T = {dup[0][1]} K).  A duplicated observation would count twice "
+            f"in a fit; read the article before choosing one copy.")
 
     #  THE NAMES MUST FOLLOW `members`, NOT THE DOCUMENT ORDER.  Found
     #  2026-08-25 on the first real multi-isobar file, and it is a
@@ -654,10 +684,23 @@ def _one_bubble_block(root, pom, comps, doi):
             "compound name by its RegNum.  The axis of x1 would be a "
             "guess, and a mislabelled axis is a wrong answer that nothing "
             "downstream can detect.")
+    #  The confidence level the uncertainties are stated at, read off the
+    #  PROPERTY's own CombinedUncertainty (per series, not per point).
+    level = ""
+    for pr in find_all(pom, "Property"):
+        if find_text(pr, "nPropNumber") == pnum:
+            level = find_text(pr, "nCombUncertLevOfConfid")
+    order = sorted(range(len(points)), key=lambda k: points[k])
     rec = {
         "system": names[:2],
+        #  The block's own member org numbers, in `system` order -- so a
+        #  caller can reach each member's InChI/InChIKey without matching
+        #  anything by name.
+        "members": members[:2],
         "doi": doi,
         "points": sorted(points),
+        "uT": [uncert_per_point[k] for k in order],
+        "uT_level": level,
     }
     if len(pressures) == 1:
         #  Held CONSTANT: keep it a scalar, which is what ThermoML's own
@@ -833,8 +876,458 @@ def cmd_extract(a):
 
 
 
+#  ---------------------------------------------------------------------------
+#  IDENTITY: ARCHIVE COMPOUND -> CHOUPO COMPONENT, BY IDENTIFIER (2026-09-28).
+#
+#  The archive identifies a compound by its standard InChI and InChIKey and,
+#  in the files NIST actually ships, by NO CAS number at all (measured: 0 of
+#  58 276 binary blocks carry one).  The catalogue identifies a component by
+#  its CAS number and carries no InChIKey.  So the two cannot be joined
+#  directly, and the tool used to join them by the only thing they share --
+#  the NAME ("ethanol" in both) -- which is right for ethanol and wrong for
+#  "propan-2-ol" against `isopropanol`, and is the name identity this project
+#  bans.
+#
+#  The bridge is built ONCE, at curation time, from the catalogue's own CAS:
+#  two independent resolvers (PubChem PUG REST and NCI CACTUS) are asked for
+#  the standard InChIKey of each CAS, and the answer is accepted only when
+#  they AGREE and the molecular formula PubChem returns matches the record's
+#  own `formula` (when it declares one).  Anything else is listed, never
+#  guessed.  The bridge is a cache on the curator's machine
+#  (identity.json, gitignored with the archive); the extracted dataset
+#  records the CAS and the InChIKey it was joined on, so a reader can check
+#  the join without re-running it.
+#  ---------------------------------------------------------------------------
+PUBCHEM = ("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{}/"
+           "property/InChIKey,MolecularFormula/JSON")
+CACTUS = "https://cactus.nci.nih.gov/chemical/structure/{}/stdinchikey"
+IDENTITY_RULE = ("the archive's standard InChIKey matched to the catalogue "
+                 "record's CAS through two resolvers that agree (PubChem PUG "
+                 "REST and NCI CACTUS), molecular formula checked -- never "
+                 "by name")
+
+
+def _formula_counts(f: str):
+    """Element counts of a molecular formula ('C2H6O' -> {C:2, H:6, O:1})."""
+    out = {}
+    for el, n in re.findall(r"([A-Z][a-z]?)(\d*)", f or ""):
+        out[el] = out.get(el, 0) + (int(n) if n else 1)
+    return out
+
+
+def _catalogue_identities():
+    """(component, CAS, formula) for every catalogue record declaring a CAS."""
+    rows = []
+    for f in sorted((ROOT / "data" / "standards" / "components").glob("*.dat")):
+        t = f.read_text(errors="ignore")
+        m = re.search(r"^\s*CAS\s+([0-9]+-[0-9]+-[0-9])\s*;", t, re.M)
+        if not m:
+            continue
+        fm = re.search(r"^\s*formula\s+([A-Za-z0-9]+)\s*;", t, re.M)
+        rows.append((f.stem, m.group(1), fm.group(1) if fm else ""))
+    return rows
+
+
+def _ask_pubchem(cas):
+    txt = _fetch(PUBCHEM.format(urllib.parse.quote(cas)), text=True)
+    props = json.loads(txt)["PropertyTable"]["Properties"]
+    return sorted({(p["InChIKey"], p.get("MolecularFormula", "")) for p in props})
+
+
+def _ask_cactus(cas):
+    txt = _fetch(CACTUS.format(urllib.parse.quote(cas)), text=True).strip()
+    return sorted({ln.split("=", 1)[-1].strip() for ln in txt.splitlines()
+                   if ln.strip()})
+
+
+def cmd_identity(a):
+    """Build the CAS -> InChIKey bridge for the catalogue."""
+    cache = cache_root()
+    cache.mkdir(parents=True, exist_ok=True)
+    out = cache / "identity.json"
+    old = json.loads(out.read_text()) if out.exists() and not a.refresh else {}
+    prev = {r["component"]: r for r in old.get("records", [])}
+    records = []
+    rows = _catalogue_identities()
+    for i, (comp, cas, formula) in enumerate(rows):
+        #  A settled answer is reused; an INCOMPLETE one (a resolver could
+        #  not be reached) is asked again -- a network error is not a finding
+        #  about the compound.
+        if comp in prev and prev[comp].get("cas") == cas and not a.refresh \
+                and prev[comp].get("status") != "incomplete":
+            records.append(prev[comp])
+            continue
+        rec = {"component": comp, "cas": cas, "formula": formula}
+        def _ask(fn, tries=3):
+            last = None
+            for k in range(tries):
+                try:
+                    return fn(cas), None
+                except urllib.error.HTTPError as ex:
+                    if ex.code == 404:          # the resolver ANSWERED: unknown
+                        return [], None
+                    last = ex
+                except Exception as ex:         # transport: worth a retry
+                    last = ex
+                time.sleep(1.0 + k)
+            return [], f"{type(last).__name__}: {last}"[:120]
+        pc, err = _ask(_ask_pubchem)
+        if err:
+            rec["pubchemError"] = err
+        ca, err = _ask(_ask_cactus)
+        if err:
+            rec["cactusError"] = err
+        rec["pubchem"] = [k for k, _ in pc]
+        rec["cactus"] = ca
+        keys_pc, keys_ca = {k for k, _ in pc}, set(ca)
+        if len(keys_pc) == 1 and keys_pc == keys_ca:
+            key = next(iter(keys_pc))
+            pf = pc[0][1]
+            if formula and _formula_counts(formula) != _formula_counts(pf):
+                rec["status"] = "formulaMismatch"
+                rec["note"] = f"record formula {formula} vs PubChem {pf}"
+            else:
+                rec["status"] = "resolved"
+                rec["inchiKey"] = key
+                rec["formulaChecked"] = bool(formula)
+        elif rec.get("pubchemError") or rec.get("cactusError"):
+            #  One resolver could not be REACHED.  That is not a disagreement
+            #  and not an absence; it is an unanswered question.
+            rec["status"] = "incomplete"
+        elif not keys_pc and not keys_ca:
+            rec["status"] = "unresolved"
+        else:
+            rec["status"] = "disagree"
+        records.append(rec)
+        if (i + 1) % 25 == 0:
+            sys.stderr.write(f"\r  {i + 1} / {len(rows)}")
+        time.sleep(0.2)          # PubChem asks for at most 5 requests per second
+    sys.stderr.write("\n")
+    by_key = {}
+    for r in records:
+        if r.get("status") == "resolved":
+            by_key.setdefault(r["inchiKey"], []).append(r["component"])
+    doc = {"rule": IDENTITY_RULE, "resolvedOn": time.strftime("%Y-%m-%d"),
+           "resolvers": ["PubChem PUG REST", "NCI CACTUS"],
+           "records": records, "byInchiKey": by_key}
+    out.write_text(json.dumps(doc, indent=1, sort_keys=True))
+    counts = {}
+    for r in records:
+        counts[r["status"]] = counts.get(r["status"], 0) + 1
+    print(f"choupo-thermoml identity: {len(records)} catalogue record(s) with a CAS")
+    for k in sorted(counts):
+        print(f"  {k:<16} {counts[k]}")
+    for r in records:
+        if r["status"] != "resolved":
+            print(f"  {r['status']:<16} {r['component']} (CAS {r['cas']})"
+                  + (f" -- {r['note']}" if r.get("note") else ""))
+    amb = {k: v for k, v in by_key.items() if len(v) > 1}
+    for k, v in sorted(amb.items()):
+        print(f"  AMBIGUOUS        {k} is claimed by {', '.join(v)} -- no "
+              f"dataset naming it will be joined")
+    print(f"  wrote {out}")
+    return 0
+
+
+def _identity_map():
+    """InChIKey -> (component, CAS) for resolved, unambiguous records."""
+    f = cache_root() / "identity.json"
+    if not f.exists():
+        return None
+    doc = json.loads(f.read_text())
+    out = {}
+    for r in doc["records"]:
+        if r.get("status") != "resolved":
+            continue
+        if len(doc["byInchiKey"].get(r["inchiKey"], [])) != 1:
+            continue
+        out[r["inchiKey"]] = (r["component"], r["cas"])
+    return out
+
+
+#  ---------------------------------------------------------------------------
+#  THE VLE INDEX: one row per BINARY vapour-liquid block, searchable by
+#  component, CAS, InChIKey, geometry, pressure and temperature.
+#
+#  `index` answers "which ARTICLES mention this compound?".  Fitting a pair
+#  needs a sharper question -- "which binary DATASETS measured this pair, in
+#  what geometry, at what pressure, over what temperatures, with or without a
+#  stated uncertainty?" -- and answering it by opening XML files one by one is
+#  how a curator ends up fitting to whatever they found first.  This index is
+#  the finding aid for that choice; it copies NO data point.
+#  ---------------------------------------------------------------------------
+def _block_geometry(props, variables):
+    """Name the geometry from DECLARED property/variable types and phases."""
+    pn = [(n.split(",")[0].lower(), ph) for n, ph, _ in props]
+    vn = [(n.split(",")[0].lower(), ph) for n, ph, _ in variables]
+    xL = ("mole fraction", "Liquid") in vn
+    if pn == [("boiling temperature at pressure p", "Liquid")] and xL:
+        return "bubbleT"
+    if len(pn) == 1 and pn[0][0] == "mole fraction" and pn[0][1] == "Gas" and xL:
+        return "vapourComposition"
+    if len(pn) == 1 and pn[0][0] == "vapor or sublimation pressure" and xL:
+        return "bubbleP"
+    if len(pn) == 1 and pn[0][0] == "activity coefficient":
+        return "activityCoefficient"
+    return "other"
+
+
+def _read_vle_blocks(path):
+    root = ET.parse(path).getroot()
+    if detect_dialect(root) != "published":
+        return []
+    comps = {}
+    for c in find_all(root, "Compound"):
+        comps[find_text(c, "nOrgNum")] = {
+            "name": find_text(c, "sCommonName"),
+            "inchi": find_text(c, "sStandardInChI"),
+            "inchiKey": find_text(c, "sStandardInChIKey")}
+    cite = {"doi": find_text(root, "sDOI"), "year": find_text(root, "yrPubYr"),
+            "journal": find_text(root, "sPubName"),
+            "title": find_text(root, "sTitle")}
+    rows = []
+    for bi, pom in enumerate(find_all(root, "PureOrMixtureData")):
+        members = [find_text(c, "nOrgNum") for c in find_all(pom, "Component")]
+        if len(members) != 2:
+            continue
+        phases = sorted({(e.text or "").strip() for e in find_all(pom, "ePhase")})
+        if phases != ["Gas", "Liquid"]:
+            continue
+        props = []
+        for p in find_all(pom, "Property"):
+            props.append((find_text(p, "ePropName"), find_text(p, "ePropPhase"),
+                          find_text(p, "nPropNumber")))
+        variables = []
+        for v in find_all(pom, "Variable"):
+            kind, unit, org = _var_kind(v)
+            name = ""
+            for e in v.iter():
+                if local(e.tag).startswith("e") and local(e.tag) != "eVarPhase" \
+                        and e.text and e.text.strip():
+                    name = e.text.strip()
+            variables.append((name, find_text(v, "eVarPhase"),
+                              find_text(v, "nVarNumber")))
+        geom = _block_geometry(props, variables)
+        #  Temperature and pressure spans, from the DECLARED types only:
+        #  "Boiling temperature at pressure P" is a temperature, whatever the
+        #  word "pressure" inside its name suggests.
+        tnum = {n for nm, _, n in variables if nm.lower().startswith("temperature")}
+        pnum = {n for nm, _, n in variables if nm.lower().startswith("pressure")}
+        tprop = {n for nm, _, n in props if "temperature" in nm.lower().split(",")[0]}
+        pprop = {n for nm, _, n in props
+                 if nm.lower().startswith(("vapor or sublimation pressure", "pressure"))}
+        T, P, hasU = [], [], False
+        for nv in find_all(pom, "NumValues"):
+            for vv in find_all(nv, "VariableValue"):
+                k, val = find_text(vv, "nVarNumber"), find_text(vv, "nVarValue")
+                try:
+                    f = float(val)
+                except ValueError:
+                    continue
+                if k in tnum:
+                    T.append(f)
+                if k in pnum:
+                    P.append(f)
+            for pv in find_all(nv, "PropertyValue"):
+                k, val = find_text(pv, "nPropNumber"), find_text(pv, "nPropValue")
+                if find_text(pv, "nCombExpandUncertValue") or \
+                        find_text(pv, "nStdUncertValue"):
+                    hasU = True
+                try:
+                    f = float(val)
+                except ValueError:
+                    continue
+                if k in tprop:
+                    T.append(f)
+                if k in pprop:
+                    P.append(f)
+        for c in find_all(pom, "Constraint"):
+            unit = ""
+            for e in c.iter():
+                if local(e.tag) in ("eTemperature", "ePressure") and e.text:
+                    unit = e.text.strip()
+            try:
+                f = float(find_text(c, "nConstraintValue"))
+            except ValueError:
+                continue
+            if unit.lower().startswith("temperature"):
+                T.append(f)
+            elif unit.lower().startswith("pressure"):
+                P.append(f)
+        rows.append({
+            "file": str(path.relative_to(cache_root())),
+            "block": bi, **cite,
+            "compounds": [comps.get(m, {}) for m in members],
+            "geometry": geom,
+            "properties": [(n, ph) for n, ph, _ in props],
+            "variables": [(n, ph) for n, ph, _ in variables],
+            "points": len(find_all(pom, "NumValues")),
+            "T_K": [min(T), max(T)] if T else None,
+            #  The archive's pressure unit is kPa throughout the blocks this
+            #  index classifies; a block declaring another is not summarised.
+            "P_kPa": [min(P), max(P)] if P else None,
+            "uncertaintyDeclared": hasU,
+        })
+    return rows
+
+
+def cmd_vle_index(a):
+    cache = cache_root()
+    files = sorted(cache.rglob("*.xml"))
+    if not files:
+        print(f"choupo-thermoml vle-index: {cache} holds no .xml files.  Run "
+              f"`sync` first; an index over nothing is not a clean archive.")
+        return 1
+    ident = _identity_map()
+    if ident is None:
+        print("choupo-thermoml vle-index: no identity.json -- run "
+              "`choupo-thermoml identity` first.  Without it no archive "
+              "compound can be joined to a catalogue component, and the index "
+              "would say every pair is unknown to Choupo.")
+        return 1
+    rows, refused = [], []
+    for f in files:
+        try:
+            rows.extend(_read_vle_blocks(f))
+        except ET.ParseError as ex:
+            refused.append((f.name, str(ex)))
+    for r in rows:
+        for c in r["compounds"]:
+            hit = ident.get(c.get("inchiKey", ""))
+            if hit:
+                c["component"], c["cas"] = hit
+    out = cache / "vleIndex.json"
+    doc = {"archive": SYNC_TARBALL, "archiveDoi": ARCHIVE_DOI,
+           "identity": IDENTITY_RULE, "blocks": rows}
+    out.write_text(json.dumps(doc, indent=0, sort_keys=True))
+    geo = {}
+    joined = 0
+    for r in rows:
+        geo[r["geometry"]] = geo.get(r["geometry"], 0) + 1
+        if all(c.get("component") for c in r["compounds"]):
+            joined += 1
+    print(f"choupo-thermoml vle-index: {len(rows)} binary vapour-liquid "
+          f"block(s) from {len(files)} file(s)")
+    for g in sorted(geo):
+        print(f"  {g:<22} {geo[g]}")
+    print(f"  {joined} block(s) join BOTH compounds to a catalogue component "
+          f"by InChIKey")
+    for n, why in refused:
+        print(f"  REFUSED {n}: {why}")
+    print(f"  wrote {out}")
+    return 0
+
+
+def cmd_vle_search(a):
+    f = cache_root() / "vleIndex.json"
+    if not f.exists():
+        print("choupo-thermoml vle-search: no vleIndex.json -- run "
+              "`choupo-thermoml vle-index` first.")
+        return 1
+    rows = json.loads(f.read_text())["blocks"]
+
+    def matches(c, q):
+        q = q.lower()
+        return q in {(c.get(k) or "").lower()
+                     for k in ("component", "cas", "inchiKey", "name")}
+    hits = []
+    for r in rows:
+        c1, c2 = r["compounds"]
+        if a.geometry and r["geometry"] != a.geometry:
+            continue
+        ok = any(matches(c, a.a) for c in (c1, c2))
+        if a.b:
+            ok = (matches(c1, a.a) and matches(c2, a.b)) or \
+                 (matches(c1, a.b) and matches(c2, a.a))
+        if not ok:
+            continue
+        if a.pmax is not None and (not r["P_kPa"] or r["P_kPa"][1] > a.pmax):
+            continue
+        hits.append(r)
+    hits.sort(key=lambda r: (r["geometry"], r["doi"], r["block"]))
+    print(f"choupo-thermoml vle-search: {len(hits)} block(s)")
+    for r in hits:
+        c1, c2 = r["compounds"]
+        nm = lambda c: c.get("component") or f"({c.get('name')}, not in catalogue)"
+        P = r["P_kPa"]
+        T = r["T_K"]
+        print(f"  {r['geometry']:<18} {nm(c1)} + {nm(c2)}   {r['points']:>3} pts"
+              f"   P {P[0]:g}-{P[1]:g} kPa" if P else "   P ?", end="")
+        print(f"   T {T[0]:g}-{T[1]:g} K" if T else "   T ?", end="")
+        print("   U declared" if r["uncertaintyDeclared"] else "   U none")
+        print(f"      doi {r['doi']}  ({r['year']})  {r['file']}  --block {r['block']}")
+    return 0
+
+
+def _vapour_series(root, pom_t, rec):
+    """y of the SAME component at the SAME liquid compositions, from a
+    companion block of the same file -- or None, with the reason.
+
+    ThermoML stores a T-x-y measurement as TWO blocks: the bubble
+    temperature against x, and the vapour mole fraction against x, each under
+    the same held pressure.  They are joined here only when the companion is
+    unambiguous: same members, the vapour fraction OF THE SAME component the
+    liquid fraction names, the same held pressure, and an identical set of x
+    values.  Anything else is reported and left out; a y paired with the
+    wrong x would be a plausible number on the wrong point."""
+    if "P_kPa" not in rec:
+        return None, "the series varies its pressure; no vapour column is joined"
+    want = set(rec["members"])
+    comp_org = rec["members"][0]
+    xs = [x for x, _ in rec["points"]]
+    cands = []
+    for pom in find_all(root, "PureOrMixtureData"):
+        if pom is pom_t:
+            continue
+        mem = [find_text(c, "nOrgNum") for c in find_all(pom, "Component")]
+        if set(mem) != want:
+            continue
+        props = [(find_text(p, "ePropName"), find_text(p, "ePropPhase"),
+                  find_text(p, "nOrgNum"), find_text(p, "nPropNumber"))
+                 for p in find_all(pom, "Property")]
+        if len(props) != 1 or not props[0][0].lower().startswith("mole fraction") \
+                or props[0][1] != "Gas":
+            continue
+        if props[0][2] and props[0][2] != comp_org:
+            continue
+        pc = None
+        for c in find_all(pom, "Constraint"):
+            try:
+                pc = float(find_text(c, "nConstraintValue"))
+            except ValueError:
+                pass
+        if pc is None or abs(pc - rec["P_kPa"]) > 1e-9:
+            continue
+        xvar = None
+        for v in find_all(pom, "Variable"):
+            kind, _, org = _var_kind(v)
+            if kind == "composition" and (not org or org == comp_org):
+                xvar = find_text(v, "nVarNumber")
+        if xvar is None:
+            continue
+        pairs = {}
+        for nv in find_all(pom, "NumValues"):
+            xv = [find_text(x, "nVarValue") for x in find_all(nv, "VariableValue")
+                  if find_text(x, "nVarNumber") == xvar]
+            yv = [find_text(p, "nPropValue") for p in find_all(nv, "PropertyValue")
+                  if find_text(p, "nPropNumber") == props[0][3]]
+            if xv and yv:
+                pairs.setdefault(float(xv[0]), []).append(float(yv[0]))
+        cands.append(pairs)
+    if not cands:
+        return None, "no companion vapour-composition block in this file"
+    if len(cands) > 1:
+        return None, (f"{len(cands)} companion vapour-composition blocks match; "
+                      "choosing among them would be a guess")
+    pairs = cands[0]
+    if sorted(pairs) != sorted(xs) or any(len(v) != 1 for v in pairs.values()):
+        return None, ("the companion vapour block's liquid compositions do not "
+                      "coincide one-for-one with this series")
+    return [pairs[x][0] for x in xs], "joined"
+
+
 def cmd_extract_vle(a):
-    """Write ONE Choupo dataset from a fixed-P binary bubble-point file."""
+    """Write ONE Choupo dataset from a binary bubble-point block."""
     src = pathlib.Path(a.file)
     if not src.is_file():
         print(f"choupo-thermoml extract-vle: no such file: {src}")
@@ -860,115 +1353,211 @@ def cmd_extract_vle(a):
               f"  This extractor supports {BUBBLE_SUPPORTED}.\n"
               f"  {src.name}: {ex}\n"
               f"  Nothing was written.  A dataset of another geometry -- "
-              f"variable pressure, vapour compositions, more than two "
-              f"components, VLLE -- is NOT reduced to a shape it does not "
-              f"have; reducing it would produce plausible numbers from a "
+              f"more than two components, VLLE, a pressure or a composition "
+              f"as the measured property -- is NOT reduced to a shape it does "
+              f"not have; reducing it would produce plausible numbers from a "
               f"misreading.")
         return 1
+
+    syn = a.provenance == "synthetic"
+    #  THE COMPONENTS ARE NAMED BY IDENTIFIER, NOT BY THE ARCHIVE'S NAME.
+    #  A measured dataset is joined to the catalogue through the InChIKey
+    #  bridge, and REFUSES when a member cannot be joined.  A synthetic
+    #  fixture carries no identifier by construction, keeps the name it was
+    #  written with, and says so in the file.
+    orgs = {find_text(c, "nOrgNum"): c for c in find_all(root, "Compound")}
+    identity = []
+    if not syn:
+        ident = _identity_map()
+        if ident is None:
+            print("choupo-thermoml extract-vle: REFUSED\n"
+                  "  no identity.json in the cache.  Run `choupo-thermoml "
+                  "identity` first: a measured dataset is joined to a "
+                  "catalogue component by InChIKey, never by the archive's "
+                  "compound name.")
+            return 1
+        names = []
+        for org, arch_name in zip(rec["members"], rec["system"]):
+            key = find_text(orgs.get(org, root), "sStandardInChIKey") \
+                if org in orgs else ""
+            hit = ident.get(key)
+            if not hit:
+                print("choupo-thermoml extract-vle: REFUSED\n"
+                      f"  the archive compound '{arch_name}' (InChIKey "
+                      f"{key or 'none declared'}) resolves to NO catalogue "
+                      "component through the identity bridge.  Either the "
+                      "catalogue does not describe it, or `identity` could not "
+                      "resolve its CAS -- run `identity` and read its list.  "
+                      "Guessing from the name is the join this tool refuses.")
+                return 1
+            names.append(hit[0])
+            identity.append((hit[0], hit[1], key))
+        rec["system"] = names
+    c1, c2 = rec["system"]
+
+    pts, uT = rec["points"], rec["uT"]
+    ypts, yreason = (None, "not requested")
+    if not a.no_vapour:
+        ypts, yreason = _vapour_series(root, _find_block(root, rec, a.block), rec)
+    keep = list(range(len(pts)))
+    dropped = []
+    if a.interior_only:
+        keep = [k for k in keep if 0.0 < pts[k][0] < 1.0]
+        dropped = [k for k in range(len(pts)) if k not in keep]
+        if len(keep) < 2:
+            print("choupo-thermoml extract-vle: REFUSED\n"
+                  "  fewer than two interior points remain after setting the "
+                  "pure-component endpoints aside.")
+            return 1
 
     dest = pathlib.Path(a.into)
     dest.mkdir(parents=True, exist_ok=True)
     sha = hashlib.sha256(src.read_bytes()).hexdigest()
-    syn = a.provenance == "synthetic"
-    sysname = "-".join(rec["system"]).replace(" ", "_")
+    sysname = f"{c1}-{c2}".replace(" ", "_")
     out = dest / f"{sysname}-bubble-{src.stem}.dat"
 
     varying = "P_kPa_perPoint" in rec
+    doi = rec["doi"] or "none-declared"
+    authors = [e.text.strip() for e in find_all(root, "sAuthor")
+               if e.text and e.text.strip()]
+    journal, year = find_text(root, "sPubName"), find_text(root, "yrPubYr")
+    title = find_text(root, "sTitle")
+    au = "; ".join(x.split("[")[0].strip() for x in authors[:6])
+    if len(authors) > 6:
+        au += " et al."
+    citation = f"{au} ({year}). {title}. {journal}. doi:{doi}".replace('"', "'")
+
     if varying:
         lo, hi = min(rec["isobars"]), max(rec["isobars"])
-        head = ("MULTI-ISOBAR BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML",
-                "  file by bin/choupo-thermoml extract-vle.")
         pline = (f"  pressure     {len(rec['isobars'])} isobars, {lo} .. {hi} kPa"
                  f"   (a COLUMN: each point at its own)")
     else:
-        head = ("FIXED-PRESSURE BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML",
-                "  file by bin/choupo-thermoml extract-vle.")
         pline = f"  pressure     {rec['P_kPa']} kPa   (CONSTANT across the series)"
-
     lines = [
         "/*--------------------------------------------------------------------------*\\",
-        "  " + head[0],
-        head[1],
+        "  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by",
+        "  bin/choupo-thermoml extract-vle.",
         "",
-        f"  system       {rec['system'][0]} + {rec['system'][1]}   (x1 is {rec['system'][0]})",
+        f"  system       {c1} + {c2}   (x is {c1}'s liquid mole fraction)",
         pline,
-        f"  points       {len(rec['points'])}",
+        f"  points       {len(keep)}"
+        + (f"   ({len(dropped)} pure-component endpoint(s) set aside -- see"
+           f" `selection`)" if dropped else ""),
+        f"  vapour       {'y joined from the companion block' if ypts else 'none -- ' + yreason}",
         "",
-        "  The identity below is DECLARED AS FIELDS, not only described here:",
-        "  a header is a comment the parser discards, and the dossier must be",
-        "  able to say which archive file, which publication and which system",
-        "  a verdict rests on.",
+        "  ONE FILE, TWO READERS.  The column names are the ones the props",
+        "  bench's `experimental {}` overlay draws against a propertyScan1D",
+        "  (x[<component>], T_bubble, y_eq_<component>) AND the ones",
+        "  fitParameters(T_bubble) reads -- so the points a pair is fitted to",
+        "  and the points it is drawn against cannot be two transcriptions.",
         "",
         "  The role this evidence plays -- fit or held-out validation -- is NOT",
         "  set here.  It is declared in the operation that consumes it, before",
         "  any fitting runs (src/propertyOps/EvidencePartition.H).",
+        "",
+        "  REDISTRIBUTION.  These are measured values reported in the article",
+        "  cited below, located through the NIST/TRC ThermoML Archive (a finding",
+        "  aid; thirdParty/thermoml/README.md).  The article is the source; the",
+        "  archive's arrangement is not reproduced.",
         "\\*--------------------------------------------------------------------------*/",
         "",
         "property     binaryVLE.T_bubble;",
-        f"system       ( {rec['system'][0]} {rec['system'][1]} );",
+        f"system       ( {c1} {c2} );",
     ]
     if not varying:
         #  The held-constant form.  THE UNIT IS NEVER OMITTED: an unqualified
-        #  number is read as canonical SI, so a bare `pressure 101.325;` would
-        #  become 101 Pa and the fit would converge to a vacuum with no other
-        #  symptom (EvidencePartition refuses it, and this is the writer's half
-        #  of that contract).
+        #  number is read as canonical SI (EvidencePartition refuses it, and
+        #  this is the writer's half of that contract).
         lines.append(f"pressure     {rec['P_kPa']} kPa;")
-    lines += [
-        "",
-        "provenance",
-        "{",
-        f"    source       {a.provenance};",
-    ]
+    lines += ["", "provenance", "{", f"    source       {a.provenance};"]
     if not syn:
-        #  THE CONDITION THE TIER RULING ATTACHES.  docs/design/thermoml-
-        #  archive-assessment.md admits point values "cited to the ORIGINAL
-        #  article, CHECKED AGAINST IT when the paper is in hand".  This tool
-        #  transcribes from the archive and has never seen the article, so the
-        #  second half is unmet at the moment of writing -- and a file that did
-        #  not say so would let a reader assume it had been done, because the
-        #  DOI is there from birth and the file looks fully sourced.  A curator
-        #  who reads the paper and confirms the numbers edits this to
-        #  `checked`; nothing automatic may.
+        #  THE CONDITION THE TIER RULING ATTACHES: values "cited to the
+        #  ORIGINAL article, CHECKED AGAINST IT when the paper is in hand".
+        #  This tool has never seen the article; a curator who reads it and
+        #  confirms the numbers edits this to `checked`, nothing automatic may.
         lines.append("    reviewStatus transcribedNotCheckedAgainstArticle;")
+        lines.append(f'    citation     "{citation}";')
     if syn:
         lines.append('    note         "STRUCTURAL FIXTURE -- generated, never measured.  '
                      'Any verdict computed from it is about the machinery, not physics";')
     lines += [
         f'    archiveFile  "{src.name}";',
-        f'    doi          "{rec["doi"] or "none-declared"}";',
+        f'    archive      "{SYNC_TARBALL} (NIST/TRC ThermoML Archive, doi:{ARCHIVE_DOI})";',
+        f"    block        {a.block if a.block is not None else rec.get('block', 0)};",
+        f'    doi          "{doi}";',
         f'    sha256       "{sha}";',
-        "}",
-        "",
-        "columns",
-        "(",
-        "    { name x1;  unit -;  }",
     ]
+    if identity:
+        lines += ["    identity", "    {"]
+        for comp, cas, key in identity:
+            lines.append(f'        {comp:<14} {{ cas "{cas}"; inchiKey "{key}"; }}')
+        lines += [f'        rule           "{IDENTITY_RULE}";', "    }"]
+    lines += ["}", ""]
+
+    #  THE UNCERTAINTY, AS DECLARED, PER POINT.  Kept even though
+    #  fitParameters(T_bubble) weights every point equally today: a stated
+    #  uncertainty that was dropped at extraction can never be used again.
+    u = [uT[k] for k in keep]
+    if all(v is not None for v in u):
+        lines += ["uncertainty", "{", "    T_bubble", "    {",
+                  "        kind    expandedCombined;   // ThermoML nCombExpandUncertValue",
+                  f"        level   {rec['uT_level'] or 'undeclared'};"
+                  + ("            // per cent confidence" if rec["uT_level"] else ""),
+                  "        unit    K;",
+                  "        values  ( " + " ".join(f"{v:g}" for v in u) + " );"
+                  "   // per point, in `data` order",
+                  "    }", "}", ""]
+    elif any(v is not None for v in u):
+        lines += ["uncertainty", "{", "    T_bubble  partial;   // declared for "
+                  f"{sum(v is not None for v in u)} of {len(u)} points; the per-point"
+                  " values are in the archive file", "}", ""]
+    else:
+        lines += ["uncertainty", "{", "    T_bubble  none;   // the archive declares no "
+                  "uncertainty for this series", "}", ""]
+
+    if dropped:
+        lines += ["selection", "{",
+                  "    //  A bubble point on a PURE component measures the vapour-pressure",
+                  "    //  correlation, not the pair: the pair parameters have no effect",
+                  "    //  there.  Set aside, not deleted -- the values stay here.",
+                  "    pureEndpoints",
+                  "    (",
+                  ]
+        for k in dropped:
+            lines.append(f"        {{ x {pts[k][0]:g}; T_bubble {pts[k][1]:g} K; }}")
+        lines += ["    );", "}", ""]
+
+    lines += ["columns", "(", f"    {{ name x[{c1}];  unit -;  }}"]
     if varying:
         lines.append("    { name Pressure;  unit kPa; }")
-    lines += [
-        "    { name T;   unit K;  }",
-        ");",
-        "",
-        "data",
-        "(",
-    ]
-    if varying:
-        for (x, t), pk in zip(rec["points"], rec["P_kPa_perPoint"]):
-            lines.append(f"    {x:8.4f}  {pk:10.4f}  {t:.6g}")
-    else:
-        for x, t in rec["points"]:
-            lines.append(f"    {x:8.4f}  {t:.6g}")
+    lines.append("    { name T_bubble;  unit K;  }")
+    if ypts:
+        lines.append(f"    {{ name y_eq_{c1};  unit -;  }}")
+    lines += [");", "", "data", "("]
+    for k in keep:
+        x, t = pts[k]
+        row = f"    {x:8.4f}"
+        if varying:
+            row += f"  {rec['P_kPa_perPoint'][k]:10.4f}"
+        row += f"  {t:.6g}"
+        if ypts:
+            row += f"  {ypts[k]:.4f}"
+        lines.append(row)
     lines += [");", ""]
     out.write_text("\n".join(lines))
 
-    print(f"choupo-thermoml extract-vle: {out}  ({len(rec['points'])} points)")
-    print(f"  system    {rec['system'][0]} + {rec['system'][1]}")
+    print(f"choupo-thermoml extract-vle: {out}  ({len(keep)} points)")
+    print(f"  system    {c1} + {c2}")
+    for comp, cas, key in identity:
+        print(f"  identity  {comp:<14} CAS {cas}  InChIKey {key}")
     if varying:
         print(f"  pressure  {len(rec['isobars'])} isobars, "
               f"{min(rec['isobars'])} .. {max(rec['isobars'])} kPa (a column)")
     else:
         print(f"  pressure  {rec['P_kPa']} kPa (constant)")
+    print(f"  vapour    {'joined' if ypts else yreason}")
+    for k in dropped:
+        print(f"  set aside x = {pts[k][0]:g}, T = {pts[k][1]:g} K (pure endpoint)")
     print(f"  doi       {rec['doi'] or '(none declared)'}")
     if syn:
         print("  provenance synthetic -- GENERATED.  Any verdict from this "
@@ -976,6 +1565,14 @@ def cmd_extract_vle(a):
     print("  role      NOT set here: the consuming operation declares it "
           "before fitting.")
     return 0
+
+
+def _find_block(root, rec, block):
+    """The <PureOrMixtureData> element `rec` was read from."""
+    poms = find_all(root, "PureOrMixtureData")
+    if block is not None:
+        return poms[block]
+    return poms[rec.get("block", 0)]
 
 
 def _fetch(url, dest=None, text=False):
@@ -1371,6 +1968,30 @@ def main():
                     choices=["measured", "synthetic"],
                     help="what the numbers ARE -- `synthetic` marks a structural "
                          "fixture, and the mark travels with the dataset")
+    ev.add_argument("--interior-only", action="store_true",
+                    help="set the pure-component endpoints (x = 0 and x = 1) "
+                         "aside: they measure the vapour-pressure correlation, "
+                         "not the pair.  They are KEPT in the file under "
+                         "`selection`, never deleted")
+    ev.add_argument("--no-vapour", action="store_true",
+                    help="do not join the companion vapour-composition block")
+    idn = sub.add_parser("identity",
+                         help="build the CAS -> InChIKey bridge for the catalogue "
+                              "(network; PubChem + NCI CACTUS must agree)")
+    idn.add_argument("--refresh", action="store_true",
+                     help="ask the resolvers again for every record")
+    sub.add_parser("vle-index",
+                   help="index every binary vapour-liquid block in the cache "
+                        "(geometry, T and P spans, uncertainty, DOI, identity)")
+    vs = sub.add_parser("vle-search",
+                        help="search the VLE index by component / CAS / InChIKey")
+    vs.add_argument("a")
+    vs.add_argument("b", nargs="?", default="")
+    vs.add_argument("--geometry", default="",
+                    choices=["", "bubbleT", "vapourComposition", "bubbleP",
+                             "activityCoefficient", "other"])
+    vs.add_argument("--pmax", type=float, default=None,
+                    help="only blocks whose highest pressure is at most this (kPa)")
     e = sub.add_parser("extract", help="write Choupo datasets for a compound")
     e.add_argument("query")
     e.add_argument("--into", default="constant/experiments")
@@ -1384,7 +2005,9 @@ def main():
                               or getattr(a, "raw_query", "")):
         return cmd_search_online(a)
     return {"sync": cmd_sync, "index": cmd_index, "search": cmd_search,
-            "extract": cmd_extract, "extract-vle": cmd_extract_vle}[a.cmd](a)
+            "extract": cmd_extract, "extract-vle": cmd_extract_vle,
+            "identity": cmd_identity, "vle-index": cmd_vle_index,
+            "vle-search": cmd_vle_search}[a.cmd](a)
 
 
 if __name__ == "__main__":

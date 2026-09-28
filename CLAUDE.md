@@ -1969,6 +1969,26 @@ the one tool (`sync` · `index` · `search [--online]` · `extract` ·
 rather than being guessed, and a multi-block article demands `--block N`
 because choosing is the curator's act.  Record:
 [`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md) §8.
+Since 2026-09-28 (C16) it also has `identity` · `vle-index` · `vle-search`,
+and a compound is joined to a catalogue component BY INCHIKEY, never by
+name: the archive carries no CAS, so a CAS -> InChIKey bridge is built from
+two resolvers that must agree.
+
+**A PAIR CHOUPO REGRESSES IS A RECORD THAT NAMES ITS CASE, AND A SHIPPED
+TABLE IS NOT RELICENSED BY ITS COURIER (2026-09-28, C16).**  Catalogue NRTL
+pairs may be Choupo's OWN regressions to measurements the ThermoML archive
+LOCATES (each series cites its article and says
+`transcribedNotCheckedAgainstArticle` until someone reads it back): fitted on
+one study, held out on ANOTHER, band declared before the fit, promoted only
+when `validated`, as `reviewStatus interim` (now VOICED for pair records,
+`[unreviewed] pair`), naming `fittedInCase`; `check_regressed_pairs` re-runs
+that case and holds the record to it.  ChemSep's `.ipd` pair tables are NOT
+under the Artistic grant (the LITE licence gives it to the pure-component
+databank "and ONLY" that, and the tables say "DECHEMA" in their headers),
+and the `thermo` package's byte-identical copy is not freed by its MIT
+licence -- both LOCAL ONLY, enforced by `check_source_licence`
+(`EXCLUDED_TABLES`).  Record:
+[`docs/design/binary-pairs-from-open-measurements.md`](docs/design/binary-pairs-from-open-measurements.md).
 
 **THE WASM BUILD DIED WHERE THE NATIVE ONE PASSED, AND THE SITE WENT STALE
 (2026-08-27).**  A lambda captured a STRUCTURED BINDING —

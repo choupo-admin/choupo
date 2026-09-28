@@ -6,8 +6,8 @@ One subfolder per activity-coefficient model:
 
 ```
 parameters/
-├── NRTL/        (2 pairs shipped)
-├── UNIQUAC/     (3 pairs shipped)
+├── NRTL/        (`ls` is the authority -- a count here went stale once)
+├── UNIQUAC/     (`ls` is the authority)
 └── ...          (Henry/ Pitzer/ eNRTL/ SRK/ UNIFAC/ EdwardsPitzer/
                   adsorption/ solution/ -- `ls` is the authority)
 ```
@@ -25,8 +25,15 @@ reader the opposite of the truth:
   CLEAN data look encumbered is as much a defect as the reverse, and it is
   harder to notice because nobody audits in that direction.
 
-Each file keeps the raw cal/mol `source{}` block alongside the converted
-`parameters{}` (see any file's `provenance`).  The model name in the folder
+A pair converted from a published table keeps the raw cal/mol `source{}`
+block alongside the converted `parameters{}` (see its `provenance`).  A pair
+Choupo REGRESSED to published measurements (C16, 2026-09-28: `origin
+fitted;`) has no raw block -- its source is the measurements, named per
+article under `provenance.evidence`, and the case that regressed it is named
+by `fittedInCase`; `bin/curate/check_regressed_pairs.py` re-runs that case and
+holds the record to it.  How such a pair is made, and why a ChemSep or
+`thermo`-package table may never be one:
+[`docs/design/binary-pairs-from-open-measurements.md`](../../../docs/design/binary-pairs-from-open-measurements.md).  The model name in the folder
 must match the dict `model` keyword inside each file.
 
 ## Naming convention

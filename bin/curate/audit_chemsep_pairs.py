@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-PAIR_ROOT = ROOT / 'data/local/binaryPairs'
+PAIR_ROOT = ROOT / 'data/local/parameters'   # Migration 2 home (was binaryPairs/)
 SOURCE_ROOT = ROOT / 'thirdParty/chemsep/ipd'
 REPORT = ROOT / 'data/local/CHEMSEP-PAIR-AUDIT.md'
 R_CAL = 1.98720425864083
@@ -68,8 +68,10 @@ def audit(path: Path, known: set):
         problems.append('source SHA-256 mismatch')
     if word(text, 'origin') != 'literature':
         problems.append('origin is not literature')
-    if word(text, 'license') != 'Artistic-2.0':
-        problems.append('license is not Artistic-2.0')
+    #  The .ipd pair tables are under the ChemSep LITE licence, NOT the
+    #  Artistic-2.0 licence of the pure-component databank (help/chemsep.lic).
+    if word(text, 'license') != 'ChemSep-LITE-no-sublicence':
+        problems.append('license is not ChemSep-LITE-no-sublicence')
     if 'state pending;' not in text:
         problems.append('review state is not pending')
 

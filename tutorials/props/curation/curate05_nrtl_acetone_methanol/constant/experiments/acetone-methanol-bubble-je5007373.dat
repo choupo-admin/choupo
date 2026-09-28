@@ -1,0 +1,112 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       acetone + methanol   (x is acetone's liquid mole fraction)
+  pressure     101.3 kPa   (CONSTANT across the series)
+  points       32   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( acetone methanol );
+pressure     101.3 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Chen, X.; Yang, B.; Abdeltawab, A. A.; Al-Deyab, S.; Yu, G.; Yong, X. (2015). Isobaric Vapor Liquid Equilibrium for Acetone + Methanol + Phosphate Ionic Liquids. J. Chem. Eng. Data. doi:10.1021/je5007373";
+    archiveFile  "je5007373.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        0;
+    doi          "10.1021/je5007373";
+    sha256       "79535f504457aabf09e5c9df149e586cf96d04212b422eb7813ac641cdbadfd1";
+    identity
+    {
+        acetone        { cas "67-64-1"; inchiKey "CSCPPACGZOOCGX-UHFFFAOYSA-N"; }
+        methanol       { cas "67-56-1"; inchiKey "OKKJLVBELUTLKV-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.34 0.35 0.34 0.35 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 0.34 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 337.25 K; }
+        { x 1; T_bubble 329 K; }
+    );
+}
+
+columns
+(
+    { name x[acetone];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_acetone;  unit -;  }
+);
+
+data
+(
+      0.0300  337.05  0.0680
+      0.0600  336.05  0.1250
+      0.0930  335.3  0.1810
+      0.1250  334.35  0.2320
+      0.1520  333.61  0.2720
+      0.1770  333.06  0.3010
+      0.2090  332.75  0.3340
+      0.2380  332.15  0.3690
+      0.2670  331.8  0.3940
+      0.2930  331.3  0.4280
+      0.3170  330.95  0.4460
+      0.3410  330.7  0.4620
+      0.3870  330.25  0.5030
+      0.4140  329.86  0.5260
+      0.4440  329.56  0.5460
+      0.4570  329.49  0.5560
+      0.4870  328.96  0.5790
+      0.5350  328.56  0.6080
+      0.5610  328.46  0.6280
+      0.5900  328.26  0.6440
+      0.6120  328.36  0.6630
+      0.6390  328.26  0.6790
+      0.6760  328.26  0.6970
+      0.6930  328.15  0.7150
+      0.7320  328.01  0.7450
+      0.7460  328.01  0.7540
+      0.7930  327.96  0.7890
+      0.8190  328.2  0.8130
+      0.8420  328.16  0.8320
+      0.8840  328.25  0.8700
+      0.9160  328.25  0.9030
+      0.9480  328.6  0.9380
+);

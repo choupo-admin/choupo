@@ -1,0 +1,269 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate05_nrtl_acetone_methanol -- AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, END TO END.
+
+  WHY THIS SYSTEM.  a minimum-boiling azeotrope between two components a student meets in the acetone and methanol plants of this corpus.
+
+  THE CHAIN, EACH STEP A COMMAND (DEV.md C16; record
+  docs/design/binary-pairs-from-open-measurements.md):
+    1. bin/choupo-thermoml sync        the NIST/TRC ThermoML Archive
+                                       (ThermoML.v2020-09-30.tgz, doi
+                                       10.18434/mds2-2422, sha256-verified)
+    2. bin/choupo-thermoml identity    CAS -> InChIKey for the catalogue,
+                                       two resolvers that must agree
+    3. bin/choupo-thermoml vle-index   every binary VLE block, searchable
+    4. bin/choupo-thermoml vle-search acetone methanol --geometry bubbleT
+    5. bin/choupo-thermoml extract-vle <file> --block N --interior-only
+                                       -> the two files under constant/experiments/
+    6. choupoProps (this case)         fitParameters -> a proposal record
+    7. promotion                       NOT TAKEN: the verdict is notValidated,
+                                       so the record stays in THIS case
+                                       (constant/parameters/NRTL/acetone-methanol.dat)
+    8. bin/choupo-import               the seal keeps that authored record as the
+                                       case's own and mirrors the rest
+
+  THE EVIDENCE.  FIT: doi 10.1021/je5007373 (32 interior points, 101.3 kPa).
+  HELD OUT: doi 10.1021/je0603170 (30 interior points, 100 kPa) -- a
+  different article, so the held-out AAD is a validation, not a slice of
+  the fit.  Each file names its article, its archive file and block, the
+  sha256 of the archive file, the two compounds' CAS and InChIKey, and the
+  per-point expanded uncertainty; each says `reviewStatus
+  transcribedNotCheckedAgainstArticle` because nobody has read the numbers
+  back against the paper yet, and the run announces it.  Pure-component
+  endpoints are set aside (they measure the vapour-pressure record, not the
+  pair) and kept in each file under `selection`.
+
+  THE FIT.  NRTL with a_ij = a_ji = 0 and alpha = 0.30 fixed: TWO
+  parameters (b_ij, b_ji), because bubble temperatures over the ranges
+  below do not identify more (fit_nrtl_ab in the methanol + water case asks
+  that question directly).  Each point is weighted by 1/U, U its OWN stated
+  expanded uncertainty (`weighting uncertainty;`), so a point measured to
+  0.1 K is not outvoted by one measured to 1 K.  The held-out AAD is plain
+  kelvin, unweighted.
+
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+    * fit_nrtl: b_ij = 369.8 K, b_ji = -92.8 K, in-sample rms 0.13 K;
+      fit_nrtl_start2 lands on the same pair.
+    * HELD OUT (100 kPa, another laboratory): AAD 0.32 K (0.096 %) against a
+      band of 0.047 % declared before the fit -> `notValidated`.  THE PAIR
+      IS NOT PROMOTED: its record lives in this case ONLY
+      (constant/parameters/NRTL/acetone-methanol.dat, reviewStatus interim,
+      verdict notValidated), so the scans can still draw it.
+    * WHY, as far as the run can see: the two studies disagree with each
+      other.  UNIFAC, which saw neither, reproduces the held-out study to
+      0.04 K and misses the fit study by 0.34 K; the fitted pair does the
+      mirror image (0.10 K on its own study, 0.32 K on the other).  Two
+      measurements of one mixture, 0.3 K apart where each states about
+      0.1-0.35 K: a finding about the EVIDENCE, for a curator to settle by
+      reading both articles.  Swapping the roles now would be choosing the
+      partition after seeing the residual, which is the tuning the declared
+      partition exists to prevent.
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
+  frame (ideal-gas vapour, the catalogue's Antoine records); nothing here
+  tests it at high pressure, against LLE, or with another vapour model.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/acetone-methanol-bubble-je5007373.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/acetone-methanol-bubble-je0603170.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.047 percent;
+            origin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.11 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (methanol -0.045 K, acetone +0.024 K; measured with no pair involved), as a percentage of the held-out mean T (330.21 K) = 0.0469 %, rounded UP to two significant figures";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( acetone methanol );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   acetone-methanol.proposal.dat;
+        }
+    }
+    //  THE SAME FIT FROM ANOTHER START.  A least-squares surface can hold
+    //  more than one minimum; if this lands where fit_nrtl landed, the pair
+    //  is the answer the data hold, not the answer a start point chose.
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/acetone-methanol-bubble-je5007373.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/acetone-methanol-bubble-je0603170.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.047 percent;
+            origin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.11 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (methanol -0.045 K, acetone +0.024 K; measured with no pair involved), as a percentage of the held-out mean T (330.21 K) = 0.0469 %, rounded UP to two significant figures";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( acetone methanol );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+    {
+        name        txy_ideal;
+        type        propertyScan1D;
+        vary        { variable x[acetone];  from 0.0;  to 1.0;  n 101; }
+        state       { P 100 kPa;  composition { acetone 0.5;  methanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_acetone );
+        output      { file txy_ideal.csv; }
+    }
+    {
+        name        txy_unifac;
+        type        propertyScan1D;
+        vary        { variable x[acetone];  from 0.0;  to 1.0;  n 101; }
+        state       { P 100 kPa;  composition { acetone 0.5;  methanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFAC; } } }
+        }
+        properties  ( T_bubble  y_eq_acetone );
+        output      { file txy_unifac.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[acetone];  from 0.0;  to 1.0;  n 101; }
+        state       { P 100 kPa;  composition { acetone 0.5;  methanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the catalogue record, sealed copy */ } } }
+        }
+        properties  ( T_bubble  y_eq_acetone );
+        output      { file txy_nrtl.csv; }
+    }
+    {
+        name        txy_ideal_fitP;
+        type        propertyScan1D;
+        vary        { variable x[acetone];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { acetone 0.5;  methanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_acetone );
+        output      { file txy_ideal_fitP.csv; }
+    }
+    {
+        name        txy_unifac_fitP;
+        type        propertyScan1D;
+        vary        { variable x[acetone];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { acetone 0.5;  methanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFAC; } } }
+        }
+        properties  ( T_bubble  y_eq_acetone );
+        output      { file txy_unifac_fitP.csv; }
+    }
+    {
+        name        txy_nrtl_fitP;
+        type        propertyScan1D;
+        vary        { variable x[acetone];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { acetone 0.5;  methanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the catalogue record, sealed copy */ } } }
+        }
+        properties  ( T_bubble  y_eq_acetone );
+        output      { file txy_nrtl_fitP.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      heldout_acetone_methanol;
+        component acetone;
+        kind      txy;
+        models    ( txy_ideal  txy_unifac  txy_nrtl );
+        dataset   "constant/experiments/acetone-methanol-bubble-je0603170.dat";
+        source    "held out: doi 10.1021/je0603170";
+    }
+    {
+        name      fitset_acetone_methanol;
+        component acetone;
+        kind      txy;
+        models    ( txy_ideal_fitP  txy_unifac_fitP  txy_nrtl_fitP );
+        dataset   "constant/experiments/acetone-methanol-bubble-je5007373.dat";
+        source    "IN-SAMPLE (the fit set): doi 10.1021/je5007373";
+    }
+);

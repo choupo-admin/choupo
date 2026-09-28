@@ -1,0 +1,92 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       ethylAcetate + ethanol   (x is ethylAcetate's liquid mole fraction)
+  pressure     101.325 kPa   (CONSTANT across the series)
+  points       24
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( ethylAcetate ethanol );
+pressure     101.325 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Calvar, N.; Dominguez, A.; Tojo, J. (2005). Vapor liquid equilibria for the quaternary reactive system ethyl acetate + ethanol +water + acetic acid and some of the constituent binary systems at 101.3 kPa. Fluid Phase Equilib.. doi:10.1016/j.fluid.2005.07.010";
+    archiveFile  "j.fluid.2005.07.010.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        9;
+    doi          "10.1016/j.fluid.2005.07.010";
+    sha256       "23c8a585abd18c1cbce60330a71038a78a7f2e1c4a2345b84a6292781b9474ef";
+    identity
+    {
+        ethylAcetate   { cas "141-78-6"; inchiKey "XEKOWRVHYACXOJ-UHFFFAOYSA-N"; }
+        ethanol        { cas "64-17-5"; inchiKey "LFQSCWFLJHTTHZ-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 0.18 );   // per point, in `data` order
+    }
+}
+
+columns
+(
+    { name x[ethylAcetate];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_ethylAcetate;  unit -;  }
+);
+
+data
+(
+      0.0239  350.77  0.0602
+      0.0437  350.08  0.1024
+      0.0651  349.52  0.1367
+      0.1005  348.76  0.1936
+      0.1633  347.53  0.2778
+      0.1886  347.16  0.3066
+      0.2220  346.74  0.3389
+      0.2905  346.07  0.3899
+      0.3406  345.7  0.4296
+      0.3697  345.61  0.4407
+      0.3916  345.51  0.4586
+      0.4150  345.41  0.4729
+      0.4342  345.35  0.4844
+      0.4643  345.27  0.4981
+      0.4990  345.22  0.5178
+      0.5369  345.19  0.5410
+      0.5792  345.21  0.5657
+      0.6241  345.29  0.5930
+      0.6594  345.43  0.6165
+      0.7002  345.61  0.6438
+      0.7447  345.89  0.6762
+      0.7919  346.33  0.7164
+      0.8420  346.99  0.7699
+      0.8992  347.91  0.8357
+);

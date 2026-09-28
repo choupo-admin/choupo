@@ -29,7 +29,7 @@ License
 #include "FitParameters.H"
 #include "EvidencePartition.H"
 #include "CurationDossier.H"
-
+#include "FitWeighting.H"
 #include <memory>
 #include "core/Advisory.H"
 #include "core/Banner.H"
@@ -133,7 +133,7 @@ scalar computeResiduals(const ThermoPackage& thermo,
                         sVector& residualsOut,
                         int* nFailed = nullptr,
                         std::size_t i1 = 0,        // component carrying x
-                        std::size_t i2 = 1)        // component carrying 1-x
+                        std::size_t i2 = 1, const sVector* weights = nullptr) // 1-x; 1/U or none (FitWeighting.H)
 {
     const std::size_t n = thermo.n();
     const std::size_t N = xData_first.size();
@@ -148,7 +148,7 @@ scalar computeResiduals(const ThermoPackage& thermo,
         x[i2] = 1.0 - xData_first[k];
 
         auto r = BubblePoint::compute(thermo, x, pData_Pa[k]);
-        scalar res = r.converged ? (r.T - tData_exp[k]) : 1.0e3;
+        scalar res = r.converged ? (r.T - tData_exp[k]) * (weights ? (*weights)[k] : 1.0) : 1.0e3;
         if (!r.converged && nFailed) ++(*nFailed);
         residualsOut[k] = res;
         chi2 += res * res;
@@ -427,9 +427,9 @@ int FitParameters::run(const DictPtr& dict,
     //  vocabulary -- drops into a case without a hand edit, and a hand edit of
     //  a measured file is exactly what must not become routine.
     std::vector<std::string> xNames{"x1", "x", "liquidMoleFraction"};
-    if (!comp1Name.empty()) xNames.push_back("x_" + comp1Name);
+    if (!comp1Name.empty()) { xNames.push_back("x_" + comp1Name); xNames.push_back("x[" + comp1Name + "]"); }
     const std::vector<std::string> yNames{
-        "T", "Tbubble", "temperature",
+        "T", "Tbubble", "T_bubble", "temperature",
         "Boiling_temperature_at_pressure_P"};   // ThermoML's own property name
     const std::vector<std::string> zNames{"P", "Pressure", "pressure"};
 
@@ -831,7 +831,7 @@ int FitParameters::run(const DictPtr& dict,
         if (nOutside > 0) headline_.push_back("n_outside_validity");
         return 0;
     }
-
+    const sVector wExp = fitWeights(resDict, partPtr.get(), xNames, yNames, zNames, verbosity); const sVector* wPtr = wExp.empty() ? nullptr : &wExp;
     // -- LM loop -----------------------------------------------------------
     //
     //  THE SEARCH IS FRAMED, because a regression WALKS.  Levenberg-Marquardt
@@ -851,7 +851,7 @@ int FitParameters::run(const DictPtr& dict,
     ThermoPackage thermo = buildThermo(params);
     const auto [iF1, iF2] = pairIdx(thermo);
     scalar chi2 = computeResiduals(thermo, pExp, xExp, tExp, r_curr,
-                                   nullptr, iF1, iF2);
+                                   nullptr, iF1, iF2, wPtr);
 
     auto logIter = [&](int iter)
     {
@@ -889,7 +889,7 @@ int FitParameters::run(const DictPtr& dict,
             params[j].value = p0 + h;
             ThermoPackage thermoH = buildThermo(params);
             sVector r_h;
-            computeResiduals(thermoH, pExp, xExp, tExp, r_h, nullptr, iF1, iF2);
+            computeResiduals(thermoH, pExp, xExp, tExp, r_h, nullptr, iF1, iF2, wPtr);
             for (std::size_t k = 0; k < N; ++k)
                 J[k][j] = (r_h[k] - r_curr[k]) / h;
             params[j].value = p0;
@@ -910,7 +910,7 @@ int FitParameters::run(const DictPtr& dict,
         sVector r_trial;
         scalar chi2_trial = computeResiduals(thermoTrial, pExp,
                                               xExp, tExp, r_trial,
-                                              nullptr, iF1, iF2);
+                                              nullptr, iF1, iF2, wPtr);
 
         if (chi2_trial < chi2)
         {
@@ -998,8 +998,8 @@ int FitParameters::run(const DictPtr& dict,
     int nFailed = 0;
     {
         sVector r_final;
-        computeResiduals(thermo, pExp, xExp, tExp, r_final, &nFailed, iF1, iF2);
-
+        computeResiduals(thermo, pExp, xExp, tExp, r_final, &nFailed, iF1, iF2, wPtr);
+        sVector r_kelvin; if (wPtr) computeResiduals(thermo, pExp, xExp, tExp, r_kelvin, nullptr, iF1, iF2); else r_kelvin = r_final;   // rms/max stay in K
         std::vector<sVector> Jf(N, sVector(P, 0.0));
         for (std::size_t j = 0; j < P; ++j)
         {
@@ -1008,7 +1008,7 @@ int FitParameters::run(const DictPtr& dict,
             params[j].value = p0 + h;
             ThermoPackage thH = buildThermo(params);
             sVector rh;
-            computeResiduals(thH, pExp, xExp, tExp, rh, nullptr, iF1, iF2);
+            computeResiduals(thH, pExp, xExp, tExp, rh, nullptr, iF1, iF2, wPtr);
             for (std::size_t k = 0; k < N; ++k) Jf[k][j] = (rh[k] - r_final[k]) / h;
             params[j].value = p0;
         }
@@ -1030,9 +1030,9 @@ int FitParameters::run(const DictPtr& dict,
         // regions; folding (1e3)^2 into sigma^2 = chi2/dof would silently wreck
         // every standard error / CI whenever a row is infeasible (a no-silent-
         // crutch violation).  Score sigma^2 + rms on the FEASIBLE rows only.
-        scalar chi2Feasible = 0.0; int nGood = 0;
+        scalar chi2Feasible = 0.0, sseKelvin = 0.0; int nGood = 0;
         for (std::size_t k = 0; k < N; ++k)
-            if (std::abs(r_final[k]) < 9.99e2) { chi2Feasible += r_final[k] * r_final[k]; ++nGood; }
+            if (std::abs(r_kelvin[k]) < 9.99e2) { chi2Feasible += r_final[k] * r_final[k]; sseKelvin += r_kelvin[k] * r_kelvin[k]; ++nGood; }
         const int dof = nGood - static_cast<int>(P);
         const scalar sigma2 = (dof > 0) ? chi2Feasible / static_cast<scalar>(dof) : 0.0;
         const scalar tcrit  = tCrit95(dof);
@@ -1095,13 +1095,13 @@ int FitParameters::run(const DictPtr& dict,
         // propsDict it already holds), plus path-keyed value (CLI readback).
         scalar maxAbsResid = 0.0;
         for (std::size_t k = 0; k < N; ++k)
-            maxAbsResid = std::max(maxAbsResid, std::abs(r_final[k]));
-        diag_["chi2"]             = chi2Feasible;   // feasible rows only (honest)
-        diag_["rms"]              = (nGood > 0) ? std::sqrt(chi2Feasible / static_cast<scalar>(nGood))
-                                                : std::numeric_limits<scalar>::quiet_NaN();
+            maxAbsResid = std::max(maxAbsResid, std::abs(r_kelvin[k]));
+        diag_["chi2"]             = chi2Feasible;   // feasible rows only (honest); weighted iff `weighted`
+        diag_["rms"]              = (nGood > 0) ? std::sqrt(sseKelvin / static_cast<scalar>(nGood))
+                                                : std::numeric_limits<scalar>::quiet_NaN();   // K, always
         diag_["max_abs_resid"]    = maxAbsResid;
         diag_["penalised_points"] = static_cast<scalar>(nFailed);
-
+        diag_["weighted"]         = wPtr ? 1.0 : 0.0;
         int atBound = 0;
         for (std::size_t i = 0; i < P; ++i)
         {
@@ -1234,7 +1234,7 @@ int FitParameters::run(const DictPtr& dict,
                 proposal.a_ji         = co("a_ji");
                 proposal.b_ji         = co("b_ji");
                 proposal.chi2         = chi2;
-                proposal.rmsK         = std::sqrt(chi2 / static_cast<scalar>(N));
+                proposal.rmsK         = wPtr ? ((nGood > 0) ? std::sqrt(sseKelvin / static_cast<scalar>(nGood)) : 0.0) : std::sqrt(chi2 / static_cast<scalar>(N));
                 proposal.nFit         = N;
                 proposal.identifiable = identifiable;
                 proposal.corrComputed = corrComputed;
@@ -1604,6 +1604,9 @@ int FitParameters::run(const DictPtr& dict,
             //  IN-SAMPLE and labelled so: the held-out claim is `validation`.
             f << "\n    //  IN-SAMPLE: the model reproducing the very points it was\n"
                  "    //  fitted to.  It is NOT a validation; see the block below.\n"
+              << "    weighting     " << (wPtr ? "uncertainty" : "equal") << ";"
+              << (wPtr ? "   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless\n"
+                       : "   // chi2 is sum (T_model - T_exp)^2, K^2\n")
               << "    chi2          " << std::setprecision(8) << proposal.chi2 << ";\n"
               << "    rms_K         " << proposal.rmsK << ";\n"
               << "    nDataPoints   " << proposal.nFit << ";\n"
@@ -1612,6 +1615,23 @@ int FitParameters::run(const DictPtr& dict,
                 f << "    maxAbsCorr    " << proposal.maxAbsCorr << ";\n";
             else
                 f << "    maxAbsCorr    undeclared;   // J^T J singular -- not computed\n";
+            //  THE DOMAIN THE FIT EVIDENCE SPANS (2026-09-28), written as the
+            //  `validity {}` block PairAudit reads -- a pair record that does
+            //  not say over which temperatures and pressures it was regressed
+            //  invites use anywhere.  The FIT set only: that is what the
+            //  coefficients were adjusted to; the held-out domain is under
+            //  `validation`.
+            if (!tExp.empty())
+                f << "\n    validity\n    {\n"
+                  << std::setprecision(2)
+                  << "        temperature { min " << *std::min_element(tExp.begin(), tExp.end())
+                  << " K; max " << *std::max_element(tExp.begin(), tExp.end()) << " K; }\n"
+                  << std::setprecision(0)
+                  << "        pressure    { min " << pLo << " Pa; max " << pHi << " Pa; }\n"
+                  << "        note        \"the span of the FIT evidence; outside it"
+                     " the pair is an extrapolation\";\n"
+                  << "    }\n"
+                  << std::setprecision(8);
             f << "}\n\n"
               //  AXIS 4 -- MATURITY.  The verdict and the numbers behind it.
               //  The one block with no home in the corpus yet, because until

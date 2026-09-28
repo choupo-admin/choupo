@@ -1,0 +1,126 @@
+// [imported] origin "data/standards/parameters/NRTL/isopropanol-water.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- isopropanol(i) + water(j)
+
+  REGRESSED BY CHOUPO to measured bubble temperatures (DEV.md C16, record
+  docs/design/binary-pairs-from-open-measurements.md).  The two articles
+  named under `evidence` are the SOURCE of the measurements; the NIST/TRC
+  ThermoML Archive (ThermoML.v2020-09-30.tgz) was the finding aid that
+  located them and is not reproduced.  The PARAMETERS are Choupo's own
+  work, regressed and redistributed with the catalogue.
+
+  EQUATION AND CONVENTIONS (the ones src/thermo/activityCoefficient/NRTL.cpp
+  computes -- a record read under another convention is a different pair):
+      tau_ij = a_ij + b_ij / T      [b in K]      G_ij = exp(-alpha tau_ij)
+      ln gamma_i = sum_j tau_ji G_ji x_j / S_i
+                   + sum_j (x_j G_ij / S_j)(tau_ij - sum_k tau_kj G_kj x_k / S_j),
+      S_j = sum_k G_kj x_k.  Direction i->j as Renon & Prausnitz, AIChE J. 14
+      (1968) 135: tau_12 = (g_12 - g_22)/RT.  a_ij = a_ji = 0 and alpha = 0.30
+      were FIXED, not fitted: bubble temperatures alone do not identify them.
+
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own Antoine
+  records for both pure components.  A different vapour or pure-component
+  model changes what these numbers mean.
+
+  VALIDITY: the span of the fit evidence (`validity` below).  The held-out
+  test is `validation`.  reviewStatus interim: the measurements were
+  transcribed from the archive and have NOT been read back against the
+  articles; the fit has not been reviewed by a curator.  Promotion to
+  `reviewed` is Vitor's.
+
+  REPRODUCE: run tutorials/props/curation/curate06_nrtl_isopropanol_water -- its fit writes
+  isopropanol-water.proposal.dat; its parameters, evidence, validity and validation
+  must equal this record's (bin/curate/check_regressed_pairs.py holds the
+  two to each other, so the record cannot drift from its evidence).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i isopropanol; j water; }
+
+components  ( isopropanol  water );
+model       NRTL;
+
+parameters
+{
+    i           isopropanol;
+    j           water;
+    a_ij        0.00000000;
+    b_ij        -69.64687747;
+    a_ji        0.00000000;
+    b_ji        968.22281035;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate06_nrtl_isopropanol_water";
+    reviewStatus  interim;
+    reviewReason  "regressed by Choupo from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression, redistributed with the catalogue; the measured points belong to the cited articles and are not reproduced in this record";
+    fitDate       "2026-09-28";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/isopropanol-water-bubble-j.jct.2017.02.005.dat";
+            doi       "10.1016/j.jct.2017.02.005";
+            sha256    "92b44d90896c814b6920d3dc41391cc18c29ecb274966b295e66d5d32758d7b5";
+            provenance measured;
+            archiveFile "j.jct.2017.02.005.xml";
+            system    "isopropanol + water";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/isopropanol-water-bubble-acs.jced.7b00523.dat";
+            doi       "10.1021/acs.jced.7b00523";
+            sha256    "69bfa9914d8f5ad430241745a43628fc9476407e0c60a1ea50c38f700f93573b";
+            provenance measured;
+            archiveFile "acs.jced.7b00523.xml";
+            system    "isopropanol + water";
+            pressure  "101058.000000 Pa";
+        }
+    );
+    fingerprint "75dbfc88425ad3b0";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          90.12578832;
+    rms_K         0.51694526;
+    nDataPoints   29;
+    identifiable  true;
+    maxAbsCorr    0.89819127;
+
+    validity
+    {
+        temperature { min 353.11 K; max 371.44 K; }
+        pressure    { min 100000 Pa; max 100000 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validated;
+
+    heldOut
+    {
+        points      16;
+        aad_pct     0.234201;
+        aad_K       0.841478;
+        domain_x1   ( 0.017200 0.909500 );
+    }
+
+    acceptance
+    {
+        maxAAD      0.630000;   // per cent
+        origin      "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 1.7 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.519 K, isopropanol -0.246 K; measured with no pair involved), as a percentage of the held-out mean T (356.06 K) = 0.6231 %, rounded UP to two significant figures";
+    }
+}

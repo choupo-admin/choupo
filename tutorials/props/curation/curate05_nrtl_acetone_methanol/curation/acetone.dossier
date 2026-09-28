@@ -1,0 +1,141 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      acetone;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ij  369.789640469;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ji  -92.7662672044;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "27136ef2a7790cb3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/acetone-methanol-bubble-je5007373.dat";
+            doi       "10.1021/je5007373";
+            sha256    "79535f504457aabf09e5c9df149e586cf96d04212b422eb7813ac641cdbadfd1";
+            provenance measured;
+            archiveFile "je5007373.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/acetone-methanol-bubble-je0603170.dat";
+            doi       "10.1021/je0603170";
+            sha256    "3922e66535572b611e70b08d8c1c6e9b640065e32f6ebbbe4acfa7f12271398d";
+            provenance measured;
+            archiveFile "je0603170.xml";
+            system    "acetone + methanol";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.03; max 0.948; n 32; }
+            validation  { min 0.015; max 0.972; n 30; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.0960285506587;
+        acceptanceMaxAADPct 0.047;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.11 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (methanol -0.045 K, acetone +0.024 K; measured with no pair involved), as a percentage of the held-out mean T (330.21 K) = 0.0469 %, rounded UP to two significant figures";
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ij  369.790148424;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ji  -92.7665924706;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "27136ef2a7790cb3";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/acetone-methanol-bubble-je5007373.dat";
+            doi       "10.1021/je5007373";
+            sha256    "79535f504457aabf09e5c9df149e586cf96d04212b422eb7813ac641cdbadfd1";
+            provenance measured;
+            archiveFile "je5007373.xml";
+            system    "acetone + methanol";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/acetone-methanol-bubble-je0603170.dat";
+            doi       "10.1021/je0603170";
+            sha256    "3922e66535572b611e70b08d8c1c6e9b640065e32f6ebbbe4acfa7f12271398d";
+            provenance measured;
+            archiveFile "je0603170.xml";
+            system    "acetone + methanol";
+            pressure  "100000.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.03; max 0.948; n 32; }
+            validation  { min 0.015; max 0.972; n 30; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.0960287042652;
+        acceptanceMaxAADPct 0.047;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.11 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (methanol -0.045 K, acetone +0.024 K; measured with no pair involved), as a percentage of the held-out mean T (330.21 K) = 0.0469 %, rounded UP to two significant figures";
+    }
+}
+
+);

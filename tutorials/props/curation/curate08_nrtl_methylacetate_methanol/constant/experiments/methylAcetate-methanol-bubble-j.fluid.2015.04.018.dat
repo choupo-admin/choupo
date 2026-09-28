@@ -1,0 +1,99 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       methylAcetate + methanol   (x is methylAcetate's liquid mole fraction)
+  pressure     101.3 kPa   (CONSTANT across the series)
+  points       19   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( methylAcetate methanol );
+pressure     101.3 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Zhang, Z.; Hu, A.; Zhang, T.; Zhang, Q.; Sun, M.; Sun, D. et al. (2015). Separation of methyl acetate + methanol azeotropic mixture using ionic liquids as entrainers. Fluid Phase Equilib.. doi:10.1016/j.fluid.2015.04.018";
+    archiveFile  "j.fluid.2015.04.018.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        1;
+    doi          "10.1016/j.fluid.2015.04.018";
+    sha256       "c46f1a33158ddf01e5f3566d683cc19f69885b9933857fa97986c4b0d08bbcf4";
+    identity
+    {
+        methylAcetate  { cas "79-20-9"; inchiKey "KXKVLQRXCPHEJC-UHFFFAOYSA-N"; }
+        methanol       { cas "67-56-1"; inchiKey "OKKJLVBELUTLKV-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.17 0.16 0.16 0.15 0.14 0.14 0.14 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.13 0.14 0.14 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 337.69 K; }
+        { x 1; T_bubble 330.2 K; }
+    );
+}
+
+columns
+(
+    { name x[methylAcetate];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_methylAcetate;  unit -;  }
+);
+
+data
+(
+      0.0100  337.1  0.0330
+      0.0300  336.03  0.0910
+      0.0610  334.62  0.1660
+      0.0810  333.81  0.2080
+      0.1210  332.41  0.2790
+      0.1620  331.28  0.3360
+      0.2120  330.16  0.3940
+      0.2630  329.28  0.4400
+      0.3030  328.72  0.4720
+      0.3540  328.16  0.5060
+      0.4240  327.58  0.5460
+      0.4950  327.17  0.5810
+      0.5760  326.89  0.6200
+      0.6470  326.77  0.6560
+      0.7370  326.85  0.7070
+      0.8280  327.27  0.7720
+      0.9100  328.14  0.8560
+      0.9500  328.87  0.9110
+      0.9800  329.6  0.9600
+);
