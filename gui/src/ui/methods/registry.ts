@@ -231,8 +231,10 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "what-is-exergy", label: "What is exergy?",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
-    teaches: "That energy is conserved but USEFULNESS is not: PHYSICAL flow "
-      + "exergy prices a state in work, b_ph = (h - h0) - T0*(s - s0), "
+    teaches: "That energy is conserved but the capacity to produce work is "
+      + "not: the same heat from two reservoirs, B_Q = Q(1 - T0/T), buys "
+      + "different work.  Then PHYSICAL flow exergy prices a stream in work, "
+      + "b_ph = (h - h0) - T0*(s - s0), its entropy leg SIGNED, "
       + "against a restricted dead state the case DECLARES (the engine "
       + "refuses to choose your environment; chemical exergy is refused, "
       + "never silently zeroed).  Why the two LEGS re-add on screen, why "

@@ -1578,6 +1578,26 @@ accepts today, and that is a policy call.
      catalogue counts ("517 of 604", "a further twelve"), a derived number
      with a second home; removed, the fact kept, and a test keeps them out.
 
+**C19. THE EXERGY PAGE TEACHES THE IDEA BEFORE THE PROGRAM (asked
+     2026-09-28; Vitor forwarded an external review of `what-is-exergy`
+     "only for you to reflect -- the responsibility is yours").**  Judged,
+     not transcribed.  TAKEN: the opening "same energy, different worth"
+     compared two air states that do NOT hold the same energy, so it is now
+     the same 100 kJ from reservoirs at 600 K and 350 K against T0 = 300 K
+     (50 and 14.3 kJ), derived from the entropy balance and stated as the
+     exergy of heat from a constant-temperature reservoir, not a stream's;
+     the first control moves the SOURCE with the environment fixed and the
+     T0 slider comes second; the entropy leg is SIGNED ("heat that must be
+     dumped" is gone) with the compressed ideal gas at T0 as the case where
+     it is negative and carries the whole exergy, b = R T0 ln(P/P0); the
+     dead-state zero is an algebraic identity, necessary and not a
+     validation; "distance" is gone; the engine surfaces and refusals moved
+     to a final traceability part (C), kept whole; four checks with
+     answers; every variable KaTeX.  Found here, not in the review: the
+     knob was titled "what ONE UNIT of dS_gen costs" over a compressor's
+     4.2262 J/(mol K).  NOT taken: removing the program's surfaces from the
+     page -- they are the glass-box half and stay, at the end.
+
 **C13. "oxygen" FOUND NOTHING IN THE PROPERTY EXPLORER (reported 2026-09-27).**
      The ENGINE resolves it: `O2.dat:53` declares `aliases ( oxygen );`,
      `data/standards/components/ALIASES:26` maps it, and

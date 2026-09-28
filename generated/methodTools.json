@@ -32,7 +32,7 @@
       "id": "what-is-exergy",
       "label": "What is exergy?",
       "discipline": "Thermodynamics",
-      "teaches": "That energy is conserved but USEFULNESS is not: PHYSICAL flow exergy prices a state in work, b_ph = (h - h0) - T0*(s - s0), against a restricted dead state the case DECLARES (the engine refuses to choose your environment; chemical exergy is refused, never silently zeroed).  Why the two LEGS re-add on screen, why b_ph at the restricted dead state is zero identically, why b is datum-independent but NOT model-independent, and Gouy-Stodola: every dS_gen an adiabatic machine publishes costs T0 times itself in exergy destroyed.",
+      "teaches": "That energy is conserved but the capacity to produce work is not: the same heat from two reservoirs, B_Q = Q(1 - T0/T), buys different work.  Then PHYSICAL flow exergy prices a stream in work, b_ph = (h - h0) - T0*(s - s0), its entropy leg SIGNED, against a restricted dead state the case DECLARES (the engine refuses to choose your environment; chemical exergy is refused, never silently zeroed).  Why the two LEGS re-add on screen, why b_ph at the restricted dead state is zero identically, why b is datum-independent but NOT model-independent, and Gouy-Stodola: every dS_gen an adiabatic machine publishes costs T0 times itself in exergy destroyed.",
       "href": "/app/?workspace=methods&tool=what-is-exergy"
     },
     {
