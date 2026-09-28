@@ -922,8 +922,10 @@ accepts today, and that is a policy call.
 >      tutorials/steady/optimisation/pareto01_purity_energy
 >      tutorials/steady/flowsheets/process05_isomerization_recycle`.
 > After the record: commit the goldens on the branch, rebase on `main`,
-> rerun the branch's cases, fast-forward `main`.  Then: `make wasm` for the
-> C15 page's `newtonLog`; C16 slice 2 (named in its entry); the named-not-
+> rerun the branch's cases, fast-forward `main`.  (No manual `make wasm`:
+> `publish-site.yml` builds the WASM and publishes on EVERY push to `main`
+> -- corrected 2026-09-28, the belief that it waited on a hand build had
+> been carried into three reports that day.)  Then: C16 slice 2 (named in its entry); the named-not-
 > fixed items of 2026-09-27/28 in §5.
 
 
@@ -1858,8 +1860,9 @@ accepts today, and that is a policy call.
      Newton's 1e-8, so the re-seeded Newton takes zero iterations -- the
      primal is the solver there.  FOUND, not fixed: with two condensables
      supersaturated the element-potential method returns the gas-only
-     answer and says nothing (`ElementPotential.cpp:71`).  `make wasm`
-     is needed before the page draws in the browser.
+     answer and says nothing (`ElementPotential.cpp:71`).  The browser
+     gets the new WASM from `publish-site.yml` on the next push to `main`;
+     no hand build is needed.
 
 **C16. MORE MIXTURES WITH TRACEABLE BINARY DATA: import what is cleanly
      reusable, FIT the rest to ThermoML (commissioned 2026-09-27).**  Vítor
