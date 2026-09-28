@@ -28,10 +28,11 @@ import { readFileSync } from "node:fs";
 import { tutorialByName } from "../src/cases/tutorials.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import {
-  ENTROPY_WITNESS, INTERROGATION, LEDGER_META, R_GAS,
+  BLOCKS, ENTROPY_WITNESS, INTERROGATION, LEDGER_META, R_GAS,
   WITNESS_P_PA, WITNESS_T_K, WITNESS_Y,
-  minSeparationWork, mixingLine, pressureLine, rebuildLedger,
+  minSeparationWork, mixingLine, pressureLine, rebuildLedger, twoBlocks,
 } from "../src/ui/methods/WhatIsEntropyTool.js";
+import { texParses } from "../src/ui/methods/lessonTex.js";
 
 const SRC = readFileSync(
   new URL("../src/ui/methods/WhatIsEntropyTool.tsx", import.meta.url),
@@ -139,7 +140,7 @@ describe("the ledger arithmetic — the page's only physics", () => {
 describe("the spine's order and claims", () => {
   it("intuition (mixed, never unmixed) before the boxed definition", () => {
     const iMix = SRC.indexOf("never unmix by themselves");
-    const iDef = SRC.indexOf("dS = δq_rev / T");
+    const iDef = SRC.indexOf("dS = \\frac{\\delta Q_{\\mathrm{rev}}}{T}");
     expect(iMix).toBeGreaterThan(0);
     expect(iDef).toBeGreaterThan(0);
     expect(iMix).toBeLessThan(iDef);
@@ -172,9 +173,10 @@ describe("the spine's order and claims", () => {
     //  ΔS = ΔHvap/T where that IS exact (Δg = 0 on the saturation curve).
     //  Pinned on the EVALUATED meta (the note is a concatenated literal in
     //  the source, so a source-text pin would miss it).
-    const temp = LEDGER_META.find((m) => m.line.includes("Cp/T"))!;
+    const temp = LEDGER_META.find((m) => m.name === "temperature")!;
     expect(temp.note).toContain("not in equilibrium with each other");
-    expect(temp.note).toContain("collapses to the familiar ΔHvap/T");
+    expect(temp.note).toContain("collapses to the familiar");
+    expect(temp.note).toContain("\\Delta h_{\\mathrm{vap}}/T");
   });
 
   it("the machines are declared adiabatic and the un-mixing floor ideal-gas", () => {
@@ -204,7 +206,7 @@ describe("the spine's order and claims", () => {
 
   it("ends on the interrogation, five questions", () => {
     expect(INTERROGATION).toHaveLength(5);
-    expect(INTERROGATION[0]).toContain("datum");
+    expect(INTERROGATION[1]).toContain("datum");
     const all = INTERROGATION.join(" ").toLowerCase();
     for (const k of ["residual", "reference pressure", "cancel"]) {
       expect(all, `the interrogation lost "${k}"`).toContain(k);
@@ -248,5 +250,127 @@ describe("the honest absences and the marked divergence", () => {
   it("points at the trace record and states what the engine does NOT carry", () => {
     expect(SRC).toContain("docs/design/entropy-glass-box-trace.md");
     expect(prose(SRC)).toContain("wet-steam entropy");
+  });
+});
+
+describe("the balance before the ledger (owner's review, 2026-09-28)", () => {
+  //  The review's blocking finding: the opening said a local decrease of
+  //  entropy "must be paid for by generating more elsewhere, usually with
+  //  work" -- which confuses VARIATION, TRANSFER and GENERATION.  Part A now
+  //  teaches the balance first; the ledger stays whole as part B.
+  const BODY = SRC.slice(SRC.indexOf("export function WhatIsEntropyTool"));
+
+  it("the error the review found is gone and does not come back", () => {
+    expect(prose(BODY)).not.toContain("paid for by generating more elsewhere");
+    expect(BODY).not.toContain("Machines spend it");
+    expect(prose(SRC)).not.toContain("spends entropy");
+  });
+
+  it("names the three terms and says work carries no entropy", () => {
+    for (const w of ["variation", "transfer", "generation"]) {
+      expect(BODY, `the balance lost "${w}"`).toContain(w);
+    }
+    expect(prose(BODY)).toContain("work carries no entropy");
+    expect(SRC).toContain(
+      "\\Delta S = \\int \\frac{\\delta Q}{T_b} + S_{\\mathrm{gen}}, \\qquad S_{\\mathrm{gen}} \\ge 0");
+  });
+
+  it("layers in order: balance (A), ledger (B), how Choupo computes it (C)", () => {
+    const iA = BODY.indexOf('letter="A"');
+    const iBal = BODY.indexOf("entropy balance");
+    const iB = BODY.indexOf('letter="B"');
+    const iTable = BODY.indexOf("<LedgerTable");
+    const iC = BODY.indexOf('letter="C"');
+    const iSeven = BODY.indexOf("s_298 → s_formation");
+    expect(iA).toBeGreaterThan(0);
+    expect(iA).toBeLessThan(iBal);
+    expect(iBal).toBeLessThan(iB);
+    expect(iB).toBeLessThan(iTable);
+    expect(iTable).toBeLessThan(iC);
+    expect(iC).toBeLessThan(iSeven);
+  });
+
+  it("the two blocks: the hot one falls, the cold one rises more, the pair generates", () => {
+    const b = twoBlocks(BLOCKS.C_kJ_K, BLOCKS.T_hot_K, BLOCKS.T_cold_K);
+    expect(b.Tf).toBe(350);
+    expect(b.Q).toBeCloseTo(50, 12);
+    expect(b.dS_hot).toBeCloseTo(Math.log(350 / 400), 12);
+    expect(b.dS_cold).toBeCloseTo(Math.log(350 / 300), 12);
+    expect(b.dS_hot).toBeLessThan(0);
+    expect(b.dS_cold).toBeGreaterThan(-b.dS_hot);
+    expect(b.S_gen).toBeCloseTo(0.0206, 4);
+    //  the reversible limit: a vanishing difference generates nothing
+    expect(twoBlocks(1, 300.001, 300).S_gen).toBeLessThan(1e-11);
+    expect(prose(BODY)).toContain("none is generated");
+  });
+
+  it("states the definition's conditions and the irreversible-path trap", () => {
+    expect(prose(BODY)).toContain("along a <em>reversible</em> path");
+    expect(prose(BODY)).toContain("choose any reversible path between the same two end states");
+  });
+
+  it("the third law names the unique ground state; residual entropy is a note", () => {
+    expect(prose(BODY)).toContain("perfect crystal with a unique ground state");
+    expect(prose(BODY)).toContain("residual entropy");
+  });
+
+  it("distinguishes molar s from total S, and says the engine's labels are molar", () => {
+    expect(prose(BODY)).toContain("are molar values despite the capital letter");
+  });
+
+  it("the page's self-check is labelled arithmetic, not validation", () => {
+    expect(prose(SRC)).toContain("An internal arithmetic consistency check, not a validation.");
+  });
+
+  it("the separation floor carries its conditions and is not set beside a reboiler", () => {
+    for (const c of ["completely", "products delivered at the same T and P",
+      "reversibly with surroundings at that same"]) {
+      expect(prose(BODY), `the floor lost its condition "${c}"`).toContain(c);
+    }
+    expect(prose(BODY)).not.toContain("pays several times that");
+    expect(prose(BODY)).toContain("Do not set this number beside a distillation column’s reboiler duty");
+  });
+
+  it("machines GENERATE entropy and destroy exergy", () => {
+    expect(prose(BODY)).toContain("Machines generate it.");
+    expect(prose(BODY)).toContain("destroys exergy");
+  });
+
+  it("s_formation is explained as the absolute entropy, not a change", () => {
+    expect(prose(BODY)).toContain("not an entropy change of forming it from the elements");
+  });
+
+  it("carries no hand-counted catalogue totals", () => {
+    //  A derived number with a second home: it goes false the day a record
+    //  is added.  The fact stays; the count does not.
+    expect(BODY).not.toMatch(/\b517\b|\b604\b/);
+    expect(prose(BODY)).not.toContain("a further twelve");
+    expect(prose(BODY)).toContain("Not every record carries it");
+  });
+
+  it("four check questions, each with an answer", () => {
+    expect(BODY.match(/<Check\b/g) ?? []).toHaveLength(4);
+  });
+
+  it("sets every variable and equation as mathematics, and every one parses", () => {
+    //  Owner, 2026-09-28: variables in an EduTool are written in
+    //  mathematical form.  Every <M t="..."/> and <Tex src="..."/> literal,
+    //  and every $...$ segment in the ledger notes and the interrogation,
+    //  must parse under the lessons' strict KaTeX settings.
+    const jsx = [...SRC.matchAll(/(?:<M t|src)="([^"]+)"/g)].map((m) => m[1]!);
+    expect(jsx.length).toBeGreaterThan(25);
+    const data: string[] = [];
+    for (const s of [...LEDGER_META.map((m) => m.note), ...INTERROGATION]) {
+      const parts = s.split("$");
+      expect(parts.length % 2, `unbalanced $ in: ${s}`).toBe(1);
+      for (let i = 1; i < parts.length; i += 2) data.push(parts[i]!);
+    }
+    expect(data.length).toBeGreaterThan(6);
+    for (const tex of [...jsx, ...data, ...LEDGER_META.map((m) => m.line)]) {
+      expect(texParses(tex), `does not parse: ${tex}`).toBe(true);
+    }
+    //  the old monospace transcriptions are gone
+    expect(SRC).not.toContain("dS = δq_rev / T");
+    expect(SRC).not.toContain("Δs_mix = −R·Σy·ln y");
   });
 });

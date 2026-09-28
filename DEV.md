@@ -1548,6 +1548,36 @@ accepts today, and that is a policy call.
      judged, not transcribed; here ITS-90 and pyrometry stayed on the page
      as part C against the review's suggestion to move them.
 
+**C18. THE ENTROPY PAGE TEACHES THE BALANCE BEFORE THE LEDGER (asked
+     2026-09-28; Vitor brought an external pedagogical review of
+     `what-is-entropy`).**  The review's blocking finding was right and was
+     a real error: the opening said a local decrease of entropy "must be
+     paid for by generating more elsewhere, usually with work", which
+     confuses VARIATION, TRANSFER and GENERATION (a system's entropy falls
+     because it LEAVES with heat or matter; generation is never negative;
+     work carries none).  Also right: "Machines spend it" (they GENERATE
+     entropy and destroy exergy), the reboiler set beside a WORK floor, the
+     floor stated without its conditions, s vs S, dS = dQ_rev/T without its
+     conditions, the self-check read as a validation.  DONE the same day
+     (`WhatIsEntropyTool.tsx`): part A, the balance -- the three terms, two
+     blocks of C = 1 kJ/K at 400 and 300 K (-0.1335, +0.1542, generation
+     +0.0206 kJ/K, and the reversible limit where transfer happens without
+     generation), the balance for a closed system and for a steady unit,
+     the definition with its conditions and the irreversible-path trap, the
+     third law with a unique ground state and residual entropy as a note,
+     four checks with answers; part B, the live ledger (the gap row now
+     labelled an internal arithmetic check, not a validation; the floor
+     with its conditions; machines generate); part C, how Choupo computes
+     it (the five cited lines, `s_formation` named as the ABSOLUTE entropy,
+     the seven names).  Every variable is KaTeX, including the ledger notes
+     and the interrogation (`$...$` in the data, parsed by the test).
+     DECLINED, and why: making the ledger an afterthought -- it is the
+     ratified 2026-08-30 spine and answers the question a simulator user
+     has, so it stays whole as part B, after the balance rather than
+     instead of it.  Found here, not in the review: two hand-carried
+     catalogue counts ("517 of 604", "a further twelve"), a derived number
+     with a second home; removed, the fact kept, and a test keeps them out.
+
 **C13. "oxygen" FOUND NOTHING IN THE PROPERTY EXPLORER (reported 2026-09-27).**
      The ENGINE resolves it: `O2.dat:53` declares `aliases ( oxygen );`,
      `data/standards/components/ALIASES:26` maps it, and

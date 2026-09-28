@@ -25,7 +25,7 @@
       "id": "what-is-entropy",
       "label": "What is entropy?",
       "discipline": "Thermodynamics",
-      "teaches": "That an entropy value in a simulator is a LEDGER: a measured third-law datum (s_298), a temperature line (integral Cp/T), a pressure line (-R ln P/P0), a mixing line (-R sum y ln y) and a model line (S_residual) -- each computed in one named place.  Why separation has a price floor (T times the mixing line), how an isentropic machine spends entropy (dS_gen), and which lines cancel when two states are compared.",
+      "teaches": "The entropy BALANCE first -- variation, transfer (with heat or matter, never with work) and generation (never negative), worked on two blocks exchanging heat -- then that an entropy value in a simulator is a LEDGER: a measured third-law datum (s_298), a temperature line (integral cp/T), a pressure line (-R ln P/P0), a mixing line (-R sum y ln y) and a model line (s_R) -- each computed in one named place.  The floor on the work of a complete ideal-gas separation (T times the mixing line) with its conditions, how an adiabatic machine GENERATES entropy (dS_gen), and which lines cancel when two states are compared.",
       "href": "/app/?workspace=methods&tool=what-is-entropy"
     },
     {
