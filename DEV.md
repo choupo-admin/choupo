@@ -3168,17 +3168,92 @@ Each line states the DEFECT, not the feature.  Where a general owns the area
      `V y_in`); latent -- every corpus wash liquid is pure water and
      stripper01's liquid carries only NH3 (a solute) and water.  (4) the kinetic column reads no
      `orderRev`, while `forwardOrder`'s shared refusal message names it.
-     (5) **FOUND, NOT FIXED: Wang-Henke closes its component balances only
-     to its step tolerance.** It stops when max|dx| between passes <
-     `compositionTol` (1e-6), not on a residual, and a slowly contracting
-     close-boiling column leaves its balances open by far more than the
-     step: measured on the base engine, column15 6.3e-8, column14 4.2e-8,
-     column11 3.7e-8, column01/09/10 and heatlink01 2.5e-8, column16 1.4e-8
-     of the feed, and 4.8e-7 - 8.6e-7 on the representative passes of
-     optim01, optim06, pareto01 and sensitivity01/02. Remedy proposed, NOT
-     taken: stop on the balance residual (or on max|dx| scaled by the
-     contraction rate) -- it moves every Wang-Henke golden and outer-driver
-     path, so it is a separate decision.
+     (5) ~~**FOUND, NOT FIXED: Wang-Henke closes its component balances
+     only to its step tolerance.**~~ **FIXED IN THE ENGINE 2026-09-28; THE
+     GOLDENS ARE NOT RE-RECORDED -- the moved-row list goes to Vitor first
+     (CLAUDE.md §10, a re-record is a claim).**  Reproduced first, from the
+     result JSON over each column's own ports: column15 6.286e-8, column14
+     4.215e-8, column11 3.691e-8, column01/09/10 and heatlink01 2.513e-8,
+     column16 1.392e-8, heatlink02 1.056e-9, and on the representative
+     passes optim01 4.842e-7, optim06 6.012e-7, pareto01 8.595e-7,
+     sensitivity01/02 7.436e-7 -- all as filed.  The filed list MISSED ONE:
+     `process05_isomerization_recycle` runs a Wang-Henke column inside a
+     Wegstein recycle (4.403e-11, under 1e-9 by luck of a fast
+     contraction) -- 15 Wang-Henke cases, not 14.  THE RULE IT HAD
+     (`DistillationColumn.cpp`, the outer loop's step 5 on the parent
+     commit, line 799): `if (maxDx < tolX) { converged = true; ... }` --
+     the largest change of any liquid mole fraction between two passes,
+     against `compositionTol` (1e-6, 1e-7 declared on most cases).  That is
+     a statement about the STEP of a successive substitution that contracts
+     by a constant factor per pass (0.64 on column01, near 1 on the
+     Klemola splitters), so the distance to the fixed point, and with it
+     the open balance, is the step divided by (1 - rate).  TAKEN: the
+     `solver/Convergence.H` rule by hand, the MESH's own number -- a pass
+     is accepted only when, on the state it will PUBLISH, every stage's
+     component balance (with y = Keff x, the published profile) and the
+     column's balance over its ports close to 1e-9 of the feed, every
+     bubble point |Sum K x - 1| to 1e-9, and the declared `compositionTol`
+     step still holds (a declared control is honoured, now as one
+     condition of four).  The inner bubble-point Newton is solved to
+     1e-12, not 1e-8: it returns without a step once its SEED meets the
+     tolerance, so at 1e-8 T stopped moving as soon as the per-pass change
+     in x was small and the balances stalled at ~4e-9 on column01 (that
+     was the first measurement of the closure stop, and it failed).
+     ALTERNATIVES MEASURED on the 15 cases (passes; closure of the ports):
+     the closure stop -- column01 41 (was 33), column14 396 (349), column15
+     531 (426), optim01 169 (103), optim06 142 (86), pareto01 542 (305),
+     sensitivity01 225 (132), every closure 7.4e-10 .. 9.9e-10; a step
+     tolerance of 1e-8 with the same bubble points -- 38 / 382 / 485 /
+     152 / 126 / 466 / 197 passes and closures still 2.4e-9 .. 8.7e-9 on
+     9 of the 11 cases measured, so 1e-8 is not enough; a step tolerance
+     of 1e-9 -- 43 / 412 / 544 / 176 / 146 / 547 / 229 passes, every
+     closure under 1e-9 (up to 8.6e-10): it works on today's corpus,
+     costs MORE passes than the closure stop everywhere, and guarantees
+     nothing -- the ratio of closure to step is the column's own (0.3 on
+     column01, at least 0.86 on pareto01's representative pass) and a
+     slower column breaks it; a final correction pass closing the bottoms
+     by difference (xB = (F z - D xD)/B) -- REJECTED without building it,
+     from the trace: it makes the PORT balance zero by construction while
+     the stage balances stay at the old level (6.9e-9 on column01) and the
+     published bottoms stops being the reboiler's liquid, which is a plug
+     and a second home for one composition.  Not measured: accelerating
+     the substitution (Wegstein / dominant-eigenvalue extrapolation),
+     which would cut the passes but changes the method a student reads.
+     COST: the Klemola splitters are the whole of it -- column14 58.5 s ->
+     78.2 s, column15 67.8 s -> 99.1 s (a bubble tolerance of 1e-10 buys
+     back 10 s of that and leaves column15 at 9.97e-10, 3e-12 under the
+     tolerance, so 1e-12 was kept); every other Wang-Henke case stays
+     under 0.3 s.  ANNOUNCED: `[solver] Wang-Henke: the stop is decided by
+     the BALANCES, not the step ...` at verbosity >= 2 (the MESH's
+     posture), the iteration table carries `balance/F` beside `max|Δx|`,
+     the report prints the stage, port and bubble residuals at every
+     verbosity, and the per-pass convergence trace in the result JSON is
+     the feed-normalised balance, like the MESH's.  MOVED: the 15 MESH
+     cases are bit-identical in every numeric leaf of their result JSON;
+     the 15 Wang-Henke cases move 332 golden rows, 326 of them within
+     their own tolerance (single-pass cases by at most 2.0e-7 relative,
+     apart from two plant first-law residuals of ~1e-9 kW that are
+     round-off),
+     and 6 exceed it -- 5 in pareto01 (the reboiler duty, V_strip and the
+     three steam rows priced from it, 1.1e-4; R itself moved 9.9e-5, just
+     inside its 1e-4) because its epsilon constraint
+     x_D_LK >= 0.994 is now evaluated on a closed column: at the OLD
+     optimum R the old column under-reported x_D by 9.9e-7 (both engines
+     run without the driver at both R values), so the converged column
+     meets the constraint at a lower reflux; optim06 moves the same way
+     (1.96e-5, within tolerance); and 1 in process05, its plant first-law
+     residual of -1.2e-9 kW, which is cancellation round-off pinned at
+     1e-4 relative (the column13 lesson).  The list, every row with its
+     reason, is `MOVED_ROWS_wanghenke.txt` beside the commit that made it
+     (not committed).  Gate: `check_degenerate_limits` A7 now derives the
+     Wang-Henke columns from the flowsheets as well (15 today) and holds
+     each to 1e-9 of its feed over its ports (+1e-11 for the JSON's 12
+     figures: a linear method stops just under its tolerance) and every
+     STAGE balance recomputed from the published profile and CMO traffic;
+     sabotages S10-S13 in its docstring -- S10 (the step stop restored)
+     fires on 14 of 15 and process05 ONLY through the stage arm, S12 (the
+     ports dropped from the stop) fires on 13 and two survive, which is
+     why the stop takes both.
 
 *The engine publishes something nothing checks:*
 

@@ -16759,8 +16759,22 @@ column stays cheap per iteration.}
         component-balance system.
   \item For each stage, update $T_n$ by solving the bubble-point equation
         $\sum_i K_{n,i}(T_n) x_{n,i} = 1$ (Newton-1D in $T_n$).
-  \item Iterate steps 2--3 until $\|T^{(k+1)} - T^{(k)}\|_\infty < \varepsilon$.
+  \item Iterate steps 2--3 until the state the next pass would start from
+        satisfies the \emph{balances}, not merely a small step: every
+        stage's component balance and the column's balance over its ports
+        closed to $10^{-9}$ of the feed, every bubble point
+        $|\sum_i K_{n,i} x_{n,i} - 1| \le 10^{-9}$, and the step
+        $\max|x^{(k+1)} - x^{(k)}|$ under the declared
+        \code{compositionTol}.
 \end{enumerate}
+
+This is successive substitution, and it converges \emph{linearly}: the
+error shrinks by a roughly constant factor $\rho$ per pass (about $0.65$
+on \file{column01}, close to $1$ on a close-boiling splitter).  The
+distance to the answer is then about $\Delta x/(1-\rho)$, so a stop taken
+on the step alone leaves the balances open by far more than the step
+whenever $\rho$ is near $1$ --- which is why the stop is taken on the
+balances, normalised by the feed they telescope to.
 
 The simulator's implementation is in
 \file{src/unitOperations/distillation/DistillationColumn.cpp}.

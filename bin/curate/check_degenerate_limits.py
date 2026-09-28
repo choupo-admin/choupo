@@ -77,6 +77,25 @@ WHAT IT CHECKS
       4.4e-11 (stripper01), so on the corpus AS SHIPPED the absolute
       tolerance was hiding nothing -- this arm is the floor that keeps it
       so, and it is what catches a MESH that stops converging (S8, S9).
+      THE WANG-HENKE COLUMNS TOO (DEV.md §5 A7 item (5), 2026-09-28): the
+      bubble-point method is successive substitution, and it used to stop
+      when the composition STEP fell under `compositionTol`, leaving its
+      balances open by up to 6.3e-8 of the feed on the single-pass corpus
+      (column15) and 8.6e-7 on the outer drivers' representative passes
+      (pareto01).  It now stops on the balances themselves, so the same arm
+      holds every Wang-Henke column the flowsheets name (15 today, a
+      recycle and five outer-driver cases among them) to the same 1e-9 of
+      its own feed over its ports -- plus WH_JSON_SLACK, because a linear
+      method stops just UNDER its tolerance and the JSON's 12 figures move
+      the recomputed closure by ~6e-13 -- AND recomputes every STAGE's
+      component balance from the published profile and the published CMO
+      traffic (L, V, L', V', D, B, the feed stage), which is what sees a
+      stop that watched the wrong balance (S12 leaves the ports closed on
+      two cases; S10 leaves process05's ports closed and its stages open).
+      The column must also print the residuals its stop was taken on
+      ('Port balance:', printed at every verbosity; the `[solver]`
+      announcement beside it is verbosity >= 2 like the MESH's, and the
+      outer-driver cases run at 1).
   A8  (A7) a column is SCALE-INVARIANT: multiply every molar flow by 1e-8
       and nothing intensive may move.  An ABSOLUTE kmol/s tolerance fails
       exactly where the seed already satisfies the scale-free rows, because
@@ -98,22 +117,23 @@ WHAT IT CHECKS
       the 1e6 kW range and a 1e-9 tolerance on it is below what the
       finite-difference Newton resolves.
       COST: under the full sweep A7 reads the suite's own case pass
-      (bin/curate/suite_cache.py) instead of re-running fifteen cases
+      (bin/curate/suite_cache.py) instead of re-running thirty cases
       (acetonePlant alone is 40 s); standalone it runs them live, three at
-      a time -- ~70 s standalone, ~23 s on the cache, against the ~12 s of
-      A1-A6 alone.
+      a time -- ~135 s standalone since the Wang-Henke cases joined (the two
+      Klemola splitters are 78 s and 99 s each), against ~70 s for the MESH
+      cases alone and the ~12 s of A1-A6.
 
 WHAT IT DOES NOT CHECK, stated so nothing is implied:
   * N >= 2 absorbers and strippers (the corpus goldens pin those);
   * that the kinetic profile is RIGHT -- no measured or published kinetic
     column is reproduced; A6 holds convergence, closure and monotonicity;
-  * the WANG-HENKE columns' closure.  That path is not a Newton: it stops
-    when the composition STEP falls under `compositionTol` (1e-6), and the
-    balances it leaves open were measured on 2026-09-27 at up to 6.3e-8
-    of the feed on the single-pass corpus cases (column15) and up to 8.6e-7
-    on the optimisation cases' representative passes (pareto01).  Recorded in DEV.md §5
-    A7 as found, not fixed -- moving that stopping rule moves every
-    Wang-Henke golden and is a separate decision;
+  * that a Wang-Henke column REACHES its balance stop within its
+    `maxOuterIter` on a case the corpus does not ship: successive
+    substitution contracts linearly, and a close-boiling column needs
+    hundreds of passes (531 on column15) -- a column that does not get
+    there is refused (exit 2 through the flowsheet), never published;
+  * a Wang-Henke pass of an outer driver OTHER than the representative
+    one: the result JSON carries one pass, and that is what is recomputed;
   * that the equilibrium homotopy converges beyond the 3 x 3 grid it was
     measured on (Ka298 5 / 38.7 / 500 x reflux 1.5 / 2.1 / 4, 9 of 9);
   * a Newton TRIAL that drives a product's x to zero -- the same limit, but
@@ -159,6 +179,29 @@ SABOTAGES, performed by hand on 2026-09-27, restored by `cp` then `make all`:
   S9  the stage-refusal-on-a-trial rule removed -> A7: stripper02 exits 2
       -- a stage refusal ("the liquid solvent vanished") at a line-search
       trial nowhere near a column state (T = -98 K, water -1.16, measured).
+  2026-09-28, for the Wang-Henke half of A7 (each in its own rebuild, the
+  arm run alone, restored by `cp` + touch then `make all`):
+  S10 the stop back to the step alone (`converged = maxDx < tolX`) ->
+      27 failures on 14 of the 15 cases: the port closure on 13 (2.51e-8
+      column01, 5.81e-8 column15, 8.59e-7 pareto01 ...) and the stage
+      closure on 14.  process05 fired ONLY on the stage arm (its ports
+      closed to 4.4e-11 by luck, its neoPentane balance on stage 1 open by
+      1.91e-9), and heatlink02 SURVIVED: its step stop already closes to
+      1e-9 once the bubble points are solved to 1e-12 -- the case the old
+      engine got right, which is what a survivor here should be.
+  S11 the nested bubble-point tolerance back to 1e-8 -> all 15 cases
+      "did not run" (exit 2, or exit 1 under a driver): the bubble point
+      stops moving once |Sum K x - 1| < 1e-8 at the old T, the balances
+      stall at ~4e-9, and the column runs out of maxOuterIter and refuses
+      rather than publish.  Predicted as a stall, measured as a refusal.
+  S12 the port balance dropped from the stop (stages alone) -> 13 of 15
+      cases on the port arm, 1.99e-9 .. 8.47e-9 of the feed: summed over
+      the stages the per-stage residuals add up.  process05 and heatlink02
+      SURVIVED (their ports stay under 1e-9 at the pass the stages close):
+      the port arm is carried by the other 13, and a column whose stage
+      residuals cancel is exactly why the stop takes both.
+  S13 the 'Port balance:' report line renamed -> all 15 cases, and only
+      that check: the stop's residuals are no longer published.
 
 Exit 0 = every probe reproduces its hand calculation.
 """
@@ -471,6 +514,21 @@ def kinetic_closure_arm(prof_1g):
 
 # ------------------------------------------------ A7/A8: every MESH closes
 MESH_MODELS = {"simultaneous", "fullMESH", "MESH", "NaphtaliSandholm"}
+WH_MODELS = {"WangHenke"}
+#  A Wang-Henke column converges LINEARLY, so it stops just under its own
+#  1e-9 (measured 7.4e-10 .. 9.9e-10 of the feed on the corpus, where a MESH
+#  overshoots to ~1e-11).  Recomputed here from a JSON that carries 12
+#  significant figures, the same closure reads up to ~6e-13 of the feed away
+#  from the engine's own (column15: 9.767e-10 here, 9.761e-10 printed), so
+#  the arm allows the engine's tolerance plus a slack 60x above that
+#  discrepancy and 100x below the tolerance itself -- a column the stop let
+#  through at 1.02e-9 still fails.
+WH_JSON_SLACK = 1.0e-11
+#  The report line every Wang-Henke run prints, at every verbosity: the stop
+#  the column took and the residuals it took it on.  (The `[solver]`
+#  announcement beside it is verbosity >= 2, like the MESH's, and the
+#  outer-driver cases run at 1.)
+WH_REPORT = "Port balance:"
 #  A8's scale: small enough that EVERY component-balance row of a seed sits
 #  under an absolute 1e-9 kmol/s (column02's feed becomes 2.8e-10 kmol/s), so
 #  a Newton judging balances in kmol/s stops as soon as the OTHER rows do.
@@ -612,25 +670,85 @@ def worst_closure(js: dict, unit: str, ins, outs, nu):
     return worst, where, f_in
 
 
-def mesh_cases():
+def column_cases(models):
     out = []
     for fs in sorted(ROOT.glob("tutorials/**/system/flowsheetDict")):
         if "distillationColumn" not in fs.read_text():
             continue
-        cols = [c for c in column_units(fs) if c[1] in MESH_MODELS]
+        cols = [c for c in column_units(fs) if c[1] in models]
         if cols:
             out.append((fs.parent.parent, cols))
     return out
 
 
+def mesh_cases():
+    return column_cases(MESH_MODELS)
+
+
+def wh_stage_closure(js: dict, unit: str, ins):
+    """max over stages and components of |in - out| / F for a Wang-Henke
+    column, recomputed from its PUBLISHED profile (x_j, and y_j the vapour
+    the stage publishes) and its published constant-molar-overflow traffic:
+    stage j sends L_j down and V_j up, the feed stage's liquid is already
+    L' and its vapour still V, the top stage sends D overhead (the total
+    condenser returns the reflux) and the reboiler sends B out.  None when
+    the profile, the feed or a KPI is absent."""
+    k = _kpis(js, unit)
+    prof = None
+    for name, v in js.get("profiles", {}).items():
+        if name == unit or name.split(".")[-1] == unit:
+            prof = v.get("columns")
+    feed = _stream(js.get("streams", {}), ins[0]) if len(ins) == 1 else None
+    need = ("nStages", "feedStage", "L_rect", "V_rect", "L_strip", "V_strip",
+            "D", "B")
+    if not prof or feed is None or any(key not in k for key in need):
+        return None
+    N, jf = int(k["nStages"]), int(k["feedStage"]) - 1
+    Ll, Vl, Lp, Vp = k["L_rect"], k["V_rect"], k["L_strip"], k["V_strip"]
+    D, B, F = k["D"], k["B"], feed["F"]
+    comps = [c[2:] for c in prof if c.startswith("x_")]
+    if len(comps) < 2 or any(len(prof[f"x_{c}"]) != N for c in comps):
+        return None
+
+    def Lj(j):
+        return Ll if j < jf else Lp
+
+    def Vj(j):
+        return Vl if j <= jf else Vp
+
+    worst, where = 0.0, ""
+    for c in comps:
+        x, y = prof[f"x_{c}"], prof[f"y_{c}"]
+        zc = feed["composition"].get(c, 0.0)
+        for j in range(N):
+            inn = F * zc if j == jf else 0.0
+            if j > 0:
+                inn += Lj(j - 1) * x[j - 1]
+            if j + 1 < N:
+                inn += Vj(j + 1) * y[j + 1]
+            out = (Lj(j) if j + 1 < N else B) * x[j] \
+                + (D if j == 0 else Vj(j)) * y[j]
+            e = abs(inn - out) / F
+            if e > worst:
+                worst, where = e, f"{c} on stage {j + 1}"
+    return worst, where
+
+
 def mesh_closure_arm():
-    """A7: every MESH column the corpus ships closes every component balance
-    to CLOSURE_TOL of its own feed, and announces its dimensionless rows."""
+    """A7: every column the corpus ships closes every component balance to
+    CLOSURE_TOL of its own feed -- the MESH columns announcing their
+    dimensionless rows, the Wang-Henke columns publishing the residuals
+    their stop was taken on and closing their balances stage by stage."""
     runs, worst, n_cols = {}, (0.0, "", ""), 0
-    cases = mesh_cases()
-    if len(cases) < 10:
-        failures.append(f"A7: only {len(cases)} MESH column case(s) found in"
-                        " the corpus -- the scan has gone blind")
+    wh = {"cols": 0, "cases": 0, "worst": (0.0, ""), "stage": (0.0, "")}
+    cases = column_cases(MESH_MODELS | WH_MODELS)
+    n_mesh = sum(1 for _, cols in cases
+                 if any(c[1] in MESH_MODELS for c in cols))
+    n_wh = sum(1 for _, cols in cases if any(c[1] in WH_MODELS for c in cols))
+    if n_mesh < 10 or n_wh < 10:
+        failures.append(f"A7: only {n_mesh} MESH and {n_wh} Wang-Henke column"
+                        " case(s) found in the corpus -- the scan has gone"
+                        " blind")
         return None
     def one(case):
         #  The full sweep already ran every one of these cases; under it the
@@ -654,21 +772,57 @@ def mesh_closure_arm():
         rel = str(case.relative_to(ROOT))
         runs[rel] = (rc, out)
         if rc != 0:
-            failures.append(f"A7: {rel} did not run (exit {rc}) -- its MESH"
+            failures.append(f"A7: {rel} did not run (exit {rc}) -- its"
                             " column's closure cannot be read")
             continue
-        if "each component balance is divided by the total feed" not in out:
+        if any(c[1] in MESH_MODELS for c in cols) and \
+                "each component balance is divided by the total feed" not in out:
             failures.append(f"A7: {rel} did not announce its dimensionless"
                             " balances -- a solver aid reports aloud")
+        if any(c[1] in WH_MODELS for c in cols):
+            wh["cases"] += 1
+            if WH_REPORT not in out:
+                failures.append(f"A7: {rel} ran a Wang-Henke column and did"
+                                f" not print '{WH_REPORT}' -- the residuals"
+                                " its stop was taken on are not published")
         js = result_json(out)
         for (unit, model, ins, outs, nu) in cols:
-            n_cols += 1
             got = worst_closure(js, unit, ins, outs, nu)
             if got is None:
                 failures.append(f"A7: {rel} column '{unit}' publishes no"
                                 " port streams -- nothing to close")
                 continue
             w, comp, f_in = got
+            if model in WH_MODELS:
+                wh["cols"] += 1
+                if w > wh["worst"][0]:
+                    wh["worst"] = (w, f"{case.name}/{unit} ({comp})")
+                if w > CLOSURE_TOL + WH_JSON_SLACK:
+                    failures.append(
+                        f"A7: {rel} Wang-Henke column '{unit}' publishes its"
+                        f" {comp} balance open by {w:.3g} of its feed"
+                        f" ({f_in:.4g} kmol/s), tolerance {CLOSURE_TOL:.0e}"
+                        f" (+{WH_JSON_SLACK:.0e} for the JSON's 12 figures)."
+                        f"  A Wang-Henke stop taken on anything but these"
+                        f" balances (the step, the stages alone) calls a"
+                        f" slowly contracting column converged with its"
+                        f" balances open -- see DEV.md §5 A7 (5)")
+                st = wh_stage_closure(js, unit, ins)
+                if st is None:
+                    failures.append(f"A7: {rel} Wang-Henke column '{unit}'"
+                                    " publishes no stage profile or traffic"
+                                    " -- its stage balances cannot be read")
+                    continue
+                if st[0] > wh["stage"][0]:
+                    wh["stage"] = (st[0], f"{case.name}/{unit}, {st[1]}")
+                if st[0] > CLOSURE_TOL + WH_JSON_SLACK:
+                    failures.append(
+                        f"A7: {rel} Wang-Henke column '{unit}': the published"
+                        f" profile leaves the balance of {st[1]} open by"
+                        f" {st[0]:.3g} of the feed, tolerance"
+                        f" {CLOSURE_TOL:.0e}")
+                continue
+            n_cols += 1
             if w > worst[0]:
                 worst = (w, f"{case.name}/{unit}", comp)
             if w > CLOSURE_TOL:
@@ -678,7 +832,7 @@ def mesh_closure_arm():
                     f" ({f_in:.4g} kmol/s), tolerance {CLOSURE_TOL:.0e}.  A"
                     f" MESH judged in kmol/s calls a small column converged"
                     f" with its balances open -- see DEV.md §5 A7")
-    return runs, n_cols, len(cases), worst
+    return runs, n_cols, n_mesh, worst, wh
 
 
 def _scaled(src: Path, dst: Path, factor: float = None):
@@ -865,19 +1019,24 @@ def main() -> int:
           " closes every component balance to %.0e of the feed; all %d MESH"
           " columns in %d corpus cases (simultaneous and full-MESH, derived"
           " from the flowsheets) close every component balance to %.0e of"
-          " their own feed, worst %.3g (%s, %s); and %s, re-run with every"
+          " their own feed, worst %.3g (%s, %s); all %d WANG-HENKE columns in"
+          " %d corpus cases publish the residuals their stop was taken on and"
+          " close every component balance over their ports to %.0e of their"
+          " own feed (worst %.3g, %s) and every stage balance of their"
+          " published profile likewise (worst %.3g, %s); and %s, re-run with every"
           " flow x%g (and the full-MESH x%g), reproduce their full-size"
           " compositions, temperatures and conversion to %.0e.  NOT checked: N >= 2 (the goldens pin those),"
           " that a kinetic profile is RIGHT (nothing measured is reproduced),"
-          " the WANG-HENKE columns' closure (a successive-substitution"
-          " tolerance on the composition step, not a residual -- DEV.md §5"
-          " A7 records their measured closures), or a Newton trial crossing"
-          " a zero activity."
+          " that a Wang-Henke stop is REACHED within maxOuterIter on a case"
+          " the corpus does not ship, or a Newton trial crossing a zero"
+          " activity."
           % (a1[0] * 3600, a1[1], a2[0] * 3600, a2[1], REL_TOL, CAT_MASS,
              rx[0], CAT_MASS, CAT_MASS_HIGH, conv[CAT_MASS],
              conv[CAT_MASS_HIGH], CLOSURE_TOL, a7[1], a7[2], CLOSURE_TOL,
-             a7[3][0], a7[3][1], a7[3][2], ", ".join(a8), TINY, HUGE,
-             SCALE_TOL))
+             a7[3][0], a7[3][1], a7[3][2], a7[4]["cols"], a7[4]["cases"],
+             CLOSURE_TOL, a7[4]["worst"][0], a7[4]["worst"][1],
+             a7[4]["stage"][0], a7[4]["stage"][1], ", ".join(a8), TINY,
+             HUGE, SCALE_TOL))
     return 0
 
 
