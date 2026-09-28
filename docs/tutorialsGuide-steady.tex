@@ -6224,6 +6224,52 @@ The deposit leaves in the reactor's outlet as its SOLID phase, priced on the sol
 \goldmore{37}
 \end{tutgolden}
 
+\clearpage
+\tutentry{gibbs12\_element\_potential\_newton}{tutorials/steady/gibbs/gibbs12\_element\_potential\_newton}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (shift) at (0.0,-0.0) {\textbf{shift}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (coking) at (0.0,-1.7) {\textbf{coking}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ammonia) at (0.0,-3.4) {\textbf{ammonia}\\[-1pt]{\tiny gibbsReactor}};
+  \draw[->] ($(shift.west)+(-1.05,0.00)$) -- ($(shift.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedShift};
+  \draw[->] ($(coking.west)+(-1.05,0.00)$) -- ($(coking.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedCoking};
+  \draw[->] ($(ammonia.west)+(-1.05,0.00)$) -- ($(ammonia.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedAmmonia};
+  \draw[->] ($(shift.east)+(0,0.00)$) -- ($(shift.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outShift};
+  \draw[->] ($(coking.east)+(0,0.00)$) -- ($(coking.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outCoking};
+  \draw[->] ($(ammonia.east)+(0,0.00)$) -- ($(ammonia.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outAmmonia};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The element-potential Newton, logged: four Gibbs reactors -- a gas, a condensing liquid, a depositing solid, and a feed far from its equilibrium}
+\begin{tutnarrative}
+HOW a Gibbs reactor SOLVES, logged.
+
+The witness of the EduTool `element-potential`. Three isothermal Gibbs reactors side by side, each on its own feed, each a problem the corpus already solves, and each writing its method's structured log (`newtonLog <file>;`, GibbsReactor.cpp / GibbsMethod.H): every Newton iterate's element potentials pi\_k, ln N, element-balance residuals, step and ln n\_i, the seed route, and the phase searches.
+
+shift gibbs01's problem: CO + H2O <$\to$ CO2 + H2, equimolar, 800 K, 1 bar. Four species over three elements $\to$ FOUR unknowns (pi\_C, pi\_H, pi\_O, ln N). The least-squares seed converges in six Newton iterations; the first step is cut to 1/64 by the backtracking line search. coking gibbs11's steam-lean reformer: CH4 : H2O = 1 : 0.8, 1000 K, 1 bar, graphite declared. The fluid Newton runs WITHOUT the solid, reads a\_C = exp(pi\_C - g\_C/RT) = 2.33 > 1, and bisects the deposited amount (37 fluid solves) until a\_C = 1. ammonia equil03's feed (10 \% NH3 in air) at 700 K and 5 bar, where the least-squares seed at the feed composition makes the Newton's Jacobian singular at iteration 0; the engine re-seeds from a primal Gibbs iteration on ln n and SAYS so (GibbsMethod.cpp).
+
+Each reactor reproduces its source case's golden to every printed digit (the package here is the union of the three source packages -- ideal gas, ideal liquid -- and a Gibbs reactor reads only its own species list). The LIQUID step of the lesson is read from gibbs07\_wgs\_cooled, which declares its own `newtonLog`: a condensing reactor was left out of this witness because its energy balance is a pinned open debt (check\_energy\_closure.KNOWN\_OPEN) and a new case must not copy one.
+
+THE LOG IS AN OBSERVER. Remove every `newtonLog` line and every number this case publishes is unchanged; the CSVs it writes are run outputs, gitignored like every CSV under tutorials/.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feedAmmonia}{F}{0.0277777777778}
+\goldrow{stream}{feedAmmonia}{T}{700}
+\goldrow{stream}{feedCoking}{F}{0.0005}
+\goldrow{stream}{feedCoking}{T}{1000}
+\goldrow{stream}{feedShift}{F}{0.000277777777778}
+\goldrow{stream}{feedShift}{T}{800}
+\goldrow{stream}{outAmmonia}{F}{0.0284722222222}
+\goldrow{stream}{outAmmonia}{T}{700}
+\goldrow{stream}{outCoking}{F}{0.000967550025636}
+\goldrow{stream}{outCoking}{T}{1000}
+\goldrow{stream}{outShift}{F}{0.000277777777778}
+\goldrow{stream}{outShift}{T}{800}
+\goldrow{kpi}{ammonia}{F\_in\_kmol\_h}{100}
+\goldrow{kpi}{ammonia}{F\_out\_kmol\_h}{102.5}
+\goldmore{52}
+\end{tutgolden}
+
 \subsection{heat}
 \grouptheory{heat}
 \clearpage
