@@ -1638,7 +1638,15 @@ accepts today, and that is a policy call.
      taken on the reviewer's say-so: the review itself admits no student
      was observed, and its own proposal -- test three tools with students
      first -- is the one to follow.  Pedagogy is Vitor's.  01-04 and 11
-     were acted on the same day (C17-C21).  Status: verification running.
+     were acted on the same day (C17-C21).  VERIFIED the same day, all 39
+     remaining analyses: the triage is
+     `docs/design/the-44-tool-review-triage.md` -- about seventy confirmed
+     text errors (several stating physics backwards), five engine findings
+     the reviewer MISSED (a silent R_min clamp, two ActiveSetQP gaps, the
+     Wegstein q_max clamp, Herington's |D - J|) plus a glycerol record
+     inconsistency, and some fifteen points where the REVIEWER was wrong.
+     Next: the text errors page by page, then the engine items one slice
+     each, measured first.
 
 **C21. PC-SAFT, DERIVED: THREE FALSE CLAIMS OUT, THE DERIVATION CLOSED
      (asked 2026-09-28; Vitor forwarded an external review of
