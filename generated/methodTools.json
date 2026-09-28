@@ -18,7 +18,7 @@
       "id": "what-is-temperature",
       "label": "What is a temperature?",
       "discipline": "Thermodynamics",
-      "teaches": "That a temperature reading is the END OF A MEASUREMENT CHAIN, not a number nature printed on the system: STATE, T, scale, sensor, signal, model and calibration, then a reported value with an uncertainty.  The quantity T, the unit K and the practical scale T90 are three different things; no instrument observes temperature itself; and decimal places are not uncertainty.",
+      "teaches": "First, what a temperature IS: the property that decides the direction of heat between two bodies in thermal contact, intensive, and not an amount of energy; equal temperatures define thermal equilibrium where heat can pass.  Then that a temperature reading is the END OF A MEASUREMENT CHAIN, not a number nature printed on the system: a thermometer measures T through a signal, a calibration and its assumptions, and decimal places are not uncertainty.  The entropy definition, K vs T90 and pyrometry are an optional third part.",
       "href": "/app/?workspace=methods&tool=what-is-temperature"
     },
     {

@@ -27,9 +27,32 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
+  THREE LAYERS, CONCEPT FIRST -- reorganised 2026-09-28 on the owner's
+  review (Vitor): the title promises to explain a QUANTITY, and the page
+  spent most of its length teaching distrust of an INSTRUMENT, with the
+  entropy derivative in its second section.  Ruling: keep the content,
+  reorganise the entry, correct the absolute statements, and make the
+  depth a later choice rather than deleting it.  So:
+
+    A  What a temperature is -- no calculus: two bodies, the direction of
+       heat, temperature is not internal energy, thermal equilibrium stated
+       with its condition (a wall that lets heat pass), three checks with
+       their answers.
+    B  How it is measured -- the Pt100 bridge only, and why printed digits
+       are not knowledge.
+    C  Going further (optional) -- the entropy definition framed for a
+       simple system in equilibrium, unit vs scale (ITS-90), the pyrometer's
+       emissivity (magnitudes, the sign stated), traceability.
+
+  The acceptance criterion the review set: before C, the reader can predict
+  the direction of heat, tell temperature from total internal energy, and
+  explain what a reading with an uncertainty means.  More metrology does
+  not repair a gap in A.
+
+  The 2026-08-29 ruling below still governs the MEASUREMENT half (B and C):
+
   ONE PAGE, ONE MENTAL MODEL -- rearchitected 2026-08-29 on the owner's
-  pedagogical ruling, which this header records because it governs every
-  future edit:
+  pedagogical ruling:
 
       A temperature reading is the end of a MEASUREMENT CHAIN, not a number
       that nature printed on the system.
@@ -72,9 +95,18 @@ License
 
 import { Box, Group, Stack, Text, Title } from "@mantine/core";
 
+import { Tex } from "./lessonStep.js";
+
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
 const ACCENT = "var(--mantine-primary-color-filled)";
+
+/** A variable or short relation in running prose, set as mathematics
+ *  (KaTeX, the one renderer every lesson uses) rather than as plain
+ *  letters -- a T in prose and a T in an equation must look alike. */
+function M({ t }: { t: string }): JSX.Element {
+  return <Tex src={t} mode="inline" />;
+}
 
 /** The temperature the whole page is about.  It is arbitrary, and the page
  *  says so — what is not arbitrary is that it has three digits after the
@@ -149,7 +181,7 @@ export const INSTRUMENTS: readonly {
 export const CHAIN: readonly string[] = [
   "PHYSICAL STATE",
   "thermodynamic temperature T",
-  "practical scale (ITS-90) / calibration",
+  "practical scale / calibration",
   "sensor",
   "physical observable (R, V, radiance)",
   "model / correlation / calibration",
@@ -202,7 +234,7 @@ function ThreeThings(): JSX.Element {
     <Box px="sm" py={8} style={{ border: `1px solid ${GRID}`, borderRadius: 6,
       flex: "1 1 180px", minWidth: 170 }}>
       <Text size="xs" c={INK} fw={700} tt="uppercase">{head}</Text>
-      <Text size="lg" fw={700} ff="monospace" mt={2}>{sym}</Text>
+      <Text size="lg" fw={700} mt={2}><M t={sym} /></Text>
       <Text size="xs" mt={4}>{body}</Text>
     </Box>
   );
@@ -211,10 +243,10 @@ function ThreeThings(): JSX.Element {
       {cell("quantity", "T",
         "The thermodynamic property of the system.  It exists whether or not "
         + "anyone measures it.")}
-      {cell("unit", "K",
+      {cell("unit", "\\mathrm{K}",
         "The unit T is expressed in — fixed since 2019 by declaring the "
         + "Boltzmann constant exact.  A convention, not a property.")}
-      {cell("practical scale", "T₉₀",
+      {cell("practical scale", "T_{90}",
         "The practical scale (ITS-90) through which precision temperature "
         + "measurements are realised and disseminated.")}
     </Group>
@@ -222,6 +254,31 @@ function ThreeThings(): JSX.Element {
 }
 
 // ---- the page ---------------------------------------------------------------
+
+/** A layer heading: the page is read in three layers, and the reader must
+ *  be able to see where the conceptual part ends and the optional part
+ *  begins. */
+function Layer({ letter, title, note }: {
+  letter: string; title: string; note: string;
+}): JSX.Element {
+  return (
+    <Box mt={6} pt={6} style={{ borderTop: `2px solid ${ACCENT}` }}>
+      <Text size="xs" c={INK} fw={700} tt="uppercase">Part {letter}</Text>
+      <Title order={4}>{title}</Title>
+      <Text size="xs" c={INK} mt={2}>{note}</Text>
+    </Box>
+  );
+}
+
+/** A question the reader answers before reading on, with its answer. */
+function Check({ q, a }: { q: string; a: string }): JSX.Element {
+  return (
+    <Box mt={6} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
+      <Text size="sm" fw={600}>{q}</Text>
+      <Text size="sm" c={INK} mt={2}><em>Answer:</em> {a}</Text>
+    </Box>
+  );
+}
 
 export function WhatIsTemperatureTool(): JSX.Element {
   return (
@@ -231,100 +288,83 @@ export function WhatIsTemperatureTool(): JSX.Element {
         <Box>
           <Title order={3}>What is a temperature?</Title>
           <Text size="sm" c="dimmed" mt={4}>
-            Write one down: <strong>{T_SUBJECT_K} K</strong>.  It{" "}
-            <em>looks</em> extremely precise.  By the end of this page you
-            should be unable to read it that way again — not because the
-            digits are wrong, but because you will see the whole chain hidden
-            behind them: what was measured, by what, on what scale, through
-            what model, and with what uncertainty.  Never confuse the number
-            with the thing.
+            Two bodies can have the same temperature and very different
+            amounts of energy.  Temperature is what lets you predict the
+            direction of heat transfer when you put them in thermal contact.
+            This page is read in three parts: <strong>A</strong>, what a
+            temperature is (no calculus); <strong>B</strong>, how one is
+            measured; and <strong>C</strong>, an optional part for going
+            further.  Stop after B if A and B are new to you.
           </Text>
         </Box>
+
+        <Layer letter="A" title="What a temperature is"
+          note="No formula in this part." />
 
         <Box>
           <Title order={5}>1 · Two systems touch</Title>
           <Text size="sm" mt={4}>
-            Put two systems in thermal contact.  If thermal contact alone
-            produces a net flow of heat between them, they were{" "}
-            <strong>not at the same temperature</strong> — that is what the
-            words mean.  When the flow
-            stops, the two are in <strong>thermal equilibrium</strong>, and
-            there is one intensive property that is now equal in both.  We
-            call that property <strong>temperature</strong>.
+            <strong>Predict first.</strong>  A small cup of water at 80 °C
+            is placed in a large tank of water at 30 °C, in thermal contact:
+            nothing between them stops heat from passing.  Which way does
+            heat flow, and why?
           </Text>
           <Text size="sm" mt={6}>
-            Notice what this already gives you, with no formula: temperature
-            is a property of a <em>state</em>, it decides which way heat
-            flows, and equality of temperature is what equilibrium{" "}
-            <em>is</em>.  Nature has a state; temperature is one property of
-            that state.  Nothing about instruments yet — deliberately.
+            From the cup to the tank — from the higher temperature to the
+            lower.  Yet the tank, being much larger, can hold far more
+            internal energy than the cup.  It receives heat anyway.{" "}
+            <strong>Temperature is not an amount of energy.</strong>  It is
+            the property that decides which way heat flows.
           </Text>
+          <Text size="sm" mt={6}>
+            <strong>Watch what happens.</strong>  The cup cools and the tank
+            warms, and the two temperatures approach each other.  If the
+            cup and the tank are isolated from everything else, the energy
+            the cup gives up is exactly the energy the tank gains: the total
+            is conserved.  The tank’s temperature moves only a little,
+            because the same energy is shared over much more water.
+          </Text>
+          <Text size="sm" mt={6}>
+            <strong>Name it.</strong>  When the heat flow through that contact
+            stops, the two are in <strong>thermal equilibrium</strong>, and
+            their temperatures are equal.  That is what the words mean:
+            equality of temperature is what thermal equilibrium{" "}
+            <em>is</em>.  Temperature is an <strong>intensive</strong>{" "}
+            property — a property of the state, not of the amount: a second
+            litre of water in the same state has the same temperature and
+            twice the internal energy.
+          </Text>
+          <Text size="sm" mt={6}>
+            One condition matters.  The conclusion needs a contact that{" "}
+            <em>lets heat pass</em>.  Two bodies separated by a perfectly
+            insulating (adiabatic) wall exchange no heat at any pair of
+            temperatures, so “no heat flows” alone does not prove “same
+            temperature”.  Nothing about instruments yet — deliberately.
+          </Text>
+          <Text size="sm" fw={700} mt={10}>Check yourself before reading on</Text>
+          <Check
+            q="Two bodies, isolated from each other, with no heat flowing between them: must they have the same temperature?"
+            a="No. There may be no path for heat to take — an insulating wall stops the flow at any pair of temperatures." />
+          <Check
+            q="Doubling the mass of water, in the same state: does it double the temperature?"
+            a="No. The total internal energy doubles with the mass; the temperature, an intensive property, stays the same." />
+          <Check
+            q="A cup at 80 °C and a tank at 30 °C: can the tank hold more internal energy and still receive heat from the cup?"
+            a="Yes. Heat flows from higher to lower temperature, whatever the amounts of energy." />
         </Box>
 
-        <Box>
-          <Title order={5}>2 · The thermodynamic definition</Title>
-          <Text size="sm" mt={4}>
-            The intuition above has an exact formulation, and it is worth
-            seeing once, boxed, after the intuition rather than instead of it:
-          </Text>
-          <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
-            <Text size="xs" c={INK} fw={700} tt="uppercase">
-              thermodynamic definition
-            </Text>
-            <Text size="sm" ff="monospace" mt={4}>
-              1 / T = (∂S / ∂U)<sub>V, N</sub>
-            </Text>
-          </Box>
-          <Text size="sm">
-            Read it as: <strong>at fixed V and N, 1/T says how much the
-            entropy changes when a little energy is added.</strong>  At high
-            temperature, the same added joule produces a smaller entropy
-            increase.  It needs no substance and no instrument — and
-            that is precisely why everything that follows on this page is
-            about the gap between this definition and a number on a screen.
-          </Text>
-        </Box>
+        <Layer letter="B" title="How a temperature is measured"
+          note="One instrument, one bridge, and what printed digits do not tell you." />
 
         <Box>
-          <Title order={5}>3 · T is not K — and K is not T₉₀</Title>
+          <Title order={5}>2 · A thermometer measures T through a chain</Title>
           <Text size="sm" mt={4}>
-            Three different things wear the word “temperature”, and most
-            confusion about it is one of them wearing another’s clothes.
-            Keep them violently apart:
-          </Text>
-          <ThreeThings />
-          <Text size="sm" mt={4}>
-            Since 2019 the kelvin is defined by <em>declaring</em> the
-            Boltzmann constant to be exactly 1.380649 × 10⁻²³ J/K.  Note
-            carefully what was defined: <strong>the unit, not the
-            quantity</strong> — and the definition gives you no way whatsoever
-            to <em>measure</em> a temperature.  Measurement is disseminated
-            through the practical scale instead: ITS-90, a chain of
-            reproducible fixed points with declared instruments interpolating
-            between them.  At {T_SUBJECT_K} K you sit just below the freezing
-            point of tin (505.078 K), and a standard platinum resistance
-            thermometer (SPRT) is the defining interpolating instrument —
-            not the industrial Pt100 of the table below.  T₉₀ and
-            thermodynamic T{" "}
-            <strong>are not the same number</strong> — near 500 K they differ
-            by of order ten millikelvin, known and tabulated.
-          </Text>
-          <Text size="xs" c={INK} mt={6}>
-            How the kelvin actually reaches a thermometer — the fixed points,
-            the four interpolating instruments, and what happens above the
-            silver point — is the deep dive: <em>How do we know a thermometer
-            is right?</em>
-          </Text>
-        </Box>
-
-        <Box>
-          <Title order={5}>4 · The instrument does not see T</Title>
-          <Text size="sm" mt={4}>
-            Here is the lesson this page exists to install.  <strong>No
-            instrument on your P&amp;ID observes temperature.</strong>  Each
-            observes something else — a resistance, a voltage, a radiance —
-            and a <em>bridge</em> of physics, calibration and assumptions
-            turns that observable into a temperature number:
+            A thermometer does measure temperature — but not directly.
+            Separate the <strong>measurand</strong> (the quantity you want,
+            here the temperature) from the <strong>signal</strong> the
+            instrument actually observes (a resistance, a voltage, a
+            radiance).  A <em>bridge</em> of physics, calibration and
+            assumptions turns the signal into a temperature number:
           </Text>
           <Box mt={8} style={{ overflowX: "auto" }}>
             <table style={{ borderCollapse: "collapse", width: "100%",
@@ -349,77 +389,185 @@ export function WhatIsTemperatureTool(): JSX.Element {
               </tbody>
             </table>
           </Box>
-          {/*  ONE BRIDGE, WALKED WITH REAL NUMBERS.  The table names three
-               observables and the row above calls the conversion a bridge,
-               and until this block the page never crossed one: a reader met
-               "a resistance" and never a resistance.  Owner's review,
-               2026-08-31.  Closed-form and printed with its constants, per
-               this file's zero-physics-in-TypeScript rule -- the reader
-               redoes it on paper, and nothing here is an engine answer.  */}
+          {/*  ONE BRIDGE, WALKED WITH REAL NUMBERS.  Closed-form and printed
+               with its constants, per this file's zero-physics-in-TypeScript
+               rule -- the reader redoes it on paper, and nothing here is an
+               engine answer.  */}
           <Text size="sm" mt={8}>
             Walk one bridge with real numbers.  A Pt100 in a thermowell reads{" "}
-            <strong>119.4 Ω</strong>.  That is the whole of the measurement —
-            a resistance, nothing more.  The bridge is the Callendar–Van Dusen
-            relation of IEC 60751, <em>R</em>(<em>t</em>) ={" "}
-            <em>R</em><sub>0</sub>(1 + <em>At</em> + <em>Bt</em>²) with{" "}
-            <em>R</em><sub>0</sub> = 100 Ω, <em>A</em> = 3.9083 × 10⁻³ °C⁻¹
-            and <em>B</em> = −5.775 × 10⁻⁷ °C⁻², solved for <em>t</em>:
+            <strong>119.4 Ω</strong>.  That is the signal — a resistance.
+            The bridge is the Callendar–Van Dusen relation of IEC 60751,{" "}
+            <M t="R(t) = R_0\,(1 + A t + B t^2)" /> with{" "}
+            <M t="R_0 = 100\ \Omega" />,{" "}
+            <M t="A = 3.9083\times10^{-3}\ {}^{\circ}\mathrm{C}^{-1}" /> and{" "}
+            <M t="B = -5.775\times10^{-7}\ {}^{\circ}\mathrm{C}^{-2}" />,
+            solved for <M t="t" />:
           </Text>
           <Box mt={6} p={8} style={{ border: `1px solid ${GRID}`,
             borderRadius: 4, fontSize: 13 }}>
-            119.4 Ω → <em>t</em> = 50.01 °C → <strong>323.16 K</strong>
+            signal 119.4 Ω → calibration → <M t="t" /> ≈ 50.01 °C →{" "}
+            <strong>323.16 K</strong>
           </Box>
           <Text size="sm" mt={6}>
-            Notice what that arithmetic did <em>not</em> give you.  It did not
-            say the fluid is at 323.16 K — it said the <em>sensing element</em>
-            is, if this particular Pt100 obeys the standard curve, if it has
-            not drifted, if it is immersed deeply enough, and if the thermowell
-            is not conducting heat along its stem.  Every one of those is an
-            assumption inside the bridge, and none of them is visible in
-            “119.4 Ω”.
+            Notice what that arithmetic gives you.  It is the temperature of
+            the <em>sensing element</em>, provided this Pt100 obeys the
+            standard curve, has not drifted, is immersed deeply enough, is
+            not losing heat along the thermowell stem, and has had time to
+            reach the fluid’s temperature.  A sensor lagging behind a fluid
+            whose temperature is changing reports its own state, not the
+            fluid’s.  Each of those is an assumption inside the bridge, and
+            none of them is visible in “119.4 Ω”.
           </Text>
-          <Text size="sm" mt={8}>
-            The whole page in one figure — read it top to bottom and notice
-            how far the reported number sits from the state it is about:
-          </Text>
-          <ChainFigure />
         </Box>
 
         <Box>
-          <Title order={5}>5 · What the bridge costs — a worked example</Title>
+          <Title order={5}>3 · Decimal places are not uncertainty</Title>
           <Text size="sm" mt={4}>
-            The pyrometer is the instrument where the bridge is most visible,
-            so it makes the best worked example.{"  "}
-            <strong>A pyrometer does not measure temperature.  It measures
-            radiance.</strong>  To turn radiance into a temperature it must
-            ASSUME an emissivity — and what that assumption costs is
+            A display shows <strong>50.012 °C</strong>.  Does it prove that
+            the temperature is known to a thousandth of a degree?  No.  The
+            digits tell you how finely the number was <em>written</em>; only
+            the uncertainty tells you how well it is <em>known</em>.
+          </Text>
+          <Text size="sm" mt={6}>
+            The same holds for any number.  Write one down:{" "}
+            <strong>{T_SUBJECT_K} K</strong>.  As written, it is not yet a
+            measurement result: it carries no uncertainty and names no scale,
+            no instrument, no traceability.  A serious statement reads more
+            like{" "}
+            <strong><M t="T_{90} = 500.012\ \mathrm{K},\quad U = 0.015\ \mathrm{K}\ (k = 2)" /></strong>{" "}
+            — where
+            that ± is INVENTED here, for its shape alone, because no budget
+            for this number has been read back from anywhere — plus how it
+            was obtained.  Display resolution and measurement uncertainty are
+            different things and need not be comparable — though when a final
+            result is reported, the value and its uncertainty should be
+            rounded consistently.  Never confuse the number with the thing.
+          </Text>
+        </Box>
+
+        <Box>
+          <Title order={5}>4 · The questions to ask of any reported temperature</Title>
+          <Text size="sm" mt={4}>
+            Read the chain top to bottom, and notice how far the reported
+            number sits from the state it is about:
+          </Text>
+          <ChainFigure />
+          <Text size="sm">
+            When anyone shows you a reported temperature, you can defend it
+            only when you can answer:
+          </Text>
+          <Box my={8} px="sm" py={8} style={{ borderLeft: `3px solid ${ACCENT}` }}>
+            {INTERROGATION.map((q) => (
+              <Text key={q} size="sm" ff="monospace">• {q}</Text>
+            ))}
+          </Box>
+          <Text size="sm">
+            <strong>A temperature reading is the end of a measurement chain,
+            not a number that nature printed on the system.</strong>  An
+            engineer who can walk that chain can defend the number; one who
+            can only repeat it cannot.
+          </Text>
+        </Box>
+
+        <Layer letter="C" title="Going further (optional)"
+          note="For the reader who is comfortable with A and B.  Nothing here is needed to use a temperature correctly." />
+
+        <Box>
+          <Title order={5}>5 · The thermodynamic definition</Title>
+          <Text size="sm" mt={4}>
+            The intuition of part A has an exact formulation.  For a simple
+            system in equilibrium — one substance, at fixed volume{" "}
+            <M t="V" /> and amount <M t="N" />, with no other way of doing
+            work — the temperature <M t="T" /> is defined by:
+          </Text>
+          <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
+            <Text size="xs" c={INK} fw={700} tt="uppercase">
+              thermodynamic definition
+            </Text>
+            <Tex mode="display"
+              src="\frac{1}{T} = \left(\frac{\partial S}{\partial U}\right)_{V,N}" />
+          </Box>
+          <Text size="sm">
+            Read it as: <strong>at fixed <M t="V" /> and <M t="N" />,{" "}
+            <M t="1/T" /> says how much the entropy <M t="S" /> changes when
+            a little internal energy <M t="U" /> is added.</strong>  At high temperature, the same added joule
+            produces a smaller entropy increase.  It needs no substance and
+            no instrument, which is why part B is about the gap between this
+            definition and a number on a screen.
+          </Text>
+        </Box>
+
+        <Box>
+          <Title order={5}>6 · <M t="T" /> is not K — and K is not <M t="T_{90}" /></Title>
+          <Text size="sm" mt={4}>
+            Three different things share the word “temperature”, and much
+            confusion about it comes from mixing them.  Keep them apart:
+          </Text>
+          <ThreeThings />
+          <Text size="sm" mt={4}>
+            Since 2019 the kelvin is defined by <em>declaring</em> the
+            Boltzmann constant to be exactly{" "}
+            <M t="k_\mathrm{B} = 1.380649\times10^{-23}\ \mathrm{J/K}" />.  What was
+            defined is <strong>the unit, not the quantity</strong> — and the
+            definition of the unit is not, by itself, a measurement
+            procedure.  Measurement is disseminated through the practical
+            scale instead: ITS-90, a chain of reproducible fixed points with
+            declared instruments interpolating between them.  At{" "}
+            {T_SUBJECT_K} K you sit just below the freezing point of tin
+            (505.078 K), and a standard platinum resistance thermometer
+            (SPRT) is the defining interpolating instrument — not the
+            industrial Pt100 of part B.  <M t="T_{90}" /> and thermodynamic{" "}
+            <M t="T" />{" "}
+            <strong>are not the same number</strong> — near 500 K they differ
+            by of order ten millikelvin, known and tabulated.
+          </Text>
+          <Text size="xs" c={INK} mt={6}>
+            How the kelvin actually reaches a thermometer — the fixed points,
+            the four interpolating instruments, and what happens above the
+            silver point — is the deep dive: <em>How do we know a thermometer
+            is right?</em>
+          </Text>
+        </Box>
+
+        <Box>
+          <Title order={5}>7 · What an assumed emissivity costs — a worked example</Title>
+          <Text size="sm" mt={4}>
+            The pyrometer is the instrument where the bridge is most visible.
+            It observes <strong>radiance</strong>, not temperature directly,
+            and to turn radiance into a temperature it must ASSUME an
+            emissivity <M t="\varepsilon" />.  What an error in that assumption costs is
             computable, from Wien’s approximation to Planck:
           </Text>
           <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
-            <Text size="sm" ff="monospace">
-              ΔT / T ≈ (λ·T / c₂) · (Δε / ε)
-            </Text>
+            <Tex mode="display"
+              src="\frac{|\Delta T|}{T} \approx \frac{\lambda T}{c_2}\,\frac{|\Delta\varepsilon|}{\varepsilon}" />
           </Box>
           <Text size="sm">
-            Take a furnace reading of <strong>{T_HOT_C} °C</strong>{" "}
-            ({T_HOT_K.toFixed(2)} K — a cracker firebox, a reformer flame).
-            At λ = 0.65 µm with c₂ = {C2_UM_K} µm·K the sensitivity factor
-            is{" "}
+            Here <M t="\Delta\varepsilon" /> is the error in the{" "}
+            <em>assumed</em> emissivity, and the
+            formula gives the size of the effect, not its sign: at a fixed
+            radiance, assuming a larger emissivity yields a lower inferred
+            temperature.  Take a furnace reading of{" "}
+            <strong>{T_HOT_C} °C</strong> ({T_HOT_K.toFixed(2)} K — a cracker
+            firebox, a reformer flame).  At{" "}
+            <M t="\lambda = 0.65\ \mu\mathrm{m}" /> with{" "}
+            <M t={`c_2 = ${C2_UM_K}\ \mu\mathrm{m\,K}`} /> the sensitivity
+            factor <M t="\lambda T / c_2" /> is{" "}
             <strong>{emissivitySensitivity(0.65, T_HOT_K).toFixed(3)}</strong>,
-            so a <strong>10 % error in the emissivity you guessed</strong>{" "}
-            puts about{" "}
-            <strong>{emissivityBand_K(0.65, T_HOT_K, 0.10).toFixed(0)} K</strong>{" "}
-            on the answer.  Tens of kelvin — against a display that prints a
-            tenth of a degree.  In a metrology laboratory the assumption can
-            be made very good (a blackbody cavity, a characterised surface);
-            pointed at an oxidised tube it usually{" "}
+            so a <strong>10 % error in the emissivity you assumed</strong>{" "}
+            moves the answer by about{" "}
+            <strong>{emissivityBand_K(0.65, T_HOT_K, 0.10).toFixed(0)} K</strong>.
+            Tens of kelvin — against a display that prints a tenth of a
+            degree.  In a metrology laboratory the assumption can be made
+            very good (a blackbody cavity, a characterised surface); pointed
+            at an oxidised tube it usually{" "}
             <strong>dominates the uncertainty</strong>.
           </Text>
           <Text size="sm" mt={6}>
             And note where that reading sits: above the silver point
-            ({T_SILVER_K} K), <strong>the scale itself</strong> stops touching
-            the thing and becomes radiation — so at the hot end the bridge is
-            not one instrument’s weakness, it is all there is.
+            ({T_SILVER_K} K), <strong>the scale itself</strong> is realised
+            by radiation — so at the hot end the radiation bridge is not one
+            instrument’s weakness, it is how the scale itself is carried.
           </Text>
           <Text size="xs" c={INK} mt={6}>
             This is arithmetic over a printed closed form, not an engine run —
@@ -430,7 +578,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
         </Box>
 
         <Box>
-          <Title order={5}>6 · Traceability — how the number reaches your plant</Title>
+          <Title order={5}>8 · Traceability — how the number reaches your plant</Title>
           <Text size="sm" mt={4}>
             The bridge is calibrated, and the calibration has a pedigree:
           </Text>
@@ -447,44 +595,6 @@ export function WhatIsTemperatureTool(): JSX.Element {
             drift, and the transmitter all contribute.  A well-installed loop
             can be very good; a badly installed one can be tens of kelvin out
             and look perfectly fine on the DCS.
-          </Text>
-        </Box>
-
-        <Box>
-          <Title order={5}>7 · Decimal places are not uncertainty</Title>
-          <Text size="sm" mt={4}>
-            As written, <strong>{T_SUBJECT_K} K</strong> is not yet a
-            measurement result at all: it carries no uncertainty, names no
-            scale, no instrument, no traceability.  A serious statement reads
-            more like{" "}
-            <strong>T₉₀ = 500.012 K, U = 0.015 K (k = 2)</strong> — where
-            that ± is INVENTED here, for its shape alone, because no budget
-            for this number has been read back from anywhere — plus how it
-            was obtained.  The digits tell you how finely the number was{" "}
-            <em>written</em>; only the uncertainty tells you how well it is{" "}
-            <em>known</em>.  Display resolution and measurement uncertainty
-            are different things and need not be comparable — though when a
-            final result is reported, the value and its uncertainty should be
-            rounded consistently.
-          </Text>
-        </Box>
-
-        <Box>
-          <Title order={5}>8 · Back to 500.012 K</Title>
-          <Text size="sm" mt={4}>
-            Now dismantle the number you started with.  When anyone shows you
-            a reported temperature, you own it only when you can ask:
-          </Text>
-          <Box my={8} px="sm" py={8} style={{ borderLeft: `3px solid ${ACCENT}` }}>
-            {INTERROGATION.map((q) => (
-              <Text key={q} size="sm" ff="monospace">• {q}</Text>
-            ))}
-          </Box>
-          <Text size="sm">
-            <strong>A temperature reading is the end of a measurement chain,
-            not a number that nature printed on the system.</strong>  An
-            engineer who can walk that chain owns the number.  An engineer who
-            can only repeat it does not.
           </Text>
         </Box>
 
@@ -509,17 +619,19 @@ export function WhatIsTemperatureTool(): JSX.Element {
           <Text size="xs" c={INK} mt={4}>
             • {T_SUBJECT_K} K is arbitrary.  What is not arbitrary is that it
             has three digits after the point.
+            <br />• The cup and the tank are described, not computed: no
+            number on this page is an engine answer.
             <br />• The pyrometer band is conditional on its own assumptions
             (wavelength, target, a 10 % emissivity error); it is a worked
             example, not a verdict on every pyrometer.
             <br />• The ITS-90 vs T difference near 500 K is given as an order
             of magnitude, never a value — the tabulated figure is a published
-            number this repository has not read back against its source.
+            number not read back against its source here.
             <br />• No uncertainty is quoted here as if it had been
             measured.  The one ± on the page is the illustrative 0.015 K
-            above, marked as invented where it appears; everywhere else, none
-            having been read back from a primary source, the page tells you
-            to ask for the budget rather than supplying a number to trust.
+            in part B, marked as invented where it appears; everywhere else,
+            none having been read back from a primary source, the page tells
+            you to ask for the budget rather than supplying a number to trust.
           </Text>
         </Box>
 

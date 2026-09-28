@@ -24,6 +24,7 @@
   propertyTrustTool).
 \*---------------------------------------------------------------------------*/
 
+import { texParses } from "../src/ui/methods/lessonTex.js";
 import { describe, expect, it } from "vitest";
 
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
@@ -113,14 +114,14 @@ describe("the pedagogical order the owner ruled", () => {
     //  The intuition (two systems touch) must land first, the formal
     //  definition boxed after it.
     const iTouch = SRC.indexOf("Two systems touch");
-    const iDef = SRC.indexOf("(∂S / ∂U)");
+    const iDef = SRC.indexOf("\\partial S");
     expect(iTouch, "the equilibrium intuition is missing").toBeGreaterThan(0);
     expect(iDef, "the thermodynamic definition is missing").toBeGreaterThan(0);
     expect(iTouch).toBeLessThan(iDef);
   });
 
   it("defines the quantity before the unit", () => {
-    const iDef = SRC.indexOf("(∂S / ∂U)");
+    const iDef = SRC.indexOf("\\partial S");
     const iK = SRC.indexOf("1.380649");
     expect(iDef).toBeLessThan(iK);
   });
@@ -135,7 +136,7 @@ describe("the pedagogical order the owner ruled", () => {
     for (const k of ["quantity", "unit", "practical scale"]) {
       expect(prose(SRC).toLowerCase()).toContain(k);
     }
-    expect(SRC).toContain("T₉₀");
+    expect(SRC).toContain("T_{90}");
   });
 
   it("never calls a temperature a conversion factor", () => {
@@ -150,7 +151,84 @@ describe("the pedagogical order the owner ruled", () => {
 
   it("says decimal places are not uncertainty, with the serious form shown", () => {
     expect(prose(SRC)).toContain("Decimal places are not uncertainty");
-    expect(prose(SRC)).toContain("U = 0.015 K (k = 2)");
+    expect(prose(SRC)).toContain("U = 0.015\\ \\mathrm{K}\\ (k = 2)");
+  });
+});
+
+describe("concept before measurement (owner's review, 2026-09-28)", () => {
+  //  The title promises a QUANTITY.  Part A must teach it without calculus
+  //  and without an instrument; the derivative, ITS-90 and pyrometry are a
+  //  later, optional part.  These pin the ORDER and the corrected claims.
+  it("reads in three layers: concept, measurement, optional depth", () => {
+    //  the rendered page only: the header comment and the constants'
+    //  doc-comments above it may name anything
+    const PAGE = SRC.slice(SRC.indexOf("export function WhatIsTemperatureTool"));
+    const iA = PAGE.indexOf('letter="A"');
+    const iB = PAGE.indexOf('letter="B"');
+    const iC = PAGE.indexOf('letter="C"');
+    expect(iA).toBeGreaterThan(0);
+    expect(iA).toBeLessThan(iB);
+    expect(iB).toBeLessThan(iC);
+    //  no derivative, no kelvin definition, no pyrometer before part C
+    for (const late of ["\\partial S", "1.380649", "Wien", "ITS-90"]) {
+      expect(PAGE.indexOf(late), `${late} came before part C`)
+        .toBeGreaterThan(iC);
+    }
+  });
+
+  it("opens on the direction of heat, not on a precise-looking number", () => {
+    const iCup = SRC.indexOf("80 °C");
+    const iSubject = SRC.indexOf("{T_SUBJECT_K} K");
+    expect(iCup).toBeGreaterThan(0);
+    expect(iCup).toBeLessThan(iSubject);
+    expect(prose(SRC)).toContain("Temperature is not an amount of energy");
+  });
+
+  it("states the condition on thermal equilibrium, with its counterexample", () => {
+    expect(prose(SRC)).toContain("lets heat pass");
+    expect(prose(SRC)).toContain("adiabatic");
+    expect(prose(SRC)).toContain("thermal equilibrium");
+  });
+
+  it("asks the three checks and gives their answers", () => {
+    expect((SRC.match(/<Check\b/g) ?? []).length).toBe(3);
+    expect(prose(SRC)).toContain("There may be no path for heat to take");
+  });
+
+  it("frames the entropy definition for a simple system in equilibrium", () => {
+    expect(prose(SRC)).toContain("simple system in equilibrium");
+  });
+
+  it("keeps measurand and signal apart instead of denying measurement", () => {
+    expect(prose(SRC)).toContain("A thermometer does measure temperature");
+    expect(SRC).not.toContain("No\n            instrument on your P&amp;ID observes temperature");
+    for (const tone of ["violently", "no way whatsoever", "owns the number"]) {
+      expect(SRC, `the absolute tone is back: "${tone}"`).not.toContain(tone);
+    }
+  });
+
+  it("gives the emissivity effect as a magnitude and states its sign", () => {
+    expect(SRC).toContain("\\frac{|\\Delta T|}{T}");
+    expect(prose(SRC)).toContain("assuming a larger emissivity yields a lower"
+      + " inferred temperature");
+  });
+
+  it("sets every variable and equation as mathematics, and every one parses", () => {
+    //  Owner, 2026-09-28: variables in an EduTool are written in
+    //  mathematical form.  Every <M t="..."/> and <Tex src="..."/> literal
+    //  on the page must parse under the lessons' strict KaTeX settings.
+    const srcs = [...SRC.matchAll(/(?:<M t|src)="([^"]+)"/g)].map((m) => m[1]!);
+    expect(srcs.length).toBeGreaterThan(15);
+    for (const tex of srcs) {
+      expect(texParses(tex), `does not parse: ${tex}`).toBe(true);
+    }
+    //  the two equations are no longer monospace transcriptions
+    expect(SRC).not.toContain("1 / T = (∂S / ∂U)");
+    expect(SRC).not.toContain("|ΔT| / T ≈");
+  });
+
+  it("names sensor lag as an assumption inside the bridge", () => {
+    expect(prose(SRC)).toContain("A sensor lagging behind a fluid");
   });
 });
 
@@ -243,7 +321,7 @@ describe("claims kept inside what the evidence supports", () => {
     expect(prose(SRC), "the self-satisfying absolute is back")
       .not.toContain("No uncertainty is invented anywhere here");
     //  and the illustrative value is still SHOWN -- a student needs the form
-    expect(SRC).toContain("U = 0.015 K (k = 2)");
+    expect(SRC).toContain("U = 0.015\\ \\mathrm{K}\\ (k = 2)");
   });
 
   it("gives the T90 - T difference as an order of magnitude, never a value", () => {

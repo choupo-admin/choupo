@@ -143,7 +143,7 @@ const FAIL = "var(--mantine-color-red-6)";
  *  HTML string.  The string comes from this repository's own lesson data
  *  through a parser that rejects anything it does not understand, never from
  *  a case file, a run result or anything a user supplies. */
-function Tex(
+export function Tex(
   { src, mode }: { src: string; mode: "display" | "inline" },
 ): JSX.Element {
   const r = renderTex(src, mode);

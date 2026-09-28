@@ -1519,6 +1519,35 @@ accepts today, and that is a policy call.
      cases, promoting the Svehla Lennard-Jones pair, and the second home of
      Vliq in `SolventProperties.H:78`.
 
+**C17. THE TEMPERATURE PAGE TEACHES THE QUANTITY BEFORE THE INSTRUMENT
+     (asked 2026-09-28; Vitor brought an external pedagogical review of
+     `what-is-temperature` and asked for it to be acted on).**  The review's
+     verdict, adopted as his decision: keep the content, reorganise the
+     entry, correct the absolute statements, make the depth a later choice.
+     DONE the same day on one page (`WhatIsTemperatureTool.tsx`): three
+     layers -- A, the quantity without calculus (a cup at 80 C and a tank at
+     30 C, the direction of heat, temperature is not internal energy,
+     thermal equilibrium stated with its condition and the adiabatic
+     counterexample, three checks with answers); B, measurement (measurand
+     vs signal, the Pt100 bridge with sensor lag named, 50.012 C on a
+     display); C, optional (the entropy definition framed for a simple
+     system in equilibrium, K vs T90, the pyrometer with |dT| and the sign
+     stated, traceability).  The absolute tone ("violently", "no way
+     whatsoever", "owns the number", "no instrument observes temperature")
+     is gone and a test keeps it gone.  NOT done, the review's option left
+     for later: moving ITS-90 and pyrometry wholly to the thermometry deep
+     dive (`thermometer-trust`) -- part C keeps them on this page as the
+     optional layer.
+     **STANDING INSTRUCTION (Vitor, the same day): in EVERY EduTool reviewed
+     from now on, check that the variables are set as mathematics** --
+     KaTeX through `Tex` (exported from `lessonStep.tsx`, the lessons' one
+     renderer), never plain or monospace letters.  This page now does it
+     (`M` for inline, `Tex mode="display"` for the two equations) and its
+     test parses every math literal under the lessons' strict settings.
+     Also his: "tu e que mandas, nao quero yes man" -- an external review is
+     judged, not transcribed; here ITS-90 and pyrometry stayed on the page
+     as part C against the review's suggestion to move them.
+
 **C13. "oxygen" FOUND NOTHING IN THE PROPERTY EXPLORER (reported 2026-09-27).**
      The ENGINE resolves it: `O2.dat:53` declares `aliases ( oxygen );`,
      `data/standards/components/ALIASES:26` maps it, and
