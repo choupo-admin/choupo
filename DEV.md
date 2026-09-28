@@ -1632,8 +1632,8 @@ accepts today, and that is a policy call.
 **C15. AN EDUTOOL FOR THE ELEMENT-POTENTIAL METHOD -- how the Gibbs reactor
      SOLVES, not what it is (commissioned 2026-09-27).**  Vítor asked which
      minimisation the Gibbs reactor uses (answered from the source: three
-     methods registered at
-     `src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp:229-236`, selected by
+     methods registered in `GibbsMethod::registerBuiltins`,
+     `src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp`, selected by
      `model` at `GibbsReactor.cpp:206`, default `elementPotential`, the
      Lagrangian RAND / Brinkley-White method of `ElementPotential.H`), then
      whether an EduTool for it would be good, and on the proposed scope:
@@ -1652,6 +1652,31 @@ accepts today, and that is a policy call.
      verbosity 3); if not, the engine publishes it and the page draws it --
      the page recomputes nothing.  Dispatch waits for the 900 K diagnosis,
      because step 5 and any engine channel both touch `ElementPotential.cpp`.
+
+     **BUILT 2026-09-27, on the re-seed fix of 1cc31688a.**  The channel
+     did not exist: the reactor's Newton hook carried `(iter, |F|, alpha)`
+     to the console and to the unit's residual history, and nothing else.
+     Now `newtonLog <file>;` (opt-in, `gibbsReactor` operation) writes the
+     method's structured log -- a long-form CSV, one number per row, every
+     iterate's pi_k, ln N, residuals, |F|, ln n_i and step, the seed route,
+     the standard-state terms, the liquid and solid tests and searches
+     (`GibbsMethod.H` `GibbsLogRecord`, `GibbsLog.cpp`).  An observer: all
+     34 Gibbs-family case roots byte-identical (files and console) against
+     a build of 1cc31688a.  Witness `gibbs12_element_potential_newton`
+     (new, golden recorded, no existing row moved) + `newtonLog` declared on
+     `gibbs07_wgs_cooled` for the liquid.  EduTool `element-potential`
+     (numerics shelf), every quoted number recomputed from the logs by
+     `gui/tests/elementPotentialLesson.test.ts`.  THREE PREMISES OF THE
+     SCOPE ABOVE WERE WRONG, measured: (4)'s liquid is NOT an M+2 system --
+     the code bisects the liquid amount around the gas Newton, and
+     `ElementPotential.H` said otherwise (corrected); (3) holds for the
+     chemical potential mu_i/RT, not g_i/RT (the standard state is only
+     part of it); (5) on this feed the primal re-seed ALREADY meets the
+     Newton's 1e-8, so the re-seeded Newton takes zero iterations -- the
+     primal is the solver there.  FOUND, not fixed: with two condensables
+     supersaturated the element-potential method returns the gas-only
+     answer and says nothing (`ElementPotential.cpp:71`).  `make wasm`
+     is needed before the page draws in the browser.
 
 **C16. MORE MIXTURES WITH TRACEABLE BINARY DATA: import what is cleanly
      reusable, FIT the rest to ThermoML (commissioned 2026-09-27).**  Vítor

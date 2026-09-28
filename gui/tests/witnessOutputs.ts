@@ -105,6 +105,28 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "sweep_pumpSystem.csv",
     readBy: ["pumpSystemLesson.test.ts"],
   },
+  //  The element-potential lesson (C15): the gibbsReactor's opt-in
+  //  `newtonLog`, one file per reactor that declares it.
+  {
+    caseDir: "tutorials/steady/gibbs/gibbs12_element_potential_newton",
+    file: "newtonLog_shift.csv",
+    readBy: ["elementPotentialLesson.test.ts"],
+  },
+  {
+    caseDir: "tutorials/steady/gibbs/gibbs12_element_potential_newton",
+    file: "newtonLog_coking.csv",
+    readBy: ["elementPotentialLesson.test.ts"],
+  },
+  {
+    caseDir: "tutorials/steady/gibbs/gibbs12_element_potential_newton",
+    file: "newtonLog_ammonia.csv",
+    readBy: ["elementPotentialLesson.test.ts"],
+  },
+  {
+    caseDir: "tutorials/steady/gibbs/gibbs07_wgs_cooled",
+    file: "newtonLog.csv",
+    readBy: ["elementPotentialLesson.test.ts"],
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

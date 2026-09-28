@@ -68,7 +68,7 @@ export type MethodToolId =
   | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways"
-  | "least-squares";
+  | "least-squares" | "element-potential";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -953,6 +953,30 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "exactly why a real curation declares it first.  The same run is "
       + "`validated` and NOT individually identifiable at once.",
     theory: "ch:lm",
+  },
+  //  COMMISSIONED 2026-09-27 (C15): how the Gibbs reactor SOLVES, not what it
+  //  is -- `claus-gibbs` owns that, and this page links to it.  It sits on the
+  //  numerics shelf because its question is the one that shelf exists for:
+  //  how the simulator arrives at an answer.  Every iterate it draws is a row
+  //  of the engine's own `newtonLog` (GibbsReactor.cpp / GibbsLog.cpp).
+  {
+    id: "element-potential",
+    label: "How a Gibbs reactor solves (element potentials)",
+    discipline: "Flowsheeting & numerics", kind: "construction",
+    status: "live",
+    teaches: "That a Gibbs reactor never solves for its amounts: it solves "
+      + "for ONE potential per element and the log of the total, M + 1 "
+      + "unknowns however many species, with every species' stationarity "
+      + "built into the change of variables -- so no amount can ever go "
+      + "negative.  Watch the engine's own Newton, iterate by iterate: its "
+      + "first step cut to 1/64 by the line search, then the digits doubling.  "
+      + "Check by hand that each species' chemical potential is the sum of "
+      + "its atoms' potentials, which puts every reaction at equilibrium at "
+      + "once.  See a liquid and a solid added not by a bigger Newton but by "
+      + "a test on the gas answer and a one-dimensional search.  And meet "
+      + "the feed on which the least-squares seed makes the Jacobian singular "
+      + "at iteration 0, and the primal re-seed the engine announces.",
+    theory: "ch:gibbs-reactor",
   },
 ];
 

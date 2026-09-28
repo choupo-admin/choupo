@@ -191,6 +191,9 @@ const EquilibriumLandscapesTool = lazy(() =>
 const DeclaredPathwaysTool = lazy(() =>
   import("./methods/DeclaredPathwaysTool.js")
     .then((m) => ({ default: m.DeclaredPathwaysTool })));
+const ElementPotentialTool = lazy(() =>
+  import("./methods/ElementPotentialTool.js")
+    .then((m) => ({ default: m.ElementPotentialTool })));
 const DryingCurveTool = lazy(() =>
   import("./methods/DryingCurveTool.js").then((m) => ({ default: m.DryingCurveTool })));
 const TieTriangleTool = lazy(() =>
@@ -443,6 +446,7 @@ export function MethodsWorkspace() {
             : tool === "approach-to-equilibrium" ? <ApproachToEquilibriumTool />
             : tool === "equilibrium-landscapes" ? <EquilibriumLandscapesTool />
             : tool === "declared-pathways" ? <DeclaredPathwaysTool />
+            : tool === "element-potential" ? <ElementPotentialTool />
             : tool === "drying" ? <DryingCurveTool />
             : tool === "breakthrough" ? <BreakthroughTool />
             : tool === "hunter-nash" ? <TieTriangleTool />

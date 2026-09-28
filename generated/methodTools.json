@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 43,
-  "registryTools": 43,
+  "liveTools": 44,
+  "registryTools": 44,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -314,6 +314,13 @@
       "discipline": "Flowsheeting & numerics",
       "teaches": "That Levenberg-Marquardt is the easy half.  Watch the damping being repriced up and down on a real NRTL fit -- and then meet the apparatus that makes the answer worth quoting: three measurements withheld from the fitter by data flow rather than by rule, an acceptance band declared with its reason BEFORE anything was fitted, and a verdict published as a WORD.  Turn the band and watch that word change while the residual does not move -- which is exactly why a real curation declares it first.  The same run is `validated` and NOT individually identifiable at once.",
       "href": "/app/?workspace=methods&tool=least-squares"
+    },
+    {
+      "id": "element-potential",
+      "label": "How a Gibbs reactor solves (element potentials)",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "That a Gibbs reactor never solves for its amounts: it solves for ONE potential per element and the log of the total, M + 1 unknowns however many species, with every species' stationarity built into the change of variables -- so no amount can ever go negative.  Watch the engine's own Newton, iterate by iterate: its first step cut to 1/64 by the line search, then the digits doubling.  Check by hand that each species' chemical potential is the sum of its atoms' potentials, which puts every reaction at equilibrium at once.  See a liquid and a solid added not by a bigger Newton but by a test on the gas answer and a one-dimensional search.  And meet the feed on which the least-squares seed makes the Jacobian singular at iteration 0, and the primal re-seed the engine announces.",
+      "href": "/app/?workspace=methods&tool=element-potential"
     }
   ]
 }

@@ -308,7 +308,9 @@ describe("the three tools are registered and shelved", () => {
     const shelf = METHOD_TOOLS
       .filter((t) => t.discipline === "Flowsheeting & numerics")
       .map((t) => t.id).sort();
-    expect(shelf).toEqual([...ids].sort());
+    //  `element-potential` (C15, 2026-09-27) sits on the same shelf; its
+    //  lesson and its tests are its own (elementPotentialLesson.test.ts).
+    expect(shelf).toEqual([...ids, "element-potential"].sort());
   });
 
   it("each names a REAL label in the Theory Guide", () => {

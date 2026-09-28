@@ -32,7 +32,7 @@
        visible: otherwise the previous run's file would be read as this one.
     3. Hand the per-output verdict to the tests (`provide`).  A test that
        reads a refused output throws the refusal; every OTHER test file still
-       runs, so a checkout without a build loses exactly the four files that
+       runs, so a checkout without a build loses exactly the files that
        need the engine and not the whole suite.
 
   NOT CHECKED, said plainly: whether the witness's answer is RIGHT (its own

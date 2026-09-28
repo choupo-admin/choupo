@@ -16419,19 +16419,26 @@ CO$_2$, H$_2$) is
 so $M = 3$, $N = 4$.  With $b_{\mathrm{C}} = b_{\mathrm{H}} =
 2\,n_0$, $b_{\mathrm{O}} = 2\,n_0$ where $n_0 = 0.5\,F$ is the half-feed.
 
-The Gibbs energies at 800~K from the data files are
+The Gibbs energies at 800~K the engine uses, read from the run's own
+\code{newtonLog} (its \code{standardState} rows; the reactor
+\code{shift} of \file{tutorials/steady/gibbs/gibbs12\_element\_potential\_newton}
+poses this same problem and logs them), are
 \begin{center}\small
 \begin{tabular}{lrr}
 \toprule
 species   & $g^{\circ}(800\,\mathrm{K})$ [kJ/mol] & $g^{\circ}/RT$\\
 \midrule
-CO        & $-282.0$  & $-42.4$\\
-H$_2$O    & $-389.3$  & $-58.5$\\
-CO$_2$    & $-577.5$  & $-86.8$\\
-H$_2$     & $-117.8$  & $-17.7$\\
+CO        & $-277.2$  & $-41.67$\\
+H$_2$O    & $-402.9$  & $-60.58$\\
+CO$_2$    & $-576.7$  & $-86.70$\\
+H$_2$     & $-112.9$  & $-16.98$\\
 \bottomrule
 \end{tabular}
 \end{center}
+(This table carried $-282.0$, $-389.3$, $-577.5$ and $-117.8$~kJ/mol
+until 2026-09-27: numbers no run of the engine produced, and ones that
+do not give the $K_{\mathrm{eq}}$ quoted below, which the engine's own
+values do: $\ln K = -\sum_i \nu_i g_i^{\circ}/RT = 1.433$.)
 
 Running \code{./choupoSolve tutorials/steady/gibbs/gibbs01\_water\_gas\_shift}
 gives, after six Newton steps with residual decay
@@ -16486,16 +16493,26 @@ reactions that corresponds to.
         composition is an upper bound but the actual exit composition
         is dictated by kinetics.  Run a CSTR or PFR instead.
   \item \textbf{Non-ideal gas.}  Above $\sim 10$~bar the
-        ideal-gas $\varphi_i = 1$ approximation breaks down; the
-        chemical potential picks up a fugacity-coefficient term that
-        the Gibbs reactor ignores.  Post-v1 cubic EOS will fix
-        this.
-  \item \textbf{Condensation.}  Single-phase Gibbs is correct only if
-        all species stay in the same phase at the reactor outlet.
-        For reformers running at temperatures where water condenses
-        on cooling, a multi-phase Gibbs (with liquid Gibbs energy +
-        vapour-liquid equilibrium) would be needed; does not
-        do this.
+        ideal-gas $\varphi_i = 1$ approximation breaks down.  Under a
+        declared real equation of state the element-potential method
+        folds $\ln\varphi_i$ into $g_i^{\circ}/RT$ and repeats the Newton
+        until $\varphi$ settles (\file{GibbsMethod.cpp},
+        \code{gibbsGasSolve}); the ideal-gas package is one pass.
+        (This bullet said until 2026-09-27 that the reactor ignored
+        $\varphi$; it had not for some time.)
+  \item \textbf{Condensation, and a solid.}  Single-phase Gibbs is
+        correct only if all species stay in one phase.  The
+        element-potential method TESTS the gas answer ($y_i P >
+        P^{\mathrm{sat}}_i$ for a condensable, $\sum_k \pi_k A_{ks} >
+        g_s^{\circ}/RT$ for a declared pure solid) and, when one phase
+        appears, finds how much of it forms by a one-dimensional bisection
+        on its amount, each step a gas-only Newton on the atoms that
+        remain --- not by enlarging the Newton.  One condensable at a
+        time (\code{reactiveFlash} and \code{directMin} carry a
+        multi-component liquid); two pure solids at once are refused.
+        (This bullet said until 2026-09-27 that no multi-phase Gibbs
+        was done.)  The EduTool \emph{How a Gibbs reactor solves} draws
+        both searches from the engine's own log.
   \item \textbf{Element rank deficiency.}  If $\mathbf{A}$ does not
         have full row rank (e.g.\ a redundant element constraint),
         the normal-equation matrix in the initial-guess step becomes
