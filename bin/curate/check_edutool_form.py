@@ -140,6 +140,10 @@ OWN_BLOCK_MARKERS = ('ff="monospace"', "ff='monospace'")
 #  lessons' strict settings) and weaker than ROUTE 1 (no check_lesson_symbols
 #  vocabulary reads it).  Reported apart, for that reason.
 TEX_DISPLAY_MARKER = '<Tex mode="display"'
+#  Matched as an ELEMENT, not a substring: attribute order is the author's
+#  (PcSaftTheoryTool writes `<Tex key={l} src={l} mode="display" />`), and a
+#  literal prefix read that page as equation-free the day it gained six.
+TEX_DISPLAY_RE = re.compile(r'<Tex\b[^>]*\bmode="display"')
 #  THE THIRD FORM (2026-09-02): an INDEX page.  RulesOfThumbTool scrolls and
 #  carries no equation on purpose -- every rule lives in the Design Guide and
 #  the page deep-links its chapters, because a quoted heuristic beside a named
@@ -274,7 +278,7 @@ def main():
         own = any(m in code for m in OWN_BLOCK_MARKERS)
         if shared:
             shared_route.append((tid, label))
-        elif TEX_DISPLAY_MARKER in code:
+        elif TEX_DISPLAY_RE.search(code):
             tex_route.append((tid, label))
         elif own:
             own_route.append((tid, label))

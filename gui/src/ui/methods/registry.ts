@@ -411,12 +411,15 @@ export const METHOD_TOOLS: MethodTool[] = [
     kind: "notes", status: "live",
     teaches: "That PC-SAFT builds a residual HELMHOLTZ energy from named "
       + "contributions -- hard chain, dispersion, association -- so one "
-      + "surface yields both phases and their densities, which no activity "
-      + "model on this shelf can express.  The temperature-dependent "
+      + "surface yields both phases and their densities (an activity model "
+      + "needs a separate vapour model, and a Henry standard state for a "
+      + "dissolved supercritical gas).  The temperature-dependent "
       + "segment diameter, the four zeta moments, the perturbation series "
       + "in packing fraction, van der Waals one-fluid mixing with k_ij as "
       + "a CORRECTION rather than the whole interaction, and Wertheim "
-      + "TPT1's site-fraction fixed point.  And the lesson this repository "
+      + "TPT1's site-fraction fixed point closed into a_assoc; then the "
+      + "derivatives that give Z, P and ln phi, and why two density roots "
+      + "are candidate phases, not an equilibrium.  And the lesson this repository "
       + "paid for: the association SCHEME is part of the fit -- water "
       + "curated as 4C instead of the paper's 2B passed a pure-density "
       + "anchor by coincidence while the mixture flash collapsed.",

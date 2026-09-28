@@ -1626,6 +1626,37 @@ accepts today, and that is a policy call.
      (fix it) from what is the reviewer's TASTE in organisation (judge it
      against the rulings already made -- and the pedagogy is Vitor's).
 
+**C21. PC-SAFT, DERIVED: THREE FALSE CLAIMS OUT, THE DERIVATION CLOSED
+     (asked 2026-09-28; Vitor forwarded an external review of
+     `pcsaft-theory`).**  Every claim checked against `PCSAFT.cpp` and the
+     flash20 golden before anything moved.  ERRORS fixed: "a gamma-model
+     cannot even express a supercritical component" (gamma-phi with a Henry
+     standard state does -- Choupo ships Henry pairs); "the UNIFAC fallback
+     leaves an ideal mixture" (Psi = 1 makes ONE group pair athermal; the
+     combinatorial term and every other pair stay -- the UNIFAC page's own
+     heading said the same and is corrected with it); "flash20 loses to NRTL
+     by only a few per cent" (its golden: K_ethanol 11.47 vs 3.896, V/F
+     0.649 vs 0.512, and the reference is a fitted model, not a
+     measurement).  Found here, NOT in the review: the page said the engine
+     refuses a scheme that does not match its parameter set -- it refuses an
+     unknown scheme and a partial trio only; a mismatched known scheme is
+     caught by the mixture witness's golden alone.  GAPS closed (the review
+     was right that a derivation stopping before the property is not one):
+     reduced A_res/(NkT) and NUMBER density defined; both dispersion
+     averages written out with epsilon/kT; the association closure X ->
+     a_assoc; a new step 6 from the surface to Z, P and ln phi, with the
+     root scan and why two roots are candidate phases, not an equilibrium.
+     Every equation KaTeX; four checks (the review's three + the roots).
+     The page had NO test; it has one now.  `check_edutool_form` matches the
+     KaTeX display as an element (attribute order is the author's).
+     DECLINED: re-sequencing (spheres -> chains -> attraction -> sites is
+     already the order) and a live P(rho) curve -- no propsDict op scans
+     density, so it is a new engine feature, not a page edit; candidate
+     below, not faked in TypeScript.
+     CANDIDATE (not commissioned): a density-scan op or witness so the
+     PC-SAFT page can draw P(rho) at fixed T with the unstable middle
+     branch visible.
+
 **C13. "oxygen" FOUND NOTHING IN THE PROPERTY EXPLORER (reported 2026-09-27).**
      The ENGINE resolves it: `O2.dat:53` declares `aliases ( oxygen );`,
      `data/standards/components/ALIASES:26` maps it, and

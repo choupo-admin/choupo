@@ -186,13 +186,15 @@ export function UnifacTheoryTool(): JSX.Element {
       ))}
 
       <Alert variant="light" color="orange"
-        title="Two models fall back to ideal, and it is NOT the same failure">
+        title="Two models drop an unfitted interaction, and it is NOT the same failure">
         <Text size="sm">
           On the local-composition page you met NRTL running a pair at{" "}
           <Code>τ = 0</Code> when nobody had fitted it.  UNIFAC does the
           arithmetically identical thing — a missing <Code>a_mn</Code> is
           taken as 0, which makes <Code>Ψ = 1</Code>, an athermal group pair.
-          Same symptom.  <strong>Different problem, and a student who
+          (That pair only: the combinatorial term and every other group pair
+          stay, so the mixture does not become ideal — for NRTL on a binary
+          it does.)  Same symptom.  <strong>Different problem, and a student who
           conflates them will look for the wrong remedy.</strong>
         </Text>
         <Text size="sm" mt={6}>
