@@ -904,6 +904,28 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **PAUSED 2026-09-28, at Vítor's request (his weekly budget).  RESUME HERE.**
+> `main` holds everything validated.  Two finished branches wait ONLY on a
+> golden re-record that the session's permission classifier refused to the
+> assistant; each was rebased onto `main` a157bfabb and revalidated, and
+> each is pushed to origin as a backup:
+>   1. `claude/det2-flagship-first-law` (D-ET2, the flagship first law):
+>      163 rows move in 10 cases, list shown to Vítor 2026-09-27;
+>      `bin/runTests --record tutorials/plant/ChemicalPlantTutorial
+>      tutorials/steady/drying/solidDryer01_sugar
+>      tutorials/steady/drying/sprayDryer0{1_sugar,2_residence_sweep,3_pressure_nozzle,4_profiles,5_whey,6_rea,7_design}
+>      tutorials/steady/reactors/cstr07_lhhw_methylAcetate`.
+>   2. `claude/wanghenke-balance-stop` (§5 A7 item (5), Wang-Henke stops on
+>      its balances): 332 rows move in 15 cases, 6 beyond tolerance, list
+>      shown to Vítor 2026-09-28; `bin/runTests --record
+>      tutorials/steady/optimisation/pareto01_purity_energy
+>      tutorials/steady/flowsheets/process05_isomerization_recycle`.
+> After the record: commit the goldens on the branch, rebase on `main`,
+> rerun the branch's cases, fast-forward `main`.  Then: `make wasm` for the
+> C15 page's `newtonLog`; C16 slice 2 (named in its entry); the named-not-
+> fixed items of 2026-09-27/28 in §5.
+
+
 > **2026-09-24 — THIS SECTION EXISTS BECAUSE A REQUEST WAS LOST.**  Vítor
 > asked, the week of 2026-09-15, for an EduTool on the least-squares
 > minimisation used in property estimation.  It was not built and it was not
