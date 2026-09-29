@@ -343,7 +343,11 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
                           " (X_c - X_eq)/(R_c A) = " << tau << " s, with"
                           " dPhi/dt = -f(Phi)/tau";
             if (curve_.shape() == DryingCurve::Shape::power
-                && std::fabs(curve_.exponent() - 1.0) > 1e-12)
+                && std::fabs(curve_.exponent() - 1.0) <= 1e-12)
+                curveLines << ", which integrates to Phi(t') = exp(-t'/tau):"
+                              " n = 1 IS the linear curve, an exponential"
+                              " tail that never reaches X_eq";
+            else if (curve_.shape() == DryingCurve::Shape::power)
             {
                 const scalar n1 = 1.0 - curve_.exponent();
                 curveLines << ", which integrates to Phi(t') = [1 - ("

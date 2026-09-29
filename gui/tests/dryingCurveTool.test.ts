@@ -348,6 +348,17 @@ describe("criticalTimeState — the OMITTED t_critical is information", () => {
 // ---- The engine's own falling-rate sentence ---------------------------------
 
 describe("extractFallingRateNotice — quoted, never paraphrased", () => {
+  it("quotes a DECLARED curve's sentence too -- the witness declares f = Phi^1", () => {
+    const line = "  [batchDryer 'dryer'] CHARACTERISTIC DRYING CURVE (van Meel"
+      + " 1958), declared: below X_c = 0.1200 kg/kg, R = R_c f(Phi), Phi ="
+      + " (X - X_eq)/(X_c - X_eq), f = Phi^1.000; source: a hypothetical"
+      + " teaching curve";
+    const n = extractFallingRateNotice(["  [batchDryer 'dryer'] wet bulb", line]
+      .join("\n"), "dryer");
+    expect(n).toBe(line.trim().replace("[batchDryer 'dryer'] ", ""));
+    expect(extractFallingRateNotice(line, "someOtherTray")).toBeNull();
+  });
+
   it("lifts the engine's sentence out of the log with its tag stripped", () => {
     const n = extractFallingRateNotice(DRYER01_LOG, "dryer");
     expect(n).not.toBeNull();
@@ -384,6 +395,14 @@ describe("extractFallingRateNotice — quoted, never paraphrased", () => {
 // misses its dict would run the engine on the wrong question).
 
 describe("the classroom witness — dryer01 bundled and knob-addressable", () => {
+  it("the witness declares the power curve the n knob writes into", () => {
+    //  The knob addresses `exponent`; a witness that declared no curve (or
+    //  a table) would leave the knob nothing to write.
+    const raw = tutorialByName(DRYING_WITNESS)!.files.rawFiles!["system/flowsheetDict"]!;
+    expect(raw).toMatch(/shape\s+power;/);
+    expect(raw).toMatch(/^\s*exponent\s+1\.0;/m);
+    expect(raw).toMatch(/source\s+"[^"]*hypothetical teaching curve/);
+  });
   it("is in the bundled corpus, a choupoBatch batchDryer case with raw dicts", () => {
     const entry = tutorialByName(DRYING_WITNESS);
     expect(entry).toBeDefined();

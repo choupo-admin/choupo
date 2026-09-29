@@ -168,14 +168,18 @@ describe("the printed arithmetic is the arithmetic the engine runs", () => {
     //  The engine's one expression, read back out of the source: a page
     //  printing a different law would be teaching against its own solver.
     //  Since 2026-09-29 the law has two halves: BatchDryer normalises the
-    //  free moisture and DryingCurve's LINEAR branch -- the one this page's
-    //  witness runs, declaring no curve -- returns Phi itself.
+    //  free moisture and DryingCurve evaluates the curve on it.  The page's
+    //  witness declares the POWER curve f = Phi^n (n = 1 by default, the
+    //  n knob moves it), so the page prints the power branch.
     expect(ENGINE).toContain("R_c_ * curve_.f((X - X_eq_) / (X_c_ - X_eq_))");
+    expect(CURVE).toContain("case Shape::power: return std::pow(phi, n_);");
     expect(CURVE).toMatch(/default:\s+return phi;/);
-    expect(CURVE).toContain("if (!op->found(\"dryingCurve\")) return c;          // linear, undeclared");
     const f = step(4).formula!.replace(/\s+/g, "");
-    expect(f).toContain(String.raw`R&=R_c\,\frac{X-X_\mathrm{eq}}{X_c-X_\mathrm{eq}}`);
+    expect(f).toContain(String.raw`R&=R_c\,f(\Phi)`);
+    expect(f).toContain(String.raw`\Phi=\frac{X-X_\mathrm{eq}}{X_c-X_\mathrm{eq}}`);
+    expect(f).toContain(String.raw`f(\Phi)=\Phi^{n}`);
   });
+
 
   it("prints the strict inequality the classifier uses", () => {
     //  BatchDryer::flux_ is `if (X > X_c_) return R_c_;`, so a sample sitting

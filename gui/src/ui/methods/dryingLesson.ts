@@ -214,14 +214,15 @@ R_c &= k_Y \left( Y_\mathrm{sat}(T_\mathrm{wb}) - Y \right) \qquad [\text{kg/(m}
       + "heat-sensitive product is actually at risk, and it is the opposite "
       + "end of the curve from where the hot air first worried you.",
     formula: String.raw`\begin{aligned}
-R &= R_c\, \frac{X - X_\mathrm{eq}}{X_c - X_\mathrm{eq}}\\[4pt]
-X(t) - X_\mathrm{eq} &= (X_c - X_\mathrm{eq}) \exp\!\left(-\frac{t - t_c}{\tau}\right),
+R &= R_c\, f(\Phi), \qquad \Phi = \frac{X - X_\mathrm{eq}}{X_c - X_\mathrm{eq}},
+\qquad f(\Phi) = \Phi^{n}\\[4pt]
+n = 1:\quad X(t) - X_\mathrm{eq} &= (X_c - X_\mathrm{eq}) \exp\!\left(-\frac{t - t_c}{\tau}\right),
 \qquad \tau = \frac{m_s (X_c - X_\mathrm{eq})}{R_c\, A}
 \end{aligned}`,
     where: [
       { sym: "R", means: "The drying flux at moisture content X — falling "
-        + "linearly here from R_c at the critical point to zero at "
-        + "equilibrium.  Note it is not the R of any other page: not a reflux "
+        + "from R_c at the critical point to zero at equilibrium, along the "
+        + "curve f (linearly when n = 1).  Note it is not the R of any other page: not a reflux "
         + "ratio, not the gas constant.", unit: "kg/(m²·s)" },
       { sym: "X_\\mathrm{eq}",
         means: "The EQUILIBRIUM moisture content — where the "
@@ -235,13 +236,29 @@ X(t) - X_\mathrm{eq} &= (X_c - X_\mathrm{eq}) \exp\!\left(-\frac{t - t_c}{\tau}\
         + "rate, so the two periods are not independently parameterised.",
         unit: "s" },
       { sym: "t", means: "Elapsed time from the start of the run.", unit: "s" },
+      { sym: "\\Phi", means: "The NORMALISED free moisture: 1 at the critical "
+        + "point, 0 at equilibrium.  On this coordinate every material's "
+        + "falling period starts and ends at the same two points.",
+        unit: "—" },
+      { sym: "f", means: "The CHARACTERISTIC DRYING CURVE (van Meel, 1958): "
+        + "the rate relative to the constant rate, f = R/R_c, as a function "
+        + "of Φ.  It is a property of the material's internal transport.",
+        unit: "—" },
+      { sym: "n", means: "The exponent of the power-law curve — the knob.  "
+        + "n = 1 is the linear law and its exponential tail (the second "
+        + "line); n < 1 keeps the rate high and reaches X_eq in finite time; "
+        + "n > 1 drops it early and leaves a slower, algebraic tail.",
+        unit: "—" },
     ],
-    note: "TWO HONESTY MARKS ON THIS STEP.  The linear falling-rate law above "
-      + "is a MODELLING CHOICE the engine announces on every run in those "
-      + "words — the simplest defensible law, not a mechanism: no internal "
-      + "diffusion coefficient, no receding front.  It is this witness's "
-      + "choice, not the engine's only one: a case may declare the material's "
-      + "measured characteristic drying curve instead (van Meel's normalised "
+    note: "TWO HONESTY MARKS ON THIS STEP.  The linear falling-rate law "
+      + "(n = 1) is a MODELLING CHOICE, not a mechanism: no internal "
+      + "diffusion coefficient, no receding front.  Undeclared, the engine "
+      + "announces it on every run in those words; this witness DECLARES it "
+      + "as the power curve f = Φⁿ with n = 1 — so the n knob has a number "
+      + "to move — and the engine then quotes the declaration and its "
+      + "source, which says it is a hypothetical teaching curve.  It is this "
+      + "witness's choice, not the engine's only one: a case may declare the "
+      + "material's measured characteristic drying curve instead (van Meel's normalised "
       + "rate against normalised moisture — a power law or a table of points, "
       + "which can carry the two falling-rate periods many real materials "
       + "show; the witness dryer02_characteristic_curves runs four).  And the "

@@ -391,9 +391,18 @@ export function criticalTimeState(k: DryingKpis): CriticalTimeState {
 //   (X_c - X_eq) -- the simplest defensible falling-rate law, and it is a
 //   CHOICE this case makes
 //
-// The honesty chip quotes THAT, verbatim, rather than a paraphrase of it.
+// and a DECLARED characteristic curve -- the witness declares f = Phi^n with
+// n = 1 since 2026-09-29, so the n knob has a number to write -- is announced
+// as
+//
+//   [batchDryer 'dryer'] CHARACTERISTIC DRYING CURVE (van Meel 1958),
+//   declared: below X_c = 0.1200 kg/kg, R = R_c f(Phi), ... f = Phi^1.000;
+//   source: ...
+//
+// The honesty chip quotes WHICHEVER of the two the run printed, verbatim,
+// rather than a paraphrase of it.
 
-const MODELLING_CHOICE_MARK = "MODELLING CHOICE";
+const FALLING_RATE_MARKS = ["MODELLING CHOICE", "CHARACTERISTIC DRYING CURVE"];
 const DRYER_TAG = /\[batchDryer '([^']*)'\]/;
 
 /**
@@ -407,7 +416,8 @@ export function extractFallingRateNotice(
   log: string | undefined, unit?: string | null,
 ): string | null {
   if (!log) return null;
-  const lines = log.split("\n").filter((l) => l.includes(MODELLING_CHOICE_MARK));
+  const lines = log.split("\n")
+    .filter((l) => FALLING_RATE_MARKS.some((m) => l.includes(m)));
   if (lines.length === 0) return null;
   const strip = (line: string): string => {
     const close = line.indexOf("] ");
@@ -487,6 +497,19 @@ export const DRYING_KNOBS: readonly DryingKnob[] = [
     why: "the MEASURED break between the two periods -- drag it and watch "
       + "the corner in R(X) move to exactly where you put it, because in "
       + "this model X_c is an input, not a result" },
+  // `exponent  1.0;` inside operation.dryingCurve -- the witness declares
+  // its linear falling rate as the power curve f = Phi^n with n = 1, so this
+  // knob bends the curve without adding a word to the dict.
+  { id: "curveExponent", label: "drying-curve exponent n (f = Φⁿ)",
+    file: FLOWSHEET, key: "exponent",
+    def: 1, min: 0.3, max: 3, step: 0.1, unit: "",
+    why: "the SHAPE of the falling-rate period, f = R/R_c = Φⁿ with Φ = "
+      + "(X - X_eq)/(X_c - X_eq): n = 1 is the linear law and its "
+      + "exponential tail; n < 1 keeps the rate high and reaches X_eq in "
+      + "FINITE time; n > 1 drops the rate early and leaves an algebraic "
+      + "tail slower than the exponential.  The corner at X_c and the whole "
+      + "constant-rate period do not move -- the curve is a property of the "
+      + "material's internal transport, not of the air" },
   // controlDict declares `endTime 3000;` bare (the seconds live in a comment).
   { id: "endTime", label: "horizon endTime (s)", file: CONTROL, key: "endTime",
     def: 3000, min: 500, max: 20000, step: 100, unit: "",

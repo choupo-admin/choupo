@@ -1749,9 +1749,19 @@ accepts today, and that is a policy call.
      on: `solidDryer01_sugar`'s hot air declares no phase, so it is priced
      as a liquid; with `phase gas;` its pinned 372.66 kW energy debt falls
      to -6.88 kW (the rest is that unit's cp-based balance).  Moving its
-     golden is his decision.  **NEXT:** (3) the drying EduTool with the
-     curve shape as a knob; the solid's falling-rate warm-up (a solid
-     energy balance) is the named physics gap in both dryers.
+     golden is his decision.  **SLICE 3 BUILT 2026-09-29 (Vitor chose the
+     small option: "Botao n na tool batch"):** the `drying` EduTool gains
+     the knob n of f = Phi^n.  The knob writes a NUMBER, so the witness
+     `dryer01` now DECLARES its falling rate as `dryingCurve { shape
+     power; exponent 1.0; source "... hypothetical teaching curve"; }` --
+     n = 1 is the linear law, and its golden is unmoved; the engine's hand
+     check line gained the n = 1 closed form (the exponential tail).  The
+     honesty chip quotes whichever falling-rate sentence the run printed
+     (MODELLING CHOICE undeclared, CHARACTERISTIC DRYING CURVE declared);
+     step 4 of the lesson prints R = R_c f(Phi), f = Phi^n with Phi, f and
+     n glossed.  Considered and NOT taken: a tool for the continuous dryer
+     (Vitor's option 2, deferred).  The solid's falling-rate warm-up (a
+     solid energy balance) stays the named physics gap in both dryers.
 
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o
