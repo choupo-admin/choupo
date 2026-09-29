@@ -111,6 +111,10 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
             " be > 0 kg/kg -- the break between the constant-rate and the"
             " falling-rate periods is measured, not derivable");
 
+    //  The SHAPE of the falling-rate period: the material's characteristic
+    //  drying curve, declared or (absent) linear.  ONE home: DryingCurve.
+    curve_ = DryingCurve::read(op, who);
+
     if (!op->found("air"))
         throw std::runtime_error(who + ": operation.air {} is missing -- the"
             " drying air is a DECLARED, CONSTANT environment (it is not a"
@@ -346,6 +350,57 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
             ? m_solid_ * (X_0_ - X_c_) / (R_c_ * area_) : 0.0;
         const scalar tau = m_solid_ * (X_c_ - X_eq_) / (R_c_ * area_);
 
+        //  The falling-rate SHAPE and its hand check, per declared curve.
+        //  The undeclared linear curve keeps its sentence word for word.
+        std::ostringstream curveLines;
+        const std::string tag = "  [batchDryer '" + name_ + "'] ";
+        if (curve_.shape() == DryingCurve::Shape::linear)
+            curveLines << tag << "MODELLING CHOICE, not physics: below X_c = "
+                       << std::fixed << std::setprecision(4) << X_c_
+                       << " kg/kg the flux falls LINEARLY in the free moisture,"
+                          " R = R_c (X - X_eq)/(X_c - X_eq) -- the simplest"
+                          " defensible falling-rate law, and it is a CHOICE"
+                          " this case makes"
+                       << (curve_.declared() ? " (declared: dryingCurve { shape"
+                                               " linear; })" : "") << "\n"
+                       << tag << "hand check: constant rate to X_c in "
+                       << std::setprecision(1) << tCritPred
+                       << " s, then an exponential tail of time constant tau"
+                          " = m_s (X_c - X_eq)/(R_c A) = " << tau << " s\n";
+        else
+        {
+            curveLines << tag << "CHARACTERISTIC DRYING CURVE (van Meel 1958),"
+                          " declared: below X_c = " << std::fixed
+                       << std::setprecision(4) << X_c_ << " kg/kg, R = R_c"
+                          " f(Phi), Phi = (X - X_eq)/(X_c - X_eq), f = ";
+            if (curve_.shape() == DryingCurve::Shape::power)
+                curveLines << "Phi^" << std::setprecision(3) << curve_.exponent();
+            else
+                curveLines << "a measured table, interpolated linearly";
+            curveLines << "; source: " << curve_.source() << "\n"
+                       << tag << "hand check: constant rate to X_c in "
+                       << std::setprecision(1) << tCritPred << " s; the"
+                          " falling period runs on the time scale tau = m_s"
+                          " (X_c - X_eq)/(R_c A) = " << tau << " s, with"
+                          " dPhi/dt = -f(Phi)/tau";
+            if (curve_.shape() == DryingCurve::Shape::power
+                && std::fabs(curve_.exponent() - 1.0) > 1e-12)
+            {
+                const scalar n1 = 1.0 - curve_.exponent();
+                curveLines << ", which integrates to Phi(t') = [1 - ("
+                           << std::setprecision(3) << n1 << ") t'/tau]^(1/"
+                           << n1 << ")";
+                if (n1 > 0.0)
+                    curveLines << " -- it REACHES X_eq in finite time, t' = "
+                                  "tau/(1-n) = " << std::setprecision(1)
+                               << tau / n1 << " s";
+                else
+                    curveLines << " -- an algebraic, not exponential, tail:"
+                                  " slower than the linear curve's";
+            }
+            curveLines << "\n";
+        }
+
         std::cout << "  [batchDryer '" << name_ << "'] solid '" << sol.name()
                   << "' " << std::fixed << std::setprecision(4) << m_solid_
                   << " kg dry, moisture '" << moist.name() << "', X_0 = "
@@ -372,17 +427,7 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
                   << sol.sorpC() << ", K = " << sol.sorpK() << ") at the"
                      " air's own a_w = " << std::setprecision(4) << aw_
                   << ", NOT a declared number\n"
-                  << "  [batchDryer '" << name_ << "'] MODELLING CHOICE, not"
-                     " physics: below X_c = " << std::setprecision(4) << X_c_
-                  << " kg/kg the flux falls LINEARLY in the free moisture,"
-                     " R = R_c (X - X_eq)/(X_c - X_eq) -- the simplest"
-                     " defensible falling-rate law, and it is a CHOICE this"
-                     " case makes\n"
-                  << "  [batchDryer '" << name_ << "'] hand check: constant"
-                     " rate to X_c in " << std::fixed << std::setprecision(1)
-                  << tCritPred << " s, then an exponential tail of time"
-                     " constant tau = m_s (X_c - X_eq)/(R_c A) = " << tau
-                  << " s\n"
+                  << curveLines.str()
                   << "  [batchDryer '" << name_ << "'] latent load at the"
                      " constant rate = R_c A lambda(T_wb) = "
                   << std::setprecision(4) << (R_c_ * area_ * lambda_wb_ / 1000.0)
@@ -409,7 +454,7 @@ scalar BatchDryer::moistureOf_(const sVector& y) const
 scalar BatchDryer::flux_(scalar X) const
 {
     if (X > X_c_) return R_c_;
-    return R_c_ * (X - X_eq_) / (X_c_ - X_eq_);
+    return R_c_ * curve_.f((X - X_eq_) / (X_c_ - X_eq_));
 }
 
 sVector BatchDryer::odeDerivative(const sVector& y) const

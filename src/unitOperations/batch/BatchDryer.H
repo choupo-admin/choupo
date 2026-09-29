@@ -63,9 +63,13 @@ Description
 
               R_c = k_Y ( Y_sat(T_wb) - Y )            [kg/(m^2 s)]
 
-      2.  FALLING-RATE period, X <= X_c.  A MODELLING CHOICE, announced as
-          one and never presented as physics: the flux falls LINEARLY in
-          the free moisture,
+      2.  FALLING-RATE period, X <= X_c.  The flux follows the material's
+          CHARACTERISTIC DRYING CURVE (van Meel 1958; DryingCurve.H),
+          R = R_c f(Phi), Phi = (X - X_eq)/(X_c - X_eq), with f declared in
+          `operation.dryingCurve {}` as linear, power (f = Phi^n) or a
+          measured table (2026-09-29).  Absent the block the curve is
+          LINEAR -- a MODELLING CHOICE, announced as one and never presented
+          as physics: the flux falls linearly in the free moisture,
 
               R = R_c (X - X_eq) / (X_c - X_eq)
 
@@ -100,6 +104,7 @@ Description
 #pragma once
 
 #include "BatchUnitOperation.H"
+#include "unitOperations/heatTransfer/DryingCurve.H"
 
 #include <map>
 #include <string>
@@ -161,6 +166,7 @@ private:
     scalar area_  = 0.0;          // exposed drying area          [m^2]
     scalar kY_    = 0.0;          // gas-film coefficient  [kg/(m^2 s)] per dY
     scalar X_c_   = 0.0;          // critical moisture            [kg/kg]
+    DryingCurve curve_;           // f(Phi) below X_c (DryingCurve.H)
 
     // Declared air environment.
     scalar T_air_ = 0.0;          // K

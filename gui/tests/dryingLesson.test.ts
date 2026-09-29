@@ -42,6 +42,9 @@ const SRC = readFileSync(
 const ENGINE = readFileSync(
   new URL("../../src/unitOperations/batch/BatchDryer.cpp", import.meta.url),
   "utf-8");
+const CURVE = readFileSync(
+  new URL("../../src/unitOperations/heatTransfer/DryingCurve.cpp", import.meta.url),
+  "utf-8");
 
 const prose = (s: string): string => s.replace(/\s+/g, " ");
 const step = (n: number) => DRYING_STEPS.find((s) => s.n === n)!;
@@ -121,7 +124,12 @@ describe("the honesty half — what is DECLARED versus what is COMPUTED", () => 
     const note = prose(step(4).note!);
     expect(note).toContain("MODELLING CHOICE");
     expect(note).toContain("no internal diffusion coefficient");
-    expect(note).toContain("ONE falling-rate period");
+    //  Until 2026-09-29 the note said the model had "only ONE falling-rate
+    //  period"; a declared characteristic curve (a table) can carry two, so
+    //  the note says whose choice the linear law is and forbids the old claim.
+    expect(note).not.toContain("only ONE falling-rate period");
+    expect(note).toContain("this witness's choice, not the engine's only one");
+    expect(note).toContain("two falling-rate periods");
     //  The sharpest one: the page describes a warm-up the model does not
     //  integrate, and must say so in the same breath.
     expect(note).toContain("NOT computed");
@@ -159,7 +167,12 @@ describe("the printed arithmetic is the arithmetic the engine runs", () => {
   it("prints the falling-rate law BatchDryer.cpp evaluates", () => {
     //  The engine's one expression, read back out of the source: a page
     //  printing a different law would be teaching against its own solver.
-    expect(ENGINE).toContain("R_c_ * (X - X_eq_) / (X_c_ - X_eq_)");
+    //  Since 2026-09-29 the law has two halves: BatchDryer normalises the
+    //  free moisture and DryingCurve's LINEAR branch -- the one this page's
+    //  witness runs, declaring no curve -- returns Phi itself.
+    expect(ENGINE).toContain("R_c_ * curve_.f((X - X_eq_) / (X_c_ - X_eq_))");
+    expect(CURVE).toMatch(/default:\s+return phi;/);
+    expect(CURVE).toContain("if (!op->found(\"dryingCurve\")) return c;          // linear, undeclared");
     const f = step(4).formula!.replace(/\s+/g, "");
     expect(f).toContain(String.raw`R&=R_c\,\frac{X-X_\mathrm{eq}}{X_c-X_\mathrm{eq}}`);
   });

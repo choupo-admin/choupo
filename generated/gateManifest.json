@@ -1100,6 +1100,11 @@
       "exit": 0,
       "claim": "check_regressed_pairs: OK -- 5 regressed NRTL record(s) reproduced by re-running the case each names (ethanol-ethylAcetate (catalogue, validated); isopropanol-water (catalogue, validated); methanol-methylAcetate (catalogue, validated); methanol-water (catalogue, validated); acetone-methanol (case-local, notValidated)): parameters, evidence identity, validity span and held-out verdict equal what the run regresses now; only validated fits are in the catalogue; `interim` is voiced at run time; every dataset carries DOI, archive sha256, CAS+InChIKey and per-point uncertainty.  NOT checked: whether the transcribed measurements agree with the articles (a curator's read-back) or whether the band was well chosen.",
       "seconds": 1.1
+    },
+    "check_drying_curve": {
+      "exit": 0,
+      "claim": "check_drying_curve: OK -- the batch dryer's declared characteristic drying curve is the one its flux runs on: the linear, Phi^2 and Phi^0.5 closed forms reproduced from each tray's own KPIs, the table tray between linear and convex, and six malformed curves refused by name.  NOT checked: that any curve describes a real material (every curve in the witness is declared hypothetical).",
+      "seconds": 0.1
     }
   }
 }

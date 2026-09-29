@@ -1,0 +1,147 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  dryer02_characteristic_curves  --  THE CHARACTERISTIC DRYING CURVE.
+
+  Four identical trays of dryer01 (2.0 kg dry sucrose at X_0 = 0.30, 0.5 m2,
+  air at 60 C and Y = 0.010, X_c = 0.12) that differ in ONE thing: the
+  shape of the falling-rate period.  van Meel (Chem. Eng. Sci. 9 (1958)
+  36-44) observed that for many materials the drying rate normalised by the
+  constant rate is a single function of the normalised free moisture,
+
+      Phi = (X - X_eq)/(X_c - X_eq),     f = R/R_c = f(Phi),   f(1) = 1,
+                                                              f(0) = 0,
+
+  so ONE measured curve describes the material at any air condition -- the
+  air sets R_c (the wet bulb) and X_eq (the isotherm), the curve sets the
+  rest.  The shape is the material's, MEASURED; each tray declares one
+  (src/unitOperations/heatTransfer/DryingCurve.H):
+
+    linear    f = Phi              the textbook tail, dryer01's law, declared
+    concave   f = Phi^0.5          rate held high: reaches X_eq in FINITE
+                                   time, t' = tau/(1 - n) = 2 tau
+    convex    f = Phi^2            rate dropping early: an algebraic tail,
+                                   Phi = 1/(1 + t'/tau), slower than linear
+    measured  a (Phi, f) table     S-shaped, interpolated linearly
+
+  tau = m_s (X_c - X_eq)/(R_c A) = 595.0 s (dryer01's hand estimate) is the
+  SAME for all four -- the constant-rate period, t_c = 1027.7 s, too.  What
+  differs is only the falling period, and the end-of-run moisture, at
+  t' = 3000 - 1027.7 = 1972.3 s into it:
+
+    linear    X = X_eq + (X_c - X_eq) exp(-t'/tau)   = 0.019584  (= dryer01)
+    convex    X = X_eq + (X_c - X_eq)/(1 + t'/tau)   = 0.03995
+    concave   X = X_eq = 0.015798, reached at t' = 2 tau = 1190 s -- the
+              engine lands 3.8e-8 kg/kg BELOW it (2.4e-6 relative): RK4
+              stepping onto a point where f = Phi^0.5 has an infinite
+              slope, the size (dt/tau)^2 (X_c - X_eq)/4 predicts.  Not
+              clamped (no clamp in this unit, by rule); it shrinks with dt.
+    measured  0.03502 (no closed form), between linear and convex, as its
+              points lie below the linear curve
+  bin/curate/check_drying_curve.py recomputes all of this from the run.
+
+  EVERY CURVE HERE IS HYPOTHETICAL.  No measured characteristic curve of
+  sucrose is in this repository; the shapes are chosen to span what
+  materials do, and each tray says so in its `source`.  A real design reads
+  its curve from a thin-layer drying test of ITS material.
+\*---------------------------------------------------------------------------*/
+
+// the vessels' initial holdups live in 0/internalState; flowsheetDict
+// carries the topology and the operation only
+
+units
+(
+    {
+        name        linear;
+        type        batchDryer;
+        operation
+        {
+            area              0.5 m2;
+            k_Y               [1 -2 -1 0 0]  0.05;
+            criticalMoisture  0.12;         // kg/kg dry solid -- MEASURED
+            air
+            {
+                T        333.15 K;
+                Y        0.010;
+                carrier  N2;
+            }
+            dryingCurve
+            {
+                shape   linear;             // dryer01's law, declared
+            }
+        }
+    }
+    {
+        name        concave;
+        type        batchDryer;
+        operation
+        {
+            area              0.5 m2;
+            k_Y               [1 -2 -1 0 0]  0.05;
+            criticalMoisture  0.12;         // kg/kg dry solid -- MEASURED
+            air
+            {
+                T        333.15 K;
+                Y        0.010;
+                carrier  N2;
+            }
+            dryingCurve
+            {
+                shape     power;
+                exponent  0.5;
+                source    "hypothetical teaching curve -- not a measured material";
+            }
+        }
+    }
+    {
+        name        convex;
+        type        batchDryer;
+        operation
+        {
+            area              0.5 m2;
+            k_Y               [1 -2 -1 0 0]  0.05;
+            criticalMoisture  0.12;         // kg/kg dry solid -- MEASURED
+            air
+            {
+                T        333.15 K;
+                Y        0.010;
+                carrier  N2;
+            }
+            dryingCurve
+            {
+                shape     power;
+                exponent  2;
+                source    "hypothetical teaching curve -- not a measured material";
+            }
+        }
+    }
+    {
+        name        measured;
+        type        batchDryer;
+        operation
+        {
+            area              0.5 m2;
+            k_Y               [1 -2 -1 0 0]  0.05;
+            criticalMoisture  0.12;         // kg/kg dry solid -- MEASURED
+            air
+            {
+                T        333.15 K;
+                Y        0.010;
+                carrier  N2;
+            }
+            dryingCurve
+            {
+                shape   table;
+                phi     ( 0  0.2   0.5  0.8   1 );
+                f       ( 0  0.05  0.3  0.75  1 );
+                source  "hypothetical teaching curve, S-shaped -- not a measured material";
+            }
+        }
+    }
+);

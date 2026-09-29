@@ -3341,6 +3341,20 @@ PYEOF
     fi
     rm -f /tmp/diafil.$$
 
+    # drying-curve gate (2026-09-29).  The batch dryer's falling-rate period
+    # follows a DECLARED characteristic drying curve (van Meel 1958); the gate
+    # recomputes the linear, Phi^2 and Phi^0.5 closed forms from each tray's
+    # own KPIs in dryer02 and fires six malformed curves through the reader.
+    if "$ROOT/bin/curate/check_drying_curve.py" > /tmp/drycurve.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "drying-curve-gate" "$(head -1 /tmp/drycurve.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_drying_curve.py)\n" "drying-curve-gate"
+        cat /tmp/drycurve.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/drycurve.$$
+
     # SDEM gate (2026-09-15).  The solution-diffusion-electromigration law
     # couples an ION-declared feed by the zero-current field with NO new
     # parameter: the permeate must be electroneutral to machine level, the

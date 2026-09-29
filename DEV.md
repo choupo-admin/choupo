@@ -1702,6 +1702,35 @@ accepts today, and that is a policy call.
      Vitor's decision before any build.  Related, also unscheduled: a solid
      that must REMAIN for the atoms to close (DEV.md section 5, 2026-09-29).
 
+**C26. DRYING, REVIEWED FOR TEACHING -- slice 1: THE CHARACTERISTIC
+     DRYING CURVE (asked 2026-09-29, Vitor: "quero rever a secagem.
+     Podemos comecar por implementar a curva generica de secagem?").**  The
+     generic curve he named is the characteristic (normalised) drying curve
+     of van Meel (Chem. Eng. Sci. 9 (1958) 36-44; Keey 1992): f = R/R_c as
+     one function of Phi = (X - X_eq)/(X_c - X_eq).  Built from the primary
+     source, no simulator's equation copied (C7).  Measured before: the
+     `batchDryer` already had the constant-rate period (k_Y, wet bulb), a
+     measured X_c and a GAB X_eq, with the falling period hard-wired LINEAR;
+     the steady `solidDryer` has NO kinetics (dries to equilibrium).
+     **SLICE 1 BUILT 2026-09-29:** `DryingCurve` (src/unitOperations/
+     heatTransfer/DryingCurve.{H,cpp}) is the one home of f(Phi) -- shape
+     linear | power (f = Phi^n) | table (measured points, (0,0) to (1,1),
+     f non-decreasing), `source` required for power and table, six named
+     refusals; `batchDryer` reads `operation.dryingCurve {}`, absent =
+     linear, byte-identical (dryer01 unmoved).  Witness
+     `tutorials/batch/drying/dryer02_characteristic_curves` (one tray, four
+     curves, all declared hypothetical); gate `check_drying_curve` (the
+     linear, Phi^2 and Phi^0.5 closed forms from each tray's own KPIs; one
+     sabotage, flux ignoring the curve, caught).  Named, not fixed: with
+     n < 1 the curve reaches X_eq in finite time and RK4 lands 2.4e-6
+     relative BELOW it (non-Lipschitz f at Phi = 0; no clamp by rule).
+     **NEXT, to be put to Vitor (pedagogy is his):** (2) a CONTINUOUS
+     convective dryer that integrates the curve over the solids' residence
+     time with the air's humidity and temperature changing along the bed
+     (co/counter-current) -- the steady `solidDryer` today assumes enough
+     residence to reach X_eq; (3) the drying EduTool (dryer01 witness) to
+     show the curve shape as a knob.
+
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o
      arquiteto responsavel").**  An archive of 44 per-tool analyses plus a

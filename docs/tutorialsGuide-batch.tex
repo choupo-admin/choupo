@@ -940,6 +940,53 @@ Method hypotheses, each announced at run time: Lewis = 1 in the adiabatic-satura
 \goldmore{21}
 \end{tutgolden}
 
+\clearpage
+\tutentry{dryer02\_characteristic\_curves}{tutorials/batch/drying/dryer02\_characteristic\_curves}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (linear) at (0.0,-0.0) {\textbf{linear}\\[-1pt]{\tiny batchDryer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (concave) at (0.0,-1.7) {\textbf{concave}\\[-1pt]{\tiny batchDryer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (convex) at (0.0,-3.4) {\textbf{convex}\\[-1pt]{\tiny batchDryer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (measured) at (0.0,-5.1) {\textbf{measured}\\[-1pt]{\tiny batchDryer}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The characteristic drying curve: one wet sucrose tray, one declared air, four falling-rate shapes -- linear, Phi\textasciicircum{}0.5, Phi\textasciicircum{}2 and a table}
+\begin{tutnarrative}
+THE CHARACTERISTIC DRYING CURVE.
+
+Four identical trays of dryer01 (2.0 kg dry sucrose at X\_0 = 0.30, 0.5 m2, air at 60 C and Y = 0.010, X\_c = 0.12) that differ in ONE thing: the shape of the falling-rate period. van Meel (Chem. Eng. Sci. 9 (1958) 36-44) observed that for many materials the drying rate normalised by the constant rate is a single function of the normalised free moisture,
+
+Phi = (X - X\_eq)/(X\_c - X\_eq), f = R/R\_c = f(Phi), f(1) = 1, f(0) = 0,
+
+so ONE measured curve describes the material at any air condition -- the air sets R\_c (the wet bulb) and X\_eq (the isotherm), the curve sets the rest. The shape is the material's, MEASURED; each tray declares one (src/unitOperations/heatTransfer/DryingCurve.H):
+
+linear f = Phi the textbook tail, dryer01's law, declared concave f = Phi\textasciicircum{}0.5 rate held high: reaches X\_eq in FINITE time, t' = tau/(1 - n) = 2 tau convex f = Phi\textasciicircum{}2 rate dropping early: an algebraic tail, Phi = 1/(1 + t'/tau), slower than linear measured a (Phi, f) table S-shaped, interpolated linearly
+
+tau = m\_s (X\_c - X\_eq)/(R\_c A) = 595.0 s (dryer01's hand estimate) is the SAME for all four -- the constant-rate period, t\_c = 1027.7 s, too. What differs is only the falling period, and the end-of-run moisture, at t' = 3000 - 1027.7 = 1972.3 s into it:
+
+linear X = X\_eq + (X\_c - X\_eq) exp(-t'/tau) = 0.019584 (= dryer01) convex X = X\_eq + (X\_c - X\_eq)/(1 + t'/tau) = 0.03995 concave X = X\_eq = 0.015798, reached at t' = 2 tau = 1190 s -- the engine lands 3.8e-8 kg/kg BELOW it (2.4e-6 relative): RK4 stepping onto a point where f = Phi\textasciicircum{}0.5 has an infinite slope, the size (dt/tau)\textasciicircum{}2 (X\_c - X\_eq)/4 predicts. Not clamped (no clamp in this unit, by rule); it shrinks with dt. measured 0.03502 (no closed form), between linear and convex, as its points lie below the linear curve bin/curate/check\_drying\_curve.py recomputes all of this from the run.
+
+EVERY CURVE HERE IS HYPOTHETICAL. No measured characteristic curve of sucrose is in this repository; the shapes are chosen to span what materials do, and each tray says so in its `source`. A real design reads its curve from a thin-layer drying test of ITS material.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0.30993864697}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0.30993864697}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0.30993864697}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_vs\_declared\_rel}{7.11118003994e-17}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{0.209548821137}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{8.22069230365}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{10.400000055}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{2.17930775135}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldmore{69}
+\end{tutgolden}
+
 \subsection{electrodialysis}
 \grouptheory{electrodialysis}
 \clearpage

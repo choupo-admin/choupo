@@ -1488,9 +1488,15 @@ A tray of wet solid losing its moisture into air of DECLARED, CONSTANT
 condition (the air is an environment, not a ledgered stream).  State:
 `X = m_moisture / m_drySolid`.  Above the critical moisture the wetted
 surface sits at the air's wet-bulb temperature and the flux is gas-film
-controlled, `R_c = k_Y (Y_sat(T_wb) − Y)`; below it the flux falls
-LINEARLY in the free moisture, `R = R_c (X − X_eq)/(X_c − X_eq)` —
-announced at run time as a modelling CHOICE.  `X_eq` is the GAB
+controlled, `R_c = k_Y (Y_sat(T_wb) − Y)`; below it the flux follows the
+material's CHARACTERISTIC DRYING CURVE (van Meel 1958), `R = R_c f(Φ)`,
+`Φ = (X − X_eq)/(X_c − X_eq)`, declared in `operation.dryingCurve {}` as
+`shape linear;` (`f = Φ`, the default when the block is absent — announced
+at run time as a modelling CHOICE), `shape power; exponent n;` (`f = Φⁿ`)
+or `shape table; phi ( 0 … 1 ); f ( 0 … 1 );` (a measured curve from
+(0, 0) to (1, 1), f non-decreasing, interpolated linearly).  A `power` or
+`table` curve is a claim about the material and must declare
+`source "…";` (a hypothetical teaching curve says so).  `X_eq` is the GAB
 equilibrium moisture at the air's water activity, read from the solid
 component's `sorption {}` record (a solid without one is refused by name);
 `criticalMoisture` must lie above it or the falling-rate law has no domain.
@@ -1507,12 +1513,21 @@ verdict (the heat is the air's, from outside the campaign).
       k_Y               [1 -2 -1 0 0] 0.05;    // kg/(m2 s) per (kg/kg) -- equipment data
       criticalMoisture  0.12;                  // kg/kg dry solid -- MEASURED
       air { T 333.15 K;  Y 0.010;  carrier N2; }   // declared, constant
+      dryingCurve                              // optional; absent = linear
+      {
+          shape     power;                     // linear | power | table
+          exponent  2;                         // power: f = Phi^n
+          source    "hypothetical teaching curve -- not a measured material";
+      }
   }
 }
 ```
 KPIs: `X_initial`, `X_critical`, `X_equilibrium`, `X_final`, `T_wb`,
-`R_constant`, `latentDuty_kW`, `latentEnergy_kJ`.  Witness:
-`tutorials/batch/drying/dryer01_sucrose_tray`.
+`R_constant`, `latentDuty_kW`, `latentEnergy_kJ`.  Witnesses:
+`tutorials/batch/drying/dryer01_sucrose_tray` (the linear curve, hand
+estimate in its header) and
+`tutorials/batch/drying/dryer02_characteristic_curves` (one tray, four
+curve shapes; gate `check_drying_curve`).
 
 ### `batchDiafilter`
 A stirred RETENTATE vessel behind a membrane — the batch half of the
