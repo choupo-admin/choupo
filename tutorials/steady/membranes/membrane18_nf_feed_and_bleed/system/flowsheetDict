@@ -69,13 +69,17 @@
   recirculation pump: the module loses feed-side pressure on every pass and
   the pump makes it up.  Here the mixer takes the LOWEST inlet pressure, so a
   loop whose recycle arrives a bar low and has no pump loses that bar again
-  each pass and has no steady state.  The `pump` unit would restore it, but
-  it needs every component's liquid molar volume (`Vliq`) and the catalogue's
-  glucose record has none -- the engine refuses by name, correctly, and a
-  value typed in here would be a number with no source.  So the feed-side
-  pressure drop is DECLARED ZERO, the loop sits at 10 bar throughout, and
-  the pump's work is not counted anywhere.  Both are idealisations of this
-  case, not of the module.
+  each pass and has no steady state.  The `pump` unit would restore it, and
+  it now gets further than it did: glucose's record carries a liquid molar
+  volume (Seitz et al. 2019, a partial molar volume at infinite dilution),
+  which the incompressible pump model needs.  It still refuses, one datum
+  later: the outlet temperature needs the liquid ENTHALPY of the mixture and
+  glucose has no `liquidHeatCapacity` (a nonvolatile's enthalpy must not
+  route through the ideal-gas reference).  The heat capacity of glucose in
+  solution needs a primary source of its own, and a typed number would be a
+  number with no source.  So the feed-side pressure drop is DECLARED ZERO,
+  the loop sits at 10 bar throughout, and the pump's work is not counted
+  anywhere.  Both are idealisations of this case, not of the module.
 
   THE ORDER OF THE UNITS IS THE ORDER THEY RUN.  `Recycle` is produced by the
   splitter (declared LAST) and consumed by the mixer (declared FIRST), so the

@@ -945,8 +945,9 @@ unknown module name refuses with the registered list.  Witnesses:
 on the MIXED loop concentration, not the feed's, and its `R_obs` is against
 that, not against the fresh feed.  A loop needs the recirculation pressure
 restored on every pass: the mixer takes the LOWEST inlet pressure, and the
-`pump` unit refuses a component with no `Vliq` (glucose has none), so that
-witness declares `dP_feed_total 0` and says so.  With a declared `k_film` the
+`pump` unit needs every component's `Vliq` AND a liquid enthalpy (glucose has
+`Vliq` since 2026-09-29 but no `liquidHeatCapacity`, so the pump still refuses),
+so that witness declares `dP_feed_total 0` and says so.  With a declared `k_film` the
 recirculation buys no cross-flow, and the loop is worse than one pass -- the
 case's header states it.
 

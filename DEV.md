@@ -1733,25 +1733,32 @@ accepts today, and that is a policy call.
      honest and both named in the case: (a) NO PUMP and `dP_feed_total 0` --
      the mixer takes the lowest inlet pressure, so a loop that loses a bar per
      pass has no steady state without one, and the `pump` unit refuses
-     because glucose has no `Vliq` (a curated value with a primary source,
-     which nobody here can supply; sucrose carries one, glucose does not);
-     (b) the energy balance is UNAVAILABLE, like every glucose case (only the
-     solid formation datum is on the record).  **NEXT, Vitor's to order:**
-     curate glucose's apparent molar volume (then the pump, the real
-     pressure drop and the spacer-hydraulics `k_film` of membrane04 make the
-     recirculation matter); the quasi-steady seam for the DYNAMIC loop; a
-     real UF (flux law, MWCO rejection, a cited record).  **PRIMARY SOURCE
-     LOCATED for the glucose Vliq (2026-09-29, `choupo-thermoml search
-     --online`), NOT read:** Seitz, Schulte, Hall & Rhett, "Volumetric
-     properties of dilute (D-glucose + H2O) solutions at temperatures from
-     (293.15 to 433.15) K", J. Chem. Thermodyn. 2019, doi:10.1016/j.jct.
-     2018.08.020 -- the article is behind a paywall from here (the DOI
-     redirects to Elsevier, ScienceDirect answers 403), and the ThermoML
-     cache is not synced, so no number was taken.  Whoever has journal access
-     reads the infinite-dilution apparent molar volume at 298.15 K off the
-     article, with its uncertainty, and the record is written from THAT (the
-     sucrose record's own 2.115e-4 m3/mol carries no citation either, and
-     should get one in the same pass).
+     (first for want of glucose's `Vliq`, since 2026-09-29 for want of its
+     `liquidHeatCapacity` -- see below); (b) the energy balance is
+     UNAVAILABLE, like every glucose case (only the solid formation datum is
+     on the record).  **GLUCOSE Vliq CURATED 2026-09-29 (Vitor supplied the
+     paper):** `components/glucose.dat` now carries `Vliq 1.111e-4` m3/mol,
+     the partial molar volume at infinite dilution, with a `provenance`
+     block: Seitz, Schulte, Hall & Rhett, J. Chem. Thermodyn. 128 (2019)
+     372-382, doi:10.1016/j.jct.2018.08.020, Table 3 at 0.10 MPa (110.4
+     cm3/mol at 293.15 K, 113.1 at 313.15 K, u = 1.0), LINEARLY INTERPOLATED
+     to 298.15 K because the paper measured no such isotherm; its Eq. (3)
+     (115.2 at 298.15 K) is NOT used, the paper itself saying the data fall
+     below that line under 300 K at ~0.1 MPa; cross-checked against the
+     paper's own Table 4/5 (111.2-112.7 from other authors).  No golden
+     moved (membrane02, landscape06 unchanged; no other case reads glucose).
+     THE PUMP STILL REFUSES, one datum later: it prices the liquid enthalpy
+     of the mixture for the outlet temperature, and glucose has no
+     `liquidHeatCapacity` (a nonvolatile's enthalpy may not route through
+     the ideal-gas reference).  The same gap is why every glucose case has
+     an UNAVAILABLE energy balance.  **NEXT, Vitor's to order:** the heat
+     capacity of glucose in aqueous solution (a partial molar Cp, needs its
+     own primary source; the Seitz paper has none) -- with it the pump, the
+     real 1 bar pressure drop, the spacer-hydraulics `k_film` of membrane04
+     and the energy balance all open at once; and the sucrose record's own
+     `Vliq` (2.115e-4) still carries no citation.  Also open and separate:
+     the quasi-steady seam for a DYNAMIC loop (#185); a real UF (flux law,
+     MWCO rejection, a cited record).
 
 **C26. DRYING, REVIEWED FOR TEACHING -- slice 1: THE CHARACTERISTIC
      DRYING CURVE (asked 2026-09-29, Vitor: "quero rever a secagem.

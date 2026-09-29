@@ -24,6 +24,7 @@ CAS            50-99-7;
 MW             180.16;         // g/mol
 role        nonvolatile;
 dissociation   1;              // non-electrolyte
+Vliq           1.111e-4;      // m^3/mol -- PARTIAL molar volume of D-glucose at infinite dilution in water, 298.15 K, ~0.1 MPa (see provenance)
 
 
 // ---------------------------------------------------------------------------
@@ -65,4 +66,16 @@ standardThermochemistry
 groups
 {
     unifac ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 5; } { group CHO; count 1; } );   // added from data/groupEstimative (UNIFAC decomposition; vocab-checked vs groups.dat)
+}
+
+provenance
+{
+    Vliq
+    {
+        origin           measured;
+        method           "vibrating-tube densimetry of dilute (D-glucose + H2O) solutions; V-infinity from the intercept of a least-squares fit of the apparent molar volume against molality";
+        citation         "Seitz, Schulte, Hall & Rhett, J. Chem. Thermodyn. 128 (2019) 372-382, doi:10.1016/j.jct.2018.08.020, Table 3";
+        uncertainty      "1.0 cm3/mol (the paper's own estimate for V-infinity)";
+        note             "Table 3, p = 0.10 MPa: V-infinity = 110.4 cm3/mol at 293.15 K and 113.1 cm3/mol at 313.15 K; the paper measured no 298.15 K isotherm, so the value is those two LINEARLY INTERPOLATED to 298.15 K (111.075, kept as 111.1 cm3/mol = 1.111e-4 m3/mol).  Its Eq. (3), V-infinity = 94.68 + 0.06886 T, is NOT used: it would give 115.2 cm3/mol here, and the paper itself says that at ~0.1 MPa and T < 300 K the data fall below that linear trend.  Cross-check the paper prints itself (Table 4/5): 111.2-112.7 cm3/mol at 298.15 K from other authors (Origlia 2000: 111.7; Kishore 1993: 112.0), all within ~1 cm3/mol.  This is a PARTIAL molar volume in solution, the same kind of quantity as the sucrose record's Vliq, not the volume of a pure liquid glucose (which does not exist at 298 K).  Read off the PDF Vitor supplied 2026-09-29; the interpolation is the assistant's -- reviewStatus is not raised by this entry.";
+    }
 }
