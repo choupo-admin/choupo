@@ -1686,6 +1686,22 @@ accepts today, and that is a policy call.
      near 60 %), so the page asks it as the safety filter's question.
      DONE.
 
+**C25 (CANDIDATE, not commissioned). AN AQUEOUS PHASE IN THE GIBBS
+     MINIMISER (raised 2026-09-29, Vitor: "da para por sacarose dissolvida
+     em agua?").**  Measured: the element-potential minimiser prices a gas
+     (ideal), an ideal Raoult liquid of the species with a vapour pressure,
+     and pure solids (GibbsMethod.H:39-54, GibbsSolidPhase.cpp) -- no
+     solution with dissolved solutes on a molality standard state, so a
+     sugar (no vapour pressure) cannot be dissolved, and `reactionGibbs`
+     accepts only idealGas | pureLiquid | pureSolid (ReactionGibbs.cpp:55).
+     The aqueous machinery exists (SpeciationSolver, Davies/Pitzer, species
+     records such as NH4) but is a separate solver not joined to the element
+     minimisation.  Biological nitrogen fixation happens in the aqueous
+     cytoplasm (NH4+, dissolved N2, CO2/HCO3-), so the gas + pure-solid
+     treatment of landscape06/07 is an approximation.  ARCHITECTURE:
+     Vitor's decision before any build.  Related, also unscheduled: a solid
+     that must REMAIN for the atoms to close (DEV.md section 5, 2026-09-29).
+
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o
      arquiteto responsavel").**  An archive of 44 per-tool analyses plus a
