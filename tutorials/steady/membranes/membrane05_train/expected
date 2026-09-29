@@ -1,20 +1,22 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
 stream  feed                   F                0.159722222222   1e-4
-stream  permeate               F                0.0590874153104  1e-4
-stream  retentate              F                0.100637449271   1e-4
-kpi     ROunit                 J_w_avg          1.01384186683e-05 1e-4
-kpi     ROunit                 R_obs_NaCl       0.99694467035    1e-4
-kpi     ROunit                 c_ret_elem1      0.68349184216    1e-4
-kpi     ROunit                 c_ret_elem2      0.793343136295   1e-4
-kpi     ROunit                 c_ret_elem3      0.881961644632   1e-4
-kpi     ROunit                 dP_feed          101143.55107     1e-4
+stream  permeate               F                0.0590481156677  1e-4
+stream  retentate              F                0.100674106554   1e-4
+kpi     ROunit                 J_w_avg          1.01316760818e-05 1e-4
+kpi     ROunit                 R_obs_NaCl       0.996942163831   1e-4
+kpi     ROunit                 c_ret_elem1      0.683704881229   1e-4
+kpi     ROunit                 c_ret_elem2      0.793651571912   1e-4
+kpi     ROunit                 c_ret_elem3      0.882255603046   1e-4
+kpi     ROunit                 dP_feed          101156.272291    1e-4
 kpi     ROunit                 elements         3                1e-4
-kpi     ROunit                 recovery_elem1   0.175213731874   1e-4
-kpi     ROunit                 recovery_elem2   0.289843097471   1e-4
-kpi     ROunit                 recovery_elem3   0.361527335552   1e-4
-kpi     ROunit                 water_recovery   0.361527335552   1e-4
+kpi     ROunit                 recovery_elem1   0.175164837924   1e-4
+kpi     ROunit                 recovery_elem2   0.28969612966    1e-4
+kpi     ROunit                 recovery_elem3   0.361286900686   1e-4
+kpi     ROunit                 water_recovery   0.361286900686   1e-4
 stream  feed                   T                298.15           1e-4
 stream  permeate               T                298.15           1e-4
 stream  retentate              T                298.15           1e-4
-kpi     ROunit                 mass_closure_rel 7.54087679638e-16 1e-4
+kpi     ROunit                 mass_closure_rel 3.01635071855e-16 1e-4
+kpi     ROunit                 Gamma_NaCl_avg   0.200276220752   1e-4
+kpi     ROunit                 solute_closure_rel 1.17485452804e-15 1e-4

@@ -633,6 +633,15 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     std::vector<scalar> c_b(Ns, 0.0);
     for (std::size_t s = 0; s < Ns; ++s) c_b[s] = bulk0.c[soluteIdx[s]];
     scalar Q_b = bulk0.Q;
+    //  The bulk SOLUTE FLOWS [kmol/s] are the marched state; c_b is derived
+    //  from them (c_b = N_b / Q_b).  Marching c_b itself does not conserve
+    //  the product Q_b c_b: it leaks O(dz^2) per cell, O(dz) over the module,
+    //  and because the water is closed by mass the leak turned solute into
+    //  water at constant mass -- 0.064 % of the glucose on membrane02, found
+    //  2026-09-29 by the engine's own element balance.
+    std::vector<scalar> N_b(Ns, 0.0);
+    for (std::size_t s = 0; s < Ns; ++s) N_b[s] = Q_b * c_b[s];
+    const std::vector<scalar> N_feed = N_b;
     scalar P_b = P_in;
 
     // ---- Optional scaling{} audit ------------------------------------------
@@ -1057,13 +1066,13 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             const scalar J_w = sol.J_w;
             const std::vector<scalar>& Js = sol.J_s;
 
-            // Mass balances over the slice of width W·dz:
-            //   dQ_b/dz = -W · J_w
-            //   dc_b,s/dz = (J_w · c_b,s − J_s,s) · W / Q_b
+            // Balances over the slice of width W·dz, in CONSERVATIVE form --
+            // what leaves the bulk is exactly what the permeate receives:
+            //   dQ_b/dz   = -W · J_w
+            //   dN_b,s/dz = -W · J_s,s          (N_b,s = Q_b · c_b,s)
+            // which is  dc_b,s/dz = (J_w c_b,s - J_s,s) W / Q_b  written so
+            // that the discrete step conserves each solute to round-off.
             const scalar dQ = -W * J_w * dz_e;
-            std::vector<scalar> dcs(Ns, 0.0);
-            for (std::size_t s = 0; s < Ns; ++s)
-                dcs[s] = ((J_w * c_b[s] - Js[s]) * W / std::max(Q_b, 1e-30)) * dz_e;
 
             // Permeate accumulation over this slice
             Q_perm += W * J_w * dz_e;                         // m³/s
@@ -1073,7 +1082,10 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             // Advance bulk state
             Q_b += dQ;
             for (std::size_t s = 0; s < Ns; ++s)
-                c_b[s] = std::max<scalar>(c_b[s] + dcs[s], 0.0);
+            {
+                N_b[s] -= W * Js[s] * dz_e;
+                c_b[s] = (Q_b > 0.0) ? std::max<scalar>(N_b[s] / Q_b, 0.0) : 0.0;
+            }
             P_b -= dPdzAt(Q_b) * dz_e;
 
             if (Q_b <= 0.0) { dry = true; break; }
@@ -1265,8 +1277,32 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     // stops mid-vessel, so the equality is only asserted on a completed run.
     // The relative residual is surfaced as a KPI below (after kpis_.clear()).
     scalar mass_closure_rel = 0.0;
+    scalar solute_closure_rel = 0.0;   // worst solute: |feed - ret - perm| / feed
     if (!dry)
     {
+        //  EACH SOLUTE closes too.  The mass check alone cannot see a solute
+        //  lost to the water (the water is closed BY mass), which is how a
+        //  0.03-0.4 % solute leak sat under a mass closure of 1e-16 in every
+        //  spiral-wound case until 2026-09-29.
+        for (std::size_t s = 0; s < Ns; ++s)
+        {
+            if (N_feed[s] <= 0.0) continue;
+            const scalar out_s = c_b[s] * Q_b + F_perm_solute[s];
+            solute_closure_rel = std::max(solute_closure_rel,
+                std::abs(out_s - N_feed[s]) / N_feed[s]);
+        }
+        if (solute_closure_rel > 1.0e-9)
+        {
+            char b[240];
+            std::snprintf(b, sizeof(b),
+                "spiralWoundModule solute balance does not close: worst solute"
+                " rel = %.3e (retentate + permeate against feed).  A solute"
+                " exhausted from the bulk inside the channel is clamped at"
+                " zero; refine nNodes or shorten the module.",
+                static_cast<double>(solute_closure_rel));
+            throw std::runtime_error(b);
+        }
+
         const scalar mass_feed = rho * bulk0.Q;    // kg/s
         const scalar mass_out  = mass_ret + mass_perm;
         mass_closure_rel = (mass_feed > 0.0)
@@ -1364,6 +1400,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     // throws if it ever exceeds 1e-9): a permanent, visible witness that the
     // module conserves mass.
     if (!dry) kpis_["mass_closure_rel"] = mass_closure_rel;
+    if (!dry) kpis_["solute_closure_rel"] = solute_closure_rel;
     //  Membrane potential (SDEM only): the channel average of the per-node
     //  potential drop, the one number that says the field was there.
     if (cols.count("psi_mV") && !cols["psi_mV"].empty())

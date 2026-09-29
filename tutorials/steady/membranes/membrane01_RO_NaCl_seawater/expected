@@ -1,13 +1,15 @@
 # Reference KPIs (golden master).  kind  name  key  expected  reltol
 # THE case that once returned silent NaN KPIs (exit 0) --- this guards it.
-kpi     ROunit                 R_obs_NaCl       0.997859093278   1e-5
-kpi     ROunit                 water_recovery   0.157762204919   1e-4
-kpi     ROunit                 J_w_avg          1.32725173967e-05 1e-4
+kpi     ROunit                 R_obs_NaCl       0.997858419447   1e-5
+kpi     ROunit                 water_recovery   0.157724991775   1e-4
+kpi     ROunit                 J_w_avg          1.3269386659e-05 1e-4
 stream  feed                   F                0.159722222222   1e-4
 stream  feed                   T                298.15           1e-4
-stream  permeate               F                0.0257849252597  1e-4
+stream  permeate               F                0.0257788426835  1e-4
 stream  permeate               T                298.15           1e-4
-stream  retentate              F                0.133938394975   1e-4
+stream  retentate              F                0.133943379539   1e-4
 stream  retentate              T                298.15           1e-4
 kpi     ROunit                 dP_feed          200000           1e-4
-kpi     ROunit                 mass_closure_rel 1.50817535928e-16 1e-4
+kpi     ROunit                 mass_closure_rel 0                1e-4
+kpi     ROunit                 Gamma_NaCl_avg   0.303248552028   1e-4
+kpi     ROunit                 solute_closure_rel 2.6107878401e-16 1e-4

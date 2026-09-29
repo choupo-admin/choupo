@@ -70,11 +70,16 @@ is the worst deviation and the gate reports which element carries it.
 WHAT THIS DOES NOT CHECK, and the first one is the half that matters:
 
   * WHETHER A PINNED DEVIATION IS ACCEPTABLE.  It is not.  Fourteen of the
-    sixteen entries are membrane cases and the leak is systematic across the
-    family -- a student opening a desalination tutorial whose subject is where
-    the magnesium goes reads `Mg ... 99.6023` in the engine's own report.  The
-    ledger schedules stasis, not repair.  Diagnosing it is a chemical
-    engineer's pass and belongs to whoever owns the membrane transport path.
+    sixteen entries were membrane cases, and that leak is now REPAIRED, not
+    re-pinned (2026-09-29): the spiral-wound march advanced the bulk
+    CONCENTRATION, whose product with the flow is not conserved to O(dz^2)
+    per cell, while the permeate accumulated the flux exactly; the water is
+    closed by mass, so it absorbed the lost solute and the module's own
+    mass_closure_rel read 0.  Refining nNodes 100 -> 400 -> 1600 divided the
+    loss by 4 each time, which is what named it.  The march now advances the
+    solute FLOW, the module refuses a solute that does not close, and
+    thirteen pins came out.  What remains is the softener (not a leak) and
+    two extraction cases, undiagnosed.
   * WHETHER THE ELEMENT INVENTORY IS RIGHT.  A species the formula parser
     REFUSES is excluded from both sides and closes perfectly; that refusal is
     `check_element_balance`'s arm 2 and stays there.
@@ -101,19 +106,6 @@ RATCHET = 0.002
 #  percentage points.  Reseed with --seed; do not hand-edit a number.
 KNOWN_OPEN = {
     "tutorials/steady/membranes/membrane08_softened_scaling": 99.9881,
-    "tutorials/steady/membranes/membrane10_dspmde_divalent": 0.3977,
-    "tutorials/steady/membranes/membrane07_scaling_si": 0.2687,
-    "tutorials/steady/optimisation/optim04_membrane_recovery_scaling": 0.1149,
-    "tutorials/steady/membranes/membrane14_polarisation_multiionic": 0.1000,
-    "tutorials/steady/membranes/membrane15_module_nf270_4040": 0.0712,
-    "tutorials/steady/membranes/membrane05_train": 0.0709,
-    "tutorials/steady/membranes/membrane11_dspmde_born_toggle": 0.0695,
-    "tutorials/steady/membranes/membrane02_NF_sugar": 0.0643,
-    "tutorials/steady/membranes/membrane16_module_sw30hr_8040": 0.0602,
-    "tutorials/steady/membranes/membrane04_spacer_schock_miquel": 0.0371,
-    "tutorials/steady/membranes/membrane06_pitzer": 0.0365,
-    "tutorials/steady/membranes/membrane09_index_vs_rigorous": 0.0347,
-    "tutorials/steady/membranes/membrane01_RO_NaCl_seawater": 0.0295,
     "tutorials/steady/absorption/extract02_declared_interior": 0.0130,
     "tutorials/steady/absorption/extract01_ethanol_water_benzene": 0.0121,
 }

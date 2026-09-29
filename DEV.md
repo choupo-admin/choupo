@@ -1727,7 +1727,7 @@ accepts today, and that is a policy call.
      the feed analysis is short of area by 1.29x); the module's R_obs
      (68.5 %, against what it is fed) is not the plant's (43.7 % against the
      fresh feed); and the loop recovers less than one pass of the same area
-     (68.5 % against 75.3 %) -- PHYSICS, the loop runs near the bleed
+     (68.2 % against 75.2 % by mass) -- PHYSICS, the loop runs near the bleed
      concentration.  What the model cannot show is why a loop is used: the
      loop drives 7x the flow through the module and loses a tenth of it,
      while the single pass ends at a quarter of its inlet flow; with `k_film`
@@ -1797,7 +1797,20 @@ accepts today, and that is a policy call.
      (it prices through h_pure_ig, not the formation surface the report
      uses), and the ISOTHERMAL mixer publishes no duty -- together they keep
      the pump out of membrane18 (a scratch run with the pump shows a 96 %
-     first-law debt).  Engine, Vitor's.  And the sucrose record's own
+     first-law debt).  Engine, Vitor's.  **THE SOLUTE MARCH REPAIRED
+     2026-09-29 (branch, AWAITING Vitor's golden list):** the march advances
+     N_s (c_b = N_s/Q_b), the module publishes `solute_closure_rel` and
+     REFUSES a solute that does not close to 1e-9 beside its mass guard; every
+     spiral-wound case now closes every element to round-off, and
+     check_element_closure loses THIRTEEN membrane pins (the softener
+     membrane08 stays, not a leak; extract01/02 stay, undiagnosed).
+     membrane18 was pinned NOWHERE and had turned check_element_closure red
+     on main (C 0.0896 pp) the day it landed -- the gate was not run on it.
+     Moves 147 golden rows in 16 cases, all one direction and small (the
+     retentate is no longer diluted by the lost solute: recovery and flux
+     down 0.01-0.2 %, scaling indices up to 0.6 %).  The list goes to Vitor
+     before --record; membrane05's "known issue" note (an open material
+     balance) was this defect and is rewritten.  And the sucrose record's own
      `Vliq` (2.115e-4) still carries no citation.  Also open and separate:
      the quasi-steady seam for a DYNAMIC loop (#185); a real UF (flux law,
      MWCO rejection, a cited record).

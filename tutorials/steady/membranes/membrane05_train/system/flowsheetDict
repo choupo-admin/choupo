@@ -28,24 +28,28 @@
         with a 0.2 bar inter-element connector loss.
 
   What this run produces (golden master):
-      train water recovery        35.3 %       (3 elements, cumulative)
-      observed NaCl rejection      99.68 %
-      train-average water flux     34.85 LMH   (9.68e-6 m/s)
-      total feed-side ΔP           ~0.99 bar   (Schock-Miquel friction
+      train water recovery        36.1 %       (3 elements, cumulative)
+      observed NaCl rejection      99.69 %
+      train-average water flux     36.47 LMH   (1.013e-5 m/s)
+      total feed-side ΔP           ~1.01 bar   (Schock-Miquel friction
                                                 + 2 connector losses)
 
   The per-element DEGRADATION (the teaching point) reads off the KPIs:
-      recovery_elem1   17.2 %   c_ret_elem1  0.697   (fresh feed)
-      recovery_elem2   28.4 %   c_ret_elem2  0.805   (cumulative)
-      recovery_elem3   35.3 %   c_ret_elem3  0.891   (cumulative)
+      recovery_elem1   17.5 %   c_ret_elem1  0.684   (fresh feed)
+      recovery_elem2   29.0 %   c_ret_elem2  0.794   (cumulative)
+      recovery_elem3   36.1 %   c_ret_elem3  0.882   (cumulative)
   The retentate concentration climbs element to element while each
   successive element adds less recovery: a single SW30HR element at this
-  feed recovers ~17 %, the second adds ~11 %, the third only ~7 % --- the
+  feed recovers ~17.5 %, the second adds ~11.5 %, the third only ~7 % --- the
   diminishing return of stacking elements in series at fixed feed.
 
-  NOTE (known issue): this train case currently has an open mass-balance
-  discrepancy under investigation; it is run-only in the regression and the
-  KPIs above are the present golden values, not a validated material balance.
+  The material balance CLOSES, per solute, to round-off (the module refuses
+  otherwise).  Until 2026-09-29 it did not: the element balance lost 0.07 %
+  of the chlorine, because the axial march advanced the concentration rather
+  than the solute flow -- see membrane02's element balance for the same
+  defect, and DEV.md C27.  The figures above are this run's, rounded (the
+  header had drifted from its own golden before the repair: 35.3 % against
+  36.2 %).
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

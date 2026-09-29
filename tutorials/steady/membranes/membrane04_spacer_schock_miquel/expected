@@ -1,13 +1,15 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
 stream  feed                   F                0.159722222222   1e-4
-stream  permeate               F                0.0286373914761  1e-4
-stream  retentate              F                0.131086212764   1e-4
-kpi     ROunit                 J_w_avg          1.47407124897e-05 1e-4
-kpi     ROunit                 R_obs_NaCl       0.99810213206    1e-4
-kpi     ROunit                 dP_feed          26065.9064084    1e-4
-kpi     ROunit                 water_recovery   0.175213731874   1e-4
+stream  permeate               F                0.0286293996445  1e-4
+stream  retentate              F                0.131092822578   1e-4
+kpi     ROunit                 J_w_avg          1.47365990468e-05 1e-4
+kpi     ROunit                 R_obs_NaCl       0.998101402811   1e-4
+kpi     ROunit                 dP_feed          26066.7335536    1e-4
+kpi     ROunit                 water_recovery   0.175164837924   1e-4
 stream  feed                   T                298.15           1e-4
 stream  permeate               T                298.15           1e-4
 stream  retentate              T                298.15           1e-4
-kpi     ROunit                 mass_closure_rel 7.54087679638e-16 1e-4
+kpi     ROunit                 mass_closure_rel 3.01635071855e-16 1e-4
+kpi     ROunit                 Gamma_NaCl_avg   0.268477357047   1e-4
+kpi     ROunit                 solute_closure_rel 2.6107878401e-16 1e-4
