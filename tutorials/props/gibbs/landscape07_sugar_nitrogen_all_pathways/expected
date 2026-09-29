@@ -1,0 +1,11 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    sugarNitrogen          metric_T25C_P1atm 1.27109422855e-06  1e-4
+diag    sugarNitrogen          metric_T37C_P1atm 2.67461125111e-06  1e-4
+diag    sugarNitrogen          n_cells          39                 1e-4
+diag    sugarNitrogen          n_unconverged    0                  1e-4
+diag    boudouard              metric_T427C_P1atm 0.496091670405     1e-4
+diag    boudouard              metric_T927C_P1atm 0.0181328889912    1e-4
+diag    boudouard              n_cells          30                 1e-4
+diag    boudouard              n_unconverged    0                  1e-4

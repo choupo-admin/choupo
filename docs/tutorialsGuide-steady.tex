@@ -9027,6 +9027,62 @@ NOT here, and said: any rate (whisker and encapsulating carbon and their kinetic
 \end{tutgolden}
 
 \clearpage
+\tutentry{ladder01\_wgs\_three\_rungs}{tutorials/steady/reactors/ladder01\_wgs\_three\_rungs}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (split) at (0.0,-0.0) {\textbf{split}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (stoich) at (2.9,-0.0) {\textbf{stoich}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (limit) at (2.9,-1.7) {\textbf{limit}\\[-1pt]{\tiny equilibriumReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (approach) at (2.9,-3.4) {\textbf{approach}\\[-1pt]{\tiny equilibriumReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (gibbs) at (2.9,-5.1) {\textbf{gibbs}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (kinetic) at (2.9,-6.8) {\textbf{kinetic}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(split.west)+(-1.05,0.00)$) -- ($(split.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (split) -- (stoich) node[midway, above, font=\tiny] {feedStoich};
+  \draw[->] (split) -- (limit) node[midway, above, font=\tiny] {feedLimit};
+  \draw[->] (split) -- (approach) node[midway, above, font=\tiny] {feedApproach};
+  \draw[->] (split) -- (gibbs) node[midway, above, font=\tiny] {feedGibbs};
+  \draw[->] (split) -- (kinetic) node[midway, above, font=\tiny] {feedKinetic};
+  \draw[->] ($(stoich.east)+(0,0.00)$) -- ($(stoich.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outStoich};
+  \draw[->] ($(limit.east)+(0,0.00)$) -- ($(limit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outLimit};
+  \draw[->] ($(approach.east)+(0,0.00)$) -- ($(approach.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outApproach};
+  \draw[->] ($(gibbs.east)+(0,0.00)$) -- ($(gibbs.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outGibbs};
+  \draw[->] ($(kinetic.east)+(0,0.00)$) -- ($(kinetic.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outKinetic};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The reactor ladder: one water-gas-shift feed through the stoichiometric, the equilibrium and the kinetic rung}
+\begin{tutnarrative}
+THE REACTOR LADDER on one feed.
+
+CO + H2O <$\to$ CO2 + H2 equimolar, 600 K, 10 bar, ideal gas
+
+The feed is split five ways and each fifth meets a different MODEL of the same reactor. They are ordered as a design proceeds, not as a textbook does: what the stoichiometry allows, then what thermodynamics allows, then what the rate delivers.
+
+stoich conversionReactor rung 1 -- a DECLARED conversion. Balances only. X = 0.90 is declared on purpose: it is ABOVE this feed's equilibrium, and this rung has no way to know. limit equilibriumReactor rung 2 -- the thermodynamic LIMIT at 600 K. K(T) from the species' Gibbs energies; no rate, no volume. approach equilibriumReactor rung 2 with a 25 K temperature APPROACH: the exothermic shift is asked at 625 K, so the design conversion sits below the limit by a margin a designer chose, not one a rate law computed. The outlet stays at 600 K. gibbs gibbsReactor rung 2 by the other road -- no reaction written, only elements and species. Over exactly these four species it must agree with "limit"; add a species (CH4) and it would not (equil02 is that lesson). kinetic pfr rung 3 -- the rate law. Its axial profile rises toward the "limit" conversion and never crosses it. The volume is NOT a physical gas volume: this reactor prices concentrations on a liquid molar volume (src/unitOperations/reactor/PFR.cpp, "Inlet (mol/s) + liquid-basis volumetric flow"), so read its profile against V\_R as a SHAPE, never as a size.
+
+What each rung needs is the other half of the lesson: rung 1 a number someone must supply, rung 2 formation data the catalogue already has, rung 3 a rate law somebody had to MEASURE. The ladder is climbed only as far as the decision in hand requires.
+
+EduTool: gui/src/ui/methods/ReactorLadderTool.tsx.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000555555555556}
+\goldrow{stream}{feed}{T}{600}
+\goldrow{stream}{feedApproach}{F}{0.000111111111111}
+\goldrow{stream}{feedApproach}{T}{600}
+\goldrow{stream}{feedGibbs}{F}{0.000111111111111}
+\goldrow{stream}{feedGibbs}{T}{600}
+\goldrow{stream}{feedKinetic}{F}{0.000111111111111}
+\goldrow{stream}{feedKinetic}{T}{600}
+\goldrow{stream}{feedLimit}{F}{0.000111111111111}
+\goldrow{stream}{feedLimit}{T}{600}
+\goldrow{stream}{feedStoich}{F}{0.000111111111111}
+\goldrow{stream}{feedStoich}{T}{600}
+\goldrow{stream}{outApproach}{F}{0.000111111111111}
+\goldrow{stream}{outApproach}{T}{600}
+\goldmore{65}
+\end{tutgolden}
+
+\clearpage
 \tutentry{pfr01\_first\_order}{tutorials/steady/reactors/pfr01\_first\_order}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -9212,6 +9268,74 @@ Try a `sweep` over operation.V\_R and watch Xn, Mn and PDI climb and the Flory-S
 \goldrow{kpi}{reactor}{p\_conversion}{0.981423770929}
 \goldrow{kpi}{reactor}{tau\_s}{5829.95951417}
 \goldmore{8}
+\end{tutgolden}
+
+\clearpage
+\tutentry{screen01\_methanol\_routes}{tutorials/steady/reactors/screen01\_methanol\_routes}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (splitA) at (0.0,-0.0) {\textbf{splitA}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (splitB) at (0.0,-1.7) {\textbf{splitB}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (splitC) at (0.0,-3.4) {\textbf{splitC}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (stoichA) at (2.9,-0.0) {\textbf{stoichA}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (stoichB) at (2.9,-1.7) {\textbf{stoichB}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (stoichC) at (2.9,-3.4) {\textbf{stoichC}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (equilA) at (2.9,-5.1) {\textbf{equilA}\\[-1pt]{\tiny equilibriumReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (equilB) at (2.9,-6.8) {\textbf{equilB}\\[-1pt]{\tiny equilibriumReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (equilC) at (2.9,-8.5) {\textbf{equilC}\\[-1pt]{\tiny equilibriumReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (gibbsC) at (2.9,-10.2) {\textbf{gibbsC}\\[-1pt]{\tiny gibbsReactor}};
+  \draw[->] ($(splitA.west)+(-1.05,0.00)$) -- ($(splitA.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedSyngas};
+  \draw[->] ($(splitB.west)+(-1.05,0.00)$) -- ($(splitB.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedCO2};
+  \draw[->] ($(splitC.west)+(-1.05,0.00)$) -- ($(splitC.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedMethane};
+  \draw[->] (splitA) -- (stoichA) node[midway, above, font=\tiny] {feedStoichA};
+  \draw[->] (splitB) -- (stoichB) node[midway, above, font=\tiny] {feedStoichB};
+  \draw[->] (splitC) -- (stoichC) node[midway, above, font=\tiny] {feedStoichC};
+  \draw[->] (splitA) -- (equilA) node[midway, above, font=\tiny] {feedEquilA};
+  \draw[->] (splitB) -- (equilB) node[midway, above, font=\tiny] {feedEquilB};
+  \draw[->] (splitC) -- (equilC) node[midway, above, font=\tiny] {feedEquilC};
+  \draw[->] (splitC) -- (gibbsC) node[midway, above, font=\tiny] {feedGibbsC};
+  \draw[->] ($(stoichA.east)+(0,0.00)$) -- ($(stoichA.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outStoichA};
+  \draw[->] ($(stoichB.east)+(0,0.00)$) -- ($(stoichB.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outStoichB};
+  \draw[->] ($(stoichC.east)+(0,0.00)$) -- ($(stoichC.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outStoichC};
+  \draw[->] ($(equilA.east)+(0,0.00)$) -- ($(equilA.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outEquilA};
+  \draw[->] ($(equilB.east)+(0,0.00)$) -- ($(equilB.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outEquilB};
+  \draw[->] ($(equilC.east)+(0,0.00)$) -- ($(equilC.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outEquilC};
+  \draw[->] ($(gibbsC.east)+(0,0.00)$) -- ($(gibbsC.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outGibbsC};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Screening three routes to methanol on paper: stoichiometry, equilibrium, heat and selectivity}
+\begin{tutnarrative}
+SCREENING ROUTES TO A PRODUCT, ON PAPER.
+
+Three known routes to methanol, each fed at its own stoichiometric ratio at 525 K and 50 bar, ideal gas:
+
+A synthesis gas CO + 2 H2 $\to$ CH3OH B CO2 hydrogenation CO2 + 3 H2 $\to$ CH3OH + H2O C direct oxidation 2 CH4 + O2 $\to$ 2 CH3OH
+
+Each route is asked three questions, by three reactors on one split of its feed, none of which needs a rate law:
+
+stoich<X> conversionReactor, X = 1: the heat of reaction the route would have to remove (KPI dHrxn\_kJ\_per\_mol). equil<X> equilibriumReactor over the route's OWN reaction: how far thermodynamics lets it go at this temperature and pressure. gibbsC gibbsReactor over EVERY species the case carries, on route C's feed: where the atoms go when nothing stops them at methanol. Route C passes the equilibrium test with its own reaction (K is enormous) and fails this one -- the product is not where its Gibbs energy is lowest, so the route stands or falls on a catalyst's SELECTIVITY, which no paper screen can supply. (Routes A and B have the same weakness, at a milder scale: equil02 shows syngas going to methane when methanation is allowed.)
+
+The economic and atom-economy filters need only molar masses and prices; the EduTool computes them from the catalogue's MW values (its test holds the table to the records) and from prices the student sets. NO PRICE IS DECLARED HERE: this repository curates none, and a number invented for a price would be a falsehood nobody could detect.
+
+EduTool: gui/src/ui/methods/RouteScreeningTool.tsx.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feedCO2}{F}{0.00111111111111}
+\goldrow{stream}{feedCO2}{T}{525}
+\goldrow{stream}{feedEquilA}{F}{0.000416666666667}
+\goldrow{stream}{feedEquilA}{T}{525}
+\goldrow{stream}{feedEquilB}{F}{0.000555555555556}
+\goldrow{stream}{feedEquilB}{T}{525}
+\goldrow{stream}{feedEquilC}{F}{0.000277777777778}
+\goldrow{stream}{feedEquilC}{T}{525}
+\goldrow{stream}{feedGibbsC}{F}{0.000277777777778}
+\goldrow{stream}{feedGibbsC}{T}{525}
+\goldrow{stream}{feedMethane}{F}{0.000833333333333}
+\goldrow{stream}{feedMethane}{T}{525}
+\goldrow{stream}{feedStoichA}{F}{0.000416666666667}
+\goldrow{stream}{feedStoichA}{T}{525}
+\goldmore{98}
 \end{tutgolden}
 
 \subsection{rotating}

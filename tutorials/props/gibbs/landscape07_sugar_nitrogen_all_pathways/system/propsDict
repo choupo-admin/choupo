@@ -1,0 +1,92 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  landscape07_sugar_nitrogen_all_pathways
+  =======================================
+  TWO GIBBS MAPS THAT CARRY A PURE SOLID, the first cases to (2026-09-29).
+  Until that day `gibbsMap` called the fluid-only solve, so a species whose
+  record declares `referenceState pureSolid;` was priced on the ideal-gas
+  rung and its record refused the whole map (found by Vitor, mapping
+  sucrose beside the gases).  The op now calls `GibbsMethod::solve`, the one
+  home the gibbsReactor already used: a declared pure solid is its own
+  phase at activity one, deposited only where the solid-free equilibrium
+  would supersaturate it, and its amount is the CSV column `s_<name>`.
+
+  sugarNitrogen -- the REACTANTS of the sucrose nitrogen-fixation route
+      C12H22O11(s) + 8 N2 + 13 H2O  ->  12 CO2 + 16 NH3
+  (balanced by electron count; its dG at 298.15 K, 1 bar is about -355 kJ
+  per sucrose on `reactionGibbs`, so the ROUTE is permitted), handed to a
+  Gibbs map with every species open, methane included.  Where the atoms
+  go at minimum G is NOT that route: measured, the carbon ends as methane
+  and CO2 (the anaerobic digester's answer), the nitrogen stays N2 and
+  ammonia is near 1e-6 at ambient.  A declared route that is permitted is
+  not the route equilibrium picks; the organism picks it with an enzyme.
+
+  boudouard -- 2 CO <-> C(graphite) + CO2, CO fed alone: carbon DEPOSITS
+  at low temperature and not at high, pinned as the fraction of the fed
+  carbon that leaves as graphite (elementYield on the solid).
+
+  NOT HERE, said: a solid that must REMAIN for the atoms to close.  With
+  the six species sucrose, CO2, N2, NH3, H2, water and no methane, carbon
+  has one fluid carrier (CO2) and too little oxygen for it, so the
+  solid-free equilibrium the solid test starts from does not exist; every
+  cell reports unconverged, with the solver's own cause printed.  That is a
+  limit of GibbsMethod::solve, the same in the gibbsReactor, recorded in
+  DEV.md section 5, not fixed here.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      sugarNitrogen;
+        type      gibbsMap;
+        elements  ( C H O N );
+        species
+        (
+            { name sucrose;  atoms ( 12 22 11 0 ); }
+            { name N2;       atoms ( 0 0 0 2 ); }
+            { name water;    atoms ( 0 2 1 0 ); }
+            { name CO2;      atoms ( 1 0 2 0 ); }
+            { name NH3;      atoms ( 0 3 0 1 ); }
+            { name H2;       atoms ( 0 2 0 0 ); }
+            { name CH4;      atoms ( 1 4 0 0 ); }
+        );
+        feed      { sucrose 1; N2 8; water 13; }
+        Tgrid     { from 298.15; to 598.15; n 13; }          // K
+        Pgrid     { from 1.0e5; to 1.0e7; n 3; log true; }   // Pa: 1, 10, 100 bar
+        metric    { type moleFraction; species NH3; }
+        anchors
+        (
+            { T 298.15; P 101325; }    // ambient: 25 C, 1 atm
+            { T 310.15; P 101325; }    // body temperature
+        );
+        output    { file sugarNitrogen.csv; }
+    }
+    {
+        name      boudouard;
+        type      gibbsMap;
+        elements  ( C O );
+        species
+        (
+            { name CO;        atoms ( 1 1 ); }
+            { name CO2;       atoms ( 1 2 ); }
+            { name graphite;  atoms ( 1 0 ); }
+        );
+        feed      { CO 2; }
+        Tgrid     { from 600; to 1300; n 15; }               // K
+        Pgrid     { from 1.0e5; to 1.0e6; n 2; log true; }   // Pa: 1, 10 bar
+        metric    { type elementYield; product graphite; element C; }
+        anchors
+        (
+            { T 700;  P 101325; }      // deposits
+            { T 1200; P 101325; }      // does not
+        );
+        output    { file boudouard.csv; }
+    }
+);

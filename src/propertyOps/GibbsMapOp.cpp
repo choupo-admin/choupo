@@ -29,6 +29,7 @@ License
 #include "GibbsMapOp.H"
 #include "unitOperations/reactor/gibbsMethod/ElementPotential.H"
 #include "unitOperations/reactor/GibbsReactor.H"   // approachDirection: ONE home for the sign rule
+#include "unitOperations/reactor/PureSolidPhase.H"  // isPureSolid: the record's own word
 #include "core/Advisory.H"
 
 #include "thermo/RecordResolver.H"
@@ -70,6 +71,31 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
         for (std::size_t j = 0; j < M; ++j) prob.A[j].push_back(at[j]);
     }
     const std::size_t N = prob.compIdx.size();
+
+    //  A PURE SOLID IS ITS OWN PHASE (2026-09-29).  A species whose record
+    //  declares `referenceState pureSolid;` (graphite, a sugar) is not a
+    //  member of the fluid mixture: `GibbsMethod::solve` -- the ONE home for
+    //  an equilibrium that may meet a solid, and the call the gibbsReactor
+    //  makes -- tests its activity and deposits it only where that exceeds
+    //  one.  This op called the fluid-only `equilibrium()` until 2026-09-29,
+    //  so a solid species was priced on the ideal-gas rung and its record
+    //  refused the whole map.  The CSV gains an `s_<species>` column (the
+    //  solid's amount, in the feed's own mole basis) for each such species
+    //  and for no other, so a map with no solid writes what it always wrote.
+    std::vector<bool> isSolid(N, false);
+    bool anySolid = false;
+    for (std::size_t i = 0; i < N; ++i)
+        if (pureSolidPhase::isPureSolid(thermo.comp(prob.compIdx[i])))
+            isSolid[i] = anySolid = true;
+    if (anySolid && verbosity >= 1)
+    {
+        std::cout << "  [gibbsMap] pure solid phase(s), each its own phase at"
+                     " activity one, deposited only where the solid-free"
+                     " equilibrium would supersaturate it:";
+        for (std::size_t i = 0; i < N; ++i) if (isSolid[i]) std::cout << " " << spNames[i];
+        std::cout << "  (CSV column s_<name>: the solid's amount, feed basis)\n";
+    }
+
     if (N <= M)
         throw std::runtime_error("gibbsMap: need more species than elements");
 
@@ -152,6 +178,12 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
         if (mSpecies == N)
             throw std::runtime_error("gibbsMap: metric target '" + target
                 + "' is not in the species list");
+        if (mtype == "moleFraction" && isSolid[mSpecies])
+            throw std::runtime_error("gibbsMap: metric target '" + target
+                + "' is a pure solid (its record declares referenceState"
+                  " pureSolid), so it has no mole fraction in the fluid.  Map"
+                  " its amount instead: `metric { type elementYield; product "
+                + target + "; element <E>; }`.");
         if (mtype == "elementYield")
         {
             const std::string e = met->lookupWord("element");
@@ -173,8 +205,11 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
     {
         if (mtype == "moleFraction")
             return eq.nGas[mSpecies] / eq.Ntotal_gas;
-        // elementYield: atoms of E in the product / E fed
-        return prob.A[mElem][mSpecies] * eq.nGas[mSpecies] / prob.b[mElem];
+        // elementYield: atoms of E in the product / E fed -- a solid product
+        // counts its deposit (its fluid amount is zero by construction)
+        const scalar nP = eq.nGas[mSpecies]
+            + (mSpecies < eq.nSolid.size() ? eq.nSolid[mSpecies] : 0.0);
+        return prob.A[mElem][mSpecies] * nP / prob.b[mElem];
     };
 
     // ---- the sweep -------------------------------------------------------------
@@ -184,9 +219,15 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
     if (!csv.is_open()) throw std::runtime_error("gibbsMap: cannot open output file");
     csv << "T_K,P_Pa,deltaT_K,converged,metric";
     for (const auto& nm : spNames) csv << ",x_" << nm;
+    for (std::size_t i = 0; i < N; ++i) if (isSolid[i]) csv << ",s_" << spNames[i];
     csv << "\n" << std::scientific << std::setprecision(8);
 
     int nBad = 0;
+    //  WHY a cell did not converge, as the solver said it -- the first cause
+    //  seen, reported once beside the count, so "unconverged" is never a
+    //  bare number (the Newton routes fill `notConvergedCause`).
+    std::string firstCause;
+    scalar firstBadT = 0.0, firstBadP = 0.0;
     for (int it = 0; it < nT; ++it)
     {
         const scalar T = T0 + (T1 - T0) * (nT > 1 ? scalar(it) / (nT - 1) : 0.0);
@@ -197,7 +238,7 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
                                   : P0 + (P1 - P0) * f;
             prob.P = P;
             resolveDirection(T);
-            GibbsEquilibrium eq = solver.equilibrium(prob, T, {});
+            GibbsEquilibrium eq = solver.solve(prob, T, {});
             csv << T << "," << P << "," << prob.dTapproach << ","
                 << (eq.converged ? 1 : 0) << ",";
             if (eq.converged)
@@ -205,12 +246,22 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
                 csv << metricOf(eq);
                 for (std::size_t i = 0; i < N; ++i)
                     csv << "," << eq.nGas[i] / eq.Ntotal_gas;
+                for (std::size_t i = 0; i < N; ++i)
+                    if (isSolid[i])
+                        csv << "," << (i < eq.nSolid.size() ? eq.nSolid[i] : 0.0);
             }
             else
             {
+                if (nBad == 0)
+                {
+                    firstCause = eq.notConvergedCause.empty()
+                               ? eq.stopReason : eq.notConvergedCause;
+                    firstBadT = T;  firstBadP = P;
+                }
                 ++nBad;
                 csv << "nan";
                 for (std::size_t i = 0; i < N; ++i) csv << ",nan";
+                for (std::size_t i = 0; i < N; ++i) if (isSolid[i]) csv << ",nan";
             }
             csv << "\n";
         }
@@ -253,7 +304,7 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
             const scalar Pa = a->lookupScalar("P");
             prob.P = Pa;
             resolveDirection(Ta);
-            GibbsEquilibrium eq = solver.equilibrium(prob, Ta, {});
+            GibbsEquilibrium eq = solver.solve(prob, Ta, {});
             std::ostringstream key;
             key << "metric_T" << static_cast<int>(std::lround(Ta - 273.15))
                 << "C_P" << static_cast<int>(std::lround(Pa / 101325.0)) << "atm";
@@ -292,6 +343,12 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
                                     "gibbsMap", tally.str());
     }
     headline_.push_back("n_unconverged");
+    if (nBad > 0 && verbosity >= 1)
+        std::cout << "  [gibbsMap] " << nBad << " of " << nT * nP
+                  << " cells did not converge; the first (T = " << firstBadT
+                  << " K, P = " << firstBadP << " Pa) says: "
+                  << (firstCause.empty() ? std::string("(the solver gave no cause)")
+                                         : firstCause) << "\n";
 
     if (verbosity >= 2)
         std::cout << "gibbsMap: " << nT << " x " << nP << " grid ("

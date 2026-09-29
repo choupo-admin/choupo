@@ -2387,6 +2387,26 @@ NOTHING HERE IS A RATE. An exergonic route is one the equilibrium permits; what 
 \end{tutnarrative}
 
 \clearpage
+\tutentry{landscape07\_sugar\_nitrogen\_all\_pathways}{tutorials/props/gibbs/landscape07\_sugar\_nitrogen\_all\_pathways}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{sugarNitrogen}\\[-1pt]{\tiny gibbsMap}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{boudouard}\\[-1pt]{\tiny gibbsMap}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Gibbs maps with a pure solid: the sucrose nitrogen-fixation reactants with every pathway open, and Boudouard carbon}
+\begin{tutnarrative}
+TWO GIBBS MAPS THAT CARRY A PURE SOLID, the first cases to (2026-09-29). Until that day `gibbsMap` called the fluid-only solve, so a species whose record declares `referenceState pureSolid;` was priced on the ideal-gas rung and its record refused the whole map (found by Vitor, mapping sucrose beside the gases). The op now calls `GibbsMethod::solve`, the one home the gibbsReactor already used: a declared pure solid is its own phase at activity one, deposited only where the solid-free equilibrium would supersaturate it, and its amount is the CSV column `s\_<name>`.
+
+sugarNitrogen -- the REACTANTS of the sucrose nitrogen-fixation route C12H22O11(s) + 8 N2 + 13 H2O $\to$ 12 CO2 + 16 NH3 (balanced by electron count; its dG at 298.15 K, 1 bar is about -355 kJ per sucrose on `reactionGibbs`, so the ROUTE is permitted), handed to a Gibbs map with every species open, methane included. Where the atoms go at minimum G is NOT that route: measured, the carbon ends as methane and CO2 (the anaerobic digester's answer), the nitrogen stays N2 and ammonia is near 1e-6 at ambient. A declared route that is permitted is not the route equilibrium picks; the organism picks it with an enzyme.
+
+boudouard -- 2 CO <$\to$ C(graphite) + CO2, CO fed alone: carbon DEPOSITS at low temperature and not at high, pinned as the fraction of the fed carbon that leaves as graphite (elementYield on the solid).
+
+NOT HERE, said: a solid that must REMAIN for the atoms to close. With the six species sucrose, CO2, N2, NH3, H2, water and no methane, carbon has one fluid carrier (CO2) and too little oxygen for it, so the solid-free equilibrium the solid test starts from does not exist; every cell reports unconverged, with the solver's own cause printed. That is a limit of GibbsMethod::solve, the same in the gibbsReactor, recorded in DEV.md section 5, not fixed here.
+
+\end{tutnarrative}
+
+\clearpage
 \tutentry{nh3\_equilibrium\_map}{tutorials/props/gibbs/nh3\_equilibrium\_map}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

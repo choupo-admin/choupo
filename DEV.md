@@ -2453,22 +2453,38 @@ defect — look for what else went with it.
 
 ## 5. Known debts (severity-ish)
 
-**2026-09-29 -- THE GIBBS MAP BYPASSES THE PURE-SOLID PATH.  OPEN, not
-fixed.**  Found by Vitor in the `equilibrium-landscapes` EduTool: a map over
-sucrose, CO2, N2, NH3, H2 and H2O (1 mol each) refused with `sucrose:
-h_pure_ig(T) evaluates the IDEAL-GAS rung, but this record declares
-referenceState pureSolid`.  The refusal is right about the record and wrong
-about the caller: `GibbsMethod::solve` is the ONE home for an equilibrium
-that may meet a pure solid (GibbsMethod.H:263-271, "every caller that may
-meet a solid calls this"), and `GibbsMapOp.cpp` calls the fluid-only
-`solver.equilibrium(...)` at both grid sites (lines 200 and 256), so a
-declared solid species is priced as a gas.  The `gibbsReactor` routes
-through `solve` and would take the same species.  Remedy, measured nowhere
-yet: switch both calls to `solve`, carry `eq.nSolid` into the cell CSV and
-the cell composition the page draws, and add a map witness with a pure
-solid (graphite is the cheap one; sucrose is Vitor's).  Blast radius to
-measure first: every gibbsMap case with no pure solid must be
-byte-identical (solve == equilibrium there, by the header's own claim).
+**2026-09-29 -- THE GIBBS MAP BYPASSED THE PURE-SOLID PATH.  CLOSED the
+same day (Vitor: "faz"), with one limit NAMED.**  Found by Vitor in the
+`equilibrium-landscapes` EduTool: a map over sucrose, CO2, N2, NH3, H2 and
+H2O refused with `sucrose: h_pure_ig(T) evaluates the IDEAL-GAS rung`.
+`GibbsMethod::solve` is the ONE home for an equilibrium that may meet a
+pure solid ("every caller that may meet a solid calls this"), and
+`GibbsMapOp.cpp` called the fluid-only `equilibrium()` at both grid sites.
+**Fix:** both sites call `solve`; the CSV gains an `s_<solid>` column (the
+deposit, feed mole basis) for each declared pure solid and for no other
+species; `elementYield` counts a solid product's deposit; a `moleFraction`
+metric on a solid REFUSES by name (it has none in the fluid); the first
+unconverged cell's cause is printed beside the count (it had been a bare
+number).  GUI: `gibbsMapCsv.ts` reads `s_` apart from `x_`, the drill-down
+shows the solid as an amount.  Measured: the seven existing gibbsMap goldens
+unchanged, two no-solid map CSVs byte-identical against the previous
+binary.  Witness
+`tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways`: the sucrose nitrogen-fixation REACTANTS with every pathway open
+end as CH4 = CO2 = 0.29 and N2 0.39, NH3 1.3e-6 at 25 C / 1 atm and no
+sucrose left (the route is permitted, dG -355 kJ on `reactionGibbs`, and is
+not where the atoms go); Boudouard deposits 49.6 % of the carbon at 700 K,
+1.8 % at 1200 K.  **NAMED, NOT FIXED -- a solid that must REMAIN for the
+atoms to close.**  Vitor's exact six species (no methane) leave carbon one
+fluid carrier (CO2) with too little oxygen, so the solid-free equilibrium
+the solid test starts from does not exist: every cell is unconverged and
+now says why (the element-potential Newton's singular matrix).  That is
+`GibbsMethod::solve`'s algorithm (solve without the solid, then test it),
+the same in the gibbsReactor; a remedy would start from the solid PRESENT
+where the fluid alone cannot hold the atoms (a feasibility LP), and is
+unscheduled.  Also found and fixed on the way: the Tutorials Guide `.tex`
+had not been regenerated after C23/C24 added two cases, which
+`gen_tutorials_guide --check` in the FULL suite would have failed on; the
+`--gui` validation those slices ran does not include that gate.
 
 **2026-09-27 -- THE GIBBS REACTOR REFUSED A FEED FAR FROM ITS EQUILIBRIUM.
 CLOSED, with four things named.**  Reported by the general who built

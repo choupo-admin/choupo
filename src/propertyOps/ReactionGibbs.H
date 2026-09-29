@@ -44,10 +44,14 @@ Description
     (thermo/reaction/Reaction.cpp), and it prices every species with
     `g_pure_ig(T)` -- the IDEAL-GAS rung, which a record tabulated on the
     solid or liquid standard state REFUSES by name (Component.cpp,
-    `requireIdealGasRung`).  That is right for a gas-phase reactor and it is
-    why `equilibriumReactor`, `gibbsReactor` and `gibbsMap` cannot take
-    glucose (`referenceState pureSolid`) beside gases: measured, the refusal
-    is "reading them here would be wrong by a heat of sublimation".  The
+    `requireIdealGasRung`).  That is right for a gas-phase reactor, and on
+    2026-09-27 it was why `equilibriumReactor`, `gibbsReactor` and
+    `gibbsMap` could not take glucose (`referenceState pureSolid`) beside
+    gases: measured, the refusal was "reading them here would be wrong by a
+    heat of sublimation".  All three now carry a declared pure solid as its
+    own phase (the reactors from 2026-09-27, the map from 2026-09-29, through
+    `GibbsMethod::solve` / `PureSolidPhase.H`); they solve an EQUILIBRIUM,
+    and this op prices a DECLARED ROUTE, which is a different question.  The
     biological nitrogen-fixation routes an EduTool needed to price are
     exactly such reactions -- a solid sugar and liquid water beside gases --
     and no property operation summed a declared reaction over the

@@ -83,7 +83,9 @@ export function GibbsMapPanel({ op, csv }: {
                 <Button size="compact-xs" variant="subtle" onClick={() => setCell(null)}>close</Button>
               </Group>
               <Text size="xs" c="dimmed">
-                Equilibrium composition of THIS solved cell (no interpolation):
+                Equilibrium composition of THIS solved cell (no interpolation);
+                species rows are fluid mole fractions{data.solids.length > 0
+                  ? ", a pure solid is its own phase and its row is an amount" : ""}:
               </Text>
               <Table withTableBorder striped highlightOnHover fz="xs">
                 <Table.Tbody>
@@ -92,6 +94,14 @@ export function GibbsMapPanel({ op, csv }: {
                       <Table.Td><Code>{sp}</Code></Table.Td>
                       <Table.Td style={{ textAlign: "right" }}>
                         {Number.isFinite(cell.x[sp] ?? NaN) ? (cell.x[sp] as number).toPrecision(5) : "—"}
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                  {data.solids.map((sp) => (
+                    <Table.Tr key={`s_${sp}`}>
+                      <Table.Td><Code>{sp}</Code> <Text span size="xs" c="dimmed">solid, mol (feed basis)</Text></Table.Td>
+                      <Table.Td style={{ textAlign: "right" }}>
+                        {Number.isFinite(cell.solid?.[sp] ?? NaN) ? (cell.solid![sp] as number).toPrecision(5) : "—"}
                       </Table.Td>
                     </Table.Tr>
                   ))}

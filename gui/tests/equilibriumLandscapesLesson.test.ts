@@ -69,7 +69,7 @@ describe("the equilibrium-landscapes lesson", () => {
     const s = all(1);
     expect(s).toContain("ELEMENT YIELD");
     expect(s).toContain("refused by name where the species is also produced");
-    expect(s).toContain("GibbsMapOp.cpp:142–178");
+    expect(s).toContain("GibbsMapOp.cpp:168–213");
     expect(prose(step(1).formula!)).toContain(String.raw`Y_E = \frac{a_{E,p}\, n_p}{b_E}`);
   });
 
@@ -193,7 +193,7 @@ describe("the tool's arithmetic", () => {
       ({ T_K, P_Pa, deltaT_K: 0, converged, metric, x: {} })),
     Ts: [...new Set(cells.map((c) => c[0]))].sort((a, b) => a - b),
     Ps: [...new Set(cells.map((c) => c[1]))].sort((a, b) => a - b),
-    species: [], deltaT: 0,
+    species: [], solids: [], deltaT: 0,
   });
 
   it("groups converged cells by pressure, sorted by T, and drops the unconverged", () => {
