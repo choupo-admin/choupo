@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Three routes to one product, methanol.  Every equation is balanced
+  (C, H, O counted on each side):
+
+    routeA  CO  + 2 H2        -> CH3OH            C1 H4 O1 = C1 H4 O1
+    routeB  CO2 + 3 H2        -> CH3OH + H2O      C1 H6 O2 = C1 H6 O2
+    routeC  2 CH4 + O2        -> 2 CH3OH          C2 H8 O2 = C2 H8 O2
+
+  Route C is the direct partial oxidation of methane, written with integer
+  coefficients.  No kinetics: this case screens on paper, and a rate law is
+  what a screen is trying not to need yet.
+\*---------------------------------------------------------------------------*/
+
+routeA
+{
+    limitingReactant   CO;
+    stoichiometry
+    (
+        { component CO;        nu -1; }
+        { component H2;        nu -2; }
+        { component methanol;  nu  1; }
+    );
+}
+
+routeB
+{
+    limitingReactant   CO2;
+    stoichiometry
+    (
+        { component CO2;       nu -1; }
+        { component H2;        nu -3; }
+        { component methanol;  nu  1; }
+        { component water;     nu  1; }
+    );
+}
+
+routeC
+{
+    limitingReactant   CH4;
+    stoichiometry
+    (
+        { component CH4;       nu -2; }
+        { component O2;        nu -1; }
+        { component methanol;  nu  2; }
+    );
+}

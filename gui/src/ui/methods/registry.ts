@@ -67,7 +67,7 @@ export type MethodToolId =
   | "sour-water" | "rules-of-thumb" | "bode"
   | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
-  | "declared-pathways" | "reactor-ladder"
+  | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
@@ -668,6 +668,25 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  `notes` rather than `construction`: there is no classical graphical
   //  construction here.  It is a chapter you scroll with the engine running
   //  inside it, which is the shape `what-is-temperature` established.
+  //  Route screening (C24, 2026-09-29): three known routes to methanol
+  //  through the paper filters, cheapest first -- margin, atom economy,
+  //  equilibrium, heat, selectivity, SELECT -- with kinetics last.
+  {
+    id: "route-screening",
+    label: "Screening routes to a product (methanol)",
+    discipline: "Reaction engineering", kind: "notes", status: "live",
+    teaches: "That routes to a product are screened on paper in order of "
+      + "cost, cheapest filter first: the stoichiometric gross margin, the "
+      + "atom economy, the equilibrium limit at the catalyst's temperature, "
+      + "the heat to remove, and whether the product is where the atoms go "
+      + "when every species is allowed; that direct oxidation of methane "
+      + "wins the first four and fails the fifth, because the combustion "
+      + "products lie far below methanol in Gibbs energy; that the "
+      + "remaining questions (Safety, Environmental, Legal, Economics, "
+      + "Control, Throughput) need no rate constant; and that the rate law "
+      + "is bought last, for the one route that survives.",
+    theory: "ch:gibbs-reactor",
+  },
   //  The reactor ladder (C23, 2026-09-28): one feed through the three rungs
   //  a design climbs -- a declared conversion, the equilibrium limit (with
   //  its approach temperature), the rate law -- in the order industry climbs

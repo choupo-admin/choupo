@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 45,
-  "registryTools": 45,
+  "liveTools": 46,
+  "registryTools": 46,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -202,6 +202,13 @@
       "discipline": "Reaction engineering",
       "teaches": "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
       "href": "/app/?workspace=methods&tool=levenspiel"
+    },
+    {
+      "id": "route-screening",
+      "label": "Screening routes to a product (methanol)",
+      "discipline": "Reaction engineering",
+      "teaches": "That routes to a product are screened on paper in order of cost, cheapest filter first: the stoichiometric gross margin, the atom economy, the equilibrium limit at the catalyst's temperature, the heat to remove, and whether the product is where the atoms go when every species is allowed; that direct oxidation of methane wins the first four and fails the fifth, because the combustion products lie far below methanol in Gibbs energy; that the remaining questions (Safety, Environmental, Legal, Economics, Control, Throughput) need no rate constant; and that the rate law is bought last, for the one route that survives.",
+      "href": "/app/?workspace=methods&tool=route-screening"
     },
     {
       "id": "reactor-ladder",

@@ -1664,7 +1664,27 @@ accepts today, and that is a policy call.
      screening of selectivity; kinetics last.  The gross margin needs
      PRICES, which the tree does not curate -- the scope must say where
      they come from (declared by the case, never invented).  Scope put to
-     Vitor before any build.  Not started.
+     Vitor; "Faz a C24" 2026-09-29.  BUILT: witness
+     `tutorials/steady/reactors/screen01_methanol_routes` (three routes to
+     methanol -- syngas, CO2 hydrogenation, direct oxidation of methane --
+     each at its stoichiometric ratio through a conversionReactor at X = 1
+     for dH and an equilibriumReactor over its own reaction; route C also
+     through a gibbsReactor over every species) and the EduTool
+     `route-screening` (RouteScreeningTool.tsx + routeScreeningLesson.ts).
+     Measured at 525 K, 50 bar: X_eq A 0.529, B 0.212, C ~1 (K 9.3e19);
+     dH per mol methanol -98.4 / -58.7 / -127.4 kJ; route C under Gibbs
+     leaves methanol at 1.8e-10 (half the methane burns) -- the route that
+     wins on paper fails on selectivity.  PRICES: the tree curates none, so
+     the page carries them as student knobs with PLACEHOLDER starting values
+     said to be placeholders, and NO price is declared in the case (the
+     `EconomicsPass` `rawMaterials` grammar exists for a costed flowsheet;
+     a paper screen needs none).  MW and stoichiometry are transcribed in
+     the page and held by its test to the catalogue records and the case's
+     reactions.  Corrected before commit, by the author: a draft said route
+     C's 2:1 CH4/O2 feed is "inside the flammable range"; at 67 % methane
+     that is at best unverified (the room-temperature upper limit in O2 is
+     near 60 %), so the page asks it as the safety filter's question.
+     DONE.
 
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o

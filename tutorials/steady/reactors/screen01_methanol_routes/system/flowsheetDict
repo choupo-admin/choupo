@@ -1,0 +1,158 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  screen01_methanol_routes  --  SCREENING ROUTES TO A PRODUCT, ON PAPER.
+
+  Three known routes to methanol, each fed at its own stoichiometric ratio
+  at 525 K and 50 bar, ideal gas:
+
+    A  synthesis gas        CO  + 2 H2  -> CH3OH
+    B  CO2 hydrogenation    CO2 + 3 H2  -> CH3OH + H2O
+    C  direct oxidation     2 CH4 + O2  -> 2 CH3OH
+
+  Each route is asked three questions, by three reactors on one split of
+  its feed, none of which needs a rate law:
+
+    stoich<X>   conversionReactor, X = 1: the heat of reaction the route
+                would have to remove (KPI dHrxn_kJ_per_mol).
+    equil<X>    equilibriumReactor over the route's OWN reaction: how far
+                thermodynamics lets it go at this temperature and pressure.
+    gibbsC      gibbsReactor over EVERY species the case carries, on route
+                C's feed: where the atoms go when nothing stops them at
+                methanol.  Route C passes the equilibrium test with its own
+                reaction (K is enormous) and fails this one -- the product
+                is not where its Gibbs energy is lowest, so the route stands
+                or falls on a catalyst's SELECTIVITY, which no paper screen
+                can supply.  (Routes A and B have the same weakness, at a
+                milder scale: equil02 shows syngas going to methane when
+                methanation is allowed.)
+
+  The economic and atom-economy filters need only molar masses and prices;
+  the EduTool computes them from the catalogue's MW values (its test holds
+  the table to the records) and from prices the student sets.  NO PRICE IS
+  DECLARED HERE: this repository curates none, and a number invented for a
+  price would be a falsehood nobody could detect.
+
+  EduTool: gui/src/ui/methods/RouteScreeningTool.tsx.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        splitA;
+        type        splitter;
+        in          feedSyngas;
+        outputs     ( feedStoichA feedEquilA );
+        operation   { fractions ( 0.5 0.5 ); }
+    }
+    {
+        name        splitB;
+        type        splitter;
+        in          feedCO2;
+        outputs     ( feedStoichB feedEquilB );
+        operation   { fractions ( 0.5 0.5 ); }
+    }
+    {
+        name        splitC;
+        type        splitter;
+        in          feedMethane;
+        outputs     ( feedStoichC feedEquilC feedGibbsC );
+        operation   { fractions ( 0.3333 0.3333 0.3333 ); }
+    }
+    {
+        name        stoichA;
+        type        conversionReactor;
+        in          feedStoichA;
+        outputs     ( outStoichA );
+        reaction    routeA;
+        operation
+        {
+            conversion  1.0;      // the paper answer: every limiting mole converted
+        }
+    }
+    {
+        name        stoichB;
+        type        conversionReactor;
+        in          feedStoichB;
+        outputs     ( outStoichB );
+        reaction    routeB;
+        operation
+        {
+            conversion  1.0;      // the paper answer: every limiting mole converted
+        }
+    }
+    {
+        name        stoichC;
+        type        conversionReactor;
+        in          feedStoichC;
+        outputs     ( outStoichC );
+        reaction    routeC;
+        operation
+        {
+            conversion  1.0;      // the paper answer: every limiting mole converted
+        }
+    }
+    {
+        name        equilA;
+        type        equilibriumReactor;
+        in          feedEquilA;
+        outputs     ( outEquilA );
+        operation
+        {
+            T                    525 K;
+        }
+        reactions   ( routeA );
+    }
+    {
+        name        equilB;
+        type        equilibriumReactor;
+        in          feedEquilB;
+        outputs     ( outEquilB );
+        operation
+        {
+            T                    525 K;
+        }
+        reactions   ( routeB );
+    }
+    {
+        name        equilC;
+        type        equilibriumReactor;
+        in          feedEquilC;
+        outputs     ( outEquilC );
+        operation
+        {
+            T                    525 K;
+        }
+        reactions   ( routeC );
+    }
+    {
+        name        gibbsC;
+        type        gibbsReactor;
+        in          feedGibbsC;
+        outputs     ( outGibbsC );
+        operation
+        {
+            T          525 K;
+            P          50 bar;
+            elements   ( C  H  O );
+            species
+            (
+                { name  CH4;       atoms  ( 1  4  0 ); }
+                { name  O2;        atoms  ( 0  0  2 ); }
+                { name  methanol;  atoms  ( 1  4  1 ); }
+                { name  CO;        atoms  ( 1  0  1 ); }
+                { name  CO2;       atoms  ( 1  0  2 ); }
+                { name  H2;        atoms  ( 0  2  0 ); }
+                { name  water;     atoms  ( 0  2  1 ); }
+            );
+        }
+    }
+);
