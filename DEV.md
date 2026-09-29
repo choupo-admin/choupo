@@ -1722,13 +1722,21 @@ accepts today, and that is a policy call.
      **SLICE 1 BUILT 2026-09-29:** `tutorials/steady/membranes/
      membrane18_nf_feed_and_bleed` (mixer -> NF270 module -> splitter,
      `Recycle` torn; 15 m2, 95 % recycle / 5 % bleed).  MEASURED: the module
-     works at 1.81x the fresh-feed concentration, so flux 165 LMH against
-     182 LMH single pass; the module's R_obs (68.5 %, against what it is
-     fed) is not the plant's (43.7 % against the fresh feed); and **in this
-     model the loop is strictly WORSE than one pass of the same module**
-     (recovery 68.5 % against 75.3 %, dirtier permeate), because `k_film` is
-     DECLARED and the recirculation buys no cross-flow -- the very thing a
-     real loop is for.  The header says so in those words; the single-pass
+     works at 1.81x the fresh-feed concentration, so its average flux is
+     165 LMH against 213 LMH at the feed concentration (a module sized from
+     the feed analysis is short of area by 1.29x); the module's R_obs
+     (68.5 %, against what it is fed) is not the plant's (43.7 % against the
+     fresh feed); and the loop recovers less than one pass of the same area
+     (68.5 % against 75.3 %) -- PHYSICS, the loop runs near the bleed
+     concentration.  What the model cannot show is why a loop is used: the
+     loop drives 7x the flow through the module and loses a tenth of it,
+     while the single pass ends at a quarter of its inlet flow; with `k_film`
+     DECLARED the single pass pays nothing for that, so the comparison
+     flatters it.  CORRECTED 2026-09-29 (Opus review of the first slice): the
+     first header said the 182 LMH single-pass AVERAGE was "the flux the feed
+     analysis gives" and read "10 % undersized" off it (it is 1.29x), and
+     blamed the whole loop penalty on the declared k_film (the penalty is
+     real; the flattery of the comparator is the model's).  The single-pass
      column is the same case with `fractions ( 0.0  1.0 )`.  Two limits, both
      honest and both named in the case: (a) NO PUMP and `dP_feed_total 0` --
      the mixer takes the lowest inlet pressure, so a loop that loses a bar per
@@ -1750,12 +1758,26 @@ accepts today, and that is a policy call.
      THE PUMP STILL REFUSES, one datum later: it prices the liquid enthalpy
      of the mixture for the outlet temperature, and glucose has no
      `liquidHeatCapacity` (a nonvolatile's enthalpy may not route through
-     the ideal-gas reference).  The same gap is why every glucose case has
-     an UNAVAILABLE energy balance.  **NEXT, Vitor's to order:** the heat
-     capacity of glucose in aqueous solution (a partial molar Cp, needs its
-     own primary source; the Seitz paper has none) -- with it the pump, the
-     real 1 bar pressure drop, the spacer-hydraulics `k_film` of membrane04
-     and the energy balance all open at once; and the sucrose record's own
+     the ideal-gas reference).  MEASURED 2026-09-29 on a scratch copy with a
+     placeholder Cp (never committed): with a glucose liquid Cp the pump
+     RUNS (1.17 kW shaft at 9 -> 10 bar, the loop suction then sits at 9
+     bar), the 1 bar pressure drop comes back, and the energy balance
+     becomes AVAILABLE -- and it then shows a NEW plant first-law residual
+     of 1.13 kW, 96 % of the energy exchanged: the liquid enthalpy surface
+     has no v dP term (the engine announces it: only the dissipated part of
+     the pump work reaches the stream), and the declared-isothermal mixer
+     throws away the 0.013 K the pump adds.  So the Cp alone would put a
+     fresh pinned debt into check_energy_closure; closing it needs the
+     mixer's energy balance (a liquid Cp makes the adiabatic mixer possible)
+     and the pump's v dP on the surface.  **THE Cp SOURCE IS LOCATED, NOT
+     READ:** Kishore, Goldberg & Tewari, J. Chem. Thermodyn. 25 (1993)
+     847-859, doi:10.1006/jcht.1993.1082 (apparent molar heat capacities and
+     volumes of aqueous glucose, 298.15-327.01 K; the Seitz paper's ref.
+     [12]); paywalled, and the open APIs elide the abstract -- a search
+     engine's summary quotes a number, which is second-hand and was not
+     entered.  **NEXT, Vitor's to order:** that paper (its C_p,2 at infinite
+     dilution and its dC_p/dT); then the pump, the adiabatic mixer and the
+     spacer-hydraulics `k_film` of membrane04 for this loop; and the sucrose record's own
      `Vliq` (2.115e-4) still carries no citation.  Also open and separate:
      the quasi-steady seam for a DYNAMIC loop (#185); a real UF (flux law,
      MWCO rejection, a cited record).

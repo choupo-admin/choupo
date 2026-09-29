@@ -947,9 +947,11 @@ that, not against the fresh feed.  A loop needs the recirculation pressure
 restored on every pass: the mixer takes the LOWEST inlet pressure, and the
 `pump` unit needs every component's `Vliq` AND a liquid enthalpy (glucose has
 `Vliq` since 2026-09-29 but no `liquidHeatCapacity`, so the pump still refuses),
-so that witness declares `dP_feed_total 0` and says so.  With a declared `k_film` the
-recirculation buys no cross-flow, and the loop is worse than one pass -- the
-case's header states it.
+so that witness declares `dP_feed_total 0` and says so.  A loop runs its whole
+membrane near the bleed concentration, so it recovers less than one pass of the
+same area -- physics, the price of feed-and-bleed; what it buys is cross-flow,
+which a DECLARED `k_film` cannot show, so a single-pass comparator with a
+declared `k_film` is flattered.  The case's header states both.
 
 **Concentration polarisation** has ONE home for every transport law
 (`massTransfer/Polarisation`): the wall concentration `c_m` per solute.

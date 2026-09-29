@@ -44,26 +44,46 @@
   The single-pass column is this same case with `fractions ( 0.0  1.0 )`
   in SPLIT: nothing recycles, and the module is fed the fresh feed.
 
+  Read off the module's own profile (the Plot tab, or the axialProfile in
+  converged/internalStates/NF -- columns z, J_w, Q_b):
+
+                                  loop                  single pass
+      flux at the module INLET    168.1 LMH             213.1 LMH  (= at the
+                                                          fresh-feed conc.)
+      flux at the module OUTLET   162.2 LMH             136.2 LMH
+      volumetric flow through     7.1e-3 m3/s           1.0e-3 m3/s
+        the module, inlet
+      outlet flow / inlet flow    0.90                  0.25
+
   THREE READINGS OF THE SAME LOOP.
-    * The module works at 1.81 times the feed concentration, so its flux is
-      165 LMH and not the 182 LMH the feed analysis gives: sizing from the
-      feed undersizes the area by about 10 %.
+    * The module works at 1.81 times the feed concentration.  Its flux at
+      the fresh-feed concentration is 213 LMH (the single pass's first
+      node); the loop gets 165.  A module sized from the feed analysis is
+      short of area by 213/165 = 1.29, nearly a third.
     * R_obs = 68.54 % is the module's rejection AGAINST WHAT IT IS FED.  The
       permeate is 43.7 % cleaner than the fresh feed, not 68.5 %: a
       rejection is a property of the membrane at a concentration, and the
-      plant is judged against the feed.  The single pass shows the opposite
-      number (54.36 %), because there the concentration climbs ALONG the
-      module and drags the average permeate up.
-    * In THIS model the loop buys nothing.  It recovers less, runs at a
-      lower flux and makes a dirtier permeate than one pass of the same
-      module.  What a real loop buys is CROSS-FLOW -- a higher velocity
-      along the membrane, hence a higher film coefficient and less
-      polarisation and fouling -- and this model does not have it:
-      `k_film` is DECLARED, 5.0e-5 m/s, whatever the recirculation flow.
-      (membrane04 computes k_film and the pressure drop from the spacer
-      hydraulics, which is what the recirculation would move; see WHY NO
-      PUMP for why that is not used here.)  Read the numbers above as the
-      cost of the loop, not as an argument against it.
+      plant is judged against the feed.  In the single pass the two numbers
+      nearly coincide (54.4 % and 54.6 %), because there the module IS fed
+      the fresh feed.
+    * The loop recovers less and makes a dirtier permeate than one pass of
+      the same area, and that is PHYSICS, not a defect of the model: a
+      feed-and-bleed loop runs its whole membrane near the concentration of
+      the bleed, while a single pass spends its first metres on the dilute
+      feed.  It is the known price of feed-and-bleed, and the reason a
+      large plant stages its modules instead.
+      What this model does NOT show is why a loop is used at all.  The
+      single pass here takes 75 % recovery out of one element, so the flow
+      leaving the element is a quarter of the flow entering it; a real
+      element at that recovery would lose its cross-flow velocity, its film
+      coefficient and its polarisation control, and element makers state a
+      maximum recovery per element and a minimum concentrate flow for
+      exactly that reason.  The loop pushes seven times the flow through the
+      module and loses only a tenth of it -- that is what it buys.  Here
+      `k_film` is DECLARED, 5.0e-5 m/s, whatever the flow, so the single
+      pass pays nothing for its collapsing velocity and the comparison
+      flatters it.  (membrane04 computes k_film and the pressure drop from
+      the spacer hydraulics; see WHY NO PUMP for why that is not used here.)
 
   WHY NO PUMP, AND WHY dP_feed_total IS ZERO.  A real loop has a
   recirculation pump: the module loses feed-side pressure on every pass and
