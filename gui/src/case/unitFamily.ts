@@ -245,7 +245,7 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
         + " M20 27a1.6 1.6 0 103.2 0a1.6 1.6 0 10-3.2 0"
         + " M27 21a1.6 1.6 0 103.2 0a1.6 1.6 0 10-3.2 0" },
 
-  //  ---- DRYERS.  Three mechanisms, three shapes.
+  //  ---- DRYERS.  Four mechanisms, four shapes.
   { cls: "SprayDryer", label: "spray dryer",
     //  Chamber, ATOMISER at the top, the spray cone under it.
     path: "M13 10h22v18l-11 14-11-14z" + TOP_NOZZLE + " M20 14l4-4 4 4"
@@ -256,6 +256,12 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
         + " M12 36a2.5 2.5 0 105 0a2.5 2.5 0 10-5 0"
         + " M30 32a2.5 2.5 0 105 0a2.5 2.5 0 10-5 0"
         + " M2 16h6 M40 25h6" },
+  { cls: "ConvectiveDryer", label: "continuous convective (belt) dryer",
+    //  A BELT carrying the solid through a housing the air sweeps along:
+    //  the contact area is the model, so the belt runs the full length.
+    path: "M6 16h36v14H6z M9 27h30 M11 30a2 2 0 104 0a2 2 0 10-4 0"
+        + " M33 30a2 2 0 104 0a2 2 0 10-4 0 M12 22h6l-2-2 M26 22h6l-2-2"
+        + " M0 20h6 M42 26h6" },
   { cls: "EvaporativeDryer", label: "evaporative (through-flow) dryer",
     //  A chamber the DRYING AIR passes through, vapour leaving the top.
     path: "M12 14h24v20H12z M18 14V8 M24 14V6 M30 14V8" + SIDE_NOZZLES },
@@ -417,6 +423,7 @@ export const UNIT_CLASS: { readonly [type: string]: string } = {
   condenser: "PhaseChanger",
   sprayDryer: "SprayDryer",
   solidDryer: "SolidDryer",
+  convectiveDryer: "ConvectiveDryer",
   evaporativeDryer: "EvaporativeDryer",
   coolingTower: "CoolingTower",
   crystalliser: "Crystalliser",

@@ -1483,6 +1483,43 @@ library (`constant/crystallisation`) the steady MSMPR uses.
 }
 ```
 
+### `convectiveDryer`
+A CONTINUOUS convective dryer: a wet sorbing solid (a component with a
+`sorption {}` isotherm in `s[]`, its moisture as liquid) and a hot-air
+stream meet over a declared gas–solid contact `area`, `flow cocurrent` or
+`flow countercurrent`.  Along the area the solid dries at the local rate
+`R = R_c f(Φ)` of its characteristic drying curve (`dryingCurve {}`, as in
+`batchDryer`; absent = linear), with `R_c = k_Y (Y_sat(T_wb) − Y)` and
+`X_eq` (GAB) read at the LOCAL air, which cools and humidifies as it goes.
+The air's humidity and temperature are algebraic in the solid's moisture
+(water and enthalpy balances on the package's own formation surface), so
+the unit's first law closes by construction and is published as
+`energyResidual_kW`; counter-current shoots on the outlet moisture.  The
+air inlet must declare `phase gas;` (refused otherwise — an undeclared
+phase is priced as a liquid).  Announced hypotheses: the solid sits at the
+local wet bulb in both periods (its falling-rate warm-up is not modelled),
+Lewis = 1, one `k_Y`, no axial mixing, no re-wetting, adiabatic.
+
+```
+{ name dryer;  type convectiveDryer;
+  inputs  ( wetSolid  hotAir );  outputs ( drySolid  humidExhaust );
+  operation
+  {
+      flow              countercurrent;        // or cocurrent
+      area              300 m2;                // gas-solid contact area
+      k_Y               [1 -2 -1 0 0] 0.05;    // kg/(m2 s) per (kg/kg)
+      criticalMoisture  0.12;                  // kg/kg dry solid -- MEASURED
+      dryingCurve { shape power; exponent 1.5; source "..."; }   // optional
+      nSteps            100;                   // optional (default 100, announced)
+  }
+}
+```
+KPIs: `X_initial`, `X_final`, `X_equilibrium_inlet_air`, `X_critical`,
+`water_removed_kg_s`, `T_air_out`, `T_solid_out`, `Y_air_in`, `Y_air_out`,
+`energyResidual_kW`, `position_critical`; profile along `position` (area
+fraction).  Witness: `tutorials/steady/drying/convDryer01_sugar_curve`
+(co- beside counter-current; gate `check_convective_dryer`).
+
 ### `batchDryer`
 A tray of wet solid losing its moisture into air of DECLARED, CONSTANT
 condition (the air is an environment, not a ledgered stream).  State:

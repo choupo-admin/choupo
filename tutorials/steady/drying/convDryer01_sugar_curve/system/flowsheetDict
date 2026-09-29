@@ -1,0 +1,108 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  convDryer01_sugar_curve  --  CONTINUOUS CONVECTIVE DRYING ON THE
+                               CHARACTERISTIC DRYING CURVE.
+
+  solidDryer01's feed -- 3423 kg/h dry sucrose at X_in = 0.20 kg/kg, and
+  800 kmol/h of air at 420 K with 2 mol% water -- split in two halves, each
+  sent through the SAME continuous dryer (300 m2 of gas-solid contact,
+  k_Y = 0.05 kg/(m2 s), X_c = 0.12 kg/kg, the characteristic curve
+  f = Phi^1.5), one with the air flowing WITH the solid, one AGAINST it.
+  (src/unitOperations/heatTransfer/ConvectiveDryer.H)
+
+  Along the contact area the air COOLS and HUMIDIFIES as it dries the
+  solid, so the wet bulb, the constant rate and the local equilibrium
+  moisture all move -- what the batch tray (dryer02) cannot show.
+
+                         co-current      counter-current
+    X out  [kg/kg]       0.02342         0.00468
+    water removed [kg/s] 0.0839          0.0929
+    air out [K]          359.7           353.2
+    Y out  [kg/kg dry]   0.0393          0.0421
+    X_c crossed at       6.4 % of A      12.4 % of A
+    floor: X_eq of the air as fed = 0.00110 kg/kg
+
+  Counter-current dries five times further on the same area, because the
+  driest solid meets the freshest (hottest, driest) air, where X_eq is
+  lowest and the falling-rate driving force survives; co-current ends where
+  the used-up air meets the driest solid.  That is the textbook result, and
+  here it is computed, not asserted.
+
+  THE FIRST LAW, on the package's own formation surface: each dryer
+  publishes energyResidual_kW (1e-7 and 5e-10 kW), and the plant energy
+  report closes at 1e-7 kW.  The hot air DECLARES `phase gas;` -- without
+  it the stream carries vf = 0, the report prices the air as a liquid and
+  the plant is off by 380 kW; the dryer now refuses that by name.
+
+  HYPOTHESES (announced on every run): the solid sits at the LOCAL wet bulb
+  in both periods -- it leaves at ~316 K, while a real solid warms toward
+  the air in the falling period (not modelled); Lewis = 1; one k_Y over the
+  whole area; no axial mixing; no re-wetting; adiabatic; bound moisture
+  priced as liquid water.  X_c, k_Y and the curve are HYPOTHETICAL teaching
+  values, not measured on this sugar.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        splitSolid;
+        type        splitter;
+        in          wetSolid;
+        outputs     ( wetSolidCo  wetSolidCounter );
+        operation   { fractions ( 0.5 0.5 ); }
+    }
+    {
+        name        splitAir;
+        type        splitter;
+        in          hotAir;
+        outputs     ( airCo  airCounter );
+        operation   { fractions ( 0.5 0.5 ); }
+    }
+    {
+        name        co;
+        type        convectiveDryer;
+        inputs      ( wetSolidCo  airCo );
+        outputs     ( drySolidCo  exhaustCo );
+        operation
+        {
+            flow              cocurrent;
+            area              300 m2;        // gas-solid contact area
+            k_Y               [1 -2 -1 0 0]  0.05;
+            criticalMoisture  0.12;           // kg/kg dry solid
+            dryingCurve
+            {
+                shape     power;
+                exponent  1.5;
+                source    "hypothetical teaching curve -- not a measured material";
+            }
+        }
+    }
+    {
+        name        counter;
+        type        convectiveDryer;
+        inputs      ( wetSolidCounter  airCounter );
+        outputs     ( drySolidCounter  exhaustCounter );
+        operation
+        {
+            flow              countercurrent;
+            area              300 m2;        // gas-solid contact area
+            k_Y               [1 -2 -1 0 0]  0.05;
+            criticalMoisture  0.12;           // kg/kg dry solid
+            dryingCurve
+            {
+                shape     power;
+                exponent  1.5;
+                source    "hypothetical teaching curve -- not a measured material";
+            }
+        }
+    }
+);

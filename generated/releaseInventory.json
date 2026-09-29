@@ -17,14 +17,14 @@
     "utilities": 10
   },
   "engine": {
-    "unitOperations": 51,
+    "unitOperations": 52,
     "engines": 5
   },
   "tutorials": {
-    "runnableCases": 437,
-    "regressionChecks": 420,
+    "runnableCases": 440,
+    "regressionChecks": 423,
     "byTier": {
-      "witness": 391,
+      "witness": 394,
       "tutorial": 37,
       "showcase": 9
     }

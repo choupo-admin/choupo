@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BatchDryer.H"
+#include "unitOperations/heatTransfer/Psychrometry.H"
 
 #include <map>
 
@@ -242,13 +243,8 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
     //      Y = (Mv/Mc) p_v / (P - p_v)  =>  p_v = P Y / (Y + Mv/Mc).
     //  The GAB expression is SolidDryer's, verbatim: one model, two units.
     // -----------------------------------------------------------------
-    const scalar pv_air   = P * Y_air_ / (Y_air_ + Mv / Mc);
-    const scalar Psat_air = moist.vp().Psat_Pa(T_air_);
-    if (Psat_air <= 0.0)
-        throw std::runtime_error(who + ": the moisture's vapour pressure at"
-            " the declared air temperature is not positive -- the water"
-            " activity of the air cannot be formed");
-    const scalar awRaw = pv_air / Psat_air;
+    const scalar awRaw = psychrometry::airWaterActivity(moist, Mv, Mc, P,
+                                                        T_air_, Y_air_, who);
     aw_ = std::min(0.99, std::max(0.0, awRaw));
     if (verbosity_ >= 1 && awRaw > 0.99)
         std::cout << "  [batchDryer '" << name_ << "'] the declared air is at"
@@ -256,17 +252,7 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
                      " 0.99 ceiling (the capillary region is outside the"
                      " model), and it BINDS here -- announced, not hidden\n";
 
-    const scalar Ka = sol.sorpK() * aw_;
-    if (Ka >= 1.0)
-        throw std::runtime_error(who + ": the GAB isotherm of '" + sol.name()
-            + "' diverges at this air (K*a_w = " + std::to_string(Ka)
-            + " >= 1) -- the declared air is outside the isotherm's domain");
-    if (sol.sorpXm() <= 0.0)
-        throw std::runtime_error(who + ": the sorption record of '"
-            + sol.name() + "' declares a non-positive monolayer moisture Xm"
-            " -- X_eq has no model");
-    X_eq_ = sol.sorpXm() * sol.sorpC() * Ka
-          / ((1.0 - Ka) * (1.0 - Ka + sol.sorpC() * Ka));
+    X_eq_ = psychrometry::gabMoisture(sol, aw_, who);
 
     if (X_c_ <= X_eq_)
     {
@@ -299,37 +285,10 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
     const scalar cpc = carr.cpIdealGas().Cp(T_air_)  / Mc * 1000.0;  // J/(kg K)
     const scalar cpv = moist.cpIdealGas().Cp(T_air_) / Mv * 1000.0;
 
-    auto Ysat = [&](scalar T) -> scalar
-    {
-        const scalar pv = moist.vp().Psat_Pa(T);
-        if (pv <= 0.0 || pv >= 0.95 * P)
-            throw std::runtime_error(who + ": the saturation humidity is"
-                " undefined at T = " + std::to_string(T) + " K (the"
-                " moisture's saturation pressure is out of range at "
-                + std::to_string(P) + " Pa)");
-        return (Mv / Mc) * pv / (P - pv);
-    };
-    auto fWb = [&](scalar Twb) -> scalar
-    {
-        const scalar lam = moist.Hvap_latent(Twb) / Mv * 1000.0;     // J/kg
-        return Ysat(Twb) - Y_air_ - (cpc + Y_air_ * cpv) * (T_air_ - Twb) / lam;
-    };
+    T_wb_ = psychrometry::wetBulb(moist, Mv, Mc, cpc, cpv, P, T_air_, Y_air_,
+                                  who + " (operation.air)");
 
-    scalar wbLo = 273.65, wbHi = T_air_;
-    if (wbHi <= wbLo)
-        throw std::runtime_error(who + ": the declared air temperature "
-            + std::to_string(T_air_) + " K is at or below the wet-bulb"
-            " bracket floor (273.65 K) -- this unit's psychrometry is"
-            " written for air above freezing");
-    if (fWb(wbHi) < 0.0)
-        throw std::runtime_error(who + ": the declared air is supersaturated"
-            " -- its humidity ratio Y exceeds saturation at its own"
-            " temperature; check operation.air.Y");
-    for (int it = 0; it < 100 && (wbHi - wbLo) > 1.0e-7; ++it)
-    { const scalar m = 0.5 * (wbLo + wbHi); (fWb(m) >= 0.0 ? wbHi : wbLo) = m; }
-    T_wb_ = 0.5 * (wbLo + wbHi);
-
-    const scalar dY = Ysat(T_wb_) - Y_air_;
+    const scalar dY = psychrometry::Ysat(moist, Mv, Mc, P, T_wb_, who) - Y_air_;
     if (dY <= 0.0)
         throw std::runtime_error(who + ": the saturation humidity at the"
             " wet bulb does not exceed the declared air humidity -- there is"

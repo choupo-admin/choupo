@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/batchDryer.schema.json",
   "title": "batchDryer operation",
-  "description": "The drying curve as a batch vessel (choupoBatch): a tray of wet solid losing its moisture into air of DECLARED, CONSTANT condition. The state is the moisture content X = m_moisture / m_drySolid. Above the critical moisture the wetted surface sits at the air's wet-bulb temperature and the flux is gas-film controlled, R_c = k_Y (Y_sat(T_wb) - Y); below it the flux falls LINEARLY in the free moisture, R = R_c (X - X_eq)/(X_c - X_eq) — announced at run time as a modelling CHOICE, not as physics. X_eq is the GAB equilibrium moisture at the air's own water activity, read from the solid component's `sorption {}` record (a solid without one is refused by name). The air is an ENVIRONMENT, not a ledgered stream: the evaporated water leaves the campaign across that boundary and is reported as the unit's declared material residual, and the latent heat — the air's, from outside the campaign — is published as the latentDuty_kW KPI while the energy ledger honestly refuses to claim a verdict.",
+  "description": "The drying curve as a batch vessel (choupoBatch): a tray of wet solid losing its moisture into air of DECLARED, CONSTANT condition. The state is the moisture content X = m_moisture / m_drySolid. Above the critical moisture the wetted surface sits at the air's wet-bulb temperature and the flux is gas-film controlled, R_c = k_Y (Y_sat(T_wb) - Y); below it the flux follows the declared characteristic drying curve, R = R_c f(Phi) with Phi = (X - X_eq)/(X_c - X_eq) — linear (f = Phi) when no `dryingCurve` is declared, announced at run time as a modelling CHOICE, not as physics. X_eq is the GAB equilibrium moisture at the air's own water activity, read from the solid component's `sorption {}` record (a solid without one is refused by name). The air is an ENVIRONMENT, not a ledgered stream: the evaporated water leaves the campaign across that boundary and is reported as the unit's declared material residual, and the latent heat — the air's, from outside the campaign — is published as the latentDuty_kW KPI while the energy ledger honestly refuses to claim a verdict.",
   "type": "object",
   "properties": {
     "area": {
@@ -25,6 +25,54 @@
       "title": "Critical moisture content X_c",
       "description": "The break between the constant-rate and the falling-rate periods, on the dry-solid basis. A MEASURED property of this sample, not derivable — and it must lie above the equilibrium moisture X_eq of the declared air, or the falling-rate law has no domain and the unit refuses.",
       "unit": "kg/kg dry solid"
+    },
+    "dryingCurve": {
+      "type": "object",
+      "title": "Characteristic drying curve",
+      "description": "The shape of the falling-rate period on van Meel's (1958) normalised coordinates: Phi = (X - X_eq)/(X_c - X_eq) and f = R/R_c, so R = R_c f(Phi). Absent, the curve is LINEAR (f = Phi), announced at run time as a modelling choice. `shape power` takes `exponent` n (f = Phi^n; n < 1 keeps the rate high into the falling period, n > 1 drops it early); `shape table` takes two lists `phi` and `f` of the same length, from (0, 0) to (1, 1), phi strictly increasing and f never decreasing, interpolated linearly. A non-linear shape is a claim about THIS material's internal transport and must declare `source` (an article, a dataset, or 'hypothetical teaching curve'); a key that belongs to another shape is refused by name.",
+      "properties": {
+        "shape": {
+          "type": "string",
+          "enum": [
+            "linear",
+            "power",
+            "table"
+          ],
+          "title": "Curve shape",
+          "unit": "-"
+        },
+        "exponent": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Exponent n (shape power)",
+          "unit": "-"
+        },
+        "phi": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "title": "Normalised free moisture Phi (shape table)",
+          "unit": "-"
+        },
+        "f": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "title": "Relative rate f = R/R_c (shape table)",
+          "unit": "-"
+        },
+        "source": {
+          "type": "string",
+          "title": "Where the curve comes from",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "shape"
+      ],
+      "additionalProperties": false
     },
     "moisture": {
       "type": "string",
@@ -55,10 +103,19 @@
           "unit": "-"
         }
       },
-      "required": ["T", "Y", "carrier"],
+      "required": [
+        "T",
+        "Y",
+        "carrier"
+      ],
       "additionalProperties": false
     }
   },
-  "required": ["area", "k_Y", "criticalMoisture", "air"],
+  "required": [
+    "area",
+    "k_Y",
+    "criticalMoisture",
+    "air"
+  ],
   "additionalProperties": false
 }

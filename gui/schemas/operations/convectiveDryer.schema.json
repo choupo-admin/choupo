@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/convectiveDryer.schema.json",
+  "title": "convectiveDryer operation",
+  "description": "A continuous convective dryer (steady): a wet sorbing solid and a hot-air stream in contact along a declared area, co-current or counter-current. The solid follows its characteristic drying curve — constant rate R_c = k_Y (Y_sat(T_wb) - Y) above the critical moisture, R = R_c f(Phi) below it — and the air's humidity and temperature are ALGEBRAIC in the solid's moisture, from the water and enthalpy balances priced on the package's own formation surface (the surface the plant energy report checks), so the single ODE S dX/dxi = -R A is marched by RK4 over the normalised area. Counter-current is a two-point problem, solved by shooting on the outlet moisture. X_eq is the GAB equilibrium moisture at the local air's water activity, read from the solid component's `sorption {}` record. The air inlet must declare `phase gas;` and the solid inlet must carry no vapour; both are refused by name otherwise. NOT modelled, and announced: the solid's warm-up in the falling-rate period (the solid stays at the local wet-bulb temperature).",
+  "type": "object",
+  "properties": {
+    "flow": {
+      "type": "string",
+      "enum": [
+        "cocurrent",
+        "countercurrent"
+      ],
+      "title": "Flow arrangement",
+      "description": "Co-current: air and solid enter at the same end. Counter-current: the air enters where the solid leaves — it ends drier on the same area, and it is solved by shooting.",
+      "unit": "-"
+    },
+    "area": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Gas-solid contact area",
+      "description": "Equipment data — there is no default.",
+      "unit": "m2"
+    },
+    "k_Y": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Gas-film mass-transfer coefficient",
+      "description": "Mass flux per unit humidity-ratio driving force, kg/(m2 s) per (kg moisture / kg dry gas). Equipment data — never defaulted. Declare it dimensionally as `k_Y [1 -2 -1 0 0] <value>;`.",
+      "unit": "kg/(m2.s)"
+    },
+    "criticalMoisture": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Critical moisture content X_c",
+      "description": "The break between the constant-rate and the falling-rate periods, dry-solid basis. Measured on the material; it must lie above the equilibrium moisture of the air as fed, or the unit refuses.",
+      "unit": "kg/kg dry solid"
+    },
+    "dryingCurve": {
+      "type": "object",
+      "title": "Characteristic drying curve",
+      "description": "The shape of the falling-rate period on van Meel's (1958) normalised coordinates: Phi = (X - X_eq)/(X_c - X_eq) and f = R/R_c, so R = R_c f(Phi). Absent, the curve is LINEAR (f = Phi), announced at run time as a modelling choice. `shape power` takes `exponent` n (f = Phi^n; n < 1 keeps the rate high into the falling period, n > 1 drops it early); `shape table` takes two lists `phi` and `f` of the same length, from (0, 0) to (1, 1), phi strictly increasing and f never decreasing, interpolated linearly. A non-linear shape is a claim about THIS material's internal transport and must declare `source` (an article, a dataset, or 'hypothetical teaching curve'); a key that belongs to another shape is refused by name.",
+      "properties": {
+        "shape": {
+          "type": "string",
+          "enum": [
+            "linear",
+            "power",
+            "table"
+          ],
+          "title": "Curve shape",
+          "unit": "-"
+        },
+        "exponent": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Exponent n (shape power)",
+          "unit": "-"
+        },
+        "phi": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "title": "Normalised free moisture Phi (shape table)",
+          "unit": "-"
+        },
+        "f": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "title": "Relative rate f = R/R_c (shape table)",
+          "unit": "-"
+        },
+        "source": {
+          "type": "string",
+          "title": "Where the curve comes from",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "shape"
+      ],
+      "additionalProperties": false
+    },
+    "nSteps": {
+      "type": "integer",
+      "minimum": 10,
+      "default": 100,
+      "title": "RK4 steps along the area",
+      "description": "Resolution of the march over the normalised area; the default is announced when used.",
+      "unit": "-"
+    }
+  },
+  "required": [
+    "flow",
+    "area",
+    "k_Y",
+    "criticalMoisture"
+  ],
+  "additionalProperties": false
+}

@@ -42,6 +42,7 @@ License
 #include "heatTransfer/MultiStreamHX.H"
 #include "heatTransfer/PhaseChanger.H"
 #include "heatTransfer/SolidDryer.H"
+#include "heatTransfer/ConvectiveDryer.H"
 #include "heatTransfer/EvaporativeDryer.H"
 #include "heatTransfer/CoolingTower.H"
 #include "heatTransfer/SprayDryer.H"
@@ -168,6 +169,7 @@ void UnitOperation::registerBuiltins()
     reg("condenser",          []{ return std::make_unique<PhaseChanger>();       });   // alias
     reg("sprayDryer",         []{ return std::make_unique<SprayDryer>();         });
     reg("solidDryer",         []{ return std::make_unique<SolidDryer>();         });
+    reg("convectiveDryer",    []{ return std::make_unique<ConvectiveDryer>();    });
     reg("evaporativeDryer",   []{ return std::make_unique<EvaporativeDryer>();   });
     reg("coolingTower",       []{ return std::make_unique<CoolingTower>();       });
     reg("crystalliser",       []{ return std::make_unique<Crystalliser>();       });

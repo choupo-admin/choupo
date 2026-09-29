@@ -1105,6 +1105,11 @@
       "exit": 0,
       "claim": "check_drying_curve: OK -- the batch dryer's declared characteristic drying curve is the one its flux runs on: the linear, Phi^2 and Phi^0.5 closed forms reproduced from each tray's own KPIs, the table tray between linear and convex, and six malformed curves refused by name.  NOT checked: that any curve describes a real material (every curve in the witness is declared hypothetical).",
       "seconds": 0.1
+    },
+    "check_convective_dryer": {
+      "exit": 0,
+      "claim": "check_convective_dryer: OK -- the continuous convective dryer closes its first law on the package surface (each dryer and the plant report below 1e-3 kW), its water balance against the streams to 1e-9, dries further counter-current than co-current on the same area and never below the air's X_eq, runs its profiles the way each arrangement must, is converged in its step (nSteps 400 moves X_out < 1e-5), and refuses four malformed declarations by name.  NOT checked: any measured dryer (the witness's k_Y, X_c and curve are hypothetical), or the solid's falling-rate warm-up, which the model does not have.",
+      "seconds": 10.2
     }
   }
 }

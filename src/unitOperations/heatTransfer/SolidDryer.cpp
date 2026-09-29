@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SolidDryer.H"
+#include "Psychrometry.H"
 #include "thermo/ThermoPackage.H"
 
 #include <algorithm>
@@ -127,10 +128,11 @@ int SolidDryer::solve(const DictPtr& dict,
     const scalar solid_mass = solid_mol * MW_sol;                       // kg/s
     const scalar water_in   = F_w * zW[iSolv];                          // kmol/s bound water
     const scalar X_in = (solid_mass > 0.0) ? water_in * MW_solv / solid_mass : 0.0;
-    const scalar Ka = sol.sorpK() * aw;
-    scalar X_eq = 0.0;
-    if (Ka < 1.0 && sol.sorpXm() > 0.0)
-        X_eq = sol.sorpXm() * sol.sorpC() * Ka / ((1.0 - Ka) * (1.0 - Ka + sol.sorpC() * Ka));
+    //  ONE home for the GAB expression (Psychrometry.H).  Until 2026-09-29
+    //  an out-of-domain isotherm (K a_w >= 1) or a non-positive Xm set X_eq
+    //  to ZERO here, silently -- a dryer that then dried to bone-dry; it is
+    //  refused by name now, as the batch dryer always refused it.
+    const scalar X_eq = psychrometry::gabMoisture(sol, aw, "SolidDryer");
     const scalar X_final     = std::min(X_in, X_eq);
     const scalar water_final = X_final * solid_mass / MW_solv;          // kept in the powder
     const scalar water_rem   = std::max(0.0, water_in - water_final);   // evaporated into the air

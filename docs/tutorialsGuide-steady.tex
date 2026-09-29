@@ -1972,6 +1972,61 @@ DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/ and sha
 \subsection{drying}
 \grouptheory{drying}
 \clearpage
+\tutentry{convDryer01\_sugar\_curve}{tutorials/steady/drying/convDryer01\_sugar\_curve}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (splitSolid) at (0.0,-0.0) {\textbf{splitSolid}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (splitAir) at (0.0,-1.7) {\textbf{splitAir}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (co) at (2.9,-0.0) {\textbf{co}\\[-1pt]{\tiny convectiveDryer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (counter) at (2.9,-1.7) {\textbf{counter}\\[-1pt]{\tiny convectiveDryer}};
+  \draw[->] ($(splitSolid.west)+(-1.05,0.00)$) -- ($(splitSolid.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {wetSolid};
+  \draw[->] ($(splitAir.west)+(-1.05,0.00)$) -- ($(splitAir.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {hotAir};
+  \draw[->] (splitSolid) -- (co) node[midway, above, font=\tiny] {wetSolidCo};
+  \draw[->] (splitAir) -- (co) node[midway, above, font=\tiny] {airCo};
+  \draw[->] (splitSolid) -- (counter) node[midway, above, font=\tiny] {wetSolidCounter};
+  \draw[->] (splitAir) -- (counter) node[midway, above, font=\tiny] {airCounter};
+  \draw[->] ($(co.east)+(0,-0.17)$) -- ($(co.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {drySolidCo};
+  \draw[->] ($(co.east)+(0,0.17)$) -- ($(co.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {exhaustCo};
+  \draw[->] ($(counter.east)+(0,-0.17)$) -- ($(counter.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {drySolidCounter};
+  \draw[->] ($(counter.east)+(0,0.17)$) -- ($(counter.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {exhaustCounter};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Continuous convective drying of sugar on its characteristic drying curve: the same feed through a co-current and a counter-current dryer}
+\begin{tutnarrative}
+CONTINUOUS CONVECTIVE DRYING ON THE CHARACTERISTIC DRYING CURVE.
+
+solidDryer01's feed -- 3423 kg/h dry sucrose at X\_in = 0.20 kg/kg, and 800 kmol/h of air at 420 K with 2 mol\% water -- split in two halves, each sent through the SAME continuous dryer (300 m2 of gas-solid contact, k\_Y = 0.05 kg/(m2 s), X\_c = 0.12 kg/kg, the characteristic curve f = Phi\textasciicircum{}1.5), one with the air flowing WITH the solid, one AGAINST it. (src/unitOperations/heatTransfer/ConvectiveDryer.H)
+
+Along the contact area the air COOLS and HUMIDIFIES as it dries the solid, so the wet bulb, the constant rate and the local equilibrium moisture all move -- what the batch tray (dryer02) cannot show.
+
+co-current counter-current X out [kg/kg] 0.02342 0.00468 water removed [kg/s] 0.0839 0.0929 air out [K] 359.7 353.2 Y out [kg/kg dry] 0.0393 0.0421 X\_c crossed at 6.4 \% of A 12.4 \% of A floor: X\_eq of the air as fed = 0.00110 kg/kg
+
+Counter-current dries five times further on the same area, because the driest solid meets the freshest (hottest, driest) air, where X\_eq is lowest and the falling-rate driving force survives; co-current ends where the used-up air meets the driest solid. That is the textbook result, and here it is computed, not asserted.
+
+THE FIRST LAW, on the package's own formation surface: each dryer publishes energyResidual\_kW (1e-7 and 5e-10 kW), and the plant energy report closes at 1e-7 kW. The hot air DECLARES `phase gas;` -- without it the stream carries vf = 0, the report prices the air as a liquid and the plant is off by 380 kW; the dryer now refuses that by name.
+
+HYPOTHESES (announced on every run): the solid sits at the LOCAL wet bulb in both periods -- it leaves at \textasciitilde{}316 K, while a real solid warms toward the air in the falling period (not modelled); Lewis = 1; one k\_Y over the whole area; no axial mixing; no re-wetting; adiabatic; bound moisture priced as liquid water. X\_c, k\_Y and the curve are HYPOTHETICAL teaching values, not measured on this sugar.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{airCo}{F}{0.111111111115}
+\goldrow{stream}{airCo}{T}{420}
+\goldrow{stream}{airCounter}{F}{0.111111111115}
+\goldrow{stream}{airCounter}{T}{420}
+\goldrow{stream}{drySolidCo}{F}{0.0020068905978}
+\goldrow{stream}{drySolidCo}{T}{316.106805335}
+\goldrow{stream}{drySolidCounter}{F}{0.00151236672392}
+\goldrow{stream}{drySolidCounter}{T}{315.705897235}
+\goldrow{stream}{exhaustCo}{F}{0.115770899356}
+\goldrow{stream}{exhaustCo}{T}{359.690122884}
+\goldrow{stream}{exhaustCounter}{F}{0.11626542323}
+\goldrow{stream}{exhaustCounter}{T}{353.240422979}
+\goldrow{stream}{hotAir}{F}{0.222222222229}
+\goldrow{stream}{hotAir}{T}{420}
+\goldmore{32}
+\end{tutgolden}
+
+\clearpage
 \tutentry{evapDryer01\_nacl}{tutorials/steady/drying/evapDryer01\_nacl}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

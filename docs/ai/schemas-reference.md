@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*95 of 95 registered operations carry a schema and are documented below.*
+*96 of 96 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -120,13 +120,14 @@ A stirred RETENTATE vessel behind a membrane (choupoBatch): the batch half of th
 
 ## `batchDryer`  (batchDryer operation)
 
-The drying curve as a batch vessel (choupoBatch): a tray of wet solid losing its moisture into air of DECLARED, CONSTANT condition. The state is the moisture content X = m_moisture / m_drySolid. Above the critical moisture the wetted surface sits at the air's wet-bulb temperature and the flux is gas-film controlled, R_c = k_Y (Y_sat(T_wb) - Y); below it the flux falls LINEARLY in the free moisture, R = R_c (X - X_eq)/(X_c - X_eq) — announced at run time as a modelling CHOICE, not as physics. X_eq is the GAB equilibrium moisture at the air's own water activity, read from the solid component's `sorption {}` record (a solid without one is refused by name). The air is an ENVIRONMENT, not a ledgered stream: the evaporated water leaves the campaign across that boundary and is reported as the unit's declared material residual, and the latent heat — the air's, from outside the campaign — is published as the latentDuty_kW KPI while the energy ledger honestly refuses to claim a verdict.
+The drying curve as a batch vessel (choupoBatch): a tray of wet solid losing its moisture into air of DECLARED, CONSTANT condition. The state is the moisture content X = m_moisture / m_drySolid. Above the critical moisture the wetted surface sits at the air's wet-bulb temperature and the flux is gas-film controlled, R_c = k_Y (Y_sat(T_wb) - Y); below it the flux follows the declared characteristic drying curve, R = R_c f(Phi) with Phi = (X - X_eq)/(X_c - X_eq) — linear (f = Phi) when no `dryingCurve` is declared, announced at run time as a modelling CHOICE, not as physics. X_eq is the GAB equilibrium moisture at the air's own water activity, read from the solid component's `sorption {}` record (a solid without one is refused by name). The air is an ENVIRONMENT, not a ledgered stream: the evaporated water leaves the campaign across that boundary and is reported as the unit's declared material residual, and the latent heat — the air's, from outside the campaign — is published as the latentDuty_kW KPI while the energy ledger honestly refuses to claim a verdict.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `area` | ✓ | number | m2 | Surface of the tray/bed exposed to the air. Equipment data — there is no default. |
 | `k_Y` | ✓ | number | kg/(m2.s) | Mass flux per unit humidity-ratio driving force, kg/(m2 s) per (kg moisture / kg dry gas). SAMPLE/EQUIPMENT data (air velocity, tray geom… |
 | `criticalMoisture` | ✓ | number | kg/kg dry solid | The break between the constant-rate and the falling-rate periods, on the dry-solid basis. A MEASURED property of this sample, not derivab… |
+| `dryingCurve` |   | object | — | The shape of the falling-rate period on van Meel's (1958) normalised coordinates: Phi = (X - X_eq)/(X_c - X_eq) and f = R/R_c, so R = R_c… |
 | `moisture` |   | string | - | Which component is the moisture. Needed only when the tray holds more than one volatile besides the declared carrier — otherwise the sing… |
 | `air` | ✓ | object | — | The drying air, declared CONSTANT and not integrated — the FixedBedAdsorber's constant-carrier posture. `T` its temperature [K], `Y` its … |
 
@@ -219,6 +220,19 @@ Condenser — the SAME unit as `phaseChanger` under a name that says which direc
 | `geometry` |   | object | — | Present = the duty EMERGES from the surface and the film coefficients instead of being declared. Give the wall conductivity either direct… |
 | `condensation` |   | object | — | Which film correlation prices the condensing side, e.g. NusseltFilm (laminar film, Nusselt 1916). |
 | `heatingMedium` |   | object | — | The heating-medium stream's inlet temperature and film coefficient — the other half of the rating. |
+
+## `convectiveDryer`  (convectiveDryer operation)
+
+A continuous convective dryer (steady): a wet sorbing solid and a hot-air stream in contact along a declared area, co-current or counter-current. The solid follows its characteristic drying curve — constant rate R_c = k_Y (Y_sat(T_wb) - Y) above the critical moisture, R = R_c f(Phi) below it — and the air's humidity and temperature are ALGEBRAIC in the solid's moisture, from the water and enthalpy balances priced on the package's own formation surface (the surface the plant energy report checks), so the single ODE S dX/dxi = -R A is marched by RK4 over the normalised area. Counter-current is a two-point problem, solved by shooting on the outlet moisture. X_eq is the GAB equilibrium moisture at the local air's water activity, read from the solid component's `sorption {}` record. The air inlet must declare `phase gas;` and the solid inlet must carry no vapour; both are refused by name otherwise. NOT modelled, and announced: the solid's warm-up in the falling-rate period (the solid stays at the local wet-bulb temperature).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `flow` | ✓ | string | - | Co-current: air and solid enter at the same end. Counter-current: the air enters where the solid leaves — it ends drier on the same area,… |
+| `area` | ✓ | number | m2 | Equipment data — there is no default. |
+| `k_Y` | ✓ | number | kg/(m2.s) | Mass flux per unit humidity-ratio driving force, kg/(m2 s) per (kg moisture / kg dry gas). Equipment data — never defaulted. Declare it d… |
+| `criticalMoisture` | ✓ | number | kg/kg dry solid | The break between the constant-rate and the falling-rate periods, dry-solid basis. Measured on the material; it must lie above the equili… |
+| `dryingCurve` |   | object | — | The shape of the falling-rate period on van Meel's (1958) normalised coordinates: Phi = (X - X_eq)/(X_c - X_eq) and f = R/R_c, so R = R_c… |
+| `nSteps` |   | integer | - | Resolution of the march over the normalised area; the default is announced when used. |
 
 ## `conversionReactor`  (conversionReactor operation)
 
@@ -576,6 +590,7 @@ Gibbs reactor: equilibrium composition from minimising the total Gibbs free ener
 | `mode` |   | string | - | isothermal (default; `T` holds and the duty is the result) or adiabatic. In adiabatic mode `T` is the Newton's SEED, not the answer. |
 | `Q` |   | number | kJ/kmol | Heat added per kmol of feed, for a non-adiabatic non-isothermal case; defaults to 0. |
 | `temperatureApproach` |   | number | K | Detune the equilibrium by THIS MANY kelvin: the REACTION is evaluated at a shifted temperature while the physical state stays at T — enth… |
+| `newtonLog` |   | string | — | Write the element-potential method's structured log to this file (a path relative to the case) once the solve ends, converged or not: a l… |
 
 ## `hConsistency`  (hConsistency operation)
 

@@ -1724,12 +1724,34 @@ accepts today, and that is a policy call.
      sabotage, flux ignoring the curve, caught).  Named, not fixed: with
      n < 1 the curve reaches X_eq in finite time and RK4 lands 2.4e-6
      relative BELOW it (non-Lipschitz f at Phi = 0; no clamp by rule).
-     **NEXT, to be put to Vitor (pedagogy is his):** (2) a CONTINUOUS
-     convective dryer that integrates the curve over the solids' residence
-     time with the air's humidity and temperature changing along the bed
-     (co/counter-current) -- the steady `solidDryer` today assumes enough
-     residence to reach X_eq; (3) the drying EduTool (dryer01 witness) to
-     show the curve shape as a knob.
+     **SLICE 2 BUILT 2026-09-29 (Vitor: "Avanca"):** `convectiveDryer`
+     (src/unitOperations/heatTransfer/ConvectiveDryer.{H,cpp}), steady,
+     co- or counter-current over a declared contact area on the curve, the
+     air's Y and T ALGEBRAIC in X (water and enthalpy balances on the
+     package's formation surface, so the first law closes by construction:
+     energyResidual_kW 1e-7 / 5e-10, plant report 1e-7 kW), counter-current
+     by shooting on X_out.  Witness `tutorials/steady/drying/
+     convDryer01_sugar_curve` (solidDryer01's feed split to both
+     arrangements, 300 m2: X_out 0.0234 co against 0.0047 counter); gate
+     `check_convective_dryer` (two sabotages: one stops the run, one -- the
+     outlet 5 K off the unit's own balance -- caught by the plant-report
+     arm at -6.19 kW).  Riding with it: `Psychrometry.H`, ONE home for
+     Ysat / a_w / GAB / wet bulb (BatchDryer and SolidDryer migrated,
+     goldens unmoved; SolidDryer's silent X_eq = 0 on an out-of-domain
+     isotherm is now a refusal; CoolingTower's own wet-bulb lambda is NOT
+     migrated, named in the header); the wet-bulb bracket capped where
+     p_sat = 0.95 P, so air above the moisture's boiling point has a wet
+     bulb (it threw before -- no case had met it); and **THE SPLITTER
+     DROPPED A STREAM'S SOLID PHASE**: it read `solids {}` inside `feed {}`
+     while the flowsheet injects it beside `feed`, so a split wet solid
+     lost its crystals in silence -- fixed; the 23 splitter cases are
+     unmoved (none split a solid before).  FINDING FOR VITOR, not acted
+     on: `solidDryer01_sugar`'s hot air declares no phase, so it is priced
+     as a liquid; with `phase gas;` its pinned 372.66 kW energy debt falls
+     to -6.88 kW (the rest is that unit's cp-based balance).  Moving its
+     golden is his decision.  **NEXT:** (3) the drying EduTool with the
+     curve shape as a knob; the solid's falling-rate warm-up (a solid
+     energy balance) is the named physics gap in both dryers.
 
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o

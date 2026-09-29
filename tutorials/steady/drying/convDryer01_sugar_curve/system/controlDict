@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  convDryer01_sugar_curve  --  continuous convective drying of sugar on its
+  characteristic drying curve, co-current beside counter-current (see the
+  flowsheetDict header for the numbers and the hypotheses).
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Continuous convective drying of sugar on its characteristic drying curve: the same feed through a co-current and a counter-current dryer";
+verbosity     3;
+reports { streamTable {}  massBalance {} }
