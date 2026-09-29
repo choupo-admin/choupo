@@ -2453,6 +2453,23 @@ defect — look for what else went with it.
 
 ## 5. Known debts (severity-ish)
 
+**2026-09-29 -- THE GIBBS MAP BYPASSES THE PURE-SOLID PATH.  OPEN, not
+fixed.**  Found by Vitor in the `equilibrium-landscapes` EduTool: a map over
+sucrose, CO2, N2, NH3, H2 and H2O (1 mol each) refused with `sucrose:
+h_pure_ig(T) evaluates the IDEAL-GAS rung, but this record declares
+referenceState pureSolid`.  The refusal is right about the record and wrong
+about the caller: `GibbsMethod::solve` is the ONE home for an equilibrium
+that may meet a pure solid (GibbsMethod.H:263-271, "every caller that may
+meet a solid calls this"), and `GibbsMapOp.cpp` calls the fluid-only
+`solver.equilibrium(...)` at both grid sites (lines 200 and 256), so a
+declared solid species is priced as a gas.  The `gibbsReactor` routes
+through `solve` and would take the same species.  Remedy, measured nowhere
+yet: switch both calls to `solve`, carry `eq.nSolid` into the cell CSV and
+the cell composition the page draws, and add a map witness with a pure
+solid (graphite is the cheap one; sucrose is Vitor's).  Blast radius to
+measure first: every gibbsMap case with no pure solid must be
+byte-identical (solve == equilibrium there, by the header's own claim).
+
 **2026-09-27 -- THE GIBBS REACTOR REFUSED A FEED FAR FROM ITS EQUILIBRIUM.
 CLOSED, with four things named.**  Reported by the general who built
 `equil03_ammonia_oxidation_declared_pathways`, then MEASURED: its feed (10 %
