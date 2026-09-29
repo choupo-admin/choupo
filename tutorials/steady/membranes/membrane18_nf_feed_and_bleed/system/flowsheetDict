@@ -1,0 +1,138 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane18_nf_feed_and_bleed  --  one NF module, a recycle loop, and the
+  concentration the module actually works on.
+
+  THE ARRANGEMENT.  A feed-and-bleed loop, the way a membrane skid is run
+  when the recovery is set by recirculating the retentate: fresh feed joins
+  the recycled RETENTATE, the mixture crosses the module once, the permeate
+  leaves as product, and the retentate is split -- 95 % goes round again,
+  the other 5 % is the BLEED (the concentrate).
+
+      Feed --->[ MIX ]--->[ NF ]---> Permeate  (product)
+                 ^           |
+                 |        Retentate
+                 |           |
+                 +-- Recycle <--[ SPLIT ]--> Bleed  (concentrate)
+
+  It is the pressure-driven analogue of ed07_feed_and_bleed: the same loop,
+  the same trap.  A student sizes the module from the FEED analysis.  The
+  module never sees the feed: it sees the MIXED loop concentration, and
+  everything that depends on concentration is evaluated there.
+
+  WHAT THE RUN MEASURES (printed by this run; nothing here is a target):
+
+                                  loop (0.95/0.05)     single pass (0.0/1.0)
+      glucose, fresh feed         9.970e-4 (mole fr.)   9.970e-4
+      glucose, what the MODULE    1.804e-3   (1.81x)    9.970e-4
+        is fed
+      glucose, bleed              1.939e-3              2.641e-3
+      glucose, permeate           5.614e-4              4.528e-4
+      overall water recovery      68.45 %               75.29 %
+      water flux (average)        165.2 LMH             182.5 LMH
+      R_obs, module               68.54 %               54.36 %
+      rejection of the PLANT,     43.7 %                54.6 %
+        1 - x_perm / x_feed
+
+  The single-pass column is this same case with `fractions ( 0.0  1.0 )`
+  in SPLIT: nothing recycles, and the module is fed the fresh feed.
+
+  THREE READINGS OF THE SAME LOOP.
+    * The module works at 1.81 times the feed concentration, so its flux is
+      165 LMH and not the 182 LMH the feed analysis gives: sizing from the
+      feed undersizes the area by about 10 %.
+    * R_obs = 68.54 % is the module's rejection AGAINST WHAT IT IS FED.  The
+      permeate is 43.7 % cleaner than the fresh feed, not 68.5 %: a
+      rejection is a property of the membrane at a concentration, and the
+      plant is judged against the feed.  The single pass shows the opposite
+      number (54.36 %), because there the concentration climbs ALONG the
+      module and drags the average permeate up.
+    * In THIS model the loop buys nothing.  It recovers less, runs at a
+      lower flux and makes a dirtier permeate than one pass of the same
+      module.  What a real loop buys is CROSS-FLOW -- a higher velocity
+      along the membrane, hence a higher film coefficient and less
+      polarisation and fouling -- and this model does not have it:
+      `k_film` is DECLARED, 5.0e-5 m/s, whatever the recirculation flow.
+      (membrane04 computes k_film and the pressure drop from the spacer
+      hydraulics, which is what the recirculation would move; see WHY NO
+      PUMP for why that is not used here.)  Read the numbers above as the
+      cost of the loop, not as an argument against it.
+
+  WHY NO PUMP, AND WHY dP_feed_total IS ZERO.  A real loop has a
+  recirculation pump: the module loses feed-side pressure on every pass and
+  the pump makes it up.  Here the mixer takes the LOWEST inlet pressure, so a
+  loop whose recycle arrives a bar low and has no pump loses that bar again
+  each pass and has no steady state.  The `pump` unit would restore it, but
+  it needs every component's liquid molar volume (`Vliq`) and the catalogue's
+  glucose record has none -- the engine refuses by name, correctly, and a
+  value typed in here would be a number with no source.  So the feed-side
+  pressure drop is DECLARED ZERO, the loop sits at 10 bar throughout, and
+  the pump's work is not counted anywhere.  Both are idealisations of this
+  case, not of the module.
+
+  THE ORDER OF THE UNITS IS THE ORDER THEY RUN.  `Recycle` is produced by the
+  splitter (declared LAST) and consumed by the mixer (declared FIRST), so the
+  plan cannot reach it without a cut: `system/solverDict` declares
+  `tearStreams ( Recycle );` and a Newton on the tear variables closes it.
+  Omit the declaration and the engine refuses by name with the cycle chain.
+
+  WHAT IS PINNED AND WHAT IS NOT.  The golden pins the answer this model
+  gives.  The feed is membrane02's 10 g/L glucose; the NF270 permeability set
+  is the record's own pedagogical calibration to that case (it declares
+  itself `fittedToCase`), so this is a structural witness of the loop and
+  not a validation of NF270 on glucose.  No measured feed-and-bleed plant
+  is reproduced anywhere in this tree; fouling is not modelled; and the
+  energy balance is UNAVAILABLE, as it is for every glucose case, because
+  the glucose record carries only its solid formation datum.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        MIX;
+        type        mixer;
+        inputs      ( Feed  Recycle );
+        outputs     ( ModuleIn );
+
+        //  ISOTHERMAL, declared: both streams are at 298.15 K and the loop is
+        //  isothermal (nothing in the loop adds or removes heat; the pump's work is
+        //  not modelled).  The mixed T is not in question.
+        operation   { T 298.15 K; }
+    }
+
+    {
+        name        NF;
+        type        spiralWoundModule;
+        in          ModuleIn;
+        outputs     ( Retentate  Permeate );    // 0 = retentate, 1 = permeate
+
+        operation
+        {
+            membrane         NF270;
+            area             15.0;               // m2 (two NF270-4040 elements' worth, one module)
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    0.0 bar;             // see WHY NO PUMP
+            nNodes           100;
+        }
+    }
+
+    {
+        name        SPLIT;
+        type        splitter;
+        in          Retentate;
+        outputs     ( Recycle  Bleed );         // Recycle FEEDS BACK into MIX
+
+        operation   { fractions ( 0.95  0.05 ); }
+    }
+);

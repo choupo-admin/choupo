@@ -1702,6 +1702,46 @@ accepts today, and that is a policy call.
      Vitor's decision before any build.  Related, also unscheduled: a solid
      that must REMAIN for the atoms to close (DEV.md section 5, 2026-09-29).
 
+**C27. ULTRAFILTRATION / MEMBRANE IN FEED-AND-BLEED (asked 2026-09-29,
+     Vitor: "Podes ver se ha uma ultrafiltracao a operar em modo feed and
+     bleed nos tutoriais?" -- then "Avanca").**  MEASURED before any build:
+     NO ultrafiltration anywhere (no case, no `kind membrane` record, no
+     schema, no flux law: the EduTools Guide itself says the engine has no
+     gel-polarised law); the only feed-and-bleed in the corpus is
+     `ed07_feed_and_bleed` (an ED stack, steady recycle); the membrane cases
+     (`membrane01`-`17`, `diafilter01/02`) have no recycle around the module.
+     Two separate gaps, in the order taken: (1) SLICE 1, a STEADY
+     feed-and-bleed around a pressure-driven module (NF270, whose physics
+     exists), the analogue of ed07 -- the module sees the LOOP concentration,
+     not the feed's; (2) the DYNAMIC feed-and-bleed around a steady unit is
+     the quasi-steady seam (#185, a-class-a-student-can-name.md section 8),
+     not started; (3) a real UF needs a gel-polarisation flux law, a
+     size-exclusion (MWCO) rejection and a cited `kind membrane` record --
+     new physics, and data nobody may invent (a made-up citation turns
+     unsourced into falsely sourced).  Vitor's to scope before (2)/(3).
+     **SLICE 1 BUILT 2026-09-29:** `tutorials/steady/membranes/
+     membrane18_nf_feed_and_bleed` (mixer -> NF270 module -> splitter,
+     `Recycle` torn; 15 m2, 95 % recycle / 5 % bleed).  MEASURED: the module
+     works at 1.81x the fresh-feed concentration, so flux 165 LMH against
+     182 LMH single pass; the module's R_obs (68.5 %, against what it is
+     fed) is not the plant's (43.7 % against the fresh feed); and **in this
+     model the loop is strictly WORSE than one pass of the same module**
+     (recovery 68.5 % against 75.3 %, dirtier permeate), because `k_film` is
+     DECLARED and the recirculation buys no cross-flow -- the very thing a
+     real loop is for.  The header says so in those words; the single-pass
+     column is the same case with `fractions ( 0.0  1.0 )`.  Two limits, both
+     honest and both named in the case: (a) NO PUMP and `dP_feed_total 0` --
+     the mixer takes the lowest inlet pressure, so a loop that loses a bar per
+     pass has no steady state without one, and the `pump` unit refuses
+     because glucose has no `Vliq` (a curated value with a primary source,
+     which nobody here can supply; sucrose carries one, glucose does not);
+     (b) the energy balance is UNAVAILABLE, like every glucose case (only the
+     solid formation datum is on the record).  **NEXT, Vitor's to order:**
+     curate glucose's apparent molar volume (then the pump, the real
+     pressure drop and the spacer-hydraulics `k_film` of membrane04 make the
+     recirculation matter); the quasi-steady seam for the DYNAMIC loop; a
+     real UF (flux law, MWCO rejection, a cited record).
+
 **C26. DRYING, REVIEWED FOR TEACHING -- slice 1: THE CHARACTERISTIC
      DRYING CURVE (asked 2026-09-29, Vitor: "quero rever a secagem.
      Podemos comecar por implementar a curva generica de secagem?").**  The

@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-09-29";
+    importerVersion    "3";
+    records
+    {
+        "assets/NF270.dat"
+        {
+            type          imported;
+            sha256        "063cfb4ae539b51b90c08d2239318374e2442effcbcbc12c88608f7479eefda8";
+            computationalSha256 "bcf6399b2a14e4765e3725872e57d7e55a355b25fd4dd146f4f5a98607be0c46";
+            origin        "data/standards/assets/NF270.dat";
+            originSha256  "2c0ca9909550c83b462c08e39689002c8724c7bdf166e59c67b6a91b13b7b247";
+            release       Choupo-2608;
+        }
+        "components/glucose.dat"
+        {
+            type          imported;
+            sha256        "729ab55b3081ac28c250030dabc21fcc1a30dcd093f8f0d0f6bd841455872db8";
+            computationalSha256 "ce9078d475fde66ea5796a2fcfadf3deedeb669c383f727b19dbaafbcf34476b";
+            origin        "data/standards/components/glucose.dat";
+            originSha256  "6728d57fe7353ec904e5d409d00039aa6424e1113a6b1fbd27279f68f204d813";
+            release       Choupo-2608;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
+            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            origin        "data/standards/components/water.dat";
+            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            release       Choupo-2608;
+        }
+    }
+}

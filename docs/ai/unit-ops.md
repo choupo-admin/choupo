@@ -939,6 +939,17 @@ unknown module name refuses with the registered list.  Witnesses:
 `membrane15_module_nf270_4040`, `membrane16_module_sw30hr_8040`,
 `membrane17_sepa_cf_flat_cell` (a laboratory cell in five lines).
 
+**A module in a feed-and-bleed loop** is the module plus a `mixer` and a
+`splitter` and one declared tear (`tearStreams ( Recycle );` in
+`system/solverDict`); witness `membrane18_nf_feed_and_bleed`.  The module works
+on the MIXED loop concentration, not the feed's, and its `R_obs` is against
+that, not against the fresh feed.  A loop needs the recirculation pressure
+restored on every pass: the mixer takes the LOWEST inlet pressure, and the
+`pump` unit refuses a component with no `Vliq` (glucose has none), so that
+witness declares `dP_feed_total 0` and says so.  With a declared `k_film` the
+recirculation buys no cross-flow, and the loop is worse than one pass -- the
+case's header states it.
+
 **Concentration polarisation** has ONE home for every transport law
 (`massTransfer/Polarisation`): the wall concentration `c_m` per solute.
 `suctionCorrection` picks the correction of the film coefficient for the
