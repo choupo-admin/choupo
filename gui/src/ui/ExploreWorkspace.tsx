@@ -65,7 +65,7 @@ import { binaryVleSpec, orderBinaryByVolatility } from "../case/methodFeeds.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
 import { type PlotKind, viewsFor } from "../case/exploreViews.js";
 import { LENS_SHORT, PLOT_TYPES, defaultLensFor, type PlotType } from "../case/exploreLenses.js";
-import { gibbsMapAtoms, parseFormulaAtoms } from "../case/gibbsMapSpec.js";
+import { defaultMapMetric, gibbsMapAtoms, mapMetricCandidates, parseFormulaAtoms } from "../case/gibbsMapSpec.js";
 import { PURE_PROPS, isPureProp, scanPropertyKeys } from "../case/scanProperties.js";
 import { theoryUrl } from "../case/exploreTheory.js";
 import { hasPair } from "../case/pairsCatalogue.js";
@@ -381,18 +381,16 @@ export function ExploreWorkspace() {
   // case root so the synthesized flat run resolves a sector-nested component.
   const catalogue = useMemo<ComponentMeta[]>(() => mergeCatalogue(caseRaw), [caseRaw]);
 
-  // Default metric species: the one spanning the MOST distinct elements
-  // (a compound like NH3 over diatomic reactants N2/H2 — usually the product
-  // of interest); ties break to the last selected.  Used identically by the
-  // dropdown value and the spec target so they never disagree.
-  const gmDefaultSpecies = useMemo(() => {
-    let best = selected[selected.length - 1] ?? null, bestN = -1;
-    for (const c of selected) {
-      const nEl = Object.keys(parseFormulaAtoms(metaByName(c, catalogue)?.formula ?? "")).length;
-      if (nEl > bestN) { bestN = nEl; best = c; }
-    }
-    return best;
-  }, [selected, catalogue]);
+  // Default metric species (ONE home, case/gibbsMapSpec.ts): the one spanning
+  // the MOST distinct elements among those that HAVE a fluid mole fraction --
+  // a pure solid is never offered.  Used identically by the dropdown value
+  // and the spec target so they never disagree.
+  const gmMetricOptions = useMemo(() => mapMetricCandidates(selected, catalogue),
+    [selected, catalogue]);
+  const gmDefaultSpecies = useMemo(() => defaultMapMetric(selected, catalogue),
+    [selected, catalogue]);
+  const gmMetricShown = gmMetricSp && gmMetricOptions.includes(gmMetricSp)
+    ? gmMetricSp : gmDefaultSpecies;
 
   const caseList = useMemo<ComponentMeta[]>(() => caseComponents(caseRaw), [caseRaw]);
   const localUnifac = useMemo(() => buildLocalUnifac(caseRaw), [caseRaw]);
@@ -579,8 +577,7 @@ export function ExploreWorkspace() {
       const { elements, species } = gibbsMapAtoms(selected, catalogue);
       const feed: { [c: string]: number } = {};
       for (const c of selected) feed[c] = gmFeed[c] ?? 1;
-      const target = gmMetricSp && selected.includes(gmMetricSp)
-        ? gmMetricSp : (gmDefaultSpecies ?? selected[selected.length - 1]!);
+      const target = gmMetricShown ?? selected[selected.length - 1]!;
       return {
         components: [...selected],
         properties: [],
@@ -792,7 +789,7 @@ export function ExploreWorkspace() {
       ...(hasLocal ? { componentFiles: localComponentFiles } : {}),
     };
   }, [selected, plotType, property, axisVar, tFrom, tTo, pFrom, pTo, nPts, tieStride, fixedP, fixedT, eos, transportModel, activity, ionTotals, scalingPHMode, scalingPH, scalingAtm, scalingPCO2, scalingT, scalingActivity, scalingEquil, scalingFeedFlow, recFrom, recTo, steamMode, satFrom, satTo, isoFrom, isoTo, steamP, localUnifac, localComponentFiles, hasLocal,
-    gmFeed, gmTfrom, gmTto, gmPfrom, gmPto, gmMetricSp, gmDefaultSpecies, gmDeltaT, catalogue,
+    gmFeed, gmTfrom, gmTto, gmPfrom, gmPto, gmMetricSp, gmDefaultSpecies, gmMetricShown, gmDeltaT, catalogue,
     bjFamily, bjTotal, bjCounter, bjPhFrom, bjPhTo, bjT, bjOpen, bjPgas]);
 
   const snippet = useMemo(() => {
@@ -1119,7 +1116,7 @@ export function ExploreWorkspace() {
   // a plain-words subtitle of what is being computed (T6)
   const axisLabel = axisVar === "T" ? "T" : "P";
   const subtitle = plotType === "gibbsmap"
-    ? `Equilibrium map — iso-lines of ${gmMetricSp && selected.includes(gmMetricSp) ? gmMetricSp : (selected[selected.length - 1] ?? "product")} mole fraction over T × log-P by Gibbs-energy minimisation (the ATOMS you fed, redistributed to minimum G at each cell). Labelled industrial window + a user-declared kinetic band; unconverged cells marked, never interpolated. Click any cell for its full composition + the gibbsReactor dict.${gmDeltaT !== 0 ? ` ΔT approach = ${gmDeltaT} K: reaction equilibrium at T+ΔT, physical state at T (empirical; ghost ΔT=0 contours underneath).` : ""}`
+    ? `Equilibrium map — iso-lines of ${gmMetricShown ?? "product"} mole fraction over T × log-P by Gibbs-energy minimisation (the ATOMS you fed, redistributed to minimum G at each cell). Labelled industrial window + a user-declared kinetic band; unconverged cells marked, never interpolated. Click any cell for its full composition + the gibbsReactor dict.${gmDeltaT !== 0 ? ` ΔT approach = ${gmDeltaT} K: reaction equilibrium at T+ΔT, physical state at T (empirical; ghost ΔT=0 contours underneath).` : ""}`
     : plotType === "phase"
     ? `Pure-compound P–T phase diagram — liquid–vapour saturation curve to the critical point (AmbroseWalton corresponding states; marks Tc, Pc, normal b.p.). Solid region omitted — needs triple-point / ΔHfus data.`
     : plotType === "scaling"
@@ -1386,9 +1383,8 @@ export function ExploreWorkspace() {
                 </Group>
               </ToolField>
               <ToolField label="map of">
-                <Select size="xs" w={110} data={selected}
-                  value={gmMetricSp && selected.includes(gmMetricSp)
-                    ? gmMetricSp : gmDefaultSpecies}
+                <Select size="xs" w={110} data={gmMetricOptions}
+                  value={gmMetricShown}
                   onChange={(v) => setGmMetricSp(v)} />
               </ToolField>
               <ToolField label="advanced">

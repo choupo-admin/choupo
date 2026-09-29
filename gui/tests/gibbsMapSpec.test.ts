@@ -52,7 +52,9 @@ License
 import { describe, expect, it } from "vitest";
 
 import { CATALOGUE, metaByName } from "../src/case/catalogue.js";
-import { gibbsMapApplies, gibbsMapAtoms, parseFormulaAtoms } from "../src/case/gibbsMapSpec.js";
+import {
+  defaultMapMetric, gibbsMapApplies, gibbsMapAtoms, mapMetricCandidates, parseFormulaAtoms,
+} from "../src/case/gibbsMapSpec.js";
 
 const applies = (sel: string[]) => gibbsMapApplies(sel, CATALOGUE);
 
@@ -130,5 +132,28 @@ describe("parseFormulaAtoms — arithmetic on a declared string", () => {
     expect(parseFormulaAtoms("")).toEqual({});
     expect(parseFormulaAtoms("C6H6 (benzene)")).toEqual({});
     expect(parseFormulaAtoms("2H2O")).toEqual({});     // leading digit: a gap
+  });
+});
+
+describe("the mapped species is never a pure solid (2026-09-29)", () => {
+  //  Vitor mapped sucrose, CO2, N2, NH3, H2 and water; the old default picked
+  //  the species spanning the most elements -- sucrose -- and the engine has
+  //  no mole fraction to give for a pure solid.
+  const sel = ["sucrose", "CO2", "N2", "NH3", "H2", "water"];
+
+  it("the catalogue reads the engine's word for a pure solid", () => {
+    expect(metaByName("sucrose", CATALOGUE)!.isPureSolid).toBe(true);
+    expect(metaByName("graphite", CATALOGUE)!.isPureSolid).toBe(true);
+    expect(metaByName("NH3", CATALOGUE)!.isPureSolid).toBe(false);
+  });
+
+  it("offers every species but the solid, and defaults away from it", () => {
+    expect(mapMetricCandidates(sel, CATALOGUE)).toEqual(
+      ["CO2", "N2", "NH3", "H2", "water"]);
+    expect(defaultMapMetric(sel, CATALOGUE)).not.toBe("sucrose");
+  });
+
+  it("a selection with no solid keeps the old default", () => {
+    expect(defaultMapMetric(["N2", "H2", "NH3"], CATALOGUE)).toBe("NH3");
   });
 });

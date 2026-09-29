@@ -78,6 +78,15 @@ export interface ComponentMeta {
    *  ion-derived at build time, so storing one would be a second home).
    *  Gates the equilibrium-map lens — see case/gibbsMapSpec.ts. */
   hasThermochem: boolean;
+  /** The record declares `standardThermochemistry { referenceState
+   *  pureSolid; }` -- the engine's own word for a species that is its own
+   *  phase (PureSolidPhase::isPureSolid), never inferred from a name.  A
+   *  pure solid has no mole fraction in the fluid, so an equilibrium map
+   *  never offers it as the mapped species (case/gibbsMapSpec.ts).  NOT the
+   *  `isSolid` below, which reads a `phase solid` key no record in the
+   *  catalogue declares (measured 2026-09-29) and gates the electrolyte
+   *  flag; that one is left as it is, named here rather than reused. */
+  isPureSolid: boolean;
   /** Carries a UNIFAC group decomposition in its .dat (`groups { unifac (…) }`)
    *  — the engine reads it directly, so the component is UNIFAC-able (gates the
    *  γ=UNIFAC views without a hardcoded map). */
@@ -197,6 +206,8 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
     && j.standardThermochemistry !== null;
   const isSolid = hasThermochem
     && (j.standardThermochemistry as JsonDict).phase === "solid";
+  const isPureSolid = hasThermochem
+    && (j.standardThermochemistry as JsonDict).referenceState === "pureSolid";
   const dissoc = typeof j.dissociation === "number" ? j.dissociation : 1;
   const isElectrolyte = (j.electrolyte !== undefined && j.electrolyte !== null)
     || (dissoc > 1 && !isSolid);
@@ -232,7 +243,7 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
     && typeof j.HvapTb === "number" && j.HvapTb > 0
     && typeof j.Vliq === "number" && j.Vliq > 0
     && !nonvol;
-  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isRadical, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, aliases, hasThermochem, hasUnifac, unifacGroups,
+  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isRadical, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, aliases, hasThermochem, isPureSolid, hasUnifac, unifacGroups,
     deltaAble, origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb) };
 }
 

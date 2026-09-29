@@ -129,3 +129,24 @@ export function gibbsMapApplies(sel: string[], cat: ComponentMeta[]): boolean {
     parseFormulaAtoms(metaByName(c, cat)?.formula ?? "")).length === 0)) return false;
   return sel.length > gibbsMapAtoms(sel, cat).elements.length;
 }
+
+/** The species an equilibrium map may be drawn OF: every selected one except
+ *  a pure solid, which has no mole fraction in the fluid (the engine refuses
+ *  `metric moleFraction` on one by name, GibbsMapOp.cpp). */
+export function mapMetricCandidates(sel: string[], cat: ComponentMeta[]): string[] {
+  return sel.filter((c) => !(metaByName(c, cat)?.isPureSolid ?? false));
+}
+
+/** The default mapped species: among the candidates, the one spanning the
+ *  MOST distinct elements (a compound like NH3 over diatomic reactants --
+ *  usually the product of interest); ties break to the last selected.  Null
+ *  when every selected species is a pure solid. */
+export function defaultMapMetric(sel: string[], cat: ComponentMeta[]): string | null {
+  const cand = mapMetricCandidates(sel, cat);
+  let best = cand[cand.length - 1] ?? null, bestN = -1;
+  for (const c of cand) {
+    const nEl = Object.keys(parseFormulaAtoms(metaByName(c, cat)?.formula ?? "")).length;
+    if (nEl > bestN) { bestN = nEl; best = c; }
+  }
+  return best;
+}
