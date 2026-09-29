@@ -24,7 +24,7 @@ CAS            50-99-7;
 MW             180.16;         // g/mol
 role        nonvolatile;
 dissociation   1;              // non-electrolyte
-Vliq           1.111e-4;      // m^3/mol -- PARTIAL molar volume of D-glucose at infinite dilution in water, 298.15 K, ~0.1 MPa (see provenance)
+Vliq           1.1199e-4;     // m^3/mol -- STANDARD PARTIAL molar volume of D-glucose(aq) at infinite dilution, 298.15 K (see provenance)
 
 
 // ---------------------------------------------------------------------------
@@ -63,6 +63,21 @@ standardThermochemistry
 // Fill `coefficients` from Boerio-Goates 1991 Table before any case runs a
 // solid-glucose energy balance.  Do NOT invent a number.
 
+// liquidHeatCapacity -- the STANDARD PARTIAL molar heat capacity of
+// D-glucose(aq) at infinite dilution, C_p,2,m (see provenance).  Like Vliq,
+// it is a property of glucose IN WATER, which is the only liquid glucose any
+// case here holds (a pure liquid glucose does not exist at these T): in the
+// ideal-solution sum Cp = x_w Cp_w + x_g Cp_g it gives the dilute solution's
+// heat capacity.  The paper's own Taylor expansion about T' = 298.15 K,
+//     C = 345 + 1.45 (T - T') + (1/2) 0.053 (T - T')^2   [J/(K mol)],
+// written out in powers of T for the engine's polynomial:
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (2268.35819625  -14.35195  0.0265);
+    Trange        (298.15  327.01);     // the measured window; outside it the engine announces extrapolation
+}
+
 groups
 {
     unifac ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 5; } { group CHO; count 1; } );   // added from data/groupEstimative (UNIFAC decomposition; vocab-checked vs groups.dat)
@@ -73,9 +88,17 @@ provenance
     Vliq
     {
         origin           measured;
-        method           "vibrating-tube densimetry of dilute (D-glucose + H2O) solutions; V-infinity from the intercept of a least-squares fit of the apparent molar volume against molality";
-        citation         "Seitz, Schulte, Hall & Rhett, J. Chem. Thermodyn. 128 (2019) 372-382, doi:10.1016/j.jct.2018.08.020, Table 3";
-        uncertainty      "1.0 cm3/mol (the paper's own estimate for V-infinity)";
-        note             "Table 3, p = 0.10 MPa: V-infinity = 110.4 cm3/mol at 293.15 K and 113.1 cm3/mol at 313.15 K; the paper measured no 298.15 K isotherm, so the value is those two LINEARLY INTERPOLATED to 298.15 K (111.075, kept as 111.1 cm3/mol = 1.111e-4 m3/mol).  Its Eq. (3), V-infinity = 94.68 + 0.06886 T, is NOT used: it would give 115.2 cm3/mol here, and the paper itself says that at ~0.1 MPa and T < 300 K the data fall below that linear trend.  Cross-check the paper prints itself (Table 4/5): 111.2-112.7 cm3/mol at 298.15 K from other authors (Origlia 2000: 111.7; Kishore 1993: 112.0), all within ~1 cm3/mol.  This is a PARTIAL molar volume in solution, the same kind of quantity as the sucrose record's Vliq, not the volume of a pure liquid glucose (which does not exist at 298 K).  Read off the PDF Vitor supplied 2026-09-29; the interpolation is the assistant's -- reviewStatus is not raised by this entry.";
+        method           "vibrating-tube densimetry of aqueous glucose, 0.20-1.54 mol/kg; V-infinity by a Taylor-expansion fit of the apparent molar volume in T and molality";
+        citation         "Kishore, Goldberg & Tewari, J. Chem. Thermodyn. 25 (1993) 847-859, doi:10.1006/jcht.1993.1082 -- final values, p. 856";
+        uncertainty      "0.10 cm3/mol (the paper's final estimate, systematic errors included)";
+        note             "V2,m = 111.99 cm3/mol at T = 298.15 K, measured AT that temperature.  Independent cross-check: Seitz, Schulte, Hall & Rhett, J. Chem. Thermodyn. 128 (2019) 372-382, doi:10.1016/j.jct.2018.08.020, Table 3 at 0.10 MPa, 110.4 (293.15 K) and 113.1 (313.15 K), u = 1.0 -- linearly interpolated to 298.15 K, 111.1 cm3/mol, inside its own uncertainty of this value (Seitz's own Table 5 re-derives 112.0 from Kishore's data).  Superseded 2026-09-29 the same day it was written: the first entry was the Seitz interpolation, before Kishore's direct 298.15 K value was in hand.  Read off the PDFs Vitor supplied; reviewStatus is not raised by this entry.";
+    }
+    liquidHeatCapacity
+    {
+        origin           measured;
+        method           "flow calorimetry of aqueous glucose, 0.20-1.54 mol/kg, 298.15-327.01 K; C_p,2,m by a Taylor-expansion fit of the apparent molar heat capacity in T and molality (their Eq. 11)";
+        citation         "Kishore, Goldberg & Tewari, J. Chem. Thermodyn. 25 (1993) 847-859, doi:10.1006/jcht.1993.1082 -- final values, p. 856";
+        uncertainty      "C_p,2,m (345 +/- 4) J/(K mol); dC/dT (1.45 +/- 0.22) J/(K2 mol); d2C/dT2 (0.053 +/- 0.015) J/(K3 mol) -- the paper's final estimates";
+        note             "Coefficients are the paper's Taylor series about 298.15 K expanded into powers of T, no refit: a0 = 345 - 1.45*298.15 + 0.0265*298.15^2, a1 = 1.45 - 2*0.0265*298.15, a2 = 0.0265; they reproduce 345.00 at 298.15 K and 408.92 at 327.01 K.  Trange is the measured window.  The value is for the anomeric EQUILIBRIUM mixture (the solutions were held ~4 h before measurement); the alpha/beta difference is 2 +/- 2 J/(K mol).  Read off the PDF Vitor supplied 2026-09-29; reviewStatus is not raised by this entry.";
     }
 }

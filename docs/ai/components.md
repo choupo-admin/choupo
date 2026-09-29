@@ -574,7 +574,7 @@ level up.)
 | `CS` | 44.071 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CS2` | 76.131 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `dowthermA` | 165.8 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
-| `glucose` | 180.16 | nonvolatile | — | — | — | ✓ | — | — | — | ✓ |   |
+| `glucose` | 180.16 | nonvolatile | — | — | ✓ | ✓ | — | — | — | ✓ |   |
 | `graphite` | 12.011 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `H` | 1.008 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HCCO` | 41.029 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |

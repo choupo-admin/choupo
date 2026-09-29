@@ -1777,7 +1777,27 @@ accepts today, and that is a policy call.
      engine's summary quotes a number, which is second-hand and was not
      entered.  **NEXT, Vitor's to order:** that paper (its C_p,2 at infinite
      dilution and its dC_p/dT); then the pump, the adiabatic mixer and the
-     spacer-hydraulics `k_film` of membrane04 for this loop; and the sucrose record's own
+     spacer-hydraulics `k_film` of membrane04 for this loop.  **Cp CURATED
+     2026-09-29 (Vitor supplied Kishore 1993):** `liquidHeatCapacity` is the
+     paper's Taylor series (345 +/- 4 J/(K mol) at 298.15 K, measured window
+     298.15-327.01 K) and `Vliq` moved to its direct 111.99 +/- 0.10 cm3/mol.
+     Re-imports HELD: the new Cp makes the glucose cases' energy balance
+     available, and that exposed a defect -- **THE SPIRAL-WOUND MODULE DOES
+     NOT CONSERVE ITS SOLUTE.**  The engine's own elementBalance closes C at
+     99.9357 % on membrane02; every spiral-wound case loses 0.03-0.4 % of a
+     solute element (measured over membrane01-18 and optim04); the module's
+     `mass_closure_rel` reads 0 because the water is closed by mass and
+     absorbs the loss.  nNodes 100 -> 400 -> 1600 divides it by 4 each time:
+     SpiralWoundModule.cpp advances c_b and Q_b separately
+     (`c_b += (J_w c_b - J_s) W dz / Q_b`), which does not conserve Q_b c_b
+     to O(dz^2) per step, while the permeate accumulates W J_s dz exactly.
+     Fix: advance the solute FLOW (N_s -= W J_s dz; c_b = N_s / Q_b).  It
+     moves every spiral-wound golden, so the list goes to Vitor before any
+     --record.  Also found, not acted on: the ADIABATIC mixer refuses glucose
+     (it prices through h_pure_ig, not the formation surface the report
+     uses), and the ISOTHERMAL mixer publishes no duty -- together they keep
+     the pump out of membrane18 (a scratch run with the pump shows a 96 %
+     first-law debt).  Engine, Vitor's.  And the sucrose record's own
      `Vliq` (2.115e-4) still carries no citation.  Also open and separate:
      the quasi-steady seam for a DYNAMIC loop (#185); a real UF (flux law,
      MWCO rejection, a cited record).
