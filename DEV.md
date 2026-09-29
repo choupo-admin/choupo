@@ -1740,7 +1740,18 @@ accepts today, and that is a policy call.
      curate glucose's apparent molar volume (then the pump, the real
      pressure drop and the spacer-hydraulics `k_film` of membrane04 make the
      recirculation matter); the quasi-steady seam for the DYNAMIC loop; a
-     real UF (flux law, MWCO rejection, a cited record).
+     real UF (flux law, MWCO rejection, a cited record).  **PRIMARY SOURCE
+     LOCATED for the glucose Vliq (2026-09-29, `choupo-thermoml search
+     --online`), NOT read:** Seitz, Schulte, Hall & Rhett, "Volumetric
+     properties of dilute (D-glucose + H2O) solutions at temperatures from
+     (293.15 to 433.15) K", J. Chem. Thermodyn. 2019, doi:10.1016/j.jct.
+     2018.08.020 -- the article is behind a paywall from here (the DOI
+     redirects to Elsevier, ScienceDirect answers 403), and the ThermoML
+     cache is not synced, so no number was taken.  Whoever has journal access
+     reads the infinite-dilution apparent molar volume at 298.15 K off the
+     article, with its uncertainty, and the record is written from THAT (the
+     sucrose record's own 2.115e-4 m3/mol carries no citation either, and
+     should get one in the same pass).
 
 **C26. DRYING, REVIEWED FOR TEACHING -- slice 1: THE CHARACTERISTIC
      DRYING CURVE (asked 2026-09-29, Vitor: "quero rever a secagem.
