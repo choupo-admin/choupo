@@ -1759,7 +1759,14 @@ accepts today, and that is a policy call.
      honesty chip quotes whichever falling-rate sentence the run printed
      (MODELLING CHOICE undeclared, CHARACTERISTIC DRYING CURVE declared);
      step 4 of the lesson prints R = R_c f(Phi), f = Phi^n with Phi, f and
-     n glossed.  Considered and NOT taken: a tool for the continuous dryer
+     n glossed.  Same day (Vitor, on the plain "X_c" in the knob labels:
+     "Tu tens know how para fazer isso!"): a knob label, its tooltip and a
+     panel note may now name variables as inline math, `\( ... \)`, drawn
+     by KaTeX through ONE shared `TexText` (lessonStep.tsx) that every
+     `KnobSlider` uses -- a label with no delimiter renders unchanged, so
+     the other tools convert as each is reviewed; `\(` and not `$`, because
+     a label may carry a currency sign.  The drying tool is converted.
+     Considered and NOT taken: a tool for the continuous dryer
      (Vitor's option 2, deferred).  The solid's falling-rate warm-up (a
      solid energy balance) stays the named physics gap in both dryers.
 

@@ -75,7 +75,7 @@
 
 import { Box, Text, Title } from "@mantine/core";
 
-import { renderTex } from "./lessonTex.js";
+import { renderTex, splitInlineTex } from "./lessonTex.js";
 
 /** One symbol, bound to the words it stands for.
  *
@@ -163,6 +163,20 @@ export function Tex(
         {r.source}
       </Text>
     </Box>
+  );
+}
+
+/** A line of text with its variables set as math: every `\(...\)` piece is
+ *  drawn by KaTeX inline (a failure drawn AS a failure, like any `Tex`), the
+ *  rest is plain text.  A string with no delimiter renders exactly as before,
+ *  so a label not yet converted is unchanged. */
+export function TexText({ text }: { text: string }): JSX.Element {
+  return (
+    <>
+      {splitInlineTex(text).map((p, i) => (p.math
+        ? <Tex key={i} src={p.s} mode="inline" />
+        : <span key={i}>{p.s}</span>))}
+    </>
   );
 }
 

@@ -101,6 +101,7 @@ import {
   panelBoxProps, usePanel, usePanelShortcut,
 } from "../panelContract.js";
 import { fitsRow, useMeasuredBoxWidth, usePlotRefit } from "./methodsChrome.js";
+import { TexText } from "./lessonStep.js";
 
 // ---- the layout -------------------------------------------------------------
 
@@ -256,7 +257,7 @@ export function MethodSetupRail({ title, scent = "SETUP", setup, children }: {
  *  the panel's minimum width, with a narrow enough rail, that is reachable. */
 export function KnobField({ label, hint, children }: {
   label: React.ReactNode;
-  hint?: string;
+  hint?: React.ReactNode;
   children: React.ReactNode;
 }): JSX.Element {
   return (
@@ -303,9 +304,17 @@ export function KnobSlider({ knob, value, onChange, showWhy = false }: {
   onChange: (v: number) => void;
   showWhy?: boolean;
 }): JSX.Element {
-  const label = `${knob.label}${knob.unit ? ` [${knob.unit}]` : ""}`;
+  //  A label or a `why` may name its variables as inline math, `\(X_c\)`;
+  //  TexText sets them and leaves a plain string exactly as it was.
+  const label = (
+    <>
+      <TexText text={knob.label} />
+      {knob.unit ? ` [${knob.unit}]` : ""}
+    </>
+  );
+  const why = knob.why ? <TexText text={knob.why} /> : undefined;
   const field = (
-    <KnobField label={label} hint={showWhy ? knob.why : undefined}>
+    <KnobField label={label} hint={showWhy ? why : undefined}>
       <NumberInput size="xs" value={value} min={knob.min} max={knob.max}
         step={knob.step} w="100%"
         onChange={(v) => {
@@ -317,7 +326,7 @@ export function KnobSlider({ knob, value, onChange, showWhy = false }: {
     </KnobField>
   );
   return knob.why
-    ? <Tooltip withArrow multiline w={320} label={knob.why} position="right">
+    ? <Tooltip withArrow multiline w={320} label={why} position="right">
         <Box style={{ width: "100%", minWidth: 0 }}>{field}</Box>
       </Tooltip>
     : field;

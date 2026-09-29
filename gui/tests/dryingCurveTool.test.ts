@@ -37,6 +37,7 @@ License
 import { describe, expect, it } from "vitest";
 
 import { applyScalarOverride, methodCase } from "../src/case/methodRun.js";
+import { inlineTexParses } from "../src/ui/methods/lessonTex.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 import {
   DRYING_ABSENCES,
@@ -395,6 +396,20 @@ describe("extractFallingRateNotice — quoted, never paraphrased", () => {
 // misses its dict would run the engine on the wrong question).
 
 describe("the classroom witness — dryer01 bundled and knob-addressable", () => {
+  it("names every variable in a label or tooltip as inline math that parses", () => {
+    //  The knob labels are drawn by TexText: every \( ... \) piece must be
+    //  closed and parse under KaTeX's strict mode, or the page shows a failure.
+    for (const k of DRYING_KNOBS) {
+      expect(inlineTexParses(k.label), `label of knob '${k.id}'`).toBe(true);
+      expect(inlineTexParses(k.why), `why of knob '${k.id}'`).toBe(true);
+    }
+    //  And the variables ARE set as math, not typed as text.
+    const byId = Object.fromEntries(DRYING_KNOBS.map((k) => [k.id, k]));
+    expect(byId.criticalMoisture!.label).toContain(String.raw`\(X_c\)`);
+    expect(byId.curveExponent!.label).toContain(String.raw`\(f = \Phi^{n}\)`);
+    expect(byId.airY!.label).toContain(String.raw`\(Y\)`);
+  });
+
   it("the witness declares the power curve the n knob writes into", () => {
     //  The knob addresses `exponent`; a witness that declared no curve (or
     //  a table) would leave the knob nothing to write.

@@ -134,3 +134,54 @@ export function renderTex(source: string, mode: "display" | "inline"): TexRender
 export function texParses(source: string): boolean {
   return renderTex(source, "display").ok;
 }
+
+/** A line of TEXT with inline math in it, split into its pieces.
+ *
+ *  Knob labels and their tooltips are one-line prose that names variables --
+ *  "critical moisture X_c" -- and a variable in running text is owed the same
+ *  notation the lesson's equations give it.  The delimiter is LaTeX's own
+ *  inline pair `\(` ... `\)`, NOT `$` ... `$`: a knob label may legitimately
+ *  carry a currency sign ("price ($/kg)"), and a dollar pair would read it
+ *  as math.
+ *
+ *  An opening `\(` with no closing `\)` is returned as a math piece running
+ *  to the end, so the caller renders it through KaTeX and the reader sees a
+ *  failure (or a visibly wrong label) rather than a delimiter silently
+ *  swallowed; the test over the shipped labels refuses it before that. */
+export interface InlinePiece {
+  readonly math: boolean;
+  readonly s: string;
+}
+
+export function splitInlineTex(text: string): InlinePiece[] {
+  const out: InlinePiece[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const open = text.indexOf("\\(", i);
+    if (open < 0) {
+      out.push({ math: false, s: text.slice(i) });
+      break;
+    }
+    if (open > i) out.push({ math: false, s: text.slice(i, open) });
+    const close = text.indexOf("\\)", open + 2);
+    if (close < 0) {
+      out.push({ math: true, s: text.slice(open + 2) });
+      break;
+    }
+    out.push({ math: true, s: text.slice(open + 2, close) });
+    i = close + 2;
+  }
+  return out;
+}
+
+/** True when every inline-math piece of `text` is closed AND parses. */
+export function inlineTexParses(text: string): boolean {
+  let depth = 0;
+  for (let k = 0; k + 1 < text.length; ++k) {
+    if (text[k] === "\\" && text[k + 1] === "(") { if (depth++) return false; ++k; }
+    else if (text[k] === "\\" && text[k + 1] === ")") { if (!depth--) return false; ++k; }
+  }
+  if (depth !== 0) return false;
+  return splitInlineTex(text).every(
+    (p) => !p.math || renderTex(p.s, "inline").ok);
+}

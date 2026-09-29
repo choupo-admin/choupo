@@ -93,7 +93,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, TexText } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
   Tooltip,
@@ -472,51 +472,62 @@ export interface DryingKnob {
 }
 
 export const DRYING_KNOBS: readonly DryingKnob[] = [
+  // Labels and tooltips name their variables as inline math, \( ... \),
+  // drawn by the shared TexText; String.raw keeps the backslashes literal.
   // `T        333.15 K;` inside operation.air -- the only line-anchored `T`
   // in the flowsheetDict, so the key resolves uniquely there.
-  { id: "airT", label: "air T", file: FLOWSHEET, key: "T",
+  { id: "airT", label: String.raw`air temperature \(T\)`, file: FLOWSHEET,
+    key: "T",
     def: 333.15, min: 300, max: 373, step: 0.5, unit: "K",
-    why: "the declared air environment's dry-bulb temperature: it sets the "
-      + "wet bulb the surface is held at, hence the whole constant-rate "
-      + "flux -- the engine recomputes T_wb by adiabatic saturation" },
+    why: String.raw`the declared air environment's dry-bulb temperature: it `
+      + String.raw`sets the wet bulb the surface is held at, hence the whole `
+      + String.raw`constant-rate flux -- the engine recomputes \(T_\mathrm{wb}\) `
+      + "by adiabatic saturation" },
   // `Y        0.010;` -- declared bare (kg/kg lives in the dict's comment).
-  { id: "airY", label: "air humidity Y (kg/kg dry)", file: FLOWSHEET, key: "Y",
+  { id: "airY", label: String.raw`air humidity \(Y\) (kg/kg dry)`,
+    file: FLOWSHEET, key: "Y",
     def: 0.010, min: 0.001, max: 0.04, step: 0.001, unit: "",
     why: "the air's humidity ratio: it is BOTH ends of the drying problem -- "
-      + "the mass-transfer driving force Y_sat(T_wb) - Y and, through the "
-      + "air's water activity, the GAB equilibrium moisture X_eq the tail "
-      + "aims at" },
-  { id: "area", label: "exposed tray area", file: FLOWSHEET, key: "area",
+      + String.raw`the mass-transfer driving force \(Y_\mathrm{sat}(T_\mathrm{wb}) - Y\) `
+      + "and, through the air's water activity, the GAB equilibrium moisture "
+      + String.raw`\(X_\mathrm{eq}\) the tail aims at` },
+  { id: "area", label: String.raw`exposed tray area \(A\)`, file: FLOWSHEET,
+    key: "area",
     def: 0.5, min: 0.1, max: 2, step: 0.05, unit: "m2",
-    why: "the exposed drying surface: it scales the evaporation rate R_c*A "
-      + "without touching the flux R_c, so the whole X(t) curve compresses "
-      + "in time while R(X) does not move at all" },
-  { id: "criticalMoisture", label: "critical moisture X_c (kg/kg)",
+    why: String.raw`the exposed drying surface: it scales the evaporation rate `
+      + String.raw`\(R_c A\) without touching the flux \(R_c\), so the whole `
+      + String.raw`\(X(t)\) curve compresses in time while \(R(X)\) does not `
+      + "move at all" },
+  { id: "criticalMoisture", label: String.raw`critical moisture \(X_c\) (kg/kg)`,
     file: FLOWSHEET, key: "criticalMoisture",
     def: 0.12, min: 0.02, max: 0.28, step: 0.005, unit: "",
     why: "the MEASURED break between the two periods -- drag it and watch "
-      + "the corner in R(X) move to exactly where you put it, because in "
-      + "this model X_c is an input, not a result" },
+      + String.raw`the corner in \(R(X)\) move to exactly where you put it, `
+      + String.raw`because in this model \(X_c\) is an input, not a result` },
   // `exponent  1.0;` inside operation.dryingCurve -- the witness declares
   // its linear falling rate as the power curve f = Phi^n with n = 1, so this
   // knob bends the curve without adding a word to the dict.
-  { id: "curveExponent", label: "drying-curve exponent n (f = Φⁿ)",
+  { id: "curveExponent",
+    label: String.raw`drying-curve exponent \(n\) in \(f = \Phi^{n}\)`,
     file: FLOWSHEET, key: "exponent",
     def: 1, min: 0.3, max: 3, step: 0.1, unit: "",
-    why: "the SHAPE of the falling-rate period, f = R/R_c = Φⁿ with Φ = "
-      + "(X - X_eq)/(X_c - X_eq): n = 1 is the linear law and its "
-      + "exponential tail; n < 1 keeps the rate high and reaches X_eq in "
-      + "FINITE time; n > 1 drops the rate early and leaves an algebraic "
-      + "tail slower than the exponential.  The corner at X_c and the whole "
-      + "constant-rate period do not move -- the curve is a property of the "
-      + "material's internal transport, not of the air" },
+    why: String.raw`the SHAPE of the falling-rate period, \(f = R/R_c = \Phi^{n}\) `
+      + String.raw`with \(\Phi = (X - X_\mathrm{eq})/(X_c - X_\mathrm{eq})\): `
+      + String.raw`\(n = 1\) is the linear law and its exponential tail; `
+      + String.raw`\(n < 1\) keeps the rate high and reaches \(X_\mathrm{eq}\) in `
+      + String.raw`FINITE time; \(n > 1\) drops the rate early and leaves an `
+      + String.raw`algebraic tail slower than the exponential.  The corner at `
+      + String.raw`\(X_c\) and the whole constant-rate period do not move -- the `
+      + "curve is a property of the material's internal transport, not of "
+      + "the air" },
   // controlDict declares `endTime 3000;` bare (the seconds live in a comment).
-  { id: "endTime", label: "horizon endTime (s)", file: CONTROL, key: "endTime",
+  { id: "endTime", label: String.raw`run horizon \(t_\mathrm{end}\) (endTime, s)`,
+    file: CONTROL, key: "endTime",
     def: 3000, min: 500, max: 20000, step: 100, unit: "",
     why: "the run's horizon.  Below the break time (~1030 s at the authored "
       + "settings) the run ENDS inside the constant-rate period, the engine "
-      + "omits the t_critical KPI entirely, and this tool says which absence "
-      + "that is instead of drawing a zero" },
+      + String.raw`omits the t_critical KPI entirely, and this tool says which `
+      + "absence that is instead of drawing a zero" },
 ];
 
 // Candidate knobs deliberately ABSENT, each recorded BY KIND so a reason
@@ -609,11 +620,12 @@ export function knobOverrides(values: DryingKnobValues): ScalarOverride[] {
 
 // The provenance line, always visible in classroom mode.
 const PROVENANCE =
-  `Runs tutorials/${DRYING_WITNESS} (2.0 kg dry sucrose wet to X_0 = 0.30 `
-  + "kg/kg, 0.5 m2 exposed to declared 60 C air at Y = 0.010) with your "
-  + "parameters, in your browser (choupoBatch WASM).  X and R are the "
-  + "dryer's own trajectory columns; X_c, X_eq, T_wb, R_c and the break time "
-  + "are its KPIs.";
+  `Runs tutorials/${DRYING_WITNESS} (2.0 kg dry sucrose wet to `
+  + String.raw`\(X_0 = 0.30\) kg/kg, 0.5 m2 exposed to declared 60 C air at `
+  + String.raw`\(Y = 0.010\)) with your parameters, in your browser `
+  + String.raw`(choupoBatch WASM).  \(X\) and \(R\) are the dryer's own `
+  + String.raw`trajectory columns; \(X_c\), \(X_\mathrm{eq}\), `
+  + String.raw`\(T_\mathrm{wb}\), \(R_c\) and the break time are its KPIs.`;
 
 
 // ---- Display formatting -----------------------------------------------------
@@ -967,7 +979,7 @@ export function DryingCurveTool(): JSX.Element {
             <KnobSlider key={k.id} knob={k} value={knobs[k.id] ?? k.def}
               onChange={(v) => setKnob(k.id, v)} />
           ))}
-          <PanelNote>{PROVENANCE}</PanelNote>
+          <PanelNote><TexText text={PROVENANCE} /></PanelNote>
         </>
       )}
     </>

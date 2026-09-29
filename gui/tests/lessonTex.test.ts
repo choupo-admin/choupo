@@ -54,7 +54,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { renderTex } from "../src/ui/methods/lessonTex.js";
+import { inlineTexParses, renderTex, splitInlineTex } from "../src/ui/methods/lessonTex.js";
 import type { LessonStep } from "../src/ui/methods/lessonStep.js";
 
 const MODULES = import.meta.glob("../src/ui/methods/*.{ts,tsx}");
@@ -179,3 +179,28 @@ describe("every EduTool lesson equation is LaTeX that parses", () => {
     expect(renderTex("   ", "display").ok).toBe(false);
   });
 });
+
+describe("inline math in a line of text -- knob labels and tooltips", () => {
+  it("splits on \\( \\) and leaves a plain string whole", () => {
+    expect(splitInlineTex("exposed tray area")).toEqual(
+      [{ math: false, s: "exposed tray area" }]);
+    expect(splitInlineTex(String.raw`critical moisture \(X_c\) (kg/kg)`)).toEqual([
+      { math: false, s: "critical moisture " },
+      { math: true, s: "X_c" },
+      { math: false, s: " (kg/kg)" },
+    ]);
+  });
+
+  it("does not read a currency sign as math", () => {
+    expect(splitInlineTex("price ($/kg) and ($/kWh)")).toEqual(
+      [{ math: false, s: "price ($/kg) and ($/kWh)" }]);
+  });
+
+  it("refuses an unclosed or unparseable piece", () => {
+    expect(inlineTexParses(String.raw`moisture \(X_c`)).toBe(false);
+    expect(inlineTexParses(String.raw`moisture X_c\)`)).toBe(false);
+    expect(inlineTexParses(String.raw`bad \(\frac{X}\)`)).toBe(false);
+    expect(inlineTexParses(String.raw`good \(\Phi^{n}\) here`)).toBe(true);
+  });
+});
+
