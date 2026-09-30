@@ -106,6 +106,24 @@ if [ -f "$wasm" ] && { [ ! -f "$stamp" ] || [ "$wasm" -nt "$stamp" ]; }; then
     exit 1
 fi
 
+#  AND THE DEPENDENCIES MUST BE THE ONES THE LOCKFILE NAMES (2026-09-30).
+#  gui/node_modules is a LOCAL install, gitignored like the wasm, and a pull
+#  that adds a dependency does not install it: Vitor pulled the KaTeX
+#  lessons and Vite died with "Failed to resolve import katex/dist/..." --
+#  a message that names the consequence, not the cause.  npm writes
+#  node_modules/.package-lock.json on every install, so a lockfile NEWER
+#  than it is a dependency set this machine has not installed.
+lock="$root_dir/gui/package-lock.json"
+installed="$root_dir/gui/node_modules/.package-lock.json"
+if [ ! -f "$installed" ] || [ "$lock" -nt "$installed" ]; then
+    echo "[runGui] REFUSED: gui/node_modules is $( [ -f "$installed" ] \
+         && echo 'OLDER than gui/package-lock.json' || echo 'NOT INSTALLED' ) --"
+    echo "         the lockfile names dependencies this machine has not"
+    echo "         installed, and Vite would stop on the first import of one."
+    echo "         Install:    (cd gui && npm install)   (then re-run bin/runGui)"
+    exit 1
+fi
+
 kill_prior() {
     local prior
     prior=$(pgrep -f 'node .*\.bin/vite' 2>/dev/null || true)
