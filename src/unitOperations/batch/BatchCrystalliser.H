@@ -82,6 +82,8 @@ public:
     void step(scalar t, scalar dt) override;
 
     const BatchState& state() const override { return state_; }
+    std::string holdupNotRestored() const override
+    { return "the crystal population (its moments)"; }
 
     // ALL-phase inventory (forum #88): state_.n carries the DISSOLVED solute
     // only (the ODE drains it as crystals grow); the crystal magma

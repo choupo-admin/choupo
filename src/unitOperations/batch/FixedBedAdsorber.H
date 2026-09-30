@@ -194,6 +194,11 @@ public:
     bool hasOdeForm() const override { return false; }
 
     const BatchState& state() const override { return state_; }
+    //- A fixed bed's state is its AXIAL PROFILE, declared through its own
+    //  operation (and 0/<name>.profile), never a 0-D holdup.
+    bool readsHoldup() const override { return false; }
+    std::string holdupNotRestored() const override
+    { return "the axial bed profile (the gas and adsorbed-phase loadings along the bed)"; }
 
     // Bed hold-up (gas + solid) + the remaining declared feed commitment
     // [kmol] -- the open-boundary campaign datum (see header).

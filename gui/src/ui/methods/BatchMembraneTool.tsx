@@ -220,7 +220,7 @@ export interface BatchMembraneView {
   verdicts: SoluteVerdict[];
   vessel: VesselDeclaration;
   /** The trapezoid of Q_p over the WRITTEN samples, and the integrator's own
-   *  accepted permeated volume beside it (BatchDiafilter.H:255-263). */
+   *  accepted permeated volume beside it (BatchDiafilter.H:258-266). */
   VpermTrapezoid: number | null;
   VpermState: number | null;
   /** The J_w c scan and its maximum -- concentration mode only, on the
@@ -792,7 +792,7 @@ export function BatchMembraneTool(): JSX.Element {
             The permeated volume is an integrated STATE, and the trapezoid
             beside it is the same quantity re-quadratured over the written
             samples alone. The gap is the write mesh —
-            BatchDiafilter.H:255-263 records why the state is the authority.
+            BatchDiafilter.H:258-266 records why the state is the authority.
           </Text>
           <VesselNote vessel={vessel} />
         </Box>

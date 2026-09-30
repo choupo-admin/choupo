@@ -90,21 +90,22 @@ void QuasiSteadyUnit::initialise(const DictPtr&        unitDict,
         spec_->insert("inputs", EntryValue(inletNames_));
     spec_->insert("outputs", EntryValue(outletNames_));
 
-    //  The t = 0 faces, one per inlet, materialised by the driver from
-    //  0/streamFaces (`<unit>.<stream>`).  A routed inlet's face is its
+    //  The t = 0 inlets, one per declared stream, materialised by the driver
+    //  from the stream files `0/<stream>`.  A routed inlet's file is its
     //  starting value only; the router overwrites it from the first solve.
     if (!unitDict->found("inlets"))
-        throw std::runtime_error(ctx + ": no inlet faces -- 0/streamFaces must"
-            " carry `\"" + name_ + ".<stream>\"` for every inlet ("
+        throw std::runtime_error(ctx + ": no inlet states -- every inlet"
+            " stream needs its file 0/<stream> ("
             + std::to_string(inletNames_.size()) + " declared)");
     auto faces = unitDict->subDict("inlets");
     inlets_.resize(inletNames_.size());
     for (std::size_t k = 0; k < inletNames_.size(); ++k)
     {
         if (!faces->found(inletNames_[k]))
-            throw std::runtime_error(ctx + ": 0/streamFaces carries no face"
-                " `\"" + name_ + "." + inletNames_[k] + "\"` -- every inlet of"
-                " a quasi-steady unit needs one (its t = 0 value when routed)");
+            throw std::runtime_error(ctx + ": no state for inlet stream '"
+                + inletNames_[k] + "' -- every inlet of a quasi-steady unit"
+                " needs its file 0/" + inletNames_[k] + " (its t = 0 value"
+                " when routed)");
         auto f = faces->subDict(inletNames_[k]);
         ContinuousStream& c = inlets_[k];
         c.F = f->lookupScalar("F");

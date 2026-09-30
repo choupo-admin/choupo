@@ -23,11 +23,11 @@
   period + phase)`), the dynamic binary integrates the plant, and
   `frequencyResponse {}` least-squares fits `a + b sin(wt) + c cos(wt)` to the
   outlet after the start-up transient is discarded
-  (src/dynamicDriver/DynamicDriver.cpp:1745-1777): amplitude
-  `hypot(b, c)` at src/dynamicDriver/DynamicDriver.cpp:1758, phase
-  `atan2(c, b)` at src/dynamicDriver/DynamicDriver.cpp:1760, and the share of
+  (src/dynamicDriver/DynamicDriver.cpp:1821-1853): amplitude
+  `hypot(b, c)` at src/dynamicDriver/DynamicDriver.cpp:1834, phase
+  `atan2(c, b)` at src/dynamicDriver/DynamicDriver.cpp:1836, and the share of
   the output variance the single sinusoid does NOT explain at
-  src/dynamicDriver/DynamicDriver.cpp:1777.  One run is
+  src/dynamicDriver/DynamicDriver.cpp:1853.  One run is
   ONE POINT of a Bode diagram, measured.  Everything this module contributes
   to that plane is the EXPERIMENT DESIGN — which frequencies to ask for, and
   what time step and run length each one needs — plus arithmetic on the
@@ -40,7 +40,7 @@
   it — searched 2026-09-12 for bode / nyquist / transfer function / gain
   margin / phase margin / amplitude ratio across src/**, and EVERY hit is a
   COMMENT about the measurement above: src/control/signal/Signal.H:42 ("one
-  point of a Bode plot") and :94, src/dynamicDriver/DynamicDriver.cpp:824,
+  point of a Bode plot") and :94, src/dynamicDriver/DynamicDriver.cpp:898,
   and src/outerDriver/SweepDriver.H:85 (the linked-target mirror the Bode
   sweep case needs).  Not one of them computes anything.
 
@@ -75,7 +75,7 @@ import type { ScalarOverride } from "../../case/methodRun.js";
 /** One frequency's answer: how much bigger the output swing is, and how far
  *  behind it runs.  `phaseRad` is NEGATIVE for a lag, which is the sign
  *  convention the engine's own fit publishes (`out_phase_rad` at
- *  src/dynamicDriver/DynamicDriver.cpp:1772 is the lag of the outlet behind the drive). */
+ *  src/dynamicDriver/DynamicDriver.cpp:1848 is the lag of the outlet behind the drive). */
 export interface Response {
   mag: number;
   phaseRad: number;
@@ -112,7 +112,7 @@ export function gainResponse(K: number): Response {
  *  THIS IS THE ONE ELEMENT THE ENGINE JUDGES.  It is the tracer dynamics of
  *  a constant-volume stirred tank: the engine integrates
  *  `dn_i/dt = F_in z_in_i - F_out (n_i/Sum n)` with `F_out = F_in`
- *  (src/unitOperations/dynamic/DynamicCSTR.cpp:596-599), whose single time
+ *  (src/unitOperations/dynamic/DynamicCSTR.cpp:603-606), whose single time
  *  constant is the residence time `nTot / F_in` the same unit computes at
  *  :377.  Put a sinusoid in and the closed forms below come out; the
  *  measured plane checks them. */
@@ -356,15 +356,15 @@ export function loopWindow(spec: LoopSpec): { wLo: number; wHi: number } {
  *  exactly the defect this project spends its gates on. */
 export const BODE_WITNESS = "ctrl/ctrl19_freq_response_cstr";
 
-/** tutorials/ctrl/ctrl19_freq_response_cstr/0/internalState — the tank's
+/** tutorials/ctrl/ctrl19_freq_response_cstr/0/internalStates/reactor — the tank's
  *  authored holdup [kmol].  Total 0.012 kmol. */
 export const WITNESS_HOLDUP_KMOL = { compA: 0.01104, compB: 0.00096 } as const;
 
-/** .../0/streamFaces — the authored feed [kmol/s].  Total 5.0e-5 kmol/s, so
+/** .../0/feed — the authored feed [kmol/s].  Total 5.0e-5 kmol/s, so
  *  the residence time is 0.012 / 5.0e-5 = 240 s. */
 export const WITNESS_FEED_KMOL_S = { compA: 4.6e-5, compB: 4.0e-6 } as const;
 
-/** .../0/internalState — the tank's authored volume [m3]. */
+/** .../0/internalStates/reactor — the tank's authored volume [m3]. */
 export const WITNESS_VOLUME_M3 = 0.001;
 
 /** .../system/flowsheetDict — the tracer drive's amplitude [kmol/s].  The
@@ -374,7 +374,7 @@ export const WITNESS_DRIVE_AMPLITUDE_KMOL_S = 2.0e-6;
 
 /** The residence time the witness is authored at [s]: total holdup over total
  *  feed, which is the constant the tank's own ODE carries
- *  (src/unitOperations/dynamic/DynamicCSTR.cpp:417). */
+ *  (src/unitOperations/dynamic/DynamicCSTR.cpp:424). */
 export const WITNESS_TAU_S =
   (WITNESS_HOLDUP_KMOL.compA + WITNESS_HOLDUP_KMOL.compB)
   / (WITNESS_FEED_KMOL_S.compA + WITNESS_FEED_KMOL_S.compB);
@@ -480,9 +480,9 @@ export function bodeOverrides(point: SweepPoint, tauS: number): ScalarOverride[]
     { file: "system/controlDict", key: "discardCycles",
       value: point.discardCycles },
     { file: "system/controlDict", key: "fitCycles", value: point.fitCycles },
-    { file: "0/internalState", key: "compA",
+    { file: "0/internalStates/reactor", key: "compA",
       value: WITNESS_HOLDUP_KMOL.compA * holdupScale },
-    { file: "0/internalState", key: "compB",
+    { file: "0/internalStates/reactor", key: "compB",
       value: WITNESS_HOLDUP_KMOL.compB * holdupScale },
     //  The vessel scales WITH its inventory, so the declared state stays
     //  self-consistent (same molar density, a bigger tank).  The tracer
@@ -490,7 +490,7 @@ export function bodeOverrides(point: SweepPoint, tauS: number): ScalarOverride[]
     //  the dilution ODE reads the mole numbers — but leaving V behind would
     //  declare a state no vessel could hold, and a case file a student opens
     //  has to make sense on its own.
-    { file: "0/internalState", key: "V",
+    { file: "0/internalStates/reactor", key: "V",
       value: WITNESS_VOLUME_M3 * holdupScale },
   ];
 }

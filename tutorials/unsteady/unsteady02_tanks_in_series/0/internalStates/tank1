@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/tank1 -- DYNAMIC initial holdup.  The tracer impulse is a
+  SUBSTITUTION in tank 1 (total holdup identical in all three tanks, so
+  every tau is exactly 80 s and the Erlang-3 closed forms are exact).
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "tank1";
+equipment   dynamicCSTR;
+
+holdup
+{
+    T           330.0;
+    P           101325.0;
+    V           0.001;
+    holdupMolar
+    {
+        compA   0.0038;
+        compB   0.0002;
+    }
+}

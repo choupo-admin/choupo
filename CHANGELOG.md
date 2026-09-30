@@ -19,6 +19,21 @@ as they ship; the section is renamed to `## [Choupo-YYMM] — <date>` on the
 day it is cut, which is the form `bin/curate/release_inventory.py` reads to
 decide what the storefront announces as the latest release.
 
+* **The time-integrated cases adopt the ratified state layout, and write
+  their time directories by default (2026-09-30, commission C28, #186).**
+  choupoBatch, choupoCtrl and choupoSemiContinuous read `0/<stream>` (one
+  file per stream, named by the stream the unit declares) and
+  `0/internalStates/<unit>` (one `holdup {}` record per vessel) -- the
+  layout the steady path already used -- and write a `<t>/` with the same
+  layout at every writeInterval, as OpenFOAM does (`solutionControl { write
+  false; }` opts out).  A `<t>/` renamed `0/` restarts the case from t; a
+  vessel whose state is more than its holdup says so (`notRestored`) and its
+  restart is refused.  The retired `0/internalState` + `0/streamFaces` are
+  refused by name; `bin/curate/migrate_state_layout.py` migrated the 59
+  cases, whose every trajectory and result compared byte-identical before
+  and after.  Gate `check_time_state_layout`.  Record:
+  `docs/design/a-state-directory-is-a-restartable-snapshot.md` §11.
+
 * **A plug-flow catalyst bed is sized and costed from its own kinetic volume
   (2026-09-26, commission C2).**  `type pfr` in a postDict's `sizing {}`
   reads the unit's `V_R` and returns two items: the shell as a vessel on the

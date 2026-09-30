@@ -281,15 +281,19 @@ binary's `main()`.
 
 ### Transient cases — the time scrubber
 
-A dynamic run (`choupoBatch` / `choupoCtrl`) with `solutionControl { write true; }`
-drops OpenFOAM-style real-time INSTANT directories at the case root: each written
-physical time `<t>/` carries `internalState` (the holdup truth — mole inventory,
-T, V, conversion) and, for continuous units, `streams` (the instantaneous outlet
-face).  In WASM these land in MEMFS.  The flow:
+A time-integrated run (`choupoBatch` / `choupoCtrl` / `choupoSemiContinuous`)
+drops OpenFOAM-style real-time TIME directories at the case root at every
+writeInterval, by default (`solutionControl { write false; }` turns them off):
+each written physical time `<t>/` has the layout of `0/` — one file per stream
+(`<t>/<stream>`) and one holdup record per vessel (`<t>/internalStates/<unit>`,
+the mole inventory, T, V and the extras).  In WASM these land in MEMFS.  The
+flow:
 
-1. `solverWorker.js` walks `/case` after the run and harvests every
-   `<t>/internalState` + `<t>/streamFaces` (where `<t>` is an all-digit dir),
-   posting them on the `instants` channel.
+1. `solverWorker.js` walks `/case` after a time-integrated run and harvests
+   every file under a numeric directory at the case root (`0/` included, the
+   authored start), keeping an evenly spaced subset of at most 400 instants
+   for a long run (said in the log), and posts them on the `instants`
+   channel.
 2. `WasmAdapter` parses them with `parseDynamicInstants` (`gui/src/case/
    dynamicInstants.ts`) — reusing the engine's OWN dict tokenizer (`parse` +
    `toJson`), never a regex — into `RunResult.instants`.

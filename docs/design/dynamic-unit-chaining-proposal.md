@@ -22,7 +22,8 @@ held: no implicit coupling, no back-pressure, no flow networks.
 
 ## The gap, observed
 
-`choupoCtrl` units each read their own declared feed (`0/streamFaces`); the
+`choupoCtrl` units each read their own declared feed (`0/streamFaces` at the
+time; since 2026-09-30 a stream's own file `0/<stream>`, task #186); the
 driver never routes one unit's outlet into the next unit's inlet within a
 step.  Measured consequence: the RTD/frequency tools shipped 2026-08-23 can
 witness a single vessel only — the tanks-in-series half of the RTD lesson

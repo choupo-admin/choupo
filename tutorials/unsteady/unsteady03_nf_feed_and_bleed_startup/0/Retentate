@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/Retentate -- the state of stream 'Retentate' at t = 0: ONE file per stream,
+  in the canonical grammar every state view uses.
+  A ROUTED stream: this is its value until the first accepted step,
+  from which the router overwrites it with the upstream outlet.
+\*-----------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water    0.0971945 kmol/s;
+    glucose  1.66583333e-04 kmol/s;
+}
+
+T               298.15 K;
+P               1000000.0 Pa;

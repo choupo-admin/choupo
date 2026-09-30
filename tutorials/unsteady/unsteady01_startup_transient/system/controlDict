@@ -18,13 +18,15 @@ deltaT          1.0;      // s
 writeInterval   50;       // s   (one time directory every 50 s -> 0/ 50/ ... 1000/)
 
 // ---- solutionControl: OpenFOAM-style transient solution directories ----
-//   The instant directory IS the real physical time (seconds).  At each
-//   written time a `<t>/internalState` holds the reactor HOLDUP (mole
-//   inventory n_i [kmol], T [K]) and a `<t>/streamFaces` holds the instantaneous
-//   OUTLET face (F [kmol/s], T, P, molarFlows).  Open `500/internalState` to
-//   see the tank exactly as it was at t = 500 s, on its way to steady state.
-//   trajectory.csv is STILL written; remove this block for a byte-identical
-//   plain run.
+//   The time directory IS the real physical time (seconds), with the
+//   layout of 0/: `<t>/internalStates/reactor` holds the reactor HOLDUP
+//   (mole inventory n_i [kmol], T [K]) and `<t>/feed`, `<t>/product` hold
+//   the two streams at that instant (componentMolarFlows, T, P).  Open
+//   `500/internalStates/reactor` to see the tank exactly as it was at
+//   t = 500 s, on its way to steady state -- and rename `500/` to `0/` to
+//   start the case from there.  Time directories are written by DEFAULT
+//   (as OpenFOAM does); `write true;` below only says so, and `write
+//   false;` turns them off.  trajectory.csv is written either way.
 solutionControl
 {
     write           true;

@@ -29,20 +29,22 @@ License
 /*---------------------------------------------------------------------------*\
   TimeScrubber -- scrub the OpenFOAM-style real-time instants a dynamic run
   (choupoBatch / choupoCtrl / choupoSemiContinuous) wrote.  A slider walks the written physical times;
-  the panel shows each unit's HOLDUP state at the selected instant (T, V, mole
-  inventory, any extras = conversion / supersaturation) PLUS the instantaneous
-  outlet face for continuous units.  A T(t) line beneath marks where on the
-  trajectory the scrubber sits, so the student SEES the reactor evolve.
+  the panel shows each vessel's HOLDUP state at the selected instant (T, V, mole
+  inventory, any extras = conversion / supersaturation) PLUS every stream's
+  state at that instant, one card per stream as one file per stream on disk.
+  A T(t) line beneath marks where on the trajectory the scrubber sits, so the
+  student SEES the reactor evolve.
 
   Pure visualiser (gui-credo): reads result.instants (+ result.trajectory for
   the marked line); no editing, no save.  The data is the C++ engine's own
-  <t>/internalState dicts, parsed back by parseDynamicInstants.
+  time directories -- <t>/<stream> and <t>/internalStates/<unit>, the layout
+  of 0/ -- parsed back by parseDynamicInstants.
 \*---------------------------------------------------------------------------*/
 
 import { Badge, Box, Group, Slider, Stack, Table, Text } from "@mantine/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { DynamicInstants, InstantUnit } from "../../case/dynamicInstants.js";
+import type { DynamicInstants, InstantStream, InstantUnit } from "../../case/dynamicInstants.js";
 import type { TrajectoryData } from "../../adapters/SolverAdapter.js";
 import { useStore } from "../../state/store.js";
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
@@ -55,9 +57,6 @@ const fmt = (n: number): string =>
 function HoldupCard({ unit, components }: { unit: InstantUnit; components: string[] }) {
   const moles = components.filter((c) => unit.holdupMolar[c] !== undefined);
   const extras = unit.extras ? Object.entries(unit.extras) : [];
-  const outlet = unit.outletMolarFlows
-    ? components.filter((c) => unit.outletMolarFlows![c] !== undefined)
-    : [];
 
   return (
     <Box
@@ -119,22 +118,52 @@ function HoldupCard({ unit, components }: { unit: InstantUnit; components: strin
         </>
       )}
 
-      {outlet.length > 0 && (
-        <>
-          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mt={8} mb={2}>
-            Outlet face [kmol/s]
-          </Text>
-          <Table fz="xs" ff="monospace" w="auto" verticalSpacing={2}>
-            <Table.Tbody>
-              {outlet.map((c) => (
-                <Table.Tr key={c}>
-                  <Table.Td c="dimmed">{c}</Table.Td>
-                  <Table.Td ta="right">{fmt(unit.outletMolarFlows![c]!)}</Table.Td>
-                </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
-        </>
+      {unit.notRestored && (
+        <Text size="xs" c="dimmed" mt={8}>
+          Not a restart point: this record does not carry {unit.notRestored}.
+        </Text>
+      )}
+    </Box>
+  );
+}
+
+/** One stream at the scrubbed instant -- its own file on disk, its own card. */
+function StreamCard({ stream, components }: { stream: InstantStream; components: string[] }) {
+  const flows = components.filter((c) => stream.molarFlows[c] !== undefined);
+  return (
+    <Box
+      style={{
+        border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+        borderRadius: 6,
+        padding: 12,
+        minWidth: 200,
+      }}
+    >
+      <Group gap={8} mb={6}>
+        <Text fw={600} c="accent.3" size="sm">{stream.name}</Text>
+        <Badge size="xs" variant="light" color="gray">stream</Badge>
+      </Group>
+      <Group gap="lg" mb={8}>
+        <Box>
+          <Text size="xs" c="dimmed">F</Text>
+          <Text size="sm" ff="monospace">{fmt(stream.F)} kmol/s</Text>
+        </Box>
+        <Box>
+          <Text size="xs" c="dimmed">T</Text>
+          <Text size="sm" ff="monospace">{fmt(stream.T)} K</Text>
+        </Box>
+      </Group>
+      {flows.length > 0 && (
+        <Table fz="xs" ff="monospace" w="auto" verticalSpacing={2}>
+          <Table.Tbody>
+            {flows.map((c) => (
+              <Table.Tr key={c}>
+                <Table.Td c="dimmed">{c}</Table.Td>
+                <Table.Td ta="right">{fmt(stream.molarFlows[c]!)}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
       )}
     </Box>
   );
@@ -274,6 +303,9 @@ export function TimeScrubber({
       <Group align="flex-start" gap="md" wrap="wrap" mt={20}>
         {current.units.map((u) => (
           <HoldupCard key={u.name} unit={u} components={instants.components} />
+        ))}
+        {current.streams.map((st) => (
+          <StreamCard key={st.name} stream={st} components={instants.components} />
         ))}
       </Group>
 

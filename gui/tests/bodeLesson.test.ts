@@ -278,18 +278,18 @@ describe("every file:line this page cites into the engine resolves", () => {
    *  long enough" and "the claim is where I said it is". */
   const ANCHORS: [string, number, string][] = [
     // the measurement: the sin/cos fit and what it publishes
-    ["src/dynamicDriver/DynamicDriver.cpp", 1758, "std::hypot(abc[1], abc[2])"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 1760, "std::atan2(abc[2], abc[1])"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 1772, "out_phase_rad"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 1777, "fit_residual_rel"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 1834, "std::hypot(abc[1], abc[2])"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 1836, "std::atan2(abc[2], abc[1])"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 1848, "out_phase_rad"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 1853, "fit_residual_rel"],
     // the drive
     ["src/control/signal/Signals.H", 124, "amplitude*sin"],
     // "one point of a Bode plot" — the engine's own words for what it measures
     ["src/control/signal/Signal.H", 42, "one point of a Bode plot"],
     // the tank whose lag the page derives
-    ["src/unitOperations/dynamic/DynamicCSTR.cpp", 596, "dn_i/dt"],
-    ["src/unitOperations/dynamic/DynamicCSTR.cpp", 599, "F_out = F_in"],
-    ["src/unitOperations/dynamic/DynamicCSTR.cpp", 417, "nTot / F_in_"],
+    ["src/unitOperations/dynamic/DynamicCSTR.cpp", 603, "dn_i/dt"],
+    ["src/unitOperations/dynamic/DynamicCSTR.cpp", 606, "F_out = F_in"],
+    ["src/unitOperations/dynamic/DynamicCSTR.cpp", 424, "nTot / F_in_"],
     // the controller, and the form conversion the page uses
     ["src/control/PIDController.cpp", 75, "Kp = Kc; Ki = Kc/tauI; Kd = Kc*tauD"],
     ["src/control/PIDController.cpp", 123, "u_unclamped"],

@@ -274,7 +274,7 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
             " applied.");
     act_ = electrolyte::AqueousActivity::New(aqChem.activityModel);
 
-    // ---- the two tanks, from 0/internalState ------------------------------
+    // ---- the two tanks, from 0/internalStates/<unit> ----------------------
     auto init = unitDict->subDict("initial");
     state_.T  = init->lookupScalar("T");
     state_.P  = init->lookupScalar("P");
@@ -290,8 +290,8 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
             " `concentrate {}` block.  A recirculating electrodialysis rig"
             " has TWO tanks and this unit holds both -- the diluate as its"
             " own state (the product) and the concentrate as internal state"
-            " it publishes.  Declare, inside this unit's block of"
-            " 0/internalState:\n"
+            " it publishes.  Declare, inside the holdup {} block of"
+            " 0/internalStates/<unit>:\n"
             "    concentrate { totalMoles <kmol>; molarComposition { ... } }\n"
             "The concentrate's composition is what the Nernst membrane"
             " potential is a function of; it cannot be defaulted.");

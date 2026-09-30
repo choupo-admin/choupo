@@ -87,6 +87,9 @@ public:
     std::size_t odeNPositive() const override { return state_.n.size(); }
 
     const BatchState& state() const override { return state_; }
+    //- The reactor's whole integrated state IS its holdup (the inventory
+    //  and T at its V and P): a time directory restarts it exactly.
+    std::string holdupNotRestored() const override { return {}; }
 
     void setOperationParameter(const std::string& key, scalar value) override;
 

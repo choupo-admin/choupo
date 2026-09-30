@@ -1,13 +1,18 @@
 /*---------------------------------------------------------------------------*\
-  toGraph dynamic-holdup synthesis tests.
+  toGraph on a dynamic-holdup unit (the ratified state layout, task #186).
 
-  A dynamicCSTR declares its feed in the 0/streamFaces inlet face + its jacket in
-  `operation{}` instead of the steady in/outputs keys, so without the
-  synthesis branch it renders as a LONE BOX.  readFlowsheet must grow:
-    - a `<unit>.feed` feed terminal (read from the 0/streamFaces face),
-    - a `<unit>.out` product terminal (the engine's stream key),
-    - a jacket UTILITY stub (dutyPort:"jacket") when operation.UA > 0.
-  These tests pin that down so the lone-box regression can't return.
+  A dynamicCSTR declares its feed and its product like every other unit
+  (`in feed;` + `outputs ( product );`), the feed's state lives in its own
+  file `0/feed` and the vessel's starting holdup in `0/internalStates/reactor`.
+  So there is NO synthesis any more: readFlowsheet reads the stream from its
+  file exactly as it reads a steady stream, and grows
+    - the feed terminal from `0/feed`,
+    - the product terminal from the declared output,
+    - a jacket UTILITY stub (dutyPort:"jacket") when operation.UA > 0, whose
+      heating/cooling tier compares T_jacket with the holdup's own T.
+  The retired shape (`0/streamFaces`, `0/internalState`) is NOT read -- a
+  case still carrying it is refused by the engine, and the canvas draws no
+  face it would have to pretend to understand.
 \*---------------------------------------------------------------------------*/
 
 import { describe, expect, it } from "vitest";
@@ -16,44 +21,36 @@ import { parse, toJson } from "../src/dict/index.js";
 import type { JsonDict } from "../src/dict/index.js";
 import { flowsheetToGraph } from "../src/case/toGraph.js";
 
-// The authored dynamic state: 0/streamFaces carries the inlet FACE (the engine's
-// grammar -- bc inlet, T, P, per-species molarFlows).
-const ZERO_STREAMS = `
-time 0;
-faces
+// The feed's state: ONE file, the canonical stream grammar.
+const ZERO_FEED = `
+componentMolarFlows
 {
-    "reactor.feed"
-    {
-        bc          inlet;
-        T           330.0;
-        P           101325;
-        molarFlows  { compA 1.389e-8; compB 0.0; }
-    }
+    compA   1.389e-8 kmol/s;
+    compB   0.0 kmol/s;
+}
+T   330.0 K;
+P   101325 Pa;
+`;
+
+// The vessel's starting holdup: the jacket tier compares T_jacket with this T.
+const ZERO_HOLDUP = `
+recordType  internalState;
+unit        "reactor";
+equipment   dynamicCSTR;
+holdup
+{
+    T       320.0;
+    P       101325;
+    V       0.001;
+    holdupMolar { compA 0.012; compB 0.0; }
 }
 `;
 
-// The authored initial holdup (0/internalState): the jacket tier compares
-// T_jacket against this T.
-const ZERO_INTERNAL = `
-time 0;
-units
-{
-    "reactor"
-    {
-        type    dynamicCSTR;
-        T       320.0;
-        P       101325;
-        V       0.001;
-        holdupMolar { compA 0.012; compB 0.0; }
-    }
-}
-`;
-
-function graphFrom(text: string) {
+function graphFrom(text: string, files?: { [k: string]: string }) {
   const fs = toJson(parse(text, { sourceName: "flowsheetDict" })) as JsonDict;
-  return flowsheetToGraph(fs, {
-    "0/streamFaces": ZERO_STREAMS,
-    "0/internalState": ZERO_INTERNAL,
+  return flowsheetToGraph(fs, files ?? {
+    "0/feed": ZERO_FEED,
+    "0/internalStates/reactor": ZERO_HOLDUP,
   });
 }
 
@@ -64,6 +61,8 @@ units
     {
         name        reactor;
         type        dynamicCSTR;
+        in          feed;
+        outputs     ( product );
         operation
         {
             UA           50.0;
@@ -74,23 +73,22 @@ units
 );
 `;
 
-describe("toGraph — dynamicCSTR grows feed/product/jacket from its sub-dicts", () => {
+describe("toGraph — a dynamicCSTR draws its declared streams and its jacket", () => {
   const g = graphFrom(CSTR_TEXT);
   const ids = new Set(g.nodes.map((n) => n.id));
 
-  it("synthesises a feed terminal from the 0/streamFaces inlet face", () => {
-    expect(ids.has("stream:reactor.feed")).toBe(true);
-    const feed = g.nodes.find((n) => n.id === "stream:reactor.feed")!;
+  it("reads the feed terminal from its own file 0/feed", () => {
+    expect(ids.has("stream:feed")).toBe(true);
+    const feed = g.nodes.find((n) => n.id === "stream:feed")!;
     expect((feed.data as { role?: string }).role).toBe("feed");
-    // inlet T 330 K canonicalises into the StreamSpec.
     const spec = (feed.data as { stream?: { T: number; composition: Record<string, number> } }).stream;
     expect(spec?.T).toBeCloseTo(330.0, 6);
     expect(spec?.composition).toMatchObject({ compA: 1.0 });
   });
 
-  it("synthesises a product terminal named `<unit>.out` (the engine stream key)", () => {
-    expect(ids.has("stream:reactor.out")).toBe(true);
-    const out = g.nodes.find((n) => n.id === "stream:reactor.out")!;
+  it("draws the declared product terminal", () => {
+    expect(ids.has("stream:product")).toBe(true);
+    const out = g.nodes.find((n) => n.id === "stream:product")!;
     expect((out.data as { role?: string }).role).toBe("product");
   });
 
@@ -102,55 +100,37 @@ describe("toGraph — dynamicCSTR grows feed/product/jacket from its sub-dicts",
     expect((jacket!.data as { tier?: string }).tier).toBe("heating");
   });
 
-  it("draws the feed→reactor and reactor→out edges plus the jacket edge", () => {
+  it("draws the feed→reactor and reactor→product edges plus the jacket edge", () => {
     const edgeLabels = g.edges.map((e) => e.label);
-    expect(edgeLabels).toContain("reactor.feed");
-    expect(edgeLabels).toContain("reactor.out");
+    expect(edgeLabels).toContain("feed");
+    expect(edgeLabels).toContain("product");
     expect(g.edges.some((e) => e.id === "e:duty:reactor:jacket")).toBe(true);
-  });
-
-  it("no longer a lone box — the reactor has both an inbound and an outbound edge", () => {
-    const intoReactor = g.edges.filter((e) => e.target === "unit:reactor"
-      && (e.data as { kind?: string } | undefined)?.kind !== "duty");
-    const outOfReactor = g.edges.filter((e) => e.source === "unit:reactor");
-    expect(intoReactor.length).toBeGreaterThanOrEqual(1);
-    expect(outOfReactor.length).toBeGreaterThanOrEqual(1);
   });
 });
 
-describe("toGraph — dynamic synthesis is additive (cooling jacket + no-UA + explicit wiring)", () => {
-  it("a jacket COLDER than the start docks as a cooling stub", () => {
+describe("toGraph — the jacket tier reads the holdup record", () => {
+  it("a jacket COLDER than the holdup's start docks as a cooling stub", () => {
     const cold = CSTR_TEXT.replace("T_jacket     360.0 K;", "T_jacket     300.0 K;");
     const g = graphFrom(cold);
     const jacket = g.nodes.find((n) => n.id === "duty:reactor:jacket");
     expect((jacket!.data as { tier?: string }).tier).toBe("cooling");
   });
 
-  it("UA = 0 (adiabatic) grows NO jacket stub", () => {
+  it("UA = 0 (adiabatic) grows NO jacket stub, and the streams still draw", () => {
     const adiabatic = CSTR_TEXT.replace("UA           50.0;", "UA           0.0;");
     const g = graphFrom(adiabatic);
     expect(g.nodes.some((n) => n.id === "duty:reactor:jacket")).toBe(false);
-    // ... but the feed/product still synthesise.
-    expect(g.nodes.some((n) => n.id === "stream:reactor.feed")).toBe(true);
+    expect(g.nodes.some((n) => n.id === "stream:feed")).toBe(true);
   });
 
-  it("an author who wires the unit by hand keeps control (no synthesis)", () => {
-    const explicit = `
-units
-(
-    {
-        name   reactor;
-        type   dynamicCSTR;
-        in     myFeed;
-        outputs ( myProduct );
-        operation { UA 50.0; T_jacket 360.0 K; }
-    }
-);
-`;
-    const g = graphFrom(explicit);
-    // The author's names win; no `reactor.feed`/`reactor.out` synthesised.
+  it("the retired files are not read: no face terminal is synthesised from them", () => {
+    const bare = CSTR_TEXT.replace("        in          feed;\n", "")
+      .replace("        outputs     ( product );\n", "");
+    const g = graphFrom(bare, {
+      "0/streamFaces": 'time 0; faces { "reactor.feed" { bc inlet; T 330; P 1e5; molarFlows { compA 1e-8; } } }',
+      "0/internalState": 'time 0; units { "reactor" { T 320; P 1e5; V 0.001; holdupMolar { compA 0.012; } } }',
+    });
     expect(g.nodes.some((n) => n.id === "stream:reactor.feed")).toBe(false);
-    expect(g.edges.some((e) => e.label === "myFeed")).toBe(true);
-    expect(g.edges.some((e) => e.label === "myProduct")).toBe(true);
+    expect(g.nodes.some((n) => n.id === "stream:reactor.out")).toBe(false);
   });
 });

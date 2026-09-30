@@ -44,7 +44,7 @@ kmol/s;`.
 Two different readers, two different vocabularies, and mixing them up is the
 commonest authoring error:
 
-* **Inside a batch / dynamic unit-op block** (`initial {}`, `feed {}` of
+* **Inside a batch / dynamic vessel's `holdup {}` block** (`0/internalStates/<unit>`) or a unit-op `feed {}` (of
   `batchReactor`, `batchStill`, `dynamicCSTR`, `fixedBedAdsorber`, …) the keys
   are `molarComposition { water 0.85; sucrose 0.15; }` for mole fractions and
   `massComposition { water 0.30; sucrose 0.70; }` for mass fractions.  The

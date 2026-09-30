@@ -117,6 +117,11 @@ Description
     this project bans).  Empty is not a sector called "root": a flat case
     gains no level.  Same address rule as `design/`, same reason.
 
+    THE TIME-INTEGRATED CLASS FILES HERE TOO (2026-09-30, task #186): a
+    0-D vessel's inventory is the `holdup` kind, read and written by the
+    holdup functions at the end of this header, in `0/` and in every `<t>/`
+    time directory the dynamic binaries write.
+
     THE ENGINE'S HALF IS A PHOTOGRAPH.  `converged/` is removed and rewritten
     whole on every run by its own writer, and the interiors are written into
     it right after the streams, so a stale interior can never linger beside a
@@ -128,13 +133,16 @@ Description
 #ifndef Choupo_InternalStateIO_H
 #define Choupo_InternalStateIO_H
 
+#include "core/Dictionary.H"
 #include "core/FlatUnit.H"
+#include "core/Types.H"
 #include "result/SimulationResult.H"
 #include "result/UnitProfile.H"
 
 #include <cstddef>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace Choupo
@@ -242,6 +250,106 @@ std::map<std::string, std::map<std::string, UnitProfile>>
 read(const std::string&           viewRoot,
      const std::vector<FlatUnit>& topology,
      int                          verbosity);
+
+
+// ===========================================================================
+//  THE HOLDUP KIND -- the time-integrated class (choupoBatch, choupoCtrl,
+//  choupoSemiContinuous), 2026-09-30 (task #186, Vitor's ruling).
+//
+//  A 0-D vessel's interior is not a field over a coordinate: it is ONE
+//  inventory, and the kind that carries it is `holdup`:
+//
+//      holdup
+//      {
+//          T            <K>;
+//          P            <Pa>;
+//          V            <m^3>;
+//          holdupMolar  { <component> <kmol>; ... }      // what the engine writes
+//          //  -- or, as an author writes it --
+//          totalMoles   <kmol>;
+//          molarComposition { <component> <x>; ... }
+//          extras       { <label> <value>; ... }         // written, never read
+//          notRestored  "<what this record does not carry>";   // written
+//      }
+//
+//  plus any key the unit's own `initial {}` reads (a concentrate tank, a
+//  steady-state seed request), carried through VERBATIM.  The inventory is
+//  stated ONCE: `holdupMolar` and `totalMoles`/`molarComposition` together
+//  are refused -- two spellings of one inventory are two homes for it.
+//
+//  A TIME DIRECTORY IS RESTARTABLE, OR IT SAYS WHY NOT.  `<t>/` carries the
+//  same layout as `0/`, so renaming it `0/` starts the case from t.  That is
+//  only true where the holdup IS the unit's whole integrated state; a unit
+//  that carries more (a crystal population, an adsorbed loading, a permeate
+//  tank, an axial bed profile) writes `notRestored "<what>";` and the reader
+//  REFUSES such a record by name -- a snapshot that restores half a unit and
+//  re-invents the rest is not a restart (the D15 rule, one class along).
+// ===========================================================================
+
+//  The kind's name -- one home for the word, which `knownKinds()` also lists
+//  so the steady reader refuses it by name instead of calling it unknown.
+inline const char* const HOLDUP = "holdup";
+
+//  One unit's holdup at one instant, as the engine writes it.
+struct Holdup
+{
+    std::string                                   unit;        // unit name
+    std::string                                   equipment;   // its type word
+    scalar                                        T = 0;       // K
+    scalar                                        P = 0;       // Pa
+    scalar                                        V = 0;       // m^3 (0 = not tracked)
+    std::vector<scalar>                           moles;       // kmol, aligned with compNames
+    std::vector<std::pair<std::string, scalar>>   extras;      // derived views, never read
+    //  Empty when the record IS the unit's whole integrated state; else the
+    //  sentence naming what it does not carry (written as `notRestored`).
+    std::string                                   notRestored;
+};
+
+//  Write ONE unit's holdup record at `<viewRoot>/internalStates/<unit>` (a
+//  flat case: the time-integrated class has no geography).  `app` and `t`
+//  label the header.  Returns false on a bad write so the caller discards
+//  the whole instant (never a partial one).
+bool writeHoldup(const std::string&               viewRoot,
+                 const Holdup&                    h,
+                 const std::vector<std::string>&  compNames,
+                 const std::string&               app,
+                 scalar                           t);
+
+//  THE RETIRED DYNAMIC SHAPE, refused by name -- one home for the sentence,
+//  called by every time-integrated reader before it reads anything.  A
+//  `<view>/internalState` or `<view>/streamFaces` file is the layout the
+//  dynamic binaries used until 2026-09-30; there is NO dual reader (the
+//  `streams {}` precedent), and the remedy names the one-shot migrator.
+void refuseRetiredDynamicShape(const std::string& viewRoot,
+                               const std::string& binaryName);
+
+//  What the reader needs to know about one declared unit.
+struct HoldupUnit
+{
+    std::string type;               // the equipment word in flowsheetDict
+    //  Does the unit START from a holdup record?  A vessel does; a unit that
+    //  accumulates nothing (quasiSteady) or whose state is a profile it
+    //  declares elsewhere (a fixed bed) does not.
+    bool        readsHoldup = true;
+};
+
+//  Read every holdup declared in a time-integrated view (`0/`), keyed by
+//  unit name, each already translated into the `initial {}` dictionary the
+//  unit's `initialise()` reads (holdupMolar -> totalMoles + molarComposition,
+//  `extras` dropped, everything else verbatim).  Refusals, each by name:
+//  an ORPHAN file (no such unit); a file for a unit that starts from no
+//  holdup (a kind nobody reads); an `equipment` word that is not the unit's type; a
+//  block that is not `holdup` (a profile kind no time-integrated unit reads,
+//  or no kind at all); a record without a `holdup` block; the inventory
+//  stated twice; a record marked `notRestored`; an interior record MISFILED
+//  anywhere else in the view.  A unit with no file is simply absent from the
+//  result -- whether that is allowed is the caller's decision (a fixed bed
+//  starts from its own profile; a vessel refuses).
+std::map<std::string, DictPtr>
+readHoldups(const std::string&                        viewRoot,
+            const std::map<std::string, HoldupUnit>&  units,
+            const std::string&                        binaryName,
+            int                                       verbosity);
 
 } // namespace InternalStateIO
 } // namespace Choupo

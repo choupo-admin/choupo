@@ -86,6 +86,7 @@ Description
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "unitOperations/batch/BatchUnitOperation.H"
+#include "io/InternalStateIO.H"
 #include "io/SolutionWriter.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
 #include "result/ComponentIdentity.H"
@@ -107,35 +108,55 @@ Description
 using namespace Choupo;
 namespace fs = std::filesystem;
 
-// Seed each batch vessel's initial holdup from the case's 0/internalState -- the
-// SINGLE source of truth.  A closed batch vessel has no continuous inlet, so the
-// holdup is ALL of its authored state and there is no 0/streamFaces.  The inline
-// initial{} block does not live in flowsheetDict: 0/internalState
-// carries each holdup unit's block VERBATIM (T, P, V, totalMoles,
-// molarComposition, ...), re-inserted here as the initial{} dict the unit's
-// initialise() already reads.  Units whose initial state is NOT a unit-level
-// holdup (fixedBedAdsorber's operation.initial + 0/bed.profile) carry no
-// 0/internalState entry and are left untouched.
-static void seedBatchUnitsFrom0(const std::vector<DictPtr>& unitList)
+// Seed each batch vessel's initial holdup from the case's 0/ state -- the
+// SINGLE source of truth, in the layout the steady path uses (task #186,
+// 2026-09-30): ONE file per vessel at 0/internalStates/<unit>, carrying a
+// `holdup {}` block.  A closed batch vessel has no continuous inlet, so its
+// holdup is ALL of its authored state.  The block is the vessel's initial
+// state VERBATIM (T, P, V, totalMoles, molarComposition, and any key the
+// unit's own initial{} reads -- a concentrate tank, an initial loading), or
+// the inventory as the engine writes it (`holdupMolar`), re-expressed by the
+// ONE reader (InternalStateIO::readHoldups) and inserted as the initial{}
+// dict the unit's initialise() already reads.  A unit whose state is NOT a
+// 0-D holdup (fixedBedAdsorber: its operation.initial + 0/<name>.profile)
+// reads no holdup record, and one declared for it is refused.  The retired
+// 0/internalState is refused by name first -- there is no dual reader.
+static void seedBatchUnitsFrom0(const std::vector<DictPtr>& unitList,
+                                int                          verbosity)
 {
-    DictPtr istate = fs::exists("0/internalState")
-                   ? Dictionary::fromFile("0/internalState") : nullptr;
-    DictPtr uroot  = (istate && istate->found("units"))
-                   ? istate->subDict("units") : nullptr;
+    InternalStateIO::refuseRetiredDynamicShape("0", "choupoBatch");
+
+    std::map<std::string, InternalStateIO::HoldupUnit> decl;
+    for (const auto& uDict : unitList)
+    {
+        const std::string uname = uDict->lookupWord("name");
+        if (uDict->found("initial"))
+            throw std::runtime_error("choupoBatch: unit '" + uname + "' carries an "
+                "inline initial{} block -- the initial holdup lives in 0/"
+                + InternalStateIO::fileOf(uname, "") + " (a `holdup {}` block,"
+                " the single source of truth); move it there and delete it"
+                " from flowsheetDict.");
+        const std::string utype = uDict->lookupWord("type");
+        decl[uname] = { utype, BatchUnitOperation::readsHoldupRecord(utype) };
+    }
+
+    const auto holdups =
+        InternalStateIO::readHoldups("0", decl, "choupoBatch", verbosity);
 
     for (const auto& uDict : unitList)
     {
         const std::string uname = uDict->lookupWord("name");
-        const bool inState = uroot && uroot->found(uname);
-
-        if (uDict->found("initial"))
-            throw std::runtime_error("choupoBatch: unit '" + uname + "' carries an "
-                "inline initial{} block -- the initial holdup "
-                "lives in 0/internalState (the single source of truth); move the "
-                "block there and delete it from flowsheetDict.");
-
-        if (inState)
-            uDict->insert("initial", uroot->subDict(uname));
+        auto it = holdups.find(uname);
+        if (it != holdups.end())
+        {
+            uDict->insert("initial", it->second);
+            continue;
+        }
+        if (decl.at(uname).readsHoldup)
+            throw std::runtime_error("choupoBatch: no 0/"
+                + InternalStateIO::fileOf(uname, "") + " -- vessel '" + uname
+                + "' starts from a holdup, and it is declared there (a"
+                  " `holdup {}` block: T, P, V and the inventory).");
     }
 }
 
@@ -322,23 +343,14 @@ try
               << (reactionsDict ? "loaded" : "not present")
               << "\n\n";
 
-    // ---- solutionControl: OpenFOAM-style REAL-TIME instant directories ----
-    //  ABSENT block => OFF: the run is byte-identical (trajectory.csv only).
-    //  Present with `write true;` => each write step also drops a `<t>/` time
-    //  directory (`0/ 0.5/ 1/ ...`, the time IS the folder name) holding each
-    //  vessel's holdup internalState.  trajectory.csv is ALWAYS still written.
-    SolutionControl solutionCtl;            // defaults: write=false (OFF)
-    if (controlDict->found("solutionControl"))
-    {
-        auto sc = controlDict->subDict("solutionControl");
-        solutionCtl.write =
-            (sc->lookupWordOrDefault("write", "false") == "true");
-        solutionCtl.flushEach =
-            (sc->lookupWordOrDefault("flushEach", "true") == "true");
-        if (solutionCtl.write)
-            std::cout << "solutionControl:   ON -> real-time instant dirs "
-                         "(0/ <t>/ ...) at the case root, every writeInterval\n\n";
-    }
+    // ---- solutionControl: OpenFOAM-style REAL-TIME time directories -----
+    //  ON BY DEFAULT (task #186): every writeInterval drops a `<t>/` with the
+    //  layout of `0/` (each vessel's holdup under internalStates/);
+    //  `solutionControl { write false; }` turns it off.  trajectory.csv is
+    //  ALWAYS written.  One home for the reading, shared with the dynamic
+    //  driver.
+    const SolutionControl solutionCtl =
+        SolutionWriter::timeDirectoryControl(*controlDict, "choupoBatch");
 
     // ---- Build thermo package ----------------------------------------
     // v2 contract (thermophysicalPropertySystem): the BUILDER owns the ONE
@@ -370,7 +382,7 @@ try
 
     // Seed initial holdup from 0/ (single source of truth; inline initial{} is
     // retired) BEFORE each vessel initialises itself.
-    seedBatchUnitsFrom0(unitList);
+    seedBatchUnitsFrom0(unitList, verbosity);
 
     for (const auto& uDict : unitList)
     {
@@ -633,9 +645,9 @@ if (flowsheetDict->found("cycle"))
               << " s of cycling.\n";
 }
 
-    // ---- solutionControl writer (opt-in) -----------------------------
-    //  The instant directory IS the real physical time (seconds).  Component
-    //  names label each vessel's holdup inventory in <t>/internalState.
+    // ---- solutionControl writer (on by default) ------------------------
+    //  The time directory IS the real physical time (seconds).  Component
+    //  names label each vessel's holdup inventory in <t>/internalStates/.
     std::unique_ptr<SolutionWriter> solWriter;
     if (solutionCtl.write)
     {
@@ -680,30 +692,33 @@ if (flowsheetDict->found("cycle"))
                 csv << "," << v;
         csv << "\n";
 
-        // OpenFOAM-style real-time instant: each vessel's HOLDUP state at t.
-        // A batch vessel is a closed 0-D cell -> internalState only (no outlet).
+        // OpenFOAM-style real-time instant, in the layout of `0/`: each
+        // vessel's holdup at t under internalStates/ (a closed batch vessel
+        // has no stream).  A vessel whose state is MORE than its holdup says
+        // so in the record (`notRestored`), and a restart from it refuses.
         //
         // The `0/` directory is the AUTHORED initial state (the single source of
         // truth the seed reads back) -- the writer NEVER overwrites it.  Physical
         // transient snapshots are t > 0 only (50/ 100/ ...).
         if (solWriter && std::abs(t) > 1.0e-9)
         {
-            std::vector<DynamicUnitSnapshot> snaps;
-            snaps.reserve(units.size());
+            std::vector<InternalStateIO::Holdup> holdups;
+            holdups.reserve(units.size());
             for (const auto& unit : units)
             {
                 const auto& s = unit->state();
-                DynamicUnitSnapshot snap;
-                snap.name  = unit->name();
-                snap.type  = unit->type();
-                snap.T     = s.T;
-                snap.P     = s.P;          // already canonical SI (Pa)
-                snap.V     = s.V;
-                snap.moles.assign(s.n.begin(), s.n.end());
-                snap.extras = unit->trajectoryExtras();
-                snaps.push_back(std::move(snap));
+                InternalStateIO::Holdup h;
+                h.unit        = unit->name();
+                h.equipment   = unit->type();
+                h.T           = s.T;
+                h.P           = s.P;          // already canonical SI (Pa)
+                h.V           = s.V;
+                h.moles.assign(s.n.begin(), s.n.end());
+                h.extras      = unit->trajectoryExtras();
+                h.notRestored = unit->holdupNotRestored();
+                holdups.push_back(std::move(h));
             }
-            solWriter->writeDynamicInstant(t, "batch", snaps);
+            solWriter->writeDynamicInstant(t, "batch", holdups, {}, thermo);
         }
     };
 

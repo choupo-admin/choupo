@@ -20,11 +20,13 @@ writeInterval   30;       // s   (one time directory every 30 s -> 0/ 30/ 60/ ..
 // ---- solutionControl: OpenFOAM-style transient solution directories ----
 //   The instant directory IS the real physical time (seconds), exactly like
 //   an OpenFOAM transient case: `0/ 30/ 60/ ... 600/` appear at the case
-//   root.  Each `<t>/internalState` holds the reactor's HOLDUP state at that
-//   instant --- mole inventory n_i [kmol], T [K], V [m^3] + the per-unit
-//   extras (here the conversion).  Open `300/internalState` and you see the
-//   reactor exactly as it was at t = 300 s.  trajectory.csv is STILL written.
-//   Remove this block and the run is byte-identical to the plain batch case.
+//   root, each with the layout of 0/.  `<t>/internalStates/reactor` holds
+//   the reactor's HOLDUP state at that instant --- mole inventory n_i
+//   [kmol], T [K], V [m^3] + the per-unit extras (here the conversion).
+//   Open `300/internalStates/reactor` and you see the reactor exactly as it
+//   was at t = 300 s.  Time directories are written by DEFAULT (as OpenFOAM
+//   does); `write false;` turns them off.  trajectory.csv is written either
+//   way.
 solutionControl
 {
     write           true;

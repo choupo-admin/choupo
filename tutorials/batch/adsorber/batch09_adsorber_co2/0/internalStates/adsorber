@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/adsorber -- the initial HOLDUP of 'adsorber', the SINGLE
+  source of truth (an inline initial{} block in flowsheetDict is refused).
+  The `holdup {}` block is the vessel's starting state: T, P, V and the
+  inventory (totalMoles + molarComposition, or per species as
+  holdupMolar).  Every <t>/internalStates/adsorber a run writes carries the
+  same kind, so a time directory renamed 0/ starts the case from t.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "adsorber";
+equipment   batchAdsorber;
+
+holdup
+{
+    T            298.15 K;         // = T_setpoint (isothermal A2 mode)
+    V            0.01;             // m3 -- the GAS headspace volume
+    totalMoles   0.002;            // kmol of gas initially = 2 mol CO2
+    molarComposition { CO2 1.0; }
+    // P is a RESULT (ideal gas closes Duhem: n, T, V fix it).
+    // Declared here it would only be cross-checked against n*R*T/V
+    // (relative deviation > 1e-3 REFUSES); omitted, it is
+    // calculated and announced: P0 = 495791.4 Pa = 4.958 bar.
+    // initialLoading { CO2 0.0; }  // mol/kg; default 0 (regenerated
+    //                              // adsorbent), announced in the log.
+}

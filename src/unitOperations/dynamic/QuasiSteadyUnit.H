@@ -74,6 +74,7 @@ Description
 
 #include <map>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -100,6 +101,13 @@ public:
     ContinuousStream outletStreamAt(std::size_t k) const override;
     ContinuousStream outletStream() const override { return outletStreamAt(0); }
     void setInletStreamAt(std::size_t port, const ContinuousStream& s) override;
+    ContinuousStream inletStreamAt(std::size_t port) const override
+    {
+        if (port >= inlets_.size())
+            throw std::runtime_error("quasiSteady '" + name_ + "': inlet port "
+                + std::to_string(port) + " does not exist");
+        return inlets_[port];
+    }
     bool acceptsRoutedInlet() const override { return true; }
     void setInletStream(const ContinuousStream& s) override { setInletStreamAt(0, s); }
     void refresh() override;

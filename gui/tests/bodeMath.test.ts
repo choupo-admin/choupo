@@ -381,15 +381,15 @@ describe("the witness case still declares what bodeMath copies from it", () => {
   });
 
   it("declares the holdup, the volume and the feed bodeMath reads back", () => {
-    const state = raw["0/internalState"] ?? "";
+    const state = raw["0/internalStates/reactor"] ?? "";
     expect(state).toMatch(
       new RegExp(`compA\\s+${WITNESS_HOLDUP_KMOL.compA}\\s*;`));
     expect(state).toMatch(
       new RegExp(`compB\\s+${WITNESS_HOLDUP_KMOL.compB}\\s*;`));
     expect(state).toMatch(new RegExp(`V\\s+${WITNESS_VOLUME_M3}\\s*;`));
-    const faces = raw["0/streamFaces"] ?? "";
-    expect(faces).toMatch(/compA\s+4\.6e-0?5\s*;/);
-    expect(faces).toMatch(/compB\s+4\.0?e-0?6\s*;/);
+    const faces = raw["0/feed"] ?? "";
+    expect(faces).toMatch(/compA\s+4\.6e-0?5\s+kmol\/s\s*;/);
+    expect(faces).toMatch(/compB\s+4\.0?e-0?6\s+kmol\/s\s*;/);
     expect(WITNESS_FEED_KMOL_S.compA + WITNESS_FEED_KMOL_S.compB)
       .toBeCloseTo(5.0e-5, 15);
   });
@@ -440,9 +440,9 @@ describe("the overrides reach the witness", () => {
   it("doubles the holdup for double the time constant", () => {
     const p = bodeSweepGrid(2 * WITNESS_TAU_S, 3, 0.1, 10)[0]!;
     const ov = bodeOverrides(p, 2 * WITNESS_TAU_S);
-    const holdA = ov.find((o) => o.file === "0/internalState" && o.key === "compA");
-    const holdB = ov.find((o) => o.file === "0/internalState" && o.key === "compB");
-    const vol = ov.find((o) => o.file === "0/internalState" && o.key === "V");
+    const holdA = ov.find((o) => o.file === "0/internalStates/reactor" && o.key === "compA");
+    const holdB = ov.find((o) => o.file === "0/internalStates/reactor" && o.key === "compB");
+    const vol = ov.find((o) => o.file === "0/internalStates/reactor" && o.key === "V");
     expect(holdA!.value).toBeCloseTo(2 * WITNESS_HOLDUP_KMOL.compA, 12);
     expect(holdB!.value).toBeCloseTo(2 * WITNESS_HOLDUP_KMOL.compB, 12);
     //  The vessel scales with what is in it, or the declared state is one no
@@ -469,7 +469,7 @@ describe("the overrides reach the witness", () => {
     expect(files.controlDict).toBeTruthy();
     //  The two authored state files must survive the clone, or the tau knob
     //  edits a file the engine never receives.
-    expect(Object.keys(files.rawFiles ?? {})).toContain("0/internalState");
+    expect(Object.keys(files.rawFiles ?? {})).toContain("0/internalStates/reactor");
   });
 });
 

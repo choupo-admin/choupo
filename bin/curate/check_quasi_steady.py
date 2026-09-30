@@ -21,7 +21,8 @@ membrane18_nf_feed_and_bleed.  This gate holds, from the runs themselves:
       NOTE names.  The measured order is printed on the claim line;
   (c) four refusals fired through the real reader on copies of the witness:
       a loop with no vessel on it, a vessel given two inputs, topology
-      written inside the wrapped unit's block, and an inlet with no face;
+      written inside the wrapped unit's block, and an inlet whose stream has
+      no state file 0/<stream> (the ratified layout, task #186);
   (d) the vessel's `energy isothermal;` (2026-09-30), which a loop tank of a
       species with no heat capacity needs: on the witness, where nothing
       moves T, every KPI over the first hour equals the probed (canonical)
@@ -150,10 +151,8 @@ def main():
         fs = "system/flowsheetDict"
         refusals = [
             ("no vessel on the loop",
-             lambda d: (sub(d / fs, "        in          ModuleIn;",
-                            "        in          ToTank;"),
-                        sub(d / "0/streamFaces", '"NF.ModuleIn"',
-                            '"NF.ToTank"')),
+             lambda d: sub(d / fs, "        in          ModuleIn;",
+                           "        in          ToTank;"),
              "NO unit holds an inventory"),
             ("two inputs into a vessel",
              lambda d: sub(d / fs, "        in          ToTank;",
@@ -164,10 +163,9 @@ def main():
                            "            type        splitter;\n"
                            "            in          Retentate;"),
              "belong to the quasiSteady block"),
-            ("an inlet with no face",
-             lambda d: sub(d / "0/streamFaces", '"SPLIT.Retentate"',
-                           '"SPLIT.Other"'),
-             "carries no face"),
+            ("an inlet with no state file",
+             lambda d: (d / "0/Retentate").unlink(),
+             "MISSING stream state 0/Retentate"),
         ]
         for tag, edit, want in refusals:
             rc, o = run(copy(tmp, re.sub(r"\W", "_", tag), edit))
@@ -229,7 +227,7 @@ def main():
           f" the loop converges with the step (mass residual ratio {ratio:.3f}"
           f" on halving deltaT, measured order {order:.2f}); {len(refusals)} refusals fired through the reader"
           f" (a loop with no vessel, a vessel with two inputs, topology inside"
-          f" the wrapped unit, an inlet with no face); `energy isothermal;` on the"
+          f" the wrapped unit, an inlet with no state file); `energy isothermal;` on the"
           f" tank reproduces the probed route where nothing moves T and refuses"
           f" an unknown word, a jacket and a reaction.  NOT CHECKED: the first"
           f" law (withheld by the run), any measured start-up, a pump.")

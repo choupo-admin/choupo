@@ -76,6 +76,33 @@ bool DynamicUnitOperation::carriesInventory(const std::string& type)
     return New(type)->hasInventory();
 }
 
+bool DynamicUnitOperation::holdupRecord(HoldupRecord& h) const
+{
+    if (!hasInventory()) return false;
+    //  The labelled state vector: `T` and one `n_<comp>` per component.  The
+    //  component index comes from the unit's own balance snapshot names --
+    //  the ONE list a unit already publishes -- never from a guess.
+    const auto labels = stateLabels();
+    const auto vals   = stateVector();
+    const BalanceSnapshot bs = balanceSnapshot();
+    h.n.assign(bs.componentNames.size(), 0.0);
+    bool anyMoles = false;
+    for (std::size_t i = 0; i < labels.size() && i < vals.size(); ++i)
+    {
+        if (labels[i] == "T") { h.T = vals[i]; continue; }
+        if (labels[i].rfind("n_", 0) != 0) continue;
+        const std::string c = labels[i].substr(2);
+        for (std::size_t k = 0; k < bs.componentNames.size(); ++k)
+            if (bs.componentNames[k] == c) { h.n[k] = vals[i]; anyMoles = true; }
+    }
+    if (!anyMoles && bs.inventory.size() == h.n.size()) h.n = bs.inventory;
+    h.P = outletStream().P;
+    h.V = 0.0;
+    h.notRestored = "any state of a " + type() + " beyond T and the inventory"
+                    " (the type has not declared its holdup record complete)";
+    return true;
+}
+
 void DynamicUnitOperation::registerBuiltins()
 {
     registerType("quasiSteady",

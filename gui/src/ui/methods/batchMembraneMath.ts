@@ -82,7 +82,7 @@ export interface DiafilterActivation {
   /** The solutes the unit tracked, read from its own `R_initial_<s>` keys. */
   solutes: string[];
   /** true when the run held the volume (the engine counts diavolumes only
-   *  in constant-volume mode -- BatchDiafilter.H:262-263). */
+   *  in constant-volume mode -- BatchDiafilter.H:265-266). */
   constantVolume: boolean;
 }
 
@@ -125,7 +125,7 @@ export function detectDiafilter(
     if (!columns.includes(`${unit}.V_m3`)) continue;
     //  CONSTANT VOLUME IS READ FROM THE ENGINE'S OWN COUNTER, never from the
     //  case's `mode` word: the counter is zero in concentration mode by
-    //  construction (BatchDiafilter.H:262-263), so a run that counted
+    //  construction (BatchDiafilter.H:265-266), so a run that counted
     //  diavolumes held its volume, whatever any dict says.
     return {
       active: true, unit, solutes,
@@ -335,7 +335,7 @@ export interface Sample {
    *  (zero throughout a concentration-mode run, by construction). */
   N: number;
   /** The integrator's ACCEPTED permeated volume [m3], `V_perm_m3` -- the
-   *  state, not a re-quadrature (BatchDiafilter.H:255-263). */
+   *  state, not a re-quadrature (BatchDiafilter.H:258-266). */
   Vperm: number;
   /** A_eff/A_w where the case declared fouling, else null. */
   permeanceRatio: number | null;
@@ -601,7 +601,7 @@ export function conservativeOptimum(
  * re-integrating the permeate flow over the WRITTEN samples and comparing it
  * with `V_perm_m3`, the volume the adaptive integrator actually accepted.
  *
- * `BatchDiafilter.H:255-263` records why the unit integrates the volume as a
+ * `BatchDiafilter.H:258-266` records why the unit integrates the volume as a
  * STATE instead: a ledger built by re-quadrature disagrees with the accepted
  * state at O(dt).  This reproduces that disagreement, on the coarser mesh of
  * the write interval, so the gap is visible rather than described.

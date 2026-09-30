@@ -52,7 +52,7 @@
   its curve from a thin-layer drying test of ITS material.
 \*---------------------------------------------------------------------------*/
 
-// the vessels' initial holdups live in 0/internalState; flowsheetDict
+// the vessels' initial holdups live in 0/internalStates/; flowsheetDict
 // carries the topology and the operation only
 
 units

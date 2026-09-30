@@ -22,7 +22,7 @@ stale trajectory or a committed output):
       mass and every element at 1e-12 or better -- not a tolerance, the level
       a closed vessel whose derivative writes ONE number with two signs has
       no reason to miss.  And the campaign's INITIAL inventory is recomputed
-      here from the case's own 0/internalState: it must equal the sum of BOTH
+      here from the case's own 0/internalStates/rig: it must equal the sum of BOTH
       declared tanks, so a unit that published only the diluate (or double
       counted) is caught by arithmetic and not only by the closure.
 
@@ -324,7 +324,7 @@ def main():
                     " no reason to be approximate.  A tank the inventory"
                     " forgot reads exactly like this."
                     % (case.name, key.replace("_", " "), v, CLOSURE_MAX))
-        #  the inventory itself, recomputed from the case's OWN 0/internalState
+        #  the inventory itself, recomputed from the case's OWN 0/internalStates/rig
         declared = declared_inventory(case)
         got = camp.get("moles_kmol_initial")
         if got is None or not close(got, declared, 1e-10):
@@ -517,8 +517,8 @@ def main():
 
 def declared_inventory(case):
     """Total kmol across BOTH declared tanks, from the case's own
-    0/internalState -- the gate's own reading, never the engine's."""
-    t = (Path(case) / "0/internalState").read_text()
+    0/internalStates/rig -- the gate's own reading, never the engine's."""
+    t = (Path(case) / "0/internalStates/rig").read_text()
     t = re.sub(r'/\*.*?\*/|//[^\n]*', '', t, flags=re.S)
     return sum(float(m) for m in re.findall(r'totalMoles\s+([0-9.eE+-]+)\s*;', t))
 
@@ -548,7 +548,7 @@ def check_ideal(case, k, tEnd):
 
 
 def declared_cation_kmol(case):
-    t = (Path(case) / "0/internalState").read_text()
+    t = (Path(case) / "0/internalStates/rig").read_text()
     t = re.sub(r'/\*.*?\*/|//[^\n]*', '', t, flags=re.S)
     #  the DILUATE block is the first `totalMoles` / `molarComposition` pair.
     tot = float(re.search(r'totalMoles\s+([0-9.eE+-]+)\s*;', t).group(1))
@@ -617,7 +617,7 @@ def strip_concentrate(p):
     index-counting cut left a malformed dict and the probe then refused for
     the wrong reason -- a probe that cannot reach exit 0 cannot tell a silent
     acceptance from an unrelated refusal (the 2026-09-07 lesson)."""
-    f = p / "0/internalState"
+    f = p / "0/internalStates/rig"
     t = f.read_text()
     #  The BLOCK, not the word: the file's own header explains the block in
     #  prose, so a bare `t.index("concentrate")` lands in a comment and cuts
@@ -637,14 +637,17 @@ def strip_concentrate(p):
             if depth == 0:
                 f.write_text(t[:i] + t[k + 1:])
                 return
-    raise RuntimeError("unbalanced braces in 0/internalState")
+    raise RuntimeError("unbalanced braces in 0/internalStates/rig")
 
 
 def add_concentrate_T(p):
-    f = p / "0/internalState"
+    f = p / "0/internalStates/rig"
     t = f.read_text()
-    f.write_text(t.replace("        concentrate\n        {\n",
-                           "        concentrate\n        {\n            T 298.15 K;\n"))
+    #  The holdup block's body is indented four spaces (0/internalStates/rig,
+    #  task #186), so the concentrate block sits at four.
+    old = "    concentrate\n    {\n"
+    assert old in t, "no concentrate block at the expected indentation"
+    f.write_text(t.replace(old, "    concentrate\n    {\n        T 298.15 K;\n"))
 
 
 def strip_aqueous(p):
@@ -662,12 +665,14 @@ def make_three_ion(p):
     f = p / "constant/thermoPhysPropDict"
     f.write_text(f.read_text().replace("components       ( water  Na  Cl );",
                                        "components       ( water  Na  Cl  Mg );"))
-    f = p / "0/internalState"
+    f = p / "0/internalStates/rig"
     t = f.read_text()
-    t = t.replace("            water    0.9964098754;",
-                  "            water    0.9944098754;\n            Mg       0.002;")
-    t = t.replace("                water    0.9823035076;",
-                  "                water    0.9803035076;\n                Mg       0.002;")
+    for a, b in (("        water    0.9964098754;",
+                  "        water    0.9944098754;\n        Mg       0.002;"),
+                 ("            water    0.9823035076;",
+                  "            water    0.9803035076;\n            Mg       0.002;")):
+        assert a in t, "three-ion probe anchor missing: %r" % a
+        t = t.replace(a, b)
     f.write_text(t)
 
 

@@ -44,7 +44,7 @@ that does not justify 55 differently named dictionary files.
 | `0/<stream>` | complete initial state or tear seed for one graph stream | solve, batch, ctrl |
 
 Generated dictionaries/files such as `converged/`, `iterations/`, physical-time
-directories, `internalState`, `streams`, `ports`, `runInfo`, reports and CSVs are
+directories (`<t>/`, the layout of `0/`), `streams`, `ports`, `runInfo`, reports and CSVs are
 outputs.  They are not additional authoring contracts.
 
 ## 2. `controlDict` variants

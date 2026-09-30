@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/reactor -- the initial HOLDUP of 'reactor', the SINGLE
+  source of truth (an inline initial{} block in flowsheetDict is refused).
+  The `holdup {}` block is the vessel's starting state: T, P, V and the
+  inventory (totalMoles + molarComposition, or per species as
+  holdupMolar).  Every <t>/internalStates/reactor a run writes carries the
+  same kind, so a time directory renamed 0/ starts the case from t.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "reactor";
+equipment   batchReactor;
+
+holdup
+{
+    T            350.0 K;
+    P            1.013 bar;
+    V            0.001;            // m³
+    totalMoles   0.0185;           // kmol  (1 L of liquid ethanol)
+    molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+}

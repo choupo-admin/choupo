@@ -24,6 +24,8 @@ units
     {
         name        tank;
         type        dynamicCSTR;
+        in          feed;
+        outputs     ( product );
 
         operation
         {

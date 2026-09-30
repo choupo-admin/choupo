@@ -78,7 +78,7 @@ void WilliamsOttoPlant::initialise(const DictPtr&       unitDict,
         comp_.push_back(i);
     }
 
-    //  Initial holdup: the driver translates 0/internalState into
+    //  Initial holdup: the driver translates 0/internalStates/<unit> into
     //  initial { T; P; V; totalMoles; molarComposition{} }.  Masses come
     //  back out of totalMoles * x  [kmol == klb].
     auto initDict = unitDict->subDict("initial");
@@ -267,6 +267,18 @@ std::vector<std::string> WilliamsOttoPlant::stateLabels() const
     return { "wo_A", "wo_B", "wo_C", "wo_E", "wo_P", "wo_G", "T",
              "F_pP_klbh", "F_wG_klbh",
              "yield_klb", "waste_klb", "J_combined_klb" };
+}
+
+bool WilliamsOttoPlant::holdupRecord(HoldupRecord& h) const
+{
+    h.T = T_R_ / 1.8;               // K
+    h.P = P_bar_;                   // as declared (the parser's SI)
+    h.V = 0.0;                      // derived from the masses, never declared
+    h.n.assign(thermo_->n(), 0.0);
+    for (std::size_t s = 0; s < 6; ++s) h.n[comp_[s]] = m_[s];
+    h.notRestored = "the running section-5 objective integrals yield_klb and"
+                    " waste_klb (they would restart at zero)";
+    return true;
 }
 
 ContinuousStream WilliamsOttoPlant::outletStream() const

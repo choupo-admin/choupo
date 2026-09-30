@@ -235,8 +235,8 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
                       << "' --- assuming perfect rejection (B_s = 0)\n";
     }
 
-    // ---- the initial charge, from 0/internalState -------------------------
-    //  choupoBatch re-inserts each vessel's `0/internalState` block as
+    // ---- the initial charge, from 0/internalStates/<unit> -----------------
+    //  choupoBatch re-inserts each vessel's `holdup {}` block as
     //  `initial{}` -- the SINGLE source of truth for a holdup; an inline
     //  block in flowsheetDict is refused by the driver.  Same grammar and
     //  the same `readComposition` helper every other vessel reads, so a
@@ -267,7 +267,7 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
     if (state_.totalMoles() <= 0.0)
         throw std::runtime_error(
             "batchDiafilter '" + name() + "': the initial holdup is empty."
-            "  A vessel's initial state lives in `0/internalState`.");
+            "  A vessel's initial state lives in `0/internalStates/<unit>`.");
 
     n0_  = state_.n;
     V0_  = volumeOf(state_.n);

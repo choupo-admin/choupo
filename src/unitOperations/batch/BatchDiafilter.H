@@ -175,6 +175,9 @@ public:
     std::size_t odeNPositive() const override;
 
     const BatchState& state() const override { return state_; }
+    std::string holdupNotRestored() const override
+    { return "the permeated volume V_perm (it sets the fouling resistance and"
+             " the diavolume count)"; }
 
 protected:
     BatchState& mutableState() override { return state_; }

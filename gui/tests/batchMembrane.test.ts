@@ -235,7 +235,7 @@ describe("detectDiafilter -- which unit in a run is a batch membrane vessel", ()
     expect(d.unit).toBe("retentate");
     expect(d.solutes).toEqual(["MgSO4", "NaCl"]);
     //  Constant volume is read from the engine's own counter, never from a
-    //  dict word (BatchDiafilter.H:262-263).
+    //  dict word (BatchDiafilter.H:265-266).
     expect(d.constantVolume).toBe(true);
     expect(detectDiafilter(["retentate.V_m3"],
       { retentate: { ...block, diavolumes: 0 } }).constantVolume).toBe(false);
@@ -604,7 +604,7 @@ describe("buildView -- what the page draws, assembled once", () => {
     expect(v.VpermState).toBeCloseTo(7.0e-3, 12);
     //  The trapezoid over the WRITTEN samples is a DIFFERENT number, and
     //  that difference is the whole point of the row
-    //  (BatchDiafilter.H:255-263).
+    //  (BatchDiafilter.H:258-266).
     expect(v.VpermTrapezoid).toBeCloseTo(
       trapezoid(traj.t, traj.vars["retentate.Q_p_m3s"]), 15);
     expect(v.VpermTrapezoid).not.toBeCloseTo(v.VpermState!, 6);

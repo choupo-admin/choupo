@@ -58,7 +58,6 @@ import { useReducedMotion } from "@mantine/hooks";
 import { flowsheetToGraph } from "../case/toGraph.js";
 import { caseMolarMass, meanMolarMass } from "../case/caseMolarMass.js";
 import type { DynamicInstant } from "../case/dynamicInstants.js";
-import { collectControllerKnobs } from "../case/controllerKnobs.js";
 import { streamNumberResolver } from "../case/streamNumbering.js";
 import { dashKindOf, dashStyle, legendDashes, type DashKind } from "../case/edgeDashes";
 import { caseDescription } from "../case/caseDescription";
@@ -396,42 +395,21 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     return instants[Math.min(Math.max(scrubIdx, 0), instants.length - 1)];
   }, [scrubInstant, instants, scrubIdx]);
 
-  // Live stream overlay keyed by stream name (`<unit>.out` / `<unit>.feed`):
-  // T, vf, and total molar flow at the scrubbed instant.  The feed face falls
-  // back to the nominal inlet{} (handled downstream) when the engine has not
-  // yet written a `.feed` face -- tagged "(nominal — driven)" if a controller
-  // actuates the unit's T_in.  Phase colour comes from the outlet vf
-  // (phase-colour-is-semantic): the engine's flash result, never a heuristic.
-  const drivenInletUnits = useMemo(() => {
-    const out = new Set<string>();
-    const layer = collectControllerKnobs(flowsheet);
-    for (const s of layer.schedules)
-      if (s.actuate && (s.actuate.mv === "T_in" || s.actuate.mv === "T"))
-        out.add(s.actuate.unit);
-    if (layer.pid?.actuate && (layer.pid.actuate.mv === "T_in"))
-      out.add(layer.pid.actuate.unit);
-    return out;
-  }, [flowsheet]);
-
+  // Live stream overlay keyed by STREAM NAME -- the name the flowsheet gives
+  // the stream, which is also the name of its file in every time directory
+  // (task #186: `<t>/<stream>`, one file per stream, the layout of 0/).  So
+  // the overlay needs no mapping from a face key back to a unit: the edge the
+  // canvas drew for stream `feed` is keyed `feed`, and so is `<t>/feed`.  An
+  // inlet a controller drives is simply read at the scrubbed instant -- the
+  // engine writes what the unit held, so there is no "nominal" fallback left
+  // to tag.  (No phase travels on a dynamic stream, so no vf is overlaid.)
   const scrubOverlay = useMemo(() => {
     const map = new Map<string, { T?: number; vf?: number; F?: number; driven?: boolean; nominal?: boolean }>();
     if (!liveInstant) return map;
-    for (const u of liveInstant.units) {
-      // Outlet face.
-      const outFlows = u.outletMolarFlows;
-      const outF = outFlows ? Object.values(outFlows).reduce((a, b) => a + (b ?? 0), 0) : undefined;
-      map.set(`${u.name}.out`, { T: u.outletT, vf: u.outletVf, F: outF });
-      // Inlet face: the real `.feed` face when the engine wrote one, else the
-      // nominal inlet (tagged driven when a controller moves it).
-      const inFlows = u.inletMolarFlows;
-      const inF = inFlows ? Object.values(inFlows).reduce((a, b) => a + (b ?? 0), 0) : undefined;
-      const hasLiveFeed = u.inletT !== undefined || inF !== undefined;
-      map.set(`${u.name}.feed`, hasLiveFeed
-        ? { T: u.inletT, F: inF }
-        : { driven: drivenInletUnits.has(u.name), nominal: true });
-    }
+    for (const st of liveInstant.streams)
+      map.set(st.name, { T: st.T, F: st.F });
     return map;
-  }, [liveInstant, drivenInletUnits]);
+  }, [liveInstant]);
 
   // Which SHOW classes the case actually CONTAINS, so a chip that would toggle
   // nothing reads as disabled (a live control that does nothing is confusing).
@@ -830,12 +808,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             const rs = resultStreamOf(label);
             if (rs) resolved = rs;
           }
-          // Live scrub overlay (slice 2): at the scrubbed instant, the
-          // synthesised feed/product terminals read the engine's stream face
-          // (T, vf, total molar F).  This OVERRIDES the steady/nominal
-          // `resolved` so dragging the slider animates the flowsheet.  Phase
-          // colour follows the outlet vf (semantic), and a feed with no live
-          // `.feed` face yet keeps its nominal spec with a "(driven)" tag.
+          // Live scrub overlay (slice 2): at the scrubbed instant, every
+          // stream reads its own file in the time directory (T, total molar
+          // F), keyed by the stream's name.  This OVERRIDES the steady/nominal
+          // `resolved` so dragging the slider animates the flowsheet.
           const ov = scrubOverlay.get(label);
           if (ov) {
             if (ov.T !== undefined || ov.F !== undefined || ov.vf !== undefined) {
@@ -974,9 +950,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         // it.  Selection is signalled through extra thickness + a halo
         // (SVG drop-shadow) only; the underlying stroke colour stays the
         // phase colour the simulator assigned.
-        // Live scrub overlay (slice 2): a synthesised dynamic edge (`<unit>.out`
-        // / `<unit>.feed`) has no steady run stream, so colour it by the
-        // scrubbed instant's outlet vf instead (phase-colour-is-semantic).
+        // Live scrub overlay (slice 2): a dynamic stream has no steady run
+        // stream, so a vf at the scrubbed instant colours it when one is
+        // carried (phase-colour-is-semantic; no phase travels on a dynamic
+        // stream today, so the edge keeps its default colour).
         const ov = (!isEnergy && !isDuty && label) ? scrubOverlay.get(label) : undefined;
         const ovColor = ov?.vf !== undefined
           ? phaseColorFromVf(ov.vf, colorScheme).color : undefined;

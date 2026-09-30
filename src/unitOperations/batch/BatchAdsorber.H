@@ -116,6 +116,9 @@ public:
     std::size_t odeNPositive() const override { return q_.size(); }
 
     const BatchState& state() const override { return state_; }
+    std::string holdupNotRestored() const override
+    { return "the adsorbed-phase loading q_i (declared at t = 0 as"
+             " `initialLoading {}`)"; }
 
     void setOperationParameter(const std::string& key, scalar value) override;
 

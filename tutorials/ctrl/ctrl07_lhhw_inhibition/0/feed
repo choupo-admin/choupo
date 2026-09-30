@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/feed -- the state of stream 'feed' at t = 0: ONE file per stream,
+  in the canonical grammar every state view uses.
+  A domain inlet: its state for the whole run, unless a controller
+  or a signal drives one of its fields.
+\*-----------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    compA  5e-05 kmol/s;
+    compB  0.0 kmol/s;
+}
+
+T               320.0 K;
+P               101299.99999999999 Pa;

@@ -240,10 +240,15 @@ reason.
   the instant, and a loop with no vessel is refused.  Witness
   `tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup` (ends on
   membrane18's steady answer to 3e-6); gate `check_quasi_steady`.
-* **The `0/` layout (#186).**  The new binary INHERITS the OLD dynamic shape,
-  `0/internalState` + `0/streamFaces`, exactly as choupoCtrl reads it
-  (`seedDynamicUnitsFrom0`, unchanged).  Migrating it to the 2026-09-06
-  `<view>/internalStates/<SECTOR>/<unit>` shape is a separate decision.
+* **The `0/` layout (#186) -- DONE 2026-09-30.**  The new binary inherited
+  the OLD dynamic shape, `0/internalState` + `0/streamFaces`.  Vítor ruled
+  the migration on 2026-09-30 and it was executed the same day: the
+  time-integrated binaries now read and write the ratified layout
+  (`0/<stream>`, `0/internalStates/<unit>` with a `holdup {}` block), the
+  old shape is refused naming `bin/curate/migrate_state_layout.py`, and
+  `<t>/` time directories are written by default.  Record:
+  [`a-state-directory-is-a-restartable-snapshot.md`](a-state-directory-is-a-restartable-snapshot.md)
+  §11; gate `check_time_state_layout`.
 * **The WASM bundle.**  `make/wasm.mk` carries the fifth target and the
   worker its factory name, but no emscripten is installed here, so the
   first `make wasm-gui` on a machine that has it is where the bundle is

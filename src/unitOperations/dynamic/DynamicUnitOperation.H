@@ -185,6 +185,39 @@ public:
     //  has nothing to do here: its state moves only by step().
     virtual void refresh() {}
 
+    //- The inlet the unit HOLDS at `port` -- the value it integrates (or is
+    //  re-solved) on, which is what a time directory must carry for the
+    //  stream that feeds that port if the directory is to be restartable
+    //  (task #186).  Default: port 0 is the one feed face.
+    virtual ContinuousStream inletStreamAt(std::size_t port) const
+    {
+        if (port != 0)
+            throw std::runtime_error("DynamicUnitOperation: unit '" + name_
+                + "' (" + type() + ") has one inlet face; port "
+                + std::to_string(port) + " does not exist");
+        return inletStream();
+    }
+
+    //  ---- The holdup record (task #186, 2026-09-30) ---------------------
+    //  What `<t>/internalStates/<unit>` carries, and what `0/` declares:
+    //  T [K], P [Pa], V [m^3] (0 = not tracked) and the per-component
+    //  inventory n [kmol], index-aligned with the thermo package.
+    //  `notRestored` is EMPTY only when that record IS the unit's whole
+    //  integrated state -- the claim that makes a time directory a restart
+    //  point -- and otherwise names what the record does not carry, so the
+    //  reader can refuse a restart that would re-invent it.
+    struct HoldupRecord
+    {
+        scalar      T = 0, P = 0, V = 0;
+        sVector     n;
+        std::string notRestored;
+    };
+    //- Fill `h` and return true for a unit that holds an inventory.  The
+    //  DEFAULT reads the labelled state vector (T, n_<comp>) and declares
+    //  NOTHING complete: a unit type makes the completeness claim itself,
+    //  by overriding, or it is not made.
+    virtual bool holdupRecord(HoldupRecord& h) const;
+
     //- Asked of the CLASS (the interiorKindsRead precedent): the driver
     //  needs the answer while it is still reading dicts, before any unit
     //  is constructed.

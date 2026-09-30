@@ -46,7 +46,7 @@ are present) tells you which binary the case is for.
 |---|---|---|
 | **`choupoSolve`** | Steady-state simulation: `F(x) = 0` (root-finding). | `flowsheetDict` present; no time settings in controlDict. |
 | **`choupoBatch`** | Batch / time-dependent: `dY/dt = f` in closed vessels; optional recipe events (`transfer`, `setParameter`, conditions). | `flowsheetDict` + `controlDict.endTime / deltaT`. |
-| **`choupoSemiContinuous`** | Transient flowsheet, NO control loop: `dY/dt = f(Y, t)` for units with continuous inlets and outlets (start-up, disturbance, fed-batch, feed & bleed).  The fifth class, 2026-09-20; a `controllers` block is refused. | `flowsheetDict` of dynamic units (`dynamicCSTR`, ...), `controlDict.endTime / deltaT`, `0/internalState` + `0/streamFaces`, and NO `controllers` block. |
+| **`choupoSemiContinuous`** | Transient flowsheet, NO control loop: `dY/dt = f(Y, t)` for units with continuous inlets and outlets (start-up, disturbance, fed-batch, feed & bleed).  The fifth class, 2026-09-20; a `controllers` block is refused. | `flowsheetDict` of dynamic units (`dynamicCSTR`, ...), `controlDict.endTime / deltaT`, `0/<stream>` (one file per stream) + `0/internalStates/<unit>` (one `holdup {}` per vessel), and NO `controllers` block. |
 | **`choupoCtrl`** | Dynamic continuous + control: `dY/dt = f(Y, u, t)`, controllers writing MVs onto named ports. | `flowsheetDict` with a `controllers (...)` block. |
 | **`choupoProps`** | Property evaluations + LM parameter fits.  No flowsheet. | `propsDict` (instead of `flowsheetDict`). |
 

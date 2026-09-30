@@ -284,7 +284,7 @@ def batch_case(tmp, name, *, present):
     d.mkdir(parents=True, exist_ok=True)
     (d / "ghostCut.dat").write_text(GHOST)
     if present:
-        st = case / "0" / "internalState"
+        st = case / "0" / "internalStates" / "reactor"
         st.write_text(st.read_text().replace(
             "molarComposition  { ethanol 0.5;  aceticAcid 0.5;"
             "  ethylAcetate 0.0;  water 0.0; }",

@@ -36,11 +36,14 @@
     worker -> main:  { type: "log",        line: string }
     worker -> main:  { type: "trajectory", csv:  string }              (legacy)
     worker -> main:  { type: "csvFiles",   files: { [relPath]: string } }
-    worker -> main:  { type: "instants",   files: { "<t>/internalState": string,
-                                                     "<t>/streamFaces": string, ... } }
+    worker -> main:  { type: "instants",   files: { "<t>/<stream>": string,
+                                                     "<t>/internalStates/<unit>": string, ... } }
     worker -> main:  { type: "done",       rc:    number }
     worker -> main:  { type: "error",      message: string }
 \*---------------------------------------------------------------------------*/
+
+// The binaries that write OpenFOAM-style time directories <t>/ (task #186).
+const TIME_BINARIES = new Set(["choupoBatch", "choupoCtrl", "choupoSemiContinuous"]);
 
 const BINARIES = {
   choupoSolve: { factory: "createChoupoSolve" },
@@ -216,14 +219,17 @@ self.addEventListener("message", async (e) => {
             try {
               const csvFiles = {};
               const proposals = {};   // *.estimate-*.dat written by estimateComponent
-              // OpenFOAM-style real-time INSTANT files the dynamic binaries
-              // (choupoBatch / choupoCtrl / choupoSemiContinuous) drop under <t>/ at the case root:
-              //   <t>/internalState   holdup truth (mole inventory, T, V, ...)
-              //   <t>/streamFaces     instantaneous outlet faces (continuous)
-              // <t> is a single all-digit directory name.  We harvest these so
-              // the GUI can offer a TIME SCRUBBER over the transient (read-only
-              // harvest of a run output; the GUI never writes).
+              // OpenFOAM-style real-time TIME DIRECTORIES the time-integrated
+              // binaries (choupoBatch / choupoCtrl / choupoSemiContinuous) write
+              // at the case root, by default (task #186), in the layout of 0/:
+              //   <t>/<stream>                 one file per stream
+              //   <t>/internalStates/<unit>    one file per vessel (holdup)
+              // <t> is a numeric directory name at the case ROOT (0/ included:
+              // the authored start is the scrubber's first instant).  We harvest
+              // these so the GUI can offer a TIME SCRUBBER over the transient
+              // (read-only harvest of a run output; the GUI never writes).
               const instants = {};
+              const instantDirs = {};   // "<t>" -> { "<t>/<rel>": body }
               // converged/ stream-state files -- the SOLVED state the C++
               // writes beside 0/ (stream-state architecture: 0/ is the
               // initial state, converged/ the answer).  Harvested so the
@@ -289,20 +295,52 @@ self.addEventListener("message", async (e) => {
                     } catch (_) {
                       /* ignore individual file failures */
                     }
-                  } else if ((name === "internalState" || name === "streamFaces")
-                             && parentName && isNumericDir(parentName)) {
-                    try {
-                      const body = Module.FS.readFile(path, { encoding: "utf8" });
-                      // Key by "<t>/<file>" (case-root-relative) so the parser
-                      // groups files by their instant directory.
-                      instants[parentName + "/" + name] = body;
-                    } catch (_) {
-                      /* ignore individual file failures */
+                  } else {
+                    // A file under a numeric directory AT THE CASE ROOT is a
+                    // time directory's content; key it by its case-root
+                    // relative path ("500/feed", "500/internalStates/tank1")
+                    // so the parser groups it by instant.
+                    const rel = path.substring("/case/".length);
+                    const top = rel.split("/")[0];
+                    //  Only a TIME-INTEGRATED binary writes time directories;
+                    //  a steady case's 0/ is its authored start, not an instant.
+                    if (TIME_BINARIES.has(binary) && rel.includes("/")
+                        && isNumericDir(top)) {
+                      try {
+                        if (!instantDirs[top]) instantDirs[top] = {};
+                        instantDirs[top][rel] =
+                          Module.FS.readFile(path, { encoding: "utf8" });
+                      } catch (_) {
+                        /* ignore individual file failures */
+                      }
                     }
                   }
                 }
               };
               walk("/case", null);
+
+              //  THINNING, SAID.  Time directories are written BY DEFAULT now
+              //  (task #186), and a long transient at a fine writeInterval
+              //  writes thousands of them -- more than a slider can show and
+              //  more than a message should carry.  The scrubber keeps an
+              //  evenly spaced subset (always the first and the last), and
+              //  the log line says so; every directory stays on MEMFS.
+              {
+                const MAX_INSTANTS = 400;
+                const dirs = Object.keys(instantDirs)
+                  .sort((a, b) => parseFloat(a) - parseFloat(b));
+                let keep = dirs;
+                if (dirs.length > MAX_INSTANTS) {
+                  const stride = Math.ceil(dirs.length / MAX_INSTANTS);
+                  keep = dirs.filter((_, k) => k % stride === 0);
+                  if (keep[keep.length - 1] !== dirs[dirs.length - 1])
+                    keep.push(dirs[dirs.length - 1]);
+                  log("[worker] " + dirs.length + " time directories written;"
+                      + " the scrubber keeps every " + stride + "th ("
+                      + keep.length + " instants, first and last included)");
+                }
+                for (const d of keep) Object.assign(instants, instantDirs[d]);
+              }
 
               // The solved stream state -> the Case tab, read-only.
               if (Object.keys(outputs.converged).length > 0) {

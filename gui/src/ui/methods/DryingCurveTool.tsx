@@ -568,7 +568,7 @@ export const DRYING_ABSENCES: readonly DryingAbsence[] = [
       + "reach it -- the same gap BreakthroughTool records for its LDF "
       + "coefficient.  It would need a methodRun grammar extension, not a "
       + "workaround here." },
-  { id: "initialMoisture", file: "0/internalState", key: "water",
+  { id: "initialMoisture", file: "0/internalStates/dryer", key: "water",
     kind: "inlineOneLineBlock", resolves: false,
     why: "X_0 lives in `molarComposition { sucrose 0.14924928;  water "
       + "0.85075072; }` -- an inline ONE-LINE block, so `water` is not at "
@@ -580,7 +580,7 @@ export const DRYING_ABSENCES: readonly DryingAbsence[] = [
     why: "`carrier  N2;` is a WORD.  The override replaces the NUMBER of a "
       + "declared scalar, so this key does not resolve at all -- the "
       + "VanHeerden `thermalMode adiabatic;` precedent." },
-  { id: "totalMoles", file: "0/internalState", key: "totalMoles",
+  { id: "totalMoles", file: "0/internalStates/dryer", key: "totalMoles",
     kind: "addressableButDeclined", resolves: true,
     why: "addressable, and deliberately not a knob: it scales the dry solid "
       + "and its moisture in the SAME proportion, so X_0 -- the quantity "

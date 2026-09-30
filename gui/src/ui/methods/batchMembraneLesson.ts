@@ -38,9 +38,9 @@
       solution density                    BatchDiafilter.cpp:439-446
     the permeated volume is a STATE,
       not a re-quadrature                 BatchDiafilter.cpp:451,
-                                          BatchDiafilter.H:255-263
+                                          BatchDiafilter.H:258-266
     diavolumes = V_perm/V_0, counted
-      in constant-volume mode ONLY        BatchDiafilter.H:262-263
+      in constant-volume mode ONLY        BatchDiafilter.H:265-266
     concentrationFactor = V_0/V           BatchDiafilter.cpp:580
     R_0 taken from THIS run at t = 0      BatchDiafilter.cpp:281-283
     R_obs published at every instant      BatchDiafilter.cpp:566-569
@@ -217,7 +217,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "areas and pressures comparable, which seconds do not.  The engine "
       + "publishes each of them, and publishes the diavolume count ONLY in "
       + "constant-volume mode, because outside it the number would be "
-      + "counting a wash that is not happening (BatchDiafilter.H:262-263).",
+      + "counting a wash that is not happening (BatchDiafilter.H:265-266).",
     formula: String.raw`\begin{aligned}
 \mathrm{VCF} &= \frac{V_0}{V} &\qquad& \text{the concentration clock}\\[4pt]
 N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
@@ -234,7 +234,7 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
       { sym: "N", means: "the DIAVOLUMES: vessel volumes of clean solvent "
         + "pushed through.  N = 0 at the start, and the engine derives it "
         + "from the permeated volume it integrated as a STATE, so the count "
-        + "and the trajectory cannot disagree (BatchDiafilter.H:255-263)" },
+        + "and the trajectory cannot disagree (BatchDiafilter.H:258-266)" },
       { sym: "Q_d", means: "the diafiltrate rate of step 2, equal to the "
         + "permeate rate in constant-volume mode", unit: "m³/s" },
       { sym: "\\mathrm{d}t",
@@ -250,7 +250,7 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
       + "prints it beside the volume the adaptive integrator ACCEPTED.  The "
       + "gap between the two is the write mesh and nothing else, and the "
       + "engine's own header says why the state is the authority "
-      + "(BatchDiafilter.H:255-263): a ledger built by re-quadrature "
+      + "(BatchDiafilter.H:258-266): a ledger built by re-quadrature "
       + "disagrees with the state at first order in the step.",
   },
   {

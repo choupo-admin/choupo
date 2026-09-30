@@ -31,6 +31,8 @@ License
 #include "core/Banner.H"
 #include "core/Dictionary.H"
 #include "thermo/ThermoPackage.H"
+#include "io/InternalStateIO.H"
+#include "streams/StreamStateIO.H"
 
 #include <algorithm>
 #include <cstdio>          // std::rename
@@ -42,6 +44,7 @@ License
 #include <map>
 #include <set>
 #include <sstream>
+#include <stdexcept>
 
 #if !defined(_WIN32)
 #  include <fcntl.h>       // open, O_RDONLY
@@ -83,6 +86,39 @@ static std::string sci(scalar v)
 //  `0.500000`.  We render at a generous fixed precision, then strip trailing
 //  zeros and a dangling point.  Negative / positive zero both normalise to `0`.
 // ---------------------------------------------------------------------------
+SolutionControl SolutionWriter::timeDirectoryControl(
+    const Dictionary&   controlDict,
+    const std::string&  binaryName)
+{
+    SolutionControl sc;
+    sc.write = true;                         // the OpenFOAM default
+    if (controlDict.found("solutionControl"))
+    {
+        auto blk = controlDict.subDict("solutionControl");
+        auto word = [&](const char* key, bool def) -> bool
+        {
+            if (!blk->found(key)) return def;
+            const std::string w = blk->lookupWord(key);
+            if (w == "true")  return true;
+            if (w == "false") return false;
+            throw std::runtime_error(binaryName + ": solutionControl { "
+                + std::string(key) + " " + w + "; } -- expected `true` or"
+                  " `false`.");
+        };
+        sc.write     = word("write", true);
+        sc.flushEach = word("flushEach", true);
+    }
+    if (sc.write)
+        std::cout << "solutionControl:   time directories <t>/ at the case"
+                     " root every writeInterval, in the layout of 0/ (the"
+                     " default; `solutionControl { write false; }` turns them"
+                     " off)\n\n";
+    else
+        std::cout << "solutionControl:   write false -> no <t>/ time"
+                     " directories (trajectory.csv only)\n\n";
+    return sc;
+}
+
 std::string SolutionWriter::formatTime(scalar t)
 {
     if (t == 0.0) return "0";   // also catches -0.0
@@ -706,15 +742,20 @@ void SolutionWriter::refreshLatestSymlink(const std::string& timeName) const
 }
 
 // ===========================================================================
-//  DYNAMIC instant (choupoBatch / choupoCtrl): the time directory IS the real
-//  physical time.  The unit's truth is its 0-D HOLDUP state, written to
-//  `<time>/internalState`; an instantaneous outlet face (continuous units) is
-//  written to `<time>/streams` in the same self-describing dict format.
+//  DYNAMIC instant (choupoBatch / choupoCtrl / choupoSemiContinuous): the time
+//  directory IS the real physical time, and it has the LAYOUT OF `0/` (task
+//  #186, 2026-09-30): each stream ONE file, in the canonical grammar the
+//  steady `converged/` uses (`StreamStateIO::writeStreamState`, the same
+//  function -- no second grammar), and each inventory unit ONE file under
+//  `internalStates/` (`InternalStateIO::writeHoldup`).  So a time directory
+//  is a state a case can START from, which is what OpenFOAM's are.
 // ===========================================================================
 void SolutionWriter::writeDynamicInstant(
-    scalar                                   t,
-    const std::string&                       app,
-    const std::vector<DynamicUnitSnapshot>&  units)
+    scalar                                        t,
+    const std::string&                            app,
+    const std::vector<InternalStateIO::Holdup>&   holdups,
+    const std::map<std::string, ProcessStream>&   streams,
+    const ThermoPackage&                          thermo)
 {
     std::error_code ec;
     fs::create_directories(caseRoot_, ec);
@@ -726,126 +767,29 @@ void SolutionWriter::writeDynamicInstant(
     fs::remove_all(tmpDir, ec);
     fs::create_directories(tmpDir, ec);
 
-    // ---- internalState: the HOLDUP truth, one sub-dict per unit -----------
-    std::ostringstream is;
-    is <<
-"/*--------------------------------*- Choupo -*----------------------------------*\\\n"
-"| Choupo " << CHOUPO_VERSION << "   DYNAMIC instant   time " << timeName << " s   ("
-       << app << ")\n"
-"| The time directory IS the real physical time.  A batch/dynamic unit is a 0-D\n"
-"| HOLDUP cell: its truth is the internal inventory (mole numbers n_i [kmol], T\n"
-"| [K], V [m^3]) PLUS any per-unit extras (conversion, supersaturation, ...).\n"
-"| Scrub a time and you see the reactor's ACTUAL state at that instant.  Reads\n"
-"| back via the engine's own dict tokenizer (never JSON).  SI-canonical.\n"
-"\\*-----------------------------------------------------------------------------*/\n\n";
-    is << "time            " << sci(t) << ";   // s (real, physical)\n";
-    is << "application     " << app << ";\n\n";
-    is << "units\n{\n";
-    for (const auto& u : units)
+    auto discard = [&](const std::string& what)
     {
-        is << "    \"" << u.name << "\"\n    {\n";
-        is << "        type        " << (u.type.empty() ? "?" : u.type) << ";\n";
-        is << "        T           " << sci(u.T) << ";   // K\n";
-        is << "        P           " << sci(u.P) << ";   // Pa\n";
-        if (u.V != 0.0)
-            is << "        V           " << sci(u.V) << ";   // m^3\n";
-        if (!u.moles.empty())
-        {
-            is << "        holdupMolar                       // kmol per species (inventory)\n        {\n";
-            for (std::size_t i = 0; i < compNames_.size() && i < u.moles.size(); ++i)
-                is << "            " << std::left << std::setw(16) << compNames_[i]
-                   << " " << sci(u.moles[i]) << ";\n";
-            is << "        }\n";
-        }
-        if (!u.extras.empty())
-        {
-            is << "        extras\n        {\n";
-            for (const auto& [k, v] : u.extras)
-                is << "            " << std::left << std::setw(16) << k
-                   << " " << sci(v) << ";\n";
-            is << "        }\n";
-        }
-        is << "    }\n";
-    }
-    is << "}\n";
+        fs::remove_all(tmpDir, ec);
+        std::cerr << "WARNING: solutionControl: write of time " << timeName
+                  << " failed (" << what << ") --- instant NOT published.\n";
+    };
 
+    // ---- the streams: ONE file each, the canonical grammar --------------
+    for (const auto& [name, s] : streams)
     {
-        const fs::path f = tmpDir / "internalState";
-        std::ofstream of(f.string(), std::ios::out | std::ios::trunc);
-        of << is.str();
-        of.flush();
-        if (!of.good()) { of.close(); fs::remove_all(tmpDir, ec);
-            std::cerr << "WARNING: solutionControl: write of time " << timeName
-                      << " failed --- instant NOT published.\n"; return; }
-        of.close();
+        const fs::path f = tmpDir / name;
+        StreamStateIO::writeStreamState(s, thermo, f);
+        if (!fs::exists(f)) { discard("stream " + name); return; }
         if (cfg_.flushEach) fsyncPath(f, /*isDir=*/false);
     }
 
-    // ---- faces: the instantaneous outlet faces (continuous units) ---------
-    //  Reuses the steady streamFaces SHAPE (header + a `faces{}` block of
-    //  per-stream T/P/vf + molarFlows) so the SAME dict reader parses it back.
-    bool anyFace = false;
-    for (const auto& u : units)
-        if (u.hasOutlet || u.hasInlet) { anyFace = true; break; }
-    if (anyFace)
+    // ---- the holdups: ONE file per inventory unit -----------------------
+    for (const auto& h : holdups)
     {
-        std::ostringstream sb;
-        sb <<
-"/*--------------------------------*- Choupo -*----------------------------------*\\\n"
-"| Choupo " << CHOUPO_VERSION << "   DYNAMIC instant   time " << timeName << " s   ("
-           << app << ")   outlet faces\n"
-"| Instantaneous outlet stream of each continuous unit at this time: F [kmol/s],\n"
-"| T [K], P [Pa] + per-species molarFlows [kmol/s].  A batch (closed) vessel has\n"
-"| no outlet face and contributes only to internalState.  SI-canonical.\n"
-"\\*-----------------------------------------------------------------------------*/\n\n";
-        sb << "time            " << sci(t) << ";\n";
-        sb << "faces\n{\n";
-        // Render one face (a feed `<unit>.feed` or an outlet `<unit>.out`) as a
-        // self-describing stream block --- SAME shape the steady path uses so the
-        // dict reader parses both back.  `bc inlet;` for the Dirichlet feed face,
-        // `bc computed;` for the produced outlet face.
-        auto renderFace = [&](const std::string& sname, const char* bc,
-                              const char* note, scalar F, scalar T_, scalar P_,
-                              const std::vector<scalar>& z)
-        {
-            sb << "    \"" << sname << "\"\n    {\n";
-            sb << "        bc          " << bc << ";" << note << "\n";
-            sb << "        T           " << sci(T_) << ";   // K\n";
-            sb << "        P           " << sci(P_) << ";   // Pa\n";
-            sb << "        vf          " << sci(0.0) << ";   // - (liquid holdup face)\n";
-            sb << "        molarFlows                        // kmol/s per species\n        {\n";
-            for (std::size_t i = 0; i < compNames_.size(); ++i)
-            {
-                const scalar zi = (i < z.size()) ? z[i] : 0.0;
-                sb << "            " << std::left << std::setw(16) << compNames_[i]
-                   << " " << sci(F * zi) << ";\n";
-            }
-            sb << "        }\n";
-            sb << "    }\n";
-        };
-        for (const auto& u : units)
-        {
-            // Feed face first (it enters), then the produced outlet face.
-            if (u.hasInlet)
-                renderFace(u.name + ".feed", "inlet",
-                           "            // FEED -- the unit's instantaneous inlet face",
-                           u.inF, u.inT, u.inP, u.inZ);
-            if (u.hasOutlet)
-                renderFace(u.name + ".out", "computed",
-                           "         // PRODUCT -- the unit's instantaneous outlet",
-                           u.outF, u.outT, u.outP, u.outZ);
-        }
-        sb << "}\n";
-
-        const fs::path f = tmpDir / "streamFaces";
-        std::ofstream of(f.string(), std::ios::out | std::ios::trunc);
-        of << sb.str();
-        of.flush();
-        if (!of.good()) { of.close(); fs::remove_all(tmpDir, ec);
-            std::cerr << "WARNING: solutionControl: write of time " << timeName
-                      << " streams failed --- instant NOT published.\n"; return; }
-        of.close();
-        if (cfg_.flushEach) fsyncPath(f, /*isDir=*/false);
+        if (!InternalStateIO::writeHoldup(tmpDir.string(), h, compNames_, app, t))
+        { discard("holdup of " + h.unit); return; }
+        if (cfg_.flushEach)
+            fsyncPath(tmpDir / InternalStateIO::ROOT / h.unit, /*isDir=*/false);
     }
 
     // Atomic publish.
@@ -860,7 +804,7 @@ void SolutionWriter::writeDynamicInstant(
     }
     if (cfg_.flushEach) fsyncPath(caseRoot_, /*isDir=*/true);
 
-    appendDynamicLog(t, timeName, units.size());
+    appendDynamicLog(t, timeName, holdups.size());
     refreshLatestSymlink(timeName);
     // NOTE: no purge on the dynamic path --- a transient trajectory is the
     // point; every written time is retained.
@@ -876,8 +820,8 @@ void SolutionWriter::appendDynamicLog(scalar t, const std::string& timeName,
     if (needHeader)
         f << "# Choupo dynamic solution log --- one line per written time "
              "instant.\n"
-             "# The time directory IS the real physical time (s); each carries the\n"
-             "# holdup internalState (+ outlet streams where the unit has one).\n"
+             "# The time directory IS the real physical time (s); each has the\n"
+             "# layout of 0/: one file per stream, internalStates/<unit> per vessel.\n"
              "# timeDir       time[s]                   units    written\n";
     f << std::left
       << std::setw(15) << timeName

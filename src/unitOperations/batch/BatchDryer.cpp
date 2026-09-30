@@ -66,7 +66,7 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
     const std::string who = "batchDryer '" + name_ + "'";
 
     // -----------------------------------------------------------------
-    //  Initial holdup: the tray's charge (0/internalState).
+    //  Initial holdup: the tray's charge (0/internalStates/<unit>).
     // -----------------------------------------------------------------
     auto initDict = unitDict->subDict("initial");
     state_.T = initDict->lookupScalar("T", Dims::temperature);
@@ -196,7 +196,7 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
         throw std::runtime_error(who + ": no volatile moisture in the tray"
             " (a component with a vapour pressure, other than the declared"
             " carrier '" + carrierName + "') -- charge the wet solid with"
-            " its moisture in 0/internalState");
+            " its moisture in 0/internalStates/<unit>");
     }
     else if (moistCandidates.size() > 1)
     {

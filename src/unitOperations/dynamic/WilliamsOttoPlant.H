@@ -101,6 +101,11 @@ public:
 
     ContinuousStream outletStream() const override;
 
+    //- The six masses (1 kmol == 1 klb) and T.  NOT complete: the section-5
+    //  running integrals (yield, waste) are integrated state too, and a
+    //  record without them would restart the objective at zero.
+    bool holdupRecord(HoldupRecord& h) const override;
+
     BalanceSnapshot balanceSnapshot() const override;
 
     void   setMV(const std::string& key, scalar value) override;

@@ -27,59 +27,68 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  dynamicInstants -- parse the OpenFOAM-style real-time INSTANT directories the
-  dynamic binaries (choupoBatch / choupoCtrl / choupoSemiContinuous) write at the case root when
-  `controlDict.solutionControl { write true; }` is on.
+  dynamicInstants -- parse the OpenFOAM-style real-time TIME DIRECTORIES the
+  time-integrated binaries (choupoBatch / choupoCtrl / choupoSemiContinuous)
+  write at the case root, every writeInterval, by default (task #186,
+  2026-09-30; `solutionControl { write false; }` turns them off).
 
-  Each written physical time `t` (s) is a directory `<t>/` carrying:
+  A time directory `<t>/` has EXACTLY the layout of `0/` -- the ratified state
+  layout the steady path uses:
 
-    <t>/internalState   the HOLDUP truth, a Choupo dict:
-                          time, application, units { "<name>" { type T P [V]
-                          holdupMolar{ <comp> ... } [extras{ <k> ... }] } }
-    <t>/streamFaces     (continuous units only) the instantaneous outlet faces:
-                          time, faces { "<name>.out" { T P vf molarFlows{...} } }
+    <t>/<stream>                  ONE file per stream, the canonical stream
+                                  grammar (componentMolarFlows + T + P)
+    <t>/internalStates/<unit>     ONE file per vessel, `recordType
+                                  internalState;` with a `holdup {}` block
+                                  (T, P, V, holdupMolar{} or totalMoles +
+                                  molarComposition{}, extras{})
 
   The worker harvests these files verbatim from MEMFS (keyed by their path
-  relative to the case root, e.g. "500/internalState"); this module parses
-  them into a time-ordered structure the TimeScrubber renders.  We reuse the
-  engine's OWN dict tokenizer (`parse` + `toJson`) so the parse matches the C++
-  reader byte-for-byte -- never JSON, never a regex over the body.
+  relative to the case root, e.g. "500/internalStates/reactor", "500/feed");
+  this module parses them into a time-ordered structure the TimeScrubber and
+  the canvas overlay render.  A stream file is read by the SAME function the
+  canvas reads a `0/<stream>` with (`streamStateSpec`), so a stream at t and a
+  stream at 0 cannot be two readings of one grammar.  The retired shape
+  (`<t>/internalState`, `<t>/streamFaces`) is NOT read -- there is no dual
+  reader, exactly as in the engine.
 
   Self-contained + pure: no I/O, no state.  Returns null when nothing parses
-  (a steady run, an older binary, a solutionControl-off case) so callers can
-  gate the scrubber on truthiness.
+  (a steady run, or a run with `write false;`) so callers can gate the
+  scrubber on truthiness.
 \*---------------------------------------------------------------------------*/
 
 import { parse, toJson } from "../dict/index.js";
 import type { JsonDict, JsonValue } from "../dict/index.js";
+import { scalarToSI } from "../dict/scalarSI.js";
+import { streamStateSpec } from "./toGraph.js";
 
-/** One unit's holdup state at one instant. */
+/** One vessel's holdup state at one instant. */
 export interface InstantUnit {
   name: string;
+  /** The equipment word the record declares. */
   type: string;
   /** Holdup temperature [K]. */
   T: number;
   /** Holdup pressure [Pa]. */
   P: number;
-  /** Vessel volume [m^3], when the unit exposes one (batch reactors). */
+  /** Vessel volume [m^3], when the record carries one. */
   V?: number;
-  /** Mole inventory n_i [kmol] keyed by component name, in dict order. */
+  /** Mole inventory n_i [kmol] keyed by component name, in record order. */
   holdupMolar: { [component: string]: number };
-  /** Per-unit extras (conversion, supersaturation, ...) when present. */
+  /** Per-unit extras (conversion, supersaturation, T_jacket, ...). */
   extras?: { [key: string]: number };
-  /** Instantaneous outlet face (continuous units only): F_i [kmol/s]. */
-  outletMolarFlows?: { [component: string]: number };
-  /** Outlet temperature [K] (continuous units only). */
-  outletT?: number;
-  /** Outlet vapour fraction [-] (continuous units only) -- drives the edge
-   *  phase colour at the scrubbed time. */
-  outletVf?: number;
-  /** Instantaneous INLET face (continuous units only): F_i [kmol/s].  Present
-   *  only once the engine writes a `<name>.feed` stream; absent on older runs,
-   *  in which case the GUI falls back to the nominal inlet{} from the dict. */
-  inletMolarFlows?: { [component: string]: number };
-  /** Inlet temperature [K] -- the disturbance a controller drives. */
-  inletT?: number;
+  /** What the record says it does NOT carry (not a restart point), if any. */
+  notRestored?: string;
+}
+
+/** One stream's state at one instant -- its own file, named by the stream. */
+export interface InstantStream {
+  name: string;
+  /** Total molar flow [kmol/s]. */
+  F: number;
+  T: number;
+  P: number;
+  /** Per-component molar flows [kmol/s]. */
+  molarFlows: { [component: string]: number };
 }
 
 /** The state of the whole flowsheet at one written physical time. */
@@ -89,173 +98,138 @@ export interface DynamicInstant {
   /** The directory name as written ("0", "50", "500", ...). */
   dir: string;
   units: InstantUnit[];
+  streams: InstantStream[];
 }
 
 /** Every written instant, time-ordered, plus the component list (union over
  *  all instants, first-seen order) for stable table columns. */
 export interface DynamicInstants {
-  application: string;        // "batch" | "ctrl"  (the ctrl word also covers choupoSemiContinuous: same driver, same instant shape)
+  application: string;        // "batch" | "ctrl"  (the ctrl word also covers choupoSemiContinuous: same driver, same layout)
   components: string[];
   instants: DynamicInstant[];
 }
 
-function asNum(v: JsonValue | undefined): number | undefined {
-  if (typeof v === "number") return v;
-  if (typeof v === "string") {
-    const n = parseFloat(v);
-    return Number.isFinite(n) ? n : undefined;
-  }
-  return undefined;
+const HOLDUP_ROOT = "internalStates";
+
+function isDict(v: JsonValue | undefined): v is JsonDict {
+  return !!v && typeof v === "object" && !Array.isArray(v);
 }
 
-/** A "<comp> <number>;" sub-dict -> a numeric map, dropping non-finite cells. */
+/** A "<key> <number [unit]>;" sub-dict -> an SI numeric map, dropping
+ *  non-finite cells. */
 function numericMap(j: JsonValue | undefined): { [k: string]: number } {
   const out: { [k: string]: number } = {};
-  if (!j || typeof j !== "object" || Array.isArray(j)) return out;
-  for (const [k, v] of Object.entries(j as JsonDict)) {
-    const n = asNum(v);
-    if (n !== undefined) out[k] = n;
+  if (!isDict(j)) return out;
+  for (const [k, v] of Object.entries(j)) {
+    const n = scalarToSI(v);
+    if (Number.isFinite(n)) out[k] = n;
   }
   return out;
 }
 
-/** Parse one `<t>/internalState` dict text into a DynamicInstant (sans
- *  outlet faces).  Returns null when the text is not a recognisable instant. */
-function parseInternalState(dir: string, text: string): DynamicInstant | null {
+/** Parse one `<t>/internalStates/<unit>` record.  Null when it is not a
+ *  holdup record (a steady unit's profile, a malformed file). */
+function parseHoldup(unitName: string, text: string): InstantUnit | null {
   let json: JsonDict;
   try {
-    json = toJson(parse(text));
+    json = toJson(parse(text, { sourceName: "internalStates" })) as JsonDict;
   } catch {
     return null;
   }
-  const unitsBlock = json["units"];
-  if (!unitsBlock || typeof unitsBlock !== "object" || Array.isArray(unitsBlock)) {
-    return null;
+  const h = json["holdup"];
+  if (!isDict(h)) return null;
+  const T = scalarToSI(h["T"]);
+  const P = scalarToSI(h["P"]);
+  if (!Number.isFinite(T) || !Number.isFinite(P)) return null;
+  // The inventory is stated ONCE, in either spelling the engine reads.
+  let holdupMolar = numericMap(h["holdupMolar"]);
+  if (Object.keys(holdupMolar).length === 0) {
+    const n = scalarToSI(h["totalMoles"]);
+    const x = numericMap(h["molarComposition"]);
+    holdupMolar = {};
+    if (Number.isFinite(n)) for (const [c, xi] of Object.entries(x)) holdupMolar[c] = n * xi;
   }
-  // The `time` field is the SI-canonical truth; fall back to the dir name.
-  const t = asNum(json["time"]) ?? parseFloat(dir);
-  if (!Number.isFinite(t)) return null;
-
-  const units: InstantUnit[] = [];
-  for (const [name, u] of Object.entries(unitsBlock as JsonDict)) {
-    if (!u || typeof u !== "object" || Array.isArray(u)) continue;
-    const ud = u as JsonDict;
-    const T = asNum(ud["T"]);
-    const P = asNum(ud["P"]);
-    if (T === undefined || P === undefined) continue;
-    const unit: InstantUnit = {
-      name,
-      type: typeof ud["type"] === "string" ? (ud["type"] as string) : "?",
-      T,
-      P,
-      holdupMolar: numericMap(ud["holdupMolar"]),
-    };
-    const V = asNum(ud["V"]);
-    if (V !== undefined) unit.V = V;
-    const extras = numericMap(ud["extras"]);
-    if (Object.keys(extras).length > 0) unit.extras = extras;
-    units.push(unit);
-  }
-  if (units.length === 0) return null;
-  return { t, dir, units };
+  const unit: InstantUnit = {
+    name: typeof json["unit"] === "string" ? (json["unit"] as string) : unitName,
+    type: typeof json["equipment"] === "string" ? (json["equipment"] as string) : "?",
+    T,
+    P,
+    holdupMolar,
+  };
+  const V = scalarToSI(h["V"]);
+  if (Number.isFinite(V)) unit.V = V;
+  const extras = numericMap(h["extras"]);
+  if (Object.keys(extras).length > 0) unit.extras = extras;
+  if (typeof h["notRestored"] === "string") unit.notRestored = h["notRestored"] as string;
+  return unit;
 }
 
-/** Overlay the `<t>/streamFaces` outlet faces onto an already-parsed instant.
- *  Stream "name.out" maps back to unit "name". */
-function applyStreams(instant: DynamicInstant, text: string): void {
-  let json: JsonDict;
-  try {
-    json = toJson(parse(text));
-  } catch {
-    return;
-  }
-  const streamsBlock = json["faces"];
-  if (!streamsBlock || typeof streamsBlock !== "object" || Array.isArray(streamsBlock)) {
-    return;
-  }
-  for (const [sname, s] of Object.entries(streamsBlock as JsonDict)) {
-    if (!s || typeof s !== "object" || Array.isArray(s)) continue;
-    const sd = s as JsonDict;
-    // A unit's faces are written as "<name>.out" (outlet) and -- once the
-    // engine inlet-face slice lands -- "<name>.feed" (inlet, the driven
-    // disturbance).  Both map back to the owning unit; parse symmetrically.
-    const isFeed = sname.endsWith(".feed");
-    const unitName = isFeed
-      ? sname.slice(0, -5)
-      : sname.endsWith(".out") ? sname.slice(0, -4) : sname;
-    const unit = instant.units.find((u) => u.name === unitName);
-    if (!unit) continue;
-    const flows = numericMap(sd["molarFlows"]);
-    const faceT = asNum(sd["T"]);
-    if (isFeed) {
-      if (Object.keys(flows).length > 0) unit.inletMolarFlows = flows;
-      if (faceT !== undefined) unit.inletT = faceT;
-    } else {
-      if (Object.keys(flows).length > 0) unit.outletMolarFlows = flows;
-      if (faceT !== undefined) unit.outletT = faceT;
-      const vf = asNum(sd["vf"]);
-      if (vf !== undefined) unit.outletVf = vf;
-    }
-  }
+/** Parse one `<t>/<stream>` file through the canvas's own stream reader. */
+function parseStream(name: string, text: string): InstantStream | null {
+  const spec = streamStateSpec(text);
+  if (!spec) return null;
+  const molarFlows: { [c: string]: number } = {};
+  for (const [c, z] of Object.entries(spec.composition)) molarFlows[c] = z * spec.F;
+  return { name, F: spec.F, T: spec.T, P: spec.P, molarFlows };
 }
 
 /**
- * Parse the harvested instant files into a time-ordered DynamicInstants.
+ * Parse the harvested time-directory files into a time-ordered
+ * DynamicInstants.
  *
  * `files` keys are paths relative to the case root, exactly as the worker
  * harvested them from MEMFS:
- *     { "0/internalState": "...", "0/streamFaces": "...", "50/internalState": "...", ... }
+ *     { "50/internalStates/reactor": "...", "50/feed": "...", ... }
  *
- * Files that are not `<t>/internalState` or `<t>/streamFaces` are ignored, so the
- * same generic file bag can be passed in safely.  Returns null when no
- * instant parses (steady run / solutionControl off).
+ * Only paths whose FIRST segment is a number (a time directory) are read, so
+ * the same generic file bag can be passed in safely.  An instant is kept when
+ * at least one of its files parses.  Returns null when none does.
  */
 export function parseDynamicInstants(
   files: { [relPath: string]: string },
 ): DynamicInstants | null {
-  // First pass: parse every internalState into an instant, keyed by dir.
   const byDir = new Map<string, DynamicInstant>();
-  for (const [rel, text] of Object.entries(files)) {
-    const m = /^(.+)\/internalState$/.exec(rel);
-    if (!m) continue;
-    const dir = m[1]!;
-    // An instant dir is a single numeric segment at the case root (e.g.
-    // "500"), never "constant/x" or "system/y" -- reject nested paths.
-    if (dir.includes("/")) continue;
-    const inst = parseInternalState(dir, text);
-    if (inst) byDir.set(dir, inst);
+  const instantOf = (dir: string): DynamicInstant => {
+    let inst = byDir.get(dir);
+    if (!inst) {
+      inst = { t: parseFloat(dir), dir, units: [], streams: [] };
+      byDir.set(dir, inst);
+    }
+    return inst;
+  };
+  for (const rel of Object.keys(files).sort()) {
+    const parts = rel.split("/");
+    const dir = parts[0]!;
+    if (parts.length < 2 || !/^[0-9]+(\.[0-9]+)?$/.test(dir)) continue;
+    const text = files[rel]!;
+    if (parts[1] === HOLDUP_ROOT) {
+      if (parts.length !== 3) continue;          // a time-integrated case is flat
+      const u = parseHoldup(parts[2]!, text);
+      if (u) instantOf(dir).units.push(u);
+    } else if (parts.length === 2) {
+      const s = parseStream(parts[1]!, text);
+      if (s) instantOf(dir).streams.push(s);
+    }
   }
   if (byDir.size === 0) return null;
 
-  // Second pass: overlay the outlet faces where a streamFaces file exists.
-  for (const [rel, text] of Object.entries(files)) {
-    const m = /^(.+)\/streamFaces$/.exec(rel);
-    if (!m) continue;
-    const dir = m[1]!;
-    if (dir.includes("/")) continue;
-    const inst = byDir.get(dir);
-    if (inst) applyStreams(inst, text);
-  }
-
   // Time-order the instants (numeric, not lexical -- "100" sorts after "50").
-  const instants = [...byDir.values()].sort((a, b) => a.t - b.t);
+  const instants = [...byDir.values()]
+    .filter((i) => Number.isFinite(i.t))
+    .sort((a, b) => a.t - b.t);
+  if (instants.length === 0) return null;
 
-  // Application: infer from the unit types (batchReactor/batchStill -> batch),
-  // robust to header-text drift.
-  const firstTypes = instants[0]?.units.map((u) => u.type) ?? [];
-  const application = firstTypes.some((tp) => tp.startsWith("batch"))
-    ? "batch"
-    : "ctrl";
+  // Application: inferred from the equipment words (batch* -> batch).
+  const types = instants.flatMap((i) => i.units.map((u) => u.type));
+  const application = types.some((tp) => tp.startsWith("batch")) ? "batch" : "ctrl";
 
   // Component union, first-seen order (stable table columns).
   const seen = new Set<string>();
   const components: string[] = [];
+  const see = (c: string) => { if (!seen.has(c)) { seen.add(c); components.push(c); } };
   for (const inst of instants) {
-    for (const u of inst.units) {
-      for (const c of Object.keys(u.holdupMolar)) {
-        if (!seen.has(c)) { seen.add(c); components.push(c); }
-      }
-    }
+    for (const u of inst.units) Object.keys(u.holdupMolar).forEach(see);
+    for (const s of inst.streams) Object.keys(s.molarFlows).forEach(see);
   }
 
   return { application, components, instants };

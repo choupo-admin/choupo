@@ -287,7 +287,7 @@ def main() -> int:
         traj = trajectory(case)
         rec = records(case)
         fd = (case / "system" / "flowsheetDict").read_text()
-        st0 = (case / "0" / "internalState").read_text()
+        st0 = (case / "0" / "internalStates" / "dryer").read_text()
         area = scalar_in(fd, "area", "m2")
         kY = scalar_in(fd, "k_Y")
         Xc_decl = scalar_in(fd, "criticalMoisture")
@@ -582,8 +582,8 @@ def main() -> int:
               "is not above the equilibrium moisture")
 
         probe("R2_charged_below_Xeq",
-              lambda c: (c / "0" / "internalState").write_text(
-                  (c / "0" / "internalState").read_text()
+              lambda c: (c / "0" / "internalStates" / "dryer").write_text(
+                  (c / "0" / "internalStates" / "dryer").read_text()
                   .replace("totalMoles   0.039148458;",
                            "totalMoles   0.006398;")
                   .replace("molarComposition  { sucrose 0.14924928;"
@@ -600,7 +600,7 @@ def main() -> int:
               "diverges at this air", seal_must_speak=True)
 
         probe("R4_zero_pressure",
-              edit("0/internalState", "P            1.013 bar;",
+              edit("0/internalStates/dryer", "P            1.013 bar;",
                    "P            0.0 bar;"),
               "must be a positive absolute pressure")
 

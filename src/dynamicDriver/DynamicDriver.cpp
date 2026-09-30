@@ -121,7 +121,9 @@ Description
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "unitOperations/dynamic/DynamicUnitOperation.H"
 #include "thermo/ElementComposition.H"
+#include "io/InternalStateIO.H"
 #include "io/SolutionWriter.H"
+#include "streams/StreamStateIO.H"
 #include "solver/NewtonND.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
 #include "result/ComponentIdentity.H"
@@ -145,108 +147,179 @@ namespace Choupo
 
 namespace fs = std::filesystem;
 
-// Seed each dynamic unit's initial holdup + inlet from the case's 0/ state --
-// the SINGLE source of truth.  The inline initial{}/inlet{} blocks in
-// flowsheetDict do not exist: 0/internalState carries the holdup and
-// 0/streamFaces the inlet face, exactly as the engine writes them.  This translates
-// them into the initial{}/inlet{} dicts each unit's initialise() already reads
-// and injects them into the unit dict, so no unit code changes.  Must run with
-// the CWD already at the case root (the driver chdir's before calling this).
-// `binaryName` prefixes the refusals: the same driver serves more than one
-// application, and a refusal names the binary the reader actually ran.
-static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList,
-                                  const std::string&           binaryName)
+// The streams a unit DECLARES, in port order: `inputs ( ... )` or `in <s>;`
+// on the inlet side, `outputs ( ... )` on the outlet side.  The ONE reading of
+// the topology words, shared by the seed and the time-directory writer, so
+// the file a stream is read from and the file it is written to can never be
+// two different names.
+static std::vector<std::string> declaredInputs(const DictPtr& uDict)
 {
-    DictPtr istate  = fs::exists("0/internalState")
-                    ? Dictionary::fromFile("0/internalState") : nullptr;
-    DictPtr sstreams = fs::exists("0/streamFaces")
-                    ? Dictionary::fromFile("0/streamFaces") : nullptr;
+    if (uDict->found("inputs")) return uDict->lookupWordList("inputs");
+    if (uDict->found("in"))     return { uDict->lookupWord("in") };
+    return {};
+}
+static std::vector<std::string> declaredOutputs(const DictPtr& uDict)
+{
+    return uDict->found("outputs") ? uDict->lookupWordList("outputs")
+                                   : std::vector<std::string>{};
+}
+
+// Seed each dynamic unit's initial holdup + inlets from the case's 0/ state --
+// the SINGLE source of truth, in the layout the steady path uses (task #186,
+// 2026-09-30, Vitor's ruling):
+//
+//     0/<stream>                  one file per stream, the canonical
+//                                 componentMolarFlows grammar
+//     0/internalStates/<unit>     one file per vessel, a `holdup {}` block
+//
+// A stream has ONE identity -- the name the flowsheet gives it -- and ONE
+// file.  This translates those files into the initial{} / inlet{} / inlets{}
+// dicts each unit's initialise() already reads and injects them into the unit
+// dict, so no unit reads a file.  THE COMPLETENESS CONTRACT, the steady one
+// adapted to the class: every stream a unit CONSUMES has its file (missing ->
+// refused), every file names a stream of the topology (orphan -> refused),
+// every vessel has its holdup (missing -> refused).  A stream nothing consumes
+// (a product) may have a file -- a time directory renamed `0/` carries one --
+// but its value at t = 0 is its producer's outlet, computed from the
+// producer's state, so the file is checked and not used, and that is SAID.
+// The retired `0/internalState` + `0/streamFaces` are refused by name first.
+// Must run with the CWD already at the case root.  `binaryName` prefixes the
+// refusals: the same driver serves more than one application.
+static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList,
+                                  const std::string&           binaryName,
+                                  const ThermoPackage&         thermo,
+                                  int                          verbosity)
+{
+    InternalStateIO::refuseRetiredDynamicShape("0", binaryName);
+
+    std::map<std::string, InternalStateIO::HoldupUnit> decl;
+    std::set<std::string> consumed, produced;
+    for (const auto& uDict : unitList)
+    {
+        const std::string uname = uDict->lookupWord("name");
+        const std::string utype = uDict->lookupWord("type");
+        if (uDict->found("initial") || uDict->found("inlet"))
+            throw std::runtime_error(binaryName + ": unit '" + uname + "' carries an "
+                "inline initial{}/inlet{} block -- the initial holdup lives in"
+                " 0/internalStates/" + uname + " and each inlet's state in the"
+                " file of the stream it declares (0/<stream>).  Delete the"
+                " inline block from flowsheetDict.");
+        decl[uname] = { utype, DynamicUnitOperation::carriesInventory(utype) };
+        for (const auto& w : declaredInputs(uDict))  consumed.insert(w);
+        for (const auto& w : declaredOutputs(uDict)) produced.insert(w);
+    }
+
+    const auto holdups =
+        InternalStateIO::readHoldups("0", decl, binaryName, verbosity);
+
+    //  THE STREAM FILES: every file outside internalStates/ names a stream.
+    std::error_code ec;
+    std::set<std::string> present;
+    if (fs::exists("0"))
+        for (auto it = fs::recursive_directory_iterator("0", ec);
+             it != fs::recursive_directory_iterator(); it.increment(ec))
+        {
+            const fs::path rel = fs::relative(it->path(), "0", ec);
+            if (rel.empty()) continue;
+            if (rel.begin()->string() == InternalStateIO::ROOT)
+            {
+                if (it->is_directory()) it.disable_recursion_pending();
+                continue;
+            }
+            if (!it->is_regular_file()) continue;
+            if (rel.filename().string().rfind('.', 0) == 0) continue;  // .gitkeep
+            std::string name = rel.generic_string();
+            std::replace(name.begin(), name.end(), '/', '.');
+            if (!consumed.count(name) && !produced.count(name))
+            {
+                std::string known;
+                for (const auto& w : consumed) known += " " + w;
+                for (const auto& w : produced)
+                    if (!consumed.count(w)) known += " " + w;
+                throw std::runtime_error(binaryName + ": ORPHAN stream file 0/"
+                    + rel.generic_string() + " -- no unit of this flowsheet"
+                      " declares a stream '" + name + "' (`in`, `inputs` or"
+                      " `outputs`).  A stream's state file is named by the"
+                      " stream.  The streams of this flowsheet:"
+                    + (known.empty() ? std::string(" (none)") : known) + ".");
+            }
+            present.insert(name);
+        }
+    for (const auto& w : consumed)
+        if (!present.count(w))
+            throw std::runtime_error(binaryName + ": MISSING stream state 0/" + w
+                + " -- stream '" + w + "' feeds a unit, and its t = 0 state"
+                  " (for a routed stream: its value until the first step"
+                  " overwrites it) lives in its own file.  Author it in the"
+                  " canonical grammar (componentMolarFlows { ... } T ...; P"
+                  " ...;).");
+    std::map<std::string, ProcessStream> state;
+    for (const auto& w : present)
+    {
+        std::string rel = w;
+        std::replace(rel.begin(), rel.end(), '.', '/');
+        state[w] = StreamStateIO::readStreamState(fs::path("0") / rel, w, thermo);
+        if (!consumed.count(w) && verbosity >= 2)
+            std::cout << "  [state] 0/" << rel << ": a product -- nothing"
+                         " consumes it, so its value at t = 0 is its"
+                         " producer's outlet; the file is read and not used\n";
+    }
+
+    //  An inlet{} / inlets{} entry from a stream state, printed at the
+    //  precision the retired face translation used, so a migrated case
+    //  reproduces its answer to the last bit.
+    auto inletText = [&](const ProcessStream& ps, bool withP)
+    {
+        std::ostringstream in;  in << std::setprecision(17);
+        in << "F " << ps.F << "; T " << ps.T;
+        if (withP) in << "; P " << ps.P;
+        in << "; molarComposition {";
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            in << " " << thermo.comp(i).name() << " "
+               << (i < ps.z.size() ? ps.z[i] : 0.0) << ";";
+        in << " }";
+        return in.str();
+    };
 
     for (const auto& uDict : unitList)
     {
         const std::string uname = uDict->lookupWord("name");
-
-        if (uDict->found("initial") || uDict->found("inlet"))
-            throw std::runtime_error(binaryName + ": unit '" + uname + "' carries an "
-                "inline initial{}/inlet{} block -- the initial holdup and"
-                " inlet live in 0/internalState + 0/streamFaces (bin/choupo-init0"
-                " materialises them).  Delete the inline block from flowsheetDict.");
+        const auto ins = declaredInputs(uDict);
 
         //  A unit that holds NO inventory (the quasi-steady seam) has no
-        //  holdup to seed, and one face PER INLET rather than one feed face:
-        //  every `"<unit>.<stream>"` face in 0/streamFaces is handed to it
-        //  as `inlets { <stream> { F T P molarComposition } }`.
-        if (!DynamicUnitOperation::carriesInventory(uDict->lookupWord("type")))
+        //  holdup, and one inlet state PER declared inlet stream.
+        if (!decl.at(uname).readsHoldup)
         {
             auto inl = std::make_shared<Dictionary>("inlets");
-            if (sstreams && sstreams->found("faces"))
-            {
-                auto strm = sstreams->subDict("faces");
-                for (const auto& sn : strm->keys())
-                {
-                    if (sn.rfind(uname + ".", 0) != 0) continue;
-                    auto face = strm->subDict(sn);
-                    auto mf = face->subDict("molarFlows");
-                    scalar F = 0.0;
-                    for (const auto& c : mf->keys()) F += mf->lookupScalar(c);
-                    std::ostringstream in;  in << std::setprecision(17);
-                    in << "F " << F << "; T " << face->lookupScalar("T")
-                       << "; P " << face->lookupScalar("P")
-                       << "; molarComposition {";
-                    for (const auto& c : mf->keys())
-                        in << " " << c << " "
-                           << (F > 0.0 ? mf->lookupScalar(c) / F : 0.0) << ";";
-                    in << " }";
-                    const std::string port = sn.substr(uname.size() + 1);
-                    inl->insert(port, Dictionary::fromString(in.str(), port));
-                }
-            }
+            for (const auto& w : ins)
+                inl->insert(w, Dictionary::fromString(inletText(state.at(w), true), w));
             uDict->insert("inlets", inl);
             continue;
         }
 
-        if (!istate)
-            throw std::runtime_error(binaryName + ": no 0/internalState -- the dynamic"
-                " initial state lives in 0/ (run bin/choupo-init0).");
+        auto hit = holdups.find(uname);
+        if (hit == holdups.end())
+            throw std::runtime_error(binaryName + ": no 0/"
+                + InternalStateIO::fileOf(uname, "") + " -- vessel '" + uname
+                + "' holds an inventory, and the state it starts from is"
+                  " declared there (a `holdup {}` block: T, P, V and the"
+                  " inventory).");
+        uDict->insert("initial", hit->second);
 
-        // --- holdup  ->  initial{ T P V totalMoles molarComposition } ---
-        auto uHold = istate->subDict("units")->subDict(uname);
-        const scalar T = uHold->lookupScalar("T");
-        const scalar P = uHold->lookupScalarOrDefault("P", 1.0);
-        const scalar V = uHold->lookupScalar("V");
-        auto hold = uHold->subDict("holdupMolar");
-        scalar nTot = 0.0;
-        for (const auto& c : hold->keys()) nTot += hold->lookupScalar(c);
-        std::ostringstream is;  is << std::setprecision(17);
-        is << "T " << T << "; P " << P << "; V " << V << "; totalMoles " << nTot
-           << "; molarComposition {";
-        for (const auto& c : hold->keys())
-            is << " " << c << " " << (nTot > 0.0 ? hold->lookupScalar(c) / nTot : 0.0) << ";";
-        is << " }";
-        uDict->insert("initial", Dictionary::fromString(is.str(), "initial"));
-
-        // --- inlet face  ->  inlet{ F T molarComposition } ---
-        if (sstreams && sstreams->found("faces"))
-        {
-            auto strm = sstreams->subDict("faces");
-            for (const auto& sn : strm->keys())
-            {
-                auto face = strm->subDict(sn);
-                if (face->lookupWordOrDefault("bc", "") != "inlet") continue;
-                if (sn.rfind(uname + ".", 0) != 0) continue;   // this unit's face
-                auto mf = face->subDict("molarFlows");
-                scalar F = 0.0;
-                for (const auto& c : mf->keys()) F += mf->lookupScalar(c);
-                std::ostringstream in;  in << std::setprecision(17);
-                in << "F " << F << "; T " << face->lookupScalar("T")
-                   << "; molarComposition {";
-                for (const auto& c : mf->keys())
-                    in << " " << c << " " << (F > 0.0 ? mf->lookupScalar(c) / F : 0.0) << ";";
-                in << " }";
-                uDict->insert("inlet", Dictionary::fromString(in.str(), "inlet"));
-                break;
-            }
-        }
+        //  A vessel has ONE feed face: its declared inlet stream.  Refused
+        //  HERE, where the inlet is handed over, with the router's own
+        //  sentence -- the unit would otherwise refuse first for a feed it
+        //  was never given, naming the wrong fault.
+        if (ins.size() > 1)
+            throw std::runtime_error(binaryName + " routing: unit '" + uname
+                + "' (type " + decl.at(uname).type + ") declares "
+                + std::to_string(ins.size()) + " inputs, but a vessel has ONE"
+                " feed face -- merge the streams in a `mixer` wrapped as"
+                " `quasiSteady` in front of it");
+        if (ins.size() == 1)
+            uDict->insert("inlet",
+                Dictionary::fromString(inletText(state.at(ins.front()), false),
+                                       "inlet"));
     }
 }
 
@@ -439,22 +512,13 @@ try
               << (reactionsDict ? "loaded" : "not present")
               << "\n\n";
 
-    // ---- solutionControl: OpenFOAM-style REAL-TIME instant directories ----
-    //  ABSENT block => OFF: the run is byte-identical (trajectory.csv only).
-    //  Present with `write true;` => each write step also drops a `<t>/` time
-    //  directory holding each unit's holdup internalState + outlet stream.
-    SolutionControl solutionCtl;            // defaults: write=false (OFF)
-    if (controlDict->found("solutionControl"))
-    {
-        auto sc = controlDict->subDict("solutionControl");
-        solutionCtl.write =
-            (sc->lookupWordOrDefault("write", "false") == "true");
-        solutionCtl.flushEach =
-            (sc->lookupWordOrDefault("flushEach", "true") == "true");
-        if (solutionCtl.write)
-            std::cout << "solutionControl:   ON -> real-time instant dirs "
-                         "(0/ <t>/ ...) at the case root, every writeInterval\n\n";
-    }
+    // ---- solutionControl: OpenFOAM-style REAL-TIME time directories -----
+    //  ON BY DEFAULT (task #186, 2026-09-30): every writeInterval drops a
+    //  `<t>/` directory with the layout of `0/`, as OpenFOAM does;
+    //  `solutionControl { write false; }` turns it off.  One home for the
+    //  reading, shared with choupoBatch.
+    const SolutionControl solutionCtl =
+        SolutionWriter::timeDirectoryControl(*controlDict, cfg.binaryName);
 
     // v2 contract (thermophysicalPropertySystem): the BUILDER owns the ONE
     // exhaustive dispatch -- an implemented formulation assembles, any
@@ -503,7 +567,8 @@ try
         for (const auto& uDict : unitList)
             if (!uDict->found("initial") && !uDict->found("inlets"))
             { needSeed = true; break; }
-        if (needSeed) seedDynamicUnitsFrom0(unitList, cfg.binaryName);
+        if (needSeed)
+            seedDynamicUnitsFrom0(unitList, cfg.binaryName, thermo, verbosity);
     }
 
     std::vector<std::unique_ptr<DynamicUnitOperation>> units;
@@ -540,9 +605,9 @@ try
     //  each accepted driver step (b integrates [t, t+dt] on a's outlet AT
     //  t: a transport delay of one driver step, announced below).  No new
     //  grammar.  Units that declare neither are untouched -- an
-    //  unconnected case is byte-identical by construction.  The declared
-    //  0/streamFaces face stays the t = 0 inlet state and the face of
-    //  every unconnected inlet.  Scope, per the ratified proposal:
+    //  unconnected case is byte-identical by construction.  A routed
+    //  stream's file 0/<stream> is its t = 0 state; an unrouted inlet's
+    //  file is its state for the whole run (unless a controller drives it).  Scope, per the ratified proposal:
     //  forward series/parallel routing only -- no implicit-in-time
     //  coupling, no back-pressure, no flow networks.  WIDENED 2026-09-30
     //  by the quasi-steady seam (#185): a LOOP is routable when a vessel
@@ -757,9 +822,12 @@ try
     }
     std::cout << "\n";
 
-    // ---- solutionControl writer (opt-in) -----------------------------
-    //  The instant directory IS the real physical time (seconds).  Each unit
-    //  contributes its HOLDUP internalState + an instantaneous outlet face.
+    // ---- solutionControl writer (on by default) ------------------------
+    //  The time directory IS the real physical time (seconds), in the layout
+    //  of `0/`: each stream a file, each vessel's holdup under
+    //  internalStates/.  A restart needs the plant's state, and that is what
+    //  is written; a CONTROLLER's memory (a PID's integral, where a schedule
+    //  stands) is not a unit's interior and is not in it -- said once here.
     std::unique_ptr<SolutionWriter> solWriter;
     if (solutionCtl.write && writeOutputs)
     {
@@ -769,6 +837,12 @@ try
             compNames.push_back(thermo.comp(i).name());
         solWriter = std::make_unique<SolutionWriter>(
             fs::current_path().string(), solutionCtl, std::move(compNames));
+        if (fsDict->found("controllers") && vb >= 1)
+            std::cout << "[state] the <t>/ directories hold the PLANT's state"
+                         " (streams + vessel holdups); a controller's memory"
+                         " (a PID's integral, a schedule's clock) is not a"
+                         " unit's interior and is not written -- a restart"
+                         " from one restarts the loop.\n";
     }
 
     // ---- RTD tracer-experiment accumulator (2026-08-23) -------------
@@ -963,76 +1037,78 @@ try
         }
         csv << "\n";
 
-        // OpenFOAM-style real-time instant: each unit's HOLDUP state at t.
-        // The state vector is labelled (n_<comp>... , T, ...); n_<comp> entries
-        // map to the holdup inventory, T to temperature, the rest to extras.
-        // The unit's instantaneous outletStream() is the outlet face.
+        // OpenFOAM-style real-time instant, in the layout of `0/`: every
+        // stream ONE file, every vessel's holdup under internalStates/.
         //
         // The `0/` directory is the AUTHORED initial state (the single source of
         // truth the seed reads back) -- the writer NEVER overwrites it.  Physical
         // transient snapshots are 0.01/ 50/ 100/ ... (t > 0 only).
         if (solWriter && std::abs(t) > 1.0e-9)
         {
-            std::vector<DynamicUnitSnapshot> snaps;
-            snaps.reserve(units.size());
+            std::vector<InternalStateIO::Holdup> holdups;
+            holdups.reserve(units.size());
             for (const auto& u : units)
             {
+                DynamicUnitOperation::HoldupRecord r;
+                if (!u->holdupRecord(r)) continue;          // no inventory
+                InternalStateIO::Holdup h;
+                h.unit        = u->name();
+                h.equipment   = u->type();
+                h.T           = r.T;
+                h.P           = r.P;
+                h.V           = r.V;
+                h.moles       = r.n;
+                h.notRestored = r.notRestored;
+                // The labelled state vector's other entries ride as extras --
+                // derived views (F_in, z_in, ...) for the reader, never read
+                // back -- plus the jacket temperature a controller drives.
                 const auto labels = u->stateLabels();
                 const auto vals   = u->stateVector();
-                DynamicUnitSnapshot snap;
-                snap.name = u->name();
-                snap.type = u->type();
-                snap.moles.assign(thermo.n(), 0.0);
                 for (std::size_t i = 0; i < labels.size() && i < vals.size(); ++i)
                 {
                     const std::string& lbl = labels[i];
-                    if (lbl == "T") { snap.T = vals[i]; continue; }
-                    if (lbl.rfind("n_", 0) == 0)
-                    {
-                        const std::size_t ci = thermo.indexOf(lbl.substr(2));
-                        if (ci < snap.moles.size()) { snap.moles[ci] = vals[i]; continue; }
-                    }
-                    // Anything else (a controller MV mirror, a level, ...) is a
-                    // verbatim extra so the instant captures the FULL state.
-                    snap.extras.emplace_back(lbl, vals[i]);
+                    if (lbl == "T" || lbl.rfind("n_", 0) == 0) continue;
+                    h.extras.emplace_back(lbl, vals[i]);
                 }
-                // Instantaneous outlet face (continuous unit): F/T/P/z.  The
-                // dict parser already converted `P ... bar;` to canonical SI
-                // (Pa) at load, so outletStream().P is in Pa --- no rescale.
-                const ContinuousStream out = u->outletStream();
-                snap.P         = out.P;
-                snap.hasOutlet = true;
-                snap.outF      = out.F;
-                snap.outT      = out.T;
-                snap.outP      = out.P;
-                snap.outZ.assign(out.z.begin(), out.z.end());
-
-                // Instantaneous FEED face (symmetric): F_in/T_in/P/z_in.  When
-                // the unit exposes one, the live overlay shows BOTH faces and
-                // the student SEES accumulation (in flux != out flux).
-                if (u->hasInlet())
-                {
-                    const ContinuousStream in = u->inletStream();
-                    snap.hasInlet = true;
-                    snap.inF      = in.F;
-                    snap.inT      = in.T;
-                    snap.inP      = in.P;
-                    snap.inZ.assign(in.z.begin(), in.z.end());
-                }
-
-                // Jacket coolant temperature as a per-unit extra (where the
-                // unit exposes it as a CV) --- so the instant's internalState
-                // records the jacket the controller is driving.
-                {
-                    const auto cvs = u->availableCVs();
-                    if (std::find(cvs.begin(), cvs.end(), std::string("T_jacket"))
-                            != cvs.end())
-                        snap.extras.emplace_back("T_jacket", u->getCV("T_jacket"));
-                }
-
-                snaps.push_back(std::move(snap));
+                const auto cvs = u->availableCVs();
+                if (std::find(cvs.begin(), cvs.end(), std::string("T_jacket"))
+                        != cvs.end())
+                    h.extras.emplace_back("T_jacket", u->getCV("T_jacket"));
+                holdups.push_back(std::move(h));
             }
-            solWriter->writeDynamicInstant(t, cfg.instantTag, snaps);
+
+            // Every declared stream, ONE file, named by the stream.  A stream
+            // that feeds a unit is written as the value that unit HOLDS on
+            // that port (what it integrates the next step on -- the value a
+            // restart must start it from); a stream nothing consumes is its
+            // producer's outlet.
+            auto toProcess = [&](const std::string& nm, const ContinuousStream& c)
+            {
+                ProcessStream ps;
+                ps.name = nm;
+                ps.F = c.F;  ps.T = c.T;  ps.P = c.P;
+                ps.z = c.z;
+                ps.z.resize(thermo.n(), 0.0);
+                ps.s.assign(thermo.n(), 0.0);
+                ps.vf = 0.0;              // no phase travels on a dynamic stream
+                ps.phasePinned = false;
+                return ps;
+            };
+            std::map<std::string, ProcessStream> streams;
+            for (std::size_t i = 0; i < units.size(); ++i)
+            {
+                const auto outs = declaredOutputs(unitList[i]);
+                for (std::size_t k = 0; k < outs.size(); ++k)
+                    streams[outs[k]] = toProcess(outs[k], units[i]->outletStreamAt(k));
+            }
+            for (std::size_t i = 0; i < units.size(); ++i)
+            {
+                const auto ins = declaredInputs(unitList[i]);
+                for (std::size_t k = 0; k < ins.size(); ++k)
+                    streams[ins[k]] = toProcess(ins[k], units[i]->inletStreamAt(k));
+            }
+            solWriter->writeDynamicInstant(t, cfg.instantTag, holdups, streams,
+                                           thermo);
         }
     };
 

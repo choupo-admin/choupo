@@ -18,11 +18,11 @@
       natural open-loop steady state over ~ several residence times.
 
   What this tutorial shows:
-      The OpenFOAM-style transient solution directories.  With
-      `solutionControl { write true; }` in controlDict, the case root
-      fills with REAL-TIME directories `0/ 50/ 100/ ... 1000/`.  Each
-      `<t>/internalState` is the reactor HOLDUP at that instant; each
-      `<t>/streamFaces` is the instantaneous outlet face.  Scrub the times
+      The OpenFOAM-style transient solution directories.  The case root
+      fills with REAL-TIME directories `0/ 50/ 100/ ... 1000/`, each with
+      the layout of 0/: `<t>/internalStates/reactor` is the reactor HOLDUP
+      at that instant, `<t>/feed` and `<t>/product` the two streams.
+      Scrub the times
       and you watch T(t) and the inventory march to steady state --- the
       same way you scrub a CFD transient in ParaView.
 
@@ -36,6 +36,8 @@ units
     {
         name        reactor;
         type        dynamicCSTR;
+        in          feed;
+        outputs     ( product );
 
 
 

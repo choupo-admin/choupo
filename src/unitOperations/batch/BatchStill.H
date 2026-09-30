@@ -124,6 +124,9 @@ public:
     void step(scalar t, scalar dt) override;
 
     const BatchState& state() const override { return state_; }
+    std::string holdupNotRestored() const override
+    { return "the distillate shed since the last transfer and, under a reflux"
+             " policy, the reflux ratio it has reached"; }
 
     void setOperationParameter(const std::string& key, scalar value) override;
     void notifyStateWillChange() override;

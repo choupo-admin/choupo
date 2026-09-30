@@ -19,7 +19,7 @@
   grows again on the plateau.  At verbosity 3 the adaptive step HISTORY is
   printed --- the student SEES h adapt.
 
-  The trajectory rows + (if solutionControl on) instant dirs still land on the
+  The trajectory rows + the time directories (on by default) still land on the
   CLEAN writeInterval grid (0, 10, 20, ... s): the integrator is clamped so it
   never overshoots a write time.  The final state agrees with a fine fixed-step
   RK4 run to tolerance --- adaptive stepping is an EFFICIENCY/ACCURACY tool,

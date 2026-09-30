@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
-"""Stream-face gate: the aggregated snapshot grammar is streamFaces/faces{}
-EVERYWHERE a writer or migrator can produce it.
+"""Stream-face gate: the aggregated STEADY instant snapshot is spelled
+streamFaces/faces{} wherever its writer produces it.
 
-1. MIGRATOR: run bin/curate/migrate_dyn0.py on a temp dynamic case with
-   inline initial{}/inlet{} -- it must write 0/streamFaces with a faces{}
-   block and must NOT write 0/streams (the official migrator resurrecting
-   the retired name was an executable defect, not prose).
+WRITER: run the byUnit-projecting plant case in a temp copy -- each
+iterations/ instant must carry `streamFaces` (never a file named `streams`),
+and byUnit/<unit>/ must hold a `streamFaces -> ../../streamFaces` symlink plus
+a ports file whose projection field reads `streamFaces "../../streamFaces";`
+(one spelling, no `streams` alias).
 
-2. WRITER: run the byUnit-projecting plant case in a temp copy -- each
-   instant must carry `streamFaces` (never a file named `streams`), and
-   byUnit/<unit>/ must hold a `streamFaces -> ../../streamFaces` symlink
-   plus a ports file whose projection field reads
-   `streamFaces "../../streamFaces";` (one spelling, no `streams` alias).
+RETIRED ARM (2026-09-30, task #186): this gate used to run
+bin/curate/migrate_dyn0.py and require it to write `0/streamFaces`.  The
+time-integrated binaries no longer read that file -- a `0/streamFaces` is
+REFUSED by name -- so the migrator that produced it was deleted with its
+twin migrate_batch0.py, and the arm went with them.  The time-integrated
+layout (one file per stream, `internalStates/<unit>` per vessel, refusal of
+the old shape, `<t>/` directories by default and restartable) is held by
+check_time_state_layout.  `streamFaces` survives only as the STEADY
+iterations/ snapshot's file name, which is what this gate still checks.
 
 Exit 1 listing failures."""
 import os
@@ -24,54 +29,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 PLANT = ROOT / "tutorials" / "plant" / "ChemicalPlantTutorial"
-
-FLOWSHEET = """units
-(
-    {
-        name        reactor;
-        type        dynamicCSTR;
-        initial
-        {
-            T            320.0 K;
-            P            1.013 bar;
-            V            0.001;
-            totalMoles   0.012;
-            molarComposition  { compA 1.0;  compB 0.0; }
-        }
-        inlet
-        {
-            F            5.0e-5 kmol/s;
-            T            330.0 K;
-            molarComposition  { compA 1.0;  compB 0.0; }
-        }
-        operation { UA 50.0; T_jacket 360.0 K; }
-    }
-);
-"""
-
-
-def check_migrator(tmp, bad):
-    case = Path(tmp) / "dyn"
-    (case / "system").mkdir(parents=True)
-    (case / "system" / "flowsheetDict").write_text(FLOWSHEET)
-    r = subprocess.run([sys.executable,
-                        str(ROOT / "bin" / "curate" / "migrate_dyn0.py"),
-                        str(case)], capture_output=True, text=True, cwd=ROOT)
-    if r.returncode != 0:
-        bad.append("migrate_dyn0.py failed: " + (r.stdout + r.stderr)[-300:])
-        return
-    if (case / "0" / "streams").exists():
-        bad.append("migrate_dyn0.py wrote 0/streams (the retired name)")
-    faces = case / "0" / "streamFaces"
-    if not faces.exists():
-        bad.append("migrate_dyn0.py did not write 0/streamFaces")
-        return
-    txt = faces.read_text()
-    if "faces" not in txt.split("{")[0].splitlines()[-1] and "\nfaces\n" not in txt:
-        bad.append("0/streamFaces lacks the faces{} block")
-    if "\nstreams\n" in txt:
-        bad.append("0/streamFaces still spells a streams{} block")
-
 
 def check_writer(tmp, bad):
     case = Path(tmp) / "plant"
@@ -128,15 +85,17 @@ def check_writer(tmp, bad):
 def main():
     bad = []
     with tempfile.TemporaryDirectory(prefix="choupo-faces-") as tmp:
-        check_migrator(tmp, bad)
         check_writer(tmp, bad)
     if bad:
         print("STREAM-FACE GATE FAILED (%d):" % len(bad))
         for b in bad:
             print("  " + b)
         return 1
-    print("stream-face gate: migrator + writer speak streamFaces/faces{}"
-          " (no retired spelling)")
+    print("check_stream_faces: OK -- the STEADY iterations/ instant writer"
+          " speaks streamFaces/faces{} with its byUnit/ projection (no"
+          " retired `streams` spelling), on the flagship plant.  NOT checked"
+          " here: the time-integrated layout, which check_time_state_layout"
+          " holds")
     return 0
 
 

@@ -2061,9 +2061,11 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/comprep.$$
 
-    # Stream-face gate: the aggregated snapshot grammar (streamFaces/faces{})
-    # is what every writer AND the official migrator produce -- the retired
-    # `streams` spelling must not be resurrectable.
+    # Stream-face gate: the aggregated STEADY iterations/ snapshot grammar
+    # (streamFaces/faces{}) is what its writer produces -- the retired
+    # `streams` spelling must not be resurrectable.  (Its migrator arm went
+    # with migrate_dyn0.py on 2026-09-30: the time-integrated layout is
+    # check_time_state_layout's.)
     if "$ROOT/bin/curate/check_stream_faces.py" > /tmp/sfgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "stream-face-gate" "$(head -1 /tmp/sfgate.$$)"
         pass=$((pass+1))
@@ -3373,7 +3375,7 @@ PYEOF
     # transient: the NF feed-and-bleed start-up must END on membrane18's
     # steady answer, its mass residual must converge with deltaT, and four
     # refusals (a loop with no vessel, a vessel with two inputs, topology
-    # inside the wrapped unit, an inlet with no face) fire by name.
+    # inside the wrapped unit, an inlet with no state file) fire by name.
     if "$ROOT/bin/curate/check_quasi_steady.py" > /tmp/quasis.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "quasi-steady-gate" "$(head -1 /tmp/quasis.$$)"
         pass=$((pass+1))
@@ -3383,6 +3385,21 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/quasis.$$
+
+    # time-state-layout gate (2026-09-30, #186).  The time-integrated cases
+    # read and write the ratified layout (0/<stream>, 0/internalStates/<unit>
+    # with a holdup {} block), refuse the retired 0/internalState +
+    # 0/streamFaces naming the migrator, and write <t>/ directories by
+    # default that restart the case (or say why they cannot).
+    if "$ROOT/bin/curate/check_time_state_layout.py" > /tmp/tslayout.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "time-state-layout-gate" "$(head -1 /tmp/tslayout.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_time_state_layout.py)\n" "time-state-layout-gate"
+        cat /tmp/tslayout.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/tslayout.$$
 
     # UF gel-polarisation gate (2026-09-30, C27).  membrane19's flux is the
     # gel-limited closed form at every node, flat from 3 to 5 bar, exactly

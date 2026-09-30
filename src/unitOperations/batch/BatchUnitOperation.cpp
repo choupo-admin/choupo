@@ -71,6 +71,17 @@ std::unique_ptr<BatchUnitOperation> BatchUnitOperation::New(const std::string& t
     return it->second();
 }
 
+bool BatchUnitOperation::readsHoldupRecord(const std::string& type)
+{
+    return New(type)->readsHoldup();
+}
+
+std::string BatchUnitOperation::holdupNotRestored() const
+{
+    return "any state of a " + type() + " beyond T, P, V and the inventory"
+           " (the type has not declared its holdup record complete)";
+}
+
 std::vector<std::string> BatchUnitOperation::availableTypes()
 {
     std::vector<std::string> v;

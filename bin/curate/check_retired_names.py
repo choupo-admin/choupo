@@ -146,9 +146,9 @@ AGG = re.compile(r"0/streams\b|<t>/streams\b|<n>/streams\b"
 
 def tutorial_snapshot_scan_files(tutorials_root):
     """The tutorial files the aggregated-snapshot scan covers.  The AUTHORED
-    `0/` directory is IN scope (0/internalState, 0/streamFaces headers teach
-    students); numbered TRANSIENT instants (50/, 0.01/, iterations/NNNNNN)
-    and other run outputs are not."""
+    `0/` directory is IN scope (the 0/<stream> and 0/internalStates/<unit>
+    headers teach students); numbered TRANSIENT instants (50/, 0.01/,
+    iterations/NNNNNN) and other run outputs are not."""
     out = []
     for f in tutorials_root.rglob("*"):
         if not f.is_file():
@@ -167,20 +167,21 @@ def tutorial_snapshot_scan_files(tutorials_root):
     return out
 
 
-# CAUSAL self-test of the scope: a fixture 0/internalState carrying the
+# CAUSAL self-test of the scope: a fixture 0/internalStates/<unit> carrying the
 # retired spelling MUST be selected (the authored 0/ is in scope) and a
 # numbered transient instant must NOT be.  Without this the gate can claim
 # coverage its own filter silently skips.
 import tempfile
 with tempfile.TemporaryDirectory(prefix="choupo-retgate-") as _tmp:
     _t = Path(_tmp) / "tutorials"
-    (_t / "case" / "0").mkdir(parents=True)
-    (_t / "case" / "0" / "internalState").write_text("// see 0/streams\n")
-    (_t / "case" / "100").mkdir()
-    (_t / "case" / "100" / "internalState").write_text("// see 0/streams\n")
+    (_t / "case" / "0" / "internalStates").mkdir(parents=True)
+    (_t / "case" / "0" / "internalStates" / "u").write_text("// see 0/streams\n")
+    (_t / "case" / "100" / "internalStates").mkdir(parents=True)
+    (_t / "case" / "100" / "internalStates" / "u").write_text("// see 0/streams\n")
     _sel = {f.relative_to(_t).as_posix()
             for f in tutorial_snapshot_scan_files(_t)}
-    if "case/0/internalState" not in _sel or "case/100/internalState" in _sel:
+    if ("case/0/internalStates/u" not in _sel
+            or "case/100/internalStates/u" in _sel):
         print("RETIRED-NAME GATE SELF-TEST FAILED: the snapshot scan scope"
               " is wrong (authored 0/ must be IN, numbered instants OUT);"
               f" selected = {sorted(_sel)}")

@@ -91,11 +91,12 @@ records for itself.  What belongs here is the SHAPE, never the size:
                           fifth problem class (ruled 2026-09-20): the same
                           driver as choupoCtrl (src/dynamicDriver/, ONE
                           home), minus the control layer -- a `controllers`
-                          block is REFUSED by name.  Inherits the dynamic
-                          0/ shape (0/internalState + 0/streamFaces), the
-                          forward router, the accepted-step balance ledger,
-                          the real-time instant directories and the
-                          outerDict functor unchanged.
+                          block is REFUSED by name.  Shares with the other
+                          time-integrated binaries the ratified 0/ layout
+                          (0/<stream>, 0/internalStates/<unit>, 2026-09-30),
+                          the forward router, the accepted-step balance
+                          ledger, the <t>/ time directories (on by default)
+                          and the outerDict functor.
       choupoCtrl    --   dynamic continuous + control loops,
                           dY/dt = f(Y, u, t) with controllers writing MVs
       choupoProps   --   property evaluation + the PROPS BENCH

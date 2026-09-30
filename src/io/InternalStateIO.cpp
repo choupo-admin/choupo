@@ -142,7 +142,7 @@ const std::vector<std::string>& knownKinds()
 {
     static const std::vector<std::string> kinds =
         { "stageProfile", "axialProfile", "sizeDistribution", "swingTable",
-          "profile" };
+          "profile", HOLDUP };
     return kinds;
 }
 
@@ -686,26 +686,17 @@ UnitProfile parseBlock(const DictPtr& d, const std::string& where)
     return p;
 }
 
-} // namespace
-
-std::map<std::string, std::map<std::string, UnitProfile>>
-read(const std::string&           viewRoot,
-     const std::vector<FlatUnit>& topology,
-     int                          verbosity)
+//  A RECORD FILED WHERE THE READER DOES NOT LOOK IS A DECLARATION SILENTLY
+//  DROPPED -- the retired one-directory-per-unit shape
+//  (`<view>/<SECTOR>/<unit>/<kind>`, 2026-09-06, one day old) would sit in
+//  the view, look like state, and seed nothing.  So the whole view is swept
+//  for records OUTSIDE `internalStates/`, and one found there refuses naming
+//  the address it must move to.  ONE sweep for both readers (the steady
+//  profiles and the time-integrated holdups), so the two classes refuse a
+//  misfiling with the same sentence.
+void refuseMisfiled(const fs::path& view, const std::string& viewName)
 {
-    std::map<std::string, std::map<std::string, UnitProfile>> out;
-    const fs::path view(viewRoot);
-    if (!fs::exists(view) || !fs::is_directory(view)) return out;
-    const std::string viewName = view.filename().string();
-
     std::error_code ec;
-
-    //  A RECORD FILED WHERE THE READER DOES NOT LOOK IS A DECLARATION
-    //  SILENTLY DROPPED -- the retired one-directory-per-unit shape
-    //  (`<view>/<SECTOR>/<unit>/<kind>`, 2026-09-06, one day old) would sit
-    //  in the view, look like state, and seed nothing.  So the whole view is
-    //  swept for records OUTSIDE `internalStates/`, and one found there
-    //  refuses naming the address it must move to.
     for (const auto& e : fs::recursive_directory_iterator(view, ec))
     {
         if (!e.is_regular_file()) continue;
@@ -724,6 +715,23 @@ read(const std::string&           viewRoot,
               " be skipped in silence, which is the defect a declared"
               " interior exists to remove.");
     }
+}
+
+} // namespace
+
+std::map<std::string, std::map<std::string, UnitProfile>>
+read(const std::string&           viewRoot,
+     const std::vector<FlatUnit>& topology,
+     int                          verbosity)
+{
+    std::map<std::string, std::map<std::string, UnitProfile>> out;
+    const fs::path view(viewRoot);
+    if (!fs::exists(view) || !fs::is_directory(view)) return out;
+    const std::string viewName = view.filename().string();
+
+    std::error_code ec;
+
+    refuseMisfiled(view, viewName);
 
     const fs::path root = view / ROOT;
     if (!fs::exists(root) || !fs::is_directory(root)) return out;
@@ -787,6 +795,17 @@ read(const std::string&           viewRoot,
         for (const auto& key : d->keys())
         {
             if (!std::holds_alternative<DictPtr>(d->entryValue(key))) continue;
+            //  THE HOLDUP KIND IS THE TIME-INTEGRATED CLASS'S.  It is in the
+            //  vocabulary, so it is not "unknown"; but no steady unit starts
+            //  from a vessel inventory, and a declared field nobody reads is
+            //  refused by name rather than carried as a comment.
+            if (key == HOLDUP)
+                throw std::runtime_error(
+                    "declared interior " + where + ": block `holdup` is the"
+                    " vessel inventory of the TIME-INTEGRATED class"
+                    " (choupoBatch, choupoCtrl, choupoSemiContinuous) -- no"
+                    " steady unit starts from one.  Delete the file, or run"
+                    " the case under the binary that reads it.");
             if (std::find(kinds.begin(), kinds.end(), key) == kinds.end())
             {
                 std::string can;
@@ -821,6 +840,274 @@ read(const std::string&           viewRoot,
                 (void)prof;
                 std::cout << " " << uname << " (" << kind << ")";
             }
+        std::cout << "\n";
+    }
+    return out;
+}
+
+
+// ===========================================================================
+//  THE HOLDUP KIND -- the time-integrated class's interior (task #186).
+// ===========================================================================
+namespace
+{
+
+//  A restart must start from the double the run held, so a holdup is written
+//  at the precision that round-trips a double exactly -- NOT the profiles'
+//  12 digits, which match a JSON channel a holdup does not ride.
+std::string exact(scalar v)
+{
+    std::ostringstream o;
+    o << std::setprecision(17) << v;
+    return o.str();
+}
+
+} // namespace
+
+bool writeHoldup(const std::string&               viewRoot,
+                 const Holdup&                    h,
+                 const std::vector<std::string>&  compNames,
+                 const std::string&               app,
+                 scalar                           t)
+{
+    const fs::path file = fs::path(viewRoot) / ROOT / h.unit;
+    std::error_code ec;
+    fs::create_directories(file.parent_path(), ec);
+
+    std::ostringstream o;
+    o << "/*--------------------------------*- Choupo -*-----------------"
+         "---------------*\\\n"
+         "  THE HOLDUP OF ONE VESSEL at t = " << exact(t) << " s (" << app
+      << ").\n"
+         "  A time directory has the SAME layout as `0/`: one file per\n"
+         "  stream beside this one, one file per inventory unit under\n"
+         "  `internalStates/`.  ";
+    if (h.notRestored.empty())
+        o << "This record IS the unit's whole integrated\n"
+             "  state, so renaming this time directory `0/` restarts THIS\n"
+             "  VESSEL from t (a controller's memory is not a unit's\n"
+             "  interior and is not in any record).\n";
+    else
+        o << "This record is NOT the unit's whole state:\n"
+             "  it does not carry " << h.notRestored << ".\n"
+             "  A restart from it would re-invent that part, so the reader\n"
+             "  REFUSES it -- see `notRestored` below.\n";
+    o << "  `extras {}` are derived views at this instant, written for the\n"
+         "  reader and NEVER read back.  Regenerated by every run; do not\n"
+         "  edit it here.\n"
+         "\\*-----------------------------------------------------------"
+         "----------------*/\n\n";
+    o << "recordType  internalState;\n\n";
+    o << "unit        " << quoted(h.unit) << ";\n";
+    o << "equipment   " << (h.equipment.empty() ? std::string("?") : h.equipment)
+      << ";\n";
+    o << "time        " << exact(t) << ";   // s (real, physical)\n\n";
+
+    o << HOLDUP << "\n{\n";
+    o << "    T           " << exact(h.T) << " K;\n";
+    o << "    P           " << exact(h.P) << " Pa;\n";
+    if (h.V != 0.0)
+        o << "    V           " << exact(h.V) << " m3;\n";
+    o << "    holdupMolar\n    {\n";
+    for (std::size_t i = 0; i < compNames.size() && i < h.moles.size(); ++i)
+        o << "        " << std::left << std::setw(16) << compNames[i] << " "
+          << exact(h.moles[i]) << " kmol;\n";
+    o << "    }\n";
+    if (!h.notRestored.empty())
+        o << "    notRestored " << quoted(h.notRestored) << ";\n";
+    if (!h.extras.empty())
+    {
+        o << "    extras\n    {\n";
+        for (const auto& [k, v] : h.extras)
+            o << "        " << std::left << std::setw(16) << k << " "
+              << exact(v) << ";\n";
+        o << "    }\n";
+    }
+    o << "}\n";
+
+    std::ofstream f(file.string(), std::ios::out | std::ios::trunc);
+    if (!f.is_open()) return false;
+    f << o.str();
+    f.flush();
+    const bool ok = f.good();
+    f.close();
+    return ok;
+}
+
+void refuseRetiredDynamicShape(const std::string& viewRoot,
+                               const std::string& binaryName)
+{
+    const fs::path view(viewRoot);
+    const std::string viewName = view.filename().string();
+    for (const char* old : { "internalState", "streamFaces" })
+    {
+        if (!fs::exists(view / old)) continue;
+        throw std::runtime_error(binaryName + ": " + viewName + "/" + old
+            + " is the RETIRED time-integrated state layout (one file for"
+              " every unit's holdup, one for every inlet face).  Since"
+              " 2026-09-30 a time-integrated case uses the layout the steady"
+              " path already uses: ONE file per stream at " + viewName
+            + "/<stream>, named by the stream the unit declares in"
+              " flowsheetDict (`in <stream>;` / `inputs ( ... );`), and ONE"
+              " file per vessel at " + viewName + "/" + ROOT + "/<unit>"
+              " carrying a `holdup {}` block.  There is no dual reader.  Run"
+              " the one-shot migrator:  bin/curate/migrate_state_layout.py"
+              " <case>");
+    }
+}
+
+std::map<std::string, DictPtr>
+readHoldups(const std::string&                        viewRoot,
+            const std::map<std::string, HoldupUnit>&  units,
+            const std::string&                        binaryName,
+            int                                       verbosity)
+{
+    std::map<std::string, DictPtr> out;
+    const fs::path view(viewRoot);
+    if (!fs::exists(view) || !fs::is_directory(view)) return out;
+    const std::string viewName = view.filename().string();
+
+    refuseMisfiled(view, viewName);
+
+    const fs::path root = view / ROOT;
+    if (!fs::exists(root) || !fs::is_directory(root)) return out;
+
+    std::error_code ec;
+    std::vector<fs::path> files;
+    for (const auto& e : fs::recursive_directory_iterator(root, ec))
+        if (e.is_regular_file()) files.push_back(e.path());
+    std::sort(files.begin(), files.end());
+
+    for (const auto& path : files)
+    {
+        const std::string rel   = fs::relative(path, root, ec).generic_string();
+        const std::string where = viewName + "/" + ROOT + "/" + rel;
+
+        if (!looksLikeInternalState(path))
+            throw std::runtime_error(binaryName + ": " + where + " does not"
+                " declare `recordType internalState;` -- every file under "
+                + viewName + "/" + ROOT + "/ is a unit's interior record, and"
+                  " this one does not say so.");
+
+        //  A time-integrated case has no geography: the address IS the name.
+        auto uit = units.find(rel);
+        if (uit == units.end())
+        {
+            std::string known;
+            for (const auto& [n, u] : units)
+                known += (known.empty() ? "" : ", ") + n;
+            throw std::runtime_error(binaryName + ": ORPHAN declared interior "
+                + where + " -- '" + rel + "' names no unit of this flowsheet"
+                  " (a vessel's holdup lives at " + viewName + "/" + ROOT
+                + "/<unit>).  The units: " + known + ".");
+        }
+        const std::string& uname = uit->first;
+        const HoldupUnit&  decl  = uit->second;
+        auto d = Dictionary::fromFile(path.string());
+        if (d->found("equipment"))
+        {
+            const std::string eq = d->lookupWord("equipment");
+            if (eq != decl.type)
+                throw std::runtime_error(binaryName + ": " + where
+                    + " declares `equipment " + eq + ";` and unit '" + uname
+                    + "' is a " + decl.type + " -- the record describes"
+                      " another piece of equipment.");
+        }
+
+        DictPtr blk;
+        for (const auto& key : d->keys())
+        {
+            if (!std::holds_alternative<DictPtr>(d->entryValue(key))) continue;
+            if (key == HOLDUP) { blk = d->subDict(key); continue; }
+            const auto& kinds = knownKinds();
+            const bool isKind =
+                std::find(kinds.begin(), kinds.end(), key) != kinds.end();
+            throw std::runtime_error(binaryName + ": " + where + ": block `"
+                + key + "` "
+                + (isKind
+                     ? std::string("is a steady unit's field over a coordinate"
+                                   " -- no time-integrated unit reads it")
+                     : std::string("is not a kind of internal state"))
+                + ".  A time-integrated vessel's interior is ONE `holdup {}`"
+                  " block.");
+        }
+        if (!blk)
+            throw std::runtime_error(binaryName + ": " + where + " carries no"
+                " `holdup {}` block -- a vessel's interior record with no"
+                " inventory declares nothing.");
+
+        //  A RECORD THAT SAYS IT IS INCOMPLETE is refused first, whoever it
+        //  names: its own sentence is the most precise account of why.
+        if (blk->found("notRestored"))
+            throw std::runtime_error(binaryName + ": " + where + " was written"
+                " by the engine for a unit whose state is MORE than its"
+                " holdup -- it does not carry "
+                + blk->lookupWord("notRestored") + ".  A restart from it"
+                  " would re-invent that part while claiming to restore the"
+                  " unit, so it is refused.  Start the case from its authored"
+                  " `0/`, or declare that part yourself and delete the"
+                  " `notRestored` line.");
+
+        if (!decl.readsHoldup)
+            throw std::runtime_error(binaryName + ": " + where + " declares"
+                " a holdup for unit '" + uname + "' (type " + decl.type
+                + "), which starts from no holdup record -- a quasi-steady"
+                  " unit accumulates nothing (its inlets are the files of the"
+                  " streams it declares), and a unit whose state is a profile"
+                  " declares that profile elsewhere.  A holdup declared for"
+                  " it is a field nobody reads.  Delete the file.");
+
+
+        const bool molar = blk->found("holdupMolar");
+        if (molar && (blk->found("totalMoles") || blk->found("molarComposition")))
+            throw std::runtime_error(binaryName + ": " + where + " states the"
+                " inventory TWICE (`holdupMolar` and `totalMoles` /"
+                " `molarComposition`) -- two spellings of one inventory are"
+                " two homes for it.  Keep one.");
+
+        //  The `initial {}` the unit reads: everything the block says,
+        //  VERBATIM (declared units and all), minus what is not the unit's
+        //  to read -- the inventory is re-expressed, the extras dropped.
+        DictPtr init = blk->deepCopy();
+        init->setName("initial");
+        init->erase("holdupMolar");
+        if (init->found("extras"))
+        {
+            init->erase("extras");
+            if (verbosity >= 2)
+                std::cout << "  [state] " << where << ": `extras {}` are"
+                             " derived views written for the reader -- not"
+                             " read on start\n";
+        }
+        if (molar)
+        {
+            //  The translation the dynamic seed has always made, at the
+            //  same precision, so a migrated case reproduces its answer to
+            //  the last bit: n_total = sum n_i, x_i = n_i / n_total.
+            auto hold = blk->subDict("holdupMolar");
+            scalar nTot = 0.0;
+            for (const auto& c : hold->keys()) nTot += hold->lookupScalar(c);
+            std::ostringstream is;
+            is << std::setprecision(17) << "totalMoles " << nTot << ";";
+            if (nTot > 0.0)
+            {
+                is << " molarComposition {";
+                for (const auto& c : hold->keys())
+                    is << " " << c << " " << hold->lookupScalar(c) / nTot << ";";
+                is << " }";
+            }
+            auto tr = Dictionary::fromString(is.str(), where);
+            for (const auto& k : tr->keys()) init->insert(k, tr->entryValue(k));
+        }
+        out[uname] = init;
+    }
+
+    if (verbosity >= 2 && !out.empty())
+    {
+        std::cout << "  [state] " << out.size() << " holdup"
+                  << (out.size() == 1 ? "" : "s") << " read from " << viewName
+                  << "/" << ROOT << "/:";
+        for (const auto& [n, d] : out) { (void)d; std::cout << " " << n; }
         std::cout << "\n";
     }
     return out;

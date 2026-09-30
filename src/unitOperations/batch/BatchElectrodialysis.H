@@ -207,6 +207,8 @@ public:
 
     //- The DILUATE is the vessel's state: it is the product.
     const BatchState& state() const override { return state_; }
+    std::string holdupNotRestored() const override
+    { return "the concentrate tank and the electrical work integrated so far"; }
 
     //- BOTH tanks.  The rig is closed, so this is constant for the whole
     //  campaign and the material balance closes by construction; a sum that

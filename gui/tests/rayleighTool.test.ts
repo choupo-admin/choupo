@@ -227,9 +227,9 @@ describe("the classroom witness — still01 bundled and knob-addressable", () =>
     expect(raws).toBeDefined();
     expect(raws!["system/flowsheetDict"]).toContain("batchStill");
     expect(raws!["system/controlDict"]).toContain("choupoBatch");
-    // The charge lives in 0/internalState (the batch holdup home) — the two
+    // The charge lives in 0/internalStates/still (the batch holdup home) — the two
     // charge knobs write there.
-    expect(raws!["0/internalState"]).toContain("totalMoles");
+    expect(raws!["0/internalStates/still"]).toContain("totalMoles");
     // The witness's own declared chemistry, which the y*(x) sweep replicates
     // and the deviation chip's honesty rests on: ideal Raoult, declared.
     expect(raws!["constant/thermoPhysPropDict"]).toContain("activityModel ideal");
@@ -276,7 +276,7 @@ describe("the classroom witness — still01 bundled and knob-addressable", () =>
     expect(files.controlDict["application"]).toBe("choupoBatch");
     // The clone still carries the raw dicts the adapter writes into MEMFS.
     expect(files.rawFiles?.["system/flowsheetDict"]).toContain("batchStill");
-    expect(files.rawFiles?.["0/internalState"]).toContain("totalMoles");
+    expect(files.rawFiles?.["0/internalStates/still"]).toContain("totalMoles");
   });
 
   it("a bogus key throws rather than silently running the wrong question", () => {
@@ -295,9 +295,9 @@ describe("the classroom witness — still01 bundled and knob-addressable", () =>
     // the grammar indeed refuses it, so the day the dict layout changes this
     // recorded reason is re-examined rather than silently stale.
     const raws = tutorialByName(RAYLEIGH_WITNESS)!.files.rawFiles!;
-    expect(raws["0/internalState"]).toContain("molarComposition");
-    expect(() => applyScalarOverride(raws["0/internalState"]!,
-      { file: "0/internalState", key: "benzene", value: 0.4 }))
+    expect(raws["0/internalStates/still"]).toContain("molarComposition");
+    expect(() => applyScalarOverride(raws["0/internalStates/still"]!,
+      { file: "0/internalStates/still", key: "benzene", value: 0.4 }))
       .toThrow(/benzene/);
   });
 

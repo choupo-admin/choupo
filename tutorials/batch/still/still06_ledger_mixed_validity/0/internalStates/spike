@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/spike -- the initial HOLDUP of 'spike', the SINGLE
+  source of truth (an inline initial{} block in flowsheetDict is refused).
+  The `holdup {}` block is the vessel's starting state: T, P, V and the
+  inventory (totalMoles + molarComposition, or per species as
+  holdupMolar).  Every <t>/internalStates/spike a run writes carries the
+  same kind, so a time directory renamed 0/ starts the case from t.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "spike";
+equipment   batchAccumulator;
+
+holdup
+{
+    T            360.0 K;
+    P            1.013 bar;
+    V            1.0e-4;
+    totalMoles   2.0e-4;           // kmol
+    molarComposition  { compA 1.0; }
+}

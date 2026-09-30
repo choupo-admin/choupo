@@ -34,7 +34,8 @@ declared.
 | G | `totalMassFlow <kg/h>;` | a mass-only anchor |
 
 Note that `molarComposition` / `massComposition` — the spellings a batch or
-dynamic unit-op block uses in its `initial {}` / `feed {}` — are **not** stream
+dynamic vessel uses in its `holdup {}` record (`0/internalStates/<unit>`) or a
+unit-op `feed {}` — are **not** stream
 keys.  Two readers, two vocabularies.
 
 **E and F are different KINDS of claim, and that is why they are two forms.**

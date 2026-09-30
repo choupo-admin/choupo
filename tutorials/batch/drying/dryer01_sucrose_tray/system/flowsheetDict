@@ -86,7 +86,7 @@
   temperature NOT integrated.
 \*---------------------------------------------------------------------------*/
 
-// the vessel's initial holdup lives in 0/internalState (the single source
+// the vessel's initial holdup lives in 0/internalStates/dryer (the single source
 // of truth); flowsheetDict carries the topology and the operation only
 
 units

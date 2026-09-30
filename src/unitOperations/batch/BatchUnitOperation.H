@@ -130,6 +130,23 @@ public:
     // Inspect current state (for trajectory writeout).
     virtual const BatchState& state() const = 0;
 
+    //  ---- The holdup record (task #186, 2026-09-30) ---------------------
+    //  `0/internalStates/<unit>` declares the vessel's starting holdup (a
+    //  `holdup {}` block, translated into the initial{} dict initialise()
+    //  reads), and every `<t>/internalStates/<unit>` writes state() back in
+    //  the same kind.
+    //- Does this unit START from a holdup record?  A vessel does; a unit
+    //  whose state is a profile it declares elsewhere (a fixed bed) does not.
+    virtual bool readsHoldup() const { return true; }
+    //- Asked of the CLASS: the driver needs it while reading dicts.
+    static bool readsHoldupRecord(const std::string& type);
+    //- EMPTY only when state() -- T, P, V and the inventory -- IS the unit's
+    //  whole integrated state, the claim that makes a time directory a
+    //  restart point.  Otherwise the sentence naming what the record does
+    //  not carry.  The DEFAULT makes no claim: a unit type makes it by
+    //  overriding, or it is not made.
+    virtual std::string holdupNotRestored() const;
+
     // Extra trajectory columns beyond the mole numbers + T.  A unit
     // whose interesting state is NOT just mole numbers (e.g. the crystalliser's
     // supersaturation, moments and crystal size) returns them here as

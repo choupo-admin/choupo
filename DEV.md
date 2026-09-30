@@ -1884,7 +1884,15 @@ accepts today, and that is a policy call.
      `<view>/internalStates/<unit>`), NO dual reader (the old shape refused
      naming the migrator), and `<t>/` directories written BY DEFAULT at
      every writeInterval, as OpenFOAM does (`write false;` opts out).
-     Dispatched to a general with a written brief.
+     Dispatched to a general with a written brief.  **BUILT 2026-09-30 on
+     the general's branch (awaiting integration):** both drivers read and
+     write the ratified layout (a `holdup {}` kind in
+     `InternalStateIO`), the 59 cases migrated byte-identically by
+     `bin/curate/migrate_state_layout.py`, the old shape refused by name,
+     `<t>/` written by default and restartable where the holdup is the
+     unit's whole state (`notRestored` + a refusal elsewhere); gate
+     `check_time_state_layout`; record
+     `docs/design/a-state-directory-is-a-restartable-snapshot.md` §11.
 
 **C26. DRYING, REVIEWED FOR TEACHING -- slice 1: THE CHARACTERISTIC
      DRYING CURVE (asked 2026-09-29, Vitor: "quero rever a secagem.

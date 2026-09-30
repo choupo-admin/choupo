@@ -101,6 +101,17 @@ public:
     bool             hasInlet()    const override { return true; }
     ContinuousStream inletStream() const override;
 
+    //- The vessel's whole integrated state IS its holdup: the inventory and
+    //  T, at the volume and pressure it was declared with.  (T_jacket is a
+    //  manipulated variable -- the operation's or a controller's -- and the
+    //  feed is the stream file beside this record; neither is the vessel's.)
+    bool holdupRecord(HoldupRecord& h) const override
+    {
+        h.T = T_;  h.P = P_;  h.V = V_;  h.n = n_;
+        h.notRestored.clear();
+        return true;
+    }
+
     BalanceSnapshot balanceSnapshot() const override;
 
     void   setMV(const std::string& key, scalar value) override;

@@ -65,6 +65,13 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
     }
 
     // ---- Inlet --------------------------------------------------------
+    //  The driver hands the feed over from the stream file of the stream
+    //  this unit declares as its inlet (`in <stream>;` -> 0/<stream>).
+    if (!unitDict->found("inlet"))
+        throw std::runtime_error("DynamicCSTR '" + name_ + "': no feed -- a"
+            " continuous vessel declares the stream it is fed by (`in"
+            " <stream>;` in flowsheetDict), and that stream's state lives in"
+            " its own file 0/<stream>.");
     auto inletDict = unitDict->subDict("inlet");
     F_in_ = inletDict->lookupScalar("F");
     T_in_ = inletDict->lookupScalar("T");

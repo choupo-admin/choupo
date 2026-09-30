@@ -332,7 +332,7 @@ export function buildConstruction(
 // Candidate knobs deliberately ABSENT, and why is worth recording:
 //   * x_0, the charge composition — the witness declares it as a one-line
 //     inline block (`molarComposition { benzene 0.5; toluene 0.5; }` in
-//     0/internalState), which the line-anchored `key value [unit];` override
+//     0/internalStates/still), which the line-anchored `key value [unit];` override
 //     grammar cannot address (and two fractions constrained to sum to 1 are
 //     not one scalar knob anyway) — the same gap BreakthroughTool records for
 //     its feed composition;
@@ -415,11 +415,11 @@ export interface RayleighKnob {
  *  handed to the curve sweep, so the construction and the still can never run
  *  at two different pressures. */
 export const RAYLEIGH_KNOBS: readonly RayleighKnob[] = [
-  // 0/internalState declares `totalMoles 1.0e-3;` BARE (kmol in a comment).
-  { id: "charge", label: "charge W0 (kmol)", file: "0/internalState",
+  // 0/internalStates/still declares `totalMoles 1.0e-3;` BARE (kmol in a comment).
+  { id: "charge", label: "charge W0 (kmol)", file: "0/internalStates/still",
     key: "totalMoles", def: 1.0e-3, min: 1.0e-4, max: 1.0e-2, step: 1.0e-4,
     unit: "" },
-  { id: "chargeT", label: "charge T", file: "0/internalState", key: "T",
+  { id: "chargeT", label: "charge T", file: "0/internalStates/still", key: "T",
     def: 365, min: 300, max: 383, step: 1, unit: "K" },
   { id: "P", label: "still pressure P", file: FLOWSHEET, key: "P",
     def: 1.013, min: 0.3, max: 3, step: 0.05, unit: "bar" },

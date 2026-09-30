@@ -126,8 +126,11 @@ Description
     `purgeWrite` keeps only the last N numbered instants (0/ and the converged
     final are always retained).
 
-    The whole mechanism is opt-in: absent `solutionControl{}` in controlDict
-    => the callback is never installed => zero behavioural change.
+    The whole mechanism is opt-in ON THE STEADY PATH: absent
+    `solutionControl{}` in controlDict => the callback is never installed =>
+    zero behavioural change.  The TIME-INTEGRATED binaries write their `<t>/`
+    directories BY DEFAULT, as OpenFOAM does (2026-09-30, task #186);
+    `solutionControl { write false; }` turns them off.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -136,6 +139,7 @@ Description
 #include "core/PortRoles.H"
 #include "result/SimulationResult.H"   // FlatUnit (flattened unit interface)
 #include "core/Types.H"
+#include "io/InternalStateIO.H"
 
 #include <map>
 #include <set>
@@ -175,44 +179,18 @@ struct SolutionControl
 };
 
 // -------------------------------------------------------------------------
-//  DYNAMIC instant payload (choupoBatch / choupoCtrl).  Where the steady
-//  solver's instant is the recycle outer iteration (a pseudo-time march to
-//  the tear fixed point), a dynamic instant directory IS the REAL physical
-//  TIME (`0/ 0.5/ 1/ 10.5/ ...`).  A batch/dynamic unit is a 0-D HOLDUP cell:
-//  its truth is the internal STATE (mole inventory n_i, T, V), not a face
-//  flux.  So each unit contributes a `DynamicUnitSnapshot` --- the holdup
-//  written verbatim into `<t>/internalState`, plus (where the unit exposes
-//  one) an instantaneous outlet face into `<t>/streamFaces`.  Scrubbing a time
-//  directory therefore shows the reactor's ACTUAL state at that instant.
+//  DYNAMIC instant (choupoBatch / choupoCtrl / choupoSemiContinuous).  Where
+//  the steady solver's instant is the recycle outer iteration (a pseudo-time
+//  march to the tear fixed point), a dynamic instant directory IS the REAL
+//  physical TIME (`0/ 0.5/ 1/ 10.5/ ...`), and since 2026-09-30 (task #186)
+//  it has EXACTLY the layout of `0/`: one file per stream (the canonical
+//  `componentMolarFlows` grammar, `StreamStateIO::writeStreamState`) and one
+//  file per inventory unit under `internalStates/` (the `holdup` kind,
+//  `InternalStateIO::writeHoldup`).  A time directory is therefore a state a
+//  case can START from: rename it `0/` and the run continues from t.  The
+//  retired shape -- `<t>/internalState` + `<t>/streamFaces` -- is gone, and
+//  a `0/` still carrying it is refused by name.
 // -------------------------------------------------------------------------
-struct DynamicUnitSnapshot
-{
-    std::string                                   name;   // unit name
-    std::string                                   type;   // equipment type word
-    scalar                                        T = 0;  // K
-    scalar                                        P = 0;  // Pa  (canonical SI)
-    scalar                                        V = 0;  // m^3 (0 if not tracked)
-    // Holdup inventory per component (kmol), index-aligned with compNames_.
-    // Empty for a pure flow unit with no tracked inventory.
-    std::vector<scalar>                           moles;
-    // Optional instantaneous outlet face (continuous units): F [kmol/s], z[].
-    bool                                          hasOutlet = false;
-    scalar                                        outF = 0;     // kmol/s
-    scalar                                        outT = 0;     // K
-    scalar                                        outP = 0;     // Pa
-    std::vector<scalar>                           outZ;         // mole fractions
-    // Optional instantaneous INLET (feed) face --- symmetric to the outlet,
-    // so the GUI's live flux overlay shows BOTH faces and the student SEES
-    // accumulation (inlet flux != outlet flux when dn/dt != 0).
-    bool                                          hasInlet = false;
-    scalar                                        inF = 0;      // kmol/s
-    scalar                                        inT = 0;      // K
-    scalar                                        inP = 0;      // Pa
-    std::vector<scalar>                           inZ;          // mole fractions
-    // Free-form extra scalars (conversion, supersaturation, controller MV...)
-    // captured verbatim so a time shows the FULL state at that t.
-    std::vector<std::pair<std::string, scalar>>   extras;
-};
 
 class SolutionWriter
 {
@@ -238,21 +216,35 @@ public:
                       const std::vector<std::string>&              tears,
                       const std::vector<FlatUnit>&                 units);
 
-    // ---- DYNAMIC instant (choupoBatch / choupoCtrl) -------------------
+    // ---- DYNAMIC instant (choupoBatch / choupoCtrl / choupoSemiContinuous)
     //  Write one REAL-TIME instant: `<caseRoot>/<time>/` where `<time>` is the
     //  physical simulation time in SECONDS formatted OpenFOAM-style (trailing
-    //  zeros trimmed: `0`, `0.5`, `1`, `10.5`).  Each unit's HOLDUP STATE goes
-    //  to `<time>/internalState` (mole inventory, T, V, conversion, ...) and
-    //  --- where a unit exposes an instantaneous outlet --- a `<time>/streamFaces`
-    //  face is written in the same self-describing dict format the steady path
-    //  uses, so the dict reader parses both back.  Appends one row per time to
-    //  `solution.log` and refreshes the `latest` symlink.  Purge is OFF for the
-    //  dynamic path (a transient trajectory is the whole point --- you keep
-    //  every written time).  `t` is the absolute time; `app` ("batch"/"ctrl")
-    //  labels the header.
-    void writeDynamicInstant(scalar                                   t,
-                             const std::string&                       app,
-                             const std::vector<DynamicUnitSnapshot>&  units);
+    //  zeros trimmed: `0`, `0.5`, `1`, `10.5`), in the layout of `0/`:
+    //      <time>/<stream>                  every stream, ONE file each
+    //      <time>/internalStates/<unit>     every inventory unit's holdup
+    //  Written into a temporary directory and renamed into place whole, so a
+    //  reader never meets a half-written instant.  Appends one row per time
+    //  to `solution.log` and refreshes the `latest` symlink.  Purge is OFF for
+    //  the dynamic path (a transient trajectory is the whole point --- you
+    //  keep every written time).  `t` is the absolute time; `app` labels the
+    //  headers; `thermo` prices nothing -- the stream writer needs it for the
+    //  component names and the phase pin.
+    void writeDynamicInstant(scalar                                        t,
+                             const std::string&                            app,
+                             const std::vector<InternalStateIO::Holdup>&   holdups,
+                             const std::map<std::string, ProcessStream>&   streams,
+                             const ThermoPackage&                          thermo);
+
+    // THE TIME-INTEGRATED BINARIES' reading of `solutionControl {}` -- ONE
+    // home for both drivers (choupoBatch; choupoCtrl + choupoSemiContinuous).
+    // Time directories are written BY DEFAULT, as OpenFOAM does (task #186):
+    // absent block or absent `write` => ON; `write false;` => OFF; any other
+    // word REFUSES by name (a declared word the engine dispatches on must
+    // not fall through to a default).  The decision is ANNOUNCED either way,
+    // so a run that writes no <t>/ says why.  `binaryName` prefixes the
+    // refusal.
+    static SolutionControl timeDirectoryControl(const Dictionary&   controlDict,
+                                                const std::string&  binaryName);
 
     // Format a physical time (s) as a clean OpenFOAM-style directory name:
     // an integer prints with no decimals (`10`), a fractional value trims

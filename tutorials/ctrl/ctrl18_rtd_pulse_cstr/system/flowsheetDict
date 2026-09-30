@@ -36,6 +36,8 @@ units
     {
         name        reactor;
         type        dynamicCSTR;
+        in          feed;
+        outputs     ( product );
 
 
 

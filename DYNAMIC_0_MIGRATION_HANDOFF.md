@@ -1,5 +1,13 @@
 # HANDOFF — migrating `initial{}` / `inlet{}` to `0/` in the dynamic cases (NO legacy)
 
+> **SUPERSEDED 2026-09-30 (task #186).**  The `0/internalState` +
+> `0/streamFaces` shape this handoff migrated TO is itself retired and now
+> REFUSED by name: the time-integrated cases use the ratified layout
+> (`0/<stream>`, `0/internalStates/<unit>` with a `holdup {}` block) and the
+> migrators named below (`migrate_dyn0.py`, `migrate_batch0.py`) were
+> deleted.  Record: `docs/design/a-state-directory-is-a-restartable-snapshot.md`
+> §11.  This file is kept as the record of the July migration.
+
 **Vitor's mandate (2026-07-16, FURIOUS — do not relitigate):** state lives
 ALWAYS in `0/`, one format, ZERO exceptions, ZERO legacy / dual-reader.  The
 INLINE `initial{}` (holdup) and `inlet{}` (stream) blocks in the dynamic cases'

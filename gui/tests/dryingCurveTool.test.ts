@@ -427,9 +427,9 @@ describe("the classroom witness — dryer01 bundled and knob-addressable", () =>
     expect(raws).toBeDefined();
     expect(raws!["system/flowsheetDict"]).toContain("batchDryer");
     expect(raws!["system/controlDict"]).toContain("choupoBatch");
-    // The vessel's charge is authored in 0/internalState (the single source
+    // The vessel's charge is authored in 0/internalStates/dryer (the single source
     // of truth the knob map's absence list refers to).
-    expect(raws!["0/internalState"]).toContain("molarComposition");
+    expect(raws!["0/internalStates/dryer"]).toContain("molarComposition");
   });
 
   it("every knob's ScalarOverride resolves against the real witness raw text", () => {
@@ -547,12 +547,12 @@ describe("the deliberately absent knobs — each pinned in the right direction",
 
   it("the initial moisture is unreachable because it lives in an inline one-line block", () => {
     const raws = tutorialByName(DRYING_WITNESS)!.files.rawFiles!;
-    expect(raws["0/internalState"])
+    expect(raws["0/internalStates/dryer"])
       .toMatch(/molarComposition\s+\{\s*sucrose\s+[0-9.]+;\s+water\s+[0-9.]+;\s*\}/);
     // Both fractions are equally out of reach — it is the LINE, not the key.
     for (const key of ["water", "sucrose"])
-      expect(() => applyScalarOverride(raws["0/internalState"]!,
-        { file: "0/internalState", key, value: 0.5 })).toThrow(new RegExp(key));
+      expect(() => applyScalarOverride(raws["0/internalStates/dryer"]!,
+        { file: "0/internalStates/dryer", key, value: 0.5 })).toThrow(new RegExp(key));
   });
 
   it("the carrier is unreachable because it is a WORD, not a scalar", () => {

@@ -3231,8 +3231,9 @@ membrane record, film coefficient and osmotic model the steady
 channel node.  \code{mode concentration;} lets the vessel shrink;
 \code{mode constantVolume;} makes solvent up at the permeate rate so the
 solutes wash out (the make-up enters the campaign ledger under its own
-kind word, \code{externalIntake}).  The initial holdup is
-\file{0/internalState}; an inline \code{initial \{\}} is refused, and so is
+kind word, \code{externalIntake}).  The initial holdup is the
+\code{holdup \{\}} block of \file{0/internalStates/<unit>}; an inline
+\code{initial \{\}} is refused, and so is
 a missing \code{k\_film} --- the unit invents no correlation for a stirred
 geometry it was not told.  What it publishes is the lesson: the observed
 rejection at every instant, and in constant-volume mode
@@ -3270,7 +3271,8 @@ instant it happens and replayed in the end-of-run caveat block.
 The unit holds BOTH tanks --- \code{state()} is the diluate, because it is
 the product, and the concentrate is internal state it publishes in full ---
 so the closed rig's campaign material balance is exact by construction.
-Both come from \file{0/internalState}, the concentrate as a
+Both come from the \code{holdup \{\}} block of
+\file{0/internalStates/<unit>}, the concentrate as a
 \code{concentrate \{\}} sub-block; a \code{T} or \code{P} inside it is
 refused, because the rig is isothermal and has one temperature.  A
 \code{stack} record is required (there is no inline-geometry form), and so
@@ -3571,7 +3573,7 @@ as first-class columns.
 The trajectory CSV carries every CV, MV and setpoint --- plot it and
 read the tuning off the page.
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:774-817 (declaration, the two
+% Source: src/dynamicDriver/DynamicDriver.cpp:848-891 (declaration, the two
 % refusals, the armed line), :737-759 (accepted-step trapezoid),
 % :1513-1570 (KPIs, reports/rtd/E.csv, the printed moments and spread).
 % Grammar as written by tutorials/ctrl/ctrl18_rtd_pulse_cstr/system/controlDict
@@ -3604,7 +3606,7 @@ dynamic unit, a \code{tracer} that is not a declared component, and a
 run in which no tracer ever left the outlet
 (\file{ctrl18\_rtd\_pulse\_cstr}).
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:819-896 (declaration,
+% Source: src/dynamicDriver/DynamicDriver.cpp:893-970 (declaration,
 % `frequency` XOR `reference`, the five refusals, the armed line),
 % :1574-1620 (the fit, its KPIs, the fewer-than-8-samples refusal).
 % Grammar as written by tutorials/ctrl/ctrl19_freq_response_cstr/system/controlDict;
@@ -3641,7 +3643,7 @@ division by the drive's declared amplitude.  A fit window that
 \code{linkedTargets ( controllers[1].signal.frequency );} so the carrier
 mirror moves in lockstep (\file{ctrl20\_bode\_cstr}).
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:930-949 (trajectory.csv
+% Source: src/dynamicDriver/DynamicDriver.cpp:1004-1023 (trajectory.csv
 % header and rows), :892-897 (console echo), :1470-1477 (the summary
 % line), :1498-1509 (SP_final / PV_final / MV_final);
 % src/control/ScheduleController.H:83 (hasPV() false) against

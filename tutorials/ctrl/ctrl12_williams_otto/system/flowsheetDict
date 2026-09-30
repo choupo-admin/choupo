@@ -17,7 +17,7 @@
   klb) every numeral below IS the paper's value in klb/h.
 
   u* of eq. (3.20): F_fA = 10, F_fB = 20, T = 580 degR, mu = 129.5,
-  eta = 0.2.  T rides in 0/internalState (322.2222 K = 580 degR exactly).
+  eta = 0.2.  T rides in 0/internalStates/plant (322.2222 K = 580 degR exactly).
 \*---------------------------------------------------------------------------*/
 
 units

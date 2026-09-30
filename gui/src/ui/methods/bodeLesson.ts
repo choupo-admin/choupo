@@ -154,7 +154,7 @@ export const BODE_STEPS: readonly LessonStep[] = [
       + "engine's own equation, not from a transfer function someone wrote "
       + "down.  The unit integrates dn/dt = F·z_in − F·(n/Σn) with the "
       + "outflow equal to the inflow "
-      + "(src/unitOperations/dynamic/DynamicCSTR.cpp:596-599).",
+      + "(src/unitOperations/dynamic/DynamicCSTR.cpp:603-606).",
     derivation: [
       { step: "Write that balance for the tracer alone, in mole fraction, "
           + "with the total inventory N and the flow F both constant "
@@ -164,7 +164,7 @@ export const BODE_STEPS: readonly LessonStep[] = [
         eq: String.raw`N \frac{\mathrm{d}x}{\mathrm{d}t} = F x_\mathrm{in} - F x`},
       { step: "Divide by F.  The group that appears is the residence time — "
           + "the same one the unit computes for itself at "
-          + "src/unitOperations/dynamic/DynamicCSTR.cpp:417.",
+          + "src/unitOperations/dynamic/DynamicCSTR.cpp:424.",
         eq: String.raw`\tau = \frac{N}{F} \qquad \tau \frac{\mathrm{d}x}{\mathrm{d}t} + x = x_\mathrm{in}`},
       { step: "Now feed it the sinusoid of step 1 and look for a sinusoidal "
           + "answer of the same frequency: x = AR·sin(ω·t + φ).  "
@@ -419,7 +419,7 @@ export const BODE_LIMITS: readonly LessonLimit[] = [
       + "phase margin.  What the engine has is a time integrator and the "
       + "`frequencyResponse {}` experiment, which MEASURES one point of a "
       + "Bode diagram per run "
-      + "(src/dynamicDriver/DynamicDriver.cpp:1735-1782).  The measured "
+      + "(src/dynamicDriver/DynamicDriver.cpp:1811-1858).  The measured "
       + "curve on this page is that experiment, swept.  The constructed "
       + "curve, the elements and both margins are classical arithmetic "
       + "drawn in the browser and are not an engine answer.",

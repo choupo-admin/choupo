@@ -63,6 +63,8 @@ public:
     void step(scalar /*t*/, scalar /*dt*/) override {}
 
     const BatchState& state() const override { return state_; }
+    //- A receiver holds nothing but its inventory: complete.
+    std::string holdupNotRestored() const override { return {}; }
 
     // A passive adiabatic tank exchanges no heat with the surroundings:
     // its energy physics is fully represented by ZERO ledger records.  (The

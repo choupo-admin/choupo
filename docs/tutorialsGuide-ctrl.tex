@@ -6,6 +6,8 @@
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Dynamic CSTR (compA $\to$ compB) with PID jacket-temperature control; T climbs from 320 K into the +/-2\% setpoint band within \textasciitilde{}20 s (no overshoot) and tracks toward 350 K across the 150 s window}
@@ -51,6 +53,8 @@ To run the OPEN-LOOP comparison, comment out the entire `controllers` block belo
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{PID disturbance rejection: T\_in steps down then up, PID maintains T\_setpoint}
@@ -93,6 +97,8 @@ The trajectory.csv columns now include both controllers' SP / PV / MV. The Sched
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{PID disturbance rejection with ADAPTIVE plant integration --- controller samples on the fixed 1 s grid, Rosenbrock23 sub-steps between samples (MV held)}
@@ -135,11 +141,13 @@ The trajectory.csv columns now include both controllers' SP / PV / MV. The Sched
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{PID disturbance rejection with OpenFOAM-style real-time instant dirs: T\_in steps down (700 s) then up (1300 s); scrub 0/ 40/ 80/ ... s to watch the PID track the 350 K setpoint and the jacket MV move}
 \begin{tutnarrative}
-the textbook control demo, captured in OpenFOAM-style real-time instant directories (see controlDict's solutionControl block). Identical physics to ctrl02; the difference is that each written time drops a `<t>/internalState` + `<t>/streamFaces` you can scrub across the two disturbance steps to watch the PID reject them.
+the textbook control demo, captured in OpenFOAM-style real-time instant directories (see controlDict's solutionControl block). Identical physics to ctrl02; the difference is that each written time directory (the layout of 0/: the holdup under `<t>/internalStates/`, one file per stream) can be scrubbed across the two disturbance steps to watch the PID reject them.
 
 Same DynamicCSTR as ctrl01 (compA $\to$ compB, mild exotherm, jacket heat transfer). Same PID temperature controller. Two added ingredients:
 
@@ -177,6 +185,8 @@ The trajectory.csv columns now include both controllers' SP / PV / MV. The Sched
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Forced SINUSOIDAL inlet-T disturbance: T\_in = 320 + 15 sin(2 pi t / 600). The PID chases a moving target $\to$ the reactor temperature settles into a forced sinusoidal response (attenuated + phase-lagged). Sweep the period to build a one-point Bode by trial-and-error (the frequency-response seed).}
@@ -219,6 +229,8 @@ Backward-compatible by construction: ctrl02's `type Schedule; schedule(...)` sta
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Product inhibition meets a PID: an LHHW reaction whose exotherm fades as its own product covers the catalyst}
@@ -259,6 +271,8 @@ The adsorption constant K0 = 2.0 m\textasciicircum{}3/kmol is DIDACTIC -- chosen
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{PRBS identification experiment: T\_in = 320 +/- 10 K by a maximal-length LFSR (n=4, period 15 bits x 120 s) -- deterministic, seed-declared, period-VERIFIED; the broadband excitation the sine of ctrl06 cannot give.}
@@ -301,6 +315,8 @@ The PID (same tuning as ctrl06) holds the reactor at 350 K against the binary di
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Inlet-field disturbance: componentMolarFlow.compA steps 3.5e-5 $\to$ 5.25e-5 kmol/s; F and z\_in change by the DERIVED values (F = 6.75e-5, z\_A = 7/9) -- the disturbance never hides from the other components}
@@ -339,6 +355,8 @@ The `moleFraction.<c>` sibling field instead holds F\_in constant and renormalis
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tank) at (0.0,-0.0) {\textbf{tank}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(tank.west)+(-1.05,0.00)$) -- ($(tank.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(tank.east)+(0,0.00)$) -- ($(tank.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Dynamic brine tank on a Pitzer package: the electrolyte thermodynamics through a transient}
@@ -371,6 +389,8 @@ The jacket loop is the same PID shape as ctrl01: it acts on T\_jacket to hold th
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Jacketed esterification CSTR under PID temperature control: the first ctrl case whose stored enthalpy exists, so the first-law ledger claims closure instead of refusing}
@@ -409,7 +429,7 @@ The reaction declares NO dH\_rxn. On the elements datum the heat of reaction is 
 \begin{tutnarrative}
 One unit, because the benchmark IS one equation set: the Williams-Otto reactor + decanter + column + splitter fold into six ODEs (the recycle term (1-eta)mu, the removed G, the 0.1 F\_tE column retention are all inside them -- see the unit's own header). The five controls sit in `operation`, declared SI: with the MW 453.592 convention (1 kmol == 1 klb) every numeral below IS the paper's value in klb/h.
 
-u$\ast$ of eq. (3.20): F\_fA = 10, F\_fB = 20, T = 580 degR, mu = 129.5, eta = 0.2. T rides in 0/internalState (322.2222 K = 580 degR exactly).
+u$\ast$ of eq. (3.20): F\_fA = 10, F\_fB = 20, T = 580 degR, mu = 129.5, eta = 0.2. T rides in 0/internalStates/plant (322.2222 K = 580 degR exactly).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -531,6 +551,8 @@ The section-5.3 combined optimisation: system/outerDict shapes the two profiles 
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{WITNESS: ramp + pulse + staircase signals on three feed handles, with the temperature PID rejecting all three at once; the three registered shapes no case selected.}
@@ -561,6 +583,8 @@ WITNESS: the ramp, pulse and staircase SIGNALS, each on its own feed handle of t
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Open-loop process reaction curve: the jacket steps +5, -5, +20 and -20 K from one settled base, and the four responses are the identification record for the FOPDT fit in system/propsDict}
@@ -601,6 +625,8 @@ Nothing was tuned to make that happen. It is one plant, one experiment, and two 
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{RTD by pulse tracer on a pure mixing tank: tracer substitution at constant flow, tau = N/F = 240 s; engine-measured moments against Levenspiel closed-form anchors.}
@@ -633,6 +659,8 @@ THE ANCHORS ARE CLOSED FORMS (Levenspiel, Chemical Reaction Engineering, ch. 13-
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Frequency response of the LTI mixing tank at omega$\ast$tau = 1: engine-fitted amplitude and phase against the exact first-order closed forms (AR = 1/sqrt(2), phase = -45 deg).}
@@ -665,6 +693,8 @@ THE ANCHORS ARE THE FIRST-ORDER CLOSED FORMS (any process-control text; at omega
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Bode table of the LTI mixing tank: outer frequency sweep (one datum, lockstep mirror) over the engine frequency-response fit; anchors are the exact first-order closed forms at each point.}

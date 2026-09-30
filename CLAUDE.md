@@ -270,6 +270,27 @@ case/
   Records:
   [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md)
   §9 (the layout) and §10 (the seed and the tool).
+* **THE TIME-INTEGRATED CLASSES USE THE SAME LAYOUT, AND WRITE `<t>/`
+  BY DEFAULT** (2026-09-30, task #186, Vítor's ruling -- do NOT restore the
+  old shape).  `choupoBatch`, `choupoCtrl` and `choupoSemiContinuous` read
+  `0/<stream>` (one file per stream, named by the stream the unit declares:
+  `in` / `inputs` / `outputs`; the canonical grammar, `StreamStateIO`) and
+  `0/internalStates/<unit>` (one file per vessel, a `holdup {}` block --
+  `InternalStateIO::readHoldups`, the ONE reader both drivers call).  A
+  consumed stream with no file, a file naming no stream, an interior for a
+  unit that reads none each REFUSE by name; the retired `0/internalState` +
+  `0/streamFaces` REFUSE naming the one-shot migrator
+  (`bin/curate/migrate_state_layout.py`) -- NO dual reader.  Every
+  `writeInterval` a `<t>/` with the same layout is written, as OpenFOAM does
+  (`solutionControl { write false; }` opts out); renamed `0/` it restarts
+  the case from t -- EXCEPT for a vessel whose state is more than its holdup
+  (a crystal population, an adsorbed loading, a bed profile, the Williams-Otto
+  objective integrals), which writes `notRestored "<what>";` and whose
+  restart is REFUSED rather than re-invented.  A controller's memory is not
+  a unit's interior and is in no record (said at run start).  Gate:
+  `check_time_state_layout`.  Record:
+  [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md)
+  §11.
 * **The `.cho` marker file** is the openable entity in the GUI (the CLI is
   unaffected; `runCase`/`choupoSolve` take the folder path).  Intentionally
   empty for now; future GUI-only metadata lives here without polluting the
@@ -3360,10 +3381,13 @@ split below).
   topological order within the instant and a loop with NO vessel on it is
   REFUSED (it has no time constant -- it is a steady recycle).  Witness
   `unsteady03_nf_feed_and_bleed_startup`, which must END on membrane18's
-  steady answer; gate `check_quasi_steady`.  NOT done, named: the OLD `0/`
-  shape (#186 — the binary INHERITS `0/internalState` + `0/streamFaces`),
-  and the first law across a quasi-steady unit (the adapter claims no
-  stored functional, so the dynamic ledger withholds the rung).
+  steady answer; gate `check_quasi_steady`.  THE OLD `0/` SHAPE IS GONE
+  (#186, 2026-09-30): the time-integrated binaries read and write the
+  ratified layout of §3 (`0/<stream>`, `0/internalStates/<unit>` with a
+  `holdup {}` block) and write `<t>/` time directories by default -- see
+  §3.  NOT done, named: the first law across a quasi-steady unit (the
+  adapter claims no stored functional, so the dynamic ledger withholds the
+  rung).
   Record:
   [`docs/design/a-class-a-student-can-name.md`](docs/design/a-class-a-student-can-name.md).
 * **No silent crutch (numerical honesty) — decided 2026-05-30.**  Every solver

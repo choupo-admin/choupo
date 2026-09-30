@@ -1616,8 +1616,8 @@ the vessel conserves mass to machine precision.  Two modes, one line apart:
 `constantVolume` (diafiltrate added at the permeate rate: solutes wash out).
 The vessel is open in BOTH directions, so the make-up enters the campaign
 ledger under its own kind word `externalIntake` (never as a re-declared
-feed).  Initial holdup comes from `0/internalState` — an inline
-`initial {}` is refused.
+feed).  Initial holdup comes from `0/internalStates/<unit>` (a `holdup {}`
+block) — an inline `initial {}` is refused.
 
 ```
 { name retentate;  type batchDiafilter;
@@ -1680,7 +1680,8 @@ The unit holds BOTH tanks: `state()` is the diluate (the product), the
 concentrate is internal state it publishes in full, and
 `materialInventory()` is the SUM — the rig is CLOSED, so the campaign
 material balance is exact by construction.  Initial state comes from
-`0/internalState`, the concentrate as a `concentrate {}` sub-block; an
+`0/internalStates/rig` (its `holdup {}` block), the concentrate as a
+`concentrate {}` sub-block; an
 inline `initial {}` is refused, and a `T` or `P` inside `concentrate {}` is
 refused too (the rig is isothermal and has ONE temperature).
 
@@ -1699,12 +1700,13 @@ refused too (the rig is isothermal and has ONE temperature).
 }
 ```
 ```
-// 0/internalState
-units { "rig" {
+// 0/internalStates/rig
+recordType internalState;  unit "rig";  equipment batchElectrodialysis;
+holdup {
     T 298.15 K;  P 1.5 bar;  V 0.005;
     totalMoles 0.2785418672;  molarComposition { water ...; Na ...; Cl ...; }
     concentrate { totalMoles 0.2825418672;  molarComposition { ... } }
-} }
+}
 ```
 **The lesson is the point.**  The hand calculation for a batch
 electrodialysis is Faraday's law at the INITIAL current,
@@ -1807,9 +1809,10 @@ choupoSolve would read it, WITHOUT topology (refused there).  Several inlets
 and outlets are allowed; a VESSEL (`dynamicCSTR`) keeps ONE feed face, so two
 streams into a tank go through a `mixer` wrapped as `quasiSteady` in front of
 it.  A loop is routable only with a vessel on it (a loop of quasi-steady units
-alone has no time constant and is refused).  Every inlet needs a face in
-`0/streamFaces` named `"<unit>.<stream>"` (its t = 0 value when routed); no
-`0/internalState` entry.  The first law across it is NOT claimed (the ledger
+alone has no time constant and is refused).  Every inlet stream needs its
+file `0/<stream>` (its t = 0 value when routed); it has no
+`0/internalStates/` entry (one declared for it is refused -- it accumulates
+nothing).  The first law across it is NOT claimed (the ledger
 withholds the rung, naming why).  Example:
 `unsteady03_nf_feed_and_bleed_startup` (the start-up of membrane18's loop; it
 ends on membrane18's steady answer).
@@ -1877,15 +1880,17 @@ the `period` to build a one-point Bode by trial-and-error
 (`ctrl06_sine_disturbance`).  `Schedule` stays a first-class spelling
 (it delegates to the `staircase` signal, so legacy cases are unchanged).
 
-The dynamic unit also exposes its **feed face** alongside its outlet:
-when `solutionControl { write true; }` is on, each `<t>/streamFaces` carries
-both `<unit>.feed` (`bc inlet;`) and `<unit>.out` (`bc computed;`), and
-`<t>/internalState` records the controller-driven jacket as a per-unit
-extra — so the live overlay shows input and output flux at once
-(accumulation is visible when in-flux ≠ out-flux).
+The dynamic unit's streams are written at every `writeInterval` (time
+directories are on by default; `solutionControl { write false; }` turns them
+off): each `<t>/` carries one file per declared stream -- the feed the unit
+HOLDS at t (a driven inlet included) and its product -- and
+`<t>/internalStates/<unit>` records the holdup, with the controller-driven
+jacket among its `extras` — so the live overlay shows input and output flux
+at once (accumulation is visible when in-flux ≠ out-flux).
 
 A dynamic unit can also SEED its t=0 from the steady operating point:
-add `start steadyState;` inside its `initial{}` block.  The engine
+add `start steadyState;` inside its `holdup {}` block in
+`0/internalStates/<unit>`.  The engine
 relaxes the holdup ODE at the declared feed/UA/jacket to its fixed point
 and PRINTS the seeded `(T0, x_i)` (default `start explicit;` keeps the
 literal `initial{}` — byte-identical to every existing case).

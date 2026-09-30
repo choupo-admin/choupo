@@ -1,116 +1,140 @@
 // Tests for the dynamic-instant pipeline: the parser of the OpenFOAM-style
-// <t>/internalState + <t>/streamFaces files the choupoBatch / choupoCtrl WASM
-// binaries write at the case root, and the binary-dispatch logic that routes a
+// time directories the choupoBatch / choupoCtrl / choupoSemiContinuous WASM
+// binaries write at the case root -- since task #186 in the layout of 0/:
+// `<t>/<stream>` (one file per stream) and `<t>/internalStates/<unit>` (one
+// holdup record per vessel) -- and the binary-dispatch logic that routes a
 // case to the right WASM module by controlDict.application.
 //
-// The fixtures are REAL output captured from a native ctrl03 / batch04 run, so
-// the parser is exercised against the exact dict shape the C++ engine emits
-// (header comment block + scientific-notation scalars + trailing-comment units).
+// The fixtures are the shape a native ctrl03 / batch04 run writes (the
+// stream header, kmol/h flows, the holdup record with units on every value).
 
 import { describe, expect, it } from "vitest";
 
 import { parseDynamicInstants } from "../src/case/dynamicInstants.js";
 import { selectBinary } from "../src/adapters/WasmAdapter.js";
 
-// ---- Fixtures (verbatim from a native run) --------------------------------
+// ---- Fixtures --------------------------------------------------------------
 
-// ctrl03 (continuous dynamicCSTR) -- internalState + streamFaces, two instants.
-const ctrlInternal0 = `/*--------------------------------*- Choupo -*----------------------------------*\\
-| Choupo v0.3.0   DYNAMIC instant   time 0 s   (ctrl)
-\\*-----------------------------------------------------------------------------*/
+const STREAM_HEAD = `/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+`;
 
-time            0;   // s (real, physical)
-application     ctrl;
-
-units
+// ctrl03 (continuous dynamicCSTR): the authored 0/ and one written instant.
+const ctrlHoldup0 = `recordType  internalState;
+unit        "reactor";
+equipment   dynamicCSTR;
+holdup
 {
-    "reactor"
+    T           320.0;
+    P           101299.99999999999;
+    V           0.001;
+    holdupMolar
     {
-        type        dynamicCSTR;
-        T           320;   // K
-        P           101299.99999999999;   // Pa
-        holdupMolar                       // kmol per species (inventory)
-        {
-            compA            0.012;
-            compB            0;
-        }
+        compA   0.012;
+        compB   0.0;
     }
 }
 `;
 
-const ctrlStreams0 = `time            0;
-faces
+const ctrlFeed0 = `componentMolarFlows
 {
-    "reactor.out"
+    compA  5e-05 kmol/s;
+    compB  0.0 kmol/s;
+}
+T               320.0 K;
+P               101299.99999999999 Pa;
+`;
+
+const ctrlHoldup500 = `/*--------------------------------*- Choupo -*--------------------------------*\\
+  THE HOLDUP OF ONE VESSEL at t = 500 s (ctrl).
+\\*---------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "reactor";
+equipment   dynamicCSTR;
+time        500;   // s (real, physical)
+
+holdup
+{
+    T           349.91763572550042 K;
+    P           101299.99999999999 Pa;
+    V           0.001 m3;
+    holdupMolar
     {
-        bc          computed;
-        T           320;   // K
-        P           101299.99999999999;   // Pa
-        vf          0;
-        molarFlows
-        {
-            compA            1.388888888888889e-08;
-            compB            0;
-        }
+        compA            0.011203454249963758 kmol;
+        compB            0.00079654575003620324 kmol;
+    }
+    extras
+    {
+        F_in             5.0000000000000002e-05;
+        T_jacket         349.67495182942599;
     }
 }
 `;
 
-const ctrlInternal500 = `time            500;
-application     ctrl;
-
-units
+const ctrlProduct500 = STREAM_HEAD + `
+componentMolarFlows
 {
-    "reactor"
-    {
-        type        dynamicCSTR;
-        T           320.84003501084953;   // K
-        P           101299.99999999999;   // Pa
-        holdupMolar
-        {
-            compA            0.011574254173456486;
-            compB            0.00042574582654350226;
-        }
-    }
+    compA    0.1680518137 kmol/h;
+    compB    0.01194818625 kmol/h;
+}
+
+T               349.9176357 K;
+P               101300 Pa;
+`;
+
+// batch04 (closed batchReactor): the AUTHORED 0/ holdup is written the way an
+// author writes it (totalMoles + molarComposition), the instant the way the
+// engine writes it (holdupMolar) -- the parser reads both spellings.
+const batchHoldup0 = `recordType internalState;
+unit "reactor";
+equipment batchReactor;
+holdup
+{
+    T            350.0 K;
+    P            1.013 bar;
+    V            0.001;
+    totalMoles   0.0185;
+    molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
 }
 `;
 
-// batch04 (closed batchReactor) -- internalState only, carries V.
-const batchInternal120 = `time            120;
-application     batch;
-
-units
+const batchHoldup120 = `recordType  internalState;
+unit        "reactor";
+equipment   batchReactor;
+time        120;
+holdup
 {
-    "reactor"
+    T           327.41585281358238 K;
+    P           101299.99999999999 Pa;
+    V           0.001 m3;
+    holdupMolar
     {
-        type        batchReactor;
-        T           327.41585281358238;   // K
-        P           101299.99999999999;   // Pa
-        V           0.001;   // m^3
-        holdupMolar
-        {
-            ethanol          0.0087110259117045667;
-            water            0.00053897408829541721;
-            aceticAcid       0.0087110259117045667;
-            ethylAcetate     0.00053897408829541721;
-        }
+        ethanol          0.0087110259117045667 kmol;
+        water            0.00053897408829541721 kmol;
+        aceticAcid       0.0087110259117045667 kmol;
+        ethylAcetate     0.00053897408829541721 kmol;
     }
+    notRestored "nothing, for the test";
 }
 `;
 
 describe("parseDynamicInstants", () => {
-  it("returns null when no instant files are present (steady run)", () => {
+  it("returns null when no time-directory files are present (steady run)", () => {
     expect(parseDynamicInstants({})).toBeNull();
     expect(
       parseDynamicInstants({ "psat.csv": "T,P\n300,1\n", "scan/Z.csv": "x\n1\n" }),
     ).toBeNull();
   });
 
-  it("parses a continuous (ctrl) run: ordered instants + holdup + outlet faces", () => {
+  it("parses a continuous (ctrl) run: ordered instants, holdups AND streams", () => {
     const out = parseDynamicInstants({
-      "0/internalState": ctrlInternal0,
-      "0/streamFaces": ctrlStreams0,
-      "500/internalState": ctrlInternal500,
+      "0/internalStates/reactor": ctrlHoldup0,
+      "0/feed": ctrlFeed0,
+      "500/internalStates/reactor": ctrlHoldup500,
+      "500/product": ctrlProduct500,
     });
     expect(out).not.toBeNull();
     expect(out!.application).toBe("ctrl");
@@ -127,60 +151,68 @@ describe("parseDynamicInstants", () => {
     expect(reactor0.T).toBeCloseTo(320, 6);
     expect(reactor0.holdupMolar.compA).toBeCloseTo(0.012, 9);
     expect(reactor0.holdupMolar.compB).toBe(0);
-    // Outlet face overlaid from the streamFaces file.
-    expect(reactor0.outletMolarFlows!.compA).toBeCloseTo(1.388888888888889e-8, 12);
-    expect(reactor0.outletT).toBeCloseTo(320, 6);
+    // The feed stream at 0 is its own file, named by the stream.
+    expect(at0.streams.map((s) => s.name)).toEqual(["feed"]);
+    expect(at0.streams[0]!.F).toBeCloseTo(5e-5, 12);
 
-    // The 500 s instant evolved (compB grew, T rose); no streamFaces file here.
-    const reactor500 = out!.instants[1]!.units[0]!;
+    // The 500 s instant evolved; its product stream is read in kmol/s.
+    const i500 = out!.instants[1]!;
+    const reactor500 = i500.units[0]!;
     expect(reactor500.T).toBeGreaterThan(320);
-    expect(reactor500.holdupMolar.compB).toBeGreaterThan(0);
-    expect(reactor500.outletMolarFlows).toBeUndefined();
+    expect(reactor500.holdupMolar.compB).toBeCloseTo(0.00079654575003620324, 12);
+    expect(reactor500.extras!.T_jacket).toBeCloseTo(349.67495182942599, 9);
+    const product = i500.streams.find((s) => s.name === "product")!;
+    expect(product.molarFlows.compA).toBeCloseTo(0.1680518137 / 3600, 12);
+    expect(product.T).toBeCloseTo(349.9176357, 6);
   });
 
-  it("parses a batch run: closed vessel carries V, no outlet face, batch app", () => {
-    const out = parseDynamicInstants({ "120/internalState": batchInternal120 });
+  it("parses a batch run: both inventory spellings, V, notRestored, batch app", () => {
+    const out = parseDynamicInstants({
+      "0/internalStates/reactor": batchHoldup0,
+      "120/internalStates/reactor": batchHoldup120,
+    });
     expect(out).not.toBeNull();
     expect(out!.application).toBe("batch");
-    expect(out!.components).toEqual([
-      "ethanol",
-      "water",
-      "aceticAcid",
-      "ethylAcetate",
-    ]);
-    const reactor = out!.instants[0]!.units[0]!;
-    expect(reactor.type).toBe("batchReactor");
-    expect(reactor.V).toBeCloseTo(0.001, 9);
-    expect(reactor.holdupMolar.aceticAcid).toBeCloseTo(0.0087110259117, 9);
-    expect(reactor.outletMolarFlows).toBeUndefined();
+    const r0 = out!.instants[0]!.units[0]!;
+    expect(r0.holdupMolar.ethanol).toBeCloseTo(0.0185 * 0.5, 12);
+    expect(r0.P).toBeCloseTo(101300, 6);
+    const r120 = out!.instants[1]!.units[0]!;
+    expect(r120.type).toBe("batchReactor");
+    expect(r120.V).toBeCloseTo(0.001, 9);
+    expect(r120.holdupMolar.aceticAcid).toBeCloseTo(0.0087110259117, 9);
+    expect(r120.notRestored).toBe("nothing, for the test");
+    expect(out!.instants[1]!.streams).toHaveLength(0);
   });
 
   it("sorts numerically, not lexically (100 after 50)", () => {
     const mk = (t: number) =>
-      `time ${t};\nunits\n{\n  "r" { type dynamicCSTR; T 3${t}; P 1; holdupMolar { a ${t}; } }\n}\n`;
+      `recordType internalState; unit "r"; equipment dynamicCSTR;\nholdup { T 3${t}; P 1; holdupMolar { a ${t}; } }\n`;
     const out = parseDynamicInstants({
-      "50/internalState": mk(50),
-      "100/internalState": mk(100),
-      "0/internalState": mk(0),
+      "50/internalStates/r": mk(50),
+      "100/internalStates/r": mk(100),
+      "0/internalStates/r": mk(0),
     });
     expect(out!.instants.map((i) => i.t)).toEqual([0, 50, 100]);
   });
 
-  it("ignores non-instant files and nested paths", () => {
+  it("ignores non-instant files, nested paths and the RETIRED shape", () => {
     const out = parseDynamicInstants({
-      "0/internalState": ctrlInternal0,
+      "0/internalStates/reactor": ctrlHoldup0,
       "trajectory.csv": "t,x\n0,1\n",
-      "constant/internalState": "bogus",   // nested -> not a root instant dir
-      "system/streamFaces": "bogus",
+      "constant/internalStates/x": "bogus",   // not a time directory
+      "system/feed": "bogus",
+      // The retired layout: no dual reader in the GUI either.
+      "50/internalState": 'time 50; units { "reactor" { T 330; P 1; holdupMolar { compA 1; } } }',
+      "50/streamFaces": "time 50; faces { }",
     });
     expect(out).not.toBeNull();
-    expect(out!.instants).toHaveLength(1);
+    expect(out!.instants.map((i) => i.dir)).toEqual(["0"]);
   });
 
   it("survives malformed instant text without throwing", () => {
     const out = parseDynamicInstants({
-      "0/internalState": "this is not a dict {{{ ;;; ",
-      "50/internalState": ctrlInternal500,
+      "0/internalStates/reactor": "this is not a dict {{{ ;;; ",
+      "500/internalStates/reactor": ctrlHoldup500,
     });
     // The garbage instant is dropped; the valid one survives.
     expect(out).not.toBeNull();

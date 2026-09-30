@@ -17,6 +17,11 @@ the refusals — stands.  The sections are kept as written because they are the
 record of a decision that was taken and then corrected, and a corrected
 decision is worth more to the next reader than a clean one.
 
+**AMENDED 2026-09-30 (task #186) — §11.**  The time-integrated classes
+(choupoBatch, choupoCtrl, choupoSemiContinuous) now read and write this same
+layout, with a `holdup {}` kind for a 0-D vessel, and write `<t>/` time
+directories with it by default.  §7's bullet about their instants is history.
+
 ---
 
 ## 1.  The observation, stated precisely
@@ -238,6 +243,9 @@ flowsheet asks each unit and refuses.
   nothing to write there today.  (The dynamic instants already carry a file
   called `internalState` — `SolutionWriter::writeDynamicInstant`, the holdup
   inventory — which is a different record with an unfortunately similar name.)
+  **SUPERSEDED 2026-09-30 by §11:** that private file is retired and refused;
+  their `0/` and every `<t>/` carry `internalStates/<unit>` with a `holdup {}`
+  block.
 * **Every unit but the column seeds itself.**  The PFR, the crystalliser, the
   spiral-wound module, the PSA bed and the rest publish interiors and read
   none; each declares no kind, so a declared file for them REFUSES rather than
@@ -581,3 +589,108 @@ the engine's arithmetic, a case whose units read nothing gaining nothing, and
 an incomplete declared tree refusing by name while never naming the unit that
 reads none.  Six by-hand sabotages (S21–S26), one of which survived its first
 form.
+
+---
+
+## 11.  AMENDED 2026-09-30 — the time-integrated classes join the layout (task #186)
+
+*Vítor, on seeing `unsteady03` in the browser: "Não usaste internalState nem
+... gravar o estado do sistema em folder com os tempos, como faz o
+OpenFOAM!"  His rulings, taken by question the same turn: BOTH families
+migrate; NO dual reader; `<t>/` directories BY DEFAULT.*
+
+### 11.1  What was measured
+
+§7 said *"choupoCtrl and choupoBatch instants carry none either"* and named
+the file they did carry, `internalState`, "a different record with an
+unfortunately similar name".  Measured on 2026-09-30 it was worse than a
+name: the three time-integrated binaries read and wrote a SECOND layout of
+their own.  `0/internalState` held every unit's holdup in one file;
+`0/streamFaces` held every inlet as a FACE keyed `"<unit>.<port>"` — a
+stream with no identity of its own, named after the unit that consumed it
+(unsteady02's routed stream `s12` was the face `"tank2.feed"`).  59 cases
+carried it (19 ctrl, 3 unsteady, 37 batch), and `<t>/` directories were
+written only under `solutionControl { write true; }` (6 cases), in the same
+private shape.
+
+### 11.2  What was built
+
+**D18 — one layout for every class.**  A time-integrated `0/` is the
+steady one: `0/<stream>` (ONE file per stream, the canonical grammar,
+`StreamStateIO::readStreamState` — the same function) and
+`0/internalStates/<unit>` (ONE file per vessel).  A stream's file is named
+by the stream the unit DECLARES (`in` / `inputs` / `outputs`); a face key is
+gone, because a stream has ONE identity.
+
+**D19 — the `holdup` kind.**  A 0-D vessel's interior is not a field over a
+coordinate, it is one inventory, so it is a new kind, `holdup {}` (T, P, V,
+and the inventory as `holdupMolar {}` OR `totalMoles` + `molarComposition
+{}`, never both; any key the vessel's own start reads rides through
+verbatim — a recirculating ED rig's `concentrate {}`, `start steadyState;`).
+It is in `InternalStateIO::knownKinds()`, so the steady reader REFUSES it by
+name ("no steady unit starts from one") instead of calling it unknown, and
+the time-integrated reader (`InternalStateIO::readHoldups`, ONE reader for
+both drivers) refuses a profile kind for the mirror reason.  An orphan file,
+an `equipment` word that is not the unit's type, a holdup declared for a unit
+that reads none (a quasi-steady unit; a fixed bed, whose state is a profile)
+and a record MISFILED elsewhere in the view each refuse — the §9 rules, one
+class along.
+
+**D20 — the completeness contract, adapted to the class and argued.**  Every
+stream a unit CONSUMES has its file (missing: refused) — for a routed stream
+that file is its value until the first step overwrites it, exactly what the
+face was.  Every file names a stream of the topology (orphan: refused).  A
+PRODUCT's file is allowed and not required: its value at t = 0 is its
+producer's outlet, a function of the producer's state, so requiring it would
+be a second home for that state; it is read (so a broken one refuses) and
+said to be unused.  Every vessel has its holdup (missing: refused).
+
+**D21 — no dual reader.**  `0/internalState` and `0/streamFaces` REFUSE by
+name, naming the one-shot migrator `bin/curate/migrate_state_layout.py`
+(deterministic, idempotent, refusing `data/standards/`; it copies every
+value TOKEN verbatim and gives a stream explicit units whose factor is
+exactly 1, so the migrated corpus reproduced its answers to the last bit —
+every trajectory.csv, balanceTrajectory.csv and result JSON of the 73
+time-integrated cases compared byte-identical before and after).  A vessel
+that declared no `in` was given `in <port>;` (its face's own word) and
+`outputs ( product );`, so its outlet has a name a time directory can write
+it under — 17 ctrl/unsteady flowsheets gained two topology lines and
+nothing else.  The retired migrators `migrate_dyn0.py` / `migrate_batch0.py`
+(inline blocks -> the retired shape) were deleted: their target is refused.
+
+**D22 — `<t>/` BY DEFAULT, RESTARTABLE OR SAYING WHY NOT.**  Every
+`writeInterval` writes a `<t>/` with the layout of `0/`
+(`SolutionWriter::writeDynamicInstant`, atomic rename; the holdups at 17
+significant digits, the streams at the stream writer's 10);
+`solutionControl { write false; }` opts out, and a word other than
+`true`/`false` refuses.  Renamed `0/`, it restarts the case from t — measured
+on unsteady02 (restart at 200 s) and batch01 (120 s), every common row within
+1e-6 relative.  That claim is made per unit TYPE and only where it is true:
+`DynamicUnitOperation::holdupRecord` / `BatchUnitOperation::holdupNotRestored`
+DEFAULT to "not declared complete", and `dynamicCSTR`, `batchReactor` and
+`batchAccumulator` override it.  Every other vessel writes `notRestored
+"<what>";` (a crystal population, an adsorbed loading, a permeate volume, a
+concentrate tank, an axial bed profile, the Williams-Otto objective
+integrals, a still's distillate buffer) and a restart from it is REFUSED by
+name — a snapshot that restores half a unit and re-invents the rest is not a
+restart (D15, one class along).  A controller's memory is not a unit's
+interior; a run with controllers says so once when it starts writing.
+
+### 11.3  What was not done, said plainly
+
+* **Restart at startTime = t.**  A time directory renamed `0/` restarts the
+  PLANT; a recipe, a schedule or a signal keyed on absolute time restarts
+  its clock at 0.  Exact only for an autonomous case (the gate uses two).
+* **The incomplete vessels are not made complete.**  Each could carry its
+  extra state in its holdup block (an adsorber's `initialLoading {}` already
+  exists as a declaration); that is per-unit work and each is named instead.
+* **Sectored time-integrated cases.**  The dynamic driver has no geography;
+  `internalStates/<unit>` is flat, and `readHoldups` refuses a nested path
+  as an orphan.
+* **The GUI thins, it does not page.**  A long run at a fine writeInterval
+  writes thousands of directories; the worker keeps an evenly spaced subset
+  of at most 400 for the scrubber and says so in the log.
+
+Gate: `check_time_state_layout` (arms (a)–(g); the sabotages in its
+docstring).  `check_stream_faces` lost its migrator arm (the migrator is
+gone) and keeps the STEADY `iterations/` spelling it always held.
