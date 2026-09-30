@@ -106,22 +106,53 @@ if [ -f "$wasm" ] && { [ ! -f "$stamp" ] || [ "$wasm" -nt "$stamp" ]; }; then
     exit 1
 fi
 
-#  AND THE DEPENDENCIES MUST BE THE ONES THE LOCKFILE NAMES (2026-09-30).
-#  gui/node_modules is a LOCAL install, gitignored like the wasm, and a pull
-#  that adds a dependency does not install it: Vitor pulled the KaTeX
-#  lessons and Vite died with "Failed to resolve import katex/dist/..." --
-#  a message that names the consequence, not the cause.  npm writes
+#  NODE, AND THE INTERFACE'S LIBRARIES (2026-09-30).  Whoever runs this may
+#  know nothing about Node or npm (Vitor: "os meus alunos nao percebem nada
+#  de computadores"), so the launcher does the plumbing itself and speaks
+#  only when a person has to act.
+#
+#  Node: Vite needs 18; pdfjs-dist and postcss-mixins (via Mantine) DECLARE
+#  20.  Below 18 nothing runs, so it stops; at 18-19 it runs today, so it
+#  says once what to update and carries on.
+if ! command -v node > /dev/null 2>&1 || ! command -v npm > /dev/null 2>&1; then
+    echo "[runGui] Choupo's interface needs Node.js, and this computer does"
+    echo "         not have it.  Install the LTS version from https://nodejs.org,"
+    echo "         then run bin/runGui again."
+    exit 1
+fi
+node_major=$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)
+if [ "$node_major" -lt 18 ]; then
+    echo "[runGui] Choupo's interface needs Node.js 20 or newer; this computer"
+    echo "         has $(node -v).  Install the LTS version from https://nodejs.org,"
+    echo "         then run bin/runGui again."
+    exit 1
+elif [ "$node_major" -lt 20 ]; then
+    echo "[runGui] note: Node.js $(node -v) is older than the 20 some of the"
+    echo "         interface's libraries ask for.  It runs today; update from"
+    echo "         https://nodejs.org (LTS) when convenient."
+fi
+
+#  The libraries: gui/node_modules is a LOCAL install, gitignored like the
+#  wasm, and a pull that adds one does not install it -- Vitor pulled the
+#  KaTeX lessons and Vite died with "Failed to resolve import
+#  katex/dist/...", the consequence rather than the cause.  npm writes
 #  node_modules/.package-lock.json on every install, so a lockfile NEWER
-#  than it is a dependency set this machine has not installed.
+#  than it is a set this machine has not installed: install it, quietly
+#  (a student has nothing to do with npm's warnings), and stop only if the
+#  install itself fails.
 lock="$root_dir/gui/package-lock.json"
 installed="$root_dir/gui/node_modules/.package-lock.json"
 if [ ! -f "$installed" ] || [ "$lock" -nt "$installed" ]; then
-    echo "[runGui] REFUSED: gui/node_modules is $( [ -f "$installed" ] \
-         && echo 'OLDER than gui/package-lock.json' || echo 'NOT INSTALLED' ) --"
-    echo "         the lockfile names dependencies this machine has not"
-    echo "         installed, and Vite would stop on the first import of one."
-    echo "         Install:    (cd gui && npm install)   (then re-run bin/runGui)"
-    exit 1
+    echo "[runGui] installing the interface's libraries (first run, or after"
+    echo "         an update) -- this can take a minute ..."
+    if ! (cd "$root_dir/gui" && npm install --no-audit --no-fund \
+              --loglevel=error > /tmp/choupo-npm-install.log 2>&1); then
+        echo "[runGui] the installation failed; the details are in"
+        echo "         /tmp/choupo-npm-install.log.  Check the internet"
+        echo "         connection and run bin/runGui again."
+        exit 1
+    fi
+    echo "[runGui] libraries installed"
 fi
 
 kill_prior() {
