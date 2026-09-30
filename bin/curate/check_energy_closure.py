@@ -372,7 +372,7 @@ KNOWN_OPEN_KW = {
     "tutorials/steady/distillation/column04_multifeed_sidedraw": -78.6939,
     "tutorials/steady/distillation/column08_radfrac_multidraw": -891.9801,
     "tutorials/steady/distillation/shortcut01_benzene_toluene": -1.0804,
-    "tutorials/steady/drying/solidDryer01_sugar": 372.6562,
+    "tutorials/steady/drying/solidDryer01_sugar": -6.8764,
     "tutorials/steady/drying/sprayDryer01_sugar": -2.6584,
     "tutorials/steady/drying/sprayDryer03_pressure_nozzle": -2.6584,
     "tutorials/steady/drying/sprayDryer04_profiles": -2.6584,

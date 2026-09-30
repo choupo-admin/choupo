@@ -1798,7 +1798,7 @@ accepts today, and that is a policy call.
      uses), and the ISOTHERMAL mixer publishes no duty -- together they keep
      the pump out of membrane18 (a scratch run with the pump shows a 96 %
      first-law debt).  Engine, Vitor's.  **THE SOLUTE MARCH REPAIRED
-     2026-09-29 (branch, AWAITING Vitor's golden list):** the march advances
+     2026-09-29, MERGED 2026-09-30 (05c7548d8, list shown first):** the march advances
      N_s (c_b = N_s/Q_b), the module publishes `solute_closure_rel` and
      REFUSES a solute that does not close to 1e-9 beside its mass guard; every
      spiral-wound case now closes every element to round-off, and
@@ -1808,9 +1808,15 @@ accepts today, and that is a policy call.
      on main (C 0.0896 pp) the day it landed -- the gate was not run on it.
      Moves 147 golden rows in 16 cases, all one direction and small (the
      retentate is no longer diluted by the lost solute: recovery and flux
-     down 0.01-0.2 %, scaling indices up to 0.6 %).  The list goes to Vitor
-     before --record; membrane05's "known issue" note (an open material
-     balance) was this defect and is rewritten.  And the sucrose record's own
+     down 0.01-0.2 %, scaling indices up to 0.6 %), re-recorded after Vitor
+     saw the list; membrane05's "known issue" note (an open material
+     balance) was this defect and is rewritten.  **The curated glucose is
+     RE-IMPORTED into membrane02 and membrane18 (2026-09-30)**, so both now
+     publish a first law: membrane02 closes at 0.0000 kW (its -0.057 kW
+     was the solute leak), membrane18 at -0.039 kW, all of it on the
+     isothermal MIX, which publishes no duty (so its pricing is not audited
+     against a declared heat); boundary rows appended, none moved.  STILL
+     OPEN, engine, Vitor's: the two mixer gaps above.  And the sucrose record's own
      `Vliq` (2.115e-4) still carries no citation.  Also open and separate:
      the quasi-steady seam for a DYNAMIC loop (#185); a real UF (flux law,
      MWCO rejection, a cited record).
@@ -1858,11 +1864,13 @@ accepts today, and that is a policy call.
      DROPPED A STREAM'S SOLID PHASE**: it read `solids {}` inside `feed {}`
      while the flowsheet injects it beside `feed`, so a split wet solid
      lost its crystals in silence -- fixed; the 23 splitter cases are
-     unmoved (none split a solid before).  FINDING FOR VITOR, not acted
-     on: `solidDryer01_sugar`'s hot air declares no phase, so it is priced
-     as a liquid; with `phase gas;` its pinned 372.66 kW energy debt falls
-     to -6.88 kW (the rest is that unit's cp-based balance).  Moving its
-     golden is his decision.  **SLICE 3 BUILT 2026-09-29 (Vitor chose the
+     unmoved (none split a solid before).  `solidDryer01_sugar`'s hot air
+     declared no phase, so it was priced as a liquid; it DECLARES `phase
+     gas;` now (2026-09-30, the two moved rows shown to Vitor first) and
+     its check_energy_closure pin falls from 372.6562 to -6.8764 kW.  What
+     remains is the SolidDryer's own cp-based balance against the
+     formation surface, OPEN (the ConvectiveDryer route closes by
+     construction and is the remedy's shape).  **SLICE 3 BUILT 2026-09-29 (Vitor chose the
      small option: "Botao n na tool batch"):** the `drying` EduTool gains
      the knob n of f = Phi^n.  The knob writes a NUMBER, so the witness
      `dryer01` now DECLARES its falling rate as `dryingCurve { shape

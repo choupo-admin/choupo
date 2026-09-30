@@ -20,3 +20,4 @@ componentMolarFlows
 
 T               420 K;
 P               100000 Pa;
+phase           gas;

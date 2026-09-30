@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/assets/NF270.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Membrane: NF270-style loose-NF
   (DuPont FilmTec NF270-400 archetype)
@@ -56,6 +57,13 @@ kind           NF;
 manufacturer   "DuPont FilmTec";
 
 A_w            1.0e-5  m/s/bar;     // much more permeable than RO
+
+//  PROVENANCE OF THE PERMEABILITY SET -- machine-readable, because a tier that
+//  changes how a number should be READ must not live only in a comment.
+provenance     fittedToCase;
+fittedAgainst  membrane02_NF_sugar;
+intendedUse    pedagogicalCalibration;
+
 permeabilities
 {
     NaCl       5.0e-6  m/s;     // R_obs ~ 60-70 % at 2 g/L
