@@ -206,6 +206,11 @@ private:
     //  T becomes a READOUT, recovered from H(n,T) = H by a 1-D Newton on
     //  the same surface at every evaluation.
     bool   mixtureH_ = false;
+    //  `energy isothermal;` (2026-09-30): T is HELD, the energy equation is
+    //  not solved and the first law is withheld -- a declared simplification
+    //  for a vessel with no reaction and no jacket (the feed-and-bleed tank
+    //  of a species that carries no heat capacity).
+    bool   isothermal_ = false;
     scalar H_ = 0.0;          // stored total enthalpy [kJ] (mixtureH_ state)
 
     //- Mixture molar enthalpy [J/mol == kJ/kmol] on the elements datum, at

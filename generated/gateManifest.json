@@ -1113,8 +1113,8 @@
     },
     "check_quasi_steady": {
       "exit": 0,
-      "claim": "check_quasi_steady: OK -- the NF feed-and-bleed start-up ends on membrane18's steady answer (flux, rejection, permeate, bleed; worst 3.2e-06 relative, band 2e-5); the loop converges with the step (mass residual ratio 0.257 on halving deltaT, measured order 1.96); 4 refusals fired through the reader (a loop with no vessel, a vessel with two inputs, topology inside the wrapped unit, an inlet with no face).  NOT CHECKED: the first law (withheld by the run), any measured start-up, a pump.",
-      "seconds": 14.9
+      "claim": "check_quasi_steady: OK -- the NF feed-and-bleed start-up ends on membrane18's steady answer (flux, rejection, permeate, bleed; worst 3.2e-06 relative, band 2e-5); the loop converges with the step (mass residual ratio 0.257 on halving deltaT, measured order 1.96); 4 refusals fired through the reader (a loop with no vessel, a vessel with two inputs, topology inside the wrapped unit, an inlet with no face); `energy isothermal;` on the tank reproduces the probed route where nothing moves T and refuses an unknown word, a jacket and a reaction.  NOT CHECKED: the first law (withheld by the run), any measured start-up, a pump.",
+      "seconds": 18.1
     }
   }
 }

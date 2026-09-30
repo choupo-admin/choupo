@@ -151,6 +151,34 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
         reactions_.push_back(std::move(r));
     }
 
+    // ---- A DECLARED ISOTHERMAL VESSEL (2026-09-30) -----------------------
+    //  `operation { energy isothermal; }` holds T and solves no energy
+    //  equation.  Exact where nothing moves T -- no reaction, no jacket,
+    //  every inlet at the vessel's temperature -- and a simplification
+    //  otherwise, so it is DECLARED, never inferred, and it refuses the two
+    //  cases where holding T needs a duty this unit would not compute.
+    //  Absent, the energy equation is chosen by probing exactly as before.
+    {
+        auto op = unitDict->subDict("operation");
+        const std::string e = op->lookupWordOrDefault("energy", "");
+        if (!e.empty() && e != "isothermal")
+            throw std::runtime_error("DynamicCSTR '" + name_ + "': energy '"
+                + e + "' is not a declaration this unit reads -- the one word"
+                " is `isothermal`; leave `energy` out for the energy equation"
+                " the unit chooses by probing");
+        isothermal_ = (e == "isothermal");
+        if (isothermal_ && !reactions_.empty())
+            throw std::runtime_error("DynamicCSTR '" + name_ + "': `energy"
+                " isothermal;` with a reaction -- holding T would need the duty"
+                " that removes the heat of reaction, which this declaration"
+                " does not compute; drop `energy isothermal;`");
+        if (isothermal_ && UA_ != 0.0)
+            throw std::runtime_error("DynamicCSTR '" + name_ + "': `energy"
+                " isothermal;` with a jacket (UA " + std::to_string(UA_)
+                + " W/K) -- the jacket would move a temperature the declaration"
+                " holds; set UA 0 or drop `energy isothermal;`");
+    }
+
     // ---- WHICH ENERGY EQUATION, and it is announced -----------------------
     //
     //  THE CANONICAL ROUTE.  The vessel stores H(n,T) = Σ nᵢ hᵢ(T) on the
@@ -229,7 +257,19 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
         catch (const std::exception&) { mixtureH_ = false; }
     }
 
-    if (canonicalEnergy_)
+    if (isothermal_)
+    {
+        canonicalEnergy_ = false;
+        mixtureH_        = false;
+        std::cout << "  [energy] DynamicCSTR '" << name_ << "': ISOTHERMAL,"
+                     " as declared -- T is held at " << T_ << " K and no"
+                     " energy equation is solved.  Exact while every inlet"
+                     " arrives at that temperature (no reaction, no jacket:"
+                     " both refused); an inlet at another temperature would"
+                     " exchange heat this unit does not compute, so the"
+                     " first-law ledger is WITHHELD.\n";
+    }
+    else if (canonicalEnergy_)
         std::cout << "  [energy] DynamicCSTR '" << name_ << "': CANONICAL"
                      " route -- the vessel stores H(n,T) on the elements datum"
                      " and the ODE is its exact derivative, so the first-law"
@@ -271,7 +311,7 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
     //  ctrl10_brine_concentration).
     for (std::size_t i = 0; i < N; ++i)
     {
-        if (mixtureH_) break;   // dH/dt needs no per-component Cp at all
+        if (mixtureH_ || isothermal_) break;   // no Cp is needed at all
         if (thermo.comp(i).hasCpLiquid()) continue;
         if (!canonicalEnergy_)
             throw std::runtime_error("DynamicCSTR: component '"
@@ -596,6 +636,11 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
     }
 
     // ---- Energy balance ----------------------------------------------
+    if (isothermal_)
+    {
+        dydt[N] = 0.0;                          // T held, as declared
+        return dydt;
+    }
     if (mixtureH_)
     {
         //  dH/dt = Hdot_in - Hdot_out + Q, every enthalpy on the ONE
@@ -834,9 +879,13 @@ BalanceSnapshot DynamicCSTR::balanceSnapshot() const
     {
         bs.functional = BalanceSnapshot::EnergyFunctional::none;
         bs.physicalEnergyAvailable = false;
-        bs.energyReason = "the dynamicCSTR energy equation is a Cp/convective"
-            " model, not the exact derivative of a stored U(n,T) or H(n,T);"
-            " a physical first-law closure requires the model reformulation";
+        bs.energyReason = isothermal_
+            ? "the vessel is DECLARED isothermal: T is held and no energy"
+              " equation is solved, so there is no stored functional to"
+              " close a first law on"
+            : "the dynamicCSTR energy equation is a Cp/convective"
+              " model, not the exact derivative of a stored U(n,T) or H(n,T);"
+              " a physical first-law closure requires the model reformulation";
     }
     return bs;
 }

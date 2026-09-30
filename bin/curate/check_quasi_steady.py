@@ -21,7 +21,12 @@ membrane18_nf_feed_and_bleed.  This gate holds, from the runs themselves:
       NOTE names.  The measured order is printed on the claim line;
   (c) four refusals fired through the real reader on copies of the witness:
       a loop with no vessel on it, a vessel given two inputs, topology
-      written inside the wrapped unit's block, and an inlet with no face.
+      written inside the wrapped unit's block, and an inlet with no face;
+  (d) the vessel's `energy isothermal;` (2026-09-30), which a loop tank of a
+      species with no heat capacity needs: on the witness, where nothing
+      moves T, every KPI over the first hour equals the probed (canonical)
+      route's to 1e-9; and it refuses by name an unknown energy word, a
+      jacket (UA != 0) and a reaction (on a copy of unsteady01).
 
 NOT CHECKED: the first law (the adapter claims no stored energy functional
 and the run withholds the rung, which this gate does not re-verify); any
@@ -40,6 +45,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup"
 STEADY = ROOT / "tutorials/steady/membranes/membrane18_nf_feed_and_bleed/expected"
+REACTING = ROOT / "tutorials/unsteady/unsteady01_startup_transient"
 BIN = ROOT / "choupoSemiContinuous"
 
 
@@ -169,13 +175,63 @@ def main():
                 fail(f"(c) {tag}: expected a refusal naming \"{want}\","
                      f" got exit {rc}:\n{o[-600:]}")
 
+    # (d) the isothermal vessel
+    with tempfile.TemporaryDirectory() as tmp:
+        def hour(d):
+            sub(d / "system/controlDict", "endTime         21600;",
+                "endTime         3600;")
+        def iso(d, extra=None):
+            hour(d)
+            sub(d / "system/flowsheetDict", "            T_jacket     298.15 K;",
+                "            T_jacket     298.15 K;\n            energy       isothermal;")
+            if extra:
+                extra(d)
+        rc, ob = run(copy(tmp, "probed", hour))
+        rc2, oi = run(copy(tmp, "isothermal", iso))
+        if rc or rc2:
+            fail(f"(d) the probed/isothermal runs failed ({rc}/{rc2}):\n{oi[-600:]}")
+        if "ISOTHERMAL, as declared" not in oi:
+            fail("(d) the isothermal run did not announce its declaration")
+        kb, ki = kpis(ob), kpis(oi)
+        for u in ("NF", "SPLIT", "TANK"):
+            for key, v in kb[u].items():
+                w = ki[u].get(key)
+                if isinstance(v, (int, float)) and (w is None
+                        or abs(v - w) > 1e-9 * max(1.0, abs(v))):
+                    fail(f"(d) {u}.{key}: probed {v!r}, isothermal {w!r} --"
+                         " holding a T that nothing moves changed the answer")
+        vessel = [
+            ("an unknown energy word",
+             lambda d: iso(d, lambda e: sub(e / "system/flowsheetDict",
+                           "energy       isothermal;", "energy       adiabatic;")),
+             "is not a declaration this unit reads"),
+            ("a jacket", lambda d: iso(d, lambda e: sub(
+                e / "system/flowsheetDict", "UA           0.0; ",
+                "UA           5.0; ")), "with a jacket"),
+        ]
+        for tag, edit, want in vessel:
+            rc, o = run(copy(tmp, re.sub(r"\W", "_", tag), edit))
+            if rc == 0 or want not in o:
+                fail(f"(d) {tag}: expected a refusal naming \"{want}\","
+                     f" got exit {rc}:\n{o[-600:]}")
+        rx = Path(tmp) / "reacting"
+        shutil.copytree(REACTING, rx)
+        sub(rx / "system/flowsheetDict", "            T_jacket     320.0 K;",
+            "            T_jacket     320.0 K;\n            energy       isothermal;")
+        rc, o = run(rx)
+        if rc == 0 or "with a reaction" not in o:
+            fail(f"(d) a reaction: expected a refusal naming \"with a"
+                 f" reaction\", got exit {rc}:\n{o[-600:]}")
+
     print(f"check_quasi_steady: OK -- the NF feed-and-bleed start-up ends on"
           f" membrane18's steady answer (flux, rejection, permeate, bleed;"
           f" worst {worst:.1e} relative, band 2e-5);"
           f" the loop converges with the step (mass residual ratio {ratio:.3f}"
           f" on halving deltaT, measured order {order:.2f}); {len(refusals)} refusals fired through the reader"
           f" (a loop with no vessel, a vessel with two inputs, topology inside"
-          f" the wrapped unit, an inlet with no face).  NOT CHECKED: the first"
+          f" the wrapped unit, an inlet with no face); `energy isothermal;` on the"
+          f" tank reproduces the probed route where nothing moves T and refuses"
+          f" an unknown word, a jacket and a reaction.  NOT CHECKED: the first"
           f" law (withheld by the run), any measured start-up, a pump.")
 
 

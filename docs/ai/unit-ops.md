@@ -1768,6 +1768,11 @@ setpoint against a shrinking disturbance.
   reactions ( a_to_b );
 }
 ```
+`operation { energy isothermal; }` holds T and solves no energy equation
+(announced; the first law is withheld) -- for a vessel with NO reaction and NO
+jacket (both refused), e.g. the recirculation tank of a feed-and-bleed loop
+whose solute carries no heat capacity.
+Absent, the energy equation is chosen by probing, as before.
 
 ### `quasiSteady` — a steady unit inside a transient
 Wraps ANY steady unit (a membrane module, an ED stack, a mixer, a splitter)

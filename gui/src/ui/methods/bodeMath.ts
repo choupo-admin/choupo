@@ -112,7 +112,7 @@ export function gainResponse(K: number): Response {
  *  THIS IS THE ONE ELEMENT THE ENGINE JUDGES.  It is the tracer dynamics of
  *  a constant-volume stirred tank: the engine integrates
  *  `dn_i/dt = F_in z_in_i - F_out (n_i/Sum n)` with `F_out = F_in`
- *  (src/unitOperations/dynamic/DynamicCSTR.cpp:556-559), whose single time
+ *  (src/unitOperations/dynamic/DynamicCSTR.cpp:596-599), whose single time
  *  constant is the residence time `nTot / F_in` the same unit computes at
  *  :377.  Put a sinusoid in and the closed forms below come out; the
  *  measured plane checks them. */
@@ -374,7 +374,7 @@ export const WITNESS_DRIVE_AMPLITUDE_KMOL_S = 2.0e-6;
 
 /** The residence time the witness is authored at [s]: total holdup over total
  *  feed, which is the constant the tank's own ODE carries
- *  (src/unitOperations/dynamic/DynamicCSTR.cpp:377). */
+ *  (src/unitOperations/dynamic/DynamicCSTR.cpp:417). */
 export const WITNESS_TAU_S =
   (WITNESS_HOLDUP_KMOL.compA + WITNESS_HOLDUP_KMOL.compB)
   / (WITNESS_FEED_KMOL_S.compA + WITNESS_FEED_KMOL_S.compB);
