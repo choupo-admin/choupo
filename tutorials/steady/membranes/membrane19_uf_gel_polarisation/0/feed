@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  1.0 m3/h of a 10 kg/m3 BSA solution:
+     water 55.3 kmol/h, BSA 10 kg/h / 66398.8 kg/kmol. ---*/
+
+componentMolarFlows
+{
+    water    55.30         kmol/h;
+    BSA      1.50605e-04   kmol/h;
+}
+
+T               298.15 K;
+P               3.0 bar;
+phase           liquid;

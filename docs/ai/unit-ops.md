@@ -899,7 +899,7 @@ operation
     pressureDrop  { model SchockMiquel; }   // in-block default SchockMiquel; omit the
                                             // block for the constant dP_feed_total
     osmotic       { model Pitzer; }         // or `vanHoff` (default)
-    transport     solutionDiffusion;        // default | DSPM-DE | SDEM (below)
+    transport     solutionDiffusion;        // default | DSPM-DE | SDEM | gelPolarisation (below)
 
     // The FILM'S POLICY -- one block whichever way k arrives (a correlation
     // or a bare `k_film`); NOT inside massTransfer {} (refused there).
@@ -944,10 +944,13 @@ unknown module name refuses with the registered list.  Witnesses:
 `system/solverDict`); witness `membrane18_nf_feed_and_bleed`.  The module works
 on the MIXED loop concentration, not the feed's, and its `R_obs` is against
 that, not against the fresh feed.  A loop needs the recirculation pressure
-restored on every pass: the mixer takes the LOWEST inlet pressure, and the
-`pump` unit needs every component's `Vliq` AND a liquid enthalpy (glucose has
-`Vliq` since 2026-09-29 but no `liquidHeatCapacity`, so the pump still refuses),
-so that witness declares `dP_feed_total 0` and says so.  A loop runs its whole
+restored on every pass: the mixer takes the LOWEST inlet pressure.  Glucose
+has `Vliq` and a `liquidHeatCapacity` since 2026-09-29, so the `pump` no longer
+refuses it -- but the adiabatic mixer still prices glucose through the
+ideal-gas route and refuses, and the isothermal one publishes no duty, so that
+witness declares `dP_feed_total 0` and says so.  The same loop IN TIME is
+`tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup` (the module wrapped
+as `quasiSteady`, see the dynamic units below).  A loop runs its whole
 membrane near the bleed concentration, so it recovers less than one pass of the
 same area -- physics, the price of feed-and-bleed; what it buys is cross-flow,
 which a DECLARED `k_film` cannot show, so a single-pass comparator with a
@@ -1015,6 +1018,26 @@ each channel node):
   The polarisation film is per ion and field-free by default (announced);
   `polarisation { ionCoupling electroneutral; }` couples it by the
   Geraldes & Afonso 2007 interface field (`membrane14_polarisation_multiionic`).
+* `gelPolarisation` — **ultrafiltration by gel polarisation** (Michaels 1968;
+  Blatt et al. 1970): the flux is pressure-controlled, `J = A_w dP`, until the
+  gel-forming solute's wall concentration reaches its gel concentration
+  `c_g`; from there the wall is pinned at `c_g` and
+  `J = k ln(c_g (1 - S)/(c_b - S c_g))` -- independent of pressure (the
+  plateau).  `S` is each solute's INTRINSIC sieving coefficient
+  (`c_p = S c_m`), DECLARED -- there is no MWCO model -- and `source` must say
+  where `c_g` and `S` come from.  The protein's osmotic pressure is neglected
+  (the gel model's own assumption).  Needs a `kind UF` membrane record (its
+  `A_w`) and:
+  ```
+  transport  gelPolarisation;
+  transportParameters
+  {
+      gel { solute BSA; c_gel 250; sieving { BSA 0.01; } source "..."; }
+  }                                   // c_gel in kg/m3
+  ```
+  `transportParameters {}` is the same block `batchDiafilter` hands its law.
+  Witness `membrane19_uf_gel_polarisation` (every UF number in it is a
+  HYPOTHETICAL teaching value, said in its header).
 
 **Props bench `polarisationIndex`** (choupoProps) — the glass-box surface of
 the multi-ionic polarisation model: given `massTransfer { model StirredCell;

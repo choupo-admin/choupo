@@ -1856,6 +1856,35 @@ accepts today, and that is a policy call.
      Found and NOT fixed (pre-existing on main): check_decision_index is
      red on two design records it does not index
      (binary-pairs-from-open-measurements.md, the-44-tool-review-triage.md).
+     **SLICE 2 BUILT 2026-09-30 -- UF by gel polarisation:** `transport
+     gelPolarisation` (membrane/transport/GelPolarisation.{H,cpp}; its
+     parameters in `transportParameters { gel {} }`, the block the batch
+     diafilter already hands its law); `kind UF` accepted.  Witness
+     `membrane19_uf_gel_polarisation` (BSA from its UniProt sequence; the
+     membrane, c_g, S and k HYPOTHETICAL and labelled); gate
+     `check_uf_gel` (closed form per node, plateau, pressure regime,
+     Michaels at S = 0, four refusals; one by-hand sabotage caught).  The
+     batch-membrane EduTool's two absence claims (the gel law; no
+     feed-and-bleed loop, which slice 1 had already falsified and missed)
+     corrected.  **SLICE 2b, the tank:** `dynamicCSTR` may declare
+     `energy isothermal;` (5b05131e5) -- BSA has no heat capacity, so the
+     UF loop's tank needs it.  **NEXT:** the UF feed-and-bleed start-up
+     (`unsteady04`), AFTER C28, so it is born in the ratified layout.
+
+**C28. THE TIME-INTEGRATED CASES ADOPT THE RATIFIED STATE LAYOUT (#186)
+     (asked 2026-09-30, Vitor, on seeing unsteady03 in the browser: "Nao
+     usaste internalState nem ... gravar o estado do sistema em folder com
+     os tempos, como faz o OpenFOAM!").**  Measured: the dynamic and batch
+     binaries still read and write the OLD shape (one `0/internalState`
+     for every unit, one `0/streamFaces` for every face), 59 cases carry it
+     (22 ctrl/unsteady, 37 batch), and `<t>/` directories are written only
+     under `solutionControl { write true; }` (6 cases), in the old shape
+     too.  His rulings, taken by question the same turn: BOTH families
+     migrate to the ratified layout (`<view>/<stream>` one file per stream,
+     `<view>/internalStates/<unit>`), NO dual reader (the old shape refused
+     naming the migrator), and `<t>/` directories written BY DEFAULT at
+     every writeInterval, as OpenFOAM does (`write false;` opts out).
+     Dispatched to a general with a written brief.
 
 **C26. DRYING, REVIEWED FOR TEACHING -- slice 1: THE CHARACTERISTIC
      DRYING CURVE (asked 2026-09-29, Vitor: "quero rever a secagem.

@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  UF30_hypothetical -- a HYPOTHETICAL ultrafiltration membrane for teaching.
+  CASE-LOCAL, not in the standard catalogue, and not any product.
+
+  Every number here is a TEACHING VALUE chosen to be of the order a 30 kDa
+  polyethersulfone UF membrane shows, NOT a measurement and NOT a datasheet:
+  the pure-water permeance 5.0e-5 m/(s bar) is 180 L/(m2 h bar).  Nothing in
+  this file may be quoted as a property of a real membrane.  The retention of
+  a solute is NOT carried here: under `transport gelPolarisation` it is the
+  case's declared sieving coefficient (the ruling of 2026-09-30).
+\*-----------------------------------------------------------------------------*/
+
+name           UF30_hypothetical;
+kind           UF;
+A_w            5.0e-5  m/s/bar;     // hypothetical teaching value (180 LMH/bar)
+provenance     estimated;           // the registered word; the value is a hypothetical teaching value
+intendedUse    pedagogicalCalibration;
+MWCO           30000;               // Da, nominal -- a label, read by no law

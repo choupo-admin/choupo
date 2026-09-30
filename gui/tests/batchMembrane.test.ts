@@ -675,11 +675,12 @@ describe("the batch membrane lesson", () => {
     expect(BATCH_MEMBRANE_STEPS[6]!.note).toMatch(/does not carry that law/);
   });
 
-  it("NAMES the absence a reader will look for: no feed-and-bleed loop", () => {
+  it("NAMES where the loop a reader will look for lives: not in this unit", () => {
     const fb = BATCH_MEMBRANE_LIMITS.find((l) => l.id === "no-feed-and-bleed");
     expect(fb).toBeDefined();
-    expect(fb!.body).toMatch(/no feed-and-bleed membrane loop/);
-    expect(fb!.body).toMatch(/quasi-steady seam/);
+    expect(fb!.body).toMatch(/not a mode of this unit/);
+    expect(fb!.body).toMatch(/unsteady03_nf_feed_and_/);
+    expect(fb!.body).toMatch(/quasiSteady/);
     //  and step 2 points at it, so a reader enumerating the modes is not
     //  left to discover the gap for themselves.
     expect(BATCH_MEMBRANE_STEPS[1]!.note).toMatch(/feed-and-bleed/);

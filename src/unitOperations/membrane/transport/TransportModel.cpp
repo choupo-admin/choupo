@@ -30,6 +30,7 @@ License
 #include "SolutionDiffusion.H"
 #include "DSPM_DE.H"
 #include "SDEM.H"
+#include "GelPolarisation.H"
 
 #include "core/RegistryRefusal.H"
 
@@ -77,6 +78,8 @@ void TransportModel::registerBuiltins()
                  []{ return std::make_unique<DSPM_DE>(); });
     registerType("SDEM",
         []{ return std::make_unique<SDEM>(); });
+    registerType("gelPolarisation",
+        []{ return std::make_unique<GelPolarisation>(); });
 }
 
 } // namespace membrane

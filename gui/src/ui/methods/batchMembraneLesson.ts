@@ -202,8 +202,8 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "obvious thing to write and leaks about one per cent of the vessel's "
       + "mass across a run (BatchDiafilter.H:56-64).  A third mode a reader "
       + "will look for is NOT here, and the limits at the foot of this page "
-      + "say so rather than leaving it to be discovered: Choupo has no "
-      + "feed-and-bleed membrane loop today.",
+      + "say where it lives rather than leaving it to be discovered: a "
+      + "feed-and-bleed membrane loop is not a mode of this unit.",
   },
   {
     n: 3,
@@ -503,9 +503,12 @@ V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{D
       + "retained concentration is greatest.  The familiar closed form that "
       + "goes with it -- wash at the gel concentration divided by e -- does "
       + "NOT follow from the criterion alone; it follows from the "
-      + "GEL-POLARISED flux law of ultrafiltration, and this engine does not "
-      + "carry that law.  Its flux comes from an applied pressure less an "
-      + "osmotic pressure through the declared transport model.  So the page "
+      + "GEL-POLARISED flux law of ultrafiltration, and the run on this page "
+      + "does not carry that law: its flux comes from an applied pressure "
+      + "less an osmotic pressure through the declared solution-diffusion "
+      + "model (the engine has the gel law as `transport gelPolarisation`, "
+      + "witness membrane19_uf_gel_polarisation, but this diafiltration does "
+      + "not declare it).  So the page "
       + "applies the criterion and NOT the closed form: it reads the product "
       + "off the engine's own concentration-mode trajectory, marks the "
       + "maximum, and says whether the maximum was inside the window the run "
@@ -588,8 +591,8 @@ C_\mathrm{opt} \approx c_g/e & \text{the classical shortcut, and an approximatio
         + "LOWER of the two, which is the conservative choice", unit: "g/L" },
       { sym: "c_g", means: "the GEL concentration of the classical "
         + "ultrafiltration flux law -- the concentration at which its flux "
-        + "extrapolates to zero.  This engine carries no such law and no "
-        + "case declares one", unit: "g/L" },
+        + "extrapolates to zero.  The run on this page declares no such law; "
+        + "membrane19_uf_gel_polarisation is the case that does", unit: "g/L" },
       { sym: "e", means: "Euler's number, 2.718…, which appears here only "
         + "because it falls out of maximising the gel-polarised flux law -- "
         + "not because anything general puts it there" },
@@ -706,16 +709,18 @@ G_\mathrm{max} = \dfrac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R -
 export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
   {
     id: "no-feed-and-bleed",
-    title: "There is no feed-and-bleed membrane loop in Choupo today.",
+    title: "The feed-and-bleed membrane loop is not a mode of this unit.",
     body: "A reader who knows how pilot and production plants are actually "
-      + "run will look for a third mode, and it is not here: Choupo has no "
-      + "feed-and-bleed membrane loop today -- that is a STEADY module inside "
-      + "a recirculating tank, and the seam between a steady unit and a "
-      + "time-integrated vessel is open (CLAUDE.md names it as the "
-      + "quasi-steady seam, task #185, NOT done).  The two modes on this page "
-      + "are the two the unit implements, and nothing here should be read as "
-      + "a model of a continuous loop.  If you need one, you are writing it, "
-      + "not selecting it.",
+      + "run will look for a third mode, and it is not a mode of this unit: "
+      + "a feed-and-bleed loop is a STEADY module inside a recirculating "
+      + "tank, so Choupo builds it as a FLOWSHEET -- at steady state as a "
+      + "steady recycle (tutorials/steady/membranes/membrane18_nf_feed_and_"
+      + "bleed), and in time under choupoSemiContinuous, the module wrapped "
+      + "as `quasiSteady` and re-solved at every instant beside a "
+      + "`dynamicCSTR` tank (tutorials/unsteady/unsteady03_nf_feed_and_"
+      + "bleed_startup, which ends on membrane18's steady answer).  The two "
+      + "modes on this page are the two this unit implements, and nothing "
+      + "here should be read as a model of a continuous loop.",
   },
   {
     id: "r-is-the-lesson-not-a-verdict",

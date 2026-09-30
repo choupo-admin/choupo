@@ -472,6 +472,13 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     std::unique_ptr<membrane::TransportModel> transportModel =
         membrane::TransportModel::New(
             opDict->lookupWordOrDefault("transport", "solutionDiffusion"));
+    //  A law that declares its own parameters reads them from
+    //  `transportParameters {}` -- the convention batchDiafilter already
+    //  had, so one declaration serves both binaries (gelPolarisation's
+    //  `gel {}` lives there).  Absent, nothing is read and every law that
+    //  predates it is untouched.
+    if (opDict->found("transportParameters"))
+        transportModel->readParameters(opDict->subDict("transportParameters"));
     const scalar dP_drop    = opDict->lookupScalarOrDefault("dP_feed_total", 0.0,
                                                             Dims::pressure);
 

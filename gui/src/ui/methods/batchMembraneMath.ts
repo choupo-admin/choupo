@@ -510,9 +510,10 @@ export function concentrationAxis(
  *
  * THE CLOSED FORM OF THAT OPTIMUM IS NOT REPRODUCED, and the omission is the
  * point.  The familiar c_gel/e answer follows from the GEL-POLARISED flux law
- * J_w = k ln(c_gel/c), which this engine does not carry -- its flux comes from
- * a transmembrane pressure less an osmotic pressure through the declared
- * transport law.  So the maximum is READ OFF the engine's own J_w(c), which
+ * J_w = k ln(c_gel/c), which the diafiltration this page runs does not
+ * declare (the engine has it since 2026-09-30 as `transport
+ * gelPolarisation`) -- its flux comes from a transmembrane pressure less an
+ * osmotic pressure through the declared solution-diffusion law.  So the maximum is READ OFF the engine's own J_w(c), which
  * is the same method applied to a different flux law, and no constant is
  * borrowed from a model that is not running.
  *

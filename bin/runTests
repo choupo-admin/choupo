@@ -3384,6 +3384,20 @@ PYEOF
     fi
     rm -f /tmp/quasis.$$
 
+    # UF gel-polarisation gate (2026-09-30, C27).  membrane19's flux is the
+    # gel-limited closed form at every node, flat from 3 to 5 bar, exactly
+    # A_w dP at 0.1 bar, Michaels' form at S = 0; the solute closes; four
+    # refusals by name.
+    if "$ROOT/bin/curate/check_uf_gel.py" > /tmp/ufgel.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "uf-gel-gate" "$(head -1 /tmp/ufgel.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_uf_gel.py)\n" "uf-gel-gate"
+        cat /tmp/ufgel.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ufgel.$$
+
     # SDEM gate (2026-09-15).  The solution-diffusion-electromigration law
     # couples an ION-declared feed by the zero-current field with NO new
     # parameter: the permeate must be electroneutral to machine level, the

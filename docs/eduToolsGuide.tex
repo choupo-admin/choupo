@@ -1362,9 +1362,12 @@ Separation Science \textbf{11}(5) (1976) 499--502.
 The page applies that \emph{criterion} and deliberately not the closed
 form usually quoted beside it.  ``Wash at the gel concentration divided by
 $\mathrm{e}$'' does not follow from the criterion alone --- it follows
-from the gel-polarised flux law of ultrafiltration, and this engine does
-not carry that law; its flux is an applied pressure less an osmotic
-pressure through the declared transport model.  So the tool reads the
+from the gel-polarised flux law of ultrafiltration, and the run on this
+page does not carry that law: its flux is an applied pressure less an
+osmotic pressure through the declared solution-diffusion model (the
+engine has the gel law as \texttt{transport gelPolarisation}, witness
+\file{tutorials/steady/membranes/membrane19\_uf\_gel\_polarisation}, but this
+diafiltration does not declare it).  So the tool reads the
 product off the engine's own concentration trajectory, marks the maximum,
 and says whether that maximum was bracketed by the sweep or sitting on one
 of its ends, because an endpoint is not an optimum --- it is a run that
@@ -1403,10 +1406,14 @@ block apart.
 \subsubsection*{What this tool does not carry}
 
 Said here because the page says it too, and an absence that is named is
-worth more than a green run that implies otherwise.  Choupo has \emph{no
-feed-and-bleed membrane loop} today: that is a steady module inside a
-recirculating tank, and the seam between a steady unit and a time
-integrator is open work, not a mode of this unit.  The tree carries no
+worth more than a green run that implies otherwise.  A
+\emph{feed-and-bleed membrane loop} is not a mode of this unit: it is a
+steady module inside a recirculating tank, which Choupo builds as a
+flowsheet --- a steady recycle at steady state
+(\file{tutorials/steady/membranes/membrane18\_nf\_feed\_and\_bleed}) and, in time,
+the module wrapped as \texttt{quasiSteady} beside a tank under
+\texttt{choupoSemiContinuous}
+(\file{tutorials/unsteady/unsteady03\_nf\_feed\_and\_bleed\_startup}).  The tree carries no
 measured fouling data at all, so a cake constant is equipment-and-feed
 data a case declares and never a catalogue value.  The polarisation
 coefficient is declared, never correlated from a geometry the engine was

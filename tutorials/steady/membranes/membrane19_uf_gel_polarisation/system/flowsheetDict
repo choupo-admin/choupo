@@ -1,0 +1,86 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane19_uf_gel_polarisation -- ULTRAFILTRATION of a protein, and the
+  flux that stops answering the pump.
+
+  THE PLANT.  1 m3/h of a 10 kg/m3 bovine serum albumin solution (BSA) is
+  fed at 3 bar to 5 m2 of a 30 kDa UF membrane; the permeate leaves at 1 bar,
+  so the membrane sees 2 bar.
+
+  THE LAW (`transport gelPolarisation`, Michaels 1968; Blatt et al. 1970).
+  The water passes by viscous flow, J = A_w dP, and the protein is pushed to
+  the wall by that flow, where it piles up by the film law
+  (c_m - c_p)/(c_b - c_p) = exp(J/k), c_p = S c_m.  A protein solution does
+  not concentrate without limit: at the GEL concentration c_g the wall
+  layer stops being a solution.  From there the wall is pinned at c_g and
+  the flux is whatever the film can carry away:
+
+        J = k ln( c_g (1 - S) / (c_b - S c_g) )   ~  k ln(c_g / c_b)
+
+  -- independent of pressure.  Here A_w dP would be 360 L/(m2 h), while the
+  film carries k ln(c_g/c_b) = 1e-5 ln(25) m/s = 116 L/(m2 h) at the inlet:
+  the module is GEL-LIMITED from its first node, and doubling the pump
+  pressure would buy nothing (check_uf_gel sweeps it).  Along the channel
+  the protein concentrates, c_b rises, and the flux FALLS as ln(c_g/c_b):
+  the profile shows it.
+
+  WHAT IS DECLARED AND WHERE IT COMES FROM -- read before quoting any
+  number:
+    * BSA (constant/components/BSA.dat): MW and formula DERIVED from the
+      UniProt sequence P02769, the derivation in the record's header.  Its
+      charge is not modelled.
+    * the membrane (constant/assets/UF30_hypothetical.dat): a HYPOTHETICAL
+      teaching membrane, A_w 5e-5 m/(s bar) = 180 L/(m2 h bar), not a
+      product;
+    * c_gel 250 kg/m3, S = 0.01 and k_film 1e-5 m/s: HYPOTHETICAL teaching
+      values of the order the UF literature reports for albumin, not a
+      measurement (the ruling of 2026-09-30: a declared sieving coefficient,
+      no MWCO model, the case saying it is a hypothesis).
+  So the SHAPE is the lesson -- the plateau, the flux falling along the
+  channel -- and no number here may be quoted as a property of BSA or of
+  any real membrane.
+
+  NOT MODELLED, said plainly: the osmotic pressure of the protein (the gel
+  model's own assumption), fouling and its decline in time (see the batch
+  diafilter's Hermia laws), the protein's charge and the pH, and the
+  temperature dependence of k and c_g.  No first law is published: the BSA
+  record carries no heat capacity or formation enthalpy.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        UF;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+        operation
+        {
+            membrane         UF30_hypothetical;
+            transport        gelPolarisation;
+            area             5.0;                 // m2
+            length           1.0;                 // m
+            P_permeate       1.0 bar;
+            k_film           1.0e-5;              // m/s, hypothetical teaching value
+            dP_feed_total    0.0 bar;
+            nNodes           100;
+            transportParameters
+            {
+                gel
+                {
+                    solute    BSA;
+                    c_gel     250;                // kg/m3, hypothetical teaching value
+                    sieving   { BSA 0.01; }       // hypothetical teaching value
+                    source    "hypothetical teaching values of the order reported for albumin UF; no measurement";
+                }
+            }
+        }
+    }
+);

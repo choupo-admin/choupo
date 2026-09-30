@@ -93,7 +93,12 @@
     "transport": {
       "type": "string",
       "title": "Transport law",
-      "description": "The inner J_w–c_m–c_p problem: `solutionDiffusion` (default) or `DSPM-DE` (the pore-flow model for NF, with its announced internal Davies)."
+      "description": "The inner J_w–c_m–c_p problem: `solutionDiffusion` (default), `DSPM-DE` (the pore-flow model for NF, with its announced internal Davies), `SDEM` (per-ion solution-diffusion coupled by the zero-current field) or `gelPolarisation` (ultrafiltration: pressure-controlled flux until the wall reaches the gel concentration, then J = k ln(c_g(1-S)/(c_b - S c_g)); its parameters in `transportParameters { gel {} }`)."
+    },
+    "transportParameters": {
+      "type": "object",
+      "title": "Transport-law parameters",
+      "description": "Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-forming solute>; c_gel <kg/m3>; sieving { <solute> <S>; ... }; source \"...\"; }` -- S in [0, 1) for EVERY solute, and `source` says where c_g and S come from."
     },
     "osmotic": {
       "type": "object",
