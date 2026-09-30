@@ -1110,6 +1110,11 @@
       "exit": 0,
       "claim": "check_convective_dryer: OK -- the continuous convective dryer closes its first law on the package surface (each dryer and the plant report below 1e-3 kW), its water balance against the streams to 1e-9, dries further counter-current than co-current on the same area and never below the air's X_eq, runs its profiles the way each arrangement must, is converged in its step (nSteps 400 moves X_out < 1e-5), and refuses four malformed declarations by name.  NOT checked: any measured dryer (the witness's k_Y, X_c and curve are hypothetical), or the solid's falling-rate warm-up, which the model does not have.",
       "seconds": 10.2
+    },
+    "check_quasi_steady": {
+      "exit": 0,
+      "claim": "check_quasi_steady: OK -- the NF feed-and-bleed start-up ends on membrane18's steady answer (flux, rejection, permeate, bleed; worst 3.2e-06 relative, band 2e-5); the loop converges with the step (mass residual ratio 0.257 on halving deltaT, measured order 1.96); 4 refusals fired through the reader (a loop with no vessel, a vessel with two inputs, topology inside the wrapped unit, an inlet with no face).  NOT CHECKED: the first law (withheld by the run), any measured start-up, a pump.",
+      "seconds": 14.9
     }
   }
 }

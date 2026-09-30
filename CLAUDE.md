@@ -3351,9 +3351,19 @@ split below).
   the open-loop plant of a reference battery and stays in `ctrl/`.  The
   asymmetry is deliberate: a loop under the loopless binary is a category
   error, a loopless case under the loop binary is merely the wrong door.
-  NOT done, named: the quasi-steady seam (#185 — a feed & bleed around a
-  STEADY unit such as an ED stack or a membrane), and the OLD `0/` shape
-  (#186 — the new binary INHERITS `0/internalState` + `0/streamFaces`).
+  THE QUASI-STEADY SEAM (#185) IS BUILT (2026-09-30, Vítor's ruling: a
+  GENERIC adapter): `type quasiSteady;` wraps ANY steady unit, re-solved on
+  its inlets at every accepted state (`flowsheet/UnitInputs.H` is the ONE
+  home of how a unit is handed its inlets, shared with choupoSolve); units
+  gain PORTS (several outlets; several inlets on a unit with no inventory,
+  a vessel keeping ONE feed face); algebraic units are solved in
+  topological order within the instant and a loop with NO vessel on it is
+  REFUSED (it has no time constant -- it is a steady recycle).  Witness
+  `unsteady03_nf_feed_and_bleed_startup`, which must END on membrane18's
+  steady answer; gate `check_quasi_steady`.  NOT done, named: the OLD `0/`
+  shape (#186 — the binary INHERITS `0/internalState` + `0/streamFaces`),
+  and the first law across a quasi-steady unit (the adapter claims no
+  stored functional, so the dynamic ledger withholds the rung).
   Record:
   [`docs/design/a-class-a-student-can-name.md`](docs/design/a-class-a-student-can-name.md).
 * **No silent crutch (numerical honesty) — decided 2026-05-30.**  Every solver

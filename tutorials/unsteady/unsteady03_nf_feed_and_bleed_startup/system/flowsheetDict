@@ -1,0 +1,106 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  unsteady03_nf_feed_and_bleed_startup -- the START-UP of the feed-and-bleed
+  loop whose steady state is membrane18_nf_feed_and_bleed.
+
+  THE PLANT.  Fresh feed (1 wt % glucose, 200 kmol/h) joins the recycle in
+  MIX and fills a 1 m3 recirculation tank; the tank feeds an NF270 module
+  (15 m2); the retentate is split, 95 % back to MIX and 5 % bled off.  The
+  permeate and the bleed leave.  At t = 0 the tank holds feed.
+
+  WHAT IS SOLVED HOW.  The TANK is a vessel (dynamicCSTR, no reaction, no
+  jacket): it holds an inventory and is integrated in time.  MIX, NF and
+  SPLIT hold essentially no liquid, so on the loop's time scale they are
+  at steady state at every instant -- each is its steady unit wrapped as
+  `quasiSteady` and re-solved on every accepted state.  The module the
+  run solves is exactly the one membrane18 solves; only the time around it
+  is new.
+
+  WHAT TO WATCH.  The tank starts at the feed concentration, so the
+  module first sees the feed and delivers its single-pass flux.  As the
+  retentate returns, the loop concentrates, the osmotic pressure rises
+  and the flux falls towards the value membrane18 reports at steady
+  state.  The time scale is the tank's contents over the flows that carry
+  solute OUT of the loop -- the bleed, and the permeate because NF270
+  passes glucose partly: V / (Q_bleed + Q_permeate (1 - R)) is about
+  1 m3 / 5.3e-4 m3/s = 1900 s, and the loop is faster than that (measured
+  e-folding about 1340 s, from successive gaps in balanceTrajectory.csv)
+  because the bleed leaves at the RETENTATE concentration, richer than
+  the tank's.  6 h is some 16 of them, so the end state must be
+  membrane18's: the golden holds the module's flux, rejection and the
+  permeate and bleed flows to membrane18's own within 2e-5.  That
+  agreement is the case's anchor -- a transient that does not end on the
+  steady answer is wrong.
+
+  WHAT IS ASSUMED, and printed on the run: the quasi-steady units hold no
+  inventory (nothing accumulates in the module or the pipes), the tank
+  is well mixed, and the loop's pressure is the module's feed pressure
+  throughout (no pump is modelled, as in membrane18 -- see its header).
+  The first law is NOT claimed: the dynamic ledger needs a stored energy
+  functional per unit, which the quasi-steady adapter does not provide,
+  and the run says so rather than closing it with a zero.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        MIX;
+        type        quasiSteady;
+        inputs      ( Feed  Recycle );
+        outputs     ( ToTank );
+        unit
+        {
+            type        mixer;
+            operation   { T 298.15 K; }
+        }
+    }
+    {
+        name        TANK;
+        type        dynamicCSTR;
+        in          ToTank;
+        outputs     ( ModuleIn );
+        operation
+        {
+            UA           0.0;             // W/K: no jacket
+            T_jacket     298.15 K;
+        }
+    }
+    {
+        name        NF;
+        type        quasiSteady;
+        in          ModuleIn;
+        outputs     ( Retentate  Permeate );    // 0 = retentate, 1 = permeate
+        unit
+        {
+            type        spiralWoundModule;
+            operation
+            {
+                membrane         NF270;
+                area             15.0;
+                length           1.0;
+                P_permeate       1.0 bar;
+                k_film           5.0e-5;
+                dP_feed_total    0.0 bar;
+                nNodes           100;
+            }
+        }
+    }
+    {
+        name        SPLIT;
+        type        quasiSteady;
+        in          Retentate;
+        outputs     ( Recycle  Bleed );
+        unit
+        {
+            type        splitter;
+            operation   { fractions ( 0.95  0.05 ); }
+        }
+    }
+);

@@ -1,0 +1,42 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     MIX                    F_ToTank_final   0.388832449894     1e-4
+kpi     MIX                    kpi_F_out_final  0.388832449894     1e-4
+kpi     MIX                    kpi_P_out_final  1000000            1e-4
+kpi     MIX                    kpi_T_out_final  298.15             1e-4
+kpi     MIX                    kpi_n_in_final   2                  1e-4
+kpi     MIX                    kpi_vf_final     0                  1e-4
+kpi     MIX                    t_end            21600              1e-4
+kpi     NF                     F_Permeate_final 0.0380146663544    1e-4
+kpi     NF                     F_Retentate_final 0.350817783479     1e-4
+kpi     NF                     kpi_Gamma_glucose_avg_final 1.04649230438      1e-4
+kpi     NF                     kpi_J_w_avg_final 4.58864465983e-05  1e-4
+kpi     NF                     kpi_R_obs_glucose_final 0.685413515081     1e-4
+kpi     NF                     kpi_dP_feed_final 0                  1e-4
+kpi     NF                     kpi_mass_closure_rel_final 6.23839085054e-16  1e-4
+kpi     NF                     kpi_solute_closure_rel_final 1.54434416295e-16  1e-4
+kpi     NF                     kpi_water_recovery_final 0.096689217709     1e-4
+kpi     NF                     t_end            21600              1e-4
+kpi     SPLIT                  F_Bleed_final    0.0175408891739    1e-4
+kpi     SPLIT                  F_Recycle_final  0.333276894305     1e-4
+kpi     SPLIT                  t_end            21600              1e-4
+kpi     TANK                   F_in_final       0.388832449894     1e-4
+kpi     TANK                   T_final          298.15             1e-4
+kpi     TANK                   n_glucose_final  0.0994030201811    1e-4
+kpi     TANK                   n_water_final    54.9554869798      1e-4
+kpi     TANK                   t_end            21600              1e-4
+kpi     TANK                   z_in_glucose_final 0.00180552573348   1e-4
+kpi     TANK                   z_in_water_final 0.998194474267     1e-4
+kpi     balance                element_C_closure_rel 4.81268055276e-08  1e-4
+kpi     balance                element_H_closure_rel 4.2922534156e-10   1e-4
+kpi     balance                element_O_closure_rel 4.2922534156e-10   1e-4
+kpi     balance                element_worst_closure_rel 4.81268055276e-08  1e-4
+kpi     balance                energy_balance_available 0                  1e-4
+kpi     balance                mass_closure_rel 7.6718299018e-10   1e-4
+kpi     balance                mass_kg_final    1007.93154606      1e-4
+kpi     balance                mass_kg_in_cum   580839.07517       1e-4
+kpi     balance                mass_kg_initial  1000.7139824       1e-4
+kpi     balance                mass_kg_out_cum  580831.857161      1e-4
+kpi     balance                mass_residual_kg -0.000445609858502 1e-4
+kpi     balance                material_available 1                  1e-4

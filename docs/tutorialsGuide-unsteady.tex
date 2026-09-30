@@ -79,3 +79,51 @@ WHAT THE ANCHORS TOLERATE, stated: the engine measures moments by trapezoid on t
 \goldmore{23}
 \end{tutgolden}
 
+\clearpage
+\tutentry{unsteady03\_nf\_feed\_and\_bleed\_startup}{tutorials/unsteady/unsteady03\_nf\_feed\_and\_bleed\_startup}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (MIX) at (49.3,-0.0) {\textbf{MIX}\\[-1pt]{\tiny quasiSteady}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (TANK) at (52.2,-0.0) {\textbf{TANK}\\[-1pt]{\tiny dynamicCSTR}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (55.1,-0.0) {\textbf{NF}\\[-1pt]{\tiny quasiSteady}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (SPLIT) at (58.0,-0.0) {\textbf{SPLIT}\\[-1pt]{\tiny quasiSteady}};
+  \draw[->] ($(MIX.west)+(-1.05,0.00)$) -- ($(MIX.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {Feed};
+  \draw[->, dashed] (SPLIT.south) .. controls +(0,-1.0) and +(0,-1.0) .. (MIX.south) node[midway, below, font=\tiny] {Recycle};
+  \draw[->] (MIX) -- (TANK) node[midway, above, font=\tiny] {ToTank};
+  \draw[->] (TANK) -- (NF) node[midway, above, font=\tiny] {ModuleIn};
+  \draw[->] (NF) -- (SPLIT) node[midway, above, font=\tiny] {Retentate};
+  \draw[->] ($(NF.east)+(0,0.00)$) -- ($(NF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {Permeate};
+  \draw[->] ($(SPLIT.east)+(0,0.00)$) -- ($(SPLIT.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {Bleed};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Feed-and-bleed NF start-up: the loop concentrates from the feed's to its steady value, the module solved quasi-steady at every instant}
+\begin{tutnarrative}
+the START-UP of the feed-and-bleed loop whose steady state is membrane18\_nf\_feed\_and\_bleed.
+
+THE PLANT. Fresh feed (1 wt \% glucose, 200 kmol/h) joins the recycle in MIX and fills a 1 m3 recirculation tank; the tank feeds an NF270 module (15 m2); the retentate is split, 95 \% back to MIX and 5 \% bled off. The permeate and the bleed leave. At t = 0 the tank holds feed.
+
+WHAT IS SOLVED HOW. The TANK is a vessel (dynamicCSTR, no reaction, no jacket): it holds an inventory and is integrated in time. MIX, NF and SPLIT hold essentially no liquid, so on the loop's time scale they are at steady state at every instant -- each is its steady unit wrapped as `quasiSteady` and re-solved on every accepted state. The module the run solves is exactly the one membrane18 solves; only the time around it is new.
+
+WHAT TO WATCH. The tank starts at the feed concentration, so the module first sees the feed and delivers its single-pass flux. As the retentate returns, the loop concentrates, the osmotic pressure rises and the flux falls towards the value membrane18 reports at steady state. The time scale is the tank's contents over the flows that carry solute OUT of the loop -- the bleed, and the permeate because NF270 passes glucose partly: V / (Q\_bleed + Q\_permeate (1 - R)) is about 1 m3 / 5.3e-4 m3/s = 1900 s, and the loop is faster than that (measured e-folding about 1340 s, from successive gaps in balanceTrajectory.csv) because the bleed leaves at the RETENTATE concentration, richer than the tank's. 6 h is some 16 of them, so the end state must be membrane18's: the golden holds the module's flux, rejection and the permeate and bleed flows to membrane18's own within 2e-5. That agreement is the case's anchor -- a transient that does not end on the steady answer is wrong.
+
+WHAT IS ASSUMED, and printed on the run: the quasi-steady units hold no inventory (nothing accumulates in the module or the pipes), the tank is well mixed, and the loop's pressure is the module's feed pressure throughout (no pump is modelled, as in membrane18 -- see its header). The first law is NOT claimed: the dynamic ledger needs a stored energy functional per unit, which the quasi-steady adapter does not provide, and the run says so rather than closing it with a zero.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{MIX}{F\_ToTank\_final}{0.388832449894}
+\goldrow{kpi}{MIX}{kpi\_F\_out\_final}{0.388832449894}
+\goldrow{kpi}{MIX}{kpi\_P\_out\_final}{1000000}
+\goldrow{kpi}{MIX}{kpi\_T\_out\_final}{298.15}
+\goldrow{kpi}{MIX}{kpi\_n\_in\_final}{2}
+\goldrow{kpi}{MIX}{kpi\_vf\_final}{0}
+\goldrow{kpi}{MIX}{t\_end}{21600}
+\goldrow{kpi}{NF}{F\_Permeate\_final}{0.0380146663544}
+\goldrow{kpi}{NF}{F\_Retentate\_final}{0.350817783479}
+\goldrow{kpi}{NF}{kpi\_Gamma\_glucose\_avg\_final}{1.04649230438}
+\goldrow{kpi}{NF}{kpi\_J\_w\_avg\_final}{4.58864465983e-05}
+\goldrow{kpi}{NF}{kpi\_R\_obs\_glucose\_final}{0.685413515081}
+\goldrow{kpi}{NF}{kpi\_dP\_feed\_final}{0}
+\goldrow{kpi}{NF}{kpi\_mass\_closure\_rel\_final}{6.23839085054e-16}
+\goldmore{25}
+\end{tutgolden}
+

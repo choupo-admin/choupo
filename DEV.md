@@ -1820,6 +1820,42 @@ accepts today, and that is a policy call.
      `Vliq` (2.115e-4) still carries no citation.  Also open and separate:
      the quasi-steady seam for a DYNAMIC loop (#185); a real UF (flux law,
      MWCO rejection, a cited record).
+     **COMMISSIONED 2026-09-30 (Vitor: "Eu queria mesmo era fazer isto" --
+     the UF and the dynamic feed-and-bleed; the commander had read "termina
+     isto tudo" as the pending approvals only).  His three rulings, taken
+     by question the same turn:** (a) #185 is a GENERIC ADAPTER --
+     `type quasiSteady;` in choupoSemiContinuous wraps any steady unit
+     declared inside it, solved at each accepted step on that instant's
+     inlets, with NO inventory of its own (the accumulation is the tank's),
+     announced on the run; (b) the UF flux law is GEL POLARISATION
+     (Michaels/Blatt, J = k ln(c_g/c_b), declared c_g, the pressure-
+     independent plateau); (c) the UF rejection is a DECLARED sieving
+     coefficient for now, no MWCO model, the case saying it is a
+     hypothesis.  Order: the adapter (with NF270, whose physics exists),
+     then the UF law, then a UF feed-and-bleed transient witness.
+     **SLICE 1 BUILT 2026-09-30 -- the quasi-steady seam (#185):**
+     `QuasiSteadyUnit` (src/unitOperations/dynamic/) wraps any steady unit
+     and re-solves it on its inlets at every accepted state; the steady
+     injection moved VERBATIM out of Flowsheet.cpp's anonymous namespace
+     into `flowsheet/UnitInputs.{H,cpp}` (the second caller arrived), so a
+     unit reads the same dict in both binaries; the dynamic driver routes
+     PORTS, solves the algebraic units in topological order within the
+     instant, and REFUSES a loop with no vessel on it; the dynamic binaries
+     now register the steady factories and the asset catalogues.  Witness
+     `tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup` (the start-up
+     of membrane18's loop, 1 m3 tank): it ENDS on membrane18's steady
+     answer to 3e-6 (flux, rejection, permeate, bleed), e-folding ~1340 s.
+     Gate `check_quasi_steady` (anchor, step convergence, four refusals;
+     one by-hand sabotage -- the no-vessel refusal disabled -- caught: the
+     loop then ran to exit 0 in silence).  MEASURED, against the
+     expectation written into the gate's first draft: the mass residual is
+     SECOND order in deltaT (ratio 0.257), not the first-order route lag the
+     driver's NOTE names -- recorded, not tuned.  Not done: the first law
+     across a quasiSteady unit (withheld by the run), a pump in the loop,
+     drawing the wrapped unit's own symbol on the canvas (a QS box today).
+     Found and NOT fixed (pre-existing on main): check_decision_index is
+     red on two design records it does not index
+     (binary-pairs-from-open-measurements.md, the-44-tool-review-triage.md).
 
 **C26. DRYING, REVIEWED FOR TEACHING -- slice 1: THE CHARACTERISTIC
      DRYING CURVE (asked 2026-09-29, Vitor: "quero rever a secagem.

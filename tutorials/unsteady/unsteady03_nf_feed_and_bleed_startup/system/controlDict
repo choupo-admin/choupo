@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSemiContinuous;
+description   "Feed-and-bleed NF start-up: the loop concentrates from the feed's to its steady value, the module solved quasi-steady at every instant";
+
+verbosity     2;
+
+startTime       0;        // s
+endTime         21600;    // s  (6 h: about 16 loop time constants, see flowsheetDict)
+deltaT          5.0;      // s
+writeInterval   600;      // s

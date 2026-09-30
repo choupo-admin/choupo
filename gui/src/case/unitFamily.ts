@@ -350,6 +350,15 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
     path: "M4 14h10v20H4z M34 14h10v20H34z"
         + " M19 12v24 M23 12v24 M27 12v24 M31 12v24"
         + " M14 20h5 M31 20h3 M14 30h5 M31 30h3" },
+  { cls: "QuasiSteadyUnit",
+    label: "a steady unit solved quasi-steady at each instant (its type is in its unit {} block)",
+    //  AN ADAPTER, NOT EQUIPMENT.  It wraps whichever steady unit its
+    //  `unit {}` block declares -- a membrane module, a mixer, a splitter --
+    //  and this table cannot see which, so it draws a plain BOX rather
+    //  than guessing a vessel (no tag: tags mark a SHARED shape, and this one is its own): the 2026-09-07 ruling, a labelled box beats
+    //  a wrong picture.  Drawing the wrapped unit's own symbol is a later
+    //  GUI slice.
+    path: "M6 12h36v24H6z M3 24h3 M42 24h3" },
   { cls: "WilliamsOttoPlant", label: "Williams-Otto plant (one lumped unit)",
     //  NOT ONE PIECE OF EQUIPMENT.  Its own header says "the Williams-Otto
     //  plant as ONE dynamic unit" -- a whole benchmark plant lumped into a
@@ -393,6 +402,11 @@ export const UNIT_CLASS: { readonly [type: string]: string } = {
   //  DynamicUnitOperation's registry (choupoCtrl + choupoSemiContinuous).
   dynamicCSTR: "DynamicCSTR",
   williamsOttoPlant: "WilliamsOttoPlant",
+  //  The quasi-steady seam (2026-09-30): an ADAPTER around a steady unit.
+  //  Its class has no symbol of its own ON PURPOSE -- the honest picture is
+  //  the WRAPPED unit's, which this table cannot see (the inner type lives
+  //  in the `unit {}` block), so it draws the labelled box.
+  quasiSteady: "QuasiSteadyUnit",
   //  BatchUnitOperation's registry (choupoBatch).
   batchReactor: "BatchReactor",
   batchStill: "BatchStill",

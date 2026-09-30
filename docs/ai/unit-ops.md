@@ -1769,6 +1769,32 @@ setpoint against a shrinking disturbance.
 }
 ```
 
+### `quasiSteady` — a steady unit inside a transient
+Wraps ANY steady unit (a membrane module, an ED stack, a mixer, a splitter)
+and re-solves it on its inlets at every accepted state -- the unit holds NO
+inventory, so on the loop's time scale it is at steady state at each instant
+(announced on the run).  Topology (`in`/`inputs`/`outputs`) and the name sit
+on the `quasiSteady` block; the inner `unit {}` is the steady unit exactly as
+choupoSolve would read it, WITHOUT topology (refused there).  Several inlets
+and outlets are allowed; a VESSEL (`dynamicCSTR`) keeps ONE feed face, so two
+streams into a tank go through a `mixer` wrapped as `quasiSteady` in front of
+it.  A loop is routable only with a vessel on it (a loop of quasi-steady units
+alone has no time constant and is refused).  Every inlet needs a face in
+`0/streamFaces` named `"<unit>.<stream>"` (its t = 0 value when routed); no
+`0/internalState` entry.  The first law across it is NOT claimed (the ledger
+withholds the rung, naming why).  Example:
+`unsteady03_nf_feed_and_bleed_startup` (the start-up of membrane18's loop; it
+ends on membrane18's steady answer).
+
+```
+{ name NF;  type quasiSteady;
+  in ModuleIn;  outputs ( Retentate  Permeate );
+  unit { type spiralWoundModule;
+         operation { membrane NF270; area 15.0; length 1.0;
+                     P_permeate 1.0 bar; k_film 5.0e-5; } }
+}
+```
+
 ## Controllers (in `flowsheetDict.controllers (... )`)
 
 ```

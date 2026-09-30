@@ -3369,6 +3369,21 @@ PYEOF
     fi
     rm -f /tmp/convdry.$$
 
+    # quasi-steady gate (2026-09-30, #185).  A steady unit inside a
+    # transient: the NF feed-and-bleed start-up must END on membrane18's
+    # steady answer, its mass residual must converge with deltaT, and four
+    # refusals (a loop with no vessel, a vessel with two inputs, topology
+    # inside the wrapped unit, an inlet with no face) fire by name.
+    if "$ROOT/bin/curate/check_quasi_steady.py" > /tmp/quasis.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "quasi-steady-gate" "$(head -1 /tmp/quasis.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_quasi_steady.py)\n" "quasi-steady-gate"
+        cat /tmp/quasis.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/quasis.$$
+
     # SDEM gate (2026-09-15).  The solution-diffusion-electromigration law
     # couples an ION-declared feed by the zero-current field with NO new
     # parameter: the permeate must be electroneutral to machine level, the

@@ -153,6 +153,43 @@ public:
             + "' (" + type() + ") has no routable inlet face");
     }
 
+    //  ---- Ports and inventory (the quasi-steady seam, 2026-09-30) ------
+    //  A unit that HOLDS an inventory (a vessel) is integrated in time; a
+    //  unit that holds none (a steady unit wrapped by `quasiSteady`) is
+    //  ALGEBRAIC in time: its outlets are a function of its inlets at the
+    //  same instant, so the driver re-solves it on each accepted state
+    //  instead of stepping it.  Defaults describe every vessel written
+    //  before the seam: inventory, one inlet face, one outlet.
+    virtual bool hasInventory() const { return true; }
+    //- The declared inlet names in port order; EMPTY means the single
+    //  legacy feed face (`in <stream>;`), set through setInletStream().
+    virtual std::vector<std::string> inletPorts() const { return {}; }
+    virtual std::size_t nOutlets() const { return 1; }
+    virtual ContinuousStream outletStreamAt(std::size_t k) const
+    {
+        if (k != 0)
+            throw std::runtime_error("DynamicUnitOperation: unit '" + name_
+                + "' (" + type() + ") has one outlet; port "
+                + std::to_string(k) + " does not exist");
+        return outletStream();
+    }
+    virtual void setInletStreamAt(std::size_t port, const ContinuousStream& s)
+    {
+        if (port != 0)
+            throw std::runtime_error("DynamicUnitOperation: unit '" + name_
+                + "' (" + type() + ") has one inlet face; port "
+                + std::to_string(port) + " does not exist");
+        setInletStream(s);
+    }
+    //- Re-solve an ALGEBRAIC unit on the inlets it now holds.  A vessel
+    //  has nothing to do here: its state moves only by step().
+    virtual void refresh() {}
+
+    //- Asked of the CLASS (the interiorKindsRead precedent): the driver
+    //  needs the answer while it is still reading dicts, before any unit
+    //  is constructed.
+    static bool carriesInventory(const std::string& type);
+
     // ---- Manipulated / Controlled Variables (the controller API) -----
     //   MV: a controller writes a numeric value into a named knob.
     //   CV: a controller reads a numeric value from a named measurement.

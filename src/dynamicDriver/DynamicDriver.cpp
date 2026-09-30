@@ -87,6 +87,13 @@ Description
 #include "streams/StreamOverrides.H"
 #include "core/DisplayUnits.H"
 #include "materials/MaterialRegistry.H"
+#include "thermo/membrane/MembraneRegistry.H"
+#include "thermo/membrane/MembraneModuleRegistry.H"
+#include "thermo/electrochem/EDStackRegistry.H"
+#include "thermo/adsorbent/AdsorbentRegistry.H"
+#include "unitOperations/UnitOperation.H"
+#include "unitOperations/separation/cycloneModel/CycloneModel.H"
+#include "unitOperations/reactor/gibbsMethod/GibbsMethod.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
 #include "thermo/solution/SolutionRegistry.H"
 #include "thermo/utility/UtilityCatalogue.H"
@@ -165,6 +172,39 @@ static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList,
                 " inlet live in 0/internalState + 0/streamFaces (bin/choupo-init0"
                 " materialises them).  Delete the inline block from flowsheetDict.");
 
+        //  A unit that holds NO inventory (the quasi-steady seam) has no
+        //  holdup to seed, and one face PER INLET rather than one feed face:
+        //  every `"<unit>.<stream>"` face in 0/streamFaces is handed to it
+        //  as `inlets { <stream> { F T P molarComposition } }`.
+        if (!DynamicUnitOperation::carriesInventory(uDict->lookupWord("type")))
+        {
+            auto inl = std::make_shared<Dictionary>("inlets");
+            if (sstreams && sstreams->found("faces"))
+            {
+                auto strm = sstreams->subDict("faces");
+                for (const auto& sn : strm->keys())
+                {
+                    if (sn.rfind(uname + ".", 0) != 0) continue;
+                    auto face = strm->subDict(sn);
+                    auto mf = face->subDict("molarFlows");
+                    scalar F = 0.0;
+                    for (const auto& c : mf->keys()) F += mf->lookupScalar(c);
+                    std::ostringstream in;  in << std::setprecision(17);
+                    in << "F " << F << "; T " << face->lookupScalar("T")
+                       << "; P " << face->lookupScalar("P")
+                       << "; molarComposition {";
+                    for (const auto& c : mf->keys())
+                        in << " " << c << " "
+                           << (F > 0.0 ? mf->lookupScalar(c) / F : 0.0) << ";";
+                    in << " }";
+                    const std::string port = sn.substr(uname.size() + 1);
+                    inl->insert(port, Dictionary::fromString(in.str(), port));
+                }
+            }
+            uDict->insert("inlets", inl);
+            continue;
+        }
+
         if (!istate)
             throw std::runtime_error(binaryName + ": no 0/internalState -- the dynamic"
                 " initial state lives in 0/ (run bin/choupo-init0).");
@@ -234,6 +274,12 @@ try
     HeatCapacityModel ::registerBuiltins();
     Phase             ::registerBuiltins();
     HeatTransferCorrelation::registerBuiltins();
+    //  The STEADY units too, since the quasi-steady seam (2026-09-30): a
+    //  `quasiSteady` block wraps any of them, and a unit is not installed
+    //  until everything it constructs is (the choupoBatch/diafilter rule).
+    CycloneModel    ::registerBuiltins();
+    GibbsMethod     ::registerBuiltins();
+    UnitOperation   ::registerBuiltins();
     DynamicUnitOperation::registerBuiltins();
     //  The CONTROL layer's own factories (Controller, Signal) are registered
     //  by the application that owns that layer -- choupoCtrl's main -- never
@@ -263,6 +309,12 @@ try
     //  Unguarded + after the chdir -- the choupoSolve shape; see the note in
     //  choupoBatch/main.cpp (2026-08-22).
     MaterialRegistry::loadFrom(dataRoot.string());
+    //  The asset catalogues a wrapped steady unit reads (membranes, module
+    //  and stack records, adsorbents): same rule as the factories above.
+    MembraneRegistry::loadFrom(dataRoot.string());
+    MembraneModuleRegistry::loadFrom(dataRoot.string());
+    EDStackRegistry::loadFrom(dataRoot.string());
+    AdsorbentRegistry::loadFrom(dataRoot.string());
     HenrysLawRegistry::loadFrom(dataRoot.string());
 
     SolutionRegistry::loadFrom(dataRoot.string());
@@ -449,7 +501,8 @@ try
     {
         bool needSeed = false;
         for (const auto& uDict : unitList)
-            if (!uDict->found("initial")) { needSeed = true; break; }
+            if (!uDict->found("initial") && !uDict->found("inlets"))
+            { needSeed = true; break; }
         if (needSeed) seedDynamicUnitsFrom0(unitList, cfg.binaryName);
     }
 
@@ -491,63 +544,172 @@ try
     //  0/streamFaces face stays the t = 0 inlet state and the face of
     //  every unconnected inlet.  Scope, per the ratified proposal:
     //  forward series/parallel routing only -- no implicit-in-time
-    //  coupling, no back-pressure, no flow networks.
-    struct CtrlRoute { std::size_t from = 0, to = 0; std::string stream; };
+    //  coupling, no back-pressure, no flow networks.  WIDENED 2026-09-30
+    //  by the quasi-steady seam (#185): a LOOP is routable when a vessel
+    //  sits on it (its inventory is the loop's time constant, and the
+    //  route into it stays one step explicit); a loop of algebraic units
+    //  alone is refused below.
+    //  PORTS (the quasi-steady seam, 2026-09-30).  A unit may now have
+    //  several outlets (`outputs ( a b )`, bound in order) and a unit that
+    //  holds no inventory several inlets (`inputs ( a b )`).  A vessel keeps
+    //  its ONE feed face: two streams into a tank are merged by a mixer
+    //  wrapped as quasiSteady in front of it, never summed here.
+    struct CtrlRoute
+    {
+        std::size_t from = 0, fromPort = 0, to = 0, toPort = 0;
+        std::string stream;
+    };
     std::vector<CtrlRoute> routes;
     {
-        std::map<std::string, std::size_t> producerOf;
+        std::map<std::string, std::pair<std::size_t, std::size_t>> producerOf;
         for (std::size_t i = 0; i < unitList.size(); ++i)
             if (unitList[i]->found("outputs"))
-                for (const auto& w : unitList[i]->lookupWordList("outputs"))
+            {
+                const auto outs = unitList[i]->lookupWordList("outputs");
+                if (outs.size() > units[i]->nOutlets())
+                    throw std::runtime_error(cfg.binaryName + " routing: unit '"
+                        + unitNames[i] + "' (type " + units[i]->type()
+                        + ") declares " + std::to_string(outs.size())
+                        + " outputs but has " + std::to_string(units[i]->nOutlets())
+                        + " outlet(s)");
+                for (std::size_t k = 0; k < outs.size(); ++k)
                 {
+                    const auto& w = outs[k];
                     if (producerOf.count(w))
                         throw std::runtime_error(cfg.binaryName + " routing: stream '"
                             + w + "' is produced by BOTH '"
-                            + unitNames[producerOf[w]] + "' and '"
+                            + unitNames[producerOf[w].first] + "' and '"
                             + unitNames[i] + "' -- two connections into one"
                             " name have no meaning on the forward-routing"
-                            " path (merge them with an explicit mixer unit"
-                            " when one exists)");
-                    producerOf[w] = i;
+                            " path (merge them with a mixer wrapped as"
+                            " quasiSteady)");
+                    producerOf[w] = { i, k };
                 }
+            }
         for (std::size_t i = 0; i < unitList.size(); ++i)
         {
-            if (!unitList[i]->found("in")) continue;
-            const std::string src = unitList[i]->lookupWord("in");
-            auto it = producerOf.find(src);
-            if (it == producerOf.end()) continue;   // domain inlet: 0/ face
-            if (it->second == i)
-                throw std::runtime_error(cfg.binaryName + " routing: unit '"
-                    + unitNames[i] + "' declares its own output '" + src
-                    + "' as its inlet -- a self-loop needs the recycle"
-                    " machinery the steady path owns, not forward routing");
-            //  REACH, stated honestly (the check_true_ions discipline): as
-            //  of 2026-08-24 this refusal cannot fire in practice -- the
-            //  only registered dynamic type without a routable inlet
-            //  (williamsOttoPlant) owns its own component set and refuses
-            //  earlier, at initialise.  It stands for the next dynamic
-            //  type, and claims no probe today.
-            if (!units[i]->acceptsRoutedInlet())
-                throw std::runtime_error(cfg.binaryName + " routing: unit '"
-                    + unitNames[i] + "' (type " + units[i]->type()
-                    + ") is the target of routed stream '" + src
-                    + "' but has no routable inlet face -- only units that"
-                    " model a feed (e.g. dynamicCSTR) can be chained");
-            routes.push_back({ it->second, i, src });
+            std::vector<std::string> ins;
+            const bool algebraic = !units[i]->hasInventory();
+            if (unitList[i]->found("inputs"))
+            {
+                ins = unitList[i]->lookupWordList("inputs");
+                if (!algebraic && ins.size() > 1)
+                    throw std::runtime_error(cfg.binaryName + " routing: unit '"
+                        + unitNames[i] + "' (type " + units[i]->type()
+                        + ") declares " + std::to_string(ins.size())
+                        + " inputs, but a vessel has ONE feed face -- merge the"
+                        " streams in a `mixer` wrapped as `quasiSteady` in"
+                        " front of it");
+            }
+            else if (unitList[i]->found("in"))
+                ins = { unitList[i]->lookupWord("in") };
+            for (std::size_t port = 0; port < ins.size(); ++port)
+            {
+                const std::string& src = ins[port];
+                auto it = producerOf.find(src);
+                if (it == producerOf.end()) continue;   // domain inlet: 0/ face
+                if (it->second.first == i)
+                    throw std::runtime_error(cfg.binaryName + " routing: unit '"
+                        + unitNames[i] + "' declares its own output '" + src
+                        + "' as its inlet -- a self-loop needs the recycle"
+                        " machinery the steady path owns, not forward routing");
+                //  REACH, stated honestly (the check_true_ions discipline):
+                //  as of 2026-08-24 this refusal cannot fire in practice --
+                //  the only registered dynamic type without a routable
+                //  inlet (williamsOttoPlant) owns its own component set and
+                //  refuses earlier, at initialise.  It stands for the next
+                //  dynamic type, and claims no probe today.
+                if (!units[i]->acceptsRoutedInlet())
+                    throw std::runtime_error(cfg.binaryName + " routing: unit '"
+                        + unitNames[i] + "' (type " + units[i]->type()
+                        + ") is the target of routed stream '" + src
+                        + "' but has no routable inlet face -- only units that"
+                        " model a feed (e.g. dynamicCSTR) can be chained");
+                routes.push_back({ it->second.first, it->second.second,
+                                   i, port, src });
+            }
         }
         for (const auto& r : routes)
+        {
+            const bool algebraic = !units[r.to]->hasInventory();
             std::cout << "[routing] " << unitNames[r.from] << " -> "
-                      << unitNames[r.to] << "  (stream '" << r.stream
-                      << "'; ONE-STEP-EXPLICIT: the downstream unit"
-                         " integrates each driver step on the upstream"
-                         " outlet at the step's start -- a transport delay"
-                         " of one driver step)\n";
+                      << unitNames[r.to] << "  (stream '" << r.stream << "'; "
+                      << (algebraic
+                          ? "SAME INSTANT: the receiving unit holds no"
+                            " inventory and is re-solved on it at every"
+                            " accepted state)\n"
+                          : "ONE-STEP-EXPLICIT: the downstream unit"
+                            " integrates each driver step on the upstream"
+                            " outlet at the step's start -- a transport delay"
+                            " of one driver step)\n");
+        }
+    }
+
+    //  The algebraic units are solved in an order where every one of them
+    //  sees inlets already brought to the current instant.  A route out of a
+    //  vessel is always ready (its outlet is its state); a route between two
+    //  algebraic units orders them.  A cycle made ONLY of algebraic units has
+    //  no inventory on it, hence no time constant: it is a steady recycle,
+    //  which this driver does not solve -- refused by name.
+    std::vector<std::size_t> algebraicOrder;
+    {
+        std::vector<std::size_t> alg;
+        for (std::size_t i = 0; i < units.size(); ++i)
+            if (!units[i]->hasInventory()) alg.push_back(i);
+        std::map<std::size_t, int> indeg;
+        for (auto i : alg) indeg[i] = 0;
+        for (const auto& r : routes)
+            if (indeg.count(r.from) && indeg.count(r.to)) ++indeg[r.to];
+        std::vector<std::size_t> ready;
+        for (auto i : alg) if (indeg[i] == 0) ready.push_back(i);
+        while (!ready.empty())
+        {
+            const std::size_t u = ready.front();
+            ready.erase(ready.begin());
+            algebraicOrder.push_back(u);
+            for (const auto& r : routes)
+                if (r.from == u && indeg.count(r.to) && --indeg[r.to] == 0)
+                    ready.push_back(r.to);
+        }
+        if (algebraicOrder.size() != alg.size())
+        {
+            std::string loop;
+            for (auto i : alg)
+                if (indeg[i] > 0) loop += " " + unitNames[i];
+            throw std::runtime_error(cfg.binaryName + " routing: the units"
+                + loop + " form a loop in which NO unit holds an inventory"
+                " (all quasiSteady) -- such a loop has no time constant and"
+                " is a steady recycle.  Put a vessel (e.g. dynamicCSTR) on"
+                " the loop, or solve it with choupoSolve's tear machinery.");
+        }
+        if (!algebraicOrder.empty())
+        {
+            std::cout << "[routing] algebraic (quasi-steady) units solved per"
+                         " accepted state, in order:";
+            for (auto i : algebraicOrder) std::cout << " " << unitNames[i];
+            std::cout << "\n";
+        }
     }
     auto applyRoutes = [&]()
     {
+        for (auto u : algebraicOrder)
+        {
+            for (const auto& r : routes)
+                if (r.to == u)
+                    units[r.to]->setInletStreamAt(r.toPort,
+                        units[r.from]->outletStreamAt(r.fromPort));
+            units[u]->refresh();
+        }
         for (const auto& r : routes)
-            units[r.to]->setInletStream(units[r.from]->outletStream());
+            if (units[r.to]->hasInventory())
+                units[r.to]->setInletStreamAt(r.toPort,
+                    units[r.from]->outletStreamAt(r.fromPort));
     };
+    //  With algebraic units present the loop is brought to ONE instant
+    //  before the first step, so every vessel starts on a feed consistent
+    //  with its neighbours.  Without them nothing changes: a vessel chain
+    //  keeps its declared t = 0 faces, byte-identical to before the seam.
+    if (!algebraicOrder.empty()) applyRoutes();
 
     // ---- Build controllers -------------------------------------------
     std::vector<std::unique_ptr<Controller>> controllers;

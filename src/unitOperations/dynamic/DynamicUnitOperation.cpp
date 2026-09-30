@@ -29,6 +29,7 @@ License
 #include "DynamicUnitOperation.H"
 #include "DynamicCSTR.H"
 #include "WilliamsOttoPlant.H"
+#include "QuasiSteadyUnit.H"
 
 #include <map>
 #include <memory>
@@ -70,8 +71,16 @@ std::vector<std::string> DynamicUnitOperation::availableTypes()
     return v;
 }
 
+bool DynamicUnitOperation::carriesInventory(const std::string& type)
+{
+    return New(type)->hasInventory();
+}
+
 void DynamicUnitOperation::registerBuiltins()
 {
+    registerType("quasiSteady",
+        []() -> std::unique_ptr<DynamicUnitOperation>
+        { return std::make_unique<QuasiSteadyUnit>(); });
     registerType("dynamicCSTR",
         []() -> std::unique_ptr<DynamicUnitOperation>
         { return std::make_unique<DynamicCSTR>(); });

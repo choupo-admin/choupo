@@ -36,7 +36,7 @@ transient simulation of a process reads `Ctrl` and walks past.
 So this slice is a NAME and an EXTRACTION, not new physics.  What it
 deliberately does not build is the feed & bleed around a STEADY unit (an ED
 stack, a membrane module), which needs the quasi-steady seam — task #185, a
-separate slice.
+separate slice (BUILT 2026-09-30, see §8).
 
 ## 3. The extraction, and its evidence
 
@@ -232,10 +232,14 @@ reason.
 
 ## 8. Not done, said plainly
 
-* **The quasi-steady seam (#185).**  A feed & bleed around a STEADY unit —
-  an ED stack, a spiral-wound module — needs a unit that is solved to steady
-  state inside each accepted step of a dynamic vessel.  Nothing here starts
-  it.
+* **The quasi-steady seam (#185) -- BUILT 2026-09-30.**  A feed & bleed
+  around a STEADY unit needed a unit solved to steady state at each
+  accepted state of a dynamic vessel: `type quasiSteady;`
+  (`src/unitOperations/dynamic/QuasiSteadyUnit.H`) wraps any steady unit,
+  the driver routes PORTS and solves the algebraic units in order within
+  the instant, and a loop with no vessel is refused.  Witness
+  `tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup` (ends on
+  membrane18's steady answer to 3e-6); gate `check_quasi_steady`.
 * **The `0/` layout (#186).**  The new binary INHERITS the OLD dynamic shape,
   `0/internalState` + `0/streamFaces`, exactly as choupoCtrl reads it
   (`seedDynamicUnitsFrom0`, unchanged).  Migrating it to the 2026-09-06
