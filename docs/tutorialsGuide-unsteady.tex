@@ -129,3 +129,51 @@ WHAT IS ASSUMED, and printed on the run: the quasi-steady units hold no inventor
 \goldmore{25}
 \end{tutgolden}
 
+\clearpage
+\tutentry{unsteady04\_uf\_feed\_and\_bleed\_startup}{tutorials/unsteady/unsteady04\_uf\_feed\_and\_bleed\_startup}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (MIX) at (49.3,-0.0) {\textbf{MIX}\\[-1pt]{\tiny quasiSteady}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (TANK) at (52.2,-0.0) {\textbf{TANK}\\[-1pt]{\tiny dynamicCSTR}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (UF) at (55.1,-0.0) {\textbf{UF}\\[-1pt]{\tiny quasiSteady}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (SPLIT) at (58.0,-0.0) {\textbf{SPLIT}\\[-1pt]{\tiny quasiSteady}};
+  \draw[->] ($(MIX.west)+(-1.05,0.00)$) -- ($(MIX.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {Feed};
+  \draw[->, dashed] (SPLIT.south) .. controls +(0,-1.0) and +(0,-1.0) .. (MIX.south) node[midway, below, font=\tiny] {Recycle};
+  \draw[->] (MIX) -- (TANK) node[midway, above, font=\tiny] {ToTank};
+  \draw[->] (TANK) -- (UF) node[midway, above, font=\tiny] {ModuleIn};
+  \draw[->] (UF) -- (SPLIT) node[midway, above, font=\tiny] {Retentate};
+  \draw[->] ($(UF.east)+(0,0.00)$) -- ($(UF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {Permeate};
+  \draw[->] ($(SPLIT.east)+(0,0.00)$) -- ($(SPLIT.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {Bleed};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Feed-and-bleed UF start-up: the loop concentrates the protein, and the gel-limited flux falls as ln(c\_g/c\_b) while it does}
+\begin{tutnarrative}
+ultrafiltration of a protein in a feed-and-bleed loop, from start-up.
+
+THE PLANT. 1 m3/h of a 10 kg/m3 BSA solution joins the recycle in MIX and fills a 0.5 m3 recirculation tank; the tank feeds the UF module of membrane19 (5 m2, 3 bar, the same hypothetical membrane and gel parameters); the retentate is split, 80 \% back to MIX and 20 \% bled off. At t = 0 the tank holds feed.
+
+WHAT IS SOLVED HOW. The TANK is a vessel (dynamicCSTR, no reaction, no jacket), integrated in time, and DECLARED isothermal (`energy isothermal;`): BSA carries no heat capacity, so the tank cannot solve an energy equation, and here nothing would move T anyway -- every stream is at 298.15 K with no reaction and no jacket. MIX, UF and SPLIT hold essentially no liquid and are each a steady unit wrapped as `quasiSteady`, re-solved at every accepted state -- the module is membrane19's, law and all.
+
+WHAT TO WATCH -- the lesson of gel polarisation IN A LOOP. The module is gel-limited, so its flux is k ln(c\_g/c\_b) whatever the pump does (membrane19 shows the plateau). The loop returns the retained protein, the tank concentrates, c\_b rises -- and the flux FALLS with it, as a logarithm, until the protein leaving in the bleed and the permeate balances the protein fed. MEASURED on this case: the module's mean flux falls from 3.30e-5 m/s (119 L/(m2 h)) at start-up to 2.88e-5 m/s (104 L/(m2 h)), 13 \% less, while the tank goes from 10 to 15.3 kg/m3 of protein, with an e-folding time of about 2500 s -- so a plant sized on the FEED's flux is short of area by that 13 \%. 6 h is some 8 time constants. Every <t>/ directory the run writes holds each stream's state and the tank's holdup at t (open 600/ against 21600/), and the module's own J\_w\_avg rides trajectory.csv as a kpi column.
+
+EVERY UF NUMBER HERE IS HYPOTHETICAL, as in membrane19 (the membrane, c\_gel, S, k\_film -- read its header); BSA's MW is derived from its UniProt sequence. The shape is the lesson, never a number. NOT MODELLED: the first law (BSA carries no enthalpy datum, and the quasi-steady adapter claims none), a pump, fouling in time.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{MIX}{F\_ToTank\_final}{0.044910327156}
+\goldrow{kpi}{MIX}{kpi\_F\_out\_final}{0.044910327156}
+\goldrow{kpi}{MIX}{kpi\_P\_out\_final}{300000}
+\goldrow{kpi}{MIX}{kpi\_T\_out\_final}{298.15}
+\goldrow{kpi}{MIX}{kpi\_n\_in\_final}{2}
+\goldrow{kpi}{MIX}{kpi\_vf\_final}{0}
+\goldrow{kpi}{MIX}{t\_end}{21600}
+\goldrow{kpi}{SPLIT}{F\_Bleed\_final}{0.00738729355532}
+\goldrow{kpi}{SPLIT}{F\_Recycle\_final}{0.0295491742213}
+\goldrow{kpi}{SPLIT}{t\_end}{21600}
+\goldrow{kpi}{TANK}{F\_in\_final}{0.044910327156}
+\goldrow{kpi}{TANK}{T\_final}{298.15}
+\goldrow{kpi}{TANK}{n\_BSA\_final}{0.000115420024839}
+\goldrow{kpi}{TANK}{n\_water\_final}{27.6499598825}
+\goldmore{27}
+\end{tutgolden}
+

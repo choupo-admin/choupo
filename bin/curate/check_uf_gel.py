@@ -20,7 +20,12 @@ from its first node.  This gate holds, from the runs themselves:
   (d) Michaels' form: with S = 0 the first node carries k ln(c_g/c_b);
   (e) the solute balance: the module's own solute_closure_rel below 1e-9;
   (f) four refusals fired through the reader: no `gel {}` block, no
-      `source`, a solute with no sieving coefficient, and S = 1.
+      `source`, a solute with no sieving coefficient, and S = 1;
+  (g) the LOOP (tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup, the
+      same module under choupoSemiContinuous): the mean flux never rises
+      as the tank concentrates, ends at least 5 % below its start-up value,
+      and in the last written <t>/ directory the protein leaving (bleed +
+      permeate, read from the stream FILES) equals the protein fed to 1e-3.
 
 NOT CHECKED: any measured UF -- the membrane, c_g, S and k of the witness
 are hypothetical teaching values and its header says so; the protein's
@@ -37,6 +42,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials/steady/membranes/membrane19_uf_gel_polarisation"
 BIN = ROOT / "choupoSolve"
+LOOP = ROOT / "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
+SEMI = ROOT / "choupoSemiContinuous"
 C_GEL_MASS, S_BSA, K = 250.0, 0.01, 1.0e-5
 A_W = 5.0e-5 / 1.0e5          # m/(s Pa), the record's 5e-5 m/(s bar)
 
@@ -156,12 +163,51 @@ def main():
                 fail(f"(f) {tag}: expected a refusal naming \"{want_msg}\","
                      f" got exit {rc}:\n{out[-600:]}")
 
+    # (g) the loop in time
+    import csv, re
+    with tempfile.TemporaryDirectory() as tmp:
+        d = Path(tmp) / "loop"
+        shutil.copytree(LOOP, d)
+        p = subprocess.run([str(SEMI), "."], cwd=d, capture_output=True,
+                           text=True, timeout=600,
+                           env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+        if p.returncode != 0:
+            fail(f"(g) the loop did not run (exit {p.returncode}):\n"
+                 f"{(p.stdout + p.stderr)[-800:]}")
+        rows = list(csv.DictReader(open(d / "trajectory.csv")))
+        J = [float(r["UF.kpi_J_w_avg"]) for r in rows]
+        if any(b > a * (1 + 1e-12) for a, b in zip(J, J[1:])):
+            fail("(g) the loop's mean flux ROSE while the tank concentrated")
+        drop = 1.0 - J[-1] / J[0]
+        if drop < 0.05:
+            fail(f"(g) the loop's flux fell only {drop:.2%} from start-up")
+        times = sorted((float(x.name), x) for x in d.iterdir()
+                       if x.is_dir() and re.fullmatch(r"[0-9.]+", x.name)
+                       and x.name != "0")
+        if not times:
+            fail("(g) the loop wrote no <t>/ directory")
+        last = times[-1][1]
+        def bsa(f):
+            m = re.search(r"^\s*BSA\s+([0-9.eE+-]+)\s+kmol/(s|h);",
+                          f.read_text(), re.M)
+            if not m:
+                fail(f"(g) no BSA flow in {f} (in kmol/s or kmol/h)")
+            return float(m.group(1)) * (3600.0 if m.group(2) == "s" else 1.0)
+        fed = bsa(d / "0" / "Feed")
+        out = bsa(last / "Bleed") + bsa(last / "Permeate")
+        if abs(out - fed) > 1e-3 * fed:
+            fail(f"(g) at t = {times[-1][0]:g} s the protein leaving is"
+                 f" {out:.6g} kmol/h against {fed:.6g} fed")
+
     print(f"check_uf_gel: OK -- membrane19's flux equals the gel-limited"
           f" closed form k ln(c_g (1 - S)/(c_b - S c_g)) at all {nodes} nodes"
           f" (worst {worst:.1e}); 3 -> 5 bar leaves it unchanged (the"
           f" plateau); at 0.1 bar it is exactly A_w dP; with S = 0 it is"
           f" Michaels' k ln(c_g/c_b); the solute closes; {len(refusals)}"
-          f" refusals fired by name.  NOT CHECKED: any measured UF (every"
+          f" refusals fired by name; in the feed-and-bleed loop (unsteady04) the"
+          f" flux falls {drop:.1%} from start-up and never rises, and the"
+          f" protein leaving at the last <t>/ equals the protein fed"
+          f" (out/in {out / fed:.5f}).  NOT CHECKED: any measured UF (every"
           f" UF number in the witness is a hypothetical teaching value),"
           f" the protein's osmotic pressure and charge.")
 

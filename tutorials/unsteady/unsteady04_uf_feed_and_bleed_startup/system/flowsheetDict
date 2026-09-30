@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  unsteady04_uf_feed_and_bleed_startup -- ultrafiltration of a protein in a
+  feed-and-bleed loop, from start-up.
+
+  THE PLANT.  1 m3/h of a 10 kg/m3 BSA solution joins the recycle in MIX
+  and fills a 0.5 m3 recirculation tank; the tank feeds the UF module of
+  membrane19 (5 m2, 3 bar, the same hypothetical membrane and gel
+  parameters); the retentate is split, 80 % back to MIX and 20 % bled off.
+  At t = 0 the tank holds feed.
+
+  WHAT IS SOLVED HOW.  The TANK is a vessel (dynamicCSTR, no reaction, no
+  jacket), integrated in time, and DECLARED isothermal (`energy
+  isothermal;`): BSA carries no heat capacity, so the tank cannot solve an
+  energy equation, and here nothing would move T anyway -- every stream is
+  at 298.15 K with no reaction and no jacket.  MIX, UF and SPLIT hold essentially no
+  liquid and are each a steady unit wrapped as `quasiSteady`, re-solved at
+  every accepted state -- the module is membrane19's, law and all.
+
+  WHAT TO WATCH -- the lesson of gel polarisation IN A LOOP.  The module
+  is gel-limited, so its flux is k ln(c_g/c_b) whatever the pump does
+  (membrane19 shows the plateau).  The loop returns the retained protein,
+  the tank concentrates, c_b rises -- and the flux FALLS with it, as a
+  logarithm, until the protein leaving in the bleed and the permeate
+  balances the protein fed.  MEASURED on this case: the module's mean
+  flux falls from 3.30e-5 m/s (119 L/(m2 h)) at start-up to 2.88e-5 m/s
+  (104 L/(m2 h)), 13 % less, while the tank goes from 10 to 15.3 kg/m3 of
+  protein, with an e-folding time of about 2500 s -- so a plant sized on
+  the FEED's flux is short of area by that 13 %.  6 h is some 8 time
+  constants.  Every <t>/ directory the run writes holds each stream's state
+  and the tank's holdup at t (open 600/ against 21600/), and the module's
+  own J_w_avg rides trajectory.csv as a kpi column.
+
+  EVERY UF NUMBER HERE IS HYPOTHETICAL, as in membrane19 (the membrane,
+  c_gel, S, k_film -- read its header); BSA's MW is derived from its UniProt
+  sequence.  The shape is the lesson, never a number.  NOT MODELLED: the
+  first law (BSA carries no enthalpy datum, and the quasi-steady adapter
+  claims none), a pump, fouling in time.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        MIX;
+        type        quasiSteady;
+        inputs      ( Feed  Recycle );
+        outputs     ( ToTank );
+        unit
+        {
+            type        mixer;
+            operation   { T 298.15 K; }
+        }
+    }
+    {
+        name        TANK;
+        type        dynamicCSTR;
+        in          ToTank;
+        outputs     ( ModuleIn );
+        operation
+        {
+            UA           0.0;             // W/K: no jacket
+            T_jacket     298.15 K;
+            energy       isothermal;      // BSA carries no heat capacity: see the header
+        }
+    }
+    {
+        name        UF;
+        type        quasiSteady;
+        in          ModuleIn;
+        outputs     ( Retentate  Permeate );    // 0 = retentate, 1 = permeate
+        unit
+        {
+            type        spiralWoundModule;
+            operation
+            {
+                membrane         UF30_hypothetical;
+                transport        gelPolarisation;
+                area             5.0;
+                length           1.0;
+                P_permeate       1.0 bar;
+                k_film           1.0e-5;
+                dP_feed_total    0.0 bar;
+                nNodes           100;
+                transportParameters
+                {
+                    gel
+                    {
+                        solute    BSA;
+                        c_gel     250;
+                        sieving   { BSA 0.01; }
+                        source    "hypothetical teaching values, as membrane19; no measurement";
+                    }
+                }
+            }
+        }
+    }
+    {
+        name        SPLIT;
+        type        quasiSteady;
+        in          Retentate;
+        outputs     ( Recycle  Bleed );
+        unit
+        {
+            type        splitter;
+            operation   { fractions ( 0.80  0.20 ); }
+        }
+    }
+);

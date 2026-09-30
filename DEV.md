@@ -1868,8 +1868,16 @@ accepts today, and that is a policy call.
      feed-and-bleed loop, which slice 1 had already falsified and missed)
      corrected.  **SLICE 2b, the tank:** `dynamicCSTR` may declare
      `energy isothermal;` (5b05131e5) -- BSA has no heat capacity, so the
-     UF loop's tank needs it.  **NEXT:** the UF feed-and-bleed start-up
-     (`unsteady04`), AFTER C28, so it is born in the ratified layout.
+     UF loop's tank needs it.  **SLICE 3 BUILT 2026-09-30, after C28 so it
+     was born in the ratified layout:** `unsteady04_uf_feed_and_bleed_
+     startup` -- membrane19's module in a feed-and-bleed loop under
+     choupoSemiContinuous (isothermal 0.5 m3 tank, 20 % bleed): the mean
+     flux falls 12.7 % from start-up (119 -> 104 LMH) as the tank goes from
+     10 to 15.3 kg/m3, e-folding ~2500 s, and at 6 h the protein leaving
+     (read from the <t>/ stream files) equals the protein fed to 7e-5;
+     check_uf_gel arm (g) holds all three.  C27 is COMPLETE: the steady
+     loop (membrane18), the dynamic loop (unsteady03), the UF law
+     (membrane19) and the UF loop in time (unsteady04).
 
 **C28. THE TIME-INTEGRATED CASES ADOPT THE RATIFIED STATE LAYOUT (#186)
      (asked 2026-09-30, Vitor, on seeing unsteady03 in the browser: "Nao

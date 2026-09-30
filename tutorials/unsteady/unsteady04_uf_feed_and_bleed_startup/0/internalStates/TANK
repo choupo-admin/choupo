@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/TANK -- DYNAMIC initial holdup: the 0.5 m3 tank filled with FEED
+  (10 kg/m3 BSA: water 27.65 kmol, BSA 10 kg x 0.5 / 66398.8 kg/kmol).
+  MIX, UF and SPLIT hold no inventory and have no entry here.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "TANK";
+equipment   dynamicCSTR;
+
+holdup
+{
+    T           298.15;
+    P           300000.0;
+    V           0.5;
+    holdupMolar
+    {
+        water     27.65;
+        BSA       7.53025e-05;
+    }
+}

@@ -1,0 +1,44 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     MIX                    F_ToTank_final   0.044910327156     1e-4
+kpi     MIX                    kpi_F_out_final  0.044910327156     1e-4
+kpi     MIX                    kpi_P_out_final  300000             1e-4
+kpi     MIX                    kpi_T_out_final  298.15             1e-4
+kpi     MIX                    kpi_n_in_final   2                  1e-4
+kpi     MIX                    kpi_vf_final     0                  1e-4
+kpi     MIX                    t_end            21600              1e-4
+kpi     SPLIT                  F_Bleed_final    0.00738729355532   1e-4
+kpi     SPLIT                  F_Recycle_final  0.0295491742213    1e-4
+kpi     SPLIT                  t_end            21600              1e-4
+kpi     TANK                   F_in_final       0.044910327156     1e-4
+kpi     TANK                   T_final          298.15             1e-4
+kpi     TANK                   n_BSA_final      0.000115420024839  1e-4
+kpi     TANK                   n_water_final    27.6499598825      1e-4
+kpi     TANK                   t_end            21600              1e-4
+kpi     TANK                   z_in_BSA_final   4.17438000151e-06  1e-4
+kpi     TANK                   z_in_water_final 0.99999582562      1e-4
+kpi     UF                     F_Permeate_final 0.00797385772699   1e-4
+kpi     UF                     F_Retentate_final 0.0369364677766    1e-4
+kpi     UF                     kpi_Gamma_BSA_avg_final 14.2538522957      1e-4
+kpi     UF                     kpi_J_w_avg_final 2.88017943403e-05  1e-4
+kpi     UF                     kpi_R_obs_BSA_final 0.835009720162     1e-4
+kpi     UF                     kpi_dP_feed_final 0                  1e-4
+kpi     UF                     kpi_mass_closure_rel_final 0                  1e-4
+kpi     UF                     kpi_solute_closure_rel_final 7.05974934404e-16  1e-4
+kpi     UF                     kpi_water_recovery_final 0.175299194466     1e-4
+kpi     UF                     t_end            21600              1e-4
+kpi     balance                element_C_closure_rel 1.27846864797e-08  1e-4
+kpi     balance                element_H_closure_rel 1.21531530683e-10  1e-4
+kpi     balance                element_N_closure_rel 1.27846864613e-08  1e-4
+kpi     balance                element_O_closure_rel 4.78384269942e-11  1e-4
+kpi     balance                element_S_closure_rel 1.27846866268e-08  1e-4
+kpi     balance                element_worst_closure_rel 1.27846866268e-08  1e-4
+kpi     balance                energy_balance_available 0                  1e-4
+kpi     balance                mass_closure_rel 1.94467832891e-10  1e-4
+kpi     balance                mass_kg_final    505.777778428      1e-4
+kpi     balance                mass_kg_in_cum   66838.4442097      1e-4
+kpi     balance                mass_kg_initial  503.114745637      1e-4
+kpi     balance                mass_kg_out_cum  66835.7811639      1e-4
+kpi     balance                mass_residual_kg -1.29979273993e-05 1e-4
+kpi     balance                material_available 1                  1e-4

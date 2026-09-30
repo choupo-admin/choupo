@@ -1118,8 +1118,8 @@
     },
     "check_uf_gel": {
       "exit": 0,
-      "claim": "check_uf_gel: OK -- membrane19's flux equals the gel-limited closed form k ln(c_g (1 - S)/(c_b - S c_g)) at all 101 nodes (worst 2.5e-12); 3 -> 5 bar leaves it unchanged (the plateau); at 0.1 bar it is exactly A_w dP; with S = 0 it is Michaels' k ln(c_g/c_b); the solute closes; 4 refusals fired by name.  NOT CHECKED: any measured UF (every UF number in the witness is a hypothetical teaching value), the protein's osmotic pressure and charge.",
-      "seconds": 0.3
+      "claim": "check_uf_gel: OK -- membrane19's flux equals the gel-limited closed form k ln(c_g (1 - S)/(c_b - S c_g)) at all 101 nodes (worst 2.5e-12); 3 -> 5 bar leaves it unchanged (the plateau); at 0.1 bar it is exactly A_w dP; with S = 0 it is Michaels' k ln(c_g/c_b); the solute closes; 4 refusals fired by name; in the feed-and-bleed loop (unsteady04) the flux falls 12.7% from start-up and never rises, and the protein leaving at the last <t>/ equals the protein fed (out/in 0.99993).  NOT CHECKED: any measured UF (every UF number in the witness is a hypothetical teaching value), the protein's osmotic pressure and charge.",
+      "seconds": 1.3
     },
     "check_time_state_layout": {
       "exit": 0,

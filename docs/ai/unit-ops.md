@@ -1796,7 +1796,7 @@ setpoint against a shrinking disturbance.
 `operation { energy isothermal; }` holds T and solves no energy equation
 (announced; the first law is withheld) -- for a vessel with NO reaction and NO
 jacket (both refused), e.g. the recirculation tank of a feed-and-bleed loop
-whose solute carries no heat capacity.
+whose solute carries no heat capacity (`unsteady04_uf_feed_and_bleed_startup`).
 Absent, the energy equation is chosen by probing, as before.
 
 ### `quasiSteady` — a steady unit inside a transient
