@@ -28,6 +28,8 @@ License
 
 #include "PhaseChanger.H"
 #include "unitOperations/flash/IsothermalFlash.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
+#include "core/Advisory.H"
 #include "unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
 #include "materials/MaterialRegistry.H"
 #include "solver/NewtonRaphson.H"
@@ -93,6 +95,45 @@ scalar streamEnthalpy(const ThermoPackage& thermo, const FlashSolution& sol,
          +        bV  * thermo.H_stream_formation(T, P, 1.0, sol.y);
 }
 
+//  THE SUPERCRITICAL ROOT IS DISCARDED HERE TOO (2026-10-01).  Every flash
+//  this unit takes went to `solveCore` bare -- the three sites DEV.md named
+//  on 2026-09-26 as not yet reading the one home of the rule.  A hot gas
+//  above every present component's Tc can resolve TWO-PHASE when a Henry
+//  pair or an Antoine is read far past its window, and the unit then priced
+//  its duty on a liquid that cannot exist while the report priced the same
+//  stream as the gas it is.  Measured on the PEQ 2026-27 green-ammonia case:
+//  the first inter-bed cooler, fed at 813 K, closed its own energy balance
+//  331.8 kW short.  The discard is `flashState::supercriticalSplitDiscarded`
+//  (one home, the sentence included); the state it leaves is the single gas
+//  phase.  The sentence is DEFERRED: a duty search evaluates many trial
+//  temperatures, and the caller says it once, at its own site.
+FlashSolution resolveAt(const FlashInput& in, const ThermoPackage& thermo,
+                        std::string& discarded)
+{
+    FlashOptions opts; opts.verbosity = 0;
+    FlashSolution fs = IsothermalFlash::solveCore(in, thermo, opts);
+    std::string said;
+    if (flashState::supercriticalSplitDiscarded(fs, in.T, in.z, thermo,
+            "phaseChanger", "phaseChanger", &said, /*nameT=*/false))
+    {
+        fs.V_over_F = 1.0;
+        fs.x = in.z;
+        fs.y = in.z;
+        if (discarded.empty()) discarded = said;
+    }
+    return fs;
+}
+
+//  Say the deferred sentence once, if a split was discarded.
+void reportDiscard(const std::string& discarded, int verbosity)
+{
+    if (discarded.empty()) return;
+    AdvisoryLog::instance().add("phaseChanger", "warning", "phaseChanger",
+                                discarded);
+    if (verbosity >= 1)
+        std::cout << "  [phaseChanger] " << discarded << "\n";
+}
+
 } // anonymous namespace
 
 int PhaseChanger::solve(const DictPtr& dict,
@@ -156,11 +197,11 @@ int PhaseChanger::solve(const DictPtr& dict,
             + std::to_string(nCoord) + " coordinates)");
 
     // ---- A flash at (T, P_out) over z (reused everywhere) ----------------
+    std::string scDiscarded;     // a supercritical split, discarded (said once)
     auto flashAt = [&](scalar T) -> FlashSolution
     {
         FlashInput in; in.F = 1.0; in.T = T; in.P = P_out; in.z = z;
-        FlashOptions opts; opts.verbosity = 0;
-        return IsothermalFlash::solveCore(in, thermo, opts);
+        return resolveAt(in, thermo, scDiscarded);
     };
 
     // Dominant component + pure-dome detection.  On a PURE / dominant-component
@@ -184,8 +225,7 @@ int PhaseChanger::solve(const DictPtr& dict,
     scalar H_in;
     {
         FlashInput fin; fin.F = 1.0; fin.T = T_in; fin.P = P_in; fin.z = z;
-        FlashOptions fopts; fopts.verbosity = 0;
-        FlashSolution fsol = IsothermalFlash::solveCore(fin, thermo, fopts);
+        FlashSolution fsol = resolveAt(fin, thermo, scDiscarded);
         H_in = streamEnthalpy(thermo, fsol, T_in, P_in, z);
     }
 
@@ -494,6 +534,7 @@ int PhaseChanger::solve(const DictPtr& dict,
     kpis_["F"]           = F;
     kpis_["P"]           = P_out;
 
+    reportDiscard(scDiscarded, verbosity);
     return 0;
 }
 
@@ -777,17 +818,16 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     // -- outlet = the dome-flash at duty -Q (condensing removes heat) -------
     // Reuse the existing duty path: flash the feed enthalpy minus the removed
     // duty.  Compute H_in, the target H_out, then locate the outlet state.
+    std::string scDiscarded;     // a supercritical split, discarded (said once)
     auto flashAt = [&](scalar T) -> FlashSolution
     {
         FlashInput in; in.F = 1.0; in.T = T; in.P = P_out; in.z = z;
-        FlashOptions opts; opts.verbosity = 0;
-        return IsothermalFlash::solveCore(in, thermo, opts);
+        return resolveAt(in, thermo, scDiscarded);
     };
     scalar H_in;
     {
         FlashInput fin; fin.F = 1.0; fin.T = T_in; fin.P = P_in; fin.z = z;
-        FlashOptions fopts; fopts.verbosity = 0;
-        FlashSolution fsol = IsothermalFlash::solveCore(fin, thermo, fopts);
+        FlashSolution fsol = resolveAt(fin, thermo, scDiscarded);
         H_in = streamEnthalpy(thermo, fsol, T_in, P_in, z);
     }
     const scalar F_mol_s   = F * 1000.0;                 // kmol/s -> mol/s
@@ -940,6 +980,7 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     kpis_["U_overall"]        = U_overall;
     kpis_["Q_UAdT_kW"]        = Q_UAdT_W / 1000.0;
 
+    reportDiscard(scDiscarded, verbosity);
     return 0;
 }
 
@@ -1262,17 +1303,16 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     const scalar Q_boil_W = q_nucleate * area;       // > 0 added to the pool
 
     // -- outlet = the dome-flash at duty +Q (boiling adds heat) ------------
+    std::string scDiscarded;     // a supercritical split, discarded (said once)
     auto flashAt = [&](scalar T) -> FlashSolution
     {
         FlashInput in; in.F = 1.0; in.T = T; in.P = P_out; in.z = z;
-        FlashOptions opts; opts.verbosity = 0;
-        return IsothermalFlash::solveCore(in, thermo, opts);
+        return resolveAt(in, thermo, scDiscarded);
     };
     scalar H_in;
     {
         FlashInput fin; fin.F = 1.0; fin.T = T_in; fin.P = P_in; fin.z = z;
-        FlashOptions fopts; fopts.verbosity = 0;
-        FlashSolution fsol = IsothermalFlash::solveCore(fin, thermo, fopts);
+        FlashSolution fsol = resolveAt(fin, thermo, scDiscarded);
         H_in = streamEnthalpy(thermo, fsol, T_in, P_in, z);
     }
     const scalar F_mol_s   = F * 1000.0;
@@ -1408,6 +1448,7 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     kpis_["F"]            = F;
     kpis_["P"]            = P_out;
 
+    reportDiscard(scDiscarded, verbosity);
     return 0;
 }
 

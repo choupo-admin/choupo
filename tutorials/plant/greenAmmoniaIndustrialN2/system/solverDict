@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solverDict -- the recycle plan.  Two cuts, both in the synthesis loop:
+  the MATERIAL recycle (Recycle, the separator vapour going back) and the
+  ENERGY recycle (HotEffluent, the converter outlet that preheats the
+  converter's own feed in the FEHE).
+\*---------------------------------------------------------------------------*/
+tearStreams        ( Recycle  HotEffluent );
+recycleSolver       Newton;
+recycleTol          1e-8;
+recycleMaxIter      200;

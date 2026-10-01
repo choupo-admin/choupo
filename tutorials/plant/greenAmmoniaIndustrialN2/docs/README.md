@@ -1,5 +1,11 @@
 # Case documents
 
+> **These two documents describe the EARLIER version of this case** (500 t/day,
+> industrial-grade nitrogen, four sectors), which was replaced on 2026-10-01 by
+> the base case of the project base data v2.  They have not been revised yet;
+> read the case's own `README.md` and the header of `system/flowsheetDict`
+> for the plant as it stands.
+
 Two documents belong to this case. Both are built from the LaTeX beside them —
 `make` here rebuilds both, so neither is a binary without a source.
 

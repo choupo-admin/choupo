@@ -15,25 +15,21 @@
   identical -- the solutes list states the engine's own Henry selection);
   v2 contract 2026-07-17.
 
-  greenNH3_04: ARGON added to the solutes group, and O2 added to the components.
-
-  Without the Ar-NH3 pair, argon fell onto the Raoult rung with a vapour
-  pressure extrapolated ABOVE its critical temperature: K_Ar = 1.7 in the
-  separator against K_N2 = 124, and argon left dissolved in the product instead
-  of accumulating in the loop.  The pair was fitted from the IUPAC-NIST
-  Solubility Data Series Vol. 4 -- see the header of
-  constant/parameters/Henry/Ar-NH3.dat and the dossier in curation/Ar-NH3/.
-
-  Oxygen exists ONLY in the purification section (it comes in with the
-  industrial nitrogen and is consumed entirely in the deoxo); it never reaches
-  the synthesis loop, so it needs no Henry pair in ammonia.  Water was already
-  declared (cooling water) and is now also the deoxo reaction product.
+  ARGON is in the solutes group.  Without the Ar-NH3 pair, argon fell onto the
+  Raoult rung with a vapour pressure extrapolated ABOVE its critical
+  temperature: K_Ar = 1.7 in the separator against K_N2 = 124, and argon left
+  dissolved in the product instead of accumulating in the loop.  The pair was
+  fitted from the IUPAC-NIST Solubility Data Series Vol. 4 -- see the header
+  of constant/parameters/Henry/Ar-NH3.dat and the dossier in curation/Ar-NH3/.
+  WATER is a component because the purge scrubber washes the ammonia into it
+  and the loop is cooled with it; the scrubber computes in its own
+  water-solvent world (the `thermo {}` block on that unit).
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 
-components       ( N2  H2  NH3  Ar  water  O2 );
+components       ( N2  H2  NH3  Ar  water );
 
 equilibrium
 {

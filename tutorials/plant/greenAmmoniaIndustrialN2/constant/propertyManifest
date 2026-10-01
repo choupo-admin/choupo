@@ -99,15 +99,6 @@ propertyManifest
             originSha256  "1266d171a28a6d1bb02fddf65dd64c6d02350f40dc0a39b9e88ca707d080d718";
             release       Choupo-2608;
         }
-        "components/O2.dat"
-        {
-            type          imported;
-            sha256        "28eb28fdfab6aed0e2110eea3b8d886d0791e2585548ce4694e80a53ef80ead0";
-            computationalSha256 "601481feda24f388e3fe70ad700b2dce1bb9b8954fa83550c2065764d2bdb4a4";
-            origin        "data/standards/components/O2.dat";
-            originSha256  "e3d123385657307e1929cf9d9f01e3b96bf2813c5914168c5bfe290d31abf282";
-            release       Choupo-2608;
-        }
         "components/water.dat"
         {
             type          imported;
@@ -169,15 +160,6 @@ propertyManifest
             computationalSha256 "5428033d18389bed599de4cb755a48d08b32f30282cde835422b2447b9bea983";
             origin        "data/standards/parameters/Henry/NH3-water.dat";
             originSha256  "9bde3a89acf084e816cc277ce7e16b6a418c280cabf036286ee4da193a901c1e";
-            release       Choupo-2608;
-        }
-        "parameters/Henry/O2-water.dat"
-        {
-            type          imported;
-            sha256        "dca5674aacf06886427a7ca9414ef403e7d9cf0130c7c273458827f67fdc2822";
-            computationalSha256 "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
-            origin        "data/standards/parameters/Henry/O2-water.dat";
-            originSha256  "8ba1de0151c0e216217eca2fd490675b34a59755d3b81b9f9eee8eff89976e65";
             release       Choupo-2608;
         }
         "species/H.dat"

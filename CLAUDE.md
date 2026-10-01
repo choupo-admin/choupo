@@ -1072,11 +1072,12 @@ both readers call it, gate `check_inlet_resolution` arm (h)).  Enumerated in
 the same commit, per the 2026-09-25 rule: every reader that goes THROUGH
 `StreamEquilibrium.H` (report, model-boundary ledger, `heater`,
 `heatExchanger`, `conversionReactor`, column feed, evaporator chest) already
-discarded; `phaseChanger`'s H_in (three sites), `pipe`'s inlet regime and
-every OUTLET search (`valve`, `adiabaticFlash`, `phaseChanger`, the flash's
-own operating resolution) still call `solveCore` bare and are NAMED, not
-fixed -- no corpus case reaches them with a supercritical feed today
-(DEV.md §5, 2026-09-26).
+discarded; `pipe`'s inlet regime and the OUTLET searches of `valve`,
+`adiabaticFlash` and the flash's own operating resolution still call
+`solveCore` bare and are NAMED, not fixed -- no corpus case reaches them with
+a supercritical feed today (DEV.md §5, 2026-09-26).  `phaseChanger` was on
+that list and is CLOSED (2026-10-01): the rewritten green-ammonia case's
+first inter-bed cooler reached it, 331.8 kW short, the day it existed.
 
 **AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED
 (2026-09-12, same day).**  `column01`'s 631.956148 kW decomposed EXACTLY into

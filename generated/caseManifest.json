@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 435,
+  "cases": 444,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -371,6 +371,20 @@
    "hasGolden": true
   },
   "tutorials/batch/drying/dryer01_sucrose_tray": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/drying/dryer02_characteristic_curves": {
    "application": "choupoBatch",
    "unitTypes": [
     "batchDryer"
@@ -2139,6 +2153,20 @@
    "roles": [],
    "hasGolden": false
   },
+  "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways": {
+   "application": "choupoProps",
+   "ops": [
+    "gibbsMap"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/gibbs/nh3_equilibrium_map": {
    "application": "choupoProps",
    "ops": [
@@ -3328,6 +3356,21 @@
      "davies"
     ],
     "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/convDryer01_sugar_curve": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "convectiveDryer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
    },
    "roles": [],
    "hasGolden": true
@@ -5456,6 +5499,36 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/membranes/membrane18_nf_feed_and_bleed": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mixer",
+    "spiralWoundModule",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane19_uf_gel_polarisation": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/optimisation/designSpec01_triple_equal_areas": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5922,6 +5995,24 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/ladder01_wgs_three_rungs": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor",
+    "equilibriumReactor",
+    "gibbsReactor",
+    "pfr",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/pfr01_first_order": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5982,6 +6073,23 @@
    "application": "choupoSolve",
    "unitTypes": [
     "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/screen01_methanol_routes": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor",
+    "equilibriumReactor",
+    "gibbsReactor",
+    "splitter"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -6361,6 +6469,42 @@
     "anchored"
    ],
    "hasGolden": true
+  },
+  "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup": {
+   "application": "choupoSemiContinuous",
+   "unitTypes": [
+    "dynamicCSTR",
+    "mixer",
+    "quasiSteady",
+    "spiralWoundModule",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup": {
+   "application": "choupoSemiContinuous",
+   "unitTypes": [
+    "dynamicCSTR",
+    "mixer",
+    "quasiSteady",
+    "spiralWoundModule",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
   }
  },
  "indices": {
@@ -6392,6 +6536,7 @@
     "tutorials/batch/crystallisation/batch13_nacl_pitzer",
     "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
     "tutorials/batch/drying/dryer01_sucrose_tray",
+    "tutorials/batch/drying/dryer02_characteristic_curves",
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
     "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
@@ -6506,6 +6651,7 @@
     "tutorials/props/gibbs/landscape04_methane_combustion",
     "tutorials/props/gibbs/landscape05_thermal_no",
     "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
+    "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
@@ -6552,7 +6698,9 @@
    ],
    "choupoSemiContinuous": [
     "tutorials/unsteady/unsteady01_startup_transient",
-    "tutorials/unsteady/unsteady02_tanks_in_series"
+    "tutorials/unsteady/unsteady02_tanks_in_series",
+    "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
+    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "choupoSolve": [
     "tutorials/plant/ChemicalPlantTutorial",
@@ -6614,6 +6762,7 @@
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
+    "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",
     "tutorials/steady/drying/solidDryer01_sugar",
@@ -6752,6 +6901,8 @@
     "tutorials/steady/membranes/membrane15_module_nf270_4040",
     "tutorials/steady/membranes/membrane16_module_sw30hr_8040",
     "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
+    "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
+    "tutorials/steady/membranes/membrane19_uf_gel_polarisation",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",
@@ -6781,11 +6932,13 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr_polyesterification",
+    "tutorials/steady/reactors/screen01_methanol_routes",
     "tutorials/steady/rotating/compressor01_air",
     "tutorials/steady/rotating/compressor02_designspec_pout",
     "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
@@ -6880,7 +7033,8 @@
     "tutorials/batch/membrane/diafilter02_fouling_decline"
    ],
    "batchDryer": [
-    "tutorials/batch/drying/dryer01_sucrose_tray"
+    "tutorials/batch/drying/dryer01_sucrose_tray",
+    "tutorials/batch/drying/dryer02_characteristic_curves"
    ],
    "batchElectrodialysis": [
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
@@ -6938,6 +7092,9 @@
     "tutorials/steady/heat/phasechange01_partial_condenser",
     "tutorials/steady/power/rankine02_water"
    ],
+   "convectiveDryer": [
+    "tutorials/steady/drying/convDryer01_sugar_curve"
+   ],
    "conversionReactor": [
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammoniaStaged01_yield",
@@ -6945,7 +7102,9 @@
     "tutorials/steady/reactors/acetone02_luyben_reactor",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
-    "tutorials/steady/reactors/conversion02_parallel_selectivity"
+    "tutorials/steady/reactors/conversion02_parallel_selectivity",
+    "tutorials/steady/reactors/ladder01_wgs_three_rungs",
+    "tutorials/steady/reactors/screen01_methanol_routes"
    ],
    "coolingTower": [
     "tutorials/steady/heat/coolingTower01_merkel"
@@ -7045,7 +7204,9 @@
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/unsteady/unsteady01_startup_transient",
-    "tutorials/unsteady/unsteady02_tanks_in_series"
+    "tutorials/unsteady/unsteady02_tanks_in_series",
+    "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
+    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "electricLoad": [
     "tutorials/steady/electrodialysis/ed01_nacl_desalination",
@@ -7072,7 +7233,9 @@
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
-    "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways"
+    "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/ladder01_wgs_three_rungs",
+    "tutorials/steady/reactors/screen01_methanol_routes"
    ],
    "evaporativeDryer": [
     "tutorials/steady/drying/evapDryer01_nacl",
@@ -7141,7 +7304,9 @@
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
-    "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways"
+    "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/ladder01_wgs_three_rungs",
+    "tutorials/steady/reactors/screen01_methanol_routes"
    ],
    "heatExchanger": [
     "tutorials/steady/flowsheets/proxy01_gas_loop",
@@ -7256,7 +7421,10 @@
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
-    "tutorials/steady/gibbs/claus01_thermal_stage"
+    "tutorials/steady/gibbs/claus01_thermal_stage",
+    "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
+    "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
+    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "multiStreamHX": [
     "tutorials/steady/heat/mheatx01_two_hot_one_cold"
@@ -7264,6 +7432,7 @@
    "pfr": [
     "tutorials/plant/ammoniaStaged04_kinetic",
     "tutorials/plant/polycaprolactonePlant",
+    "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
     "tutorials/steady/reactors/pfr03_series_selectivity",
@@ -7299,6 +7468,10 @@
     "tutorials/steady/rotating/pump01_water",
     "tutorials/steady/rotating/pump02_pressure_spec"
    ],
+   "quasiSteady": [
+    "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
+    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
+   ],
    "ramp": [
     "tutorials/ctrl/ctrl17_signal_shapes"
    ],
@@ -7331,7 +7504,11 @@
     "tutorials/steady/membranes/membrane15_module_nf270_4040",
     "tutorials/steady/membranes/membrane16_module_sw30hr_8040",
     "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
-    "tutorials/steady/optimisation/optim04_membrane_recovery_scaling"
+    "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
+    "tutorials/steady/membranes/membrane19_uf_gel_polarisation",
+    "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
+    "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
+    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "splitter": [
     "tutorials/plant/ammoniaStaged01_yield",
@@ -7339,15 +7516,21 @@
     "tutorials/plant/ammoniaStaged03_approach",
     "tutorials/plant/ammoniaStaged04_kinetic",
     "tutorials/plant/polycaprolactonePlant",
+    "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/process03_recycle",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
-    "tutorials/steady/thermo/basis01_two_unit_chain"
+    "tutorials/steady/reactors/ladder01_wgs_three_rungs",
+    "tutorials/steady/reactors/screen01_methanol_routes",
+    "tutorials/steady/thermo/basis01_two_unit_chain",
+    "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
+    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "sprayDryer": [
     "tutorials/steady/drying/sprayDryer01_sugar",
@@ -7552,6 +7735,7 @@
     "tutorials/batch/combustion/ignition02_h2air_slack",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/drying/dryer01_sucrose_tray",
+    "tutorials/batch/drying/dryer02_characteristic_curves",
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
     "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
@@ -7640,6 +7824,7 @@
     "tutorials/props/gibbs/landscape04_methane_combustion",
     "tutorials/props/gibbs/landscape05_thermal_no",
     "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
+    "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
@@ -7680,6 +7865,7 @@
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column16_declared_interior",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
+    "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",
     "tutorials/steady/drying/solidDryer01_sugar",
@@ -7782,6 +7968,8 @@
     "tutorials/steady/membranes/membrane15_module_nf270_4040",
     "tutorials/steady/membranes/membrane16_module_sw30hr_8040",
     "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
+    "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
+    "tutorials/steady/membranes/membrane19_uf_gel_polarisation",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",
@@ -7810,11 +7998,13 @@
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
+    "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr_polyesterification",
+    "tutorials/steady/reactors/screen01_methanol_routes",
     "tutorials/steady/rotating/compressor01_air",
     "tutorials/steady/rotating/compressor02_designspec_pout",
     "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
@@ -7835,7 +8025,9 @@
     "tutorials/steady/utilities/utility02_hitec_csp_heater",
     "tutorials/steady/utilities/utility03_glycol_brine_chiller",
     "tutorials/unsteady/unsteady01_startup_transient",
-    "tutorials/unsteady/unsteady02_tanks_in_series"
+    "tutorials/unsteady/unsteady02_tanks_in_series",
+    "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
+    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "pitzerHMW": [
     "tutorials/props/electrolyte/davies01_band_edge",
@@ -7912,6 +8104,7 @@
     "tutorials/props/gibbs/landscape03_steam_reforming",
     "tutorials/props/gibbs/landscape04_methane_combustion",
     "tutorials/props/gibbs/landscape05_thermal_no",
+    "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map"
    ],
    "hConsistency": [

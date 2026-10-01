@@ -1,21 +1,20 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
 |       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
-|      \\|//   H eat-transfer |  PEQ 2026-27 -- Green ammonia                  |
+|      \\|//   H eat-transfer |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
 |     \\\|///  O perations    |  Website:  https://choupo.org                 |
 |      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
-|       \|/    P roperties    |  Sectored case, industrial-grade nitrogen     |
+|       \|/    P roperties    |  Base case of the project base data (v2)     |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application  choupoSolve;
 
 //  AUDIENCE.  A SHOWCASE composes engineering (bin/curate/check_case_tiers):
-//  three sectors, two recycle cuts and two property packages are not a
-//  feature being isolated (a witness) nor a feature being composed (a
-//  tutorial) -- they are a plant.  Declared rather than defaulted: without
-//  this word the case was a WITNESS by omission, which is the audience a
-//  regression fixture has, not the one a capstone deserves.
+//  a three-bed converter, two recycle cuts, refrigerated separation and a
+//  scrubber with its own property package are not a feature being isolated
+//  (a witness) -- they are a plant, and the base case a design-project group
+//  starts from.
 tier         showcase;
-description  "Green ammonia, 500 t/day, with INDUSTRIAL-GRADE nitrogen (99.5 % N2 / 0.40 % O2 / 0.10 % Ar), laid out in three sectors: PURIFICATION (nitrogen booster, 3:1 mixing, Pd deoxo, chilling to 279 K, knock-out drum, 4A molecular-sieve dryer and the synthesis compressor), LOOP (Haber-Bosch loop with feed/effluent exchanger, adiabatic converter, cooling, cold separation at 250 K, purge and recycle) and PRODUCT (let-down to 20 bar). Both recycle cuts -- material (Recycle) and energy (HotEffluent) -- are INTERNAL to the LOOP sector. SRK vapour; H2, N2 and Ar dissolved in liquid ammonia through measured Henry constants. The purification sector carries its own property package, with water as the solvent.";
+description  "Green ammonia, 1200 t/day: the base case of the PEQ 2026-27 project base data (v2). Electrolytic H2 at 30 bar and ASU nitrogen (99.99 % N2, 100 ppm Ar) at 8 bar; nitrogen booster and two-stage intercooled make-up compression to 150 bar; a synthesis loop with a feed/effluent exchanger, three adiabatic Gibbs beds at 5 K from equilibrium with waste-heat boilers between them, water cooling, a -20 C chiller and separation at 140 bar; purge to a water scrubber; two-stage let-down to storage at 1 atm. One level, no sectors. SRK vapour; H2, N2 and Ar dissolved in liquid ammonia through measured Henry constants; the scrubber computes in its own water-solvent world.";
 verbosity    3;
 
 reports

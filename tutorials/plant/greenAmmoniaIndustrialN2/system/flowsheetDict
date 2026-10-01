@@ -1,143 +1,235 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia                 |
-|      \\|//   H eat-transfer |  SECTORED case, industrial-grade nitrogen     |
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  The base case of the project base data (v2)  |
 |     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  PLANT (the COMPOSITE node) -- geography and the piping between sectors, only.
+  GREEN AMMONIA, 1200 t/day -- the base case of the PEQ 2026-27 project base
+  data, v2: hydrogen from electrolysis at 30 bar, nitrogen from an on-site
+  cryogenic ASU at 8 bar (99.99 % N2, 100 ppm Ar), a 150 bar synthesis loop
+  with a three-bed intercooled converter, refrigerated separation, and a
+  water-scrubbed purge.  ONE LEVEL, no sectors: about twenty units, all on one
+  canvas, because the loop is what a group has to understand and a sector
+  boundary would cut it in half.
 
-    H2, N2 --> [ PURIFICATION ] --Makeup--> [ LOOP ] --RawLiquid--> [ PRODUCT ] --> NH3
-                     |                        |
-            KoWater, RegenGas               Purge
-            CwAOut, ChwOut                    |
-                                              v
-                            WashWater --> [ RECOVERY ] --> ScrubbedGas (H2, N2, Ar)
-                                                      --> AqueousNH3
+  N2Feed -[N2Boost]-[N2Cooler]-+
+                               +-[MakeupMix]-[MakeupComp1]-[Intercooler]-[MakeupComp2]-[Aftercooler]-+
+  H2Feed ----------------------+                                                                     |
+                                                                                                     v
+          Recycle -[RecycleComp]-------------------------------------------------------------->[LoopMix]
+             ^                                                                                       |
+             |                         +----------- HotEffluent (tear) -----------+                  v
+             |                         v                                          |              [FEHE] cold side
+             |   CooledEffluent <---[FEHE] hot side                                |                  |
+             |        |                                                           |    PreheatedFeed  v
+             |   [WaterCooler]<-Cw                       [Bed1]-[WHB1]-[Bed2]-[WHB2]-[Bed3]
+             |        |
+             |   [Chiller]  -20 C (refrigeration)
+             |        |
+             |   [Separator]  140 bar --- RawLiquid -[LetdownHP]-[StorageFlash]- ProductNH3 (-35 C, 1 atm)
+             |        |                                 |              |
+             |   UnreactedGas                      LetdownGas      FlashGas (to the refrigeration unit)
+             |        |
+             +--[PurgeSplit]--Purge-[PurgeValve]-[PurgeHeater]-[Scrubber]<-WashWater
+                                                                 |      |
+                                                          ScrubbedGas  AqueousNH3
 
-  WHAT MAKES THIS CASE: ONE line of the input data.
-  The nitrogen is INDUSTRIAL grade -- N2 99.5 % / O2 0.40 % / Ar 0.10 % --
-  instead of the 99.999 % of the original data sheet, which is analytical-grade
-  gas that nobody supplies at 17 t/h.  Consequence: this plant needs a whole
-  PURIFICATION sector -- deoxo reactor, chiller, knock-out drum, dryer -- where
-  one fed on 99.999 % nitrogen would only need compression.
+  WHERE EACH NUMBER COMES FROM.  Feeds, loop pressure, first-bed inlet, the
+  three-bed intercooled converter and the -20 C separation are the base data
+  (sections 2.3-2.5).  The rest are DECLARED here and are the groups' to
+  change:
+    * compressors are specified by SHAFT POWER, the only way Choupo's
+      compressor is specified; each power was chosen so that its discharge
+      lands on the pressure the base data give (30, 67 and 150 bar for the
+      make-up, 150 bar for the recycle).  Change a flow and the pressure moves:
+      read it, and re-tune the power.
+    * the loop pressure drop is LUMPED at the separator (declared at 140 bar,
+      i.e. the base data's "recycle compressor dp ~ 10 bar").  Every other unit
+      holds its pressure.
+    * each bed is a gibbsReactor in `mode adiabatic` with a 5 K approach to
+      equilibrium (US 5,352,428 -- see tutorials/plant/ammoniaStaged03_approach
+      for the source and its wording).  The `T` in each bed is ONLY the Newton
+      seed; it is set a little above the bed inlet on purpose: in adiabatic
+      mode the engine reads the approach's SIGN at the seed, and a seed hotter
+      than the temperature at which the bed's own feed is at equilibrium
+      flips it (DEV.md section 5, 2026-10-01).  Check `T + 5` in the log.
+    * the intercoolers between beds are WHB1 and WHB2: the reaction heat
+      leaves there as medium-pressure steam in the base data.  The steam side
+      is not modelled; their duties are the heat available to raise it.
+    * the purge fraction gives the base data's ~12 kmol/h purge (stream 8).
+      The argon at the converter inlet then sits near 0.2 %, not the base
+      data's 1 %: most of the argon leaves DISSOLVED in the liquid, through
+      the let-down and storage flashes (task 3 starts there).
 
-  Naming convention (docs/ai/case-layout.md):
-    SECTORS in CAPITALS       : PURIFICATION, LOOP, PRODUCT
-    Units in PascalCase       : N2Boost, Deoxo, Dryer, Converter
-    Streams in PascalCase     : Makeup, DryGas, RawLiquid, ProductNH3
-    Components as they come   : N2, H2, NH3, Ar, water, O2
+  WHAT IS NOT IN THIS CASE, and is the groups' work (base data, section 2.8):
+    * the < 100 ppm H2O + O2 of the hydrogen.  The feed here is pure H2.  Both
+      are catalyst poisons: a dryer/deoxo on the make-up, or injecting the
+      make-up upstream of the separator so the liquid ammonia washes it, is a
+      design decision, not a default.
+    * the cold gas/gas exchanger between the separator vapour and the effluent
+      (the base data's ~9 MW): the Chiller here takes the whole cooling from
+      the water cooler down to -20 C, so its duty is an UPPER bound on the
+      refrigeration.
+    * the refrigeration cycle itself (the Chiller's duty is a heat to remove,
+      not an electrical load), the steam system, the start-up heater, the
+      catalyst volume (an equilibrium-approach bed has none -- that needs the
+      kinetics, see tutorials/plant/ammoniaStaged04_kinetic).
 
-  Where each stream's state file lives: ONE rule -- at the LOWEST level whose
-  subtree contains ALL of its ends.  A stream crossing two sectors, and a plant
-  inlet, live in 0/MAIN/.  Check it with `choupoSolve --manifest .`
+  KNOWN RESULT THE GROUPS SHOULD FIND.  With the base data's 380 C inlet and a
+  bed that reaches 5 K from equilibrium, bed 1 leaves ABOVE the 520 C limit of
+  the catalyst.  That is the base data being taken literally, not a defect of
+  the case: resolving it (a colder first-bed inlet, a bed sized by its
+  kinetics to stop short of equilibrium) is part of task 2.
 
-  THREE PROPERTY PACKAGES, one per thermodynamic world:
-    plant constant/          AMMONIA solvent   the loop and the product
-    PURIFICATION/constant/   WATER solvent     trace gases in deoxo condensate
-    RECOVERY/constant/       WATER solvent     ammonia absorbed into water
-  `Makeup` and `Purge` therefore cross MODEL BOUNDARIES, and their enthalpy
-  STEPS there -- read the first-law ledger.  That step is two models
-  disagreeing on H(T,P,z): information, not a bug.
+  TOPOLOGY ONLY.  Stream state lives in 0/, one file per stream.
 \*---------------------------------------------------------------------------*/
 
-sectors    ( PURIFICATION  LOOP  PRODUCT  RECOVERY );
+units
+(
+    //  ---- nitrogen and make-up compression (base data 2.5, steps 1-2) ----
+    { name N2Boost;      type compressor;    in N2Feed;         outputs ( N2Compressed );
+      operation { W_shaft 2110 kW;  eta 0.78; } }
+    { name N2Cooler;     type phaseChanger;  in N2Compressed;   outputs ( N2Cooled );
+      operation { outletT 313.15 K; } }
+    { name MakeupMix;    type mixer;         inputs ( H2Feed  N2Cooled );  outputs ( Makeup30 ); }
+    { name MakeupComp1;  type compressor;    in Makeup30;       outputs ( Makeup67 );
+      operation { W_shaft 5200 kW;  eta 0.75; } }
+    { name Intercooler;  type phaseChanger;  in Makeup67;       outputs ( Makeup67Cool );
+      operation { outletT 313.15 K; } }
+    { name MakeupComp2;  type compressor;    in Makeup67Cool;   outputs ( Makeup150 );
+      operation { W_shaft 5510 kW;  eta 0.75; } }
+    { name Aftercooler;  type phaseChanger;  in Makeup150;      outputs ( Makeup );
+      operation { outletT 313.15 K; } }
 
-boundary
-{
-    inlets   ( H2Feed  N2Feed  Cw  CwA  Chw  WashWater );
-    outlets  ( ProductNH3  LetdownGas  ScrubbedGas  AqueousNH3  CwOut  CwAOut  ChwOut  KoWater  RegenGas );
-}
+    //  ---- the synthesis loop (step 3) ----
+    { name RecycleComp;  type compressor;    in Recycle;        outputs ( CompRecycle );
+      operation { W_shaft 850 kW;  eta 0.75; } }
+    { name LoopMix;      type mixer;         inputs ( Makeup  CompRecycle );  outputs ( Mixed ); }
+    { name FEHE;         type heatExchanger; inputs ( HotEffluent  Mixed );
+      outputs ( CooledEffluent  PreheatedFeed );
+      operation { area 2000 m2;  U 550 W/m2/K;  flow counter; } }
+    { name Bed1;  type gibbsReactor;  in PreheatedFeed;  outputs ( Bed1Out );
+      operation
+      {
+          mode adiabatic;  P 150 bar;  T 673.15 K;     // seed only: 400 C
+          temperatureApproach 5;                        // K, a magnitude
+          elements ( N  H  Ar );
+          species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
+                    { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
+      } }
+    { name WHB1;         type phaseChanger;  in Bed1Out;        outputs ( Bed2Feed );
+      operation { outletT 693.15 K; } }                 // bed 2 inlet, 420 C
+    { name Bed2;  type gibbsReactor;  in Bed2Feed;  outputs ( Bed2Out );
+      operation
+      {
+          mode adiabatic;  P 150 bar;  T 713.15 K;     // seed only: 440 C
+          temperatureApproach 5;
+          elements ( N  H  Ar );
+          species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
+                    { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
+      } }
+    { name WHB2;         type phaseChanger;  in Bed2Out;        outputs ( Bed3Feed );
+      operation { outletT 688.15 K; } }                 // bed 3 inlet, 415 C
+    { name Bed3;  type gibbsReactor;  in Bed3Feed;  outputs ( HotEffluent );
+      operation
+      {
+          mode adiabatic;  P 150 bar;  T 703.15 K;     // seed only: 430 C
+          temperatureApproach 5;
+          elements ( N  H  Ar );
+          species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
+                    { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
+      } }
 
-connections
-{
-    H2Feed      { to PURIFICATION/H2Feed; }
-    N2Feed      { to PURIFICATION/N2Feed; }
-    CwA         { to PURIFICATION/CwA; }
-    Chw         { to PURIFICATION/Chw; }
-    Cw          { to LOOP/Cw; }
+    //  ---- condensation and separation (step 4) ----
+    { name WaterCooler;  type heatExchanger; inputs ( CooledEffluent  Cw );
+      outputs ( WaterCooledEffluent  CwOut );
+      operation { area 1500 m2;  U 700 W/m2/K;  flow counter; } }
+    { name Chiller;      type phaseChanger;  in WaterCooledEffluent;  outputs ( ChilledEffluent );
+      operation { outletT 253.15 K; } }                 // -20 C
+    { name Separator;    type isothermalFlash;  in ChilledEffluent;
+      outputs ( RawLiquid  UnreactedGas );
+      operation { T 253.15 K;  P 140 bar; } }
 
-    Makeup      { from PURIFICATION/Makeup;   to LOOP/Makeup; }
-    RawLiquid   { from LOOP/RawLiquid;       to PRODUCT/RawLiquid; }
+    //  ---- recycle and purge (steps 5-6) ----
+    { name PurgeSplit;   type splitter;      in UnreactedGas;   outputs ( Purge  Recycle );
+      operation { fractions ( 0.00085  0.99915 ); } }
+    { name PurgeValve;   type valve;         in Purge;          outputs ( PurgeLP );
+      operation { P 30 bar; } }
+    { name PurgeHeater;  type phaseChanger;  in PurgeLP;        outputs ( PurgeWarm );
+      operation { outletT 298.15 K; } }
+    { name Scrubber;     type absorber;      inputs ( PurgeWarm  WashWater );
+      outputs ( ScrubbedGas  AqueousNH3 );
+      operation { stages 6; }
+      //  The scrubber's OWN thermodynamic world: water is the solvent here,
+      //  ammonia the solute.  Henry is a convention for SPARINGLY soluble
+      //  solutes, so this is defensible only while the rich liquid stays
+      //  dilute (a few % m/m) -- which is what the wash-water rate is for.
+      thermo
+      {
+          equilibrium
+          {
+              formulation diluteSolution;
+              liquid
+              {
+                  solvent { component water;  standardState pureLiquid; }
+                  solutes
+                  {
+                      components    ( NH3 N2 H2 Ar );
+                      standardState infiniteDilution;
+                      solutionModel henryDilute;
+                      binaryParameters
+                      {
+                          NH3-water { source "data/standards/parameters/Henry/NH3-water.dat"; }
+                          N2-water  { source "data/standards/parameters/Henry/N2-water.dat"; }
+                          H2-water  { source "data/standards/parameters/Henry/H2-water.dat"; }
+                          Ar-water  { source "data/standards/parameters/Henry/Ar-water.dat"; }
+                      }
+                  }
+              }
+              vapour { fugacityModel SRK; }
+          }
+      } }
 
-    ProductNH3  { from PRODUCT/ProductNH3; }
-    LetdownGas  { from PRODUCT/LetdownGas; }
-    Purge       { from LOOP/Purge;           to RECOVERY/Purge; }
-    WashWater   { to RECOVERY/WashWater; }
-    ScrubbedGas { from RECOVERY/ScrubbedGas; }
-    AqueousNH3  { from RECOVERY/AqueousNH3; }
-    CwOut       { from LOOP/CwOut; }
-    CwAOut      { from PURIFICATION/CwAOut; }
-    ChwOut      { from PURIFICATION/ChwOut; }
-    KoWater     { from PURIFICATION/KoWater; }
-    RegenGas    { from PURIFICATION/RegenGas; }
-}
+    //  ---- finishing (step 7): let-down in two stages to storage ----
+    { name LetdownHP;    type isothermalFlash;  in RawLiquid;
+      outputs ( LetdownLiquid  LetdownGas );
+      operation { T 253.15 K;  P 20 bar; } }
+    { name StorageFlash; type isothermalFlash;  in LetdownLiquid;
+      outputs ( ProductNH3  FlashGas );
+      operation { T 238.15 K;  P 1.01325 bar; } }   // -35 C, see below
+    //  WHY -35 C AND NOT -33.4 C.  Liquid ammonia at 1 atm and its own boiling
+    //  point is a PURE component ON its saturation curve: there K_NH3 = 1 and
+    //  every vapour fraction satisfies the flash, so the answer is whatever
+    //  the solver lands on (measured at -34 C: 85 % "vaporised", which is not
+    //  a result).  The store is therefore declared 1.7 K below the boiling
+    //  point, where the flash only releases the dissolved H2, N2 and Ar.  A
+    //  real let-down is an ADIABATIC flash whose ammonia vapour returns to
+    //  the refrigeration unit -- part of task 5.
+);
 
-/*--- Project KPIs: identifiers QUALIFIED by sector ---*/
-variables
-{
-    NH3_t_h         { compute "PRODUCT.ProductNH3.F * 17.0305 * 3.6"; }
-    NH3_t_day       { compute "NH3_t_h * 24"; }
-    W_total_kW      { compute "PURIFICATION.N2Boost.W_shaft_kW + PURIFICATION.SynComp.W_shaft_kW + LOOP.RecycleComp.W_shaft_kW"; }
-    W_specific_kWh_t     { compute "W_total_kW / NH3_t_h"; }
-    H2_specific_kg_t     { compute "H2Feed.F * 2.01588 * 3.6 * 1000 / NH3_t_h"; }
-    y_NH3_converter { compute "LOOP.Converter.y_NH3"; }
-    T_converter_K   { compute "LOOP.Converter.T"; }
-    T_makeup_K      { compute "PURIFICATION.Makeup.T"; }
-
-    // --- the KPIs that exist only because the nitrogen is industrial grade ---
-    y_Ar_converter       { compute "LOOP.Converter.y_Ar"; }
-    purge_kmol_h         { compute "Purge.F * 3600"; }
-    O2_removed_kmol_h   { compute "PURIFICATION.Deoxo.extent_kmol_h"; }
-    Q_deoxo_kW           { compute "PURIFICATION.Deoxo.Q_kW"; }
-    Q_chilling_kW     { compute "PURIFICATION.GasChiller.Q_kW"; }
-    H2O_condensed_kg_h  { compute "KoWater.F * 3600 * 18.0153"; }
-    dryer_working_capacity_mol_kg { compute "PURIFICATION.Dryer.Dq_water"; }
-    dryer_utilisation   { compute "PURIFICATION.Dryer.capacity_utilisation_water"; }
-    Q_regeneration_kW     { compute "PURIFICATION.Dryer.Q_regeneration_kW"; }
-}
-
-//  THE AUXILIARY CIRCUITS, DECLARED (2026-09-25).
-//
-//  Without this block the plant's global material summary was 99.40 % cooling
-//  water: 3 513 143 kg/h of it against 21 306 kg/h of process feed, so the
-//  ammonia this plant exists to make was a rounding sliver on its own balance
-//  and every per-component chart drew one bar.  A declaration is TOPOLOGY --
-//  which EDGES form the circuit -- so the report publishes a PROCESS closure
-//  beside the TOTAL one it always did, and the separation is PRESENTATION,
-//  never validation scope: every law keeps counting every stream.
-//
-//  WATER IS BOTH HERE, and that is why the criterion is the EDGE and not the
-//  component.  The Pd deoxo runs O2 + 2 H2 -> 2 H2O and the knock-out drum
-//  takes the condensate out, so 93.5 kg/h of water is PROCESS water; it stays
-//  in the process scope exactly as it should, visible instead of buried under
-//  three and a half million kilograms of coolant.
-//
-//  WashWater is NOT a circuit: it absorbs ammonia into AqueousNH3, so it
-//  transfers matter across the process boundary and is process material.  The
-//  engine checks that test itself on each pair declared here (boundary inlet,
-//  boundary outlet, one served unit, component-wise conservation) and refuses
-//  a declaration that fails it.
 utilities
 (
     {
         name     CW_LOOP;
         service  coolingWater;
         supply   Cw;
-        return   LOOP.CwOut;
-        note     "synthesis-loop cooling water: condenses the converter effluent";
-    }
-    {
-        name     CW_PURIF;
-        service  coolingWater;
-        supply   CwA;
-        return   PURIFICATION.CwAOut;
-        note     "purification cooling water: removes the deoxo reaction heat";
-    }
-    {
-        name     CHW_PURIF;
-        service  chilledWater;
-        supply   Chw;
-        return   PURIFICATION.ChwOut;
-        note     "chilled water to 279 K before the knock-out drum and dryer";
+        return   CwOut;
+        note     "loop cooling water: the first cut of the effluent's cooling";
     }
 );
+
+variables
+{
+    NH3_t_h            { compute "ProductNH3.F * 17.0305 * 3.6"; }
+    NH3_t_day          { compute "NH3_t_h * 24"; }
+    W_compression_kW   { compute "N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + MakeupComp2.W_shaft_kW + RecycleComp.W_shaft_kW"; }
+    W_specific_kWh_t   { compute "W_compression_kW / NH3_t_h"; }
+    H2_specific_kg_t   { compute "H2Feed.F * 2.01588 * 3.6 * 1000 / NH3_t_h"; }
+    T_bed1_out_C       { compute "Bed1.T - 273.15"; }
+    T_bed2_out_C       { compute "Bed2.T - 273.15"; }
+    T_bed3_out_C       { compute "Bed3.T - 273.15"; }
+    y_NH3_converter    { compute "Bed3.y_NH3"; }
+    Q_steam_kW         { compute "-(WHB1.Q_kW + WHB2.Q_kW)"; }
+    Q_refrigeration_kW { compute "-Chiller.Q_kW"; }
+    purge_kmol_h       { compute "Purge.F * 3600"; }
+}

@@ -2891,15 +2891,18 @@ separator `Q`/`Q_kW` and its three `refrigerationNH3` utility rows;
 same root: through the one home (already discarding since 2026-09-08) the
 report, the model-boundary ledger, `heater`, `heatExchanger`,
 `conversionReactor`, the column's feed, the evaporator's chest; through
-`solveCore` DIRECTLY and NOT guarded, named not fixed: `phaseChanger`'s
-H_in (three sites, `PhaseChanger.cpp` ~188/790/1275), `pipe`'s inlet regime
+`solveCore` DIRECTLY and NOT guarded, named not fixed: `pipe`'s inlet regime
 detection (`Pipe.cpp` ~129), and every OUTLET search (`valve`,
-`adiabaticFlash`, `phaseChanger`'s `flashAt(T)`, and `IsothermalFlash`'s
+`adiabaticFlash`, and `IsothermalFlash`'s
 own operating resolution -- a flash OPERATED above every Tc would publish a
 liquid product).  `Flowsheet.cpp`'s stream-H re-flash runs only on a
 CARRIED vf strictly inside (0, 1), so it cannot reach a vf = 1 stream.  No
 corpus case reaches any of those with a supercritical feed today, measured
-by the suite (only stage D moved).
+by the suite (only stage D moved).  **`phaseChanger` CLOSED 2026-10-01**
+(H_in and `flashAt(T)`, all three entry points, through one local
+`resolveAt` that calls the one home): the rewritten green-ammonia case
+reached it -- its first inter-bed cooler, fed at 813 K, closed its own
+balance 331.8 kW short, and closes now.
 
 **2026-09-25 -- ONE CONCEPT, TWO KEYS, IN ONE FUNCTION, AND THE DOCUMENTED
 ONE IS THE SILENT ONE.**  Found while building the C9 EduTool; every line

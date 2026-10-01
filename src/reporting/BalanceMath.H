@@ -377,7 +377,7 @@ inline scalar streamH_elements(const ProcessStream& s,
 // leaves the heat it carried.  With the tag on ONE end only the cancellation
 // never happens: the supply's whole datum offset lands in qBoundary as a
 // "duty" and the return lands in hOut as process material.  Measured on
-// `greenAmmoniaIndustrialN2`, where `0/MAIN/Chw` carries
+// `greenAmmoniaIndustrialN2` (its sectored 2026-09 edition), where `0/MAIN/Chw` carries
 // `category chilledWater;` and the ChwOut the run produces carries none:
 // 60.05 kg/s of chilled water reported a 960 712 kW duty for a chiller whose
 // real duty is 741.56 kW -- and, because that unit then failed the

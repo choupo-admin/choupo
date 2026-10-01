@@ -15,11 +15,12 @@
 import { describe, it, expect } from "vitest";
 import { caseDescription, LEAD_MAX_CHARS } from "../src/case/caseDescription";
 
-//  The OPENING of tutorials/plant/greenAmmoniaIndustrialN2's description,
-//  copied verbatim and cut at its first full stop; the real one continues
+//  The OPENING of tutorials/plant/greenAmmoniaIndustrialN2's description AS
+//  IT STOOD UNTIL 2026-10-01 (the case was then rewritten and its description
+//  changed), copied verbatim and cut at its first full stop; it continued
 //  (SRK vapour, the Henry constants, the purification package).  Ninety
 //  words before that first stop, which is why a sentence split alone would
-//  not have folded it -- and the real description is LONGER still, so this
+//  not have folded it -- and the real description was LONGER still, so this
 //  fixture is the easy case, not the worst one.
 const FLAGSHIP =
   "Green ammonia, 500 t/day, with INDUSTRIAL-GRADE nitrogen (99.5 %"
