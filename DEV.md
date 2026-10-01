@@ -2739,6 +2739,36 @@ defect — look for what else went with it.
 
 ## 5. Known debts (severity-ish)
 
+**2026-10-01 -- A FEED DECLARED WITH T, P AND `vaporFraction` IS OVER-SPECIFIED,
+AND THE ENGINE NEITHER REFUSES IT NOR SHOWS WHAT IT USES.  OPEN, NOT FIXED
+(Vitor: Saturday).**  Seen by Vitor on the landing case
+`flash01_benzene_toluene`, whose `0/feed` declares T 370 K, P 1 bar AND
+`vaporFraction 0.3039835731` for a 40/60 benzene/toluene mixture.  By Duhem's
+theorem a stream of known component flows is fixed by TWO intensive
+variables; for a mixture T and P already fix the split, so the third is
+either redundant or a contradiction.  Three defects, measured on a scratch
+copy:
+(1) the WRITER emits `vaporFraction` beside T and P for every 0 < vf < 1
+(`StreamStateIO.cpp:396-409`, whose comment "T,P alone do not fix the split"
+holds for a pure component on its saturation curve, not for a mixture);
+(2) the READER accepts all three silently (`StreamStateIO.cpp:3096-3113`)
+although the header promises "THREE top-level state vars over-specify ...
+-> FATAL" (`StreamStateIO.H:42`) -- with `vaporFraction 0.9` the run exits 0,
+the stream table and the GUI print vf = 0.900, and the energy report prices
+the feed at its resolved 0.304 and closes, so the number shown is not the
+number used;
+(3) the STREAM TABLE prints the carried vf, not the resolved state: with the
+line removed (the correct declaration) the feed shows vf = 0.000 and
+H = 37 807 J/mol (1050 kW, a liquid) while the first law uses 1325.78 kW, a
+275 kW disagreement about one stream between two surfaces of one run.
+Remedy proposed to Vitor, not built: the table/JSON draw the resolved state
+of an unpinned stream; the reader refuses `vaporFraction` beside T and P on a
+mixture, naming the two-variable rule (a pure saturated stream keeps
+`phase gas|liquid`); the writer stops emitting it for mixtures; flash01
+declares T and P only.  (1)-(3) reach every case, so a full regression and
+Vitor's authorisation are required; 156 tracked `0/` files declare
+`vaporFraction` and how many are mixtures has NOT been measured.
+
 **2026-10-01 -- AN ADIABATIC `temperatureApproach` CAN TAKE THE WRONG SIGN
 FROM ITS SEED, AND THE BED THEN ENDS ABOVE ITS OWN EQUILIBRIUM.  OPEN, NOT
 FIXED.**  Found while checking a design-project group's report ("with a
@@ -2758,7 +2788,10 @@ same run at dT = 5 K: 468.7 C / 19.74 % against the correct 462.1 C /
 from the dT = 0 adiabatic answer (unambiguous: feed -> that state) instead
 of from the seed.  No corpus case declares an approach on an adiabatic
 gibbsReactor today, so no golden is known to move -- verify before
-claiming it.
+claiming it.  (Corrected the same day: `greenAmmoniaIndustrialN2`, rewritten
+in `de22b75d3`, now declares a 5 K approach on three adiabatic beds; its
+seeds are set below each bed's equilibrium temperature so the sign is right,
+and its golden WILL be the one to check when the remedy lands.)
 
 **2026-09-29 -- THE GIBBS MAP BYPASSED THE PURE-SOLID PATH.  CLOSED the
 same day (Vitor: "faz"), with one limit NAMED.**  Found by Vitor in the
