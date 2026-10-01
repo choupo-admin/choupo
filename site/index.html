@@ -621,7 +621,14 @@ make all
 
 source etc/bashrc
 runCase tutorials/steady/flash/flash01_benzene_toluene
-bin/runTests</pre>
+bin/runTests
+
+<span class="comment"># The graphical interface (GUI), once:</span>
+sudo apt install -y nodejs npm emscripten
+make wasm-gui
+<span class="comment"># then bin/runGui, and open in Windows:</span>
+<span class="comment">#   http://127.0.0.1:5173/</span>
+bin/runGui</pre>
         </div>
       </div>
 
@@ -651,7 +658,8 @@ bin/runTests</pre>
           <div>
             <h3>Linux</h3>
             <p>The native target. Only a C++17 compiler and GNU make are required — zero external libraries.</p>
-            <p><a class="text-link" href="https://github.com/choupo-admin/choupo#build" target="_blank" rel="noopener">Read the full build guide</a></p>
+            <p><strong>The graphical interface on your own computer</strong> needs three more tools — Node.js, npm and Emscripten — because it runs the engine compiled to WebAssembly. <code>bin/runGui</code> checks each one, says in one sentence what is missing, and opens a browser window at <code>http://127.0.0.1:5173/</code>. After pulling a new version, run <code>make wasm-gui</code> again.</p>
+            <p><a class="text-link" href="https://github.com/choupo-admin/choupo#web-gui" target="_blank" rel="noopener">Read the full build guide</a></p>
           </div>
           <pre class="commands"><span class="comment"># Debian / Ubuntu deps:</span>
 sudo apt install -y git build-essential
@@ -662,7 +670,14 @@ make all
 
 source etc/bashrc
 runCase tutorials/steady/flash/flash01_benzene_toluene
-bin/runTests</pre>
+bin/runTests
+
+<span class="comment"># The graphical interface (GUI), once:</span>
+sudo apt install -y nodejs npm emscripten
+make wasm-gui
+<span class="comment"># then, every time:</span>
+bin/runGui
+bin/runGui --kill        <span class="comment"># stops it</span></pre>
         </div>
       </div>
 
