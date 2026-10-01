@@ -253,6 +253,18 @@ for _g in theoryGuide userGuide propsGuide developerGuide; do
 done
 
 PROFILE_DIR="${HOME}/.cache/choupo-firefox"
+#  Ubuntu ships Firefox as a SNAP, and a snap may not read hidden
+#  directories in $HOME -- so a profile under ~/.cache is one the browser
+#  cannot open, and with its output sent to /dev/null the student sees
+#  "opening Firefox" and then nothing.  A snap's own writable area is
+#  ~/snap/firefox/common, so the profile goes there.
+#  (On Ubuntu /usr/bin/firefox is often a small script that runs the snap,
+#  so the script's own text is checked too.)
+_ff=$(command -v firefox 2>/dev/null || true)
+if [ "${_ff#/snap/}" != "$_ff" ] \
+   || { [ -n "$_ff" ] && grep -qs '/snap/bin/firefox' "$_ff"; }; then
+    PROFILE_DIR="${HOME}/snap/firefox/common/choupo-profile"
+fi
 FIRST_RUN=0
 if [ ! -d "$PROFILE_DIR" ]; then
     mkdir -p "$PROFILE_DIR"
@@ -305,8 +317,13 @@ if command -v firefox > /dev/null; then
     firefox --no-remote --profile "$PROFILE_DIR" --new-window "$URL" \
         > /dev/null 2>&1 &
     disown
+elif command -v xdg-open > /dev/null; then
+    echo "[runGui] Firefox not found -- opening $URL in your default browser"
+    xdg-open "$URL" > /dev/null 2>&1 &
+    disown
 else
-    echo "[runGui] Firefox not on PATH -- open $URL in your browser of choice"
+    echo "[runGui] Firefox not found -- open $URL in your browser"
 fi
+echo "[runGui] if no window appears, open $URL in any browser yourself"
 
 echo "[runGui] dev server running in background; run \`bin/runGui --kill\` to stop"

@@ -64,8 +64,7 @@ Optional, and only for parts you may never touch:
 
 | for | you also need |
 |---|---|
-| the browser GUI (`gui/`) | Node.js + npm |
-| rebuilding the WASM engine (`make wasm-gui`) | Emscripten |
+| the browser GUI on your own computer (`bin/runGui`) | Node.js 18+ (20 recommended) + npm, **and** Emscripten (the GUI runs the engine compiled to WebAssembly) — or use [choupo.org/app](https://www.choupo.org/app) and install nothing |
 | the curation + doctrine gates (`bin/curate/*.py`) | Python 3 |
 
 ## Build
@@ -231,10 +230,29 @@ of what each one teaches.
 
 ## Web GUI
 
-Browser front-end in [`gui/`](gui).  React + Mantine + React Flow +
-Plotly.  Loads the C++ solver as a WebAssembly module (via Emscripten)
-running in a Web Worker; falls back to a deterministic mock when the
-WASM is not built.  See [`gui/README.md`](gui/README.md).
+**Nothing to install:** open [choupo.org/app](https://www.choupo.org/app).
+It runs the same engine inside your browser.
+
+**On your own Linux computer** (Ubuntu / Debian; the first time takes a few
+minutes, after that only step 4):
+
+```bash
+sudo apt install build-essential nodejs npm emscripten   # 1. the tools, once
+cd Choupo                                                # 2. the folder you cloned
+make all -j4 && make wasm-gui                            # 3. build the engine, twice:
+                                                         #    native + browser
+bin/runGui                                               # 4. opens the GUI
+```
+
+`bin/runGui` checks each of these itself and, when something is missing or
+out of date, says in one sentence what to run.  It installs the interface's
+libraries on first use, starts a local server and opens a browser window at
+<http://127.0.0.1:5173/>; if no window appears, open that address in any
+browser.  `bin/runGui --kill` stops it.  After pulling a new version, run
+step 3 again: the GUI refuses to start on an engine older than the sources.
+
+Developer detail (stack, tests, the WASM build's quirks):
+[`gui/README.md`](gui/README.md).
 
 ## Authorship and Provenance
 
