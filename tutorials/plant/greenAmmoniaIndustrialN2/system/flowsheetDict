@@ -7,7 +7,7 @@
   GREEN AMMONIA, 1200 t/day -- the base case of the PEQ 2026-27 project base
   data, v2: hydrogen from electrolysis at 30 bar, nitrogen from an on-site
   cryogenic ASU at 8 bar (99.99 % N2, 100 ppm Ar), a 150 bar synthesis loop
-  with a three-bed intercooled converter, refrigerated separation, and a
+  with an equilibrium converter, refrigerated separation, and a
   water-scrubbed purge.  ONE LEVEL, no sectors: about twenty units, all on one
   canvas, because the loop is what a group has to understand and a sector
   boundary would cut it in half.
@@ -22,7 +22,7 @@
              |                         v                                          |              [FEHE] cold side
              |   CooledEffluent <---[FEHE] hot side                                |                  |
              |        |                                                           |    PreheatedFeed  v
-             |   [WaterCooler]<-Cw                       [Bed1]-[WHB1]-[Bed2]-[WHB2]-[Bed3]
+             |   [WaterCooler]<-Cw                                    [Converter] 460 C, 5 K approach
              |        |
              |   [Chiller]  -20 C (refrigeration)
              |        |
@@ -34,9 +34,8 @@
                                                                  |      |
                                                           ScrubbedGas  AqueousNH3
 
-  WHERE EACH NUMBER COMES FROM.  Feeds, loop pressure, first-bed inlet, the
-  three-bed intercooled converter and the -20 C separation are the base data
-  (sections 2.3-2.5).  The rest are DECLARED here and are the groups' to
+  WHERE EACH NUMBER COMES FROM.  Feeds, loop pressure, the 380 C converter
+  inlet and the -20 C separation are the base data (sections 2.3-2.5).  The rest are DECLARED here and are the groups' to
   change:
     * compressors are specified by SHAFT POWER, the only way Choupo's
       compressor is specified; each power was chosen so that its discharge
@@ -46,16 +45,13 @@
     * the loop pressure drop is LUMPED at the separator (declared at 140 bar,
       i.e. the base data's "recycle compressor dp ~ 10 bar").  Every other unit
       holds its pressure.
-    * each bed is a gibbsReactor in `mode adiabatic` with a 5 K approach to
-      equilibrium (US 5,352,428 -- see tutorials/plant/ammoniaStaged03_approach
-      for the source and its wording).  The `T` in each bed is ONLY the Newton
-      seed; it is set a little above the bed inlet on purpose: in adiabatic
-      mode the engine reads the approach's SIGN at the seed, and a seed hotter
-      than the temperature at which the bed's own feed is at equilibrium
-      flips it (DEV.md section 5, 2026-10-01).  Check `T + 5` in the log.
-    * the intercoolers between beds are WHB1 and WHB2: the reaction heat
-      leaves there as medium-pressure steam in the base data.  The steam side
-      is not modelled; their duties are the heat available to raise it.
+    * the converter is ONE gibbsReactor at its OUTLET temperature, 460 C,
+      5 K short of equilibrium (see the comment on the unit).  The outlet
+      temperature is a design choice the base data leave open; the base data's
+      three intercooled beds are how a real converter reaches it, and their
+      number and size need the kinetics (task 2).  The reactor's duty is the
+      reaction heat the intercoolers remove as medium-pressure steam; the
+      steam side is not modelled.
     * the purge fraction gives the base data's ~12 kmol/h purge (stream 8).
       The argon at the converter inlet then sits near 0.2 %, not the base
       data's 1 %: most of the argon leaves DISSOLVED in the liquid, through
@@ -71,15 +67,15 @@
       the water cooler down to -20 C, so its duty is an UPPER bound on the
       refrigeration.
     * the refrigeration cycle itself (the Chiller's duty is a heat to remove,
-      not an electrical load), the steam system, the start-up heater, the
-      catalyst volume (an equilibrium-approach bed has none -- that needs the
-      kinetics, see tutorials/plant/ammoniaStaged04_kinetic).
+      not an electrical load), the steam system, the start-up heater, and the
+      beds themselves: their number, inlet temperatures and catalyst volumes
+      need a rate law (tutorials/plant/ammoniaStaged04_kinetic).
 
-  KNOWN RESULT THE GROUPS SHOULD FIND.  With the base data's 380 C inlet and a
-  bed that reaches 5 K from equilibrium, bed 1 leaves ABOVE the 520 C limit of
-  the catalyst.  That is the base data being taken literally, not a defect of
-  the case: resolving it (a colder first-bed inlet, a bed sized by its
-  kinetics to stop short of equilibrium) is part of task 2.
+  WHAT THE GROUPS SHOULD NOTICE.  The base data's 18 % per-pass conversion
+  (~12 % NH3 out) is a KINETIC figure: at 460 C the equilibrium allows much
+  more, so this converter converts more per pass and the recycle is about
+  half the base data's.  Raising the outlet temperature towards the 520 C
+  limit brings the two together -- try it.
 
   TOPOLOGY ONLY.  Stream state lives in 0/, one file per stream.
 \*---------------------------------------------------------------------------*/
@@ -108,33 +104,27 @@ units
     { name FEHE;         type heatExchanger; inputs ( HotEffluent  Mixed );
       outputs ( CooledEffluent  PreheatedFeed );
       operation { area 2000 m2;  U 550 W/m2/K;  flow counter; } }
-    { name Bed1;  type gibbsReactor;  in PreheatedFeed;  outputs ( Bed1Out );
+    //  THE CONVERTER IS ONE EQUILIBRIUM REACTOR -- the first-pass practice.
+    //  A Gibbs reactor computes only the OUTLET: the equilibrium of the atoms
+    //  that enter, at the declared temperature and pressure.  It has no
+    //  volume and no path, so three Gibbs beds in series with coolers between
+    //  them give exactly the outlet of ONE Gibbs reactor at the last bed's
+    //  outlet temperature.  So: one reactor, at the converter OUTLET
+    //  temperature, 5 K short of equilibrium; its duty is the reaction heat
+    //  the intercoolers must remove (steam).  How many beds, and how big, is
+    //  a question for a plug-flow reactor with a rate law
+    //  (tutorials/plant/ammoniaStaged04_kinetic) -- task 2.
+    //
+    //  temperatureApproach: the ammonia content is the equilibrium one 5 K
+    //  ABOVE the actual temperature (US 5,352,428, Bhakta & Grotz 1994: "the
+    //  ammonia concentration corresponds to the equilibrium concentration at
+    //  a temperature 5 C. above the actual temperature"; design range 0-30 C,
+    //  preferably 1-10 C).  See tutorials/plant/ammoniaStaged03_approach.
+    { name Converter;  type gibbsReactor;  in PreheatedFeed;  outputs ( HotEffluent );
       operation
       {
-          mode adiabatic;  P 150 bar;  T 673.15 K;     // seed only: 400 C
-          temperatureApproach 5;                        // K, a magnitude
-          elements ( N  H  Ar );
-          species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
-                    { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
-      } }
-    { name WHB1;         type phaseChanger;  in Bed1Out;        outputs ( Bed2Feed );
-      operation { outletT 693.15 K; } }                 // bed 2 inlet, 420 C
-    { name Bed2;  type gibbsReactor;  in Bed2Feed;  outputs ( Bed2Out );
-      operation
-      {
-          mode adiabatic;  P 150 bar;  T 713.15 K;     // seed only: 440 C
-          temperatureApproach 5;
-          elements ( N  H  Ar );
-          species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
-                    { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
-      } }
-    { name WHB2;         type phaseChanger;  in Bed2Out;        outputs ( Bed3Feed );
-      operation { outletT 688.15 K; } }                 // bed 3 inlet, 415 C
-    { name Bed3;  type gibbsReactor;  in Bed3Feed;  outputs ( HotEffluent );
-      operation
-      {
-          mode adiabatic;  P 150 bar;  T 703.15 K;     // seed only: 430 C
-          temperatureApproach 5;
+          T 733.15 K;  P 150 bar;           // converter OUTLET, 460 C -- a design choice
+          temperatureApproach 5;            // K, a magnitude; the engine assigns the sign
           elements ( N  H  Ar );
           species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
                     { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
@@ -225,11 +215,8 @@ variables
     W_compression_kW   { compute "N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + MakeupComp2.W_shaft_kW + RecycleComp.W_shaft_kW"; }
     W_specific_kWh_t   { compute "W_compression_kW / NH3_t_h"; }
     H2_specific_kg_t   { compute "H2Feed.F * 2.01588 * 3.6 * 1000 / NH3_t_h"; }
-    T_bed1_out_C       { compute "Bed1.T - 273.15"; }
-    T_bed2_out_C       { compute "Bed2.T - 273.15"; }
-    T_bed3_out_C       { compute "Bed3.T - 273.15"; }
-    y_NH3_converter    { compute "Bed3.y_NH3"; }
-    Q_steam_kW         { compute "-(WHB1.Q_kW + WHB2.Q_kW)"; }
+    y_NH3_converter    { compute "Converter.y_NH3"; }
+    Q_steam_kW         { compute "-Converter.Q_kW"; }
     Q_refrigeration_kW { compute "-Chiller.Q_kW"; }
     purge_kmol_h       { compute "Purge.F * 3600"; }
 }

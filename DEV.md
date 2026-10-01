@@ -2788,10 +2788,11 @@ same run at dT = 5 K: 468.7 C / 19.74 % against the correct 462.1 C /
 from the dT = 0 adiabatic answer (unambiguous: feed -> that state) instead
 of from the seed.  No corpus case declares an approach on an adiabatic
 gibbsReactor today, so no golden is known to move -- verify before
-claiming it.  (Corrected the same day: `greenAmmoniaIndustrialN2`, rewritten
-in `de22b75d3`, now declares a 5 K approach on three adiabatic beds; its
-seeds are set below each bed's equilibrium temperature so the sign is right,
-and its golden WILL be the one to check when the remedy lands.)
+claiming it.  (`greenAmmoniaIndustrialN2` declared a 5 K approach on three
+adiabatic beds for a few hours on 2026-10-01 and no longer does: three Gibbs
+beds in series give the outlet of ONE Gibbs reactor at the last bed's
+temperature, so its converter is now one isothermal gibbsReactor with the
+approach, and the sentence above is true again.)
 
 **2026-09-29 -- THE GIBBS MAP BYPASSED THE PURE-SOLID PATH.  CLOSED the
 same day (Vitor: "faz"), with one limit NAMED.**  Found by Vitor in the
