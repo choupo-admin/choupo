@@ -2739,6 +2739,27 @@ defect — look for what else went with it.
 
 ## 5. Known debts (severity-ish)
 
+**2026-10-01 -- AN ADIABATIC `temperatureApproach` CAN TAKE THE WRONG SIGN
+FROM ITS SEED, AND THE BED THEN ENDS ABOVE ITS OWN EQUILIBRIUM.  OPEN, NOT
+FIXED.**  Found while checking a design-project group's report ("with a
+10 K approach the conversion comes out very high").  In `mode adiabatic`
+`GibbsReactor::approachDirection` reads the thermicity of feed -> equilibrium
+at the SEED `T` (`GibbsReactor.cpp:338-344`, announced).  A downstream bed
+whose feed already carries ammonia, seeded HOTTER than the temperature at
+which that feed is itself at equilibrium, reads the transformation as
+DECOMPOSITION (endothermic), assigns `T - dT`, and lands MORE converted than
+equilibrium at its own outlet.  Measured (scratch copy of
+ammoniaStaged03's constant/, 150 bar, the PEQ 2026-27 converter inlet gas,
+beds entering 380/420/415 C, dT = 10 K): bed 3 seeded at 495 C ends at
+473.6 C with y_NH3 19.73 % (sign "-"); seeded at 435 C it ends at 460.4 C
+with 18.74 % (sign "+", correct; equilibrium at 470.4 C is ~18.8 %).  The
+same run at dT = 5 K: 468.7 C / 19.74 % against the correct 462.1 C /
+19.24 %.  Remedy proposed, not built: in adiabatic mode take the direction
+from the dT = 0 adiabatic answer (unambiguous: feed -> that state) instead
+of from the seed.  No corpus case declares an approach on an adiabatic
+gibbsReactor today, so no golden is known to move -- verify before
+claiming it.
+
 **2026-09-29 -- THE GIBBS MAP BYPASSED THE PURE-SOLID PATH.  CLOSED the
 same day (Vitor: "faz"), with one limit NAMED.**  Found by Vitor in the
 `equilibrium-landscapes` EduTool: a map over sucrose, CO2, N2, NH3, H2 and
