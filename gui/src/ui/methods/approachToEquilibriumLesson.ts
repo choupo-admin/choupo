@@ -355,6 +355,100 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
       + "a different rung of the ladder.  Neither is implemented; only one of "
       + "them is announced when it is missing.",
   },
+  {
+    n: 7,
+    title: "Three Gibbs beds in series are ONE Gibbs reactor",
+    body: "A real ammonia converter has three catalyst beds with coolers between "
+      + "them, and the tempting model is one Gibbs reactor per bed.  It is a "
+      + "mistake, and this project made it on 2026-10-01 in its own green "
+      + "ammonia case.  A Gibbs reactor has no volume and no path: it returns "
+      + "the equilibrium of the ATOMS that enter (step 1), at the temperature "
+      + "and pressure it is given.  A cooler changes the temperature and moves "
+      + "no atom, so every bed sees the same atom inventory b, and the last "
+      + "bed returns the equilibrium of b at ITS temperature — exactly what one "
+      + "Gibbs reactor at that temperature returns.  Measured on that case "
+      + "(150 bar, SRK, 5 K approach): three adiabatic beds with two "
+      + "waste-heat boilers leave at 736.48 K with an ammonia mole fraction of "
+      + "0.191745443741; one isothermal Gibbs reactor at 736.48 K, fed the "
+      + "same gas, gives 0.191745443739.  Its duty, −30 058 kW, is the two boilers' "
+      + "−30 062 kW to 0.01 %, because enthalpy is a state function and the "
+      + "beds were adiabatic.  What the three beds ADDED were the two "
+      + "intermediate temperatures, and those are artefacts: each bed was "
+      + "assumed to reach equilibrium, so bed 1 \"left at 532 °C\", above the "
+      + "catalyst's 520 °C limit — a number about the model, not the plant.",
+    formula: String.raw`\begin{aligned}
+A\,n_k &= A\,n_\mathrm{feed} = b, \qquad k = 1,\dots,N\\
+n_N &= n_\mathrm{eq}\big(T_N + \Delta T,\; P;\; b\big)
+\end{aligned}`,
+    where: [
+      { sym: "A", means: "the atom matrix of step 1: one row per element, one "
+        + "column per species", unit: "atoms per molecule" },
+      { sym: "n_k", means: "the molar flows leaving bed k", unit: "mol/s" },
+      { sym: "n_\\mathrm{feed}", means: "the molar flows entering the first "
+        + "bed", unit: "mol/s" },
+      { sym: "b", means: "the atom inventory, element by element.  Neither a "
+        + "bed nor a cooler changes it, so it is the SAME at every bed", unit:
+        "mol/s of atoms" },
+      { sym: "k", means: "the bed index", unit: "—" },
+      { sym: "N", means: "the number of beds", unit: "—" },
+      { sym: "n_N", means: "the molar flows leaving the LAST bed — the "
+        + "converter outlet", unit: "mol/s" },
+      { sym: "n_\\mathrm{eq}", means: "the equilibrium composition function of "
+        + "step 3, here written with the atom inventory it conserves", unit:
+        "mol/s" },
+      { sym: "T_N", means: "the outlet temperature of the last bed — the only "
+        + "temperature the converter outlet depends on", unit: "K" },
+      { sym: "\\Delta T", means: "the temperature approach of step 3", unit:
+        "K" },
+      { sym: "P", means: "the converter pressure", unit: "Pa" },
+    ],
+    note: "THE PRACTICE THAT FOLLOWS.  In the first pass model the converter as "
+      + "ONE Gibbs reactor at its OUTLET temperature, with an approach; its "
+      + "duty is the heat the intercoolers must remove.  The number of beds, "
+      + "their inlet temperatures against the catalyst's limit and their "
+      + "catalyst volumes are questions about RATE, and a rate needs a "
+      + "kinetic plug-flow reactor: in Choupo, `tutorials/plant/"
+      + "ammoniaStaged04_kinetic`.  Three Gibbs beds can never answer them, "
+      + "however many you draw.",
+  },
+  {
+    n: 8,
+    title: "What approach practice uses, and where each number comes from",
+    body: "There is no universal value; there are published design statements, "
+      + "process by process, and each is a preference written by a licensor, "
+      + "not a law.  AMMONIA SYNTHESIS: \"The approach to equilibrium in any "
+      + "catalyst bed is 0 C. to 30 C. and preferably 1 C. to 10 C.\", with "
+      + "5 °C called \"typical and optimum in many commercial process "
+      + "designs\" (US 5,352,428, M. L. Bhakta and B. J. Grotz, C F Braun & "
+      + "Co, 1994).  STEAM METHANE REFORMING: \"between 1 and 60° C., more "
+      + "preferably between 5 and 30° C., most preferably between 5 and 20° "
+      + "C.\" (US 11,591,215 B2, Topsoe A/S, 2023), and Johnson Matthey's "
+      + "worked example in step 3 is 12 °C.  WATER–GAS SHIFT: \"a 50 F. "
+      + "approach to the apparent equilibrium temperature is a reasonable "
+      + "design value\" (US 3,666,682, J. R. Muenger, Texaco Inc., 1972) — "
+      + "about 28 K.  METHANOL SYNTHESIS: no value is given here, because no "
+      + "source that could be read back to its words was found; a number "
+      + "without one would be invented.  All of these were read online on "
+      + "2026-10-02.",
+    formula: String.raw`\Delta T = \bigl|\, T_\mathrm{eq}(y_\mathrm{out}) - T \,\bigr|`,
+    where: [
+      { sym: "\\Delta T", means: "the temperature approach, as a magnitude; "
+        + "Choupo assigns its direction from the reaction's thermicity "
+        + "(step 4)", unit: "K" },
+      { sym: "T_\\mathrm{eq}", means: "the temperature at which the measured "
+        + "outlet composition WOULD be the equilibrium composition — how a "
+        + "plant reads its own approach (step 3)", unit: "K" },
+      { sym: "y_\\mathrm{out}", means: "the outlet mole fractions", unit: "—" },
+      { sym: "T", means: "the real outlet temperature", unit: "K" },
+    ],
+    note: "HOW TO USE THEM.  Take the low end for fresh catalyst and the high end "
+      + "for end-of-run (step 5: the approach grows as the catalyst ages), and "
+      + "say which one the design is for.  The ammonia figure is quoted PER "
+      + "BED; in the single-reactor model of step 7 it applies at the "
+      + "converter outlet, which is where Choupo's green ammonia case declares "
+      + "its 5 K.  And a value from this list is still UNCALIBRATED for your "
+      + "catalyst — the last limit below says so.",
+  },
 ];
 
 export const APPROACH_LIMITS: readonly LessonLimit[] = [
@@ -404,7 +498,9 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "specific catalyst at a specific point in its life; there is no "
       + "measurement anywhere in this tool.  The corpus cases that declare "
       + "an approach declare an UNCALIBRATED one: `ammoniaStaged03_approach` "
-      + "carries a magnitude chosen for the staged sequence, and the five "
+      + "carries a magnitude chosen for the staged sequence, "
+      + "`greenAmmoniaIndustrialN2` takes the patent's 5 K at its converter "
+      + "outlet (step 8), and the five "
       + "`gibbsMap` witnesses of the companion survey page declare the key "
       + "at zero so a slider can move it.",
   },

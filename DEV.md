@@ -1879,6 +1879,22 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C29. THE APPROACH-TO-EQUILIBRIUM EDUTOOL SAYS WHY THREE GIBBS BEDS ARE
+     ONE, AND GIVES THE PUBLISHED HEURISTICS FOR THE APPROACH (asked
+     2026-10-02, Vítor, after the green-ammonia converter had been built as
+     three adiabatic Gibbs beds: "No Edutool tens de esclarecer isto para
+     que os alunos não cometam o mesmo erro!  E na temperatura de
+     aproximação tens de ir online e ver quais é que são as
+     heurísticas!").**  Two additions to `approach-to-equilibrium`
+     (`gui/src/ui/methods/approachToEquilibriumLesson.ts`): (1) a Gibbs
+     reactor has no volume and no path, so N Gibbs beds in series with
+     coolers between them return the outlet of ONE Gibbs reactor at the
+     last bed's temperature; the intermediate temperatures they print are
+     artefacts, and the number of beds is a question for a kinetic plug
+     flow reactor; (2) the approach values practice actually uses, per
+     process, each from a source read online and cited -- never a number
+     without one.  Variables in mathematical form (the standing rule).
+
 **C28. THE TIME-INTEGRATED CASES ADOPT THE RATIFIED STATE LAYOUT (#186)
      (asked 2026-09-30, Vitor, on seeing unsteady03 in the browser: "Nao
      usaste internalState nem ... gravar o estado do sistema em folder com

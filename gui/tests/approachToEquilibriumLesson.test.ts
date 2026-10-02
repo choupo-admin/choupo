@@ -61,9 +61,9 @@ const all = (n: number): string => {
 };
 
 describe("the Gibbs-reactor approach lesson", () => {
-  it("has six steps, numbered without a gap, in the commissioned order", () => {
-    expect(APPROACH_STEPS).toHaveLength(6);
-    expect(APPROACH_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5, 6]);
+  it("has eight steps, numbered without a gap, in the commissioned order", () => {
+    expect(APPROACH_STEPS).toHaveLength(8);
+    expect(APPROACH_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
   it("opens on a reactor that declares NO reactions, and names the trap", () => {
@@ -155,6 +155,31 @@ describe("the Gibbs-reactor approach lesson", () => {
       if (s.formula)
         expect(s.where?.length, `step ${s.n} has a formula and no glosses`)
           .toBeGreaterThan(0);
+  });
+});
+
+describe("the two steps commissioned 2026-10-02 (DEV.md C29)", () => {
+  it("says N Gibbs beds in series are ONE Gibbs reactor, with the measurement", () => {
+    const s = all(7);
+    expect(s).toContain("Three Gibbs beds in series are ONE Gibbs reactor");
+    expect(s).toContain("no volume and no path");
+    expect(s).toContain("0.191745443741");
+    expect(s).toContain("0.191745443739");
+    expect(s).toContain("ammoniaStaged04_kinetic");
+    const f = prose(step(7).formula!);
+    expect(f).toContain(String.raw`A\,n_k &= A\,n_\mathrm{feed} = b`);
+    expect(f).toContain(String.raw`n_\mathrm{eq}\big(T_N + \Delta T`);
+  });
+
+  it("gives each published approach WITH its source, and none without one", () => {
+    const s = all(8);
+    expect(s).toContain("US 5,352,428");
+    expect(s).toContain("US 11,591,215 B2");
+    expect(s).toContain("US 3,666,682");
+    expect(s).toContain("preferably 1 C. to 10 C.");
+    expect(s).toContain("most preferably between 5 and 20");
+    expect(s).toContain("a 50 F. approach to the apparent equilibrium");
+    expect(s).toContain("METHANOL SYNTHESIS: no value is given here");
   });
 });
 
