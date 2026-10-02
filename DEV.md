@@ -1894,6 +1894,8 @@ accepts today, and that is a policy call.
      flow reactor; (2) the approach values practice actually uses, per
      process, each from a source read online and cited -- never a number
      without one.  Variables in mathematical form (the standing rule).
+     DONE 2026-10-02 in `439200dbb` (steps 7 and 8; no methanol value,
+     because no readable source was found).
 
 **C28. THE TIME-INTEGRATED CASES ADOPT THE RATIFIED STATE LAYOUT (#186)
      (asked 2026-09-30, Vitor, on seeing unsteady03 in the browser: "Nao
