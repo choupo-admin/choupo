@@ -6,11 +6,9 @@
 /*---------------------------------------------------------------------------*\
   GREEN AMMONIA, 1200 t/day -- the base case of the PEQ 2026-27 project base
   data, v2: hydrogen from electrolysis at 30 bar, nitrogen from an on-site
-  cryogenic ASU at 8 bar (99.99 % N2, 100 ppm Ar), a 150 bar synthesis loop
-  with an equilibrium converter, refrigerated separation, and a
-  water-scrubbed purge.  ONE LEVEL, no sectors: about twenty units, all on one
-  canvas, because the loop is what a group has to understand and a sector
-  boundary would cut it in half.
+  ASU at 8 bar (99.99 % N2, 100 ppm Ar), a 150 bar synthesis loop with an
+  equilibrium converter, and refrigerated separation.  One level, seventeen
+  units: the loop is what a group has to understand.
 
   N2Feed -[N2Boost]-[N2Cooler]-+
                                +-[MakeupMix]-[MakeupComp1]-[Intercooler]-[MakeupComp2]-[Aftercooler]-+
@@ -22,60 +20,45 @@
              |                         v                                          |              [FEHE] cold side
              |   CooledEffluent <---[FEHE] hot side                                |                  |
              |        |                                                           |    PreheatedFeed  v
-             |   [WaterCooler]<-Cw                                    [Converter] 460 C, 5 K approach
+             |   [WaterCooler]  40 C                                    [Converter] 460 C, 5 K approach
              |        |
-             |   [Chiller]  -20 C (refrigeration)
+             |   [Chiller]  -20 C
              |        |
              |   [Separator]  140 bar --- RawLiquid -[LetdownHP]-[StorageFlash]- ProductNH3 (-35 C, 1 atm)
              |        |                                 |              |
-             |   UnreactedGas                      LetdownGas      FlashGas (to the refrigeration unit)
-             |        |
-             +--[PurgeSplit]--Purge-[PurgeValve]-[PurgeHeater]-[Scrubber]<-WashWater
-                                                                 |      |
-                                                          ScrubbedGas  AqueousNH3
+             +--[PurgeSplit]-- Purge               LetdownGas      FlashGas
 
   WHERE EACH NUMBER COMES FROM.  Feeds, loop pressure, the 380 C converter
-  inlet and the -20 C separation are the base data (sections 2.3-2.5).  The rest are DECLARED here and are the groups' to
-  change:
+  inlet and the -20 C separation are the base data (sections 2.3-2.5).  The
+  rest are DECLARED here and are the groups' to change:
     * compressors are specified by SHAFT POWER, the only way Choupo's
       compressor is specified; each power was chosen so that its discharge
       lands on the pressure the base data give (30, 67 and 150 bar for the
       make-up, 150 bar for the recycle).  Change a flow and the pressure moves:
       read it, and re-tune the power.
     * the loop pressure drop is LUMPED at the separator (declared at 140 bar,
-      i.e. the base data's "recycle compressor dp ~ 10 bar").  Every other unit
-      holds its pressure.
-    * the converter is ONE gibbsReactor at its OUTLET temperature, 460 C,
-      5 K short of equilibrium (see the comment on the unit).  The outlet
-      temperature is a design choice the base data leave open; the base data's
-      three intercooled beds are how a real converter reaches it, and their
-      number and size need the kinetics (task 2).  The reactor's duty is the
-      reaction heat the intercoolers remove as medium-pressure steam; the
-      steam side is not modelled.
+      i.e. the base data's "recycle compressor dp ~ 10 bar").
+    * the converter is ONE Gibbs reactor at its OUTLET temperature, 460 C,
+      5 K short of equilibrium (see the comment on the unit).  Its duty is
+      the reaction heat the intercoolers remove as steam.
+    * every cooler is a phaseChanger with a declared outlet temperature: its
+      duty is the heat to remove, and which utility removes it is the group's.
     * the purge fraction gives the base data's ~12 kmol/h purge (stream 8).
-      The argon at the converter inlet then sits near 0.2 %, not the base
-      data's 1 %: most of the argon leaves DISSOLVED in the liquid, through
-      the let-down and storage flashes (task 3 starts there).
 
   WHAT IS NOT IN THIS CASE, and is the groups' work (base data, section 2.8):
-    * the < 100 ppm H2O + O2 of the hydrogen.  The feed here is pure H2.  Both
-      are catalyst poisons: a dryer/deoxo on the make-up, or injecting the
-      make-up upstream of the separator so the liquid ammonia washes it, is a
-      design decision, not a default.
-    * the cold gas/gas exchanger between the separator vapour and the effluent
-      (the base data's ~9 MW): the Chiller here takes the whole cooling from
-      the water cooler down to -20 C, so its duty is an UPPER bound on the
-      refrigeration.
-    * the refrigeration cycle itself (the Chiller's duty is a heat to remove,
-      not an electrical load), the steam system, the start-up heater, and the
-      beds themselves: their number, inlet temperatures and catalyst volumes
-      need a rate law (tutorials/plant/ammoniaStaged04_kinetic).
+  the converter's beds (number, inlet temperatures, catalyst volume -- they
+  need a rate law, tutorials/plant/ammoniaStaged04_kinetic); the H2O + O2 of
+  the hydrogen (the feed here is pure H2); the cold gas/gas exchanger before
+  the chiller (so the chiller duty is an upper bound); the purge scrubber and
+  the let-down gas recovery; the cooling water, the refrigeration cycle and
+  the steam system; sizing and economics.
 
   WHAT THE GROUPS SHOULD NOTICE.  The base data's 18 % per-pass conversion
-  (~12 % NH3 out) is a KINETIC figure: at 460 C the equilibrium allows much
-  more, so this converter converts more per pass and the recycle is about
-  half the base data's.  Raising the outlet temperature towards the 520 C
-  limit brings the two together -- try it.
+  (~12 % NH3 out) is a KINETIC figure: at 460 C the equilibrium allows more,
+  so this converter converts more per pass and the recycle is about half the
+  base data's.  The loop settles at H2/N2 ~ 3.6, not 3, because what leaves
+  dissolved in the liquid is nitrogen-rich; and most of the argon leaves
+  dissolved in the liquid, not through the purge.
 
   TOPOLOGY ONLY.  Stream state lives in 0/, one file per stream.
 \*---------------------------------------------------------------------------*/
@@ -131,54 +114,17 @@ units
       } }
 
     //  ---- condensation and separation (step 4) ----
-    { name WaterCooler;  type heatExchanger; inputs ( CooledEffluent  Cw );
-      outputs ( WaterCooledEffluent  CwOut );
-      operation { area 1500 m2;  U 700 W/m2/K;  flow counter; } }
+    { name WaterCooler;  type phaseChanger;  in CooledEffluent;  outputs ( WaterCooledEffluent );
+      operation { outletT 313.15 K; } }                 // cooling water, 40 C
     { name Chiller;      type phaseChanger;  in WaterCooledEffluent;  outputs ( ChilledEffluent );
       operation { outletT 253.15 K; } }                 // -20 C
     { name Separator;    type isothermalFlash;  in ChilledEffluent;
       outputs ( RawLiquid  UnreactedGas );
       operation { T 253.15 K;  P 140 bar; } }
 
-    //  ---- recycle and purge (steps 5-6) ----
+    //  ---- recycle and purge (step 5) ----
     { name PurgeSplit;   type splitter;      in UnreactedGas;   outputs ( Purge  Recycle );
       operation { fractions ( 0.00085  0.99915 ); } }
-    { name PurgeValve;   type valve;         in Purge;          outputs ( PurgeLP );
-      operation { P 30 bar; } }
-    { name PurgeHeater;  type phaseChanger;  in PurgeLP;        outputs ( PurgeWarm );
-      operation { outletT 298.15 K; } }
-    { name Scrubber;     type absorber;      inputs ( PurgeWarm  WashWater );
-      outputs ( ScrubbedGas  AqueousNH3 );
-      operation { stages 6; }
-      //  The scrubber's OWN thermodynamic world: water is the solvent here,
-      //  ammonia the solute.  Henry is a convention for SPARINGLY soluble
-      //  solutes, so this is defensible only while the rich liquid stays
-      //  dilute (a few % m/m) -- which is what the wash-water rate is for.
-      thermo
-      {
-          equilibrium
-          {
-              formulation diluteSolution;
-              liquid
-              {
-                  solvent { component water;  standardState pureLiquid; }
-                  solutes
-                  {
-                      components    ( NH3 N2 H2 Ar );
-                      standardState infiniteDilution;
-                      solutionModel henryDilute;
-                      binaryParameters
-                      {
-                          NH3-water { source "data/standards/parameters/Henry/NH3-water.dat"; }
-                          N2-water  { source "data/standards/parameters/Henry/N2-water.dat"; }
-                          H2-water  { source "data/standards/parameters/Henry/H2-water.dat"; }
-                          Ar-water  { source "data/standards/parameters/Henry/Ar-water.dat"; }
-                      }
-                  }
-              }
-              vapour { fugacityModel SRK; }
-          }
-      } }
 
     //  ---- finishing (step 7): let-down in two stages to storage ----
     { name LetdownHP;    type isothermalFlash;  in RawLiquid;
@@ -195,17 +141,6 @@ units
     //  point, where the flash only releases the dissolved H2, N2 and Ar.  A
     //  real let-down is an ADIABATIC flash whose ammonia vapour returns to
     //  the refrigeration unit -- part of task 5.
-);
-
-utilities
-(
-    {
-        name     CW_LOOP;
-        service  coolingWater;
-        supply   Cw;
-        return   CwOut;
-        note     "loop cooling water: the first cut of the effluent's cooling";
-    }
 );
 
 variables

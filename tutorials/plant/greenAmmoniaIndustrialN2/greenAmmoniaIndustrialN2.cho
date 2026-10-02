@@ -2,74 +2,97 @@
   "choupoLayout": 1,
   "nodes": {
     "stream:H2Feed": {
-      "x": 80,
+      "x": 0,
       "y": 40
     },
     "stream:N2Feed": {
-      "x": 80,
-      "y": 170
+      "x": 0,
+      "y": 200
     },
-    "stream:CwA": {
-      "x": 80,
-      "y": 300
+    "unit:N2Boost": {
+      "x": 170,
+      "y": 200
     },
-    "stream:Chw": {
-      "x": 80,
-      "y": 430
+    "unit:N2Cooler": {
+      "x": 340,
+      "y": 200
     },
-    "stream:Cw": {
-      "x": 80,
-      "y": 560
+    "unit:MakeupMix": {
+      "x": 510,
+      "y": 120
     },
-    "unit:PURIFICATION": {
-      "x": 566.859330348226,
-      "y": 114.40853857092318
+    "unit:MakeupComp1": {
+      "x": 680,
+      "y": 120
     },
-    "unit:LOOP": {
-      "x": 735.7924180744683,
-      "y": 403.2856828822688
+    "unit:Intercooler": {
+      "x": 850,
+      "y": 120
     },
-    "unit:PRODUCT": {
-      "x": 1100,
-      "y": 300
+    "unit:MakeupComp2": {
+      "x": 1020,
+      "y": 120
     },
-    "stream:ProductNH3": {
-      "x": 1440,
-      "y": 625
+    "unit:Aftercooler": {
+      "x": 1190,
+      "y": 120
     },
-    "stream:LetdownGas": {
-      "x": 1440,
-      "y": 755
+    "unit:LoopMix": {
+      "x": 1360,
+      "y": 320
+    },
+    "unit:RecycleComp": {
+      "x": 1000,
+      "y": 320
+    },
+    "unit:FEHE": {
+      "x": 1360,
+      "y": 500
+    },
+    "unit:Converter": {
+      "x": 1620,
+      "y": 500
+    },
+    "unit:WaterCooler": {
+      "x": 1120,
+      "y": 680
+    },
+    "unit:Chiller": {
+      "x": 880,
+      "y": 680
+    },
+    "unit:Separator": {
+      "x": 640,
+      "y": 680
+    },
+    "unit:PurgeSplit": {
+      "x": 640,
+      "y": 420
     },
     "stream:Purge": {
-      "x": 1440,
-      "y": 365
+      "x": 400,
+      "y": 420
     },
-    "stream:CwOut": {
-      "x": 1440,
-      "y": 495
+    "unit:LetdownHP": {
+      "x": 640,
+      "y": 860
     },
-    "stream:CwAOut": {
-      "x": 968.1769708682,
-      "y": -149.6686663374938
+    "unit:StorageFlash": {
+      "x": 880,
+      "y": 860
     },
-    "stream:ChwOut": {
-      "x": 1288.0569906185729,
-      "y": -63.652169053170056
+    "stream:ProductNH3": {
+      "x": 1120,
+      "y": 860
     },
-    "stream:KoWater": {
-      "x": 1297.3868245279587,
-      "y": 66.34783094682994
+    "stream:LetdownGas": {
+      "x": 640,
+      "y": 1020
     },
-    "stream:RegenGas": {
-      "x": 1102.793145846482,
-      "y": 219.00599901248137
+    "stream:FlashGas": {
+      "x": 880,
+      "y": 1020
     }
-  },
-  "viewport": {
-    "x": -166.14913599227725,
-    "y": 232.81598484962208,
-    "zoom": 0.750281309183645
   },
   "edges": {},
   "handles": {}

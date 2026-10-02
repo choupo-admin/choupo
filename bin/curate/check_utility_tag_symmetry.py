@@ -40,7 +40,8 @@ WHAT THIS GATE CHECKS.
       branches record the ignored names.  A SOURCE arm because no output can
       distinguish "the rule is there" from "no case exercised it today".
 
-  (b) THE ANNOUNCEMENT FIRES.  A live case with a half-tagged circuit prints
+  (b) THE ANNOUNCEMENT FIRES.  A half-tagged circuit (a fixture the gate
+      builds; no shipped case reaches the path since 2026-10-01) prints
       `[utility]` naming the unit and the stream.  Silence here is the whole
       defect: the engine acted on the author's declaration in a way the author
       did not ask for.
@@ -74,8 +75,10 @@ NOT CHECKED, and said plainly:
     That is a case-authoring decision, not the engine's, and the engine now
     says so on every run instead of deciding in silence.
 """
+import os
 import re
 import subprocess
+import tempfile
 import sys
 from pathlib import Path
 
@@ -83,23 +86,58 @@ ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 MATH = ROOT / "src/reporting/BalanceMath.H"
 
-#  (b),(c): the ONLY shipped case that reaches this path, and picking it was
-#  not a preference.  MEASURED 2026-09-09 over all ten cases that tag a
-#  utility stream: this one announces; utility01 and utility02 REFUSE their
+#  (b),(c): a FIXTURE this gate builds, because no shipped case reaches the
+#  path any more.  MEASURED 2026-09-09 over all ten cases that tag a utility
+#  stream: only greenAmmoniaIndustrialN2 announced; utility01-03 REFUSE their
 #  energy balance outright (a component with no enthalpy datum), so the
-#  announcement site is never reached; and the other seven never present the
-#  tagged stream to a unit's energy balance at all.  The first draft of this
-#  gate used utility03 and failed on correct code for exactly that reason --
-#  A WITNESS THAT CANNOT REACH THE CODE PROVES NOTHING ABOUT IT.
-POSITIVE = "tutorials/plant/greenAmmoniaIndustrialN2"
+#  announcement site is never reached, and the other cases never present the
+#  tagged stream to a unit's energy balance at all -- A WITNESS THAT CANNOT
+#  REACH THE CODE PROVES NOTHING ABOUT IT.  On 2026-10-01 that case lost its
+#  cooling-water exchanger (its coolers declare an outlet temperature; which
+#  utility serves them is the student's), and the remeasurement found no
+#  other shipped witness, so the circuit is built here: one exchanger, a hot
+#  N2 stream, a cooling-water supply tagged `category coolingWater;` and its
+#  return untagged -- the half-tagged shape the rule is about.
+FIXTURE = {
+    "fixture.cho": "",
+    "system/controlDict":
+        'application choupoSolve;\n'
+        'description "check_utility_tag_symmetry fixture: a half-tagged '
+        'cooling-water circuit";\nverbosity 1;\n',
+    "system/flowsheetDict":
+        "units\n(\n    { name Cooler; type heatExchanger; inputs ( Hot  Cw );"
+        " outputs ( HotOut  CwOut );\n      operation { area 50 m2;  U 500 "
+        "W/m2/K;  flow counter; } }\n);\n",
+    "constant/thermoPhysPropDict":
+        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "components ( N2 water );\nequilibrium { formulation gammaPhi; "
+        "liquid { activityModel ideal; } vapour { fugacityModel idealGas; } }\n",
+    "0/Hot":    "componentMolarFlows { N2 100 kmol/h; }\nT 450 K; P 5 bar; phase gas;\n",
+    "0/HotOut": "componentMolarFlows { N2 100 kmol/h; }\nT 450 K; P 5 bar; phase gas;\n",
+    "0/Cw":     "componentMolarFlows { water 1000 kmol/h; }\nT 298.15 K; P 3 bar;"
+                " phase liquid;\ncategory coolingWater;\n",
+    "0/CwOut":  "componentMolarFlows { water 1000 kmol/h; }\nT 298.15 K; P 3 bar;"
+                " phase liquid;\n",
+}
+POSITIVE = "half-tagged cooling-water fixture"
 #  (d): a case with no categorised stream anywhere.
 NEGATIVE = "tutorials/steady/flash/flash01_benzene_toluene"
 
 
 def run(case):
-    p = subprocess.run([str(SOLVE), str(ROOT / case)],
-                       capture_output=True, text=True, timeout=600)
+    p = subprocess.run([str(SOLVE), str(case)],
+                       capture_output=True, text=True, timeout=600,
+                       env={**os.environ, "CHOUPO_HOME": str(ROOT)})
     return p.returncode, p.stdout + p.stderr
+
+
+def build_fixture(where: Path) -> Path:
+    case = where / "fixture"
+    for rel, text in FIXTURE.items():
+        f = case / rel
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(text)
+    return case
 
 
 def main() -> int:
@@ -128,7 +166,9 @@ def main() -> int:
                         "would be filed as a duty")
 
     #  (b),(c) the announcement and the cancellation.
-    rc, out = run(POSITIVE)
+    tmp = tempfile.TemporaryDirectory(prefix="utilityTagFixture_")
+    fixture = build_fixture(Path(tmp.name))
+    rc, out = run(fixture)
     if rc != 0:
         fail.append(f"{POSITIVE} did not run (exit {rc}) -- this gate's "
                     "witness is broken, which is not evidence about the rule")
@@ -157,14 +197,14 @@ def main() -> int:
                                 f"form of silence -- got: {one[:160]}")
 
         #  (c) the cancellation, on the ANNOUNCED units only.
-        csv = ROOT / POSITIVE / "reports/balances/energyBalance_byUnit.csv"
+        csv = fixture / "reports/balances/energyBalance_byUnit.csv"
         named = set()
         for l in lines:
             m = re.search(r"unit '([^']+)'", l)
             if m:
                 named.add(m.group(1))
         if not csv.is_file():
-            fail.append(f"{csv.relative_to(ROOT)} was not written, so this "
+            fail.append(f"{csv} was not written, so this "
                         "gate cannot check the cancellation it claims to")
         elif named:
             seen = set()
@@ -204,7 +244,7 @@ def main() -> int:
                             "the report disagree about which units exist")
 
     #  (d) the negative.
-    rc, out = run(NEGATIVE)
+    rc, out = run(ROOT / NEGATIVE)
     if rc != 0:
         fail.append(f"{NEGATIVE} did not run (exit {rc})")
     elif "[utility]" in out:
@@ -223,15 +263,15 @@ def main() -> int:
           "half-declared one has its tag ignored (the medium counted as "
           "material, which nets its own formation datum exactly) and the run "
           "ANNOUNCES it by unit and stream with the remedy.  Verified on the "
-          "source rule, on a live case that has such a circuit, on that "
-          "case's own per-unit ledger -- on the unit the announcement NAMES, "
+          "source rule, on a FIXTURE this gate builds with such a circuit, on "
+          "that fixture's own per-unit ledger -- on the unit the announcement NAMES, "
           "|dH| is under 1 % of the enthalpy flowing through it, i.e. the "
           "medium's datum cancels -- and on a case with no categorised "
-          "stream, which stays silent.  SCOPE, MEASURED: ten "
-          "corpus cases tag a utility stream and exactly ONE reaches this "
-          "path -- two refuse their energy balance for a missing enthalpy "
-          "datum and seven never hand the tagged stream to a unit's balance, "
-          "so this gate speaks for one case and says so.  NOT CHECKED: the "
+          "stream, which stays silent.  SCOPE, MEASURED 2026-10-02: nine "
+          "corpus cases tag a utility stream and NONE reaches this path -- "
+          "three refuse their energy balance for a missing enthalpy datum "
+          "and six never hand the tagged stream to a unit's balance -- so "
+          "the rule is witnessed on the fixture alone, and says so.  NOT CHECKED: the "
           "SYMMETRIC path -- no case in the corpus tags both ends of a "
           "circuit, so nothing here witnesses that a fully declared circuit "
           "reports the right duty.")

@@ -21,15 +21,12 @@
   dissolved in the product instead of accumulating in the loop.  The pair was
   fitted from the IUPAC-NIST Solubility Data Series Vol. 4 -- see the header
   of constant/parameters/Henry/Ar-NH3.dat and the dossier in curation/Ar-NH3/.
-  WATER is a component because the purge scrubber washes the ammonia into it
-  and the loop is cooled with it; the scrubber computes in its own
-  water-solvent world (the `thermo {}` block on that unit).
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 
-components       ( N2  H2  NH3  Ar  water );
+components       ( N2  H2  NH3  Ar );
 
 equilibrium
 {
