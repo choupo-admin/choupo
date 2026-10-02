@@ -10,8 +10,14 @@ source /path/to/Choupo/etc/bashrc
 runCase -f .
 ```
 
-Seventeen units on one canvas, no sectors. Every declared number and where it
-comes from is in the header of [`system/flowsheetDict`](system/flowsheetDict).
+Seventeen units, no sectors, each in its **own folder** (`Converter/`,
+`Separator/`, …) with its `system/flowsheetDict` and its `.cho` marker. The
+plant's [`system/flowsheetDict`](system/flowsheetDict) holds the topology only —
+which folders exist and the pipes between them — and its header says where
+every declared number comes from. Because each unit is a folder, a
+double-click on it in the GUI opens it as a case of its own, in its own tab,
+fed with the plant's converged streams: change its operation, sweep it, study
+it alone.
 
 ## The process
 

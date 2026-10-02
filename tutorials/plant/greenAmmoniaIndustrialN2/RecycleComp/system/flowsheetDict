@@ -1,0 +1,9 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  Recycle compressor, 140 -> 150 bar (the loop pressure drop is lumped at
+//  the separator).
+
+type      compressor;
+operation { W_shaft 850 kW;  eta 0.75; }
+boundary  { inlets ( Feed );  outlets ( Out ); }

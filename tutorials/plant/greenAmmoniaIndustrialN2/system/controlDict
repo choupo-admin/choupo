@@ -14,7 +14,7 @@ application  choupoSolve;
 //  (a witness) -- they are a plant, and the base case a design-project group
 //  starts from.
 tier         showcase;
-description  "Green ammonia, 1200 t/day: the base case of the PEQ 2026-27 project base data (v2). Electrolytic H2 at 30 bar and ASU nitrogen (99.99 % N2, 100 ppm Ar) at 8 bar; nitrogen booster and two-stage intercooled make-up compression to 150 bar; a synthesis loop with a feed/effluent exchanger, one Gibbs reactor at the converter outlet temperature 5 K short of equilibrium, cooling to 40 C and -20 C and separation at 140 bar; purge; two-stage let-down to storage at 1 atm. One level, seventeen units. SRK vapour; H2, N2 and Ar dissolved in liquid ammonia through measured Henry constants.";
+description  "Green ammonia, 1200 t/day: the base case of the PEQ 2026-27 project base data (v2). Electrolytic H2 at 30 bar and ASU nitrogen (99.99 % N2, 100 ppm Ar) at 8 bar; nitrogen booster and two-stage intercooled make-up compression to 150 bar; a synthesis loop with a feed/effluent exchanger, one Gibbs reactor at the converter outlet temperature 5 K short of equilibrium, cooling to 40 C and -20 C and separation at 140 bar; purge; two-stage let-down to storage at 1 atm. Seventeen units, no sectors, each in its own folder. SRK vapour; H2, N2 and Ar dissolved in liquid ammonia through measured Henry constants.";
 verbosity    3;
 
 reports

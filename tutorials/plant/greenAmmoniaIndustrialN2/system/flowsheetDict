@@ -7,8 +7,11 @@
   GREEN AMMONIA, 1200 t/day -- the base case of the PEQ 2026-27 project base
   data, v2: hydrogen from electrolysis at 30 bar, nitrogen from an on-site
   ASU at 8 bar (99.99 % N2, 100 ppm Ar), a 150 bar synthesis loop with an
-  equilibrium converter, and refrigerated separation.  One level, seventeen
-  units: the loop is what a group has to understand.
+  equilibrium converter, and refrigerated separation.  Seventeen units, each
+  in its OWN folder (<Unit>/system/flowsheetDict) so any one of them opens
+  standalone in the GUI -- a tab of its own, its own What-if -- and no
+  sectors: the loop is what a group has to understand.  This file holds the
+  plant's topology only: which folders exist, and the pipes between them.
 
   N2Feed -[N2Boost]-[N2Cooler]-+
                                +-[MakeupMix]-[MakeupComp1]-[Intercooler]-[MakeupComp2]-[Aftercooler]-+
@@ -63,85 +66,60 @@
   TOPOLOGY ONLY.  Stream state lives in 0/, one file per stream.
 \*---------------------------------------------------------------------------*/
 
-units
+sectors
 (
-    //  ---- nitrogen and make-up compression (base data 2.5, steps 1-2) ----
-    { name N2Boost;      type compressor;    in N2Feed;         outputs ( N2Compressed );
-      operation { W_shaft 2110 kW;  eta 0.78; } }
-    { name N2Cooler;     type phaseChanger;  in N2Compressed;   outputs ( N2Cooled );
-      operation { outletT 313.15 K; } }
-    { name MakeupMix;    type mixer;         inputs ( H2Feed  N2Cooled );  outputs ( Makeup30 ); }
-    { name MakeupComp1;  type compressor;    in Makeup30;       outputs ( Makeup67 );
-      operation { W_shaft 5200 kW;  eta 0.75; } }
-    { name Intercooler;  type phaseChanger;  in Makeup67;       outputs ( Makeup67Cool );
-      operation { outletT 313.15 K; } }
-    { name MakeupComp2;  type compressor;    in Makeup67Cool;   outputs ( Makeup150 );
-      operation { W_shaft 5510 kW;  eta 0.75; } }
-    { name Aftercooler;  type phaseChanger;  in Makeup150;      outputs ( Makeup );
-      operation { outletT 313.15 K; } }
-
-    //  ---- the synthesis loop (step 3) ----
-    { name RecycleComp;  type compressor;    in Recycle;        outputs ( CompRecycle );
-      operation { W_shaft 850 kW;  eta 0.75; } }
-    { name LoopMix;      type mixer;         inputs ( Makeup  CompRecycle );  outputs ( Mixed ); }
-    { name FEHE;         type heatExchanger; inputs ( HotEffluent  Mixed );
-      outputs ( CooledEffluent  PreheatedFeed );
-      operation { area 2000 m2;  U 550 W/m2/K;  flow counter; } }
-    //  THE CONVERTER IS ONE EQUILIBRIUM REACTOR -- the first-pass practice.
-    //  A Gibbs reactor computes only the OUTLET: the equilibrium of the atoms
-    //  that enter, at the declared temperature and pressure.  It has no
-    //  volume and no path, so three Gibbs beds in series with coolers between
-    //  them give exactly the outlet of ONE Gibbs reactor at the last bed's
-    //  outlet temperature.  So: one reactor, at the converter OUTLET
-    //  temperature, 5 K short of equilibrium; its duty is the reaction heat
-    //  the intercoolers must remove (steam).  How many beds, and how big, is
-    //  a question for a plug-flow reactor with a rate law
-    //  (tutorials/plant/ammoniaStaged04_kinetic) -- task 2.
-    //
-    //  temperatureApproach: the ammonia content is the equilibrium one 5 K
-    //  ABOVE the actual temperature (US 5,352,428, Bhakta & Grotz 1994: "the
-    //  ammonia concentration corresponds to the equilibrium concentration at
-    //  a temperature 5 C. above the actual temperature"; design range 0-30 C,
-    //  preferably 1-10 C).  See tutorials/plant/ammoniaStaged03_approach.
-    { name Converter;  type gibbsReactor;  in PreheatedFeed;  outputs ( HotEffluent );
-      operation
-      {
-          T 733.15 K;  P 150 bar;           // converter OUTLET, 460 C -- a design choice
-          temperatureApproach 5;            // K, a magnitude; the engine assigns the sign
-          elements ( N  H  Ar );
-          species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
-                    { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
-      } }
-
-    //  ---- condensation and separation (step 4) ----
-    { name WaterCooler;  type phaseChanger;  in CooledEffluent;  outputs ( WaterCooledEffluent );
-      operation { outletT 313.15 K; } }                 // cooling water, 40 C
-    { name Chiller;      type phaseChanger;  in WaterCooledEffluent;  outputs ( ChilledEffluent );
-      operation { outletT 253.15 K; } }                 // -20 C
-    { name Separator;    type isothermalFlash;  in ChilledEffluent;
-      outputs ( RawLiquid  UnreactedGas );
-      operation { T 253.15 K;  P 140 bar; } }
-
-    //  ---- recycle and purge (step 5) ----
-    { name PurgeSplit;   type splitter;      in UnreactedGas;   outputs ( Purge  Recycle );
-      operation { fractions ( 0.00085  0.99915 ); } }
-
-    //  ---- finishing (step 7): let-down in two stages to storage ----
-    { name LetdownHP;    type isothermalFlash;  in RawLiquid;
-      outputs ( LetdownLiquid  LetdownGas );
-      operation { T 253.15 K;  P 20 bar; } }
-    { name StorageFlash; type isothermalFlash;  in LetdownLiquid;
-      outputs ( ProductNH3  FlashGas );
-      operation { T 238.15 K;  P 1.01325 bar; } }   // -35 C, see below
-    //  WHY -35 C AND NOT -33.4 C.  Liquid ammonia at 1 atm and its own boiling
-    //  point is a PURE component ON its saturation curve: there K_NH3 = 1 and
-    //  every vapour fraction satisfies the flash, so the answer is whatever
-    //  the solver lands on (measured at -34 C: 85 % "vaporised", which is not
-    //  a result).  The store is therefore declared 1.7 K below the boiling
-    //  point, where the flash only releases the dissolved H2, N2 and Ar.  A
-    //  real let-down is an ADIABATIC flash whose ammonia vapour returns to
-    //  the refrigeration unit -- part of task 5.
+    N2Boost
+    N2Cooler
+    MakeupMix
+    MakeupComp1
+    Intercooler
+    MakeupComp2
+    Aftercooler
+    RecycleComp
+    LoopMix
+    FEHE
+    Converter
+    WaterCooler
+    Chiller
+    Separator
+    PurgeSplit
+    LetdownHP
+    StorageFlash
 );
+
+boundary
+{
+    inlets   ( H2Feed  N2Feed );
+    outlets  ( ProductNH3  LetdownGas  FlashGas  Purge );
+}
+
+connections
+{
+    H2Feed              { to MakeupMix/H2; }
+    N2Feed              { to N2Boost/Feed; }
+    N2Compressed        { from N2Boost/Out;  to N2Cooler/Feed; }
+    N2Cooled            { from N2Cooler/Out;  to MakeupMix/N2; }
+    Makeup30            { from MakeupMix/Out;  to MakeupComp1/Feed; }
+    Makeup67            { from MakeupComp1/Out;  to Intercooler/Feed; }
+    Makeup67Cool        { from Intercooler/Out;  to MakeupComp2/Feed; }
+    Makeup150           { from MakeupComp2/Out;  to Aftercooler/Feed; }
+    Makeup              { from Aftercooler/Out;  to LoopMix/Makeup; }
+    Recycle             { from PurgeSplit/Recycle;  to RecycleComp/Feed; }
+    CompRecycle         { from RecycleComp/Out;  to LoopMix/Recycle; }
+    Mixed               { from LoopMix/Out;  to FEHE/Cold; }
+    PreheatedFeed       { from FEHE/ColdOut;  to Converter/Feed; }
+    HotEffluent         { from Converter/Out;  to FEHE/Hot; }
+    CooledEffluent      { from FEHE/HotOut;  to WaterCooler/Feed; }
+    WaterCooledEffluent { from WaterCooler/Out;  to Chiller/Feed; }
+    ChilledEffluent     { from Chiller/Out;  to Separator/Feed; }
+    RawLiquid           { from Separator/Liquid;  to LetdownHP/Feed; }
+    UnreactedGas        { from Separator/Vapour;  to PurgeSplit/Feed; }
+    Purge               { from PurgeSplit/Purge; }
+    LetdownLiquid       { from LetdownHP/Liquid;  to StorageFlash/Feed; }
+    LetdownGas          { from LetdownHP/Vapour; }
+    ProductNH3          { from StorageFlash/Liquid; }
+    FlashGas            { from StorageFlash/Vapour; }
+}
 
 variables
 {

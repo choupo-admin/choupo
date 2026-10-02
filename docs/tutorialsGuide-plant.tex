@@ -562,91 +562,58 @@ SCALE, TOPOLOGY, SEED: read stage C's flowsheetDict; nothing about them moved. T
 \goldmore{16}
 \end{tutgolden}
 
+\subsection{greenAmmoniaIndustrialN2}
+\grouptheory{greenAmmoniaIndustrialN2}
 \clearpage
-\tutentry{greenAmmoniaIndustrialN2}{tutorials/plant/greenAmmoniaIndustrialN2}
-\begin{tutscheme}
-\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (N2Boost) at (0.0,-0.0) {\textbf{N2Boost}\\[-1pt]{\tiny compressor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (N2Cooler) at (2.9,-0.0) {\textbf{N2Cooler}\\[-1pt]{\tiny phaseChanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (MakeupMix) at (5.8,-0.0) {\textbf{MakeupMix}\\[-1pt]{\tiny mixer}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (MakeupComp1) at (8.7,-0.0) {\textbf{MakeupComp1}\\[-1pt]{\tiny compressor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Intercooler) at (11.6,-0.0) {\textbf{Intercooler}\\[-1pt]{\tiny phaseChanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (MakeupComp2) at (14.5,-0.0) {\textbf{MakeupComp2}\\[-1pt]{\tiny compressor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Aftercooler) at (17.4,-0.0) {\textbf{Aftercooler}\\[-1pt]{\tiny phaseChanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (RecycleComp) at (362.5,-0.0) {\textbf{RecycleComp}\\[-1pt]{\tiny compressor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (LoopMix) at (365.4,-0.0) {\textbf{LoopMix}\\[-1pt]{\tiny mixer}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (FEHE) at (368.3,-0.0) {\textbf{FEHE}\\[-1pt]{\tiny heatExchanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Converter) at (371.2,-0.0) {\textbf{Converter}\\[-1pt]{\tiny gibbsReactor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (WaterCooler) at (371.2,-1.7) {\textbf{WaterCooler}\\[-1pt]{\tiny phaseChanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Chiller) at (374.1,-0.0) {\textbf{Chiller}\\[-1pt]{\tiny phaseChanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Separator) at (377.0,-0.0) {\textbf{Separator}\\[-1pt]{\tiny isothermalFlash}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (PurgeSplit) at (379.9,-0.0) {\textbf{PurgeSplit}\\[-1pt]{\tiny splitter}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (LetdownHP) at (379.9,-1.7) {\textbf{LetdownHP}\\[-1pt]{\tiny isothermalFlash}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (StorageFlash) at (382.8,-0.0) {\textbf{StorageFlash}\\[-1pt]{\tiny isothermalFlash}};
-  \draw[->] ($(N2Boost.west)+(-1.05,0.00)$) -- ($(N2Boost.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {N2Feed};
-  \draw[->] (N2Boost) -- (N2Cooler) node[midway, above, font=\tiny] {N2Compressed};
-  \draw[->] ($(MakeupMix.west)+(-1.05,0.00)$) -- ($(MakeupMix.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {H2Feed};
-  \draw[->] (N2Cooler) -- (MakeupMix) node[midway, above, font=\tiny] {N2Cooled};
-  \draw[->] (MakeupMix) -- (MakeupComp1) node[midway, above, font=\tiny] {Makeup30};
-  \draw[->] (MakeupComp1) -- (Intercooler) node[midway, above, font=\tiny] {Makeup67};
-  \draw[->] (Intercooler) -- (MakeupComp2) node[midway, above, font=\tiny] {Makeup67Cool};
-  \draw[->] (MakeupComp2) -- (Aftercooler) node[midway, above, font=\tiny] {Makeup150};
-  \draw[->, dashed] (PurgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (RecycleComp.south) node[midway, below, font=\tiny] {Recycle};
-  \draw[->] (Aftercooler) -- (LoopMix) node[midway, above, font=\tiny] {Makeup};
-  \draw[->] (RecycleComp) -- (LoopMix) node[midway, above, font=\tiny] {CompRecycle};
-  \draw[->, dashed] (Converter.south) .. controls +(0,-1.0) and +(0,-1.0) .. (FEHE.south) node[midway, below, font=\tiny] {HotEffluent};
-  \draw[->] (LoopMix) -- (FEHE) node[midway, above, font=\tiny] {Mixed};
-  \draw[->] (FEHE) -- (Converter) node[midway, above, font=\tiny] {PreheatedFeed};
-  \draw[->] (FEHE) -- (WaterCooler) node[midway, above, font=\tiny] {CooledEffluent};
-  \draw[->] (WaterCooler) -- (Chiller) node[midway, above, font=\tiny] {WaterCooledEffluent};
-  \draw[->] (Chiller) -- (Separator) node[midway, above, font=\tiny] {ChilledEffluent};
-  \draw[->] (Separator) -- (PurgeSplit) node[midway, above, font=\tiny] {UnreactedGas};
-  \draw[->] (Separator) -- (LetdownHP) node[midway, above, font=\tiny] {RawLiquid};
-  \draw[->] (LetdownHP) -- (StorageFlash) node[midway, above, font=\tiny] {LetdownLiquid};
-  \draw[->] ($(PurgeSplit.east)+(0,0.00)$) -- ($(PurgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {Purge};
-  \draw[->] ($(LetdownHP.east)+(0,0.00)$) -- ($(LetdownHP.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {LetdownGas};
-  \draw[->] ($(StorageFlash.east)+(0,-0.17)$) -- ($(StorageFlash.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ProductNH3};
-  \draw[->] ($(StorageFlash.east)+(0,0.17)$) -- ($(StorageFlash.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {FlashGas};
-\end{tikzpicture}
-\end{tutscheme}
-\tutwhat{Green ammonia, 1200 t/day: the base case of the PEQ 2026-27 project base data (v2). Electrolytic H2 at 30 bar and ASU nitrogen (99.99 \% N2, 100 ppm Ar) at 8 bar; nitrogen booster and two-stage intercooled make-up compression to 150 bar; a synthesis loop with a feed/effluent exchanger, one Gibbs reactor at the converter outlet temperature 5 K short of equilibrium, cooling to 40 C and -20 C and separation at 140 bar; purge; two-stage let-down to storage at 1 atm. One level, seventeen units. SRK vapour; H2, N2 and Ar dissolved in liquid ammonia through measured Henry constants.}
-\begin{tutnarrative}
-GREEN AMMONIA, 1200 t/day -- the base case of the PEQ 2026-27 project base data, v2: hydrogen from electrolysis at 30 bar, nitrogen from an on-site ASU at 8 bar (99.99 \% N2, 100 ppm Ar), a 150 bar synthesis loop with an equilibrium converter, and refrigerated separation. One level, seventeen units: the loop is what a group has to understand.
+\tutentry{Aftercooler}{tutorials/plant/greenAmmoniaIndustrialN2/Aftercooler}
 
-N2Feed -[N2Boost]-[N2Cooler]-+ +-[MakeupMix]-[MakeupComp1]-[Intercooler]-[MakeupComp2]-[Aftercooler]-+ H2Feed ----------------------+ | v Recycle -[RecycleComp]-------------------------------------------------------------$\to$[LoopMix] \textasciicircum{} | | +----------- HotEffluent (tear) -----------+ v | v | [FEHE] cold side | CooledEffluent <---[FEHE] hot side | | | | | PreheatedFeed v | [WaterCooler] 40 C [Converter] 460 C, 5 K approach | | | [Chiller] -20 C | | | [Separator] 140 bar --- RawLiquid -[LetdownHP]-[StorageFlash]- ProductNH3 (-35 C, 1 atm) | | | | +--[PurgeSplit]-- Purge LetdownGas FlashGas
+\clearpage
+\tutentry{Chiller}{tutorials/plant/greenAmmoniaIndustrialN2/Chiller}
 
-WHERE EACH NUMBER COMES FROM. Feeds, loop pressure, the 380 C converter inlet and the -20 C separation are the base data (sections 2.3-2.5). The rest are DECLARED here and are the groups' to change: compressors are specified by SHAFT POWER, the only way Choupo's compressor is specified; each power was chosen so that its discharge lands on the pressure the base data give (30, 67 and 150 bar for the make-up, 150 bar for the recycle). Change a flow and the pressure moves: read it, and re-tune the power. the loop pressure drop is LUMPED at the separator (declared at 140 bar, i.e. the base data's "recycle compressor dp \textasciitilde{} 10 bar"). the converter is ONE Gibbs reactor at its OUTLET temperature, 460 C, 5 K short of equilibrium (see the comment on the unit). Its duty is the reaction heat the intercoolers remove as steam. every cooler is a phaseChanger with a declared outlet temperature: its duty is the heat to remove, and which utility removes it is the group's. the purge fraction gives the base data's \textasciitilde{}12 kmol/h purge (stream 8).
+\clearpage
+\tutentry{Converter}{tutorials/plant/greenAmmoniaIndustrialN2/Converter}
 
-WHAT IS NOT IN THIS CASE, and is the groups' work (base data, section 2.8): the converter's beds (number, inlet temperatures, catalyst volume -- they need a rate law, tutorials/plant/ammoniaStaged04\_kinetic); the H2O + O2 of the hydrogen (the feed here is pure H2); the cold gas/gas exchanger before the chiller (so the chiller duty is an upper bound); the purge scrubber and the let-down gas recovery; the cooling water, the refrigeration cycle and the steam system; sizing and economics.
+\clearpage
+\tutentry{FEHE}{tutorials/plant/greenAmmoniaIndustrialN2/FEHE}
 
-WHAT THE GROUPS SHOULD NOTICE. The base data's 18 \% per-pass conversion (\textasciitilde{}12 \% NH3 out) is a KINETIC figure: at 460 C the equilibrium allows more, so this converter converts more per pass and the recycle is about half the base data's. The loop settles at H2/N2 \textasciitilde{} 3.6, not 3, because what leaves dissolved in the liquid is nitrogen-rich; and most of the argon leaves dissolved in the liquid, not through the purge.
+\clearpage
+\tutentry{Intercooler}{tutorials/plant/greenAmmoniaIndustrialN2/Intercooler}
 
-TOPOLOGY ONLY. Stream state lives in 0/, one file per stream.
+\clearpage
+\tutentry{LetdownHP}{tutorials/plant/greenAmmoniaIndustrialN2/LetdownHP}
 
-\end{tutnarrative}
-\tutreadme{The starting point a design-project group opens: the plant of the project base data (v2) --- electrolytic hydrogen at 30 bar, nitrogen from an on-site air separation unit at 8 bar, a 150 bar synthesis loop with an equilibrium converter, and refrigerated separation.}
-\tutreadme{Seventeen units on one canvas, no sectors. Every declared number and where it comes from is in the header of [system/flowsheetDict](system/flowsheetDict).}
-\tutreadme{Two recycle cuts, declared in [system/solverDict](system/solverDict): Recycle (material) and HotEffluent (the converter outlet preheats the converter's own feed).}
-\tutreadme{A Gibbs reactor computes only the outlet: the equilibrium of the atoms that enter, at the declared temperature and pressure. It has no volume and no path, so three Gibbs beds in series with coolers between them give the same outlet as one Gibbs reactor at the last bed's temperature. The first-pass practice is therefore one reactor at the converter outlet temperature with an approach to equilibrium (the definition and its source are in [ammoniaStaged03\_approach](../ammoniaStaged03\_approach)). The number of beds, their inlet temperatures against the catalyst's 520 $^\circ$C limit and their catalyst volumes need a rate law: a plug-flow reactor ([ammoniaStaged04\_kinetic](../ammoniaStaged04\_kinetic)), task 2.}
-\tutreadme{$\ast$ The base data's 18 \% per pass is kinetic. At 460 $^\circ$C the equilibrium allows more, so this converter converts more per pass and the recycle is about half the base data's. Raise the outlet temperature towards 520 $^\circ$C and watch the two meet. $\ast$ The loop is not at H$_2$/N$_2$ = 3. The make-up is 3 : 1 and so is the reaction, but what leaves dissolved in the liquid is nitrogen-rich, so hydrogen accumulates: the converter sees about 3.6. $\ast$ Argon leaves mostly with the liquid, through the let-down and storage flashes, not through the purge. Task 3 (10 to 1000 ppm of argon) starts here.}
-\tutreadme{$\ast$ the converter's beds (number, inlet temperatures, catalyst volume); $\ast$ the < 100 ppm H$_2$O + O$_2$ of the hydrogen (the feed here is pure H$_2$); $\ast$ the cold gas/gas exchanger before the chiller, so the chiller duty is an upper bound; $\ast$ the purge scrubber and the let-down gas recovery; $\ast$ the cooling water, the refrigeration cycle and the steam system: each cooler declares an outlet temperature and its duty is the heat to remove; $\ast$ sizing and economics.}
-\begin{tutgolden}
-\goldrow{stream}{ChilledEffluent}{F}{4.53613998781}
-\goldrow{stream}{ChilledEffluent}{T}{253.15}
-\goldrow{stream}{CompRecycle}{F}{3.71606937133}
-\goldrow{stream}{CompRecycle}{T}{260.599972932}
-\goldrow{stream}{CooledEffluent}{F}{4.53613998781}
-\goldrow{stream}{CooledEffluent}{T}{336.393757736}
-\goldrow{stream}{FlashGas}{F}{0.0111897239824}
-\goldrow{stream}{FlashGas}{T}{238.15}
-\goldrow{stream}{H2Feed}{F}{1.225}
-\goldrow{stream}{H2Feed}{T}{313.15}
-\goldrow{stream}{HotEffluent}{F}{4.5361399889}
-\goldrow{stream}{HotEffluent}{T}{733.15}
-\goldrow{stream}{LetdownGas}{F}{0.00354627608417}
-\goldrow{stream}{LetdownGas}{T}{253.15}
-\goldmore{281}
-\end{tutgolden}
+\clearpage
+\tutentry{LoopMix}{tutorials/plant/greenAmmoniaIndustrialN2/LoopMix}
+
+\clearpage
+\tutentry{MakeupComp1}{tutorials/plant/greenAmmoniaIndustrialN2/MakeupComp1}
+
+\clearpage
+\tutentry{MakeupComp2}{tutorials/plant/greenAmmoniaIndustrialN2/MakeupComp2}
+
+\clearpage
+\tutentry{MakeupMix}{tutorials/plant/greenAmmoniaIndustrialN2/MakeupMix}
+
+\clearpage
+\tutentry{N2Boost}{tutorials/plant/greenAmmoniaIndustrialN2/N2Boost}
+
+\clearpage
+\tutentry{N2Cooler}{tutorials/plant/greenAmmoniaIndustrialN2/N2Cooler}
+
+\clearpage
+\tutentry{PurgeSplit}{tutorials/plant/greenAmmoniaIndustrialN2/PurgeSplit}
+
+\clearpage
+\tutentry{RecycleComp}{tutorials/plant/greenAmmoniaIndustrialN2/RecycleComp}
+
+\clearpage
+\tutentry{Separator}{tutorials/plant/greenAmmoniaIndustrialN2/Separator}
+
+\clearpage
+\tutentry{StorageFlash}{tutorials/plant/greenAmmoniaIndustrialN2/StorageFlash}
+
+\clearpage
+\tutentry{WaterCooler}{tutorials/plant/greenAmmoniaIndustrialN2/WaterCooler}
 
 \clearpage
 \tutentry{hda}{tutorials/plant/hda}

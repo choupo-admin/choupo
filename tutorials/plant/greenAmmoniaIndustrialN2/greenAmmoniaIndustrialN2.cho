@@ -3,95 +3,95 @@
   "nodes": {
     "stream:H2Feed": {
       "x": 0,
-      "y": 40
+      "y": 0
     },
     "stream:N2Feed": {
       "x": 0,
-      "y": 200
+      "y": 260
     },
     "unit:N2Boost": {
-      "x": 170,
-      "y": 200
+      "x": 320,
+      "y": 260
     },
     "unit:N2Cooler": {
-      "x": 340,
-      "y": 200
+      "x": 640,
+      "y": 260
     },
     "unit:MakeupMix": {
-      "x": 510,
-      "y": 120
+      "x": 960,
+      "y": 100
     },
     "unit:MakeupComp1": {
-      "x": 680,
-      "y": 120
+      "x": 1280,
+      "y": 100
     },
     "unit:Intercooler": {
-      "x": 850,
-      "y": 120
+      "x": 1600,
+      "y": 100
     },
     "unit:MakeupComp2": {
-      "x": 1020,
-      "y": 120
+      "x": 1920,
+      "y": 100
     },
     "unit:Aftercooler": {
-      "x": 1190,
-      "y": 120
-    },
-    "unit:LoopMix": {
-      "x": 1360,
-      "y": 320
+      "x": 2240,
+      "y": 100
     },
     "unit:RecycleComp": {
-      "x": 1000,
-      "y": 320
+      "x": 1600,
+      "y": 420
+    },
+    "unit:LoopMix": {
+      "x": 2240,
+      "y": 420
     },
     "unit:FEHE": {
-      "x": 1360,
-      "y": 500
+      "x": 2240,
+      "y": 680
     },
     "unit:Converter": {
-      "x": 1620,
-      "y": 500
+      "x": 2640,
+      "y": 680
     },
     "unit:WaterCooler": {
-      "x": 1120,
-      "y": 680
+      "x": 2240,
+      "y": 940
     },
     "unit:Chiller": {
-      "x": 880,
-      "y": 680
+      "x": 1920,
+      "y": 940
     },
     "unit:Separator": {
-      "x": 640,
-      "y": 680
+      "x": 1600,
+      "y": 940
     },
     "unit:PurgeSplit": {
-      "x": 640,
-      "y": 420
+      "x": 1920,
+      "y": 680
     },
     "stream:Purge": {
-      "x": 400,
-      "y": 420
+      "x": 1920,
+      "y": 1180
     },
     "unit:LetdownHP": {
-      "x": 640,
-      "y": 860
+      "x": 1280,
+      "y": 940
     },
     "unit:StorageFlash": {
-      "x": 880,
-      "y": 860
+      "x": 960,
+      "y": 940
     },
     "stream:ProductNH3": {
-      "x": 1120,
-      "y": 860
+      "x": 640,
+      "y": 940
     },
     "stream:LetdownGas": {
-      "x": 640,
-      "y": 1020
+      "x": 1280,
+      "y": 1180
     },
     "stream:FlashGas": {
-      "x": 880,
-      "y": 1020
+      "x": 960,
+      "y": 1180
     }
   },
   "edges": {},
