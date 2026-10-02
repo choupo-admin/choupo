@@ -53,6 +53,9 @@ import { useRef, useState } from "react";
 import type { XY } from "../state/layout.js";
 import { ModelBoundaryBadge, type BoundaryBadgeData } from "./ModelBoundaryBadge.js";
 
+//  One above the zIndex toGraph.ts gives every tear edge (1000).
+export const TEAR_HANDLE_Z = 1001;
+
 interface TearData {
   center?: XY;
   onCenterChange?: (id: string, xy: XY) => void;
@@ -181,6 +184,13 @@ export function TearEdge({
             position: "absolute",
             transform: `translate(-50%, -50%) translate(${labelX}px, ${busY}px)`,
             pointerEvents: "all",
+            //  ABOVE the tear's own SVG.  toGraph gives a tear edge zIndex
+            //  1000 so the recycle line draws over the units it passes; that
+            //  lifts its 20 px interaction path over this label layer too,
+            //  and the path then took every pointer-down meant for the grab
+            //  strip (measured on the live site, 2026-10-02: the element at
+            //  the strip's centre was `path.react-flow__edge-interaction`).
+            zIndex: TEAR_HANDLE_Z,
             width: busSpan, height: 18,
             display: "flex", alignItems: "center", justifyContent: "center",
             cursor: "ns-resize",
@@ -211,6 +221,7 @@ export function TearEdge({
               position: "absolute",
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelTextY}px)`,
               pointerEvents: "none",
+              zIndex: TEAR_HANDLE_Z,   // the name chip too, or the line runs over it
               padding: labelBgPadding
                 ? `${labelBgPadding[1]}px ${labelBgPadding[0]}px`
                 : "2px 4px",
