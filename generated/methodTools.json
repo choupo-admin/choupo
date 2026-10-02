@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 46,
-  "registryTools": 46,
+  "liveTools": 47,
+  "registryTools": 47,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -223,6 +223,13 @@
       "discipline": "Reaction engineering",
       "teaches": "That a Gibbs reactor declares NO reactions — it minimises G subject to the element balances, which is its power and its trap in one sentence; that it sits early because nobody has the KINETICS yet, not because of the project stage; that the approach to equilibrium evaluates the CHEMISTRY at T + ΔT while enthalpy, Psat and the energy balance stay at the physical T; and THE SIGN — positive is conservative only for an EXOTHERMIC reaction, which is why the author declares a MAGNITUDE and the ENGINE assigns the direction from the reaction's thermicity and announces it: a reformer gets T − ΔT without anyone typing a minus.",
       "href": "/app/?workspace=methods&tool=approach-to-equilibrium"
+    },
+    {
+      "id": "limiting-reactant",
+      "label": "Limiting reactant and feed ratio in a recycle loop",
+      "discipline": "Reaction engineering",
+      "teaches": "That a plant with a recycle has TWO ratios: the fresh-feed ratio, which the steady-state plant balance forces to the stoichiometry plus the losses, and the reactor-inlet ratio, which the loop sets — a fresh-feed error divided by the purge fraction, so one part in ten thousand moves the ammonia converter's H₂/N₂ visibly; that a SELECTIVE loss (gas dissolved in the product) shifts it even with a stoichiometric feed; and that which reactant is limiting is decided by safety, selectivity, cost or equilibrium, in that order, leaving one variable to optimise.",
+      "href": "/app/?workspace=methods&tool=limiting-reactant"
     },
     {
       "id": "equilibrium-landscapes",

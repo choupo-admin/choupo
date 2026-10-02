@@ -68,7 +68,7 @@ export type MethodToolId =
   | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways" | "reactor-ladder" | "route-screening"
-  | "least-squares" | "element-potential";
+  | "least-squares" | "element-potential" | "limiting-reactant";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -722,6 +722,25 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "direction from the reaction's thermicity and announces it: a "
       + "reformer gets T − ΔT without anyone typing a minus.",
     theory: "sec:gibbs-maps",
+  },
+  //  COMMISSIONED 2026-10-02 (DEV.md 4c, C30): which heuristics fix the
+  //  limiting reactant and the molar ratio of a gas-phase reactor, asked by
+  //  the architect "because it introduces many variables".  The page shows
+  //  it introduces fewer than it seems.
+  {
+    id: "limiting-reactant",
+    label: "Limiting reactant and feed ratio in a recycle loop",
+    discipline: "Reaction engineering", kind: "notes", status: "live",
+    teaches: "That a plant with a recycle has TWO ratios: the fresh-feed ratio, "
+      + "which the steady-state plant balance forces to the stoichiometry plus "
+      + "the losses, and the reactor-inlet ratio, which the loop sets — a "
+      + "fresh-feed error divided by the purge fraction, so one part in ten "
+      + "thousand moves the ammonia converter's H₂/N₂ visibly; that a "
+      + "SELECTIVE loss (gas dissolved in the product) shifts it even with a "
+      + "stoichiometric feed; and that which reactant is limiting is decided "
+      + "by safety, selectivity, cost or equilibrium, in that order, leaving "
+      + "one variable to optimise.",
+    theory: "sec:conv-recycle",
   },
   //  COMMISSIONED 2026-09-27, the day after the page above shipped: the
   //  architect saw the Gibbs reactor under an approach for the first time

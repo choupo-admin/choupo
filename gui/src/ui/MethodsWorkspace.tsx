@@ -185,6 +185,9 @@ const VanHeerdenTool = lazy(() =>
 const ApproachToEquilibriumTool = lazy(() =>
   import("./methods/ApproachToEquilibriumTool.js")
     .then((m) => ({ default: m.ApproachToEquilibriumTool })));
+const LimitingReactantTool = lazy(() =>
+  import("./methods/LimitingReactantTool.js")
+    .then((m) => ({ default: m.LimitingReactantTool })));
 const EquilibriumLandscapesTool = lazy(() =>
   import("./methods/EquilibriumLandscapesTool.js")
     .then((m) => ({ default: m.EquilibriumLandscapesTool })));
@@ -450,6 +453,7 @@ export function MethodsWorkspace() {
             : tool === "levenspiel" ? <LevenspielTool />
             : tool === "vanheerden" ? <VanHeerdenTool />
             : tool === "approach-to-equilibrium" ? <ApproachToEquilibriumTool />
+            : tool === "limiting-reactant" ? <LimitingReactantTool />
             : tool === "equilibrium-landscapes" ? <EquilibriumLandscapesTool />
             : tool === "declared-pathways" ? <DeclaredPathwaysTool />
             : tool === "reactor-ladder" ? <ReactorLadderTool />

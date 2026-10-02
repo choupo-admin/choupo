@@ -1879,6 +1879,18 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C30. AN EDUTOOL ON THE LIMITING REACTANT AND THE FEED RATIO IN A RECYCLE
+     LOOP (asked 2026-10-02, Vítor: "Faz o EduTools que recomendaste!  É muito
+     interessante!", after asking which heuristics fix the limiting reactant
+     and the molar ratio in a gas-phase reactor, "porque isso introduz muitas
+     variáveis").**  The page separates the fresh-feed ratio (forced to the
+     stoichiometry plus losses by the steady-state plant balance) from the
+     reactor-inlet ratio (set by the loop), derives the inlet ratio of a
+     purge loop in closed form, lists the heuristics for which reactant to
+     make limiting WITH sources read online, and uses the green-ammonia loop
+     as its measured witness.  DONE 2026-10-02 (registry id
+     `limiting-reactant`).
+
 **C29. THE APPROACH-TO-EQUILIBRIUM EDUTOOL SAYS WHY THREE GIBBS BEDS ARE
      ONE, AND GIVES THE PUBLISHED HEURISTICS FOR THE APPROACH (asked
      2026-10-02, Vítor, after the green-ammonia converter had been built as
