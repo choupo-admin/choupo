@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  reactionEnthalpy01_haber_kirchhoff -- THE REACTION ENTHALPY IS A FUNCTION OF
+  TEMPERATURE.  The ammonia synthesis N2 + 3 H2 -> 2 NH3, every species an
+  ideal gas at the standard pressure, priced by `reactionGibbs` at seven
+  temperatures from 298.15 K (where formation enthalpies are tabulated) to
+  800 K (above an ammonia converter):
+
+      dH°(T) = sum_i nu_i h_i(T),  h_i(T) = dHf_i(298.15 K) + int Cp_i dT
+
+  The "°" fixes the standard state (1 bar, ideal gas); it does not fix the
+  temperature.  At 298.15 K the result is -91.88 kJ per mole of reaction,
+  i.e. -45.94 kJ per mole of NH3; at a converter's 700-800 K it is about
+  -53 kJ per mole of NH3 -- the 25 C value under-states the heat a converter
+  releases by about 14 %.  The witness of the EduTool `reaction-enthalpy`
+  (DEV.md 4c, C31).  The constant/ tree is landscape06's, copied whole: the
+  same formation surface, so the 298.15 K and 700 K rows reproduce that
+  case's own `routes298` and `haber700` Haber-Bosch rows.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name         haberT;
+        type         reactionGibbs;
+        reactions    ( haberBosch );
+        phases       { N2 idealGas; NH3 idealGas; H2 idealGas; }
+        temperatures ( 298.15 400 500 600 700 773.15 800 );   // K
+        output       { file haberT.csv; }
+    }
+);

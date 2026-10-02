@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 47,
-  "registryTools": 47,
+  "liveTools": 48,
+  "registryTools": 48,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -223,6 +223,13 @@
       "discipline": "Reaction engineering",
       "teaches": "That a Gibbs reactor declares NO reactions — it minimises G subject to the element balances, which is its power and its trap in one sentence; that it sits early because nobody has the KINETICS yet, not because of the project stage; that the approach to equilibrium evaluates the CHEMISTRY at T + ΔT while enthalpy, Psat and the energy balance stay at the physical T; and THE SIGN — positive is conservative only for an EXOTHERMIC reaction, which is why the author declares a MAGNITUDE and the ENGINE assigns the direction from the reaction's thermicity and announces it: a reformer gets T − ΔT without anyone typing a minus.",
       "href": "/app/?workspace=methods&tool=approach-to-equilibrium"
+    },
+    {
+      "id": "reaction-enthalpy",
+      "label": "Reaction enthalpy and temperature (Kirchhoff)",
+      "discipline": "Reaction engineering",
+      "teaches": "That the degree sign of a standard reaction enthalpy fixes the standard STATE (1 bar, each species in its reference phase), not the temperature, so there is a standard value at every temperature and the table's is the one at 298.15 K; that Kirchhoff's law moves it by the reaction heat capacity; that for ammonia the engine prices −45.9 kJ per mole of NH₃ at 25 °C and −53.4 at 500 °C, so the 25 °C value under-states a converter's heat by about 14 %; and that an energy balance on the elements datum never needs a reaction enthalpy at all.",
+      "href": "/app/?workspace=methods&tool=reaction-enthalpy"
     },
     {
       "id": "limiting-reactant",

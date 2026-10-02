@@ -1,0 +1,31 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    haberT                 haberBosch_T298K_dG_kJ_mol -32.8135035        1e-4
+diag    haberT                 haberBosch_T298K_dH_kJ_mol -91.88             1e-4
+diag    haberT                 haberBosch_T298K_dS_J_molK -198.11            1e-4
+diag    haberT                 haberBosch_T298K_lnK 13.2368181896      1e-4
+diag    haberT                 haberBosch_T400K_dG_kJ_mol -11.9635351712     1e-4
+diag    haberT                 haberBosch_T400K_dH_kJ_mol -96.1395343725     1e-4
+diag    haberT                 haberBosch_T400K_dS_J_molK -210.439998003     1e-4
+diag    haberT                 haberBosch_T400K_lnK 3.59720637425      1e-4
+diag    haberT                 haberBosch_T500K_dG_kJ_mol 9.51125665348      1e-4
+diag    haberT                 haberBosch_T500K_dH_kJ_mol -99.7619775808     1e-4
+diag    haberT                 haberBosch_T500K_dS_J_molK -218.546468469     1e-4
+diag    haberT                 haberBosch_T500K_lnK -2.2878824743      1e-4
+diag    haberT                 haberBosch_T600K_dG_kJ_mol 31.6629415717      1e-4
+diag    haberT                 haberBosch_T600K_dH_kJ_mol -102.826551039     1e-4
+diag    haberT                 haberBosch_T600K_dS_J_molK -224.149154351     1e-4
+diag    haberT                 haberBosch_T600K_lnK -6.34696091747     1e-4
+diag    haberT                 haberBosch_T700K_dG_kJ_mol 54.2847022924      1e-4
+diag    haberT                 haberBosch_T700K_dH_kJ_mol -105.351066247     1e-4
+diag    haberT                 haberBosch_T700K_dS_J_molK -228.051097914     1e-4
+diag    haberT                 haberBosch_T700K_lnK -9.32706998232     1e-4
+diag    haberT                 haberBosch_T773K_dG_kJ_mol 71.0459944094      1e-4
+diag    haberT                 haberBosch_T773K_dH_kJ_mol -106.877284326     1e-4
+diag    haberT                 haberBosch_T773K_dS_J_molK -230.127761411     1e-4
+diag    haberT                 haberBosch_T773K_lnK -11.0520197428     1e-4
+diag    haberT                 haberBosch_T800K_dG_kJ_mol 77.2335513209      1e-4
+diag    haberT                 haberBosch_T800K_dH_kJ_mol -107.374307706     1e-4
+diag    haberT                 haberBosch_T800K_dS_J_molK -230.759823783     1e-4
+diag    haberT                 haberBosch_T800K_lnK -11.6113263823     1e-4

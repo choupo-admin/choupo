@@ -2441,6 +2441,43 @@ temperatureApproach: 0 here (true equilibrium). Re-run with e.g. `temperatureApp
 \goldrow{diag}{haber\_map}{n\_unconverged}{0}
 \end{tutgolden}
 
+\clearpage
+\tutentry{reactionEnthalpy01\_haber\_kirchhoff}{tutorials/props/gibbs/reactionEnthalpy01\_haber\_kirchhoff}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{haberT}\\[-1pt]{\tiny reactionGibbs}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The reaction enthalpy is a function of temperature: N2 + 3 H2 $\to$ 2 NH3 priced from 25 C to 527 C on the formation surface -- the witness of the reaction-enthalpy EduTool}
+\begin{tutnarrative}
+THE REACTION ENTHALPY IS A FUNCTION OF TEMPERATURE. The ammonia synthesis N2 + 3 H2 $\to$ 2 NH3, every species an ideal gas at the standard pressure, priced by `reactionGibbs` at seven temperatures from 298.15 K (where formation enthalpies are tabulated) to 800 K (above an ammonia converter):
+
+dH$^\circ$(T) = sum\_i nu\_i h\_i(T), h\_i(T) = dHf\_i(298.15 K) + int Cp\_i dT
+
+The "$^\circ$" fixes the standard state (1 bar, ideal gas); it does not fix the temperature. At 298.15 K the result is -91.88 kJ per mole of reaction, i.e. -45.94 kJ per mole of NH3; at a converter's 700-800 K it is about -53 kJ per mole of NH3 -- the 25 C value under-states the heat a converter releases by about 14 \%. The witness of the EduTool `reaction-enthalpy` (DEV.md 4c, C31). The constant/ tree is landscape06's, copied whole: the same formation surface, so the 298.15 K and 700 K rows reproduce that case's own `routes298` and `haber700` Haber-Bosch rows.
+
+\end{tutnarrative}
+\tutreadme{The witness of the EduTool Reaction enthalpy and temperature (reaction-enthalpy). One reactionGibbs operation prices N$_2$ + 3 H$_2$ $\to$ 2 NH$_3$ (ideal gases at 1 bar) at seven temperatures, from 298.15 K to 800 K, on the formation surface of the catalogue records.}
+\tutreadme{The degree sign fixes the standard state (1 bar, each species in its reference phase), not the temperature: tables are printed at 298.15 K by convention. A converter running at 700--800 K releases about 16 \% more heat per mole of ammonia than the 25 $^\circ$C value says.}
+\tutreadme{constant/ is copied whole from [landscape06\_nitrogen\_fixation\_routes](../landscape06\_nitrogen\_fixation\_routes), so the formation surface is the same one; this case reads only N$_2$, H$_2$ and NH$_3$.}
+\begin{tutgolden}
+\goldrow{diag}{haberT}{haberBosch\_T298K\_dG\_kJ\_mol}{-32.8135035}
+\goldrow{diag}{haberT}{haberBosch\_T298K\_dH\_kJ\_mol}{-91.88}
+\goldrow{diag}{haberT}{haberBosch\_T298K\_dS\_J\_molK}{-198.11}
+\goldrow{diag}{haberT}{haberBosch\_T298K\_lnK}{13.2368181896}
+\goldrow{diag}{haberT}{haberBosch\_T400K\_dG\_kJ\_mol}{-11.9635351712}
+\goldrow{diag}{haberT}{haberBosch\_T400K\_dH\_kJ\_mol}{-96.1395343725}
+\goldrow{diag}{haberT}{haberBosch\_T400K\_dS\_J\_molK}{-210.439998003}
+\goldrow{diag}{haberT}{haberBosch\_T400K\_lnK}{3.59720637425}
+\goldrow{diag}{haberT}{haberBosch\_T500K\_dG\_kJ\_mol}{9.51125665348}
+\goldrow{diag}{haberT}{haberBosch\_T500K\_dH\_kJ\_mol}{-99.7619775808}
+\goldrow{diag}{haberT}{haberBosch\_T500K\_dS\_J\_molK}{-218.546468469}
+\goldrow{diag}{haberT}{haberBosch\_T500K\_lnK}{-2.2878824743}
+\goldrow{diag}{haberT}{haberBosch\_T600K\_dG\_kJ\_mol}{31.6629415717}
+\goldrow{diag}{haberT}{haberBosch\_T600K\_dH\_kJ\_mol}{-102.826551039}
+\goldmore{14}
+\end{tutgolden}
+
 \subsection{heat}
 \grouptheory{heat}
 \clearpage

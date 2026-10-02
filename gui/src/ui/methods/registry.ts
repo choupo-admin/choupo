@@ -68,7 +68,8 @@ export type MethodToolId =
   | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways" | "reactor-ladder" | "route-screening"
-  | "least-squares" | "element-potential" | "limiting-reactant";
+  | "least-squares" | "element-potential" | "limiting-reactant"
+  | "reaction-enthalpy";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -722,6 +723,23 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "direction from the reaction's thermicity and announces it: a "
       + "reformer gets T − ΔT without anyone typing a minus.",
     theory: "sec:gibbs-maps",
+  },
+  //  COMMISSIONED 2026-10-02 (DEV.md 4c, C31): the tabulated reaction
+  //  enthalpy is a 25 C number and no reactor runs there -- "isso é
+  //  realmente importante".
+  {
+    id: "reaction-enthalpy",
+    label: "Reaction enthalpy and temperature (Kirchhoff)",
+    discipline: "Reaction engineering", kind: "notes", status: "live",
+    teaches: "That the degree sign of a standard reaction enthalpy fixes the "
+      + "standard STATE (1 bar, each species in its reference phase), not the "
+      + "temperature, so there is a standard value at every temperature and "
+      + "the table's is the one at 298.15 K; that Kirchhoff's law moves it by "
+      + "the reaction heat capacity; that for ammonia the engine prices −45.9 "
+      + "kJ per mole of NH₃ at 25 °C and −53.4 at 500 °C, so the 25 °C value "
+      + "under-states a converter's heat by about 14 %; and that an energy "
+      + "balance on the elements datum never needs a reaction enthalpy at all.",
+    theory: "sec:elements-reference",
   },
   //  COMMISSIONED 2026-10-02 (DEV.md 4c, C30): which heuristics fix the
   //  limiting reactant and the molar ratio of a gas-phase reactor, asked by

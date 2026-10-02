@@ -1879,6 +1879,19 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C31. AN EDUTOOL ON THE REACTION ENTHALPY AND TEMPERATURE (asked
+     2026-10-02, Vítor: "Ha outra coisa que eu confundo sempre que é o
+     DeltaH0 da reacção! Aquilo é 25 graus, mas depois depende da
+     temperatura" -- and, after the online search, "Então faz esse EduTool
+     porque isso é realmente importante!").**  What the degree sign fixes
+     (the standard state, not the temperature -- IUPAC 1982 via Wikipedia),
+     Kirchhoff's law, ammonia priced by the engine from 25 C to 527 C (new
+     witness tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff), what
+     the 25 C value gets wrong in a converter design, and the elements-datum
+     energy balance that never needs a reaction enthalpy.  The online search
+     found NO study measuring this confusion on its own; the page says so.
+     DONE 2026-10-02 (registry id `reaction-enthalpy`).
+
 **C30. AN EDUTOOL ON THE LIMITING REACTANT AND THE FEED RATIO IN A RECYCLE
      LOOP (asked 2026-10-02, Vítor: "Faz o EduTools que recomendaste!  É muito
      interessante!", after asking which heuristics fix the limiting reactant

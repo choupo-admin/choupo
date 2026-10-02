@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 444,
+  "cases": 445,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -2171,6 +2171,20 @@
    "application": "choupoProps",
    "ops": [
     "gibbsMap"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff": {
+   "application": "choupoProps",
+   "ops": [
+    "reactionGibbs"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -6653,6 +6667,7 @@
     "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
     "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map",
+    "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
@@ -7826,6 +7841,7 @@
     "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
     "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map",
+    "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
@@ -8198,7 +8214,8 @@
     "tutorials/ctrl/ctrl17_step_reaction_curve"
    ],
    "reactionGibbs": [
-    "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes"
+    "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
+    "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff"
    ],
    "scalingScan": [
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",

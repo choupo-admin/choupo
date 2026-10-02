@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the component list the three fixation routes
+  need, on the T1 ideal gamma-phi package.  `reactionGibbs` reads only each
+  record's standardThermochemistry (and, off the datum temperature, its heat
+  capacities and vaporisation data); no equilibrium is solved, no phase is
+  flashed, so the models declared below are not exercised by this case and
+  are the plainest ones.  glucose is a `role nonvolatile` solid-referenced
+  record (referenceState pureSolid); water's datum is on the ideal-gas rung
+  and its liquid potential is reached by the vaporisation crossing.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( glucose water N2 NH3 CO2 O2 H2 );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
