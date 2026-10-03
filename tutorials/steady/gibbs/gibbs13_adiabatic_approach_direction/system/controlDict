@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  An ADIABATIC ammonia bed whose feed already carries ammonia, with a 10 K
+  approach to equilibrium and a deliberately HOT seed.  The witness of the
+  rule that the approach's DIRECTION is read from the bed's own dT = 0
+  adiabatic answer, never from the seed.  See flowsheetDict.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "An adiabatic ammonia synthesis bed fed a gas that already carries 16 % NH3 (the third bed of a staged converter), 150 bar, 10 K approach to equilibrium, seeded 80 K hotter than its answer: the engine reads the approach's SIGN from the dT = 0 adiabatic outlet it solves first, not from the seed, so the bed ends BELOW its own equilibrium whichever seed the case declares";
+
+verbosity     3;

@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  An initial ESTIMATE of the bed outlet; the solver overwrites it.  NOTE:
+//  this file is NOT the adiabatic outer Newton's seed -- that is
+//  `operation.T` in system/flowsheetDict (read GibbsReactor.cpp: the unit
+//  reads its feed from the inlet stream and its seed from its own dict).
+
+componentMolarFlows
+{
+    N2    1800 kmol/h;
+    H2    5400 kmol/h;
+    NH3   1800 kmol/h;
+    Ar     800 kmol/h;
+}
+
+T               768.15 K;
+P               15000000 Pa;
+phase           gas;

@@ -2770,6 +2770,30 @@ PYEOF
     fi
     rm -f /tmp/rsapproach.$$
 
+    # adiabatic approach-direction gate (2026-10-03; DEV.md 5, 2026-10-01).
+    # In `mode adiabatic` the gibbsReactor's approach SIGN was read from the
+    # thermicity of feed -> equilibrium AT THE SEED `operation.T`; a bed whose
+    # feed already carries product, seeded hotter than that feed's own
+    # equilibrium temperature, read DECOMPOSITION, took T - |dT| and ended
+    # MORE converted than its own equilibrium -- the aid helping instead of
+    # hurting, with a 60 K colder seed giving the other sign on the same
+    # case.  The direction is now read from the dT = 0 ADIABATIC answer the
+    # bed is solved to first, never from the seed.  Arms: the witness
+    # gibbs13 under its hot seed and a cold seed ends at ONE outlet; that
+    # outlet is BELOW the dT = 0 outlet in NH3 and in T; the announcement
+    # names T0 and T0 is the dT = 0 run's own T; the probe's cost is
+    # published; the isothermal path is untouched (the dT = 0 run prints no
+    # approach line); a sealed source arm.
+    if "$ROOT/bin/curate/check_adiabatic_approach_direction.py" > /tmp/adiabappr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "adiabatic-approach-direction-gate" "$(gate_claim check_adiabatic_approach_direction /tmp/adiabappr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_adiabatic_approach_direction.py)\n" "adiabatic-approach-direction-gate"
+        cat /tmp/adiabappr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/adiabappr.$$
+
     # feed-thermal-state gate (2026-09-12).  `operation.feedQuality` was a
     # SECOND HOME for a fact the feed stream already carries, and the
     # single-feed solver paths never reconciled the two: column01_benzene_

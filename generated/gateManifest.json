@@ -1125,6 +1125,11 @@
       "exit": 0,
       "claim": "check_time_state_layout: OK -- the time-integrated cases read and write the ratified layout (0/<stream>, 0/internalStates/<unit>), refuse the retired one, and write restartable <t>/ directories by default (not checked: a closed-loop or clock-driven restart)",
       "seconds": 1.4
+    },
+    "check_adiabatic_approach_direction": {
+      "exit": 0,
+      "claim": "check_adiabatic_approach_direction: OK -- an ADIABATIC gibbsReactor's approach direction is read from the dT = 0 adiabatic answer, never from the seed: the witness gibbs13 under its hot seed and a 60 K colder seed ends at ONE outlet (T, y_NH3, the signed +10 K, the sign word; 1e-9); that outlet is BELOW the dT = 0 outlet in NH3 and in T; the announcement names the dT = 0 outlet T0 (equal to the dT = 0 run's own T), the seed it started from and that the seed cannot move the sign, and reaches the caveat block; the probe's cost is a KPI of the approach run and absent from the dT = 0 run; the dT = 0 run prints no approach line and gibbs10 (isothermal, no approach) holds its golden; the adiabatic branch calls approachDirection at the probe's root with an AdiabaticProbe and no call passes the seed with one.  NOT checked: whether 10 K is right for any bed, an unconverged dT = 0 probe, a multi-bed recycle, the isothermal direction (other gates), and any number of the physics beyond the ORDER of three outlets",
+      "seconds": 0.3
     }
   }
 }
