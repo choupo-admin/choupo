@@ -159,8 +159,8 @@ export function LimitingReactantTool(): JSX.Element {
             </Stack>
             <Box style={{ minWidth: 0 }}>
               <Group gap="xs" wrap="wrap" mb={8}>
-                <Badge variant="light" color="gray">p = {fmt(p * 100, 3)} %</Badge>
-                <Badge variant="light" color="gray">
+                <Badge variant="light" color="gray" tt="none">p = {fmt(p * 100, 3)} %</Badge>
+                <Badge variant="light" color="gray" tt="none">
                   fresh ratio = {fmt(nu * (1 + eps), 5)}
                 </Badge>
               </Group>

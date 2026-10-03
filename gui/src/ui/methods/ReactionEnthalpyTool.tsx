@@ -193,13 +193,13 @@ export function ReactionEnthalpyTool(): JSX.Element {
               )}
               {chart}
               <Group gap="xs" wrap="wrap" mt={6}>
-                <Badge variant="light" color="blue">
+                <Badge variant="light" color="blue" tt="none">
                   engine at 298 K: {fmt(dH0, 2)} kJ/mol NH₃
                 </Badge>
-                <Badge variant="light" color="blue">
+                <Badge variant="light" color="blue" tt="none">
                   engine at 773 K: {fmt(at773, 2)}
                 </Badge>
-                <Badge variant="light" color="orange">
+                <Badge variant="light" color="orange" tt="none">
                   straight line at 773 K: {fmt(k773, 2)}
                 </Badge>
               </Group>
