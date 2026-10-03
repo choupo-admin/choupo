@@ -15,8 +15,11 @@ beside every speciation-bearing stream; the reader recomputes the
 fingerprint from the block actually in the file.
 
 WHAT THIS CHECKS, all through real engine runs on a staged copy of
-`flash16_calcite_precipitation` (its converged feed carries a speciation
-block AND the reference):
+`flash16_calcite_precipitation` with its feed's CO2 charge lowered to one
+the brine can hold (0.03 kmol/h; the shipped 2.0 kmol/h feed is 2.1 % vapour
+at its own (T, P) and, since 2026-10-03, correctly gets no top-level
+speciation block -- see `stage()`), so that its converged feed carries a
+speciation block AND the reference:
 
   (E1) THE ROUND TRIP: converged/feed fed back as 0/feed loads and the case
        runs -- the reference verifies against the very block it was written
@@ -98,6 +101,28 @@ def stage():
     d = tempfile.mkdtemp(prefix="eqref_")
     dst = os.path.join(d, "case")
     shutil.copytree(CASE, dst)
+    #  THE WITNESS FEED MUST BE A LIQUID AT ITS OWN STATE (2026-10-03).
+    #  flash16's shipped feed charges 2.0 kmol/h of CO2 into 97 kmol/h of
+    #  water at 313 K and 1 atm, and its own equilibrium there is 2.1 %
+    #  VAPOUR (K_CO2 ~ 1773; the drum at the same T and P finds the same
+    #  split).  Until the flowsheet resolved unpinned domain inlets
+    #  (docs/design/a-stream-is-fixed-by-two-variables.md) the feed carried
+    #  the default vf = 0 and the post-solve pass speciated it AS A LIQUID --
+    #  a block claiming all the carbonate in solution on a stream that was
+    #  never all liquid, exactly the shape check_phase_speciation arm (e)
+    #  refuses.  The pass now sees the resolved split and, correctly, writes
+    #  no block, so a feed with a CO2 charge the brine can hold (0.03 kmol/h
+    #  -- 97 kmol of water dissolves ~0.055 at this K) is staged instead.
+    #  The reference round trip this gate tests is unchanged by the amount.
+    feed = os.path.join(dst, "0", "feed")
+    s = open(feed, encoding="utf-8").read()
+    s2 = re.sub(r"(?m)^(\s*CO2\s+)2\.0(\s+kmol/h;)", r"\g<1>0.03\g<2>", s)
+    if s2 == s:
+        print("check_equilibrium_state_ref: FAILED")
+        print("  the witness feed no longer carries `CO2 2.0 kmol/h;` -- the "
+              "staging edit did not land, so the witness premise is unverified")
+        sys.exit(1)
+    open(feed, "w", encoding="utf-8").write(s2)
     rc, out = run(dst)
     if rc != 0:
         print("check_equilibrium_state_ref: FAILED")

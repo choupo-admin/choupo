@@ -36,17 +36,26 @@ THE FIVE ARMS, each probed through the real binary.
       criterion is therefore doing the deciding, not decoration.
 
   A4  A FABRICATED BOUNDARY BUYS NOTHING.  `perUnitThermo01_srk_nrtl` with
-      its turbine's `thermo {}` block deleted has a 536.54 kW imbalance and
-      no declared override: the boundary reads `none`, the step is exactly
-      0, the remaining equals the raw, and the RED alarm fires.  A boundary
-      is a DECLARATION; the size of an imbalance is never evidence of its
-      cause.
+      its feed PINNED `phase liquid;` (see A5) and its turbine's `thermo {}`
+      block deleted has a 536 kW imbalance and no declared override: the
+      boundary reads `none`, the step is exactly 0, the remaining equals
+      the raw, and the RED alarm fires.  A boundary is a DECLARATION; the
+      size of an imbalance is never evidence of its cause.
 
-  A5  AN UNREPRODUCED STEP BUYS NOTHING.  `perUnitThermo01_srk_nrtl` as
-      shipped: the turbine declares a real SRK world, the auditor prices a
-      7.5 kW step across it, and 536 kW remains.  The status is
-      `unconfirmed`, the step is printed but NOT credited, the remaining
-      residual equals the raw one, and the alarm stays.
+  A5  AN UNREPRODUCED STEP BUYS NOTHING.  `perUnitThermo01_srk_nrtl` with
+      its feed PINNED `phase liquid;`: the turbine declares a real SRK
+      world, the auditor prices a 7.5 kW step across it, and 536 kW
+      remains.  The status is `unconfirmed`, the step is printed but NOT
+      credited, the remaining residual equals the raw one, and the alarm
+      stays.  UNTIL 2026-10-03 THESE TWO ARMS RAN THE CASE AS SHIPPED, and
+      the 536 kW they relied on was the energy report pricing an UNPINNED
+      vapour feed on the carried default (a liquid) -- the V2 debt DEV.md
+      names.  The flowsheet now resolves every unpinned domain inlet before
+      the report reads it (docs/design/a-stream-is-fixed-by-two-variables.md),
+      the shipped case closes at 0.12 % with its step reproduced and
+      credited, and the imbalance the arms need is re-created by
+      DECLARATION -- a pin the report prices as declared (R-E2).  The arms'
+      question is unchanged; their fixture says how the imbalance arises.
 
 WHAT THIS GATE DOES NOT CLAIM.  It does not check that the step is
 PHYSICALLY the right number -- that is the reproduction test's own job and
@@ -309,9 +318,29 @@ def main() -> int:
             if "1e-30" not in out2:
                 failures.append("A3: the declared controls were not announced")
 
-        # ---- A5: perUnitThermo01 as shipped -- a step that does not
-        #          reproduce the imbalance buys nothing.
+        # ---- A5: perUnitThermo01 with a DECLARED liquid feed -- a step
+        #          that does not reproduce the imbalance buys nothing.
+        #
+        #  THE 536 kW WAS THE INLET, NOT THE BOUNDARY (2026-10-03).  As
+        #  shipped, perUnitThermo01's feed (ethanol/water at 430 K, 6 bar)
+        #  declares no phase and is single-phase VAPOUR at its own (T, P);
+        #  the energy report priced it on the carried default -- vf = 0, a
+        #  liquid -- and the turbine carried a 536 kW "imbalance" that no
+        #  7.5 kW SRK step could reproduce.  Since the flowsheet resolves
+        #  every unpinned domain inlet before the report reads it
+        #  (docs/design/a-stream-is-fixed-by-two-variables.md), the shipped
+        #  case closes at 0.12 % and its step is REPRODUCED and credited --
+        #  so the probe's premise dissolved.  The imbalance is re-created by
+        #  DECLARATION: `phase liquid;` on the feed is a pin the report
+        #  prices as declared (R-E2), the vapour's latent heat is then a
+        #  genuine imbalance inside the turbine, and the arm tests what it
+        #  always tested -- that a step which does not reproduce it is
+        #  printed and not credited.  Measured: raw 536.0360 kW, step 7.5154
+        #  kW, remaining 536.0360 kW, status unconfirmed, alarm -- the old
+        #  shape to the last digit.
         pu = fresh(tmp, "perunit", PERUNIT)
+        with open(pu / "0" / "feed", "a") as fh:
+            fh.write("phase           liquid;\n")
         rc3, out3 = run(pu)
         if rc3 != 0:
             failures.append("A5: perUnitThermo01 did not run")
@@ -337,6 +366,8 @@ def main() -> int:
 
         # ---- A4: the same case with the DECLARATION removed --------------
         fab = fresh(tmp, "fabricated", PERUNIT)
+        with open(fab / "0" / "feed", "a") as fh:      # the same declared liquid as A5
+            fh.write("phase           liquid;\n")
         fd = fab / "system" / "flowsheetDict"
         txt = fd.read_text()
         m = re.search(r"^.*thermo\s*\{ equilibrium \{ vapour \{ fugacityModel"
