@@ -55,6 +55,7 @@ License
 #include "thermo/PropertyContext.H"
 #include "thermo/ThermoOverride.H"
 #include "unitOperations/flash/IsothermalFlash.H"
+#include "unitOperations/flash/StreamEquilibrium.H"  // equilibriumAt / twoPhaseSplit / hOfState: the ONE home
 #include "unitOperations/flowsheet/UnitInputs.H"     // streamToDict, buildAugmentedDict
 #include "unitOperations/flowsheet/MemberFolder.H"   // solveCore: feed-flash for the true vf
 
@@ -3456,40 +3457,62 @@ int Flowsheet::solve(const DictPtr& dict,
         utilityCircuits::validateConservation(utilityCircuitDecls, streams_,
                                               thermo);
 
-    // ---- Summary -------------------------------------------------------
-    std::cout << "\n================  Flowsheet summary  ================\n";
-    std::cout << "Final stream table (all registered streams):\n";
-    for (const auto& [name, s] : streams_) printStream(s, thermo);
-    std::cout << "======================================================\n\n";
-
-    // ---- Utility consumption ---------------------------------
-    //  Aggregate by ProcessStream::category.  Streams without a
-    //  category are process streams and do not appear in the report.
-    //  Multiple streams sharing a category (e.g. two heaters tapping
-    //  the same plant header) are summed automatically.
-    std::map<std::string, scalar> utilityTotals;
-    for (const auto& [name, s] : streams_)
+    // ---- THE STATE AN UNPINNED INLET SHOWS IS THE STATE IT MEANS (2026-10-03)
+    //
+    //  An unpinned (T, P, z) MEANS its own equilibrium (R-E1/R-E2); the first
+    //  law has priced it that way since 2026-08-09 and every unit that goes
+    //  through `flashState::resolveStreamThermalState` reads it that way.
+    //  The stream TABLE and the result JSON did not: they printed `s.vf`, which
+    //  for a domain inlet that declares no pin is the struct's default 0.
+    //  Measured on flash01 with its (over-specified) `vaporFraction` line
+    //  removed: the feed printed vf = 0.000 and H = 37 807 J/mol (1050 kW, a
+    //  liquid) while the first law used 1325.78 kW -- 275 kW of disagreement
+    //  about one stream between two surfaces of one run -- and the energy
+    //  report then accused the feed of an IMPOSSIBLE liquid label, reading
+    //  the same default.  Four readers of one stream, two answers.
+    //
+    //  So, before anything prints: every UNPINNED stream that NO UNIT PRODUCES
+    //  (a domain inlet, or an authored state nothing consumes) is resolved
+    //  ONCE at its own (T, P, z) through the one home, and `vf` carries that
+    //  answer from here on -- to the table, the JSON, the energy report's
+    //  label check and its pricing, which then agree by construction.  A
+    //  stream a unit PRODUCED already carries that unit's resolved answer (a
+    //  re-flash is idempotent, R-E1), and re-resolving it in the GLOBAL world
+    //  would overwrite a per-unit thermo world's answer with another world's,
+    //  so produced streams are left as their producer left them.  A PINNED
+    //  stream is a declaration and is never re-solved (R-E2).  A resolution
+    //  the package refuses, or that does not converge, leaves the carried
+    //  value and is announced by `equilibriumAt` itself.
+    //
+    //  WHAT THIS DOES NOT DO.  It does not change what a unit read DURING the
+    //  solve: a unit that prices its inlet off the carried `vf` rather than
+    //  through `resolveStreamThermalState` still saw the default there.  The
+    //  constitution's layer 2 (resolution in the consuming unit's own world,
+    //  stream-state-architecture.md) is that unit's to adopt; this pass is the
+    //  SURFACE the run shows and the report reads.  Gate:
+    //  check_overspecified_stream arm (d).
+    std::map<std::string, FlashSolution> resolvedInlet;   // handed to the H pass below
     {
-        if (s.category.empty()) continue;
-        utilityTotals[s.category] += F_mass(s, thermo);
-    }
-    if (!utilityTotals.empty())
-    {
-        std::cout << "================  Utility consumption  ===============\n";
-        std::cout << "  category                              kg/s        kg/h\n";
-        std::cout << "  -----------------------------------  --------  ----------\n";
-        for (const auto& [cat, kg_s] : utilityTotals)
+        std::set<std::string> produced;
+        for (const auto& fu : topology_)
+            for (const auto& o : fu.outs) produced.insert(o);
+        for (auto& [nm, s] : streams_)
         {
-            std::cout << "  " << std::left << std::setw(37) << cat
-                      << std::right
-                      << std::fixed << std::setprecision(4)
-                      << std::setw(8)  << kg_s
-                      << std::setw(12) << kg_s * 3600.0 << "\n";
+            if (s.phasePinned || produced.count(nm) || s.F <= 0.0) continue;
+            auto fs = flashState::equilibriumAt(s.T, s.P, s.z, false, s.vf,
+                                                thermo, "stream '" + nm + "'",
+                                                "streamState");
+            if (!fs) continue;
+            s.vf = (fs->V_over_F <= 1.0e-9) ? 0.0
+                 : (fs->V_over_F >= 1.0 - 1.0e-9) ? 1.0 : fs->V_over_F;
+            resolvedInlet.emplace(nm, *fs);
         }
-        std::cout << "======================================================\n\n";
     }
 
     // ---- Stream enthalpy (post-solve, formation reference) ----------
+    //  Computed BEFORE the summary table is printed (moved here 2026-10-03
+    //  from after the utility table, which read none of it), so that the
+    //  table, the JSON and the report draw one resolved state.
     // Choupo-native datum: each component contributes from its OWN
     // tabulated rung (standardThermochemistry.referenceState --
     // idealGas / pureLiquid / pureSolid; there is no `phase` key here),
@@ -3519,21 +3542,31 @@ int Flowsheet::solve(const DictPtr& dict,
             // the student SEES on the stream and the number that closes the
             // balance are byte-identical -- not two latent models that differ
             // by ∫cpLiq-vs-Watson and silently disagree.
-            if (s.vf > 1.0e-9 && s.vf < 1.0 - 1.0e-9
-                && !thermo.phasesOfType("vapor").empty())
+            //
+            //  THROUGH THE ONE HOME (2026-10-03).  This block used to call
+            //  `solveCore` itself and blend the split by hand -- a third
+            //  reader of one state beside `reporting/BalanceMath.H` (which
+            //  resolves through `flashState::twoPhaseSplit` and prices through
+            //  `hOfState`) and the units.  The two differed exactly where the
+            //  one home has learnt something since: a two-phase root above
+            //  every present Tc, which the report DISCARDS (2026-09-08) and
+            //  this block blended; a resolved precipitate, which the report
+            //  moves onto the solid rung (R-E3) and this block priced as
+            //  dissolved.  One call now; the JSON's H and the report's H are
+            //  the same arithmetic.  An inlet resolved by the pass above hands
+            //  its solution on rather than being flashed twice.
+            std::optional<FlashSolution> sp;
+            if (auto it = resolvedInlet.find(name); it != resolvedInlet.end())
             {
-                FlashInput fin; fin.F = 1.0; fin.T = s.T; fin.P = s.P; fin.z = s.z;
-                FlashOptions fopts; fopts.verbosity = 0;
-                const FlashSolution fs = IsothermalFlash::solveCore(fin, thermo, fopts);
-                if (fs.converged
-                    && fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9)
-                    s.H = (1.0 - fs.V_over_F) * thermo.H_stream_formation(s.T, s.P, 0.0, fs.x)
-                        +        fs.V_over_F  * thermo.H_stream_formation(s.T, s.P, 1.0, fs.y);
-                else
-                    s.H = thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
+                if (it->second.V_over_F > 1.0e-9 && it->second.V_over_F < 1.0 - 1.0e-9)
+                    sp = it->second;
             }
-            else
-                s.H = thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
+            else if (s.vf > 1.0e-9 && s.vf < 1.0 - 1.0e-9)
+                sp = flashState::twoPhaseSplit(s.T, s.P, s.z, s.phasePinned, s.vf,
+                                               thermo, "stream '" + name + "'",
+                                               "streamState");
+            s.H = sp ? flashState::hOfState(*sp, s.T, s.P, s.z, thermo)
+                     : thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
             s.H_valid = std::isfinite(s.H);
         }
         catch (const std::exception& e)
@@ -3580,6 +3613,39 @@ int Flowsheet::solve(const DictPtr& dict,
         {
             s.H_flow_valid = false;
         }
+    }
+
+    // ---- Summary -------------------------------------------------------
+    std::cout << "\n================  Flowsheet summary  ================\n";
+    std::cout << "Final stream table (all registered streams):\n";
+    for (const auto& [name, s] : streams_) printStream(s, thermo);
+    std::cout << "======================================================\n\n";
+
+    // ---- Utility consumption ---------------------------------
+    //  Aggregate by ProcessStream::category.  Streams without a
+    //  category are process streams and do not appear in the report.
+    //  Multiple streams sharing a category (e.g. two heaters tapping
+    //  the same plant header) are summed automatically.
+    std::map<std::string, scalar> utilityTotals;
+    for (const auto& [name, s] : streams_)
+    {
+        if (s.category.empty()) continue;
+        utilityTotals[s.category] += F_mass(s, thermo);
+    }
+    if (!utilityTotals.empty())
+    {
+        std::cout << "================  Utility consumption  ===============\n";
+        std::cout << "  category                              kg/s        kg/h\n";
+        std::cout << "  -----------------------------------  --------  ----------\n";
+        for (const auto& [cat, kg_s] : utilityTotals)
+        {
+            std::cout << "  " << std::left << std::setw(37) << cat
+                      << std::right
+                      << std::fixed << std::setprecision(4)
+                      << std::setw(8)  << kg_s
+                      << std::setw(12) << kg_s * 3600.0 << "\n";
+        }
+        std::cout << "======================================================\n\n";
     }
 
     // ---- Stream SPECIATION (post-solve, same posture as the enthalpy) -----

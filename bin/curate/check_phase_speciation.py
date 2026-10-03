@@ -487,14 +487,32 @@ else:
         shutil.copytree(F13, dst)
         for junk in ("converged", "reports"):
             shutil.rmtree(os.path.join(dst, junk), ignore_errors=True)
-        with open(os.path.join(dst, "0", "feed"), "a") as f:
-            f.write("\nvaporFraction   0.30;\n")
+        #  A two-phase feed BY STATE, not by pin (2026-10-03): a mixture's
+        #  `vaporFraction` beside T and P is refused as over-specified, so
+        #  the feed is put at the flash's own operating pressure (0.65 atm at
+        #  358.15 K), where its own equilibrium is ~58 % vapour and the
+        #  engine resolves it so.  The arm's question is unchanged: no
+        #  unnameable top-level block on a part-vapour stream, and the engine
+        #  reads back what it wrote.
+        fp = os.path.join(dst, "0", "feed")
+        t = open(fp).read()
+        t2 = re.sub(r"(?m)^P\s+[-\d.eE+]+\s*Pa;", "P               65862.5 Pa;", t, count=1)
+        if t2 == t:
+            fail("(h) could not move flash13's feed pressure -- the fixture "
+                 "edit did not land, so nothing below is tested")
+        open(fp, "w").write(t2)
         r1 = subprocess.run([SOLVER, dst], capture_output=True, text=True)
         conv = os.path.join(dst, "converged")
         if r1.returncode != 0:
-            fail("(h) the 30 %%-vapour feed case does not run (exit %d) -- a "
+            fail("(h) the part-vapour feed case does not run (exit %d) -- a "
                  "two-phase feed is legal; only the report on it was not.  "
                  "Tail:\n%s" % (r1.returncode, (r1.stdout + r1.stderr)[-500:]))
+        elif not re.search(r"(?m)^\s+feed\s.*vf = 0\.[1-9]", r1.stdout):
+            fail("(h) the moved feed did not resolve part-vapour in the "
+                 "stream table -- the arm's premise did not hold, so its "
+                 "verdict proves nothing.  Table lines:\n%s"
+                 % "\n".join(l for l in r1.stdout.splitlines()
+                             if re.match(r"\s+feed\s", l)))
         elif not os.path.isdir(conv):
             fail("(h) the case ran but wrote no converged/ state")
         else:

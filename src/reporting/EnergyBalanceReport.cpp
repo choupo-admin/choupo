@@ -594,8 +594,9 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                           << " and cannot hold that label.  The enthalpy this report "
                              "charged for it is missing (or inventing) that phase change, "
                              "which is a residual of latent-heat size.  Fix the STREAM "
-                             "(declare its real `vaporFraction`/`phase` in 0/, or feed it "
-                             "at a state where the label is true), not this unit.\n";
+                             "(declare its real `phase gas|liquid;` in 0/ -- a mixture's "
+                             "`vaporFraction` beside T and P is refused as over-specified "
+                             "-- or feed it at a state where the label is true), not this unit.\n";
                         found += o.str();
 
                         //  ON `AdvisoryLog`, unconditionally.  See the block

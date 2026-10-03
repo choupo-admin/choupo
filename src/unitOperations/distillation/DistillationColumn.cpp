@@ -302,8 +302,24 @@ void refuseContradictoryFeedQuality(const DictPtr&     operDict,
           "    * the stream is right  -> DELETE `feedQuality` from the unit's"
           " `operation {}` block; the column will use q = " << qRes << ".\n"
           "    * the dict is right    -> set the feed stream's state file so it"
-          " says so: `vaporFraction " << (1.0 - qDecl) << ";` (and a T at which"
-          " that is true -- at " << T << " K it is not).\n"
+          " says so: ";
+    //  THE STREAM-SIDE REMEDY NAMES A LINE THE READER WILL ACCEPT (2026-10-03).
+    //  It used to say `vaporFraction <1-q>;`, which on a mixture beside T and
+    //  P is the over-specification the reader now refuses -- a remedy that
+    //  creates the next refusal is advice that creates the bug.  A saturated
+    //  liquid or vapour feed is the `phase` pin; a two-phase quality is the
+    //  (T, P) that gives it, which this engine does not solve from q.
+    const scalar vfDecl = 1.0 - qDecl;
+    if (vfDecl <= 1.0e-9)
+        os << "`phase liquid;` (a declared saturated-liquid feed, R-E2)";
+    else if (vfDecl >= 1.0 - 1.0e-9)
+        os << "`phase gas;` (a declared vapour feed, R-E2)";
+    else
+        os << "a T and P at which its own equilibrium gives vapour fraction "
+           << vfDecl << " (a mixture's (T, P) fix its split, so"
+              " `vaporFraction` beside them is refused as over-specified; the"
+              " engine does not solve T from a declared quality)";
+    os << " -- at " << T << " K it is not so.\n"
           "  Deleting the key is the recommended fix: it leaves ONE home for"
           " the feed's thermal state and this contradiction cannot recur.";
     throw std::runtime_error(os.str());
@@ -1382,11 +1398,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 if (std::abs(qDecl - qf) > 1.0e-3)
                     throw std::runtime_error("DistillationColumn: feed '" + sName
                         + "': operation.feeds.quality = " + std::to_string(qDecl)
-                        + " contradicts the feed STREAM (vaporFraction "
+                        + " contradicts the feed STREAM (vapour fraction "
                         + std::to_string(vfStream) + " => q = " + std::to_string(qf)
                         + ").  A feed's thermal state lives in the stream, not the"
                         " column -- delete the `quality` and set the stream's"
-                        " T / P / vaporFraction so the two can never disagree.");
+                        " T and P (or its `phase gas|liquid;` pin) so the two"
+                        " can never disagree.");
             }
             addFeed(st - 1, Ff, qf, Tfe, zf);
             if (first) { Tf = Tfe; NF = st; q = qf; z = zf; first = false; }

@@ -341,7 +341,9 @@ SELF_CONTRADICTING_RECORDS = {}
 #  it.  The gate fails if a case joins the list, leaves it, or gets worse.
 #
 #  REMEDY, per case: decide what the stream really is at its (T, P, z) and
-#  declare it -- `vaporFraction`/`phase` in 0/ -- then re-record the golden.
+#  declare it -- `phase gas|liquid` in 0/, or no pin at all so (T, P) resolve
+#  it (a mixture's `vaporFraction` beside T and P is refused since
+#  2026-10-03) -- then re-record the golden.
 #  BLOCKER: each is a thermodynamic judgement about that case, not a sweep.
 #  THREE PINS CLEARED 2026-09-18, and the record of WHEN is the point.
 #
@@ -368,10 +370,21 @@ SELF_CONTRADICTING_RECORDS = {}
 #  0.0000 kW -- and the debt was paid in `check_energy_closure.KNOWN_OPEN`,
 #  in the case's golden, and HERE, three ledgers in three files.  This one
 #  was the one the ratchet had to ask for.
-IMPOSSIBLE_PHASE_CASES = {
-    "tsa01_co2_twin_bed":                  0.023239,
-    "flash10_ch4propane_pcsaft":           2.4e-05,
-}
+#
+#  THE LAST TWO PINS CLEARED 2026-10-03, by the surface fix and not by any
+#  edit to either case: `tsa01_co2_twin_bed` and `flash10_ch4propane_pcsaft`
+#  each had an UNPINNED inlet whose carried default (vf = 0, liquid) the
+#  report's label check read while its own pricing resolved past it.  The
+#  flowsheet now resolves every unpinned domain inlet once after the solve
+#  (`Flowsheet.cpp`, "THE STATE AN UNPINNED INLET SHOWS IS THE STATE IT
+#  MEANS"; record docs/design/a-stream-is-fixed-by-two-variables.md), so the
+#  label the check reads IS the resolved state and the line is not printed.
+#  Both were the numerically clean pins (0.023 kW and 2.4e-5 kW): the LABEL
+#  was impossible, the duty it distorted was nil.  The dict is EMPTY and
+#  stays declared: the ratchet (arm a) is what keeps a case from joining the
+#  corpus with an impossible label in silence, and it needs no member to
+#  bite.
+IMPOSSIBLE_PHASE_CASES = {}
 
 
 # ---------------------------------------------------------------------------

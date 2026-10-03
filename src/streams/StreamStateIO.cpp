@@ -395,18 +395,41 @@ void writeStreamState(const ProcessStream&  s,
 
     // Stream state = T and P (a TP flash resolves the phase split).  We write
     // vaporFraction ONLY when it is genuinely needed to disambiguate an otherwise
-    // non-unique liquid-vapour split (0 < vf < 1) -- never a decorative 0/1 that a
-    // TP flash already fixes.  No derived{} second layer.
+    // non-unique liquid-vapour split -- never a decorative 0/1 that a TP flash
+    // already fixes.  No derived{} second layer.
     out << "T               " << s.T << " K;\n";
     out << "P               " << s.P << " Pa;\n";
     // Phase is a RESULT the resolver recovers from (T,P,z); write a PIN only when
-    // it cannot.  Two-phase split (0<vf<1) -> `vaporFraction q` (T,P alone do not
-    // fix the split).  All-vapour -> the Tc screen recovers it iff T exceeds every
-    // present component's Tc (a permanent gas); write nothing then.  Otherwise it
-    // is a sub-critical gas mixture (steam in a gas) the screen cannot recover ->
-    // the readable `phase gas` pin.  Liquid (vf~0) is the resolver default: nothing.
+    // it cannot.
+    //
+    // A TWO-PHASE SPLIT IS WRITTEN FOR A PURE COMPONENT ONLY (2026-10-03).  This
+    // branch used to write `vaporFraction q` for every 0 < vf < 1 under the
+    // comment "T,P alone do not fix the split", which is true of a pure
+    // component on its saturation curve and FALSE of a mixture, whose (T, P)
+    // between bubble and dew fix the split exactly.  So every converged/ view
+    // and every `choupo-init0` seed re-created the over-specification the
+    // reader now refuses (T, P and q on a mixture -- 135 tracked files in the
+    // corpus carried it, flash01's landing feed among them, and every stream of
+    // ammoniaStaged01-04 carried one and the same stamped q).  The reader
+    // resolves an unpinned mixture at its own (T, P, z) (R-E1), so writing
+    // nothing loses no information; for a pure component the split IS
+    // information (T, P) do not carry, and it stays.  The pin a mixture may
+    // carry is `phase gas|liquid`, and it is written only where it always was.
+    //
+    // All-vapour -> the Tc screen recovers it iff T exceeds every present
+    // component's Tc (a permanent gas); write nothing then.  Otherwise it is a
+    // sub-critical gas mixture (steam in a gas) the screen cannot recover ->
+    // the readable `phase gas` pin.  Liquid (vf~0) is the resolver default:
+    // nothing.
+    std::size_t nPresent = 0;
+    for (std::size_t i = 0; i < thermo.n() && i < s.z.size(); ++i)
+        if (s.z[i] > 0.0 && significant(s.F * s.z[i])) ++nPresent;
     if (s.vf > 1e-6 && s.vf < 1.0 - 1e-6)
-        out << "vaporFraction   " << s.vf << ";\n";
+    {
+        if (nPresent == 1)
+            out << "vaporFraction   " << s.vf << ";\n";
+        // a mixture: (T, P) fix the split; the reader resolves it (R-E1)
+    }
     else if (s.vf >= 1.0 - 1e-6)
     {
         scalar maxTc = 0.0; bool allHaveTc = true, anyPresent = false;
@@ -3110,7 +3133,77 @@ ProcessStream readStreamState(const fs::path&       file,
     //  precisely the implicit pin the constitution bans and the flash19 duty
     //  was paying for.  Consumers that price energy ask `phasePinned`, never
     //  `vf == 0`.
-    if (d->found("vaporFraction")) s.phasePinned = true;
+    //
+    //  A STREAM IS FIXED BY TWO VARIABLES (2026-10-03, Vitor's rule on the
+    //  landing case flash01, whose 0/feed declared T, P AND vaporFraction for
+    //  a benzene/toluene mixture).  By Duhem's theorem a stream of known
+    //  component flows has two intensive degrees of freedom; for a MIXTURE
+    //  (T, P) already fix the vapour fraction, so a third value beside them
+    //  is redundant when it agrees with the (T, P) flash and a contradiction
+    //  when it does not -- and until today the reader accepted all three in
+    //  silence while the header above promised "THREE top-level state vars
+    //  over-specify -> FATAL".  With `vaporFraction 0.9` on that feed the run
+    //  exited 0, the table printed 0.900 and the first law priced 0.304: the
+    //  number shown was not the number used.  The header's promise is kept
+    //  here.  A PURE component (one present fluid component) keeps the pin:
+    //  on its saturation curve (T, P) are not independent and genuinely do
+    //  not fix the split -- that is the ONE case the old comment "T,P alone
+    //  do not fix the split" was true of.  `vaporFraction 0` or `1` on a
+    //  mixture is a single-phase declaration spelled as a number, and the
+    //  legible pin for it is `phase liquid|gas;` (R-E2); the refusal names
+    //  that spelling.  Gate: check_overspecified_stream.  Record:
+    //  docs/design/a-stream-is-fixed-by-two-variables.md.
+    if (d->found("vaporFraction"))
+    {
+        std::size_t nPresent = 0;
+        std::string present;
+        for (std::size_t i = 0; i < n && i < s.z.size(); ++i)
+            if (s.z[i] > 0.0)
+            {
+                ++nPresent;
+                if (nPresent <= 4)
+                    present += (present.empty() ? "" : ", ") + thermo.comp(i).name();
+            }
+        if (nPresent > 4) present += ", ...";
+        if (nPresent > 1 && d->found("T") && d->found("P"))
+        {
+            const scalar q = s.vf;
+            const bool twoPhase = (q > 1.0e-9 && q < 1.0 - 1.0e-9);
+            std::ostringstream os;
+            os << std::setprecision(10);
+            os << "stream state '" << name << "': OVER-SPECIFIED -- declares T = "
+               << s.T << " K, P = " << s.P << " Pa AND vaporFraction = " << q
+               << " for a MIXTURE of " << nPresent << " components (" << present
+               << ").  A stream of known component flows is fixed by TWO"
+                  " intensive variables (Duhem's theorem); for a mixture (T, P)"
+                  " already fix the vapour fraction, so a third value beside"
+                  " them is redundant when it agrees with the (T, P) flash and"
+                  " a contradiction when it does not.  ";
+            if (twoPhase)
+                os << "Remedies: (1) delete the `vaporFraction` line and let"
+                      " (T, P) resolve the split -- an unpinned stream MEANS its"
+                      " own equilibrium at (T, P, z), and the stream table and"
+                      " result JSON show the vapour fraction that resolution"
+                      " gives; (2) if the QUALITY is the specification, the"
+                      " state is (P, q) or (T, q) and the other variable must be"
+                      " SOLVED from it -- this engine does not do that today"
+                      " (the (T, q) and (P, q) closures are recognised and their"
+                      " resolution is deferred), so declare the T that gives"
+                      " your q, or use a phaseChanger to produce the state.  A"
+                      " PURE component keeps `vaporFraction q;`: on its"
+                      " saturation curve (T, P) do not fix the split.";
+            else
+                os << "A vaporFraction of exactly " << (q <= 1.0e-9 ? 0 : 1)
+                   << " is a single-phase declaration spelled as a number."
+                      "  Remedies: (1) write `phase "
+                   << (q <= 1.0e-9 ? "liquid" : "gas")
+                   << ";` -- a phase-intent pin the engine honours as a"
+                      " declaration (R-E2) and prices as that phase; (2) delete"
+                      " the line and let (T, P) resolve the phase.";
+            throw std::runtime_error(os.str());
+        }
+        s.phasePinned = true;
+    }
     if (d->found("phase"))
     {
         const std::string ph = d->lookupWord("phase");
