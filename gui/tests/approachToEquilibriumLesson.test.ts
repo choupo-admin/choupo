@@ -86,7 +86,7 @@ describe("the Gibbs-reactor approach lesson", () => {
   });
 
   it("keeps the two temperatures apart, which is the teachable line", () => {
-    //  GibbsReactor.cpp:343-349 announces exactly this, and the page must not
+    //  GibbsReactor.cpp:357-362 announces exactly this, and the page must not
     //  round it off into "the reactor runs hotter".
     const f = prose(step(3).formula!);
     expect(f).toContain(String.raw`n_\mathrm{eq}(T + \Delta T,\; P)`);
@@ -237,7 +237,7 @@ describe("the tool's one piece of arithmetic", () => {
   });
 
   it("reads the thermicity off the engine's duty sign, not off a name", () => {
-    //  GibbsReactor.cpp:594 -- Q_kW is heat ADDED to hold T.
+    //  GibbsReactor.cpp:652 -- Q_kW is heat ADDED to hold T.
     expect(thermicityOf(-3.44038833106)).toBe("exothermic");   // shift at 800 K
     expect(thermicityOf(57.7812038582)).toBe("endothermic");   // reformer, 1000 K
     expect(thermicityOf(0)).toBe("thermally neutral");
@@ -255,7 +255,7 @@ describe("the tool's one piece of arithmetic", () => {
 
   it("offers no negative magnitude, because the engine refuses one", () => {
     //  A slider whose floor is below zero would teach a declaration the
-    //  engine rejects by name (GibbsReactor.cpp:278-289).
+    //  engine rejects by name (GibbsReactor.cpp:288-299).
     expect(DT_KNOB.min).toBe(0);
     expect(DT_KNOB.label).toMatch(/MAGNITUDE/);
   });

@@ -201,7 +201,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "stationarity condition of step 1 becomes a statement about the "
       + "outlet: every species' chemical potential is the sum of its "
       + "atoms' potentials.  The engine publishes λ_k = π_k R T as the KPI "
-      + "`lambda_<element>` (GibbsReactor.cpp:602).  Check it by hand on "
+      + "`lambda_<element>` (GibbsReactor.cpp:660).  Check it by hand on "
       + `the shift answer: π_C = ${Q.shiftPiC}, π_H = ${Q.shiftPiH}, `
       + `π_O = ${Q.shiftPiO}.  For CO, g°/RT = ${Q.shiftGRT.CO} and `
       + `ln y = ${Q.shiftLnY.CO} (P = 1 bar, so ln P/P° = 0): their sum is `

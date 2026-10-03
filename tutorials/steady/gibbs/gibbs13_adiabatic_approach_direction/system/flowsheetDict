@@ -1,0 +1,78 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  gibbs13_adiabatic_approach_direction -- the SIGN of an adiabatic approach
+  is read from the bed's own answer, never from the seed.
+
+  THE BED.  The third bed of a staged ammonia converter: the feed already
+  carries 16 % NH3 (N2 19, H2 57, NH3 16, Ar 8 mol%), enters at 415 C and
+  150 bar, and the bed is ADIABATIC with a 10 K approach to equilibrium (US
+  5,352,428's design band is 1-10 C; see ammoniaStaged03_approach for the
+  source).  `operation.T` is the SEED of the outer Newton on the outlet
+  temperature, and it is set 80 K HOTTER than the answer on purpose.
+
+  WHAT THIS CASE WITNESSES (DEV.md 5, 2026-10-01; fixed 2026-10-03).  The
+  engine assigns the approach's direction from the thermicity of the
+  transformation feed -> equilibrium.  Until 2026-10-03, in adiabatic mode,
+  it read that thermicity AT THE SEED.  A feed that already carries product
+  is itself AT equilibrium at some temperature (here ~487 C); seeded hotter
+  than that, the equilibrium at the seed holds LESS ammonia than the feed,
+  the transformation reads as DECOMPOSITION, the approach takes T - 10 K, and
+  the bed ends MORE converted than its own equilibrium outlet -- the aid
+  helped instead of hurting, and a 60 K colder seed on the SAME case gave
+  the other sign.  Measured on this feed with the old rule: seed 768 K ->
+  734.2 K and 19.32 % NH3; seed 708 K -> 721.1 K and 18.36 %; the dT = 0
+  outlet is 727.6 K and 18.84 %, from either seed.
+
+  THE RULE NOW.  The bed is solved ONCE with no approach -- its own dT = 0
+  adiabatic outlet T0, which no seed can move -- the thermicity of feed ->
+  THAT state decides the sign (exothermic here: the bed heats from 688 to
+  T0), the announcement names T0 and the enthalpy change it read, and the
+  bed is re-solved from T0 with the signed approach.  So this case ends at
+  the SAME outlet as its cold-seeded twin, BELOW its dT = 0 equilibrium in
+  both NH3 and temperature (the reaction is exothermic), which is what a
+  real bed does.  Gate: check_adiabatic_approach_direction (it runs this
+  case under a second seed and under dT = 0).
+
+  THE COST, published: `approachProbeOuterIterations` is the dT = 0 solve's
+  outer Newton count; `outerIterations` the re-solve's, now seeded from T0.
+  The physics is nothing new -- the SAME Gibbs minimisation and the SAME
+  energy balance as gibbs05 -- which is the point: an aid's sign must not
+  depend on where the solver started.
+
+  TOPOLOGY ONLY.  Stream state lives on disk in 0/, one file per stream.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name       bed3;
+        type       gibbsReactor;
+        in         feed;
+        outputs    ( out );
+
+        operation
+        {
+            T 768.15 K;                 // the outer Newton's SEED (495 C), 80 K hot on purpose
+            P 150.0 bar;
+            mode adiabatic;
+            temperatureApproach 10;     // K, a MAGNITUDE; the engine assigns the sign
+
+            elements ( N  H  Ar );
+            species
+            (
+                { name N2;  atoms ( 2 0 0 ); }
+                { name H2;  atoms ( 0 2 0 ); }
+                { name NH3; atoms ( 1 3 0 ); }
+                { name Ar;  atoms ( 0 0 1 ); }
+            );
+        }
+    }
+);
