@@ -904,7 +904,18 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
-> **PAUSED 2026-09-28, at Vítor's request (his weekly budget).  RESUME HERE.**
+> **RESUMED 2026-10-03 under a standing mandate (Vítor, verbatim: "Assume a
+> responsabilidade e avança sempre da forma mais razoável!  À medida que eu
+> for revendo logo se corrige depois").**  Read as: the commander decides
+> and acts on the open items below on its own judgement -- including the
+> golden re-records whose lists were already shown (27/28-09) and the full
+> regressions those integrations require under CLAUDE.md §0.4 -- and Vítor
+> reviews afterwards; a decision he reverses is undone by `git revert`, so
+> every integration is one revertable merge.  Architecture, pedagogy and the
+> RESERVED items stay his.  The paragraph below is kept as the record of
+> where the pause left things.
+>
+> **PAUSED 2026-09-28, at Vítor's request (his weekly budget).**
 > `main` holds everything validated.  Two finished branches wait ONLY on a
 > golden re-record that the session's permission classifier refused to the
 > assistant; each was rebased onto `main` a157bfabb and revalidated, and
