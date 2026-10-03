@@ -118,11 +118,11 @@ describe("the lesson", () => {
     expect(limits).toContain(`${conv} % below at the converter`);
   });
 
-  it("names no commercial simulator", () => {
-    const text = prose([...STANDARD_STATE_STEPS.map((s) => all(s.n)), limits,
-      ...STANDARD_STATE_QUIZ.map((q) => q.q + " " + q.feedback)].join(" "));
-    expect(text).not.toMatch(/\b(aspen|hysys|dwsim|gproms|chemcad|prosim|unisim|promax)\b/i);
-  });
+  //  No arm here checks that the page names no commercial simulator: that
+  //  rule has ONE home, bin/curate/check_doctrine.py, which scans every
+  //  tracked file -- this test included -- so an arm spelling the names
+  //  out to forbid them was itself the violation (caught by the gate the
+  //  day it was written, 2026-10-03).
 
   it("asks six questions, each with its right answer in range and a reason", () => {
     expect(STANDARD_STATE_QUIZ).toHaveLength(6);
