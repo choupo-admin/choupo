@@ -59,7 +59,7 @@ export const PATHWAYS_STEPS: readonly LessonStep[] = [
       + "returns the composition of least Gibbs energy that conserves every "
       + "atom of the feed, and every transformation the species list permits "
       + "is open to it (the atom inventory is built from the feed, "
-      + "GibbsReactor.cpp:260).  An equilibrium reactor is told REACTIONS: a "
+      + "GibbsReactor.cpp:270).  An equilibrium reactor is told REACTIONS: a "
       + "list of names from constant/reactions, each a stoichiometry.  The "
       + "outlet can move only along those reactions, n = n0 + Σ ν ξ (the "
       + "engine writes it as the conservation laws the declared set leaves "

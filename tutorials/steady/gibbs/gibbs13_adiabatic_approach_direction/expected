@@ -1,0 +1,27 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                2.77777777778      1e-4
+stream  feed                   T                688.15             1e-4
+stream  out                    F                2.72249892313      1e-4
+stream  out                    T                721.051945619      1e-4
+kpi     bed3                   F_in_kmol_h      10000              1e-4
+kpi     bed3                   F_out_kmol_h     9800.99612328      1e-4
+kpi     bed3                   N_in_mol_s       2777.77777778      1e-4
+kpi     bed3                   N_out_mol_s      2722.49892313      1e-4
+kpi     bed3                   P                15000000           1e-4
+kpi     bed3                   T                721.051945619      1e-4
+kpi     bed3                   approachProbeOuterIterations 5                  1e-4
+kpi     bed3                   converged        1                  1e-4
+kpi     bed3                   lambda_Ar        -100923.402463     1e-4
+kpi     bed3                   lambda_H         -36944.0037435     1e-4
+kpi     bed3                   lambda_N         -62174.2195072     1e-4
+kpi     bed3                   outerIterations  4                  1e-4
+kpi     bed3                   temperatureApproach_K 10                 1e-4
+kpi     bed3                   y_Ar             0.0816243563345    1e-4
+kpi     bed3                   y_H2             0.551116857611     1e-4
+kpi     bed3                   y_N2             0.183705619204     1e-4
+kpi     bed3                   y_NH3            0.183553166851     1e-4
+boundary global               H_feeds_kW       13055.3956942      1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    13055.3956942      1e-4

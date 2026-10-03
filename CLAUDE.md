@@ -1877,6 +1877,38 @@ DONE: the column schematic (task #134), deliberately after the cost rather than
 before it.  Record:
 [`docs/design/one-unit-five-items-the-column-gets-a-size.md`](docs/design/one-unit-five-items-the-column-gets-a-size.md).
 
+**A SOLVER AID'S DIRECTION IS READ FROM THE ANSWER, NEVER FROM THE SEED
+(2026-10-03).**  `temperatureApproach` is a MAGNITUDE whose sign the engine
+reads off the thermicity of feed -> equilibrium (the 2026-09-26 ruling,
+`src/unitOperations/reactor/TemperatureApproach.H`).  In `mode adiabatic` the physical T is
+itself the unknown, and the reading was taken at the outer Newton's SEED,
+`operation.T`: a bed whose feed already carries product, seeded hotter than
+the temperature at which that feed is itself at equilibrium, read the
+transformation as DECOMPOSITION, took T - |dT|, and ended MORE converted
+than its own equilibrium outlet -- the aid helping instead of hurting, and a
+colder seed on the SAME case taking the other sign, at exit 0, with the sign
+announced as if it were a fact about the chemistry.  Rule: **in adiabatic
+mode the bed is solved ONCE with no approach, the direction is read from the
+thermicity of feed -> THAT dT = 0 outlet (the state the bed itself reaches,
+which no seed can move), the announcement names that outlet temperature and
+the seed the probe started from, and the bed is re-solved from it with the
+signed magnitude**; the probe's cost is published
+(`approachProbeOuterIterations`).  Isothermal mode is untouched, because
+there the physical T is the declared one and the reading was at the answer
+all along.  The general form is the durable half: a seed is the one input
+the 2026-05-30 rule lets a solver own, and **a sign that a seed can move is
+a seed deciding the answer**.  Two traps paid for: the brief said the seed
+was the `0/<outlet>` file, and it is `operation.T` -- the unit is handed its
+FEED from the stream registry and nothing else, so a witness that edits the
+outlet file reproduces nothing; and a `file:line` citation can be stale
+before the lines move (a lesson cited the adiabatic energy residual at the
+lines of a retired key's refusal).  Witness
+`gibbs13_adiabatic_approach_direction` (seeded hot on purpose); gate
+`check_adiabatic_approach_direction` (3 by-hand sabotages; the one that
+drops the announcement is caught by a single arm, which is why that arm
+exists).  Record:
+[`docs/design/the-approach-direction-is-read-from-the-answer.md`](docs/design/the-approach-direction-is-read-from-the-answer.md).
+
 **A CATALYST BED IS SIZED BY ITS KINETICS, AND THE CHAIN NOW RUNS WHERE THE
 HEADER SAID IT DID (2026-09-26, commission C2).**  Rule: **a sizer for a
 RATING model READS the unit's own size and passes it through** -- the `pfr`
