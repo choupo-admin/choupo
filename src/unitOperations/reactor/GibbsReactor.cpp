@@ -66,11 +66,11 @@ scalar GibbsReactor::stateEnthalpy_W(const GibbsProblem&     prob,
 }
 
 GibbsReactor::ApproachDirection
-GibbsReactor::approachDirection(const GibbsMethod&  method,
-                                const GibbsProblem& prob,
-                                scalar              T,
-                                scalar              magnitude,
-                                bool                atSeed)
+GibbsReactor::approachDirection(const GibbsMethod&    method,
+                                const GibbsProblem&   prob,
+                                scalar                T,
+                                scalar                magnitude,
+                                const AdiabaticProbe* adiabatic)
 {
     ApproachDirection d;
     const ThermoPackage& thermo = *prob.thermo;
@@ -118,7 +118,17 @@ GibbsReactor::approachDirection(const GibbsMethod&  method,
     m << std::fixed << std::setprecision(2);
     m << "temperatureApproach " << magnitude << " K is a MAGNITUDE; the engine"
          " assigned its direction";
-    if (atSeed) m << " (adiabatic mode: read at the seed T, the physical T being the answer)";
+    //  ADIABATIC: the reading is at the dT = 0 ADIABATIC outlet, never at
+    //  the seed (2026-10-03) -- say which state decided, and what reached it.
+    if (adiabatic)
+        m << " (adiabatic mode: the physical T is the answer, so the reading"
+             " is taken at the dT = 0 ADIABATIC outlet T0 = " << T << " K --"
+             " the state THIS bed reaches with no approach, solved first from"
+             " the seed " << adiabatic->T_seed << " K in "
+          << adiabatic->outerIterations << " outer iteration"
+          << (adiabatic->outerIterations == 1 ? "" : "s")
+          << (adiabatic->converged ? "" : ", NOT converged")
+          << "; the seed cannot move the sign)";
     m << ": the overall transformation from THIS feed to its equilibrium at T = "
       << T << " K is ";
     if (d.determined)
@@ -335,12 +345,14 @@ int GibbsReactor::solve(const DictPtr& dict,
     //  into every results block -- the "dT=50 survived in a copied dict for
     //  months" accident).  Ruled 2026-09-26: the SIGN is the engine's, read
     //  off the thermicity of the overall transformation from this feed at the
-    //  physical T (see `approachDirection`).  In adiabatic mode the physical
-    //  T is the answer, so the reading is taken at the seed and says so.
-    if (dTmagnitude > 0.0)
-    {
-        const auto dir = approachDirection(*method, prob, T_guess, dTmagnitude,
-                                           mode == "adiabatic");
+    //  physical T (see `approachDirection`).  ISOTHERMAL: the physical T is
+    //  `operation.T`, so the reading is taken here, before the solve.
+    //  ADIABATIC: the physical T is the ANSWER, so the reading is taken
+    //  inside the adiabatic branch below, at the dT = 0 adiabatic outlet --
+    //  never at the seed, which decided the sign until 2026-10-03 and could
+    //  decide it wrong (GibbsReactor.H, `AdiabaticProbe`).  ONE announcement
+    //  for both modes.
+    auto announceApproach = [&](const ApproachDirection& dir) {
         prob.dTapproach = dir.sign * dTmagnitude;
         std::cout << "  [gibbs] temperatureApproach = " << dTmagnitude
                   << " K: REACTION equilibrium evaluated at T "
@@ -358,7 +370,9 @@ int GibbsReactor::solve(const DictPtr& dict,
                                     "gibbsReactor "
                                     + dict->lookupWordOrDefault("name", "(unnamed)"),
                                     dir.message);
-    }
+    };
+    if (dTmagnitude > 0.0 && mode == "isothermal")
+        announceApproach(approachDirection(*method, prob, T_guess, dTmagnitude));
 
     //  ---- THE NEWTON LOG, OPT-IN (2026-09-27, commission C15) ------------
     //
@@ -397,6 +411,7 @@ int GibbsReactor::solve(const DictPtr& dict,
     scalar T_final = T_guess;
     GibbsEquilibrium eq;
     int outerIter = 0;
+    int probeOuterIter = -1;   // the dT = 0 probe's count; -1 = no probe ran
     if (mode == "adiabatic")
     {
         const scalar T_in = feedDict->lookupScalar("T", Dims::temperature);
@@ -438,14 +453,13 @@ int GibbsReactor::solve(const DictPtr& dict,
         nro.tolerance = 1.0e-2; nro.maxIter = 30;
         nro.lower = 250.0; nro.upper = 5000.0;
         nro.bracket = false; nro.monotoneIncreasing = true; nro.maxStep = 200.0;
-        if (verbosity >= 2)
-            std::cout << "GibbsReactor (adiabatic): outer Newton on T from "
-                      << T_guess << " K\n";
         nro.onIter = [this](const solver::NRTrace& tr){ recordResidual(std::abs(tr.f)); };
-        auto rT = solver::newton1D(fT, dfT, T_guess, nro);
-        outerIter = rT.iterations;
-        T_final = rT.x;
-        eq = method->solve(prob, T_final, {}, logSink);
+        auto outerNewton = [&](scalar Tstart) {
+            if (verbosity >= 2)
+                std::cout << "GibbsReactor (adiabatic): outer Newton on T from "
+                          << Tstart << " K\n";
+            return solver::newton1D(fT, dfT, Tstart, nro);
+        };
         //  The augmented dict carries the unit's name as the DICTIONARY'S OWN
         //  name and strips the `name` entry (DistillationColumn.cpp records
         //  the same finding), so a `name` lookup would say "(unnamed)".
@@ -453,6 +467,46 @@ int GibbsReactor::solve(const DictPtr& dict,
             + (dict->name().empty()
                    ? dict->lookupWordOrDefault("name", "(unnamed)")
                    : dict->name()) + "'";
+
+        //  ---- THE DIRECTION IS READ FROM THE ANSWER, NEVER FROM THE SEED --
+        //
+        //  2026-10-03 (DEV.md 5, 2026-10-01).  Until this day the direction
+        //  was read at the SEED `operation.T`: the thermicity of feed ->
+        //  equilibrium AT THE SEED.  A downstream bed whose feed already
+        //  carries product, seeded hotter than the temperature at which that
+        //  feed is itself at equilibrium, read the transformation as
+        //  DECOMPOSITION (endothermic), took T - |dT|, and ended MORE
+        //  converted than its own equilibrium outlet -- measured on an
+        //  ammonia bed at 150 bar: seeded 60 K hotter than the cold seed the
+        //  SAME case took the other sign and published 0.5 % more NH3 than
+        //  the dT = 0 outlet.  A solver aid whose sign a seed can move is a
+        //  seed that decides the answer, which the 2026-05-30 rule forbids.
+        //  So: solve the bed ONCE with no approach -- its own equilibrium
+        //  outlet T0, which no seed can move -- read the thermicity of
+        //  feed -> THAT state, announce it with T0, then re-solve from T0
+        //  with the signed approach.  One outer Newton more, counted and
+        //  published (`approachProbeOuterIterations`).
+        scalar Tseed = T_guess;
+        if (dTmagnitude > 0.0)
+        {
+            prob.dTapproach = 0.0;
+            const auto r0 = outerNewton(T_guess);
+            AdiabaticProbe probe;
+            probe.T_seed          = T_guess;
+            probe.outerIterations = r0.iterations;
+            probe.converged       = r0.converged;
+            if (!r0.converged)   // the dT = 0 probe is announced like any outer solve
+                announceOuterNotConverged(unitLocus + " (dT = 0 probe for the"
+                    " approach direction)", r0.x, r0.residual, r0.iterations);
+            announceApproach(approachDirection(*method, prob, r0.x, dTmagnitude,
+                                               &probe));
+            probeOuterIter = r0.iterations;
+            Tseed = r0.x;
+        }
+        auto rT = outerNewton(Tseed);
+        outerIter = rT.iterations;
+        T_final = rT.x;
+        eq = method->solve(prob, T_final, {}, logSink);
         if (!rT.converged)   // ANNOUNCED, not a bare cerr line (DEV.md §5 A3)
             announceOuterNotConverged(unitLocus, rT.x, rT.residual, rT.iterations);
         if (!penalisedT.empty())
@@ -563,6 +617,10 @@ int GibbsReactor::solve(const DictPtr& dict,
     kpis_["converged"]    = eq.converged ? 1.0 : 0.0;
     kpis_["iterations"]   = static_cast<scalar>(eq.iterations);
     if (mode == "adiabatic") kpis_["outerIterations"] = static_cast<scalar>(outerIter);
+    //  The dT = 0 probe that decided the approach direction: its cost, so a
+    //  reader can see what the rule bought (published only when it ran).
+    if (probeOuterIter >= 0)
+        kpis_["approachProbeOuterIterations"] = static_cast<scalar>(probeOuterIter);
 
     // -- Reactor duty on the ELEMENTS datum (heat that crosses the boundary) --
     // In ISOTHERMAL (fixed-T) mode the reactor must exchange heat with the

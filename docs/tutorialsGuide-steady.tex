@@ -6325,6 +6325,55 @@ THE LOG IS AN OBSERVER. Remove every `newtonLog` line and every number this case
 \goldmore{52}
 \end{tutgolden}
 
+\clearpage
+\tutentry{gibbs13\_adiabatic\_approach\_direction}{tutorials/steady/gibbs/gibbs13\_adiabatic\_approach\_direction}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed3) at (0.0,-0.0) {\textbf{bed3}\\[-1pt]{\tiny gibbsReactor}};
+  \draw[->] ($(bed3.west)+(-1.05,0.00)$) -- ($(bed3.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(bed3.east)+(0,-0.17)$) -- ($(bed3.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {)};
+  \draw[->] ($(bed3.east)+(0,0.17)$) -- ($(bed3.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {out};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{An adiabatic ammonia synthesis bed fed a gas that already carries 16 \% NH3 (the third bed of a staged converter), 150 bar, 10 K approach to equilibrium, seeded 80 K hotter than its answer: the engine reads the approach's SIGN from the dT = 0 adiabatic outlet it solves first, not from the seed, so the bed ends BELOW its own equilibrium whichever seed the case declares}
+\begin{tutnarrative}
+the SIGN of an adiabatic approach is read from the bed's own answer, never from the seed.
+
+THE BED. The third bed of a staged ammonia converter: the feed already carries 16 \% NH3 (N2 19, H2 57, NH3 16, Ar 8 mol\%), enters at 415 C and 150 bar, and the bed is ADIABATIC with a 10 K approach to equilibrium (US 5,352,428's design band is 1-10 C; see ammoniaStaged03\_approach for the source). `operation.T` is the SEED of the outer Newton on the outlet temperature, and it is set 80 K HOTTER than the answer on purpose.
+
+WHAT THIS CASE WITNESSES (DEV.md 5, 2026-10-01; fixed 2026-10-03). The engine assigns the approach's direction from the thermicity of the transformation feed $\to$ equilibrium. Until 2026-10-03, in adiabatic mode, it read that thermicity AT THE SEED. A feed that already carries product is itself AT equilibrium at some temperature (here \textasciitilde{}487 C); seeded hotter than that, the equilibrium at the seed holds LESS ammonia than the feed, the transformation reads as DECOMPOSITION, the approach takes T - 10 K, and the bed ends MORE converted than its own equilibrium outlet -- the aid helped instead of hurting, and a 60 K colder seed on the SAME case gave the other sign. Measured on this feed with the old rule: seed 768 K $\to$ 734.2 K and 19.32 \% NH3; seed 708 K $\to$ 721.1 K and 18.36 \%; the dT = 0 outlet is 727.6 K and 18.84 \%, from either seed.
+
+THE RULE NOW. The bed is solved ONCE with no approach -- its own dT = 0 adiabatic outlet T0, which no seed can move -- the thermicity of feed $\to$ THAT state decides the sign (exothermic here: the bed heats from 688 to T0), the announcement names T0 and the enthalpy change it read, and the bed is re-solved from T0 with the signed approach. So this case ends at the SAME outlet as its cold-seeded twin, BELOW its dT = 0 equilibrium in both NH3 and temperature (the reaction is exothermic), which is what a real bed does. Gate: check\_adiabatic\_approach\_direction (it runs this case under a second seed and under dT = 0).
+
+THE COST, published: `approachProbeOuterIterations` is the dT = 0 solve's outer Newton count; `outerIterations` the re-solve's, now seeded from T0. The physics is nothing new -- the SAME Gibbs minimisation and the SAME energy balance as gibbs05 -- which is the point: an aid's sign must not depend on where the solver started.
+
+TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
+
+\end{tutnarrative}
+\tutreadme{THE CASE. One adiabatic gibbsReactor: the third bed of a staged ammonia converter, fed a gas that already carries 16 \% NH3 (N2 19, H2 57, NH3 16, Ar 8 mol\%; author-set to be representative of a last bed, not a plant measurement), entering at 415 $^\circ$C and 150 bar, with a 10 K approach to equilibrium (the band US 5,352,428 calls "preferably 1 C. to 10 C."; see ammoniaStaged03\_approach for the source). operation.T is the SEED of the outer Newton on the outlet temperature, and it is set to 495 $^\circ$C --- 80 K hotter than the answer --- on purpose. The 0/out file is an initial estimate of the stream and is NOT that seed; the unit reads its seed from its own dict.}
+\tutreadme{temperatureApproach is declared as a MAGNITUDE and the engine assigns its sign from the thermicity of the transformation feed $\to$ equilibrium (ruled 2026-09-26). In mode adiabatic the physical temperature is the answer of an outer Newton, and until 2026-10-03 the thermicity was read at the seed. A feed that already carries product is itself at equilibrium at some temperature (here about 487 $^\circ$C). Seeded hotter than that, the equilibrium at the seed holds LESS ammonia than the feed, the transformation reads as decomposition (endothermic), the approach takes T - 10 K, and the bed ends MORE converted than its own equilibrium outlet --- the aid helps instead of hurting. A 60 K colder seed on the SAME case took the other sign.}
+\tutreadme{The hot-seeded bed published more ammonia than equilibrium allows at its own outlet, at exit 0, with the sign announced as if it were a finding about the chemistry.}
+\tutreadme{The bed is solved once with no approach --- its own dT = 0 adiabatic outlet T0, which no seed can move --- the thermicity of feed $\to$ THAT state decides the sign (exothermic here: the bed heats from 688 K to T0), the announcement names T0, the seed the probe started from and the enthalpy change it read, and the bed is re-solved from T0 with the signed approach. So this case ends at the same outlet as its cold-seeded twin, 721.05 K and 18.36 \% NH3, BELOW its dT = 0 equilibrium in both ammonia and temperature, which is what a real bed does. approachProbeOuterIterations publishes the cost of the dT = 0 solve (one extra outer Newton; outerIterations is the re-solve's count, now seeded from T0).}
+\tutreadme{Isothermal mode is untouched: there the physical T is operation.T and the reading was at the answer all along.}
+\tutreadme{check\_adiabatic\_approach\_direction runs this case under its hot seed and under a cold seed and requires ONE outlet; runs it at dT = 0 and requires the approach outlet below it in NH3 and in T; reads T0 off the announcement and holds it to the dT = 0 run's own temperature. Record: docs/design/the-approach-direction-is-read-from-the-answer.md.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{2.77777777778}
+\goldrow{stream}{feed}{T}{688.15}
+\goldrow{stream}{out}{F}{2.72249892313}
+\goldrow{stream}{out}{T}{721.051945619}
+\goldrow{kpi}{bed3}{F\_in\_kmol\_h}{10000}
+\goldrow{kpi}{bed3}{F\_out\_kmol\_h}{9800.99612328}
+\goldrow{kpi}{bed3}{N\_in\_mol\_s}{2777.77777778}
+\goldrow{kpi}{bed3}{N\_out\_mol\_s}{2722.49892313}
+\goldrow{kpi}{bed3}{P}{15000000}
+\goldrow{kpi}{bed3}{T}{721.051945619}
+\goldrow{kpi}{bed3}{approachProbeOuterIterations}{5}
+\goldrow{kpi}{bed3}{converged}{1}
+\goldrow{kpi}{bed3}{lambda\_Ar}{-100923.402463}
+\goldrow{kpi}{bed3}{lambda\_H}{-36944.0037435}
+\goldmore{10}
+\end{tutgolden}
+
 \subsection{heat}
 \grouptheory{heat}
 \clearpage

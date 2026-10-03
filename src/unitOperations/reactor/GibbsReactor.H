@@ -128,6 +128,26 @@ public:
     //  and at T - |dT| for an endothermic one.  ONE home for the rule: the
     //  reactor and the `gibbsMap` props op both call this, so the two cannot
     //  drift apart.  It costs one extra equilibrium solve at dT = 0.
+    //
+    //  THE DIRECTION IS READ FROM THE ANSWER, NEVER FROM THE SEED
+    //  (2026-10-03; record docs/design/the-approach-direction-is-read-from-
+    //  the-answer.md).  In ISOTHERMAL mode `T` is the physical T and the
+    //  reading is at the answer by construction.  In ADIABATIC mode the
+    //  physical T is itself the unknown, and this used to be read at the
+    //  SEED `operation.T`: a bed whose feed already carries product, seeded
+    //  hotter than the temperature at which that feed is itself at
+    //  equilibrium, read the transformation as DECOMPOSITION, took T - |dT|,
+    //  and ended MORE converted than its own equilibrium -- the aid helped
+    //  instead of hurting, and a different seed gave a different sign.  Now
+    //  the adiabatic bed is solved ONCE with no approach, and `T` here is
+    //  that dT = 0 outlet T0: the state THIS bed reaches, which no seed can
+    //  move.  `adiabatic` carries what decided it, for the announcement.
+    struct AdiabaticProbe
+    {
+        scalar T_seed          = 0.0;   // the operation.T the dT = 0 solve started from
+        int    outerIterations = 0;     // that solve's outer Newton iterations on T
+        bool   converged       = false; // whether it met its tolerance
+    };
     struct ApproachDirection
     {
         int         sign = +1;          // +1: T + |dT|;  -1: T - |dT|
@@ -136,11 +156,11 @@ public:
         std::string word;               // "exothermic" | "endothermic" | "undetermined"
         std::string message;            // the ONE sentence every caller prints and logs
     };
-    static ApproachDirection approachDirection(const GibbsMethod&  method,
-                                               const GibbsProblem& prob,
-                                               scalar              T,
-                                               scalar              magnitude,
-                                               bool                atSeed = false);
+    static ApproachDirection approachDirection(const GibbsMethod&    method,
+                                               const GibbsProblem&   prob,
+                                               scalar                T,
+                                               scalar                magnitude,
+                                               const AdiabaticProbe* adiabatic = nullptr);
 
     //- Enthalpy flow [W] of an equilibrium state at temperature T on the
     //  package's own surface (the SAME arithmetic the adiabatic Newton and

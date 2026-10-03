@@ -185,7 +185,7 @@ export const CLAUS_STEPS = [
       { sym: "f(T)", means: "the energy residual the outer Newton drives to zero", unit: "J/s" },
     ],
     assumes: "Adiabatic, and a single gas phase.",
-    cites: "GibbsReactor.cpp:188-214",
+    cites: "GibbsReactor.cpp:445-450",
   },
   {
     n: 6,
