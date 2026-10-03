@@ -1966,8 +1966,10 @@ accepts today, and that is a policy call.
      `<view>/internalStates/<unit>`), NO dual reader (the old shape refused
      naming the migrator), and `<t>/` directories written BY DEFAULT at
      every writeInterval, as OpenFOAM does (`write false;` opts out).
-     Dispatched to a general with a written brief.  **BUILT 2026-09-30 on
-     the general's branch (awaiting integration):** both drivers read and
+     Dispatched to a general with a written brief.  **BUILT 2026-09-30 and INTEGRATED into `main` the same
+     day (CLAUDE.md §3 and §10 record the landed shape; this sentence said
+     "awaiting integration" for three days after it landed -- corrected
+     2026-10-03):** both drivers read and
      write the ratified layout (a `holdup {}` kind in
      `InternalStateIO`), the 59 cases migrated byte-identically by
      `bin/curate/migrate_state_layout.py`, the old shape refused by name,
