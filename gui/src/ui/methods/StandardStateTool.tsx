@@ -227,7 +227,11 @@ export function StandardStateTool(): JSX.Element {
         {series.map((s, i) => {
           const pts = xs.map((x) => [px(x), py(valueOf(s, x, hEng) ?? 0)] as const);
           const colour = SERIES_COLOURS[i % SERIES_COLOURS.length];
-          const last = pts[pts.length - 1]!;
+          //  The legend is a stacked column in the right margin, never a label
+          //  at each line's end: the isobars lie within a kilojoule of one
+          //  another at 1000 K, and five end-labels there overprint (seen on
+          //  the live page, 2026-10-03).
+          const legendY = Tp + 10 + 11 * i;
           return (
             <g key={s}>
               <polyline fill="none" stroke={colour} strokeWidth={1.5}
@@ -240,7 +244,9 @@ export function StandardStateTool(): JSX.Element {
                     fill="none" stroke={colour} strokeWidth={1} />
                 );
               })}
-              <text x={last[0] + 5} y={last[1] + 3} fontSize={9} fill={colour}>
+              <line x1={W - R + 6} y1={legendY - 3} x2={W - R + 18} y2={legendY - 3}
+                stroke={colour} strokeWidth={2} />
+              <text x={W - R + 22} y={legendY} fontSize={9} fill={colour}>
                 {axis === "T" ? `${s} bar` : `${s} K`}
               </text>
             </g>
