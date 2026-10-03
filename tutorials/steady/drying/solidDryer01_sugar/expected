@@ -4,7 +4,7 @@ stream  drySolid               F                0.00283583138708 1e-4
 stream  hotAir                 F                0.222222222229   1e-4
 stream  humidExhaust           F                0.23271974852    1e-4
 stream  wetSolid               F                0.0133333576778  1e-4
-kpi     solidDryer             T_out            347.5126791      1e-4
+kpi     solidDryer             T_out            346.659472289    1e-4
 kpi     solidDryer             X_equilibrium    0.00109945367934 1e-4
 kpi     solidDryer             X_final          0.00109945367934 1e-4
 kpi     solidDryer             X_initial        0.199991235822   1e-4
@@ -13,11 +13,11 @@ kpi     solidDryer             drySolid_flow    0.951878730237   1e-4
 kpi     solidDryer             moisture_pct_wb  0.109824620851   1e-4
 kpi     solidDryer             water_activity   0.00431158404412 1e-4
 kpi     solidDryer             water_removed    0.189112936127   1e-4
-stream  drySolid               T                347.5126791      1e-4
+stream  drySolid               T                346.659472289    1e-4
 stream  hotAir                 T                420              1e-4
-stream  humidExhaust           T                347.5126791      1e-4
+stream  humidExhaust           T                346.659472289    1e-4
 stream  wetSolid               T                330              1e-4
 boundary global                 H_feeds_kW       -9423.75561039   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
-boundary global                 H_products_kW    -9416.87923055   1e-4
-boundary global                 residual_kW      -6.87637983215   1e-4
+boundary global                 H_products_kW    -9423.75561039   1e-4
+boundary global                 residual_kW      1.81898940355e-12 1e-4
