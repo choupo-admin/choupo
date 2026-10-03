@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  One pure gas on a cubic equation of state.  The ideal-gas enthalpy comes
+    from the record's Cp polynomial on the elements datum; the residual is
+    SRK's departure function at (T, P) -- the two halves of h_real(T, P) =
+    h_ig(T) + h_R(T, P) the page separates.
+*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components    ( H2 );
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model SRK; }
+}

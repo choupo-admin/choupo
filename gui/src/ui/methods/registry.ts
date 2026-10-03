@@ -69,7 +69,7 @@ export type MethodToolId =
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
-  | "reaction-enthalpy";
+  | "reaction-enthalpy" | "standard-state";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -739,6 +739,28 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "kJ per mole of NH₃ at 25 °C and −53.4 at 500 °C, so the 25 °C value "
       + "under-states a converter's heat by about 14 %; and that an energy "
       + "balance on the elements datum never needs a reaction enthalpy at all.",
+    theory: "sec:elements-reference",
+  },
+  //  COMMISSIONED 2026-10-03 (DEV.md 4c, C32), out of a long conversation
+  //  that began on the page above and kept introducing symbols before the
+  //  physical need for them.  Behaviour first (how much h of real hydrogen
+  //  moves with T against P, priced by the engine), then the reference and
+  //  its correction, only then the degree sign.
+  {
+    id: "standard-state",
+    label: "Enthalpy, standard state and equilibrium (what ° means)",
+    discipline: "Thermodynamics", kind: "notes", status: "live",
+    teaches: "That the enthalpy of real hydrogen rises 20.6 kJ/mol from 300 to "
+      + "1000 K at 1 bar and 1.3 kJ/mol from 1 to 1000 bar at 300 K — small "
+      + "against temperature, never zero; that the degree sign names a RULE OF "
+      + "REFERENCE (the standard pressure and the reference phase) and not a "
+      + "temperature, so a standard property is a function of T; that a "
+      + "process at 150 bar uses the standard property plus the equation of "
+      + "state's residual, without assuming an ideal gas; that the zero of "
+      + "enthalpy is a third, separate choice, and only the elements datum "
+      + "makes species' zeros consistent across every reaction; and why "
+      + "equilibrium is a minimum of G, not G = 0, with Kirchhoff, "
+      + "Gibbs–Helmholtz and van 't Hoff kept apart.",
     theory: "sec:elements-reference",
   },
   //  COMMISSIONED 2026-10-02 (DEV.md 4c, C30): which heuristics fix the

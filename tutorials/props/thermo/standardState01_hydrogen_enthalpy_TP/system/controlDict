@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  The molar enthalpy of real hydrogen over 300-1000 K and 1-1000 bar, one
+    propertyPoint per node, so the numbers reach the result JSON (a
+    propertyScan2D writes a CSV the browser cannot read).  Witness of the
+    `standard-state` EduTool (DEV.md 4c, C32): how much h moves with T
+    against P, the ideal-gas part against the SRK residual, and the
+    green-ammonia converter's point (733.15 K, 150 bar) for "the process is
+    at 150 bar".  The datum is the engine's elements datum (H2 is an element:
+    h_ig(298.15 K) = 0); the page shifts every curve to h(300 K, 1 bar) = 0,
+    which is the zero-of-enthalpy lesson itself.
+
+    SRK, not Peng-Robinson, and that was MEASURED before it was chosen
+    (2026-10-03, against the Leachman 2009 reference in constant/reference/):
+    at 300 K the SRK residual at 1000 bar is 6 % below the reference, PR's is
+    a third below and PR gets the SIGN wrong at 100 bar.  Neither is
+    hydrogen's own equation; the page shows the gap rather than hiding it.
+*/
+application   choupoProps;
+description   "h(T,P) of hydrogen on SRK, 300-1000 K by 1-1000 bar, 42 points: the ideal-gas part against the residual, for the standard-state EduTool";
+verbosity     2;

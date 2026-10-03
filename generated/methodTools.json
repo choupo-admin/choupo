@@ -11,8 +11,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 48,
-  "registryTools": 48,
+  "liveTools": 49,
+  "registryTools": 49,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -230,6 +230,13 @@
       "discipline": "Reaction engineering",
       "teaches": "That the degree sign of a standard reaction enthalpy fixes the standard STATE (1 bar, each species in its reference phase), not the temperature, so there is a standard value at every temperature and the table's is the one at 298.15 K; that Kirchhoff's law moves it by the reaction heat capacity; that for ammonia the engine prices −45.9 kJ per mole of NH₃ at 25 °C and −53.4 at 500 °C, so the 25 °C value under-states a converter's heat by about 14 %; and that an energy balance on the elements datum never needs a reaction enthalpy at all.",
       "href": "/app/?workspace=methods&tool=reaction-enthalpy"
+    },
+    {
+      "id": "standard-state",
+      "label": "Enthalpy, standard state and equilibrium (what ° means)",
+      "discipline": "Thermodynamics",
+      "teaches": "That the enthalpy of real hydrogen rises 20.6 kJ/mol from 300 to 1000 K at 1 bar and 1.3 kJ/mol from 1 to 1000 bar at 300 K — small against temperature, never zero; that the degree sign names a RULE OF REFERENCE (the standard pressure and the reference phase) and not a temperature, so a standard property is a function of T; that a process at 150 bar uses the standard property plus the equation of state's residual, without assuming an ideal gas; that the zero of enthalpy is a third, separate choice, and only the elements datum makes species' zeros consistent across every reaction; and why equilibrium is a minimum of G, not G = 0, with Kirchhoff, Gibbs–Helmholtz and van 't Hoff kept apart.",
+      "href": "/app/?workspace=methods&tool=standard-state"
     },
     {
       "id": "limiting-reactant",

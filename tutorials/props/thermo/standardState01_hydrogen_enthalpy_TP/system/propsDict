@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  One propertyPoint per node of the page's grid.  Names are the keys the
+    GUI reads: h_T<K>_P<bar>; h_converter is the green-ammonia converter's
+    (T, P), h_converter_1bar its standard-pressure twin.
+*/
+operations
+(
+    { name h_T300_P1;  type propertyPoint;  state { T 300 K;  P 1 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T300_P100;  type propertyPoint;  state { T 300 K;  P 100 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T300_P300;  type propertyPoint;  state { T 300 K;  P 300 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T300_P600;  type propertyPoint;  state { T 300 K;  P 600 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T300_P1000;  type propertyPoint;  state { T 300 K;  P 1000 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T400_P1;  type propertyPoint;  state { T 400 K;  P 1 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T400_P100;  type propertyPoint;  state { T 400 K;  P 100 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T400_P300;  type propertyPoint;  state { T 400 K;  P 300 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T400_P600;  type propertyPoint;  state { T 400 K;  P 600 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T400_P1000;  type propertyPoint;  state { T 400 K;  P 1000 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T500_P1;  type propertyPoint;  state { T 500 K;  P 1 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T500_P100;  type propertyPoint;  state { T 500 K;  P 100 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T500_P300;  type propertyPoint;  state { T 500 K;  P 300 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T500_P600;  type propertyPoint;  state { T 500 K;  P 600 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T500_P1000;  type propertyPoint;  state { T 500 K;  P 1000 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T600_P1;  type propertyPoint;  state { T 600 K;  P 1 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T600_P100;  type propertyPoint;  state { T 600 K;  P 100 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T600_P300;  type propertyPoint;  state { T 600 K;  P 300 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T600_P600;  type propertyPoint;  state { T 600 K;  P 600 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T600_P1000;  type propertyPoint;  state { T 600 K;  P 1000 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T700_P1;  type propertyPoint;  state { T 700 K;  P 1 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T700_P100;  type propertyPoint;  state { T 700 K;  P 100 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T700_P300;  type propertyPoint;  state { T 700 K;  P 300 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T700_P600;  type propertyPoint;  state { T 700 K;  P 600 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T700_P1000;  type propertyPoint;  state { T 700 K;  P 1000 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T800_P1;  type propertyPoint;  state { T 800 K;  P 1 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T800_P100;  type propertyPoint;  state { T 800 K;  P 100 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T800_P300;  type propertyPoint;  state { T 800 K;  P 300 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T800_P600;  type propertyPoint;  state { T 800 K;  P 600 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T800_P1000;  type propertyPoint;  state { T 800 K;  P 1000 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T900_P1;  type propertyPoint;  state { T 900 K;  P 1 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T900_P100;  type propertyPoint;  state { T 900 K;  P 100 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T900_P300;  type propertyPoint;  state { T 900 K;  P 300 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T900_P600;  type propertyPoint;  state { T 900 K;  P 600 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T900_P1000;  type propertyPoint;  state { T 900 K;  P 1000 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T1000_P1;  type propertyPoint;  state { T 1000 K;  P 1 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T1000_P100;  type propertyPoint;  state { T 1000 K;  P 100 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T1000_P300;  type propertyPoint;  state { T 1000 K;  P 300 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T1000_P600;  type propertyPoint;  state { T 1000 K;  P 600 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_T1000_P1000;  type propertyPoint;  state { T 1000 K;  P 1000 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_converter;       type propertyPoint;  state { T 733.15 K;  P 150 bar;  composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+    { name h_converter_1bar;  type propertyPoint;  state { T 733.15 K;  P 1 bar;    composition { H2 1.0; } }  properties ( H_ig H_R H_real Z ); }
+);

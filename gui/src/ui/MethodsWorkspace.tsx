@@ -191,6 +191,9 @@ const LimitingReactantTool = lazy(() =>
 const ReactionEnthalpyTool = lazy(() =>
   import("./methods/ReactionEnthalpyTool.js")
     .then((m) => ({ default: m.ReactionEnthalpyTool })));
+const StandardStateTool = lazy(() =>
+  import("./methods/StandardStateTool.js")
+    .then((m) => ({ default: m.StandardStateTool })));
 const EquilibriumLandscapesTool = lazy(() =>
   import("./methods/EquilibriumLandscapesTool.js")
     .then((m) => ({ default: m.EquilibriumLandscapesTool })));
@@ -458,6 +461,7 @@ export function MethodsWorkspace() {
             : tool === "approach-to-equilibrium" ? <ApproachToEquilibriumTool />
             : tool === "limiting-reactant" ? <LimitingReactantTool />
             : tool === "reaction-enthalpy" ? <ReactionEnthalpyTool />
+            : tool === "standard-state" ? <StandardStateTool />
             : tool === "equilibrium-landscapes" ? <EquilibriumLandscapesTool />
             : tool === "declared-pathways" ? <DeclaredPathwaysTool />
             : tool === "reactor-ladder" ? <ReactorLadderTool />

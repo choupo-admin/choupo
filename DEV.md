@@ -1879,6 +1879,37 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C32. AN EDUTOOL ON WHAT THE DEGREE SIGN MEANS: ENTHALPY, THE STANDARD
+     STATE AND EQUILIBRIUM (asked 2026-10-03, Vítor, forwarding a brief
+     ChatGPT wrote after a long conversation that began on the
+     `reaction-enthalpy` page: "Quero que cries um EduTools … sobre
+     'Entalpia, estado padrão e equilíbrio: o que significa realmente o
+     °?'").**  The brief's pedagogical order is kept -- physical behaviour
+     first (how much h of real hydrogen moves with T against P, 300-1000 K,
+     1-1000 bar), then the reference curve and its correction, only then the
+     degree sign; the zero of enthalpy as a separate choice; the process at
+     150 bar; equilibrium and the three 1/T relations; six questions with
+     feedback.  Three of its instructions are NOT followed, each by a
+     settled rule: the page is in ENGLISH (the repository language, §5 of
+     CLAUDE.md -- the brief asked for Portuguese); its "what does <a named
+     commercial simulator> do" screen names a competitor, which
+     `check_doctrine` refuses in user-facing content, so it becomes "what
+     Choupo does, and what any simulator's convention must declare"; and
+     the hydrogen curves are NOT
+     a pasted CoolProp table -- the ENGINE prices them (41 `propertyPoint`
+     ops on SRK in the new witness
+     `tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP`, zero
+     physics in the panel), and the Leachman-2009 reference values are
+     RE-COMPUTED here with CoolProp 8.0.0 by
+     `bin/curate/reference_h2_enthalpy.py` into the witness's
+     `constant/experimental/` (the one CSV location the bundle admits), cited, drawn beside the engine's points with the
+     deviation stated (measured first: SRK is within 6 % of the reference
+     residual at 300 K / 1000 bar and 0.2 % at 1000 K; PR under-predicts it
+     by a third and gets the sign wrong at 300 K / 100 bar, so SRK it is).
+     Ten steps, six questions with feedback (`lessonQuiz.tsx`, the first
+     shared quiz component), four stated limits.  DONE 2026-10-03 (registry
+     id `standard-state`).
+
 **C31. AN EDUTOOL ON THE REACTION ENTHALPY AND TEMPERATURE (asked
      2026-10-02, Vítor: "Ha outra coisa que eu confundo sempre que é o
      DeltaH0 da reacção! Aquilo é 25 graus, mas depois depende da
