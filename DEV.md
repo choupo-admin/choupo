@@ -1450,7 +1450,7 @@ accepts today, and that is a policy call.
      methanation (full Gibbs goes to CH4).  The witness choice was the
      commander's on a stated default; Vitor may reverse it.
 
-     **BUILT 2026-09-27 (general's branch, not yet merged).**  Engine:
+     **BUILT 2026-09-27, and ON MAIN (equil03/equil04 are in the tree; this sentence said "not yet merged" until 2026-10-03).**  Engine:
      `operation.temperatureApproach` on `equilibriumReactor` as a MAGNITUDE,
      per-reaction override in the reaction's constant/reactions entry (0
      exempts), the sign PER REACTION from the thermicity AS IT RUNS (probe
