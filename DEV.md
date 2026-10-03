@@ -2857,29 +2857,53 @@ Vitor's authorisation are required; 156 tracked `0/` files declare
 `vaporFraction` and how many are mixtures has NOT been measured.
 
 **2026-10-01 -- AN ADIABATIC `temperatureApproach` CAN TAKE THE WRONG SIGN
-FROM ITS SEED, AND THE BED THEN ENDS ABOVE ITS OWN EQUILIBRIUM.  OPEN, NOT
-FIXED.**  Found while checking a design-project group's report ("with a
-10 K approach the conversion comes out very high").  In `mode adiabatic`
-`GibbsReactor::approachDirection` reads the thermicity of feed -> equilibrium
-at the SEED `T` (`GibbsReactor.cpp:338-344`, announced).  A downstream bed
-whose feed already carries ammonia, seeded HOTTER than the temperature at
-which that feed is itself at equilibrium, reads the transformation as
-DECOMPOSITION (endothermic), assigns `T - dT`, and lands MORE converted than
-equilibrium at its own outlet.  Measured (scratch copy of
+FROM ITS SEED, AND THE BED THEN ENDS ABOVE ITS OWN EQUILIBRIUM.  CLOSED
+2026-10-03 (branch `claude/adiabatic-approach-direction`, under the 4c
+standing mandate; record
+`docs/design/the-approach-direction-is-read-from-the-answer.md`).**  Found
+while checking a design-project group's report ("with a 10 K approach the
+conversion comes out very high").  In `mode adiabatic`
+`GibbsReactor::approachDirection` read the thermicity of feed -> equilibrium
+at the SEED `operation.T` (announced as such).  A downstream bed whose feed
+already carries ammonia, seeded HOTTER than the temperature at which that
+feed is itself at equilibrium, read the transformation as DECOMPOSITION
+(endothermic), assigned `T - dT`, and landed MORE converted than equilibrium
+at its own outlet.  Measured by the commander (scratch copy of
 ammoniaStaged03's constant/, 150 bar, the PEQ 2026-27 converter inlet gas,
-beds entering 380/420/415 C, dT = 10 K): bed 3 seeded at 495 C ends at
-473.6 C with y_NH3 19.73 % (sign "-"); seeded at 435 C it ends at 460.4 C
-with 18.74 % (sign "+", correct; equilibrium at 470.4 C is ~18.8 %).  The
-same run at dT = 5 K: 468.7 C / 19.74 % against the correct 462.1 C /
-19.24 %.  Remedy proposed, not built: in adiabatic mode take the direction
-from the dT = 0 adiabatic answer (unambiguous: feed -> that state) instead
-of from the seed.  No corpus case declares an approach on an adiabatic
-gibbsReactor today, so no golden is known to move -- verify before
-claiming it.  (`greenAmmoniaIndustrialN2` declared a 5 K approach on three
-adiabatic beds for a few hours on 2026-10-01 and no longer does: three Gibbs
-beds in series give the outlet of ONE Gibbs reactor at the last bed's
-temperature, so its converter is now one isothermal gibbsReactor with the
-approach, and the sentence above is true again.)
+beds entering 380/420/415 C, dT = 10 K): bed 3 seeded at 495 C ended at
+473.6 C with y_NH3 19.73 % (sign "-"); seeded at 435 C at 460.4 C with
+18.74 % (sign "+", correct; equilibrium at 470.4 C ~18.8 %).  Reproduced by
+the general on an authored third-bed feed (16 % NH3, 8 % Ar, 415 C, 150 bar,
+dT = 10 K) against a build of the parent commit: seed 768 K -> 734.235 K /
+19.322 % (sign "-"); seed 708 K -> 721.052 K / 18.355 % (sign "+"); the
+dT = 0 outlet 727.625 K / 18.836 % from either seed.  **Fix:** in adiabatic
+mode the bed is solved ONCE with no approach, the direction is read from the
+thermicity of feed -> THAT dT = 0 outlet T0 (the probe equilibrium at T0 IS
+that outlet), announced with T0, the seed and the probe's iteration count,
+and the bed is re-solved from T0 with the signed magnitude
+(`GibbsReactor.H` `AdiabaticProbe`, the adiabatic branch of `solve()`); the
+probe's cost is the KPI `approachProbeOuterIterations` (one extra outer
+Newton: 5 + 4 iterations on the witness against 5 before).  Both seeds now
+end at 721.052 K / 18.355 %, below the dT = 0 outlet in NH3 and in T.
+Isothermal mode byte-identical (ammoniaStaged03 diffed between the two
+builds).  Two premises of the brief measured false: the seed is
+`operation.T`, NOT the `0/<outlet>` file (`UnitInputs.cpp:248-254` hands
+the unit only its feed); and `ClausGibbsTool.tsx` cited the adiabatic energy
+residual at `GibbsReactor.cpp:188-214`, which was the `approachTemperature`
+refusal -- stale before this slice, re-pointed with the other eleven
+citations the line shift moved.  Witness
+`tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction` (sealed,
+golden recorded -- a NEW witness); gate `check_adiabatic_approach_direction`
+(3 by-hand sabotages, all caught; S2 -- the announcement dropped -- is
+caught by its arm (c) ALONE).  Corpus reach verified: no corpus case
+declares an approach on an adiabatic gibbsReactor (the five that declare one
+are isothermal or `equilibriumReactor`), and all 31 gibbsReactor cases hold
+their goldens.  NOT done: an unconverged dT = 0 probe is announced and read
+at its last iterate (no case reaches it).  (`greenAmmoniaIndustrialN2`
+declared a 5 K approach on three adiabatic beds for a few hours on
+2026-10-01 and no longer does: three Gibbs beds in series give the outlet of
+ONE Gibbs reactor at the last bed's temperature, so its converter is one
+isothermal gibbsReactor with the approach.)
 
 **2026-09-29 -- THE GIBBS MAP BYPASSED THE PURE-SOLID PATH.  CLOSED the
 same day (Vitor: "faz"), with one limit NAMED.**  Found by Vitor in the
