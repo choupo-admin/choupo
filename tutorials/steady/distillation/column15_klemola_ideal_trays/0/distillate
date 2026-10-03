@@ -38,4 +38,4 @@ componentMolarFlows
 
 T               314.2 K;                   // guess, near the overhead bubble point
 P               658600 Pa;
-vaporFraction   0.0;                       // total condenser
+phase           liquid;                       // total condenser

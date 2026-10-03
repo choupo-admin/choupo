@@ -20,9 +20,13 @@
     assumption A1 (flowsheetDict): feed saturated liquid at the Table-2 feed
     pressure of 892.67 kPa (bubble T = 334.4218 K, computed with this case's
     own thermo), let down adiabatically to the column pressure of 658.6 kPa
-    (V/F = 0.0929333445, T = 323.5875148 K).  The vaporFraction below MUST stay
-    equal to that V/F, and the column's `feedQuality` MUST stay equal to
-    1 - V/F; the engine does not tie them together.                            */
+    (V/F = 0.0929333445, T = 323.5875148 K).  Only T and P are declared: a
+    mixture's (T, P) fix its split (Duhem), the engine resolves this feed at
+    its own (T, P, z) and gets that V/F back, and it REFUSES a `feedQuality`
+    on the column that contradicts the resolved state -- so the column's
+    `feedQuality 0.9070666555` (= 1 - V/F) is a cross-check, not a second
+    declaration.  (Until 2026-10-03 this file also declared `vaporFraction
+    0.0929333445`, a third state variable the reader now refuses.)          */
 
 componentMolarFlows
 {
@@ -39,4 +43,3 @@ componentMolarFlows
 
 T               323.5875148 K;             // derived, A1
 P               658600 Pa;                 // Table 2 column top pressure
-vaporFraction   0.0929333445;              // derived, A1 -- ties to feedQuality

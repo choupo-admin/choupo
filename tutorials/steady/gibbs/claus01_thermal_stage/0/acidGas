@@ -22,4 +22,4 @@ P               1.5 bar;
 //  a stream file that says nothing is seeded vf = 0 and the mixer then
 //  prices this stream as a LIQUID -- which sent the first run's mixed feed
 //  to 183 K on a condensation enthalpy nobody meant to spend.
-vaporFraction   1.0;
+phase           gas;

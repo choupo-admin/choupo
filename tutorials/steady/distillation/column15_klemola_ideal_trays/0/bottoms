@@ -40,4 +40,4 @@ componentMolarFlows
 
 T               329.4 K;                   // guess, near the reboiler bubble point
 P               658600 Pa;
-vaporFraction   0.0;
+phase           liquid;

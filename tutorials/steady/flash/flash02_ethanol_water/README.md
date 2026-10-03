@@ -32,11 +32,13 @@ The golden: **V/F = 0.7976** (79.76 kmol/h vapour, 20.24 kmol/h liquid),
    water-rich — at a composition the previous case never evaluated.  A curve
    at fixed composition is a slice through a surface the flash walks across.
 4. **`Q_kW = 0`, for the same reason as `flash01`.**  The feed file declares
-   `vaporFraction 0.7975634083` at 355 K and 1.01325 bar, and the drum holds
-   that same T and P — so the feed stream *already is* the two-phase mixture
-   the drum separates, and the answer `V/F = 0.797563408329` reproduces the
-   declared fraction digit for digit.  Enthalpy is a state function; nothing
-   has to be added to hold a state you were already in.
+   only T = 355 K and P = 1.01325 bar — a mixture's (T, P) fix its split, so
+   the engine resolves the feed at its own state and the stream table shows
+   `vf = 0.798` — and the drum holds that same T and P.  So the feed stream
+   *already is* the two-phase mixture the drum separates, and the answer
+   `V/F = 0.797563408329` is the feed's own resolved fraction.  Enthalpy is a
+   state function; nothing has to be added to hold a state you were already
+   in.
 5. **Read the `flowsheetDict` header before you move anything.**  It records
    that the operating pressure once read a bare `P 1.01325;` with no unit —
    parsed as 1.01325 **Pa** — which drove the K's to O(1e5) and reported a
