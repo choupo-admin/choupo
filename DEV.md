@@ -904,6 +904,18 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **INTEGRATED 2026-10-03 on `claude/integrate-det2-wanghenke`, under
+> Vítor's standing mandate of that day: both branches below were merged onto
+> `main` 9b2f8bb67 (one merge commit each, revertable), both re-records were
+> done on exactly the cases named here and MEASURED first -- D-ET2 moved 162
+> rows beyond tolerance in its 10 cases (one of the 163 now sits inside
+> tolerance on this base), every plant residual falling; Wang-Henke moved
+> the 6 keys of its two cases and left the other 28 column cases passing
+> unchanged.  The full regression on the combined branch (with `main`
+> 3d8f8f8d2 merged in first) is the integration report's; its tally is
+> written in the commit that closes this integration.  The paragraph that
+> follows is kept as the record of the pause.**
+>
 > **PAUSED 2026-09-28, at Vítor's request (his weekly budget).  RESUME HERE.**
 > `main` holds everything validated.  Two finished branches wait ONLY on a
 > golden re-record that the session's permission classifier refused to the
