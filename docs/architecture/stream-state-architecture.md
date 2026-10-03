@@ -346,9 +346,15 @@ read, never written.
 | resolved | `T` + `P` + `phases{}` | machine-written snapshot / drill-in |
 
 Enthalpy/entropy use EXPLICIT keywords (`molarEnthalpy -12.5 kJ/mol;`), never bare
-`H`/`S`. **THREE top-level state variables over-specify → FATAL; ONE
-under-specifies → FATAL** (both name what was found and the legal pairs). A
-zero-flow guess may keep `T`/`P` as numerical seeds.
+`H`/`S`. **THREE top-level state variables over-specify → FATAL** — IMPLEMENTED
+2026-10-03 for the one combination the grammar can spell today: a MIXTURE
+declaring `T`, `P` AND `vaporFraction` is refused by name, quoting the
+two-variable rule (Duhem), the three values and the two remedies
+(`check_overspecified_stream`; record
+`docs/design/a-stream-is-fixed-by-two-variables.md`).  **ONE under-specifies →
+FATAL** is still a promise, not an implementation: `T` and `P` default to 0 when
+absent, said plainly here rather than implied.  A zero-flow guess may keep
+`T`/`P` as numerical seeds.
 
 **The phase is a RESULT, not stored state** (settled 2026-07-09, the Claude+ChatGPT
 design forum + Vítor's Tc rule; that 2026-07-09 forum was a session deliberation and is not in the repository -- this section is the record). `(T, P, z)`
@@ -357,21 +363,33 @@ FILE READER does no thermodynamics — it reads only **pins**:
 
 | pin | keyword | meaning |
 |-----|---------|---------|
-| two-phase split | `vaporFraction q;` (0<q<1) | a saturation SPLIT `T`,`P` alone do not fix |
-| phase intent | `phase gas\|liquid;` | this feed enters as gas / liquid (a boundary spec) — the legible replacement for a `vaporFraction 0/1` a reader once needed |
+| two-phase split | `vaporFraction q;` (0<q<1), **PURE component only** | a saturation SPLIT on the pure component's coexistence curve, where `T`,`P` are not independent and do not fix it; on a MIXTURE `(T,P)` fix the split and the line is REFUSED (2026-10-03) |
+| phase intent | `phase gas\|liquid;` | this feed enters as gas / liquid (a boundary spec) — the legible replacement for a `vaporFraction 0/1`, which a mixture may no longer spell as a number |
 
 Absent a pin, **PHASE RESOLUTION happens in the resolver, after unit setup**, in two
 layers: **layer 1** — the *Tc screen* (Vítor's rule: only speak of vapour when
 `T < Tc` of the mixture): a non-pinned stream whose `T` exceeds **every present
 component's `Tc`** cannot form a liquid → permanent gas / supercritical single phase,
-`vf=1`, cheap and thermo-context-independent; **layer 2** (deferred) — a TP/flash in
-the *consuming unit's* effective thermo world, for sub-critical ambiguity. `phase gas`
+`vf=1`, cheap and thermo-context-independent; **layer 2** — a TP/flash in
+the *consuming unit's* effective thermo world, for sub-critical ambiguity.  Layer 2
+is in TWO halves since 2026-10-03: the SURFACE half is shipped — after the solve the
+flowsheet resolves every unpinned domain inlet once at its own `(T, P, z)` in the
+global world (`flashState::equilibriumAt`, the one home), and the stream table, the
+result JSON and the first-law report all draw that state (`Flowsheet.cpp`, "THE
+STATE AN UNPINNED INLET SHOWS IS THE STATE IT MEANS"); the per-UNIT half — what a
+unit prices DURING the solve — is each unit's through
+`flashState::resolveStreamThermalState`, and a unit that still reads its inlet's
+`vf` bare sees the default there (named in `docs/ai/pitfalls.md`).  `phase gas`
 is exactly for the gap the Tc screen cannot close — a gas mixture holding a
 sub-critical species (steam in a WGS gas). `vaporFraction` keeps its one precise job
-= `n_vapour / (n_vapour + Σ n_liquid)` (solids excluded); a resolved snapshot puts it
-under `derived{}`. *(A pure-component TP on its coexistence manifold is genuinely
-non-unique; the flash must detect the degeneracy and FATAL asking for TQ/PQ/PH — not
-silently pick a split.)*
+= `n_vapour / (n_vapour + Σ n_liquid)` (solids excluded), as a PIN on a pure
+component only; the writer emits it for nothing else (a resolved mixture's split is
+what its `(T, P)` give, and is not written). *(A pure-component TP on its
+coexistence manifold is genuinely non-unique; the flash must detect the degeneracy
+and FATAL asking for TQ/PQ/PH — not silently pick a split.  NOT implemented: the
+pure-component flash at saturation returns its bisection midpoint today, which is
+why the pure pin is kept and why the evaporator chest reads its declared phase
+rather than the resolution — see `docs/design/the-word-that-was-not-there.md`.)*
 
 **Overall material ≠ phase-resolved.** `componentMolarFlows` is the OVERALL
 material (all phases). When multiphase, a `phases { … }` block DECOMPOSES it and

@@ -83,11 +83,14 @@ docs/design/a-stream-is-fixed-by-two-variables.md):
       line written for the mixture).  Nothing else fires: the reader still
       refuses, the surface still resolves.
   S3  the post-solve resolution pass disabled (its `continue` made
-      unconditional): arm (d) FAILS on vf (0 against 0.30398357314) and on
-      H_kW (1050.19 against 1325.78 -- the 275.582 kW of defect 3).  The
-      IMPOSSIBLE INLET PHASE arm did NOT fire, because the report's label
-      check is gated on `phasePinned` and flash01's feed is unpinned in this
-      shape; predicted to fire, observed not to.  [Observed 2026-10-03.]
+      unconditional): arm (d) FAILS on vf (0 against 0.30398357314), on
+      H_kW (1050.19 against 1325.78 -- the 275.582 kW of defect 3) AND on
+      the impossible-label line.  ON THE FIRST RUN the third did NOT fire:
+      the arm matched the report FILE's phrase (IMPOSSIBLE INLET PHASE)
+      against stdout, where the sentence reads `[phase] stream 'feed' is
+      priced as LIQUID ... cannot hold that label` -- an arm that could never
+      fire, found only because the sabotage was predicted to trip it.  The
+      regex was corrected and S3 re-run: all three fire.
   S4  a `vaporFraction 0.3;` line re-added to flash02's 0/feed (a shipped
       mixture file): arm (f) FAILS naming the file, q and component count.
   S5  the pure exception removed in the reader (`nPresent > 1` ->

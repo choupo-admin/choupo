@@ -338,10 +338,42 @@ def ratchet_kW(pin: float) -> float:
 #  and the column's duty priced states its own streams did not carry.  They now
 #  close at 0.0000 %.  The debt is PAID, not waived; the record is
 #  docs/design/the-state-a-unit-computes-with.md.
+#  RE-MEASURED 2026-10-03 (`--seed`), after the flowsheet started resolving
+#  every UNPINNED domain inlet at its own (T, P, z) before the report reads
+#  it (docs/design/a-stream-is-fixed-by-two-variables.md).  The report had
+#  priced such an inlet on the carried default -- vf = 0, liquid -- which
+#  DEV.md section 5 names as V2 and which this closes for the
+#  SURFACE and the report.  Seven pins moved and every one is the same
+#  mechanism, the first law now priced on the inlet the case has rather than
+#  the liquid the default supplied:
+#    tsa01_co2_twin_bed            1.1120 %  -> closes (0.0000 %)   LEFT
+#    perUnitThermo01_srk_nrtl    128.8000 %  -> closes (0.1210 %)   LEFT
+#    esterification2sector       170.9790 %  -> 44.9270 %           re-pinned
+#    acetone05_luyben_absorber   -40.5770 kW -> +3.1179 kW          re-pinned
+#    coolingTower01_merkel       -14.5302 kW -> +1.5666 kW          re-pinned
+#  and TWO JOINED, each a column with `model simultaneous;` whose feed
+#  declares no phase and whose own (T, P) equilibrium is NOT the saturated
+#  liquid its `feedQuality 1.0` says: the report now prices the resolved feed
+#  while the column still prices the declared liquid (its resolver returns
+#  the CARRIED vf for a converged single-phase answer -- the "unmistakable is
+#  not a channel the engine reads" shape, CLAUDE.md section 6), so the
+#  latent heat of the feed is the whole residual.  They closed at 0.0000 %
+#  before ONLY because both sides read the same default; the gap is real
+#  and was invisible:
+#    acetone07_luyben_column_C2  (was 0.0000 %) -> 196.7990 %       JOINED
+#    column03_azeotrope_mesh     (was 0.0000 %) ->  60.8760 %       JOINED
+#  Both are the column03 entry of DEV.md section 5 ("NOT YET DECIDED:
+#  whether the case's feed T moves to its true bubble point ... or the case
+#  is re-specified"), and the fix that makes the column read the resolved
+#  single-phase answer makes both cases REFUSE their `feedQuality` -- a
+#  pedagogical decision about each case that is Vitor's, so they are PINNED
+#  here as measured and not fixed.
 KNOWN_OPEN = {
     "tutorials/plant/ChemicalPlantTutorial": 3.1710,
-    "tutorials/plant/esterification2sector": 170.9790,
+    "tutorials/plant/esterification2sector": 44.9270,
     "tutorials/plant/polycaprolactonePlant": 20.0100,
+    "tutorials/steady/distillation/acetone07_luyben_column_C2": 196.7990,
+    "tutorials/steady/distillation/column03_azeotrope_mesh": 60.8760,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/credo01_valve_heater_drum": 2.0940,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
@@ -353,9 +385,7 @@ KNOWN_OPEN = {
     "tutorials/steady/reactors/pfr_polyesterification": 18.3420,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,
-    "tutorials/steady/separation/tsa01_co2_twin_bed": 1.1120,
     "tutorials/steady/thermo/basis01_two_unit_chain": 7.4630,
-    "tutorials/steady/thermo/perUnitThermo01_srk_nrtl": 128.8000,
 }
 
 
@@ -366,7 +396,7 @@ KNOWN_OPEN = {
 #  AND THAT NOBODY HAS YET LOOKED AT -- a ledger of work owed, not exemptions.
 KNOWN_OPEN_KW = {
     "tutorials/steady/absorption/absorber01_NH3_water": -27.9838,
-    "tutorials/steady/absorption/acetone05_luyben_absorber": -40.5770,
+    "tutorials/steady/absorption/acetone05_luyben_absorber": 3.1179,
     "tutorials/steady/absorption/extract02_declared_interior": -1.0263,
     "tutorials/steady/absorption/stripper01_NH3_water": 19.8710,
     "tutorials/steady/distillation/column04_multifeed_sidedraw": -78.6939,
@@ -385,7 +415,7 @@ KNOWN_OPEN_KW = {
     "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat": 17.9760,
     "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine": 18.4102,
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 42.8610,
-    "tutorials/steady/heat/coolingTower01_merkel": -14.5302,
+    "tutorials/steady/heat/coolingTower01_merkel": 1.5666,
     "tutorials/steady/thermoTest/model2_pitzer_evaporator": 17.8991,
     "tutorials/steady/userops/userOp01_yield_reactor": -3.7126,
 }

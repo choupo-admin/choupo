@@ -2827,8 +2827,22 @@ defect — look for what else went with it.
 ## 5. Known debts (severity-ish)
 
 **2026-10-01 -- A FEED DECLARED WITH T, P AND `vaporFraction` IS OVER-SPECIFIED,
-AND THE ENGINE NEITHER REFUSES IT NOR SHOWS WHAT IT USES.  OPEN, NOT FIXED
-(Vitor: Saturday).**  Seen by Vitor on the landing case
+AND THE ENGINE NEITHER REFUSES IT NOR SHOWS WHAT IT USES.  CLOSED 2026-10-03
+on the standing mandate (branch `claude/flash01-overspecified-feed`): the
+reader REFUSES a mixture's third value naming the rule and both remedies, the
+writer emits `vaporFraction` for a pure two-phase stream only, the surface
+(table, JSON, report label and pricing) draws the state an unpinned inlet
+MEANS, 133 corpus lines deleted and 7 rewritten as `phase` by
+`bin/curate/migrate_overspecified_vf.py`, flash01 declares T and P only.
+MEASURED: the 52 affected cases pass with ZERO golden rows moved (the flash
+and the column resolve their feeds themselves; init0 seeds are overwritten;
+`phase liquid;` builds the same stream as `vaporFraction 0`).  The corpus
+count below was wrong by a third: 142 tracked files, 140 mixtures, 52 cases.
+Gate `check_overspecified_stream` (5 sabotages); record
+`docs/design/a-stream-is-fixed-by-two-variables.md`.  NOT done, named: units
+that read their inlet's `vf` bare during the solve (valve, adiabaticFlash,
+heatExchanger, storageTank) still see the default there.  The entry as
+written on 2026-10-01 follows.**  Seen by Vitor on the landing case
 `flash01_benzene_toluene`, whose `0/feed` declares T 370 K, P 1 bar AND
 `vaporFraction 0.3039835731` for a 40/60 benzene/toluene mixture.  By Duhem's
 theorem a stream of known component flows is fixed by TWO intensive

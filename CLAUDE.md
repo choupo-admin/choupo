@@ -291,6 +291,32 @@ case/
   `check_time_state_layout`.  Record:
   [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md)
   §11.
+* **A STREAM IS FIXED BY TWO VARIABLES (2026-10-03, Vítor's rule on the
+  landing case flash01 -- "Se especificas fração de vapor não podes
+  especificar uma das outras variáveis na corrente de entrada!").**  By
+  Duhem's theorem a stream of known component flows has TWO intensive degrees
+  of freedom; for a MIXTURE (T, P) fix the split, so a `0/<stream>` declaring
+  `T`, `P` AND `vaporFraction` on more than one present component REFUSES by
+  name, quoting the rule, the three values and the two remedies (delete the
+  line and let (T, P) resolve -- an unpinned stream MEANS its own equilibrium;
+  or, if the quality IS the specification, the (T, q)/(P, q) closure must be
+  SOLVED, which the engine does not do today and says so).  `vaporFraction 0`
+  or `1` on a mixture refuses naming `phase liquid;`/`phase gas;`, the pin's
+  legible spelling.  The ONE exception is a PURE component in two phases,
+  whose (T, P) sit on its saturation curve and do not fix the split: its pin
+  stays, and the writer writes it back for nothing else -- a `converged/`
+  view or an init0 seed of a mixture carries T and P and no third value.
+  The SURFACE draws the state the stream MEANS: after the solve every
+  unpinned stream no unit produces is resolved once through
+  `flashState::equilibriumAt` (the one home), and the stream table, the
+  result JSON, the energy report's label check and its pricing all read that
+  `vf` -- flash01 with the line removed had shown vf = 0.000 and a liquid
+  enthalpy 275 kW from the first law it was priced in.  Produced streams
+  keep their producer's answer; a unit that reads its inlet's `vf` bare
+  during the solve still sees the default there (named, not fixed).  The
+  one-shot migrator is `bin/curate/migrate_overspecified_vf.py`.  Gate:
+  `check_overspecified_stream`.  Record:
+  [`docs/design/a-stream-is-fixed-by-two-variables.md`](docs/design/a-stream-is-fixed-by-two-variables.md).
 * **The `.cho` marker file** is the openable entity in the GUI (the CLI is
   unaffected; `runCase`/`choupoSolve` take the folder path).  Intentionally
   empty for now; future GUI-only metadata lives here without polluting the

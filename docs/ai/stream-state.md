@@ -65,8 +65,8 @@ REFUSES, naming the offending top-level keys.
 ```
 T               313.15 K;
 P               101325 Pa;
-vaporFraction   0.3039835731;    // optional pin, see below
-phase           gas;             // optional pin, alternative to the above
+phase           gas;             // optional PIN: this feed enters as gas (or liquid)
+vaporFraction   0.55;            // optional PIN, PURE component only (two-phase split)
 category        LP_steam_200kPa; // optional, for utility aggregation
 ```
 
@@ -74,12 +74,18 @@ category        LP_steam_200kPa; // optional, for utility aggregation
 field name inside `ProcessStream`), and there is no `state saturatedVapour;`
 keyword; both belonged to the retired `flowsheetDict streams {}` block.
 
-**`T` + `P` is the implemented closure.**  `(P, vaporFraction)` and
-`(T, vaporFraction)` are recognised and their flash resolution is DEFERRED, so
-a declared `vaporFraction` is a PIN carried into the solve (it raises
-`phasePinned`, which energy-pricing consumers ask instead of testing `vf == 0`)
-and not a spec that solves for `T`.  All three together are carried, not
-refused, and the pin is not checked against the flash — see `pitfalls.md`.
+**`T` + `P` is the closure, and a stream is fixed by TWO variables (Duhem).**
+A MIXTURE's `(T, P)` fix its vapour fraction, so a `vaporFraction` beside them
+is REFUSED by name (since 2026-10-03; the message quotes the three values and
+the two remedies).  Leave it out: the engine resolves the unpinned stream at
+its own `(T, P, z)` and the stream table / result JSON show that `vf`.  A
+single-phase declaration is `phase gas;` / `phase liquid;` (R-E2 — a pin is
+honoured, never re-solved; `vaporFraction 0` / `1` on a mixture is refused
+naming it).  The ONE place `vaporFraction q` is a pin is a PURE component in
+two phases, whose `(T, P)` sit on its saturation curve and do not fix the
+split.  `(P, vaporFraction)` and `(T, vaporFraction)` — solving `T` or `P`
+from a declared quality — are recognised and their resolution is DEFERRED;
+see `pitfalls.md`.
 
 ---
 

@@ -124,37 +124,41 @@ for `adiabaticFlash`).  Its duty `Q` is a RESULT (a KPI + heat stream), never an
 `heater(Q) → flash`; for a target T, a DesignSpec on the heater's `$Q`.  See
 [`energy.md`](energy.md) → "the flash/heater rule".
 
-### Specifying a feed's thermal state — the `vaporFraction` rule
+### Specifying a feed's thermal state — a stream is fixed by TWO variables
 A stream of known composition + flow is fixed by exactly **two** intensive
-variables (Duhem).  That is the theory; what the engine implements is narrower:
+variables (Duhem).  For a **mixture**, `T` and `P` already fix the vapour
+fraction, so a `vaporFraction` beside them is a third number on a two-variable
+state: redundant when it agrees with the `(T,P)` flash, a contradiction when it
+does not — and since 2026-10-03 the reader **REFUSES** it by name (it used to
+accept all three in silence, print the declared number in the stream table and
+use the resolved one in the first law).
 
-| you write | engine does today | |
+| you write (mixture) | engine does today | |
 |---|---|---|
-| `T` + `P` | flash → `vf` | the implemented closure |
-| `P` + `vaporFraction` | — | recognised; resolution DEFERRED |
-| `T` + `vaporFraction` | — | recognised; resolution DEFERRED |
-| `T` + `P` + `vaporFraction` | flash on `(T,P)`; the declared `vf` is a PIN | carried, not refused |
+| `T` + `P` | resolves the split at `(T,P,z)`; the table and JSON show that `vf` | the implemented closure |
+| `T` + `P` + `phase gas;` / `phase liquid;` | prices the DECLARED phase (R-E2) | the single-phase pin |
+| `T` + `P` + `vaporFraction q` | **REFUSED** (over-specified) | the message names the three values and the two remedies |
+| `T` + `P` + `vaporFraction 0` or `1` | **REFUSED**, naming `phase liquid;` / `phase gas;` | a phase spelled as a number |
+| `P` + `vaporFraction` or `T` + `vaporFraction` | — | recognised; resolution DEFERRED (the engine does not solve `T` from a declared `β`) |
 
-**`vaporFraction` is often ESSENTIAL, not optional sugar:** on the phase boundary
-`T` and `P` are NOT independent (a pure two-phase stream has `P = Psat(T)`), so a
-saturated / two-phase feed CANNOT be pinned with `(T,P)` — you must give
-`vaporFraction` with one of them.  This is the classic point of confusion.
-
-- **The implemented closure is `T` + `P`.**  `(P, vaporFraction)` and
-  `(T, vaporFraction)` are recognised spellings whose flash resolution is
-  DEFERRED — the engine does not currently solve `T` from a declared `β`.
-- All three together are **carried, not refused**, whatever older notes said:
-  the flash runs on `(T, P)` and the declared `vaporFraction` acts as a PIN
-  (it sets `phasePinned`, which is what energy-pricing consumers ask instead of
-  testing `vf == 0`).  It is not checked against the flash, so if the two
-  disagree the flash wins silently.  `tutorials/steady/flash/flash01_benzene_toluene`
-  ships all three and passes — which is how the old "REFUSED" claim was caught.
-  Write `β` only when you mean the pin.
+- **The ONE exception is a PURE component in two phases.**  On its saturation
+  curve `T` and `P` are not independent (`P = Psat(T)`), so `(T,P)` genuinely
+  do not fix the split and `vaporFraction q;` stays its pin (a wet steam line,
+  a partially condensed pure vapour).  That is where the old sentence "T,P
+  alone do not fix the split" was true; for a mixture it never was.
+- **If the quality IS your specification**, the state is `(P, q)` or `(T, q)`
+  and the other variable has to be SOLVED — which this engine does not do
+  today.  Declare the `T` at which the `(T,P)` flash gives your `q` (read it
+  off a `choupoProps` scan or a `phaseChanger`), rather than typing `q`.
 - The key is spelled `vaporFraction` in full.  **`vf` is not a dict key** (it
   is the name of the field inside `ProcessStream`), and there is no
   `state saturatedLiquid;` stream keyword — both belonged to the retired
-  `flowsheetDict streams {}` block.  `phase gas;` / `phase liquid;` is the
-  other live pin.
+  `flowsheetDict streams {}` block.
+- `tutorials/steady/flash/flash01_benzene_toluene` declares `T` and `P` only;
+  its stream table shows the feed at the `vf` the engine resolves (0.304), the
+  same number the flash reports as `V_over_F` and the first law prices.  (It
+  used to ship all three, which is how the defect was found — Vítor,
+  2026-10-01.)  Gate: `check_overspecified_stream`.
 
 ### A feed's phase must match its declared state (don't call a vapour "liquid")
 At low pressure, light species sit ABOVE their boiling point, so a feed you think
@@ -614,18 +618,30 @@ ports, the `utilityAllocation` report).
 
 ## State / streams
 
-### An unpinned gas feed manufactures an "ENERGY BALANCE FAILED" banner
-A stream file with no `vaporFraction` / `phase` key is priced as a
-**sub-cooled liquid** (vf = 0).  Feed a flash an all-vapour mixture that way
-(natural gas at 250 K / 60 bar: every species except methane is
-sub-critical, so the Tc screen cannot prove it gaseous) and the unit's
-energy report shows an "unexplained" first-law residual — the latent heat of
-the mispriced feed — under a red `ENERGY BALANCE FAILED` banner, at exit 0,
-on a case whose composition answers are perfectly right.  The fix is one
-declared line in the `0/` file: `phase gas;` (see dict-syntax "Pinning the
-phase of an inlet").  Rule of thumb: **any feed that is not a liquid at its
-(T, P) needs its phase pinned**, and a FAILED energy banner whose residual
-is latent-heat-sized is usually a mispriced inlet, not a broken unit.
+### An unpinned feed: what resolves it, and which units still read the default
+A stream file with no `phase` key is UNPINNED, and an unpinned `(T, P, z)`
+MEANS its own equilibrium (R-E1/R-E2).  Since 2026-10-03 the flowsheet
+resolves every unpinned domain inlet once, after the solve, and the stream
+table, the result JSON and the energy report all draw that resolved state —
+so a feed declared with `T` and `P` only shows the vapour fraction it has,
+never a default `0.000`.  The units that go through
+`flashState::resolveStreamThermalState` (the flash's own duty, the heater,
+the column, the evaporator, the conversion reactor, the first-law report)
+price the resolved state too.
+
+What is NOT yet resolved, said plainly: a unit that reads its inlet's `vf`
+bare — the valve's isenthalpic inlet, the adiabatic flash's `H_in`, the
+exchanger, the storage tank, the mixer's basis — sees the carried default
+(0, or 1 where the Tc screen proved a permanent gas) DURING the solve.  Feed
+one of those an all-vapour sub-critical mixture (natural gas at 250 K /
+60 bar: every species except methane is sub-critical, so the Tc screen cannot
+prove it gaseous) and its duty is out by the latent heat of the mispriced
+inlet, under a red `ENERGY BALANCE FAILED` banner, at exit 0, on a case whose
+composition answers are right.  The fix is one declared line in the `0/`
+file: `phase gas;` (see dict-syntax "Pinning the phase of an inlet").  Rule
+of thumb for those units: **a feed that is not a liquid at its (T, P) gets
+its phase pinned**, and a FAILED energy banner whose residual is
+latent-heat-sized is usually a mispriced inlet, not a broken unit.
 (Found by the 2026-08-23 LLM benchmark, which also hit a
 `conversionReactor` variant of the same banner — RESOLVED 2026-08-24: that
 unit now carries its inlet's phase state instead of stamping gas; see its
@@ -639,7 +655,9 @@ with the saturation temperature stated and the phase pinned:
 componentMolarFlows { water 277.6 kmol/h; }
 T               393.36 K;             // T_sat(P) for water at 200 kPa
 P               200 kPa;
-vaporFraction   1.0;
+phase           gas;                  // the saturated-vapour pin (a pure
+                                      // component: `vaporFraction 1.0;` is
+                                      // also accepted, but `phase` is the word)
 ```
 The engine does **not** invert Antoine for you at parse time.  A
 `state saturatedVapour;` key did exactly that, but it read the retired
