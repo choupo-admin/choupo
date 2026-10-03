@@ -36,8 +36,12 @@ Description
     powder with a real particle size.  This phase-1 model couples four
     pieces, each a textbook correlation (not CFD):
 
-      1. Mass + energy balance (adiabatic): all feed solvent evaporates
-         (dry powder assumed in phase 1); the air cools from T_in to T_out.
+      1. Mass + energy balance (adiabatic): the air cools from T_in to
+         T_out, and T_out closes H(powder) + H(exhaust) = H(feed) + H(air)
+         on the package's own enthalpy surface -- the one the published
+         streams are priced on (2026-09-27; it was a constant-Cp hand
+         balance that charged the latent heat of every feed mole, including
+         the water phase 2 leaves in the powder).
       2. Atomisation (Friedman rotary-disc correlation): droplet Sauter
          diameter d32 from the disc speed/diameter, feed rate and liquid
          properties; the droplet shrinks to the powder particle diameter
