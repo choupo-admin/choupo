@@ -97,9 +97,8 @@ Toggling the GUI Units menu to Mass-basis shows the absorption as CO2 mass trans
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (absorber) at (0.0,-0.0) {\textbf{absorber}\\[-1pt]{\tiny absorber}};
   \draw[->] ($(absorber.west)+(-1.05,-0.17)$) -- ($(absorber.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {gasIn};
   \draw[->] ($(absorber.west)+(-1.05,0.17)$) -- ($(absorber.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {washWater};
-  \draw[->] ($(absorber.east)+(0,-0.34)$) -- ($(absorber.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {offgas};
-  \draw[->] ($(absorber.east)+(0,0.00)$) -- ($(absorber.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(absorber.east)+(0,0.34)$) -- ($(absorber.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(absorber.east)+(0,-0.17)$) -- ($(absorber.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {offgas};
+  \draw[->] ($(absorber.east)+(0,0.17)$) -- ($(absorber.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Luyben's acetone absorber: 9 stages, water washing acetone out of the hydrogen offgas -- against his own acetone and bottoms}
@@ -912,9 +911,8 @@ THE DISTILLATE RATE IS HIS, 5.88 kmol/h, and that matters here in a way it did n
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column01) at (0.0,-0.0) {\textbf{column01}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column01.west)+(-1.05,0.00)$) -- ($(column01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column01.east)+(0,-0.34)$) -- ($(column01.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column01.east)+(0,0.00)$) -- ($(column01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column01.east)+(0,0.34)$) -- ($(column01.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column01.east)+(0,-0.17)$) -- ($(column01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column01.east)+(0,0.17)$) -- ($(column01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Benzene/toluene distillation column (Wang-Henke)}
@@ -949,9 +947,8 @@ Benzene/toluene distillation --- classical textbook problem with Raoult, no azeo
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column01) at (0.0,-0.0) {\textbf{column01}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column01.west)+(-1.05,0.00)$) -- ($(column01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column01.east)+(0,-0.34)$) -- ($(column01.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column01.east)+(0,0.00)$) -- ($(column01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column01.east)+(0,0.34)$) -- ($(column01.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column01.east)+(0,-0.17)$) -- ($(column01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column01.east)+(0,0.17)$) -- ($(column01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Rigorous distillation by simultaneous MESH Newton (benzene/toluene; validates against column01)}
@@ -987,9 +984,8 @@ Expected (identical to column01): T\_top $\approx$ 354.2 K, T\_bottom $\approx$ 
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column.west)+(-1.05,0.00)$) -- ($(column.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column.east)+(0,-0.34)$) -- ($(column.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column.east)+(0,0.00)$) -- ($(column.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column.east)+(0,0.34)$) -- ($(column.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column.east)+(0,-0.17)$) -- ($(column.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column.east)+(0,0.17)$) -- ($(column.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Azeotropic distillation (ethanol/water, NRTL) by the rigorous simultaneous MESH method}
@@ -1074,9 +1070,8 @@ Multiple feeds as FLOWSHEET STREAMS (`inputs ( feed feed2 )`) + a liquid side dr
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (rdColumn) at (0.0,-0.0) {\textbf{rdColumn}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(rdColumn.west)+(-1.05,-0.17)$) -- ($(rdColumn.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
   \draw[->] ($(rdColumn.west)+(-1.05,0.17)$) -- ($(rdColumn.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {acidFeed};
-  \draw[->] ($(rdColumn.east)+(0,-0.34)$) -- ($(rdColumn.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(rdColumn.east)+(0,0.00)$) -- ($(rdColumn.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(rdColumn.east)+(0,0.34)$) -- ($(rdColumn.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(rdColumn.east)+(0,-0.17)$) -- ($(rdColumn.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(rdColumn.east)+(0,0.17)$) -- ($(rdColumn.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Reactive distillation: methyl acetate synthesis (validation vs P?pken et al. 2001, run S-1)}
@@ -1114,9 +1109,8 @@ Both feeds are FLOWSHEET STREAMS (`inputs ( feed acidFeed )`) -- so the plant-bo
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column06) at (0.0,-0.0) {\textbf{column06}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column06.west)+(-1.05,0.00)$) -- ($(column06.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column06.east)+(0,-0.34)$) -- ($(column06.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column06.east)+(0,0.00)$) -- ($(column06.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column06.east)+(0,0.34)$) -- ($(column06.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column06.east)+(0,-0.17)$) -- ($(column06.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column06.east)+(0,0.17)$) -- ($(column06.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Full-MESH (Naphtali-Sandholm) distillation -- energy-consistent V\_j/L\_j, seeded from the CMO solution (benzene/toluene; compare column02)}
@@ -1158,9 +1152,8 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column07) at (0.0,-0.0) {\textbf{column07}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column07.west)+(-1.05,0.00)$) -- ($(column07.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column07.east)+(0,-0.34)$) -- ($(column07.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column07.east)+(0,0.00)$) -- ($(column07.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column07.east)+(0,0.34)$) -- ($(column07.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column07.east)+(0,-0.17)$) -- ($(column07.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column07.east)+(0,0.17)$) -- ($(column07.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Full-MESH (Naphtali-Sandholm) validation vs AIChE J. 17 (1971) 148, Problem 2: nC4/iC5/nC5}
@@ -1231,9 +1224,8 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column09) at (0.0,-0.0) {\textbf{column09}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column09.west)+(-1.05,0.00)$) -- ($(column09.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column09.east)+(0,-0.34)$) -- ($(column09.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column09.east)+(0,0.00)$) -- ($(column09.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column09.east)+(0,0.34)$) -- ($(column09.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column09.east)+(0,-0.17)$) -- ($(column09.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column09.east)+(0,0.17)$) -- ($(column09.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Sieve-tray hydraulics: the column that separates, sized so its trays do not flood}
@@ -1277,9 +1269,8 @@ Read the printed table. The feed is a saturated liquid, so it joins the liquid t
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column10) at (0.0,-0.0) {\textbf{column10}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column10.west)+(-1.05,0.00)$) -- ($(column10.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column10.east)+(0,-0.34)$) -- ($(column10.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column10.east)+(0,0.00)$) -- ($(column10.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column10.east)+(0,0.34)$) -- ($(column10.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column10.east)+(0,-0.17)$) -- ($(column10.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column10.east)+(0,0.17)$) -- ($(column10.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{The same column, built too narrow: every tray floods -- and it still converges}
@@ -1319,9 +1310,8 @@ Note the downcomer, too: the backup reaches 268.5 mm against a 275 mm limit. Nar
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column11) at (0.0,-0.0) {\textbf{column11}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column11.west)+(-1.05,0.00)$) -- ($(column11.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column11.east)+(0,-0.34)$) -- ($(column11.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column11.east)+(0,0.00)$) -- ($(column11.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column11.east)+(0,0.34)$) -- ($(column11.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column11.east)+(0,-0.17)$) -- ($(column11.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column11.east)+(0,0.17)$) -- ($(column11.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Murphree tray efficiency: 14 REAL trays plus the reboiler (nStages 15, reboiler counted), not ideal stages -- and the purity you actually get}
@@ -1505,9 +1495,8 @@ WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converg
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (splitter) at (0.0,-0.0) {\textbf{splitter}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(splitter.west)+(-1.05,0.00)$) -- ($(splitter.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(splitter.east)+(0,-0.34)$) -- ($(splitter.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(splitter.east)+(0,0.00)$) -- ($(splitter.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(splitter.east)+(0,0.34)$) -- ($(splitter.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(splitter.east)+(0,-0.17)$) -- ($(splitter.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(splitter.east)+(0,0.17)$) -- ($(splitter.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Klemola-Ilme industrial C4 splitter: 74 real trays at the measured E\_MV = 1.191, products anchored on the plant's own key-component analysis}
@@ -1709,9 +1698,8 @@ That shape is worth more than a single number. At 74 trays and R = 11.4 this col
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (splitter) at (0.0,-0.0) {\textbf{splitter}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(splitter.west)+(-1.05,0.00)$) -- ($(splitter.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(splitter.east)+(0,-0.34)$) -- ($(splitter.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(splitter.east)+(0,0.00)$) -- ($(splitter.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(splitter.east)+(0,0.34)$) -- ($(splitter.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(splitter.east)+(0,-0.17)$) -- ($(splitter.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(splitter.east)+(0,0.17)$) -- ($(splitter.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{The Klemola-Ilme C4 splitter with IDEAL trays: the same column at E\_MV = 1, the control arm that says what the measured efficiency is worth}
@@ -1777,9 +1765,8 @@ ONE MORE OBSERVATION, and it is about the ENGINE rather than the column. These t
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column16) at (0.0,-0.0) {\textbf{column16}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column16.west)+(-1.05,0.00)$) -- ($(column16.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column16.east)+(0,-0.34)$) -- ($(column16.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column16.east)+(0,0.00)$) -- ($(column16.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column16.east)+(0,0.34)$) -- ($(column16.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column16.east)+(0,-0.17)$) -- ($(column16.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column16.east)+(0,0.17)$) -- ($(column16.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{A column that starts from the interior declared in 0/}
@@ -1833,9 +1820,8 @@ WHAT THE STUDENT SHOULD DO WITH IT. Run the case and read the `iterations` KPI; 
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny shortcutColumn}};
   \draw[->] ($(column.west)+(-1.05,0.00)$) -- ($(column.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column.east)+(0,-0.34)$) -- ($(column.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column.east)+(0,0.00)$) -- ($(column.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column.east)+(0,0.34)$) -- ($(column.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column.east)+(0,-0.17)$) -- ($(column.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column.east)+(0,0.17)$) -- ($(column.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Shortcut (FUG) design of a benzene/toluene column}
@@ -1876,9 +1862,8 @@ Compare with the rigorous column01 (Wang-Henke): FUG is a fast design estimate; 
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tower) at (0.0,-0.0) {\textbf{tower}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(tower.west)+(-1.05,0.00)$) -- ($(tower.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(tower.east)+(0,-0.34)$) -- ($(tower.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(tower.east)+(0,0.00)$) -- ($(tower.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(tower.east)+(0,0.34)$) -- ($(tower.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(tower.east)+(0,-0.17)$) -- ($(tower.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(tower.east)+(0,0.17)$) -- ($(tower.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{S2: a sour-water stripper over the chemistry -- eight reactive trays, the CO2-strips-first mechanism measured across the whole column.}
@@ -1926,9 +1911,8 @@ DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/ and sha
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tower) at (0.0,-0.0) {\textbf{tower}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(tower.west)+(-1.05,0.00)$) -- ($(tower.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(tower.east)+(0,-0.34)$) -- ($(tower.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(tower.east)+(0,0.00)$) -- ($(tower.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(tower.east)+(0,0.34)$) -- ($(tower.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(tower.east)+(0,-0.17)$) -- ($(tower.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(tower.east)+(0,0.17)$) -- ($(tower.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{The three-family sour water: CO2 strips overhead while H2S concentrates downward and the pH FALLS -- the selectivity lesson the two-family stripper cannot teach.}
@@ -2952,10 +2936,9 @@ WHAT IS PINNED AND WHAT IS NOT. The golden pins the answer this model gives. As 
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (evap) at (0.0,-0.0) {\textbf{evap}\\[-1pt]{\tiny evaporator}};
   \draw[->] ($(evap.west)+(-1.05,-0.17)$) -- ($(evap.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
   \draw[->] ($(evap.west)+(-1.05,0.17)$) -- ($(evap.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {saturatedSteam130C};
-  \draw[->] ($(evap.east)+(0,-0.51)$) -- ($(evap.east)+(1.05,-0.51)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
-  \draw[->] ($(evap.east)+(0,-0.17)$) -- ($(evap.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {vapour};
-  \draw[->] ($(evap.east)+(0,0.17)$) -- ($(evap.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(evap.east)+(0,0.51)$) -- ($(evap.east)+(1.05,0.51)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(evap.east)+(0,-0.34)$) -- ($(evap.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
+  \draw[->] ($(evap.east)+(0,0.00)$) -- ($(evap.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
+  \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Single-effect evaporator: 35 g/L brine at 1 bar; the fixed steam duty/UA evaporates \textasciitilde{}82 \% of the feed water (V/F=0.82), enriching NaCl \textasciitilde{}5.5x (x 0.011 $\to$ 0.059) -- duty-driven, not a target (BPE included)}
@@ -3126,10 +3109,9 @@ Notes for the student: Thermo properties (MW, Cp, Antoine, ...) of `agua` and `s
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (evap) at (0.0,-0.0) {\textbf{evap}\\[-1pt]{\tiny evaporator}};
   \draw[->] ($(evap.west)+(-1.05,-0.17)$) -- ($(evap.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
   \draw[->] ($(evap.west)+(-1.05,0.17)$) -- ($(evap.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {liveSteam\_200kPa};
-  \draw[->] ($(evap.east)+(0,-0.51)$) -- ($(evap.east)+(1.05,-0.51)$) node[at end, below, font=\tiny, anchor=north east] {productConc};
-  \draw[->] ($(evap.east)+(0,-0.17)$) -- ($(evap.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {vapour};
-  \draw[->] ($(evap.east)+(0,0.17)$) -- ($(evap.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(evap.east)+(0,0.51)$) -- ($(evap.east)+(1.05,0.51)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(evap.east)+(0,-0.34)$) -- ($(evap.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {productConc};
+  \draw[->] ($(evap.east)+(0,0.00)$) -- ($(evap.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
+  \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Single-effect evaporator concentrating orange juice 10\% to 50\% solids (textbook Example 10.2 a-c, without BPE)}
@@ -3223,10 +3205,9 @@ Constraints: productConc.F\_mass = 0.3125 kg/s (40 wt\%) effect3.P = 13.5 kPa (t
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (evap) at (0.0,-0.0) {\textbf{evap}\\[-1pt]{\tiny evaporator}};
   \draw[->] ($(evap.west)+(-1.05,-0.17)$) -- ($(evap.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
   \draw[->] ($(evap.west)+(-1.05,0.17)$) -- ($(evap.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {saturatedSteam130C};
-  \draw[->] ($(evap.east)+(0,-0.51)$) -- ($(evap.east)+(1.05,-0.51)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
-  \draw[->] ($(evap.east)+(0,-0.17)$) -- ($(evap.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {vapour};
-  \draw[->] ($(evap.east)+(0,0.17)$) -- ($(evap.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(evap.east)+(0,0.51)$) -- ($(evap.east)+(1.05,0.51)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(evap.east)+(0,-0.34)$) -- ($(evap.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
+  \draw[->] ($(evap.east)+(0,0.00)$) -- ($(evap.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
+  \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Single-effect NaCl evaporator with the boiling-point elevation from the PITZER electrolyte model (a\_w), not the ideal K\_b$\ast$m. Concentrated brine $\to$ BPE several degrees, the real value.}
@@ -3259,10 +3240,9 @@ Constraints: productConc.F\_mass = 0.3125 kg/s (40 wt\%) effect3.P = 13.5 kPa (t
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (evap) at (0.0,-0.0) {\textbf{evap}\\[-1pt]{\tiny evaporator}};
   \draw[->] ($(evap.west)+(-1.05,-0.17)$) -- ($(evap.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
   \draw[->] ($(evap.west)+(-1.05,0.17)$) -- ($(evap.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {saturatedSteam130C};
-  \draw[->] ($(evap.east)+(0,-0.51)$) -- ($(evap.east)+(1.05,-0.51)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
-  \draw[->] ($(evap.east)+(0,-0.17)$) -- ($(evap.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {vapour};
-  \draw[->] ($(evap.east)+(0,0.17)$) -- ($(evap.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(evap.east)+(0,0.51)$) -- ($(evap.east)+(1.05,0.51)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(evap.east)+(0,-0.34)$) -- ($(evap.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
+  \draw[->] ($(evap.east)+(0,0.00)$) -- ($(evap.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
+  \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Single-effect NaCl evaporator with the boiling-point elevation from the eNRTL water activity (electrolyte-NRTL) -- the same slot as model pitzer, one word changed. eNRTL is the model for salt in a non-ideal molecular solvent.}
@@ -3295,10 +3275,9 @@ Constraints: productConc.F\_mass = 0.3125 kg/s (40 wt\%) effect3.P = 13.5 kPa (t
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (evap) at (0.0,-0.0) {\textbf{evap}\\[-1pt]{\tiny evaporator}};
   \draw[->] ($(evap.west)+(-1.05,-0.17)$) -- ($(evap.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
   \draw[->] ($(evap.west)+(-1.05,0.17)$) -- ($(evap.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {saturatedSteam130C};
-  \draw[->] ($(evap.east)+(0,-0.51)$) -- ($(evap.east)+(1.05,-0.51)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
-  \draw[->] ($(evap.east)+(0,-0.17)$) -- ($(evap.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {vapour};
-  \draw[->] ($(evap.east)+(0,0.17)$) -- ($(evap.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(evap.east)+(0,0.51)$) -- ($(evap.east)+(1.05,0.51)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(evap.east)+(0,-0.34)$) -- ($(evap.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
+  \draw[->] ($(evap.east)+(0,0.00)$) -- ($(evap.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
+  \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Single-effect NaOH evaporator: the heat of dilution IN the duty (fitted L\_phi, Parker-validated)}
@@ -3337,10 +3316,9 @@ Contrast evaporator06 (whose CASE-LOCAL pair overlay omits the T-slots, so ITS N
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (evap) at (0.0,-0.0) {\textbf{evap}\\[-1pt]{\tiny evaporator}};
   \draw[->] ($(evap.west)+(-1.05,-0.17)$) -- ($(evap.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
   \draw[->] ($(evap.west)+(-1.05,0.17)$) -- ($(evap.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {saturatedSteam130C};
-  \draw[->] ($(evap.east)+(0,-0.51)$) -- ($(evap.east)+(1.05,-0.51)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
-  \draw[->] ($(evap.east)+(0,-0.17)$) -- ($(evap.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {vapour};
-  \draw[->] ($(evap.east)+(0,0.17)$) -- ($(evap.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(evap.east)+(0,0.51)$) -- ($(evap.east)+(1.05,0.51)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(evap.east)+(0,-0.34)$) -- ($(evap.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
+  \draw[->] ($(evap.east)+(0,0.00)$) -- ($(evap.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
+  \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Evaporating a brine that also carries sugar: the electrolyte BPE is computed on the salt molality, and the rest is announced, not absorbed}
@@ -4941,9 +4919,8 @@ Two flashes in series, each a GENUINE vapour/liquid split. flash1 (370 K) splits
   \draw[->] ($(H1.west)+(-1.05,0.00)$) -- ($(H1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
   \draw[->] (H1) -- (V1) node[midway, above, font=\tiny] {heated};
   \draw[->] (V1) -- (D1) node[midway, above, font=\tiny] {throttled};
-  \draw[->] ($(D1.east)+(0,-0.34)$) -- ($(D1.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {liquid};
-  \draw[->] ($(D1.east)+(0,0.00)$) -- ($(D1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
-  \draw[->] ($(D1.east)+(0,0.34)$) -- ($(D1.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(D1.east)+(0,-0.17)$) -- ($(D1.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liquid};
+  \draw[->] ($(D1.east)+(0,0.17)$) -- ($(D1.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Info-follows-streams credo: heater (Q) + valve (P) set the state; the flash drum (no knobs) just separates}
@@ -5259,8 +5236,7 @@ Identical to flash02\_ethanol\_water, but this case demonstrates the RESEARCH WO
   \draw[->, dashed] (column.south) .. controls +(0,-1.0) and +(0,-1.0) .. (mixer.south) node[midway, below, font=\tiny] {recycle};
   \draw[->] (mixer) -- (reactor) node[midway, above, font=\tiny] {mixed};
   \draw[->] (reactor) -- (column) node[midway, above, font=\tiny] {reactorOut};
-  \draw[->] ($(column.east)+(0,-0.17)$) -- ($(column.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {bottoms};
-  \draw[->] ($(column.east)+(0,0.17)$) -- ($(column.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column.east)+(0,0.00)$) -- ($(column.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Isomerization neoPentane$\to$nPentane: mixer + CSTR + distillation with recycle}
@@ -6072,9 +6048,8 @@ TWO LESSONS THIS CASE TEACHES: 1. THE RADICALS' WORK: endothermic dissociation (
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (wgs) at (0.0,-0.0) {\textbf{wgs}\\[-1pt]{\tiny gibbsReactor}};
   \draw[->] ($(wgs.west)+(-1.05,0.00)$) -- ($(wgs.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(wgs.east)+(0,-0.34)$) -- ($(wgs.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {gas};
-  \draw[->] ($(wgs.east)+(0,0.00)$) -- ($(wgs.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(wgs.east)+(0,0.34)$) -- ($(wgs.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(wgs.east)+(0,-0.17)$) -- ($(wgs.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {gas};
+  \draw[->] ($(wgs.east)+(0,0.17)$) -- ($(wgs.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Cooled WGS Gibbs reactor (350 K): water condenses, shifting the equilibrium (multi-phase)}
@@ -6112,9 +6087,8 @@ Outlets: `gas` (the dry-ish product gas) + `condensate` (liquid water).
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (wgs) at (0.0,-0.0) {\textbf{wgs}\\[-1pt]{\tiny gibbsReactor}};
   \draw[->] ($(wgs.west)+(-1.05,0.00)$) -- ($(wgs.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(wgs.east)+(0,-0.34)$) -- ($(wgs.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {gas};
-  \draw[->] ($(wgs.east)+(0,0.00)$) -- ($(wgs.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(wgs.east)+(0,0.34)$) -- ($(wgs.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(wgs.east)+(0,-0.17)$) -- ($(wgs.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {gas};
+  \draw[->] ($(wgs.east)+(0,0.17)$) -- ($(wgs.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Cooled WGS via reactiveFlash (B1) -- cross-checks the elementPotential V+L result}
@@ -6154,9 +6128,8 @@ Outlets: `gas` (the dry-ish product gas) + `condensate` (liquid water).
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (wgs) at (0.0,-0.0) {\textbf{wgs}\\[-1pt]{\tiny gibbsReactor}};
   \draw[->] ($(wgs.west)+(-1.05,0.00)$) -- ($(wgs.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(wgs.east)+(0,-0.34)$) -- ($(wgs.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {gas};
-  \draw[->] ($(wgs.east)+(0,0.00)$) -- ($(wgs.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(wgs.east)+(0,0.34)$) -- ($(wgs.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(wgs.east)+(0,-0.17)$) -- ($(wgs.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {gas};
+  \draw[->] ($(wgs.east)+(0,0.17)$) -- ($(wgs.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Cooled WGS via directMin (B2, Nelder-Mead direct G-min) -- cross-checks A/B1 to \textasciitilde{}0.3\%}
@@ -6331,8 +6304,7 @@ THE LOG IS AN OBSERVER. Remove every `newtonLog` line and every number this case
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed3) at (0.0,-0.0) {\textbf{bed3}\\[-1pt]{\tiny gibbsReactor}};
   \draw[->] ($(bed3.west)+(-1.05,0.00)$) -- ($(bed3.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(bed3.east)+(0,-0.17)$) -- ($(bed3.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {)};
-  \draw[->] ($(bed3.east)+(0,0.17)$) -- ($(bed3.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {out};
+  \draw[->] ($(bed3.east)+(0,0.00)$) -- ($(bed3.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{An adiabatic ammonia synthesis bed fed a gas that already carries 16 \% NH3 (the third bed of a staged converter), 150 bar, 10 K approach to equilibrium, seeded 80 K hotter than its answer: the engine reads the approach's SIGN from the dT = 0 adiabatic outlet it solves first, not from the seed, so the bed ends BELOW its own equilibrium whichever seed the case declares}
@@ -6382,8 +6354,7 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (condenser) at (0.0,-0.0) {\textbf{condenser}\\[-1pt]{\tiny condenser}};
   \draw[->] ($(condenser.west)+(-1.05,0.00)$) -- ($(condenser.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {steam};
-  \draw[->] ($(condenser.east)+(0,-0.17)$) -- ($(condenser.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {condensate};
-  \draw[->] ($(condenser.east)+(0,0.17)$) -- ($(condenser.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(condenser.east)+(0,0.00)$) -- ($(condenser.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Horizontal-tube steam condenser: Nusselt film HTC $\to$ duty (geometry mode)}
@@ -6466,9 +6437,8 @@ What to look at in the output: T\_water\_out against the wet-bulb floor (T\_wb \
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (hx) at (0.0,-0.0) {\textbf{hx}\\[-1pt]{\tiny heatExchanger}};
   \draw[->] ($(hx.west)+(-1.05,-0.17)$) -- ($(hx.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {hot};
   \draw[->] ($(hx.west)+(-1.05,0.17)$) -- ($(hx.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {cold};
-  \draw[->] ($(hx.east)+(0,-0.34)$) -- ($(hx.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {hotOut};
-  \draw[->] ($(hx.east)+(0,0.00)$) -- ($(hx.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
-  \draw[->] ($(hx.east)+(0,0.34)$) -- ($(hx.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(hx.east)+(0,-0.17)$) -- ($(hx.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {hotOut};
+  \draw[->] ($(hx.east)+(0,0.17)$) -- ($(hx.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Two-stream heat exchanger (eps-NTU): hot/cold water recovery}
@@ -6510,9 +6480,8 @@ Expected (eps-NTU, Cp\_water \textasciitilde{} 75 J/mol/K): C\_hot = 100/3.6 $\a
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (hx) at (0.0,-0.0) {\textbf{hx}\\[-1pt]{\tiny heatExchanger}};
   \draw[->] ($(hx.west)+(-1.05,-0.17)$) -- ($(hx.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {hotShell};
   \draw[->] ($(hx.west)+(-1.05,0.17)$) -- ($(hx.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {coldTube};
-  \draw[->] ($(hx.east)+(0,-0.34)$) -- ($(hx.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {hotOut};
-  \draw[->] ($(hx.east)+(0,0.00)$) -- ($(hx.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
-  \draw[->] ($(hx.east)+(0,0.34)$) -- ($(hx.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(hx.east)+(0,-0.17)$) -- ($(hx.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {hotOut};
+  \draw[->] ($(hx.east)+(0,0.17)$) -- ($(hx.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Shell-and-tube heat exchanger sized from GEOMETRY: the overall U and area are COMPUTED from the tube bundle + per-side convective correlations (Gnielinski tube-side, Kern shell-side), not specified. Water-water clean service. The computed U lands in the textbook clean water-water band (\textasciitilde{}2000-3000 W/(m2.K), Kern / Sinnott). Tube-side h\_i via Gnielinski (Incropera \& DeWitt 6th ed.); shell-side h\_o via the Kern method (Process Heat Transfer, 1950). U and area are RESULTS that then feed the unchanged eps-NTU duty.}
@@ -6554,9 +6523,8 @@ Expected order of magnitude (clean water-water): U \textasciitilde{} 2000-3000 W
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (preheater) at (0.0,-1.7) {\textbf{preheater}\\[-1pt]{\tiny heater}};
   \draw[->] ($(column01.west)+(-1.05,0.00)$) -- ($(column01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
   \draw[->] ($(preheater.west)+(-1.05,0.00)$) -- ($(preheater.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {coldProcess};
-  \draw[->] ($(column01.east)+(0,-0.34)$) -- ($(column01.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column01.east)+(0,0.00)$) -- ($(column01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column01.east)+(0,0.34)$) -- ($(column01.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column01.east)+(0,-0.17)$) -- ($(column01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column01.east)+(0,0.17)$) -- ($(column01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
   \draw[->] ($(preheater.east)+(0,0.00)$) -- ($(preheater.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {warmedProcess};
 \end{tikzpicture}
 \end{tutscheme}
@@ -6593,9 +6561,8 @@ The preheater is heated by the column's rejected condenser duty (\textasciitilde
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column01) at (2.9,-0.0) {\textbf{column01}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(preheater.west)+(-1.05,0.00)$) -- ($(preheater.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {coldFeed};
   \draw[->] (preheater) -- (column01) node[midway, above, font=\tiny] {warmFeed};
-  \draw[->] ($(column01.east)+(0,-0.34)$) -- ($(column01.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column01.east)+(0,0.00)$) -- ($(column01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column01.east)+(0,0.34)$) -- ($(column01.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column01.east)+(0,-0.17)$) -- ($(column01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column01.east)+(0,0.17)$) -- ($(column01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Feedback heat-link (energy tear): column condenser preheats its OWN feed}
@@ -6677,9 +6644,8 @@ If you instead need a specific T\_out (say "I want exactly 338 K"), wrap the hea
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (hx) at (0.0,-0.0) {\textbf{hx}\\[-1pt]{\tiny heatExchanger}};
   \draw[->] ($(hx.west)+(-1.05,-0.17)$) -- ($(hx.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {hotShell};
   \draw[->] ($(hx.west)+(-1.05,0.17)$) -- ($(hx.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {coldTube};
-  \draw[->] ($(hx.east)+(0,-0.34)$) -- ($(hx.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {hotOut};
-  \draw[->] ($(hx.east)+(0,0.00)$) -- ($(hx.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
-  \draw[->] ($(hx.east)+(0,0.34)$) -- ($(hx.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(hx.east)+(0,-0.17)$) -- ($(hx.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {hotOut};
+  \draw[->] ($(hx.east)+(0,0.17)$) -- ($(hx.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{PART 1 of 2 -- DESIGN: the DUTY TARGET is given (cool the hot shell 330$\to$315 K) and the exchanger GEOMETRY is SOLVED for (model design;). Glass-box Kern sizing: fix the tube choices, then find the tube count (and the shell diameter it implies, Kern/Sinnott bundle) so U$\ast$A = Q\_req/LMTD; U/dP then rated with Gnielinski (tube) + Kern (shell). The detailed-design (sizing) step, glass-box. Part 2 (hxWorkflow2\_rate\_designed) rates the bundle this case produces.}
@@ -6728,9 +6694,8 @@ Water-water, clean service, 2-pass U-tube (the general arrangement). Expect: \te
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (hx) at (0.0,-0.0) {\textbf{hx}\\[-1pt]{\tiny heatExchanger}};
   \draw[->] ($(hx.west)+(-1.05,-0.17)$) -- ($(hx.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {hotShell};
   \draw[->] ($(hx.west)+(-1.05,0.17)$) -- ($(hx.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {coldTube};
-  \draw[->] ($(hx.east)+(0,-0.34)$) -- ($(hx.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {hotOut};
-  \draw[->] ($(hx.east)+(0,0.00)$) -- ($(hx.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
-  \draw[->] ($(hx.east)+(0,0.34)$) -- ($(hx.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(hx.east)+(0,-0.17)$) -- ($(hx.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {hotOut};
+  \draw[->] ($(hx.east)+(0,0.17)$) -- ($(hx.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Shell-and-tube heat exchanger sized from GEOMETRY: the overall U and area are COMPUTED from the tube bundle + per-side convective correlations (Gnielinski tube-side, Kern shell-side), not specified. Water-water clean service. The computed U lands in the textbook clean water-water band (\textasciitilde{}2000-3000 W/(m2.K), Kern / Sinnott). Tube-side h\_i via Gnielinski (Incropera \& DeWitt 6th ed.); shell-side h\_o via the Kern method (Process Heat Transfer, 1950). U and area are RESULTS that then feed the unchanged eps-NTU duty.}
@@ -6774,10 +6739,9 @@ Numbers are RESULTS pinned by --record. Same clean water-water service, same Gni
   \draw[->] ($(mhx.west)+(-1.05,-0.34)$) -- ($(mhx.west)+(0,-0.34)$) node[at start, below, font=\tiny, anchor=north west] {hot1};
   \draw[->] ($(mhx.west)+(-1.05,0.00)$) -- ($(mhx.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {hot2};
   \draw[->] ($(mhx.west)+(-1.05,0.34)$) -- ($(mhx.west)+(0,0.34)$) node[at start, above, font=\tiny, anchor=south west] {cold};
-  \draw[->] ($(mhx.east)+(0,-0.51)$) -- ($(mhx.east)+(1.05,-0.51)$) node[at end, below, font=\tiny, anchor=north east] {hot1Out};
-  \draw[->] ($(mhx.east)+(0,-0.17)$) -- ($(mhx.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {hot2Out};
-  \draw[->] ($(mhx.east)+(0,0.17)$) -- ($(mhx.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
-  \draw[->] ($(mhx.east)+(0,0.51)$) -- ($(mhx.east)+(1.05,0.51)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(mhx.east)+(0,-0.34)$) -- ($(mhx.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {hot1Out};
+  \draw[->] ($(mhx.east)+(0,0.00)$) -- ($(mhx.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {hot2Out};
+  \draw[->] ($(mhx.east)+(0,0.34)$) -- ($(mhx.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Multi-stream heat exchanger: 2 hot + 1 cold, balance closes}
@@ -7091,9 +7055,8 @@ The sweep straddles that crossing (0.4..1.6 kmol/s); each point is a complete co
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ROunit) at (0.0,-0.0) {\textbf{ROunit}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(ROunit.west)+(-1.05,0.00)$) -- ($(ROunit.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(ROunit.east)+(0,-0.34)$) -- ($(ROunit.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(ROunit.east)+(0,0.00)$) -- ($(ROunit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(ROunit.east)+(0,0.34)$) -- ($(ROunit.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(ROunit.east)+(0,-0.17)$) -- ($(ROunit.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(ROunit.east)+(0,0.17)$) -- ($(ROunit.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Spiral-wound RO of 35 g/L NaCl feed at 55 bar (canonical seawater desalination)}
@@ -7131,9 +7094,8 @@ Expected (with the SW30HR parameters): water recovery $\approx$ 18 \% (single pa
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFunit) at (0.0,-0.0) {\textbf{NFunit}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(NFunit.west)+(-1.05,0.00)$) -- ($(NFunit.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(NFunit.east)+(0,-0.34)$) -- ($(NFunit.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(NFunit.east)+(0,0.00)$) -- ($(NFunit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(NFunit.east)+(0,0.34)$) -- ($(NFunit.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(NFunit.east)+(0,-0.17)$) -- ($(NFunit.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NFunit.east)+(0,0.17)$) -- ($(NFunit.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{NF270 partial rejection of glucose at 10 bar (canonical NF: 10 g/L sugar feed)}
@@ -7175,9 +7137,8 @@ The partial rejection is the defining NF feature: the membrane is not tight enou
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ROunit) at (0.0,-0.0) {\textbf{ROunit}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(ROunit.west)+(-1.05,0.00)$) -- ($(ROunit.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(ROunit.east)+(0,-0.34)$) -- ($(ROunit.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(ROunit.east)+(0,0.00)$) -- ($(ROunit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(ROunit.east)+(0,0.34)$) -- ($(ROunit.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(ROunit.east)+(0,-0.17)$) -- ($(ROunit.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(ROunit.east)+(0,0.17)$) -- ($(ROunit.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Concentration polarization study: sweep k\_film over a SW30HR seawater RO case}
@@ -7215,9 +7176,8 @@ This sweep illustrates why membrane-module designers obsess over spacer geometry
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ROunit) at (0.0,-0.0) {\textbf{ROunit}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(ROunit.west)+(-1.05,0.00)$) -- ($(ROunit.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(ROunit.east)+(0,-0.34)$) -- ($(ROunit.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(ROunit.east)+(0,0.00)$) -- ($(ROunit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(ROunit.east)+(0,0.34)$) -- ($(ROunit.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(ROunit.east)+(0,-0.17)$) -- ($(ROunit.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(ROunit.east)+(0,0.17)$) -- ($(ROunit.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Seawater RO with k\_film computed from spacer-channel hydraulics (Schock-Miquel Sherwood); k\_film falls \textasciitilde{}6.6 to \textasciitilde{}5.6e-5 m/s along the channel}
@@ -7257,9 +7217,8 @@ Expected (with the SW30HR parameters): water recovery $\approx$ 18 \% (single pa
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ROunit) at (0.0,-0.0) {\textbf{ROunit}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(ROunit.west)+(-1.05,0.00)$) -- ($(ROunit.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(ROunit.east)+(0,-0.34)$) -- ($(ROunit.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(ROunit.east)+(0,0.00)$) -- ($(ROunit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(ROunit.east)+(0,0.34)$) -- ($(ROunit.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(ROunit.east)+(0,-0.17)$) -- ($(ROunit.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(ROunit.east)+(0,0.17)$) -- ($(ROunit.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Multi-element membrane train: 3 SW30HR elements in series (seawater RO)}
@@ -7301,9 +7260,8 @@ The material balance CLOSES, per solute, to round-off (the module refuses otherw
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ROunit) at (0.0,-0.0) {\textbf{ROunit}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(ROunit.west)+(-1.05,0.00)$) -- ($(ROunit.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(ROunit.east)+(0,-0.34)$) -- ($(ROunit.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(ROunit.east)+(0,0.00)$) -- ($(ROunit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(ROunit.east)+(0,0.34)$) -- ($(ROunit.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(ROunit.east)+(0,-0.17)$) -- ($(ROunit.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(ROunit.east)+(0,0.17)$) -- ($(ROunit.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Seawater RO with the Pitzer osmotic model (vs membrane01 van't Hoff)}
@@ -7343,9 +7301,8 @@ Expected (with the SW30HR parameters): water recovery $\approx$ 18 \% (single pa
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (vessel) at (0.0,-0.0) {\textbf{vessel}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(vessel.west)+(-1.05,0.00)$) -- ($(vessel.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(vessel.east)+(0,-0.34)$) -- ($(vessel.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(vessel.east)+(0,0.00)$) -- ($(vessel.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(vessel.east)+(0,0.34)$) -- ($(vessel.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(vessel.east)+(0,-0.17)$) -- ($(vessel.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(vessel.east)+(0,0.17)$) -- ($(vessel.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Brackish RO, 6 x 8-inch modules: per-module scaling audit (SI at wall vs bulk)}
@@ -7395,9 +7352,8 @@ Expected story (KPIs locked by the golden master; recovery 55 \%): calcite WALL 
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (vessel) at (2.9,-0.0) {\textbf{vessel}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(softener.west)+(-1.05,0.00)$) -- ($(softener.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
   \draw[->] (softener) -- (vessel) node[midway, above, font=\tiny] {softened};
-  \draw[->] ($(vessel.east)+(0,-0.34)$) -- ($(vessel.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(vessel.east)+(0,0.00)$) -- ($(vessel.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(vessel.east)+(0,0.34)$) -- ($(vessel.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(vessel.east)+(0,-0.17)$) -- ($(vessel.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(vessel.east)+(0,0.17)$) -- ($(vessel.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Softener + brackish RO: ion-exchange removes the scaling driver upstream of the vessel}
@@ -7443,9 +7399,8 @@ Expected story (golden master): softener removes \textasciitilde{}99.99\% hardne
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (vessel) at (0.0,-0.0) {\textbf{vessel}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(vessel.west)+(-1.05,0.00)$) -- ($(vessel.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(vessel.east)+(0,-0.34)$) -- ($(vessel.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(vessel.east)+(0,0.00)$) -- ($(vessel.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(vessel.east)+(0,0.34)$) -- ($(vessel.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(vessel.east)+(0,-0.17)$) -- ($(vessel.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(vessel.east)+(0,0.17)$) -- ($(vessel.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Seawater RO at high recovery: industry calcite indices (LSI / Stiff-Davis / Ryznar) vs the rigorous activity SI at the membrane WALL}
@@ -7597,9 +7552,8 @@ This is the pedagogical core of DSPM-"DE": the DE (dielectric exclusion) is what
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(NF.east)+(0,-0.34)$) -- ($(NF.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(NF.east)+(0,0.00)$) -- ($(NF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(NF.east)+(0,0.34)$) -- ($(NF.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(NF.east)+(0,-0.17)$) -- ($(NF.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.17)$) -- ($(NF.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{SDEM on NF270: dominant NaCl 0.01 M + NaNO3/NH4Cl traces -- NO3- slips through, the field says why}
@@ -7636,9 +7590,8 @@ one NF270 element under the SOLUTION-DIFFUSION-ELECTROMIGRATION law (`transport 
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(NF.east)+(0,-0.34)$) -- ($(NF.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(NF.east)+(0,0.00)$) -- ($(NF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(NF.east)+(0,0.34)$) -- ($(NF.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(NF.east)+(0,-0.17)$) -- ($(NF.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.17)$) -- ($(NF.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{SDEM on NF270: dominant MgSO4 0.01 M + NaNO3/NH4Cl traces -- both trace anions negatively rejected}
@@ -7674,9 +7627,8 @@ one NF270 element under the SOLUTION-DIFFUSION-ELECTROMIGRATION law (`transport 
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(NF.east)+(0,-0.34)$) -- ($(NF.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(NF.east)+(0,0.00)$) -- ($(NF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(NF.east)+(0,0.34)$) -- ($(NF.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(NF.east)+(0,-0.17)$) -- ($(NF.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.17)$) -- ($(NF.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{NF270 + SDEM on a real spacer channel: per-ion film, one interface field (Geraldes \& Afonso 2007) -- Gamma per ion, the trace anion below the bulk}
@@ -7714,9 +7666,8 @@ membrane12's feed and law (NF270, NaCl 0.01 M with NO3-/NH4+ traces, `transport 
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(NF.east)+(0,-0.34)$) -- ($(NF.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(NF.east)+(0,0.00)$) -- ($(NF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(NF.east)+(0,0.34)$) -- ($(NF.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(NF.east)+(0,-0.17)$) -- ($(NF.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.17)$) -- ($(NF.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{NF270-4040 element as a RECORD: NaCl 2 g/L at the rated 4.8 bar -- the geometry, limits and estimates come from data/standards/assets/NF270-4040.dat}
@@ -7753,9 +7704,8 @@ a commercial element named as a RECORD. `module NF270-4040;` replaces `membrane`
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (RO) at (0.0,-0.0) {\textbf{RO}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(RO.west)+(-1.05,0.00)$) -- ($(RO.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(RO.east)+(0,-0.34)$) -- ($(RO.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(RO.east)+(0,0.00)$) -- ($(RO.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(RO.east)+(0,0.34)$) -- ($(RO.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(RO.east)+(0,-0.17)$) -- ($(RO.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(RO.east)+(0,0.17)$) -- ($(RO.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{SW30HR-380 element as a RECORD: seawater 32 g/L NaCl at the rated 55 bar -- membrane01's separation with the hardware read from data/standards/assets/SW30HR-380.dat}
@@ -7791,9 +7741,8 @@ the 8-inch seawater element named as a RECORD. membrane01 typed `area 35 m2; len
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (cell) at (0.0,-0.0) {\textbf{cell}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(cell.west)+(-1.05,0.00)$) -- ($(cell.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(cell.east)+(0,-0.34)$) -- ($(cell.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(cell.east)+(0,0.00)$) -- ($(cell.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(cell.east)+(0,0.34)$) -- ($(cell.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(cell.east)+(0,-0.17)$) -- ($(cell.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(cell.east)+(0,0.17)$) -- ($(cell.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{A laboratory cell in five lines: SEPA CF flat-sheet cell + an NF270 coupon, membrane12's NaCl + traces feed under SDEM at 0.2 m/s crossflow, the coupled Geraldes \& Afonso film}
@@ -7893,9 +7842,8 @@ WHAT IS PINNED AND WHAT IS NOT. The golden pins the answer this model gives. The
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (UF) at (0.0,-0.0) {\textbf{UF}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(UF.west)+(-1.05,0.00)$) -- ($(UF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(UF.east)+(0,-0.34)$) -- ($(UF.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(UF.east)+(0,0.00)$) -- ($(UF.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(UF.east)+(0,0.34)$) -- ($(UF.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(UF.east)+(0,-0.17)$) -- ($(UF.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(UF.east)+(0,0.17)$) -- ($(UF.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{UF of a protein by gel polarisation: past a modest pressure the flux is set by mass transfer, not by the pump}
@@ -8100,9 +8048,8 @@ WHAT THE RUN'S TWO CAVEATS ARE ABOUT, said plainly. The end-of-run block reports
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column01) at (0.0,-0.0) {\textbf{column01}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column01.west)+(-1.05,0.00)$) -- ($(column01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column01.east)+(0,-0.34)$) -- ($(column01.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column01.east)+(0,0.00)$) -- ($(column01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column01.east)+(0,0.34)$) -- ($(column01.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column01.east)+(0,-0.17)$) -- ($(column01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column01.east)+(0,0.17)$) -- ($(column01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Optimise reflux ratio + feedStage of benzene/toluene column to minimise reboiler vapour V\_strip}
@@ -8183,9 +8130,8 @@ Initial guesses are placeholders -- overwritten by Nelder-Mead.
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (vessel) at (0.0,-0.0) {\textbf{vessel}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(vessel.west)+(-1.05,0.00)$) -- ($(vessel.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(vessel.east)+(0,-0.34)$) -- ($(vessel.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
-  \draw[->] ($(vessel.east)+(0,0.00)$) -- ($(vessel.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
-  \draw[->] ($(vessel.east)+(0,0.34)$) -- ($(vessel.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(vessel.east)+(0,-0.17)$) -- ($(vessel.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(vessel.east)+(0,0.17)$) -- ($(vessel.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Brackish RO: maximise water recovery up to the scaling limit (SQP, scaling constraints active at the optimum)}
@@ -8306,9 +8252,8 @@ So this case still demonstrates constrained SQP, shadow prices and a KKT certifi
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column01) at (0.0,-0.0) {\textbf{column01}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column01.west)+(-1.05,0.00)$) -- ($(column01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column01.east)+(0,-0.34)$) -- ($(column01.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column01.east)+(0,0.00)$) -- ($(column01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column01.east)+(0,0.34)$) -- ($(column01.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column01.east)+(0,-0.17)$) -- ($(column01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column01.east)+(0,0.17)$) -- ($(column01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{The classic N-vs-R trade solved in ONE run: nStages declared integer $\to$ exhaustive enumeration, one full SQP per stage count, ALL values on the table}
@@ -8340,9 +8285,8 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column01) at (0.0,-0.0) {\textbf{column01}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column01.west)+(-1.05,0.00)$) -- ($(column01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column01.east)+(0,-0.34)$) -- ($(column01.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column01.east)+(0,0.00)$) -- ($(column01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column01.east)+(0,0.34)$) -- ($(column01.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column01.east)+(0,-0.17)$) -- ($(column01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column01.east)+(0,0.17)$) -- ($(column01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{The purity-energy PARETO FRONT by epsilon-constraint: minimise V\_strip subject to x\_D\_LK >= eps, eps swept 0.96..0.994 -- each front point one auditable SQP run}
@@ -8374,9 +8318,8 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column01) at (0.0,-0.0) {\textbf{column01}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column01.west)+(-1.05,0.00)$) -- ($(column01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column01.east)+(0,-0.34)$) -- ($(column01.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column01.east)+(0,0.00)$) -- ($(column01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column01.east)+(0,0.34)$) -- ($(column01.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column01.east)+(0,-0.17)$) -- ($(column01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column01.east)+(0,0.17)$) -- ($(column01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Sweep reflux ratio R = 1.5..5.0 (10 pts) across the column01 case; responses: x\_D purity + V\_strip (reboiler-duty proxy)}
@@ -8408,9 +8351,8 @@ the column01 benzene/toluene column (classical Raoult textbook problem, no azeot
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column01) at (0.0,-0.0) {\textbf{column01}\\[-1pt]{\tiny distillationColumn}};
   \draw[->] ($(column01.west)+(-1.05,0.00)$) -- ($(column01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(column01.east)+(0,-0.34)$) -- ($(column01.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
-  \draw[->] ($(column01.east)+(0,0.00)$) -- ($(column01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(column01.east)+(0,0.34)$) -- ($(column01.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(column01.east)+(0,-0.17)$) -- ($(column01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column01.east)+(0,0.17)$) -- ($(column01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Feasibility MAP: the reflux sweep with declared constraints -- every row marked (value, bound, residual, satisfied), nothing filtered; the feasible window between the purity spec and the boilup budget read off the CSV}
@@ -8603,7 +8545,6 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
   \draw[->] (feedPump) -- (boiler) node[midway, above, font=\tiny] {feedwater};
   \draw[->] (boiler) -- (steamTurbine) node[midway, above, font=\tiny] {superheatedSteam};
   \draw[->] (steamTurbine) -- (condenser) node[midway, above, font=\tiny] {wetExhaust};
-  \draw[->] ($(condenser.east)+(0,0.00)$) -- ($(condenser.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {)};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Closed IF97 Rankine cycle: pump $\to$ boiler $\to$ turbine $\to$ condenser $\to$ recycle}
@@ -9570,8 +9511,7 @@ EduTool: gui/src/ui/methods/RouteScreeningTool.tsx.
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (compressor01) at (0.0,-0.0) {\textbf{compressor01}\\[-1pt]{\tiny compressor}};
   \draw[->] ($(compressor01.west)+(-1.05,0.00)$) -- ($(compressor01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(compressor01.east)+(0,-0.17)$) -- ($(compressor01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {)};
-  \draw[->] ($(compressor01.east)+(0,0.17)$) -- ($(compressor01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {out};
+  \draw[->] ($(compressor01.east)+(0,0.00)$) -- ($(compressor01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Adiabatic air compressor: 10 kW shaft, eta 0.75 --- P\_out and T\_out are RESULTS}
@@ -9611,8 +9551,7 @@ Hand check (ideal gas, Cp \textasciitilde{} 29.2 J/(mol$\ast$K), gamma \textasci
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (compressor) at (0.0,-0.0) {\textbf{compressor}\\[-1pt]{\tiny compressor}};
   \draw[->] ($(compressor.west)+(-1.05,0.00)$) -- ($(compressor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(compressor.east)+(0,-0.17)$) -- ($(compressor.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {)};
-  \draw[->] ($(compressor.east)+(0,0.17)$) -- ($(compressor.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {out};
+  \draw[->] ($(compressor.east)+(0,0.00)$) -- ($(compressor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Air compressor sized to hit P\_out = 8 bar exactly, via DesignSpec on \$W\_shaft}
@@ -9699,8 +9638,7 @@ The wire makes the energy flow visible at the case level --- a single edge in th
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (pump01) at (0.0,-0.0) {\textbf{pump01}\\[-1pt]{\tiny pump}};
   \draw[->] ($(pump01.west)+(-1.05,0.00)$) -- ($(pump01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(pump01.east)+(0,-0.17)$) -- ($(pump01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {)};
-  \draw[->] ($(pump01.east)+(0,0.17)$) -- ($(pump01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {out};
+  \draw[->] ($(pump01.east)+(0,0.00)$) -- ($(pump01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Water pump: 2 kW shaft, eta 0.65 --- incompressible, P\_out / T\_out are RESULTS}
@@ -9740,8 +9678,7 @@ Hand check (water: v \textasciitilde{} 1.8e-5 m3/mol, Cp\_liq \textasciitilde{} 
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (pump02) at (0.0,-0.0) {\textbf{pump02}\\[-1pt]{\tiny pump}};
   \draw[->] ($(pump02.west)+(-1.05,0.00)$) -- ($(pump02.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(pump02.east)+(0,-0.17)$) -- ($(pump02.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {)};
-  \draw[->] ($(pump02.east)+(0,0.17)$) -- ($(pump02.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {out};
+  \draw[->] ($(pump02.east)+(0,0.00)$) -- ($(pump02.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Water pump specified by DISCHARGE PRESSURE (P\_out 30 bar) --- the shaft power W\_shaft is the RESULT (closed-form inverse of pump01)}
@@ -10133,10 +10070,9 @@ Pedagogical caveat: the stream that crosses from the turbine (SRK) into the flas
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (evap) at (0.0,-0.0) {\textbf{evap}\\[-1pt]{\tiny evaporator}};
   \draw[->] ($(evap.west)+(-1.05,-0.17)$) -- ($(evap.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
   \draw[->] ($(evap.west)+(-1.05,0.17)$) -- ($(evap.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {saturatedSteam130C};
-  \draw[->] ($(evap.east)+(0,-0.51)$) -- ($(evap.east)+(1.05,-0.51)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
-  \draw[->] ($(evap.east)+(0,-0.17)$) -- ($(evap.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {vapour};
-  \draw[->] ($(evap.east)+(0,0.17)$) -- ($(evap.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(evap.east)+(0,0.51)$) -- ($(evap.east)+(1.05,0.51)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(evap.east)+(0,-0.34)$) -- ($(evap.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
+  \draw[->] ($(evap.east)+(0,0.00)$) -- ($(evap.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
+  \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{thermoTest model 1 -- NaCl as a LUMPED molecular component: the boiling-point elevation is the IDEAL K\_b$\ast$m (van't Hoff), BPE \textasciitilde{} 2.11 K. Compare model2 (same evaporator, Pitzer a\_w $\to$ BPE \textasciitilde{} 5.07 K): the REPRESENTATION axis, lumped vs dissociated, on one operation.}
@@ -10169,10 +10105,9 @@ thermoTest model1\_lumped\_evaporator / flowsheetDict NaCl treated as a LUMPED m
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (evap) at (0.0,-0.0) {\textbf{evap}\\[-1pt]{\tiny evaporator}};
   \draw[->] ($(evap.west)+(-1.05,-0.17)$) -- ($(evap.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
   \draw[->] ($(evap.west)+(-1.05,0.17)$) -- ($(evap.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {saturatedSteam130C};
-  \draw[->] ($(evap.east)+(0,-0.51)$) -- ($(evap.east)+(1.05,-0.51)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
-  \draw[->] ($(evap.east)+(0,-0.17)$) -- ($(evap.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {vapour};
-  \draw[->] ($(evap.east)+(0,0.17)$) -- ($(evap.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
-  \draw[->] ($(evap.east)+(0,0.51)$) -- ($(evap.east)+(1.05,0.51)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(evap.east)+(0,-0.34)$) -- ($(evap.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {concentrated};
+  \draw[->] ($(evap.east)+(0,0.00)$) -- ($(evap.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {vapour};
+  \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{thermoTest model 2 -- NaCl as a PITZER electrolyte (Na+ + Cl-, aqueous-inf-dilution reference): the boiling-point elevation comes from the real water activity a\_w, BPE \textasciitilde{} 5.07 K vs the ideal 2.11 K of model1.}
@@ -10285,8 +10220,7 @@ thermoTest model5\_nrtl\_flash / flowsheetDict Water + ethanol as MOLECULAR comp
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny yieldReactor}};
   \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(reactor.east)+(0,-0.17)$) -- ($(reactor.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {)};
-  \draw[->] ($(reactor.east)+(0,0.17)$) -- ($(reactor.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {out};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{User-defined yieldReactor (case-local code/): neoPentane $\to$ nPentane, X=0.8}
@@ -10322,9 +10256,8 @@ The op converts a SPECIFIED fraction of the reactant to the product (no kinetics
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (splitter) at (0.0,-0.0) {\textbf{splitter}\\[-1pt]{\tiny componentSplitter}};
   \draw[->] ($(splitter.west)+(-1.05,0.00)$) -- ($(splitter.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] ($(splitter.east)+(0,-0.34)$) -- ($(splitter.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {overhead};
-  \draw[->] ($(splitter.east)+(0,0.00)$) -- ($(splitter.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
-  \draw[->] ($(splitter.east)+(0,0.34)$) -- ($(splitter.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+  \draw[->] ($(splitter.east)+(0,-0.17)$) -- ($(splitter.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {overhead};
+  \draw[->] ($(splitter.east)+(0,0.17)$) -- ($(splitter.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{User-defined componentSplitter (case-local code/): shortcut benzene/toluene split}
