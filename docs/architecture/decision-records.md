@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 151 records already exist
+## 1. Why an index, when 154 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 151 design records, **103 state a rejected alternative and 48 do not** —
+- Of 154 design records, **104 state a rejected alternative and 50 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -253,6 +253,9 @@ is this index failing its own purpose; they move below with their rulings.
 | [`properties-gui-task-orientation-2026-08-11.md`](../design/properties-gui-task-orientation-2026-08-11.md) | STUDY | measured the Properties GUI against a task-orientation critique: the flow is already substance-first and one-click-to-a-curve, and the real gap is that a component is not an inspectable object.  Item 1 (the Component Inspector) shipped from it |
 | [`the-salt-chosen-by-its-position.md`](../design/the-salt-chosen-by-its-position.md) | ADR | no | **SHIPPED 2026-09-27** (DEV.md §5 A1) -- the single-salt electrolyte adapter picked its active salt through a formula read from the retired `chemistry/salts/<phase>.dat` home, and an empty formula let the FIRST `dissociatesTo` component in the list win.  Measured first: the filing's example (the lithium plant's BRINE sector) was not positional and its engine answer was right.  RULE: the active salt is DECLARED -- the candidate whose own `solidPhases {}` owns the phase `constant/chemistryDict` declares -- never positional, announced in one line; a legacy `salts/` record is honoured and announced, and refused where it disagrees; anything else refuses naming every candidate.  Gate `check_v2_refusals` (the active-salt arm).  Indexed 2026-09-27 by the water.dat slice, which found this gate failing on it at `741b759aa` |
 | [`what-water-dat-does-not-say.md`](../design/what-water-dat-does-not-say.md) | STUDY | yes | **INVENTORY + PARTIAL FILL 2026-09-27** (Vítor: "a gap in [water's] properties is unacceptable") -- every property a unit reads off `water.dat`, measured against IAPWS SR1-86(1992), R15-11, R12-08, R1-76, IF97 and the CODATA Key Values.  The record's Antoine fit is +2.47 % at 373.15 K INSIDE its declared window (its own normal boiling point is 372.45 K) and +18 % at 573 K; the liquid Cp is -6.7 % at 473 K; Watson and the enthalpy surface carry two latent heats 3.30 % apart at 401.63 K; BrockBird's water surface tension is +48 % at 298 K.  263 of the 264 water cases read a SEALED mirror, so a catalogue edit moves goldens at re-import, not today.  BUILT: an IAPWS-R15-11-derived `liquidThermalConductivity` (no reader in the corpus, no golden moves) and an opt-in `Wagner` vapour-pressure model with REQUIRED reducing constants.  MEASURED, NOT TAKEN: the vapour-pressure flip on 102 staged cases moves 268 rows in 37 and stops `column05` converging.  REJECTED: storing the CODATA liquid datum (`check_record_form` refuses a second formation datum; the error is the Watson derivation, not the datum) and AmbroseWalton as the fix (-24 % on water at 298 K) |
+| [`binary-pairs-from-open-measurements.md`](../design/binary-pairs-from-open-measurements.md) | ADR | yes | **FIRST PATH BUILT 2026-09-28** (DEV.md C16) -- the licence determination for wider NRTL coverage from open sources, and the chain built on it.  REJECTED: importing ChemSep's `.ipd` pair tables (the LITE licence grants the pure-component databank "and ONLY" that, and the tables name DECHEMA in their headers) and the `thermo` package's byte-identical copy (its MIT licence does not relicense what it carries) -- both LOCAL ONLY, enforced by `check_source_licence`.  ADOPTED: Choupo's OWN regressions to measurements the ThermoML archive locates, joined to a component by InChIKey, fitted on one study, held out on another, band declared before the fit, promoted only as `reviewStatus interim`; gate `check_regressed_pairs`.  Nothing promoted to `reviewed`: that is Vítor's |
+| [`the-44-tool-review-triage.md`](../design/the-44-tool-review-triage.md) | STUDY | no | **TRIAGE 2026-09-28** (DEV.md C22) -- an external pedagogical review of the 44 EduTools, every claim that a text, formula, number or code is wrong checked against the current lesson source and the engine it cites.  Records the confirmed errors by damage, the engine defects the reviewer MISSED (each its own slice), the claims where the reviewer is wrong (so they are not re-raised), what was softened, what was fixed and the order of the remaining work |
+| [`the-approach-direction-is-read-from-the-answer.md`](../design/the-approach-direction-is-read-from-the-answer.md) | ADR | no | **SHIPPED 2026-10-03** (DEV.md §5, taken on the 2026-10-03 standing mandate) -- an adiabatic `temperatureApproach` read its SIGN at the outer Newton's seed, so a bed seeded hotter than its feed's own equilibrium temperature ended MORE converted than its equilibrium outlet, and a colder seed on the same case took the other sign.  RULE: in adiabatic mode the bed is solved once with no approach, the direction is read from feed -> that dT = 0 outlet, announced with the outlet T and the seed, and the bed re-solved with the signed magnitude; the probe's cost is published.  Isothermal mode untouched.  Witness `gibbs13_adiabatic_approach_direction`; gate `check_adiabatic_approach_direction` |
 
 ### Historical
 
@@ -305,7 +308,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**48 of 151 records state no rejected alternative.**  For a FORUM or a STUDY
+**50 of 154 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
