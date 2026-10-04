@@ -47,8 +47,15 @@ WHAT THIS GATE CHECKS.
       agrees is noise.
 
   (d) THE RESOLVED-STATE ARM: a feed that declares NO `vaporFraction` and
-      resolves two-phase still contradicts `feedQuality 1.0`, and still
-      refuses.  See above -- this is the stripper shape.
+      resolves two-phase still contradicts `feedQuality 1.0`, and the refusal
+      SAYS the state was resolved.  See above -- this is the stripper shape.
+      Since 2026-10-03 every mixture fixture here declares T and P only (a
+      mixture's `vaporFraction` beside T and P is refused as over-specified,
+      check_overspecified_stream), so arm (a) resolves its feed too and this
+      arm holds the sentence that tells the two rules apart.
+  (d2) THE DECLARED-STATE ARM: a feed pinned `phase liquid;` keeps q = 1
+      whatever (T, P) say (R-E2), so a feedQuality right for the unpinned
+      feed contradicts it, refuses, and the refusal says DECLARED.
 
   (e) SOURCE: the second home stays deleted.  No site in
       DistillationColumn.cpp may read `feedQuality` as a VALUE with a default;
@@ -75,7 +82,7 @@ WHAT THIS GATE DOES NOT CHECK, said plainly rather than implied:
     two cases it would move, column04 and column08, are the two whose energy
     residuals are undiagnosed.
   * WHETHER A DECLARED FEED STATE IS TRUE OF THE FEED.  A pinned
-    `vaporFraction 0.0` at a temperature above the bubble point is a
+    `phase liquid;` at a temperature above the bubble point is a
     declaration the engine honours; this gate checks that the case says ONE
     thing, not that the thing is right.
   * THE REACTIVE PATH's distillate temperature, which is knowingly the top
@@ -153,7 +160,7 @@ componentMolarFlows
 
 T               %(T)s K;
 P               101325 Pa;
-vaporFraction   0.0;
+phase           liquid;
 """
 
 
@@ -199,13 +206,17 @@ def main() -> int:
     tmp = Path(tempfile.mkdtemp(prefix="choupo-feedstate-"))
     try:
         # ---- (a) the refusal, and what it must say -----------------------
-        case = build_fixture(tmp, "            feedQuality    1.0;\n",
-                             "vaporFraction   0.6972418857;\n")
+        #  The feed declares T and P only (2026-10-03: a mixture's
+        #  `vaporFraction` beside T and P is refused as over-specified, so the
+        #  fixture that used to DECLARE 0.6972418857 now lets (T, P) resolve
+        #  it -- to the same number, since that pin was column01's own (T, P)
+        #  flash written back by the state writer).
+        case = build_fixture(tmp, "            feedQuality    1.0;\n", "")
         rc, out = run(case)
         if rc == 0:
             failures.append(
                 "(a) a case declaring `feedQuality 1.0` against a feed stream "
-                "that declares `vaporFraction 0.6972418857` RAN TO EXIT 0.  "
+                "whose own (T, P) equilibrium is 69.7 % vapour RAN TO EXIT 0.  "
                 "The feed's thermal state has two homes again and the engine "
                 "is choosing one in silence -- which is the 630.861080 kW "
                 "defect this gate exists to keep closed.")
@@ -225,7 +236,11 @@ def main() -> int:
                         "not both quoted")
             for what, phrase in (
                 ("the delete-the-key remedy", "DELETE `feedQuality`"),
-                ("the fix-the-stream remedy", "vaporFraction 0.000000;"),
+                #  A saturated-liquid feed is the `phase liquid;` pin: the
+                #  remedy used to name `vaporFraction 0.000000;`, which the
+                #  reader refuses on a mixture since 2026-10-03 -- advice
+                #  that creates the next refusal.
+                ("the fix-the-stream remedy", "`phase liquid;`"),
                 ("which home is recommended", "Deleting the key is the recommended fix"),
             ):
                 if phrase not in out:
@@ -237,7 +252,7 @@ def main() -> int:
                         "not only the rule.")
 
         # ---- (b) the negative: no feedQuality, it runs --------------------
-        case = build_fixture(tmp, "", "vaporFraction   0.6972418857;\n")
+        case = build_fixture(tmp, "", "")
         rc, out = run(case)
         if rc != 0:
             failures.append(
@@ -247,8 +262,7 @@ def main() -> int:
                 + "\n".join(out.strip().splitlines()[-6:]))
 
         # ---- (c) the second negative: agreeing, and SILENT ---------------
-        case = build_fixture(tmp, "            feedQuality    0.3027581143;\n",
-                             "vaporFraction   0.6972418857;\n")
+        case = build_fixture(tmp, "            feedQuality    0.3027581143;\n", "")
         rc, out = run(case)
         if rc != 0:
             failures.append(
@@ -262,10 +276,13 @@ def main() -> int:
                 "shouts when it agrees is noise the reader learns to skip.")
 
         # ---- (d) the RESOLVED-state arm (the stripper shape) -------------
-        #  No vaporFraction is declared at all, so nothing in the case text
-        #  contradicts `feedQuality 1.0`.  The engine must resolve the state
-        #  and refuse anyway.  A rule that read only the declared field would
-        #  pass this and leave 30.27 kW across stripper01/02 untouched.
+        #  Arm (a)'s fixture declares no vapour fraction either (since
+        #  2026-10-03 no mixture fixture can), so arm (a) IS the stripper
+        #  shape now and this arm holds the half it leaves open: the refusal
+        #  must SAY the state was RESOLVED, not declared -- a reader whose
+        #  case declares no vapour fraction must be told where the number
+        #  came from.  A rule that read only a declared field could not print
+        #  that sentence, which is how the two rules are told apart.
         case = build_fixture(tmp, "            feedQuality    1.0;\n", "")
         rc, out = run(case)
         if rc == 0:
@@ -281,6 +298,29 @@ def main() -> int:
                 "(d) the refusal fired but does not say the state was "
                 "RESOLVED -- a reader whose case declares no vapour fraction "
                 "must be told where the number came from.")
+
+        # ---- (d2) the DECLARED-state arm (R-E2) ---------------------------
+        #  A `phase liquid;` pin is a declaration and is never re-solved: the
+        #  column reads q = 1 off it whatever (T, P) say, so `feedQuality
+        #  0.3027581143` -- right for the UNPINNED feed in (c) -- contradicts
+        #  THIS feed, and the refusal must say the state was DECLARED.  This
+        #  is the half that stripper01/02 rely on since their pins moved from
+        #  `vaporFraction 0.0` to `phase liquid;` (2026-10-03): the spelling
+        #  changed, the reading must not have.
+        case = build_fixture(tmp, "            feedQuality    0.3027581143;\n",
+                             "phase           liquid;\n")
+        rc, out = run(case)
+        if rc == 0:
+            failures.append(
+                "(d2) a feed PINNED `phase liquid;` ran to exit 0 under a "
+                "`feedQuality 0.3027581143` that contradicts the declared "
+                "liquid.  Either the pin was re-solved (R-E2 broken) or the "
+                "cross-check was skipped.")
+        elif "declared by the stream" not in out:
+            failures.append(
+                "(d2) the refusal fired but does not say the state was "
+                "DECLARED by the stream -- the reader must be able to tell a "
+                "pin from a resolution.")
 
         # ---- (e) SOURCE: the second home stays deleted --------------------
         src = strip_comments(SRC.read_text())

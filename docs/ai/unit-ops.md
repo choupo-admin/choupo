@@ -1262,8 +1262,9 @@ summed.  A mixer MIXES — it never runs an internal flash (separators
 separate).  Newton-1D in T_out.
 
 **Declare each inlet's phase** in its `0/` file with `phase gas;` /
-`phase liquid;` (or a `vaporFraction` pin; there is no `state` key; both
-forms need T and P).  The mixer picks its
+`phase liquid;` (there is no `state` key; a mixture's `vaporFraction` beside
+T and P is refused as over-specified — see dict-syntax "Pinning the phase of
+an inlet").  The mixer picks its
 energy-balance basis from the flow-weighted inlet vf — leave the phase out
 and every inlet defaults to liquid, so a gas-dominant merge tries a liquid
 balance and the T-solve can fail.

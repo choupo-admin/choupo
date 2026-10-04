@@ -615,15 +615,21 @@ renormalisation of a state file.
 
 \paragraph{Thermodynamic closure --- T and P.}  Give \code{T} and
 \code{P}; the phase split is then a \emph{result} (Duhem's theorem: a
-stream of known composition is fixed by exactly two state variables).
-Do not write a decorative \code{vaporFraction 0;} or \code{1;} --- the
-engine recovers the phase itself.  Two honest pins exist for the cases
-$(T,P,z)$ cannot close:
+stream of known composition is fixed by exactly two state variables),
+and the stream table shows the vapour fraction the engine resolves.  A
+MIXTURE that declares \code{vaporFraction} beside \code{T} and \code{P}
+is \textbf{refused} as over-specified --- three values on a two-variable
+state --- and the message names the two remedies (since 2026-10-03; the
+landing case \file{flash01} used to ship all three).  Do not write a
+decorative \code{vaporFraction 0;} or \code{1;} either --- on a mixture
+it is refused naming the \code{phase} pin.  Two honest pins exist for the
+cases $(T,P,z)$ cannot close:
 
 \begin{itemize}[leftmargin=*,nosep,topsep=2pt]
   \item \code{vaporFraction 0.30;} --- a genuine \emph{two-phase split}
-        on the saturation manifold, where $T$ and $P$ are not
-        independent and the split is a real degree of freedom;
+        of a \emph{pure component}, on its saturation curve, where $T$
+        and $P$ are not independent and the split is a real degree of
+        freedom (wet steam, a partly condensed pure vapour);
   \item \code{phase gas;} (or \code{phase liquid;}) --- a
         \emph{phase-intent} pin for a feed the cheap screen cannot
         classify (e.g.\ steam in a hot gas mixture: all vapour, but $T$

@@ -626,20 +626,30 @@ boundary it creates is auditable (the opt-in model-boundary AUDIT prints
 **The phase is normally a CONSEQUENCE, not a declaration.**  A stream of known
 composition is fixed by exactly two variables (Duhem's theorem): give `(T, P, z)`
 and the phase (vf) is determined — you read it off, you don't type it.  Declaring
-`T`, `P` AND `vf` together is over-specification (three numbers on a two-variable
-state).  Prefer declaring only `(T, P, z)`.
+`T`, `P` AND `vaporFraction` together on a MIXTURE is over-specification (three
+numbers on a two-variable state) and the reader **REFUSES** it by name (since
+2026-10-03; the message quotes the three values and the two remedies).  Declare
+`(T, P, z)`; the engine resolves the unpinned stream at its own state and the
+stream table and result JSON show that `vf`.
 
 **When you DO pin the phase** (the two legitimate cases — never a decorative
 `vaporFraction 1`):
 
-* `vaporFraction 0.25;` — a **two-phase split** on the saturation manifold, where
-  `T` and `P` are *not* independent so the split is a genuine free variable.
 * `phase gas;` (or `phase liquid;`) — a **phase-intent boundary**: "this feed enters
   as a gas".  Needed when the cheap screen cannot recover the phase — Choupo marks a
   stream a permanent gas only when `T` exceeds *every* present component's critical
   temperature `Tc` (Vítor's rule: you can only speak of *vapour* below `Tc`).  A gas
   mixture holding a sub-critical species — steam in a water-gas-shift feed, `T` below
   water's `Tc` — is all-vapour but the screen can't prove it, so you say `phase gas;`.
+  A declared phase is honoured, never re-solved (R-E2), and priced as declared.
+  `vaporFraction 0;` or `1;` on a mixture is refused naming this spelling.
+* `vaporFraction 0.25;` — a **two-phase split**, for a PURE component only: on its
+  saturation curve `T` and `P` are *not* independent, so the split is a genuine
+  free variable there (wet steam, a partly condensed pure vapour).  For a mixture
+  `(T, P)` between bubble and dew fix the split, and the line is refused.  If the
+  quality is what you know, the state is `(P, q)` or `(T, q)` and the other
+  variable must be solved — which the engine does not do today; declare the `T`
+  at which the `(T, P)` flash gives your `q`.
 
 The reader stores only these pins; the *permanent-gas* case (hot air, combustion gas)
 carries **nothing** — the engine's `Tc` screen recovers `vf = 1` on its own.
@@ -652,7 +662,7 @@ block:
 componentMolarFlows { water 277.6 kmol/h; }
 T               393.36 K;
 P               200 kPa;
-vaporFraction   1.0;
+phase           gas;                  // saturated-vapour supply, declared
 category        LP_steam_200kPa;      // for utility aggregation
 ```
 

@@ -2820,6 +2820,25 @@ PYEOF
     fi
     rm -f /tmp/feedstate.$$
 
+    # over-specified stream gate (2026-10-03).  A stream of known component
+    # flows is fixed by TWO intensive variables (Duhem); for a MIXTURE (T, P)
+    # fix the split, so a `vaporFraction` beside them is refused by name --
+    # the landing case flash01 shipped all three, with `vaporFraction 0.9` the
+    # run exited 0 showing 0.900 while the first law priced 0.304, and with
+    # the line removed the table showed 0.000 and a liquid enthalpy 275 kW
+    # from the first law.  The reader refuses (the pure two-phase pin kept),
+    # the writer no longer emits it for a mixture, the surface draws the
+    # resolved state, and the corpus carries no such file.  Five sabotages.
+    if "$ROOT/bin/curate/check_overspecified_stream.py" > /tmp/overspec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "overspecified-stream-gate" "$(gate_claim check_overspecified_stream /tmp/overspec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_overspecified_stream.py)\n" "overspecified-stream-gate"
+        cat /tmp/overspec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/overspec.$$
+
     # evaporator chest-phase gate (2026-09-12).  The same family as the one
     # above, and the first member where the second home is a MISSING WORD
     # rather than a conflicting one.  An evaporator's duty is

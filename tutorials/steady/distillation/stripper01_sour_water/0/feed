@@ -29,4 +29,4 @@ P               101325 Pa;
 //  so what is declared here is the author's saturated-liquid charge, not the
 //  flash of it.  If you want the column fed by the equilibrium instead, delete
 //  this line and the engine will resolve it; the answer will move.
-vaporFraction   0.0;
+phase           liquid;

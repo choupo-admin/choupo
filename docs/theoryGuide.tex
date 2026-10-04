@@ -12859,49 +12859,61 @@ often essential)}\label{sec:vaporFraction-dof}
 
 The mixture-aware statement of the degrees of freedom is: \textbf{a stream is
 fixed by $\zv$ + $F$ + exactly TWO of $\{T,\,P,\,\code{vaporFraction}\}$}
-(\code{vaporFraction} is the vapour fraction $\beta$; it is spelled in full ---
-\code{vf} is the name of the field inside \code{ProcessStream}, not a dict
-key).  That is the \emph{theory}.  What the engine implements today is
-narrower, and the difference is worth stating precisely because it is the kind
-of gap a reader would otherwise discover by getting a wrong answer:
+(Duhem's theorem; \code{vaporFraction} is the vapour fraction $\beta$; it is
+spelled in full --- \code{vf} is the name of the field inside
+\code{ProcessStream}, not a dict key).  That is the \emph{theory}, and since
+2026-10-03 the engine enforces the ``exactly TWO'' half of it on the one
+combination the grammar can spell: a third value is refused.  What the engine
+implements of the OTHER pairs is narrower, and the difference is worth stating
+precisely because it is the kind of gap a reader would otherwise discover by
+getting a wrong answer:
 
 \begin{center}\small
 \begin{tabular}{@{}lll@{}}
 \toprule
-What you write & What the engine does today & \\
+What you write (mixture) & What the engine does today & \\
 \midrule
-$T$ + $P$              & Rachford--Rice flash $\to$ $\beta$ & the implemented closure \\
+$T$ + $P$              & Rachford--Rice flash $\to$ $\beta$; the table shows it & the implemented closure \\
+$T$ + $P$ + \code{phase gas|liquid} & prices the DECLARED phase (R-E2) & the single-phase pin \\
+$T$ + $P$ + \code{vaporFraction} & --- & \textbf{REFUSED}: over-specified (three values on a two-variable state) \\
 $P$ + \code{vaporFraction} & --- & recognised; resolution deferred \\
 $T$ + \code{vaporFraction} & --- & recognised; resolution deferred \\
-$T$ + $P$ + \code{vaporFraction} & flash on $(T,P)$; the declared $\beta$ is a PIN & carried, not refused \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \begin{pitfall}
-Earlier printings of this table claimed that all three variables together were
-\textbf{REFUSED} as over-specified and that one alone was refused as
-under-specified.  \textbf{No such refusal is implemented}, and the corpus
-disproves the claim directly: \file{tutorials/steady/flash/flash01\_benzene\_toluene}
-ships $T$, $P$ \emph{and} \code{vaporFraction} in its \file{0/feed} and passes.
-A top-level \code{vaporFraction} sets the \code{phasePinned} flag --- consumers
-that price energy ask that flag rather than testing $\beta = 0$, so an
-\emph{implicit} pin cannot be smuggled in --- but it does not close the state
-and it is not checked against the flash the $(T,P)$ pair produces.  If the two
-disagree, the flash wins silently.  Write $\beta$ only when you mean the pin.
+Earlier printings of this table said that all three variables together were
+\emph{carried, not refused}, and the printing before that said they were
+refused while no refusal existed.  Since 2026-10-03 the refusal IS implemented,
+for a mixture: a \file{0/<stream>} that declares $T$, $P$ and
+\code{vaporFraction} on more than one present component is refused by name,
+and the message quotes the two-variable rule, the three values it found and
+the two remedies --- delete the line and let $(T,P)$ resolve the split, or, if
+the quality is the specification, declare the $T$ at which the $(T,P)$ flash
+gives it (the engine does not solve $T$ from $\beta$ today).  What caused the
+change is worth knowing: \file{flash01\_benzene\_toluene}, the landing case,
+shipped all three, and with the line edited to \code{vaporFraction 0.9} the
+run still exited 0, the stream table printed 0.900 and the first law priced
+the feed at its resolved 0.304 --- the number shown was not the number used.
+The case now declares $T$ and $P$ only, and the table shows the resolved
+0.304.  Gate: \code{check\_overspecified\_stream}.
 \end{pitfall}
 
 \begin{intuition}
-Why \code{vaporFraction} is not optional sugar but often \emph{essential}: on
-the phase boundary, $T$ and $P$ are \textbf{not independent}.  For a pure
-component a two-phase state has $P = P_{\mathrm{sat}}(T)$, so $(T,P)$ is
-degenerate --- you \emph{cannot} pin a saturated state with $T$ and $P$; you
-must give $\beta$ with one of them.  For a mixture $(T,P)$ between bubble and
-dew does fix $\beta$ uniquely, but $\code{vaporFraction}\ 0$ (or $1$) is the
-unambiguous way to say ``saturated liquid (or vapour) feed'' and let the engine
-find the bubble (or dew) point.  This is the most common point of confusion in
-stream specification, and the over-/under-specification refusals above exist so
-the engine never silently resolves an ill-posed request.
+Why the exception is a PURE component, and only that: on the phase boundary,
+$T$ and $P$ are \textbf{not independent}.  For a pure component a two-phase
+state has $P = P_{\mathrm{sat}}(T)$, so $(T,P)$ is degenerate --- you
+\emph{cannot} pin a saturated state with $T$ and $P$; you must give $\beta$
+with one of them, and \code{vaporFraction q} stays the pin there (wet steam, a
+partly condensed pure vapour).  For a mixture $(T,P)$ between bubble and dew
+fix $\beta$ uniquely, so writing $\beta$ beside them is either repeating what
+the flash will say or contradicting it.  A saturated liquid or vapour feed is
+spelled \code{phase liquid;} / \code{phase gas;} --- a declaration the engine
+honours and prices as declared, and a \code{vaporFraction 0} or \code{1} on a
+mixture is refused naming that spelling.  This is the most common point of
+confusion in stream specification, and the refusal exists so the engine never
+shows one number while using another.
 \end{intuition}
 
 A resolver that brackets and bisects on the (monotone) flash $\beta$ ---

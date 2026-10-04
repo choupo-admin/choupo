@@ -39,12 +39,21 @@ Description
                    form is FATAL; `componentFlows` is a legacy fluid-only alias).
       CLOSURE   -- exactly ONE pair: T+P (implemented), or PH/PS/TQ/PQ (recognised,
                    flash-resolution deferred), or a resolved T+P+phases{} snapshot.
-                   THREE top-level state vars over-specify, ONE under-specifies -> FATAL.
+                   THREE top-level state vars over-specify -> FATAL: a MIXTURE
+                   declaring T, P AND `vaporFraction` is refused by name (a stream
+                   of known component flows has TWO intensive degrees of freedom,
+                   Duhem; for a mixture (T, P) fix the split).  The ONE exception is
+                   a PURE component in two phases, whose (T, P) sit on its saturation
+                   curve and do not fix the split: `vaporFraction q` stays its pin.
+                   `phase gas|liquid;` is the single-phase pin for either.  ONE state
+                   var alone is not refused today (said plainly: the under-specified
+                   half of the old promise is not implemented; T and P default to 0).
 
     componentMolarFlows is the OVERALL material; a phases{} block decomposes it and
-    sums back exactly.  vaporFraction / molarEnthalpy of a resolved snapshot live
-    under derived{} (diagnostics, not constraints).  Every DIMENSIONAL value carries
-    its unit; the writer drops numerically-negligible species.
+    sums back exactly.  A legacy derived{ vaporFraction } of an old snapshot is still
+    read (diagnostics, never a constraint); the writer no longer emits one.  Every
+    DIMENSIONAL value carries its unit; the writer drops numerically-negligible
+    species, and writes `vaporFraction` only for a pure two-phase stream.
 
     The flattened solver name `SECTOR.sub.stream` maps to the path
     `<dir>/SECTOR/sub/stream` (dots -> directory separators): the sector owns its

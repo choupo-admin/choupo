@@ -661,6 +661,11 @@
       "claim": "check_overlay_aad_pinned: OK -- 14 AAD statistic(s) across 3 overlay case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published).  NOT CHECKED: whether any AAD is GOOD -- this gate makes the number falsifiable, never good; and these are self-recorded regression rows, never anchors, because an AAD is derived from the model and the dataset together and no primary published it.",
       "seconds": 0.2
     },
+    "check_overspecified_stream": {
+      "exit": 0,
+      "claim": "check_overspecified_stream: OK -- a MIXTURE stream file declaring T, P and vaporFraction is REFUSED naming the two-variable rule (Duhem), the three values and both remedies; vaporFraction 0/1 on a mixture refuses naming `phase liquid|gas;`; a PURE two-phase stream keeps its pin and the writer writes it back; flash01 (T and P only) shows ONE feed state on the stream surface, the flash KPI and the first law, with no impossible-phase accusation and no vaporFraction written back for the mixture; and no tracked 0/ file under tutorials/ declares all three on a mixture.  SCANNED: a fixture case written by this gate (five variants), flash01, condenser01, every tracked 0/ file under tutorials/.  NOT CHECKED: units that read their inlet's vf bare during the solve (valve, adiabaticFlash, heatExchanger, storageTank); the under-specified half of the header's promise (not implemented); the degenerate pure-component flash at saturation.",
+      "seconds": 1.6
+    },
     "check_ownership_index": {
       "exit": 0,
       "claim": "check_ownership_index: OK -- 25 feature block(s); every backticked path exists, every named gate exists, every witness class is declared in tutorials/WITNESSES, every block carries Contract and Gates lines.  NOT COVERED: whether any row's content is RIGHT (the pointed-at gates and witnesses carry that), and completeness of the feature list (a new subsystem ships its own row).",

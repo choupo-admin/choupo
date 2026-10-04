@@ -18,4 +18,3 @@ componentMolarFlows
 
 T               350 K;
 P               100000 Pa;
-vaporFraction   0.4314937972;

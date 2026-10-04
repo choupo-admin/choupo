@@ -1558,7 +1558,7 @@ bubbleT of the feed composition at 892.67 kPa $\to$ T = 334.4218 K adiabaticFlas
 
 feedQuality q = 1 - V/F = 0.9070666555
 
-and 0/feed carries the COLUMN-INLET state (323.5875148 K, 658600 Pa, vaporFraction 0.0929333445), not the line state. The paper's 892.67 kPa therefore appears in this case only as the premise of A1, stated above. NOTE the arity cost, declared: q lives in two places (this key and the stream's vaporFraction) because the Wang-Henke path takes q as a number and does not read it off the inlet. They must be kept equal; the derivation above is how you check them.
+and 0/feed carries the COLUMN-INLET state (323.5875148 K, 658600 Pa; the V/F is not declared -- a mixture's (T, P) fix it, and the engine resolves it), not the line state. The paper's 892.67 kPa therefore appears in this case only as the premise of A1, stated above. The `feedQuality` key below is a CROSS-CHECK against the feed stream's resolved state, which the column reads (2026-09-12): a key that contradicts it is refused by name, so the two cannot drift apart in silence. (Until 2026-10-03 the stream file also declared `vaporFraction 0.0929333445` -- a third state variable beside T and P, which the reader now refuses as over-specified.)
 
 Sensitivity, MEASURED rather than asserted -- the competing assumption was run. Declaring instead "saturated liquid AT THE COLUMN PRESSURE" gives T = 323.2706 K (bubble point at 658.6 kPa) and q = 1.0 exactly, and the whole column moves by:
 
@@ -3661,7 +3661,7 @@ NOTE (golden re-recorded): the operation pressure formerly read a BARE `P 1.0132
 \end{tutnarrative}
 \tutreadme{A 50/50 ethanol/water feed (50 kmol/h of each) held at 355 K and 1.01325 bar in one isothermalFlash. Structurally this is flash01\_benzene\_toluene again: one unit, one operation \{ T ... P ... \}, Rachford-Rice in one unknown. Everything that is different is in constant/thermoPhysPropDict, which declares NRTL with exactly the parameters compare\_activity\_etoh\_water plotted --- a\_ij -0.8009, b\_ij 246.18, a\_ji 3.4578, b\_ji -586.0809, alpha 0.30.}
 \tutreadme{The golden: V/F = 0.7976 (79.76 kmol/h vapour, 20.24 kmol/h liquid), K\_ethanol = 2.2274, K\_water = 0.5850, and Q\_kW = 0.}
-\tutreadme{1. K stopped being a ratio of pressures. In flash01 Raoult gave K\_i = Psat\_i(T) / P and you could check both K's against the two vapour pressures the log prints. Here the liquid is non-ideal, so K\_i = gamma\_i $\ast$ Psat\_i(T) / P, and the activity coefficient is the whole of the difference between this case and the last one. The Log tab still prints the vapour pressures, so the gap between Psat/P and the reported K is the gamma, read off the screen. 2. The model arrived from the case, not from the unit. The unit spec in flowsheetDict carries no thermodynamics at all --- type, in/outputs, and operation \{ T 355.0 K; P 1.01325 bar; \}. Swapping Raoult for NRTL touched one file, and it was not the one describing the equipment. 3. The gamma that acts here is not the gamma you plotted. Case 2 scanned an $\ast$equimolar$\ast$ liquid; the liquid leaving this drum is not equimolar. K\_ethanol 2.2274 is greater than 1 and K\_water 0.5850 is less than 1, so ethanol concentrates in the vapour and the liquid left behind is water-rich --- at a composition the previous case never evaluated. A curve at fixed composition is a slice through a surface the flash walks across. 4. Q\_kW = 0, for the same reason as flash01. The feed file declares vaporFraction 0.7975634083 at 355 K and 1.01325 bar, and the drum holds that same T and P --- so the feed stream $\ast$already is$\ast$ the two-phase mixture the drum separates, and the answer V/F = 0.797563408329 reproduces the declared fraction digit for digit. Enthalpy is a state function; nothing has to be added to hold a state you were already in. 5. Read the flowsheetDict header before you move anything. It records that the operating pressure once read a bare P 1.01325; with no unit --- parsed as 1.01325 Pa --- which drove the K's to O(1e5) and reported a fully vaporised feed, converged, with no warning. Scalars carry units in this grammar; that header is what a silent wrong answer costs.}
+\tutreadme{1. K stopped being a ratio of pressures. In flash01 Raoult gave K\_i = Psat\_i(T) / P and you could check both K's against the two vapour pressures the log prints. Here the liquid is non-ideal, so K\_i = gamma\_i $\ast$ Psat\_i(T) / P, and the activity coefficient is the whole of the difference between this case and the last one. The Log tab still prints the vapour pressures, so the gap between Psat/P and the reported K is the gamma, read off the screen. 2. The model arrived from the case, not from the unit. The unit spec in flowsheetDict carries no thermodynamics at all --- type, in/outputs, and operation \{ T 355.0 K; P 1.01325 bar; \}. Swapping Raoult for NRTL touched one file, and it was not the one describing the equipment. 3. The gamma that acts here is not the gamma you plotted. Case 2 scanned an $\ast$equimolar$\ast$ liquid; the liquid leaving this drum is not equimolar. K\_ethanol 2.2274 is greater than 1 and K\_water 0.5850 is less than 1, so ethanol concentrates in the vapour and the liquid left behind is water-rich --- at a composition the previous case never evaluated. A curve at fixed composition is a slice through a surface the flash walks across. 4. Q\_kW = 0, for the same reason as flash01. The feed file declares only T = 355 K and P = 1.01325 bar --- a mixture's (T, P) fix its split, so the engine resolves the feed at its own state and the stream table shows vf = 0.798 --- and the drum holds that same T and P. So the feed stream $\ast$already is$\ast$ the two-phase mixture the drum separates, and the answer V/F = 0.797563408329 is the feed's own resolved fraction. Enthalpy is a state function; nothing has to be added to hold a state you were already in. 5. Read the flowsheetDict header before you move anything. It records that the operating pressure once read a bare P 1.01325; with no unit --- parsed as 1.01325 Pa --- which drove the K's to O(1e5) and reported a fully vaporised feed, converged, with no warning. Scalars carry units in this grammar; that header is what a silent wrong answer costs.}
 \tutreadme{Set the liquid's activityModel back to ideal in constant/thermoPhysPropDict and run again. The K's collapse to Psat/P, the split moves, and Q\_kW stops being zero --- because the feed's declared vapour fraction is no longer the answer at 355 K. That difference is case 2's three curves, arriving in a unit. Then open column01\_benzene\_toluene, where this same equilibrium is solved on fifteen stages at once.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.0277777777778}
@@ -9882,14 +9882,14 @@ This teaching case uses a CASE-LOCAL synthetic property anchor: cpSolid = 920 J/
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{feed}{F}{2.77777777778e-4}
-\goldrow{stream}{cleanHe}{F}{2.475e-4}
-\goldrow{stream}{regenerationGas}{F}{3.02777777778e-5}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{cleanHe}{F}{0.0002475}
+\goldrow{stream}{regenerationGas}{F}{3.02777777778e-05}
 \goldrow{kpi}{co2tsa}{recovery\_He}{0.9}
-\goldrow{kpi}{co2tsa}{purity\_He}{1.0}
+\goldrow{kpi}{co2tsa}{purity\_He}{1}
 \goldrow{kpi}{co2tsa}{Dq\_CO2}{0.408156018947}
 \goldrow{kpi}{co2tsa}{capacity\_utilisation\_CO2}{0.680567638068}
-\goldrow{kpi}{co2tsa}{Q\_sensible\_per\_cycle\_kJ}{276.0}
+\goldrow{kpi}{co2tsa}{Q\_sensible\_per\_cycle\_kJ}{276}
 \goldrow{kpi}{co2tsa}{Q\_desorption\_per\_cycle\_kJ}{37.5}
 \goldrow{kpi}{co2tsa}{Q\_regeneration\_kW}{1.045}
 \goldrow{kpi}{co2tsa}{Q\_adsorption\_cooling\_kW}{-1.045}
@@ -10310,10 +10310,10 @@ The op converts a SPECIFIED fraction of the reactant to the product (no kinetics
 \goldrow{kpi}{reactor}{converted\_kmol\_h}{0.8}
 \goldrow{stream}{feed}{T}{320}
 \goldrow{stream}{out}{T}{320}
-\goldrow{boundary}{global}{H\_feeds\_kW}{-51.7413268856}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-45.85856841}
 \goldrow{boundary}{global}{Q\_boundary\_kW}{0}
 \goldrow{boundary}{global}{H\_products\_kW}{-48.028683133}
-\goldrow{boundary}{global}{residual\_kW}{-3.71264375254}
+\goldrow{boundary}{global}{residual\_kW}{2.170114723}
 \end{tutgolden}
 
 \clearpage

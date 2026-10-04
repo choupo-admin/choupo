@@ -34,7 +34,10 @@
   8.08 % apart.  Nothing in this file or in the drawing changed.  What changed
   is that `d6a984701` stopped the column reading its feed's thermal state from
   the wrong home: `operation.feedQuality` defaulted to 1.0, saturated liquid,
-  while the feed stream itself declares `vaporFraction 0.6972418857`.  The
+  while the feed stream itself resolved to a vapour fraction of 0.6972418857
+  (it DECLARED that number beside T and P until 2026-10-03, when a mixture's
+  `vaporFraction` beside T and P became an over-specification the reader
+  refuses; the (T, P) resolution gives the same split).  The
   sheets below carry that number on every port block -- the feed arrives 69.7 %
   VAPOUR.
 

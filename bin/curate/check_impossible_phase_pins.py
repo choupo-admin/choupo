@@ -185,7 +185,8 @@ def main() -> int:
                 " engine has proved one of its streams cannot hold the phase"
                 " its state file declares, so the enthalpy charged for it is"
                 " out by a latent heat.  Fix the stream's declared"
-                " `vaporFraction`/`phase` in 0/, or add it to PINS with its"
+                " `phase` in 0/ (or delete the pin and let (T, P) resolve"
+                " it), or add it to PINS with its"
                 " measurement and a reason -- but it may not join the corpus"
                 " silently")
 

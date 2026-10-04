@@ -122,13 +122,15 @@
 
       feedQuality  q = 1 - V/F = 0.9070666555
 
-  and 0/feed carries the COLUMN-INLET state (323.5875148 K, 658600 Pa,
-  vaporFraction 0.0929333445), not the line state.  The paper's 892.67 kPa
-  therefore appears in this case only as the premise of A1, stated above.
-  NOTE the arity cost, declared: q lives in two places (this key and the
-  stream's vaporFraction) because the Wang-Henke path takes q as a number and
-  does not read it off the inlet.  They must be kept equal; the derivation
-  above is how you check them.
+  and 0/feed carries the COLUMN-INLET state (323.5875148 K, 658600 Pa; the
+  V/F is not declared -- a mixture's (T, P) fix it, and the engine resolves
+  it), not the line state.  The paper's 892.67 kPa therefore appears in this
+  case only as the premise of A1, stated above.  The `feedQuality` key below
+  is a CROSS-CHECK against the feed stream's resolved state, which the column
+  reads (2026-09-12): a key that contradicts it is refused by name, so the
+  two cannot drift apart in silence.  (Until 2026-10-03 the stream file also
+  declared `vaporFraction 0.0929333445` -- a third state variable beside T
+  and P, which the reader now refuses as over-specified.)
 
   Sensitivity, MEASURED rather than asserted -- the competing assumption was
   run.  Declaring instead "saturated liquid AT THE COLUMN PRESSURE" gives
