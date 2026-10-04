@@ -151,7 +151,7 @@ restore:
     `bin/buildCode` and run through its own `choupoCase` binary (see
     `binary_for` in bin/runTests), so standalone it exits non-zero here and
     lands in `unrun`.  Under the suite it is CACHED and fully judged -- which
-    is why `userOp01_yield_reactor` (-3.7126 kW) is in KNOWN_OPEN_KW although
+    is why `userOp01_yield_reactor` (+2.1701 kW) is in KNOWN_OPEN_KW although
     a standalone `--seed` cannot see it.  That pin was measured by building
     the case and running its own binary, and a standalone seed will silently
     omit it: check the ledger against a suite-cached run before pasting.  The
@@ -374,9 +374,17 @@ def ratchet_kW(pin: float) -> float:
 #  the liquid the default supplied:
 #    tsa01_co2_twin_bed            1.1120 %  -> closes (0.0000 %)   LEFT
 #    perUnitThermo01_srk_nrtl    128.8000 %  -> closes (0.1210 %)   LEFT
-#    esterification2sector       170.9790 %  -> 44.9270 %           re-pinned
 #    acetone05_luyben_absorber   -40.5770 kW -> +3.1179 kW          re-pinned
 #    coolingTower01_merkel       -14.5302 kW -> +1.5666 kW          re-pinned
+#    userOp01_yield_reactor       -3.7126 kW -> +2.1701 kW          re-pinned
+#  (userOp01 is a `code/` case: measured from the suite's cached run, which a
+#  standalone `--seed` cannot reproduce -- see the blind spot above).  A
+#  first draft listed esterification2sector here, 170.979 % -> 44.927 %, and
+#  it was WRONG: the pass re-resolved the plant's bare product LABEL `vapor`
+#  in the global ideal world, so the NRTL flash's vapour was priced as a
+#  liquid, ~596 kW low.  Labels now take their source's answer and the pin
+#  stands at 170.979 % unmoved -- a residual that shrinks is not a fix until
+#  the mechanism that shrank it is named.
 #  and TWO JOINED, each a column with `model simultaneous;` whose feed
 #  declares no phase and whose own (T, P) equilibrium is NOT the saturated
 #  liquid its `feedQuality 1.0` says: the report now prices the resolved feed
@@ -396,7 +404,7 @@ def ratchet_kW(pin: float) -> float:
 #  here as measured and not fixed.
 KNOWN_OPEN = {
     "tutorials/plant/ChemicalPlantTutorial": 1.0300,
-    "tutorials/plant/esterification2sector": 44.9270,
+    "tutorials/plant/esterification2sector": 170.9790,
     "tutorials/plant/polycaprolactonePlant": 20.0100,
     "tutorials/steady/distillation/acetone07_luyben_column_C2": 196.7990,
     "tutorials/steady/distillation/column03_azeotrope_mesh": 60.8760,
@@ -441,7 +449,7 @@ KNOWN_OPEN_KW = {
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 42.8610,
     "tutorials/steady/heat/coolingTower01_merkel": 1.5666,
     "tutorials/steady/thermoTest/model2_pitzer_evaporator": 17.8991,
-    "tutorials/steady/userops/userOp01_yield_reactor": -3.7126,
+    "tutorials/steady/userops/userOp01_yield_reactor": 2.1701,
 }
 
 

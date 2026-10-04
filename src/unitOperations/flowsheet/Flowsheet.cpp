@@ -3496,9 +3496,19 @@ int Flowsheet::solve(const DictPtr& dict,
         std::set<std::string> produced;
         for (const auto& fu : topology_)
             for (const auto& o : fu.outs) produced.insert(o);
+        //  A boundary LABEL is not a stream of its own: it is a second NAME
+        //  for the stream it points at (`vapor` -> `SEPARATION.vapor`), minted
+        //  by the alias passes above under a bare or boundary name that is in
+        //  no unit's `outs`.  Resolving it here would re-solve a PRODUCED
+        //  stream in the global world -- measured on esterification2sector,
+        //  whose NRTL flash vapour (58.9 kmol/h) came back a subcooled
+        //  liquid under the global ideal model and was priced 596 kW low as
+        //  a product.  A label takes its source's answer, below, and nothing
+        //  else.
         for (auto& [nm, s] : streams_)
         {
-            if (s.phasePinned || produced.count(nm) || s.F <= 0.0) continue;
+            if (s.phasePinned || produced.count(nm) || s.F <= 0.0
+                || boundaryAliases_.count(nm)) continue;
             auto fs = flashState::equilibriumAt(s.T, s.P, s.z, false, s.vf,
                                                 thermo, "stream '" + nm + "'",
                                                 "streamState");
@@ -3506,6 +3516,15 @@ int Flowsheet::solve(const DictPtr& dict,
             s.vf = (fs->V_over_F <= 1.0e-9) ? 0.0
                  : (fs->V_over_F >= 1.0 - 1.0e-9) ? 1.0 : fs->V_over_F;
             resolvedInlet.emplace(nm, *fs);
+        }
+        //  The label of a resolved inlet carries the inlet's answer (the
+        //  label of a produced stream already carries its producer's).
+        for (const auto& [alias, src] : boundaryAliasOf_)
+        {
+            const auto it = resolvedInlet.find(src);
+            if (it == resolvedInlet.end() || !streams_.count(alias)) continue;
+            streams_.at(alias).vf = streams_.at(src).vf;
+            resolvedInlet.emplace(alias, it->second);
         }
     }
 

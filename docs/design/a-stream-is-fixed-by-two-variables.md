@@ -170,9 +170,9 @@ priced the carried default (vf = 0, a liquid), the V2 debt DEV.md §5 names:
 |---|---|---|---|
 | `tsa01_co2_twin_bed` | 1.1120 % | 0.0000 % | closes; pin removed (and its `IMPOSSIBLE_PHASE_CASES` pin with it) |
 | `perUnitThermo01_srk_nrtl` | 128.8000 % | 0.1210 % | closes; pin removed |
-| `esterification2sector` | 170.9790 % | 44.9270 % | re-pinned |
 | `acetone05_luyben_absorber` | −40.5770 kW | +3.1179 kW | re-pinned |
 | `coolingTower01_merkel` | −14.5302 kW | +1.5666 kW | re-pinned |
+| `userOp01_yield_reactor` | −3.7126 kW | +2.1701 kW | re-pinned (a `code/` case: a standalone `--seed` cannot run it, measured from the suite's own run) |
 | `acetone07_luyben_column_C2` | 0.0000 % | **196.7990 %** | JOINED the ledger |
 | `column03_azeotrope_mesh` | 0.0000 % | **60.8760 %** | JOINED the ledger |
 
@@ -192,8 +192,29 @@ single-phase answer makes both cases REFUSE their `feedQuality` (the
 its bubble point, or the column re-specified for a vapour feed — is a
 pedagogical decision about the case that is Vítor's (DEV.md §5, "NOT YET
 DECIDED").  So they are PINNED as measured, not fixed, and their golden
-`boundary residual_kW 0` rows will MOVE: the moved-row list for the
-commander, not recorded here.
+`boundary residual_kW 0` rows MOVED.  The goldens of all seven were
+re-recorded on 2026-10-04 (the `boundary global H_feeds_kW` and
+`residual_kW` rows of each, plus perUnitThermo01's three `closure turbine`
+rows, whose inlet is the same resolved feed), on the commander's
+authorisation under Vítor's standing mandate of 2026-10-03 and with every
+row named in the commit.  The list shown to Vítor carried esterification2sector
+(whose rows, it turned out, must not move -- see below) and not userOp01
+(the same mechanism, missed because the standalone seed cannot run a
+`code/` case); both differences are his to review.
+
+**A SEVENTH ENTRY, `esterification2sector` (170.9790 % → 44.9270 %), WAS
+WRONG, and it is the trap worth keeping (found 2026-10-04, merging onto the
+D-ET2 integration).**  The pass skips every stream a unit PRODUCES, but a
+sectored plant also holds each product under its bare LABEL (`vapor` →
+`SEPARATION.vapor`), minted by the alias passes and in no unit's `outs`.  So
+the label was re-resolved in the GLOBAL world: the flash's vapour, solved
+under its LOCAL NRTL override, came back a subcooled liquid under the global
+ideal model, and the 58.9 kmol/h product was priced about 596 kW low — the
+whole of the "improvement".  The pass now skips a label (`boundaryAliases_`)
+and hands it its source's answer instead; esterification2sector is back at
+170.979 % with its golden unmoved, and its pin was never changed.  *A
+residual that shrinks is not evidence of a fix until the mechanism that
+shrank it has been named.*  `userOp01` replaced it in the table above.
 
 `tsa01` and `flash10_ch4propane_pcsaft` also left `IMPOSSIBLE_PHASE_CASES`
 (the two numerically clean pins): the label the report checks is the resolved
