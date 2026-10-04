@@ -1909,6 +1909,19 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C34. "AVANÇA COM TUDO" (Vítor, 2026-10-04, after the month summary).**
+Every open item that is NOT his to decide, taken in two waves of generals in
+separate worktrees on non-overlapping files, each integrated as one
+revertable merge.  Wave 1: (A) the inlet-vf family -- the dozen units C33
+enumerated, the supercritical discard in pipe/valve/adiabaticFlash, a
+witness and a gate arm for both; (B) the pre-existing red gates
+(check_internal_states arm (q), check_sealed_corpus on membrane19/unsteady04)
+and the tutorials-guide stray `)`; (C) C22's remaining text errors and C3's
+per-equation citation audit.  Wave 2: C4, C8, C16 slice 2, C26 slice 2, the
+unreserved parts of C2 and C7.  NOT taken, his: the tray cost set (C2), any
+history rewrite (C7), the evaporator latent, acetone07/column03, §4b.
+Status: wave 1 dispatched 2026-10-04.
+
 **C33. THE FOUR UNITS THAT STILL READ AN UNPINNED INLET'S DEFAULT `vf`
 (Vítor, 2026-10-04: "Podes avançar, mas com calma, porque o preço dos tokens
 aumentou e o crédito já não chega para 5h").**  The flash01 slice left valve,
