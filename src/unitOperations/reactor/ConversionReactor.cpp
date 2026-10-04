@@ -76,32 +76,10 @@ namespace {
 //  The three states this unit needs are priced by one function, and the
 //  intermediate one is why the Hess split stays EXACT rather than becoming
 //  an apportionment (ConversionReactor.H's own promise).
-scalar priceState(scalar               T,
-                  scalar               P,
-                  const sVector&       z,
-                  scalar               F,
-                  bool                 pinned,
-                  scalar               vfCarried,
-                  const ThermoPackage& thermo,
-                  const std::string&   locus,
-                  std::vector<std::string>* notes)
-{
-    //  DEFERRED, NEVER LOGGED, and the reason is this unit's own (the
-    //  `[rating]` comment that used to stand below): a recycle solves each
-    //  unit against states it does not end on, so an advisory raised here
-    //  reaches the result JSON of a CONVERGED run describing an inlet that
-    //  run does not have.  The report raises the same note about the same
-    //  stream at the answer, where it is true.  Here it is printed with the
-    //  rest of the unit's console block, at the same verbosity, or not at all.
-    std::string deferred;
-    auto sp = flashState::twoPhaseSplit(T, P, z, pinned, vfCarried, thermo,
-                                        locus, "model", &deferred);
-    if (!deferred.empty() && notes) notes->push_back(locus + ": " + deferred);
-    if (sp) return F * flashState::hOfState(*sp, T, P, z, thermo);
-    //  Not a split: price the state the stream carries -- which is the
-    //  `else` arm of `reporting/BalanceMath.H::streamH_elements`, verbatim.
-    return F * thermo.H_stream_formation(T, P, vfCarried, z);
-}
+//  The pricing itself is `flashState::priceState` (StreamEquilibrium.H).  It
+//  was written HERE on 2026-09-25 and moved out verbatim on 2026-09-27, when
+//  the spray dryer, the solid dryer and the CSTR needed the same sentence.
+using flashState::priceState;
 
 //  The whole duty, for both reaction paths.  ONE home: the single-reaction
 //  and the multi-reaction branch differ only in how they reach `zout`.

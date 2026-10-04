@@ -922,8 +922,8 @@ THE DISTILLATE RATE IS HIS, 5.88 kmol/h, and that matters here in a way it did n
 Benzene/toluene distillation --- classical textbook problem with Raoult, no azeotrope, easy convergence. Used to validate the column code.
 
 \end{tutnarrative}
-\tutreadme{The same equimolar benzene/toluene feed (100 kmol/h, now at 370 K) in a rigorous column: 15 stages (reboiler counted), feed on stage 8, R = 2, distillate 50 kmol/h, Raoult VLE, solved by the Wang--Henke bubble-point method. The golden: x\_D = 0.9812 benzene, x\_B = 0.9812 toluene, T\_top 354.21 K, T\_bottom 382.89 K, condenser -1281 kW, reboiler 1279 kW.}
-\tutreadme{1. The specification is the column, not the split. Compare with shortcut01: there you declared the recoveries and got N; here you declare N, the feed stage, R and D --- and the purity is the $\ast$answer$\ast$. Both cases separate the same feed; only the question differs. 2. Watch it converge. The Log tab prints Outer iter max T\_top T\_bottom for all 108 bubble-point iterations, the final max = 9.3e-8. Wang--Henke is slow and steady; column02\_simultaneous solves the identical column by a Newton on all the MESH equations in a handful of iterations --- run both and count. 3. The profile is printed stage by stage. T and x for every tray, the feed tray marked, the reboiler last: 354.21 K and 95.3 \% benzene on tray 1, 382.89 K and 98.1 \% toluene in the reboiler. That table is the McCabe--Thiele diagram in numbers. 4. Two duties, two utilities, priced from the catalogue. The reboiler is served by low-pressure steam (0.585 kg/s, 55.3 ?/h at the catalogue price) and the condenser by cooling water (30.6 kg/s, 1.84 ?/h) --- the same picker every steady report uses, and the ?/h is a catalogue number, not a market one. 5. Read the caveats. Both Antoine fits are asked slightly outside their declared windows on the way to the answer (benzene at 365 K, toluene at 380.7 K), announced and still returned.}
+\tutreadme{The same equimolar benzene/toluene feed (100 kmol/h, now at 370 K) in a rigorous column: 15 stages (reboiler counted), feed on stage 8, R = 2, distillate 50 kmol/h, Raoult VLE, solved by the Wang--Henke bubble-point method. At 370 K and 1 atm the feed resolves to about 70 \% vapour (q = 0.30), so the reboiler does far less than the condenser. The golden: x\_D = 0.9510 benzene, x\_B = 0.9510 toluene, T\_top 355.69 K, T\_bottom 381.51 K, condenser -1283 kW, reboiler 647 kW.}
+\tutreadme{1. The specification is the column, not the split. Compare with shortcut01: there you declared the recoveries and got N; here you declare N, the feed stage, R and D --- and the purity is the $\ast$answer$\ast$. Both cases separate the same feed; only the question differs. 2. Watch it converge. The Log tab prints Pass max balance/F T\_top T\_bottom for the 41 bubble-point passes. The step and the balance fall by the same factor, about 0.65, every pass: that is what linear convergence looks like. The column stops on the balance, not the step --- when every stage balance and the balance over its ports close to 1e-9 of the feed (here 7.4e-10, with a last step of 2.3e-9). A small step alone is not a closed balance: a column that contracts slowly takes small steps while still far from its answer. column02\_simultaneous solves the identical column by a Newton on all the MESH equations in a handful of iterations --- run both and count. 3. The profile is printed stage by stage. T and x for every tray, the feed tray marked, the reboiler last: 355.69 K and 88.3 \% benzene in the liquid on tray 1 (the vapour leaving it, the distillate, is 95.1 \%), 381.51 K and 95.1 \% toluene in the reboiler. That table is the McCabe--Thiele diagram in numbers. 4. Two duties, two utilities, priced from the catalogue. The reboiler is served by low-pressure steam (0.296 kg/s, 27.96 ?/h at the catalogue price) and the condenser by cooling water (30.69 kg/s, 1.85 ?/h) --- the same picker every steady report uses, and the ?/h is a catalogue number, not a market one. 5. Read the caveats. Both Antoine fits are asked slightly outside their declared windows on the way to the answer (benzene at 370 K, toluene at 380.7 K), announced and still returned.}
 \tutreadme{Raise refluxRatio to 3: purities climb, both duties climb with them --- the trade-off every column design turns on. Then try feedStage 4: the same reflux buys less separation when the feed lands in the wrong place.}
 \begin{tutgolden}
 \goldrow{kpi}{column01}{T\_top}{355.689113032}
@@ -2128,7 +2128,7 @@ Wet solid: 10 kmol/h sucrose (3423 kg/h) + 38 kmol/h bound water (X\_in=0.20). H
 \goldrow{stream}{hotAir}{F}{0.222222222229}
 \goldrow{stream}{humidExhaust}{F}{0.23271974852}
 \goldrow{stream}{wetSolid}{F}{0.0133333576778}
-\goldrow{kpi}{solidDryer}{T\_out}{347.5126791}
+\goldrow{kpi}{solidDryer}{T\_out}{346.659472289}
 \goldrow{kpi}{solidDryer}{X\_equilibrium}{0.00109945367934}
 \goldrow{kpi}{solidDryer}{X\_final}{0.00109945367934}
 \goldrow{kpi}{solidDryer}{X\_initial}{0.199991235822}
@@ -2137,7 +2137,7 @@ Wet solid: 10 kmol/h sucrose (3423 kg/h) + 38 kmol/h bound water (X\_in=0.20). H
 \goldrow{kpi}{solidDryer}{moisture\_pct\_wb}{0.109824620851}
 \goldrow{kpi}{solidDryer}{water\_activity}{0.00431158404412}
 \goldrow{kpi}{solidDryer}{water\_removed}{0.189112936127}
-\goldrow{stream}{drySolid}{T}{347.5126791}
+\goldrow{stream}{drySolid}{T}{346.659472289}
 \goldmore{7}
 \end{tutgolden}
 
@@ -2165,15 +2165,15 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{dryingAir}{F}{0.0138888888889}
-\goldrow{stream}{exhaustAir}{F}{0.0148058483113}
+\goldrow{stream}{exhaustAir}{F}{0.0148043580604}
 \goldrow{stream}{feed}{F}{0.000957611111111}
-\goldrow{stream}{powder}{F}{4.06516887181e-05}
+\goldrow{stream}{powder}{F}{4.2141939629e-05}
 \goldrow{kpi}{dryer}{Nu}{2.24583682227}
 \goldrow{kpi}{dryer}{Pr}{0.746977616919}
 \goldrow{kpi}{dryer}{Re}{0.203916784363}
 \goldrow{kpi}{dryer}{Sc}{0.6026290984}
 \goldrow{kpi}{dryer}{Sh}{2.22885536787}
-\goldrow{kpi}{dryer}{T\_out}{372.025243986}
+\goldrow{kpi}{dryer}{T\_out}{366.288022769}
 \goldrow{kpi}{dryer}{T\_wetbulb}{318.053221267}
 \goldrow{kpi}{dryer}{d\_droplet}{6.04023981348e-05}
 \goldrow{kpi}{dryer}{d\_droplet\_micron}{60.4023981348}
@@ -2207,19 +2207,19 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{dryingAir}{F}{0.0138888888889}
-\goldrow{stream}{exhaustAir}{F}{0.0148058483112}
+\goldrow{stream}{exhaustAir}{F}{0.0148043580604}
 \goldrow{stream}{feed}{F}{0.000957611111111}
-\goldrow{stream}{powder}{F}{4.06516887566e-05}
+\goldrow{stream}{powder}{F}{4.21419396495e-05}
 \goldrow{kpi}{dryer}{Nu}{2.23180639411}
 \goldrow{kpi}{dryer}{Pr}{0.746977616919}
 \goldrow{kpi}{dryer}{Re}{0.181305061943}
 \goldrow{kpi}{dryer}{Sc}{0.6026290984}
 \goldrow{kpi}{dryer}{Sh}{2.21579410729}
-\goldrow{kpi}{dryer}{T\_out}{372.025243986}
+\goldrow{kpi}{dryer}{T\_out}{366.288022771}
 \goldrow{kpi}{dryer}{T\_wetbulb}{318.053221267}
 \goldrow{kpi}{dryer}{X\_critical}{0.15}
-\goldrow{kpi}{dryer}{X\_equilibrium}{0.0132756494842}
-\goldrow{kpi}{dryer}{X\_final}{0.0132756495467}
+\goldrow{kpi}{dryer}{X\_equilibrium}{0.0156916759905}
+\goldrow{kpi}{dryer}{X\_final}{0.0156916760249}
 \goldmore{36}
 \end{tutgolden}
 
@@ -2247,19 +2247,19 @@ The dryer atomises the feed with a PRESSURE-SWIRL nozzle at 40 bar (d32 = 9575$\
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{dryingAir}{F}{0.0138888888889}
-\goldrow{stream}{exhaustAir}{F}{0.0148058483113}
+\goldrow{stream}{exhaustAir}{F}{0.0148043580604}
 \goldrow{stream}{feed}{F}{0.000957611111111}
-\goldrow{stream}{powder}{F}{4.06516887181e-05}
+\goldrow{stream}{powder}{F}{4.2141939629e-05}
 \goldrow{kpi}{dryer}{Nu}{2.24532614778}
 \goldrow{kpi}{dryer}{Pr}{0.746977616919}
 \goldrow{kpi}{dryer}{Re}{0.203070475508}
 \goldrow{kpi}{dryer}{Sc}{0.6026290984}
 \goldrow{kpi}{dryer}{Sh}{2.2283799688}
-\goldrow{kpi}{dryer}{T\_out}{372.025243986}
+\goldrow{kpi}{dryer}{T\_out}{366.288022769}
 \goldrow{kpi}{dryer}{T\_wetbulb}{318.053221267}
 \goldrow{kpi}{dryer}{X\_critical}{0.15}
-\goldrow{kpi}{dryer}{X\_equilibrium}{0.0132756494842}
-\goldrow{kpi}{dryer}{X\_final}{0.0132756494842}
+\goldrow{kpi}{dryer}{X\_equilibrium}{0.0156916759917}
+\goldrow{kpi}{dryer}{X\_final}{0.0156916759917}
 \goldmore{40}
 \end{tutgolden}
 
@@ -2287,19 +2287,19 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{dryingAir}{F}{0.0138888888889}
-\goldrow{stream}{exhaustAir}{F}{0.0148058483113}
+\goldrow{stream}{exhaustAir}{F}{0.0148043580604}
 \goldrow{stream}{feed}{F}{0.000957611111111}
-\goldrow{stream}{powder}{F}{4.06516887181e-05}
+\goldrow{stream}{powder}{F}{4.2141939629e-05}
 \goldrow{kpi}{dryer}{Nu}{2.24583682227}
 \goldrow{kpi}{dryer}{Pr}{0.746977616919}
 \goldrow{kpi}{dryer}{Re}{0.203916784363}
 \goldrow{kpi}{dryer}{Sc}{0.6026290984}
 \goldrow{kpi}{dryer}{Sh}{2.22885536787}
-\goldrow{kpi}{dryer}{T\_out}{372.025243986}
+\goldrow{kpi}{dryer}{T\_out}{366.288022769}
 \goldrow{kpi}{dryer}{T\_wetbulb}{318.053221267}
 \goldrow{kpi}{dryer}{X\_critical}{0.15}
-\goldrow{kpi}{dryer}{X\_equilibrium}{0.0132756494842}
-\goldrow{kpi}{dryer}{X\_final}{0.0132756494842}
+\goldrow{kpi}{dryer}{X\_equilibrium}{0.0156916759917}
+\goldrow{kpi}{dryer}{X\_final}{0.0156916759917}
 \goldmore{40}
 \end{tutgolden}
 
@@ -2327,19 +2327,19 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{dryingAir}{F}{0.138888888889}
-\goldrow{stream}{exhaustAir}{F}{0.14529654835}
+\goldrow{stream}{exhaustAir}{F}{0.145294374409}
 \goldrow{stream}{feed}{F}{0.00649261111111}
-\goldrow{stream}{powder}{F}{8.49516499934e-05}
+\goldrow{stream}{powder}{F}{8.71255906462e-05}
 \goldrow{kpi}{dryer}{Nu}{2.33731434528}
 \goldrow{kpi}{dryer}{Pr}{0.745230561117}
 \goldrow{kpi}{dryer}{Re}{0.384509154435}
 \goldrow{kpi}{dryer}{Sc}{0.602916461126}
 \goldrow{kpi}{dryer}{Sh}{2.31430911286}
-\goldrow{kpi}{dryer}{T\_out}{382.7774359}
+\goldrow{kpi}{dryer}{T\_out}{378.559527516}
 \goldrow{kpi}{dryer}{T\_wetbulb}{315.824008236}
 \goldrow{kpi}{dryer}{X\_critical}{0.5}
-\goldrow{kpi}{dryer}{X\_equilibrium}{0.0134981947613}
-\goldrow{kpi}{dryer}{X\_final}{0.0134981947613}
+\goldrow{kpi}{dryer}{X\_equilibrium}{0.0151904301947}
+\goldrow{kpi}{dryer}{X\_final}{0.0151904301947}
 \goldmore{40}
 \end{tutgolden}
 
@@ -2367,19 +2367,19 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{dryingAir}{F}{0.0138888888889}
-\goldrow{stream}{exhaustAir}{F}{0.0148058483113}
+\goldrow{stream}{exhaustAir}{F}{0.0148043580604}
 \goldrow{stream}{feed}{F}{0.000957611111111}
-\goldrow{stream}{powder}{F}{4.06516887181e-05}
+\goldrow{stream}{powder}{F}{4.2141939629e-05}
 \goldrow{kpi}{dryer}{Nu}{2.24583682227}
 \goldrow{kpi}{dryer}{Pr}{0.746977616919}
 \goldrow{kpi}{dryer}{Re}{0.203916784363}
 \goldrow{kpi}{dryer}{Sc}{0.6026290984}
 \goldrow{kpi}{dryer}{Sh}{2.22885536787}
-\goldrow{kpi}{dryer}{T\_out}{372.025243986}
+\goldrow{kpi}{dryer}{T\_out}{366.288022769}
 \goldrow{kpi}{dryer}{T\_wetbulb}{318.053221267}
 \goldrow{kpi}{dryer}{X\_critical}{0.15}
-\goldrow{kpi}{dryer}{X\_equilibrium}{0.0132756494842}
-\goldrow{kpi}{dryer}{X\_final}{0.0132756494842}
+\goldrow{kpi}{dryer}{X\_equilibrium}{0.0156916759917}
+\goldrow{kpi}{dryer}{X\_final}{0.0156916759917}
 \goldmore{40}
 \end{tutgolden}
 
@@ -2407,19 +2407,19 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{dryingAir}{F}{0.0138888888889}
-\goldrow{stream}{exhaustAir}{F}{0.0148058483113}
+\goldrow{stream}{exhaustAir}{F}{0.0148043580604}
 \goldrow{stream}{feed}{F}{0.000957611111111}
-\goldrow{stream}{powder}{F}{4.06516887181e-05}
+\goldrow{stream}{powder}{F}{4.2141939629e-05}
 \goldrow{kpi}{dryer}{Nu}{2.24583682227}
 \goldrow{kpi}{dryer}{Pr}{0.746977616919}
 \goldrow{kpi}{dryer}{Re}{0.203916784363}
 \goldrow{kpi}{dryer}{Sc}{0.6026290984}
 \goldrow{kpi}{dryer}{Sh}{2.22885536787}
-\goldrow{kpi}{dryer}{T\_out}{372.025243986}
+\goldrow{kpi}{dryer}{T\_out}{366.288022769}
 \goldrow{kpi}{dryer}{T\_wetbulb}{318.053221267}
 \goldrow{kpi}{dryer}{X\_critical}{0.15}
-\goldrow{kpi}{dryer}{X\_equilibrium}{0.0132756494842}
-\goldrow{kpi}{dryer}{X\_final}{0.0132756494842}
+\goldrow{kpi}{dryer}{X\_equilibrium}{0.0156916759917}
+\goldrow{kpi}{dryer}{X\_final}{0.0156916759917}
 \goldmore{51}
 \end{tutgolden}
 
@@ -5287,8 +5287,8 @@ This is the case to open in the GUI and to read the reports/ CSVs from: streamTa
 \goldrow{kpi}{column}{L\_rect}{0.000172222222222}
 \goldrow{kpi}{column}{L\_strip}{0.000536111111111}
 \goldrow{kpi}{column}{R}{2}
-\goldrow{kpi}{column}{T\_bottom}{364.544713604}
-\goldrow{kpi}{column}{T\_top}{349.6579691}
+\goldrow{kpi}{column}{T\_bottom}{364.544713638}
+\goldrow{kpi}{column}{T\_top}{349.657969186}
 \goldrow{kpi}{column}{V\_rect}{0.000258333333333}
 \goldrow{kpi}{column}{V\_strip}{0.000258333333333}
 \goldmore{39}
@@ -8356,15 +8356,15 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{kpi}{column01}{B}{0.0138888888889}
 \goldrow{kpi}{column01}{D}{0.0138888888889}
-\goldrow{kpi}{column01}{L\_rect}{0.0618502921554}
-\goldrow{kpi}{column01}{L\_strip}{0.0702602397755}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-2327.26316419}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1694.49433945}
-\goldrow{kpi}{column01}{R}{4.45322103519}
-\goldrow{kpi}{column01}{T\_bottom}{383.489764433}
-\goldrow{kpi}{column01}{T\_top}{353.562993954}
-\goldrow{kpi}{column01}{V\_rect}{0.0757391810443}
-\goldrow{kpi}{column01}{V\_strip}{0.0563713508866}
+\goldrow{kpi}{column01}{L\_rect}{0.0618441580991}
+\goldrow{kpi}{column01}{L\_strip}{0.0702541057191}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-2327.074681}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1694.3065187}
+\goldrow{kpi}{column01}{R}{4.45277938313}
+\goldrow{kpi}{column01}{T\_bottom}{383.4896836}
+\goldrow{kpi}{column01}{T\_top}{353.562993958}
+\goldrow{kpi}{column01}{V\_rect}{0.0757330469879}
+\goldrow{kpi}{column01}{V\_strip}{0.0563652168302}
 \goldmore{18}
 \end{tutgolden}
 
@@ -9060,7 +9060,7 @@ The plateau is not asserted anywhere in the dict. It is where k1 a'\_HOAc a'\_Me
 \goldrow{stream}{reactorOut}{F}{0.000277777777778}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
 \goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
-\goldrow{kpi}{reactor}{Q\_kW}{-2.09513270004}
+\goldrow{kpi}{reactor}{Q\_kW}{-1.29936595639}
 \goldrow{kpi}{reactor}{T}{333.15}
 \goldrow{kpi}{reactor}{T\_out}{333.15}
 \goldrow{kpi}{reactor}{V\_R}{0.005}

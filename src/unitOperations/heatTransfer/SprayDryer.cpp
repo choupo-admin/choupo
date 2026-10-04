@@ -32,7 +32,9 @@ License
 #include "core/RegistryRefusal.H"
 #include "solver/NewtonRaphson.H"
 #include "streams/StreamMass.H"
+#include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -303,15 +305,24 @@ int SprayDryer::solve(const DictPtr& dict,
     const scalar T_wb = rwb.x;
 
     // -------------------------------------------------------------------
-    //  Adiabatic energy balance -> outlet air T_out.  The hot air gives
-    //  up sensible heat to evaporate the feed solvent (warm the feed
-    //  water from T_feed up to the wet-bulb, then vaporise it):
+    //  THE HAND BALANCE, NOW ONLY THE SEED (2026-09-27).  The hot air gives
+    //  up sensible heat to evaporate the feed solvent:
     //      F_air·cp_air·(T_air - T_out) = n_evap·[ΔHvap + cpL·(Twb - Tfeed)]
+    //  This used to BE the energy balance, and it was the largest single
+    //  term in the flagship plant's first-law violation (-70.8516 kW on
+    //  DRYING.SD, of a plant residual of +34.4126 kW).  It is written on its
+    //  own surface -- a constant Cp for the air, a Watson latent heat at the
+    //  wet bulb -- and it omits four things the outlet streams carry: the
+    //  vapour superheated from T_wb to T_out, the solid and the residual
+    //  moisture heated from T_feed to T_out, the heat of crystallisation of
+    //  every dissolved mole of solid that leaves as powder, and (with a
+    //  sorption isotherm) the water that STAYS in the powder, whose latent
+    //  heat it charged anyway.  The streams are priced by the package.  So
+    //  the temperature it gives is now only where the search below STARTS;
+    //  the published T_out closes H(out) = H(in) on the package's surface.
     // -------------------------------------------------------------------
     const scalar cpL_w = solv.hasCpLiquid()
                        ? solv.cpLiquid().Cp(0.5 * (T_feed + T_wb)) : 75.4;  // J/(mol·K)
-    const scalar Q = n_solv_feed * 1000.0
-                   * (solv.Hvap_latent(T_wb) + cpL_w * (T_wb - T_feed));    // W
     // Molar Cp of the inlet air -- summed over species ACTUALLY present, so
     // a non-volatile solid in the package (y = 0, no idealGasHeatCapacity)
     // is skipped rather than tripping ThermoPackage::Cp_ig's hard check.
@@ -319,17 +330,19 @@ int SprayDryer::solve(const DictPtr& dict,
     for (std::size_t i = 0; i < n; ++i)
         if (yAir[i] > 0.0) cp_air_molar += yAir[i] * thermo.comp(i).cpIdealGas().Cp(T_air);
     const scalar cp_air_W = std::max(1.0, F_air * 1000.0 * cp_air_molar);   // W/K
-    // Energy cap: the air cannot cool below its adiabatic-saturation (wet-bulb)
-    // temperature.  If the feed solvent exceeds what the air can carry to
-    // saturation, drying is ENERGY-limited -- the air leaves saturated at T_wb
-    // and the unevaporated solvent stays in the powder (a wet product), not the
-    // unphysical sub-wet-bulb T the "all solvent evaporates" balance would give.
     const scalar q_per_evap = solv.Hvap_latent(T_wb) + cpL_w * (T_wb - T_feed);  // J/mol
-    const scalar n_evap_max = (q_per_evap > 0.0)
-                            ? cp_air_W * (T_air - T_wb) / (1000.0 * q_per_evap)  // kmol/s
-                            : n_solv_feed;
-    const bool   energy_limited = (n_solv_feed > n_evap_max);
-    const scalar T_out = energy_limited ? T_wb : T_air - Q / cp_air_W;
+    const scalar n_evap_seed_max = (q_per_evap > 0.0)
+                                 ? cp_air_W * (T_air - T_wb) / (1000.0 * q_per_evap)  // kmol/s
+                                 : n_solv_feed;
+    const scalar T_out_seed = (n_solv_feed > n_evap_seed_max)
+        ? T_wb
+        : T_air - n_solv_feed * 1000.0 * q_per_evap / cp_air_W;
+    //  The exhaust temperature, and whether drying is ENERGY-LIMITED (the air
+    //  cannot carry the solvent the kinetics release without cooling below
+    //  its wet bulb).  Both are set by the balance below; the kinetics read
+    //  T_out, so the two are solved together.
+    scalar T_out          = T_out_seed;
+    bool   energy_limited = false;
 
     // -------------------------------------------------------------------
     //  Atomisation -- the SELECTED atomizer returns d32 from the liquid state
@@ -436,20 +449,7 @@ int SprayDryer::solve(const DictPtr& dict,
     scalar X_final = 0.0, X_eq = 0.0, X_cr = 0.0, a_w = 0.0, t_const = 0.0, k_fall = 0.0;
     UnitProfile axialProfile;   // populated when `model distributed` (the chamber profiles)
 
-    // Residence time = chamber height / particle fall velocity --- a RESULT
-    // of the chamber HARDWARE (D, L), not a free parameter (the credo).  The
-    // particle falls at the gas superficial velocity plus its terminal
-    // velocity (co-current); counter-current subtracts.
     scalar v_gas = 0.0, v_particle = 0.0, residence = 0.0;
-    if (Dch > 0.0 && Lch > 0.0)
-    {
-        const scalar A_ch  = PI * Dch * Dch / 4.0;                          // m^2
-        const scalar Q_gas = F_air * R * (0.5 * (T_air + T_out)) / P_air;   // m^3/s
-        v_gas = Q_gas / A_ch;
-        v_particle = (flowDir == "counter")
-                   ? std::max(1.0e-4, v_t - v_gas) : v_gas + v_t;
-        residence = (v_particle > 0.0) ? Lch / v_particle : 0.0;
-    }
     // Drying KINETICS (critical moisture Xc + curve) come from the
     // constant/dryingKinetics library, resolved by the Flowsheet into a
     // `dryingCurve` sub-dict --- kept SEPARATE from the equilibrium sorption
@@ -472,17 +472,45 @@ int SprayDryer::solve(const DictPtr& dict,
     }
     // The REA (`model chen`) needs no critical moisture Xc -- its rate is smooth;
     // it needs only the sorption isotherm (for X_eq and the bulk water activity).
-    const bool phase2 = sol.hasSorption() && hasDryCurve && (X_cr > 0.0 || rea)
-                      && h > 0.0 && residence > 0.0;
+    bool phase2 = false;
+    //  THE KINETICS ARE EVALUATED AT THE EXHAUST THE UNIT PUBLISHES
+    //  (2026-09-27).  They read the exhaust twice -- its temperature (the
+    //  gas volume, so the residence time; the saturation pressure, so the
+    //  water activity) and its humidity (the water activity) -- and they used
+    //  to read a hand-balance temperature and the humidity of a phase-1
+    //  "everything evaporates" exhaust, "not iterated".  Neither is the state
+    //  the Exhaust stream carries, so the moisture the powder keeps was
+    //  decided against an air the plant never has.  `dryingAt` takes the
+    //  exhaust as an argument, and the energy balance below iterates it to
+    //  the state it publishes.
+    auto dryingAt = [&](scalar Tex, scalar n_evap_ex)
+    {
+    X_final = 0.0; X_eq = 0.0; a_w = 0.0; t_const = 0.0; k_fall = 0.0;
+    axialProfile = UnitProfile{};
+    v_gas = 0.0; v_particle = 0.0; residence = 0.0;
+    // Residence time = chamber height / particle fall velocity --- a RESULT
+    // of the chamber HARDWARE (D, L), not a free parameter (the credo).  The
+    // particle falls at the gas superficial velocity plus its terminal
+    // velocity (co-current); counter-current subtracts.
+    if (Dch > 0.0 && Lch > 0.0)
+    {
+        const scalar A_ch  = PI * Dch * Dch / 4.0;                          // m^2
+        const scalar Q_gas = F_air * R * (0.5 * (T_air + Tex)) / P_air;     // m^3/s
+        v_gas = Q_gas / A_ch;
+        v_particle = (flowDir == "counter")
+                   ? std::max(1.0e-4, v_t - v_gas) : v_gas + v_t;
+        residence = (v_particle > 0.0) ? Lch / v_particle : 0.0;
+    }
+    phase2 = sol.hasSorption() && hasDryCurve && (X_cr > 0.0 || rea)
+           && h > 0.0 && residence > 0.0;
     if (phase2)
     {
-        // Water activity the powder sees = relative humidity of exhaust air
-        // (use the phase-1 fully-evaporated humidity; residual is a tiny
-        // correction, so this is not iterated).
-        const scalar n_w_ex   = F_air * yAir[iSolv] + n_solv_feed;
-        const scalar F_ex     = F_air + n_solv_feed;
+        // Water activity the powder sees = relative humidity of the exhaust
+        // air it leaves with (the water that actually evaporated).
+        const scalar n_w_ex   = F_air * yAir[iSolv] + n_evap_ex;
+        const scalar F_ex     = F_air + n_evap_ex;
         const scalar y_w_ex   = (F_ex > 0.0) ? n_w_ex / F_ex : 0.0;
-        const scalar Psat_out = solv.vp().Psat_Pa(T_out);
+        const scalar Psat_out = solv.vp().Psat_Pa(Tex);
         a_w = (Psat_out > 0.0) ? std::min(0.99, y_w_ex * P_air / Psat_out) : 0.0;
 
         // GAB equilibrium moisture Xe(a_w).
@@ -596,7 +624,7 @@ int SprayDryer::solve(const DictPtr& dict,
                 Xz = std::max(Xz, X_eq);
                 const scalar frac = std::min(1.0, std::max(0.0, (X_in - Xz) / span));
                 const scalar yw   = yAir[iSolv] + (y_w_ex - yAir[iSolv]) * frac;
-                const scalar Tgz  = T_air + (T_out - T_air) * frac;
+                const scalar Tgz  = T_air + (Tex - T_air) * frac;
                 // Particle T: at the wet-bulb while the surface is wet, rising toward
                 // the gas as it dries.  REA measures "wetness" by psi (1->0); the CDC
                 // by the moisture position between Xc and X_eq.
@@ -619,11 +647,170 @@ int SprayDryer::solve(const DictPtr& dict,
                     { std::min(1.0, t_const / residence) * Lch, "Xc (constant -> falling rate)" });
         }
     }
-    // Residual moisture = the LARGER of the kinetic hold-up (residence time)
-    // and the energy floor (solvent the air could not carry to saturation).
-    const scalar n_resid_kinetic = X_final * m_solid / MW_w;  // kmol/s
-    const scalar n_resid_energy  = energy_limited ? std::max(0.0, n_solv_feed - n_evap_max) : 0.0;
-    const scalar n_resid_model   = std::max(n_resid_kinetic, n_resid_energy);  // kmol/s
+    };   // dryingAt
+
+    // -------------------------------------------------------------------
+    //  THE ENERGY BALANCE, ON THE SURFACE THE STREAMS ARE PRICED ON
+    //  (2026-09-27).  Every enthalpy below is `flashState::priceState` (+
+    //  `priceSolids` for the crystals): the call the energy report's own rule
+    //  is, so the unit and the report cannot part.  The dryer is ADIABATIC and
+    //  declares no energy item, so its whole job is
+    //      H(powder, T_out) + H(exhaust, T_out) = H(feed) + H(drying air),
+    //  and the report's `raw_imbalance_kW` for this unit is the residual of
+    //  exactly that equation.
+    //
+    //  The mass split and the exhaust temperature depend on each other (the
+    //  kinetics read the exhaust; the exhaust temperature depends on how much
+    //  evaporated), so the two are solved TOGETHER, as one bracketed root in
+    //  the evaporation (see below).  The number of evaluations is printed.
+    //
+    //  ENERGY-LIMITED DRYING keeps its old meaning -- the air cannot cool
+    //  below its wet bulb -- but is now decided on the same surface: if even
+    //  at T_wb the outlets would carry more enthalpy than came in, the exhaust
+    //  leaves at T_wb and the evaporation is what the air can pay for.  The
+    //  old code pinned the exhaust at T_wb and evaporated by a DIFFERENT
+    //  estimate, which is the same two-surface disagreement in the other
+    //  regime.
+    // -------------------------------------------------------------------
+    const std::string who = "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'";
+    const bool   pinnedFeed = feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const scalar vfFeed     = feedDict->lookupScalarOrDefault("vf", 0.0);
+    const bool   pinnedAir  = airDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const scalar vfAir      = airDict->lookupScalarOrDefault("vf", 1.0);
+    const scalar H_air_in = flashState::priceState(T_air, P_air, yAir, F_air,
+        pinnedAir, vfAir, thermo, who + " drying air", nullptr);             // kW
+    const scalar H_in = flashState::priceState(T_feed, P_feed, zFeed, F_feed,
+        pinnedFeed, vfFeed, thermo, who + " feed", nullptr)
+        + flashState::priceSolids(sFeed, T_feed, thermo) + H_air_in;       // kW
+
+    //  The two outlets, exactly as they are published below (unpinned: this
+    //  unit pins nothing), for an evaporation `nev` and a temperature `T`.
+    sVector sPowder(n, 0.0); sPowder[iSolid] = n_solid;
+    sVector zWater(n, 0.0);  zWater[iSolv] = 1.0;
+    auto exhaustFlows = [&](scalar nev)
+    {
+        sVector v(n, 0.0);
+        for (std::size_t i = 0; i < n; ++i) v[i] = F_air * yAir[i];
+        v[iSolv] += nev;
+        return v;
+    };
+    auto H_out = [&](scalar T, scalar nev) -> scalar                      // kW
+    {
+        const scalar nres = std::max(0.0, n_solv_feed - nev);
+        scalar H = flashState::priceSolids(sPowder, T, thermo);
+        if (nres > 0.0)
+            H += flashState::priceState(T, P_air, zWater, nres, false, 0.0,
+                                        thermo, who + " powder", nullptr);
+        const sVector v = exhaustFlows(nev);
+        scalar Fex = 0.0; for (auto x : v) Fex += x;
+        sVector zex(n, 0.0);
+        if (Fex > 0.0) for (std::size_t i = 0; i < n; ++i) zex[i] = v[i] / Fex;
+        H += flashState::priceState(T, P_air, zex, Fex, false, 1.0,
+                                    thermo, who + " exhaust", nullptr);
+        return H;
+    };
+    //  T_out for a given evaporation: H_out is monotone increasing in T.
+    auto solveT = [&](scalar nev) -> scalar
+    {
+        auto g  = [&](scalar T) { return H_out(T, nev) - H_in; };
+        auto dg = [&](scalar T) { const scalar dT = 1.0e-3;
+                                  return (g(T + dT) - g(T - dT)) / (2.0 * dT); };
+        solver::NROptions o;
+        o.tolerance = 1.0e-9;                 // kW -- a microwatt
+        o.maxIter   = 200;
+        o.lower     = T_wb;
+        o.upper     = T_air;
+        o.bracket   = true;
+        o.monotoneIncreasing = true;
+        auto r = solver::newton1D(g, dg, std::clamp(T_out, T_wb, T_air), o);
+        if (!r.converged)
+            throw std::runtime_error(who + ": the adiabatic energy balance"
+                " H(out) = H(in) did not converge for T_out in [T_wb, T_air]"
+                " (residual " + std::to_string(r.residual) + " kW).");
+        return r.x;
+    };
+    //  Evaporation the air can pay for with the exhaust at T_wb: H_out is
+    //  monotone increasing in `nev` (vapour costs more than liquid).
+    auto solveEvapAtWetBulb = [&](scalar nevMax) -> scalar
+    {
+        scalar lo = 0.0, hi = nevMax;
+        for (int k = 0; k < 200 && (hi - lo) > 1.0e-15 * std::max(1.0, nevMax); ++k)
+        {
+            const scalar m = 0.5 * (lo + hi);
+            if (H_out(T_wb, m) - H_in > 0.0) hi = m; else lo = m;
+        }
+        return 0.5 * (lo + hi);
+    };
+
+    //  THE UNKNOWN IS THE EVAPORATION, AND THE ROOT IS BRACKETED.  For an
+    //  evaporation `nev` the energy balance fixes the exhaust temperature
+    //  T(nev) (falling as nev rises), and the kinetics, run at that exhaust,
+    //  return the evaporation they would release, nevKin(nev).  More
+    //  evaporation means a cooler, wetter exhaust, a higher water activity
+    //  and a powder that keeps more water, so R(nev) = nevKin - nev falls
+    //  strictly: R(0) >= 0 and R at the energy cap <= 0 unless drying is
+    //  ENERGY-LIMITED.  A plain successive substitution was tried first and
+    //  cycled with period two on `sugarPlantEconomicsSweep` (exhaust 318 K /
+    //  410 K, water activity 0 / 0.99), because near saturation the GAB
+    //  isotherm makes the kinetics far steeper than the energy balance; a
+    //  bracketed root cannot cycle.
+    scalar n_resid_kinetic = 0.0;
+    auto nevKin = [&](scalar T, scalar nev) -> scalar
+    {
+        dryingAt(T, nev);
+        // Residual moisture the KINETICS leave in the powder, capped at the
+        // water the feed brought (see the cap below).
+        n_resid_kinetic = X_final * m_solid / MW_w;                        // kmol/s
+        return std::max(0.0, n_solv_feed - std::min(n_solv_feed, n_resid_kinetic));
+    };
+    //  The energy cap: the most the air can evaporate with the exhaust at T_wb.
+    const scalar nevCap = (H_out(T_wb, n_solv_feed) - H_in > 0.0)
+                        ? solveEvapAtWetBulb(n_solv_feed) : n_solv_feed;
+    auto Tof = [&](scalar nev) -> scalar
+    {
+        return (H_out(T_wb, nev) - H_in >= 0.0) ? T_wb : solveT(nev);
+    };
+    scalar n_evap = nevCap;
+    int    nPass  = 0;
+    const scalar Rcap = nevKin(Tof(nevCap), nevCap) - nevCap;  ++nPass;
+    if (Rcap >= 0.0)
+    {
+        //  The kinetics would release at least what the air can pay for.
+        energy_limited = (nevCap < n_solv_feed * (1.0 - 1.0e-12));
+        T_out  = Tof(nevCap);
+        n_evap = nevCap;
+    }
+    else
+    {
+        //  Illinois (regula falsi with a bisection guard) on R(nev) over
+        //  [0, nevCap]; R(0) >= 0 because the kinetics never return a
+        //  negative evaporation.
+        scalar a = 0.0, b = nevCap;
+        scalar Ra = nevKin(Tof(0.0), 0.0);  ++nPass;
+        scalar Rb = Rcap;
+        int side = 0;
+        const scalar tolN = 1.0e-13 * std::max(1.0e-30, n_solv_feed);
+        if (Ra <= 0.0) { b = 0.0; Rb = Ra; }                 // root at the lower end
+        while (std::abs(b - a) > tolN && nPass < 400)
+        {
+            scalar c = (Ra != Rb) ? (a * Rb - b * Ra) / (Rb - Ra) : 0.5 * (a + b);
+            if (!(c > std::min(a, b) && c < std::max(a, b))) c = 0.5 * (a + b);
+            const scalar Rc = nevKin(Tof(c), c) - c;  ++nPass;
+            if (Rc == 0.0) { a = b = c; break; }
+            if (Rc > 0.0) { a = c; Ra = Rc; if (side == +1) Rb *= 0.5; side = +1; }
+            else          { b = c; Rb = Rc; if (side == -1) Ra *= 0.5; side = -1; }
+        }
+        if (std::abs(b - a) > tolN)
+            throw std::runtime_error(who + ": the evaporation that satisfies"
+                " both the drying kinetics and the adiabatic energy balance was"
+                " not located in 400 evaluations.");
+        n_evap = 0.5 * (a + b);
+        T_out  = Tof(n_evap);
+        energy_limited = false;
+    }
+    //  The kinetics' own KPIs at the state the unit publishes.
+    (void) nevKin(T_out, n_evap);
+    const scalar n_water_resid = n_solv_feed - n_evap;                     // kmol/s
 
     //  A DRYER CANNOT END WETTER THAN IT STARTED.  Both residual routes above
     //  are MODEL quantities: the kinetic one is `X_final * m_solid`, a moisture
@@ -647,13 +834,12 @@ int SprayDryer::solve(const DictPtr& dict,
     //  Antoine and the out-of-band Davies).  The answer is the physical one --
     //  the powder keeps the water it was given and nothing evaporates -- and
     //  the reader is told the equilibrium the model wanted.
-    const scalar n_water_resid   = std::min(n_solv_feed, n_resid_model);  // kmol/s
-    if (n_resid_model > n_solv_feed * (1.0 + 1.0e-9))
+    if (n_resid_kinetic > n_solv_feed * (1.0 + 1.0e-9))
     {
         std::ostringstream msg;
         msg << "the drying model asks the powder to hold "
             << std::fixed << std::setprecision(4)
-            << (n_resid_model * MW_w * 3600.0) << " kg/h of moisture, but the"
+            << (n_resid_kinetic * MW_w * 3600.0) << " kg/h of moisture, but the"
                " feed carries only " << (n_solv_feed * MW_w * 3600.0)
             << " kg/h.  The feed is ALREADY drier than this model's"
                " equilibrium moisture at the declared water activity, so there"
@@ -670,7 +856,13 @@ int SprayDryer::solve(const DictPtr& dict,
             std::cout << "  [drying] " << msg.str() << "\n";
     }
     const scalar m_water_resid   = n_water_resid * MW_w;      // kg/s held in the powder
-    const scalar n_evap          = std::max(0.0, n_solv_feed - n_water_resid);
+    //  The heat the drying air gives up, on the package's surface: the air
+    //  as it came in, minus the same air at the exhaust temperature.  It is
+    //  what the droplets receive -- exactly the enthalpy rise of the feed
+    //  side, by the balance above -- and NOT an energy item: the dryer is
+    //  adiabatic and the report must not count it at the boundary.
+    const scalar Q = 1000.0 * (H_air_in - flashState::priceState(T_out, P_air,
+        yAir, F_air, false, 1.0, thermo, who + " drying air", nullptr));    // W
 
     // -------------------------------------------------------------------
     //  Particle-size distribution.  Atomisation produces a SPREAD of
@@ -765,7 +957,7 @@ int SprayDryer::solve(const DictPtr& dict,
     kpis_["h"]                = h;                // W/(m^2·K)
     kpis_["k_c"]              = kc;               // m/s
     kpis_["tau_dry_constant"] = tau_const;        // s
-    kpis_["duty"]             = Q;                // W (latent+sensible to evaporate)
+    kpis_["duty"]             = Q;                // W (heat the air gives up, package surface)
     kpis_["thermalEfficiency"]= eta_th;           // adiabatic-saturation efficiency
     kpis_["rho_liquid"]       = rho_L;
     kpis_["rho_gas"]          = rho_g;
@@ -830,6 +1022,11 @@ int SprayDryer::solve(const DictPtr& dict,
                   << "  Exhaust air  T_out   = " << std::setprecision(1) << T_out
                   << " K (" << (T_out - 273.15) << " °C),  η_th = "
                   << std::setprecision(2) << eta_th << "\n"
+                  << "  Energy: H(out) = H(in) on the package's enthalpy surface ("
+                  << nPass << " kinetics evaluations; hand-balance seed "
+                  << std::setprecision(1) << T_out_seed << " K)"
+                  << (energy_limited ? "  -- ENERGY-LIMITED: exhaust at the wet bulb" : "")
+                  << "\n"
                   << "  ----  atomisation (Friedman)  ----\n"
                   << "  Surface tension sigma = " << std::scientific << std::setprecision(4)
                   << sigma << " N/m  [" << sigmaSource << "]\n"

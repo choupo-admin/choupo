@@ -108,6 +108,10 @@ not, and the three terms pin it indirectly to 1e-4 of 1.3 MW.
   in total against 372), and they are left as a finding, not a fix — each
   needs its own reading (the fermentor's heat of reaction on the elements
   datum against an imposed T is the first suspect).
+  *(Corrected 2026-09-27: the fermentor's +37.0 kW was NOT its heat of
+  reaction -- the CSTR priced its duty on a quality blend where the report
+  resolves the outlet's CO2 split; it closes at 100.00 % now.  Record:
+  `docs/design/three-units-and-the-flagship-first-law.md`.)*
 * `EnergyBalanceReport.cpp` carried the sentence *"This is the single number
   the GUI shows green"*.  It was not.  Corrected to what is now true.
 

@@ -33,6 +33,7 @@ License
 #include "thermo/reaction/Reaction.H"
 #include "solver/NewtonRaphson.H"
 #include "solver/NewtonND.H"
+#include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
 
 #include <cmath>
 #include <iomanip>
@@ -42,6 +43,45 @@ License
 #include <vector>
 
 namespace Choupo {
+
+namespace {
+
+//  ---- THE DUTY IS PRICED ON THE STATE THE STREAMS CARRY (2026-09-27) ------
+//
+//  Both duty sites below used to price the inlet and the outlet with
+//  `H_stream_formation(T, P, vf, z)` -- a QUALITY BLEND at the overall
+//  composition z, carrying the inlet's vapour fraction onto the outlet --
+//  while the energy report resolves every unpinned stream at its own
+//  (T, P, z) and prices the equilibrium phases.  The two agree on every
+//  single-phase stream and part on every two-phase one.  The flagship
+//  plant's fermentor is the witness: its outlet at 310 K carries 12.2 kmol/h
+//  of CO2 the report resolves as a vapour, the unit priced it on the blend,
+//  and the row read dH = -168.7729 kW against a declared Q = -205.7716 kW
+//  (82.02 %) -- +36.9987 kW of that plant's first law, on one reactor.  The
+//  family is CLAUDE.md 6's: THE STATE A UNIT COMPUTES WITH IS NOT THE STATE
+//  ITS STREAMS CARRY.  Now both terms go through `flashState::priceState`,
+//  the call the report's own rule is, and the two cannot part.
+scalar cstrDutyKW(scalar                            F_in_kmols,
+                  scalar                            T_in,
+                  scalar                            P,
+                  bool                              pinned_in,
+                  scalar                            vf_in,
+                  const sVector&                    z_in,
+                  const std::vector<ProcessStream>& produced,
+                  const ThermoPackage&              thermo)
+{
+    const scalar H_in_kW = flashState::priceState(T_in, P, z_in, F_in_kmols,
+        pinned_in, vf_in, thermo, "cstr inlet", nullptr);
+    scalar H_out_kW = 0.0;
+    //  An outlet this unit produced is UNPINNED (it pins nothing), exactly as
+    //  the report will read it.
+    for (const auto& s : produced)
+        H_out_kW += flashState::priceState(s.T, P, s.z, s.F, false, s.vf,
+                                           thermo, "cstr outlet", nullptr);
+    return H_out_kW - H_in_kW;   // F[kmol/s]*h[kJ/kmol] = kW
+}
+
+} // namespace
 
 int CSTR::solve(const DictPtr& dict,
                 const ThermoPackage& thermo,
@@ -188,7 +228,7 @@ int CSTR::solve(const DictPtr& dict,
         std::cout << "Feed:        F = " << (F_in_kmols * 3600.0) << " kmol/h  ("
                   << F_in << " mol/s)\n"
                   << "Reactor:     V_R = " << V_R << " m³\n"
-                  << "Temperature: T = " << T << " K\n"
+                  << "Temperature: T = " << T_react << " K  (the reactor's; the kinetics run at it)\n"
                   << "Feed comp.:\n";
         for (std::size_t i = 0; i < n; ++i)
             std::cout << "  " << thermo.comp(i).name() << "  = " << z_in[i] << "\n";
@@ -202,7 +242,7 @@ int CSTR::solve(const DictPtr& dict,
                   << "  Ea:     " << Ea << "  J/mol\n";
         if (reversible)
         {
-            const auto eq = Reaction::equilibrium(thermo, nu, T);
+            const auto eq = Reaction::equilibrium(thermo, nu, T_react);
             std::cout << "  Kp(T):  " << std::scientific << std::setprecision(4)
                       << eq.Kp << "   Σν = " << std::showpos << eq.sumNu
                       << std::noshowpos << "\n"
@@ -401,11 +441,10 @@ int CSTR::solve(const DictPtr& dict,
     // leaks out of globalEnergyBoundary.csv (the ~8.6% hole on process05).
     {
         const scalar P_ref = feedDict->lookupScalarOrDefault("P", 101325.0);
-        const scalar H_in_kW = F_in_kmols * thermo.H_stream_formation(T, P_ref, vf_in, z_in);
-        scalar H_out_kW = 0.0;
-        for (const auto& s : produced_)
-            H_out_kW += s.F * thermo.H_stream_formation(s.T, P_ref, s.vf, s.z);
-        kpis_["Q_kW"] = H_out_kW - H_in_kW;   // F[kmol/s]*h[kJ/kmol] = kW
+        const bool   pinned_in =
+            feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+        kpis_["Q_kW"] = cstrDutyKW(F_in_kmols, T, P_ref, pinned_in, vf_in,
+                                   z_in, produced_, thermo);
     }
 
     return r.converged ? 0 : 1;
@@ -837,11 +876,10 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     // resolver -- never a per-reaction dH_rxn key).
     try
     {
-        const scalar H_in_kW = F_in_kmols * thermo.H_stream_formation(T, P, vf_in, z_in);
-        scalar H_out_kW = 0.0;
-        for (const auto& s : produced_)
-            H_out_kW += s.F * thermo.H_stream_formation(s.T, P, s.vf, s.z);
-        kpis_["Q_kW"] = H_out_kW - H_in_kW;
+        const bool pinned_in = dict->subDict("feed")
+            ->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+        kpis_["Q_kW"] = cstrDutyKW(F_in_kmols, T, P, pinned_in, vf_in,
+                                   z_in, produced_, thermo);
     }
     catch (const std::exception&) { /* a species lacks formation data -- no duty */ }
 

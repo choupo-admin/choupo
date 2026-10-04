@@ -29,11 +29,15 @@ License
 #include "SolidDryer.H"
 #include "Psychrometry.H"
 #include "thermo/ThermoPackage.H"
+#include "core/Advisory.H"
+#include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
 
 #include <algorithm>
 #include <cmath>
+#include "solver/NewtonRaphson.H"
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
@@ -98,6 +102,7 @@ int SolidDryer::solve(const DictPtr& dict,
     const scalar F_air = airDict->lookupScalar("F", Dims::molarFlow);    // dry+humid air [kmol/s]
     const scalar T_air = airDict->lookupScalar("T", Dims::temperature);
     const sVector yAir = readComp(airDict);
+    const scalar P_air = airDict->lookupScalarOrDefault("P", P);
 
     // ---- Identify the wet SOLID (sorption) and the SOLVENT (water) -----
     std::size_t iSolid = n, iSolv = n;
@@ -133,36 +138,109 @@ int SolidDryer::solve(const DictPtr& dict,
     //  to ZERO here, silently -- a dryer that then dried to bone-dry; it is
     //  refused by name now, as the batch dryer always refused it.
     const scalar X_eq = psychrometry::gabMoisture(sol, aw, "SolidDryer");
-    const scalar X_final     = std::min(X_in, X_eq);
-    const scalar water_final = X_final * solid_mass / MW_solv;          // kept in the powder
-    const scalar water_rem   = std::max(0.0, water_in - water_final);   // evaporated into the air
+    //  The moisture the isotherm allows.  NOT yet the moisture the powder
+    //  leaves with: the air may be unable to pay for it (see below).
+    const scalar X_target    = std::min(X_in, X_eq);
+    const scalar water_rem_target =
+        std::max(0.0, water_in - X_target * solid_mass / MW_solv);      // kmol/s
 
     // ---- Adiabatic energy balance -> outlet T_out (no duty) -----------
-    //   Hot air cools (T_air -> T_out); its sensible heat heats the solid +
-    //   residual water from T_w to T_out and evaporates the removed water:
-    //     F_air*cp_air*(T_air-T_out)
-    //        = [solid*cpSolid + water_in*cpLiq]*(T_out-T_w) + water_rem*dHvap
-    //   Solved by bisection on T_out in [T_w, T_air].
-    scalar cp_air = 0.0;                                                // J/(mol.K)
-    for (std::size_t i = 0; i < n; ++i)
-        if (yAir[i] > 0.0 && thermo.comp(i).hasCpIdealGas())
-            cp_air += yAir[i] * thermo.comp(i).cpIdealGas().Cp(T_air);
-    const scalar cpSolid = sol.hasCpSolid()  ? sol.cpSolid().Cp(0.5*(T_w+T_air)) : 0.0;
-    const scalar cpLiq   = solv.hasCpLiquid() ? solv.cpLiquid().Cp(0.5*(T_w+T_air)) : 75.4;
-    auto fEner = [&](scalar Tout) -> scalar
+    //   Hot air cools (T_air -> T_out); the solid, its moisture and the
+    //   evaporated water leave at T_out.  The dryer declares no duty, so the
+    //   whole balance is
+    //       H(dry solid, T_out) + H(humid exhaust, T_out)
+    //           = H(wet solid, T_w) + H(hot air, T_air),
+    //   solved for T_out in [T_w, T_air].
+    //
+    //   ON THE SURFACE THE STREAMS ARE PRICED ON, AND NEVER BY INVENTING HEAT
+    //   (2026-09-27).  This used to be a constant-Cp air balance against a
+    //   Watson latent heat -- a surface the published streams are not priced
+    //   on -- and, when the air could not supply the heat even with the solid
+    //   leaving at its feed temperature, it FLOORED T_out at T_w and
+    //   evaporated the full isotherm target anyway.  The heat for that water
+    //   came from nowhere: on the flagship plant, +10.2352 kW on DRYING.BD,
+    //   the unit's whole row in the first-law report, announced only as a
+    //   console line.  Every enthalpy is now `flashState::priceState` (+
+    //   `priceSolids`), the call the energy report's own rule is.  When the
+    //   air cannot pay, the solid still leaves at T_w -- this model's
+    //   declared floor, unchanged -- and the evaporation is what the air CAN
+    //   pay for, so the powder leaves WETTER than the isotherm allows, and the
+    //   run says so.  Whether the outlet should instead fall below the feed
+    //   temperature toward the air's adiabatic-saturation temperature (which
+    //   would dry further) is a change to this model's domain and is not
+    //   taken here.
+    const std::string who = "solidDryer '" + (dict->name().empty() ? type() : dict->name()) + "'";
+    const bool   pinnedW   = solidDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const scalar vfW       = solidDict->lookupScalarOrDefault("vf", 0.0);
+    const bool   pinnedAir = airDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const scalar vfAir     = airDict->lookupScalarOrDefault("vf", 1.0);
+    const scalar H_in =
+          flashState::priceState(T_w, P, zW, F_w, pinnedW, vfW, thermo,
+                                 who + " wet solid", nullptr)
+        + flashState::priceSolids(sW, T_w, thermo)
+        + flashState::priceState(T_air, P_air, yAir, F_air, pinnedAir, vfAir,
+                                 thermo, who + " hot air", nullptr);        // kW
+    sVector sDry(n, 0.0); sDry[iSolid] = solid_mol;
+    sVector zWater(n, 0.0); zWater[iSolv] = 1.0;
+    auto exhaustComp = [&](scalar rem, scalar& Fex)
     {
-        const scalar supply = F_air * 1000.0 * cp_air * (T_air - Tout);          // W
-        const scalar demand = (solid_mol * cpSolid + water_in * cpLiq) * 1000.0 * (Tout - T_w)
-                            + water_rem * 1000.0 * solv.Hvap_latent(Tout);       // W
-        return supply - demand;
+        Fex = F_air + rem;
+        sVector z(n, 0.0);
+        if (Fex > 0.0)
+            for (std::size_t i = 0; i < n; ++i)
+                z[i] = (yAir[i] * F_air + (i == iSolv ? rem : 0.0)) / Fex;
+        return z;
     };
-    scalar T_out;
-    const bool energyLimited = fEner(T_w) < 0.0;     // air cannot even supply the duty at T_w
-    if (energyLimited) T_out = T_w;                  // honest floor (warned below)
-    else { scalar a = T_w, b = T_air;                // f(T_w)>=0, f(T_air)<0 -> bracketed
-           for (int it = 0; it < 80 && (b - a) > 1.0e-4; ++it)
-           { const scalar m = 0.5*(a+b); if (fEner(m) >= 0.0) a = m; else b = m; }
-           T_out = 0.5*(a+b); }
+    //  The two outlets, exactly as they are published below (unpinned).
+    auto H_out = [&](scalar T, scalar rem) -> scalar                      // kW
+    {
+        const scalar wf = std::max(0.0, water_in - rem);
+        scalar H = flashState::priceSolids(sDry, T, thermo);
+        if (wf > 0.0)
+            H += flashState::priceState(T, P, zWater, wf, false, 0.0, thermo,
+                                        who + " dry solid", nullptr);
+        scalar Fex = 0.0;
+        const sVector zex = exhaustComp(rem, Fex);
+        H += flashState::priceState(T, P, zex, Fex, false, 1.0, thermo,
+                                    who + " exhaust", nullptr);
+        return H;
+    };
+    scalar T_out, water_rem;
+    const bool energyLimited = (H_out(T_w, water_rem_target) - H_in > 0.0);
+    if (energyLimited)
+    {
+        //  The air cannot pay for the isotherm's target even with the solid
+        //  leaving at its feed T: evaporate what it can pay for (H_out is
+        //  monotone increasing in the evaporation -- vapour costs more than
+        //  liquid).
+        T_out = T_w;
+        scalar lo = 0.0, hi = water_rem_target;
+        for (int it = 0; it < 200 && (hi - lo) > 1.0e-15 * std::max(1.0, water_rem_target); ++it)
+        { const scalar m = 0.5*(lo+hi); if (H_out(T_w, m) - H_in > 0.0) hi = m; else lo = m; }
+        water_rem = 0.5 * (lo + hi);
+    }
+    else
+    {
+        water_rem = water_rem_target;
+        auto g  = [&](scalar T) { return H_out(T, water_rem) - H_in; };
+        auto dg = [&](scalar T) { const scalar dT = 1.0e-3;
+                                  return (g(T + dT) - g(T - dT)) / (2.0 * dT); };
+        solver::NROptions o;
+        o.tolerance = 1.0e-9;                 // kW -- a microwatt
+        o.maxIter   = 200;
+        o.lower     = T_w;
+        o.upper     = T_air;
+        o.bracket   = true;
+        o.monotoneIncreasing = true;
+        auto r = solver::newton1D(g, dg, 0.5 * (T_w + T_air), o);
+        if (!r.converged)
+            throw std::runtime_error(who + ": the adiabatic energy balance"
+                " H(out) = H(in) did not converge for T_out in [T_w, T_air]"
+                " (residual " + std::to_string(r.residual) + " kW).");
+        T_out = r.x;
+    }
+    const scalar water_final = std::max(0.0, water_in - water_rem);    // kept in the powder
+    const scalar X_final     = (solid_mass > 0.0) ? water_final * MW_solv / solid_mass : 0.0;
 
     // ---- Outlet streams: dry solid + HUMID EXHAUST (air + moisture) ----
     produced_.clear();
@@ -194,8 +272,20 @@ int SolidDryer::solve(const DictPtr& dict,
     kpis_["air_in_kmol_h"]  = F_air * 3600.0;
 
     if (energyLimited)
-        std::cout << "  [SolidDryer] WARNING: the hot air cannot supply the drying"
-                     " heat -- T_out floored at the feed T; use hotter or more air.\n";
+    {
+        std::ostringstream msg;
+        msg << std::setprecision(4) << std::fixed
+            << "the hot air cannot pay for drying to the isotherm's equilibrium"
+               " moisture: with the solid leaving at its feed temperature ("
+            << T_w << " K, this model's floor) it evaporates "
+            << (water_rem * MW_solv * 3600.0) << " kg/h of the "
+            << (water_rem_target * MW_solv * 3600.0) << " kg/h the isotherm"
+               " would remove, so the powder leaves at X = " << X_final
+            << " kg/kg instead of X_eq = " << X_eq << ".  Use hotter or more"
+               " air.";
+        AdvisoryLog::instance().add("drying", "warning", who, msg.str());
+        std::cout << "  [SolidDryer] WARNING: " << msg.str() << "\n";
+    }
     if (verbosity >= 2)
         std::cout << "\n=========================  Solid Dryer Result  ===================\n"
                   << "  Hot air IN: T = " << std::fixed << std::setprecision(1) << T_air

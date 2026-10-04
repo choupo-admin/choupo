@@ -39,16 +39,20 @@ Description
         X_final  =  min(X_in,  X_e )
         X_e      =  GAB(a_w = relativeHumidity )   on the solid's sorption isotherm
 
-    where X = kg water / kg dry solid.  The removed water leaves as vapour;
-    the duty Q = water_removed · ΔHvap is a RESULT.
+    where X = kg water / kg dry solid.  The removed water leaves as vapour
+    in the hot-air stream; the dryer is ADIABATIC and declares no duty --
+    T_out closes H(out) = H(in) on the package's own enthalpy surface
+    (2026-09-27), and when the air cannot pay for X_e the powder leaves
+    wetter, announced.
 
     Equilibrium vs kinetics, the project rule: the equilibrium isotherm lives
     on the solid component's `sorption {}` block; a falling-rate KINETICS
     (constant/dryingKinetics, the residence-limited X) would refine this --
     here the steady model dries to equilibrium (enough residence assumed).
 
-    Hardware-only operation: the drying-air `airTemperature` + `relativeHumidity`.
-    Inputs (wetSolid );   Outputs (drySolid  vapour );
+    The drying air is a REAL stream (its T and humidity set a_w); there is
+    no `airTemperature` / `relativeHumidity` parameter any more.
+    Inputs (wetSolid  hotAir );   Outputs (drySolid  humidExhaust );
 \*---------------------------------------------------------------------------*/
 
 #pragma once

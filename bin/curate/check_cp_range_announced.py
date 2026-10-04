@@ -106,7 +106,19 @@ SILENT = "tutorials/steady/flash/bubbleT01_ethanol_water"
 #  spelling breaks the arm loudly instead of quietly making it a no-op.
 SILENT_RECORD = "constant/components/ethanol.dat"
 SILENT_WINDOW = "Trange        (280  351);"
-LOUD = "tutorials/steady/drying/solidDryer01_sugar"
+#  THE LOUD WITNESS MOVED 2026-10-03.  It was solidDryer01_sugar, whose old
+#  energy balance evaluated a POINT Cp at the hot air's 375 K (sucrose's
+#  window is (280 330)).  The D-ET2 slice (docs/design/three-units-and-the-
+#  flagship-first-law.md) made the dryer price every enthalpy through
+#  `flashState::priceState`, which travels the INTEGRAL from the 298.15 K
+#  datum -- so that case now speaks only in the span's sentence, and arm (b)
+#  below, which asks for the point's, went red for a reason that is not
+#  silence: the engine still announces, in the other of the two sentences.
+#  A witness that lost the property is replaced, never the arm weakened.
+#  utility01_dowtherm_preheat evaluates a point Cp for nHexane at 623.15 K
+#  against (280 340) AND integrates across the same window, so both arms
+#  (b) and (c) have a sentence to read on one choupoSolve case.
+LOUD = "tutorials/steady/utilities/utility01_dowtherm_preheat"
 
 #  THE NON-INTERVAL BRANCH LEFT THIS GATE (AP3, 2026-08-05).
 #

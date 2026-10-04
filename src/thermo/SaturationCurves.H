@@ -59,11 +59,16 @@ namespace Choupo {
 /// Bubble-point temperature at the given liquid composition x and
 /// pressure P.  Uses Newton-1D on  f(T) = Σ K_i(T, x) x_i - 1  with a
 /// finite-difference derivative.  Tguess is the initial T; values near
-/// the actual bubble-T speed convergence.
+/// the actual bubble-T speed convergence.  `tolerance` is on |f|, and the
+/// Newton returns without a step once the SEED already meets it -- so a
+/// caller that re-solves from its previous T (the Wang-Henke column, which
+/// passes 1e-12) must ask for more than its own outer test, or T stops
+/// moving once the per-pass change in x is small.
 scalar bubbleT(const ThermoPackage& thermo,
                const sVector& x,
                scalar P,
-               scalar Tguess);
+               scalar Tguess,
+               scalar tolerance = 1.0e-8);
 
 /// Stored binary T-x-y locus.  Both vectors share the same temperature
 /// axis: Tbubble[i] is the bubble-T of liquid xBubble[i] AND the dew-T

@@ -77,7 +77,13 @@ Description
            c. Normalise Σ_i x_{j,i} = 1 at every stage.
            d. Update T_j by bubble-point  Σ K(T_j,x_j) x_{j,i} = 1
               (1-D Newton).
-           e. Check max|Δx|, max|ΔT|; iterate.
+           e. Stop when the state the next pass would start from -- the one
+              the report publishes -- closes every stage's component balance
+              and the column's balance over its ports to 1e-9 of the feed,
+              every bubble point to 1e-9, and the step max|Δx| is under the
+              declared compositionTol; otherwise iterate (up to
+              maxOuterIter).  Successive substitution converges linearly, so
+              the step alone is not a balance (DEV.md §5 A7 item (5)).
 
     Outputs:
         Distillate: F = D,  z = x_D,  T = T_1

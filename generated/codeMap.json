@@ -60,6 +60,9 @@
   "AdiabaticFlash": [
    "src/unitOperations/flash/AdiabaticFlash.H"
   ],
+  "AdiabaticProbe": [
+   "src/unitOperations/reactor/GibbsReactor.H"
+  ],
   "Adsorbent": [
    "src/thermo/adsorbent/Adsorbent.H"
   ],
@@ -291,6 +294,9 @@
   "Controller": [
    "src/control/Controller.H"
   ],
+  "ConvectiveDryer": [
+   "src/unitOperations/heatTransfer/ConvectiveDryer.H"
+  ],
   "ConvergenceControls": [
    "src/solver/Convergence.H"
   ],
@@ -393,6 +399,9 @@
   "DropletResult": [
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H"
   ],
+  "DryingCurve": [
+   "src/unitOperations/heatTransfer/DryingCurve.H"
+  ],
   "DynamicCSTR": [
    "src/unitOperations/dynamic/DynamicCSTR.H"
   ],
@@ -401,9 +410,6 @@
   ],
   "DynamicUnitOperation": [
    "src/unitOperations/dynamic/DynamicUnitOperation.H"
-  ],
-  "DynamicUnitSnapshot": [
-   "src/io/SolutionWriter.H"
   ],
   "DysonSimon1968": [
    "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
@@ -636,6 +642,9 @@
   "GasSolidSplitter": [
    "src/unitOperations/separation/GasSolidSplitter.H"
   ],
+  "GelPolarisation": [
+   "src/unitOperations/membrane/transport/GelPolarisation.H"
+  ],
   "Geometry": [
    "src/unitOperations/distillation/TrayHydraulics.H"
   ],
@@ -719,6 +728,15 @@
   ],
   "HenrysLawRegistry": [
    "src/thermo/henrysLaw/HenrysLawRegistry.H"
+  ],
+  "Holdup": [
+   "src/io/InternalStateIO.H"
+  ],
+  "HoldupRecord": [
+   "src/unitOperations/dynamic/DynamicUnitOperation.H"
+  ],
+  "HoldupUnit": [
+   "src/io/InternalStateIO.H"
   ],
   "IEMSpec": [
    "src/unitOperations/electrochem/EDCell.H"
@@ -1125,6 +1143,9 @@
   ],
   "QPResult": [
    "src/solver/ActiveSetQP.H"
+  ],
+  "QuasiSteadyUnit": [
+   "src/unitOperations/dynamic/QuasiSteadyUnit.H"
   ],
   "RK4": [
    "src/solver/ODE/RK4.H"
@@ -2146,6 +2167,10 @@
     "type": "SolidDryer"
    },
    {
+    "key": "convectiveDryer",
+    "type": "ConvectiveDryer"
+   },
+   {
     "key": "evaporativeDryer",
     "type": "EvaporativeDryer"
    },
@@ -2306,6 +2331,10 @@
   ],
   "src/unitOperations/dynamic/DynamicUnitOperation.cpp": [
    {
+    "key": "quasiSteady",
+    "type": "QuasiSteadyUnit"
+   },
+   {
     "key": "dynamicCSTR",
     "type": "DynamicCSTR"
    },
@@ -2416,6 +2445,10 @@
    {
     "key": "SDEM",
     "type": "SDEM"
+   },
+   {
+    "key": "gelPolarisation",
+    "type": "GelPolarisation"
    }
   ],
   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp": [
@@ -2494,6 +2527,7 @@
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/core/distribution/SizeDistribution.H",
+   "src/io/InternalStateIO.H",
    "src/io/SolutionWriter.H",
    "src/materials/Material.H",
    "src/materials/MaterialRegistry.H",
@@ -2930,6 +2964,7 @@
    "src/core/Types.H",
    "src/core/distribution/SizeDistribution.H",
    "src/dynamicDriver/DynamicDriver.H",
+   "src/io/InternalStateIO.H",
    "src/io/SolutionWriter.H",
    "src/materials/Material.H",
    "src/materials/MaterialRegistry.H",
@@ -2944,6 +2979,7 @@
    "src/solver/ODE/ODEIntegrator.H",
    "src/streams/ProcessStream.H",
    "src/streams/StreamOverrides.H",
+   "src/streams/StreamStateIO.H",
    "src/thermo/ChemistrySystem.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
@@ -2957,14 +2993,24 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/ThermoPackageBuilder.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/adsorbent/Adsorbent.H",
+   "src/thermo/adsorbent/AdsorbentRegistry.H",
+   "src/thermo/adsorbent/IsothermModel.H",
+   "src/thermo/electrochem/EDStack.H",
+   "src/thermo/electrochem/EDStackRegistry.H",
    "src/thermo/electrolyte/AqueousActivity.H",
    "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
+   "src/thermo/membrane/Membrane.H",
+   "src/thermo/membrane/MembraneModule.H",
+   "src/thermo/membrane/MembraneModuleRegistry.H",
+   "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/reaction/Reaction.H",
    "src/thermo/solution/SolutionPair.H",
    "src/thermo/solution/SolutionRegistry.H",
    "src/thermo/transport/CorrelationVerify.H",
@@ -2977,9 +3023,13 @@
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitOperation.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H",
-   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
+   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
+   "src/unitOperations/reactor/PureSolidPhase.H",
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
+   "src/unitOperations/separation/cycloneModel/CycloneModel.H"
   ],
   "src/io/DesignSheetWriter.cpp": [
    "src/core/Advisory.H",
@@ -3038,11 +3088,13 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/io/InternalStateIO.H",
    "src/io/SolutionWriter.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
+   "src/streams/StreamStateIO.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
@@ -6256,6 +6308,7 @@
    "src/unitOperations/electrochem/ElectrodialysisStack.H",
    "src/unitOperations/flash/AdiabaticFlash.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.H",
    "src/unitOperations/heatTransfer/CoolingTower.H",
    "src/unitOperations/heatTransfer/EvaporativeDryer.H",
    "src/unitOperations/heatTransfer/Evaporator.H",
@@ -6432,7 +6485,9 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/batch/BatchDryer.H",
-   "src/unitOperations/batch/BatchUnitOperation.H"
+   "src/unitOperations/batch/BatchUnitOperation.H",
+   "src/unitOperations/heatTransfer/DryingCurve.H",
+   "src/unitOperations/heatTransfer/Psychrometry.H"
   ],
   "src/unitOperations/batch/BatchElectrodialysis.cpp": [
    "src/core/Advisory.H",
@@ -6563,6 +6618,7 @@
    "src/unitOperations/batch/FixedBedAdsorber.H",
    "src/unitOperations/electrochem/EDCell.H",
    "src/unitOperations/electrochem/LimitingCurrent.H",
+   "src/unitOperations/heatTransfer/DryingCurve.H",
    "src/unitOperations/membrane/osmotic/OsmoticModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
@@ -6581,6 +6637,7 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/io/InternalStateIO.H",
    "src/io/SolutionWriter.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -6735,15 +6792,38 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
+   "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/reaction/RateLaw.H",
+   "src/unitOperations/UnitOperation.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicCSTR.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.H",
    "src/unitOperations/dynamic/WilliamsOttoPlant.H"
+  ],
+  "src/unitOperations/dynamic/QuasiSteadyUnit.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/Composition.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/dynamic/BalanceSnapshot.H",
+   "src/unitOperations/dynamic/DynamicUnitOperation.H",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.H",
+   "src/unitOperations/flowsheet/UnitInputs.H"
   ],
   "src/unitOperations/dynamic/WilliamsOttoPlant.cpp": [
    "src/core/Dictionary.H",
@@ -6945,7 +7025,40 @@
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flowsheet/Flowsheet.H",
    "src/unitOperations/flowsheet/MemberFolder.H",
-   "src/unitOperations/flowsheet/ModelBoundaryAudit.H"
+   "src/unitOperations/flowsheet/ModelBoundaryAudit.H",
+   "src/unitOperations/flowsheet/UnitInputs.H"
+  ],
+  "src/unitOperations/flowsheet/UnitInputs.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/flowsheet/UnitInputs.H"
+  ],
+  "src/unitOperations/heatTransfer/ConvectiveDryer.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.H",
+   "src/unitOperations/heatTransfer/DryingCurve.H",
+   "src/unitOperations/heatTransfer/Psychrometry.H"
   ],
   "src/unitOperations/heatTransfer/CoolingTower.cpp": [
    "src/core/Dictionary.H",
@@ -6963,6 +7076,13 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/heatTransfer/CoolingTower.H"
+  ],
+  "src/unitOperations/heatTransfer/DryingCurve.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/Types.H",
+   "src/unitOperations/heatTransfer/DryingCurve.H"
   ],
   "src/unitOperations/heatTransfer/EvaporativeDryer.cpp": [
    "src/core/Dictionary.H",
@@ -7067,6 +7187,7 @@
    "src/unitOperations/heatTransfer/MultiStreamHX.H"
   ],
   "src/unitOperations/heatTransfer/PhaseChanger.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -7086,10 +7207,12 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/PhaseChanger.H",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
   ],
   "src/unitOperations/heatTransfer/SolidDryer.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -7097,6 +7220,7 @@
    "src/core/Types.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
+   "src/solver/NewtonRaphson.H",
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
@@ -7104,6 +7228,9 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
+   "src/unitOperations/heatTransfer/Psychrometry.H",
    "src/unitOperations/heatTransfer/SolidDryer.H"
   ],
   "src/unitOperations/heatTransfer/SprayDryer.cpp": [
@@ -7125,6 +7252,8 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/SprayDryer.H",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H"
   ],
@@ -7330,6 +7459,21 @@
    "src/unitOperations/membrane/transport/DSPM_DE.H",
    "src/unitOperations/membrane/transport/TransportModel.H"
   ],
+  "src/unitOperations/membrane/transport/GelPolarisation.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
+   "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
+   "src/unitOperations/membrane/transport/GelPolarisation.H",
+   "src/unitOperations/membrane/transport/TransportModel.H"
+  ],
   "src/unitOperations/membrane/transport/SDEM.cpp": [
    "src/core/Advisory.H",
    "src/core/Dictionary.H",
@@ -7379,6 +7523,7 @@
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/DSPM_DE.H",
+   "src/unitOperations/membrane/transport/GelPolarisation.H",
    "src/unitOperations/membrane/transport/SDEM.H",
    "src/unitOperations/membrane/transport/SolutionDiffusion.H",
    "src/unitOperations/membrane/transport/TransportModel.H"
@@ -7415,6 +7560,7 @@
    "src/unitOperations/mixer/Splitter.H"
   ],
   "src/unitOperations/reactor/CSTR.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -7432,6 +7578,8 @@
    "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/CSTR.H",
    "src/unitOperations/reactor/CatalystPellet.H"
   ],
@@ -8237,11 +8385,14 @@
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
+   "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/CatalystPellet.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
@@ -8582,6 +8733,7 @@
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -8589,7 +8741,10 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
+   "src/unitOperations/heatTransfer/DryingCurve.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -8612,6 +8767,7 @@
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp",
@@ -8882,6 +9038,7 @@
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -8889,7 +9046,10 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
+   "src/unitOperations/heatTransfer/DryingCurve.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -8912,6 +9072,7 @@
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp",
@@ -9214,6 +9375,7 @@
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -9221,6 +9383,8 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -9235,6 +9399,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
@@ -9462,6 +9627,7 @@
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -9469,6 +9635,8 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -9483,6 +9651,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
@@ -9610,6 +9779,7 @@
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
+   "src/unitOperations/heatTransfer/DryingCurve.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
@@ -10008,6 +10178,7 @@
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -10015,7 +10186,10 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
+   "src/unitOperations/heatTransfer/DryingCurve.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -10038,6 +10212,7 @@
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp",
@@ -10146,8 +10321,12 @@
    "src/io/DesignSheetWriter.cpp"
   ],
   "src/io/InternalStateIO.H": [
+   "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/InternalStateIO.cpp",
+   "src/io/SolutionWriter.cpp",
+   "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/io/SolutionWriter.H": [
@@ -10857,10 +11036,13 @@
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
+   "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -11021,12 +11203,15 @@
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -11041,6 +11226,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
@@ -11122,6 +11308,7 @@
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
@@ -11197,6 +11384,7 @@
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
@@ -11273,10 +11461,14 @@
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
+   "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -11355,6 +11547,8 @@
   ],
   "src/streams/StreamStateIO.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/io/SolutionWriter.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
@@ -11563,6 +11757,7 @@
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -11570,6 +11765,8 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -11584,6 +11781,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
@@ -11852,12 +12050,15 @@
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -11872,6 +12073,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
@@ -12241,12 +12443,15 @@
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -12261,6 +12466,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
@@ -12382,6 +12588,7 @@
   ],
   "src/thermo/adsorbent/Adsorbent.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/thermo/adsorbent/Adsorbent.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
@@ -12392,6 +12599,7 @@
   ],
   "src/thermo/adsorbent/AdsorbentRegistry.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -12401,6 +12609,7 @@
   ],
   "src/thermo/adsorbent/IsothermModel.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/thermo/adsorbent/Adsorbent.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
@@ -12413,6 +12622,7 @@
   "src/thermo/electrochem/EDStack.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/electrochem/EDStack.cpp",
    "src/thermo/electrochem/EDStackRegistry.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
@@ -12422,6 +12632,7 @@
   "src/thermo/electrochem/EDStackRegistry.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/electrochem/EDStackRegistry.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp"
@@ -12744,6 +12955,7 @@
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -12796,6 +13008,7 @@
   "src/thermo/membrane/Membrane.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/membrane/Membrane.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
@@ -12804,18 +13017,21 @@
   ],
   "src/thermo/membrane/MembraneModule.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
   "src/thermo/membrane/MembraneModuleRegistry.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
   "src/thermo/membrane/MembraneRegistry.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
@@ -12873,6 +13089,7 @@
   ],
   "src/thermo/reaction/Reaction.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
@@ -13124,6 +13341,7 @@
    "src/unitOperations/batch/BatchDryer.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -13141,6 +13359,7 @@
   ],
   "src/unitOperations/UnitOperation.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -13159,10 +13378,13 @@
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
+   "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -13285,6 +13507,7 @@
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp"
   ],
   "src/unitOperations/dynamic/DynamicCSTR.H": [
@@ -13300,7 +13523,12 @@
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp"
+  ],
+  "src/unitOperations/dynamic/QuasiSteadyUnit.H": [
+   "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp"
   ],
   "src/unitOperations/dynamic/WilliamsOttoPlant.H": [
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
@@ -13352,7 +13580,10 @@
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
+   "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/valve/Valve.cpp"
@@ -13369,6 +13600,10 @@
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
+   "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
+   "src/unitOperations/heatTransfer/SprayDryer.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp"
   ],
   "src/unitOperations/flowsheet/Flowsheet.H": [
@@ -13382,9 +13617,24 @@
   "src/unitOperations/flowsheet/ModelBoundaryAudit.H": [
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
+  "src/unitOperations/flowsheet/UnitInputs.H": [
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp"
+  ],
+  "src/unitOperations/heatTransfer/ConvectiveDryer.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp"
+  ],
   "src/unitOperations/heatTransfer/CoolingTower.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp"
+  ],
+  "src/unitOperations/heatTransfer/DryingCurve.H": [
+   "src/unitOperations/batch/BatchDryer.cpp",
+   "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
+   "src/unitOperations/heatTransfer/DryingCurve.cpp"
   ],
   "src/unitOperations/heatTransfer/EvaporativeDryer.H": [
    "src/unitOperations/UnitOperation.cpp",
@@ -13409,6 +13659,11 @@
   "src/unitOperations/heatTransfer/PhaseChanger.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp"
+  ],
+  "src/unitOperations/heatTransfer/Psychrometry.H": [
+   "src/unitOperations/batch/BatchDryer.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp"
   ],
   "src/unitOperations/heatTransfer/SolidDryer.H": [
    "src/unitOperations/UnitOperation.cpp",
@@ -13531,6 +13786,7 @@
   "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H": [
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp"
@@ -13538,6 +13794,7 @@
   "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H": [
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp"
@@ -13549,6 +13806,10 @@
   ],
   "src/unitOperations/membrane/transport/DSPM_DE.H": [
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/TransportModel.cpp"
+  ],
+  "src/unitOperations/membrane/transport/GelPolarisation.H": [
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp"
   ],
   "src/unitOperations/membrane/transport/SDEM.H": [
@@ -13564,6 +13825,7 @@
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp"
@@ -13610,6 +13872,7 @@
   ],
   "src/unitOperations/reactor/PureSolidPhase.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
@@ -13645,6 +13908,7 @@
   ],
   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
@@ -13767,6 +14031,7 @@
   ],
   "src/unitOperations/separation/cycloneModel/CycloneModel.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/unitOperations/separation/Cyclone.cpp",
    "src/unitOperations/separation/cycloneModel/Barth.cpp",
    "src/unitOperations/separation/cycloneModel/CycloneModel.cpp",
