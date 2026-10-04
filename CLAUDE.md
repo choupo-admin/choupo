@@ -312,8 +312,13 @@ case/
   result JSON, the energy report's label check and its pricing all read that
   `vf` -- flash01 with the line removed had shown vf = 0.000 and a liquid
   enthalpy 275 kW from the first law it was priced in.  Produced streams
-  keep their producer's answer; a unit that reads its inlet's `vf` bare
-  during the solve still sees the default there (named, not fixed).  The
+  keep their producer's answer.  DURING the solve, valve, adiabaticFlash,
+  heatExchanger and storageTank resolve an AUTHORED inlet (no unit produces
+  it; `ProcessStream::authoredInlet`, stamped once before the first unit
+  runs) through `flashState::resolvedInletVaporFraction`, single phase
+  included -- never a produced one (column12's mixer writes the right vf at
+  a fictitious T); a dozen other units still read the carried `vf` and are
+  ENUMERATED in DEV.md C33, not audited (2026-10-04).  The
   one-shot migrator is `bin/curate/migrate_overspecified_vf.py`.  Gate:
   `check_overspecified_stream`.  Record:
   [`docs/design/a-stream-is-fixed-by-two-variables.md`](docs/design/a-stream-is-fixed-by-two-variables.md).

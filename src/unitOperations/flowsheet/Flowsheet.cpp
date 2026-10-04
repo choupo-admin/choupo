@@ -2889,6 +2889,19 @@ int Flowsheet::solve(const DictPtr& dict,
     // recycle the tear iteration converges values that propagate through).
     energyWires_.clear();
 
+    //  AUTHORED INLETS, marked once before any unit runs (DEV.md C33): a
+    //  stream no unit produces is a domain inlet, and a unit that reads its
+    //  inlet's phase may resolve it at its own (T, P, z) -- see
+    //  `flashState::resolvedInletVaporFraction`.  Tears are produced, so
+    //  they are not marked.  Nothing about the stream itself changes here.
+    {
+        std::set<std::string> producedHere;
+        for (const auto& fu : topology_)
+            for (const auto& o : fu.outs) producedHere.insert(o);
+        for (auto& [nm, s] : streams_)
+            s.authoredInlet = !producedHere.count(nm);
+    }
+
     // Feedback heat-links (energy tears): a unit's energyInput `from
     // <col>.<port>` (kind heat) where the producer column is listed AFTER this
     // consumer.  The duty is unknown when the consumer solves, so it is NOT a

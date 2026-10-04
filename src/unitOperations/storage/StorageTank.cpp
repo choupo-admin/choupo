@@ -17,6 +17,7 @@ File
 
 #include "StorageTank.H"
 #include "core/Advisory.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 
 #include <cmath>
 #include <iomanip>
@@ -55,12 +56,6 @@ int StorageTank::solve(const DictPtr& dict,
     const scalar F  = feedDict->lookupScalar("F",     Dims::molarFlow);    // kmol/s
     const scalar T  = feedDict->lookupScalar("Tfeed", Dims::temperature);
     const scalar P  = feedDict->lookupScalar("Pfeed", Dims::pressure);
-    //  THE FEED'S OWN VAPOUR FRACTION, read rather than assumed: the key is
-    //  `vf`, as every other unit reads it.  The first version looked for
-    //  `vaporFraction`, found nothing, defaulted to 0, and asked the package
-    //  for the LIQUID density of a 25-bar syngas at 300 K -- which correctly
-    //  refused, on a stream that is entirely vapour.
-    const scalar vf = feedDict->lookupScalarOrDefault("vf", 0.0);
 
     //  DECLARED, NEVER DEFAULTED.  A holdup nobody declared is not a holdup,
     //  and inventing one puts working capital on a student's balance sheet
@@ -97,6 +92,16 @@ int StorageTank::solve(const DictPtr& dict,
         zsum += z[thermo.indexOf(key)];
     }
     if (zsum > 0.0) for (auto& v : z) v /= zsum;
+
+    //  THE FEED'S OWN VAPOUR FRACTION, read rather than assumed: the key is
+    //  `vf`, as every other unit reads it.  The first version looked for
+    //  `vaporFraction`, found nothing, defaulted to 0, and asked the package
+    //  for the LIQUID density of a 25-bar syngas at 300 K -- which correctly
+    //  refused, on a stream that is entirely vapour.  And an UNPINNED feed
+    //  means its own equilibrium (R-E2), so the carried default is resolved
+    //  at (T, P, z) in this unit's own thermo world (DEV.md C33).
+    const scalar vf = flashState::resolvedInletVaporFraction(
+        feedDict, T, P, z, thermo, "storageTank inlet");
 
     //  A BUFFER HOLDING A BOILING MIXTURE IS A DIFFERENT UNIT.  It has a
     //  level, a vapour space and a duty, and this models none of them --

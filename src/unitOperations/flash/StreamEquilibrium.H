@@ -387,6 +387,41 @@ inline StreamThermalState resolveStreamThermalState(const DictPtr&       streamD
     return st;
 }
 
+//  ---- THE VAPOUR FRACTION AN INLET MEANS, single phase included -----------
+//
+//  `resolveStreamThermalState` answers "is there a split to price", and on a
+//  converged SINGLE-phase answer it keeps the carried value -- right for
+//  pricing, wrong for a unit that must know WHICH phase it was handed: an
+//  unpinned all-vapour inlet carries the struct default 0 and would read as a
+//  liquid (the phasechange01 trap, 2026-09-12).  This is the reading the
+//  flowsheet's post-solve surface pass takes (Flowsheet.cpp, 2026-10-03),
+//  made available to the units that read their inlet DURING the solve
+//  (valve, adiabaticFlash, heatExchanger, storageTank -- DEV.md C33), each in
+//  its own thermo world.  A pinned single phase is a declaration and is
+//  returned as carried; a resolution that fails or is refused leaves the
+//  carried value and is announced by `equilibriumAt` itself.
+inline scalar resolvedInletVaporFraction(const DictPtr&       streamDict,
+                                         scalar               T,
+                                         scalar               P,
+                                         const sVector&       z,
+                                         const ThermoPackage& thermo,
+                                         const std::string&   locus)
+{
+    const scalar vfCarried = streamDict->lookupScalarOrDefault("vf", 0.0);
+    const bool   pinned    =
+        streamDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    //  Only an AUTHORED inlet is resolved: a produced stream keeps its
+    //  producer's answer (column12's mixer writes the right vf at a
+    //  fictitious T), the rule the flowsheet's own surface pass applies.
+    if (streamDict->lookupScalarOrDefault("authoredInlet", 0.0) < 0.5)
+        return vfCarried;
+    auto fs = equilibriumAt(T, P, z, pinned, vfCarried, thermo, locus,
+                            "streamState");
+    if (!fs) return vfCarried;
+    return (fs->V_over_F <= 1.0e-9)       ? 0.0
+         : (fs->V_over_F >= 1.0 - 1.0e-9) ? 1.0 : fs->V_over_F;
+}
+
 //  ---- PRICE A STATE EXACTLY AS THE ENERGY REPORT PRICES IT -----------------
 //
 //  THE THIRD CALLER MOVED IT HERE (2026-09-27).  This function was written on

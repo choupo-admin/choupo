@@ -28,6 +28,7 @@ License
 
 #include "AdiabaticFlash.H"
 #include "core/Advisory.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 #include "solver/NewtonRaphson.H"
 
 #include <cmath>
@@ -102,7 +103,11 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     //  beside T and P), so it is read from there -- the same rule the column
     //  already enforces on a feed's thermal state.  A vf of 0 reproduces the
     //  previous value exactly, which is why every existing case is untouched.
-    const scalar vfFeed = feedDict->lookupScalarOrDefault("vf", 0.0);
+    //  An UNPINNED inlet means its own equilibrium (R-E2), single phase
+    //  included -- read in this unit's own thermo world (DEV.md C33).
+    const scalar vfFeed = flashState::resolvedInletVaporFraction(
+        feedDict, Tfeed, Pfeed, z, thermo,
+        "adiabaticFlash inlet");
     const scalar Hin  = useFormation
         ? thermo.H_stream_formation(Tfeed, Pfeed, vfFeed, z)   // the stream's own surface
         : (1.0 - vfFeed) * thermo.Hliquid(Tfeed, z, Tref)

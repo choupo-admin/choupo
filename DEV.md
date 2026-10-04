@@ -1909,6 +1909,44 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C33. THE FOUR UNITS THAT STILL READ AN UNPINNED INLET'S DEFAULT `vf`
+(Vítor, 2026-10-04: "Podes avançar, mas com calma, porque o preço dos tokens
+aumentou e o crédito já não chega para 5h").**  The flash01 slice left valve,
+adiabaticFlash, heatExchanger and storageTank reading their inlet's `vf` bare
+during the solve (§5, 2026-10-01 entry).  Taken by the commander alone, no
+general, validation sized to the cases these units reach; a full regression
+only if the measurement shows a path every case goes through.  Status: DONE
+2026-10-04, no golden moved.
+RULE: an AUTHORED inlet (no unit produces it) is resolved at its own
+(T, P, z) in the consuming unit's own thermo world, single phase included
+(`flashState::resolvedInletVaporFraction`); a PRODUCED stream keeps its
+producer's answer.  The first cut resolved every inlet and broke
+`column12_stage_is_a_flash` at exit 2: its mixer writes the right vf at a
+deliberately fictitious T, and re-resolving it there is wrong -- the rule the
+flowsheet's surface pass already applied.  A unit cannot tell the two apart
+from its dict, so `Flowsheet::solve` stamps `ProcessStream::authoredInlet`
+once before the first unit runs and `UnitInputs` carries it as a dict key
+(false wherever nobody stamps it -- the dynamic driver -- so nothing changes
+there).  `resolveStreamThermalState` was NOT reused: on a converged single
+phase it keeps the carried value, so an all-vapour inlet still read liquid.
+MEASURED: the 16 corpus cases using the four units PASS with zero golden
+rows moved (no corpus case feeds them an unpinned non-liquid inlet); a probe
+(adiabaticFlash01 with the feed at 450 K) reads vf = 1.0000 where the
+default read 0.  Validation: build clean; those 16 cases; `--fast` PASS 67 /
+FAIL 0; check_overspecified_stream, check_inlet_resolution,
+check_feed_thermal_state, check_layering OK; the four lesson tests holding
+`Flowsheet.cpp`/`HeatExchanger.cpp` citations, re-pointed by the measured
+shift, 113/113.  No full regression: the only executable change on the
+shared path is a flag no other unit reads.  NOT GATED: no corpus witness
+reaches the change, so nothing pins it; a witness is the next step if wanted.
+ENUMERATED, NOT AUDITED (grep for a bare `vf` read, 2026-10-04): mixer,
+splitter, cstr, pfr, conversionReactor, shortcutColumn, the multi-feed
+column branch, electrodialysisStack, sprayDryer, solidDryer, convectiveDryer,
+heater, phaseChanger, multiStreamHX and the isothermal flash's feed read.
+Several resolve afterwards through `priceState`, which keeps the carried vf
+on a single-phase answer; which of them can see an all-vapour authored inlet
+has not been measured.
+
 **C32. AN EDUTOOL ON WHAT THE DEGREE SIGN MEANS: ENTHALPY, THE STANDARD
      STATE AND EQUILIBRIUM (asked 2026-10-03, Vítor, forwarding a brief
      ChatGPT wrote after a long conversation that began on the
@@ -2860,7 +2898,8 @@ count below was wrong by a third: 142 tracked files, 140 mixtures, 52 cases.
 Gate `check_overspecified_stream` (5 sabotages); record
 `docs/design/a-stream-is-fixed-by-two-variables.md`.  NOT done, named: units
 that read their inlet's `vf` bare during the solve (valve, adiabaticFlash,
-heatExchanger, storageTank) still see the default there.
+heatExchanger, storageTank) still see the default there.  [CLOSED for those
+four 2026-10-04, C33; a dozen more readers are ENUMERATED there.]
 MERGED ONTO `main` 9370451c4 (the D-ET2 + Wang-Henke integration) on
 2026-10-04 and fully regressed there.  §0.4 reason for the full sweep: the
 slice changes how every unpinned inlet stream is resolved (the energy

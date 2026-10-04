@@ -28,6 +28,7 @@ License
 
 #include "Valve.H"
 #include "unitOperations/flash/IsothermalFlash.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 #include "solver/NewtonRaphson.H"
 
 #include <cmath>
@@ -91,7 +92,10 @@ int Valve::solve(const DictPtr& dict,
     // vf = 0 and Tref = Tfeed this is Hliquid(Tfeed, z, Tfeed) = 0 exactly,
     // so every existing case is byte-identical.
     const scalar Tref  = Tfeed;
-    const scalar vfFeed = feedDict->lookupScalarOrDefault("vf", 0.0);
+    //  An UNPINNED inlet means its own equilibrium (R-E2); read in this
+    //  unit's own thermo world, single phase included (DEV.md C33).
+    const scalar vfFeed = flashState::resolvedInletVaporFraction(
+        feedDict, Tfeed, Pfeed, z, thermo, "valve inlet");
     const scalar Hin   = (1.0 - vfFeed) * thermo.Hliquid(Tfeed, z, Tref)
                        +        vfFeed  * thermo.Hvapour(Tfeed, z, Tref);
     const scalar Hreq  = Hin;

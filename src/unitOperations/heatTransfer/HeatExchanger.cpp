@@ -68,13 +68,19 @@ int HeatExchanger::solve(const DictPtr& dict,
         s.F  = sd->lookupScalar("F", Dims::molarFlow);
         s.T  = sd->lookupScalar("T", Dims::temperature);
         s.P  = sd->lookupScalar("P", Dims::pressure);
-        s.vf = sd->lookupScalarOrDefault("vf", 0.0);
         s.z.assign(n, 0.0);
         auto cd = sd->subDict("composition");
         scalar sum = 0.0;
         for (const auto& k : cd->keys()) s.z[thermo.indexOf(k)] = cd->lookupScalar(k);
         for (auto v : s.z) sum += v;
         if (sum > 0.0) for (auto& v : s.z) v /= sum;
+        //  An UNPINNED inlet means its own equilibrium (R-E2), single phase
+        //  included: the Cp rung and the transport properties below pick the
+        //  phase from this, and the carried default 0 read an all-vapour
+        //  inlet as a liquid (DEV.md C33).  This unit's own thermo world.
+        s.vf = flashState::resolvedInletVaporFraction(
+            sd, s.T, s.P, s.z, thermo,
+            "heatExchanger inlet '" + s.name + "'");
         return s;
     };
     Stream s0 = readStream(ins[0]);

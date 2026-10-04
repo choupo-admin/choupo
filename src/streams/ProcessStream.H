@@ -92,6 +92,14 @@ struct ProcessStream
     //  result of equilibrium at its own T, P, z).
     //  Record: docs/design/tp-stream-energy-coherence.md R-E1/R-E2, caveat C1.
     bool        phasePinned = false;
+    //  AUTHORED INLET (2026-10-04, DEV.md C33): set by `Flowsheet::solve`
+    //  before the first unit runs, on every stream NO unit produces (a domain
+    //  inlet).  Its unpinned (T, P, z) means its own equilibrium (R-E2), and a
+    //  consuming unit may resolve it; a PRODUCED stream keeps its producer's
+    //  answer -- a mixer's outlet carries the right vf at a deliberately
+    //  fictitious T (column12), so re-resolving it there breaks it.  False
+    //  wherever nobody set it (the dynamic driver), which changes nothing.
+    bool        authoredInlet = false;
     // Specific molar enthalpy at the ELEMENTS reference (formation
     // datum, 298.15 K).  Populated by Flowsheet::solve once the case
     // has converged, via thermo.H_stream_formation(T, P, vf, z) when
