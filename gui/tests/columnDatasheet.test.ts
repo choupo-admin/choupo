@@ -120,7 +120,7 @@ outlets
         T           354.2479 K;
         P           101325 Pa;
         F           0.013888889 kmol/s;
-        mdot        1.0944595 kg/s;
+        mdot        1.0944594 kg/s;
         vapourFraction 0;
     }
     port1
@@ -231,7 +231,7 @@ outlets
         T           354.2479 K;
         P           101325 Pa;
         F           0.013888889 kmol/s;
-        mdot        1.0944595 kg/s;
+        mdot        1.0944594 kg/s;
         vapourFraction 0;
     }
     port1
@@ -303,7 +303,7 @@ outlets
         T           354.2479 K;
         P           101325 Pa;
         F           0.013888889 kmol/s;
-        mdot        1.0944595 kg/s;
+        mdot        1.0944594 kg/s;
         vapourFraction 0;
     }
     port1
@@ -323,7 +323,7 @@ sizing
     D                     0.8011089 m;
     H                     2.4033267 m;
     L_over_D              [0 0 0 0 0] 3;
-    Q_condensate          0.0040379837 m3/s;
+    Q_condensate          0.0040379836 m3/s;
     V_R                   1.2113951 m3;
     pressureDesign        2 bar;
     residenceTime         300 s;

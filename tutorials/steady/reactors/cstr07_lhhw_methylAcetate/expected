@@ -5,7 +5,7 @@ stream  feed                   F                0.000277777777778 1e-4
 stream  reactorOut             F                0.000277777777778 1e-4
 kpi     reactor                F_in_kmol_h      1                1e-4
 kpi     reactor                F_out_kmol_h     1                1e-4
-kpi     reactor                Q_kW             -2.09513270004   1e-4
+kpi     reactor                Q_kW             -1.29936595639   1e-4
 kpi     reactor                T                333.15           1e-4
 kpi     reactor                T_out            333.15           1e-4
 kpi     reactor                V_R              0.005            1e-4
@@ -17,6 +17,6 @@ kpi     reactor                xi_esterification_meoac_mol_per_s 0.0680930737737
 stream  feed                   T                333.15           1e-4
 stream  reactorOut             T                333.15           1e-4
 boundary global                 H_feeds_kW       -96.1505890459   1e-4
-boundary global                 Q_boundary_kW    -2.09513270004   1e-4
+boundary global                 Q_boundary_kW    -1.29936595639   1e-4
 boundary global                 H_products_kW    -97.4499550023   1e-4
-boundary global                 residual_kW      -0.795766743649  1e-4
+boundary global                 residual_kW      0                1e-4

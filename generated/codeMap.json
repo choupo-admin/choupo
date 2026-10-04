@@ -7213,6 +7213,7 @@
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
   ],
   "src/unitOperations/heatTransfer/SolidDryer.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -7220,6 +7221,7 @@
    "src/core/Types.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
+   "src/solver/NewtonRaphson.H",
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
@@ -7227,6 +7229,8 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/Psychrometry.H",
    "src/unitOperations/heatTransfer/SolidDryer.H"
   ],
@@ -7249,6 +7253,8 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/SprayDryer.H",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H"
   ],
@@ -7555,6 +7561,7 @@
    "src/unitOperations/mixer/Splitter.H"
   ],
   "src/unitOperations/reactor/CSTR.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -7572,6 +7579,8 @@
    "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/CSTR.H",
    "src/unitOperations/reactor/CatalystPellet.H"
   ],
@@ -8378,11 +8387,13 @@
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/CatalystPellet.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
@@ -11298,6 +11309,7 @@
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
@@ -13569,7 +13581,10 @@
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
+   "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/valve/Valve.cpp"
@@ -13588,6 +13603,9 @@
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
+   "src/unitOperations/heatTransfer/SprayDryer.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp"
   ],
   "src/unitOperations/flowsheet/Flowsheet.H": [

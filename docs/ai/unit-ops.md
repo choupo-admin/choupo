@@ -616,6 +616,12 @@ differ only in the numerical strategy:
   O(100–500) outer iterations, and it can step *through* an azeotrope
   non-physically.  Use it for **ideal / wide-boiling** systems (Raoult,
   ideal-γ); it is the pedagogical default because each step is inspectable.
+  It **stops on the balances, not on the step**: a pass is accepted only
+  when every stage's component balance and the column's balance over its
+  ports close to 1e-9 of the feed, every bubble point to 1e-9, and the step
+  `max|Δx|` is under the declared `compositionTol` (default 1e-6).  The
+  report prints all three residuals; `maxOuterIter` (default 200) is what a
+  slowly contracting close-boiling column may need to raise.
 - `simultaneous`  (aliases `MESH`, `NaphtaliSandholm`, `fullMESH`).  Newton-ND on the
   whole block at once — unknowns are the per-stage `(x_{1..n-1}, T_j)`,
   residuals the n−1 component balances plus the bubble-point
@@ -762,8 +768,10 @@ flows — an honest bubble-point screening model.
 column's total feed (and, under `fullMESH`, each energy row by the feed times the
 stage liquids' mean latent heat), so the 1e-9 tolerance is a fraction of what the
 column balances — the same on a 1e-5 kmol/s laboratory column as on a plant one.
-Announced at verbosity ≥ 2.  The Wang–Henke path is not a Newton and keeps its
-`compositionTol` on the composition step.
+Announced at verbosity ≥ 2.  The Wang–Henke path is not a Newton, and stops on
+the same 1e-9 fraction of the feed, measured on the balances of the state it
+publishes (its `compositionTol` on the step is kept as an additional
+condition).
 ```
 reaction
 {

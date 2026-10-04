@@ -607,8 +607,40 @@ int DistillationColumn::solve(const DictPtr& dict,
             "DistillationColumn: vapour flow below feed is non-positive");
 
     // ---- Convergence config -------------------------------------------
+    //  THE STOP IS DECIDED BY THE BALANCES, NOT BY THE STEP (2026-09-28,
+    //  DEV.md §5 A7 item (5)).  Wang-Henke is successive substitution, not a
+    //  Newton: each pass solves the stage balances EXACTLY at the previous
+    //  pass's K, then normalises x and moves T to the bubble point, and the
+    //  error contracts by a constant factor per pass (0.64 on column01, close
+    //  to 1 on a close-boiling splitter).  It used to stop when max|dx|
+    //  between passes fell under `compositionTol` -- a statement about the
+    //  STEP -- and a slowly contracting column is still a long way from its
+    //  fixed point when its step is small: the corpus published columns whose
+    //  balances were open by 2.5e-8 of the feed (column01) and 8.6e-7
+    //  (pareto01's representative pass) while saying "Converged: yes".
+    //
+    //  So the stop is the `solver/Convergence.H` rule applied by hand, the
+    //  same one the MESH uses: normalise by the terms the equation balances.
+    //  Summed over the stages a column's component balances telescope to
+    //  feed = products, so each balance is measured as a fraction of the
+    //  feed.  A pass is accepted only when, on the state it will PUBLISH,
+    //    * every stage's component balance (y = K x, the published profile)
+    //      closes to `balanceTol` of the feed,
+    //    * the column's own balance over its ports (the published distillate
+    //      and bottoms) closes to `balanceTol` of the feed,
+    //    * every bubble point |Sum_i K_i x_i - 1| closes to `bubbleTol`,
+    //    * and the step is under `compositionTol` -- a DECLARED control, so it
+    //      is still honoured, now as one condition among four.
+    //  1e-9 is the MESH's own number, so one fraction means the same on both
+    //  column models.  The inner bubble-point Newton is solved to 1e-12,
+    //  nested well under the outer test: at its old 1e-8 the bubble point
+    //  stopped moving once the per-pass change in x put |Sum K x - 1| under
+    //  1e-8 at the old T, and the balances stalled at ~4e-9 on column01.
     const int    maxOuter = static_cast<int>(dict->lookupScalarOrDefault("maxOuterIter", 200));
     const scalar tolX     = dict->lookupScalarOrDefault("compositionTol", 1.0e-6);
+    constexpr scalar balanceTol     = 1.0e-9;   // a fraction of the feed
+    constexpr scalar bubbleTol      = 1.0e-9;   // |Sum_i K_i x_i - 1| on every stage
+    constexpr scalar bubbleSolveTol = 1.0e-12;  // the nested bubble-point Newton
 
     // ---- Initial T profile (linear) -----------------------------------
     // Heuristic: T_top ≈ Tf - 10, T_bot ≈ Tf + 10 (refined by bubble-point)
@@ -629,14 +661,29 @@ int DistillationColumn::solve(const DictPtr& dict,
     //  does not describe this column.
     seedFromDeclaredInterior(N, thermo, T, x, verbosity, "WangHenke");
 
+    if (verbosity >= 2)
+    {
+        std::ostringstream m;                      // leave std::cout's format as found
+        m << std::scientific << std::setprecision(1)
+          << "  [solver] Wang-Henke: the stop is decided by the BALANCES, not"
+             " the step -- every stage's component balance and the column's"
+             " own balance over its ports close to " << balanceTol
+          << " of the feed (" << std::setprecision(4) << F
+          << " kmol/s), every bubble point |Sum K x - 1| to "
+          << std::setprecision(1) << bubbleTol << ", and the composition step"
+             " max|dx| is under compositionTol (" << tolX << ").  Successive"
+             " substitution converges linearly, so a small step alone does"
+             " not close a balance.\n";
+        std::cout << m.str();
+    }
     if (verbosity >= 3)
     {
         std::cout << "DistillationColumn  N=" << N
                   << "  feedStage=" << NF
                   << "  R=" << R << "  D=" << D
                   << "  B=" << B << "  q=" << q << "  P=" << (P * 1.0e-5) << " bar\n"
-                  << "Outer iter      max|Δx|         T_top         T_bottom\n"
-                  << "   ----      -----------    -----------    -----------\n";
+                  << "   Pass      max|Δx|      balance/F         T_top       T_bottom\n"
+                  << "   ----    -----------   -----------    -----------    -----------\n";
     }
 
     // ---- MURPHREE TRAY EFFICIENCY (declared, never guessed) ------------
@@ -702,7 +749,56 @@ int DistillationColumn::solve(const DictPtr& dict,
     bool haveY = false;
     std::vector<sVector> Keff(N, sVector(n, 1.0));
 
-    for (outerIt = 0; outerIt < maxOuter; ++outerIt)
+    //  THE RESIDUALS OF THE STATE THE COLUMN WOULD PUBLISH, as fractions of
+    //  the feed (see the convergence config above).  The CMO traffic of the
+    //  tridiagonal below: stage j (0-based) sends L_j down and V_j up, with the
+    //  feed stage's liquid already L' and its vapour still V; the top stage
+    //  sends D overhead (the total condenser returns the reflux), the reboiler
+    //  sends B out.  y_j = Keff_j x_j is the vapour the profile publishes, and
+    //  the distillate is y_1 normalised -- exactly what the report below
+    //  writes -- so the port residual is the closure a reader recomputes from
+    //  the result.
+    const std::size_t jFeed = NF - 1;
+    auto Lstage = [&](std::size_t j) { return (j < jFeed)  ? Ll : Lp; };
+    auto Vstage = [&](std::size_t j) { return (j <= jFeed) ? Vl : Vp; };
+    scalar resStage = 0.0, resPort = 0.0, resBubble = 0.0;
+    auto residuals = [&](const std::vector<sVector>& Keq, const std::vector<sVector>& Kpub)
+    {
+        resStage = resPort = resBubble = 0.0;
+        std::vector<sVector> y(N, sVector(n, 0.0));
+        for (std::size_t j = 0; j < N; ++j)
+        {
+            scalar s = 0.0;
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                y[j][i] = Kpub[j][i] * x[j][i];
+                s      += Keq[j][i]  * x[j][i];
+            }
+            resBubble = std::max(resBubble, std::abs(s - 1.0));
+        }
+        sVector yD = y[0];
+        {
+            scalar s = 0.0;
+            for (auto v : yD) s += v;
+            if (s > 0.0) for (auto& v : yD) v /= s;
+        }
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            for (std::size_t j = 0; j < N; ++j)
+            {
+                scalar in = (j == jFeed) ? F * z[i] : 0.0;
+                if (j > 0)     in += Lstage(j-1) * x[j-1][i];
+                if (j + 1 < N) in += Vstage(j+1) * y[j+1][i];
+                const scalar out = ((j + 1 < N) ? Lstage(j) : B) * x[j][i]
+                                 + ((j == 0)     ? D : Vstage(j)) * y[j][i];
+                resStage = std::max(resStage, std::abs(in - out) / F);
+            }
+            resPort = std::max(resPort,
+                               std::abs(F * z[i] - D * yD[i] - B * x[N-1][i]) / F);
+        }
+    };
+
+    for (outerIt = 0; ; ++outerIt)
     {
         // 1. K-matrix at current (T, x)
         std::vector<sVector> K(N, sVector(n, 1.0));
@@ -721,6 +817,28 @@ int DistillationColumn::solve(const DictPtr& dict,
                     const scalar yDown = haveY ? yPrev[j+1][i] : K[j+1][i] * x[j+1][i];
                     Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);
                 }
+
+        // 1c. The stop, taken on the state the previous pass left (the one the
+        //     report will publish if we stop here), never on the step alone.
+        residuals(K, Keff);
+        if (outerIt > 0)
+        {
+            const scalar balance = std::max(resStage, resPort);
+            recordResidual(balance);                 // feed-normalised, like the MESH's
+            converged = balance   <= balanceTol
+                     && resBubble <= bubbleTol
+                     && maxDx     <  tolX;
+            if (verbosity >= 3 && (outerIt < 7 || outerIt % 5 == 0 || converged))
+                std::cout << "   " << std::setw(4) << outerIt
+                          << "    " << std::scientific << std::setprecision(3)
+                          << std::setw(11) << maxDx
+                          << "   " << std::setw(11) << balance
+                          << "    " << std::fixed << std::setprecision(2)
+                          << std::setw(11) << T[0]
+                          << "    " << std::setw(11) << T[N-1] << "\n";
+            if (converged) break;
+        }
+        if (outerIt >= maxOuter) break;
 
         // 2. Solve tridiagonal per component i
         std::vector<sVector> x_new(N, sVector(n, 0.0));
@@ -791,28 +909,15 @@ int DistillationColumn::solve(const DictPtr& dict,
 
         // 4. Update T at each stage via bubble-point
         for (std::size_t j = 0; j < N; ++j)
-            T[j] = bubbleT(thermo, x_new[j], P, T[j]);
+            T[j] = bubbleT(thermo, x_new[j], P, T[j], bubbleSolveTol);
 
         // 5. Convergence
         maxDx = 0.0;
         for (std::size_t j = 0; j < N; ++j)
             for (std::size_t i = 0; i < n; ++i)
                 maxDx = std::max(maxDx, std::abs(x_new[j][i] - x[j][i]));
-        recordResidual(maxDx);
 
         x = x_new;
-
-        if (verbosity >= 3 && (outerIt < 6
-                            || outerIt % 5 == 0
-                            || maxDx < tolX))
-            std::cout << "   " << std::setw(4) << outerIt
-                      << "      " << std::scientific << std::setprecision(3)
-                      << std::setw(11) << maxDx
-                      << "    " << std::fixed << std::setprecision(2)
-                      << std::setw(11) << T[0]
-                      << "    " << std::setw(11) << T[N-1] << "\n";
-
-        if (maxDx < tolX) { converged = true; ++outerIt; break; }
     }
 
     // ---- Distillate composition: x_D = y_1, the vapour leaving the TOP TRAY.
@@ -858,7 +963,13 @@ int DistillationColumn::solve(const DictPtr& dict,
               << "  Converged:     " << (converged ? "yes" : "NO") << "\n"
               << "  Outer iter.:   " << outerIt << "\n"
               << "  Final max|Δx|: " << std::scientific << std::setprecision(3)
-              << maxDx << "\n\n"
+              << maxDx << "   (compositionTol " << tolX << ")\n"
+              << "  Stage balance: " << resStage << "   of the feed (tolerance "
+              << balanceTol << ")\n"
+              << "  Port balance:  " << resPort << "   of the feed (tolerance "
+              << balanceTol << ")\n"
+              << "  Bubble point:  " << resBubble << "   |Sum K x - 1| (tolerance "
+              << bubbleTol << ")\n\n"
               << "  Stage-by-stage profile  (T, x_i):\n"
               << "    stage      T [K]      ";
     for (std::size_t i = 0; i < n; ++i)

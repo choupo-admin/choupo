@@ -37,7 +37,8 @@ namespace Choupo {
 scalar bubbleT(const ThermoPackage& thermo,
                const sVector& x,
                scalar P,
-               scalar Tguess)
+               scalar Tguess,
+               scalar tolerance)
 {
     auto f = [&](scalar T)
     {
@@ -52,7 +53,7 @@ scalar bubbleT(const ThermoPackage& thermo,
         return (f(T + dT) - f(T - dT)) / (2.0 * dT);
     };
     solver::NROptions nro;
-    nro.tolerance          = 1.0e-8;
+    nro.tolerance          = tolerance;
     nro.maxIter            = 30;
     nro.lower              = 200.0;
     nro.upper              = 700.0;

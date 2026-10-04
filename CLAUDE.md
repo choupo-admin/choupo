@@ -994,10 +994,13 @@ old denominator divided that residual by the enthalpy THROUGHPUT, most of
 which is the formation datum passing through; the new one divides by the
 energy EXCHANGED, which is `solver/Convergence.H`'s own rule -- normalise by
 THE TERMS THE EQUATION BALANCES.  Normalising by throughput hid a real gap
-exactly as the cooling water hid the atom balance.  So `energy-T2:plant` is
-correctly red and has been since 2026-09-08; what nobody did was act on what
-it revealed.  Diagnosis, the open question and the remedy that is NOT
-available (widening the gate): DEV.md 5.  The
+exactly as the cooling water hid the atom balance.  So `energy-T2:plant` was
+correctly red from 2026-09-08.  **It was acted on 2026-09-27, and it is STILL
+red, by 0.03 pp, for a reason already reserved** -- see the paragraph *THREE
+MORE, AND THE FLAGSHIP'S FIRST LAW* below: the spray dryer, the solid dryer
+and the fermentor closed to 0.0000 kW, and what remains (+10.79 kW, 1.0298 %)
+is the evaporators' Watson latent, which the evaporator paragraph below
+RESERVES for Vítor.  The gate is NOT widened.  DEV.md 5, D-ET2.  The
 physics underneath was called ONE family: **a unit solves its energy equation
 on one enthalpy surface while its streams are priced on another** — ε-NTU on
 `cpIdealGas` against SRK-priced streams, the adiabatic `gibbsReactor` on
@@ -1104,6 +1107,37 @@ discarded; `pipe`'s inlet regime and the OUTLET searches of `valve`,
 a supercritical feed today (DEV.md §5, 2026-09-26).  `phaseChanger` was on
 that list and is CLOSED (2026-10-01): the rewritten green-ammonia case's
 first inter-bed cooler reached it, 331.8 kW short, the day it existed.
+
+**THREE MORE, AND THE FLAGSHIP'S FIRST LAW (2026-09-27).**  The flagship's
++34.41 kW was additive, and three of its four terms were this family: the
+`sprayDryer` solved `T_out` from a hand balance (constant-Cp air, a Watson
+latent heat) that charged the latent heat of the water its own isotherm left
+in the powder and omitted the solid, the superheat and the crystallisation
+(-70.85 kW); the `solidDryer` did the same and, when the air could not pay,
+FLOORED `T_out` and evaporated the water anyway (+10.24 kW, heat from
+nowhere); the `cstr` priced its duty on a quality blend at the overall z where
+the report resolves the split (+37.00 kW on the fermentor's CO2).  One home
+now: `flashState::priceState` + `priceSolids` in `StreamEquilibrium.H`, moved
+verbatim out of `ConversionReactor.cpp`; all three units, and that one, call
+it, and each row closes at 0.0000 kW.  The spray dryer's kinetics are now
+evaluated at the exhaust it publishes, the unknown is the evaporation, and the
+root is BRACKETED -- a plain substitution cycled with period two near
+saturation, where the GAB isotherm is steeper than the energy balance.  The
+solid dryer keeps its `T_w` floor and evaporates only what the air can pay
+for, ANNOUNCED.  The flagship reads +10.79 kW (1.0298 %): the evaporators,
+reserved.  **And a case gap rode with it, as it did on 2026-09-25:**
+`solidDryer01`'s 372.66 kW was 365.78 kW of humid hot air that declared no
+phase and was priced as a LIQUID (the permanent-gas screen does not fire on a
+stream carrying water) -- a unit that prices as the report does inherits the
+report's reading of an under-declared stream, so the case now declares
+`phase gas;`.  ENUMERATED, not fixed (none is in the flagship):
+`evaporativeDryer`, `evaporator` (reserved), `coolingTower`, `absorber`,
+`stripper`, `pfr`, the CSTR's adiabatic/jacketed T-solves, `phaseChanger`,
+`mixer`, `adiabaticFlash`; and `src/reporting/BalanceMath.H` still holds its own
+copy of the rule `priceState` holds.  Gate: `check_energy_closure`'s UNIT ARM
+(an adiabatic dryer, and a cstr/conversionReactor that publishes `Q_kW`, must
+leave <= 1e-4 kW unattributed; five witnesses must be read).  Record:
+[`docs/design/three-units-and-the-flagship-first-law.md`](docs/design/three-units-and-the-flagship-first-law.md).
 
 **AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED
 (2026-09-12, same day).**  `column01`'s 631.956148 kW decomposed EXACTLY into
@@ -1568,9 +1602,11 @@ golden kind, rows appended corpus-wide with `--record-append` (adds only — a
 residual is pinned only when ≥ 1 W, threshold in the generator alone (the
 column13 lesson).  Found on the way: the flagship's golden was NEVER in the
 full suite — fractal `children` cases were skipped on a reason settled
-2026-06-08 — and is in the walk now; and three of its units do not close
-(Evap1 98.45 %, Cryst 110.66 %, Fermentor 82.02 %), the engine's own stated
-finding, left as such.  Gate: `check_energy_boundary_pinned`.  Record:
+2026-06-08 — and is in the walk now; and three of its units did not close
+that day (Evap1 98.45 %, Cryst 110.66 %, Fermentor 82.02 %), the engine's own
+stated finding, left as such.  (Cryst and the Fermentor close at 100.00 %
+today, the Fermentor since 2026-09-27; Evap1 is the reserved evaporator
+latent -- measured, not remembered.)  Gate: `check_energy_boundary_pinned`.  Record:
 [`docs/design/a-first-law-the-gui-computed-for-itself.md`](docs/design/a-first-law-the-gui-computed-for-itself.md).
 
 **A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04).**  `flattenNode`
