@@ -164,13 +164,13 @@ int ConversionReactor::solve(const DictPtr& dict,
         zsum += z[i];
     }
     if (zsum > 0.0) for (auto& v : z) v /= zsum;
-
-    // ---- MULTI-REACTION?  `reactions ( r1 r2 ... );` -----------------
-    //  Each reaction's extent is SPECIFIED (a conversion or a direct extent);
-    //  the single-reaction path below is untouched.
-    if (dict->hasDictList("reactions"))
-        return solveMultiReaction(dict, thermo, verbosity, F_in, T, T_feed, P,
-                                  feedDict->lookupScalarOrDefault("vf", 1.0), z);
+    //  The inlet phase, for both paths: an UNPINNED authored feed is its own
+    //  equilibrium (R-E2; DEV.md C33/C34), a produced one is carried as is.
+    const scalar vf_in = !feedDict->found("vf") ? 1.0
+        : flashState::resolvedInletVaporFraction(feedDict, T_feed, P, z, thermo,
+                                                 "conversionReactor inlet");
+    if (dict->hasDictList("reactions"))   // MULTI-REACTION: each extent SPECIFIED
+        return solveMultiReaction(dict, thermo, verbosity, F_in, T, T_feed, P, vf_in, z);
 
     auto rxnDict = dict->subDict("reaction");
 
@@ -246,7 +246,6 @@ int ConversionReactor::solve(const DictPtr& dict,
     //  running that reaction costs THIS fluid at THIS (T, P), which under a
     //  cubic EoS is not the same thing.  They coincide, to the last digit,
     //  whenever the package is an ideal gas.
-    const scalar vf_in     = feedDict->lookupScalarOrDefault("vf", 1.0);
     const bool   pinned_in = feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
     const std::string unitName = dict->lookupWordOrDefault("name", "conversionReactor");
 

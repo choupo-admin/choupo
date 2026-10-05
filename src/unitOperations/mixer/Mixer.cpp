@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Mixer.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 #include "solver/NewtonRaphson.H"
 
 #include <cmath>
@@ -123,7 +124,6 @@ int Mixer::solve(const DictPtr& dict,
         const scalar F  = sd->lookupScalar("F");
         const scalar T  = sd->lookupScalar("T");
         const scalar P  = sd->lookupScalar("P");
-        const scalar vf = sd->lookupScalarOrDefault("vf", 0.0);
 
         auto cd = sd->subDict("composition");
         sVector z(n, 0.0);
@@ -135,6 +135,41 @@ int Mixer::solve(const DictPtr& dict,
             zsum += z[i];
         }
         if (zsum > 0.0) for (auto& v : z) v /= zsum;
+        //  The inlet's phase prices its enthalpy and votes for the outlet's
+        //  dominant phase.  An UNPINNED authored inlet means its own
+        //  equilibrium (R-E2), single phase included: the carried default 0
+        //  read an all-vapour feed as a liquid (DEV.md C33/C34).  A produced
+        //  inlet keeps its producer's answer.
+        //
+        //  A TWO-PHASE authored inlet is the exception, TAKEN ON A STATED
+        //  DEFAULT (2026-10-04, C34) and announced: this mixer balances its
+        //  energy on ONE dominant phase and never splits, so a resolved
+        //  fraction would flip that vote and price a quality blend the model
+        //  cannot carry to its outlet.  Measured on cavett01, whose 322 K,
+        //  18.6 bar feed is two-phase: the vote went to vapour and the
+        //  adiabatic Newton found no outlet temperature in [150, 2500] K.
+        //  What a two-phase authored inlet into this mixer should do (an
+        //  isothermal mixer, a flash in front, the resolved fraction) is the
+        //  case's and Vitor's call; until then it is read as carried, and
+        //  said.
+        const std::string inName = sd->lookupWordOrDefault("streamName", "?");
+        const scalar vfCarried = sd->lookupScalarOrDefault("vf", 0.0);
+        scalar vf = flashState::resolvedInletVaporFraction(
+            sd, T, P, z, thermo, "mixer inlet '" + inName + "'");
+        if (vf > 1.0e-9 && vf < 1.0 - 1.0e-9 && vf != vfCarried)
+        {
+            const std::string msg =
+                "inlet '" + inName + "' resolves TWO-PHASE at its own (T, P, z)"
+                " (V/F = " + std::to_string(vf) + "), but this mixer balances"
+                " on one dominant phase and never splits: it is read as the"
+                " state it carries (vf = " + std::to_string(vfCarried) + ")."
+                "  Put a flash in front of the mixer, or declare it isothermal,"
+                " to make the split explicit (DEV.md C33)";
+            AdvisoryLog::instance().add("mixer", "info", "mixer inlet '"
+                                        + inName + "'", msg);
+            if (verbosity >= 2) std::cout << "  [mixer] " << msg << "\n";
+            vf = vfCarried;
+        }
 
         if (sd->found("solids"))
         {

@@ -28,6 +28,7 @@ License
 
 #include "MultiStreamHX.H"
 #include "thermo/ThermoPackage.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 
 #include <algorithm>
 #include <cmath>
@@ -101,13 +102,18 @@ int MultiStreamHX::solve(const DictPtr& dict,
         s.F     = sd->lookupScalar("F");                      // kmol/s (SI)
         s.T_in  = sd->lookupScalar("T");
         s.P     = sd->lookupScalar("P");
-        s.vf_in = sd->lookupScalarOrDefault("vf", 0.0);
 
         s.z.assign(n, 0.0);
         auto cd = sd->subDict("composition");
         scalar zsum = 0.0;
         for (const auto& k : cd->keys()) { s.z[thermo.indexOf(k)] = cd->lookupScalar(k); zsum += cd->lookupScalar(k); }
         if (zsum > 0.0) for (auto& v : s.z) v /= zsum;
+        //  The inlet's phase prices h_in and is the outlet's default phase.
+        //  An UNPINNED authored inlet means its own equilibrium (R-E2),
+        //  single phase included (DEV.md C33/C34); a produced one keeps its
+        //  producer's answer.
+        s.vf_in = flashState::resolvedInletVaporFraction(
+            sd, s.T_in, s.P, s.z, thermo, "multiStreamHX inlet '" + s.name + "'");
 
         if (!outDict->found(s.name))
             throw std::runtime_error("MultiStreamHX: no outlet target for"

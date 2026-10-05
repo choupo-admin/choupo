@@ -111,12 +111,17 @@ int Valve::solve(const DictPtr& dict,
     iopts.verbosity   = (verbosity >= 4) ? 3 : 0;
     iopts.accelerator = OuterAccelerator::Wegstein;
 
+    //  A two-phase root above every present component's Tc is not a split:
+    //  the outlet is the single fluid phase, and the discard is said once,
+    //  after the search (the one home, StreamEquilibrium.H -- C34).
     FlashSolution lastSol;
+    std::string   scDiscarded;
     auto flashAt = [&](scalar T) -> FlashSolution
     {
         FlashInput in;
         in.F = F; in.T = T; in.P = Pout; in.z = z;
-        return IsothermalFlash::solveCore(in, thermo, iopts);
+        return flashState::flashDiscardingSupercriticalSplit(in, thermo, iopts,
+                                                             scDiscarded);
     };
     auto f = [&](scalar T)
     {
@@ -159,9 +164,12 @@ int Valve::solve(const DictPtr& dict,
     };
 
     auto r = solver::newton1D(f, df, Tfeed, nro);
+    scDiscarded.clear();    // say it only if the ANSWER is a discarded root
     lastSol = flashAt(r.x);
     const scalar Tout = r.x;
     const scalar vf   = lastSol.V_over_F;
+    flashState::reportSupercriticalDiscard(scDiscarded, "valve", "valve outlet",
+                                           verbosity);
 
     std::cout << "\n============================  Valve Result  ==========================\n"
               << "  Converged:     " << (r.converged ? "yes" : "NO") << "\n"

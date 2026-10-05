@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 447,
+  "cases": 448,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -4450,6 +4450,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flowsheets/inletState01_undeclared_vapour": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mixer",
+    "splitter",
+    "valve"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flowsheets/plant01_two_sectors": {
    "application": "choupoSolve",
    "thermo": {
@@ -6871,6 +6887,7 @@
     "tutorials/steady/flowsheets/cavett01_recycle_train",
     "tutorials/steady/flowsheets/composite01_two_flashes",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
+    "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
     "tutorials/steady/flowsheets/plant01_two_sectors",
     "tutorials/steady/flowsheets/plant02_basename_twins",
     "tutorials/steady/flowsheets/process01_reactor_flash",
@@ -7457,6 +7474,7 @@
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
+    "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
     "tutorials/steady/flowsheets/process03_recycle",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
@@ -7559,6 +7577,7 @@
     "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
+    "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
     "tutorials/steady/flowsheets/process03_recycle",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
@@ -7606,7 +7625,8 @@
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl"
    ],
    "valve": [
-    "tutorials/steady/flowsheets/credo01_valve_heater_drum"
+    "tutorials/steady/flowsheets/credo01_valve_heater_drum",
+    "tutorials/steady/flowsheets/inletState01_undeclared_vapour"
    ],
    "williamsOttoPlant": [
     "tutorials/ctrl/ctrl12_williams_otto",
@@ -7942,6 +7962,7 @@
     "tutorials/steady/flash/leaf01_flash",
     "tutorials/steady/flowsheets/composite01_two_flashes",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
+    "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
     "tutorials/steady/flowsheets/plant01_two_sectors",
     "tutorials/steady/flowsheets/plant02_basename_twins",
     "tutorials/steady/flowsheets/process01_reactor_flash",

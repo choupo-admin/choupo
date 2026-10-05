@@ -1,0 +1,33 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feedA                  F                0.0277777777778    1e-4
+stream  feedA                  T                450                1e-4
+stream  feedB                  F                0.00833333333333   1e-4
+stream  feedB                  T                420                1e-4
+stream  feedC                  F                0.0166666666667    1e-4
+stream  feedC                  T                420                1e-4
+stream  mixed                  F                0.0361111111111    1e-4
+stream  mixed                  T                443.510352472      1e-4
+stream  sideA                  F                0.005              1e-4
+stream  sideA                  T                420                1e-4
+stream  sideB                  F                0.0116666666667    1e-4
+stream  sideB                  T                420                1e-4
+stream  throttled              F                0.0277777777778    1e-4
+stream  throttled              T                450                1e-4
+kpi     M1                     F_out            0.0361111111111    1e-4
+kpi     M1                     P_out            150000             1e-4
+kpi     M1                     T_out            443.510352472      1e-4
+kpi     M1                     n_in             2                  1e-4
+kpi     M1                     vf               1                  1e-4
+kpi     V1                     F                0.0277777777778    1e-4
+kpi     V1                     P_in             300000             1e-4
+kpi     V1                     P_out            150000             1e-4
+kpi     V1                     T_in             450                1e-4
+kpi     V1                     T_out            450                1e-4
+kpi     V1                     dP               150000             1e-4
+kpi     V1                     dT               0                  1e-4
+kpi     V1                     vf               1                  1e-4
+boundary global               H_feeds_kW       4321.91708567      1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    4321.91709373      1e-4

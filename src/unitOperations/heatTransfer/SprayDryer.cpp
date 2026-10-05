@@ -673,10 +673,19 @@ int SprayDryer::solve(const DictPtr& dict,
     //  regime.
     // -------------------------------------------------------------------
     const std::string who = "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'";
+    //  The inlets' phases: an UNPINNED authored inlet means its own
+    //  equilibrium (R-E2), single phase included -- `priceState` keeps the
+    //  CARRIED value on a single-phase answer, and the carried default 0
+    //  priced undeclared hot air as a liquid (the solidDryer01 gap of
+    //  2026-09-27, one unit over; DEV.md C33/C34).  Produced inlets keep
+    //  their producer's answer.
     const bool   pinnedFeed = feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
-    const scalar vfFeed     = feedDict->lookupScalarOrDefault("vf", 0.0);
+    const scalar vfFeed     = flashState::resolvedInletVaporFraction(
+        feedDict, T_feed, P_feed, zFeed, thermo, who + " feed");
     const bool   pinnedAir  = airDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
-    const scalar vfAir      = airDict->lookupScalarOrDefault("vf", 1.0);
+    const scalar vfAir      = !airDict->found("vf") ? 1.0
+        : flashState::resolvedInletVaporFraction(airDict, T_air, P_air, yAir,
+                                                 thermo, who + " drying air");
     const scalar H_air_in = flashState::priceState(T_air, P_air, yAir, F_air,
         pinnedAir, vfAir, thermo, who + " drying air", nullptr);             // kW
     const scalar H_in = flashState::priceState(T_feed, P_feed, zFeed, F_feed,

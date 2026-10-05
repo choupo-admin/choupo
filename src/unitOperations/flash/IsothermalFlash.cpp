@@ -1541,6 +1541,21 @@ int IsothermalFlash::solve(const DictPtr& dict,
     }
 
     auto sol = solveCore(in, thermo, opts);
+    //  THE OPERATING RESOLUTION READS THE SAME RULE AS THE FEED'S (C34).  A
+    //  drum OPERATED above every present component's Tc would otherwise
+    //  publish a liquid product that cannot exist (DEV.md §5, 2026-09-26,
+    //  named there): the root is discarded through the one home and the
+    //  drum's answer is the single fluid phase.  Not for a liquid-liquid
+    //  split, whose fraction is not a vapour fraction and which the rule's
+    //  replacement (the vapour leg) would misdescribe.
+    if (opts.phaseSet != PhaseSet::LL)
+    {
+        std::string scDiscarded;
+        if (flashState::takeSupercriticalAsSinglePhase(sol, in.T, in.z, thermo,
+                                                       scDiscarded))
+            flashState::reportSupercriticalDiscard(scDiscarded, "flash",
+                "isothermalFlash operating state", opts.verbosity);
+    }
     if (opts.verbosity >= 2) printFlashResult(sol, thermo, in);
 
     // ---- Duty Q (the heat exchanged) -----------------------------------

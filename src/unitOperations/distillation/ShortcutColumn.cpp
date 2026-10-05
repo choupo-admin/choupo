@@ -29,6 +29,7 @@ License
 #include "ShortcutColumn.H"
 #include "core/ProblemDivergence.H"
 #include "unitOperations/saturation/BubblePoint.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 
 #include <cmath>
 #include <iomanip>
@@ -74,7 +75,6 @@ int ShortcutColumn::solve(const DictPtr& dict,
     const scalar F  = feed->lookupScalar("F", Dims::molarFlow);
     const scalar Tf = feed->lookupScalar("T", Dims::temperature);
     const scalar P  = feed->lookupScalar("P", Dims::pressure);
-    const scalar vf = feed->lookupScalarOrDefault("vf", 0.0);
 
     const std::size_t n = thermo.n();
     sVector z(n, 0.0);
@@ -84,6 +84,12 @@ int ShortcutColumn::solve(const DictPtr& dict,
         for (auto v : z) s += v;
         if (s > 0.0) for (auto& v : z) v /= s;
     }
+    //  The feed's thermal state sets q, and q sets R_min.  An UNPINNED
+    //  authored feed means its own equilibrium (R-E2), single phase
+    //  included: the carried default 0 made a vapour feed q = 1 (DEV.md
+    //  C33/C34).  A produced feed keeps its producer's answer.
+    const scalar vf = flashState::resolvedInletVaporFraction(
+        feed, Tf, P, z, thermo, "shortcutColumn feed");
 
     // ---- Operation -----------------------------------------------------
     auto oper = dict->subDict("operation");

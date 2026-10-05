@@ -70,6 +70,7 @@ Description
 #include "unitOperations/flash/IsothermalFlash.H"
 
 #include <exception>
+#include <iostream>
 #include <optional>
 #include <string>
 #include <vector>
@@ -176,6 +177,71 @@ supercriticalSplitDiscarded(const FlashSolution& fs,
     if (deferTo) *deferTo = msg;
     else AdvisoryLog::instance().add(category, "warning", locus, msg);
     return msg;
+}
+
+//  ---- THE SAME DISCARD, FOR A UNIT THAT SEARCHES ITS OWN OUTLET -----------
+//
+//  `equilibriumAt` answers for a stream that EXISTS: a discarded root leaves
+//  the stream priced on the state it carries.  A unit searching for its
+//  OUTLET has no carried state -- the flash IS the answer it will publish --
+//  so the discarded root needs a replacement, and above every present
+//  component's Tc there is one: the single fluid phase, on the vapour leg.
+//  `phaseChanger` wrote exactly that on 2026-10-01 in its anonymous
+//  namespace; the valve's and the adiabatic flash's outlet searches, the
+//  pipe's inlet-regime test and the isothermal flash's own operating
+//  resolution called `solveCore` bare and accepted the root (DEV.md §5,
+//  2026-09-26, named not fixed; C34 wave 1).  Five callers of one rule, so it
+//  lives here, beside the test it applies.
+//
+//  A THREE-phase answer is left alone (its `V_over_F` is a liquid fraction,
+//  not a vapour one).  The sentence is DEFERRED into `discarded` (kept from
+//  the first trial only): an outlet search evaluates many trial
+//  temperatures, and the caller says it once, at its own site, through
+//  `reportSupercriticalDiscard`.  Returns whether the root was discarded.
+inline bool takeSupercriticalAsSinglePhase(FlashSolution&       fs,
+                                           scalar               T,
+                                           const sVector&       z,
+                                           const ThermoPackage& thermo,
+                                           std::string&         discarded)
+{
+    if (fs.threePhase) return false;
+    std::string said;
+    if (!supercriticalSplitDiscarded(fs, T, z, thermo, "", "", &said,
+                                     /*nameT=*/false))
+        return false;
+    fs.V_over_F = 1.0;
+    fs.x        = z;
+    fs.y        = z;
+    fs.regime   = "single phase above every Tc (two-phase root discarded)";
+    //  Nothing of the impossible liquid may survive the discard.
+    fs.speciation.reset();
+    fs.organicLiquid.reset();
+    if (discarded.empty()) discarded = said;
+    return true;
+}
+
+//  `IsothermalFlash::solveCore` at `in`, with the discard above applied.
+inline FlashSolution flashDiscardingSupercriticalSplit(const FlashInput&    in,
+                                                       const ThermoPackage& thermo,
+                                                       const FlashOptions&  opts,
+                                                       std::string&         discarded)
+{
+    FlashSolution fs = IsothermalFlash::solveCore(in, thermo, opts);
+    takeSupercriticalAsSinglePhase(fs, in.T, in.z, thermo, discarded);
+    return fs;
+}
+
+//  Say a deferred discard ONCE: on `AdvisoryLog` (the end-of-run caveat
+//  block) and, at verbosity >= 1, at the unit's own site as `[<category>]`.
+inline void reportSupercriticalDiscard(const std::string& discarded,
+                                       const char*        category,
+                                       const std::string& locus,
+                                       int                verbosity)
+{
+    if (discarded.empty()) return;
+    AdvisoryLog::instance().add(category, "warning", locus, discarded);
+    if (verbosity >= 1)
+        std::cout << "  [" << category << "] " << discarded << "\n";
 }
 
 inline std::optional<FlashSolution> equilibriumAt(scalar               T,
@@ -396,8 +462,10 @@ inline StreamThermalState resolveStreamThermalState(const DictPtr&       streamD
 //  liquid (the phasechange01 trap, 2026-09-12).  This is the reading the
 //  flowsheet's post-solve surface pass takes (Flowsheet.cpp, 2026-10-03),
 //  made available to the units that read their inlet DURING the solve
-//  (valve, adiabaticFlash, heatExchanger, storageTank -- DEV.md C33), each in
-//  its own thermo world.  A pinned single phase is a declaration and is
+//  (valve, adiabaticFlash, heatExchanger, storageTank -- DEV.md C33; the
+//  mixer, splitter, cstr, pfr, conversionReactor, both columns, the three
+//  dryers, heater, phaseChanger and multiStreamHX -- C34), each in its own
+//  thermo world.  Which readers were LEFT, and why, is the table in C33.  A pinned single phase is a declaration and is
 //  returned as carried; a resolution that fails or is refused leaves the
 //  carried value and is announced by `equilibriumAt` itself.
 inline scalar resolvedInletVaporFraction(const DictPtr&       streamDict,
