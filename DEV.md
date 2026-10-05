@@ -2021,6 +2021,22 @@ with its moved golden rows listed:
      `check_ed_batch` (g) holds the one home on the source.]
   5. `--fast`'s mass-closure atom arm judges only in-scope witnesses (it read
      leftover run outputs).
+     [BUILT 2026-10-05 on `claude/c36-nernst-fastarm`, BOTH remedies, and
+     why both: `check_mass_closure`'s atom arm now reads only the plants RUN
+     IN THIS PASS, and only through report files that pass's stdout names
+     (`[report] elementBalance -> <path>`, or `-> UNAVAILABLE`, which writes
+     the header-only table); a file on disk the run did not name is a
+     leftover, set aside and COUNTED in the claim; under the fast scope with
+     nothing to judge the claim says NOT JUDGED IN THIS SCOPE.  That is the
+     fix -- even with a witness in FASTSET, the old glob would still have
+     judged other plants' leftovers.  And `ammonia02_full_plant` is back in
+     FASTSET: its exclusion said it EXPIRED the day its goldens were
+     re-recorded, which happened 2026-09-14 (b9a61948a); it passes and runs
+     in 0.1-0.2 s, so the fast tier JUDGES the arm instead of only saying it
+     did not.  MEASURED on a worktree with every tutorials/ run output
+     removed: `--fast` PASS 68 / FAIL 0, the arm "judged on 1 plant";
+     standalone full scope: 240 steady cases, the arm judged on 2 plants
+     (ammonia02, ammonia03).  Sabotages S8/S9 in the gate's docstring.]
 Vítor's own deck stays his.  Status: dispatched 2026-10-05.
 
 **C35. THE SIXTEEN DECISIONS (Vítor, 2026-10-05, verbatim: "Decide as 16
@@ -3775,7 +3791,9 @@ defect — look for what else went with it.
 ## 5. Known debts (severity-ish)
 
 **2026-10-05 -- `--fast` IS RED ON A CLEAN CHECKOUT THROUGH `check_mass_closure`'S
-ATOM-SCOPE ARM.  FOUND (C35), NOT FIXED.**  The arm looks through every
+ATOM-SCOPE ARM.  FOUND (C35); CLOSED THE SAME DAY by C36 item 5 (see §4c):
+the arm judges only plants run in this pass, through the files that pass
+says it wrote, and ammonia02 is back in FASTSET.**  The arm looks through every
 `tutorials/plant/*` run output for a plant publishing a process atom scope;
 the only two that declare `utilities` (ammonia02, ammonia03) are outside
 `tutorials/FASTSET`, so a fresh worktree has no such output and the arm
