@@ -2016,6 +2016,22 @@ held back for predicting a second liquid; see C16.
 honest case (`ed08_wine_kht_model_solution`, a KHT model solution) is built;
 the faithful wine case stays blocked on the reserved multi-ion split -- C4
 lists the six missing pieces.
+(C26 slice 2) INTEGRATED 2026-10-05 (merge 7336edefc): the evaporative
+dryer evaporates only what its air pays for (3 lithiumBrinePlant rows moved,
+listed in the merge), the cooling tower on the shared psychrometry, gate
+`check_evaporative_dryer`; proposals P1-P7 in C26 are Vitor's.
+(C7 class A) INTEGRATED 2026-10-05 (merge 47431c796): 20 archived records
+redacted, 2 renamed with stubs, competitor pins 65 -> 5 (B and C remain).
+(VLLE fallback, DEV 5) INTEGRATED 2026-10-05 (merge 168926510): the flash's
+liquid-liquid kind is a typed field; witness `vlle04_two_liquids_decanter`,
+gate `check_vlle_fallback`; found, not fixed: vlle03's three-phase duty and
+KPIs mis-report (golden moves).
+(C8 + C2 remainder) INTEGRATED 2026-10-05 (merge 6d1270c78): `spaceVelocity`
+requires `spaceVelocityBasis normal|actual`; one row (a basis word) moved
+by hand; ammonia02's 80 m3 and ammonia03's beds are Vitor's.
+Combined validation on adcc885d6: targeted 66 PASS / 0 FAIL, `--fast` 67 / 0,
+eight touched gates OK.  The reactorLadderLesson citation was re-pointed.
+Wave 2 is COMPLETE.
 
 **C33. THE FOUR UNITS THAT STILL READ AN UNPINNED INLET'S DEFAULT `vf`
 (Vítor, 2026-10-04: "Podes avançar, mas com calma, porque o preço dos tokens
