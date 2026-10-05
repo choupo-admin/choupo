@@ -1988,6 +1988,24 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C38. THE RESERVED ITEMS, TAKEN (Vítor, 2026-10-05, verbatim: "Não quero que
+deixes comigo!!!! Faz tu!", answering the commander's list of what stayed
+reserved for him).**  The commander takes them, each one revertable merge:
+  1. TRAY COST: a published tray correlation (Turton's sieve/valve tray set
+     and its quantity factor) is added to the costing model ONLY with every
+     coefficient transcribed from a source the general actually reads and
+     cites; if no such source is readable, the refusal stays and the reason
+     is recorded -- an invented set is never shipped.
+  2. THE COSTING MODEL'S NAME: registered `Guthrie` while every coefficient is
+     Turton's.  Renamed to what it is (`Turton`), the corpus migrated in one
+     pass, the old word REFUSED by name naming the new one (no dual reader).
+  3. Vítor's deck `docs/slides/farelo_choupo.tex` (C7 class B): its three
+     product names replaced by neutral descriptions like the other records,
+     its pin dropped from `check_doctrine`.
+  4. Catalyst beds: the bed shell is costed on the vessel set and the charge
+     on its declared price since C2; no further reserved decision remains.
+Status: dispatched 2026-10-05.
+
 **C37. THE C35/C36 LOOSE ENDS (Vítor, 2026-10-05, verbatim: "Trata tu disso
 o melhor que souberes", answering the commander's list of six).**  Each lands
 as one revertable merge with its moved rows listed:
