@@ -2005,7 +2005,11 @@ Each lands as ONE revertable merge with its moved golden rows listed.
  10. ammonia03's beds keep refusing (their lesson); no change.
  11. lithiumBrinePlant's dryer: air raised until the product leaves dry.
  12. evapDryer02 renamed for what binds it (exhaust saturation).
- 13. convDryer01's two round-off residual rows removed.
+ 13. convDryer01's two round-off residual rows removed.  [DONE 2026-10-05,
+     branch `claude/c35-cases`: `kpi co energyResidual_kW 1.08e-7` and
+     `kpi counter energyResidual_kW -4.87e-10` deleted by hand, the reason
+     left as a comment in `expected`; `check_convective_dryer` (a) still
+     holds |r| <= 1e-3 kW absolutely.]
  14. The published git history is NOT rewritten; DEV.md C7 aligned with the
      ruling record.  [DONE 2026-10-05, branch `claude/c35-cases`: C7's two
      "his to take" sentences now record the rejection.]
