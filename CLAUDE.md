@@ -2140,7 +2140,11 @@ splits the liquid -- ethanol + cyclohexane passed its band and predicts two
 liquids across its whole validity span, so it stays in its case; arm (f) holds
 every catalogue pair to ONE liquid across its validity span, and below that
 span a two-parameter b/T pair may split a miscible liquid (its record says
-where).  ChemSep's `.ipd` pair tables are NOT
+where), and since 2026-10-05 (C35 item 5) the ENGINE says so too: a pair
+record used outside its declared temperature span is ANNOUNCED
+(`[pair-span]`, once per pair per run, into the caveat block; NRTL, UNIQUAC
+and Wilson share `PairSpanGuard` in `thermo/PairAudit.H`), moving no number
+-- arm (g) holds it.  ChemSep's `.ipd` pair tables are NOT
 under the Artistic grant (the LITE licence gives it to the pure-component
 databank "and ONLY" that, and the tables say "DECHEMA" in their headers),
 and the `thermo` package's byte-identical copy is not freed by its MIT

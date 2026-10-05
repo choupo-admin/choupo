@@ -111,6 +111,9 @@ Wilson::Wilson(const DictPtr& dict, const std::vector<Component>& comps)
     {
         PairResolution r{ "Wilson", ni, nj, status, source, provSource };
         fillPairAudit(r, provDict, ni + "-" + nj, status == "standard");
+        if (provDict)   // a record's declared span is guarded (C35 item 5)
+            spanGuard_.add("Wilson", findIndex(names, ni), findIndex(names, nj),
+                           ni + "-" + nj, r);
         ThermoResolutionLog::instance().add(std::move(r));
     };
 
@@ -213,6 +216,10 @@ Wilson::Wilson(const DictPtr& dict, const std::vector<Component>& comps)
 
 sVector Wilson::gamma(scalar T, const sVector& x) const
 {
+    // A pair used outside the temperature span its record declares is
+    // ANNOUNCED (thermo/PairAudit.H, PairSpanGuard); no number changes.
+    spanGuard_.check(T, x);
+
     const scalar RT = constant::R * T;
 
     // Λ matrix at this T

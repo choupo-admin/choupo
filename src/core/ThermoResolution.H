@@ -68,7 +68,10 @@ struct PairResolution
 
     // ---- P1 audit fields (forum #67/#69): typed, riding the same record, and
     //      NEVER read by the hot numerical path -- they exist for the run
-    //      header, the result JSON, the gap report and mode-evaluate.
+    //      header, the result JSON, the gap report and mode-evaluate.  (The
+    //      validity span is COPIED by the activity models at construction
+    //      and checked at gamma() only to ANNOUNCE an excursion --
+    //      thermo/PairAudit.H, PairSpanGuard, C35 item 5; no number reads it.)
     // RANKING AND POLICY USE ONLY `origin` (the typed tier); `provSource` stays
     // as the raw source label during migration and never outranks the type.
     //  The five audit fields carry EXPLICIT defaults so a call site may

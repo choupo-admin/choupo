@@ -374,7 +374,10 @@ would put a second liquid into every flash that reads it, and no
 bubble-temperature verdict could tell -- so it was NOT promoted, though
 `validated`.  It stays in curate12 as an authored record with the reason in
 its header.  The remedy (a third parameter constrained by the phase count, or
-LLE data) is a curation decision, Vitor's.
+LLE data) is a curation decision, Vitor's.  LLE data: the archive has NONE for this
+pair (searched by InChIKey on 2026-10-05, DEV.md C35 item 6 -- 19 binary
+blocks, every one of one liquid), so that route is closed until someone
+measures it; the record stays in its case.
 
 The three that split BELOW their span are honest extrapolations -- each record
 says where, and why (the two-parameter b/T form grows tau as T falls) -- but
@@ -382,7 +385,10 @@ says where, and why (the two-parameter b/T form grows tau as T falls) -- but
 temperature, so a student who runs a cooler or decanter with these pairs below
 their validity span WILL get a false second liquid.  The validity block is the
 guard; whether the engine should ANNOUNCE a pair used outside its validity
-span is open (it does for a vapour-pressure Trange, not for a pair's).
+span was open here, and Vitor ruled it on 2026-10-05 (DEV.md C35 item 5): it
+does, through `PairSpanGuard` (`src/thermo/PairAudit.H`) -- `[pair-span]`,
+once per pair per run, into the caveat block, no number moved --
+held by `check_regressed_pairs` arm (g).
 
 ### 6.4 The gate's new arm, and its sabotages
 

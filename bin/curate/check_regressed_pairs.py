@@ -49,6 +49,21 @@ case-local one that did not earn promotion):
       announces; the arm does not look there (1-propanol + water splits
       below 355.5 K, and its record says so).
 
+  (g) A PAIR USED OUTSIDE ITS SPAN IS ANNOUNCED (C35 item 5, 2026-10-05).
+      Arm (f) looks only INSIDE a span; below it the three water pairs the
+      C16 report named (1-propanol, acetonitrile, isopropanol + water) split
+      a liquid miscible in every proportion, and a run there used to say
+      nothing.  The engine now announces it (`PairSpanGuard`,
+      src/thermo/PairAudit.H).  Each of the three is asked for activity
+      coefficients at TWO temperatures below its span, in a probe case built
+      here: the run must print exactly ONE `[pair-span]` line naming the
+      pair (once per pair per run) and carry it into the result JSON's
+      advisories (the end-of-run caveat block); the same pair asked inside
+      its span must print none.  And it changes no number: the gammas are
+      compared with a twin that declares the same parameters INLINE (an
+      inline pair carries no span, so nothing is announced) and must be
+      identical.
+
 WHAT IT DOES NOT CHECK.  Whether the measurements are RIGHT -- each dataset
 says `reviewStatus transcribedNotCheckedAgainstArticle`, and reading them
 back against the articles is a curator's act.  Whether the band was the right
@@ -58,7 +73,9 @@ Phase stability below a record's validity span, or for a case-local record.
 SABOTAGES (by hand): docs/design/binary-pairs-from-open-measurements.md
 section 4 (2026-09-28, arms a-e) and section 6.4 (2026-10-05, arm f).
 """
+import json
 import math
+import os
 import re
 import shutil
 import subprocess
@@ -194,6 +211,128 @@ def check_dataset(path, fails, tag):
                      f"missing or not one per data row ({len(rows)} rows)")
 
 
+#  Arm (g): the three water pairs C16 found splitting a miscible liquid BELOW
+#  their spans -- two temperatures below each span, one inside it.
+SPAN_PROBES = (
+    ("isopropanol",  "water", (298.15, 290.0), 360.0),
+    ("1Propanol",    "water", (298.15, 290.0), 365.0),
+    ("acetonitrile", "water", (298.15, 290.0), 360.0),
+)
+
+
+def run_span_probe(tmp, i, j, temps, inline=None):
+    """Build a two-component choupoProps case asking for gamma at each T, and
+    run it.  `inline` replaces the catalogue resolution with an inline pair,
+    which carries no span -- the twin that cannot announce."""
+    case = tmp / ("span-" + i + "-" + "-".join(f"{t:g}" for t in temps)
+                  + ("-inline" if inline else ""))
+    (case / "system").mkdir(parents=True)
+    (case / "constant").mkdir()
+    (case / "system" / "controlDict").write_text(
+        'application choupoProps;\ndescription "pair span probe";\nverbosity 2;\n')
+    ops = "".join(
+        f"    {{ name g{k}; type activityCoefficients; temperature {t};"
+        f" composition {{ {i} 0.5; {j} 0.5; }} }}\n"
+        for k, t in enumerate(temps))
+    (case / "system" / "propsDict").write_text("operations\n(\n" + ops + ");\n")
+    pairs = ""
+    if inline:
+        pairs = (f" binaryParameters {{ {i}-{j} {{ i {i}; j {j};"
+                 f" a_ij {inline['a_ij']!r}; b_ij {inline['b_ij']!r};"
+                 f" a_ji {inline['a_ji']!r}; b_ji {inline['b_ji']!r};"
+                 f" alpha {inline['alpha']!r}; }} }}")
+    (case / "constant" / "thermoPhysPropDict").write_text(
+        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        f"components ( {i} {j} );\n"
+        "equilibrium\n{\n    formulation gammaPhi;\n"
+        f"    liquid {{ activityModel {{ model NRTL;{pairs} }}"
+        " standardState pureLiquid; }\n"
+        "    vapour { fugacityModel idealGas; }\n}\n")
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+    p = subprocess.run([str(PROPS), "."], cwd=str(case), env=env,
+                       capture_output=True, text=True, timeout=300)
+    return p.returncode, p.stdout + p.stderr
+
+
+def result_of(out):
+    """(the gammas a run published, its advisories), from the result JSON."""
+    m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>",
+                  out, re.S)
+    if not m:
+        return None, None
+    try:
+        js = json.loads(m.group(1))
+    except json.JSONDecodeError:
+        return None, None
+    vals = []
+    for op in js.get("operationResults", []):
+        for k, v in sorted(op.get("diagnostics", {}).items()):
+            if k.startswith("gamma_"):
+                vals.append((op.get("name"), k, v))
+    return vals, js.get("advisories", [])
+
+
+def check_span_announcement(tmp, fails):
+    """Arm (g).  Returns the number of pairs held to it."""
+    held = 0
+    for i, j, below, inside in SPAN_PROBES:
+        tag = f"arm (g) {i}-{j}"
+        names = (f"NRTL pair {i}-{j}:", f"NRTL pair {j}-{i}:")
+        rc, out = run_span_probe(tmp, i, j, below)
+        if rc != 0:
+            fails.append(f"{tag}: the below-span probe exited {rc} -- the arm "
+                         f"cannot run, so it must not pass: {out[-400:]}")
+            continue
+        lines = [ln for ln in out.splitlines()
+                 if ln.startswith("[pair-span]") and any(n in ln for n in names)]
+        if len(lines) != 1:
+            fails.append(f"{tag}: asked for gamma at {below} K, below its "
+                         f"declared span, the run printed {len(lines)} "
+                         "`[pair-span]` line(s) for it -- the ruling is ONE "
+                         "per pair per run")
+        elif "BELOW its declared validity span" not in lines[0]:
+            fails.append(f"{tag}: the `[pair-span]` line does not say BELOW "
+                         f"its declared validity span: {lines[0][:200]}")
+        vals, adv = result_of(out)
+        loci = {f"NRTL pair '{i}-{j}'", f"NRTL pair '{j}-{i}'"}
+        if adv is None or not any(a.get("locus") in loci
+                                  and a.get("category") == "validity"
+                                  for a in adv):
+            fails.append(f"{tag}: the announcement is not in the result "
+                         "JSON's advisories -- it would never reach the "
+                         "end-of-run caveat block")
+        rc2, out2 = run_span_probe(tmp, i, j, (inside,))
+        if rc2 != 0:
+            fails.append(f"{tag}: the inside-span probe exited {rc2}")
+            continue
+        if "[pair-span]" in out2:
+            fails.append(f"{tag}: asked at {inside} K, INSIDE its span, the "
+                         "run still printed a `[pair-span]` line -- an "
+                         "announcement that fires everywhere is read nowhere")
+        #  The numbers.  The parameters are read from the catalogue record
+        #  itself, so the twin differs from the probe ONLY in carrying no
+        #  span.
+        f = STD / f"{i}-{j}.dat"
+        rf = facts(f.read_text()) if f.exists() else {"i": None}
+        if rf["i"] != i:
+            fails.append(f"{tag}: no catalogue record {f.name} with i = {i}")
+            continue
+        rc3, out3 = run_span_probe(tmp, i, j, below, inline=rf)
+        v3, adv3 = result_of(out3)
+        if rc3 != 0 or not vals or not v3:
+            fails.append(f"{tag}: the inline twin could not be compared "
+                         f"(exit {rc3})")
+        elif vals != v3:
+            fails.append(f"{tag}: the announced run and its span-less inline "
+                         f"twin publish DIFFERENT gammas ({vals} vs {v3}) -- "
+                         "an announcement must move no number")
+        elif "[pair-span]" in out3:
+            fails.append(f"{tag}: the inline twin announced a span it does "
+                         "not carry")
+        held += 1
+    return held
+
+
 def main():
     if not PROPS.exists():
         print("check_regressed_pairs: FAILED\n  choupoProps is not built -- "
@@ -318,6 +457,7 @@ def main():
             where = ("catalogue" if in_std
                      else "case-local in " + rec_path.parents[3].name)
             checked.append(f"{rec_path.stem} ({where}, {rf['verdict']})")
+        span_held = check_span_announcement(tmp, fails)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -333,10 +473,14 @@ def main():
           "catalogue; `interim` is voiced at run time; every dataset carries "
           "DOI, archive sha256, CAS+InChIKey and per-point uncertainty; "
           f"{len(stable_checked)} catalogue pair(s) predict ONE liquid across "
-          "their validity span (arm f, the record's NRTL recomputed).  NOT "
+          "their validity span (arm f, the record's NRTL recomputed); "
+          f"{span_held} water pair(s) used BELOW their span announce it once "
+          "per run, into the caveat block, say nothing inside it, and publish "
+          "the same gammas as a span-less inline twin (arm g).  NOT "
           "checked: whether the transcribed measurements agree with the "
           "articles (a curator's read-back), whether the band was well "
-          "chosen, or phase stability below a validity span.")
+          "chosen, or phase stability below a validity span (it is "
+          "announced, arm g, not judged).")
     return 0
 
 

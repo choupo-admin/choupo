@@ -87,7 +87,7 @@ export const LC_STEPS = [
     assumes: "The energy of a neighbourhood is the sum of independent "
       + "pairwise contributions, and the Boltzmann factor uses the same T "
       + "for all pairs.",
-    cites: "Wilson.cpp:226 · NRTL.cpp:356 · UNIQUAC.cpp:238 — each of the "
+    cites: "Wilson.cpp:233 · NRTL.cpp:363 · UNIQUAC.cpp:244 — each of the "
       + "three exponentials below is this factor, differently dressed",
   },
   {
@@ -108,7 +108,7 @@ export const LC_STEPS = [
     assumes: "Local volume fractions, not local mole fractions; and "
       + "complete miscibility, which is where the LLE limitation comes "
       + "from rather than from any parameter.",
-    cites: "Wilson.cpp:226 (Λ), Wilson.cpp:238-251 (γ)",
+    cites: "Wilson.cpp:233 (Λ), Wilson.cpp:245-258 (γ)",
   },
   {
     n: 4,
@@ -131,7 +131,7 @@ export const LC_STEPS = [
     assumes: "The non-randomness parameter α is a property of the PAIR and "
       + "is symmetric (α_ij = α_ji), which is a modelling convention, not "
       + "a derived result.",
-    cites: "NRTL.cpp:355-358 (τ, G), NRTL.cpp:380-393 (the two terms)",
+    cites: "NRTL.cpp:362-365 (τ, G), NRTL.cpp:387-400 (the two terms)",
   },
   {
     n: 5,
@@ -158,8 +158,8 @@ export const LC_STEPS = [
     assumes: "That the size and energy contributions are separable and "
       + "simply add — the same assumption the plus sign makes on the "
       + "COSMO-SAC page, and it is no better justified here.",
-    cites: "UNIQUAC.cpp:238 (τ), UNIQUAC.cpp:247-248 (φ, θ), "
-      + "UNIQUAC.cpp:273-277 (combinatorial), UNIQUAC.cpp:286 (residual)",
+    cites: "UNIQUAC.cpp:244 (τ), UNIQUAC.cpp:253-254 (φ, θ), "
+      + "UNIQUAC.cpp:279-283 (combinatorial), UNIQUAC.cpp:292 (residual)",
   },
 ] as const;
 
@@ -231,8 +231,8 @@ export function LocalCompositionTool(): JSX.Element {
           and the reader is told so beside the number.
         </Text>
         <Text size="xs" c={INK} mt={6}>
-          <Code style={{ fontSize: 11 }}>NRTL.cpp:178, NRTL.cpp:219-245,
-          NRTL.cpp:304 · thermo/ApproximationAuthorisation</Code>
+          <Code style={{ fontSize: 11 }}>NRTL.cpp:181, NRTL.cpp:222-248,
+          NRTL.cpp:307 · thermo/ApproximationAuthorisation</Code>
         </Text>
       </Alert>
 

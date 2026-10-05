@@ -2009,8 +2009,38 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      equilibrium, in the unit AND the energy report (full regression
      AUTHORISED by Vítor for this item).
   5. A pair used outside its validity span is ANNOUNCED, as vapour pressure is.
+     [DONE 2026-10-05, branch `claude/c35-pairs-pipe`.  `PairSpanGuard`
+     (`src/thermo/PairAudit.H`, beside the ONE parser that reads the span):
+     NRTL, UNIQUAC and Wilson copy each pair RECORD's declared temperature
+     span at construction and check it at `gamma(T, x)`; a pair whose two
+     components are both present, evaluated outside its span, raises ONE
+     `validity` advisory through `addAnnouncedOnce` (key per pair, so once
+     per pair per run; the console line `[pair-span] NRTL pair i-j: used at
+     T = ... K, BELOW|ABOVE its declared validity span (lo hi K) by ... K`),
+     reaching the end-of-run caveat block.  Mirrors the Henry pair's Trange
+     (`HenrysLaw.cpp:136`) and the vapour-pressure window
+     (`VaporPressureModel.cpp:161`).  No number moved: the 54 cases that
+     declare NRTL/UNIQUAC/Wilson (or carry their pair files) PASS 54/0, no
+     golden row moved.  Twelve of them now announce: flash21 (ethanol-water
+     at 258 K), crystalliser09 (278 K), vlle04 (cyclohexane-ethanol at
+     365 K) and the nine curation cases (their held-out bubble scans walk
+     0.4-11.6 K above the FIT span -- true, and now said).  NOT guarded:
+     INLINE pairs (no provenance, so no span), and an infinite-dilution
+     gamma of an absent component.  Gate: `check_regressed_pairs` arm (g)
+     (the three water pairs below their spans announce once, into the
+     advisories, say nothing inside, and publish the same gammas as a
+     span-less inline twin); sabotages by hand, each restored with git +
+     `make all`: S1 (the `gamma()` check removed) caught on all three pairs
+     -- no line, no advisory; S2 (the once-per-run latch dropped, the line
+     printed on every raise) caught on all three -- two lines each.]
   6. Ethanol + cyclohexane: re-regressed against LLE data if the archive has
      them; otherwise it stays case-local, recorded.
+     [DONE 2026-10-05, branch `claude/c35-pairs-pipe`: the archive has
+     none.  19 binary ethanol + cyclohexane blocks in ThermoML.v2020-09-30
+     (joined by InChIKey), all of ONE liquid; the only two-liquid blocks
+     naming both are ternaries whose second liquid is the third
+     component's.  The pair stays case-local in curate12, unpromoted; no
+     constraint invented, no case or golden touched.  Detail in C16.]
   7. Dryer solid floor: the gas wet-bulb temperature, not the feed T.
      [DONE 2026-10-05, branch `claude/c35-dryer-floor`.  MEASURED first:
      the units that floored their solid at its feed T were exactly two,
@@ -2080,6 +2110,32 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      caught (S1 feed floor -> (a), S2 old bisection -> (a), S3 solid feed
      floor -> (f)).]
   8. Pipe with a vapour inlet: REFUSED by name until a compressible model exists.
+     [DONE 2026-10-05, branch `claude/c35-pairs-pipe`.  MEASURED first: the
+     corpus has three pipes and none carries vapour -- pipe01_water_line and
+     pumpSystem01_operating_point resolve liquid (they take the
+     single-phase path, `regime` KPI), pipe02_airwater_twophase resolves
+     V/F = 0.0114 (the two-phase path).  `Pipe.cpp`, right after the
+     inlet-regime flash: an inlet whose flash resolves V/F >= 1 - 1e-6 (an
+     RR answer of 1, or a supercritical root discarded to the single fluid
+     phase) REFUSES, naming the unit, the inlet stream (`feed.streamName`),
+     its resolved V/F, (T, P) and regime, and both remedies (a liquid line
+     mis-declared -> correct T, P or composition; a gas line has no model
+     until a compressible pipe exists).  **A TWO-PHASE inlet is NOT
+     refused**, although the brief said "(or two-phase)": the ruling's own
+     words are "a vapour inlet", the pipe carries four two-phase
+     correlations (homogeneous, Lockhart-Martinelli, Friedel, Beggs-Brill)
+     and a witness, pipe02, which a two-phase refusal would break -- the
+     brief's stop rule; if Vitor wants the two-phase line refused too (its
+     correlations take both densities at the INLET, so they are
+     incompressible as well), that is his to say and pipe02 goes with it.
+     No golden row moved (the three pipe cases PASS 3/0).  Gate:
+     `check_friction_correlations` arm (g) (pipe01 heated to 450 K at its
+     5 bar must exit non-zero naming unit, inlet, V/F, REFUSED and both
+     remedies; source arm: the refusal is gated on V/F reaching 1).
+     Sabotages by hand, each restored with git + `make all`: S1 (the throw
+     removed) -> "RAN to exit 0 -- the incompressible liquid path priced a
+     gas line"; S2 (the gate widened to `VF > 1e-6`, which would refuse
+     pipe02) -> caught by the source arm.]
   9. ammonia02 declares `spaceVelocity 20000; spaceVelocityBasis normal;`.
      [DONE 2026-10-05, branch `claude/c35-cases`, with `flowKey N_in_mol_s`
      (GHSV on the inlet gas, as ammoniaStaged03 declares): V_R 80 -> 45.4386
@@ -2874,7 +2930,8 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
      validity spans (355.5, 323.6, 330.4 K) although all three are miscible
      at room temperature -- each new record says so; whether the engine
      should announce a PAIR used outside its validity span (it does for a
-     vapour-pressure Trange) is for Vitor.  Passed over, measured: methanol +
+     vapour-pressure Trange) was for Vitor -- RULED 2026-10-05, C35 item 5:
+     it does now (`[pair-span]`).  Passed over, measured: methanol +
      benzene (its two studies report x of different components and
      `extract-vle` cannot reorient -- the aromatic waits on a `--x-of`
      option), ethanol + p-xylene (ethanol's Antoine ends at 369 K), acetone +
@@ -2888,6 +2945,25 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
      `--x-of`; a stability-constrained fit (alpha or a_ij freed under a
      phase-count constraint) for alcohol + hydrocarbon pairs; then the next
      pairs by the same rule.
+     **ETHANOL + CYCLOHEXANE AGAINST LLE DATA (C35 item 6, 2026-10-05):
+     the archive has NONE, so the pair stays case-local.**  Searched in
+     ThermoML.v2020-09-30 (the same tarball, sha256 231161b5... verified by `sync` on
+     2026-09-28 and re-hashed today; data.nist.gov answered 503 on 2026-10-05, so the unpacked
+     copy a C16 worktree had made was READ, not re-downloaded), joined BY
+     INCHIKEY (cyclohexane XDTMQSROBMDMFD-UHFFFAOYSA-N, ethanol
+     LFQSCWFLJHTTHZ-UHFFFAOYSA-N): 1190 files carry cyclohexane, 456 carry
+     both, and they hold 19 BINARY ethanol + cyclohexane blocks -- VLE
+     (x-y, boiling T, azeotrope, Psat), density, refractive index,
+     permittivity, viscosity, speed of sound, Cp, H^E, diffusion -- and NOT
+     ONE with two liquid phases (`Liquid mixture 1/2`), a consolute
+     temperature or a mutual solubility.  Two ternary sources do carry two
+     liquids (j.fluid.2005.07.015, water + ethanol + cyclohexane VLLE;
+     je700741x, 2,2,2-trifluoroethanol + ethanol + cyclohexane LLE at
+     288-308 K), but their second liquid is made by the third component;
+     they are not mutual-solubility data on this pair and were not used.
+     Every binary block the archive holds is of ONE liquid.  Per the
+     ruling, no constraint was invented: the record stays in curate12 (and
+     its copy in vlle04), unpromoted, with the reason in its header.
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds

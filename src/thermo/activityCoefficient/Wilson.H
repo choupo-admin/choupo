@@ -65,6 +65,7 @@ Dictionary form:
 
 #include "ActivityModel.H"
 #include "thermo/Component.H"
+#include "thermo/PairAudit.H"
 
 #include <vector>
 
@@ -94,6 +95,9 @@ private:
     // V_j/V_i ratio) -- so the foundation builds pair-by-pair instead of
     // aborting.  Announced, never silent.  true => that off-diagonal is ideal.
     std::vector<bool> idealPair_;
+
+    // The declared temperature span of each pair RECORD, read at gamma().
+    PairSpanGuard spanGuard_;
     // Pure-component liquid molar volumes [m³/mol]
     sVector V_;
 };
