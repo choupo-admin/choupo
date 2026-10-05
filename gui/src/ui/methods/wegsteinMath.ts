@@ -299,7 +299,7 @@ const errScaled = (x: Vec2): number => {
 
 /** Unit systems the page can re-express the tear vector in.  NONE of these is
  *  a switch the engine has: Choupo packs the tear in canonical SI always
- *  (kmol/s and K — src/streams/ProcessStream.H:78).  They exist so a reader
+ *  (kmol/s and K — src/streams/ProcessStream.H:80).  They exist so a reader
  *  can ask what a DIFFERENT choice would have done to the two numbers on this
  *  page, and find that it moves the stopping test and not the step. */
 export interface DisplayUnits {

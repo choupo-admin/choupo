@@ -296,13 +296,22 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         // the heat is INTERNAL -- the four process streams already net it, and
         // the unit's overall dH is ~0 (adiabatic envelope).  Its duty KPI is
         // therefore not a boundary item (counting it double-counts, the old
-        // -3663 % on heatExchanger01).  Detected structurally: >=2 process
-        // inlets AND >=2 process outlets, with no utility stream.  A heater /
-        // flash (one process side + a boundary Q) is NOT this and keeps its
-        // duty as a genuine boundary item.
+        // -3663 % on heatExchanger01).  A heater / flash (one process side + a
+        // boundary Q) is NOT this and keeps its duty as a genuine boundary
+        // item.
+        //
+        //  DECIDED BY WHAT THE UNIT IS, NOT BY ITS PORT COUNT (2026-10-05,
+        //  C35).  The test was structural alone (>= 2 process inlets AND
+        //  outlets, no utility stream), and a multi-feed distillation column
+        //  passes it: its reboiler and condenser duties were dropped from the
+        //  plant boundary and the residual was exactly -(Q_reboiler +
+        //  Q_condenser) (column04 -78.693876 kW, column08 -891.980060 kW).
+        //  The type decides (`reporting::isProcessToProcessExchanger`, ONE
+        //  home); the structure stays a necessary condition.
         const bool internalExchanger =
-            (e.nProcIn >= 2 && e.nProcOut >= 2
-             && std::abs(e.qBoundary) <= 1.0e-9);
+            reporting::isProcessToProcessExchanger(u.type)
+            && (e.nProcIn >= 2 && e.nProcOut >= 2
+                && std::abs(e.qBoundary) <= 1.0e-9);
 
         // Process-stream change vs the heat that crossed the boundary.
         //   dH       = hOut - hIn over the PROCESS streams
@@ -546,6 +555,10 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                     const bool asLiquid = (sp->vf <= 1.0e-9);
                     for (std::size_t i = 0; i < K.size(); ++i)
                     {
+                        //  A component the stream carries none of is not a
+                        //  term (C35, the flash's own rule): a ZERO nonvolatile
+                        //  (K = 0) used to abandon the whole test.
+                        if (sp->z[i] == 0.0) continue;
                         if (!(K[i] > 0.0) || !std::isfinite(K[i])) { g = 0.0; break; }
                         g += asLiquid ? sp->z[i] * (K[i] - 1.0)
                                       : sp->z[i] * (1.0 - 1.0 / K[i]);

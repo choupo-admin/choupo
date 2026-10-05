@@ -2004,10 +2004,72 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      on `claude/c35-evaporator-latent` (not merged): every evaporator row
      closes against the report, eight `check_energy_closure` pins removed,
      `energy-T2:plant` green; the evaporator-chest half of 4d D1 taken (see
-     there: still refused on corpus packages, for a flash cause named).
+     there: still refused on corpus packages, for a flash cause named --
+     that cause, the phase test's 0/0 on a zero nonvolatile, was removed on
+     `claude/c35-shared-path` with item 4's regression, and a superheated
+     chest now runs on every package).
   4. An unpinned feed to a `phaseSet VLLE` unit means its three-phase
      equilibrium, in the unit AND the energy report (full regression
      AUTHORISED by Vítor for this item).
+     [BUILT 2026-10-05 on branch `claude/c35-shared-path`.  ONE search, one
+     parse: `IsothermalFlash::readOptions` is the unit's option parse
+     (extracted verbatim from `solve()`), and
+     `IsothermalFlash::inletEquilibriumOptions` returns the search the unit
+     resolves its feed with when it is richer than vapour-liquid (phase set
+     VLLE, or `auto` resolving to it), nothing otherwise.  The flowsheet
+     stamps every stream such a unit consumes with that unit's dict
+     (`ProcessStream::equilibriumConsumer`, after the solve, because a
+     produced stream is replaced on every pass), and every reader that
+     resolves the stream goes through `flashState::consumerRecipe`, i.e.
+     the unit's own call: the energy report (`reporting::streamSplit`), the
+     surface pass that sets the stream table's vf and H (`Flowsheet.cpp`),
+     and the unit's duty (`priceState`'s new `recipe` argument).  A
+     three-phase or two-liquid answer is priced port by port through the
+     one unpacking (`vllePorts`, moved to `IsothermalFlash.H`) inside
+     `flashState::hOfState`, and `isSplit` / `vapourFractionOf` read a
+     resolved state of any kind (`V_over_F` is the alpha LIQUID fraction of
+     a three-phase answer).  MEASURED, vlle03's datum fixture
+     (check_vlle_fallback arm (e2)): duty 186.481786 kW -> 0, plant residual
+     1e-13 kW both before and after (they agreed on the wrong state), the
+     feed's published vf 0 -> 0.185797 = the unit's beta_vapor.  Gate:
+     `check_vlle_fallback` arm (e3).  Moved rows: listed in the commit.
+     NOT covered, said: a VLLE feed that ANOTHER unit produced is resolved
+     with the consumer's search by the report while its producer priced it
+     vapour-liquid (no corpus case has one).]
+     THE FULL REGRESSION (CLAUDE.md §0.4 reason, written before launch,
+     2026-10-05): WHAT CHANGED since the last validation of `main`
+     (2a403aac0) is three edits on shared paths, run ONCE on their
+     combination: (1) item 4 -- `flashState::equilibriumAt` /
+     `twoPhaseSplit` / `hOfState` / `priceState`, `reporting::streamSplit`
+     and the flowsheet's post-solve surface pass, which EVERY steady case's
+     stream table and energy report go through; (2) 4d D1 multi-feed --
+     `EnergyBalanceReport`'s internal-exchanger test, which every case with
+     an energy report goes through; (3) 4d D1 chest -- `IsothermalFlash`'s
+     Rachford-Rice and phase test (and `DewPoint`'s sum), which every
+     vapour-liquid flash in every unit goes through.  WHY TARGETED CHECKS ARE
+     NOT ENOUGH: each edit claims "identical where defined" for every case
+     but its witnesses, and only the whole corpus can test that claim; the
+     targeted runs (vlle03/04, column01/04/05/08, coolingTower01, mheatx01,
+     the chest fixtures) cover the witnesses alone.  Authorised by Vítor
+     (C35, verbatim above).
+     RESULT (one run, on the combination of this branch's three item commits):
+     PASS 674 / FAIL 15 / KNOWN-BROKEN 0 / EXPECTED-FAIL 6.  The 15:
+     SIX goldens -- column04/05/08 (the internal-exchanger fix), vlle04
+     (this item: its feed now priced on the unit's own two-liquid state,
+     H_feeds -5627.62926632 -> -5627.61678644 kW, residual -0.0124798850247
+     -> 0; the 0.0125 kW was the LL fallback's material imbalance priced
+     between a VL-resolved feed and the outlets, and stays in the mass
+     balance), utility01 (recorded) and utility02 (re-specified at 48 bar,
+     every row then reproduced; see §4d D1); FOUR gates this slice moved and fixed -- code-map (regenerated),
+     gui-tests (two lesson citations into Flowsheet.cpp shifted +46 lines
+     and re-pointed by measurement), cp-range and convective-dryer (witness
+     and probe, see §4d D1); FIVE gates RED ON 2a403aac0 TOO, each re-run
+     on an untouched build of that commit and failing identically --
+     problem-divergence (A1/A4), time-state-layout (c), theory-bibliography,
+     origin-census, props-ops-reference -- not this slice's.  After the
+     fixes: the six cases' rows, the four gates and `bin/runTests --gui`
+     (27/0) pass; rows that moved only at round-off (column04's T profile at
+     ~1e-10) were NOT re-recorded.
   5. A pair used outside its validity span is ANNOUNCED, as vapour pressure is.
      [DONE 2026-10-05, branch `claude/c35-pairs-pipe`.  `PairSpanGuard`
      (`src/thermo/PairAudit.H`, beside the ONE parser that reads the span):
@@ -3567,6 +3629,26 @@ defect — look for what else went with it.
    1e-9 kW (check_feed_thermal_state arm (i2)).  Unchanged by D1 (both
    multi-feed cases' feeds resolve liquid).  Fixing it is a report change
    every case goes through.
+   **CLOSED 2026-10-05 (C35, branch `claude/c35-shared-path`, under the full
+   regression Vítor authorised for item 4):** internal-exchanger status is
+   read off what the unit IS -- `reporting::isProcessToProcessExchanger`
+   (`BalanceMath.H`, ONE home: `heatExchanger`, `multiStreamHX`,
+   `coolingTower`, the types whose energy-item KPI is heat passed between
+   their own process streams) -- with the port count kept as a NECESSARY
+   condition (an exchanger with a both-ends-tagged utility side still sends
+   its heat through `qBoundary`).  MEASURED: column04 -78.693876 -> 0 kW,
+   column08 -891.980060 -> ~-2e-12 kW, and a third member nobody had named,
+   `column05_reactive_methylacetate`, +0.163790 -> 0 kW (its reboiler
+   0.626731 and condenser -0.790521 kW were dropped the same way; under the
+   1 kW band, so never pinned).  Every other unit type the corpus runs with
+   >= 2 inlets and outlets (absorber, stripper, extractor, the three dryers,
+   electrodialysisStack, evaporator) publishes no boundary energy item, so
+   its status changes nothing; the antisolvent crystallisers (Q_kW, 2 in /
+   2 out) would have dropped their cooling duty the same way but publish no
+   energy boundary (no datum).  Both column pins left
+   `check_energy_closure.KNOWN_OPEN_KW`; its unit arm now holds every
+   `distillationColumn` row to 1e-4 kW (witnesses column04, column08,
+   column01).
    THE EVAPORATOR-CHEST HALF, DONE 2026-10-05 (C35 item 3, branch
    claude/c35-evaporator-latent), and measuring it found a second cause.
    `Evaporator.cpp` now reads an unpinned chest with no split through
@@ -3584,12 +3666,100 @@ defect — look for what else went with it.
    pins it as a STALE PIN.  The remedy is one guard in that phase test (skip
    `z_i = 0`), on a path every flash in the corpus goes through: it needs
    a full regression, so it is NOT taken here -- for the commander/Vítor.
+   **TAKEN 2026-10-05 (C35, branch `claude/c35-shared-path`, under the full
+   regression Vítor authorised for item 4):** every sum over z_i in
+   `IsothermalFlash.cpp` skips z_i = 0 (`RR`, `dRR_dV`, the g(V=0)/g(V=1)
+   phase test, the substitution step), and so do the siblings of the same
+   shape: `DewPoint.cpp`'s sum y/K and x = y/K, and the energy report's
+   incipient-phase test (which ABANDONED the whole test on a zero
+   nonvolatile's K = 0).  The dropped term is exactly zero wherever it is
+   defined, so a state that was finite sums the same numbers bit for bit.
+   `check_evaporator_chest_phase` arm (c2) flipped from the stale pin to a
+   second (c1): the donor's water + sucrose superheated chest RUNS, vf = 1,
+   its row closes to 3e-11 kW.  FOUND, recorded rather than ruled: with the
+   flash answering, an undeclared chest ON the saturation curve is read by
+   the last digits of its T -- the gate's fixture at Tsat(200 kPa) =
+   392.1781136 K now reads as vapour and RUNS (it was refused only because
+   the flash returned NaN), 392.17 K reads as liquid and is refused.  Arm
+   (a) moved to 392.17 K, and the refusal's text says the side is set by
+   rounding.  Whether a pure-component stream within some band of its
+   saturation curve should count as UNDETERMINED (refused unless pinned)
+   is a rule nobody has written, and is Vítor's.
+   WHAT THE REGRESSION SHOWED IT MOVED (the full sweep of C35 item 4):
+     * `utility01_dowtherm_preheat` -- its heater outlet carries ZERO
+       dowthermA (K = 0); the exchanger's Q -> T inversion priced every
+       trial state above saturation through a NaN flash, fell back to the
+       carried LIQUID and published nHexane + C8H18 as a liquid at 617.51 K,
+       above both components' Tc.  It now resolves the stream: the outlet
+       VAPORISES and lands at 526.36 K, vf = 1, the target enthalpy met to
+       7e-9.  Three rows re-recorded (processOut T and the preheater's
+       T_cold_out 617.514294852 -> 526.359227681, LMTD 64.7267220716 ->
+       162.011885097), and the tutorials guide's two goldrows with them.
+       `check_cp_range_announced`'s SPAN arm lost its witness for the same
+       reason (no liquid Cp is integrated past a window any more) and reads
+       column01_benzene_toluene now; its POINT arm keeps utility01.
+     * `utility02_hitec_csp_heater` -- **RE-SPECIFIED, not re-recorded
+       (commander's decision under C35, 2026-10-05): the water side is now at
+       48 bar**, where the engine's own `bubbleT` on this package gives
+       T_sat = 525.8758 K, so the 517.4009 K outlet is subcooled by 8.5 K, as
+       the case header always meant (stated there with both Tsat values).
+       Every golden row reproduces unchanged (no row pins P; the liquid
+       outlet, the duty and the salt side do not depend on it); the
+       description line and the tutorials guide moved with it.  The
+       pure-component two-phase outlet the 40 bar case exposed is a named
+       debt in §5 (2026-10-05, HEAT EXCHANGER).  What follows is the
+       40 bar diagnosis that led there.  40 bar water with zero hitecSalt.  The case's
+       water Antoine (Trange 273-373 K, extrapolated) gives Tsat(40 bar) =
+       515.5797 K, and the old answer, 517.4009 K, was a liquid 1.82 K ABOVE
+       its own saturation temperature, reached only because the flash
+       returned NaN there.  The flash now answers, the target enthalpy lies
+       INSIDE pure water's latent jump (about 0.5 % of the feed would boil),
+       and the exchanger's bisection, which cannot represent a pure-component
+       two-phase state, lands ON the jump at 515.5797 K labelled liquid --
+       137.5 J/mol (3.06 kW, 1.5 % of the 208.47 kW duty) short of the target
+       (boilerOut T 517.400926398 -> 515.579741933, boilerHX T_cold_out the
+       same, LMTD 306.566828203 -> 307.593136063).  The reason is stated,
+       and the new number is still wrong, so it is not pinned; the case's
+       energy report is UNAVAILABLE (hitecSalt has no datum), so no gate sees
+       the 3.06 kW.  Remedies, not taken: the inversion returning the
+       two-phase outlet at Tsat with q = (H - H_L)/(H_V - H_L) (which then
+       needs a carried vf a re-flash of a pure component cannot reproduce --
+       the CLAUDE.md §3 pure-component pin), or the case declaring a feed
+       that stays below its own Tsat.
+     * `check_convective_dryer` arm (f)'s "air with no declared phase" probe
+       was refused only because the air's flash returned NaN on the absent
+       sucrose; undeclared 420 K air now resolves as vapour and RUNS (new
+       arm (f0)), and the refusal is probed with air DECLARED liquid.
    Also named, not changed: a superheated chest's condensate is published at
    T_steam (the model's statement), not Tsat(P_chest); a multi-effect
    train's vapour chests are superheated by their BPE in the same way, so
    moving it moves every multi-effect golden.
 
 ## 5. Known debts (severity-ish)
+
+**2026-10-05 -- A HEAT EXCHANGER CANNOT PUBLISH A PURE-COMPONENT TWO-PHASE
+OUTLET.  NAMED, NOT FIXED (C35, found by the full regression of item 4).**
+`HeatExchanger.cpp`'s Q -> outlet-state inversion bisects on H(T) at fixed
+P.  For a stream with ONE present component, H(T) jumps by the whole latent
+heat at Tsat(P) (the flash classes a pure component single-phase on either
+side), so a target enthalpy INSIDE the jump has no root: the bisection
+converges onto Tsat and publishes the outlet single-phase, short of its duty
+by the unboiled (or uncondensed) fraction's latent heat -- at exit 0.
+MEASURED on `utility02_hitec_csp_heater` as shipped before C35 (40 bar): its
+target lay ~0.5 % of the feed inside water's jump, and the outlet landed at
+515.5797 K labelled liquid, 137.5 J/mol (3.06 kW, 1.5 % of a 208.47 kW duty)
+short; no gate saw it, because that case's energy report is UNAVAILABLE
+(hitecSalt has no enthalpy datum).  Until C35 it was MASKED: the flash
+returned NaN on the zero-hitecSalt component above saturation and the
+inversion priced a superheated liquid instead.  The case was re-specified
+(48 bar) so it no longer reaches the jump; the unit was not changed.
+Remedy, not taken: when the bracket's two ends straddle a single-component
+jump, publish the two-phase outlet at Tsat with q = (H - H_L)/(H_V - H_L) --
+which then needs the stream to CARRY that q as a pin, because a re-flash of
+a pure component on its curve cannot reproduce it (CLAUDE.md §3, the
+pure-component exception), and every reader that re-resolves produced
+streams must honour it.  The same shape applies to any unit that inverts
+H(T) on a pure stream (`heater`, `phaseChanger`): not enumerated yet.
 
 **2026-10-05 -- A VLLE FLASH THAT FINDS TWO LIQUIDS PUBLISHES THE SECOND AS A
 GAS.  FOUND (C16 slice 2); CLOSED 2026-10-05 on branch
@@ -3636,7 +3806,10 @@ datum fixture of vlle03 it prices the feed (at the drum's own T and P) as one
 liquid where the VLLE search finds three phases -- the unit's duty agrees with
 the report (186.48 kW, the vapour's latent heat), while the sensible route,
 resolving its feed with the unit's VLLE options, reads Q = 0.  Which reading
-an unpinned VLLE feed MEANS is Vitor's.  The original entry follows.
+an unpinned VLLE feed MEANS is Vitor's.  **RULED AND CLOSED 2026-10-05 (C35
+item 4, branch `claude/c35-shared-path`): it means its THREE-phase
+equilibrium, in the unit AND the report** -- see C35 item 4 for how.  The
+original entry follows.
 `IsothermalFlash.cpp:1857` (now `:1870`) picked the
 two-phase fallback of a `phaseSet VLLE` flash by `sol.regime.find("VL")`, and
 the LL regime's own string (line 1000, now 1001) is "two-phase liquid (LL, VLLE attempt

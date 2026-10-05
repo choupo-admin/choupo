@@ -7,19 +7,30 @@
   textbook ternary (NaNO3-NaNO2-KNO3) used for solar-thermal storage
   and high-T process heat down to its 142 C melting point.
 
-  Process here: pressurised water at 40 bar pre-heated towards its
-  T_sat (~250 C) for a downstream HP steam generation step.  Hot side:
+  Process here: pressurised water at 48 bar pre-heated towards its
+  T_sat for a downstream HP steam generation step.  Hot side:
   HITEC at 773 K (500 C) delivery, `utility hitecSalt;` pulls the loop
   conditions from data/standards/utilities/hitecSalt.dat.
 
   Hardware: A = 0.85 m^2, U = 800 W/(m^2.K), counter-current.  The Q and
   T_out fall out of eps-NTU.  The area is deliberately sized so the cold
-  outlet lands at ~517 K (244 C) -- a sensible pre-heat that stops JUST
-  below T_sat(40 bar) ~= 523.5 K (250 C): the water leaves as a hot
-  liquid (vf = 0), no phase change, exactly as a feedwater pre-heater
-  ahead of the steam generator should.  Oversize the area and the cold
-  outlet would try to cross the saturation dome -- a separate boiler's
-  job, not this sensible-only eps-NTU unit's.
+  outlet lands at ~517 K (244 C) -- a sensible pre-heat that stops below
+  T_sat: the water leaves as a hot liquid (vf = 0), no phase change,
+  exactly as a feedwater pre-heater ahead of the steam generator should.
+  Oversize the area and the cold outlet would try to cross the saturation
+  dome -- a separate boiler's job, not this sensible-only eps-NTU unit's.
+
+  THE PRESSURE IS 48 bar, AND T_sat IS THIS CASE'S OWN (2026-10-05, DEV.md
+  C35).  It was 40 bar, with T_sat quoted from steam tables (~523.5 K).
+  This case's water record carries an Antoine fit (Trange 273-373 K, here
+  extrapolated), and the ENGINE, asked with a `bubbleT` on this very
+  package, gives T_sat(40 bar) = 515.5797 K -- so the 517.40 K outlet was a
+  liquid 1.82 K ABOVE its own saturation temperature, which ran only while
+  the flash could not answer (a zero-hitecSalt NaN, fixed in C35).  At
+  48 bar the same engine gives T_sat = 525.8758 K, and the outlet sits
+  8.5 K below it: subcooled, as this header always meant.  The duty, the
+  salt side and the outlet temperature do not depend on the pressure of a
+  liquid here; only the margin to boiling does.
 
   Inspection: how much HITEC do we circulate to deliver the duty?  At
   what hourly cost?  Compare to the equivalent steam-generated route

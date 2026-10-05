@@ -1192,13 +1192,15 @@ bands reach ONE sentence — and REFUSES a contradicting `feedQuality` naming bo
 numbers and both remedies with their values filled in.  Thirteen cases refused;
 eleven had the stream right and lost the dict key, two had only ever said it in
 the dict and now say it in the stream.  Every distillation case in the corpus
-closes its first law at 0.000000 kW except the two that stay pinned:
+closes its first law at 0.000000 kW -- the last two,
 `column04_multifeed_sidedraw` (-78.693876 kW) and
-`column08_radfrac_multidraw` (-891.980060 kW), both multi-feed -- DIAGNOSED
-2026-10-05 and not a column defect: each residual is exactly -(Q_reboiler +
-Q_condenser), because the energy report files a unit with >= 2 process inlets
-and >= 2 outlets as an internal exchanger and drops its duties from the plant
-boundary (DEV.md §4d D1, found-not-fixed).  The `simultaneous` MULTI-feed
+`column08_radfrac_multidraw` (-891.980060 kW), both multi-feed, were not a
+column defect: each residual was exactly -(Q_reboiler + Q_condenser), because
+the energy report filed a unit with >= 2 process inlets and >= 2 outlets as an
+internal exchanger and dropped its duties from the plant boundary.  CLOSED
+2026-10-05 (DEV.md §4d D1, C35): **an internal exchanger is decided by what
+the unit IS, never by its port count** (`reporting::
+isProcessToProcessExchanger`, one home).  The `simultaneous` MULTI-feed
 branch has resolved each stream feed and priced a two-phase one at (x, y)
 since the same day.  Also NOT done, named rather than implied: the WIDE route
 for the quality blend — making `H_stream_formation` itself flash, which is the true
@@ -1252,10 +1254,14 @@ sensibly).  Every evaporator row now closes against the report to 1e-6 kW,
 eight pins left `check_energy_closure`, and `energy-T2:plant` is green.  A
 feed or chest with no enthalpy datum keeps the Watson balance, ANNOUNCED (the
 report is UNAVAILABLE there too).  A SUPERHEATED chest is read as the vapour
-it means (`resolvedInletVaporFraction`) -- but only where the package's flash
-resolves it: a chest carrying zero of a K = 0 nonvolatile makes the flash's
-dew test 0/0, so on every corpus package it is still refused, now naming
-that cause (DEV.md 4d D1).  Gate: `check_evaporator_chest_phase` arms (c1),
+it means (`resolvedInletVaporFraction`), on every package since C35
+(2026-10-05): a chest carrying zero of a K = 0 nonvolatile made the flash's
+dew test 0/0 = NaN, and **an absent component is not a term** in the flash's
+sums now (`IsothermalFlash.cpp` `RR`/`dRR_dV`/the phase test, `DewPoint`, the
+report's incipient-phase test).  What that made visible: an undeclared
+SATURATED chest is read by the last digits of T and P (DEV.md 4d D1), so
+`phase gas;` is still the one channel that does not depend on rounding.
+Gate: `check_evaporator_chest_phase` arms (c1),
 (c2), (i) (7 sabotages; two results did not
 match the prediction and are recorded as measured — S3 is caught STRUCTURALLY
 and not behaviourally, and a presence-based arm (e) was measured to survive S4

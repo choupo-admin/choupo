@@ -111,8 +111,10 @@ WHAT THIS DOES NOT CHECK, said plainly:
     since 2026-09-27 (below): the units whose energy balance is H_out = H_in
     BY CONSTRUCTION -- an adiabatic sprayDryer/solidDryer/convectiveDryer, an
     evaporator (its heat crosses as its own chest/condensate streams; joined
-    2026-10-05), and a cstr/conversionReactor that published Q_kW -- must
-    leave nothing unattributed.  Every other unit is judged only through the
+    2026-10-05), a distillationColumn (its reboiler and condenser cross the
+    boundary whatever its feed count; joined 2026-10-05, C35), and a
+    cstr/conversionReactor that published Q_kW -- must leave nothing
+    unattributed.  Every other unit is judged only through the
     plant sum.
 
 THE UNIT ARM, SABOTAGE-VERIFIED 2026-09-27 by hand on a SCOPED run (a cache
@@ -135,6 +137,13 @@ restore:
   U4  break the gate's own header pattern (`>>>  UNIT`) -> five "the unit arm
       did not READ its witness" failures: an arm that reads nothing does not
       pass.
+  U6  (2026-10-05, C35: the distillationColumn joins the arm) restore the
+      structural-only internal-exchanger test in EnergyBalanceReport.cpp
+      (`isProcessToProcessExchanger(u.type)` -> `true`) -> "unit
+      'radfracLite' (distillationColumn) leaves +78.6939 kW" and "unit
+      'radfrac' ... +891.9801 kW", and the plant arm re-fails both cases as
+      unpinned (-78.6939 / -891.9801 kW); column01 (single feed) passes.
+      Restored with git + `make all`.
   U5  (2026-10-05, the evaporator joins the arm) restore the evaporator's
       Watson duty -> "unit 'CONCENTRATION.Evap1' (evaporator) leaves -21.0456
       kW", Evap2 -10.3209, evaporator02's effect1/2/3 -152.9702 / -62.7408 /
@@ -446,13 +455,17 @@ KNOWN_OPEN = {
 #  surface their streams are not priced on (and solidDryer01's hot air
 #  declared no phase).  PAID, not waived: docs/design/three-units-and-the-
 #  flagship-first-law.md.
+#  TWO ENTRIES LEFT IT ON 2026-10-05 (DEV.md 4c C35, 4d D1):
+#  column04_multifeed_sidedraw (-78.6939 kW) and column08_radfrac_multidraw
+#  (-891.9801 kW) were each exactly -(Q_reboiler + Q_condenser), because the
+#  report filed a multi-feed column as an internal heat exchanger by its port
+#  count and dropped both duties.  Internal-exchanger status is read off the
+#  unit type now; both close at 0.0000 kW.  PAID, not waived.
 KNOWN_OPEN_KW = {
     "tutorials/steady/absorption/absorber01_NH3_water": -27.9838,
     "tutorials/steady/absorption/acetone05_luyben_absorber": 3.1179,
     "tutorials/steady/absorption/extract02_declared_interior": -1.0263,
     "tutorials/steady/absorption/stripper01_NH3_water": 19.8710,
-    "tutorials/steady/distillation/column04_multifeed_sidedraw": -78.6939,
-    "tutorials/steady/distillation/column08_radfrac_multidraw": -891.9801,
     "tutorials/steady/distillation/shortcut01_benzene_toluene": -1.0804,
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 42.8610,
     "tutorials/steady/heat/coolingTower01_merkel": 1.5666,
@@ -503,6 +516,17 @@ KNOWN_OPEN_KW = {
 #  whole of what kept `energy-T2:plant` red.  A no-datum evaporator (its feed
 #  or chest carries a component with no enthalpy datum) publishes no closure
 #  row, because the report is UNAVAILABLE for it -- `noLedger`, never judged.
+#  `distillationColumn` joined 2026-10-05 (DEV.md 4c C35 / 4d D1): its
+#  reboiler and condenser are heat that crosses the boundary, never heat
+#  passed between its own streams, and its `Q_reboiler_kW` closes the column's
+#  own balance by construction (a plug on the condenser), so the report's
+#  remainder for it must be zero.  It was not on a MULTI-FEED column: the
+#  report filed any unit with >= 2 process inlets and >= 2 outlets as an
+#  internal exchanger and dropped both duties, so column04's row left
+#  -(Q_reboiler + Q_condenser) = -78.6939 kW and column08's -891.9801 kW --
+#  the whole of each plant's residual.  Internal-exchanger status is now
+#  read off the unit TYPE (`reporting::isProcessToProcessExchanger`).
+UNIT_BOUNDARY_DUTY = {"distillationColumn"}
 UNIT_ADIABATIC = {"sprayDryer", "solidDryer", "convectiveDryer"}
 UNIT_MATERIAL_HEAT = {"evaporator"}
 UNIT_DUTY_IS_DH = {"cstr", "conversionReactor"}
@@ -528,6 +552,11 @@ UNIT_WITNESSES = {
     ("tutorials/steady/evaporation/evaporator02_triple_effect_sugar", "effect1"),
     ("tutorials/steady/evaporation/evaporator02_triple_effect_sugar", "effect2"),
     ("tutorials/steady/evaporation/evaporator02_triple_effect_sugar", "effect3"),
+    #  The column: the two MULTI-FEED cases whose duties the report dropped
+    #  as an "internal exchanger" (C35), and one single-feed column.
+    ("tutorials/steady/distillation/column04_multifeed_sidedraw", "radfracLite"),
+    ("tutorials/steady/distillation/column08_radfrac_multidraw", "radfrac"),
+    ("tutorials/steady/distillation/column01_benzene_toluene", "column01"),
 }
 UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
 
@@ -549,7 +578,8 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
     every unit it JUDGED, so the witness check can tell read from unread."""
     types = dict(UNIT_HEADER.findall(txt))
     if not any(t in UNIT_ADIABATIC or t in UNIT_DUTY_IS_DH
-               or t in UNIT_MATERIAL_HEAT for t in types.values()):
+               or t in UNIT_MATERIAL_HEAT or t in UNIT_BOUNDARY_DUTY
+               for t in types.values()):
         return
     closures = json_block(txt, "energyClosures")
     kpis = json_block(txt, "kpis") or {}
@@ -569,6 +599,13 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
                    "own streams -- its duty must be the enthalpy difference "
                    "the report prices, h(chest) - h(condensate), and its "
                    "process side priced on the same surface" % t)
+        elif t in UNIT_BOUNDARY_DUTY:
+            why = ("a %s's reboiler and condenser are heat crossing the "
+                   "boundary (never passed between its own streams, whatever "
+                   "its feed count), and its reboiler duty closes its own "
+                   "balance by construction -- a remainder equal to its "
+                   "Q_reboiler + Q_condenser means the REPORT dropped both "
+                   "duties (reporting::isProcessToProcessExchanger, C35)" % t)
         elif t in UNIT_DUTY_IS_DH and "Q_kW" in kpis.get(unit, {}):
             why = ("a %s publishes Q_kW = H_out - H_in on the streams it "
                    "publishes, so nothing may remain unattributed" % t)
@@ -933,6 +970,8 @@ def main() -> int:
           "energy balance is H_out = H_in by construction (adiabatic "
           "sprayDryer/solidDryer/convectiveDryer; an evaporator, whose heat "
           "crosses as its own chest and condensate streams; a "
+          "distillationColumn, whose reboiler and condenser cross the "
+          "boundary whatever its feed count; a "
           "cstr/conversionReactor "
           "that published "
           "Q_kW) leave no more than %.0e kW unattributed in the report, "

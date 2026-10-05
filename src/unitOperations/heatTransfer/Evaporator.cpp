@@ -131,16 +131,21 @@ int Evaporator::solve(const DictPtr& dict,
     //  surface pass and so the energy report take), single phase included.  A
     //  produced chest keeps its producer's answer.
     //
-    //  WHERE THE PACKAGE RESOLVES IT -- and on every corpus evaporator package
-    //  it does not, measured the same day.  The chest carries ZERO of the
-    //  liquor's nonvolatile (sucrose, a salt), whose K is 0, so the flash's
-    //  dew test sums z/K = 0/0 = NaN (`IsothermalFlash.cpp`, the `g_at_1`
-    //  phase test), never classes the stream as superheated, and returns an
-    //  unconverged "two-phase" answer; `equilibriumAt` discards it and the
-    //  carried default stands -- in this unit AND in the report.  So such a
-    //  chest is still refused, and the refusal now says WHY.  The remedy is a
-    //  one-line guard in that phase test (skip z_i = 0), on a path every flash
-    //  in the corpus goes through: not taken here (DEV.md 4d D1).
+    //  ON EVERY PACKAGE NOW (2026-10-05, C35).  The chest carries ZERO of the
+    //  liquor's nonvolatile (sucrose, a salt), whose K is 0, and the flash's
+    //  dew test summed z/K = 0/0 = NaN (`IsothermalFlash.cpp`, the `g_at_1`
+    //  phase test), so on every corpus evaporator package a superheated chest
+    //  went unresolved and was refused.  The flash now skips a component the
+    //  stream carries none of, and the chest reads as the vapour it is.  A
+    //  chest the package still cannot resolve keeps the carried default and
+    //  is refused saying WHY.
+    //
+    //  WHAT THE GUARD MADE VISIBLE: a SATURATED chest is no longer refused
+    //  for want of an answer -- the flash answers, and on the saturation
+    //  curve its answer is set by the last digits of T and P (the gate's
+    //  fixture at Tsat(200 kPa) = 392.1781136 K, written to seven decimals,
+    //  reads as vapour; at 392.17 K it reads as liquid and is refused).
+    //  `phase gas;` stays the one channel that does not depend on rounding.
     sVector zSteam(n, 0.0);
     scalar  vfChest     = 1.0;
     bool    chestPinned = false;
@@ -222,11 +227,10 @@ int Evaporator::solve(const DictPtr& dict,
                   " state file `0/" << sName << "`.  The word is needed even"
                   " when the state looks unmistakable: a SATURATED supply sits"
                   " exactly ON the saturation curve, the one place where"
-                  " (T, P) cannot say which side it is on, and the default"
-                  " for the missing word is LIQUID.  (A SUPERHEATED supply"
-                  " needs no word WHERE this package resolves it: it then"
-                  " reads as single-phase vapour.  Where the package cannot"
-                  " resolve it, the word is the only channel.)\n"
+                  " (T, P) cannot say which side it is on -- the side the"
+                  " engine reads there is set by the last digits of T and P."
+                  "  (A SUPERHEATED supply needs no word: it reads as"
+                  " single-phase vapour wherever the package resolves it.)\n"
                   "    * it is NOT steam -> this unit is the wrong model for"
                   " it; an evaporator heated by a sensible-heat medium needs a"
                   " duty that is not a latent heat.";

@@ -240,6 +240,35 @@ inline bool isInternalMediumDutyKpi(const std::string& k)
     return k == "duty_kW";
 }
 
+//  IS THIS UNIT A PROCESS-TO-PROCESS HEAT EXCHANGER?  (2026-10-05, DEV.md
+//  C35 / 4d D1.)  Asked of what the unit IS -- its TYPE -- never of how many
+//  ports it has.  Such a unit moves its declared duty BETWEEN its own process
+//  streams, so the duty is internal: the streams already net it and counting
+//  it at the plant boundary would count it twice (the old -3663 % on
+//  heatExchanger01).  The test used to be structural -- >= 2 process inlets,
+//  >= 2 process outlets, no utility stream -- and a MULTI-FEED distillation
+//  column satisfies it while its reboiler and condenser are heat that
+//  crosses the boundary: its two duties were dropped, and the plant residual
+//  was exactly -(Q_reboiler + Q_condenser) on column04 (-78.693876 kW),
+//  column05 and column08 (-891.980060 kW).  An antisolvent crystalliser's
+//  cooling duty was one data datum away from the same fate.
+//
+//  The list is the set of unit types whose energy-item KPI IS heat passed
+//  from one of their process streams to another: a shell-and-tube or plate
+//  exchanger, a multi-stream exchanger, a cooling tower (water to air).  A
+//  new exchanger type joins it here, by a human, the way an energy item
+//  joins `energyItemKpis`; a type that is not listed keeps its duties on the
+//  boundary, which is the reading a unit's published duty already promises.
+//  The structural conditions stay as NECESSARY ones (an exchanger whose one
+//  side is a utility circuit tagged on both ends sends its heat through
+//  `qBoundary` and is not internal), never as sufficient.
+inline bool isProcessToProcessExchanger(const std::string& unitType)
+{
+    return unitType == "heatExchanger"
+        || unitType == "multiStreamHX"
+        || unitType == "coolingTower";
+}
+
 
 // Which enthalpy datum a per-unit energy balance was computed on.  There is
 // only ONE datum -- the elements reference (Hf, 25 C) -- so the heat of
@@ -302,9 +331,18 @@ inline std::optional<FlashSolution> streamSplit(const ProcessStream& s,
     //  the two disagree by the feed's latent half.  `unitOperations` may not
     //  include `reporting`, so the sentence would have had to be copied --
     //  the arity sin, in the machinery built to audit it.  It is one call now.
+    //
+    //  AND THE SEARCH IS THE CONSUMER'S (2026-10-05, C35 item 4).  A stream
+    //  fed to a `phaseSet VLLE` flash means its THREE-phase equilibrium; the
+    //  vapour-liquid search found one liquid on vlle03's feed where the
+    //  unit's own search finds a vapour and two liquids, and the unit's duty
+    //  (priced as this report prices) charged 186.48 kW to an identity
+    //  operation.  `consumerRecipe` is the unit's own call.
+    const auto recipe = flashState::consumerRecipe(s, thermo);
     return flashState::twoPhaseSplit(s.T, s.P, s.z, s.phasePinned, s.vf,
                                      thermo, "stream '" + s.name + "'",
-                                     "energyBalance");
+                                     "energyBalance", nullptr,
+                                     recipe ? &*recipe : nullptr);
 }
 
 // Enthalpy [kW] carried by the CRYSTALLINE phase (the per-component molar
