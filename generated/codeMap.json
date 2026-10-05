@@ -3752,7 +3752,6 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
-   "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -7084,7 +7083,8 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
-   "src/unitOperations/heatTransfer/CoolingTower.H"
+   "src/unitOperations/heatTransfer/CoolingTower.H",
+   "src/unitOperations/heatTransfer/Psychrometry.H"
   ],
   "src/unitOperations/heatTransfer/DryingCurve.cpp": [
    "src/core/Dictionary.H",
@@ -7094,6 +7094,7 @@
    "src/unitOperations/heatTransfer/DryingCurve.H"
   ],
   "src/unitOperations/heatTransfer/EvaporativeDryer.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -8410,6 +8411,7 @@
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
+   "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
@@ -9797,7 +9799,6 @@
   ],
   "src/core/RegistryRefusal.H": [
    "src/core/RegistryRefusal.cpp",
-   "src/postProcessing/sizing/VesselSize.cpp",
    "src/solver/ODE/ODEIntegrator.cpp",
    "src/streams/UtilityCircuit.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
@@ -13715,6 +13716,7 @@
   "src/unitOperations/heatTransfer/Psychrometry.H": [
    "src/unitOperations/batch/BatchDryer.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/SolidDryer.cpp"
   ],
   "src/unitOperations/heatTransfer/SolidDryer.H": [
