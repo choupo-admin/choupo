@@ -2008,6 +2008,47 @@ Each lands as ONE revertable merge with its moved golden rows listed.
   4. An unpinned feed to a `phaseSet VLLE` unit means its three-phase
      equilibrium, in the unit AND the energy report (full regression
      AUTHORISED by Vítor for this item).
+     [BUILT 2026-10-05 on branch `claude/c35-shared-path`.  ONE search, one
+     parse: `IsothermalFlash::readOptions` is the unit's option parse
+     (extracted verbatim from `solve()`), and
+     `IsothermalFlash::inletEquilibriumOptions` returns the search the unit
+     resolves its feed with when it is richer than vapour-liquid (phase set
+     VLLE, or `auto` resolving to it), nothing otherwise.  The flowsheet
+     stamps every stream such a unit consumes with that unit's dict
+     (`ProcessStream::equilibriumConsumer`, after the solve, because a
+     produced stream is replaced on every pass), and every reader that
+     resolves the stream goes through `flashState::consumerRecipe`, i.e.
+     the unit's own call: the energy report (`reporting::streamSplit`), the
+     surface pass that sets the stream table's vf and H (`Flowsheet.cpp`),
+     and the unit's duty (`priceState`'s new `recipe` argument).  A
+     three-phase or two-liquid answer is priced port by port through the
+     one unpacking (`vllePorts`, moved to `IsothermalFlash.H`) inside
+     `flashState::hOfState`, and `isSplit` / `vapourFractionOf` read a
+     resolved state of any kind (`V_over_F` is the alpha LIQUID fraction of
+     a three-phase answer).  MEASURED, vlle03's datum fixture
+     (check_vlle_fallback arm (e2)): duty 186.481786 kW -> 0, plant residual
+     1e-13 kW both before and after (they agreed on the wrong state), the
+     feed's published vf 0 -> 0.185797 = the unit's beta_vapor.  Gate:
+     `check_vlle_fallback` arm (e3).  Moved rows: listed in the commit.
+     NOT covered, said: a VLLE feed that ANOTHER unit produced is resolved
+     with the consumer's search by the report while its producer priced it
+     vapour-liquid (no corpus case has one).]
+     THE FULL REGRESSION (CLAUDE.md §0.4 reason, written before launch,
+     2026-10-05): WHAT CHANGED since the last validation of `main`
+     (2a403aac0) is three edits on shared paths, run ONCE on their
+     combination: (1) item 4 -- `flashState::equilibriumAt` /
+     `twoPhaseSplit` / `hOfState` / `priceState`, `reporting::streamSplit`
+     and the flowsheet's post-solve surface pass, which EVERY steady case's
+     stream table and energy report go through; (2) 4d D1 multi-feed --
+     `EnergyBalanceReport`'s internal-exchanger test, which every case with
+     an energy report goes through; (3) 4d D1 chest -- `IsothermalFlash`'s
+     Rachford-Rice and phase test (and `DewPoint`'s sum), which every
+     vapour-liquid flash in every unit goes through.  WHY TARGETED CHECKS ARE
+     NOT ENOUGH: each edit claims "identical where defined" for every case
+     but its witnesses, and only the whole corpus can test that claim; the
+     targeted runs (vlle03/04, column01/04/05/08, coolingTower01, mheatx01,
+     the chest fixtures) cover the witnesses alone.  Authorised by Vítor
+     (C35, verbatim above).
   5. A pair used outside its validity span is ANNOUNCED, as vapour pressure is.
      [DONE 2026-10-05, branch `claude/c35-pairs-pipe`.  `PairSpanGuard`
      (`src/thermo/PairAudit.H`, beside the ONE parser that reads the span):
@@ -3636,7 +3677,10 @@ datum fixture of vlle03 it prices the feed (at the drum's own T and P) as one
 liquid where the VLLE search finds three phases -- the unit's duty agrees with
 the report (186.48 kW, the vapour's latent heat), while the sensible route,
 resolving its feed with the unit's VLLE options, reads Q = 0.  Which reading
-an unpinned VLLE feed MEANS is Vitor's.  The original entry follows.
+an unpinned VLLE feed MEANS is Vitor's.  **RULED AND CLOSED 2026-10-05 (C35
+item 4, branch `claude/c35-shared-path`): it means its THREE-phase
+equilibrium, in the unit AND the report** -- see C35 item 4 for how.  The
+original entry follows.
 `IsothermalFlash.cpp:1857` (now `:1870`) picked the
 two-phase fallback of a `phaseSet VLLE` flash by `sol.regime.find("VL")`, and
 the LL regime's own string (line 1000, now 1001) is "two-phase liquid (LL, VLLE attempt

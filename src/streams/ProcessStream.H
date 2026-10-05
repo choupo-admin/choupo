@@ -60,6 +60,8 @@ Description
 
 namespace Choupo {
 
+class Dictionary;   // the consumer's unit dict, carried opaque (see below)
+
 // Particle-size distribution of a stream's solid phase.
 // Discretised into bins: `diameter[k]` is the representative size of
 // bin k [m]; `massFrac[k]` its fraction of the total solid mass
@@ -100,6 +102,19 @@ struct ProcessStream
     //  fictitious T (column12), so re-resolving it there breaks it.  False
     //  wherever nobody set it (the dynamic driver), which changes nothing.
     bool        authoredInlet = false;
+    //  WHICH SEARCH THIS STREAM'S EQUILIBRIUM MEANS (2026-10-05, DEV.md C35
+    //  item 4).  Null for every stream but one consumed by a unit that
+    //  resolves its inlet with a search richer than vapour-liquid -- today a
+    //  `phaseSet VLLE` isothermalFlash -- where it holds that unit's
+    //  (flattened) dict, stamped by `Flowsheet::solve` after the solve.  An
+    //  unpinned (T, P, z) MEANS its own equilibrium (R-E2), and for a feed to
+    //  a unit that admits a vapour and two liquids that equilibrium is the
+    //  three-phase one: every reader that resolves the stream (the energy
+    //  report, the stream table's H and vf) builds its search from this dict
+    //  through `IsothermalFlash::inletEquilibriumOptions`, the call the unit
+    //  itself makes, so the unit and the report price ONE state.  Opaque
+    //  here: `streams` may not read `unitOperations`.
+    std::shared_ptr<Dictionary> equilibriumConsumer;
     // Specific molar enthalpy at the ELEMENTS reference (formation
     // datum, 298.15 K).  Populated by Flowsheet::solve once the case
     // has converged, via thermo.H_stream_formation(T, P, vf, z) when

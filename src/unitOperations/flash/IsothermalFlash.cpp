@@ -239,27 +239,10 @@ FlashSolution solveSLE(const FlashInput&    in,
     return sol;
 }
 
-//  ---- WHICH PHASE A VLLE ANSWER PUTS ON WHICH PORT (2026-10-05) -----------
-//
-//  A `phaseSet VLLE` flash always emits three ports (vapour, liquid alpha,
-//  liquid beta), and its solution packs them differently by KIND: a genuine
-//  three-phase answer carries the vapour in `xVapor` / `betaVapor` and the
-//  ALPHA fraction in `V_over_F`; a VL fallback carries the vapour in `y` /
-//  `V_over_F`; an LL fallback carries the beta LIQUID there.  The ports were
-//  the only reader that unpacked all three right.  The duty priced a
-//  three-phase answer as if `V_over_F` were a vapour fraction and `y` a
-//  vapour (its beta LIQUID costed with a latent heat, its real vapour left
-//  out), and the KPIs published F_alpha = F(1 - beta_alpha) against an alpha
-//  port carrying F beta_alpha -- vlle03 pinned both.  So the unpacking has
-//  ONE home, and the ports, the duty and the KPIs all read it.
-struct VllePhase
-{
-    scalar  beta = 0.0;   //  fraction of the feed on this port
-    sVector z;            //  its composition
-    scalar  vf   = 0.0;   //  1 for the vapour port, 0 for a liquid one
-};
-struct VllePorts { VllePhase vapour, alpha, beta; };
+} // anonymous namespace
 
+//  The VLLE port unpacking: its ONE home, declared in IsothermalFlash.H
+//  (the comment there says why it left the anonymous namespace).
 VllePorts vllePorts(const FlashSolution& sol, std::size_t n)
 {
     VllePorts p;
@@ -299,8 +282,6 @@ VllePorts vllePorts(const FlashSolution& sol, std::size_t n)
     }
     return p;
 }
-
-} // anonymous namespace
 
 FlashSolution
 IsothermalFlash::solveCore(const FlashInput&    in,
@@ -1373,41 +1354,12 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     return sol;
 }
 
-int IsothermalFlash::solve(const DictPtr& dict,
-                           const ThermoPackage& thermo,
-                           int verbosity)
+FlashOptions IsothermalFlash::readOptions(const DictPtr&       dict,
+                                          const ThermoPackage& thermo,
+                                          const FlashInput&    in,
+                                          int                  verbosity)
 {
-    auto feedDict = dict->subDict("feed");
     auto operDict = dict->subDict("operation");
-    auto compDict = dict->subDict("composition");
-
-    FlashInput in;
-    in.F = feedDict->lookupScalar("F", Dims::molarFlow);
-    // T and P fall back to the feed stream values if the user did
-    // not set them explicitly under `operation` — natural propagation
-    // in a flowsheet, override possible per unit.
-    in.T = operDict->found("T")
-             ? operDict->lookupScalar("T", Dims::temperature)
-           : feedDict->lookupScalar("T", Dims::temperature);
-    in.P = operDict->found("P")
-             ? operDict->lookupScalar("P", Dims::pressure)
-           : feedDict->lookupScalar("P", Dims::pressure);
-
-    in.z.assign(thermo.n(), 0.0);
-    scalar zsum = 0.0;
-    for (const auto& key : compDict->keys())
-    {
-        std::size_t i = thermo.indexOf(key);
-        in.z[i] = compDict->lookupScalar(key);
-        zsum   += in.z[i];
-    }
-    if (std::abs(zsum - 1.0) > 1.0e-6)
-    {
-        std::cerr << "Warning: feed composition sums to " << zsum
-                  << "; normalising.\n";
-        for (auto& v : in.z) v /= zsum;
-    }
-
     FlashOptions opts;
     opts.verbosity = verbosity;
 
@@ -1423,11 +1375,9 @@ int IsothermalFlash::solve(const DictPtr& dict,
     if (dict->found("maxOuterIter"))
         opts.maxOuterIter   = static_cast<int>(dict->lookupScalar("maxOuterIter"));
 
-    std::string psDeclared;
     if (operDict->found("phaseSet"))
     {
         const std::string ps = operDict->lookupWord("phaseSet");
-        psDeclared = ps;
         if      (ps == "VL"  ) opts.phaseSet = PhaseSet::VL;
         else if (ps == "LL"  ) opts.phaseSet = PhaseSet::LL;
         else if (ps == "VLLE") opts.phaseSet = PhaseSet::VLLE;
@@ -1511,6 +1461,75 @@ int IsothermalFlash::solve(const DictPtr& dict,
         else throw std::runtime_error("Unknown phaseSet '" + ps
             + "' (expected 'VL', 'LL', 'VLLE' or 'auto')");
     }
+    if (operDict->found("alphaRich"))
+        opts.llAlphaRichComp = thermo.indexOf(operDict->lookupWord("alphaRich"));
+    if (operDict->found("betaRich"))
+        opts.llBetaRichComp  = thermo.indexOf(operDict->lookupWord("betaRich"));
+    return opts;
+}
+
+std::optional<FlashOptions>
+IsothermalFlash::inletEquilibriumOptions(const DictPtr&       unitDict,
+                                         const ThermoPackage& thermo,
+                                         scalar               T,
+                                         scalar               P,
+                                         const sVector&       z)
+{
+    if (!unitDict || !unitDict->found("operation")) return std::nullopt;
+    auto operDict = unitDict->subDict("operation");
+    if (!operDict->found("phaseSet")) return std::nullopt;   // VL: the default
+    //  The operating state the `auto` decision is taken at, exactly as
+    //  `solve()` builds it: the declared T and P, else the feed's.
+    FlashInput in;
+    in.F = 1.0;
+    in.T = operDict->found("T") ? operDict->lookupScalar("T", Dims::temperature) : T;
+    in.P = operDict->found("P") ? operDict->lookupScalar("P", Dims::pressure)    : P;
+    in.z = z;
+    FlashOptions o = readOptions(unitDict, thermo, in, 0);
+    if (o.phaseSet != PhaseSet::VLLE) return std::nullopt;
+    o.verbosity    = 0;
+    o.residualSink = nullptr;
+    return o;
+}
+
+int IsothermalFlash::solve(const DictPtr& dict,
+                           const ThermoPackage& thermo,
+                           int verbosity)
+{
+    auto feedDict = dict->subDict("feed");
+    auto operDict = dict->subDict("operation");
+    auto compDict = dict->subDict("composition");
+
+    FlashInput in;
+    in.F = feedDict->lookupScalar("F", Dims::molarFlow);
+    // T and P fall back to the feed stream values if the user did
+    // not set them explicitly under `operation` — natural propagation
+    // in a flowsheet, override possible per unit.
+    in.T = operDict->found("T")
+             ? operDict->lookupScalar("T", Dims::temperature)
+           : feedDict->lookupScalar("T", Dims::temperature);
+    in.P = operDict->found("P")
+             ? operDict->lookupScalar("P", Dims::pressure)
+           : feedDict->lookupScalar("P", Dims::pressure);
+
+    in.z.assign(thermo.n(), 0.0);
+    scalar zsum = 0.0;
+    for (const auto& key : compDict->keys())
+    {
+        std::size_t i = thermo.indexOf(key);
+        in.z[i] = compDict->lookupScalar(key);
+        zsum   += in.z[i];
+    }
+    if (std::abs(zsum - 1.0) > 1.0e-6)
+    {
+        std::cerr << "Warning: feed composition sums to " << zsum
+                  << "; normalising.\n";
+        for (auto& v : in.z) v /= zsum;
+    }
+
+    //  The declared options -- ONE parse, shared with the energy report's
+    //  resolution of this unit's feed (`inletEquilibriumOptions`).
+    FlashOptions opts = readOptions(dict, thermo, in, verbosity);
 
     /*-----------------------------------------------------------------------*\
       THE `model` SLOT: which MACHINE solves the flash.
@@ -1583,10 +1602,6 @@ int IsothermalFlash::solve(const DictPtr& dict,
         std::cout << "  [flash] model " << impliedModel
                   << (declaredModel.empty() ? "  (implied by the phase set)"
                                             : "  (declared)") << "\n";
-    if (operDict->found("alphaRich"))
-        opts.llAlphaRichComp = thermo.indexOf(operDict->lookupWord("alphaRich"));
-    if (operDict->found("betaRich"))
-        opts.llBetaRichComp  = thermo.indexOf(operDict->lookupWord("betaRich"));
 
     // Pipe per-iteration composition residuals into UnitOperation's
     // recordResidual so the GUI's convergence plot can see them.
@@ -1667,6 +1682,11 @@ int IsothermalFlash::solve(const DictPtr& dict,
         const bool wantSplit = pinned
             ? (vf_feed > 1.0e-9 && vf_feed < 1.0 - 1.0e-9)
             : true;
+        //  The search this unit resolves its feed with when it is richer than
+        //  vapour-liquid (a `phaseSet VLLE` unit) -- the SAME call the energy
+        //  report makes on the stream (`reporting::streamSplit`).
+        const std::optional<FlashOptions> feedRecipe =
+            inletEquilibriumOptions(dict, thermo, T_feed, P_feed, in.z);
         bool feedSplit = wantSplit && !thermo.phasesOfType("vapor").empty();
         FlashSolution feedSol;
         if (feedSplit)
@@ -1680,12 +1700,10 @@ int IsothermalFlash::solve(const DictPtr& dict,
             //  beta_V 0.18891 vs 0.18580), a -3.16 kW duty for an identity
             //  operation.  "The SAME solveCore this unit uses" (R-E1 above)
             //  means the same options too.
-            if (opts.phaseSet == PhaseSet::VLLE)
-            {
-                fopts = opts;
-                fopts.verbosity    = 0;
-                fopts.residualSink = nullptr;
-            }
+            //  And "the same options" has ONE home: the search the energy
+            //  report runs on this very stream (C35 item 4), so the unit and
+            //  the report resolve one state, not two that agree today.
+            if (feedRecipe) fopts = *feedRecipe;
             //  A feed state the package cannot resolve is a NAMED gap, never a
             //  crashed case and never a silent fall-back to the old pricing:
             //  the duty would then be a number about a state the engine just
@@ -1814,7 +1832,9 @@ int IsothermalFlash::solve(const DictPtr& dict,
                 H_in = flashState::priceState(T_feed, P_feed, in.z, 1.0,
                                               pinned, vf_feed, thermo,
                                               "feed of an isothermalFlash",
-                                              &notes);
+                                              &notes,
+                                              feedRecipe ? &*feedRecipe
+                                                         : nullptr);
                 if (sol.threePhase)
                 {
                     const auto ports = vllePorts(sol, thermo.n());

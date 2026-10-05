@@ -3504,6 +3504,39 @@ int Flowsheet::solve(const DictPtr& dict,
     //  the ones DEV.md C33 lists as left, each with its reason (2026-10-04).
     //  This pass is the SURFACE the run shows and the report reads.  Gates:
     //  check_overspecified_stream arm (d), check_inlet_resolution arm (i).
+    //  WHICH SEARCH A STREAM'S EQUILIBRIUM MEANS (2026-10-05, DEV.md C35
+    //  item 4).  A stream fed to a unit that resolves its inlet with a search
+    //  richer than vapour-liquid -- a `phaseSet VLLE` isothermalFlash --
+    //  carries that unit's dict from here on, so the resolution below, the H
+    //  pass and the energy report all ask the unit's OWN search
+    //  (`flashState::consumerRecipe` -> `IsothermalFlash::
+    //  inletEquilibriumOptions`, the call the unit makes on its feed).
+    //  Stamped after the solve because a produced stream is replaced by its
+    //  producer on every pass.  Measured on vlle03 under a datum: the
+    //  vapour-liquid search read its feed as ONE liquid where the unit finds
+    //  a vapour and two liquids, and the duty charged 186.48 kW to an
+    //  identity operation.
+    {
+        std::map<std::string, DictPtr> unitDictOf;
+        for (const auto& u : units)
+            unitDictOf[u->lookupWordOrDefault("name", "")] = u;
+        for (const auto& fu : topology_)
+        {
+            if (fu.type != "isothermalFlash") continue;
+            const auto ud = unitDictOf.find(fu.name);
+            if (ud == unitDictOf.end()) continue;
+            for (const auto& in : fu.ins)
+            {
+                auto st = streams_.find(in);
+                if (st == streams_.end()) continue;
+                if (IsothermalFlash::inletEquilibriumOptions(
+                        ud->second, thermo, st->second.T, st->second.P,
+                        st->second.z))
+                    st->second.equilibriumConsumer = ud->second;
+            }
+        }
+    }
+
     std::map<std::string, FlashSolution> resolvedInlet;   // handed to the H pass below
     {
         std::set<std::string> produced;
@@ -3522,12 +3555,15 @@ int Flowsheet::solve(const DictPtr& dict,
         {
             if (s.phasePinned || produced.count(nm) || s.F <= 0.0
                 || boundaryAliases_.count(nm)) continue;
+            const auto recipe = flashState::consumerRecipe(s, thermo);
             auto fs = flashState::equilibriumAt(s.T, s.P, s.z, false, s.vf,
                                                 thermo, "stream '" + nm + "'",
-                                                "streamState");
+                                                "streamState", nullptr,
+                                                recipe ? &*recipe : nullptr);
             if (!fs) continue;
-            s.vf = (fs->V_over_F <= 1.0e-9) ? 0.0
-                 : (fs->V_over_F >= 1.0 - 1.0e-9) ? 1.0 : fs->V_over_F;
+            //  The VAPOUR share, whatever the answer's kind: a three-phase
+            //  answer's `V_over_F` is its alpha LIQUID fraction.
+            s.vf = flashState::vapourFractionOf(*fs);
             resolvedInlet.emplace(nm, *fs);
         }
         //  The label of a resolved inlet carries the inlet's answer (the
@@ -3537,6 +3573,8 @@ int Flowsheet::solve(const DictPtr& dict,
             const auto it = resolvedInlet.find(src);
             if (it == resolvedInlet.end() || !streams_.count(alias)) continue;
             streams_.at(alias).vf = streams_.at(src).vf;
+            streams_.at(alias).equilibriumConsumer =
+                streams_.at(src).equilibriumConsumer;
             resolvedInlet.emplace(alias, it->second);
         }
     }
@@ -3590,13 +3628,21 @@ int Flowsheet::solve(const DictPtr& dict,
             std::optional<FlashSolution> sp;
             if (auto it = resolvedInlet.find(name); it != resolvedInlet.end())
             {
-                if (it->second.V_over_F > 1.0e-9 && it->second.V_over_F < 1.0 - 1.0e-9)
+                if (flashState::isSplit(it->second))
                     sp = it->second;
             }
-            else if (s.vf > 1.0e-9 && s.vf < 1.0 - 1.0e-9)
+            else if ((s.vf > 1.0e-9 && s.vf < 1.0 - 1.0e-9)
+                     || s.equilibriumConsumer)
+            {
+                //  A stream fed to a VLLE unit is resolved with that unit's
+                //  search whatever its carried vf, as the energy report
+                //  resolves it (`reporting::streamSplit`): one state.
+                const auto recipe = flashState::consumerRecipe(s, thermo);
                 sp = flashState::twoPhaseSplit(s.T, s.P, s.z, s.phasePinned, s.vf,
                                                thermo, "stream '" + name + "'",
-                                               "streamState");
+                                               "streamState", nullptr,
+                                               recipe ? &*recipe : nullptr);
+            }
             s.H = sp ? flashState::hOfState(*sp, s.T, s.P, s.z, thermo)
                      : thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
             s.H_valid = std::isfinite(s.H);

@@ -252,7 +252,8 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
                                                   const ThermoPackage& thermo,
                                                   const std::string&   locus,
                                                   const char*          category,
-                                                  std::string*         deferTo = nullptr)
+                                                  std::string*         deferTo = nullptr,
+                                                  const FlashOptions*  recipe  = nullptr)
 {
     const bool resolvable = pinned
         ? (vfCarried > 1.0e-9 && vfCarried < 1.0 - 1.0e-9)
@@ -261,7 +262,14 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
     if (thermo.phasesOfType("vapor").empty()) return std::nullopt;
 
     FlashInput fin; fin.F = 1.0; fin.T = T; fin.P = P; fin.z = z;
-    FlashOptions fopts; fopts.verbosity = 0;
+    //  `recipe`: the search the stream's CONSUMER resolves it with, when that
+    //  search is richer than vapour-liquid -- a `phaseSet VLLE` flash
+    //  (`IsothermalFlash::inletEquilibriumOptions`, C35 item 4).  Absent, the
+    //  vapour-liquid default every reader applied before.
+    FlashOptions fopts;
+    if (recipe) fopts = *recipe;
+    fopts.verbosity    = 0;
+    fopts.residualSink = nullptr;
     FlashSolution fs;
     try
     {
@@ -318,9 +326,49 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
     //  `solveCore` directly and needed the SAME sentence, and the day it had
     //  its own copy of the test it had none -- ammoniaStaged04's separator
     //  accepted the root this block discards and the plant lost 22 274.7 kW.
-    if (supercriticalSplitDiscarded(fs, T, z, thermo, locus, category, deferTo))
+    //  A three-phase or two-liquid answer (only a VLLE `recipe` returns
+    //  one) carries a LIQUID fraction in `V_over_F`, which the discard would
+    //  misread as a vapour fraction.  It is left alone, as
+    //  `takeSupercriticalAsSinglePhase` leaves a three-phase answer alone.
+    if (!fs.threePhase && !fs.liquidLiquid
+        && supercriticalSplitDiscarded(fs, T, z, thermo, locus, category, deferTo))
         return std::nullopt;
     return fs;
+}
+
+//  ---- THE SEARCH A STREAM'S CONSUMER RESOLVES IT WITH (2026-10-05) --------
+//
+//  C35 item 4.  A stream fed to a `phaseSet VLLE` flash carries that unit's
+//  dict (`ProcessStream::equilibriumConsumer`, stamped by the flowsheet);
+//  this turns it into the search, through the ONE call the unit makes on its
+//  own feed.  Nothing for every other stream: the vapour-liquid default.
+inline std::optional<FlashOptions> consumerRecipe(const ProcessStream& s,
+                                                  const ThermoPackage& thermo)
+{
+    if (!s.equilibriumConsumer) return std::nullopt;
+    return IsothermalFlash::inletEquilibriumOptions(s.equilibriumConsumer,
+                                                    thermo, s.T, s.P, s.z);
+}
+
+//  ---- WHAT A RESOLVED STATE IS, WHATEVER ITS KIND (2026-10-05) ------------
+//
+//  A vapour-liquid answer carries its vapour fraction in `V_over_F`; a
+//  three-phase answer (a `phaseSet VLLE` search, C35 item 4) carries the
+//  ALPHA LIQUID fraction there and the vapour in `betaVapor`; a VLLE search
+//  that found no vapour carries the beta LIQUID fraction there.  A reader
+//  that must know whether a state is a split, or how much of it is vapour,
+//  asks these two -- never `V_over_F` alone.
+inline bool isSplit(const FlashSolution& fs)
+{
+    if (fs.threePhase || fs.liquidLiquid) return true;
+    return fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9;
+}
+inline scalar vapourFractionOf(const FlashSolution& fs)
+{
+    const scalar v = fs.threePhase   ? fs.betaVapor
+                   : fs.liquidLiquid ? 0.0
+                                     : fs.V_over_F;
+    return (v <= 1.0e-9) ? 0.0 : (v >= 1.0 - 1.0e-9) ? 1.0 : v;
 }
 
 //  Per-mole enthalpy [J/mol] of a RESOLVED state on the elements datum.
@@ -342,7 +390,18 @@ inline scalar hOfState(const FlashSolution& fs,
 {
     const scalar bV = fs.V_over_F;
     scalar h;
-    if (bV <= 1.0e-9)            h = thermo.H_stream_formation(T, P, 0.0, z);
+    if (fs.threePhase || fs.liquidLiquid)
+    {
+        //  A VLLE resolution (C35 item 4): each phase at its own composition,
+        //  the vapour as a vapour and BOTH liquids as liquids, through the
+        //  ONE unpacking the unit's ports read (`vllePorts`).
+        const auto ports = vllePorts(fs, thermo.n());
+        h = 0.0;
+        for (const VllePhase* ph : { &ports.vapour, &ports.alpha, &ports.beta })
+            if (ph->beta > 0.0)
+                h += ph->beta * thermo.H_stream_formation(T, P, ph->vf, ph->z);
+    }
+    else if (bV <= 1.0e-9)       h = thermo.H_stream_formation(T, P, 0.0, z);
     else if (bV >= 1.0 - 1.0e-9) h = thermo.H_stream_formation(T, P, 1.0, z);
     else
         h = (1.0 - bV) * thermo.H_stream_formation(T, P, 0.0, fs.x)
@@ -387,11 +446,16 @@ inline std::optional<FlashSolution> twoPhaseSplit(scalar               T,
                                                   const ThermoPackage& thermo,
                                                   const std::string&   locus,
                                                   const char*          category,
-                                                  std::string*         deferTo = nullptr)
+                                                  std::string*         deferTo = nullptr,
+                                                  const FlashOptions*  recipe  = nullptr)
 {
     auto fs = equilibriumAt(T, P, z, pinned, vfCarried, thermo,
-                            locus, category, deferTo);
-    if (fs && fs->V_over_F > 1.0e-9 && fs->V_over_F < 1.0 - 1.0e-9)
+                            locus, category, deferTo, recipe);
+    //  Without a recipe the answer is vapour-liquid and `isSplit` reduces to
+    //  0 < V/F < 1 exactly as before; with one (a VLLE consumer) a
+    //  three-phase or two-liquid answer is a split too, and its readers
+    //  price it through `hOfState`, never through `V_over_F` as a vf.
+    if (fs && isSplit(*fs))
         return fs;
     return std::nullopt;
 }
@@ -525,11 +589,12 @@ inline scalar priceState(scalar                    T,
                          scalar                    vfCarried,
                          const ThermoPackage&      thermo,
                          const std::string&        locus,
-                         std::vector<std::string>* notes)
+                         std::vector<std::string>* notes,
+                         const FlashOptions*       recipe = nullptr)
 {
     std::string deferred;
     auto sp = twoPhaseSplit(T, P, z, pinned, vfCarried, thermo,
-                            locus, "model", &deferred);
+                            locus, "model", &deferred, recipe);
     if (!deferred.empty() && notes) notes->push_back(locus + ": " + deferred);
     if (sp) return F * hOfState(*sp, T, P, z, thermo);
     return F * thermo.H_stream_formation(T, P, vfCarried, z);

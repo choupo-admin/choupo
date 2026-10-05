@@ -302,9 +302,18 @@ inline std::optional<FlashSolution> streamSplit(const ProcessStream& s,
     //  the two disagree by the feed's latent half.  `unitOperations` may not
     //  include `reporting`, so the sentence would have had to be copied --
     //  the arity sin, in the machinery built to audit it.  It is one call now.
+    //
+    //  AND THE SEARCH IS THE CONSUMER'S (2026-10-05, C35 item 4).  A stream
+    //  fed to a `phaseSet VLLE` flash means its THREE-phase equilibrium; the
+    //  vapour-liquid search found one liquid on vlle03's feed where the
+    //  unit's own search finds a vapour and two liquids, and the unit's duty
+    //  (priced as this report prices) charged 186.48 kW to an identity
+    //  operation.  `consumerRecipe` is the unit's own call.
+    const auto recipe = flashState::consumerRecipe(s, thermo);
     return flashState::twoPhaseSplit(s.T, s.P, s.z, s.phasePinned, s.vf,
                                      thermo, "stream '" + s.name + "'",
-                                     "energyBalance");
+                                     "energyBalance", nullptr,
+                                     recipe ? &*recipe : nullptr);
 }
 
 // Enthalpy [kW] carried by the CRYSTALLINE phase (the per-component molar

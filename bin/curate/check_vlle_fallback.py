@@ -58,19 +58,27 @@ WHAT THIS CHECKS:
            Before: the unit priced its beta LIQUID as a vapour and left the
            real vapour out -- Q = 2.149 kW against the report's dH =
            186.482 kW on that fixture.
+      (e3) THE FEED MEANS ITS THREE-PHASE EQUILIBRIUM (DEV.md C35 item 4,
+           2026-10-05), on the same fixture: its feed sits at the drum's own
+           T and P, so the decanter's duty is |Q_kW| <= 1e-4 kW, the plant
+           first law closes to 1e-4 kW, and the feed's published vf equals
+           the unit's beta_vapor -- the unit, the energy report and the
+           stream table resolve the unpinned feed with ONE search (the
+           unit's, `IsothermalFlash::inletEquilibriumOptions`, reached by the
+           report through `ProcessStream::equilibriumConsumer`).  Before:
+           the report resolved it vapour-liquid (one liquid, vf 0) and the
+           unit priced its feed the report's way -- Q = 186.48 kW, the
+           vapour's latent heat charged to an identity operation, which
+           (e2) could not see because unit and report agreed on it.
 
 WHAT THIS DOES NOT CHECK.  Whether the split is RIGHT: the witness's NRTL
 pair is Choupo's own case-local regression and predicts a second liquid its
 own evidence does not show (that is why the witness can reach the fallback at
 all); it is a STRUCTURAL witness.  The VL fallback (a VLLE search that finds
-one liquid) has no corpus witness.  Whether the THREE-PHASE duty is the
-physically right number on (e2)'s fixture: it agrees with the report, and
-the report resolves an unpinned stream with a VAPOUR-LIQUID flash only, so
-it prices that fixture's unpinned feed (at the drum's own T and P) as ONE
-liquid where the VLLE search finds three phases -- the 186.48 kW is the
-vapour's latent heat charged against a feed state that is not its own
-equilibrium.  The shipped case (no datum, sensible route) resolves its feed
-with the unit's own VLLE options and reads Q = 0.
+one liquid) has no corpus witness.  A stream fed to a VLLE unit that
+ANOTHER unit produced (a mixer's outlet): the report resolves it with the
+consumer's search while its producer priced it vapour-liquid -- no corpus
+case has one, so nothing here can see that pair.
 The propertyOps VL / one-phase classification still reads the regime string
 (PropertyScanTernary) and is not checked.
 
@@ -102,6 +110,15 @@ SABOTAGES (by hand, 2026-10-05; each restored with `git checkout` and
       -> ONLY (e1) FAILS: F_alpha 0.016470 against liquidA 0.011308 kmol/s.
   S7  publish the solution's alpha fraction as V_over_F again
       -> ONLY (e1) FAILS: V_over_F 0.40707 against a vapour share 0.18580.
+  S8  (arm (e3), C35 item 4) the report ignores the consumer's search
+      (`reporting::streamSplit` passes no recipe) -> (e2) and (e3) FAIL:
+      14.152 kW unattributed and a -14.152 kW plant residual (the surface
+      pass still carried vf 0.1858, which the VL report then read as a
+      quality blend at z -- a different wrong number from the 186.48).
+  S9  the flowsheet never stamps `equilibriumConsumer` -> (e2) and (e3)
+      FAIL: 186.482 kW unattributed, plant residual -186.482 kW, feed vf 0
+      against the unit's beta_vapor 0.18580 (the unit alone resolving its
+      feed three-phase, the defect's mirror image).
 """
 import json
 import pathlib
@@ -127,7 +144,11 @@ PROPS_READERS = [
 #  the witness, element closure off by 0.0008 %), priced at -0.0125 kW.  The
 #  defect this gate exists for was 498.03 kW; 0.05 kW sits four orders of
 #  magnitude below it and above the measured imbalance.  The imbalance itself
-#  is a separate finding (DEV.md section 5), not this gate's to hide.
+#  is a separate finding (DEV.md section 5), not this gate's to hide.  Since
+#  C35 item 4 (2026-10-05) the report resolves the witness's feed with the
+#  unit's own VLLE search, so the feed is priced on the same two-liquid state
+#  the ports carry and the residual reads 0: the imbalance is a MATERIAL
+#  fact and stays in the mass balance, where it always was.
 TOL_KW = 5.0e-2
 FLOW_EPS = 1.0e-12     # kmol/s
 #  (e): the three-phase witness, its KPI -> port map, and the unit-arm band
@@ -320,6 +341,27 @@ def main() -> int:
                                 f"attribute (tolerance {TOL_UNIT_KW} kW): the "
                                 "duty is not priced the way the report prices "
                                 "the ports")
+            # (e3) THE FEED MEANS ITS THREE-PHASE EQUILIBRIUM (C35 item 4).
+            #  The fixture's feed sits at the drum's own T and P, so the
+            #  operation is an IDENTITY: an unpinned feed that means the
+            #  equilibrium the unit finds costs nothing to bring there.
+            q = kp.get("Q_kW")
+            if q is None or abs(float(q)) > TOL_UNIT_KW:
+                fail.append(f"(e3) the decanter's duty is {q} kW for a feed "
+                            "already at its own T and P: the feed was not "
+                            "resolved with the unit's three-phase search "
+                            f"(tolerance {TOL_UNIT_KW} kW)")
+            geb = res.get("globalEnergyBoundary") or {}
+            r3 = geb.get("residual_kW")
+            if r3 is None or abs(float(r3)) > TOL_UNIT_KW:
+                fail.append(f"(e3) the plant first law reads residual {r3} kW "
+                            f"(tolerance {TOL_UNIT_KW} kW)")
+            vfF = (res.get("streams", {}).get("feed") or {}).get("vf")
+            bv = kp.get("beta_vapor")
+            if vfF is None or bv is None or abs(float(vfF) - float(bv)) > 1e-6:
+                fail.append(f"(e3) the feed publishes vf = {vfF} but the unit's "
+                            f"own search finds a vapour share {bv}: the stream "
+                            "table and the unit read two different states")
 
     if fail:
         print("check_vlle_fallback: FAILED")
@@ -335,10 +377,14 @@ def main() -> int:
           "and a THREE-PHASE answer (witness vlle03) publishes each phase "
           "flow equal to its port, the ports summing to the feed, V_over_F "
           "as the vapour's share, K ratios named by pair, and a duty the "
-          f"energy report closes to within {TOL_UNIT_KW} kW (datum fixture).  "
+          f"energy report closes to within {TOL_UNIT_KW} kW (datum fixture), "
+          "and an unpinned feed at the drum's own state means its THREE-phase "
+          "equilibrium in the unit, the report and the stream table alike "
+          f"(Q = 0 and plant residual within {TOL_UNIT_KW} kW, feed vf = the "
+          "unit's beta_vapor).  "
           "NOT checked: whether the split is right (a structural witness), "
-          "the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 % vapour, inside the band), whether the report's "
-          "VL-only resolution of an unpinned VLLE feed is its equilibrium, and the "
+          "the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 % vapour, inside the band), a VLLE feed "
+          "another unit produced (no witness), and the "
           "ternary scan's VL / one-phase classification (still the string).")
     return 0
 

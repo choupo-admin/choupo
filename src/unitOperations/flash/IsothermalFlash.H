@@ -50,6 +50,7 @@ Description
 #include <map>
 #include <string>
 #include <memory>
+#include <optional>
 
 namespace Choupo {
 
@@ -191,11 +192,61 @@ public:
                                    const ThermoPackage& thermo,
                                    const FlashOptions& opts);
 
+    //  THE OPTIONS A UNIT DICT DECLARES, read in ONE place (2026-10-05,
+    //  DEV.md C35 item 4).  `solve()` reads them here, and so does
+    //  `inletEquilibriumOptions` below, so the search the unit runs and the
+    //  search the energy report runs on the unit's feed are one parse, not
+    //  two that happen to agree.  `in` is the operating state the
+    //  `phaseSet auto` decision is taken at (T, P and the feed z).
+    static FlashOptions readOptions(const DictPtr&       unitDict,
+                                    const ThermoPackage& thermo,
+                                    const FlashInput&    in,
+                                    int                  verbosity);
+
+    //  THE SEARCH THIS UNIT RESOLVES ITS FEED WITH, when it is richer than
+    //  the vapour-liquid default every other reader applies -- i.e. when the
+    //  unit's phase set is (or `auto` resolves to) VLLE.  Nothing otherwise.
+    //  An unpinned feed MEANS its own equilibrium (R-E2), and for a unit
+    //  that admits two liquids and a vapour, that equilibrium is the
+    //  three-phase one: the energy report must resolve the stream with THIS
+    //  search or it prices a different state from the one the unit
+    //  consumed (vlle03 on a datum: 186.48 kW of "duty" for an identity
+    //  operation).  `T`, `P`, `z` are the stream's; the operating T and P
+    //  are the unit's declared ones when it declares them, as in `solve()`.
+    //  Quiet (verbosity 0) and with no residual sink.
+    static std::optional<FlashOptions>
+    inletEquilibriumOptions(const DictPtr&       unitDict,
+                            const ThermoPackage& thermo,
+                            scalar               T,
+                            scalar               P,
+                            const sVector&       z);
+
 private:
     inline static const std::string type_ = "isothermalFlash";
     std::vector<ProcessStream>      produced_;
     std::map<std::string, scalar>   kpis_;
 };
+
+//  ---- WHICH PHASE A VLLE ANSWER PUTS ON WHICH PORT (2026-10-05) -----------
+//
+//  A `phaseSet VLLE` flash always emits three ports (vapour, liquid alpha,
+//  liquid beta), and its solution packs them differently by KIND: a genuine
+//  three-phase answer carries the vapour in `xVapor` / `betaVapor` and the
+//  ALPHA fraction in `V_over_F`; a VL fallback carries the vapour in `y` /
+//  `V_over_F`; an LL fallback carries the beta LIQUID there.  ONE home for
+//  the unpacking: the unit's ports, its duty and its KPIs read it, and so
+//  does `flashState::hOfState` when the energy report prices a feed it
+//  resolved with the unit's own VLLE search (C35 item 4) -- which is why it
+//  left the .cpp's anonymous namespace.
+struct VllePhase
+{
+    scalar  beta = 0.0;   //  fraction of the feed on this port
+    sVector z;            //  its composition
+    scalar  vf   = 0.0;   //  1 for the vapour port, 0 for a liquid one
+};
+struct VllePorts { VllePhase vapour, alpha, beta; };
+
+VllePorts vllePorts(const FlashSolution& sol, std::size_t n);
 
 void printFlashResult(const FlashSolution& sol,
                       const ThermoPackage& thermo,
