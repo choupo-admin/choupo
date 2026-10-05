@@ -1171,6 +1171,10 @@ Polish a HYGROSCOPIC powder (sugar, food) toward the equilibrium
 moisture set by a real hot-air stream + the solid's **GAB sorption
 isotherm** (`sorption {}` on the component).  Two real streams — the air
 brings the heat and carries the moisture; the outlet T is a RESULT, no duty.
+The powder and the exhaust leave at one T, never below the air's WET-BULB
+temperature (the floor, published as the KPI `T_wetbulb`); when the air
+cannot pay for the isotherm's target there, the powder leaves wetter and the
+run says so.
 ```
 inputs  (wetSolid  hotAir );   outputs (drySolid  humidExhaust );
 ```
@@ -1182,7 +1186,10 @@ sorption isotherm exists or is consulted.  Free water evaporates into a real
 hot-air stream (constant-rate) until the **first of three announced limits**
 binds: all water gone · the exhaust air saturates (`maxExhaustHumidity`,
 default 0.95) · the air runs out of heat (energy floor: the solid leaves at
-its feed T and only the water the air can pay for there evaporates).
+the gas's WET-BULB temperature, the KPI `T_wetbulb`, and only the water the
+air can pay for there evaporates).  A wet solid fed BELOW that wet bulb is
+warmed up to it, which is what makes a starved gas run out of heat before its
+exhaust saturates.
 Saturation and the adiabatic outlet T are solved coupled (evaporation cools
 the air); the limit announced is the one the answer satisfies.  No duty.  Its
 energy balance is the unit's own hand surface (constant air Cp, Watson latent

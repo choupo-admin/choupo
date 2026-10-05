@@ -2049,7 +2049,7 @@ Wet salt: 20 kmol/h NaCl crystals (1169 kg/h) carrying 15 kmol/h of free water. 
 \goldrow{kpi}{dryer}{water\_removed}{0.0750625}
 \goldrow{stream}{drySolid}{T}{360.675490975}
 \goldrow{stream}{hotGas}{T}{400}
-\goldmore{2}
+\goldmore{3}
 \end{tutgolden}
 
 \clearpage
@@ -2063,7 +2063,7 @@ Wet salt: 20 kmol/h NaCl crystals (1169 kg/h) carrying 15 kmol/h of free water. 
   \draw[->] ($(dryer.east)+(0,0.17)$) -- ($(dryer.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {humidExhaust};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{The same dryer starved of gas: 40 kmol/h instead of 600, so the exhaust saturates and 16.6 wt\% of the water stays on the crystal}
+\tutwhat{The same dryer starved of gas: 40 kmol/h instead of 600, so the gas runs out of heat at its wet bulb and 16.6 wt\% of the water stays on the crystal}
 \begin{tutnarrative}
 FREE WATER, NOT BOUND WATER.
 
@@ -2073,27 +2073,27 @@ FREE WATER, NOT BOUND WATER.
 
 Limits 2 and 3 are coupled -- evaporation cools the gas, which lowers its carrying capacity -- and the unit bisects on the removed water until the two agree, rather than applying them in sequence and hoping.
 
-THIS CASE IS THE STARVED ONE. Identical to evapDryer01\_nacl except for the gas: 40 kmol/h instead of 600. The announcement changes to [saturation-limited]: the exhaust reaches its cap (a\_w 0.95) at T\_out = 310.7 K having taken up 37.6 kg/h of water, and 16.6 wt\% of the water stays on the crystal -- a dryer that does not dry, reported as such instead of returning a dry solid it cannot produce.
+THIS CASE IS THE STARVED ONE. Identical to evapDryer01\_nacl except for the gas: 40 kmol/h instead of 600. The announcement changes to [energy-limited]: the solid leaves at the gas's WET-BULB temperature, 311.68 K, this model's floor, having given up 36.75 kg/h of water with the exhaust at a\_w 0.886, below its cap, and 16.6 wt\% of the water stays on the crystal -- a dryer that does not dry, reported as such instead of returning a dry solid it cannot produce.
 
-THE WALL THIS GAS MEETS IS ROOM, NOT HEAT, and the case is named for it (it was `evapDryer02\_energy\_limited` until 2026-10-05, renamed by Vitor's ruling, DEV.md C35 item 12). The same NOTE says what the heat could have paid for: cooled all the way to the solid's feed temperature, 298.15 K, this gas could evaporate 48.9 kg/h, more than the 37.6 kg/h it has room for. The two limits are coupled -- evaporation cools the gas, which lowers what it can hold -- but they are two walls, and at this gas rate the room wall comes first. Until 2026-10-05 the unit called this answer energy-limited and warned that T\_out was floored at the feed temperature, beside a T\_out 12.6 K above it: it judged the limit on a hypothetical (all the water leaving), not on the answer. None of the numbers moved; the sentence did.
+THE WALL THIS GAS MEETS IS HEAT, AT THE WET BULB -- AND THE CASE'S NAME PREDATES THAT (2026-10-05). The wet solid enters at 298.15 K, BELOW the gas's wet bulb, so part of what the gas pays goes to warming the cake up to it, and what is left evaporates less than the exhaust has room for. The name was given the same morning (DEV.md C35 item 12, it was `evapDryer02\_energy\_limited`), when the floor was still the solid's FEED temperature: then the exhaust reached its cap at T\_out = 310.73 K, BELOW the gas's own wet bulb, and the room wall came first. Vitor's ruling C35 item 7 put the floor at the wet bulb -- a wet solid in a gas cools, or warms, toward it -- and that answer is no longer allowed. Whether the case is renamed back, or its wet solid fed warm (at 330 K, above the wet bulb, the same gas meets the room wall again: the exhaust at its cap at 314.5 K with 49.0 kg/h carried and 51.6 kg/h payable -- the fixture `check\_evaporative\_dryer` arm (a') runs), is Vitor's; DEV.md C35 item 7.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{drySolid}{F}{0.00914216942312}
+\goldrow{stream}{drySolid}{F}{0.00915552191059}
 \goldrow{stream}{hotGas}{F}{0.01125}
-\goldrow{stream}{humidExhaust}{F}{0.0118300527991}
+\goldrow{stream}{humidExhaust}{F}{0.0118167003116}
 \goldrow{stream}{wetSolid}{F}{0.00972222222222}
-\goldrow{kpi}{dryer}{T\_out}{310.725305009}
-\goldrow{kpi}{dryer}{X\_final}{0.199012881389}
+\goldrow{kpi}{dryer}{T\_out}{311.677565845}
+\goldrow{kpi}{dryer}{X\_final}{0.199753779936}
 \goldrow{kpi}{dryer}{X\_initial}{0.231198665298}
 \goldrow{kpi}{dryer}{air\_in\_kmol\_h}{40.5}
-\goldrow{kpi}{dryer}{drySolid\_flow}{0.389279515491}
-\goldrow{kpi}{dryer}{exhaust\_humidity}{0.949998302456}
-\goldrow{kpi}{dryer}{moisture\_pct\_wb}{16.5980603276}
-\goldrow{kpi}{dryer}{water\_removed}{0.0104496511758}
-\goldrow{stream}{drySolid}{T}{310.725305009}
+\goldrow{kpi}{dryer}{drySolid\_flow}{0.389520060553}
+\goldrow{kpi}{dryer}{exhaust\_humidity}{0.886447295542}
+\goldrow{kpi}{dryer}{moisture\_pct\_wb}{16.6495645421}
+\goldrow{kpi}{dryer}{water\_removed}{0.0102091061141}
+\goldrow{stream}{drySolid}{T}{311.677565845}
 \goldrow{stream}{hotGas}{T}{400}
-\goldmore{2}
+\goldmore{3}
 \end{tutgolden}
 
 \clearpage
@@ -2122,7 +2122,7 @@ Wet solid: 10 kmol/h sucrose (3423 kg/h) + 38 kmol/h bound water (X\_in=0.20). H
 \goldrow{kpi}{solidDryer}{water\_activity}{0.00431158404412}
 \goldrow{kpi}{solidDryer}{water\_removed}{0.189112936127}
 \goldrow{stream}{drySolid}{T}{346.659472289}
-\goldmore{7}
+\goldmore{8}
 \end{tutgolden}
 
 \clearpage

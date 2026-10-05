@@ -47,6 +47,15 @@ Description
                        by bisection on [273.65 K, T] to 1e-7 K, the humid
                        heat evaluated at the air's own T (a HYPOTHESIS: cp
                        moves by well under a percent across the depression).
+      gasWetBulb       the wet bulb of a GAS STREAM given as mole fractions
+                       over the package's components (2026-10-05, DEV.md C35
+                       item 7): the dry carrier's mean molar mass and mass
+                       heat capacity at the gas's own T, its humidity ratio,
+                       then `wetBulb`.  It is the FLOOR of the solid in the
+                       two dryers whose solid and exhaust leave at one
+                       temperature (SolidDryer, EvaporativeDryer): a wet
+                       solid in a gas cools toward the gas's wet bulb, not
+                       toward its own feed temperature.
 
     Humidities are kg moisture per kg DRY carrier; Mv and Mc are the
     moisture's and the dry carrier's molar masses [kg/kmol]; cp_c and cp_v
@@ -64,8 +73,11 @@ Description
 
 #include "core/Types.H"
 #include "thermo/Component.H"
+#include "thermo/ThermoPackage.H"
+#include "thermo/heatCapacity/HeatCapacityModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
+#include <cmath>
 #include <stdexcept>
 #include <string>
 
@@ -136,9 +148,23 @@ inline scalar wetBulb(const Component& moist, scalar Mv, scalar Mc,
     //  defined, and air there cannot be supersaturated; the wet bulb lies
     //  below it, so the bracket's top is moved down to it.  Below it the
     //  bracket is [273.65 K, T] exactly as before.
-    if (moist.vp().Psat_Pa(T) >= 0.95 * P)
+    //
+    //  AIR HOTTER THAN THE MOISTURE'S CRITICAL POINT (2026-10-05).  A flue
+    //  gas at 950 K (the lithium plant's dryer) is above water's Tc, where
+    //  there is no saturation curve to ask: the search for the 0.95 P point
+    //  starts just below Tc instead of at T, which leaves every answer below
+    //  Tc unchanged.  At a total pressure where even Tc does not reach
+    //  0.95 P, the question has no answer and is refused by name.
+    const scalar Tc   = moist.Tc();
+    const scalar Ttop = (Tc > 0.0 && T >= Tc) ? std::nextafter(Tc, 0.0) : T;
+    if (Ttop < T && moist.vp().Psat_Pa(Ttop) < 0.95 * P)
+        throw std::runtime_error(who + ": the gas at " + std::to_string(T)
+            + " K is above the moisture's critical temperature, and at "
+            + std::to_string(P) + " Pa its saturation pressure never reaches"
+            " 0.95 P below it -- this psychrometry has no wet bulb there");
+    if (moist.vp().Psat_Pa(Ttop) >= 0.95 * P)
     {
-        scalar a = lo, b = T;
+        scalar a = lo, b = Ttop;
         for (int it = 0; it < 100 && (b - a) > 1.0e-9; ++it)
         {
             const scalar m = 0.5 * (a + b);
@@ -153,6 +179,46 @@ inline scalar wetBulb(const Component& moist, scalar Mv, scalar Mc,
     for (int it = 0; it < 100 && (hi - lo) > 1.0e-7; ++it)
     { const scalar m = 0.5 * (lo + hi); (fWb(m) >= 0.0 ? hi : lo) = m; }
     return 0.5 * (lo + hi);
+}
+
+//- The wet bulb of a gas stream of mole fractions `y` (over the package's
+//  components) at (T, P), the moisture being component `iMoist`.  Every
+//  OTHER present component is the dry carrier, and each must carry an
+//  ideal-gas heat capacity: the humid heat is formed from them, and a
+//  component skipped in silence would move the wet bulb with no trace.
+inline scalar gasWetBulb(const ThermoPackage& thermo, const sVector& y,
+                         std::size_t iMoist, scalar T, scalar P,
+                         const std::string& who)
+{
+    const Component& moist = thermo.comp(iMoist);
+    const scalar Mv = moist.MW();
+    scalar nDry = 0.0, mDry = 0.0, cpMolar = 0.0;   // per mole of gas
+    for (std::size_t i = 0; i < thermo.n(); ++i)
+    {
+        if (i == iMoist || !(y[i] > 0.0)) continue;
+        const Component& c = thermo.comp(i);
+        if (!c.hasCpIdealGas())
+            throw std::runtime_error(who + ": the drying gas carries '"
+                + c.name() + "', which has no ideal-gas heat capacity -- the"
+                " gas's humid heat, and so its wet-bulb temperature (the"
+                " solid's floor), cannot be formed.  Curate its"
+                " `idealGasHeatCapacity {}`.");
+        nDry    += y[i];
+        mDry    += y[i] * c.MW();
+        cpMolar += y[i] * c.cpIdealGas().Cp(T);
+    }
+    if (!(nDry > 0.0))
+        throw std::runtime_error(who + ": the drying gas carries no dry"
+            " carrier -- it has no wet-bulb temperature");
+    if (!moist.hasCpIdealGas())
+        throw std::runtime_error(who + ": the moisture '" + moist.name()
+            + "' has no ideal-gas heat capacity -- the gas's humid heat,"
+              " and so its wet-bulb temperature, cannot be formed");
+    const scalar Mc  = mDry / nDry;                              // kg/kmol
+    const scalar cpc = (cpMolar / nDry) / Mc * 1000.0;           // J/(kg K)
+    const scalar cpv = moist.cpIdealGas().Cp(T) / Mv * 1000.0;   // J/(kg K)
+    const scalar Y   = (y[iMoist] > 0.0) ? y[iMoist] * Mv / mDry : 0.0;
+    return wetBulb(moist, Mv, Mc, cpc, cpv, P, T, Y, who);
 }
 
 } // namespace psychrometry

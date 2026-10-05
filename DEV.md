@@ -2012,6 +2012,73 @@ Each lands as ONE revertable merge with its moved golden rows listed.
   6. Ethanol + cyclohexane: re-regressed against LLE data if the archive has
      them; otherwise it stays case-local, recorded.
   7. Dryer solid floor: the gas wet-bulb temperature, not the feed T.
+     [DONE 2026-10-05, branch `claude/c35-dryer-floor`.  MEASURED first:
+     the units that floored their solid at its feed T were exactly two,
+     `evaporativeDryer` (EvaporativeDryer.cpp, the old `Tout_for` returned
+     `T_w` and `water_pay` was read at `T_w`) and `solidDryer`
+     (SolidDryer.cpp, `energyLimited` judged and the bisection run at
+     `T_w`, the Newton's `o.lower = T_w`); `sprayDryer` already floors at
+     its droplet's wet bulb and `convectiveDryer` and `batchDryer` hold the
+     solid at the local wet bulb.  Both now read
+     `psychrometry::gasWetBulb` (Psychrometry.H, NEW: the dry carrier's
+     molar mass and humid heat at the gas's own T, then the shared
+     `wetBulb`; a carrier with no ideal-gas Cp refuses by name), publish it
+     as KPI `T_wetbulb`, name it in the energy WARNING, and REFUSE by name a
+     gas that cannot bring a cold solid up to it even evaporating nothing.
+     `wetBulb` itself no longer asks a vapour pressure above the moisture's
+     Tc (a 950 K flue gas): the 0.95 P search starts just below Tc --
+     every answer below Tc unchanged.  RIDING WITH IT, item 11's engine
+     finding: the evaporative dryer's outlet is now the FIRST root above the
+     floor (a 400-step scan, then bisection to 1e-9 K), bracketed below
+     water's Tc; no root there refuses by name.  The two COULD NOT ship
+     apart: with the floor at the 346.30 K wet bulb the old bisection's
+     first midpoint on the lithium plant's 950.58 K gas is 648 K, so even
+     the DESIGNED dryer (5 % margin) landed on the spurious root (652.68 K,
+     sabotage S2).  The +20 % margin now returns 446.56 K (was 672.28 K).
+     `priceState` was NOT taken: C26 recorded the corpus would refuse, and
+     the scan is the smaller change.  GOLDENS: evapDryer02 moved 10 rows,
+     ONE reason -- its wet solid is fed at 298.15 K, BELOW the gas's
+     311.68 K wet bulb, and its old answer (T_out 310.73 K) left the solid
+     below that wet bulb; at the floor the gas pays for 36.75 kg/h, less
+     than the 37.6 kg/h the cap allowed, so it is now HEAT-bound:
+     drySolid.F 0.00914216942312 -> 0.00915552191059, humidExhaust.F
+     0.0118300527991 -> 0.0118167003116, T_out / drySolid.T /
+     humidExhaust.T 310.725305009 -> 311.677565845, X_final 0.199012881389
+     -> 0.199753779936, drySolid_flow 0.389279515491 -> 0.389520060553,
+     exhaust_humidity 0.949998302456 -> 0.886447295542, moisture_pct_wb
+     16.5980603276 -> 16.6495645421, water_removed 0.0104496511758 ->
+     0.0102091061141.  Appended (no row moved): `T_wetbulb` on
+     evapDryer02 (311.677565845), evapDryer01 (308.892481017) and
+     solidDryer01 (315.705897235).  Every other dryer golden passes
+     unmoved: evapDryer01 and the lithium plant move inside tolerance only
+     (T_out 360.675490975 -> 360.675531553 and 385.328291845 ->
+     385.328309993 K, the old 1e-4 K bisection against the new 1e-9 K
+     one); solidDryer01, convDryer01, sprayDryer01-07 and the flagship are
+     byte-identical but for the new KPI (their dryers reach their answer
+     above the floor).  `sugarPlantEconomicsSweep` (no golden): its BD was
+     energy-limited at the feed T on every sweep point and now reaches its
+     isotherm at ~321 K, between the air's wet bulb and the feed T.
+     **OPEN, VITOR'S:** evapDryer02 was renamed `_saturation_limited` this
+     morning (item 12) for a wall the new floor removes; its header and
+     description now say so.  Rename it back, or feed its wet solid warm
+     (at 330 K it meets the cap again: 314.5 K, 49.0 kg/h carried, 51.6
+     payable -- gate arm (a') runs exactly that), is his.  A reading that
+     would have kept it unmoved -- floor = min(T_w, T_wb), a cold solid
+     allowed to stay cold -- was NOT taken: the ruling says the wet bulb.
+     **FOUND, NOT FIXED:** the solid dryer has NO exhaust-saturation limit
+     and prices an exhaust its evaporation supersaturates at its
+     condensed equilibrium (a fog published as vf = 1) -- e.g.
+     solidDryer01 with its air cut to 100 kmol/h still reaches the
+     isotherm at 318.6 K; that is what lets its warm-fed cases stay above
+     the new floor.  Gate `check_evaporative_dryer` extended: (a) the
+     corpus limits, (a') the saturation fixture, (b) the evaporation affine
+     in the gas at the floor (second difference to 1e-9), (c) the default,
+     (d) the floor recomputed from each case's own records (Antoine,
+     Watson, the Cp polynomials) to 1e-6 K and independent of the feed T,
+     (e) the +20 % lithium gas below its inlet T and Tc, (f) the solid
+     dryer's floor on a cold, starved fixture; three by-hand sabotages, all
+     caught (S1 feed floor -> (a), S2 old bisection -> (a), S3 solid feed
+     floor -> (f)).]
   8. Pipe with a vapour inlet: REFUSED by name until a compressible model exists.
   9. ammonia02 declares `spaceVelocity 20000; spaceVelocityBasis normal;`.
      [DONE 2026-10-05, branch `claude/c35-cases`, with `flowKey N_in_mol_s`
@@ -2040,7 +2107,8 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      0.0879791; product.F 0.0225568 -> 0.000138889 (the Li2CO3 alone);
      product/humidExhaust/cleanAir/fines T 363.15 -> 385.328 K (off the
      floor).  hotAir.T drifted 1.7e-6 relative and was NOT re-pinned.
-     **ENGINE FINDING, not fixed (src/ was out of this slice):** a 20 %
+     **ENGINE FINDING, FIXED with item 7 (branch
+     `claude/c35-dryer-floor`; the +20 % gas now returns 446.56 K):** a 20 %
      margin was tried first and the unit returned T_out = 672.28 K, ABOVE
      water's critical point -- its hand balance (Watson latent -> 0 at
      647 K, the free water warmed as a liquid at a constant cp) has a
@@ -2459,7 +2527,10 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
      `evapDryer02_saturation_limited`; the lithium plant's gas DESIGNED for
      a dry product, so NO corpus case is heat-bound now and arm (b)'s warm
      fixture is the heat-bound witness, its caveat-block replay checked
-     there); P6 -> item 13 (the two rows dropped).  P2-P5 and P7 stay his.
+     there); P6 -> item 13 (the two rows dropped); P2 -> item 7 (the floor
+     is the gas's wet bulb in both dryers; DONE on branch
+     `claude/c35-dryer-floor` -- and it makes evapDryer02 heat-bound again,
+     see item 7).  P3-P5 and P7 stay his.
 
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o

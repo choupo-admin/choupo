@@ -22,23 +22,27 @@
 
     THIS CASE IS THE STARVED ONE.  Identical to evapDryer01_nacl except for
     the gas: 40 kmol/h instead of 600.  The announcement changes to
-    [saturation-limited]: the exhaust reaches its cap (a_w 0.95) at
-    T_out = 310.7 K having taken up 37.6 kg/h of water, and 16.6 wt% of the
-    water stays on the crystal -- a dryer that does not dry, reported as such
-    instead of returning a dry solid it cannot produce.
+    [energy-limited]: the solid leaves at the gas's WET-BULB temperature,
+    311.68 K, this model's floor, having given up 36.75 kg/h of water with
+    the exhaust at a_w 0.886, below its cap, and 16.6 wt% of the water stays
+    on the crystal -- a dryer that does not dry, reported as such instead of
+    returning a dry solid it cannot produce.
 
-    THE WALL THIS GAS MEETS IS ROOM, NOT HEAT, and the case is named for it
-    (it was `evapDryer02_energy_limited` until 2026-10-05, renamed by
-    Vitor's ruling, DEV.md C35 item 12).  The same NOTE says
-    what the heat could have paid for: cooled all the way to the solid's
-    feed temperature, 298.15 K, this gas could evaporate 48.9 kg/h, more than
-    the 37.6 kg/h it has room for.  The two limits are coupled --
-    evaporation cools the gas, which lowers what it can hold -- but they are
-    two walls, and at this gas rate the room wall comes first.  Until
-    2026-10-05 the unit called this answer energy-limited and warned that
-    T_out was floored at the feed temperature, beside a T_out 12.6 K above
-    it: it judged the limit on a hypothetical (all the water leaving), not
-    on the answer.  None of the numbers moved; the sentence did.
+    THE WALL THIS GAS MEETS IS HEAT, AT THE WET BULB -- AND THE CASE'S NAME
+    PREDATES THAT (2026-10-05).  The wet solid enters at 298.15 K, BELOW the
+    gas's wet bulb, so part of what the gas pays goes to warming the cake up
+    to it, and what is left evaporates less than the exhaust has room for.
+    The name was given the same morning (DEV.md C35 item 12, it was
+    `evapDryer02_energy_limited`), when the floor was still the solid's FEED
+    temperature: then the exhaust reached its cap at T_out = 310.73 K, BELOW
+    the gas's own wet bulb, and the room wall came first.  Vitor's ruling
+    C35 item 7 put the floor at the wet bulb -- a wet solid in a gas cools,
+    or warms, toward it -- and that answer is no longer allowed.  Whether
+    the case is renamed back, or its wet solid fed warm (at 330 K, above the
+    wet bulb, the same gas meets the room wall again: the exhaust at its
+    cap at 314.5 K with 49.0 kg/h carried and 51.6 kg/h payable -- the
+    fixture `check_evaporative_dryer` arm (a') runs), is Vitor's; DEV.md
+    C35 item 7.
 */
 units
 (

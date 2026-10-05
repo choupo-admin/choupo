@@ -47,9 +47,19 @@ Description
         (2) the exhaust air reaches saturation (a_w -> a_w_max, default 0.95)
             --- the constant-rate air-capacity limit;
         (3) the air cannot supply the latent + sensible heat (energy floor):
-            the solid leaves at its feed temperature, this model's floor, and
-            ONLY the water the air can pay for there evaporates,
-            F_air cp_air (T_air - T_w) / lambda(T_w).
+            the solid leaves at the GAS'S WET-BULB temperature T_wb, this
+            model's floor (C35 item 7, 2026-10-05; it was the solid's feed
+            temperature T_w until then), and ONLY the water the air can pay
+            for there evaporates,
+            [F_air cp_air (T_air - T_wb) - C_s (T_wb - T_w)] / lambda(T_wb),
+            C_s the heat capacity flow of the solid and its free water.
+
+    The outlet T is the FIRST root of the balance above the floor and below
+    the moisture's critical temperature: the Watson latent heat vanishes at
+    Tc, so close below it the balance has a second, spurious root, which a
+    plain bisection on [floor, T_air] reached for a hot gas (672.28 K on the
+    lithium plant's 950 K flue gas, DEV.md C35 item 11).  An answer with no
+    root below Tc is refused by name.
 
     Saturation and the adiabatic outlet T are COUPLED (evaporation cools the
     air, which lowers its carrying capacity): solved self-consistently by a
