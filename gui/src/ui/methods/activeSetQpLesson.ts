@@ -44,7 +44,11 @@ export const QP_STEPS: readonly LessonStep[] = [
     body: "A quadratic objective and linear constraints. It is worth a method "
       + "of its own for two reasons. First, it is solvable exactly: unlike a "
       + "general non-linear programme, a convex QP is finished in a finite "
-      + "number of steps with no tolerance to argue about. Second, it is the "
+      + "number of steps, with no convergence tolerance on the answer — the "
+      + "only tolerances are floating-point deadbands (Choupo's solver "
+      + "carries three: a feasibility slack, a multiplier-sign band and a "
+      + "zero-step test, src/solver/ActiveSetQP.cpp:143-144 and :235). "
+      + "Second, it is the "
       + "inner problem of the general case — an SQP method builds a quadratic "
       + "model of a hard non-linear problem at the current point and solves "
       + "exactly this to decide where to go next, over and over.",
@@ -174,7 +178,12 @@ export const QP_STEPS: readonly LessonStep[] = [
     note: "Choupo keeps a running point starting at zero and solves each KKT "
       + "system for a SUB-STEP from wherever it is, rather than re-solving "
       + "the whole problem each time — so the picture below is a path, and "
-      + "each segment is one of these steps.",
+      + "each segment is one of these steps.  A PRIMAL active-set method "
+      + "like this one needs its starting point to be FEASIBLE for the "
+      + "inequalities; the solver starts at zero without checking that, "
+      + "which is safe for the reconciliation of step 6 (there zero means "
+      + "no correction, and the measurements are non-negative) and is not "
+      + "guaranteed in general.",
   },
   {
     n: 4,
@@ -201,8 +210,8 @@ export const QP_STEPS: readonly LessonStep[] = [
           + "is the answer.",
         eq: String.raw`\text{all } \lambda_k \ge 0 \quad \Rightarrow \quad \text{optimal}`},
       { step: "Otherwise drop the most negative and solve again with a "
-          + "smaller working set. The objective strictly improves, which is "
-          + "why this cannot go round for ever." },
+          + "smaller working set. The next non-zero step improves the "
+          + "objective; step 5 says when a step can be zero instead." },
     ],
     formula: String.raw`\begin{aligned}
 p = 0 \ \text{ and all } \lambda_k \ge 0 \quad &\Rightarrow \quad \text{OPTIMAL}\\
@@ -218,11 +227,16 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the 
   {
     n: 5,
     title: "Why it terminates, and what would make it fail",
-    body: "Each change of working set strictly reduces the objective, because "
-      + "B is positive definite and the sub-problem over each working set has "
-      + "a unique minimum. There are finitely many working sets. So the "
-      + "method finishes — in exact arithmetic, in a finite number of steps, "
-      + "with no tolerance to argue about. That is the payoff of strict "
+    body: "Every step of non-zero length strictly reduces the objective, "
+      + "because B is positive definite and the sub-problem over each "
+      + "working set has a unique minimum. There are finitely many working "
+      + "sets. So, provided no step is DEGENERATE, the method finishes — in "
+      + "exact arithmetic, in a finite number of steps, with no convergence "
+      + "tolerance on the answer. A degenerate step is one blocked at the "
+      + "very point it starts from (α = 0): the working set changes and the "
+      + "objective does not, and a run of such steps can cycle — which is "
+      + "what the engine's cap on working-set changes is there to catch. "
+      + "That is the payoff of strict "
       + "convexity, and it is why Choupo's SQP driver can afford to solve one "
       + "of these inside every outer iteration.",
     note: "Two things do go wrong and the engine names both. If two active "
@@ -300,16 +314,21 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the 
           + "identity and the problem is perfectly scaled whatever the "
           + "analytes weigh.",
         eq: String.raw`u_r = \frac{x_r - m_r}{\sigma_r}`},
+      { step: "Write each law in those same units and give it unit length, "
+          + "as the engine does before the solve: multiply each coefficient "
+          + "by its row's σ, then divide the law by the length of the result "
+          + "(src/streams/AnalysisReconciler.cpp:129-140).",
+        eq: String.raw`\tilde{C}_{kr} = \frac{C_{kr}\, \sigma_r}{\lVert C_{k\cdot}\, \sigma \rVert}`},
       { step: "Stationarity of the Lagrangian at the answer: the gradient of "
           + "the objective plus the constraint gradients times their "
           + "multipliers is zero.",
-        eq: String.raw`u + C' \lambda + A_\mathrm{in}' \mu = 0`},
+        eq: String.raw`u + \tilde{C}' \lambda + A_\mathrm{in}' \mu = 0`},
       { step: "Read off one row of it. Every term on the right is a genuine "
           + "part of an identity, and Choupo ASSERTS that they reconstruct "
           + "the correction before it publishes them.",
-        eq: String.raw`u_r = -\sum_k \lambda_k\, C_{kr} + \mu_r`},
+        eq: String.raw`u_r = -\sum_k \lambda_k\, \tilde{C}_{kr} + \mu_r`},
     ],
-    formula: String.raw`u_r = -\sum_k \lambda_k\, C_{kr} + \mu_r`,
+    formula: String.raw`u_r = -\sum_k \lambda_k\, \tilde{C}_{kr} + \mu_r`,
     where: [
       { sym: "u",
         means: "the vector of SCALED residuals, one per measurement: the gradient of "
@@ -318,7 +337,20 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{DROP the 
         + "standard uncertainty — the number the report publishes" },
       { sym: "\\sum_k", means: "a sum over every enforced conservation law" },
       { sym: "C_{kr}",
-        means: "the coefficient of measured quantity r in law k" },
+        means: "the coefficient of measured quantity r in law k, as the "
+        + "case declares it" },
+      { sym: "\\tilde{C}_{kr} \\,/\\, \\tilde{C}",
+        means: "the same coefficient in the engine's NORMALISED form — "
+        + "times σ_r, the law then scaled to unit length — and the matrix of "
+        + "them.  The multipliers λ the report publishes belong to these "
+        + "rows, not to the raw C" },
+      { sym: "\\lVert C_{k\\cdot}\\, \\sigma \\rVert",
+        means: "the length of law k's row once each coefficient is "
+        + "multiplied by its σ" },
+      { sym: "\\lambda \\,/\\, \\lambda_k",
+        means: "the multipliers of the normalised laws, and law k's" },
+      { sym: "A_\\mathrm{in}",
+        means: "the non-negativity rows, one per measurement" },
       { sym: "\\mu \\,/\\, \\mu_r",
         means: "the multiplier of a non-negativity bound — "
         + "mu_r is row r's. Zero unless that measurement was pinned at zero" },

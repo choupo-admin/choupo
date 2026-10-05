@@ -45,8 +45,8 @@ membranes, solids handling, and the metal envelope that contains all of
 it.
 
 \textbf{How to read every rule here: a heuristic is a \emph{hypothesis},
-not a verdict.} "Pick a PFR for a fast, high-conversion liquid reaction"
-is a starting bet that buys you 80 \% of the answer in 20 \% of the
+not a verdict.} "Pick a PFR when you need high conversion of a single
+reaction" (the reactor rule below) is a starting bet that buys you 80 \% of the answer in 20 \% of the
 effort --- it is \emph{not} a substitute for the run. Choupo is
 glass-box precisely so you can test the bet: build the case, watch the
 Newton iterations, read the KPIs, and confirm (or refute) the rule for
@@ -94,7 +94,7 @@ Physical/economic WHY \\
 1. Reactor & CSTR vs PFR, single-pass conversion X & Push X to
 \textbf{0.6--0.9} for cheap reactant; stop where recycle cost rises
 faster than reactor cost. Keep \textbf{X \(\le\) 0.95} if selectivity falls
-(consecutive rxns) & Reactor cost \(\propto\) V \(\propto\) 1/(1\textminus{}X) for PFR;
+(consecutive rxns) & Reactor cost \(\propto\) V \(\propto\) ln{[}1/(1\textminus{}X){]} for a first-order PFR;
 recycle/separation cost \(\propto\) unconverted feed. The minimum-TAC X sits where
 \(\partial\)(reactor)/\(\partial\)X = \textminus{}\(\partial\)(recycle)/\(\partial\)X \\
 2. Separation & Recover vs recycle; sequence & Recover species worth
@@ -135,7 +135,7 @@ staged CSTRs (3--4 stages approach PFR) is common. See
 \texttt{tutorials/steady/reactors} cases; for economics-driven X,
 \texttt{optim05\_reactor\_npv}.
 
-\textbf{Distillation sequencing} (Heaviest-out / direct sequence is the
+\textbf{Distillation sequencing} (Lightest-out / direct sequence is the
 default): (1) remove \textbf{most plentiful} component early; (2) take
 the \textbf{lightest} (highest relative volatility, \(\alpha\)) split first when
 \(\alpha\) \textgreater{} \textasciitilde1.5; (3) leave the \textbf{hardest

@@ -156,7 +156,12 @@ describe("the lesson, stated as the page's one job", () => {
 
   it("credits the method: the record cross-examined against itself", () => {
     expect(prose(SRC)).toContain("cross-examined against itself");
-    expect(prose(SRC)).toContain("nobody needed to");
+    //  C22 slice 2: "nobody knows the true vapour pressure of glycerol at
+    //  563 K" was false -- 563.15 K is its own Tb, where P_sat is 1 atm by
+    //  definition.  The page now says so, and the old sentence may not return.
+    expect(prose(SRC)).toContain("No outside measurement was needed");
+    expect(prose(SRC)).toContain("by definition");
+    expect(prose(SRC)).not.toContain("Nobody knows the “true” vapour pressure");
   });
 
   it("points the epistemology at the deep dive rather than carrying it", () => {

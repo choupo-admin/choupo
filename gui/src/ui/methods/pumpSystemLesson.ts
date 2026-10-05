@@ -259,7 +259,7 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "it gets noisy, and it erodes.  None of that is visible in a "
       + "pump-versus-system diagram, however good the crossing looks.",
     formula: String.raw`\begin{aligned}
-\mathrm{NPSH}_a &= \frac{P_\mathrm{suction} - P_\mathrm{vap}}{\rho\, g} + z_\mathrm{suction} - h_\mathrm{f,suction} && \text{(falls with } Q)\\
+\mathrm{NPSH}_a &= \frac{P_\mathrm{source} - P_\mathrm{vap}}{\rho\, g} + z_\mathrm{suction} - h_\mathrm{f,suction} && \text{(falls with } Q)\\
 \mathrm{NPSH}_r &= \text{the pump's own, measured} && \text{(rises with } Q)\\[4pt]
 &\text{cavitation when}\quad \mathrm{NPSH}_a \le \mathrm{NPSH}_r
 \end{aligned}`,
@@ -275,8 +275,13 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         + "pump's own property, measured by its maker, rising with flow.  NOT "
         + "COMPUTED, and could not be: it is measured machine data, and this "
         + "model carries no measured data of any kind.", unit: "m" },
-      { sym: "P_\\mathrm{suction}",
-        means: "Absolute pressure at the pump suction.",
+      { sym: "P_\\mathrm{source}",
+        means: "Absolute pressure on the liquid SURFACE of the "
+        + "vessel the pump draws from.  Not the pressure at the pump's "
+        + "suction flange: that one already contains the static head and "
+        + "the suction-line friction, so putting it here would count both "
+        + "twice.  With a flange pressure the line reduces to "
+        + "(P − P_vap)/(ρg) plus the velocity head.",
         unit: "Pa" },
       { sym: "P_\\mathrm{vap}",
         means: "The liquid's vapour pressure at the suction "

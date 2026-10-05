@@ -286,8 +286,10 @@ export function PropertyTrustTool(): JSX.Element {
           <Text size="sm" mt={6}>
             Notice what caught both: not a better database, not an external
             truth — <strong>the record cross-examined against itself</strong>.
-            Nobody knows the “true” vapour pressure of glycerol at 563 K, and
-            nobody needed to.
+            No outside measurement was needed: 563.15 K is glycerol’s own
+            declared boiling point, where the vapour pressure is one
+            atmosphere <em>by definition</em> — the record already holds the
+            answer its correlation should have given.
           </Text>
         </Box>
 
@@ -308,8 +310,12 @@ export function PropertyTrustTool(): JSX.Element {
                 <code>[unreviewed]</code>), so provenance travels with the
                 number instead of living in a comment;</li>
               <li><strong>internal-consistency checks run in the test
-                suite</strong>, so a record whose declared Tb and fitted Psat
-                disagree past a band is a named finding, not a surprise;</li>
+                suite</strong>, so an Antoine record whose declared Tb and
+                fitted Psat disagree past a band is a named finding, not a
+                surprise — with a reach worth knowing: that check does NOT
+                catch either record above, because water misses by 2.6 %
+                (inside its 3 % band) at a Tb 0.15 K outside its window, and
+                glycerol’s curve is not an Antoine set at all;</li>
               <li>and <strong>a gap is left visible rather than filled
                 in</strong>: a missing datum refuses by name, because a
                 plausible invented value is the one failure no reader can

@@ -222,8 +222,10 @@ export function FourWaysMixtureTool(): JSX.Element {
           <Text size="sm" c="dimmed" mt={4}>
             Ethanol and water do not mix indifferently — they azeotrope,
             and a model that misses that will design you a column that
-            cannot exist.  Five models will now price the same binary, and
-            by the end of this page each one should come with a reflex
+            cannot exist.  Four activity models will now price the same
+            binary against one measured dataset, and two more rungs —
+            COSMO-SAC and PC-SAFT — are shown from their own witnesses, not
+            on that table.  By the end of this page each one should come with a reflex
             question attached: <strong>what did it KNOW about this pair
             before it answered?</strong>
           </Text>

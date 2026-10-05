@@ -513,7 +513,10 @@ V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{D
       + "off the engine's own concentration-mode trajectory, marks the "
       + "maximum, and says whether the maximum was inside the window the run "
       + "swept or sitting on one of its ends -- because an endpoint is not an "
-      + "optimum, it is a run that did not bracket one.  Nothing here borrows "
+      + "UNCONSTRAINED optimum: either the run did not bracket one, or the "
+      + "real limit is a constraint at that end (a minimum working volume, "
+      + "a stability ceiling), which the curve cannot tell apart.  Nothing "
+      + "here borrows "
       + "a constant from a model that is not running.",
   },
   {
@@ -545,8 +548,10 @@ V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{D
         eq: String.raw`\mathrm{DFOP}(C) = C\, J_f(C)`},
       { step: "Plot that product against concentration and read where it "
           + "turns over.  Each buffer curve gives its own maximum, and the "
-          + "turn is what an optimum IS -- a value at the end of the range "
-          + "you measured is a range that was too short.",
+          + "turn is what an UNCONSTRAINED optimum is -- a value at the end of "
+          + "the range you measured is either a range that was too short or "
+          + "a constrained optimum sitting on a limit of the rig or the "
+          + "product, as the note below explains.",
         eq: String.raw`C_\mathrm{opt,start} \text{ and } C_\mathrm{opt,DF}: \quad \mathrm{DFOP} \text{ at its maximum on each curve}`},
       { step: "Where the two differ materially, take the LOWER.  The true "
           + "optimum lies between the curves, because the product is "

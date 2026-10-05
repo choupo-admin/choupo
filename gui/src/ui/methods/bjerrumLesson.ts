@@ -77,7 +77,10 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "a legal declaration.  Look at what it costs.  Fixing [H+] REMOVES the "
       + "electroneutrality equation, so the run reports the net charge the "
       + "composition carries instead of forcing it to zero — the curve you "
-      + "drew is a set of compositions no beaker can hold.  That mode is for "
+      + "drew describes a real beaker only if something you did not write "
+      + "down carries the missing charge: the Na+ or Cl- of the base or acid "
+      + "that set the pH, or a buffer.  The diagram is real; its counter-ion "
+      + "is untracked.  That mode is for "
       + "a MEASURED pH off a laboratory sheet, which is a datum somebody read "
       + "off an instrument.  This case declares `pH solve;` instead, so [H+] "
       + "joins the unknowns and CHARGE is what decides it: the solution must "
@@ -184,8 +187,13 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
     note: "Both crossovers sit slightly BELOW the thermodynamic pK, and the "
       + "gap is the activity coefficients: the engine works in activities, a "
       + "textbook diagram works in concentrations and takes every gamma as 1. "
-      + " The divalent carbonate ion is the one that feels it — its gamma is "
-      + "0.90 at the first crossover and 0.81 at the second.  Both crossover "
+      + " The first crossover is moved by the BICARBONATE's gamma alone — "
+      + "about 0.975 there, the dissolved CO2 being neutral with gamma 1 — so "
+      + "it shifts only slightly; the carbonate's own gamma there, 0.90, "
+      + "moves nothing, carbonate being a trace at that pH.  The second is "
+      + "moved by the ratio of the "
+      + "carbonate's gamma to the bicarbonate's, and the divalent carbonate is "
+      + "the one that feels it most: 0.81 against 0.95.  Both crossover "
       + "pH's are INTERPOLATED between the two beakers that bracket them: the "
       + "axis is 44 sampled points, not a continuum, and no beaker lands "
       + "exactly on a crossing.",
@@ -290,9 +298,10 @@ export const BJERRUM_LIMITS: readonly LessonLimit[] = [
   {
     id: "one-family",
     title: "One acid-base family, chosen for that reason.",
-    body: "Carbonate is two steps and three forms, which is the smallest "
-      + "system where a diagram teaches anything.  Boron would be prettier "
-      + "still — one step, two curves crossing once — and it is not "
+    body: "Carbonate is two steps and three forms, the smallest system that "
+      + "shows two crossovers and a middle species rising and falling between "
+      + "them.  Boron would be simpler — one step, two curves crossing once "
+      + "— and it is not "
       + "available: the species record for borate exists but there is no "
       + "boric-acid species and no formation reaction, which is a curation "
       + "act and not a code change.",

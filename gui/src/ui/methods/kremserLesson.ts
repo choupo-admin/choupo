@@ -103,7 +103,9 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
     title: "And then the staircase collapses into a formula",
     body: "This is the part worth remembering.  When the equilibrium line is "
       + "STRAIGHT, the steps of the staircase form a geometric series, and "
-      + "the whole construction sums in closed form.  You no longer draw "
+      + "the whole construction sums in closed form — in the form below, "
+      + "for an entering solvent that carries NO solute; a solvent that "
+      + "arrives already loaded recovers less.  You no longer draw "
       + "stages — you compute the recovery directly from A and N.  That is "
       + "Kremser, and it is why absorbers are designed with a formula while "
       + "distillation columns are drawn or solved stage by stage.",
@@ -114,7 +116,7 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
     where: [
       { sym: "\\mathrm{recovery}",
         means: "the fraction of the entering solute the "
-        + "solvent captures" },
+        + "solvent captures, when the entering solvent carries no solute" },
       { sym: "A", means: "the absorption factor, as above" },
       { sym: "N", means: "the number of EQUILIBRIUM stages — ideal ones, not "
         + "trays: a real column needs more" },

@@ -182,8 +182,11 @@ t_\mathrm{st} &= \frac{L}{u}\, R_f
     formula: String.raw`\mathrm{LUB} = L \left( 1 - \frac{t_b}{t_\mathrm{st}} \right) \qquad \text{(length of unused bed)}`,
     where: [
       { sym: "\\mathrm{LUB}",
-        means: "LENGTH OF UNUSED BED — the part still clean when "
-        + "you switched, which is the price of a front with width",
+        means: "LENGTH OF UNUSED BED — the capacity left unused when "
+        + "you switched, expressed as an EQUIVALENT length of bed.  It is "
+        + "not a clean slice at the outlet: the unused capacity sits mostly "
+        + "inside the partly loaded zone, and this lumps it into one length "
+        + "— the price of a front with width",
         unit: "m" },
       { sym: "t_b", means: "the BREAKTHROUGH time — when the outlet first "
         + "reaches the concentration you declared unacceptable.  In DESIGN "
@@ -260,9 +263,11 @@ b(T) &= b(T_\mathrm{ref}) \exp\!\left[ -\frac{\Delta H_\mathrm{ads}}{R} \left( \
       + "front arrives sooner.  That is the lever temperature-swing "
       + "regeneration pulls, and it is why a bed is a batch operation run in "
       + "PAIRS: one loads while the other is purged, heated or depressurised, "
-      + "so the breakthrough time IS the cycle time — it sets how often you "
-      + "switch, how much adsorbent you buy and how much regeneration duty "
-      + "you pay for.  This tool draws ONE loading step from a clean bed.",
+      + "so the breakthrough time BOUNDS the loading step: the bed must be "
+      + "switched by t_b, and the regeneration of its partner must finish "
+      + "within that interval.  It is not the cycle time itself, but it "
+      + "sets how often you switch, how much adsorbent you buy and how much "
+      + "regeneration duty you pay for.  This tool draws ONE loading step from a clean bed.",
   },
 ];
 

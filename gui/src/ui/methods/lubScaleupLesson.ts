@@ -99,8 +99,10 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
     ],
     note: "When the premise fails, so does everything below.  On an "
       + "UNFAVOURABLE or LINEAR isotherm the zone never settles: it spreads "
-      + "as it travels, proportionally to √t for a dispersive front and to t "
-      + "for a linear one, so a length measured in a short column "
+      + "as it travels -- proportionally to √t on a LINEAR isotherm, where "
+      + "only dispersion and mass-transfer resistance spread it, and to t on "
+      + "an UNFAVOURABLE one, where the equilibrium itself pulls it apart -- "
+      + "so a length measured in a short column "
       + "underestimates it in a long one.  A laboratory column SHORTER than "
       + "the zone never lets it form, so the curve you measured is not the "
       + "constant pattern at all.  And a plant bed run at a different "
@@ -108,8 +110,9 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       + "number carried across is only valid at the conditions it was "
       + "measured under.  The classroom witness is a Langmuir (favourable) "
       + "isotherm on a 0.5 m bed with a zone about 0.05 m long, so the "
-      + "premise holds there; a real data set has to be checked, and step 3 "
-      + "is the check.",
+      + "premise holds there.  A real data set has to be checked against "
+      + "the premise by other means: step 3's equilibrium check catches a "
+      + "cut tail, not a spreading front (see the limits below).",
   },
   {
     n: 2,
@@ -237,10 +240,11 @@ L_\mathrm{MTZ} &\approx 2\, \mathrm{LUB} \qquad \text{(a SYMMETRIC front only)}
       { sym: "f_\\mathrm{used}", means: "the fraction of the laboratory bed's "
         + "capacity used at breakthrough" },
       { sym: "\\mathrm{LUB}",
-        means: "the LENGTH OF UNUSED BED -- the part of the "
-        + "column still clean when it was switched, which the constant "
-        + "pattern makes a property of the conditions rather than of the "
-        + "column", unit: "m" },
+        means: "the LENGTH OF UNUSED BED -- the capacity left unused "
+        + "when the column was switched, as an EQUIVALENT length (it sits "
+        + "mostly inside the partly loaded zone, not in a clean slice at the "
+        + "outlet), which the constant pattern makes a property of the "
+        + "conditions rather than of the column", unit: "m" },
       { sym: "L_\\mathrm{MTZ}", means: "the length of the MASS-TRANSFER ZONE, "
         + "estimated as twice the unused length.  That equality holds only "
         + "for a front symmetric about t_st; the sizing below uses LUB "

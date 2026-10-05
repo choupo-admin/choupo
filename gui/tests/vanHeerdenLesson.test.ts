@@ -74,12 +74,15 @@ describe("the ignition / extinction lesson", () => {
   });
 
   it("STATES THE STABILITY CRITERION as a slope comparison", () => {
-    //  The load-bearing sentence of the whole page: a steady state is stable
-    //  when the removal line is steeper than the generation curve there.
+    //  The load-bearing sentence of the whole page: a steady state CANNOT be
+    //  stable unless the removal line is steeper than the generation curve
+    //  there -- a NECESSARY condition, not a sufficient one (C22 slice 2).
     const s3 = step(3);
     expect(prose(s3.formula!)).toContain(String.raw`\frac{\mathrm{d}Q_\mathrm{rem}}{\mathrm{d}T} &> \frac{\mathrm{d}Q_\mathrm{gen}}{\mathrm{d}T}`);
     expect(prose(s3.formula!)).toContain(String.raw`\frac{\mathrm{d}R}{\mathrm{d}T} &> \frac{\mathrm{d}G}{\mathrm{d}T}`);
     expect(prose(s3.body)).toContain("REMOVAL LINE IS STEEPER");
+    expect(prose(s3.body)).toContain("NECESSARY condition");
+    expect(prose(s3.formula!)).not.toContain(String.raw`\longrightarrow \quad \text{stable}`);
     expect(prose(s3.note!)).toContain("MIDDLE one fails this test");
     //  And the distinction the criterion exists to draw.
     expect(prose(s3.note!))

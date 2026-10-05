@@ -287,8 +287,9 @@ G(i\omega) &= \frac{1}{1 + i\omega\tau}\\[4pt]
       + "Between them lies a band where the two cancel and the controller "
       + "is a pure gain.",
     derivation: [
-      { step: "The textbook ideal form — the one every published tuning rule "
-          + "is written in.",
+      { step: "The textbook ideal form — the one most published tuning "
+          + "rules are written in (some are given for the series or the "
+          + "parallel form instead, and must be converted first).",
         eq: String.raw`G_c(s) = K_c \left( 1 + \frac{1}{\tau_I s} + \tau_D s \right)`},
       { step: "Substitute s = i·ω.  1/i = −i, so the integral term is "
           + "negative imaginary and the derivative term positive imaginary: "
@@ -449,8 +450,12 @@ export const BODE_LIMITS: readonly LessonLimit[] = [
   {
     id: "measured-bias",
     title: "The measurement has a phase lag of its own, and it is not removed.",
-    body: "The fit reads accepted states on a time grid, which lags the "
-      + "continuous answer by half a step: exactly ω·Δt/2 radians.  Here Δt "
+    body: "The engine applies the sine drive as a ZERO-ORDER HOLD: it is "
+      + "evaluated at the start of each step and held constant across it "
+      + "(src/dynamicDriver/DynamicDriver.cpp:1564-1566).  A held sinusoid "
+      + "trails the continuous one by half a step, so the response the fit "
+      + "reads carries a lag of exactly ω·Δt/2 radians — the hold puts it "
+      + "there, not the act of reading the states on a grid.  Here Δt "
       + "is set to the drive period over 1000, so that bias is π/1000 = "
       + "3.1416e-3 rad = 0.18° at EVERY point of the sweep.  It is printed "
       + "beside the residual and deliberately not corrected away — a "

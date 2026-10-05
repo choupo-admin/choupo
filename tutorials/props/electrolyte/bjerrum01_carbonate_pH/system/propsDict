@@ -58,8 +58,11 @@
       Neither pK was used as an input to any point -- they are the mass-
       action constants inside the network, and the crossover is where the
       titration happens to arrive.  The small shift DOWN in both is the
-      activity coefficients: gamma_CO3 is 0.90 at the first crossover and
-      0.81 at the second, while a textbook plot takes every gamma as 1.
+      activity coefficients, while a textbook plot takes every gamma as 1.
+      The first is moved by gamma_HCO3 alone (about 0.975 there; CO2(aq) is
+      neutral) -- gamma_CO3 is 0.90 at that crossover but carbonate is a
+      trace there and moves nothing.  The second is moved by the ratio
+      gamma_CO3 / gamma_HCO3, 0.81 against 0.95.
 
   2.  THE THREE FRACTIONS DO NOT SUM TO ONE.  They dip to 0.99966 through
       the middle of the range, and the missing carbon is NOT round-off: it

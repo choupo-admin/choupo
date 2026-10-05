@@ -227,6 +227,10 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
         + "not a thermodynamic one.", unit: "K" },
       { sym: "A", means: "Exchanger area — the capital side of the approach "
         + "trade.", unit: "m²" },
+      { sym: "Q", means: "The exchanger's duty.  In THIS formula it must be "
+        + "in watts to give m² with U in W/(m²·K); the duties elsewhere on "
+        + "the page are printed in kW, so multiply by 1000 first.",
+        unit: "W" },
       { sym: "U", means: "The overall heat-transfer coefficient.  IT APPEARS "
         + "HERE ONLY TO NAME THE MECHANISM by which a smaller approach buys "
         + "surface.  This analysis computes no U, no area and no cost — the "
@@ -261,8 +265,9 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
       + "same reason.  Move Q across the pinch, from the region above to the "
       + "region below: the region above has lost Q that it needed, so the "
       + "hot utility must replace it, and the region below has gained Q it "
-      + "did not need, so the cold utility must reject it.  BOTH targets "
-      + "rise by Q — a cross-pinch transfer of Q is paid for twice, and that "
+      + "did not need, so the cold utility must reject it.  BOTH utility "
+      + "duties rise above their targets by Q — the targets themselves do "
+      + "not move — so a cross-pinch transfer of Q is paid for twice, and that "
       + "is the sentence worth remembering.  A heater below the pinch is "
       + "that same transfer with a utility standing in for the process "
       + "stream: heat is added where there is already a surplus, so it "

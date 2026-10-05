@@ -183,7 +183,9 @@ describe("what sharpens or broadens the zone, and the cyclic reality", () => {
 
   it("says why breakthrough time is a commercial number: beds run in PAIRS", () => {
     expect(prose(s5.note!)).toContain("PAIRS");
-    expect(prose(s5.note!)).toContain("breakthrough time IS the cycle time");
+    //  t_b BOUNDS the loading step; it is not the cycle time (C22 slice 2).
+    expect(prose(s5.note!)).toContain("breakthrough time BOUNDS the loading step");
+    expect(prose(s5.note!)).not.toContain("breakthrough time IS the cycle time");
     //  And that this plot is the loading half only.
     expect(prose(s5.note!)).toContain("ONE loading step");
   });

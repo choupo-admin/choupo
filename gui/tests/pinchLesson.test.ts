@@ -119,7 +119,10 @@ describe("THE THREE RULES, and the price of breaking each", () => {
     //  A rule with no price attached is a rule a student forgets.  The
     //  double penalty is the whole content of the pinch design method.
     const b = prose(s5.body);
-    expect(b).toContain("BOTH targets rise by Q");
+    //  The DUTIES rise above the targets; the targets do not move (C22
+    //  slice 2 -- the old sentence said the targets rose).
+    expect(b).toContain("BOTH utility duties rise above their targets by Q");
+    expect(b).not.toContain("BOTH targets rise by Q");
     expect(b).toContain("paid for twice");
     expect(s5.formula).toContain(String.raw`Q_H = Q_\mathrm{H,min} + Q`);
     expect(s5.formula).toContain(String.raw`Q_C = Q_\mathrm{C,min} + Q`);

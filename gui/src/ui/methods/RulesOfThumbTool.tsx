@@ -123,7 +123,8 @@ export function RulesOfThumbTool(): JSX.Element
 
             <Alert variant="light" color="orange" title="A rule is a starting bet, not a verdict">
                 <Text size="sm">
-                    “Pick a PFR for a fast, high-conversion liquid reaction” buys
+                    “Pick a PFR when you need high conversion of a single
+                    reaction” — the guide’s own rule — buys
                     you 80 % of the answer for 20 % of the effort.  It is not a
                     substitute for the run — and this simulator is glass-box
                     precisely so you can test the bet: build the case, watch the

@@ -188,11 +188,13 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
       + "it by comparing slopes.  Nudge the temperature up a little at a "
       + "crossing: if generation grows faster than removal, the surplus heat "
       + "pushes the temperature further up and the reactor leaves; if removal "
-      + "grows faster, the extra removal pulls it back.  So a steady state is "
-      + "stable when the REMOVAL LINE IS STEEPER than the generation curve "
-      + "where they meet.",
+      + "grows faster, the extra removal pulls it back.  So a steady state "
+      + "CANNOT be stable unless the REMOVAL LINE IS STEEPER than the "
+      + "generation curve where they meet.  That is a NECESSARY condition, "
+      + "not a sufficient one: the limits below say why passing it proves "
+      + "nothing on its own.",
     formula: String.raw`\begin{aligned}
-\frac{\mathrm{d}Q_\mathrm{rem}}{\mathrm{d}T} &> \frac{\mathrm{d}Q_\mathrm{gen}}{\mathrm{d}T} \quad \text{at the crossing} \quad \longrightarrow \quad \text{stable}\\[4pt]
+\frac{\mathrm{d}Q_\mathrm{rem}}{\mathrm{d}T} &> \frac{\mathrm{d}Q_\mathrm{gen}}{\mathrm{d}T} \quad \text{at the crossing} \quad \longleftarrow \quad \text{stable}\\[4pt]
 \frac{\mathrm{d}R}{\mathrm{d}T} &> \frac{\mathrm{d}G}{\mathrm{d}T}
 \end{aligned}`,
     where: [
@@ -205,9 +207,11 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
         unit: "W" },
       { sym: "\\mathrm{d}R/\\mathrm{d}T",
         means: "The SLOPE of the removal curve at the crossing — "
-        + "how much extra heat you get rid of for one more kelvin.  Stability "
-        + "is entirely a contest between this and dG/dT: if a small warm "
-        + "excursion removes more than it generates, the reactor comes back.",
+        + "how much extra heat you get rid of for one more kelvin.  The "
+        + "STATIC half of stability is a contest between this and dG/dT: if a "
+        + "small warm excursion removes more than it generates, the "
+        + "temperature is pushed back — though the composition can still "
+        + "move the other way, which is the half this test does not see.",
         unit: "W/K" },
       { sym: "\\mathrm{d}G/\\mathrm{d}T",
         means: "The slope of the generation curve — how much "
@@ -215,7 +219,9 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
     ],
     note: "Where there are three crossings the MIDDLE one fails this test — "
       + "the generation curve is cutting upward through the line there — which "
-      + "is why it can never be observed however carefully the plant is tuned. "
+      + "is why the reactor left to itself can never sit there.  Feedback "
+      + "control CAN hold it (a temperature loop on the coolant does exactly "
+      + "that), but the open-loop plant cannot. "
       + " \"The solver converged\" and \"the plant can run there\" are "
       + "different claims, and this is the cleanest place in the corpus to see "
       + "that the second does not follow from the first.",

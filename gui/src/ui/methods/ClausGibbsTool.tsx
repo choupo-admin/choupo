@@ -70,9 +70,11 @@ export const CLAUS_STEPS = [
       + "2 H₂S + SO₂   →  3/x S_x + 2 H₂O      (the Claus reaction)",
     after: "Add them in the ratio 1 : 1 and the oxygen is exactly enough — "
       + "which is where the one third comes from, and why the air rate is "
-      + "the only real knob on a Claus furnace.  Now try to close a mass "
-      + "balance.  You cannot: the second equation contains x, and x is the "
-      + "number of sulfur atoms in the molecule that actually forms.  Sulfur "
+      + "the only real knob on a Claus furnace.  Now try to write the "
+      + "stream table.  The ATOM balance closes for any x — 3/x molecules of "
+      + "S_x carry three sulfur atoms whatever x is — but the MOLE count does "
+      + "not, and x is the number of sulfur atoms in the molecule that "
+      + "actually forms.  Sulfur "
       + "vapour is S₂ when it is hot and S₈ when it is cool, with everything "
       + "in between at the temperatures a Claus plant works at.  A hand "
       + "calculation must ASSUME a value for x before it can proceed, and "
@@ -111,9 +113,10 @@ export const CLAUS_STEPS = [
       { sym: "M", means: "number of elements tracked", unit: "—" },
     ],
     assumes: "That the species you listed are the ones that can form.  This "
-      + "is the model's one real assumption and it is yours, not the "
+      + "is the model's first assumption and it is yours, not the "
       + "engine's — a species you leave out cannot appear, however "
-      + "favourable it would have been.",
+      + "favourable it would have been.  (Step 3 adds the second: an ideal "
+      + "gas.)",
     cites: "GibbsReactor.H:36-38",
   },
   {
@@ -122,9 +125,9 @@ export const CLAUS_STEPS = [
     body: "A constrained minimum is a Lagrangian.  Attach a multiplier π_j "
       + "to each element balance, differentiate, and the stationarity "
       + "condition gives every mole number in closed form:",
-    eq: "n_i = exp( ln N − ln P − g°_i(T)/RT + Σ_k π_k A_ki )",
+    eq: "n_i = exp( ln n_t − ln(P/P°) − g°_i(T)/RT + Σ_k π_k A_ki )",
     after: "This is worth staring at.  N unknowns have collapsed into M + 1 "
-      + "— one π per ELEMENT plus the total — and there are five elements "
+      + "— one π per ELEMENT plus the total n_t — and there are five elements "
       + "here whatever the species count.  Substituting back into the "
       + "constraints leaves M + 1 equations for M + 1 unknowns, which is "
       + "what the engine actually solves with a finite-difference Newton.",
@@ -135,9 +138,13 @@ export const CLAUS_STEPS = [
       { sym: "R", means: "gas constant", unit: "J/(mol·K)" },
       { sym: "T", means: "temperature", unit: "K" },
       { sym: "P", means: "pressure", unit: "Pa" },
+      { sym: "P°", means: "the standard-state pressure, 1 bar — the engine "
+        + "takes ln(P/P°), never ln P of a pressure in Pa", unit: "Pa" },
+      { sym: "n_t", means: "total moles of gas at equilibrium (the extra "
+        + "unknown beside the π's); not N, which counts species", unit: "mol" },
     ],
     assumes: "Ideal gas at the 1 bar reference, φ_i = 1, so μ_i = g°_i(T) + "
-      + "RT ln(y_i P).  At 1.5 bar and 1500 K that is a very good "
+      + "RT ln(y_i P/P°).  At 1.5 bar and 1500 K that is a very good "
       + "approximation and the engine says so rather than hiding it.",
     cites: "GibbsMethod.cpp:78-82, GibbsMethod.cpp:85-92",
   },
@@ -207,12 +214,17 @@ export const CLAUS_STEPS = [
   },
   {
     n: 7,
-    title: "The 2 : 1 nobody asked for",
+    title: "The 2 : 1, and what set it",
     body: "Look at H₂S and SO₂ in the boiler: 2.783 % and 1.392 %, a ratio "
       + "of 1.999270.  Every Claus plant in the world is controlled to keep "
       + "that ratio at 2 : 1, because it is the stoichiometry the catalytic "
-      + "beds need.  It was never entered anywhere.  It fell out of a Gibbs "
-      + "minimisation that had never heard of the Claus reaction.",
+      + "beds need — and it is controlled with the AIR RATE, which is "
+      + "exactly what fixed it here.  The ratio was never entered as a "
+      + "ratio, but it did not fall out of the minimisation either: with "
+      + "the air declared to burn one third of the H₂S, the O and H "
+      + "balances FORCE H₂S = 2 SO₂ whenever the hydrogen sits only in H₂S "
+      + "and H₂O.  What the minimisation decided is everything else — how "
+      + "much H₂ and CO there are, and so how far the ratio strays from two.",
     after: "In the FURNACE the same ratio is 1.04, and the explanation is "
       + "two columns over on the same line: 2.85 % H₂ and 0.80 % CO.  At "
       + "1500 K hydrogen sulfide also CRACKS (H₂S → H₂ + ½ S₂), which "
@@ -275,7 +287,7 @@ export function ClausGibbsTool(): JSX.Element {
         <Title order={3}>The allotrope nobody declared</Title>
         <Text size="sm" mt={4}>
           A Claus sulfur plant, worked end to end — and the one thing about it
-          that <strong>cannot be done by hand</strong>.  Every number on this
+          that a hand calculation <strong>has to assume</strong>.  Every number on this
           page is the recorded output of{" "}
           <Code style={{ fontSize: 11 }}>tutorials/steady/gibbs/claus01_thermal_stage</Code>,
           not a textbook table.

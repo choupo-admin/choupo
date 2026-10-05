@@ -73,7 +73,7 @@ export const PATHWAYS_STEPS: readonly LessonStep[] = [
       + "thermodynamics, same data, two different questions.",
     formula: String.raw`\min_{n \ge 0}\; G(T,P,n) \quad \text{subject to} \quad A\,n = b
 \qquad\text{versus}\qquad
-n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ij}\,\ln\frac{y_i\,P}{P^{\circ}} = \ln K_j(T)`,
+n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ji}\,\ln\frac{y_i\,P}{P^{\circ}} = \ln K_j(T)`,
     where: [
       { sym: "G", means: "the total Gibbs energy of the outlet mixture — what "
         + "the Gibbs reactor minimises", unit: "J/s" },
@@ -99,8 +99,9 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ij}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
         + "the outlet amounts and recovers ξ from them "
         + "(EquilibriumReactor.cpp:532–576), so a species left at 10⁻¹⁴ of the "
         + "feed is resolved, not lost to a subtraction", unit: "mol/s" },
-      { sym: "\\nu_{ij}", means: "the stoichiometric coefficient of species i "
-        + "in reaction j" },
+      { sym: "\\nu_{ji}", means: "the entry of ν in row j and column i: the "
+        + "stoichiometric coefficient of species i in reaction j (rows are "
+        + "reactions, as in ν above)" },
       { sym: "i", means: "the species index" },
       { sym: "j", means: "the reaction index, over the DECLARED reactions "
         + "only" },

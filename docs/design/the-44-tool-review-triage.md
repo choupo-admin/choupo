@@ -197,6 +197,83 @@ curve).  Two tests had been PINNING the wrong wording (ε-NTU "FIRST-LAW
 maximum", psychrometrics "FLOOR for any adiabatic humidification"); both now
 pin the correction and forbid the old sentence.
 
+**Slice 2 (2026-10-05), every remaining confirmed error in the list above.**
+Each was re-read against the CURRENT lesson source and, where the page cites
+engine behaviour, against the engine at `296df2d9c` before a word moved; none
+had been fixed in the meantime and none had become true.  Wegstein (the
+secant is a directional difference, not a partial derivative — the page now
+agrees with its own previous sentence); McCabe–Thiele (q is a liquid
+fraction only between 0 and 1); LUB (√t on a linear isotherm, t on an
+unfavourable one; step 3 does not check the premise, as the page's own limit
+already said; LUB is an equivalent length of unused capacity, also fixed in
+the breakthrough page's gloss); breakthrough (t_b bounds the loading step, it
+is not the cycle time); pump/system (NPSH_a written on the SOURCE vessel's
+surface pressure, so elevation and friction are not counted twice); Claus
+(the atom balance closes for any x, the mole count does not; ln(P/P°) as
+`GibbsMethod.cpp:61` takes it; n_t for the total, N stays the species count;
+the 2 : 1 is forced by the declared air rate and the O and H balances, not
+chosen by the minimisation; species list is the FIRST assumption, ideal gas
+the second); sour water (m = A n is master TOTALS in moles, as
+`ThermoPackageBuilder.cpp:1567` defines it; the master balance on one basis;
+γ on the formed species in the mass-action law; the table no longer puts
+stage 1's pH beside stage 2's bisulfide — stage 1 carries no sulfide; the
+anchor is Edwards' PREDICTED column, not his measurements, and the case
+header and description already said so); declared pathways (ν_ji, rows are
+reactions); local composition (ethanol/water deviates POSITIVELY; τ = 0 is
+ideal for NRTL, Λ = 1 for Wilson, and UNIQUAC keeps its combinatorial term —
+`Wilson.cpp:225`, `UNIQUAC.cpp:173`); UNIFAC (Ψ_mn; temperature enters NRTL
+through τ too; X_m defined; a missing main-group pair CAN be regressed, as a
+new named parameterisation); COSMO-SAC (contacts are Boltzmann-weighted; α',
+c_HB and σ_HB were regressed on mixtures; φ and θ defined as
+`CosmoSac.cpp:177-178` forms them); property origins (MW is a sum of atomic
+weights; s_298 is measured only where a record cites a measurement; ω is
+DEFINED at T_r = 0.7 and here comes from Lee–Kesler, as
+`EstimateComponent.cpp:359` prints; the table shows totals, not a group sum;
+no ΔHf error is claimed, the case cites no reference for it); property trust
+(at 563.15 K, glycerol's own Tb, P_sat is one atmosphere by definition;
+`check_tb_antoine` reaches neither water nor glycerol, and the page now says
+so); four ways (four models on the table, two more from their own
+witnesses); Van Heerden (the slope test is NECESSARY; feedback control can
+hold the middle state); column control (ΔT/Δu IS a finite-difference gain;
+T–x is one-to-one only for a ZEOTROPIC binary, twice); Bode (most, not every,
+tuning rule is in the ideal form; the half-step lag is the ZERO-ORDER HOLD
+of the drive, `DynamicDriver.cpp:1564-1566`, not the reading of states on a
+grid — lesson, tool and `bodeMath.ts` comment); tear streams (the engine
+looks for the cycle over ALL edges; a tear on an acyclic backward edge
+converges to the RIGHT number and is refused because it hides the mistake —
+leaving it undeclared is what reads the seed); active-set QP (three
+floating-point deadbands, `ActiveSetQP.cpp:143-144, 235`; a degenerate α = 0
+step changes the working set without improving the objective; a primal
+method needs a feasible start, which the solver does not check; the
+attribution identity is written on the engine's NORMALISED rows,
+`AnalysisReconciler.cpp:129-140`); least squares (maximum likelihood needs
+NORMAL errors, twice; one Gauss–Newton minimum needs full column rank);
+Thiele (Weisz–Prater still needs an estimated D_eff; the 0.3 belongs to one
+of the two conventions and its quoter must say which); batch membranes (an
+endpoint may be a CONSTRAINED optimum, as the page's own note explains);
+Bjerrum (a fixed-pH diagram is a real buffered beaker with an untracked
+counter-ion; the first crossover moves by γ(HCO₃⁻) alone, ≈ 0.975, read from
+the golden — the case header carried the same misattribution and is
+corrected with it, and `check_bjerrum_prose` still finds every number it
+recomputes; carbonate is the smallest system with TWO crossovers, which
+removes the contradiction with boron); FUG (a constant α cannot CROSS one,
+twice); Kremser (the formula assumes an entering solvent free of solute);
+pinch (the utility DUTIES rise above unmoved targets; Q in W for A in m²).
+Design Guide: V ∝ ln[1/(1−X)] for a first-order PFR; the direct sequence is
+LIGHTEST-out; and the "PFR for a fast liquid reaction" example — which the
+reviewer found in `RulesOfThumbTool.tsx` and which the guide's own
+introduction (`designGuide.tex:48`) carried too — now quotes the guide's own
+reactor rule in both places.  Three tests pinned the corrections and forbid
+the old sentences where one was pinned (breakthrough, pinch, Van Heerden),
+and two citation anchors were added (`DynamicDriver.cpp:1565`,
+`AnalysisReconciler.cpp:129,138`).
+
+**NOT done in slice 2, and named:** the SOFTEN pass.  Its source lists are
+not in the repository (above), so it would be a fresh reading of every page
+for absolutes, which is a different job from correcting the list; nothing
+here was softened except where an absolute WAS the confirmed error.  The
+engine items (below) are untouched — this slice moved no file under `src/`.
+
 ## Order of work
 
 1. The confirmed text errors above, page by page, with each page's SOFTEN
