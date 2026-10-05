@@ -7,8 +7,8 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  0/internalStates/retentate -- the retentate vessel's initial holdup, the SINGLE
-  source of truth (an inline initial{} block in flowsheetDict is refused).
+  0/internalStates/retentate -- the initial HOLDUP of 'retentate', the
+  retentate vessel's starting state and the SINGLE source of truth (an inline initial{} block in flowsheetDict is refused).
 
   10 litres of water carrying 0.02 kmol/m3 of each salt.  In the mole
   fractions the engine works in, 10 L of water is 0.5551 kmol and each

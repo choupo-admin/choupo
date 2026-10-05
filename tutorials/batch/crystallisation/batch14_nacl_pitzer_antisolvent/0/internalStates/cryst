@@ -7,7 +7,8 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  0/internalStates/cryst -- the vessel's initial HOLDUP.
+  0/internalStates/cryst -- the initial HOLDUP of 'cryst', the vessel's
+  starting state.
 
   batch13's brine with an antisolvent added:
 

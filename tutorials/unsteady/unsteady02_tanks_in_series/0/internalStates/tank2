@@ -1,6 +1,6 @@
 /*--------------------------------*- Choupo -*----------------------------------*\
-  0/internalStates/tank2 -- DYNAMIC initial holdup.  The tracer impulse is a
-  SUBSTITUTION in tank 1 (total holdup identical in all three tanks, so
+  0/internalStates/tank2 -- the initial HOLDUP of 'tank2' (DYNAMIC).  The tracer
+  impulse is a SUBSTITUTION in tank 1 (total holdup identical in all three tanks, so
   every tau is exactly 80 s and the Erlang-3 closed forms are exact).
 \*-----------------------------------------------------------------------------*/
 

@@ -7,7 +7,8 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  0/internalStates/plant -- the plant AT its nominal steady state (ctrl12's
+  0/internalStates/plant -- the initial HOLDUP of 'plant': the plant AT its
+  nominal steady state (ctrl12's
   converged x*, machine-accurate; the paper's eq. 4.8 quotes it to three
   figures).  The paper activates its PI at t* = 100 h with the process
   already settled -- starting AT the settled state with the PI on from

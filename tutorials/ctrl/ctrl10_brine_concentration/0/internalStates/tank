@@ -7,7 +7,8 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  0/internalStates/tank -- the vessel's initial HOLDUP.
+  0/internalStates/tank -- the initial HOLDUP of 'tank', the vessel's
+  starting state.
 
   50 kg water + 8.77 kg NaCl = 3.00 mol/kg, at 25 C, to be warmed to 40 C by
   the jacket loop.  Comfortably below the Pitzer saturation (~6.14 mol/kg at
