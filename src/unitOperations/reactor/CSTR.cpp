@@ -97,14 +97,6 @@ int CSTR::solve(const DictPtr& dict,
     const scalar T          = feedDict->lookupScalar("T",   Dims::temperature);
     const scalar V_R        = operDict->lookupScalar("V_R", Dims::volume);
 
-    // Inlet vapour fraction.  The flowsheet has already inferred the feed phase
-    // at its own (T, P, z) and supplies it here.  A reactor is NOT a phase-
-    // change device, so the product leaves in the SAME phase it entered: a gas-
-    // phase reaction fed superheated vapour must report a VAPOUR product, not a
-    // (silently liquid) vf = 0.  We inherit the inlet phase instead of asserting
-    // liquid; an isothermal continuation does not invent a phase boundary.
-    const scalar vf_in = feedDict->lookupScalarOrDefault("vf", 0.0);
-
     const std::size_t n = thermo.n();
     sVector z_in(n, 0.0);
     scalar zsum = 0.0;
@@ -115,6 +107,19 @@ int CSTR::solve(const DictPtr& dict,
         zsum   += z_in[i];
     }
     for (auto& v : z_in) v /= zsum;
+
+    // Inlet vapour fraction.  A reactor is NOT a phase-change device, so the
+    // product leaves in the SAME phase it entered: a gas-phase reaction fed
+    // superheated vapour must report a VAPOUR product, not a (silently
+    // liquid) vf = 0.  We inherit the inlet phase instead of asserting
+    // liquid; an isothermal continuation does not invent a phase boundary.
+    // The flowsheet does NOT infer it before this unit runs: an UNPINNED
+    // authored feed carries the default 0, so it is resolved here at its own
+    // (T, P, z), single phase included (R-E2; DEV.md C33/C34).  A produced
+    // feed keeps its producer's answer, a pinned one its declaration.
+    const scalar vf_in = flashState::resolvedInletVaporFraction(
+        feedDict, T, feedDict->lookupScalarOrDefault("P", 101325.0), z_in,
+        thermo, "cstr inlet");
 
     // ---- MULTI-REACTION?  `reactions ( r1 r2 ... );` -----------------
     //  R coupled design equations solved together; the single-reaction path

@@ -86,6 +86,44 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              own report, is 100 +- 0.5 %, and the report's own discard line
              for `reacted` is STILL there -- the two readers agree by saying
              the same thing, not by one of them falling silent.
+  (i) AN AUTHORED INLET IS READ AS WHAT IT MEANS, DURING THE SOLVE
+      (2026-10-04, DEV.md C33 + C34).  A domain inlet that declares no phase
+      carries the stream record's default `vf = 0` until something resolves
+      it; the flowsheet's surface pass does so only AFTER the solve, so every
+      unit that reads its inlet's phase must resolve it itself.
+        (i1) SOURCE: each unit in INLET_READERS calls
+             `flashState::resolvedInletVaporFraction` and keeps no bare
+             `lookupScalarOrDefault("vf"` beside it (comments stripped; the
+             two named non-inlet reads in BARE_VF_ALLOWED excepted).  The
+             readers deliberately LEFT -- the distillation column (DEV.md §4d
+             D1, reserved), the electrodialysis stack, the isothermal flash's
+             own feed re-flash -- are the table in DEV.md C33.
+        (i2) OUTPUT: `inletState01_undeclared_vapour` feeds three undeclared
+             superheated vapours to a valve, a mixer and a splitter.  The
+             valve's T_out must equal its T_in within 0.5 K (an ideal-gas
+             vapour has no Joule-Thomson effect) with vf = 1, the mixer's vf
+             must be 1, both splitter branches must carry vf = 1, and the
+             plant's first law must close within 1e-2 kW (the mixer's own Newton
+             tolerance leaves ~1e-3 kW on 250 kmol/h; a misread inlet costs
+             hundreds).
+  (j) AN OUTLET SEARCH DISCARDS THE SAME ROOT (2026-10-04, C34).  The
+      valve's and the adiabatic flash's outlet searches, the pipe's
+      inlet-regime test and the isothermal flash's own OPERATING resolution
+      called `solveCore` bare and accepted a two-phase root above every
+      present component's Tc (DEV.md §5, 2026-09-26, named there).
+        (j1) SOURCE: each unit in OUTLET_SEARCHERS searches through
+             `flashState::flashDiscardingSupercriticalSplit` and calls no
+             bare `IsothermalFlash::solveCore`; IsothermalFlash.cpp calls
+             `flashState::takeSupercriticalAsSinglePhase` on its operating
+             answer.
+        (j2) OUTPUT: a one-drum fixture built from (h)'s own converged
+             `reacted` (844.86 K, 200 bar) and operated at the feed's T and P
+             publishes NO liquid, says so at its site and once on the result
+             JSON under `isothermalFlash operating state`.  NOT reached by any
+             output arm: the valve's and the adiabatic flash's outlet
+             searches (their bracket stops at 700 K, and no corpus state
+             below it resolves a supercritical root) and the pipe -- those
+             ride (j1) alone.
   (e) flash13_acetic_ethanol_vacuum_flash keeps a LARGE duty -- the
       negative control.  Its feed is at 1 atm and it operates at 0.65 atm,
       so its 669 kW is genuine pressure-drop work; a gate that drove every
@@ -117,6 +155,26 @@ because a presence test was satisfied by something other than its subject:
           no match is a silent no-op.  A SABOTAGE THAT DOES NOT LAND PROVES
           THE GATE IS FINE, which is the opposite of what it was run to
           find out.  Assert the edit applied before believing its verdict.
+
+SABOTAGE-VERIFIED 2026-10-04 for (i)/(j), by hand on the engine source,
+each restored by git and rebuilt:
+  S1  `resolvedInletVaporFraction` returns the carried value (the one home
+      bypassed).  (i2) fails five ways: the valve lets the 450 K vapour down
+      to 384.5 K at vf = 0.315, the mixer and both splitter branches publish
+      vf = 0, and the plant's first law misses by 1659.5 kW.
+  S2  the flash's operating discard disarmed (`if (false && ...)`, the call
+      left in place).  (j1) PASSES -- it reads the call -- and (j2) fails
+      three ways: the drum publishes 7.685 kmol/s of liquid, no site line,
+      no advisory.  The output arm is the one that can see a disarmed call.
+  S3  the valve's outlet search back to a bare `IsothermalFlash::solveCore`.
+      (j1) fails twice (no one-home call; a bare solveCore).
+  S4  the mixer stops asking the one home (`vf = vfCarried`).  SURVIVED its
+      first version's mixer-vf sub-check: the valve's PRODUCED vapour
+      outvoted the authored feedB, so the outlet stayed vapour either way and
+      only (i1) and the closure (258.9 kW) caught it.  feedB is now the larger
+      inlet, and S4 is caught three ways: (i1), M1 vf = 0, 1306.8 kW.
+  S5  `takeSupercriticalAsSinglePhase` hollowed (returns before it
+      discards; every caller intact).  (j2) fails three ways.
 
 SABOTAGE-VERIFIED 2026-08-09: reverting the R-E1 gate (unpinned feeds no
 longer re-flashed -- the pre-slice behaviour) reproduced the original
@@ -162,6 +220,45 @@ SUPERCRITICAL_UNIT = "separator"
 SUPERCRITICAL_FEED = "reacted"
 ONE_HOME = ROOT / "src/unitOperations/flash/StreamEquilibrium.H"
 FLASH_SRC = ROOT / "src/unitOperations/flash/IsothermalFlash.cpp"
+#  (i) the units that read an inlet's vapour fraction DURING the solve, each
+#  through the one home (DEV.md C33 + C34).  The readers deliberately LEFT,
+#  each with its reason, are the table in DEV.md C33 -- they are not here.
+UNITS = ROOT / "src/unitOperations"
+INLET_READERS = [
+    "valve/Valve.cpp",
+    "flash/AdiabaticFlash.cpp",
+    "heatTransfer/HeatExchanger.cpp",
+    "storage/StorageTank.cpp",
+    "mixer/Mixer.cpp",
+    "mixer/Splitter.cpp",
+    "reactor/CSTR.cpp",
+    "reactor/PFR.cpp",
+    "reactor/ConversionReactor.cpp",
+    "distillation/ShortcutColumn.cpp",
+    "heatTransfer/SprayDryer.cpp",
+    "heatTransfer/SolidDryer.cpp",
+    "heatTransfer/ConvectiveDryer.cpp",
+    "heatTransfer/Heater.cpp",
+    "heatTransfer/PhaseChanger.cpp",
+    "heatTransfer/MultiStreamHX.cpp",
+]
+#  The two bare `vf` reads that are not the inlet's reading: multiStreamHX's
+#  DECLARED outlet phase in `operation.outlet.<stream>` (`od`), whose default
+#  is the resolved inlet; and the mixer's CARRIED value, kept -- announced --
+#  for a two-phase authored inlet its one-phase balance cannot carry (the
+#  stated default of C34, cavett01).
+BARE_VF_ALLOWED = {
+    "heatTransfer/MultiStreamHX.cpp": r"\bod->lookupScalarOrDefault",
+    "mixer/Mixer.cpp": r"\bvfCarried\s*=\s*sd->lookupScalarOrDefault",
+}
+WITNESS = "tutorials/steady/flowsheets/inletState01_undeclared_vapour"
+#  (j) the units that search their own OUTLET (or regime) with a flash
+OUTLET_SEARCHERS = [
+    "valve/Valve.cpp",
+    "flash/AdiabaticFlash.cpp",
+    "hydraulics/Pipe.cpp",
+    "heatTransfer/PhaseChanger.cpp",
+]
 
 
 def run(case: pathlib.Path):
@@ -344,14 +441,15 @@ def main() -> int:
         home = strip_comments(ONE_HOME.read_text())
         flash = strip_comments(FLASH_SRC.read_text())
         n_def = len(re.findall(r"\bsupercriticalSplitDiscarded\s*\(", home))
-        #  the definition plus the call inside equilibriumAt
-        if n_def != 2:
+        #  the definition, the call inside equilibriumAt, and the call inside
+        #  takeSupercriticalAsSinglePhase (the outlet-search form, arm (j))
+        if n_def != 3:
             fail.append(
                 f"(h1) `supercriticalSplitDiscarded` appears {n_def} time(s) "
-                "in StreamEquilibrium.H outside comments; expected exactly 2 "
-                "-- its ONE definition and the call from `equilibriumAt`.  "
-                "The discard has a second home, or the report's reader lost "
-                "it.")
+                "in StreamEquilibrium.H outside comments; expected exactly 3 "
+                "-- its ONE definition, the call from `equilibriumAt` and the "
+                "call from `takeSupercriticalAsSinglePhase`.  The discard has "
+                "a second home, or one of its two readers lost it.")
         if not re.search(r"flashState::supercriticalSplitDiscarded\s*\(", flash):
             fail.append(
                 "(h1) IsothermalFlash.cpp does not CALL "
@@ -412,6 +510,128 @@ def main() -> int:
                     "readers must agree by both saying so, not by one going "
                     "silent.")
 
+            # (j2) THE DRUM OPERATED ABOVE EVERY Tc, built from this run's own
+            #  converged `reacted` (844.86 K, 200 bar): one isothermalFlash
+            #  that inherits the feed's T and P.  Its operating resolution
+            #  must discard the same root its duty and the report discard,
+            #  and publish NO liquid.
+            conv = sc / "converged" / SUPERCRITICAL_FEED
+            if not conv.is_file():
+                fail.append("(j2) ammoniaStaged04 wrote no converged/"
+                            f"{SUPERCRITICAL_FEED} -- the drum fixture "
+                            "cannot be built")
+            else:
+                drum = tmp / "drumAboveEveryTc"
+                (drum / "system").mkdir(parents=True)
+                (drum / "0").mkdir()
+                shutil.copytree(sc / "constant", drum / "constant")
+                shutil.copy(sc / "system" / "controlDict",
+                            drum / "system" / "controlDict")
+                for nm in ("reacted", "liq", "vap"):
+                    shutil.copy(conv, drum / "0" / nm)
+                (drum / "system" / "flowsheetDict").write_text(
+                    "units\n(\n    {\n        name drum;\n"
+                    "        type isothermalFlash;\n        in reacted;\n"
+                    "        outputs ( liq vap );\n        operation { }\n"
+                    "    }\n);\n")
+                rc, dlog = run(drum)
+                m = re.search(r'"liq":\s*\{\s*"F":\s*([-0-9.eE+]+)', dlog)
+                if rc != 0 or not m:
+                    fail.append(f"(j2) the drum fixture did not run (rc={rc})"
+                                " or published no `liq` stream")
+                else:
+                    if abs(float(m.group(1))) > 1e-12:
+                        fail.append(
+                            "(j2) a drum operated at 844.86 K and 200 bar, "
+                            "above every present component's Tc (405.4 K), "
+                            f"published a LIQUID product of {m.group(1)} "
+                            "kmol/s: its operating resolution accepted the "
+                            "two-phase root its own duty and the report "
+                            "discard (DEV.md §5, 2026-09-26).")
+                    if not re.search(r"\[flash\] resolved TWO-PHASE .*"
+                                     r"DISCARDED", dlog):
+                        fail.append("(j2) the drum's operating discard printed "
+                                    "no `[flash] ... DISCARDED` line at its "
+                                    "site")
+                    loc = '"locus": "isothermalFlash operating state"'
+                    n = len(re.findall(re.escape(loc) + r".*?TWO-PHASE", dlog))
+                    if n != 1:
+                        fail.append(
+                            "(j2) the operating discard reached the result "
+                            f"JSON {n} time(s) under {loc}; expected exactly 1")
+
+        # (i1) SOURCE: every inlet-vf reader goes through the one home, and
+        #  none keeps a bare `vf` read beside it.
+        for rel in INLET_READERS:
+            src = strip_comments((UNITS / rel).read_text())
+            if not re.search(r"\bresolvedInletVaporFraction\s*\(", src):
+                fail.append(
+                    f"(i1) {rel} no longer reads its inlet through "
+                    "`flashState::resolvedInletVaporFraction` -- an unpinned "
+                    "authored vapour reaches it as the struct default, a "
+                    "liquid (DEV.md C33/C34)")
+            allowed = BARE_VF_ALLOWED.get(rel)
+            for line in src.splitlines():
+                if re.search(r'lookupScalarOrDefault\(\s*"vf"', line) and not (
+                        allowed and re.search(allowed, line)):
+                    fail.append(f"(i1) {rel} reads a bare `vf` again: "
+                                f"{line.strip()[:110]}")
+
+        # (i2) OUTPUT: the witness, whose three undeclared superheated feeds
+        #  must reach the valve, the mixer and the splitter as vapours.
+        w = tmp / "inletState01"
+        shutil.copytree(ROOT / WITNESS, w)
+        rc, wlog = run(w)
+        if rc != 0:
+            fail.append(f"(i2) {WITNESS} did not run (rc={rc})")
+        else:
+            def unit_kpis(name):
+                tail = wlog.split('"kpis"')[-1] if '"kpis"' in wlog else ""
+                m = re.search(r'"' + name + r'":\s*\{([^}]*)\}', tail)
+                if not m:
+                    return {}
+                return {k: float(v) for k, v in re.findall(
+                    r'"([A-Za-z_]+)":\s*([-0-9.eE+]+)', m.group(1))}
+            v1, m1 = unit_kpis("V1"), unit_kpis("M1")
+            if (v1.get("vf") != 1.0
+                    or abs(v1.get("T_out", 0.0) - v1.get("T_in", -1.0)) > 0.5):
+                fail.append(
+                    f"(i2) V1 (valve) let an undeclared 450 K vapour down to "
+                    f"T_out = {v1.get('T_out')} K, vf = {v1.get('vf')}: an "
+                    "ideal-gas vapour has no Joule-Thomson effect, so this "
+                    "valve read its inlet as the struct's default LIQUID")
+            if m1.get("vf") != 1.0:
+                fail.append("(i2) M1 (mixer) labelled two undeclared vapours' "
+                            f"outlet vf = {m1.get('vf')}")
+            for side in ("sideA", "sideB"):
+                m = re.search(r'"' + side + r'":\s*\{[^}]*"vf":\s*([-0-9.eE+]+)',
+                              wlog)
+                if not m or float(m.group(1)) != 1.0:
+                    fail.append(f"(i2) S1 (splitter) published `{side}` with "
+                                f"vf = {m.group(1) if m else None}: a branch of "
+                                "an undeclared vapour is a vapour")
+            m = re.search(r'"globalEnergyBoundary":\s*\{[^}]*"residual_kW":\s*'
+                          r'([-0-9.eE+]+)', wlog)
+            if not m or abs(float(m.group(1))) > 1e-2:
+                fail.append("(i2) the witness's plant first law does not close "
+                            f"(residual {m.group(1) if m else None} kW): the "
+                            "units and the report read different inlet states")
+
+        # (j1) SOURCE: every outlet search reads the one-home discard, and none
+        #  calls the flash bare beside it.
+        for rel in OUTLET_SEARCHERS:
+            src = strip_comments((UNITS / rel).read_text())
+            if not re.search(r"\bflashDiscardingSupercriticalSplit\s*\(", src):
+                fail.append(f"(j1) {rel} does not search through "
+                            "`flashState::flashDiscardingSupercriticalSplit`")
+            if re.search(r"IsothermalFlash::solveCore\s*\(", src):
+                fail.append(f"(j1) {rel} calls `IsothermalFlash::solveCore` "
+                            "bare -- a two-phase root above every Tc is "
+                            "accepted there again")
+        if not re.search(r"\btakeSupercriticalAsSinglePhase\s*\(", flash):
+            fail.append("(j1) IsothermalFlash.cpp's operating resolution does "
+                        "not call `flashState::takeSupercriticalAsSinglePhase`")
+
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
         shutil.copytree(ROOT / CONTROL, ctrl)
@@ -444,11 +664,21 @@ def main() -> int:
           "(`flashState::supercriticalSplitDiscarded`, source-checked): "
           "ammoniaStaged04's separator, fed at 844.86 K, announces the "
           "discard at its site and ONCE on AdvisoryLog and closes at 100 +- "
-          "0.5 % beside the report's own discard line.  NOT "
+          "0.5 % beside the report's own discard line.  AN AUTHORED INLET "
+          f"IS READ AS WHAT IT MEANS DURING THE SOLVE: {len(INLET_READERS)} "
+          "units read it through `resolvedInletVaporFraction` (source), and "
+          "the witness's undeclared superheated vapours leave the valve at "
+          "their own T, the mixer and the splitter as vapours, with the "
+          "plant's first law closed.  EVERY OUTLET SEARCH DISCARDS THE SAME "
+          f"ROOT: {len(OUTLET_SEARCHERS)} searchers through "
+          "`flashDiscardingSupercriticalSplit` (source), and a drum operated "
+          "at 844.86 K publishes no liquid.  NOT "
           "CHECKED: whether a NON-zero duty is right (only the identity has a "
           "closed form); the multi-condition cases' duties, which ride their "
           "goldens; whether the 1e-3 incipient band is the right number (it "
-          "is a stated choice); and any vapourless package, which the test "
+          "is a stated choice); the valve's, the adiabatic flash's and the "
+          "pipe's discard by OUTPUT (no corpus state reaches them -- source "
+          "only); and any vapourless package, which the test "
           "skips by hasEos().")
     return 0
 

@@ -113,7 +113,14 @@ int Heater::solve(const DictPtr& dict,
     const scalar F_mol_s   = F * 1000.0;
     const scalar Q_per_mol = Q_W / F_mol_s;             // J/mol
 
-    const scalar vf_in  = feedDict->lookupScalarOrDefault("vf", 0.0);
+    //  The inlet's phase picks the sensible rung, the Newton's upper bracket
+    //  and the leg the datum probe below asks for.  An UNPINNED authored
+    //  inlet means its own equilibrium (R-E2), single phase included: the
+    //  carried default 0 sent an all-vapour feed to the liquid bracket
+    //  (700 K) and probed a liquid leg the gas may not have (DEV.md
+    //  C33/C34).  A produced inlet keeps its producer's answer.
+    const scalar vf_in  = flashState::resolvedInletVaporFraction(
+        feedDict, T_in, P_in, z, thermo, "heater inlet");
     const bool   useGas = vf_in >= 0.5;
     //  Was that vf AUTHORED, or is it merely the upstream unit's answer?
     //  R-E2: only a DECLARATION is priced as one; a carried vf is re-resolved.

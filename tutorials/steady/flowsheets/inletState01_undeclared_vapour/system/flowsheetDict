@@ -1,0 +1,73 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  inletState01_undeclared_vapour
+
+  THE STATE A UNIT COMPUTES WITH MUST BE THE STATE ITS INLET MEANS.
+
+    feedA (450 K, 3 bar) --> [V1 valve: 1.5 bar] --> throttled --+
+                                                                 +--> [M1 mixer] --> mixed
+    feedB (420 K, 1.5 bar) --------------------------------------+
+
+    feedC (420 K, 1.5 bar) --> [S1 splitter: 0.3 / 0.7] --> sideA + sideB
+
+  The three feeds are benzene/toluene, each well above its dew point at its
+  own pressure, and NONE declares `phase`.  A stream file that declares no
+  phase does not thereby declare a liquid: its (T, P, z) means its own
+  equilibrium, and here that equilibrium is all vapour.  The stream record
+  still carries a default `vf = 0` until something resolves it, and for a
+  domain inlet nothing upstream does -- so each unit that reads its inlet's
+  phase resolves it itself, at the inlet's own (T, P, z), in its own thermo
+  world (`flashState::resolvedInletVaporFraction`, the one home):
+
+    * V1 (valve).  The isenthalpic let-down prices H_in on the inlet's phase.
+      Read as a liquid, H_in is a liquid's and the outlet search lands tens
+      of kelvin colder, part-condensed -- a valve that "condenses" a vapour.
+      Read as what it is, an ideal-gas vapour has no Joule-Thomson effect
+      and T_out = T_in.
+    * M1 (mixer).  The inlets' phases price the inlet enthalpies AND vote for
+      the outlet's dominant phase.  feedB is the LARGER inlet (150 against
+      100 kmol/h) on purpose: the valve's outlet is a PRODUCED vapour that
+      votes vapour either way, so only an authored inlet that carries the
+      vote can show a mixer reading it as a liquid -- its vapour would then
+      leave labelled a liquid.
+    * S1 (splitter).  A splitter preserves the phase -- the phase the inlet
+      MEANS.  Its branches are PRODUCED streams that nobody re-resolves, so
+      copying the carried default would publish two vapours as liquids.
+
+  The plant's first law closes only if the units and the energy report read
+  the same states.  check_inlet_resolution arm (i) runs this case and holds
+  all three readings and the closure.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        V1;
+        type        valve;
+        in          feedA;
+        outputs     ( throttled );
+
+        operation   { P 1.5 bar; }
+    }
+    {
+        name        M1;
+        type        mixer;
+        inputs      ( throttled  feedB );
+        outputs     ( mixed );
+    }
+    {
+        name        S1;
+        type        splitter;
+        in          feedC;
+        outputs     ( sideA  sideB );
+
+        operation   { fractions ( 0.3 0.7 ); }
+    }
+);

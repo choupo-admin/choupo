@@ -170,10 +170,19 @@ int SolidDryer::solve(const DictPtr& dict,
     //   would dry further) is a change to this model's domain and is not
     //   taken here.
     const std::string who = "solidDryer '" + (dict->name().empty() ? type() : dict->name()) + "'";
+    //  The inlets' phases: an UNPINNED authored inlet means its own
+    //  equilibrium (R-E2), single phase included -- `priceState` keeps the
+    //  CARRIED value on a single-phase answer, and the carried default 0
+    //  priced this unit's own undeclared hot air as a liquid (solidDryer01,
+    //  365.78 kW, 2026-09-27).  Produced inlets keep their producer's answer
+    //  (DEV.md C33/C34).
     const bool   pinnedW   = solidDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
-    const scalar vfW       = solidDict->lookupScalarOrDefault("vf", 0.0);
+    const scalar vfW       = flashState::resolvedInletVaporFraction(
+        solidDict, T_w, P, zW, thermo, who + " wet solid");
     const bool   pinnedAir = airDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
-    const scalar vfAir     = airDict->lookupScalarOrDefault("vf", 1.0);
+    const scalar vfAir     = !airDict->found("vf") ? 1.0
+        : flashState::resolvedInletVaporFraction(airDict, T_air, P_air, yAir,
+                                                 thermo, who + " hot air");
     const scalar H_in =
           flashState::priceState(T_w, P, zW, F_w, pinnedW, vfW, thermo,
                                  who + " wet solid", nullptr)

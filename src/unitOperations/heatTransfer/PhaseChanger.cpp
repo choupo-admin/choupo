@@ -106,32 +106,23 @@ scalar streamEnthalpy(const ThermoPackage& thermo, const FlashSolution& sol,
 //  331.8 kW short.  The discard is `flashState::supercriticalSplitDiscarded`
 //  (one home, the sentence included); the state it leaves is the single gas
 //  phase.  The sentence is DEFERRED: a duty search evaluates many trial
-//  temperatures, and the caller says it once, at its own site.
+//  temperatures, and the caller says it once, at its own site.  The
+//  replacement state and the sentence moved to `StreamEquilibrium.H`
+//  (2026-10-04, C34) when the valve, the adiabatic flash, the pipe and the
+//  isothermal flash needed the same rule: one home, five callers.
 FlashSolution resolveAt(const FlashInput& in, const ThermoPackage& thermo,
                         std::string& discarded)
 {
     FlashOptions opts; opts.verbosity = 0;
-    FlashSolution fs = IsothermalFlash::solveCore(in, thermo, opts);
-    std::string said;
-    if (flashState::supercriticalSplitDiscarded(fs, in.T, in.z, thermo,
-            "phaseChanger", "phaseChanger", &said, /*nameT=*/false))
-    {
-        fs.V_over_F = 1.0;
-        fs.x = in.z;
-        fs.y = in.z;
-        if (discarded.empty()) discarded = said;
-    }
-    return fs;
+    return flashState::flashDiscardingSupercriticalSplit(in, thermo, opts,
+                                                         discarded);
 }
 
 //  Say the deferred sentence once, if a split was discarded.
 void reportDiscard(const std::string& discarded, int verbosity)
 {
-    if (discarded.empty()) return;
-    AdvisoryLog::instance().add("phaseChanger", "warning", "phaseChanger",
-                                discarded);
-    if (verbosity >= 1)
-        std::cout << "  [phaseChanger] " << discarded << "\n";
+    flashState::reportSupercriticalDiscard(discarded, "phaseChanger",
+                                           "phaseChanger", verbosity);
 }
 
 } // anonymous namespace
@@ -221,7 +212,15 @@ int PhaseChanger::solve(const DictPtr& dict,
         T_floor = 274.0;
 
     // ---- Inlet enthalpy [J/mol] (flash the feed at its own state) --------
-    const scalar vf_in_decl = feedDict->lookupScalarOrDefault("vf", -1.0);
+    //  The inlet's own vapour fraction, for the latent / sensible split only
+    //  (the duty above is priced on the resolved inlet state).  An UNPINNED
+    //  authored inlet means its own equilibrium (R-E2), single phase
+    //  included: the carried default 0 booked the whole of a superheated
+    //  vapour's cooling as condensation (DEV.md C33/C34).  -1 when the dict
+    //  carries no `vf` at all: then the feed is re-flashed below.
+    const scalar vf_in_decl = !feedDict->found("vf") ? -1.0
+        : flashState::resolvedInletVaporFraction(feedDict, T_in, P_in, z,
+                                                 thermo, "phaseChanger inlet");
     scalar H_in;
     {
         FlashInput fin; fin.F = 1.0; fin.T = T_in; fin.P = P_in; fin.z = z;

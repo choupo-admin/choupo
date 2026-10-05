@@ -137,11 +137,16 @@ int AdiabaticFlash::solve(const DictPtr& dict,
 
     FlashSolution lastSol;
 
+    //  A two-phase root above every present component's Tc is not a split:
+    //  the outlet is the single fluid phase, and the discard is said once,
+    //  at the answer (the one home, StreamEquilibrium.H -- C34).
+    std::string scDiscarded;
     auto flashAt = [&](scalar T) -> FlashSolution
     {
         FlashInput in;
         in.F = F; in.T = T; in.P = Pout; in.z = z;
-        return IsothermalFlash::solveCore(in, thermo, iopts);
+        return flashState::flashDiscardingSupercriticalSplit(in, thermo, iopts,
+                                                             scDiscarded);
     };
 
     //  A TRIAL TEMPERATURE THE PACKAGE CANNOT ANSWER MUST NOT KILL THE
@@ -290,7 +295,10 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     walk.close();                       // the search is over; what follows is the answer
 
     // Final flash at converged T
+    scDiscarded.clear();    // say it only if the ANSWER is a discarded root
     lastSol = flashAt(r.x);
+    flashState::reportSupercriticalDiscard(scDiscarded, "adiabaticFlash",
+                                           "adiabaticFlash outlet", verbosity);
     scalar Hout = splitH(r.x, Pout, lastSol);
 
     // Outlet streams (liquid + vapor) at the converged T_out and the outlet P.

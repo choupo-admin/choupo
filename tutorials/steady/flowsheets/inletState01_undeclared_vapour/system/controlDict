@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  controlDict  --  inletState01_undeclared_vapour
+
+  A WITNESS, not a lesson in a separation: three superheated benzene/toluene
+  vapours enter the plant and NONE of them declares a phase.  An undeclared
+  (T, P, z) MEANS its own equilibrium, so each of them is a vapour -- and
+  every unit that reads its inlet's phase must read it that way DURING the
+  solve, not only the stream table after it.  Read system/flowsheetDict for
+  what each unit would do with the struct's old default (vf = 0, a liquid).
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Witness: undeclared superheated vapours are read as vapours by the valve, the mixer and the splitter";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

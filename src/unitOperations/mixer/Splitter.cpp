@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Splitter.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 
 #include <cmath>
 #include <iomanip>
@@ -46,7 +47,6 @@ int Splitter::solve(const DictPtr& dict,
     const scalar F  = feedDict->lookupScalar("F");
     const scalar T  = feedDict->lookupScalar("T");
     const scalar P  = feedDict->lookupScalar("P");
-    const scalar vf = feedDict->lookupScalarOrDefault("vf", 0.0);
 
     const std::size_t n = thermo.n();
     sVector z(n, 0.0);
@@ -58,6 +58,13 @@ int Splitter::solve(const DictPtr& dict,
         zsum += z[i];
     }
     if (zsum > 0.0) for (auto& v : z) v /= zsum;
+    //  A splitter preserves the phase -- the phase the inlet MEANS.  An
+    //  UNPINNED authored inlet is its own equilibrium (R-E2), single phase
+    //  included; copying the carried default 0 would hand every branch an
+    //  all-vapour feed labelled liquid, and a branch is a PRODUCED stream
+    //  that nobody re-resolves (DEV.md C33/C34).
+    const scalar vf = flashState::resolvedInletVaporFraction(
+        feedDict, T, P, z, thermo, "splitter inlet");
 
     // Solid phase (if any): a splitter divides flow without changing the
     // intensive state, so the solid molar flow splits by the same fraction.

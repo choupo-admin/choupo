@@ -29,6 +29,7 @@ License
 #include "Pipe.H"
 #include "core/Constants.H"
 #include "unitOperations/flash/IsothermalFlash.H"   // feed-flash for the gas-liquid split
+#include "unitOperations/flash/StreamEquilibrium.H" // the supercritical discard (one home)
 #include "unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
 
 #include <cmath>
@@ -126,7 +127,15 @@ int Pipe::solve(const DictPtr& dict,
     {
         FlashInput fin;  fin.F = F;  fin.T = T;  fin.P = Pin;  fin.z = z;
         FlashOptions fo; fo.verbosity = 0;
-        const FlashSolution fs = IsothermalFlash::solveCore(fin, thermo, fo);
+        //  A two-phase root above every present component's Tc is not a
+        //  split, and must not switch the two-phase correlations on: the one
+        //  home discards it and the feed is the single fluid phase (DEV.md
+        //  §5 2026-09-26, named there; C34).  Said once, here.
+        std::string scDiscarded;
+        const FlashSolution fs = flashState::flashDiscardingSupercriticalSplit(
+            fin, thermo, fo, scDiscarded);
+        flashState::reportSupercriticalDiscard(scDiscarded, "pipe",
+                                               "pipe inlet regime", verbosity);
         const scalar VF = (fs.converged && std::isfinite(fs.V_over_F))
             ? std::min(1.0, std::max(0.0, fs.V_over_F)) : 0.0;
 

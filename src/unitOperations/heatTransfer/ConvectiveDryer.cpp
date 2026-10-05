@@ -37,6 +37,7 @@ Description
 #include "thermo/ThermoPackage.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 
 #include <algorithm>
 #include <cmath>
@@ -122,17 +123,28 @@ int ConvectiveDryer::solve(const DictPtr& dict,
     //  declared phase carries vf = 0 by default and the energy report prices
     //  it as a LIQUID: that is a 380 kW first-law error on this unit's own
     //  witness, measured, before the stream said `phase gas;`.
+    //  Since 2026-10-03 an UNPINNED authored stream means its own
+    //  equilibrium on every surface (the flowsheet resolves it before the
+    //  report prices it), so the phase is read through the same one home
+    //  here (DEV.md C33/C34): undeclared hot air whose own equilibrium is a
+    //  vapour is a vapour, and only a stream that RESOLVES (or was produced,
+    //  or declared) otherwise is refused.
     {
-        const scalar vfA = airDict->lookupScalarOrDefault("vf", 0.0);
-        const scalar vfS = solidDict->lookupScalarOrDefault("vf", 0.0);
         const std::string an = airDict->lookupWordOrDefault("streamName", "the air");
         const std::string sn = solidDict->lookupWordOrDefault("streamName", "the wet solid");
+        const scalar vfA = flashState::resolvedInletVaporFraction(airDict,
+            airDict->lookupScalar("T", Dims::temperature),
+            airDict->lookupScalar("P", Dims::pressure), readComp(airDict),
+            thermo, who + " air '" + an + "'");
+        const scalar vfS = flashState::resolvedInletVaporFraction(solidDict,
+            T_sIn, P, zW, thermo, who + " wet solid '" + sn + "'");
         if (vfA < 1.0 - 1.0e-12)
             throw std::runtime_error(who + ": the air stream '" + an + "' is"
                 " carried with vapour fraction " + std::to_string(vfA)
                 + ", but this dryer prices its air as a VAPOUR -- declare"
-                " `phase gas;` in its 0/ file (an undeclared phase defaults to"
-                " liquid, and the energy report would price it as one)");
+                " `phase gas;` in its 0/ file, or check its T and P: an"
+                " undeclared stream is read at its own equilibrium, and this"
+                " one did not resolve to a vapour");
         if (vfS > 1.0e-12)
             throw std::runtime_error(who + ": the wet-solid stream '" + sn
                 + "' is carried with vapour fraction " + std::to_string(vfS)

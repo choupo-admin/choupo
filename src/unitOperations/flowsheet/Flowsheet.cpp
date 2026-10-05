@@ -3498,12 +3498,12 @@ int Flowsheet::solve(const DictPtr& dict,
     //  value and is announced by `equilibriumAt` itself.
     //
     //  WHAT THIS DOES NOT DO.  It does not change what a unit read DURING the
-    //  solve: a unit that prices its inlet off the carried `vf` rather than
-    //  through `resolveStreamThermalState` still saw the default there.  The
-    //  constitution's layer 2 (resolution in the consuming unit's own world,
-    //  stream-state-architecture.md) is that unit's to adopt; this pass is the
-    //  SURFACE the run shows and the report reads.  Gate:
-    //  check_overspecified_stream arm (d).
+    //  solve: that is layer 2 (resolution in the consuming unit's own world,
+    //  stream-state-architecture.md), which the units adopt through
+    //  `flashState::resolvedInletVaporFraction` -- every inlet `vf` reader but
+    //  the ones DEV.md C33 lists as left, each with its reason (2026-10-04).
+    //  This pass is the SURFACE the run shows and the report reads.  Gates:
+    //  check_overspecified_stream arm (d), check_inlet_resolution arm (i).
     std::map<std::string, FlashSolution> resolvedInlet;   // handed to the H pass below
     {
         std::set<std::string> produced;

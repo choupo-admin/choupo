@@ -38,7 +38,7 @@ License
 #include "thermo/equationOfState/EquationOfState.H"
 #include "thermo/reaction/RateLaw.H"
 #include "thermo/reaction/Reaction.H"
-
+#include "unitOperations/flash/StreamEquilibrium.H"
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -299,14 +299,6 @@ int PFR::solve(const DictPtr& dict,
     const scalar T          = feedDict->lookupScalar("T",   Dims::temperature);
     const scalar V_R        = operDict->lookupScalar("V_R", Dims::volume);
 
-    // Inlet vapour fraction.  The flowsheet has already inferred the feed phase
-    // at its own (T, P, z) and supplies it here.  A reactor is NOT a phase-
-    // change device, so the product leaves in the SAME phase it entered: a gas-
-    // phase reaction fed superheated vapour must report a VAPOUR product, not a
-    // (silently liquid) vf = 0.  We inherit the inlet phase instead of asserting
-    // liquid; an isothermal continuation does not invent a phase boundary.
-    const scalar vf_in = feedDict->lookupScalarOrDefault("vf", 0.0);
-
     const int    nSteps  = static_cast<int>(operDict->lookupScalarOrDefault("nSteps", 100));
     const int    nWrite  = static_cast<int>(operDict->lookupScalarOrDefault("writeInterval", 0));
 
@@ -322,6 +314,14 @@ int PFR::solve(const DictPtr& dict,
         zsum   += z_in[i];
     }
     for (auto& v : z_in) v /= zsum;
+
+    // Inlet phase: a reactor is NOT a phase-change device -- the product
+    // leaves in the phase it entered (a superheated vapour feed reports a
+    // VAPOUR product, never a silent vf = 0).  An UNPINNED authored feed is
+    // resolved at its own (T, P, z), single phase included (R-E2; DEV.md
+    // C33/C34); a produced feed keeps its producer's answer.
+    const scalar vf_in = flashState::resolvedInletVaporFraction(feedDict, T,
+        feedDict->lookupScalarOrDefault("P", 101325.0), z_in, thermo, "pfr inlet");
 
     // ---- MULTI-REACTION?  `reactions ( r1 r2 ... );` ------------------
     //  dF_i/dV = SUM_j nu_ij r_j(F), marched by the same RK4.  The single-
