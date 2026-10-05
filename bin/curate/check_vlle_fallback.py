@@ -48,17 +48,24 @@ F_alpha / F_beta KPIs are not checked here (vlle03 pins what they print).
 The propertyOps VL / one-phase classification still reads the regime string
 (PropertyScanTernary) and is not checked.
 
-SABOTAGES (by hand, 2026-10-05; each restored with git and `make all`):
+SABOTAGES (by hand, 2026-10-05; each restored with `git checkout` and
+`make all`; results as MEASURED, not predicted):
   S1  restore the substring test at the VLLE fallback
-      (`const bool llFallback = sol.regime.find("VL") == std::string::npos;`)
-      -> (a) FAILS (vapour port carries the beta liquid), (c) FAILS (the
-      phantom latent heat returns), (d) FAILS (`regime.find(` in source).
+      (`llFallback = sol.regime.find("VL") == std::string::npos`)
+      -> (d) FAILS (`regime.find(` in source); (a) FAILS (vapour port
+      F = 0.01339 kmol/s, liquidBeta 0, feed not conserved by the liquid
+      ports); (c) FAILS at -498.039 kW, the defect reproduced to the kW.
+      (b) does NOT fire: the KPI block reads the field, not the ports.
   S2  drop `sol.liquidLiquid = true;` at the VLLE LL fallback only
-      -> (a), (b) and (d) FAIL.
-  S3  keep the port fix but decide the KPI block on `phaseSet` alone
-      (`const bool isLL = (opts.phaseSet == PhaseSet::LL);`)
-      -> (b) FAILS (V_over_F, K_ ratios and a duty published for two liquids).
-Measured results are recorded in DEV.md section 5's entry.
+      -> (d) FAILS (1 site), (a) FAILS as S1, (b) FAILS (V_over_F, K ratios
+      and a Q_kW of 0.0048 kW published for two liquids), (c) FAILS at
+      -498.034 kW.
+  S3  keep the ports right but decide the KPI block on `phaseSet` alone
+      (`isLL = (opts.phaseSet == PhaseSet::LL)`)
+      -> ONLY (b) FAILS (V_over_F, K ratios, Q_kW = -0.0038 kW) -- the arm
+      exists because neither the ports nor the first law can see this.
+  S4  restore PropertyScanBinary's `regime.find("two-phase liquid")`
+      (source only; no witness runs that op) -> ONLY (d) FAILS, twice.
 """
 import json
 import pathlib

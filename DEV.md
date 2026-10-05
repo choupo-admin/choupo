@@ -3002,9 +3002,41 @@ defect — look for what else went with it.
 ## 5. Known debts (severity-ish)
 
 **2026-10-05 -- A VLLE FLASH THAT FINDS TWO LIQUIDS PUBLISHES THE SECOND AS A
-GAS.  FOUND (C16 slice 2), NOT FIXED.**  `IsothermalFlash.cpp:1857` picks the
+GAS.  FOUND (C16 slice 2); CLOSED 2026-10-05 on branch
+`claude/c34-vlle-ll-fallback` (commit d749d670f + its docs commit).**  What
+was done: the split's KIND is a typed field, `FlashSolution::liquidLiquid`
+(`IsothermalFlash.H`), set at the two sites that produce a liquid-liquid split
+(`IsothermalFlash.cpp:724`, the LL Gibbs minimisation, and `:1002`, the VLLE
+search that finds no vapour); the regime strings are unchanged.  Readers
+converted, ENUMERATED (the 2026-09-25 rule): the VLLE port assignment
+(`:1870`), `printFlashResult`'s LL vocabulary (`:2055`), the duty's
+beta-phase vapour fraction and the no-Gibbs-data LL enthalpy branch (both
+decided on `phaseSet`, so the VLLE LL fallback also priced its beta liquid as
+a vapour in the UNIT's duty), the KPI block (an LL answer now publishes
+`betaFraction`, no `V_over_F`, no `K_` ratios, no duty -- the `phaseSet LL`
+posture), and in `propertyOps/` PropertyScanBinary, PropertyScanTernary's LL
+arm and PropertyEvaluator's three tests (equivalent there: only the two LL
+sites ever wrote "two-phase liquid" / "(LL").  Left on the string, named:
+PropertyScanTernary's VL / one-phase arm.  MEASURED: witness
+`tutorials/steady/flash/vlle04_two_liquids_decanter` (this decanter, the
+curate12 record copied unchanged, a STRUCTURAL witness) -- vapour port
+F = 0, liquidAlpha 51.80 / liquidBeta 48.20 kmol/h, plant residual
+-0.0125 kW where the defect booked -498.04 kW (reproduced to the kW by
+sabotage S1); no existing golden row moved.  Gate `check_vlle_fallback`
+(4 by-hand sabotages in its docstring).  FOUND ON THE WAY, NOT FIXED: (1) the
+-0.0125 kW is the fallback's own MATERIAL imbalance -- it drops a beta_V < 1 %
+vapour, keeps the two liquid compositions and renormalises their fractions, so
+1.0e-7 kmol/s of ethanol is traded for cyclohexane (element closure off by
+0.0008 %); the `phaseSet LL` path conserves exactly.  (2) A genuine
+THREE-PHASE answer (`vlle03`) is priced in the unit's duty as
+`(1 - beta_alpha) H(x_alpha, liquid) + beta_alpha H(x_beta, VAPOUR)`, ignoring
+the vapour, and publishes `F_alpha = F (1 - beta_alpha)` = 0.01647 kmol/s
+against its own liquidA port's 0.01131 (and `V_over_F` = beta_alpha, and
+liquid-liquid ratios as `K_`); all of it is pinned by vlle03's golden, so
+moving it is a list for Vitor.  The original entry follows.
+`IsothermalFlash.cpp:1857` (now `:1870`) picked the
 two-phase fallback of a `phaseSet VLLE` flash by `sol.regime.find("VL")`, and
-the LL regime's own string (line 1000) is "two-phase liquid (LL, VLLE attempt
+the LL regime's own string (line 1000, now 1001) is "two-phase liquid (LL, VLLE attempt
 found V beta ~ 0)" -- "VLLE" contains "VL".  So the beta LIQUID leaves on the
 vapour port with `vf = 1` (`phase gas;` in `converged/`), the second liquid
 port carries zero, and the energy report books the latent heat that never

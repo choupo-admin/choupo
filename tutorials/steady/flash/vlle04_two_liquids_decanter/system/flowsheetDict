@@ -45,9 +45,10 @@
   That spurious split is exactly what this witness needs -- a VLLE flash
   that ends with two liquids and no vapour -- and exactly why no composition
   it prints may be quoted as the behaviour of real ethanol + cyclohexane.
-  At 340 K and 3 bar the drum is far above the mixture's bubble pressure
-  (about 1 atm near 340 K), so the ABSENCE of vapour is shared by the model
-  and the real system; the SECOND LIQUID is the model's alone.
+  The run's own T-x-y diagnostic at 3 bar boils every composition at or
+  above about 370 K, thirty kelvin above the drum, so the ABSENCE of vapour
+  is the model's honest answer at these conditions; the SECOND LIQUID is
+  what its own evidence does not support.
 
   The copied record names `fittedInCase`, so check_regressed_pairs re-runs
   curate12 and holds this copy to the fit: it cannot drift.

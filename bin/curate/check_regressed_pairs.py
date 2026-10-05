@@ -221,6 +221,7 @@ def main():
                      "`fittedInCase`")
 
     tmp = Path(tempfile.mkdtemp(prefix="choupo-regressed-"))
+    runs = {}   # fittedInCase -> (exit code, output): one run per named case
     try:
         for rec_path in std + local:
             #  Fields are read from the COMMENT-STRIPPED record: the header
@@ -270,15 +271,23 @@ def main():
             case = ROOT / case_rel
             for ds in sorted((case / "constant" / "experiments").glob("*.dat")):
                 check_dataset(ds, fails, tag)
+            #  ONE RUN PER NAMED CASE.  Two records may name the same case:
+            #  a witness that carries an unchanged COPY of a case-local
+            #  regression (vlle04_two_liquids_decanter carries curate12's,
+            #  2026-10-05) is held to the fit exactly as the original is.
+            #  Copying the case twice into one work directory collided, so the
+            #  run is made once and each record is compared against it.
             work = tmp / case.name
-            shutil.copytree(case, work)
-            for stale in work.glob("*.proposal.dat"):
-                stale.unlink()
-            p = subprocess.run([str(PROPS), "."], cwd=str(work),
-                               capture_output=True, text=True, timeout=900)
-            out = p.stdout + p.stderr
-            if p.returncode != 0:
-                fails.append(f"{tag}: its case {case.name} exited {p.returncode}")
+            if case_rel not in runs:
+                shutil.copytree(case, work)
+                for stale in work.glob("*.proposal.dat"):
+                    stale.unlink()
+                p = subprocess.run([str(PROPS), "."], cwd=str(work),
+                                   capture_output=True, text=True, timeout=900)
+                runs[case_rel] = (p.returncode, p.stdout + p.stderr)
+            rc, out = runs[case_rel]
+            if rc != 0:
+                fails.append(f"{tag}: its case {case.name} exited {rc}")
                 continue
             prop = work / (rec_path.stem + ".proposal.dat")
             if not prop.exists():
@@ -306,8 +315,9 @@ def main():
                 fails.append(f"{tag}: marked `reviewStatus interim` and its case "
                              "printed no `[unreviewed] pair` line -- the engine "
                              "does not voice the field")
-            checked.append(f"{rec_path.stem} ({'catalogue' if in_std else 'case-local'}, "
-                           f"{rf['verdict']})")
+            where = ("catalogue" if in_std
+                     else "case-local in " + rec_path.parents[3].name)
+            checked.append(f"{rec_path.stem} ({where}, {rf['verdict']})")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

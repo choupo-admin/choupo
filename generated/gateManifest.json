@@ -1103,8 +1103,8 @@
     },
     "check_regressed_pairs": {
       "exit": 0,
-      "claim": "check_regressed_pairs: OK -- 9 regressed NRTL record(s) reproduced by re-running the case each names (1Propanol-water (catalogue, validated); acetone-ethanol (catalogue, validated); acetonitrile-water (catalogue, validated); ethanol-ethylAcetate (catalogue, validated); isopropanol-water (catalogue, validated); methanol-methylAcetate (catalogue, validated); methanol-water (catalogue, validated); acetone-methanol (case-local, notValidated); cyclohexane-ethanol (case-local, validated)): parameters, evidence identity, validity span and held-out verdict equal what the run regresses now; only validated fits are in the catalogue; `interim` is voiced at run time; every dataset carries DOI, archive sha256, CAS+InChIKey and per-point uncertainty; 7 catalogue pair(s) predict ONE liquid across their validity span (arm f, the record's NRTL recomputed).  NOT checked: whether the transcribed measurements agree with the articles (a curator's read-back), whether the band was well chosen, or phase stability below a validity span.",
-      "seconds": 1.5
+      "claim": "check_regressed_pairs: OK -- 10 regressed NRTL record(s) reproduced by re-running the case each names (1Propanol-water (catalogue, validated); acetone-ethanol (catalogue, validated); acetonitrile-water (catalogue, validated); ethanol-ethylAcetate (catalogue, validated); isopropanol-water (catalogue, validated); methanol-methylAcetate (catalogue, validated); methanol-water (catalogue, validated); acetone-methanol (case-local in curate05_nrtl_acetone_methanol, notValidated); cyclohexane-ethanol (case-local in curate12_nrtl_ethanol_cyclohexane, validated); cyclohexane-ethanol (case-local in vlle04_two_liquids_decanter, validated)): parameters, evidence identity, validity span and held-out verdict equal what the run regresses now; only validated fits are in the catalogue; `interim` is voiced at run time; every dataset carries DOI, archive sha256, CAS+InChIKey and per-point uncertainty; 7 catalogue pair(s) predict ONE liquid across their validity span (arm f, the record's NRTL recomputed).  NOT checked: whether the transcribed measurements agree with the articles (a curator's read-back), whether the band was well chosen, or phase stability below a validity span.",
+      "seconds": 2.0
     },
     "check_drying_curve": {
       "exit": 0,
@@ -1139,7 +1139,7 @@
     "check_vlle_fallback": {
       "exit": 0,
       "claim": "check_vlle_fallback: OK -- a phaseSet VLLE flash whose search finds no vapour publishes TWO LIQUIDS (witness vlle04: vapour port F = 0, both liquid ports nonzero at vf = 0, LL vocabulary, plant first law within 0.05 kW), and the split's kind is read off the typed `liquidLiquid` field, never parsed from the regime string, in IsothermalFlash.cpp and the three propertyOps readers.  NOT checked: whether the split is right (a structural witness), the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 %% vapour, inside the band), the three-phase duty, and the ternary scan's VL / one-phase classification (still the string).",
-      "seconds": 0.2
+      "seconds": 0.1
     }
   }
 }
