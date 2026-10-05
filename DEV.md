@@ -2059,8 +2059,8 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      H_feeds -5627.62926632 -> -5627.61678644 kW, residual -0.0124798850247
      -> 0; the 0.0125 kW was the LL fallback's material imbalance priced
      between a VL-resolved feed and the outlets, and stays in the mass
-     balance), utility01 (recorded) and utility02 (NOT recorded, open -- see
-     §4d D1); FOUR gates this slice moved and fixed -- code-map (regenerated),
+     balance), utility01 (recorded) and utility02 (re-specified at 48 bar,
+     every row then reproduced; see §4d D1); FOUR gates this slice moved and fixed -- code-map (regenerated),
      gui-tests (two lesson citations into Flowsheet.cpp shifted +46 lines
      and re-pointed by measurement), cp-range and convective-dryer (witness
      and probe, see §4d D1); FIVE gates RED ON 2a403aac0 TOO, each re-run
@@ -3698,8 +3698,17 @@ defect — look for what else went with it.
        `check_cp_range_announced`'s SPAN arm lost its witness for the same
        reason (no liquid Cp is integrated past a window any more) and reads
        column01_benzene_toluene now; its POINT arm keeps utility01.
-     * `utility02_hitec_csp_heater` -- **NOT RE-RECORDED; OPEN, for the
-       commander/Vítor.**  40 bar water with zero hitecSalt.  The case's
+     * `utility02_hitec_csp_heater` -- **RE-SPECIFIED, not re-recorded
+       (commander's decision under C35, 2026-10-05): the water side is now at
+       48 bar**, where the engine's own `bubbleT` on this package gives
+       T_sat = 525.8758 K, so the 517.4009 K outlet is subcooled by 8.5 K, as
+       the case header always meant (stated there with both Tsat values).
+       Every golden row reproduces unchanged (no row pins P; the liquid
+       outlet, the duty and the salt side do not depend on it); the
+       description line and the tutorials guide moved with it.  The
+       pure-component two-phase outlet the 40 bar case exposed is a named
+       debt in §5 (2026-10-05, HEAT EXCHANGER).  What follows is the
+       40 bar diagnosis that led there.  40 bar water with zero hitecSalt.  The case's
        water Antoine (Trange 273-373 K, extrapolated) gives Tsat(40 bar) =
        515.5797 K, and the old answer, 517.4009 K, was a liquid 1.82 K ABOVE
        its own saturation temperature, reached only because the flash
@@ -3727,6 +3736,30 @@ defect — look for what else went with it.
    moving it moves every multi-effect golden.
 
 ## 5. Known debts (severity-ish)
+
+**2026-10-05 -- A HEAT EXCHANGER CANNOT PUBLISH A PURE-COMPONENT TWO-PHASE
+OUTLET.  NAMED, NOT FIXED (C35, found by the full regression of item 4).**
+`HeatExchanger.cpp`'s Q -> outlet-state inversion bisects on H(T) at fixed
+P.  For a stream with ONE present component, H(T) jumps by the whole latent
+heat at Tsat(P) (the flash classes a pure component single-phase on either
+side), so a target enthalpy INSIDE the jump has no root: the bisection
+converges onto Tsat and publishes the outlet single-phase, short of its duty
+by the unboiled (or uncondensed) fraction's latent heat -- at exit 0.
+MEASURED on `utility02_hitec_csp_heater` as shipped before C35 (40 bar): its
+target lay ~0.5 % of the feed inside water's jump, and the outlet landed at
+515.5797 K labelled liquid, 137.5 J/mol (3.06 kW, 1.5 % of a 208.47 kW duty)
+short; no gate saw it, because that case's energy report is UNAVAILABLE
+(hitecSalt has no enthalpy datum).  Until C35 it was MASKED: the flash
+returned NaN on the zero-hitecSalt component above saturation and the
+inversion priced a superheated liquid instead.  The case was re-specified
+(48 bar) so it no longer reaches the jump; the unit was not changed.
+Remedy, not taken: when the bracket's two ends straddle a single-component
+jump, publish the two-phase outlet at Tsat with q = (H - H_L)/(H_V - H_L) --
+which then needs the stream to CARRY that q as a pin, because a re-flash of
+a pure component on its curve cannot reproduce it (CLAUDE.md §3, the
+pure-component exception), and every reader that re-resolves produced
+streams must honour it.  The same shape applies to any unit that inverts
+H(T) on a pure stream (`heater`, `phaseChanger`): not enumerated yet.
 
 **2026-10-05 -- A VLLE FLASH THAT FINDS TWO LIQUIDS PUBLISHES THE SECOND AS A
 GAS.  FOUND (C16 slice 2); CLOSED 2026-10-05 on branch
