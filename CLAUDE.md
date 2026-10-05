@@ -1149,7 +1149,10 @@ saturation, where the GAB isotherm is steeper than the energy balance.  The
 solid dryer keeps a floor and evaporates only what the air can pay for,
 ANNOUNCED -- the floor was the feed `T_w` then, and is the air's WET BULB
 since 2026-10-05 (DEV.md C35 item 7, both this unit and `evaporativeDryer`,
-through `psychrometry::gasWetBulb`).  The flagship read +10.79 kW (1.0298 %)
+through `psychrometry::gasWetBulb`) -- and only what its exhaust can carry
+without supersaturating at its own T_out (DEV.md C37 item 3: a fog had been
+priced at its condensed equilibrium and published as vf = 1; gate
+`check_evaporative_dryer` arm (g)).  The flagship read +10.79 kW (1.0298 %)
 after it: the evaporators, closed 2026-10-05 (the evaporator paragraph below).  **And a case gap rode with it, as it did on 2026-09-25:**
 `solidDryer01`'s 372.66 kW was 365.78 kW of humid hot air that declared no
 phase and was priced as a LIQUID (the permanent-gas screen does not fire on a

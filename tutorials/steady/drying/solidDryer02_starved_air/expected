@@ -1,0 +1,25 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  drySolid               F                0.0109196509746    1e-4
+stream  drySolid               T                318.606571264      1e-4
+stream  hotAir                 F                0.0277777777778    1e-4
+stream  hotAir                 T                420                1e-4
+stream  humidExhaust           F                0.030191484481     1e-4
+stream  humidExhaust           T                318.606571264      1e-4
+stream  wetSolid               F                0.0133333576778    1e-4
+stream  wetSolid               T                330                1e-4
+kpi     solidDryer             T_out            318.606571264      1e-4
+kpi     solidDryer             T_wetbulb        315.70439014       1e-4
+kpi     solidDryer             X_equilibrium    0.00109902098433   1e-4
+kpi     solidDryer             X_final          0.154259849734     1e-4
+kpi     solidDryer             X_initial        0.199991235822     1e-4
+kpi     solidDryer             air_in_kmol_h    100                1e-4
+kpi     solidDryer             drySolid_flow    1.09750874011      1e-4
+kpi     solidDryer             exhaust_humidity 1                  1e-4
+kpi     solidDryer             moisture_pct_wb  13.3643953543      1e-4
+kpi     solidDryer             water_activity   0.00430985941091   1e-4
+kpi     solidDryer             water_removed    0.0434829262581    1e-4
+boundary global               H_feeds_kW       -9178.71029673     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -9178.71029673     1e-4

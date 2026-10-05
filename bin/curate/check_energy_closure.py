@@ -540,6 +540,9 @@ UNIT_WITNESSES = {
     ("tutorials/plant/ChemicalPlantTutorial", "FERMENTATION.Fermentor"),
     ("tutorials/steady/drying/sprayDryer01_sugar", "dryer"),
     ("tutorials/steady/drying/solidDryer01_sugar", "solidDryer"),
+    #  The solid dryer SATURATION-bound (C37 item 3): its evaporation stops
+    #  where the exhaust saturates, a branch of its own in the unit.
+    ("tutorials/steady/drying/solidDryer02_starved_air", "solidDryer"),
     ("tutorials/steady/drying/convDryer01_sugar_curve", "co"),
     ("tutorials/steady/drying/convDryer01_sugar_curve", "counter"),
     #  The evaporator: the flagship's two effects, a single-effect brine on

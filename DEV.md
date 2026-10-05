@@ -2024,6 +2024,68 @@ as one revertable merge with its moved rows listed:
      agreement check drops the `utility <hx> heating.-.carried` row).
   3. `solidDryer` gets an exhaust-saturation limit (a fog is no longer
      published as vf = 1); the stale Theory Guide sentence on its X_final.
+     [BUILT 2026-10-05 on `claude/c37-solid-dryer-saturation` (not merged).
+     MEASURED first, at 32dbe5577: `SolidDryer.cpp:239-271` evaporated the
+     isotherm's target (or what the heat paid for at the floor) and asked
+     nothing of the exhaust; `:220` priced the exhaust UNPINNED, so
+     `priceState` resolved a supersaturated one at its condensed equilibrium
+     while `:285` published it with vf = 1.  The witness, solidDryer01 with
+     its air cut from 800 to 100 kmol/h (now the case
+     `solidDryer02_starved_air`), evaporated all 680.81 kg/h at 318.611 K into
+     an exhaust whose package flash resolves ~524 kg/h of liquid.  NOW: the
+     evaporation is the least of three and the one that binds is announced
+     in the result block (`[isotherm-reached]` / `[heat-bound]` /
+     `[saturation-bound]`), the last two also as a WARNING replayed in the
+     caveat block (printed once per pass, not once per recycle re-solve):
+     the exhaust's humidity ratio may not exceed Y_sat(T_out) -- written as
+     a_w = p_w / p_sat(T_out) <= 1 through `psychrometry::airWaterActivity`
+     (the same statement, and defined where `Ysat` refuses, p_sat >= 0.95 P);
+     a_w rises monotonically with the evaporation (more water AND a colder
+     outlet), so the saturated evaporation is bisected on [0, the isotherm's
+     or the heat's cap], each trial at its OWN T_out, keeping the unsaturated
+     end.  The limit is saturation itself, a_w = 1, not a knob (the
+     evaporative dryer's `maxExhaustHumidity` 0.95 is a design margin).  New
+     KPI `exhaust_humidity` (the exhaust's a_w).  The witness: 156.54 kg/h
+     carried at a_w = 1.0000, T_out 318.6066 K (the fog answer's 318.6114 K
+     -- a fog and a saturated gas beside the same water left on the powder
+     hold the same enthalpy; what moves is WHERE the water is), X_final
+     0.1543 against X_eq 0.0011, the unit and the plant closing at
+     7e-12 kW.  GOLDENS: NO row moved -- solidDryer01, the flagship
+     (DRYING.BD isotherm-reached, exhaust a_w 0.1469), lithiumBrinePlant,
+     evapDryer01/02, convDryer01 and sprayDryer01/05 are byte-identical in
+     every published number (an old/new build compared token by token), and
+     sprayDryer02-04/06/07 PASS their goldens (they do not reach this
+     unit); appended: `exhaust_humidity`
+     on solidDryer01 (0.175354451046); the new witness's golden recorded
+     whole.  `sugarPlantEconomicsSweep` (no golden) MOVES: its BD reached its
+     isotherm into a fog on its later solves and now announces
+     saturation-bound on six of them -- the exhaust carrying 145.63 to
+     147.89 kg/h at ~321.3-321.4 K where the isotherm would remove 147.16
+     to 245.71 kg/h; on the stream table it prints, the dry powder's water
+     mole fraction moves 0.17015 -> 0.17507 (X 0.0112 against X_eq
+     0.0108).  Its dryer is marginally under-aired, a case-design question
+     left to Vitor.  NAMED, NOT
+     FIXED: the limit is the psychrometric saturation of the WATER alone;
+     the case's ideal-solution package applies Raoult's law to N2/O2/Ar on
+     their extrapolated Antoine, so its dew sum at a_w = 1 is 1.0014 and it
+     resolves a whisker of liquid at the saturated answer (V/F 0.99985,
+     0.016 kmol/h on the witness), priced identically by the unit and the
+     report.  Theory Guide: the two X_final sentences (the solid-dryer
+     section and the drying chapter's equilibrium paragraph) now name the
+     three limits; the PDF rebuilt; the Tutorials Guide, the case
+     manifest and the release inventory regenerated for the new witness
+     and the Tutorials Guide PDF rebuilt; docs/ai/unit-ops.md and CLAUDE.md
+     §6 name the limit.  Gate: `check_evaporative_dryer` arm
+     (g) (the witness saturation-bound with its exhaust's a_w RECOMPUTED
+     from the published stream in [1 - 1e-6, 1], wetter than its isotherm,
+     water picked up = water_removed, the unit's energyClosures row and the
+     plant within 1e-4 kW; solidDryer01 isotherm-reached; the (f) fixture
+     heat-bound); the witness joins `check_energy_closure`'s UNIT_WITNESSES.
+     Sabotages: S4 the saturation test disabled -> (g); S5 the bisection
+     reading a_w at the isotherm answer's T -> (g) at a_w 1.000247; a first
+     S5 (keeping the supersaturated bisection end) SURVIVED -- it moves the
+     answer 1e-13 relative, below the JSON's twelve digits, and proves
+     nothing.]
   4. A `phaseSet VLLE` feed PRODUCED by another unit: report and producer read
      it the same way.
   5. The C36 #1 saturation refusal reaches a unit's own `thermo {}` world and
@@ -2293,7 +2355,9 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      condensed equilibrium (a fog published as vf = 1) -- e.g.
      solidDryer01 with its air cut to 100 kmol/h still reaches the
      isotherm at 318.6 K; that is what lets its warm-fed cases stay above
-     the new floor.  Gate `check_evaporative_dryer` extended: (a) the
+     the new floor.  [FIXED 2026-10-05, C37 item 3: the evaporation stops
+     where the exhaust saturates, announced; the witness is
+     `solidDryer02_starved_air`.]  Gate `check_evaporative_dryer` extended: (a) the
      corpus limits, (a') the saturation fixture, (b) the evaporation affine
      in the gas at the floor (second difference to 1e-9), (c) the default,
      (d) the floor recomputed from each case's own records (Antoine,
@@ -2784,7 +2848,11 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
      there); P6 -> item 13 (the two rows dropped); P2 -> item 7 (the floor
      is the gas's wet bulb in both dryers; DONE on branch
      `claude/c35-dryer-floor` -- and it makes evapDryer02 heat-bound again,
-     see item 7).  P3-P5 and P7 stay his.
+     see item 7).  P3-P5 and P7 stay his.  The gap item 7's general FOUND
+     -- the solid dryer had no exhaust-saturation limit, so a starved air
+     published a fog as vf = 1 -- is closed by C37 item 3 (2026-10-05): its
+     evaporation now stops where the exhaust saturates, announced, gate
+     `check_evaporative_dryer` arm (g).
 
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o

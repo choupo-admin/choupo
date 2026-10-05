@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 457,
+  "cases": 458,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -3519,6 +3519,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/drying/solidDryer02_starved_air": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "solidDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/drying/sprayDryer01_sugar": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -6971,6 +6985,7 @@
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",
     "tutorials/steady/drying/solidDryer01_sugar",
+    "tutorials/steady/drying/solidDryer02_starved_air",
     "tutorials/steady/drying/sprayDryer01_sugar",
     "tutorials/steady/drying/sprayDryer02_residence_sweep",
     "tutorials/steady/drying/sprayDryer03_pressure_nozzle",
@@ -7705,7 +7720,8 @@
     "tutorials/ctrl/ctrl20_bode_cstr"
    ],
    "solidDryer": [
-    "tutorials/steady/drying/solidDryer01_sugar"
+    "tutorials/steady/drying/solidDryer01_sugar",
+    "tutorials/steady/drying/solidDryer02_starved_air"
    ],
    "spiralWoundModule": [
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
@@ -8106,6 +8122,7 @@
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",
     "tutorials/steady/drying/solidDryer01_sugar",
+    "tutorials/steady/drying/solidDryer02_starved_air",
     "tutorials/steady/drying/sprayDryer01_sugar",
     "tutorials/steady/drying/sprayDryer02_residence_sweep",
     "tutorials/steady/drying/sprayDryer03_pressure_nozzle",

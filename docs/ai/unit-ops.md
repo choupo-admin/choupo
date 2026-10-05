@@ -1181,9 +1181,16 @@ moisture set by a real hot-air stream + the solid's **GAB sorption
 isotherm** (`sorption {}` on the component).  Two real streams — the air
 brings the heat and carries the moisture; the outlet T is a RESULT, no duty.
 The powder and the exhaust leave at one T, never below the air's WET-BULB
-temperature (the floor, published as the KPI `T_wetbulb`); when the air
-cannot pay for the isotherm's target there, the powder leaves wetter and the
-run says so.
+temperature (the floor, published as the KPI `T_wetbulb`).  The water
+evaporated is the least of three, and the result block names the one that
+binds: `[isotherm-reached]` (the powder reaches X_eq), `[heat-bound]` (the
+air cannot pay for X_eq even with the solid at the floor) or
+`[saturation-bound]` (the exhaust would be supersaturated at its own T_out:
+the evaporation stops at a_w = 1, i.e. Y = Y_sat(T_out) -- a physical limit,
+not a knob like `evaporativeDryer`'s `maxExhaustHumidity`).  The last two
+leave the powder wetter and raise a WARNING into the caveat block; the
+exhaust's a_w is the KPI `exhaust_humidity`.  Witness of the saturation
+limit: `solidDryer02_starved_air`.
 ```
 inputs  (wetSolid  hotAir );   outputs (drySolid  humidExhaust );
 ```
