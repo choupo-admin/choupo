@@ -4,7 +4,7 @@ and a material that cannot contain the pressure (I5, W-R-C).
 
 Until 2026-08-22 four of the six equipment sizers silently defaulted a
 missing `pressureDesign` to 1 bar (the identical omission on a stirredTank
-refused -- one decision, six homes, two answers), and the Guthrie vessel
+refused -- one decision, six homes, two answers), and the Turton vessel
 pressure factor answered THREE distinct missing-data paths with F_P = 1.0,
 the cheapest possible factor, including a material whose allowable stress
 cannot contain the design pressure at all.  Three probes, each built from a
@@ -91,7 +91,7 @@ for f in (
           r"FAILED: .*missing scalar entry 'pressureDesign'",
           r"incomplete-sizing", "missing-pressureDesign probe"),
     #  no-sigma fires in SIZING (StirredTank's own check, upstream of the
-    #  Guthrie one -- defence in depth; either message satisfies I5).
+    #  Turton one -- defence in depth; either message satisfies I5).
     probe(no_sigma_material,
           r"has no .*_y defined|declares no allowable stress",
           r"incomplete-sizing", "no-sigma_y probe"),

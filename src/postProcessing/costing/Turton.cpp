@@ -26,7 +26,7 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "Guthrie.H"
+#include "Turton.H"
 
 #include "core/Advisory.H"
 
@@ -176,9 +176,9 @@ const EquipCoeffs& coeffsFor(const std::string& equipType)
     //  reader and no gate can detect, while a refusal is visible on the first
     //  run.  A visible gap is strictly better than an invisible falsehood.
     if (equipType == "sieveTrays")
-        throw std::runtime_error("Guthrie: the TRAY STACK is not costed."
+        throw std::runtime_error("Turton: the TRAY STACK is not costed."
             "\n  Choupo carries no purchased-cost correlation for trays, and"
-            " will not invent one: the eight sets in\n  `Guthrie.cpp` are"
+            " will not invent one: the eight sets in\n  `Turton.cpp` are"
             " Turton's, and adding a ninth is a curation act, not a coding"
             " one.\n  A set would need, from a primary source: the size"
             " DRIVER (tray area or tower diameter, and the\n  number of"
@@ -189,7 +189,7 @@ const EquipCoeffs& coeffsFor(const std::string& equipType)
             " its drum -- and it is\n  INCOMPLETE by exactly the trays."
             "  The `TOTALS (EUR) -- INCOMPLETE` line above says so.");
 
-    throw std::runtime_error("Guthrie: no cost correlation for equipment '"
+    throw std::runtime_error("Turton: no cost correlation for equipment '"
         + equipType + "'");
 }
 
@@ -294,7 +294,7 @@ scalar priceIndexOr(const DictPtr& dict, const PriceIndexDefault& d)
 
 } // anonymous namespace
 
-Guthrie::Guthrie(const DictPtr& dict)
+Turton::Turton(const DictPtr& dict)
 {
     year_      = priceIndexOr(dict, priceIndexDefaults[0]);
     cepci_     = priceIndexOr(dict, priceIndexDefaults[1]);
@@ -306,7 +306,7 @@ Guthrie::Guthrie(const DictPtr& dict)
 //  into every `CostBreakdown::factors`, so the header line the pass draws and
 //  the per-unit provenance line under it are two printings of one fact and
 //  cannot drift apart.
-std::map<std::string, scalar> Guthrie::pricingFactors() const
+std::map<std::string, scalar> Turton::pricingFactors() const
 {
     return { { "year",      year_      },
              { "cepci",     cepci_     },
@@ -314,7 +314,7 @@ std::map<std::string, scalar> Guthrie::pricingFactors() const
              { "usdToEur",  usdToEur_  } };
 }
 
-CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) const
+CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) const
 {
     //  A CATALYST CHARGE IS PRICED FROM A DECLARED UNIT PRICE, AND THE LINE
     //  SAYS SO (2026-09-26).  This is the SECOND cost shape in this file and
@@ -342,14 +342,14 @@ CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) con
         auto pit = dim.costInputs.find("catalystPrice");
         auto mit = dim.values.find("m_catalyst_kg");
         if (mit == dim.values.end())
-            throw std::runtime_error("Guthrie: the CATALYST CHARGE of '"
+            throw std::runtime_error("Turton: the CATALYST CHARGE of '"
                 + dim.unitName + "' has no mass to price: the sizer derived"
                   " none (its basis reads \"" + dim.basis + "\").\n  Declare"
                   " `catalystBulkDensity <kg/m3>;` in this unit's designRules"
                   " so m_catalyst = V_R x rho_bulk exists.  Until then the"
                   " total below is INCOMPLETE by exactly this charge.");
         if (pit == dim.costInputs.end())
-            throw std::runtime_error("Guthrie: the CATALYST CHARGE of '"
+            throw std::runtime_error("Turton: the CATALYST CHARGE of '"
                 + dim.unitName + "' is not costed: no `catalystPrice` is"
                   " declared in this unit's designRules, and Choupo carries no"
                   " catalyst price and will not invent one.\n  Declare"
@@ -361,7 +361,7 @@ CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) con
         const scalar price = pit->second;
         const scalar m_kg  = mit->second;
         if (!(price >= 0.0) || !(m_kg > 0.0))
-            throw std::runtime_error("Guthrie: the CATALYST CHARGE of '"
+            throw std::runtime_error("Turton: the CATALYST CHARGE of '"
                 + dim.unitName + "' has a negative price or a non-positive"
                   " mass -- nothing is priced from that");
         const scalar Cp = price * m_kg;
@@ -402,7 +402,7 @@ CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) con
     auto getS = [&]() -> scalar {
         auto it = dim.values.find(c.sizeKey);
         if (it == dim.values.end())
-            throw std::runtime_error("Guthrie: dimension '" + c.sizeKey
+            throw std::runtime_error("Turton: dimension '" + c.sizeKey
                 + "' missing for " + dim.equipmentType);
         return it->second;
     };
@@ -454,14 +454,14 @@ CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) con
         // stress cannot contain the pressure, is not priceable at the
         // cheapest factor -- it is not priceable at all (I5).
         if (P_gauge > 0.0 && mat.sigma_y <= 0.0)
-            throw std::runtime_error("Guthrie costing, unit '" + dim.unitName
+            throw std::runtime_error("Turton costing, unit '" + dim.unitName
                 + "': material '" + mat.name + "' declares no allowable"
                 " stress (sigma_y) and this is a pressure vessel at "
                 + std::to_string(P_des_bar) + " bar design -- the pressure"
                 " factor cannot be priced.  Add `sigma_y <MPa>;` to the"
                 " material record (see data/standards/assets/SS304.dat).");
         if (P_gauge > 0.0 && 2.0 * (mat.sigma_y * 10.0 - 0.6 * P_gauge) <= 0.0)
-            throw std::runtime_error("Guthrie costing, unit '" + dim.unitName
+            throw std::runtime_error("Turton costing, unit '" + dim.unitName
                 + "': material '" + mat.name + "' (sigma_y "
                 + std::to_string(mat.sigma_y) + " MPa) cannot contain a "
                 + std::to_string(P_des_bar) + " bar design pressure -- the"
@@ -471,7 +471,7 @@ CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) con
         const scalar D_m   = dim.values.count("D") ? dim.values.at("D") : 0.0;
         if (P_gauge > 0.0 && D_m <= 0.0)
             AdvisoryLog::instance().add("costing", "warning",
-                "Guthrie " + dim.unitName,
+                "Turton " + dim.unitName,
                 "pressure vessel with no diameter in its sizing record: the"
                 " pressure factor is priced at its LOWER BOUND (F_P = 1.0),"
                 " so the bare-module cost is a floor, not an estimate.");

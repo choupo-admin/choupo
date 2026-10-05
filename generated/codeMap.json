@@ -696,9 +696,6 @@
   "GridSweepDriver": [
    "src/outerDriver/GridSweepDriver.H"
   ],
-  "Guthrie": [
-   "src/postProcessing/costing/Guthrie.H"
-  ],
   "HConsistency": [
    "src/propertyOps/HConsistency.H"
   ],
@@ -1512,6 +1509,9 @@
   "Turbine": [
    "src/unitOperations/rotating/Turbine.H"
   ],
+  "Turton": [
+   "src/postProcessing/costing/Turton.H"
+  ],
   "UNIFAC": [
    "src/thermo/activityCoefficient/UNIFAC.H"
   ],
@@ -1737,11 +1737,7 @@
   "src/postProcessing/costing/CostingModel.cpp": [
    {
     "key": "Turton",
-    "type": "Guthrie"
-   },
-   {
-    "key": "Guthrie",
-    "type": "Guthrie"
+    "type": "Turton"
    }
   ],
   "src/postProcessing/sizing/EquipmentSize.cpp": [
@@ -3463,12 +3459,13 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/materials/Material.H",
    "src/postProcessing/costing/CostingModel.H",
-   "src/postProcessing/costing/Guthrie.H",
+   "src/postProcessing/costing/Turton.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3478,7 +3475,7 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
-  "src/postProcessing/costing/Guthrie.cpp": [
+  "src/postProcessing/costing/Turton.cpp": [
    "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3491,7 +3488,7 @@
    "src/core/Types.H",
    "src/materials/Material.H",
    "src/postProcessing/costing/CostingModel.H",
-   "src/postProcessing/costing/Guthrie.H",
+   "src/postProcessing/costing/Turton.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -8349,7 +8346,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -8625,7 +8622,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -8930,7 +8927,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -9234,7 +9231,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -9303,7 +9300,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -9552,7 +9549,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -9792,7 +9789,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -9837,6 +9834,7 @@
   ],
   "src/core/RegistryRefusal.H": [
    "src/core/RegistryRefusal.cpp",
+   "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/solver/ODE/ODEIntegrator.cpp",
    "src/streams/UtilityCircuit.cpp",
@@ -9898,7 +9896,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -9966,7 +9964,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -10056,7 +10054,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -10423,7 +10421,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -10531,11 +10529,11 @@
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp"
+   "src/postProcessing/costing/Turton.cpp"
   ],
-  "src/postProcessing/costing/Guthrie.H": [
+  "src/postProcessing/costing/Turton.H": [
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp"
+   "src/postProcessing/costing/Turton.cpp"
   ],
   "src/postProcessing/sizing/CatalystBedSize.H": [
    "src/postProcessing/sizing/CatalystBedSize.cpp",
@@ -11004,7 +11002,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -11065,7 +11063,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -11191,7 +11189,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -11487,7 +11485,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -11691,7 +11689,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -12038,7 +12036,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -12298,7 +12296,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -12436,7 +12434,7 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
-   "src/postProcessing/costing/Guthrie.cpp",
+   "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",

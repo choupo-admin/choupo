@@ -466,7 +466,7 @@ convergence and augment the result (they never change the solution):
 
 ```
 sizing    { ... }                 // equipment sizes from the converged duties
-costing   { method Turton; ... }  // cost from the sizes (case-sensitive; `Guthrie` is an announced alias)
+costing   { method Turton; ... }  // cost from the sizes (case-sensitive; the former name `Guthrie` is refused, naming `Turton`)
 economics { ... }                 // cash-flow aggregation over the costed plant
 pinchPass { dTmin 20 K; }         // pinch TARGETS (P1): the Linnhoff-Flower
                                   // problem table printed cascade by cascade,
@@ -543,7 +543,7 @@ rebuilds it from a throughput; its `designRules {}`:
 
 Two items under `design/<unit>/`: `shell` (a straight cylinder of the bed
 volume at L/D, ASME wall at `pressureDesign`, costed as a `vessel` on the
-existing Guthrie set) and `catalystCharge` (`m = V_R x catalystBulkDensity`,
+existing Turton vessel set) and `catalystCharge` (`m = V_R x catalystBulkDensity`,
 costed at `catalystPrice x m` with NO price index, NO material or module
 factor and NO contingency -- the costing table prints the shape word
 `declared-unit-price` and the price beside it).  Absent the density the charge
@@ -552,7 +552,7 @@ the charge is REFUSED BY NAME at costing time and the total reads `TOTALS
 (EUR) -- INCOMPLETE` naming it.  The basis reads *catalyst volume V_R read
 from the unit* and nothing more: the sizing pass cannot see the outer driver,
 so whether the volume was solved or typed is said in the case, not by the
-sizer.  There is no Guthrie set for a catalyst bed and none is invented; a
+sizer.  There is no Turton set for a catalyst bed and none is invented; a
 density or a price you cannot source is declared as an assumption in a
 comment, in those words.  Worked case:
 `tutorials/plant/ammoniaStaged04_kinetic`.

@@ -1177,6 +1177,7 @@ def check_catalyst_bed(problems, notes):
 
     SABOTAGES, BY HAND, each restored with `cp` and the engine rebuilt:
       S1  CatalystBedSize.cpp: the shell's V_R set to 1.01 x the KPI.
+      (Guthrie.cpp is named Turton.cpp since 2026-10-05, DEV.md 4c C38.)
       S2  Guthrie.cpp: the missing-price refusal replaced by price = 0.
       S3  Guthrie.cpp: Cp multiplied by cepci_/cepci2001_ for the charge.
       S4  Guthrie.cpp: C_BM = Cp x (2.25 + 1.82) and C_TM = 1.18 C_BM for

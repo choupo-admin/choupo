@@ -26,11 +26,12 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 Class
-    Choupo::Guthrie
+    Choupo::Turton
 
 Description
-    Guthrie (1969) / Turton (4th ed., Appendix A) capital-cost
-    correlations.  Per-equipment-type purchased cost in 2001 USD:
+    Turton et al. (Appendix A) capital-cost correlations, on the bare-module
+    FORM Guthrie (1969) introduced.  Per-equipment-type purchased cost in
+    2001 USD:
 
         log10(C_p)  =  K1 + K2·log10(S) + K3·(log10 S)²
 
@@ -67,10 +68,10 @@ Description
 
 namespace Choupo {
 
-class Guthrie : public CostingModel
+class Turton : public CostingModel
 {
 public:
-    explicit Guthrie(const DictPtr& costingDict);
+    explicit Turton(const DictPtr& costingDict);
 
     const std::string& type() const override { return type_; }
 
@@ -83,15 +84,14 @@ public:
     std::map<std::string, scalar> pricingFactors() const override;
 
 private:
-    //  THE CLASS is named for Guthrie (1969), whose bare-module FORM the
-    //  correlations sit in.  THE METHOD a run reports is `Turton` -- the
-    //  registered factory name, the word every corpus case declares, and the
-    //  source of every coefficient in the .cpp (Turton et al., App. A).  A
-    //  student cites the numbers, and this string is what the costing banner
-    //  prints, so it must be the name they would write down.  The two are
-    //  DIFFERENT questions (which form? whose numbers?) and this field answers
-    //  the second.  `method Guthrie;` stays accepted as an announced alias --
-    //  see `CostingModel::registerBuiltins`.
+    //  THE NAME IS WHOSE NUMBERS THESE ARE (ruled 2026-09-03, completed
+    //  2026-10-05, DEV.md 4c C38 item 2).  Every coefficient in Turton.cpp is
+    //  Turton et al.'s (App. A); Guthrie (1969) supplied the bare-module FORM
+    //  they sit in, and the form is cited where it is used.  The class, its
+    //  files, the registered factory key and the word the costing banner
+    //  prints were three different names for one model until 2026-10-05;
+    //  they are one now, and `method Guthrie;` is REFUSED by name
+    //  (`CostingModel::New`) -- no alias, no dual reader.
     inline static const std::string type_ = "Turton";
 
     //  THE IN-CLASS INITIALISERS ARE GONE, and their absence is the point.
@@ -100,7 +100,7 @@ private:
     //  `lookupScalarOrDefault`, one line apart, so one fact had two homes and
     //  the in-class copy was dead the whole time (the constructor assigns all
     //  four unconditionally, on every path).  The one home is
-    //  `defaultPriceIndex` in Guthrie.cpp, which is also what announces when
+    //  `priceIndexDefaults` in Turton.cpp, which is also what announces when
     //  a default is USED.
     scalar  year_      = 0.0;
     scalar  cepci_     = 0.0;

@@ -477,8 +477,8 @@
     "postProcessing": [
       {
         "key": "costing",
-        "name": "Costing pass (Guthrie/Turton purchased + bare-module + total-module cost)",
-        "source": "src/postProcessing/costing/Guthrie.cpp",
+        "name": "Costing pass (Turton App. A purchased + bare-module + total-module cost)",
+        "source": "src/postProcessing/costing/Turton.cpp",
         "engine": "all",
         "phases": null,
         "tutorials": [

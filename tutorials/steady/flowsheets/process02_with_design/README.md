@@ -1,7 +1,7 @@
 # process02_with_design — the deliverable: a size and a price you can defend
 
 `process01` with a heater between the reactor and the flash, and the two
-reports a project needs most: **equipment sizing** and **Guthrie
+reports a project needs most: **equipment sizing** and **Turton
 costing**.  The chain runs from `system/postDict`; `reports { design {}
 economics {} }` in the controlDict *serialise* what it produced into
 `reports/design/sizing.csv` and `reports/economics/costs.csv`.
@@ -18,7 +18,7 @@ run: reactor **V_R = 0.005 m³**, wall 3.15 mm, 3.7 kg of SS316; heater
 1. **The rules are declared, once, in `postDict`.**  `sizing { units (
    { unitName reactor; type stirredTank; material SS316; designRules {
    L_over_D 2.5; pressureDesign 3.0; … } } … ) }` and `costing { method
-   Guthrie; year 2026; cepci 820; cepci2001 397; usdToEur 0.92; }`.  Every
+   Turton; year 2026; cepci 820; cepci2001 397; usdToEur 0.92; }`.  Every
    number in the tables descends from those lines and the run's own
    results — nothing else.
 2. **The costing table prints its own arithmetic.**  Below the totals:

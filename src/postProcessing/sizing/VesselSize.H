@@ -29,7 +29,7 @@ Description
     Q_gas [m^3/s] is built from a molar-flow KPI (designRules.flowKey, default
     N_out_mol_s) at the unit's (T,P) via the ideal-gas law.  The pressure vessel
     is then sized ASME thin-wall exactly like StirredTank (D, L, wall, weight)
-    and costed with the Guthrie vessel coefficients.
+    and costed with the Turton vessel coefficients.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

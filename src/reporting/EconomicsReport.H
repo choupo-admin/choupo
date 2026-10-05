@@ -30,7 +30,7 @@ Class
 
 Description
     CAPEX as a report object.  Runs the `costing` PostProcessor over the
-    result (Guthrie/Turton purchased + bare-module + total-module cost
+    result (Turton purchased + bare-module + total-module cost
     from each unit's equipment size) and writes `reports/economics/
     costs.csv` with a TOTAL row.
 

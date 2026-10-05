@@ -23401,7 +23401,7 @@ the shell metal mass is
    \qquad
    A_{\mathrm{shell}} \;=\; \pi D L.
 \end{equation}
-This $m$ is the principal sizing output consumed by the Guthrie
+This $m$ is the principal sizing output consumed by the Turton
 correlation downstream.
 
 % ---------------------------------------------------------------------
@@ -23528,13 +23528,19 @@ recorded here rather than quietly corrected, because implementing the
 draw-down would move a published NPV.
 
 % ---------------------------------------------------------------------
-\section{Guthrie / Turton bare-module costing}\label{ch:cost-guthrie}
+\section{Turton bare-module costing}\label{ch:cost-guthrie}
 
 \begin{whatyoulllearn}
 How the sized equipment list becomes a bare-module and total-module
 cost, anchored on Turton-style polynomial purchased-cost
 correlations, CEPCI year scaling, and a USD$\to$EUR conversion.
 \end{whatyoulllearn}
+
+The model is registered as \code{Turton} (\code{costing \{ method
+Turton; \}}): every coefficient it holds is Turton et al.'s
+\cite{Turton}, App.~A, set in the bare-module form Guthrie (1969)
+introduced.  The word \code{Guthrie} named this model until
+2026-10-05 and is now refused by name, naming \code{Turton}.
 
 \subsection{Purchased cost from size}
 
@@ -23547,7 +23553,7 @@ attribute equipment-specific (vessel $\to$ mass; HX $\to$ area):
        \;+\; K_3\,\bigl[\log_{10}(\text{size})\bigr]^2.
 \end{equation}
 The coefficients $(K_1, K_2, K_3)$ come from Turton 4th ed.\
-\cite{Turton} and live inside \file{src/postProcessing/costing/Guthrie.cpp}
+\cite{Turton} and live inside \file{src/postProcessing/costing/Turton.cpp}
 --- one set per equipment type.
 
 \subsection{Bare-module factor}
@@ -23569,7 +23575,7 @@ factor from a Turton polynomial in $\log_{10} P_{\mathrm{design}}$.
 
 Adding contingency and fees, with the factor of the same Turton
 correlation set the code transcribes (\cite{Turton}, App.~A;
-\file{src/postProcessing/costing/Guthrie.H}):
+\file{src/postProcessing/costing/Turton.H}):
 \begin{equation}
    C_{\mathrm{TM}} \;=\; 1.18 \, C_{\mathrm{BM}}.
 \end{equation}
@@ -23600,7 +23606,7 @@ effect. They are \emph{not} a substitute for a vendor quote.
 \begin{tutoriallink}
 \file{tutorials/steady/flowsheets/process02\_with\_design} --- the canonical end-to-end:
 two-unit flowsheet ($\to$ CSTR + flash), \code{postDict} declares
-sizing for both, Guthrie costing in EUR$_{2026}$ at the user-chosen
+sizing for both, Turton costing in EUR$_{2026}$ at the user-chosen
 CEPCI. The output table shows $F_M$, $F_P$, $C_{\mathrm{purchased}}$,
 $C_{\mathrm{BM}}$, $C_{\mathrm{TM}}$ per unit and the grand total.
 \end{tutoriallink}
@@ -24534,7 +24540,7 @@ Activity-coefficient models           & van Laar, NRTL, others           & ideal
 Distillation methods                  & matrix (rigorous) + shortcuts    & Wang-Henke bubble-point \\
 Recycle convergence                   & bounded Wegstein                 & bounded Wegstein \\
 Parameter estimation                  & companion program (VLE fitting)  & in-simulator Levenberg-Marquardt (\code{fitParameters} op) \\
-Equipment sizing + costing            & 20+ blocks built in              & two equipment + Guthrie costing \\
+Equipment sizing + costing            & 20+ blocks built in              & two equipment + Turton costing \\
 LOC (source)                          & $\sim$35\,000 FORTRAN-66 (est.)  & $\sim$10\,000 C++17 \\
 Equivalent C++ LOC                    & (FORTRAN-66 $\to$ modern C++ compresses $\sim 3\!\times$) $\Rightarrow$ $\sim$12\,000 & 10\,000 (direct) \\
 External dependencies                 & none (FORTRAN library)           & none (\cpp{}~17 standard library) \\
@@ -24615,7 +24621,7 @@ NRTL, Wilson), the numerical methods (Newton 1-D and $n$-D,
 Levenberg-Marquardt, Wegstein, Nelder-Mead, RK4), the
 selected unit operations (isothermal flash with VL / LL / VLLE
 branches, CSTR, PFR, Gibbs reactor by free-energy minimisation,
-Wang-Henke distillation), the equipment-sizing + Guthrie-costing
+Wang-Henke distillation), the equipment-sizing + Turton-costing
 chain that closes the loop from a converged flowsheet to a EUR
 figure, and ---  --- the dynamic simulation classes:
 batch reactors (isothermal + adiabatic + multi-reaction), Rayleigh

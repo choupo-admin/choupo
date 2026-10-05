@@ -12,7 +12,7 @@
 
 tier          tutorial;
 application   choupoSolve;
-description   "process02 with full reports: balances + sizing + Guthrie costing";
+description   "process02 with full reports: balances + sizing + Turton costing";
 
 verbosity     3;
 

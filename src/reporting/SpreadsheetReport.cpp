@@ -488,7 +488,7 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
         const std::string cur = ctx.result.costs.begin()->second.currency;
         ods.beginSheet("Economics");
         ods.newRow();
-        ods.textCell("CAPEX (Guthrie/Turton, " + cur + ")", OdsWriter::Title);
+        ods.textCell("CAPEX (Turton App. A, " + cur + ")", OdsWriter::Title);
         ods.newRow();
         bool anyCostTag = false;
         for (const auto& [u, c] : ctx.result.costs)

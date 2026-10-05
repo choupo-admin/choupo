@@ -49,7 +49,7 @@ std::vector<EquipmentSizing> CycloneSize::size(const std::string& unitName,
             + "' has no 'Q_gas' KPI -- the cyclone carries no gas load in this "
               "run (nothing to size)");
 
-    const scalar Q_gas = q->second;     // m^3/s   (Guthrie sizeKey)
+    const scalar Q_gas = q->second;     // m^3/s   (Turton sizeKey)
 
     const scalar P_des = designRules->lookupScalar("pressureDesign");   // required: a silent
         // 1 bar default costed pressure equipment as atmospheric while the

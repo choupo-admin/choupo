@@ -37,7 +37,7 @@ buys you is the **reshuffling** of that mass toward the valuable overhead.
 * **V_R** — a bigger reactor raises the residence time τ = V_R/Q, so the
   isothermal-CSTR conversion `X = k·τ/(1+k·τ)` climbs and the priced overhead
   grows. But a bigger vessel costs more steel — the `StirredTank` sizing →
-  Guthrie costing drives **FCI (CAPEX) up**. Revenue rises with **diminishing
+  Turton costing drives **FCI (CAPEX) up**. Revenue rises with **diminishing
   returns** (X saturates toward 1) while CAPEX keeps climbing → an NPV maximum
   exists.
 * **T_feed** — a higher feed temperature raises the Arrhenius rate `k =

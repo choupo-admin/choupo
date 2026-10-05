@@ -228,7 +228,7 @@ and the result JSON; this README must agree with it and not soften it.
   solved; this README and the postDict header are where that is said) and
   returns TWO items under `design/converter/` — the `shell` (a straight
   cylinder of that volume at L/D 6, ASME wall at 220 bar, costed on the
-  existing Guthrie vessel set) and the `catalystCharge` (`m = V_R x
+  existing Turton vessel set) and the `catalystCharge` (`m = V_R x
   catalystBulkDensity`, priced at `catalystPrice x m` in today's EUR with NO
   index and NO module factor, the costing line naming the shape
   `declared-unit-price`).  The sequence's invariant — *a stage may not cost

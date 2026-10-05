@@ -176,7 +176,8 @@ what the student MEETS.  So, for September:
    structure.
 
 Reserved to Vítor, untouched: the catalogue reseal (`Choupo-2607` in the
-sealed manifests), `paper/README.md`, the Guthrie/Turton attribution, the
+sealed manifests), `paper/README.md`, the Guthrie/Turton attribution
+(decided 2026-10-05, C38 item 2: the model is `Turton`), the
 Burcat citation ruling, P-swing, speciation aliases, the basis mass
 migration.
 
@@ -454,7 +455,9 @@ correct under either design.
 >   golden — so a case declaring `Turton` was answered `Guthrie` on screen.
 >   The class keeps its name (the bare-module FORM is Guthrie's, 1969); the
 >   METHOD it reports is `Turton` (whose coefficients these are, App. A), and
->   the two are different questions.  No number moved.
+>   the two are different questions.  No number moved.  (Superseded 2026-10-05,
+>   C38 item 2: the class and its files are `Turton` too, and `Guthrie` is
+>   refused by name.)
 > * **R8 — should a plant PRODUCT sit at the domain level, and does the
 >   plant's label become the file's name?**  The 2026-09-07 lowest-common-
 >   ancestor rule settled inlets and internal streams; a plant OUTLET is
@@ -1999,6 +2002,24 @@ reserved for him).**  The commander takes them, each one revertable merge:
   2. THE COSTING MODEL'S NAME: registered `Guthrie` while every coefficient is
      Turton's.  Renamed to what it is (`Turton`), the corpus migrated in one
      pass, the old word REFUSED by name naming the new one (no dual reader).
+     [BUILT 2026-10-05 on branch `claude/c38-costing`.  MEASURED FIRST: the
+     key `Turton` had been registered since 2026-09-03 with `Guthrie` as an
+     ANNOUNCED alias, and all 12 corpus `costing {}` blocks already said
+     `method Turton;` -- so NO postDict needed migrating and no migrator was
+     written.  What was left: the class and its files
+     (`src/postProcessing/costing/Turton.{H,cpp}`), the alias registration
+     (deleted), and the prose that named the model (src comments, the
+     guides, README, docs/ai, tutorial READMEs/descriptions, the models
+     catalogue).  `method Guthrie;` now REFUSES through
+     `registryRefusal::message` (exit 2) with a line naming `Turton`.  No
+     golden row and no result-JSON key carried the word (`type()` already
+     returned `Turton`), so NO row moved.  Guthrie stays cited for what is
+     his: the bare-module FORM.  NOT renamed, said rather than hidden: the
+     `F_M feeds the Guthrie module-costing pass` header comment in the
+     construction-material records (`data/standards/assets/*.dat` and their
+     case-local copies) -- curated records, comment only, and a comment
+     edit in a sealed copy is announced as cosmetic drift on every run.
+     Gate: `check_cost_provenance` arm (p).]
   3. Vítor's deck `docs/slides/farelo_choupo.tex` (C7 class B): its three
      product names replaced by neutral descriptions like the other records,
      its pin dropped from `check_doctrine`.  **DONE 2026-10-05:** the 1976

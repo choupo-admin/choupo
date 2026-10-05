@@ -318,7 +318,7 @@ def _components_footer() -> str:
     ) + "\n" + _kind_section(
         "## Construction materials",
         ("constructionMaterial",),
-        "Each carries ρ, F_M (Guthrie), σ_y, max T, max P.",
+        "Each carries ρ, F_M (Turton), σ_y, max T, max P.",
     ) + "\n\n" + _glossary()
 
 

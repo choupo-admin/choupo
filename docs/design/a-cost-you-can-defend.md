@@ -153,3 +153,13 @@ Guthrie is the ancestor of the method — he invented the module-factor approach
 — and Turton is where every number comes from.  Both readings are defensible
 and no value moves whichever is chosen, so this is an **attribution ruling and
 a corpus-wide rename**, and it is Vitor's.  Recorded here rather than decided.
+
+**RESOLVED 2026-10-05 (Vitor, DEV.md 4c C38 item 2).**  Turton is where every
+number comes from, so the model is named for him: the class and its files are
+`Turton` (`src/postProcessing/costing/Turton.{H,cpp}`), `Turton` is the ONE
+registered key, and `method Guthrie;` is REFUSED through
+`registryRefusal::message`, naming `Turton` -- no alias, no dual reader.  The
+corpus needed no migration (every `postDict` already said `Turton` since the
+2026-09-03 alias), and no value moved.  Guthrie is still cited where his
+contribution is used: the bare-module FORM.  Gate: `check_cost_provenance`
+arm (p).

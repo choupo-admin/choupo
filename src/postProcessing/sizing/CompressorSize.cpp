@@ -31,7 +31,7 @@ std::vector<EquipmentSizing> CompressorSize::size(const std::string& unitName,
     if (w == k.end())
         throw std::runtime_error("Compressor: unit '" + unitName
             + "' has no 'W_shaft_kW' KPI -- nothing to size (is it a compressor?)");
-    const scalar power_kW = w->second;         // kW   (Guthrie sizeKey "power")
+    const scalar power_kW = w->second;         // kW   (Turton sizeKey "power")
 
     EquipmentSizing d;
     d.unitName       = unitName;

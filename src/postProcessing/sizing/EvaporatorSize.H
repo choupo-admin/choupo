@@ -35,7 +35,7 @@ Description
     declared U and dT).  No mechanical wall calculation is performed here:
     the evaporator cost correlation (Turton App. A) is a function of area
     alone, near-atmospheric, so F_P = 1 and the area maps straight through to
-    the Guthrie cost.
+    the Turton cost.
 
     Inputs (from result.kpis[unitName]):
         A_m2             -- heat-transfer area [m^2]   (falls back to `A`)
@@ -43,7 +43,7 @@ Description
         pressureDesign   -- design pressure [bar]      (default 1, near-atm)
 
     Validity range (Turton App. A "evaporator", A in [10, 1000] m^2) is
-    enforced in Guthrie as a WARN-don't-clamp, preserving the extrapolation
+    enforced in Turton as a WARN-don't-clamp, preserving the extrapolation
     teaching point.
 \*---------------------------------------------------------------------------*/
 

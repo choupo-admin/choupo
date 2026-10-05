@@ -83,12 +83,12 @@ Description
     name with the remedy and simply not built.  A student who declares only
     the shell gets a shell and a sentence saying what to add for the rest.
 
-    THE TRAY STACK IS SIZED AND NOT COSTED, DELIBERATELY.  `Guthrie` holds
+    THE TRAY STACK IS SIZED AND NOT COSTED, DELIBERATELY.  `Turton` holds 
     eight coefficient sets and every coefficient in that file is Turton's.
     There is no tray set in it, and entering one is a CURATION act that lands
     inside what is reserved: inventing K1/K2/K3 for a sieve tray would convert
     "uncosted" into "falsely costed", which no reader and no gate can detect.
-    So `Guthrie` refuses the `sieveTrays` type BY NAME and says what a
+    So `Turton` refuses the `sieveTrays` type BY NAME and says what a
     coefficient set would need.  A column costed by Choupo today is missing
     its tray cost, and it says so.
 \*---------------------------------------------------------------------------*/
