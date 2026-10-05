@@ -3737,6 +3737,16 @@ defect — look for what else went with it.
 
 ## 5. Known debts (severity-ish)
 
+**2026-10-05 -- `--fast` IS RED ON A CLEAN CHECKOUT THROUGH `check_mass_closure`'S
+ATOM-SCOPE ARM.  FOUND (C35), NOT FIXED.**  The arm looks through every
+`tutorials/plant/*` run output for a plant publishing a process atom scope;
+the only two that declare `utilities` (ammonia02, ammonia03) are outside
+`tutorials/FASTSET`, so a fresh worktree has no such output and the arm
+fails "found NO plant publishing a process atom scope", while a checkout
+holding stale run outputs passes -- a verdict that depends on leftovers.
+Remedy (a gate change, not yet taken): under `--fast` the arm judges only
+in-scope witnesses, or FASTSET carries one utility-declaring plant.
+
 **2026-10-05 -- A HEAT EXCHANGER CANNOT PUBLISH A PURE-COMPONENT TWO-PHASE
 OUTLET.  NAMED, NOT FIXED (C35, found by the full regression of item 4).**
 `HeatExchanger.cpp`'s Q -> outlet-state inversion bisects on H(T) at fixed
