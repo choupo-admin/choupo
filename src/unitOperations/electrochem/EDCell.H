@@ -49,14 +49,28 @@ Description
     refusals read exactly as they did, and both electrodialysis units'
     goldens are unchanged by the move.
 
-    WHAT IS **NOT** HERE, and deliberately: the Faraday transfer itself, the
-    stack-record clash refusals and the operating-mode grammar.  Those differ
-    between the two units -- a flowing stack reads its flow off an inlet
-    stream and a batch rig declares a recirculation rate; a flowing stack may
-    be given a `targetDemin` or a `targetConductivityRemoval`, a batch rig may
-    be given a voltage -- and
-    folding two different questions into one function is how a shared home
-    becomes a switchboard.
+    THE COUNTER-ION SPLIT IS HERE TOO (C35, Vitor's ruling of 2026-10-05).
+    How the counter-ion current divides between several counter-ions of
+    one membrane was a refusal in the batch rig and a defect in the steady
+    stack (every counter-ion was given the WHOLE current, xi I N/(|z_i| F),
+    so a feed of mixed valence left the stack carrying net charge: +1.8 %
+    of the ion equivalents on ed04's ED1 diluate).  The ruling shares the
+    current by z_i D_i c_i over the counter-ions of that membrane -- the
+    transport numbers of the paper's own Eqs. (12)/(13), now applied at
+    every current and not only at the limit -- and it is ONE rule with two
+    callers, so it lives here: `counterIonRates` gives the INSTANTANEOUS
+    rates the batch integrator wants, `counterIonPassTransfer` gives the
+    same rule INTEGRATED over one pass of a flowing stack.  Each membrane
+    then moves exactly xi I N / F equivalents, so the transfer is
+    charge-balanced by construction on every feed the unit accepts.
+
+    WHAT IS **NOT** HERE, and deliberately: the stack-record clash refusals
+    and the operating-mode grammar.  Those differ between the two units -- a
+    flowing stack reads its flow off an inlet stream and a batch rig
+    declares a recirculation rate; a flowing stack may be given a
+    `targetDemin` or a `targetConductivityRemoval`, a batch rig may be
+    given a voltage -- and folding two different questions into one
+    function is how a shared home becomes a switchboard.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -172,6 +186,80 @@ LimitingCurrent predictiveLimitingCurrent(const EDStack&      stk,
                                           scalar              Q_dil,
                                           scalar              nu,
                                           scalar              seFactor);
+
+// ---------------------------------------------------------------------------
+//  THE COUNTER-ION SPLIT (C35, Vitor 2026-10-05).
+//
+//  Over the counter-ions K of ONE membrane (the cations for the CEM, the
+//  anions for the AEM) the counter-ion current is shared by
+//
+//      t_k = |z_k| D_k c_k / SUM_{j in K} |z_j| D_j c_j          (no parameter)
+//
+//  -- exactly the limiting transport numbers of Geraldes & Afonso (2010)
+//  Eqs. (12)/(13), computed by the SAME function
+//  (`edLimitingCurrent::limitingTransportNumbers`), and the molar rate of
+//  each counter-ion is
+//
+//      ndot_k = t_k xi I N / (|z_k| F)                          [mol/s]
+//
+//  so SUM_k |z_k| ndot_k = xi I N / F on each membrane: the same
+//  equivalents leave the diluate through the CEM and through the AEM, and
+//  the transfer is charge-balanced by construction.  D_k is the ion's
+//  curated D0 (`electrolyte::ionD0`, the record the limiting current
+//  already reads); a temperature factor common to every ion cancels in t_k
+//  and is therefore not applied.
+//
+//  A membrane with ONE counter-ion has t = 1 whatever its diffusivity, so
+//  NO diffusivity is looked up there and the arithmetic is the single-salt
+//  expression `faradayMolarRate(I, |z|, xi) * N`, bit for bit -- which is
+//  why every single-salt golden is unmoved.  An ion with z = 0 is on
+//  neither membrane and is never transferred.
+// ---------------------------------------------------------------------------
+struct CounterIonSplit
+{
+    std::vector<scalar> dn;          // mol/s per channel row (ChannelState order)
+    std::vector<scalar> t;           // the share each row was given (1 alone, 0 for z = 0)
+    int  nCation = 0, nAnion = 0;    // counter-ions on the CEM / on the AEM
+    bool exhausted = false;          // a membrane's counter-ions ran out (capped)
+};
+
+//- The INSTANTANEOUS rates at the composition `ch` carries -- what a batch
+//  integrator differentiates.  `who` names the unit in a refusal (an ion
+//  with no curated D0 on a membrane that has more than one counter-ion).
+CounterIonSplit counterIonRates(const std::string&  who,
+                                const ChannelState& ch,
+                                scalar I, scalar xi, int N);
+
+//- The SAME rule INTEGRATED over one pass of a flowing stack.  `avail` is
+//  the mol/s of each channel row entering the diluate.  Along the channel
+//  the local composition changes, and with it the shares; because the
+//  shares depend on composition alone, the outlet depends only on the
+//  total charge passed, Q = xi I N / F, whatever the current distribution
+//  along the path.  With dq the equivalents passed so far,
+//
+//      d n_k / dq = - D_k n_k / SUM_j |z_j| D_j n_j
+//
+//  which integrates in closed form: n_k = n_k,in exp(-D_k tau), with the
+//  single scalar tau fixed by SUM_k |z_k| (n_k,in - n_k) = Q (monotone,
+//  concave in tau, solved by Newton from tau = 0, which cannot overshoot).
+//  No counter-ion is driven negative; only when Q exceeds every
+//  counter-ion equivalent the diluate carries is the membrane EXHAUSTED,
+//  every counter-ion removed entirely, and `exhausted` set.  A membrane
+//  with ONE counter-ion keeps the single-salt expression and its cap, bit
+//  for bit.
+CounterIonSplit counterIonPassTransfer(const std::string&         who,
+                                       const ChannelState&        chIn,
+                                       const std::vector<scalar>& avail,
+                                       scalar I, scalar xi, int N);
+
+//- The membrane potential of ONE membrane carrying several counter-ions:
+//  the MEAN of each counter-ion's own Nernst potential,
+//      E = (R T / F) * mean_k [ ln(a_k,con / a_k,dil) / |z_k| ]
+//  over the counter-ions present in both channels.  On one counter-ion it
+//  is exactly that ion's Nernst potential.  Used by the batch rig on a
+//  multi-ionic feed (its single-salt path is unchanged).
+scalar meanNernstPotential(const ChannelState& chD, const ChannelState& chC,
+                           scalar sign, scalar T);
 
 } // namespace edCell
 } // namespace Choupo

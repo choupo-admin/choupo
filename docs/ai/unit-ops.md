@@ -1746,10 +1746,19 @@ KPIs: `I_initial`/`I_final`, `U_final`, `i_density_final`,
 `specificEnergy_kWh_per_m3`, plus the model's own derived inputs
 (`D_eff`, `k_c_eff`, `Sh`, `Re`, `Sc`, `u_superficial`, `film_thickness`).
 
+A diluate with SEVERAL cations or anions runs (since 2026-10-05): the
+counter-ions of each membrane share its current by `|z_i| D_i c_i` (the
+limiting transport numbers of Geraldes & Afonso 2010 Eqs. 12/13, applied at
+every current; D_i the ions' curated D0; no new parameter), each membrane
+moves `xi I N / F` equivalents, and a membrane with several counter-ions
+takes the mean of their own Nernst potentials (announced).  It then
+publishes `demin_<ion>` for every ion and `t_transfer_final_<ion>`; the hand
+calculation `demin_ideal` uses the reference cation's INITIAL share.
+Witness `edbatch03_multiionic_split`.
+
 NOT modelled, said plainly, and each is REFUSED or ANNOUNCED rather than
-assumed: **more than one cation or one anion** (refused by name — the split
-of the counter-ion current between two counter-ions is the MEMBRANES'
-selectivity and no `kind IEM` record carries it); back-diffusion from the
+assumed: any selectivity the MEMBRANES add between counter-ions beyond that
+share (no `kind IEM` record carries one); back-diffusion from the
 concentrate (it needs a membrane salt permeability no record carries);
 water transport, osmotic or electro-osmotic; a falling current efficiency
 from co-ion leakage; any temperature transient (the rig is isothermal and
@@ -2127,7 +2136,17 @@ legacy route, no stack record), `ed03_stack_record` (a bench stack as a record, 
 derived velocity), `ed04_limiting_current_multiionic` (the prediction against
 a published measurement), `ed05_industrial_stack` (an industrial stack whose
 record names no membrane pair and stores no channel length, two hydraulic
-passes).
+passes), `ed09_wine_multiionic` (thirteen ions sharing two membranes'
+current).
+
+**Several counter-ions on one membrane.**  The counter-ions of each membrane
+SHARE its current by `|z_i| D_i c_i` (Eqs. 12/13 of the 2010 paper, applied
+at every current; no new parameter), integrated along the pass, so each
+membrane moves exactly `xi I N / F` equivalents and both outlets stay
+electroneutral.  Every ion on such a membrane needs a D0 (a case-local
+species record is enough); a missing one refuses by name.  Such a unit
+publishes `demin_<ion>`, `t_transfer_<ion>` (the pass-average share) and
+`eq_transferred_cem` / `eq_transferred_aem`.  A single salt is unchanged.
 
 # Outer drivers (in `outerDict`)
 

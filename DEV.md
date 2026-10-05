@@ -1131,8 +1131,9 @@ accepts today, and that is a policy call.
      per row.
 
 **C4. An electrodialysis case for WINE (asked 2026-09-21 as a question;
-     taken in C34 wave 2, 2026-10-05: the CLOSEST HONEST CASE is built, the
-     faithful one is NOT).**  He asked whether a typical wine
+     taken in C34 wave 2, 2026-10-05: the CLOSEST HONEST CASE is built; the
+     multi-ion split ruled in C35 then unblocked the FULL wine,
+     `ed09_wine_multiionic`, the same day -- see (a) below).**  He asked whether a typical wine
      electrodialysis case had been made.  Measured then: nine ED cases
      (`ed01`-`ed07`, `edbatch01`, `edbatch02`), none wine;
      `tutorials/plant/tartaricAcid` carries the chemistry and no ED.
@@ -1174,9 +1175,12 @@ accepts today, and that is a policy call.
      at 25 C both read the same diffusivities.
 
      **WHAT A FAITHFUL WINE CASE STILL NEEDS, each Vitor's or curation:**
-     (a) the MULTI-ION CURRENT SPLIT in the steady stack (RESERVED: §6,
-     "THE LIMITING CURRENT THAT FALLS"; the same rule unblocks a multi-ionic
-     `batchElectrodialysis`, which refuses today); (b) a NEUTRAL CO-SOLVENT
+     (a) the MULTI-ION CURRENT SPLIT -- DONE 2026-10-05 (C35 item 1): the
+     counter-ions of each membrane share its current by z D c, in the steady
+     stack and the batch rig alike, and `ed09_wine_multiionic` carries
+     thirteen ions (an AUTHOR-SET composition closed on sulfate; the parked
+     WIP's Siren-derived numbers were not reused, because that source is not
+     in the tree); (b) a NEUTRAL CO-SOLVENT
      carried through the stack's mass balance and priced into the
      solvent's viscosity/dielectric constant (ethanol refuses today);
      (c) curated, primary-cited D0 for HTart-, Tart2-, H2PO4- and species
@@ -1185,9 +1189,9 @@ accepts today, and that is a policy call.
      hydroalcoholic medium, so the run can say whether the removal is
      enough; (f) the kappa/D0 temperature inconsistency above (moves every
      ED golden).  Two notes: the parked WIP still uses the name `ed08` and
-     must take another number if revived; and the WIP's composition cites a
-     primary (Siren et al. 2015) this session did not read, so this case
-     uses none of its numbers.
+     must take another number if revived (it was: `ed09`); and the WIP's
+     composition cites a primary (Siren et al. 2015) this session did not
+     read, so neither ed08 nor ed09 uses any of its numbers.
 
 **C6-R1. DESIGN REVIEW of the green ammonia plant (2026-09-24, read-only
      survey; every claim below re-verified by the commander against the
@@ -2056,6 +2060,24 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      content, not names, so its ledger is unchanged.]
  16. Vítor's own deck stays his.
 Status: dispatched 2026-10-05.
+(item 1) DONE 2026-10-05 on `claude/c35-ed-split`, not merged: the split has
+ONE home, `edCell::counterIonRates` (instantaneous, the batch rig) and
+`edCell::counterIonPassTransfer` (the same rule integrated in closed form
+along a pass, the steady stack); each membrane moves xi I N / F equivalents;
+a membrane with one counter-ion keeps the old expression bit for bit (every
+single-salt result JSON byte-identical against a build of the parent).  The
+batch rig's multi-ionic refusal is lifted.  Moved: ed04's 12 outlet-flow rows
+(2.5e-6 to 3.9e-6 relative, inside their 1e-4 band; re-recorded, listed in
+the commit) + 48 new split KPI rows.  New witnesses `edbatch03_multiionic_split`
+and `ed09_wine_multiionic` (the full wine, author-set composition, ethanol
+still refuses).  Gates: `check_ed_stack` (h), `check_ed_batch` (j).  FLAGGED
+for Vitor: the ruling's WORDS say "conductivity share", its FORMULA z D c;
+the formula was built (= the paper's Eqs. 12/13); the conductivity share
+proper is z^2 D c and differs only between counter-ions of different
+valence on one membrane (ed04 ED1: Cl 4.52 % / SO4 2.39 % removed under
+z D c, 3.38 % / 3.53 % under z^2 D c).  Found, not fixed: the steady stack's
+Nernst term takes |z| = 1 for every ion (wrong for ed04's Mg2+; moves ed04's
+voltage, not this rule).
 
 **C34. "AVANÇA COM TUDO" (Vítor, 2026-10-04, after the month summary).**
 Every open item that is NOT his to decide, taken in two waves of generals in

@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/diluate -- an initial ESTIMATE of the stack's diluate outlet (the wine
+  feed, unchanged).  The stack is not on a recycle, so nothing reads this
+  value before the unit writes it; it is here because 0/ is complete.
+\*---------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water    166.5251203144 kmol/h;
+    K        0.075 kmol/h;
+    Na       0.015 kmol/h;
+    Ca       0.00375 kmol/h;
+    Mg       0.012 kmol/h;
+    H        0.00075 kmol/h;
+    Cl       0.0033 kmol/h;
+    SO4      0.018075 kmol/h;
+    HTart    0.024 kmol/h;
+    Tart     0.0045 kmol/h;
+    HMal     0.003 kmol/h;
+    Mal      0.00015 kmol/h;
+    Lactate  0.027 kmol/h;
+    H2PO4    0.0195 kmol/h;
+}
+
+T               298.15 K;
+P               250000 Pa;

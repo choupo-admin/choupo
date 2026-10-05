@@ -29,9 +29,11 @@ Namespace
     Choupo::edCell
 
 Description
-    Implementation.  Every function here is `ElectrodialysisStack.cpp`'s own
-    code, moved verbatim the day a second unit needed it -- read EDCell.H for
-    what is shared and what is deliberately not.
+    Implementation.  Every function above the counter-ion split is
+    `ElectrodialysisStack.cpp`'s own code, moved verbatim the day a second
+    unit needed it; the split itself (C35, 2026-10-05) was written here so
+    that it has one home from its first day -- read EDCell.H for what is
+    shared and what is deliberately not.
 \*---------------------------------------------------------------------------*/
 
 #include "EDCell.H"
@@ -257,6 +259,193 @@ LimitingCurrent predictiveLimitingCurrent(const EDStack&      stk,
     lc.haveEq16 = edLimitingCurrent::singleSaltEq16(lc.ions, lc.k_c_eff, tCu1,
                                                     lc.i_lim_eq16);
     return lc;
+}
+
+// ---------------------------------------------------------------------------
+//  THE COUNTER-ION SPLIT (C35).  Read EDCell.H for the rule and its reason.
+// ---------------------------------------------------------------------------
+namespace {
+
+//  The channel rows that are counter-ions of one membrane: the cations for
+//  the cation-exchange membrane, the anions for the anion-exchange one.  An
+//  uncharged row is on neither.
+std::vector<std::size_t> counterRows(const ChannelState& ch, bool cem)
+{
+    std::vector<std::size_t> rows;
+    for (std::size_t k = 0; k < ch.ion.size(); ++k)
+        if (cem ? (ch.z[k] > 0.0) : (ch.z[k] < 0.0)) rows.push_back(k);
+    return rows;
+}
+
+//  The diffusivity the split reads, refused by name with the reason it is
+//  needed (a membrane with ONE counter-ion never asks).
+scalar splitDiffusivity(const std::string& who, const SpeciesId& sp,
+                        const std::vector<std::size_t>& rows,
+                        const ChannelState& ch)
+{
+    try { return electrolyte::ionD0(sp); }
+    catch (const std::exception& e)
+    {
+        std::string list;
+        for (auto k : rows) list += " " + ch.ion[k].key;
+        throw std::runtime_error(who + ": the counter-ion current is shared"
+            " between" + list + " by z_i D_i c_i (the C35 ruling; the"
+            " transport numbers of Geraldes & Afonso 2010 Eqs. 12/13), and"
+            " that needs every one of their diffusivities -- " + e.what()
+            + "  Curate the missing D0 (a case-local species record is"
+              " enough); no share is guessed.");
+    }
+}
+
+} // namespace
+
+CounterIonSplit counterIonRates(const std::string&  who,
+                                const ChannelState& ch,
+                                scalar I, scalar xi, int N)
+{
+    CounterIonSplit s;
+    s.dn.assign(ch.ion.size(), 0.0);
+    s.t.assign(ch.ion.size(), 0.0);
+    for (const bool cem : { true, false })
+    {
+        const std::vector<std::size_t> rows = counterRows(ch, cem);
+        (cem ? s.nCation : s.nAnion) = static_cast<int>(rows.size());
+        if (rows.empty()) continue;
+        if (rows.size() == 1)
+        {
+            //  t = 1: the single-salt expression, bit for bit.
+            const std::size_t k = rows.front();
+            s.t[k]  = 1.0;
+            s.dn[k] = electrochem::faradayMolarRate(I, std::abs(ch.z[k]), xi)
+                    * static_cast<scalar>(N);
+            continue;
+        }
+        //  Eqs. (12)/(13), the ONE function that computes them.  C on the
+        //  dilute-carrier basis the limiting current uses; any common
+        //  factor cancels in the share.
+        std::vector<edLimitingCurrent::Ion> ions;
+        for (auto k : rows)
+        {
+            edLimitingCurrent::Ion io;
+            io.name = ch.ion[k].key;
+            io.z    = ch.z[k];
+            io.C    = ch.m[k] * RHO_CARRIER;
+            io.D    = splitDiffusivity(who, ch.ion[k], rows, ch);
+            ions.push_back(io);
+        }
+        const std::vector<scalar> t =
+            edLimitingCurrent::limitingTransportNumbers(ions, cem);
+        scalar tSum = 0.0;
+        for (std::size_t j = 0; j < rows.size(); ++j)
+        {
+            const std::size_t k = rows[j];
+            s.t[k]  = t[j];
+            s.dn[k] = t[j] * electrochem::faradayMolarRate(I, std::abs(ch.z[k]), xi)
+                    * static_cast<scalar>(N);
+            tSum += t[j];
+        }
+        if (!(tSum > 0.0)) s.exhausted = true;
+    }
+    return s;
+}
+
+CounterIonSplit counterIonPassTransfer(const std::string&         who,
+                                       const ChannelState&        chIn,
+                                       const std::vector<scalar>& avail,
+                                       scalar I, scalar xi, int N)
+{
+    CounterIonSplit s;
+    s.dn.assign(chIn.ion.size(), 0.0);
+    s.t.assign(chIn.ion.size(), 0.0);
+    for (const bool cem : { true, false })
+    {
+        const std::vector<std::size_t> rows = counterRows(chIn, cem);
+        (cem ? s.nCation : s.nAnion) = static_cast<int>(rows.size());
+        if (rows.empty()) continue;
+        if (rows.size() == 1)
+        {
+            //  The single-salt expression and its cap, bit for bit.
+            const std::size_t k = rows.front();
+            scalar dn = electrochem::faradayMolarRate(I, std::abs(chIn.z[k]), xi)
+                      * static_cast<scalar>(N);
+            if (dn > avail[k]) { dn = avail[k]; s.exhausted = true; }
+            s.t[k]  = 1.0;
+            s.dn[k] = dn;
+            continue;
+        }
+        //  The equivalents this membrane must carry, and those it can.
+        const scalar Q = xi * I * static_cast<scalar>(N) / electrochem::Faraday;
+        scalar E = 0.0, Dmax = 0.0;
+        std::vector<scalar> D(rows.size(), 0.0);
+        for (std::size_t j = 0; j < rows.size(); ++j)
+        {
+            const std::size_t k = rows[j];
+            E += std::abs(chIn.z[k]) * avail[k];
+            D[j] = splitDiffusivity(who, chIn.ion[k], rows, chIn);
+            Dmax = std::max(Dmax, D[j]);
+        }
+        if (!(Q > 0.0)) continue;
+        if (Q >= E)
+        {
+            //  More charge than this membrane's counter-ions can carry: the
+            //  diluate leaves with none of them (announced by the caller).
+            for (auto k : rows) s.dn[k] = avail[k];
+            s.exhausted = true;
+        }
+        else
+        {
+            //  n_k = n_k,in exp(-w_k tau), w_k = D_k / Dmax (scaled so tau is
+            //  O(1)); g(tau) = SUM |z_k| n_k,in (1 - exp(-w_k tau)) - Q is
+            //  increasing and concave, so Newton from tau = 0 approaches the
+            //  root from below and never overshoots it.
+            scalar tau = 0.0;
+            for (int it = 0; it < 200; ++it)
+            {
+                scalar g = -Q, gp = 0.0;
+                for (std::size_t j = 0; j < rows.size(); ++j)
+                {
+                    const std::size_t k = rows[j];
+                    const scalar w  = D[j] / Dmax;
+                    const scalar az = std::abs(chIn.z[k]) * avail[k];
+                    g  += -az * std::expm1(-w * tau);
+                    gp +=  az * w * std::exp(-w * tau);
+                }
+                if (!(gp > 0.0)) break;
+                const scalar step = -g / gp;
+                tau += step;
+                if (std::abs(step) <= 1.0e-15 * std::max(tau, 1.0e-300)) break;
+            }
+            for (std::size_t j = 0; j < rows.size(); ++j)
+            {
+                const std::size_t k = rows[j];
+                s.dn[k] = -avail[k] * std::expm1(-(D[j] / Dmax) * tau);
+            }
+        }
+        //  The PASS-AVERAGE share each counter-ion carried.
+        for (auto k : rows) s.t[k] = std::abs(chIn.z[k]) * s.dn[k] / Q;
+    }
+    return s;
+}
+
+scalar meanNernstPotential(const ChannelState& chD, const ChannelState& chC,
+                           scalar sign, scalar T)
+{
+    scalar sum = 0.0; int n = 0;
+    for (std::size_t kc = 0; kc < chC.ion.size(); ++kc)
+    {
+        if ((chC.z[kc] > 0) != (sign > 0) || chC.z[kc] == 0.0) continue;
+        for (std::size_t kd = 0; kd < chD.ion.size(); ++kd)
+            if (chD.ion[kd] == chC.ion[kc])
+            {
+                const scalar aC = chC.gamma[kc] * chC.m[kc];
+                const scalar aD = chD.gamma[kd] * chD.m[kd];
+                if (aC > 0 && aD > 0)
+                { sum += std::log(aC / aD) / std::abs(chC.z[kc]); ++n; }
+            }
+    }
+    return (n > 0) ? (constant::R * T / electrochem::Faraday) * sum
+                     / static_cast<scalar>(n)
+                   : 0.0;
 }
 
 } // namespace edCell

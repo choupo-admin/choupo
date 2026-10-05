@@ -1089,6 +1089,56 @@ WHAT IS PINNED AND WHAT IS NOT: as edbatch01. The golden pins the answer this mo
 \goldmore{44}
 \end{tutgolden}
 
+\clearpage
+\tutentry{edbatch03\_multiionic\_split}{tutorials/batch/electrodialysis/edbatch03\_multiionic\_split}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (rig) at (0.0,-0.0) {\textbf{rig}\\[-1pt]{\tiny batchElectrodialysis}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Batch electrodialysis of a mixed NaCl + K2SO4 brine: two counter-ions on each membrane share its current by z D c}
+\begin{tutnarrative}
+a batch electrodialysis rig on a MIXED brine, and two counter-ions on each membrane sharing its current.
+
+THE OPERATION. The rig of edbatch01 (Eurodia EUR2C-7P18, seven cell pairs, 175 L/h recirculation), but the diluate tank holds 0.05 mol/kg NaCl plus 0.025 mol/kg K2SO4 -- two cations (Na+, K+) on the cation-exchange membrane and two anions (Cl-, SO4 2-) on the anion-exchange one. The rectifier is held at 2.0 A (100 A/m2 on one cell pair).
+
+THE RULE (Vitor's ruling C35, 2026-10-05). Until that day this unit REFUSED a diluate with more than one cation or one anion, for want of a rule dividing a membrane's current between its counter-ions. The ruling shares it by
+
+t\_k = |z\_k| D\_k c\_k / SUM\_j |z\_j| D\_j c\_j over that membrane's counter-ions
+
+-- the transport numbers of Geraldes \& Afonso, J. Membr. Sci. 360 (2010) 499-508, Eqs. (12)/(13), applied at every current and not only at the limit -- with D the ions' curated D0 and NO new parameter. Each ion then leaves at t\_k xi I N / (|z\_k| F) mol/s, so each membrane moves exactly xi I N / F equivalents and both tanks stay electroneutral.
+
+WHAT A STUDENT SHOULD SEE. Divide that rate by the ion's own inventory:
+
+d ln n\_k / dt = - D\_k xi I N / ( F SUM\_j |z\_j| D\_j n\_j )
+
+-- the FRACTIONAL depletion rate of a counter-ion is proportional to its diffusivity and to nothing else about it, so on a log scale the counter-ions of one membrane fall along straight lines whose slopes stand in the ratio of their D0. K+ (1.96e-9 m2/s) is depleted 1.47 times faster than Na+ (1.33e-9) in log terms; Cl- (2.03e-9) 1.92 times faster than SO4 2- (1.06e-9), the charge of the sulfate making no difference to its FRACTIONAL rate (it carries twice the current per mole and so moves half the moles per coulomb, exactly compensating its doubled share). The run publishes `demin\_<ion>` for every ion and `t\_transfer\_final\_<ion>`, the shares at the end, and its trajectory carries every molality.
+
+WHAT THE RUN MEASURES (every number is printed by this run; the golden pins them): i 100.00 A/m2, flat, all 2400 s i\_lim 696.83 A/m2 at t = 0, 244.39 at t = 2400 s (i/i\_lim 0.144 $\to$ 0.409: never crossed) removed at t = 2400 s K+ 69.77 \% Na+ 55.60 \% (CEM) Cl- 74.43 \% SO4 2- 50.94 \% (AEM) share of the current Na+ 0.404 $\to$ 0.499 of the CEM's Cl- 0.657 $\to$ 0.500 of the AEM's material closure 0 on mass, 1.4e-15 on the worst element
+
+READ THE SHARES BACKWARDS AND THE LESSON IS THERE. At t = 0 the two cations are equally concentrated, so K+, the faster, takes 0.596 of the cation current; it therefore depletes faster, its c falls, and the share drifts toward Na+. The hand calculation `demin\_ideal` (Faraday's law at the INITIAL current AND the reference cation's INITIAL share, computed from the run) predicts 50.68 \% of the sodium removed; the run removes 55.60 \%, because sodium's share of the current GROWS as potassium is stripped -- the opposite sign from edbatch01's gap, and for a different reason. And ln(n/n0)/D0 comes out as one number for K+ and Na+, and one number for Cl- and SO4 2-, to the integrator's precision.
+
+WHAT IS PINNED AND WHAT IS NOT. The golden pins the answer THIS model gives. The share z D c is a RULING, not a measurement: real ion-exchange membranes add a preference between counter-ions of their own (a Donnan preference for divalent ions, or a monovalent-selective layer) which no `kind IEM` record in this tree carries and this unit does not model. The brine is an author-set assumption; nothing here is validated against a measured rig. The membrane potential of a membrane with two counter-ions is taken as the MEAN of their own Nernst potentials (announced). Back- diffusion, water transport and every thermal effect are not modelled -- the unit's own header lists them.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_Cl\_closure\_rel}{1.01192202759e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_K\_closure\_rel}{1.44560289655e-15}
+\goldrow{kpi}{campaign}{element\_Na\_closure\_rel}{1.15648231724e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_S\_closure\_rel}{1.01192202759e-15}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{1.44560289655e-15}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{10.2181899752}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{10.2181899752}
+\goldmore{56}
+\end{tutgolden}
+
 \subsection{membrane}
 \grouptheory{membrane}
 \clearpage

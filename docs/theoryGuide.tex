@@ -19030,6 +19030,37 @@ parasitic electrode reaction.  Choupo treats $\xi$ as a lumped, explicit
 operating number the student owns --- there is no hidden permselectivity
 sub-model in v1.
 
+\paragraph{Several counter-ions on one membrane.}
+Equation~\eqref{eq:ed-faraday} gives a membrane's whole current to its one
+counter-ion.  When a membrane has several (a cation-exchange membrane facing
+Na$^+$ and K$^+$, an anion-exchange membrane facing Cl$^-$ and
+SO$_4^{2-}$), the current is \emph{shared}: since 2026-10-05 (Vítor's ruling,
+no new parameter) counter-ion $i$ carries the fraction
+%
+\begin{equation}
+  t_i \;=\; \frac{|z_i|\,D_i\,c_i}{\sum_{j} |z_j|\,D_j\,c_j},
+  \qquad
+  \dot n_i \;=\; t_i\,\xi\,\frac{I}{|z_i| F},
+  \label{eq:ed-split}
+\end{equation}
+%
+the sum running over that membrane's counter-ions, with $D_i$ the ion's
+diffusivity at infinite dilution.  These are the limiting transport numbers
+of Geraldes and Afonso\cite{GeraldesAfonso2010} (their Eqs.~12 and~13,
+\S\ref{sec:ed-multiionic}), applied at every current.  Because
+$\sum_i |z_i|\dot n_i = \xi I/F$ on each membrane, the cation and anion
+membranes move the same equivalents and the diluate stays electroneutral;
+with one counter-ion \eqref{eq:ed-split} is \eqref{eq:ed-faraday}.  Dividing
+by the ion's own amount, $\mathrm{d}\ln n_i/\mathrm{d}q = -D_i/\sum_j
+|z_j| D_j n_j$ with $q$ the equivalents passed: the \emph{fractional}
+removal of a counter-ion depends on its diffusivity alone, while its
+\emph{share} of the current is $z D c$.  Along one pass of a flowing stack
+this integrates in closed form, $n_i = n_{i,\text{in}}\,e^{-D_i\tau}$ with
+the single $\tau$ fixed by $\sum_i |z_i|(n_{i,\text{in}} - n_i) = \xi I
+N/F$; a recirculating batch rig integrates the instantaneous rates in time.
+Any preference of a real membrane between counter-ions (a Donnan preference
+for divalent ions, a monovalent-selective layer) is \emph{not} modelled.
+
 Equation~\eqref{eq:ed-faraday} is a hard upper bound on what current can
 remove: the diluate cannot give up more of an ion than it carries.  The
 solver therefore \emph{caps} the transfer at the diluate inflow and emits
