@@ -50,6 +50,13 @@ Description
     closes against the geometric Q = U.A.dT.  All other quantities
     (V/F, Q, T_boil, F_steam) come out as RESULTS, not inputs.
 
+    The duty is the heat the chest gives up condensing,
+    Q = F_chest [h(chest) - h(condensate)], and the process side is
+    balanced on the same enthalpy surface the energy report prices
+    every stream on (flashState::priceState) -- not the Watson
+    latent heat, which keeps only the boiling-point rise and the
+    no-datum path (Vitor's ruling 2026-10-05, DEV.md 4c C35 item 3).
+
     If the student wants a target that is not a natural input of
     the equipment ("V/F = 0.5", "x_3 = 0.25", "A_1 = A_2 = A_3"),
     that is the job of an outer DesignSpec controller --- the
@@ -72,7 +79,7 @@ Operation block
         P     0.8 bar;          // process-side pressure
         area  100 m^2;          // heat-exchange surface
         U     2319 W/(m^2.K);   // overall heat-transfer coefficient
-        Tref  298.15 K;         // optional, default 298.15
+        Tref  298.15 K;         // optional, no-datum path only
     }
 
 Outputs (3 streams in `outputs (... )`)

@@ -5,9 +5,10 @@
 
 WHY THIS EXISTS.  `Evaporator::solve` computes its duty as
 
-    Q = F_chest * dHvap(T_steam)
+    Q = F_chest * [h(chest) - h(condensate)]
 
-which ASSERTS a complete condensation, saturated vapour -> saturated liquid.
+(since 2026-10-05; until then `Q = F_chest * dHvap(T_steam)`, the Watson
+correlation -- see arms (c) and (i)), which ASSERTS a complete condensation.
 It read `T` and `F` off the chest stream and nothing else: `vf` appeared
 nowhere in the file except on the three outlets.  So a chest carrying LIQUID
 water was accepted in silence, the unit delivered the full latent heat to the
@@ -50,16 +51,30 @@ WHAT THIS GATE CHECKS.
       Without this arm the gate is satisfied by a unit that refuses
       everything.
 
-  (c) THE SUPERHEATED ARM, and it is the one that separates two rules.  A
-      chest 37.8 K above its saturation temperature is UNAMBIGUOUSLY vapour and
-      the engine still reads it as liquid, because a stream with no declared
-      phase is priced on the `vf` it carries unless the resolution returns a
-      genuine TWO-PHASE split -- and `flashState::twoPhaseSplit` discards a
-      converged single-phase answer.  So the resolution says "all vapour", the
-      split says "nothing", and the carried default 0 stands.  A rule that
-      only caught the saturation-curve ambiguity would pass this, and would
-      leave `phasechange01_partial_condenser` (-898.639930 kW, and a condenser
-      publishing a POSITIVE latent heat) exactly as it was.
+  (c) THE SUPERHEATED ARM, rewritten 2026-10-05 (DEV.md 4d D1, the chest
+      half).  A chest 37.8 K above its saturation temperature is
+      UNAMBIGUOUSLY vapour.  It used to be REFUSED as liquid, because
+      `resolveStreamThermalState` answers "is there a split to price" and on
+      a converged single-phase answer keeps the CARRIED vf, whose default is
+      0.  The evaporator now reads the vapour fraction the stream MEANS
+      (`flashState::resolvedInletVaporFraction`, the reading the flowsheet's
+      surface pass and so the report take), single phase included.  Two
+      halves, because MEASURING the fix found a second cause:
+
+      (c1) WHERE THE PACKAGE RESOLVES IT, IT RUNS: the fixture with a
+           water-only package (`superheatW`) runs, publishes its chest at
+           vf = 1, and the evaporator's own energy row closes against the
+           report within 1e-4 kW.
+      (c2) WHERE IT DOES NOT, IT STILL REFUSES -- AND SAYS WHY.  In the
+           donor's water + sucrose package the chest carries ZERO sucrose
+           whose K is 0, so `IsothermalFlash`'s dew test sums z/K = 0/0 =
+           NaN, never classes the stream as superheated and returns an
+           unconverged "two-phase" answer; `equilibriumAt` discards it and
+           the carried default stands in the unit AND in the report.  The
+           refusal must name that cause ("could not resolve").  THIS IS A
+           STALE-PIN ARM: the day the flash's phase test skips z_i = 0 (a
+           one-line guard on a path every flash goes through, which needs a
+           full regression to take), (c2) fails and asks to become a (c1).
 
   (d) THE DECLARED-AND-WRONG ARM: a chest pinned `vaporFraction 0.5;` refuses
       too.  A half-condensed chest is not a saturated-vapour supply, and this
@@ -89,8 +104,21 @@ WHAT THIS GATE CHECKS.
       steam of `evaporator06_nacl_pitzer` is priced as VAPOUR (its published
       `vf` is 1), and `phasechange01_partial_condenser` closes its
       plant-boundary first law at or below 1e-6 kW.  The second is the case
-      whose omission corrupted the ANSWER rather than only the report, and it
-      is the only case in this family that closes exactly.
+      whose omission corrupted the ANSWER rather than only the report.
+
+  (i) THE EVAPORATOR'S OWN BALANCE CLOSES (2026-10-05, Vitor's ruling, DEV.md
+      4c C35 item 3): the duty's latent heat is the enthalpy difference the
+      energy report prices, h(chest) - h(condensate), not the Watson
+      correlation, and the process side is priced on the same surface.  Read
+      from the engine's own `energyClosures`: every evaporator row of
+      `evaporator06_nacl_pitzer` (one effect, a Pitzer liquor carrying L_phi)
+      and `evaporator02_triple_effect_sugar` (three effects, two of them
+      heated by a PRODUCED vapour) leaves at most 1e-4 kW unattributed.
+      Until that day the single-effect brine cases left +17.6 ... +18.4 kW
+      and the triple effect -89.1 / -16.3 / -28.8 kW: the Watson latent heat
+      is 3.30 % from the package's own at 401.63 K.  `check_energy_closure`'s
+      unit arm holds the same rule corpus-wide; this arm holds it on cases
+      this gate already runs, beside the refusal it is about.
 
 WHAT THIS GATE DOES NOT CHECK, said plainly:
 
@@ -104,15 +132,42 @@ WHAT THIS GATE DOES NOT CHECK, said plainly:
     a question the engine already answers.  `evaporator05_counter_current`'s
     tear seeds were found by exactly that runtime refusal, not by a scan.
 
-  * THE RESIDUAL THAT REMAINS.  After the fix the five single-effect cases sit
-    at +17.6 ... +18.4 kW and `evaporator02` at +134.17 kW.  That is the unit's
-    Watson `Hvap_latent` against the package's `H_stream_formation` (3.30 %
-    apart on water at 401.6288 K), it is RESERVED for Vitor, and
-    `check_energy_closure` is where it is pinned and ratcheted -- not here.
+  * A NO-DATUM EVAPORATOR.  A feed or chest carrying a component with no
+    enthalpy datum keeps the Watson balance, ANNOUNCED, and the report is
+    UNAVAILABLE for it -- there is no surface to close against, so arm (i)
+    has nothing to read there and judges nothing.
+
+  * THE CONDENSATE OF A SUPERHEATED CHEST.  It is published at T_steam, the
+    model's existing statement, not at Tsat(P_chest); the vapour chests of a
+    multi-effect train are the same shape by their BPE.  Arm (c1) checks the
+    chest is READ and the unit CLOSES, not where its condensate should leave.
 
   * ANY OTHER UNIT.  The `phaseChanger` reads its inlet's `vf` and is not
     covered by arms (a)-(g); only arm (h) touches it, and only through its
     published first law.
+
+SABOTAGE-VERIFIED 2026-10-05, arms (c1), (c2) and (i), by hand: each applied,
+read back off disk, the engine rebuilt, the gate run, then the source restored
+byte-identical (md5 checked against the pre-sabotage copy) and `make all`.
+
+  W1  restore the Watson duty (`dHcond_at_steam = dHvap_solv(T_steam)` on the
+      priced path) -> "(i) evaporator06_nacl_pitzer: evaporator 'evap' leaves
+      -16.103840 kW" -- exactly the D2 term of
+      docs/design/the-word-that-was-not-there.md -- and effect1/2/3 of
+      evaporator02 -152.97 / -62.74 / -46.54 kW, and "(c1) ... leaves
+      -262.110372 kW".  check_energy_closure's unit arm, run on the same
+      build, named all ten evaporator rows in the corpus (the flagship's
+      Evap1 -21.0456, Evap2 -10.3209) and its plant arm re-opened the eight
+      removed pins.
+  W2  mis-price the condensate (priced 10 K below the T it is published at)
+      -> "(i) ... 'evap' leaves +9.437500 kW", effect1/2/3 +103.81 / +69.69
+      / +75.59 kW, "(c1) ... leaves +103.812500 kW".
+  W3  drop the single-phase reading of the chest (keep only
+      `resolveStreamThermalState`) -> "(c1) a chest 37.8 K above its
+      saturation temperature ... did not run (exit 2)", AND "(c2) the
+      superheated chest refused, but the refusal does not say the package
+      COULD NOT RESOLVE its equilibrium" -- the diagnosis lives in the same
+      branch, so a refusal that gives the wrong cause is caught too.
 
 SABOTAGE-VERIFIED 2026-09-12.  Each sabotage was applied, READ BACK OFF DISK to
 prove it landed, the engine rebuilt, the gate run, then reverted (md5 checked).
@@ -188,6 +243,7 @@ SHARED = ROOT / "src" / "unitOperations" / "flash" / "StreamEquilibrium.H"
 #  is written here, so the gate owns the case that provokes the refusal.
 DONOR = ROOT / "tutorials" / "steady" / "evaporation" / "evaporator02_triple_effect_sugar"
 EVAP06 = ROOT / "tutorials" / "steady" / "evaporation" / "evaporator06_nacl_pitzer"
+EVAP02 = DONOR
 PHASECHANGE = ROOT / "tutorials" / "steady" / "heat" / "phasechange01_partial_condenser"
 
 CONTROL = """\
@@ -265,6 +321,46 @@ def build_fixture(root: Path, T_chest: str, phase: str, tag: str) -> Path:
     (case / "0" / "vap").write_text(SEED % {"w": "350", "s": "0", "T": "368"})
     (case / "0" / "cond").write_text(SEED % {"w": "495", "s": "0", "T": "392"})
     return case
+
+
+def water_only(case: Path) -> Path:
+    """Strip the donor's sucrose from a fixture: a water-only package, whose
+    flash CAN class a superheated chest as vapour (arm (c1)).  The feed is then
+    pure water -- an evaporator needs exactly one volatile, not a solute."""
+    tp = case / "constant" / "thermoPhysPropDict"
+    txt = tp.read_text()
+    new = re.sub(r"components\s*\(\s*water\s+sucrose\s*\)\s*;",
+                 "components       ( water );", txt)
+    if new == txt:
+        raise SystemExit("check_evaporator_chest_phase: the donor's "
+                         "thermoPhysPropDict no longer declares `components "
+                         "( water sucrose );` -- arm (c1) cannot build its "
+                         "water-only fixture; update water_only().")
+    tp.write_text(new)
+    for f in ("feed", "conc", "vap", "cond"):
+        q = case / "0" / f
+        q.write_text(re.sub(r"\n\s*sucrose[^\n]*", "", q.read_text()))
+    return case
+
+
+def unit_rows(out: str, utype: str = "evaporator"):
+    """(unit, remaining_kW) for every unit of `utype` in the engine's own
+    `energyClosures`, matched to its type through the console header -- the
+    same two channels check_energy_closure's unit arm reads."""
+    types = dict(re.findall(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)",
+                            out))
+    at = out.find('"energyClosures": ')
+    if at < 0:
+        return None
+    try:
+        rows = json.JSONDecoder().raw_decode(out, at + len('"energyClosures": '))[0]
+    except ValueError:
+        return None
+    return [(r.get("unit"), float(r.get("remaining_kW", 0.0)))
+            for r in rows if types.get(r.get("unit")) == utype]
+
+
+UNIT_TOL_KW = 1.0e-4
 
 
 def run(case: Path):
@@ -361,25 +457,62 @@ def main() -> int:
                 f"an evaporator that refuses everything.  Output tail: "
                 + out[-400:])
 
-        # ---- (c) the SUPERHEATED chest, unambiguous and still unread ------
+        # ---- (c1) a SUPERHEATED chest the package resolves RUNS ----------
+        case = water_only(build_fixture(tmp, T_SUPERHEAT, "", "superheatW"))
+        rc, out = run(case)
+        if rc != 0:
+            failures.append(
+                "(c1) a chest 37.8 K above its saturation temperature, "
+                "declaring no phase, in a package whose flash resolves it as "
+                "single-phase VAPOUR, did not run (exit %d).  It is "
+                "unambiguously vapour; the evaporator must read the vapour "
+                "fraction the stream MEANS (flashState::"
+                "resolvedInletVaporFraction), not the carried default 0 that "
+                "`resolveStreamThermalState` keeps on a single-phase answer "
+                "(DEV.md 4d D1, the chest half).  Output tail: %s"
+                % (rc, out[-400:]))
+        else:
+            res = result_json(out)
+            st = (res or {}).get("streams", {}).get("chest")
+            if st is None or float(st.get("vf", 0.0)) < 1.0 - 1.0e-9:
+                failures.append(
+                    "(c1) the superheated chest ran but is published at vf = "
+                    "%s, not 1: the unit priced a vapour the report reads as "
+                    "something else." % (None if st is None else st.get("vf")))
+            rows = unit_rows(out)
+            if not rows:
+                failures.append(
+                    "(c1) the superheated-chest fixture published no "
+                    "evaporator row in `energyClosures` to read.")
+            for u, rem in rows or []:
+                if abs(rem) > UNIT_TOL_KW:
+                    failures.append(
+                        "(c1) the superheated-chest evaporator '%s' leaves "
+                        "%+.6f kW of its energy balance unattributed in the "
+                        "engine's own report.  A chest read as vapour must be "
+                        "PRICED as the vapour it is read as." % (u, rem))
+
+        # ---- (c2) STALE-PIN: where the package cannot, it still refuses ---
         case = build_fixture(tmp, T_SUPERHEAT, "", "superheat")
         rc, out = run(case)
         if rc == 0:
             failures.append(
-                "(c) a chest 37.8 K above its saturation temperature, declaring "
-                "no phase, ran to exit 0.  It is unambiguously vapour and the "
-                "engine still reads it as liquid: a converged SINGLE-PHASE "
-                "resolution is not a split, so `twoPhaseSplit` returns nothing "
-                "and the carried default 0 stands.  A rule that caught only "
-                "the saturation-curve ambiguity would pass this -- and leave "
-                "phasechange01_partial_condenser's -898.639930 kW exactly "
-                "where it was.")
-        elif "single phase" not in out:
+                "(c2) the superheated chest in the donor's water + sucrose "
+                "package now RUNS.  Until 2026-10-05 it could not: the chest's "
+                "zero sucrose (K = 0) made IsothermalFlash's dew test 0/0 = "
+                "NaN, so the flash never classed it as superheated and the "
+                "carried default stood.  If that guard has been taken, this is "
+                "the GOOD news this arm is waiting for: turn (c2) into a "
+                "second (c1) -- require it to run, publish vf = 1 and close -- "
+                "and update Evaporator.cpp's comment and DEV.md 4d D1.")
+        elif "could not resolve" not in out:
             failures.append(
-                "(c) the refusal fired but does not say the state was read as "
-                "CARRIED rather than resolved.  A reader whose chest is "
-                "plainly superheated must be told why the engine disagrees, or "
-                "the message reads as a bug in the engine.")
+                "(c2) the superheated chest refused, but the refusal does not "
+                "say the package COULD NOT RESOLVE its equilibrium.  A reader "
+                "whose chest is plainly superheated must be told the engine "
+                "fell back to the carried default, not that it found a liquid "
+                "-- or the message reads as a bug in the engine.  Output "
+                "tail: " + out[-400:])
 
         # ---- (d) a DECLARED, two-phase chest refuses too ------------------
         case = build_fixture(tmp, T_SAT, "vaporFraction   0.5;\n", "half")
@@ -466,6 +599,37 @@ def main() -> int:
                     "chest leg of the plant boundary contributes exactly 0.00 "
                     "kW, and the first law loses the whole 487.49 kW duty.")
 
+        # ---- (i) every evaporator row closes against the report ----------
+        for wcase, expect in ((EVAP06, 1), (EVAP02, 3)):
+            if wcase == EVAP06:
+                rc6, out6 = rc, out          # the run arm (h) just made
+            else:
+                rc6, out6 = run(wcase)
+            if rc6 != 0:
+                failures.append("(i) %s did not run (exit %d)" % (wcase.name, rc6))
+                continue
+            rows = unit_rows(out6)
+            if rows is None or len(rows) != expect:
+                failures.append(
+                    "(i) %s published %s evaporator row(s) in "
+                    "`energyClosures`, expected %d.  An arm that reads nothing "
+                    "does not pass." % (wcase.name,
+                                        "no" if rows is None else len(rows),
+                                        expect))
+                continue
+            for u, rem in rows:
+                if abs(rem) > UNIT_TOL_KW:
+                    failures.append(
+                        "(i) %s: evaporator '%s' leaves %+.6f kW of its energy "
+                        "balance unattributed in the engine's own report.  "
+                        "Its heat crosses as its OWN streams (chest in, "
+                        "condensate out), so nothing may remain: the duty's "
+                        "latent heat must be h(chest) - h(condensate) on the "
+                        "package's surface, not the Watson correlation, and "
+                        "the process side priced on the same surface "
+                        "(flashState::priceState).  Vitor's ruling, DEV.md 4c "
+                        "C35 item 3." % (wcase.name, u, rem))
+
         rc, out = run(PHASECHANGE)
         if rc != 0:
             failures.append(f"(h) {PHASECHANGE.name} did not run (exit {rc})")
@@ -502,24 +666,30 @@ def main() -> int:
           "heating stream's thermal state and REFUSES a chest that is not "
           "vapour, naming the stream, the state file, the `phase gas;` edit "
           "and the alternative that this is the wrong unit; the same fixture "
-          "with the word present RUNS; a chest 37.8 K superheated and a chest "
-          "pinned half-vapour both refuse; all three outlets are pinned "
+          "with the word present RUNS; a chest 37.8 K superheated RUNS, is "
+          "published at vf = 1 and closes where the package resolves it "
+          "(water-only), and still REFUSES naming the unresolved flash where "
+          "it cannot (water + sucrose, the stale-pin arm); a chest pinned "
+          "half-vapour refuses; all three outlets are pinned "
           "declarations and the condensate carries the CHEST's pressure; "
           "`resolveStreamThermalState` is defined once in src/ and called by "
           "both the column and the evaporator; and, read from the engine's own "
           "reports, evaporator06_nacl_pitzer publishes its chest steam at "
           "vf = 1 while phasechange01_partial_condenser closes its "
-          "plant-boundary first law at or below 1e-6 kW.  SCANNED: four "
-          "fixture cases written by this gate, two shipped cases, and "
+          "plant-boundary first law at or below 1e-6 kW, and every "
+          "evaporator row of evaporator06 (1) and evaporator02 (3) leaves at "
+          "most 1e-4 kW unattributed -- the duty's latent heat is the "
+          "enthalpy difference the report prices.  SCANNED: five "
+          "fixture cases written by this gate, three shipped cases, and "
           "src/unitOperations/{heatTransfer/Evaporator.cpp, "
           "distillation/DistillationColumn.cpp, flash/StreamEquilibrium.H}.  "
           "NOT CHECKED: whether a DECLARED phase is true of its stream (a "
           "declaration is never re-solved, R-E2); that every chest in the "
           "corpus declares one (the engine refuses at run time, so a scan "
-          "here would be a second home); the +17.6 ... +18.4 kW that REMAINS "
-          "on these plants, which is the Watson latent heat against "
-          "H_stream_formation and is pinned and ratcheted by "
-          "check_energy_closure, not here; and any unit other than the "
+          "here would be a second home); a no-datum evaporator, which keeps "
+          "the Watson balance, announced, with the report UNAVAILABLE; where "
+          "a superheated chest's condensate should leave (it leaves at "
+          "T_steam); and any unit other than the "
           "evaporator, except through phasechange01's published first law.")
     return 0
 

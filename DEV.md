@@ -2000,7 +2000,11 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      2026-10-05 on branch `claude/c35-d1-column-feed`; see §4d D1, now
      CLOSED, and the C33 table's column row.]
   3. Evaporator latent: the duty's latent heat is the enthalpy difference
-     the energy report prices, not the Watson correlation.
+     the energy report prices, not the Watson correlation.  DONE 2026-10-05
+     on `claude/c35-evaporator-latent` (not merged): every evaporator row
+     closes against the report, eight `check_energy_closure` pins removed,
+     `energy-T2:plant` green; the evaporator-chest half of 4d D1 taken (see
+     there: still refused on corpus packages, for a flash cause named).
   4. An unpinned feed to a `phaseSet VLLE` unit means its three-phase
      equilibrium, in the unit AND the energy report (full regression
      AUTHORISED by Vítor for this item).
@@ -2205,7 +2209,9 @@ the mixer's two-phase default taken.  **No golden row moved.**  Witness
 STILL READING AN AUTHORED INLET'S CARRIED vf, named: the distillation column
 (both branches, D1 -- CONVERTED 2026-10-05, C35 item 2) and the evaporator chest (through
 `resolveStreamThermalState`, whose single-phase reading is D1's subject; a
-superheated chest is REFUSED there, falsely, not mispriced).
+superheated chest is REFUSED there, falsely, not mispriced).  [The chest
+CONVERTED 2026-10-05, C35 item 3: it reads `resolvedInletVaporFraction`; on
+corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
 
 **C32. AN EDUTOOL ON WHAT THE DEGREE SIGN MEANS: ENTHALPY, THE STANDARD
      STATE AND EQUILIBRIUM (asked 2026-10-03, Vítor, forwarding a brief
@@ -3411,6 +3417,27 @@ defect — look for what else went with it.
    1e-9 kW (check_feed_thermal_state arm (i2)).  Unchanged by D1 (both
    multi-feed cases' feeds resolve liquid).  Fixing it is a report change
    every case goes through.
+   THE EVAPORATOR-CHEST HALF, DONE 2026-10-05 (C35 item 3, branch
+   claude/c35-evaporator-latent), and measuring it found a second cause.
+   `Evaporator.cpp` now reads an unpinned chest with no split through
+   `flashState::resolvedInletVaporFraction` (single phase included), so a
+   superheated chest is READ AS VAPOUR AND PRICED -- the fixture
+   `check_evaporator_chest_phase` arm (c1) builds (water-only package, 37.8 K
+   superheat) runs, publishes the chest at vf = 1 and closes to 8e-10 kW.
+   BUT on every corpus evaporator package it is STILL refused: the chest
+   carries zero of the liquor's nonvolatile (sucrose, a salt) whose K is 0,
+   so `IsothermalFlash.cpp`'s phase test sums `z/K` = 0/0 = NaN in `g_at_1`,
+   never classes the stream "superheated vapor" and returns an unconverged
+   "two-phase" answer; `equilibriumAt` discards it and the carried default 0
+   stands -- in the unit AND in the report, so refusing is the consistent
+   answer.  The refusal now NAMES that cause ("could not resolve"); arm (c2)
+   pins it as a STALE PIN.  The remedy is one guard in that phase test (skip
+   `z_i = 0`), on a path every flash in the corpus goes through: it needs
+   a full regression, so it is NOT taken here -- for the commander/Vítor.
+   Also named, not changed: a superheated chest's condensate is published at
+   T_steam (the model's statement), not Tsat(P_chest); a multi-effect
+   train's vapour chests are superheated by their BPE in the same way, so
+   moving it moves every multi-effect golden.
 
 ## 5. Known debts (severity-ish)
 
@@ -4181,6 +4208,16 @@ are decisions and sit in §4b, not here.
      RESERVES for Vítor.  So D-ET2 is now a Vítor decision, not a diagnosis:
      the evaporator surface is the whole of what keeps the flagship red.
      Record: docs/design/three-units-and-the-flagship-first-law.md.
+
+     **CLOSED 2026-10-05 (C35 item 3, Vítor's ruling; branch
+     claude/c35-evaporator-latent).**  The evaporator's duty is
+     `F_chest [h(chest) - h(condensate)]` on the package's own surface
+     (`flashState::priceState`), and its process side is priced on the same
+     surface -- the unit's row needs both.  Measured: the flagship's plant
+     residual +10.7949 kW (1.0298 %) -> -0.0003 kW (0.0000 %), Evap1/Evap2
+     remaining -10.4180 / -0.3773 -> 2e-10 / 5e-12 kW; `energy-T2:plant`
+     PASSES (the runTests block, reproduced verbatim).  The 3.4e-4 kW that
+     is left is FERMENTATION.Mixer's, unchanged by this slice.
 
 
 Each line states the DEFECT, not the feature.  Where a general owns the area

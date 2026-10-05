@@ -1007,12 +1007,13 @@ which is the formation datum passing through; the new one divides by the
 energy EXCHANGED, which is `solver/Convergence.H`'s own rule -- normalise by
 THE TERMS THE EQUATION BALANCES.  Normalising by throughput hid a real gap
 exactly as the cooling water hid the atom balance.  So `energy-T2:plant` was
-correctly red from 2026-09-08.  **It was acted on 2026-09-27, and it is STILL
-red, by 0.03 pp, for a reason already reserved** -- see the paragraph *THREE
-MORE, AND THE FLAGSHIP'S FIRST LAW* below: the spray dryer, the solid dryer
-and the fermentor closed to 0.0000 kW, and what remains (+10.79 kW, 1.0298 %)
-is the evaporators' Watson latent, which the evaporator paragraph below
-RESERVES for Vítor.  The gate is NOT widened.  DEV.md 5, D-ET2.  The
+correctly red from 2026-09-08.  **It was acted on 2026-09-27 and is GREEN
+since 2026-10-05** -- see the paragraph *THREE MORE, AND THE FLAGSHIP'S FIRST
+LAW* below: the spray dryer, the solid dryer and the fermentor closed to
+0.0000 kW that day and left +10.79 kW (1.0298 %), the evaporators' Watson
+latent; Vítor ruled on it (DEV.md 4c C35 item 3, the evaporator paragraph
+below) and the flagship now closes at -0.0003 kW (0.0000 %).  The gate was
+never widened.  DEV.md 5, D-ET2.  The
 physics underneath was called ONE family: **a unit solves its energy equation
 on one enthalpy surface while its streams are priced on another** — ε-NTU on
 `cpIdealGas` against SRK-priced streams, the adiabatic `gibbsReactor` on
@@ -1140,19 +1141,21 @@ evaluated at the exhaust it publishes, the unknown is the evaporation, and the
 root is BRACKETED -- a plain substitution cycled with period two near
 saturation, where the GAB isotherm is steeper than the energy balance.  The
 solid dryer keeps its `T_w` floor and evaporates only what the air can pay
-for, ANNOUNCED.  The flagship reads +10.79 kW (1.0298 %): the evaporators,
-reserved.  **And a case gap rode with it, as it did on 2026-09-25:**
+for, ANNOUNCED.  The flagship read +10.79 kW (1.0298 %) after it: the
+evaporators, closed 2026-10-05 (the evaporator paragraph below).  **And a case gap rode with it, as it did on 2026-09-25:**
 `solidDryer01`'s 372.66 kW was 365.78 kW of humid hot air that declared no
 phase and was priced as a LIQUID (the permanent-gas screen does not fire on a
 stream carrying water) -- a unit that prices as the report does inherits the
 report's reading of an under-declared stream, so the case now declares
 `phase gas;`.  ENUMERATED, not fixed (none is in the flagship):
-`evaporativeDryer`, `evaporator` (reserved), `coolingTower`, `absorber`,
+`evaporativeDryer`, `coolingTower`, `absorber`,
 `stripper`, `pfr`, the CSTR's adiabatic/jacketed T-solves, `phaseChanger`,
-`mixer`, `adiabaticFlash`; and `src/reporting/BalanceMath.H` still holds its own
+`mixer`, `adiabaticFlash` (and `evaporator`, taken off the list 2026-10-05);
+and `src/reporting/BalanceMath.H` still holds its own
 copy of the rule `priceState` holds.  Gate: `check_energy_closure`'s UNIT ARM
-(an adiabatic dryer, and a cstr/conversionReactor that publishes `Q_kW`, must
-leave <= 1e-4 kW unattributed; five witnesses must be read).  Record:
+(an adiabatic dryer, an evaporator, and a cstr/conversionReactor that
+publishes `Q_kW`, must leave <= 1e-4 kW unattributed; its witnesses must be
+read).  Record:
 [`docs/design/three-units-and-the-flagship-first-law.md`](docs/design/three-units-and-the-flagship-first-law.md).
 
 **AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED
@@ -1235,11 +1238,23 @@ flagged, with its golden unmoved.  Also fixed: the condensate took its pressure
 from `Flowsheet.cpp`'s `P_inherit`, which is the FIRST input's — the process
 feed, not the chest.  ONE home for the reading
 (`flashState::resolveStreamThermalState`, moved beside `twoPhaseSplit` because
-the column had written it four days earlier).  **NOT fixed, and RESERVED for
-Vítor:** the +17.6…+18.4 kW that remains on five plants (and +134 on the triple
-effect) is the unit's Watson `Hvap_latent` against `H_stream_formation`, 3.30 %
-apart on water at 401.63 K — **no pin was removed by it, the debt merely shrank
-27×**.  Gate: `check_evaporator_chest_phase` (7 sabotages; two results did not
+the column had written it four days earlier).  **The +17.6…+18.4 kW that
+remained on five plants (and +134 on the triple effect) was the unit's Watson
+`Hvap_latent` against `H_stream_formation`, 3.30 % apart on water at
+401.63 K, and it is CLOSED (2026-10-05, Vítor's ruling, DEV.md 4c C35 item
+3):** the duty's latent heat is the enthalpy DIFFERENCE the report prices,
+`h(chest) - h(condensate)` through `flashState::priceState`, and the process
+side is priced on the same surface -- which the unit's row needed too (the
+sucrose of a sugar liquor had no liquid Cp and contributed nothing
+sensibly).  Every evaporator row now closes against the report to 1e-6 kW,
+eight pins left `check_energy_closure`, and `energy-T2:plant` is green.  A
+feed or chest with no enthalpy datum keeps the Watson balance, ANNOUNCED (the
+report is UNAVAILABLE there too).  A SUPERHEATED chest is read as the vapour
+it means (`resolvedInletVaporFraction`) -- but only where the package's flash
+resolves it: a chest carrying zero of a K = 0 nonvolatile makes the flash's
+dew test 0/0, so on every corpus package it is still refused, now naming
+that cause (DEV.md 4d D1).  Gate: `check_evaporator_chest_phase` arms (c1),
+(c2), (i) (7 sabotages; two results did not
 match the prediction and are recorded as measured — S3 is caught STRUCTURALLY
 and not behaviourally, and a presence-based arm (e) was measured to survive S4
 at exit 0).  Record:
@@ -1623,8 +1638,8 @@ full suite — fractal `children` cases were skipped on a reason settled
 2026-06-08 — and is in the walk now; and three of its units did not close
 that day (Evap1 98.45 %, Cryst 110.66 %, Fermentor 82.02 %), the engine's own
 stated finding, left as such.  (Cryst and the Fermentor close at 100.00 %
-today, the Fermentor since 2026-09-27; Evap1 is the reserved evaporator
-latent -- measured, not remembered.)  Gate: `check_energy_boundary_pinned`.  Record:
+today, the Fermentor since 2026-09-27, Evap1 since 2026-10-05 -- measured,
+not remembered.)  Gate: `check_energy_boundary_pinned`.  Record:
 [`docs/design/a-first-law-the-gui-computed-for-itself.md`](docs/design/a-first-law-the-gui-computed-for-itself.md).
 
 **A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04).**  `flattenNode`

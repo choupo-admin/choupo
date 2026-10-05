@@ -90,13 +90,14 @@ int Evaporator::solve(const DictPtr& dict,
 
     //  ---- THE CHEST MUST ARRIVE AS VAPOUR, AND UNTIL NOW NOBODY ASKED ----
     //
-    //  This unit's duty is `Q = F_chest * dHvap(T_steam)` (below).  That single
-    //  line ASSERTS a complete condensation, saturated vapour -> saturated
-    //  liquid, and the unit read only `T` and `F` off the chest stream: `vf`
-    //  appeared nowhere in this file except on the three outlets.  So a chest
-    //  stream carrying LIQUID water was accepted in silence, the unit delivered
-    //  its full latent heat to the process, and the plant boundary -- which
-    //  prices the same stream on what it carries -- credited none of it.
+    //  This unit's duty is the heat the chest gives up condensing (below),
+    //  `Q = F_chest * [h(chest) - h(condensate)]`.  That line ASSERTS a
+    //  complete condensation, and the unit used to read only `T` and `F` off
+    //  the chest stream: `vf` appeared nowhere in this file except on the
+    //  three outlets.  So a chest stream carrying LIQUID water was accepted in
+    //  silence, the unit delivered its full latent heat to the process, and
+    //  the plant boundary -- which prices the same stream on what it carries
+    //  -- credited none of it.
     //
     //  Measured 2026-09-12 on the six evaporator cases whose chest file omits
     //  the word: `H(chest inlet)` and `H(condensate outlet)` came out EQUAL TO
@@ -118,9 +119,33 @@ int Evaporator::solve(const DictPtr& dict,
     //  `flash/StreamEquilibrium.H`): resolve the stream at its own (T, P, z)
     //  unless the author PINNED it, then refuse a disagreement by name and
     //  name the edit.  The engine may not choose which of the two is true.
+    //
+    //  A SUPERHEATED CHEST IS VAPOUR, AND IS PRICED, NOT REFUSED (2026-10-05,
+    //  DEV.md 4d D1, the chest half; C35 item 3).  `resolveStreamThermalState`
+    //  answers "is there a split to price"; on a converged SINGLE-phase answer
+    //  it keeps the carried value, so an undeclared chest 37.8 K above its
+    //  saturation temperature -- unambiguously vapour -- read as the carried
+    //  default 0 and was REFUSED as liquid.  When there is no split and the
+    //  author pinned nothing, the vapour fraction is the one the stream MEANS
+    //  (`flashState::resolvedInletVaporFraction`, the reading the flowsheet's
+    //  surface pass and so the energy report take), single phase included.  A
+    //  produced chest keeps its producer's answer.
+    //
+    //  WHERE THE PACKAGE RESOLVES IT -- and on every corpus evaporator package
+    //  it does not, measured the same day.  The chest carries ZERO of the
+    //  liquor's nonvolatile (sucrose, a salt), whose K is 0, so the flash's
+    //  dew test sums z/K = 0/0 = NaN (`IsothermalFlash.cpp`, the `g_at_1`
+    //  phase test), never classes the stream as superheated, and returns an
+    //  unconverged "two-phase" answer; `equilibriumAt` discards it and the
+    //  carried default stands -- in this unit AND in the report.  So such a
+    //  chest is still refused, and the refusal now says WHY.  The remedy is a
+    //  one-line guard in that phase test (skip z_i = 0), on a path every flash
+    //  in the corpus goes through: not taken here (DEV.md 4d D1).
+    sVector zSteam(n, 0.0);
+    scalar  vfChest     = 1.0;
+    bool    chestPinned = false;
     {
         auto steamComp = steamDict->subDict("composition");
-        sVector zSteam(n, 0.0);
         scalar  zsSum = 0.0;
         for (const auto& key : steamComp->keys())
         {
@@ -133,11 +158,50 @@ int Evaporator::solve(const DictPtr& dict,
         const std::string sName =
             steamDict->lookupWordOrDefault("streamName", "the heating steam");
         const std::string uName = dict->name();
+        const std::string locus =
+            "evaporator '" + uName + "' heating steam '" + sName + "'";
         const auto chest = flashState::resolveStreamThermalState(
-            steamDict, T_steam, P_chest, zSteam, thermo,
-            "evaporator '" + uName + "' heating steam '" + sName + "'");
+            steamDict, T_steam, P_chest, zSteam, thermo, locus);
+        chestPinned =
+            steamDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
 
-        if (chest.vf < 1.0 - 1.0e-6)
+        vfChest = chest.vf;
+        std::string origin = chest.origin;
+        if (!chest.split && !chestPinned)
+        {
+            vfChest = flashState::resolvedInletVaporFraction(
+                steamDict, T_steam, P_chest, zSteam, thermo, locus);
+            const bool authored =
+                steamDict->lookupScalarOrDefault("authoredInlet", 0.0) > 0.5;
+            if (!authored)
+                origin = "carried by the stream: its producer's answer";
+            else if (vfChest >= 1.0 - 1.0e-6)
+                origin = "resolved at its own (T, P, z): single-phase vapour";
+            else
+            {
+                //  DIAGNOSIS ONLY, for the refusal's words; the reading above
+                //  decided.  "Read as liquid" has two causes and a reader
+                //  needs to know which: the state IS liquid, or this package
+                //  could not resolve it and the carried default stood -- in
+                //  which case the energy report reads the same default.
+                std::string why;
+                const auto eq = flashState::equilibriumAt(
+                    T_steam, P_chest, zSteam, false, vfChest, thermo, locus,
+                    "model", &why);
+                origin = eq
+                    ? std::string("resolved at its own (T, P, z): single-phase"
+                                  " liquid")
+                    : "carried by the stream (single phase): this package could"
+                      " not resolve its own equilibrium at (T, P, z)"
+                      + (why.empty() ? std::string(" -- the flash did not"
+                                                   " converge")
+                                     : " -- " + why)
+                      + ", so the carried default stands, and the energy"
+                        " report reads the same one";
+            }
+        }
+
+        if (vfChest < 1.0 - 1.0e-6)
         {
             std::ostringstream os;
             os.setf(std::ios::fixed);
@@ -145,28 +209,32 @@ int Evaporator::solve(const DictPtr& dict,
             os << "Evaporator '" << uName << "': the heating stream '" << sName
                << "' is not vapour -- its thermal state at T = " << T_steam
                << " K, P = " << P_chest << " Pa is vapour fraction "
-               << chest.vf << " (" << chest.origin << ").\n"
-                  "  This unit's duty is Q = F_chest * dHvap(T_steam), which"
-                  " ASSERTS that the chest stream condenses completely from"
-                  " saturated vapour to saturated liquid.  A chest that arrives"
-                  " as liquid carries none of that heat across the plant"
-                  " boundary, so the unit would spend energy the first law"
-                  " never sees -- and the engine will not choose between the"
-                  " model and the stream.  Pick the one that is TRUE of your"
-                  " chest:\n"
+               << vfChest << " (" << origin << ").\n"
+                  "  This unit's duty is Q = F_chest * [h(chest) -"
+                  " h(condensate)], which ASSERTS that the chest stream"
+                  " arrives as vapour and condenses completely.  A chest that"
+                  " arrives as liquid carries none of that heat across the"
+                  " plant boundary, so the unit would spend energy the first"
+                  " law never sees -- and the engine will not choose between"
+                  " the model and the stream.  Pick the one that is TRUE of"
+                  " your chest:\n"
                   "    * it IS steam -> add `phase gas;` to the stream's"
                   " state file `0/" << sName << "`.  The word is needed even"
                   " when the state looks unmistakable: a SATURATED supply sits"
                   " exactly ON the saturation curve, the one place where"
-                  " (T, P) cannot say which side it is on, and a SUPERHEATED"
-                  " one resolves single-phase -- which this engine reports as"
-                  " `no split` rather than as `vapour`, so the carried default"
-                  " stands.  That default is LIQUID.\n"
+                  " (T, P) cannot say which side it is on, and the default"
+                  " for the missing word is LIQUID.  (A SUPERHEATED supply"
+                  " needs no word WHERE this package resolves it: it then"
+                  " reads as single-phase vapour.  Where the package cannot"
+                  " resolve it, the word is the only channel.)\n"
                   "    * it is NOT steam -> this unit is the wrong model for"
                   " it; an evaporator heated by a sensible-heat medium needs a"
                   " duty that is not a latent heat.";
             throw std::runtime_error(os.str());
         }
+        if (verbosity >= 2 && !chestPinned && !chest.split)
+            std::cout << "  [chest] heating stream '" << sName
+                      << "' read as vapour -- " << origin << "\n";
     }
 
     // ---- Operation: HARDWARE parameters only (Mode 2) ----
@@ -175,7 +243,9 @@ int Evaporator::solve(const DictPtr& dict,
     //  and the overall HTC `U`.  The operating pressure of the vessel
     //  is NOT a parameter --- it is a stream property of the vapour
     //  outlet, computed below from the heat balance and the saturation
-    //  curve.  Tref is optional, for sensible-enthalpy integrals.
+    //  curve.  Tref is optional, for the sensible-enthalpy integrals of the
+    //  NO-DATUM path only (see THE LATENT HEAT THE REPORT PRICES below): a
+    //  balance priced on the elements datum has no Tref.
     auto operDict = dict->subDict("operation");
     const scalar A     = operDict->lookupScalar("area", Dims::area);
     const scalar U     = operDict->lookupScalar("U",
@@ -188,9 +258,10 @@ int Evaporator::solve(const DictPtr& dict,
     // wrong for a concentrated brine).  Selected in the PACKAGE, not here.
     const bool useElectrolyte = thermo.hasElectrolyte();
 
-    // HONEST OMISSION (no silent crutch): the energy balance below uses the
-    // IDEAL-mixture liquid enthalpy (sensible + latent, per pure component) and
-    // therefore DROPS the heat of dilution.  For a strong electrolyte
+    // HONEST OMISSION (no silent crutch): the energy balance below prices the
+    // liquor on the package's liquid surface, which carries the heat of
+    // dilution ONLY through a calorimetrically fitted L_phi; without one it is
+    // the IDEAL-mixture enthalpy and DROPS that heat.  For a strong electrolyte
     // (NaOH/NaCl/...) that heat is large and concentration-dependent, so the
     // duty is approximate until the salt's apparent molar enthalpy L_phi is
     // calorimetrically fitted.  Announce it (loud + as an advisory the GUI
@@ -291,6 +362,12 @@ int Evaporator::solve(const DictPtr& dict,
         return molality_of(VoF, useElectrolyte ? thermo.electrolyte().soluteIndex() : n);
     };
 
+    //  The Watson correlation on the solvent record's own Tc/Tb/HvapTb.  Since
+    //  2026-10-05 it prices heat ONLY on the no-datum path (a feed or chest
+    //  whose components the package cannot place on the elements datum, where
+    //  the energy report is UNAVAILABLE too -- see THE LATENT HEAT THE REPORT
+    //  PRICES).  Its other use is the Clausius-Clapeyron step of the
+    //  boiling-point rise below, a colligative ESTIMATE, not an energy term.
     auto dHvap_solv = [&](scalar T) -> scalar
     {
         return solv.Hvap_latent(T);
@@ -301,7 +378,12 @@ int Evaporator::solve(const DictPtr& dict,
     //   Q_dil = n_salt [ L_phi(m_out, T_boil) - L_phi(m_in, T_feed) ]   [W]
     // Positive for NaOH-class salts (concentrating caustic absorbs extra
     // heat).  Zero unless the salt is calorimetrically fitted (the slice-0
-    // announcement covers the omission honestly).
+    // announcement covers the omission honestly).  Since 2026-10-05, on the
+    // priced path, this is a REPORTED PART of the duty, not a term added to
+    // it: the package's liquid surface (`H_liquid_formation`) already carries
+    // L_phi for a fitted salt, so the balance includes it by pricing the
+    // liquor, and adding it as well would count it twice.  Only the no-datum
+    // path adds it.
     auto Q_dilution = [&](scalar VoF, scalar T_boil) -> scalar
     {
         if (!lphiFitted) return 0.0;
@@ -313,22 +395,161 @@ int Evaporator::solve(const DictPtr& dict,
                              - el.apparentMolarEnthalpy(m_in,  T_feed));
     };
 
-    auto Q_required = [&](scalar VoF, scalar T_boil) -> scalar
+    //  The concentrate's composition at a given V/F: the solutes stay, the
+    //  solvent leaves.  ONE home for the outlet stream and the balance that
+    //  decides it, so the state the unit prices is the state it publishes.
+    auto xL_of = [&](scalar VoF) -> sVector
     {
-        // Strict balance for a feed→{L_concentrated, V_solvent} split:
-        //
-        //   Q = F · Σ_i z_i · [H_liq,i(T_boil) − H_liq,i(T_feed)]
-        //       + V · ΔHvap_solv(T_boil)
-        //
-        // Derivation: assume ideal liquid mixing (no Hmix) and pure-
-        // solvent vapour.  Species mass balance gives the L outlet
-        // contribution back as F·z_i·H_liq,i(T_boil); the V outlet then
-        // adds V·ΔHvap to the V·H_liq,solv(T_boil) already accounted
-        // for inside the F·z·H_liq term.  Net result: the SENSIBLE
-        // load is on the WHOLE feed (not just the concentrate), and
-        // the LATENT load is on V only.  Components without a liquid
-        // Cp polynomial contribute zero sensibly (e.g. nonvolatile
-        // solutes whose Cp is not yet curated).
+        sVector x(n, 0.0);
+        const scalar Lf = std::max(1.0e-12, 1.0 - VoF);
+        scalar sum_sol = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            if (i == iSolvent) continue;
+            x[i] = z[i] / Lf;
+            sum_sol += x[i];
+        }
+        x[iSolvent] = std::max(0.0, 1.0 - sum_sol);
+        scalar s = 0.0; for (auto v : x) s += v;
+        if (s > 0.0) for (auto& v : x) v /= s;
+        return x;
+    };
+
+    //  The boiling-point rise at a given V/F, and so the vessel pressure
+    //  P_op = Psat_pure(T_boil - BPE).  ONE home, so the pressure the balance
+    //  prices the outlets at is the pressure they are published at.
+    //    electrolyte: a_w * Psat_pure(T_boil) = Psat_pure(T_boil - BPE), by
+    //                 Clausius-Clapeyron BPE = -(R T_boil^2 / dHvap) ln a_w;
+    //    otherwise:   the ideal ebullioscopic K_b * m_solute.
+    auto BPE_of = [&](scalar VoF, scalar T_boil) -> scalar
+    {
+        if (useElectrolyte)
+        {
+            const scalar aw = thermo.electrolyte().waterActivity(
+                molality_salt(VoF), T_boil);
+            return -(constant::R * T_boil * T_boil / dHvap_solv(T_boil))
+                   * std::log(aw);
+        }
+        return K_b * molality_solute(VoF);
+    };
+
+    // -------------------------------------------------------------------
+    //  THE LATENT HEAT THE REPORT PRICES (2026-10-05, Vitor's ruling, DEV.md
+    //  4c C35 item 3).
+    //
+    //  The duty and the process-side balance used to be written on the
+    //  solvent's WATSON correlation (`Hvap_latent`) and an ideal sum of pure
+    //  liquid Cp integrals, while every stream this unit touches is priced
+    //  -- by the energy report, and by every unit downstream -- on the
+    //  package's own enthalpy surface (`H_stream_formation`).  On water at
+    //  401.63 K the two latent heats are 3.30 % apart, so the unit spent one
+    //  number and the first law was written on another: +17.6 ... +18.4 kW on
+    //  every single-effect brine case, +134.17 kW on the triple effect, and
+    //  the whole of what kept `energy-T2:plant` red on the flagship (Evap1
+    //  -10.42 kW, Evap2 -0.38 kW).  CLAUDE.md 6, THE STATE A UNIT COMPUTES
+    //  WITH IS NOT THE STATE ITS STREAMS CARRY.
+    //
+    //  So every term is priced through `flashState::priceState`, the call the
+    //  report's own rule is (resolve the state, price the equilibrium phases
+    //  of a split, else the state the stream carries):
+    //
+    //    Q   = F_chest  [ h(chest) - h(condensate) ]          the duty
+    //    0   = L h(concentrate) + V h(vapour) - F h(feed) - Q  the balance
+    //
+    //  The duty's latent heat is therefore the enthalpy DIFFERENCE between the
+    //  chest vapour and its condensate on the surface the report prices them
+    //  on, and the unit's energy row closes against the report by
+    //  construction.  The sucrose of a sugar liquor, which had no liquid Cp
+    //  and so contributed nothing sensibly, is now priced as the report
+    //  prices it; the L_phi of a fitted salt is inside the liquid surface.
+    //
+    //  THE NO-DATUM PATH.  A feed or chest carrying a component the package
+    //  cannot place on the elements datum (no `standardThermochemistry`, no
+    //  aqueous-ion reference -- `ThermoPackage::hasEnthalpyDatum`, the SAME
+    //  predicate the report's UNAVAILABLE verdict reads) has no surface to
+    //  price on, and the report has no first law to close for it either.
+    //  There the unit keeps its earlier balance -- the Watson latent heat and
+    //  ideal pure-liquid Cp integrals -- and SAYS so, once per run, naming the
+    //  components.  Measured 2026-10-05: evaporator01/03/04/05 and
+    //  model1_lumped_evaporator take it (a lumped `NaCl` or a declared
+    //  `agua`/`solidos` with no formation datum), unchanged to the last digit.
+    // -------------------------------------------------------------------
+    std::string noDatum;
+    for (std::size_t i = 0; i < n; ++i)
+        if ((z[i] > 0.0 || zSteam[i] > 0.0) && !thermo.hasEnthalpyDatum(i))
+            noDatum += (noDatum.empty() ? "'" : ", '") + thermo.comp(i).name() + "'";
+    const bool onSurface = noDatum.empty();
+    if (!onSurface)
+    {
+        const std::string msg =
+            "no elements-datum enthalpy for " + noDatum
+            + ", so the duty and the balance are NOT priced on the package's"
+              " surface: the latent heat is the solvent's Watson correlation"
+              " and the sensible heats are ideal pure-liquid Cp integrals"
+              " (the energy report is UNAVAILABLE for the same reason).";
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "evaporator-no-datum:" + dict->name(), "thermo", "info",
+                "evaporator '" + dict->name() + "'", msg)
+            && verbosity >= 1)
+            std::cout << "  [evaporator] " << msg << "\n";
+    }
+
+    const scalar P_feed = feedDict->lookupScalarOrDefault("P", 0.0);
+    //  The condensate leaves the chest at the chest's pressure (see `cond.P`
+    //  below); a chest with none is filled with the FIRST input's pressure by
+    //  the flowsheet, and the report prices it there -- so does this unit.
+    const scalar P_cond = (P_chest > 0.0) ? P_chest : P_feed;
+    const std::string uLocus = "evaporator '" + dict->name() + "'";
+    std::vector<std::string> priceNotes;  //  deferred: the report raises them
+    sVector y_solv(n, 0.0);
+    y_solv[iSolvent] = 1.0;
+
+    //  The vapour and the concentrate are this model's declarations:
+    //  pinned single phases at T_boil and the vessel pressure.
+    auto h_vap_at = [&](scalar T_boil, scalar P_op) -> scalar
+    {
+        return flashState::priceState(T_boil, P_op, y_solv, 1.0, true, 1.0,
+                                      thermo, uLocus + " vapour", &priceNotes);
+    };
+    auto h_conc_at = [&](scalar T_boil, scalar P_op, const sVector& x) -> scalar
+    {
+        return flashState::priceState(T_boil, P_op, x, 1.0, true, 0.0,
+                                      thermo, uLocus + " concentrate",
+                                      &priceNotes);
+    };
+
+    scalar h_chest = 0.0, h_cond = 0.0, h_feed = 0.0;
+    if (onSurface)
+    {
+        h_chest = flashState::priceState(
+            T_steam, P_cond, zSteam, 1.0, chestPinned, vfChest, thermo,
+            uLocus + " chest", &priceNotes);
+        //  The condensate is a declaration this model makes (pinned liquid at
+        //  the chest's T and P, `cond` below), and is priced as one.
+        h_cond = flashState::priceState(
+            T_steam, P_cond, y_solv, 1.0, true, 0.0, thermo,
+            uLocus + " condensate", &priceNotes);
+        //  The feed: priced with the vapour fraction it MEANS (an authored
+        //  inlet resolved at its own (T, P, z), a produced one as its producer
+        //  left it) -- the reading the flowsheet's surface pass hands the
+        //  report.
+        const bool feedPinned =
+            feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+        const scalar vfFeed = flashState::resolvedInletVaporFraction(
+            feedDict, T_feed, P_feed, z, thermo, uLocus + " feed");
+        h_feed = flashState::priceState(
+            T_feed, P_feed, z, 1.0, feedPinned, vfFeed, thermo,
+            uLocus + " feed", &priceNotes);
+    }
+
+    //  The no-datum balance, unchanged: for a feed -> {L, V_solvent} split
+    //  with ideal liquid mixing and pure-solvent vapour,
+    //    Q = F · Σ_i z_i · [H_liq,i(T_boil) − H_liq,i(T_feed)]
+    //        + V · ΔHvap_solv(T_boil) + Q_dil
+    //  (the sensible load on the WHOLE feed, the latent load on V only;
+    //  components without a liquid Cp contribute zero sensibly).
+    auto Q_required_noDatum = [&](scalar VoF, scalar T_boil) -> scalar
+    {
         scalar dH_per_mol_feed = 0.0;
         for (std::size_t i = 0; i < n; ++i)
         {
@@ -345,31 +566,30 @@ int Evaporator::solve(const DictPtr& dict,
     // -------------------------------------------------------------------
     //  Mode-2 solve  (credo-pure)
     //
-    //  Q is set by chest condensation:    Q = F_chest · ΔHvap(T_steam).
+    //  Q is set by chest condensation:  Q = F_chest [h(chest) - h(cond)].
     //  The heat exchanger has fixed hardware (area A, coefficient U),
     //  so the available driving force is uniquely determined:
     //      ΔT = Q / (U · A)        =>     T_boil = T_steam − ΔT.
     //  No V/F coupling here --- T_boil is a function of HARDWARE and
     //  CHEST-SUPPLY only, not of process-side composition.
     //
-    //  V/F then follows from the process-side energy balance in
-    //  closed form (the equation Q_required(V, T_boil) = Q is linear
-    //  in V for fixed T_boil --- mass balance gives x_L, and the
-    //  sensible / latent terms are explicit).  Newton-1D is still used
-    //  for robustness against tiny non-linearities (HvapTb scaling).
+    //  V/F then follows from the process-side energy balance (linear in V
+    //  for fixed T_boil, up to the composition dependence of the liquor's
+    //  enthalpy); Newton-1D solves it.
     //
     //  P_op (the operating pressure of the vessel) is then computed
     //  from T_boil via the saturation curve of the pure solvent, with
     //  BPE correction:
-    //      T_boil = T_sat,pure(P_op) + K_b · m_solute(x_L)
-    //  =>  P_op = P_sat,pure(T_boil − K_b · m_solute).
+    //      T_boil = T_sat,pure(P_op) + BPE(x_L)
+    //  =>  P_op = P_sat,pure(T_boil − BPE).
     //  This is the credo-pure assignment: P_op is a RESULT (a stream
     //  property of vapour & liquid outputs), not a user input.
     // -------------------------------------------------------------------
     const scalar F_steam_kmols   = steamDict->lookupScalar("F", Dims::molarFlow);
     const scalar F_steam_mol_s   = F_steam_kmols * 1000.0;
-    const scalar dHvap_at_steam  = dHvap_solv(T_steam);
-    const scalar Q_J_s           = F_steam_mol_s * dHvap_at_steam;
+    const scalar dHcond_at_steam = onSurface ? (h_chest - h_cond)     // J/mol
+                                             : dHvap_solv(T_steam);
+    const scalar Q_J_s           = F_steam_mol_s * dHcond_at_steam;
     F_steam_kmol_s_              = F_steam_kmols;
 
     const scalar dT_achieved = Q_J_s / (U * A);
@@ -382,13 +602,20 @@ int Evaporator::solve(const DictPtr& dict,
             "Either the chest steam flow is too large for this U·A,"
             " or U·A is too small for the chest flow.");
 
+    const scalar F_mol_s = F_in_kmols * 1000.0;
+
     // Newton-1D in V/F on the process-side energy balance, with
     // T_boil fixed.  The residual is monotone in V/F so the bracket
-    // [0, 0.999] is safe.  Converges in ~1-2 it. because the problem
-    // is essentially linear in V at fixed T_boil.
+    // [0, 0.999] is safe.
     auto g = [&](scalar VoF)
     {
-        return Q_required(VoF, T_boil) - Q_J_s;
+        if (!onSurface)
+            return Q_required_noDatum(VoF, T_boil) - Q_J_s;
+        const scalar P_op = solv.vp().Psat_Pa(T_boil - BPE_of(VoF, T_boil));
+        return F_mol_s * ((1.0 - VoF) * h_conc_at(T_boil, P_op, xL_of(VoF))
+                          +        VoF * h_vap_at(T_boil, P_op)
+                          -              h_feed)
+             - Q_J_s;
     };
     auto dg = [&](scalar VoF)
     {
@@ -397,7 +624,11 @@ int Evaporator::solve(const DictPtr& dict,
     };
 
     solver::NROptions nro;
-    nro.tolerance = 1.0;
+    //  1 mW on the priced path.  The unit's energy row must close against the
+    //  report to the report's own precision (1e-4 kW, check_energy_closure's
+    //  unit arm), so the balance cannot stop at the 1 W it used to -- which
+    //  the no-datum path, with no report to agree with, keeps.
+    nro.tolerance = onSurface ? 1.0e-3 : 1.0;
     nro.maxIter   = 80;
     nro.lower     = 0.0;
     nro.upper     = 0.999;
@@ -415,8 +646,13 @@ int Evaporator::solve(const DictPtr& dict,
                       << std::setw(13) << tr.f << "\n";
         }
     };
-    const scalar F_mol_s = F_in_kmols * 1000.0;
-    scalar VF0 = Q_J_s / std::max(1.0, F_mol_s * dHvap_solv(T_boil));
+    //  Seed: the duty over the solvent's latent heat at T_boil, read off the
+    //  surface the balance is written on (a seed, never the answer).
+    const scalar P_seed = (P_feed > 0.0) ? P_feed : P_cond;
+    const scalar latentAtBoil = onSurface
+        ? h_vap_at(T_boil, P_seed) - h_conc_at(T_boil, P_seed, y_solv)
+        : dHvap_solv(T_boil);
+    scalar VF0 = Q_J_s / std::max(1.0, F_mol_s * latentAtBoil);
     VF0 = std::min(0.95, std::max(0.05, VF0));
     auto r = solver::newton1D(g, dg, VF0, nro);
     const scalar V_over_F = r.x;
@@ -424,7 +660,9 @@ int Evaporator::solve(const DictPtr& dict,
     // Compute P_op from T_boil, BPE-corrected:
     //   T_boil = T_sat_pure(P_op) + K_b · m_solute(x_L)
     // => P_op = P_sat_pure(T_boil − BPE ).
-    scalar BPE;
+    //  (BPE_of above is the one home of the rule; the balance priced the
+    //  outlets at the pressure it gives, and they are published at it.)
+    const scalar BPE = BPE_of(V_over_F, T_boil);
     //  The molality a_w is ACTUALLY evaluated at, carried to the report rather
     //  than recomputed there.  A report that recomputes what it claims to
     //  describe can describe something the model never did -- and did: this
@@ -433,11 +671,7 @@ int Evaporator::solve(const DictPtr& dict,
     scalar awMolality = 0.0;
     if (useElectrolyte)
     {
-        // Activity-based BPE: a_w * Psat_pure(T_boil) = Psat_pure(T_boil - BPE).
-        // Clausius-Clapeyron -> BPE = -(R T_boil^2 / dHvap) ln a_w  (a_w<1 -> BPE>0).
         awMolality = molality_salt(V_over_F);
-        const scalar aw = thermo.electrolyte().waterActivity(awMolality, T_boil);
-        BPE = -(constant::R * T_boil * T_boil / dHvap_solv(T_boil)) * std::log(aw);
 
         //  The BPE is now the SALT's alone.  If the liquor carries other
         //  nonvolatiles they still depress the vapour pressure, and this model
@@ -458,8 +692,6 @@ int Evaporator::solve(const DictPtr& dict,
                                                   " boiling-point rise,") << "\n";
         }
     }
-    else
-        BPE = K_b * molality_solute(V_over_F);     // ideal ebullioscopic fallback
     const scalar T_sat_pure_at_Pop = T_boil - BPE;
     const scalar P_op = solv.vp().Psat_Pa(T_sat_pure_at_Pop);
     const scalar Tsat_pure = T_sat_pure_at_Pop;
@@ -467,20 +699,7 @@ int Evaporator::solve(const DictPtr& dict,
     // -------------------------------------------------------------------
     //  Build outlet streams, KPIs, report.
     // -------------------------------------------------------------------
-    sVector x_L(n, 0.0);
-    {
-        const scalar Lf = std::max(1.0e-12, 1.0 - V_over_F);
-        scalar sum_sol = 0.0;
-        for (std::size_t i = 0; i < n; ++i)
-        {
-            if (i == iSolvent) continue;
-            x_L[i] = z[i] / Lf;
-            sum_sol += x_L[i];
-        }
-        x_L[iSolvent] = std::max(0.0, 1.0 - sum_sol);
-        scalar s = 0.0; for (auto v : x_L) s += v;
-        if (s > 0.0) for (auto& v : x_L) v /= s;
-    }
+    const sVector x_L = xL_of(V_over_F);
     sVector y_V(n, 0.0);
     y_V[iSolvent] = 1.0;
 
@@ -505,7 +724,12 @@ int Evaporator::solve(const DictPtr& dict,
                   << "                   F_steam = "
                   << std::fixed << std::setprecision(2)
                   << (F_steam_kmols * 3600.0 * MW_solv) << " kg/h  (chest input)\n"
-                  << "  Duty Q = F_chest · ΔHvap = " << std::scientific << std::setprecision(4)
+                  << "  Latent heat h(chest) − h(condensate) = "
+                  << std::fixed << std::setprecision(1) << dHcond_at_steam / 1000.0
+                  << " kJ/mol  (the package's own surface, as the energy report"
+                     " prices it)\n"
+                  << "  Duty Q = F_chest · [h(chest) − h(condensate)] = "
+                  << std::scientific << std::setprecision(4)
                   << Q_J_s << " W  (= " << std::fixed << std::setprecision(1)
                   << (Q_J_s / 1000.0) << " kW)\n"
                   << "  ΔT = Q / (U·A) = " << std::fixed << std::setprecision(2)

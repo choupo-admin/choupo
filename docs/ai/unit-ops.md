@@ -547,8 +547,12 @@ operation
 
 ### `evaporator`  (Mode-2 credo-pure)
 Single-effect.  Hardware = `area` + `U`.  Heating-side `inputs[1]` is
-the chest (saturated steam); the unit propagates mass + energy
-through the vessel; T_boil, V/F, P_op all RESULTS.
+the chest (steam -- declare `phase gas;` on a saturated supply); the unit
+propagates mass + energy through the vessel; T_boil, V/F, P_op all RESULTS.
+The duty is `F_chest [h(chest) - h(condensate)]` and the process side is
+balanced on the same enthalpy surface the energy report prices, so the
+unit's energy row closes; a component with no enthalpy datum falls back to
+the Watson latent heat, announced.
 
 ```
 inputs  (feed  steam );
@@ -557,7 +561,7 @@ operation
 {
     area      <m^2>;
     U         <W/m^2/K>;
-    Tref      <K>;        // enthalpy reference (default 298.15)
+    Tref      <K>;        // no-datum path only (default 298.15)
 }
 ```
 
