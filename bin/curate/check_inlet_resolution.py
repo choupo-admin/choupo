@@ -103,7 +103,9 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              valve's T_out must equal its T_in within 0.5 K (an ideal-gas
              vapour has no Joule-Thomson effect) with vf = 1, the mixer's vf
              must be 1, both splitter branches must carry vf = 1, and the
-             plant's first law must close within 1e-3 kW.
+             plant's first law must close within 1e-2 kW (the mixer's own Newton
+             tolerance leaves ~1e-3 kW on 250 kmol/h; a misread inlet costs
+             hundreds).
   (j) AN OUTLET SEARCH DISCARDS THE SAME ROOT (2026-10-04, C34).  The
       valve's and the adiabatic flash's outlet searches, the pipe's
       inlet-regime test and the isothermal flash's own OPERATING resolution
@@ -590,7 +592,7 @@ def main() -> int:
                                 "an undeclared vapour is a vapour")
             m = re.search(r'"globalEnergyBoundary":\s*\{[^}]*"residual_kW":\s*'
                           r'([-0-9.eE+]+)', wlog)
-            if not m or abs(float(m.group(1))) > 1e-3:
+            if not m or abs(float(m.group(1))) > 1e-2:
                 fail.append("(i2) the witness's plant first law does not close "
                             f"(residual {m.group(1) if m else None} kW): the "
                             "units and the report read different inlet states")

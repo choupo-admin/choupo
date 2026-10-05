@@ -14,8 +14,8 @@
 
 componentMolarFlows
 {
-    benzene    20 kmol/h;
-    toluene    10 kmol/h;
+    benzene    90 kmol/h;
+    toluene    60 kmol/h;
 }
 
 T               420 K;

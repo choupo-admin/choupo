@@ -32,8 +32,11 @@
       Read as what it is, an ideal-gas vapour has no Joule-Thomson effect
       and T_out = T_in.
     * M1 (mixer).  The inlets' phases price the inlet enthalpies AND vote for
-      the outlet's dominant phase.  Read as liquids, two vapours leave
-      labelled a liquid.
+      the outlet's dominant phase.  feedB is the LARGER inlet (150 against
+      100 kmol/h) on purpose: the valve's outlet is a PRODUCED vapour that
+      votes vapour either way, so only an authored inlet that carries the
+      vote can show a mixer reading it as a liquid -- its vapour would then
+      leave labelled a liquid.
     * S1 (splitter).  A splitter preserves the phase -- the phase the inlet
       MEANS.  Its branches are PRODUCED streams that nobody re-resolves, so
       copying the carried default would publish two vapours as liquids.
