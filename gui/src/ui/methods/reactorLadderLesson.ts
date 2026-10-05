@@ -91,12 +91,12 @@ export const LADDER_SECTIONS: readonly LadderSection[] = [
     title: "Rung 1 — what the atoms allow: a declared conversion",
     body: "The conversion reactor is told the stoichiometry, the limiting "
       + "reactant and a conversion $X$, and returns every outlet flow by "
-      + "arithmetic (ConversionReactor.cpp:217–230).  There is no solver.  "
+      + "arithmetic (ConversionReactor.cpp:195–213).  There is no solver.  "
       + "It is the right model for a first mass balance, and whenever $X$ "
       + "is known from a running plant, a patent or a vendor.  What it cannot "
       + "do is tell you whether $X$ is possible: the only bounds it checks are "
       + "$0 \\le X \\le 1$ and that no outlet amount goes negative "
-      + "(ConversionReactor.cpp:212–215 and 224–230).  The witness declares $X = 0.90$ "
+      + "(ConversionReactor.cpp:190–193 and 205–208).  The witness declares $X = 0.90$ "
       + "on purpose.  At 600 K that is above this feed's equilibrium, and the "
       + "rung prints it without complaint.",
     eq: String.raw`\xi = \frac{X\,n_{\mathrm{CO},0}}{-\nu_{\mathrm{CO}}}
