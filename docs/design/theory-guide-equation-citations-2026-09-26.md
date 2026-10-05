@@ -1,7 +1,7 @@
 # The Theory Guide, equation by equation: which ones cite, which derive, which stand alone, and which are sourced to nobody
 
 **Date:** 2026-09-26.  **Kind:** audit record (DEV.md 4c, entry C3; Vítor asked on 2026-09-22).
-**Subject:** `docs/theoryGuide.tex` and its `\input` closure.  **Status:** a reading, not a change -- no `.tex`, no gate and no other document was edited.
+**Subject:** `docs/theoryGuide.tex` and its `\input` closure.  **Status:** Sections 1-10 are a reading, not a change -- no `.tex`, no gate and no other document was edited; Section 11 (2026-10-05) records the citations that were then added under the same rule.
 
 ## 1. Why this record exists
 
@@ -1336,3 +1336,163 @@ Nothing the tool enumerated was unclassifiable, and every environment it found i
 The 50 rows of Section 6 are his.  For each, the choices are the ones the commission named: source it (add the `\cite`, which for the rows whose note records a name and a bibliography key is a move of a few characters), mark it as an identity (and say in the guide why no source is owed), or delete it.  This record proposes none of the three for any row, and it proposes no change to the gate: whether `check_theory_citations` should ever become per-equation, and what a per-equation gate would accept as a citation, is a decision this reading was not asked to take.
 
 Two of the five conventions above are also his to keep or reverse, and the tables are built so that reversing either is arithmetic rather than re-reading: convention 1 (a model's introductory citation covers its constituent equations) moves rows between CITED and UNSOURCED by their token; convention 3 (the engine's own declarations are identities) moves rows whose note begins "the engine's own".
+
+## 11. Addendum, 2026-10-05: the citations that passed the rule (C34 wave 1, item C)
+
+**Status of this section:** a change, unlike the rest of this record.  The
+rows of Section 6 whose source already stood IN THIS REPOSITORY in full were
+cited in `docs/theoryGuide.tex`, and the PDF was rebuilt with them.  Sections
+2-10 above are left exactly as the 2026-09-26 reading wrote them, at that
+day's line numbers; this section supersedes them for the rows it names and
+gives the current `\begin` line of every one (mapped by a line diff of the
+two versions of the guide, not by offset).
+
+### 11.1 The rule, unchanged
+
+The one that bound the chapter slice
+([`a-manual-that-cites-what-it-teaches.md`](a-manual-that-cites-what-it-teaches.md)
+§2): a citation enters the guide only if its full reference already exists in
+this repository and was READ there; where the tree records no initials, none
+were supplied; where it records only a TRANSCRIPTION ROUTE (a textbook and an
+equation number), the route is what is cited, and the sentence says the
+original was not re-read.  Every home is named below with its `file:line`.
+Nothing was searched for outside the tree, and nothing was supplied from
+memory.
+
+### 11.2 What moved: 15 rows
+
+| row (2026-09-26) | now | label | cited to | where the full reference was read |
+|---|---|---|---|---|
+| `:1593` | `:1593` | `eq:aw-master` | `RPP` (route, Eq. 7-2.7) | `src/thermo/vaporPressure/AmbroseWalton.H:32-34` |
+| `:1608` | `:1609` | `eq:aw-shape` | `RPP` (route, Eq. 7-2.7) | same |
+| `:3070` | `:3071` | `eq:integral-watson` | `Watson` (already a `\bibitem`) | the guide's own bibliography |
+| `:5415` | `:5416` | -- | `SongChen2009` (new) | `src/thermo/electrolyte/ENRTLMultiSalt.H:31` |
+| `:6009` | `:6011` | -- | `Davies1962` (already a `\bibitem`) | the guide's own bibliography |
+| `:23273` | `:23335` | `eq:asme-thickness` | `Turton` (route, App. A) | `src/postProcessing/sizing/VesselMechanics.H:25-26` |
+| `:23464` | `:23528` | -- (the 1.18) | `Turton` (App. A) | `src/postProcessing/costing/Guthrie.H:31,46` |
+| `:24951` | `:25069` | `eq:rectifier-fenske` | `Fenske1932` (already a `\bibitem`) | the guide's own bibliography |
+| `:25768` | `:25887` | `eq:rc-twopoint` | `SundaresanKrishnaswamy1978` (new) | `src/propertyOps/ReactionCurve.H:164-166` |
+| `:26550` | `:26669` | `eq:ros23` | `ShampineReichelt1997` (new) | `src/solver/ODE/Rosenbrock23.H:32` |
+| `:26842` | `:26959` | `eq:carothers` | `Flory1953` (new) | `src/unitOperations/reactor/PolymerKPIs.H:34,50-51` |
+| `:26862` | `:26979` | `eq:flory-mole` | `Flory1953` | same |
+| `:26868` | `:26985` | `eq:flory-weight` | `Flory1953` | same |
+| `:26874` | `:26992` | `eq:Mw` | `Flory1953` | same |
+| `:26881` | `:26999` | `eq:pdi` | DERIVED from `eq:Mw` and `eq:Mn` (the ratio of the two averages) | -- |
+
+Every new citation stands in the equation's own paragraph (convention 1's
+strict token, `[cite: same paragraph]`), except `eq:pdi`, which is a ratio of
+two equations the text has just written and is recorded as (b) DERIVED.
+
+Five more bibliography entries came with these, each read where named:
+`BollasChenBarton2008` (`ENRTLMultiSalt.H:654`, cited where the guide already
+named the refined eNRTL in prose), `KrichevskyKasarnovsky1935`
+(`paper/paper.bib:160-169`, see 11.3), and `HairerWanner1996` and
+`Sandu1997` -- whose full references were ALREADY in the guide, written out
+in the closing prose of the stiff-ODE chapter with no `\bibitem`, and are now
+`\cite`d from that same sentence.  The guide's bibliography went from 115 to
+123 entries, all cited (`check_theory_citations` arm C2), and five chapters
+left that gate's C1 pin list because they now carry their first `\cite`:
+`ch:polymers`, `ch:rayleigh`, `ch:size-vessel`, `ch:stiff-ode` and
+`sec:reactioncurve` (38 pinned -> 33, re-measured by `--seed`).
+
+### 11.3 One row partly sourced, and therefore still (d)
+
+`eq:henry-K-highP` (`:7462` -> `:7464`) carries two corrections with two
+authors.  The Poynting term of Krichevsky and Kasarnovsky (1935) is now cited:
+its full reference stands in `paper/paper.bib:160-169`, the JOSS paper's
+bibliography.  The unsymmetric Margules gamma* of Krichevsky and Ilinskaya
+(1945), and "Prausnitz, *Molecular Thermodynamics*, Ch. 10" for the whole
+equality, are named in the guide's prose and recorded NOWHERE in full in this
+tree.  Per convention 3's last paragraph (a row takes the weaker verdict of
+its parts), the row stays (d).
+
+### 11.4 Totals after this addendum
+
+| Verdict | 2026-09-26 | 2026-10-05 |
+|---|---:|---:|
+| (a) CITED | 142 | 156 |
+| (b) DERIVED | 28 | 29 |
+| (c) IDENTITY | 314 | 314 |
+| (d) UNSOURCED | 50 | 35 |
+| **Total** | **534** | **534** |
+
+The denominator is unchanged (`bin/curate/theory_equation_inventory.py`,
+534 environments in 81 chapters, re-run on the edited guide).
+
+### 11.5 The 35 that remain, and why each could not be cited under the rule
+
+Current `\begin` line first.  The reason is what the TREE holds, measured by
+a repository-wide search (`src/`, `data/`, `tutorials/`, `docs/` including
+`docs/ai/` and the other guides, `paper/`), not what exists in the
+literature.
+
+**The tree names an author and a year, and nothing a reader could go to.**
+A curator who reads the original can close each by adding the reference; an
+assistant cannot.
+- `:2032` `eq:rackett-raw`, `:2059` `eq:zra-yamada`, `:2068` `eq:rackett-code`
+  -- Rackett (1970), Yamada and Gunn (1973), Spencer and Danner (1972): named
+  in the guide only; `src/thermo/DerivedClosures.H:65` carries the
+  arithmetic and no source.
+- `:7464` `eq:henry-K-highP` -- the Krichevsky-Ilinskaya (1945) half (11.3).
+- `:8406` `eq:wilson-K` -- "Wilson (1968)", `IsothermalFlash.cpp:1077`, no
+  journal (and the bibliography's `Wilson` is the 1964 activity model).
+- `:20629` saltation margin -- "Rizk 1973", `PneumaticConveyor.cpp:277`; the
+  1.5-2 margin band is attributed to nobody.
+- `:20752`, `:20759` Lapple d50 and grade efficiency -- "Lapple (1951)",
+  `cycloneModel/Lapple.H:32`.
+- `:21253` `eq:merkel` -- "Merkel 1925", `CoolingTower.H:33`.
+- `:6747` `eq:dh-limiting` -- "Debye-Huckel theory (1923)" in the guide only.
+
+**The tree names the model and no year, no journal, no route.**
+- `:12010` `eq:sutherland` (and the guide says it is not implemented),
+  `:12393` `eq:vignes`, `:19952` `eq:ldf` (Glueckauf), `:20476` homogeneous
+  two-phase (McAdams), `:20494` the Chisholm multiplier (`Pipe.cpp:229-233`,
+  `docs/ai/unit-ops.md:1402`), `:21000` GAB (`SprayDryer.cpp:516`),
+  `:21778` `eq:molokanov` (`ShortcutColumn.cpp:261`), `:22582` `eq:murphree`
+  (`DistillationColumn.cpp:692-746`), `:26865` `eq:falloff` (Lindemann and
+  Troe, `Reaction.H:89-92`).
+
+**Nobody is named for the form, in the guide or the tree.**
+- `:2197` the polynomial Cp form; `:5503` `eq:regular-solution`; `:5539`
+  `eq:hansen-sum` (the tree's only Hansen is the UNIFAC Hansen of 1991, the
+  trap convention 5 records); `:7688` `eq:srk-amix` and `:7701`
+  `eq:srk-damixdT` (the van der Waals one-fluid rule, `SRK.H:44`, `PR.H:45`,
+  called "classical"); `:17587`, `:17594`, `:17737` the crystalliser's growth
+  and nucleation power laws, their mu_3 closure and the size-dependent growth
+  law (`RandolphLarson` is cited two subsections up for the population
+  balance, not for these); `:19926` `eq:ext-langmuir` (`Langmuir1918` covers
+  the pure isotherm only); `:20839` the bag-filter grade efficiency; `:20845`
+  the cake pressure drop; `:21070` the counter-current epsilon-NTU closed
+  form; `:26837` `eq:mod-arrhenius`.
+
+**A textbook scheme or law the guide states without a source.**
+- `:11685` and `:24710` `eq:rk4-packed` (classical RK4), `:26829`
+  `eq:arrhenius`.  Section 6 already flagged these, with `eq:dh-limiting`, as
+  rows Vítor may prefer to mark IDENTITY; no source for any of them is in the
+  tree.
+
+### 11.6 What stays Vítor's
+
+Unchanged from Section 10, for the 35 rows above: source (a curation act,
+reading the paper), mark IDENTITY, or delete.  The commission authorised the
+"source" move only where the tree already held the reference; the other two
+choices change what the guide tells a student and were not taken.  Also his,
+and unchanged: conventions 1 and 3; the 63 CITED rows that rest on a
+citation at the model's introduction rather than in their own paragraph
+(Section 4) were not re-examined here.
+
+### 11.7 Two things found on the way, recorded rather than acted on
+
+- **The JOSS paper's bibliography is a citation home this campaign had not
+  listed.**  `paper/paper.bib` carries twenty full references; the chapter
+  slice named four homes (`src/`, a record's `source`, a case header,
+  `docs/ai/`) and the fifth is where `KrichevskyKasarnovsky1935` came from.
+  Its `chen2004` entry gives Song's and Chen's full names for a DIFFERENT
+  paper; they were NOT carried into `SongChen2009`, whose entry gives the
+  authors as the engine header does, without initials.
+- **`sec:reactioncurve` carries its four sources twice in kind**: as an
+  itemised prose list with full references (Ziegler-Nichols, Cohen-Coon,
+  Rivera-Morari-Skogestad, Sundaresan-Krishnaswamy), and now one of them as
+  a `\cite`.  Only the equation that had no citation was given one; whether
+  the prose list should become bibliography entries is an editorial choice,
+  not a missing source.

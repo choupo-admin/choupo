@@ -1598,7 +1598,8 @@ as a power series in $\omega$ and truncating at $\omega^2$,
 where $f^{(0)}$ is the simple-fluid reference (argon/krypton/xenon,
 $\omega \approx 0$) and $f^{(1)}, f^{(2)}$ are the first- and
 second-order departures.  Ambrose and Walton (1989) fitted the three
-shape functions to high-quality data using a Wagner-style basis in
+shape functions (transcribed here, as in \file{AmbroseWalton.H}, from
+\cite{RPP} Eq.~7-2.7; the 1989 original was not re-read) to high-quality data using a Wagner-style basis in
 \[
    \tau \;\equiv\; 1 - T_r,
 \]
@@ -3066,7 +3067,7 @@ trusting an equilibrium prediction.
 
 Each data file lists $\Delta h^{\mathrm{vap}}_i(T_b)$ at the normal
 boiling point only.  The simulator transports it to any other
-temperature with Watson's correlation,
+temperature with Watson's correlation \cite{Watson},
 \begin{equation}
    \boxed{\;
    \Delta h^{\mathrm{vap}}_i(T) \;=\; \Delta h^{\mathrm{vap}}_i(T_b)
@@ -5407,7 +5408,7 @@ formulation}\label{sec:enrtl-multisalt}
 When two salts share the water --- NaCl $+$ KCl in a crystalliser purge, a
 mixed brine --- each ion's environment contains \emph{foreign} ions, and the
 single-salt expressions no longer apply.  The multicomponent formulation
-(Song \& Chen 2009, DOI \texttt{10.1021/ie9004578})
+(Song \& Chen 2009 \cite{SongChen2009}, DOI \texttt{10.1021/ie9004578})
 keeps the two eNRTL hypotheses (local electroneutrality, like-ion repulsion)
 and writes the local term species-wise, with every effective ion--molecule
 and ion--ion binary assembled from the \emph{pair} parameters by
@@ -5441,7 +5442,8 @@ multicomponent activity-coefficient expressions differentiate the excess
 Gibbs energy \emph{treating the mixing-rule binaries as constants}, yet those
 binaries depend on composition through the charge fractions $Y$.  The result
 is not exactly Gibbs--Duhem consistent --- the motivation for the
-\emph{refined} eNRTL of Bollas, Chen \& Barton (2008).  Choupo ships
+\emph{refined} eNRTL of Bollas, Chen \& Barton (2008)
+\cite{BollasChenBarton2008}.  Choupo ships
 \textbf{both formulations} (\code{formulation published;} vs
 \code{consistent;}): the consistent one keeps the chain rule through the
 $Y$-dependent mixing rules, so $\gamma$ \emph{is} the exact derivative of
@@ -6004,7 +6006,7 @@ is measured and how the rest is estimated.
 \subsection{Why $\gamma = 1$ for a neutral is a structural silence}
 
 It is worth being precise about what a charge-only model does and does not
-claim.  The Davies equation is
+claim.  The Davies equation \cite{Davies1962} is
 %
 \begin{equation}
   \log_{10}\gamma_i = -A z_i^2
@@ -7477,7 +7479,7 @@ low-pressure limit):
         the package EoS: the gas phase is real at $200$~bar.
   \item $\mathcal P = \exp[\bar v_i^\infty (P-P^{\mathrm{sat}})/RT]$
         --- the \textbf{Poynting} term of \textbf{Krichevsky--Kasarnovsky}
-        (1935): compressing the \emph{liquid} raises the dissolved gas's
+        (1935) \cite{KrichevskyKasarnovsky1935}: compressing the \emph{liquid} raises the dissolved gas's
         fugacity through its partial molar volume $\bar v_i^\infty$
         (\code{v\_inf} in the pair file).
   \item $\gamma_i^{*}$ --- the \textbf{unsymmetric activity coefficient}
@@ -23327,7 +23329,9 @@ length follow from the requested reactor volume:
 
 The vessel must withstand the design pressure
 $P_{\mathrm{design}} = \texttt{designRules.pressureDesign}$. ASME
-Section VIII Div.\,1 gives, for a thin cylindrical shell:
+Section VIII Div.\,1 gives, for a thin cylindrical shell (transcribed,
+as \file{src/postProcessing/sizing/VesselMechanics.H} records, from
+\cite{Turton}, App.~A; the standard itself was not read here):
 \begin{equation}
    t \;=\; \frac{P_{\mathrm{design}}\,D/2}{S\,E - 0.6\,P_{\mathrm{design}}}
         \;+\; t_{\mathrm{corr}},
@@ -23518,7 +23522,9 @@ factor from a Turton polynomial in $\log_{10} P_{\mathrm{design}}$.
 
 \subsection{Total-module cost}
 
-Adding contingency and fees:
+Adding contingency and fees, with the factor of the same Turton
+correlation set the code transcribes (\cite{Turton}, App.~A;
+\file{src/postProcessing/costing/Guthrie.H}):
 \begin{equation}
    C_{\mathrm{TM}} \;=\; 1.18 \, C_{\mathrm{BM}}.
 \end{equation}
@@ -24312,6 +24318,59 @@ chemical process simulator and the architectural ancestor of every
 sequential-modular simulator since.  Used here for the comparative
 context of Appendix~C.
 
+% ---- Per-equation citations (C3, 2026-10-05).  Each entry below was READ
+% in this repository before it was written here; where the tree records no
+% initials, none are supplied.  Sources: SongChen2009 and
+% BollasChenBarton2008 -- src/thermo/electrolyte/ENRTLMultiSalt.H (header
+% and the verify() note); KrichevskyKasarnovsky1935 -- paper/paper.bib;
+% SundaresanKrishnaswamy1978 -- src/propertyOps/ReactionCurve.H;
+% ShampineReichelt1997 -- src/solver/ODE/Rosenbrock23.H; HairerWanner1996
+% and Sandu1997 -- this guide's own closing paragraph of the stiff-ODE
+% chapter, where both stood in prose; Flory1953 --
+% src/unitOperations/reactor/PolymerKPIs.H.
+
+\bibitem{SongChen2009} Song and Chen, \emph{Ind.\ Eng.\ Chem.\ Res.}\
+\textbf{48}, 7788, 2009, DOI \texttt{10.1021/ie9004578}.  The
+multicomponent (multi-salt) symmetric eNRTL and its charge-fraction mixing
+rules (\S\ref{sec:enrtl-multisalt}); Choupo's \code{ENRTLMultiSalt}.
+
+\bibitem{BollasChenBarton2008} Bollas, Chen and Barton, \emph{AIChE J.}\
+\textbf{54}, 1608, 2008.  The \emph{refined} eNRTL that restores the
+Gibbs--Duhem consistency the published multi-salt mixing rules lose ---
+Choupo's \code{formulation consistent;}.
+
+\bibitem{KrichevskyKasarnovsky1935} Krichevsky, I. R., \& Kasarnovsky,
+J. S., ``Thermodynamical calculations of solubilities of nitrogen and
+hydrogen in water at high pressures'', \emph{J.\ Am.\ Chem.\ Soc.},
+\textbf{57}(11), 2168--2171 (1935), DOI \texttt{10.1021/ja01314a036}.
+The Poynting correction of the Henry fugacity
+(Eq.~\ref{eq:henry-K-highP}).
+
+\bibitem{SundaresanKrishnaswamy1978} Sundaresan, K. R., \& Krishnaswamy,
+P. R., ``Estimation of time delay, time constant parameters in time,
+frequency, and Laplace domains'', \emph{Can.\ J.\ Chem.\ Eng.}\
+\textbf{56}, 257--262 (1978).  The two-point reaction-curve construction
+(Eq.~\ref{eq:rc-twopoint}).
+
+\bibitem{ShampineReichelt1997} Shampine and Reichelt, \emph{SIAM J.\
+Sci.\ Comput.}\ \textbf{18}, 1, 1997.  The ``ode23s'' embedded 2(3)
+Rosenbrock pair Choupo's \code{Rosenbrock23} implements
+(Eq.~\ref{eq:ros23}).
+
+\bibitem{HairerWanner1996} Hairer, E., \& Wanner, G., \emph{Solving
+Ordinary Differential Equations II: Stiff and Differential-Algebraic
+Problems}, 2nd ed., Springer, 1996.
+
+\bibitem{Sandu1997} Sandu, A., et al., ``Benchmarking stiff ODE solvers
+for atmospheric chemistry problems'', \emph{Atmos.\ Environ.}\
+\textbf{31}, 3151 (1997).
+
+\bibitem{Flory1953} Flory, P. J., \emph{Principles of Polymer
+Chemistry}, Cornell University Press, 1953, Ch.~VIII--IX.  The
+step-growth chain statistics of \S\ref{ch:polymers}: the number- and
+weight-average degrees of polymerisation, the most-probable distribution
+and the polydispersity; Choupo's \code{PolymerKPIs}.
+
 \end{thebibliography}
 
 \clearpage
@@ -25005,7 +25064,8 @@ down the column, $x_D = y_0$ and
 eq.~\eqref{eq:rectifier-ode} degenerates to the Rayleigh still
 exactly --- the regression suite pins the equivalence to the last
 digit.  As $R \to \infty$ at fixed $N$ the cascade approaches total
-reflux, where the Fenske relation for an ideal binary gives
+reflux, where the Fenske relation \cite{Fenske1932} for an ideal
+binary gives
 \begin{equation}
 \frac{x_D}{1 - x_D} \;=\; \alpha^{\,N+1}\,\frac{x_B}{1 - x_B}
 \label{eq:rectifier-fenske}
@@ -25820,7 +25880,8 @@ weakness is that a tangent slope is a \emph{derivative} read off a
 drawing: on a noisy record it is the least reliable quantity on the page.
 
 \paragraph{The two-point construction (Sundaresan and Krishnaswamy,
-1978).}  Instead of a slope, use two \emph{crossings}.  Let $t_{35.3}$
+1978).}  Instead of a slope, use two \emph{crossings}
+\cite{SundaresanKrishnaswamy1978}.  Let $t_{35.3}$
 and $t_{85.3}$ be the times at which the response has completed 35.3\,\%
 and 85.3\,\% of its total change.  Then
 \begin{equation}
@@ -26602,7 +26663,7 @@ and without error control.
 
 Choupo's stiff integrator is a Rosenbrock--Wanner method of order
 two with an embedded third-order estimate (the ``ode23s'' / Rosenbrock23
-family).  It generalises \eqref{eq:euler-si} to several stages that
+family of \cite{ShampineReichelt1997}).  It generalises \eqref{eq:euler-si} to several stages that
 all reuse the \emph{same} factorised matrix
 $\mathbf{W} = \mathbf{I} - h\gamma\Jac$:
 \begin{align}
@@ -26740,11 +26801,8 @@ measures --- so a student \emph{sees} why a particular problem needed
 the Rosenbrock solver rather than being told.
 \end{intuition}
 
-The classic references are E.~Hairer and G.~Wanner, \emph{Solving
-Ordinary Differential Equations II: Stiff and Differential-Algebraic
-Problems} (Springer, 2nd ed.\ 1996), and A.~Sandu et al., ``Benchmarking
-stiff ODE solvers for atmospheric chemistry problems,'' \emph{Atmos.\
-Environ.}\ \textbf{31} (1997) 3151.
+The classic references are Hairer and Wanner \cite{HairerWanner1996}
+and Sandu et al.\ \cite{Sandu1997}.
 
 % ---------------------------------------------------------------------
 \section{Chemical kinetics in the gas phase}\label{ch:gas-kinetics}
@@ -26895,8 +26953,9 @@ distribution is an analytic curve rather than the output of an engine.
 In step-growth polymerisation (a diacid and a diol esterifying to a
 polyester, releasing water) any two functional groups can react.  Let
 $p$ be the fraction of functional groups that have reacted --- the
-conversion.  Carothers' counting argument gives the number-average
-degree of polymerisation, the mean number of repeat units per chain,
+conversion.  Carothers' counting argument, in the closed form
+Choupo takes from \cite{Flory1953}, gives the number-average degree of
+polymerisation, the mean number of repeat units per chain,
 \begin{equation}
     \bar X_n \;=\; \frac{1}{1-p}.
     \label{eq:carothers}
@@ -26916,7 +26975,7 @@ repeat-unit mass $M_0$,
 A mean is not the whole story --- chains of every length coexist.
 For the equal-reactivity, uniform-time case the probability that a
 chain is exactly $x$ units long is the \emph{Flory--Schulz}
-(most-probable) distribution,
+(most-probable) distribution \cite{Flory1953},
 \begin{equation}
     n(x) \;=\; (1-p)\,p^{\,x-1},
     \label{eq:flory-mole}
@@ -26929,6 +26988,7 @@ weight fraction
 \end{equation}
 is peaked near $x \approx \bar X_n$ and broadens as $p$ rises.  The
 weight-average degree of polymerisation and molar mass are
+\cite{Flory1953}
 \begin{equation}
     \bar X_w \;=\; \frac{1+p}{1-p}, \qquad
     M_w \;=\; M_0\,\frac{1+p}{1-p}.

@@ -211,7 +211,9 @@ REGISTERED = re.compile(r'(?:registerType|reg)\("([A-Za-z0-9_]+)"')
 
 #  C1: a numbered chapter with numbered equations and no citation anywhere in
 #  it.  Keyed by the chapter's own `\label`, or by a slug of its title when it
-#  declares none.  Seeded 2026-09-19 at 46, down from 58 the same day.
+#  declares none.  Seeded 2026-09-19 at 46, down from 58 the same day;
+#  33 after the per-equation slice of 2026-10-05 (C3), re-measured by
+#  `--seed`.
 KNOWN_UNCITED = {
     "ch:balances",
     "ch:batch-adiabatic",
@@ -235,20 +237,15 @@ KNOWN_UNCITED = {
     "ch:pfr",
     "ch:pid",
     "ch:pinch",
-    "ch:polymers",
     "ch:ponchon",
     "ch:rackett",
-    "ch:rayleigh",
     "ch:rk4",
     "ch:rk4-packed",
     "ch:rotating",
     "ch:rr",
-    "ch:size-vessel",
-    "ch:stiff-ode",
     "ch:sublimation",
     "ch:three-pillars",
     "sec:column-control",
-    "sec:reactioncurve",
     "title:heat-exchanger-sizing-shell-and-tube",
     "title:notation-units-and-basis",
 }
