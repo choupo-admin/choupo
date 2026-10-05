@@ -260,3 +260,94 @@ cases / 140 mixtures / 135 two-phase / 7 zero-or-one** (`git ls-files` over
 seven 0/1 files and the shape of the finding agree; the counts do not, and
 the larger ones are the ones used here.  Nothing else in the brief was
 contradicted by measurement.
+
+## 9. The mirror: a pure stream on its curve with no phase (2026-10-05, C36 item 1)
+
+Section 1's exception has a mirror image.  On a pure component's saturation
+curve `(T, P)` are **one** condition, not two, so a pure stream that declares
+`T` and `P` and nothing else is *under*-specified there: which phase it is in,
+and how much of each, is not in the file.  Vítor's ruling (DEV.md §4c C36
+item 1): such a stream is **refused by name**, asking for `phase liquid;` or
+`phase gas;`.
+
+**Why it became urgent.**  Until C35 the flash returned NaN for a pure chest
+carrying zero of a nonvolatile, and the evaporator refused it for that reason.
+Once the flash skipped absent components (C35, the shared-path slice), it
+answered — and on the curve its answer was set by the last digits of `T`:
+`check_evaporator_chest_phase`'s fixture at Tsat(200 kPa) = 392.1781136 K read
+as vapour, the same chest 0.008 K colder as liquid (DEV.md §4d D1).
+
+**What was built.**
+
+* The rule has ONE home, `flashState::undeterminedSaturationRefusal`
+  (`src/unitOperations/flash/StreamEquilibrium.H`, beside `equilibriumAt`),
+  over `flashState::pureSaturationProximity`, which returns ln K of the one
+  present component at the stream's own `(T, P)` (the package's own `Kvec`,
+  so a γ-φ, φ-φ or Henry world answers in its own terms), its slope along `T`
+  and the `Tsat` it implies.  The question has no meaning, and nothing is
+  returned, for a mixture, a package with no vapour, a component above its
+  `Tc`, a Henry solute, a nonvolatile, or a `K` that does not move with `T`
+  (a single-root cubic's `φ_L/φ_V = 1`).
+* It is applied ONCE, in `Flowsheet::solve`, where the engine stamps the
+  authored inlets — the stamp moved above the `choupo-lint` seam so the lint
+  raises it too.  It is deliberately NOT inside `equilibriumAt`, which is
+  also asked about trial states inside a unit's search and about produced
+  streams; for those "declare the phase" is not a remedy anyone can apply
+  (a produced pure stream at `Tsat` is the producing unit's to pin — C36
+  item 3).  Every offender is collected before the refusal.
+
+**The band, from the numerics.**  For one component the Rachford-Rice
+residual is `RR(V) = (K − 1) / (1 + V (K − 1))`, whose magnitude over
+`0 ≤ V ≤ 1` is at most `|K − 1| / min(1, K) ≈ |ln K|`.  So when `|ln K|` is
+within the resolving flash's own convergence tolerance
+(`FlashOptions::tolerance`, 1e-8), **every** vapour fraction satisfies the
+criterion that flash accepts as converged: the answer is undetermined in the
+flash's own terms.  That is the band — about 3e-7 K for water at 392 K and for
+benzene at 353 K — and the refusal states it in both forms (`|ln K|` and the
+equivalent `|T − Tsat|`).
+
+**Measured before building** (an instrumented build that printed, for every
+authored, unpinned, pure stream of all 262 `choupoSolve` cases, its `ln K` and
+its distance to `Tsat`): 46 such streams in 36 cases.  None is inside the band.
+The two nearest:
+
+| case | stream | `ln K` | `T − Tsat` |
+|---|---|---|---|
+| `steady/heat/reboiler_water_copper` | `feed` (water, 372 K, 1 bar) | −3.40e-3 | −0.093 K |
+| `steady/heat/condenser01_film_nusselt` | `steam` (water, 372.76 K, 1 bar) | +2.43e-2 | +0.667 K |
+
+then neopentane at −0.154 and everything else beyond |ln K| = 0.6.  No case
+was edited and no golden row moved.  The band could be widened to about 1e-3
+in |ln K| (≈0.03 K for water) without reaching a corpus stream; that would be
+a modelling judgement about how close an author's rounding is "too close",
+not a numerical fact, and it was not taken.  `condenser01`'s steam is read as
+0.67 K superheated vapour while its header says *saturated vapour*: the case
+gets the phase it means, by a margin, and declares nothing — recorded, not
+changed here.
+
+**A finding about the band itself.**  The C35 fixture value, 392.1781136 K,
+sits at `|ln K|` = 9.18e-9 against the package's own Tsat(200 kPa) =
+392.1781133 K: inside, at 0.92 of the band.  A Tsat typed to seven decimals is
+only just caught; one computed under a different correlation would not be,
+and would still be read by its rounding — which is exactly the class of
+stream the wider band above would reach.
+
+**Gate.**  `check_overspecified_stream` arm (g): it FINDS the curve with the
+engine's own reading, bisecting a pure benzene feed's `T` on the resolved feed
+`vf` (26 runs) until a run refuses, and requires the refusal before the
+bracket closes below 1e-8 K — so the band is shown to exist on the engine, not
+only in prose — then checks the message (UNDETERMINED, the component, the
+file, both remedies, the tolerance as the band).  (g2) the same `T` declaring
+`phase gas;` runs at feed `vf = 1`, `phase liquid;` at `vf = 0`.  (g3) a
+benzene/toluene mixture at its own bubble point, found the same way, is
+untouched.  Sabotages, each applied, built, the gate run, then restored:
+
+| sabotage | arms that fired |
+|---|---|
+| S1 the refusal disabled (`if (false && !undetermined.empty())`) | (g): 33 runs, bracket closed at 352.82606370863505 K, no refusal |
+| S2 the `phasePinned` skip removed (a declared stream checked too) | (g2) both: the declared pure stream refused at exit 2 |
+
+NOT covered, said plainly: a unit's own `thermo {}` world (the band is checked
+in the case's global world, the one the stream table and the energy report
+resolve the stream in), and the time-integrated binaries (their driver stamps
+no authored inlet).

@@ -146,6 +146,12 @@ int Evaporator::solve(const DictPtr& dict,
     //  fixture at Tsat(200 kPa) = 392.1781136 K, written to seven decimals,
     //  reads as vapour; at 392.17 K it reads as liquid and is refused).
     //  `phase gas;` stays the one channel that does not depend on rounding.
+    //  Since 2026-10-05 (DEV.md C36 item 1) a PURE authored chest within the
+    //  flash's own tolerance of its curve never gets here: it is refused as
+    //  UNDETERMINED before any unit runs (`flashState::
+    //  undeterminedSaturationRefusal`).  A chest just outside that band --
+    //  392.17 K is 0.008 K off it -- is decided cleanly by the flash, and is
+    //  still read by the side the author's rounding put it on.
     sVector zSteam(n, 0.0);
     scalar  vfChest     = 1.0;
     bool    chestPinned = false;

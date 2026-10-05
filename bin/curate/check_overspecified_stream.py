@@ -58,6 +58,22 @@ case this gate writes (never on a shipped case that someone may fix):
       nothing to delete and nothing to replace under tutorials/, so the
       migration cannot silently regress.
 
+  (g) THE UNDER-SPECIFIED PURE STREAM (DEV.md C36 item 1, 2026-10-05): a
+      PURE stream declared by T and P alone ON its own saturation curve is
+      REFUSED, because there (T, P) are one condition and the phase would be
+      chosen by the last digits of T.  The arm FINDS the curve with the
+      engine's own reading -- it bisects T between a liquid-classified and a
+      vapour-classified pure benzene feed, reading each run's resolved feed
+      `vf` -- and requires that the bisection meets a REFUSING temperature
+      before the bracket closes below the band (the flash's tolerance), so
+      the band is shown to exist on the engine and not only in prose.  The
+      refusal must name UNDETERMINED, the component, both remedies (`phase
+      liquid;`, `phase gas;`), the file, and the flash's tolerance as the
+      band.  (g2) the same T with `phase gas;` RUNS with feed vf = 1 and
+      with `phase liquid;` RUNS with vf = 0.  (g3) a MIXTURE at its own
+      bubble point (found the same way, to the same width) is untouched: it
+      runs and is never called UNDETERMINED.
+
 WHAT THIS GATE DOES NOT CHECK, said plainly:
 
   * a unit that reads its inlet's `vf` BARE during the solve (the valve, the
@@ -68,7 +84,11 @@ WHAT THIS GATE DOES NOT CHECK, said plainly:
     alone), which is not implemented and is not claimed;
   * a pure-component flash AT saturation, which returns its bisection
     midpoint (docs/design/the-word-that-was-not-there.md) -- arm (b) checks
-    that the pin is ACCEPTED, not that the degenerate flash is right.
+    that the pin is ACCEPTED, not that the degenerate flash is right;
+  * arm (g)'s rule in a UNIT's own thermo world (a per-unit `thermo {}`
+    override): the engine checks the band in the case's global world only,
+    and so does this arm; nor the time-integrated binaries, whose driver
+    marks no stream as an authored inlet.
 
 SABOTAGES PERFORMED 2026-10-03 (each applied to the tree, read back, the gate
 run, then reverted; results recorded in
@@ -142,7 +162,7 @@ componentMolarFlows
 {
 %(flows)s}
 
-T               370 K;
+T               %(T)s K;
 P               100000 Pa;
 %(pin)s"""
 
@@ -158,7 +178,7 @@ P               100000 Pa;
 %(pin)s"""
 
 
-def build_fixture(root: Path, flows: str, pin: str) -> Path:
+def build_fixture(root: Path, flows: str, pin: str, T: str = "370") -> Path:
     case = root / "overspecProbe"
     if case.exists():
         shutil.rmtree(case)
@@ -168,7 +188,7 @@ def build_fixture(root: Path, flows: str, pin: str) -> Path:
     (case / "constant" / "propertyManifest").unlink(missing_ok=True)
     (case / "system" / "controlDict").write_text(CONTROL)
     (case / "system" / "flowsheetDict").write_text(FLOWSHEET)
-    (case / "0" / "feed").write_text(FEED % {"flows": flows, "pin": pin})
+    (case / "0" / "feed").write_text(FEED % {"flows": flows, "pin": pin, "T": T})
     (case / "0" / "liquid").write_text(PRODUCT % {"pin": "phase           liquid;\n"})
     (case / "0" / "vapor").write_text(PRODUCT % {"pin": "phase           gas;\n"})
     return case
@@ -195,6 +215,36 @@ def result_json(out: str):
         return json.loads(m.group(0))
     except json.JSONDecodeError:
         return None
+
+
+def feed_vf(out: str):
+    r = result_json(out)
+    if r is None:
+        return None
+    return r.get("streams", {}).get("feed", {}).get("vf")
+
+
+def find_curve(root: Path, flows: str, lo: float, hi: float, width: float):
+    """Bisect T between a liquid-read (vf == 0) and a not-liquid-read feed,
+    reading the ENGINE's resolved feed vf.  Returns (T, rc, out, steps) at the
+    first run that is refused as UNDETERMINED, or at the midpoint once the
+    bracket is narrower than `width`.  The engine decides which side each T
+    is on; this function only keeps the bracket."""
+    steps = 0
+    while True:
+        mid = 0.5 * (lo + hi)
+        case = build_fixture(root, flows, "", T=repr(mid))
+        rc, out = run(case)
+        steps += 1
+        if "UNDETERMINED" in out or hi - lo < width:
+            return mid, rc, out, steps
+        vf = feed_vf(out) if rc == 0 else None
+        if vf is None:
+            return mid, rc, out, steps
+        if vf <= 0.0:
+            lo = mid
+        else:
+            hi = mid
 
 
 MIX = "    benzene    40 kmol/h;\n    toluene    60 kmol/h;\n"
@@ -360,6 +410,66 @@ def main() -> int:
                 + "\n      ".join(offenders)
                 + "\n      Run bin/curate/migrate_overspecified_vf.py on them; "
                 "the reader refuses each at load.")
+
+        # ---- (g) a pure stream ON its saturation curve is under-specified -
+        #  Benzene's normal boiling point is ~353.2 K, so 340 K reads liquid
+        #  and 370 K vapour at 1 bar under flash01's package; the bisection
+        #  keeps the bracket and the engine decides each side.  The band is
+        #  the flash's own tolerance on |ln K| (1e-8); with d ln K/dT ~ 0.035/K
+        #  for benzene there that is ~3e-7 K, so a bracket of 1e-8 K that has
+        #  met no refusal means the band does not exist.
+        T_g, rc, out, steps = find_curve(tmp, PURE_FLOWS, 340.0, 370.0, 1.0e-8)
+        if "UNDETERMINED" not in out:
+            failures.append(
+                f"(g) bisecting a PURE benzene feed's T between a liquid and a "
+                f"vapour reading ({steps} runs, last T = {T_g!r} K, exit {rc}) "
+                "never met a refusal.  A pure stream declared by T and P alone "
+                "ON its saturation curve was classified by the last digits of "
+                "T again (DEV.md C36 item 1).")
+        else:
+            for what, pat in (
+                ("the word UNDETERMINED", r"UNDETERMINED STREAM STATE"),
+                ("the component", r"is PURE benzene"),
+                ("the file to edit", r"stream 'feed' \(0/feed\)"),
+                ("remedy `phase liquid;`", r"`phase liquid;`"),
+                ("remedy `phase gas;`", r"`phase gas;`"),
+                ("the band, as the flash's tolerance",
+                 r"<= 1e-08 \(the flash's own convergence tolerance"),
+                ("the reason (the last digits of T)", r"last digits of T"),
+            ):
+                if not re.search(pat, out):
+                    failures.append(
+                        f"(g) the undetermined-state refusal never names {what}.")
+            if rc == 0:
+                failures.append("(g) the refusal was printed but the run exited 0.")
+            # (g2) the same T, declared: runs, and the declaration is the state
+            for pin, want in (("phase           gas;\n", 1.0),
+                              ("phase           liquid;\n", 0.0)):
+                word = pin.split()[1]
+                case = build_fixture(tmp, PURE_FLOWS, pin, T=repr(T_g))
+                rc2, out2 = run(case)
+                vf2 = feed_vf(out2) if rc2 == 0 else None
+                if rc2 != 0 or "UNDETERMINED" in out2:
+                    failures.append(
+                        f"(g2) the SAME pure stream at T = {T_g!r} K declaring "
+                        f"`phase {word}` did not run (exit {rc2}); a declared "
+                        "phase is exactly the remedy the refusal asks for.")
+                elif vf2 is None or abs(vf2 - want) > 1.0e-12:
+                    failures.append(
+                        f"(g2) declared `phase {word}` at T = {T_g!r} K, the "
+                        f"feed was published at vf = {vf2}, not {want}.")
+        # (g3) a mixture at its own bubble point is untouched
+        T_b, rc3, out3, steps3 = find_curve(tmp, MIX, 340.0, 380.0, 1.0e-8)
+        if "UNDETERMINED" in out3:
+            failures.append(
+                f"(g3) a benzene/toluene MIXTURE at its bubble point (T = "
+                f"{T_b!r} K) was refused as UNDETERMINED: the rule is for a "
+                "PURE component, whose (T, P) collapse to one condition on its "
+                "curve; a mixture's (T, P) fix its state there.")
+        elif rc3 != 0:
+            failures.append(
+                f"(g3) the mixture at its bubble point (T = {T_b!r} K) did not "
+                f"run (exit {rc3}) -- the negative is untested while this stands.")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -376,14 +486,19 @@ def main() -> int:
           "stream keeps its pin and the writer writes it back; flash01 (T and "
           "P only) shows ONE feed state on the stream surface, the flash KPI "
           "and the first law, with no impossible-phase accusation and no "
-          "vaporFraction written back for the mixture; and no tracked 0/ file "
-          "under tutorials/ declares all three on a mixture.  SCANNED: a "
-          "fixture case written by this gate (five variants), flash01, "
-          "condenser01, every tracked 0/ file under tutorials/.  NOT CHECKED: "
-          "units that read their inlet's vf bare during the solve (valve, "
-          "adiabaticFlash, heatExchanger, storageTank); the under-specified "
-          "half of the header's promise (not implemented); the degenerate "
-          "pure-component flash at saturation.")
+          "vaporFraction written back for the mixture; no tracked 0/ file "
+          "under tutorials/ declares all three on a mixture; and a PURE stream "
+          "declared by T and P alone ON its saturation curve (found by "
+          "bisecting the engine's own reading to the flash's tolerance) is "
+          "REFUSED as UNDETERMINED naming `phase liquid;` and `phase gas;`, "
+          "runs once declared, while a mixture at its bubble point is "
+          "untouched.  SCANNED: a fixture case written by this gate (five "
+          "variants plus the two bisections), flash01, condenser01, every "
+          "tracked 0/ file under tutorials/.  NOT CHECKED: units that read "
+          "their inlet's vf bare during the solve (valve, adiabaticFlash, "
+          "heatExchanger, storageTank); the band in a unit's own thermo world "
+          "or in the time-integrated binaries; the degenerate pure-component "
+          "flash at saturation.")
     return 0
 
 

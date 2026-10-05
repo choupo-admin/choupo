@@ -69,8 +69,11 @@ Description
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 
+#include <cmath>
+#include <cstdio>
 #include <exception>
 #include <iostream>
+#include <limits>
 #include <optional>
 #include <string>
 #include <vector>
@@ -334,6 +337,140 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
         && supercriticalSplitDiscarded(fs, T, z, thermo, locus, category, deferTo))
         return std::nullopt;
     return fs;
+}
+
+//  ---- A PURE STREAM ON ITS OWN SATURATION CURVE IS NOT YET A STATE --------
+//
+//  DEV.md C36 item 1 (Vitor, 2026-10-05).  By Duhem's theorem a stream of
+//  known component flows has two intensive degrees of freedom, and for a
+//  MIXTURE (T, P) are those two (CLAUDE.md §3, "A STREAM IS FIXED BY TWO
+//  VARIABLES").  For a PURE component they are not, exactly where it
+//  matters: on its saturation curve T and P are ONE condition, and the
+//  second variable -- which phase, how much of each -- is missing.
+//
+//  What the engine did with the missing word, measured on the C35 #4
+//  regression: once the flash learned to skip absent components, a pure
+//  undeclared stream at Tsat(P) was classified by the LAST DIGITS of T --
+//  check_evaporator_chest_phase's fixture at Tsat(200 kPa) = 392.1781136 K
+//  read as vapour, the same stream 0.008 K colder as liquid.  Nothing in the
+//  case said which; the rounding did.
+//
+//  THE BAND, from the numerics and nothing else.  For a single component the
+//  Rachford-Rice residual is RR(V) = (K - 1) / (1 + V (K - 1)), whose
+//  magnitude over 0 <= V <= 1 is at most |K - 1| / min(1, K) ~ |ln K| near
+//  K = 1.  So when |ln K| <= the flash's OWN convergence tolerance
+//  (`FlashOptions::tolerance`, the flash `equilibriumAt` runs), EVERY vapour
+//  fraction satisfies the criterion that flash accepts as converged: the
+//  answer it returns is undetermined in its own terms.  That is the band --
+//  no wider (a wider band is a modelling judgement, not a numerical fact,
+//  and would refuse streams the flash decides cleanly), and stated in the
+//  refusal in both forms, |ln K| and the equivalent |T - Tsat|.
+//
+//  Returns nothing -- the question has no meaning -- when the stream is not
+//  pure (one present component), the package has no vapour phase, the
+//  component is above its Tc, is a Henry solute (K = H/P has no saturation
+//  curve without a solvent) or nonvolatile (K = 0), or its K does not move
+//  with T (a single-root cubic gives K = phi_L/phi_V = 1 identically; that
+//  is not a saturation curve, and the flash seeds past it with Wilson).
+//  Never a crash: a package that refuses the K returns nothing here and the
+//  stream goes on to be resolved and announced as before.
+struct SaturationProximity
+{
+    std::size_t component = 0;   //  index of the one present component
+    scalar      lnK       = 0.0; //  ln K at the stream's own (T, P)
+    scalar      dlnKdT    = 0.0; //  slope of ln K along T at fixed P [1/K]
+    scalar      Tsat      = 0.0; //  where ln K = 0 at this P (Newton from T)
+    scalar      band      = 0.0; //  the |ln K| band: the flash's tolerance
+};
+
+inline scalar saturationBand() { return FlashOptions{}.tolerance; }
+
+inline std::optional<SaturationProximity>
+pureSaturationProximity(scalar               T,
+                        scalar               P,
+                        const sVector&       z,
+                        const ThermoPackage& thermo)
+{
+    std::size_t idx = 0;
+    int nPresent = 0;
+    for (std::size_t i = 0; i < z.size() && i < thermo.n(); ++i)
+        if (z[i] > 0.0) { ++nPresent; idx = i; }
+    if (nPresent != 1)                        return std::nullopt;
+    if (thermo.phasesOfType("vapor").empty()) return std::nullopt;
+    if (thermo.isHenrySolute(idx))            return std::nullopt;
+    if (aboveEveryCriticalT(T, z, thermo))    return std::nullopt;
+
+    const scalar NaN = std::numeric_limits<scalar>::quiet_NaN();
+    auto lnKat = [&](scalar Tq) -> scalar
+    {
+        const sVector K = thermo.Kvec(Tq, P, z, z);
+        if (idx >= K.size() || !(K[idx] > 0.0) || !std::isfinite(K[idx]))
+            return NaN;
+        return std::log(K[idx]);
+    };
+    SaturationProximity sp;
+    sp.component = idx;
+    sp.band      = saturationBand();
+    try
+    {
+        //  A central difference over +-1 mK: ln K is smooth there on every
+        //  surface the corpus uses, and the slope only scales the T form of
+        //  the band and the Tsat printed -- never the decision, which is
+        //  taken on |ln K| itself.
+        const scalar h = 1.0e-3;
+        sp.lnK    = lnKat(T);
+        sp.dlnKdT = (lnKat(T + h) - lnKat(T - h)) / (2.0 * h);
+        if (!std::isfinite(sp.lnK) || !std::isfinite(sp.dlnKdT)
+            || std::fabs(sp.dlnKdT) < 1.0e-12)
+            return std::nullopt;
+        sp.Tsat = T;
+        for (int it = 0; it < 3; ++it)
+        {
+            const scalar l = lnKat(sp.Tsat);
+            if (!std::isfinite(l)) break;
+            sp.Tsat -= l / sp.dlnKdT;
+        }
+    }
+    catch (const std::exception&)
+    {
+        return std::nullopt;
+    }
+    return sp;
+}
+
+//  The refusal itself, or nothing.  `name` and `file` are for the message;
+//  the caller decides WHICH streams are declarations (only an authored,
+//  unpinned inlet is: a unit's outlet or a tear seed is the engine's own
+//  answer, and "declare the phase" is not a remedy anyone can apply to it).
+inline std::optional<std::string>
+undeterminedSaturationRefusal(const std::string&   name,
+                              const std::string&   file,
+                              scalar               T,
+                              scalar               P,
+                              const sVector&       z,
+                              const ThermoPackage& thermo)
+{
+    const auto sp = pureSaturationProximity(T, P, z, thermo);
+    if (!sp || std::fabs(sp->lnK) > sp->band) return std::nullopt;
+    char buf[640];
+    std::snprintf(buf, sizeof buf,
+        "stream '%s' (%s) is PURE %s declared by T and P alone, and that "
+        "(T, P) lies ON its saturation curve: T = %.10g K against the "
+        "package's own Tsat(P = %.10g Pa) = %.10g K, |ln K| = %.3e <= %.0e "
+        "(the flash's own convergence tolerance; |T - Tsat| <= %.3e K here).",
+        name.c_str(), file.c_str(), thermo.comp(sp->component).name().c_str(),
+        T, P, sp->Tsat, std::fabs(sp->lnK), sp->band,
+        sp->band / std::fabs(sp->dlnKdT));
+    return std::string(buf)
+        + "  On the saturation curve of a pure component (T, P) are ONE "
+          "condition, not two: the Rachford-Rice residual meets the flash's "
+          "tolerance at EVERY vapour fraction, so which phase this stream "
+          "is in would be decided by the last digits of T, not by the case.  "
+          "Say which state it is: `phase liquid;` (saturated liquid) or "
+          "`phase gas;` (saturated vapour) -- or, for a wet stream, "
+          "`vaporFraction q;` (the pure-component exception of the "
+          "two-variable rule).  Record: "
+          "docs/design/a-stream-is-fixed-by-two-variables.md";
 }
 
 //  ---- THE SEARCH A STREAM'S CONSUMER RESOLVES IT WITH (2026-10-05) --------

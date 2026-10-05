@@ -2830,6 +2830,52 @@ int Flowsheet::solve(const DictPtr& dict,
         return runInit0(units, thermo, verbosity, authoredStates, tears);
     }
 
+    //  AUTHORED INLETS, marked once before any unit runs (DEV.md C33): a
+    //  stream no unit produces is a domain inlet, and a unit that reads its
+    //  inlet's phase may resolve it at its own (T, P, z) -- see
+    //  `flashState::resolvedInletVaporFraction`.  Tears are produced, so
+    //  they are not marked.  Nothing about the stream itself changes here.
+    //  (Moved above the lint seam 2026-10-05, C36 item 1, so that the
+    //  refusal below -- a fact about the DECLARATION -- is one `choupo-lint`
+    //  raises too; nothing between here and the first unit reads the flag.)
+    {
+        std::set<std::string> producedHere;
+        for (const auto& fu : topology_)
+            for (const auto& o : fu.outs) producedHere.insert(o);
+        for (auto& [nm, s] : streams_)
+            s.authoredInlet = !producedHere.count(nm);
+    }
+
+    //  A PURE AUTHORED INLET ON ITS OWN SATURATION CURVE, WITH NO PHASE
+    //  DECLARED, IS REFUSED (DEV.md C36 item 1).  The rule and its band live
+    //  in ONE home, `flashState::undeterminedSaturationRefusal`; it is APPLIED
+    //  here, once, because this is where the engine decides which streams are
+    //  DECLARATIONS: `equilibriumAt` is also asked about trial states inside
+    //  a unit's search and about produced streams, for which "declare the
+    //  phase" is not a remedy anyone can apply.  Checked in the case's global
+    //  thermophysical world, the one the stream table and the energy report
+    //  resolve the stream in.  Every offender is collected before refusing.
+    {
+        std::vector<std::string> undetermined;
+        for (const auto& [nm, s] : streams_)
+        {
+            if (!s.authoredInlet || s.phasePinned || s.F <= 0.0
+                || !canonicalPaths.count(nm)) continue;
+            if (auto why = flashState::undeterminedSaturationRefusal(
+                    nm, "0/" + statePathOf(nm), s.T, s.P, s.z, thermo))
+                undetermined.push_back(*why);
+        }
+        if (!undetermined.empty())
+        {
+            std::string msg = "UNDETERMINED STREAM STATE -- "
+                + std::to_string(undetermined.size())
+                + " authored stream(s) sit on a pure component's saturation "
+                  "curve with no phase declared:";
+            for (const auto& u : undetermined) msg += "\n  * " + u;
+            throw std::runtime_error(msg);
+        }
+    }
+
     // ---- choupo-lint: validate and stop (read-only, same seam) -----------
     //  Everything above this line reads the disk and composes in memory;
     //  everything below solves or writes.  Lint therefore inherits the whole
@@ -2888,19 +2934,6 @@ int Flowsheet::solve(const DictPtr& dict,
     // already be solved (units are in topological order in single-pass; in
     // recycle the tear iteration converges values that propagate through).
     energyWires_.clear();
-
-    //  AUTHORED INLETS, marked once before any unit runs (DEV.md C33): a
-    //  stream no unit produces is a domain inlet, and a unit that reads its
-    //  inlet's phase may resolve it at its own (T, P, z) -- see
-    //  `flashState::resolvedInletVaporFraction`.  Tears are produced, so
-    //  they are not marked.  Nothing about the stream itself changes here.
-    {
-        std::set<std::string> producedHere;
-        for (const auto& fu : topology_)
-            for (const auto& o : fu.outs) producedHere.insert(o);
-        for (auto& [nm, s] : streams_)
-            s.authoredInlet = !producedHere.count(nm);
-    }
 
     // Feedback heat-links (energy tears): a unit's energyInput `from
     // <col>.<port>` (kind heat) where the producer column is listed AFTER this
