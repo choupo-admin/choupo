@@ -53,7 +53,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoSolve"
 EVAP01 = ROOT / "tutorials/steady/drying/evapDryer01_nacl"
-EVAP02 = ROOT / "tutorials/steady/drying/evapDryer02_energy_limited"
+EVAP02 = ROOT / "tutorials/steady/drying/evapDryer02_saturation_limited"
 LITHIUM = ROOT / "tutorials/plant/lithiumBrinePlant"
 WARN = "[EvaporativeDryer] WARNING: the hot air cannot pay"
 NOTE = "[EvaporativeDryer] NOTE: air-capacity limited"
