@@ -1002,6 +1002,9 @@
   "PairResolution": [
    "src/core/ThermoResolution.H"
   ],
+  "PairSpanGuard": [
+   "src/thermo/PairAudit.H"
+  ],
   "ParetoSweepDriver": [
    "src/outerDriver/ParetoSweepDriver.H"
   ],
@@ -1345,6 +1348,9 @@
   ],
   "SolutionWriter": [
    "src/io/SolutionWriter.H"
+  ],
+  "Span": [
+   "src/thermo/PairAudit.H"
   ],
   "Speciate": [
    "src/propertyOps/Speciate.H"
@@ -5348,12 +5354,14 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/DerivedClosures.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/SurfaceTensionModel.H",
    "src/thermo/ThermoAnnounce.H",
@@ -5395,6 +5403,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/ApproximationAuthorisation.H",
@@ -5403,6 +5412,7 @@
    "src/thermo/Database.H",
    "src/thermo/ElementComposition.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/SystemClassifier.H",
    "src/thermo/ThermoAnnounce.H",
@@ -5424,16 +5434,19 @@
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/thermo/activityCoefficient/ActivityModel.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/RegistryRefusal.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/activityCoefficient/CosmoSac.H",
@@ -5929,15 +5942,18 @@
    "src/thermo/membrane/MembraneRegistry.H"
   ],
   "src/thermo/phase/LiquidPhase.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/activityCoefficient/UNIFAC.H",
@@ -7113,7 +7129,8 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
-   "src/unitOperations/heatTransfer/EvaporativeDryer.H"
+   "src/unitOperations/heatTransfer/EvaporativeDryer.H",
+   "src/unitOperations/heatTransfer/Psychrometry.H"
   ],
   "src/unitOperations/heatTransfer/Evaporator.cpp": [
    "src/core/Advisory.H",
@@ -8370,6 +8387,7 @@
    "src/thermo/Database.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
+   "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
@@ -8388,6 +8406,7 @@
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
+   "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
    "src/thermo/transport/ChapmanEnskog.cpp",
@@ -9961,9 +9980,13 @@
    "src/reporting/UtilityAllocationReport.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
+   "src/thermo/ThermoPackage.cpp",
+   "src/thermo/ThermoPackageBuilder.cpp",
+   "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
+   "src/thermo/phase/LiquidPhase.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
    "src/unitOperations/batch/BatchCrystalliser.cpp",
@@ -12152,9 +12175,13 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/thermo/PairAudit.H": [
+   "src/thermo/ThermoPackage.cpp",
+   "src/thermo/ThermoPackageBuilder.cpp",
+   "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
-   "src/thermo/activityCoefficient/Wilson.cpp"
+   "src/thermo/activityCoefficient/Wilson.cpp",
+   "src/thermo/phase/LiquidPhase.cpp"
   ],
   "src/thermo/PropertyContext.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -13722,6 +13749,7 @@
    "src/unitOperations/batch/BatchDryer.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
+   "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/SolidDryer.cpp"
   ],
   "src/unitOperations/heatTransfer/SolidDryer.H": [

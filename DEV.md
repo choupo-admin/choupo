@@ -3260,8 +3260,8 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
            already broken -- it pointed beside itself rather than into
            `archive/`), not CLAUDE.md, `decision-records.md` or a dozen
            design records.  Renamed:
-           `archive/conceptual-data-architecture.md` and
-           `archive/conceptual-migration-map.md`, each with a zero-site stub
+           `docs/architecture/archive/conceptual-data-architecture.md` and
+           `docs/architecture/archive/conceptual-migration-map.md`, each with a zero-site stub
            at its old path for links from outside the tree.  All 20 records
            redacted in place -- every product name replaced by what it is
            ("the commercial simulators", "a commercial process simulator"),
