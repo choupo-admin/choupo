@@ -2009,7 +2009,9 @@ Each lands as ONE revertable merge with its moved golden rows listed.
  14. The published git history is NOT rewritten; DEV.md C7 aligned with the
      ruling record.  [DONE 2026-10-05, branch `claude/c35-cases`: C7's two
      "his to take" sentences now record the rejection.]
- 15. The two archive stubs are deleted.
+ 15. The two archive stubs are deleted.  [DONE 2026-10-05, branch
+     `claude/c35-cases`: no in-tree link reached them; check_doctrine reads
+     content, not names, so its ledger is unchanged.]
  16. Vítor's own deck stays his.
 Status: dispatched 2026-10-05.
 
@@ -3046,6 +3048,11 @@ superheated chest is REFUSED there, falsely, not mispriced).
            the two old FILE NAMES are still in the tree (as stubs), which is
            the price of not breaking an outside link; deleting them is a
            one-line act whenever Vítor prefers broken links to the names.
+           **DELETED 2026-10-05 (C35 item 15, Vítor's ruling):** both stubs
+           are gone; no in-tree link reached them.  `check_doctrine` scans
+           file CONTENT, never file names, so its ledger did not change --
+           the names were outside the gate's sight, which is why the stubs
+           were never pinned.
        (B) `docs/slides/farelo_choupo.tex`, 3 sites: the HISTORY OF THE FIELD
            (the 1976 project at MIT, the 1981 company, the proprietary era).
            That is history, not comparison, and it is **Vítor's own deck** —
