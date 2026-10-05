@@ -136,8 +136,9 @@ COMPETITOR_SKIP_PREFIX = ("generated/", "thirdParty/", "data/local/")
 #        CLOSED 2026-10-05 (DEV.md C7): 60 sites in 20 files.  The two
 #        archive records named after a product were renamed
 #        (`archive/conceptual-data-architecture.md`,
-#        `archive/conceptual-migration-map.md`) with a zero-site stub left at
-#        each old path for external links, every in-tree link moved, and the
+#        `archive/conceptual-migration-map.md`) -- the zero-site stubs left at
+#        the old paths were DELETED 2026-10-05 (DEV.md C35 item 15; this gate
+#        reads content, never file names) -- every in-tree link moved, and the
 #        prose of all 20 records rewritten to describe the product by what it
 #        is -- every decision, date and argument unchanged, and a dated note
 #        at the top of each saying where the original wording is kept.

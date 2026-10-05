@@ -207,8 +207,9 @@ equilibrium and no pressure drop anywhere in this case.  Consequently:
   no `economics` block.  With the converter unsized, a capital total would omit
   the most expensive item in a 200-bar loop, and an NPV built on it would be a
   confident number about a plant with no reactor.  For the loop appraisal read
-  ammonia02 — and read its converter's 80 m³ knowing it is an author-set
-  volume, not a computed one.
+  ammonia02 — and read its converter volume knowing it rests on an ASSUMED
+  space velocity (20 000 Nm³/(m³·h) on the inlet gas, declared since
+  2026-10-05; before that a typed 80 m³), not on a rate law.
 * **The peak temperature is not improved.**  Bed 1 still reaches 841 K, within
   2 K of ammonia02's single bed.  Quench does not cool the first bed; it
   rescues the ones after it.  Lowering the peak means lowering bed 1's *inlet*,

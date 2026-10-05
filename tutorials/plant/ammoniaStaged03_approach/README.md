@@ -175,15 +175,16 @@ engine does not pre-determine a single band for a class.  Read it there.
 
 ## 4. Why the converter's volume is a RULE, not a number
 
-`tutorials/plant/ammonia02_full_plant` sizes this converter with a
-`designRules` block carrying a literal `volume` and puts the provenance in a
+`tutorials/plant/ammonia02_full_plant` sized this converter with a
+`designRules` block carrying a literal `volume` and put the provenance in a
 `//` comment beside it (the flagship `greenAmmoniaIndustrialN2` did the same
 until 2026-10-02, when its sizing and costing chain left the base case).
-Measured 2026-10-05: that comment says ~20 000 Nm³/(m³·h) while its own 80 m³
-at its own converter inlet is **11 360** Nm³/(m³·h) — a factor of 1.76 that
-no reader could see from the comment.  The design sheet then records the basis as `"volume (author-set)"` and
-says nothing about a space velocity, because there is nothing about a space
-velocity for it to read.  **A fact a reader must act on, living in a comment,
+Measured 2026-10-05: that comment said ~20 000 Nm³/(m³·h) while its own 80 m³
+at its own converter inlet was **11 360** Nm³/(m³·h) — a factor of 1.76 that
+no reader could see from the comment.  The design sheet recorded the basis as `"volume (author-set)"` and
+said nothing about a space velocity, because there was nothing about a space
+velocity for it to read.  (Since 2026-10-05 ammonia02 declares the same rule
+as this case, by Vítor's ruling, and its converter is 45.4 m³.)  **A fact a reader must act on, living in a comment,
 is a fact no reader and no gate can check.**
 
 This case declares the rule instead, in grammar the engine parses

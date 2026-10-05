@@ -27,8 +27,9 @@
     water stays on the crystal -- a dryer that does not dry, reported as such
     instead of returning a dry solid it cannot produce.
 
-    THE WALL THIS GAS MEETS IS ROOM, NOT HEAT -- whatever the case's name
-    says (the name is kept: other pages link to it).  The same NOTE says
+    THE WALL THIS GAS MEETS IS ROOM, NOT HEAT, and the case is named for it
+    (it was `evapDryer02_energy_limited` until 2026-10-05, renamed by
+    Vitor's ruling, DEV.md C35 item 12).  The same NOTE says
     what the heat could have paid for: cooled all the way to the solid's
     feed temperature, 298.15 K, this gas could evaporate 48.9 kg/h, more than
     the 37.6 kg/h it has room for.  The two limits are coupled --

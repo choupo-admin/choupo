@@ -24,13 +24,18 @@ the floor it claimed.  This gate holds, from the runs themselves:
       evapDryer01 complete (X_final 0, exhaust below its cap, no limit line);
       evapDryer02 saturation (exhaust at the cap, T_out above the floor, the
       NOTE naming the heat the gas could have paid for, no energy WARNING);
-      lithiumBrinePlant energy (T_out AT the floor, exhaust below its cap,
-      water left on the cake, the WARNING replayed in the caveat block);
+      lithiumBrinePlant complete since its gas was DESIGNED for a dry product
+      (C35 item 11, 2026-10-05; it was the energy-bound witness before):
+      X_final 0, no limit line, T_out above the floor AND below water's
+      critical temperature -- the unit's hand balance has a spurious root
+      above 647 K (its Watson latent heat vanishes there), which a 20 %
+      design margin was measured to land on;
   (b) THE HEAT THE GAS PAYS FOR, independently of any property value: on a
       fixture where the floor binds (evapDryer02 with the wet solid at
       340 K), doubling the gas -- same composition, same T -- must double
       the water removed to 1e-9, because at the floor the balance is linear
-      in the gas and has no sensible term.  The pre-2026-10-05 unit removed
+      in the gas and has no sensible term, and the energy WARNING must be
+      replayed in the caveat block.  The pre-2026-10-05 unit removed
       ALL the water at both rates (ratio 1);
   (c) the heat-capacity DEFAULT the corpus uses (NaCl carries no
       `solidHeatCapacity`, so the crystal's warm-up is priced at zero) is
@@ -53,7 +58,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoSolve"
 EVAP01 = ROOT / "tutorials/steady/drying/evapDryer01_nacl"
-EVAP02 = ROOT / "tutorials/steady/drying/evapDryer02_energy_limited"
+EVAP02 = ROOT / "tutorials/steady/drying/evapDryer02_saturation_limited"
 LITHIUM = ROOT / "tutorials/plant/lithiumBrinePlant"
 WARN = "[EvaporativeDryer] WARNING: the hot air cannot pay"
 NOTE = "[EvaporativeDryer] NOTE: air-capacity limited"
@@ -174,6 +179,9 @@ def main():
             if WARN not in o or abs(k["T_out"] - 340.0) > 1e-9:
                 fail(f"(b) the warm fixture x{scale} must be heat-bound at its"
                      f" 340 K floor: {k}")
+            if scale == 1 and not replayed(o, "cannot pay for evaporating"):
+                fail("(b) the heat-bound fixture must WARN in the caveat"
+                     " block too, not only at its site")
             if k["X_final"] <= 0.0 or k["exhaust_humidity"] >= 0.95:
                 fail(f"(b) the warm fixture x{scale} must leave water on the"
                      f" cake with the exhaust below its cap: {k}")
@@ -185,25 +193,32 @@ def main():
                  " for (a ratio of 1 is the pre-2026-10-05 unit evaporating"
                  " ALL the water at both rates)")
 
-
+        #  The lithium plant's gas is DESIGNED (C35 item 11, 2026-10-05):
+        #  sized from the floor balance above for a dry product plus a 5 %
+        #  margin (the basis is written in its 0/MAIN/fuelAir).  So it must
+        #  dry completely, above the floor, with no limit warning -- and BELOW
+        #  water's critical temperature, because this unit's hand balance has
+        #  a spurious root above it (its Watson latent heat vanishes there)
+        #  that a larger margin was measured to land on (T_out 672 K).
         ol = run(LITHIUM, tmp, "lithium")
         kl = kpis(ol, "FINISHING.dryer", "lithiumBrinePlant")
-        if WARN not in ol or not replayed(ol, "cannot pay for evaporating"):
-            fail("(a) the lithium plant's FINISHING.dryer is heat-bound and"
-                 " must WARN at its site and in the caveat block")
-        if (abs(kl["T_out"] - 363.15) > 1e-9 or kl["exhaust_humidity"] >= 0.95
-                or kl["X_final"] <= 0.0):
-            fail(f"(a) the lithium dryer at its energy limit must leave AT the"
-                 f" floor (363.15 K), below the exhaust cap, with water on the"
-                 f" cake: {kl}")
+        if WARN in ol or NOTE in ol:
+            fail("(a) the lithium plant's FINISHING.dryer is designed to dry"
+                 " completely, yet announces a limit")
+        if (kl["X_final"] != 0.0 or kl["exhaust_humidity"] >= 0.95
+                or not (363.15 < kl["T_out"] < 647.096)):
+            fail(f"(a) the lithium dryer must leave dry, below the exhaust"
+                 f" cap, with T_out above its 363.15 K floor and below"
+                 f" water's 647.096 K critical point: {kl}")
 
     print("check_evaporative_dryer: OK -- the free-moisture dryer announces"
           " the limit its own answer satisfies (evapDryer01 complete,"
           " evapDryer02 saturation-bound above its floor with the payable"
-          " heat named, the lithium plant's FINISHING.dryer heat-bound AT its"
-          " floor below the exhaust cap, warned at the site and in the caveat"
-          " block), evaporates at the floor exactly what the gas pays for"
-          " (doubling the gas doubles the water removed, to 2e-9), and"
+          " heat named, the lithium plant's designed FINISHING.dryer complete"
+          " with T_out between its floor and water's critical point), evaporates"
+          " at the floor exactly what the gas pays for (doubling the gas"
+          " doubles the water removed, to 2e-9, the WARNING replayed in the"
+          " caveat block), and"
           " announces the zero heat capacity it defaults for NaCl.  NOT"
           " checked: its hand energy surface against the energy report (the"
           " report refuses these cases -- their salts carry no formation"

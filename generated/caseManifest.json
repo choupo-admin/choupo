@@ -3475,7 +3475,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/steady/drying/evapDryer02_energy_limited": {
+  "tutorials/steady/drying/evapDryer02_saturation_limited": {
    "application": "choupoSolve",
    "unitTypes": [
     "evaporativeDryer"
@@ -6920,7 +6920,7 @@
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
     "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/drying/evapDryer01_nacl",
-    "tutorials/steady/drying/evapDryer02_energy_limited",
+    "tutorials/steady/drying/evapDryer02_saturation_limited",
     "tutorials/steady/drying/solidDryer01_sugar",
     "tutorials/steady/drying/sprayDryer01_sugar",
     "tutorials/steady/drying/sprayDryer02_residence_sweep",
@@ -7401,7 +7401,7 @@
    ],
    "evaporativeDryer": [
     "tutorials/steady/drying/evapDryer01_nacl",
-    "tutorials/steady/drying/evapDryer02_energy_limited"
+    "tutorials/steady/drying/evapDryer02_saturation_limited"
    ],
    "evaporator": [
     "tutorials/steady/evaporation/evaporator01_brine",
@@ -8045,7 +8045,7 @@
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/drying/evapDryer01_nacl",
-    "tutorials/steady/drying/evapDryer02_energy_limited",
+    "tutorials/steady/drying/evapDryer02_saturation_limited",
     "tutorials/steady/drying/solidDryer01_sugar",
     "tutorials/steady/drying/sprayDryer01_sugar",
     "tutorials/steady/drying/sprayDryer02_residence_sweep",

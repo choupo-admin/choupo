@@ -15,13 +15,13 @@
   =========================================================================
   WHY THE CONVERTER'S VOLUME IS NOT TYPED IN
   =========================================================================
-  The flagship green-ammonia plant and `ammonia02_full_plant` both size this
+  The flagship green-ammonia plant and `ammonia02_full_plant` both sized this
   converter with `designRules { volume <m3>; }` and put where the number came
-  from in a `//` comment beside it.  The design sheet then records the basis
-  as "volume (author-set)" and says nothing about a space velocity, because
-  there is nothing about a space velocity for it to read.  A fact a reader
+  from in a `//` comment beside it.  The design sheet then recorded the basis
+  as "volume (author-set)" and said nothing about a space velocity, because
+  there was nothing about a space velocity for it to read.  A fact a reader
   must act on, living in a comment, is the shape this project has now found
-  five times.
+  five times.  (ammonia02 declares the rule below since 2026-10-05.)
 
   This case declares the RULE instead, in grammar the engine parses
   (`src/postProcessing/sizing/VesselSize.cpp`, the `spaceVelocity` branch):

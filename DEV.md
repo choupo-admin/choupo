@@ -1284,7 +1284,9 @@ accepts today, and that is a policy call.
      (CORRECTED 2026-10-05: "applied to this flowsheet's own throughput" was
      not measured -- 80 m3 at ammonia02's own converter inlet is 11 360
      Nm3/(m3 h), not the ~20 000 its comment said; the comment now says so
-     and the number is left for Vitor, see C8.)
+     and the number is left for Vitor, see C8.)  (RULED 2026-10-05, C35
+     item 9: the case now declares `spaceVelocity 20000; spaceVelocityBasis
+     normal; flowKey N_in_mol_s;` and its converter is 45.44 m3.)
 
 **C6-R2. BALANCES REVIEW (2026-09-24, read-only).  Vitor's instinct about
      the utility water was RIGHT, and it is right about the report he did not
@@ -2002,13 +2004,56 @@ Each lands as ONE revertable merge with its moved golden rows listed.
   7. Dryer solid floor: the gas wet-bulb temperature, not the feed T.
   8. Pipe with a vapour inlet: REFUSED by name until a compressible model exists.
   9. ammonia02 declares `spaceVelocity 20000; spaceVelocityBasis normal;`.
+     [DONE 2026-10-05, branch `claude/c35-cases`, with `flowKey N_in_mol_s`
+     (GHSV on the inlet gas, as ammoniaStaged03 declares): V_R 80 -> 45.4386
+     m3, verified.  17 rows moved, each because the converter volume moved:
+     the basis WORD; D 2.5701 -> 2.1284, H 15.421 -> 12.771, t_wall 0.2305
+     -> 0.1916, weight 229 625 -> 130 893 (the smaller vessel at L/D 6);
+     Q_gas 3.595 -> 3.931 m3/s (the flow KPI is now the inlet, 22 % more
+     moles than the outlet); purchased 104 405 -> 65 253, bareModule
+     21.26 M -> 11.06 M, totalModule 25.09 M -> 13.05 M EUR; and the
+     appraisal through FCI: FCI 67.39 M -> 55.27 M, TCI 77.50 M -> 63.56 M,
+     WC 10.11 M -> 8.29 M, COM_d 215.10 M -> 212.92 M (its FCI-proportional
+     terms), NPV 78.60 M -> 103.57 M, IRR 0.2561 -> 0.3416, paybackYears
+     4.958 -> 3.584.]
  10. ammonia03's beds keep refusing (their lesson); no change.
  11. lithiumBrinePlant's dryer: air raised until the product leaves dry.
- 12. evapDryer02 renamed for what binds it (exhaust saturation).
- 13. convDryer01's two round-off residual rows removed.
+     [DONE 2026-10-05, branch `claude/c35-cases`.  The burner feed
+     `0/MAIN/fuelAir` (its flue gas is the drying medium) is sized by the
+     dryer's own floor balance, written in that file: 8.6644 kg of water
+     per kmol of gas at the floor -> minimum 206.88 kmol/h for 1792.49 kg/h
+     of free water, + 5 % margin -> 217.22 kmol/h, same CH4 : O2 : N2 ratio
+     (x 5.5585), so the flame T is unchanged.  Result: [complete-limited],
+     X_final 0, T_out 385.33 K, a_w 0.22.  9 rows moved, all one reason
+     (the gas now pays for all the water): fuelAir.F and hotAir.F 0.0108556
+     -> 0.0603403 kmol/s; humidExhaust.F and cleanAir.F 0.0160766 ->
+     0.0879791; product.F 0.0225568 -> 0.000138889 (the Li2CO3 alone);
+     product/humidExhaust/cleanAir/fines T 363.15 -> 385.328 K (off the
+     floor).  hotAir.T drifted 1.7e-6 relative and was NOT re-pinned.
+     **ENGINE FINDING, not fixed (src/ was out of this slice):** a 20 %
+     margin was tried first and the unit returned T_out = 672.28 K, ABOVE
+     water's critical point -- its hand balance (Watson latent -> 0 at
+     647 K, the free water warmed as a liquid at a constant cp) has a
+     second, spurious root there, and the bisection's first midpoint
+     (~657 K) sends it into that half whenever the gas is large enough.
+     `check_evaporative_dryer` (a) now refuses a lithium T_out at or above
+     647.096 K (sabotage at 20 %: caught).  Whose fix: the unit's.]
+ 12. evapDryer02 renamed for what binds it (exhaust saturation).  [DONE
+     2026-10-05, branch `claude/c35-cases`:
+     `tutorials/steady/drying/evapDryer02_saturation_limited`; FASTSET,
+     check_evaporative_dryer, caseManifest and the Tutorials Guide follow;
+     no GUI test or doc outside DEV.md named it; no golden row moved.]
+ 13. convDryer01's two round-off residual rows removed.  [DONE 2026-10-05,
+     branch `claude/c35-cases`: `kpi co energyResidual_kW 1.08e-7` and
+     `kpi counter energyResidual_kW -4.87e-10` deleted by hand, the reason
+     left as a comment in `expected`; `check_convective_dryer` (a) still
+     holds |r| <= 1e-3 kW absolutely.]
  14. The published git history is NOT rewritten; DEV.md C7 aligned with the
-     ruling record.
- 15. The two archive stubs are deleted.
+     ruling record.  [DONE 2026-10-05, branch `claude/c35-cases`: C7's two
+     "his to take" sentences now record the rejection.]
+ 15. The two archive stubs are deleted.  [DONE 2026-10-05, branch
+     `claude/c35-cases`: no in-tree link reached them; check_doctrine reads
+     content, not names, so its ledger is unchanged.]
  16. Vítor's own deck stays his.
 Status: dispatched 2026-10-05.
 
@@ -2380,6 +2425,11 @@ superheated chest is REFUSED there, falsely, not mispriced).
      round-off pinned, the column13 shape; dropping the two rows is a row
      that MOVES, so it is his.  (P7) The continuous-dryer EduTool (option
      2), still deferred.
+     **RULED 2026-10-05 (C35):** P1 -> items 12 and 11 (the case renamed
+     `evapDryer02_saturation_limited`; the lithium plant's gas DESIGNED for
+     a dry product, so NO corpus case is heat-bound now and arm (b)'s warm
+     fixture is the heat-bound witness, its caveat-block replay checked
+     there); P6 -> item 13 (the two rows dropped).  P2-P5 and P7 stay his.
 
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o
@@ -2903,7 +2953,9 @@ superheated chest is REFUSED there, falsely, not mispriced).
      not, because declaring the rule (`spaceVelocity 20000; spaceVelocityBasis
      normal;` -> 45.4 m3) moves ammonia02's converter size and cost golden
      -- WAITING ON VITOR (4b): keep the typed 80 m3, or let the case declare
-     the rule.
+     the rule.  **RULED 2026-10-05 (C35 item 9): the case declares the rule
+     (inlet gas, `flowKey N_in_mol_s`), V_R = 45.4386 m3, 17 golden rows
+     moved (listed in C35).**
 
      **D IS BUILT (2026-09-26, in an isolated worktree, under Vitor's
      authorisation of the same day).**  `tutorials/plant/ammoniaStaged04_kinetic`:
@@ -3045,6 +3097,11 @@ superheated chest is REFUSED there, falsely, not mispriced).
            the two old FILE NAMES are still in the tree (as stubs), which is
            the price of not breaking an outside link; deleting them is a
            one-line act whenever Vítor prefers broken links to the names.
+           **DELETED 2026-10-05 (C35 item 15, Vítor's ruling):** both stubs
+           are gone; no in-tree link reached them.  `check_doctrine` scans
+           file CONTENT, never file names, so its ledger did not change --
+           the names were outside the gate's sight, which is why the stubs
+           were never pinned.
        (B) `docs/slides/farelo_choupo.tex`, 3 sites: the HISTORY OF THE FIELD
            (the 1976 project at MIT, the 1981 company, the proprietary era).
            That is history, not comparison, and it is **Vítor's own deck** —
@@ -3070,6 +3127,10 @@ superheated chest is REFUSED there, falsely, not mispriced).
      its own costs (every clone diverges, every existing tag and link is
      affected), and it is Vítor's decision, not the assistant's.  A scrub
      presented as closing the legal question would be false comfort.
+     **RULED 2026-10-05 (C35 item 14): the published history is NOT
+     rewritten.**  That is the posture `no-competitor-is-named-here.md` §6
+     already recorded: the ruling binds what the tree carries from here on,
+     and the history keeps what was lawful when it was written.
 
      **NOT DONE, and why it was not fired off unattended:** the two studies
      are referenced from FOUR places, two of which are not prose —
@@ -3088,11 +3149,11 @@ superheated chest is REFUSED there, falsely, not mispriced).
      to the ruling record, and `decision-records.md` names only the ruling.
      The category-2 allowlist is `COMPETITOR_EXEMPT`.  Nothing to fix.
 
-     **WHAT REMAINS (2026-10-05):** (B) is Vítor's; (C) is permanent; and
-     whether the PUBLISHED git history is rewritten is Vítor's decision --
-     note that `no-competitor-is-named-here.md` §6 and its index row record
-     history-rewriting as REJECTED, while the paragraph above calls it his
-     to take.  Those two must be made to agree, and which way is his.
+     **WHAT REMAINS (2026-10-05):** (B) is Vítor's; (C) is permanent.  The
+     PUBLISHED git history is NOT rewritten -- REJECTED, ruled by Vítor
+     2026-10-05 (C35 item 14), in agreement with
+     `no-competitor-is-named-here.md` §6 and its index row; it is no longer
+     an open question.
 
 **C6. THE GREEN AMMONIA CASE STUDY (commissioned 2026-09-24; the largest
      thing in this file).**  Vitor: put the generals to review the green

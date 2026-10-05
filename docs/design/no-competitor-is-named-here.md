@@ -127,6 +127,7 @@ TAUGHT and a history record that names a retired grammar is doing its job.
   history to remove a name would break every clone and every commit hash this
   project's records cite, to hide something that was lawful when it was
   written.  The ruling binds what the tree carries from here on.
+  Confirmed by Vítor on 2026-10-05 (DEV.md C35 item 14).
 * **No claim is made that the ban list is complete.**  It holds eight product
   names; a ninth product mentioned tomorrow passes.  The list is in the gate
   and is the one home for it.
@@ -143,8 +144,10 @@ redacted in place (the product described by what it is, each record carrying
 a dated note that the original wording is in git history), and the two
 archive records whose FILE NAMES carried a product name were renamed to
 `docs/architecture/archive/conceptual-data-architecture.md` and
-`conceptual-migration-map.md`, with a zero-site stub at each old path so a
-link from outside the tree still resolves.  What stays pinned is Vítor's own
+`conceptual-migration-map.md`.  A zero-site stub was first left at each old
+path so a link from outside the tree would still resolve; Vítor ruled the
+stubs deleted the same day (DEV.md C35 item 15), so the old file names are
+gone from the tree.  What stays pinned is Vítor's own
 slide deck (the history of the field; his to decide) and the importer's
 source-exclusion list (functional code; permanent).  DEV.md C7 carries the
 measurements.

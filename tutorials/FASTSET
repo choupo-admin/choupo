@@ -149,7 +149,7 @@ tutorials/props/transport/transport01_gas_bench
 tutorials/steady/absorption/extraction01_waterButanol
 tutorials/steady/crystallisation/crystalliser01_sugar
 tutorials/steady/distillation/shortcut01_benzene_toluene
-tutorials/steady/drying/evapDryer02_energy_limited
+tutorials/steady/drying/evapDryer02_saturation_limited
 tutorials/steady/economics/economics01_esterification_dcf
 tutorials/steady/evaporation/evaporator01_brine
 tutorials/steady/flash/flash15_refused_salt_basis_rank

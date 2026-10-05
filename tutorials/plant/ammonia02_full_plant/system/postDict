@@ -32,32 +32,36 @@
   WHAT STAGE OF DESIGN THIS IS, said where a reader audits rather than left to
   be inferred.  The economics block declares `estimateClass 4` -- AACE 18R-97's
   STUDY OR FEASIBILITY class, 1-15 % of complete project definition, method
-  "equipment factored or parametric".  The converter's 80 m3 stands for that
-  method -- a SPACE VELOCITY applied to a throughput -- but it is TYPED, not
-  derived, and this paragraph used to say it was ~20000 Nm3/(m3 h) applied to
-  this flowsheet's own throughput.  MEASURED 2026-10-05, it is not: 80 m3 at
-  this run's own converter inlet (N_in_mol_s 11262.46 mol/s, 0 degC / 1 atm
-  ideal gas) is 11 360 Nm3/(m3 h) -- 10 388 on the outlet -- so the old
-  sentence overstated the space velocity by 1.76x.  The volume is left as it
-  is (changing it moves this case's cost golden, which is Vitor's call); the
-  engine-visible way to declare the rule is `spaceVelocity` with
-  `spaceVelocityBasis normal;`, as `ammoniaStaged03_approach` does, and at
-  20000 Nm3/(m3 h) that rule would give 45.4 m3.  It is the first of the three volumes a
+  "equipment factored or parametric", and the converter is sized by exactly
+  that method: a SPACE VELOCITY applied to this run's own throughput,
+  DECLARED in grammar the engine parses --
+
+      spaceVelocity 20000;  spaceVelocityBasis normal;  flowKey N_in_mol_s;
+
+  so V = Q_normal(inlet) / SV, with Q_normal the converter INLET gas at
+  273.15 K and 101325 Pa (ideal gas), the convention published GHSVs use,
+  and the volume moves with the flowsheet instead of standing still while
+  it does.  Until 2026-10-05 the volume was a TYPED 80 m3 under a comment
+  claiming ~20000 Nm3/(m3 h); measured, 80 m3 at this run's inlet was
+  11 360 Nm3/(m3 h), and Vitor ruled that the case declare the rule instead
+  (DEV.md C35 item 9).  The 20000 is an ASSUMED feasibility figure, not a
+  datum for this catalyst.  It is the first of the three volumes a
   converter gets in a real project -- space velocity at feasibility, an
   integrated rate law with an effectiveness factor at FEED, a licensor's
   guaranteed charge at detailed design -- and it is enough to cost a vessel and
   not enough to build one.  The design sheet says so in its own `basis` field
-  ("volume (author-set)"), and this paragraph says why that is the RIGHT answer
-  at this class rather than a gap.  Read `ammonia03_quench_converter` for the
+  ("catalyst V = Q_normal/SV ..."), and this paragraph says why that is the
+  RIGHT answer at this class rather than a gap.  Read `ammonia03_quench_converter` for the
   opposite posture: it declares no volume, refuses to cost the converter, and
   says that inventing one converts `unsized` into `falsely sized`.  Both are
   honest; they answer different questions.
 
   With the sized loop units costed -- and the high-pressure CONVERTER + SEPARATOR
   (thick ASME walls at 220 bar, F_P ~ 36) now DOMINATING the CAPEX -- the
-  in-battery-limits FCI is ~68 MEUR; with the Henry-calibrated separator
-  recovering more product (~59 t/h) the loop shows NPV ~ +185 MEUR at 10%,
-  IRR ~ 44%, discounted payback ~ 2.7 yr -- healthy because the NH3-vs-syngas
+  in-battery-limits FCI is ~55 MEUR (it was ~67 MEUR with the typed 80 m3
+  converter); the loop shows NPV ~ +104 MEUR at 10%, IRR ~ 34%, payback
+  ~ 3.6 yr (the economics KPIs as of 2026-10-05; the golden is the
+  authority, these words are not) -- healthy because the NH3-vs-syngas
   price spread here is a mid-cycle teaching figure and the syngas island's
   capital sits outside the battery limits.  What remains OUTSIDE this
   battery limit is the upstream SYNGAS ISLAND (steam reformer + air separation)
@@ -79,13 +83,14 @@ sizing
         { unitName waterCooler; type shellTubeHX;  material carbonSteel;
           designRules { U 700.0;  LMTD 60.0;   pressureDesign 200.0; } }
 
-        // The CONVERTER: a high-pressure catalyst vessel.  Catalyst+internals
-        // volume 80 m3, AUTHOR-SET -- at this run's inlet flow it is a space
-        // velocity of 11 360 Nm3/(m3 h), not the ~20000 this comment used to
-        // claim (measured 2026-10-05; see the header).  Sized as a tall
-        // thick-wall vessel at 220 bar.
+        // The CONVERTER: a high-pressure catalyst vessel.  The volume is NOT
+        // here; the RULE is (see the header): V = Q_normal(inlet) / SV.
+        // Sized as a tall thick-wall vessel at 220 bar.
         { unitName converter;   type vessel;  material SS316;
-          designRules { volume 80.0;  L_over_D 6.0;  pressureDesign 220.0;
+          designRules { spaceVelocity 20000;        // 1/h, Nm3 gas / (m3 catalyst h) -- ASSUMED
+                        spaceVelocityBasis normal;  // the basis the number is quoted on
+                        flowKey N_in_mol_s;         // GHSV is on the INLET gas
+                        L_over_D 6.0;  pressureDesign 220.0;
                         corrosionAllow 0.004; } }
 
         // The high-pressure SEPARATOR: a knock-out drum, ~45 s of vapour holdup.

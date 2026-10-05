@@ -10,7 +10,9 @@ Two units, the natural finishing train:
     The evaporativeDryer is the honest one -- constant-rate evaporation
     limited by the first of three declared limits (all water gone / exhaust
     air saturates / energy floor), each announced.  Adiabatic: T_out is a
-    RESULT, no phantom duty.
+    RESULT, no phantom duty.  Its hot gas (HOTAIR's flue gas) is DESIGNED
+    from that energy floor for a dry product plus a 5 % margin -- the basis
+    is written beside the number, in 0/MAIN/fuelAir (2026-10-05).
   - recoverer (cyclone, Lapple): recovers the dried fines from the carrier
     air as product; the cut diameter follows from the gas + the Li2CO3
     crystal density (its case-local component record).
