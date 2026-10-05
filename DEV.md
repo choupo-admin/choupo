@@ -2027,6 +2027,32 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      them; otherwise it stays case-local, recorded.
   7. Dryer solid floor: the gas wet-bulb temperature, not the feed T.
   8. Pipe with a vapour inlet: REFUSED by name until a compressible model exists.
+     [DONE 2026-10-05, branch `claude/c35-pairs-pipe`.  MEASURED first: the
+     corpus has three pipes and none carries vapour -- pipe01_water_line and
+     pumpSystem01_operating_point resolve liquid (they take the
+     single-phase path, `regime` KPI), pipe02_airwater_twophase resolves
+     V/F = 0.0114 (the two-phase path).  `Pipe.cpp`, right after the
+     inlet-regime flash: an inlet whose flash resolves V/F >= 1 - 1e-6 (an
+     RR answer of 1, or a supercritical root discarded to the single fluid
+     phase) REFUSES, naming the unit, the inlet stream (`feed.streamName`),
+     its resolved V/F, (T, P) and regime, and both remedies (a liquid line
+     mis-declared -> correct T, P or composition; a gas line has no model
+     until a compressible pipe exists).  **A TWO-PHASE inlet is NOT
+     refused**, although the brief said "(or two-phase)": the ruling's own
+     words are "a vapour inlet", the pipe carries four two-phase
+     correlations (homogeneous, Lockhart-Martinelli, Friedel, Beggs-Brill)
+     and a witness, pipe02, which a two-phase refusal would break -- the
+     brief's stop rule; if Vitor wants the two-phase line refused too (its
+     correlations take both densities at the INLET, so they are
+     incompressible as well), that is his to say and pipe02 goes with it.
+     No golden row moved (the three pipe cases PASS 3/0).  Gate:
+     `check_friction_correlations` arm (g) (pipe01 heated to 450 K at its
+     5 bar must exit non-zero naming unit, inlet, V/F, REFUSED and both
+     remedies; source arm: the refusal is gated on V/F reaching 1).
+     Sabotages by hand, each restored with git + `make all`: S1 (the throw
+     removed) -> "RAN to exit 0 -- the incompressible liquid path priced a
+     gas line"; S2 (the gate widened to `VF > 1e-6`, which would refuse
+     pipe02) -> caught by the source arm.]
   9. ammonia02 declares `spaceVelocity 20000; spaceVelocityBasis normal;`.
      [DONE 2026-10-05, branch `claude/c35-cases`, with `flowKey N_in_mol_s`
      (GHSV on the inlet gas, as ammoniaStaged03 declares): V_R 80 -> 45.4386

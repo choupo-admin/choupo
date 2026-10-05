@@ -35,6 +35,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -138,6 +139,44 @@ int Pipe::solve(const DictPtr& dict,
                                                "pipe inlet regime", verbosity);
         const scalar VF = (fs.converged && std::isfinite(fs.V_over_F))
             ? std::min(1.0, std::max(0.0, fs.V_over_F)) : 0.0;
+
+        //  AN ALL-VAPOUR INLET IS REFUSED BY NAME (DEV.md C35 item 8, Vitor
+        //  2026-10-05).  The single-phase path below is INCOMPRESSIBLE and
+        //  LIQUID: it prices the line with the package's liquid density and
+        //  liquid viscosity.  A gas falling through it -- an RR V/F of 1, or
+        //  a supercritical root discarded to the single fluid phase -- got a
+        //  liquid Delta-P at exit 0 (found C34, DEV.md §5).  No compressible
+        //  model exists, so the honest answer is a refusal, not a number.  A
+        //  TWO-PHASE inlet is NOT refused: it has its own correlations just
+        //  above (homogeneous / Lockhart-Martinelli / Friedel / Beggs-Brill)
+        //  and its witness, pipe02_airwater_twophase.
+        if (fs.converged && VF >= 1.0 - 1.0e-6)
+        {
+            //  The composed dict is named after the unit, and the flowsheet
+            //  stamps the inlet's name into `feed {}` for messages exactly
+            //  like this one (UnitInputs.cpp, `streamName`).
+            const std::string unitName = dict->name();
+            const std::string inName   =
+                feedDict->lookupWordOrDefault("streamName", "");
+            std::ostringstream m;
+            m << "Pipe" << (unitName.empty() ? "" : " '" + unitName + "'")
+              << ": inlet stream"
+              << (inName.empty() ? "" : " '" + inName + "'")
+              << " resolves to a vapour fraction V/F = " << VF
+              << " at its own (T = " << T << " K, P = " << Pin << " Pa)"
+              << (fs.regime.empty() ? "" : " [" + fs.regime + "]")
+              << " -- an all-vapour feed.  REFUSED: this pipe has no"
+                 " compressible model; its single-phase path prices the line"
+                 " with a LIQUID density and viscosity, which for a gas is not"
+                 " a pressure drop (a two-phase inlet has its own"
+                 " correlations and runs).  Remedies: (1) if the line is meant"
+                 " to carry a LIQUID, the inlet state is mis-declared --"
+                 " correct its T, P or composition so the stream resolves"
+                 " liquid; (2) a gas line has no model in Choupo until a"
+                 " compressible pipe exists (DEV.md C35 item 8) -- size it"
+                 " outside the flowsheet and say so in the case.";
+            throw std::runtime_error(m.str());
+        }
 
         if (VF > 1.0e-6 && VF < 1.0 - 1.0e-6)
         {

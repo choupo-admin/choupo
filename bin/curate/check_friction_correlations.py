@@ -51,6 +51,18 @@ WHAT THIS GATE CHECKS, on `tutorials/props/hydraulics/moody01_friction_correlati
       not a refactor; the three hydraulics goldens carry that arm in the main
       suite and this gate re-asserts the KPI of pipe01 directly.
 
+  (g) AN ALL-VAPOUR INLET IS REFUSED BY NAME (C35 item 8, 2026-10-05).  The
+      pipe has no compressible model; its single-phase path prices the line
+      with a LIQUID density and viscosity, and an all-vapour feed used to fall
+      through it at exit 0 (found C34).  pipe01 is copied and its feed heated
+      to 450 K at its own 5 bar (water's Psat there is ~9.3 bar, so the feed
+      resolves V/F = 1): the run must FAIL, naming the unit, the inlet
+      stream, its resolved vapour fraction and the word REFUSED, and must
+      name both remedies.  The liquid line itself still runs: that is arm
+      (f), on the unmodified pipe01.  A TWO-PHASE inlet is NOT refused (it has
+      its own correlations and pipe02 as its witness); the source arm checks
+      the refusal is gated on V/F reaching 1, not on any vapour.
+
 WHAT THIS GATE DOES **NOT** COVER, stated so its OK line cannot imply it:
 
   * It does not establish that any correlation is RIGHT.  Two of the four
@@ -96,6 +108,20 @@ which is the only thing that can see a second home that happens to agree.
     Pipe.cpp defines its own friction arithmetic (f_churchill) -- the
     decision has two homes again
 
+ARM (g), SABOTAGE-VERIFIED 2026-10-05 (C35 item 8), twice:
+
+S5 -- the refusal's `throw` removed from Pipe.cpp.  The vapour probe ran:
+
+    arm (g): pipe01 with an all-vapour feed (450 K, 5 bar) RAN to exit 0
+    -- the incompressible liquid path priced a gas line
+
+S6 -- the refusal widened to `VF > 1e-6`, which would refuse pipe02's
+two-phase line.  The vapour probe still refused (correctly), so only the
+source arm could see it:
+
+    arm (g): Pipe.cpp's vapour refusal is not gated on
+    `fs.converged && VF >= 1.0 - eps`
+
 AND A DEFECT IN THIS GATE, found by running those four.  Three of the
 sabotages ALSO reported "pipe01_water_line no longer reproduces its golden"
 while touching nothing the pipe computes -- S3 changed only a printed line.
@@ -109,9 +135,12 @@ than reporting nothing, because it sends the next reader to the wrong file.
 Arm (f) now distinguishes the two and says which one it is.
 """
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -252,6 +281,57 @@ def main():
         fails.append("pipe01_water_line no longer reproduces its golden -- a "
                      "refactor that moves an answer is not a refactor")
 
+    # ---- (g) an all-vapour inlet is refused by name ----------------------
+    #
+    #  The probe is pipe01 with ONE line changed -- the feed's T -- so the
+    #  refusal can only be about the inlet's phase.  Built in a temporary
+    #  directory, never in the tree.
+    solve = ROOT / "choupoSolve"
+    tmpd = Path(tempfile.mkdtemp(prefix="choupo-pipe-vapour-"))
+    try:
+        probe = tmpd / "pipe01_vapour"
+        shutil.copytree(pipe, probe,
+                        ignore=shutil.ignore_patterns("converged", "log.*",
+                                                      "reports", "iterations"))
+        feed = probe / "0" / "feed"
+        ftxt = feed.read_text()
+        ftxt2 = re.sub(r"^T\s+300 K;", "T               450 K;", ftxt,
+                       count=1, flags=re.M)
+        if ftxt2 == ftxt:
+            fails.append("arm (g) could not heat pipe01's feed (its `T 300 K;` "
+                         "line moved) -- the arm cannot run, so it must not "
+                         "pass")
+        else:
+            feed.write_text(ftxt2)
+            env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+            pv = subprocess.run([str(solve), "."], cwd=str(probe), env=env,
+                                capture_output=True, text=True, timeout=300)
+            vout = pv.stdout + pv.stderr
+            if pv.returncode == 0:
+                fails.append("arm (g): pipe01 with an all-vapour feed (450 K, "
+                             "5 bar) RAN to exit 0 -- the incompressible "
+                             "liquid path priced a gas line")
+            else:
+                for need, why in (("Pipe 'P1'", "the unit"),
+                                  ("inlet stream 'feed'", "the inlet stream"),
+                                  ("V/F = 1", "its resolved vapour fraction"),
+                                  ("REFUSED", "that it is a refusal"),
+                                  ("no compressible model", "the reason"),
+                                  ("mis-declared", "the liquid-line remedy"),
+                                  ("compressible pipe exists", "the gas-line remedy")):
+                    if need not in vout:
+                        fails.append(f"arm (g): the vapour-inlet refusal does "
+                                     f"not name {why} (`{need}`): "
+                                     f"{vout[-500:]}")
+    finally:
+        shutil.rmtree(tmpd, ignore_errors=True)
+    #  The refusal must be gated on an ALL-vapour feed: a test on `VF > 0`
+    #  would refuse pipe02's two-phase line, which has its own correlations.
+    if not re.search(r"if\s*\(\s*fs\.converged\s*&&\s*VF\s*>=\s*1\.0\s*-", src):
+        fails.append("arm (g): Pipe.cpp's vapour refusal is not gated on "
+                     "`fs.converged && VF >= 1.0 - eps` -- a two-phase inlet "
+                     "has its own correlations and must not be refused")
+
     if fails:
         print("check_friction_correlations: FAIL")
         for f in fails:
@@ -268,12 +348,16 @@ def main():
           "read from the log; Blasius is flagged out of window at eps/D = 1e-3 "
           "with the reason named; Pipe.cpp keeps NO private friction "
           "arithmetic and reaches the factory at both call sites; pipe01's "
-          "golden is unmoved.  NOT CHECKED: that any correlation is RIGHT -- "
+          "golden is unmoved; pipe01 with an all-vapour feed (450 K, 5 bar) is "
+          "REFUSED naming the unit, the inlet, its V/F and both remedies, and "
+          "the refusal is gated on V/F reaching 1 so a two-phase line still "
+          "runs (arm g).  NOT CHECKED: that any correlation is RIGHT -- "
           "two anchors are self-consistency by construction and Haaland's is "
           "agreement with Colebrook, which is the claim he published, not an "
           "independent measurement; the corpus holds no friction data at all. "
           " Also not covered: the transition band, and Ergun/two-phase "
-          "multipliers, which are still unit-op-private.")
+          "multipliers, which are still unit-op-private; and no "
+          "compressible pipe exists to check.")
     return 0
 
 
