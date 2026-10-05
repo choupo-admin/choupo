@@ -192,6 +192,9 @@
   "BlockTri": [
    "src/solver/NewtonND.H"
   ],
+  "BracketedRoot": [
+   "src/unitOperations/flash/PureSaturationPlateau.H"
+  ],
   "BrockBird": [
    "src/thermo/transport/BrockBird.H"
   ],
@@ -1261,6 +1264,9 @@
   ],
   "SatoRiedel": [
    "src/thermo/transport/SatoRiedel.H"
+  ],
+  "SaturationLegs": [
+   "src/unitOperations/flash/PureSaturationPlateau.H"
   ],
   "ScalingIndexResult": [
    "src/thermo/electrolyte/ScalingIndices.H"
@@ -7179,6 +7185,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/HeatExchanger.H",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
@@ -7202,6 +7209,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/Heater.H"
   ],
@@ -7244,6 +7252,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/PhaseChanger.H",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
@@ -13664,6 +13673,11 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
+  ],
+  "src/unitOperations/flash/PureSaturationPlateau.H": [
+   "src/unitOperations/heatTransfer/HeatExchanger.cpp",
+   "src/unitOperations/heatTransfer/Heater.cpp",
+   "src/unitOperations/heatTransfer/PhaseChanger.cpp"
   ],
   "src/unitOperations/flash/StreamEquilibrium.H": [
    "src/reporting/ElementBalanceReport.cpp",

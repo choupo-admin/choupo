@@ -2002,6 +2002,11 @@ with its moved golden rows listed:
   3. heatExchanger publishes a single-component two-phase outlet at Tsat with
      its vapour fraction pinned (the pure-component exception of the
      two-variables rule); heater and phaseChanger checked for the same shape.
+     [BUILT 2026-10-05 on `claude/c36-pure-twophase-outlet`: the exchanger
+     and the heater (which had the shape, and failed to converge on it);
+     phaseChanger pins too and had a different defect (§5, same day), fixed
+     in a separate commit whose 16 moved rows await Vitor.  §5, 2026-10-05, HEAT
+     EXCHANGER -- CLOSED.]
   4. The steady ED stack's Nernst term uses each ion's own |z| (ed04's Mg2+).
      [BUILT 2026-10-05 on `claude/c36-nernst-fastarm`.  ONE home,
      `edCell::membranePotential` (EDCell.cpp): one counter-ion in the
@@ -3803,7 +3808,9 @@ Remedy (a gate change, not yet taken): under `--fast` the arm judges only
 in-scope witnesses, or FASTSET carries one utility-declaring plant.
 
 **2026-10-05 -- A HEAT EXCHANGER CANNOT PUBLISH A PURE-COMPONENT TWO-PHASE
-OUTLET.  NAMED, NOT FIXED (C35, found by the full regression of item 4).**
+OUTLET.  NAMED (C35, found by the full regression of item 4); CLOSED
+2026-10-05 on branch `claude/c36-pure-twophase-outlet` (C36 item 3), see the
+closing paragraph below.**
 `HeatExchanger.cpp`'s Q -> outlet-state inversion bisects on H(T) at fixed
 P.  For a stream with ONE present component, H(T) jumps by the whole latent
 heat at Tsat(P) (the flash classes a pure component single-phase on either
@@ -3825,6 +3832,72 @@ a pure component on its curve cannot reproduce it (CLAUDE.md §3, the
 pure-component exception), and every reader that re-resolves produced
 streams must honour it.  The same shape applies to any unit that inverts
 H(T) on a pure stream (`heater`, `phaseChanger`): not enumerated yet.
+CLOSED (C36 item 3, Vitor's ruling: the remedy above, taken).  ONE home,
+`src/unitOperations/flash/PureSaturationPlateau.H`: `soleComponent` (z_i > 0
+for exactly one i -- the flash's own presence test, deliberately narrower
+than `isEffectivelyPure`), `pureSaturationLegs` / `plateauQuality` (the
+plateau's ends read off the package's own two-phase blend, which is linear
+in q, so a published q prices back to the target to round-off),
+`bisectIncreasing` + `qualityAtJump` (the exchanger's bisection, verbatim,
+now keeping BOTH bracket residuals: a continuous root leaves them micro-J/mol
+apart, a jump a latent heat apart) and `pinnedPureQuality` (a pinned,
+0 < vf < 1, one-component stream dict: its pin is its state).  ENUMERATED:
+  * `heatExchanger` (`HeatExchanger.cpp:873-887`): a side whose bisection
+    closes on a single-component jump publishes T = Tsat with its quality,
+    `phasePinned` (`:924`, `:927`); its inlet reads a pure pin (`:91`) and
+    its H-gap measures both through the pin (`Hinlet`/`Houtlet`, `:806`,
+    `:889`).  `utility02` at its ORIGINAL 40 bar, run on this build: the
+    outlet leaves at 515.5797 K with vf = 0.003854, and the water side's
+    published dH is 208.465443 kW against Q = 208.465443 kW.
+  * `heater` -- THE SAME SHAPE, refused rather than short: its Newton on T
+    cannot meet its tolerance on a jump, so the unit returned unconverged and
+    the run stopped (measured on the witness with the new path disabled:
+    `Flowsheet: unit 'trimCooler' failed to converge`, exit 2, its outlet
+    labelled vf = 1 at Tsat -- a refusal of a physical state).  Where the
+    Newton fails on a single-component stream it now brackets, bisects and
+    reads the plateau through the same calls (`Heater.cpp:284-336`), and
+    publishes the outlet pinned (`:462`); its inlet reads a pure pin (`:127`).
+  * `phaseChanger` -- NOT the shape: it tests the plateau BEFORE any search,
+    in every mode that has one, so it never lands on the jump.  It now pins a
+    pure plateau outlet (`PhaseChanger.cpp:537`, `:977`, `:1456`) and reads a
+    pure inlet pin in all three modes (`:171`).  FOUND on the way: its three
+    copies of the extrapolation to the plateau's ends scale about ZERO
+    instead of translating, so on any non-zero datum the plateau quality and
+    the published duty are off -- the next paragraph.
+  * NOT changed, named: `flashState::resolvedInletVaporFraction` (in
+    `StreamEquilibrium.H`, another general's file) returns one side of the
+    curve for an AUTHORED pinned pure two-phase inlet; the three units above
+    read the pin before calling it, every other caller does not.
+Witness `tutorials/steady/heat/heatExchanger03_pure_water_plateau` (100 bar
+steam partly condensing and 40 bar feedwater partly boiling in one
+exchanger, then a `heater` on the wet steam whose target lands on the plateau
+again).  Gate: `check_duty_inversion` arms (f)-(h) (Tsat recomputed from the
+case's own Antoine record; each side, the heater and the energy report to
+1e-4 kW); 3 by-hand sabotages recorded in its docstring, one of which (the
+exchanger's pin dropped) passes every exchanger arm and is caught only by
+the heater and the report -- a pin is for the READER.  Corpus: every case
+using `heatExchanger`, `heater` or `phaseChanger` (34) is byte-identical on
+every published number (compared at 1e-12 relative) under the first commit.
+
+**2026-10-05 -- `phaseChanger`'S PLATEAU ENDS WERE SCALED, NOT TRANSLATED.
+FOUND (C36 item 3); FIXED on branch `claude/c36-pure-twophase-outlet` in its
+own commit, the two goldens NOT RE-RECORDED -- the moved rows are Vitor's
+(CLAUDE.md §10), listed in that commit; until he rules,
+`reboiler_water_copper` and `condenser01_film_nusselt` FAIL their goldens
+on that commit, for this stated reason.**  Three sites (`PhaseChanger.cpp`, the duty mode and both
+geometry modes) extrapolated the saturated legs from two interior qualities
+as h_f = (h_lo - eps h_hi)/(1 - 2 eps), h_g = (h_hi - eps h_lo)/(1 - 2 eps).
+With h_lo = h_L + eps L, h_hi = h_L + (1 - eps) L that is h_L (1 - eps) /
+(1 - 2 eps) + O(eps^2 L): exact only for h_L = 0.  The published quality and
+duty moved with it, so a geometry-mode unit published a duty that was NOT
+its own transfer model's.  MEASURED, both corpus cases that land on the
+plateau, both IF97: `reboiler_water_copper` published 111.804645 kW against
+its own q_nucleate x A = 111.836571 kW; `condenser01_film_nusselt` published
+-506.700517 kW beside its own printed cross-check U A dT = 506.617312 kW.
+The fix routes all three sites through `pureSaturationLegs`; measured on a
+build of it, each case then publishes exactly its model's duty.  Rows it
+moves (8 each, 16): Q, Q_kW, vf_out, the utility's duty_kW / kg_s / eur_h,
+boundary Q_boundary_kW and H_products_kW.
 
 **2026-10-05 -- A VLLE FLASH THAT FINDS TWO LIQUIDS PUBLISHES THE SECOND AS A
 GAS.  FOUND (C16 slice 2); CLOSED 2026-10-05 on branch

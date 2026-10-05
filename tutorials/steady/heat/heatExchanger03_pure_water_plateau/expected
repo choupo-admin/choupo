@@ -1,0 +1,46 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  condensate             F                0.0277777777778    1e-4
+stream  condensate             T                572.172481697      1e-4
+stream  feedwater              F                0.0277777777778    1e-4
+stream  feedwater              T                480                1e-4
+stream  steam                  F                0.0277777777778    1e-4
+stream  steam                  T                700                1e-4
+stream  wetFeed                F                0.0277777777778    1e-4
+stream  wetFeed                T                515.579742002      1e-4
+stream  wetSteam               F                0.0277777777778    1e-4
+stream  wetSteam               T                572.172481734      1e-4
+kpi     boilerHX               C_cold           2097.22222222      1e-4
+kpi     boilerHX               C_hot            1016.46772691      1e-4
+kpi     boilerHX               C_r              0.484673353227     1e-4
+kpi     boilerHX               H_closure_gap_kW -8.24229573482e-13 1e-4
+kpi     boilerHX               LMTD             133.007049666      1e-4
+kpi     boilerHX               NTU              1.96759813131      1e-4
+kpi     boilerHX               Q                172897.339532      1e-4
+kpi     boilerHX               Q_kW             172.897339532      1e-4
+kpi     boilerHX               T_cold_in        480                1e-4
+kpi     boilerHX               T_cold_out       515.579742002      1e-4
+kpi     boilerHX               T_hot_in         700                1e-4
+kpi     boilerHX               T_hot_out        572.172481734      1e-4
+kpi     boilerHX               U                1000               1e-4
+kpi     boilerHX               UA               2000               1e-4
+kpi     boilerHX               area             2                  1e-4
+kpi     boilerHX               effectiveness    0.773164732209     1e-4
+kpi     trimCooler             F                0.0277777777778    1e-4
+kpi     trimCooler             P                10000000           1e-4
+kpi     trimCooler             Q                -500000            1e-4
+kpi     trimCooler             Q_kW             -500               1e-4
+kpi     trimCooler             Q_per_mol        -18000             1e-4
+kpi     trimCooler             T_in             572.172481734      1e-4
+kpi     trimCooler             T_out            572.172481697      1e-4
+kpi     trimCooler             dT               -3.72660906578e-08 1e-4
+kpi     trimCooler             vf_out           0.416118946631     1e-4
+boundary global               H_feeds_kW       -13895.844686      1e-4
+boundary global               Q_boundary_kW    -500               1e-4
+boundary global               H_products_kW    -14395.844686      1e-4
+utility boilerHX               heating.-.carried 1                  1e-4
+utility trimCooler             cooling.coolingWater.duty_kW -500               1e-4
+utility trimCooler             cooling.coolingWater.T 572.172481697      1e-4
+utility trimCooler             cooling.coolingWater.kg_s 11.961722488       1e-4
+utility trimCooler             cooling.coolingWater.eur_h 0.72               1e-4

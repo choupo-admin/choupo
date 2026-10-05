@@ -38,6 +38,7 @@ License
 #include "thermo/EnthalpyDatum.H"
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
+#include "unitOperations/flash/PureSaturationPlateau.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 
 namespace Choupo {
@@ -119,8 +120,14 @@ int Heater::solve(const DictPtr& dict,
     //  carried default 0 sent an all-vapour feed to the liquid bracket
     //  (700 K) and probed a liquid leg the gas may not have (DEV.md
     //  C33/C34).  A produced inlet keeps its producer's answer.
-    const scalar vf_in  = flashState::resolvedInletVaporFraction(
-        feedDict, T_in, P_in, z, thermo, "heater inlet");
+    //  A PURE two-phase inlet DECLARES its quality (pinned, 0 < vf < 1, one
+    //  component): on its saturation curve (T, P) do not fix the split, and a
+    //  resolution at (T, P, z) would hand back one side of it by the last
+    //  digits of T.  Its pin is its state (C36 item 3).
+    const auto   qInPinned = flashState::pinnedPureQuality(feedDict, z);
+    const scalar vf_in  = qInPinned ? *qInPinned
+        : flashState::resolvedInletVaporFraction(
+              feedDict, T_in, P_in, z, thermo, "heater inlet");
     const bool   useGas = vf_in >= 0.5;
     //  Was that vf AUTHORED, or is it merely the upstream unit's answer?
     //  R-E2: only a DECLARATION is priced as one; a carried vf is re-resolved.
@@ -215,6 +222,7 @@ int Heater::solve(const DictPtr& dict,
     const scalar H_in =
         !useFormation ? (useGas ? thermo.H_ig(T_in, z)
                                 : thermo.Hliquid(T_in, z, Tref))
+        : qInPinned   ? thermo.H_stream_formation(T_in, P_in, *qInPinned, z)
                       : Hresolved(T_in, pinned, vf_in, nullptr);
     const scalar H_target = H_in + Q_per_mol;
 
@@ -269,13 +277,64 @@ int Heater::solve(const DictPtr& dict,
         }
     };
     auto r = solver::newton1D(f, df, T_in, nro);
-    const scalar T_out    = r.x;
-    const bool   converged = r.converged;
+    scalar       T_out     = r.x;
+    bool         converged = r.converged;
     const int    iters     = r.iterations;
+
+    //  ---- A PURE STREAM WHOSE TARGET LIES INSIDE ITS LATENT JUMP ---------
+    //
+    //  For one component H(T) jumps by the whole latent heat at Tsat(P): a
+    //  target inside the jump has no root in T, so the Newton cannot meet
+    //  its tolerance and ends next to Tsat, unconverged (C36 item 3,
+    //  2026-10-05 -- the exchanger's defect, in this unit's numerics).  The
+    //  state there is T = Tsat with q = (H - h_L)/(h_V - h_L), pinned,
+    //  because (T, P) do not fix the split of one component (CLAUDE.md §3).
+    //  So: bracket the residual around where the Newton stopped, bisect it to
+    //  the jump, and read the quality off the plateau -- one home for that
+    //  arithmetic, `flash/PureSaturationPlateau.H`, which the exchanger
+    //  calls too.  Taken only where the Newton FAILED on a single-component
+    //  stream, so every answer it already reached is untouched.
+    scalar vf_plateau = -1.0;
+    if (useFormation && !converged && flashState::soleComponent(z))
+    {
+        scalar lo = T_out, hi = T_out, flo = f(lo), fhi = flo;
+        for (int k = 0; k < 40 && flo * fhi > 0.0; ++k)
+        {
+            const scalar step = 1.0 * (1 << std::min(k, 10));
+            lo = std::max<scalar>(nro.lower, lo - step);
+            hi = std::min<scalar>(nro.upper, hi + step);
+            flo = f(lo); fhi = f(hi);
+        }
+        if (flo * fhi <= 0.0 && std::isfinite(flo) && std::isfinite(fhi))
+        {
+            const flashState::BracketedRoot root =
+                flashState::bisectIncreasing(f, lo, flo, hi, fhi);
+            if (const auto q = flashState::qualityAtJump(root, H_target,
+                                                         P_in, z, thermo))
+            {
+                T_out      = root.T;
+                vf_plateau = *q;
+                converged  = true;
+                if (verbosity >= 2)
+                    std::cout << "  [heater] the target enthalpy lies INSIDE"
+                                 " this pure fluid's latent jump: the outlet"
+                                 " is ON its saturation plateau, T = Tsat(P) = "
+                              << std::fixed << std::setprecision(4) << T_out
+                              << " K, vf = " << std::setprecision(6)
+                              << vf_plateau << " (pinned: (T, P) do not fix"
+                                 " the split of one component).\n";
+            }
+        }
+    }
 
     // ---- The outlet STATE, read back at the answer -----------------------
     scalar H_out;
-    if (useFormation)
+    if (vf_plateau > 0.0)
+    {
+        vf_out = vf_plateau;
+        H_out  = thermo.H_stream_formation(T_out, P_in, vf_out, z);
+    }
+    else if (useFormation)
     {
         H_out = Hresolved(T_out, false, vf_in, &vf_out);
         if (!resolveRefusal.empty())
@@ -399,6 +458,8 @@ int Heater::solve(const DictPtr& dict,
     out.P    = P_in;
     out.z    = z;
     out.vf   = vf_out;      // a RESULT, exactly as T_out is
+    //  ON the plateau the quality is the state, and a pin (above).
+    out.phasePinned = (vf_plateau > 0.0);
     produced_.push_back(out);
 
     // -- KPIs --------------------------------------------------------------

@@ -483,8 +483,13 @@ in a DesignSpec that varies `$T`.
 
 ### `heater`  (1-stream, furnished duty)
 Single-stream heater/cooler.  Operation block carries the absolute
-thermal power Q (W); T_out is a RESULT.  Phase-aware: gas
-streams integrate H_ig, liquid uses H_liquid.
+thermal power Q (W); T_out AND vf_out are RESULTS: the outlet is the state
+whose enthalpy (elements datum, over the state (T, P, z) resolves to) is
+H_in + Q, so a stream heated past its bubble point leaves two-phase.  A PURE
+stream whose H_in + Q lies inside its latent jump leaves AT Tsat(P) with its
+vapour fraction PINNED (for one component (T, P) do not fix the split).
+Without an elements-datum enthalpy it falls back to a sensible H_ig /
+H_liquid inversion, announced, and refuses to cross the dome.
 ```
 operation { Q  <W>; }   // positive heats, negative cools
 ```
@@ -495,8 +500,8 @@ unit that **takes** a Q (its hardware knob); a flash **gives** one.  That makes
 
 ### `phaseChanger`  (aliases `boiler`, `condenser`)
 The dome-crossing phase-change unit: one stream in, one (two-phase-aware) stream
-out, the heat duty Q a **result**.  Where a `heater` is sensible-only (must not
-cross the saturation line), a `phaseChanger` lands the outlet **anywhere** on the
+out, the heat duty Q a **result**.  Where a `heater` takes a duty and returns the
+state, a `phaseChanger` takes a target state and lands the outlet **anywhere** on the
 (T, vf) surface — subcooled liquid, inside the dome (0 < vf < 1), or superheated
 vapour.  It wraps the isothermal-flash (vf, x, y) kernel + the dome-aware
 enthalpy `h = (1−vf)·h_f + vf·h_g`; Tsat(P) comes from the pure-fluid (IF97)
@@ -531,8 +536,12 @@ flux, Zuber CHF ceiling — a design above CHF is hard-refused).  Theory:
 boiler / condenser".
 
 ### `heatExchanger`  (2-stream, ε-NTU rating)
-Two process streams; hardware-only (`area` + `U`).  Outputs both
-streams' new T + the duty Q.
+Two process streams; hardware-only (`area` + `U`).  Outputs the duty Q
+(ε-NTU) and both streams' new STATE, each inverted from its own enthalpy
+H_in ± Q (so a side may leave two-phase).  A PURE stream whose target lies
+inside its latent jump leaves AT Tsat(P) with its vapour fraction PINNED —
+for one component (T, P) on the saturation curve do not fix the split
+(witness `heatExchanger03_pure_water_plateau`).
 
 ```
 inputs  (hot  cold );

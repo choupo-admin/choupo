@@ -6721,6 +6721,56 @@ Expected order of magnitude (clean water-water): U \textasciitilde{} 2000-3000 W
 \end{tutgolden}
 
 \clearpage
+\tutentry{heatExchanger03\_pure\_water\_plateau}{tutorials/steady/heat/heatExchanger03\_pure\_water\_plateau}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (boilerHX) at (0.0,-0.0) {\textbf{boilerHX}\\[-1pt]{\tiny heatExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (trimCooler) at (2.9,-0.0) {\textbf{trimCooler}\\[-1pt]{\tiny heater}};
+  \draw[->] ($(boilerHX.west)+(-1.05,-0.17)$) -- ($(boilerHX.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {steam};
+  \draw[->] ($(boilerHX.west)+(-1.05,0.17)$) -- ($(boilerHX.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {feedwater};
+  \draw[->] (boilerHX) -- (trimCooler) node[midway, above, font=\tiny] {wetSteam};
+  \draw[->] ($(boilerHX.east)+(0,0.00)$) -- ($(boilerHX.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {wetFeed};
+  \draw[->] ($(trimCooler.east)+(0,0.00)$) -- ($(trimCooler.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Pure water on its saturation plateau: a 40 bar boiler, a 100 bar partial condenser and a trim cooler}
+\begin{tutnarrative}
+ONE component, two phases, and the one state a temperature and a pressure cannot name.
+
+A pure fluid at fixed P boils at ONE temperature, Tsat(P). Its enthalpy H(T) is therefore not a smooth curve: it JUMPS by the whole latent heat at Tsat. Ask an exchanger for an outlet whose enthalpy lies inside that jump and there is no temperature that answers -- the answer is T = Tsat and a VAPOUR FRACTION q = (H - h\_L)/(h\_V - h\_L). And because (T, P) sit on the saturation curve, they do not fix q: the stream must CARRY it, as a pin -- the one exception to "a stream is fixed by two variables", and the only stream that may declare T, P AND a vapour fraction.
+
+Until 2026-10-05 the exchanger's bisection on H(T) closed onto Tsat and published the nearer single phase -- short of its own duty by the unboiled fraction's latent heat, at exit 0 (measured on `utility02\_hitec\_csp\_heater` at 40 bar: 3.06 kW, 1.5 \% of its duty).
+
+Here (counter-current, A = 2 m\textasciicircum{}2, U = 1000 W/(m\textasciicircum{}2.K)): `boilerHX` -- 100 bar superheated steam (700 K) against 40 bar feedwater (480 K). The duty comes from eps-NTU; the steam leaves PARTLY CONDENSED and the feedwater PARTLY BOILED, both at their own Tsat with a pinned quality. A boiler and a partial condenser in one unit. `trimCooler` -- a `heater` with Q < 0 on the condensing steam. Its inlet is the exchanger's pinned two-phase outlet (the pin is read, not re-resolved) and its outlet lands on the plateau again: the temperature stays at Tsat and only the quality falls.
+
+What to read: the Log's `PURE fluid on its saturation plateau` lines; the stream table's vf column (two numbers strictly between 0 and 1 at a T that does not move); and the energy balance, where each unit closes to the duty it declares.
+
+STRUCTURAL WITNESS, NOT A VALIDATION. Every number here comes from this case's own water record: an Antoine fit stated for 273-373 K (so Tsat at 40 and 100 bar is EXTRAPOLATED, and announced), an ideal-gas vapour, and the Watson latent heat. Tsat(40 bar) is the record's 515.6 K, not the steam tables' 523.5 K. What the case pins is the MECHANICS -- the outlet sits at Tsat with the quality the first law demands, and the balances close -- never the steam properties.
+
+\end{tutnarrative}
+\tutreadme{Superheated steam at 100 bar, 700 K against feedwater at 40 bar, 480 K, 100 kmol/h each, in a counter-current exchanger of 2 m$^2$ at U = 1000 W/m$^2$K; then a heater takes 500 kW more out of the steam. Every stream carries ONE component, water.}
+\tutreadme{1. A pure fluid boils at one temperature. At fixed pressure its enthalpy H(T) is a step at Tsat(P): every joule between the saturated liquid and the saturated vapour goes in AT Tsat. So when the duty asks for an enthalpy inside that step, the outlet temperature is Tsat and what changes is the vapour fraction, q = (H - h\_L)/(h\_V - h\_L). 2. Both directions in one unit. The exchanger's duty (from $\varepsilon$-NTU) partly condenses the steam (it leaves at Tsat(100 bar) with q $\approx$ 0.95) and partly boils the feedwater (Tsat(40 bar), q $\approx$ 0.10). The Log prints a PURE fluid on its saturation plateau line for each side. 3. Why the stream carries q as a pin. For a mixture, T and P between the bubble and dew points fix the split. For ONE component on its curve they do not --- any q is consistent with them --- so the stream must say which. Open converged/wetFeed: T, P and vaporFraction, the one case where a stream legitimately declares all three. 4. The temperature does not move, the quality does. trimCooler removes 500 kW from the wet steam: T\_out equals T\_in (to the bisection's precision) and q falls from 0.95 to 0.42. 5. Nothing is lost. The energy balance closes every unit to the duty it declares, and the plant boundary to zero.}
+\tutreadme{This is a STRUCTURAL witness. The water record's Antoine fit is stated for 273--373 K, so Tsat at 40 and 100 bar is extrapolated (and announced): Tsat(40 bar) here is 515.6 K, not the steam tables' 523.5 K. The vapour is an ideal gas and the latent heat is Watson's. What the case pins is the mechanics --- the outlet sits at Tsat with the quality the first law demands --- never the steam properties.}
+\tutreadme{Raise the area to 4 m$^2$: more feedwater boils, more steam condenses, and both outlet temperatures stay exactly where they were.}
+\begin{tutgolden}
+\goldrow{stream}{condensate}{F}{0.0277777777778}
+\goldrow{stream}{condensate}{T}{572.172481697}
+\goldrow{stream}{feedwater}{F}{0.0277777777778}
+\goldrow{stream}{feedwater}{T}{480}
+\goldrow{stream}{steam}{F}{0.0277777777778}
+\goldrow{stream}{steam}{T}{700}
+\goldrow{stream}{wetFeed}{F}{0.0277777777778}
+\goldrow{stream}{wetFeed}{T}{515.579742002}
+\goldrow{stream}{wetSteam}{F}{0.0277777777778}
+\goldrow{stream}{wetSteam}{T}{572.172481734}
+\goldrow{kpi}{boilerHX}{C\_cold}{2097.22222222}
+\goldrow{kpi}{boilerHX}{C\_hot}{1016.46772691}
+\goldrow{kpi}{boilerHX}{C\_r}{0.484673353227}
+\goldrow{kpi}{boilerHX}{H\_closure\_gap\_kW}{-8.24229573482e-13}
+\goldmore{29}
+\end{tutgolden}
+
+\clearpage
 \tutentry{heatlink01\_condenser\_to\_heater}{tutorials/steady/heat/heatlink01\_condenser\_to\_heater}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

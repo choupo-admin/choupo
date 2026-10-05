@@ -28,6 +28,7 @@ License
 
 #include "PhaseChanger.H"
 #include "unitOperations/flash/IsothermalFlash.H"
+#include "unitOperations/flash/PureSaturationPlateau.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "core/Advisory.H"
 #include "unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
@@ -163,11 +164,18 @@ int PhaseChanger::solve(const DictPtr& dict,
     //  of the six outlet-coordinate specs.  Gated behind the model word so
     //  the six existing spec modes (and their goldens) stay byte-stable.
     // =====================================================================
+    //  A PURE two-phase feed DECLARES its quality (pinned, 0 < vf < 1, one
+    //  component): on its curve (T, P) do not fix the split, and the flash
+    //  below would hand back one side of it by the last digits of T.  Its
+    //  pin is its state (C36 item 3); every mode prices the feed at it.
+    const auto qInPinned = flashState::pinnedPureQuality(feedDict, z);
+
     const std::string model = dict->lookupWordOrDefault("model", "");
     if (model == "geometry")
     {
         return solveGeometry(operDict, thermo, verbosity,
-                             F, T_in, P_in, P_out, z);
+                             F, T_in, P_in, P_out, z,
+                             qInPinned ? *qInPinned : -1.0);
     }
 
     // ---- Pick EXACTLY ONE outlet coordinate (DOF guard) ------------------
@@ -219,6 +227,7 @@ int PhaseChanger::solve(const DictPtr& dict,
     //  vapour's cooling as condensation (DEV.md C33/C34).  -1 when the dict
     //  carries no `vf` at all: then the feed is re-flashed below.
     const scalar vf_in_decl = !feedDict->found("vf") ? -1.0
+        : qInPinned ? *qInPinned          // a pure two-phase feed's pin
         : flashState::resolvedInletVaporFraction(feedDict, T_in, P_in, z,
                                                  thermo, "phaseChanger inlet");
     scalar H_in;
@@ -226,6 +235,8 @@ int PhaseChanger::solve(const DictPtr& dict,
         FlashInput fin; fin.F = 1.0; fin.T = T_in; fin.P = P_in; fin.z = z;
         FlashSolution fsol = resolveAt(fin, thermo, scDiscarded);
         H_in = streamEnthalpy(thermo, fsol, T_in, P_in, z);
+        if (qInPinned)       // a pure two-phase feed: its pin is its state
+            H_in = thermo.H_stream_formation(T_in, P_in, *qInPinned, z);
     }
 
     // ---- Resolve the single coordinate -> (T_out, mode label) ------------
@@ -264,11 +275,14 @@ int PhaseChanger::solve(const DictPtr& dict,
             // LIQUID branch (p == psat routes to region 1) and miss the latent
             // heat.  The linear extrapolation back to vf = 0 / 1 recovers the
             // true endpoints.
-            const scalar eps  = 1.0e-4;
-            const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
-            const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
-            const scalar h_f  = (h_lo - eps * h_hi) / (1.0 - 2.0 * eps);
-            const scalar h_g  = (h_hi - eps * h_lo) / (1.0 - 2.0 * eps);
+            //  The ends of the plateau, through the ONE home of that
+            //  extrapolation (`flash/PureSaturationPlateau.H`).  The form it
+            //  replaces scaled the legs about ZERO instead of translating
+            //  them, off by ~eps |h_L| on the elements datum (C36 item 3).
+            const auto   legs = flashState::pureSaturationLegs(Tsat, P_out, z,
+                                                               thermo);
+            const scalar h_f  = legs.hLiquid;
+            const scalar h_g  = legs.hVapour;
             if (H_target >= h_f - 1.0e-3 && H_target <= h_g + 1.0e-3)
             {
                 T_out     = Tsat;
@@ -517,6 +531,11 @@ int PhaseChanger::solve(const DictPtr& dict,
     out.P    = P_out;
     out.z    = z;
     out.vf   = vf_out;
+    //  A PURE outlet ON its plateau carries its quality as a PIN: (T, P) do
+    //  not fix the split of one component (CLAUDE.md §3; C36 item 3).  A
+    //  mixture never: its (T, P) between bubble and dew fix the split.
+    out.phasePinned = vf_out > 1.0e-9 && vf_out < 1.0 - 1.0e-9
+                   && flashState::soleComponent(z).has_value();
     produced_.push_back(out);
 
     // ---- KPIs ------------------------------------------------------------
@@ -565,7 +584,8 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
                                 const ThermoPackage& thermo,
                                 int verbosity,
                                 scalar F, scalar T_in, scalar P_in,
-                                scalar P_out, const sVector& z)
+                                scalar P_out, const sVector& z,
+                                scalar qInPinned)
 {
     const std::size_t n = thermo.n();
 
@@ -576,7 +596,7 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     //    (NusseltFilm) continues below for a `coolant{}` block.
     if (operDict->found("boiling"))
         return solveBoilingGeometry(operDict, thermo, verbosity,
-                                    F, T_in, P_in, P_out, z);
+                                    F, T_in, P_in, P_out, z, qInPinned);
 
     if (!operDict->found("geometry"))
         throw std::runtime_error("phaseChanger(geometry): a `geometry { ... }` "
@@ -828,6 +848,8 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
         FlashInput fin; fin.F = 1.0; fin.T = T_in; fin.P = P_in; fin.z = z;
         FlashSolution fsol = resolveAt(fin, thermo, scDiscarded);
         H_in = streamEnthalpy(thermo, fsol, T_in, P_in, z);
+        if (qInPinned > 0.0) // a pure two-phase feed: its pin is its state
+            H_in = thermo.H_stream_formation(T_in, P_in, qInPinned, z);
     }
     const scalar F_mol_s   = F * 1000.0;                 // kmol/s -> mol/s
     const scalar Q_per_mol = -Q_cond_W / F_mol_s;        // heat REMOVED < 0
@@ -841,11 +863,12 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     scalar T_out = T_in, vf_out = 0.0, H_out = H_target;
     bool resolved = false;
     {
-        const scalar eps  = 1.0e-4;
-        const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
-        const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
-        const scalar h_f  = (h_lo - eps * h_hi) / (1.0 - 2.0 * eps);
-        const scalar h_g  = (h_hi - eps * h_lo) / (1.0 - 2.0 * eps);
+        //  The plateau's ends: one home, `flash/PureSaturationPlateau.H`
+        //  (see the duty mode above for the extrapolation it replaced).
+        const auto   legs = flashState::pureSaturationLegs(Tsat, P_out, z,
+                                                           thermo);
+        const scalar h_f  = legs.hLiquid;
+        const scalar h_g  = legs.hVapour;
         if (pureDome && H_target >= h_f - 1.0e-3 && H_target <= h_g + 1.0e-3)
         {
             T_out  = Tsat;
@@ -951,6 +974,8 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     ProcessStream out;
     out.name = "out";
     out.F = F; out.T = T_out; out.P = P_out; out.z = z; out.vf = vf_out;
+    out.phasePinned = vf_out > 1.0e-9 && vf_out < 1.0 - 1.0e-9   // a pure
+                   && flashState::soleComponent(z).has_value();  // plateau
     produced_.push_back(out);
 
     // ---- KPIs ------------------------------------------------------------
@@ -1012,7 +1037,8 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
                                        const ThermoPackage& thermo,
                                        int verbosity,
                                        scalar F, scalar T_in, scalar P_in,
-                                       scalar P_out, const sVector& z)
+                                       scalar P_out, const sVector& z,
+                                       scalar qInPinned)
 {
     const std::size_t n = thermo.n();
 
@@ -1313,6 +1339,8 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
         FlashInput fin; fin.F = 1.0; fin.T = T_in; fin.P = P_in; fin.z = z;
         FlashSolution fsol = resolveAt(fin, thermo, scDiscarded);
         H_in = streamEnthalpy(thermo, fsol, T_in, P_in, z);
+        if (qInPinned > 0.0) // a pure two-phase feed: its pin is its state
+            H_in = thermo.H_stream_formation(T_in, P_in, qInPinned, z);
     }
     const scalar F_mol_s   = F * 1000.0;
     const scalar Q_per_mol = +Q_boil_W / F_mol_s;    // heat ADDED > 0
@@ -1325,11 +1353,12 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     scalar T_out = T_in, vf_out = 0.0, H_out = H_target;
     bool resolved = false;
     {
-        const scalar eps  = 1.0e-4;
-        const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
-        const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
-        const scalar h_f  = (h_lo - eps * h_hi) / (1.0 - 2.0 * eps);
-        const scalar h_g  = (h_hi - eps * h_lo) / (1.0 - 2.0 * eps);
+        //  The plateau's ends: one home, `flash/PureSaturationPlateau.H`
+        //  (see the duty mode above for the extrapolation it replaced).
+        const auto   legs = flashState::pureSaturationLegs(Tsat, P_out, z,
+                                                           thermo);
+        const scalar h_f  = legs.hLiquid;
+        const scalar h_g  = legs.hVapour;
         if (pureDome && H_target >= h_f - 1.0e-3 && H_target <= h_g + 1.0e-3)
         {
             T_out  = Tsat;
@@ -1424,6 +1453,8 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     ProcessStream out;
     out.name = "out";
     out.F = F; out.T = T_out; out.P = P_out; out.z = z; out.vf = vf_out;
+    out.phasePinned = vf_out > 1.0e-9 && vf_out < 1.0 - 1.0e-9   // a pure
+                   && flashState::soleComponent(z).has_value();  // plateau
     produced_.push_back(out);
 
     // ---- KPIs ------------------------------------------------------------

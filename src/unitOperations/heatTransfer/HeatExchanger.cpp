@@ -34,6 +34,7 @@ License
 #include "thermo/ThermoAnnounce.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
+#include "unitOperations/flash/PureSaturationPlateau.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include <limits>
 
@@ -59,8 +60,14 @@ int HeatExchanger::solve(const DictPtr& dict,
             + ".  Declare in flowsheetDict as  inputs (hotName coldName );");
     const std::size_t n = thermo.n();
 
+    //  `qPinned`: the quality a PURE two-phase inlet DECLARES (pinned,
+    //  0 < vf < 1, one component), or -1.  On its saturation curve (T, P) do
+    //  not fix the split, so a resolution at (T, P, z) returns one side of the
+    //  curve by the last digits of T and loses it; this unit reads the pin
+    //  instead (`flashState::pinnedPureQuality`, C36 item 3).
     struct Stream
-    { std::string name; sVector z; scalar F = 0, T = 0, P = 0, vf = 0; };
+    { std::string name; sVector z; scalar F = 0, T = 0, P = 0, vf = 0;
+      scalar qPinned = -1.0; };
     auto readStream = [&](const DictPtr& sd) -> Stream
     {
         Stream s;
@@ -81,6 +88,11 @@ int HeatExchanger::solve(const DictPtr& dict,
         s.vf = flashState::resolvedInletVaporFraction(
             sd, s.T, s.P, s.z, thermo,
             "heatExchanger inlet '" + s.name + "'");
+        if (const auto q = flashState::pinnedPureQuality(sd, s.z))
+        {
+            s.vf      = *q;
+            s.qPinned = *q;
+        }
         return s;
     };
     Stream s0 = readStream(ins[0]);
@@ -788,16 +800,42 @@ int HeatExchanger::solve(const DictPtr& dict,
       }
     };
 
+    //  The enthalpy of an INLET at its own state.  A pure two-phase inlet's
+    //  declared quality IS its state (see `Stream::qPinned`): priced on the
+    //  same blend the energy report prices it with, never re-resolved.
+    auto Hinlet = [&](const Stream& s) -> scalar
+    {
+        if (s.qPinned > 0.0)
+        {
+            try { return thermo.H_stream_formation(s.T, s.P, s.qPinned, s.z); }
+            catch (const std::exception&)
+            { return std::numeric_limits<scalar>::quiet_NaN(); }
+        }
+        return Hmol(s, s.T, nullptr);
+    };
+
     //  Returns the outlet T for a side that must absorb `dH_per_mol`, and
     //  writes back the resolved vapour fraction.  Falls back to the eps-NTU
     //  temperature -- ANNOUNCED, never silently -- if the package cannot be
     //  bracketed, so a world this inversion cannot serve degrades to exactly
     //  the previous behaviour instead of refusing a case that used to run.
+    //
+    //  `pinnedOut`: set when the answer is a PURE stream on its saturation
+    //  plateau (C36 item 3, 2026-10-05).  For one component H(T) JUMPS by the
+    //  whole latent heat at Tsat(P), so a target inside the jump has no root
+    //  in T: the bisection closes onto Tsat with its two bracket ends a latent
+    //  heat apart, and used to publish the nearer single phase -- short of
+    //  the duty by the unboiled (or uncondensed) fraction's latent heat, at
+    //  exit 0 (`utility02_hitec_csp_heater` at 40 bar: 3.06 kW, 1.5 %).  The
+    //  state there is T = Tsat and q = (H - h_L)/(h_V - h_L), and (T, P) do
+    //  not fix q, so the outlet carries it as a PIN (CLAUDE.md §3, the
+    //  pure-component exception) -- one home for the arithmetic,
+    //  `flash/PureSaturationPlateau.H`.
     auto invert = [&](const Stream& s, scalar dH_per_mol, scalar Tguess,
-                      scalar& vfOut) -> scalar
+                      scalar& vfOut, bool& pinnedOut) -> scalar
     {
-        scalar dummy = 0.0;
-        const scalar Hin = Hmol(s, s.T, &dummy);
+        pinnedOut = false;
+        const scalar Hin = Hinlet(s);
         if (!std::isfinite(Hin))
         {
             if (announceOnce("hxNoDatum:" + s.name))
@@ -831,29 +869,45 @@ int HeatExchanger::solve(const DictPtr& dict,
             Hmol(s, Tguess, &vfOut);
             return Tguess;
         }
-        for (int k = 0; k < 200 && (hi - lo) > 1.0e-10 * std::max<scalar>(1.0, hi); ++k)
+        const flashState::BracketedRoot root =
+            flashState::bisectIncreasing(f, lo, flo, hi, fhi);
+        const scalar Tans = root.T;
+        if (const auto q = flashState::qualityAtJump(root, Htarget, s.P, s.z,
+                                                     thermo))
         {
-            const scalar mid = 0.5 * (lo + hi), fm = f(mid);
-            if (flo * fm <= 0.0) { hi = mid; }
-            else                 { lo = mid; flo = fm; }
+            vfOut     = *q;          // the state ON the plateau, pinned
+            pinnedOut = true;
+            return Tans;
         }
-        const scalar Tans = 0.5 * (lo + hi);
         Hmol(s, Tans, &vfOut);      // the vf AT the answer, never at a trial
         return Tans;
     };
 
+    //  The enthalpy of an OUTLET as published: a pinned plateau state is
+    //  priced at its pin, anything else through the same resolution the
+    //  inversion used.
+    auto Houtlet = [&](const Stream& s, scalar T, bool pinned,
+                       scalar q) -> scalar
+    {
+        if (pinned) return thermo.H_stream_formation(T, s.P, q, s.z);
+        return Hmol(s, T, nullptr);
+    };
+
     scalar vfHotOut = 0.0, vfColdOut = 0.0;
+    bool   pinHotOut = false, pinColdOut = false;
     const Stream& sHot  = zeroHot ? s0 : s1;
     const Stream& sCold = zeroHot ? s1 : s0;
     //  Q [W] over n [mol/s]; F is kmol/s.
-    Th_out = invert(sHot,  -Q / (sHot.F  * 1000.0), Th_out, vfHotOut);
-    Tc_out = invert(sCold, +Q / (sCold.F * 1000.0), Tc_out, vfColdOut);
+    Th_out = invert(sHot,  -Q / (sHot.F  * 1000.0), Th_out, vfHotOut,  pinHotOut);
+    Tc_out = invert(sCold, +Q / (sCold.F * 1000.0), Tc_out, vfColdOut, pinColdOut);
 
     // Map back to the input streams (outlet order matches input order).
     const scalar T0_out = zeroHot ? Th_out : Tc_out;
     const scalar T1_out = zeroHot ? Tc_out : Th_out;
     const scalar vf0_out = zeroHot ? vfHotOut : vfColdOut;
     const scalar vf1_out = zeroHot ? vfColdOut : vfHotOut;
+    const bool   pin0_out = zeroHot ? pinHotOut : pinColdOut;
+    const bool   pin1_out = zeroHot ? pinColdOut : pinHotOut;
 
     // ---- LMTD (a posteriori, for verification / sizing) ----------------
     const scalar dT1 = counter ? (Th_in - Tc_out) : (Th_in - Tc_in);
@@ -867,8 +921,10 @@ int HeatExchanger::solve(const DictPtr& dict,
     produced_.clear();
     ProcessStream o0; o0.name = "hotOut";
     o0.F = s0.F; o0.T = T0_out; o0.P = s0.P; o0.z = s0.z; o0.vf = vf0_out;
+    o0.phasePinned = pin0_out;      // a pure stream ON its plateau (above)
     ProcessStream o1; o1.name = "coldOut";
     o1.F = s1.F; o1.T = T1_out; o1.P = s1.P; o1.z = s1.z; o1.vf = vf1_out;
+    o1.phasePinned = pin1_out;
     // Name them by their real role for the report/streams panel.
     o0.name = zeroHot ? "hotOut" : "coldOut";
     o1.name = zeroHot ? "coldOut" : "hotOut";
@@ -889,10 +945,13 @@ int HeatExchanger::solve(const DictPtr& dict,
         //  20 759 kW on a side that closes to 1e-6 -- the outlet's phase is a
         //  RESULT now, and a gap measured against the wrong phase is exactly
         //  the latent heat this slice exists to stop dropping.
-        const scalar dHhot  = s0.F * (Hmol(s0, T0_out, nullptr)
-                                    - Hmol(s0, s0.T,   nullptr));
-        const scalar dHcold = s1.F * (Hmol(s1, T1_out, nullptr)
-                                    - Hmol(s1, s1.T,   nullptr));
+        //  And through the same PIN: a plateau outlet re-resolved here would
+        //  read one side of the curve and report the latent heat this unit
+        //  just priced as its own gap.
+        const scalar dHhot  = s0.F * (Houtlet(s0, T0_out, pin0_out, vf0_out)
+                                    - Hinlet(s0));
+        const scalar dHcold = s1.F * (Houtlet(s1, T1_out, pin1_out, vf1_out)
+                                    - Hinlet(s1));
         const scalar gap    = dHhot + dHcold;              // kW; zero if H closes
         const scalar Q_kW   = Q / 1000.0;
         //  PUBLISHED whatever its size, so a reader can see a ZERO as a fact
@@ -1017,8 +1076,22 @@ int HeatExchanger::solve(const DictPtr& dict,
                   << "  NTU = " << std::setprecision(3) << NTU
                   << ",  C_r = " << Cr << ",  effectiveness = " << eps << "\n"
                   << "  Q = " << std::setprecision(2) << (Q/1000.0) << " kW,  LMTD = "
-                  << LMTD << " K   (check: U.A.LMTD = " << (U*A*LMTD/1000.0) << " kW)\n"
-                  << "  Assumptions: sensible heat only, no phase change, no losses.\n"
+                  << LMTD << " K   (check: U.A.LMTD = " << (U*A*LMTD/1000.0) << " kW)\n";
+        //  The outlet STATE is the enthalpy inversion's, not the eps-NTU's: a
+        //  pure stream whose target lies inside its latent jump leaves AT
+        //  Tsat with a pinned quality, and says so here.
+        for (const auto* side : { &o0, &o1 })
+            if (side->phasePinned)
+                std::cout << "  " << side->name << ": PURE fluid on its"
+                             " saturation plateau -- T = Tsat(P) = "
+                          << std::setprecision(4) << side->T << " K, vf = "
+                          << std::setprecision(6) << side->vf
+                          << " (pinned: (T, P) do not fix the split of one"
+                             " component)\n";
+        std::cout
+                  << "  Assumptions: the DUTY comes from a sensible eps-NTU (no"
+                     " phase change in the transfer model), no losses; the"
+                     " outlet states are inverted from the enthalpy.\n"
                   << "==================================================================\n\n";
     }
     return 0;

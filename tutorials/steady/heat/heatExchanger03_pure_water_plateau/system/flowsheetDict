@@ -1,0 +1,84 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  heatExchanger03_pure_water_plateau
+  ==================================
+
+  ONE component, two phases, and the one state a temperature and a pressure
+  cannot name.
+
+  A pure fluid at fixed P boils at ONE temperature, Tsat(P).  Its enthalpy
+  H(T) is therefore not a smooth curve: it JUMPS by the whole latent heat at
+  Tsat.  Ask an exchanger for an outlet whose enthalpy lies inside that jump
+  and there is no temperature that answers -- the answer is T = Tsat and a
+  VAPOUR FRACTION q = (H - h_L)/(h_V - h_L).  And because (T, P) sit on the
+  saturation curve, they do not fix q: the stream must CARRY it, as a pin --
+  the one exception to "a stream is fixed by two variables", and the only
+  stream that may declare T, P AND a vapour fraction.
+
+  Until 2026-10-05 the exchanger's bisection on H(T) closed onto Tsat and
+  published the nearer single phase -- short of its own duty by the
+  unboiled fraction's latent heat, at exit 0 (measured on
+  `utility02_hitec_csp_heater` at 40 bar: 3.06 kW, 1.5 % of its duty).
+
+  Here (counter-current, A = 2 m^2, U = 1000 W/(m^2.K)):
+    * `boilerHX` -- 100 bar superheated steam (700 K) against 40 bar
+      feedwater (480 K).  The duty comes from eps-NTU; the steam leaves
+      PARTLY CONDENSED and the feedwater PARTLY BOILED, both at their own
+      Tsat with a pinned quality.  A boiler and a partial condenser in one
+      unit.
+    * `trimCooler` -- a `heater` with Q < 0 on the condensing steam.  Its
+      inlet is the exchanger's pinned two-phase outlet (the pin is read,
+      not re-resolved) and its outlet lands on the plateau again: the
+      temperature stays at Tsat and only the quality falls.
+
+  What to read:  the Log's `PURE fluid on its saturation plateau` lines; the
+  stream table's vf column (two numbers strictly between 0 and 1 at a T
+  that does not move); and the energy balance, where each unit closes to
+  the duty it declares.
+
+  STRUCTURAL WITNESS, NOT A VALIDATION.  Every number here comes from this
+  case's own water record: an Antoine fit stated for 273-373 K (so Tsat at
+  40 and 100 bar is EXTRAPOLATED, and announced), an ideal-gas vapour, and
+  the Watson latent heat.  Tsat(40 bar) is the record's 515.6 K, not the
+  steam tables' 523.5 K.  What the case pins is the MECHANICS -- the outlet
+  sits at Tsat with the quality the first law demands, and the balances
+  close -- never the steam properties.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        boilerHX;
+        type        heatExchanger;
+        inputs      ( steam  feedwater );
+        outputs     ( wetSteam  wetFeed );
+
+        operation
+        {
+            area     2.0 m2;
+            U        1000.0 W/m2/K;
+            flow     counter;
+        }
+    }
+
+    {
+        name        trimCooler;
+        type        heater;
+        inputs      ( wetSteam );
+        outputs     ( condensate );
+
+        operation
+        {
+            Q        -500.0 kW;    // removed; lands back on the plateau
+        }
+    }
+);

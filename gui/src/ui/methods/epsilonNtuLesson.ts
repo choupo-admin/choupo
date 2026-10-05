@@ -206,15 +206,18 @@ C_r = 1 & \varepsilon = \dfrac{\mathrm{NTU}}{1 + \mathrm{NTU}} & \text{counter-c
 export const ENTU_LIMITS: readonly { id: string; title: string; body: string }[] = [
   {
     id: "sensible-only",
-    title: "Sensible heat only — the C_r = 0 limit is on the chart, not in the unit.",
-    body: "The exchanger changes each stream's TEMPERATURE and nothing else: "
-      + "flow, composition, pressure and vapour fraction pass through "
-      + "unchanged, and each stream's c_p is read from the phase its vapour "
-      + "fraction declares (liquid below 0.5, ideal gas above). A condensing "
-      + "or boiling stream — the physical C_r = 0 — is not something this "
-      + "unit solves. With the knobs you can only approach C_r = 0 by "
-      + "starving one side's flow, which reaches the same ratio by a "
-      + "different road.",
+    title: "A sensible duty only — the C_r = 0 limit is on the chart, not in the unit.",
+    body: "The exchanger's DUTY comes from sensible capacity rates: each "
+      + "stream's c_p is read from the phase its vapour fraction declares "
+      + "(liquid below 0.5, ideal gas above), and flow, composition and "
+      + "pressure pass through unchanged. A condensing or boiling stream — "
+      + "the physical C_r = 0 — is not something this unit solves in its "
+      + "ε-NTU. The outlet STATE is found afterwards from the enthalpy, so a "
+      + "stream may leave partly boiled (a pure one at its saturation "
+      + "temperature, its vapour fraction carried as a pin), but the duty "
+      + "that boiled it came from a sensible c_p. With the knobs you can only "
+      + "approach C_r = 0 by starving one side's flow, which reaches the same "
+      + "ratio by a different road.",
   },
   {
     id: "constant-U",
