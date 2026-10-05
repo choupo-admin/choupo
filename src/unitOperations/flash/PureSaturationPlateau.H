@@ -54,11 +54,9 @@ Description
       * `heatExchanger` and `heater`, which invert H(T) by a root-finder and
         must recognise that they landed on the jump;
       * `phaseChanger`, which tests the plateau FIRST on its duty and
-        geometry modes, and reads the pin rules here.  Its own three copies
-        of the extrapolation to the saturated legs are NOT yet this one:
-        they scale the legs about zero instead of translating them (see
-        `pureSaturationLegs`), and moving them moves two goldens, so it is
-        its own commit.
+        geometry modes -- and carried, in three copies, an extrapolation to
+        the saturated legs that was exact only when the enthalpy datum is
+        zero (see `pureSaturationLegs`).
 
     Nothing here resolves a stream's state: that is
     `flash/StreamEquilibrium.H`'s, and it is untouched.  These are the legs of
@@ -115,13 +113,15 @@ inline std::optional<std::size_t> soleComponent(const sVector& z)
 //  extrapolation is exact and h(q) evaluated afterwards reproduces any target
 //  between the legs to round-off.
 //
-//  THE EXTRAPOLATION `phaseChanger` CARRIES IS EXACT ONLY FOR A ZERO DATUM.
-//  It writes, at three sites, h_f = (h_lo - eps h_hi)/(1 - 2 eps)
+//  THE EXTRAPOLATION THIS REPLACES WAS EXACT ONLY FOR A ZERO DATUM.
+//  `phaseChanger` carried, at three sites, h_f = (h_lo - eps h_hi)/(1 - 2 eps)
 //  and h_g = (h_hi - eps h_lo)/(1 - 2 eps).  With h_lo = h_L + eps L and
 //  h_hi = h_L + (1 - eps) L that is h_L (1 - eps)/(1 - 2 eps) + O(eps^2 L):
 //  the legs are scaled about ZERO, not translated, so on the elements datum
-//  (water's liquid leg is about -2.86e5 J/mol) both move by ~eps |h_L|,
-//  ~28.6 J/mol, and the plateau quality and the delivered duty with them.
+//  (water's liquid leg is about -2.86e5 J/mol) both moved by ~eps |h_L|,
+//  ~28.6 J/mol, and the plateau quality and the delivered duty with them
+//  (on the two IF97 corpus cases that land on the plateau: 1.15 and
+//  3.00 J/mol, a published duty 0.029 % and 0.016 % off the unit's own).
 //  The exact form translates: h_L = h_lo - eps L, h_V = h_hi + eps L,
 //  L = (h_hi - h_lo)/(1 - 2 eps).
 struct SaturationLegs

@@ -2004,8 +2004,8 @@ with its moved golden rows listed:
      two-variables rule); heater and phaseChanger checked for the same shape.
      [BUILT 2026-10-05 on `claude/c36-pure-twophase-outlet`: the exchanger
      and the heater (which had the shape, and failed to converge on it);
-     phaseChanger pins too and had a different defect (§5, same day): its
-     fix is a separate commit whose 16 moved rows await Vitor.  §5, 2026-10-05, HEAT
+     phaseChanger pins too and had a different defect (§5, same day), fixed
+     in a separate commit whose 16 moved rows await Vitor.  §5, 2026-10-05, HEAT
      EXCHANGER -- CLOSED.]
   4. The steady ED stack's Nernst term uses each ion's own |z| (ed04's Mg2+).
   5. `--fast`'s mass-closure atom arm judges only in-scope witnesses (it read
@@ -3823,7 +3823,7 @@ apart, a jump a latent heat apart) and `pinnedPureQuality` (a pinned,
     publishes the outlet pinned (`:462`); its inlet reads a pure pin (`:127`).
   * `phaseChanger` -- NOT the shape: it tests the plateau BEFORE any search,
     in every mode that has one, so it never lands on the jump.  It now pins a
-    pure plateau outlet (`PhaseChanger.cpp:534`, `:973`, `:1451`) and reads a
+    pure plateau outlet (`PhaseChanger.cpp:537`, `:977`, `:1456`) and reads a
     pure inlet pin in all three modes (`:171`).  FOUND on the way: its three
     copies of the extrapolation to the plateau's ends scale about ZERO
     instead of translating, so on any non-zero datum the plateau quality and
@@ -3843,9 +3843,12 @@ the heater and the report -- a pin is for the READER.  Corpus: every case
 using `heatExchanger`, `heater` or `phaseChanger` (34) is byte-identical on
 every published number (compared at 1e-12 relative) under the first commit.
 
-**2026-10-05 -- `phaseChanger`'S PLATEAU ENDS ARE SCALED, NOT TRANSLATED.
-FOUND (C36 item 3), NOT FIXED IN THIS COMMIT: the fix moves two goldens and
-is its own commit, whose moved rows are Vitor's (CLAUDE.md §10).**  Three sites (`PhaseChanger.cpp`, the duty mode and both
+**2026-10-05 -- `phaseChanger`'S PLATEAU ENDS WERE SCALED, NOT TRANSLATED.
+FOUND (C36 item 3); FIXED on branch `claude/c36-pure-twophase-outlet` in its
+own commit, the two goldens NOT RE-RECORDED -- the moved rows are Vitor's
+(CLAUDE.md §10), listed in that commit; until he rules,
+`reboiler_water_copper` and `condenser01_film_nusselt` FAIL their goldens
+on that commit, for this stated reason.**  Three sites (`PhaseChanger.cpp`, the duty mode and both
 geometry modes) extrapolated the saturated legs from two interior qualities
 as h_f = (h_lo - eps h_hi)/(1 - 2 eps), h_g = (h_hi - eps h_lo)/(1 - 2 eps).
 With h_lo = h_L + eps L, h_hi = h_L + (1 - eps) L that is h_L (1 - eps) /

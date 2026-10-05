@@ -275,11 +275,14 @@ int PhaseChanger::solve(const DictPtr& dict,
             // LIQUID branch (p == psat routes to region 1) and miss the latent
             // heat.  The linear extrapolation back to vf = 0 / 1 recovers the
             // true endpoints.
-            const scalar eps  = 1.0e-4;
-            const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
-            const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
-            const scalar h_f  = (h_lo - eps * h_hi) / (1.0 - 2.0 * eps);
-            const scalar h_g  = (h_hi - eps * h_lo) / (1.0 - 2.0 * eps);
+            //  The ends of the plateau, through the ONE home of that
+            //  extrapolation (`flash/PureSaturationPlateau.H`).  The form it
+            //  replaces scaled the legs about ZERO instead of translating
+            //  them, off by ~eps |h_L| on the elements datum (C36 item 3).
+            const auto   legs = flashState::pureSaturationLegs(Tsat, P_out, z,
+                                                               thermo);
+            const scalar h_f  = legs.hLiquid;
+            const scalar h_g  = legs.hVapour;
             if (H_target >= h_f - 1.0e-3 && H_target <= h_g + 1.0e-3)
             {
                 T_out     = Tsat;
@@ -860,11 +863,12 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     scalar T_out = T_in, vf_out = 0.0, H_out = H_target;
     bool resolved = false;
     {
-        const scalar eps  = 1.0e-4;
-        const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
-        const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
-        const scalar h_f  = (h_lo - eps * h_hi) / (1.0 - 2.0 * eps);
-        const scalar h_g  = (h_hi - eps * h_lo) / (1.0 - 2.0 * eps);
+        //  The plateau's ends: one home, `flash/PureSaturationPlateau.H`
+        //  (see the duty mode above for the extrapolation it replaced).
+        const auto   legs = flashState::pureSaturationLegs(Tsat, P_out, z,
+                                                           thermo);
+        const scalar h_f  = legs.hLiquid;
+        const scalar h_g  = legs.hVapour;
         if (pureDome && H_target >= h_f - 1.0e-3 && H_target <= h_g + 1.0e-3)
         {
             T_out  = Tsat;
@@ -1349,11 +1353,12 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     scalar T_out = T_in, vf_out = 0.0, H_out = H_target;
     bool resolved = false;
     {
-        const scalar eps  = 1.0e-4;
-        const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
-        const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
-        const scalar h_f  = (h_lo - eps * h_hi) / (1.0 - 2.0 * eps);
-        const scalar h_g  = (h_hi - eps * h_lo) / (1.0 - 2.0 * eps);
+        //  The plateau's ends: one home, `flash/PureSaturationPlateau.H`
+        //  (see the duty mode above for the extrapolation it replaced).
+        const auto   legs = flashState::pureSaturationLegs(Tsat, P_out, z,
+                                                           thermo);
+        const scalar h_f  = legs.hLiquid;
+        const scalar h_g  = legs.hVapour;
         if (pureDome && H_target >= h_f - 1.0e-3 && H_target <= h_g + 1.0e-3)
         {
             T_out  = Tsat;
