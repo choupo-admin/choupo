@@ -4760,6 +4760,52 @@ Equimolar feed (1/3, 1/3, 1/3). This case is the litmus test for the VLLE solver
 \goldmore{12}
 \end{tutgolden}
 
+\clearpage
+\tutentry{vlle04\_two\_liquids\_decanter}{tutorials/steady/flash/vlle04\_two\_liquids\_decanter}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (decanter01) at (0.0,-0.0) {\textbf{decanter01}\\[-1pt]{\tiny isothermalFlash}};
+  \draw[->] ($(decanter01.west)+(-1.05,0.00)$) -- ($(decanter01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(decanter01.east)+(0,-0.34)$) -- ($(decanter01.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {vapour};
+  \draw[->] ($(decanter01.east)+(0,0.00)$) -- ($(decanter01.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {liquidAlpha};
+  \draw[->] ($(decanter01.east)+(0,0.34)$) -- ($(decanter01.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {liquidBeta};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Structural witness: a phaseSet VLLE flash whose search finds TWO LIQUIDS and no vapour (ethanol + cyclohexane at 340 K, 3 bar, with Choupo's own case-local regressed NRTL pair, which predicts a liquid split its measurements do not show). The second liquid must leave on liquidBeta, never on the vapour port. Not a validated LLE.}
+\begin{tutnarrative}
+a `phaseSet VLLE` flash whose three-phase search finds NO vapour and falls back to TWO LIQUIDS.
+
+A STRUCTURAL WITNESS, NOT A VALIDATED LLE. Read this before reading any number it prints.
+
+WHAT IT PINS. A VLLE flash always emits three ports (vapour, liquid alpha, liquid beta); when the Gibbs minimisation finds the vapour fraction below 1 \%, the solver demotes the answer to a liquid-liquid split. Until 2026-10-05 the unit decided WHICH two-phase fallback it had by searching the regime's human-readable string for "VL" -- and the LL fallback's own string reads "two-phase liquid (LL, VLLE attempt found V beta \textasciitilde{} 0)", whose "VLLE" contains "VL". So the beta LIQUID left on the VAPOUR port with vf = 1, the second liquid port carried zero, and the energy report booked a latent heat that never happened (498.03 kW on this very drum). The decision now reads a typed field of the flash solution (`liquidLiquid`), and this case is the witness that it does:
+
+the `vapour` port carries ZERO flow; `liquidAlpha` and `liquidBeta` both carry flow, both as liquids; the unit speaks the LL vocabulary (betaFraction, no V\_over\_F, no K-values, no duty -- an LL split's liquid enthalpies carry no excess-of-mixing term, the same posture as a `phaseSet LL` flash); the plant first law closes (no phantom latent heat).
+
+Gate: bin/curate/check\_vlle\_fallback.py. Record: DEV.md section 5, the entry dated 2026-10-05.
+
+WHY THESE NUMBERS ARE NOT PHYSICS. The NRTL pair is Choupo's OWN regression to measured BUBBLE TEMPERATURES of ethanol + cyclohexane (the case tutorials/props/curation/curate12\_nrtl\_ethanol\_cyclohexane, whose record is copied UNCHANGED into constant/parameters/NRTL/ here). It passed its held-out bubble-temperature test and was deliberately NOT promoted to the catalogue, because it predicts a liquid-liquid split up to about 358.8 K while the measurements it was fitted to show ONE liquid. That spurious split is exactly what this witness needs -- a VLLE flash that ends with two liquids and no vapour -- and exactly why no composition it prints may be quoted as the behaviour of real ethanol + cyclohexane. The run's own T-x-y diagnostic at 3 bar boils every composition at or above about 370 K, thirty kelvin above the drum, so the ABSENCE of vapour is the model's honest answer at these conditions; the SECOND LIQUID is what its own evidence does not support.
+
+The copied record names `fittedInCase`, so check\_regressed\_pairs re-runs curate12 and holds this copy to the fit: it cannot drift.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{340}
+\goldrow{stream}{liquidAlpha}{F}{0.0143891231219}
+\goldrow{stream}{liquidAlpha}{T}{340}
+\goldrow{stream}{liquidBeta}{F}{0.0133886546559}
+\goldrow{stream}{liquidBeta}{T}{340}
+\goldrow{stream}{vapour}{F}{0}
+\goldrow{stream}{vapour}{T}{340}
+\goldrow{kpi}{decanter01}{F\_alpha}{0.0143891231219}
+\goldrow{kpi}{decanter01}{F\_beta}{0.0133886546559}
+\goldrow{kpi}{decanter01}{F\_in}{0.0277777777778}
+\goldrow{kpi}{decanter01}{P}{300000}
+\goldrow{kpi}{decanter01}{T}{340}
+\goldrow{kpi}{decanter01}{betaFraction}{0.481991567611}
+\goldmore{5}
+\end{tutgolden}
+
 \subsection{flowsheets}
 \grouptheory{flowsheets}
 \clearpage

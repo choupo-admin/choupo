@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Structural witness: a phaseSet VLLE flash whose search finds TWO LIQUIDS and no vapour (ethanol + cyclohexane at 340 K, 3 bar, with Choupo's own case-local regressed NRTL pair, which predicts a liquid split its measurements do not show). The second liquid must leave on liquidBeta, never on the vapour port. Not a validated LLE.";
+
+verbosity     3;

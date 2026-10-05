@@ -4460,6 +4460,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flash/vlle04_two_liquids_decanter": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "unitModels": [
+    "gibbsMinimisation"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flowsheets/acetone03_luyben_reaction_section": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -6968,6 +6985,7 @@
     "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
     "tutorials/steady/flash/vlle01_waterButanol",
     "tutorials/steady/flash/vlle03_audit_artificial",
+    "tutorials/steady/flash/vlle04_two_liquids_decanter",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
@@ -7532,6 +7550,7 @@
     "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
     "tutorials/steady/flash/vlle01_waterButanol",
     "tutorials/steady/flash/vlle03_audit_artificial",
+    "tutorials/steady/flash/vlle04_two_liquids_decanter",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
@@ -7755,6 +7774,7 @@
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft",
     "tutorials/steady/flash/flash21_freeze_concentration",
     "tutorials/steady/flash/vlle03_audit_artificial",
+    "tutorials/steady/flash/vlle04_two_liquids_decanter",
     "tutorials/steady/flowsheets/process04_research_workflow",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
     "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars",

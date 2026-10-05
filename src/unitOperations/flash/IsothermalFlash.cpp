@@ -721,6 +721,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         tpdAdvisory("L-beta",  xB);
 
         sol.regime     = "two-phase liquid (LL via Gibbs minimisation)";
+        sol.liquidLiquid = true;
         sol.V_over_F   = betaFinal;
         sol.x          = xA;
         sol.y          = xB;
@@ -998,6 +999,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             // 2-phase LL --- emit as the LL branch normally would.
             const scalar denom = 1.0 - bV;
             sol.regime     = "two-phase liquid (LL, VLLE attempt found V β ≈ 0)";
+            sol.liquidLiquid = true;
             sol.V_over_F   = bB / denom;
             sol.x          = xA;
             sol.y          = xB;
@@ -1685,7 +1687,13 @@ int IsothermalFlash::solve(const DictPtr& dict,
         // fraction is therefore 0, not 1 --- blending it as a vapour would add a
         // phantom latent heat to the β fraction (a large spurious duty for an
         // otherwise isothermal, equal-T liquid split).
-        const scalar betaVf = (opts.phaseSet == PhaseSet::LL) ? 0.0 : 1.0;
+        //  The KIND is read per solution: a `phaseSet VLLE` search that
+        //  finds no vapour returns an LL split too (`liquidLiquid`), and its
+        //  beta phase is just as much a liquid as an LL flash's.
+        auto betaVfOf = [&](const FlashSolution& s) -> scalar
+        {
+            return (opts.phaseSet == PhaseSet::LL || s.liquidLiquid) ? 0.0 : 1.0;
+        };
 
         //  The vf the SINGLE-PHASE branch prices on.  Pinned: the declaration.
         //  Unpinned: what the feed's own equilibrium resolved to -- an
@@ -1719,14 +1727,15 @@ int IsothermalFlash::solve(const DictPtr& dict,
             {
                 const scalar bF = feedSol.V_over_F;
                 H_in = (1.0 - bF) * thermo.H_stream_formation(T_feed, P_feed, 0.0, feedSol.x)
-                     +        bF  * thermo.H_stream_formation(T_feed, P_feed, betaVf, feedSol.y);
+                     +        bF  * thermo.H_stream_formation(T_feed, P_feed,
+                                                               betaVfOf(feedSol), feedSol.y);
             }
             else
                 H_in = thermo.H_stream_formation(T_feed, P_feed, vf_priced, in.z);
             H_out = (1.0 - bV) * thermo.H_stream_formation(in.T, in.P, 0.0, sol.x)
-                  +        bV  * thermo.H_stream_formation(in.T, in.P, betaVf, sol.y);
+                  +        bV  * thermo.H_stream_formation(in.T, in.P, betaVfOf(sol), sol.y);
         }
-        else if (opts.phaseSet == PhaseSet::LL)
+        else if (opts.phaseSet == PhaseSet::LL || sol.liquidLiquid)
         {
             // Both phases liquid: blend two liquid enthalpies (no latent heat).
             H_out = (1.0 - sol.V_over_F) * thermo.Hliquid(in.T, sol.x, T_feed)
@@ -1852,13 +1861,19 @@ int IsothermalFlash::solve(const DictPtr& dict,
         }
         else
         {
-            // 2-phase fallback from the VLLE branch.  Identify which
-            // pair survived from sol.regime and populate the empty one.
-            const bool vlFallback =
-                sol.regime.find("VL") != std::string::npos;
-            if (vlFallback)
+            // 2-phase fallback from the VLLE branch.  Which pair survived
+            // is read off the solution's KIND (`liquidLiquid`), never off
+            // `sol.regime`: that string is prose for a human, and the LL
+            // fallback's own wording ("... VLLE attempt ...") contains "VL",
+            // so a substring test sent its beta LIQUID out on the vapour
+            // port with vf = 1 (DEV.md section 5, 2026-10-05).
+            const bool llFallback = sol.liquidLiquid;
+            if (!llFallback)
             {
-                // V+L: sol.x is the liquid, sol.y is the vapor
+                // V+L: sol.x is the liquid, sol.y is the vapor.  A single
+                // liquid (V_over_F = 0, sol.y all zero) lands here too and
+                // emits the same flows either branch would: everything on
+                // liquid_alpha.
                 bV = sol.V_over_F;
                 bA = 1.0 - bV;
                 bB = 0.0;
@@ -1954,7 +1969,11 @@ int IsothermalFlash::solve(const DictPtr& dict,
 
     // ---- KPIs ----------------------------------------------------------
     kpis_.clear();
-    const bool isLL = (opts.phaseSet == PhaseSet::LL);
+    //  LL vocabulary whenever the answer IS a liquid-liquid split -- an LL
+    //  flash, or a VLLE search that found no vapour (`liquidLiquid`): its
+    //  second phase is a liquid, so V_over_F, a K-value and a duty priced
+    //  without an excess-enthalpy route would each misdescribe it.
+    const bool isLL = (opts.phaseSet == PhaseSet::LL) || sol.liquidLiquid;
     kpis_["T"]         = in.T;
     kpis_["P"]         = in.P;
     kpis_["F_in"]      = in.F;
@@ -2032,8 +2051,8 @@ void printFlashResult(const FlashSolution& sol,
               << sol.residual << "\n";
     // LL split: the beta phase is a LIQUID -- never print it as "Vapor"
     // (Codex P0.2: V/F is reserved for a real vapour fraction).
-    const bool llSplit = sol.regime.find("liquid (LL") != std::string::npos
-                      || sol.regime.find("two-phase liquid") != std::string::npos;
+    //  Read off the solution's KIND, never parsed out of `sol.regime`.
+    const bool llSplit = sol.liquidLiquid;
     if (llSplit)
     {
         std::cout << "  beta (Lb/F):   " << std::fixed << std::setprecision(6)

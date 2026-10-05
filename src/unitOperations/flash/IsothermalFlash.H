@@ -72,6 +72,18 @@ struct FlashSolution
     bool    converged  = false;
     std::string regime;   // "subcooled liquid" | "two-phase" | "superheated vapor"
 
+    // THE KIND OF THE SPLIT, as a FACT the engine reads (2026-10-05).  true
+    // when the two phases this solution carries are both LIQUIDS: `x` is
+    // liquid alpha, `y` is liquid beta and `V_over_F` is the beta LIQUID
+    // fraction, not a vapour fraction.  Set at the sites that produce such
+    // a split (the LL Gibbs minimisation, and the VLLE search that finds no
+    // vapour) and read by every caller that must tell a second liquid from
+    // a vapour.  `regime` is prose for a human and is NEVER parsed for this:
+    // the VLLE fallback's own string, "two-phase liquid (LL, VLLE attempt
+    // ...)", contains "VL", and a substring test sent its beta liquid out
+    // on the vapour port with vf = 1.
+    bool    liquidLiquid = false;
+
     // VLLE extension: when threePhase == true, x / y still
     // carry the two liquid compositions (α, β) and V_over_F carries
     // β_α; the vapour phase appears in `xVapor` with fraction

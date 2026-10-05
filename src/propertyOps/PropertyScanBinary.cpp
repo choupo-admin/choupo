@@ -136,7 +136,7 @@ int PropertyScanBinary::run(const DictPtr& dict,
     try
     {
         const FlashSolution sol = IsothermalFlash::solveCore(in, thermo, opts);
-        const bool isLL = sol.regime.find("two-phase liquid") != std::string::npos;
+        const bool isLL = sol.liquidLiquid;   // the split's KIND, never parsed from `regime`
         if (isLL && sol.x.size() == 2 && sol.y.size() == 2)
         {
             const scalar xa = sol.x[0];           // liquid-alpha mole fraction of comp 1

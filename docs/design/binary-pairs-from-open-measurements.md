@@ -409,6 +409,9 @@ own parameters (independent of the engine).  By hand, 2026-10-05:
   residual on a 100 kmol/h decanter (scratch case, the curate12 pair).  No
   corpus case reaches it today (`vlle03` solves three phases).  A one-word
   fix in `src/`, outside this slice's licence; DEV.md section 5.
+  **FIXED 2026-10-05** (branch `claude/c34-vlle-ll-fallback`): the kind is a
+  typed field, `FlashSolution::liquidLiquid`; this decanter is now the corpus
+  witness `vlle04_two_liquids_decanter`, gate `check_vlle_fallback`.
 - **No reorientation in `extract-vle`** (6.1): the next tool step before the
   aromatics can be fitted.
 
