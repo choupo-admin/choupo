@@ -1988,6 +1988,24 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C37. THE C35/C36 LOOSE ENDS (Vítor, 2026-10-05, verbatim: "Trata tu disso
+o melhor que souberes", answering the commander's list of six).**  Each lands
+as one revertable merge with its moved rows listed:
+  1. `flashState::resolvedInletVaporFraction` honours a pinned pure two-phase
+     inlet for EVERY caller (today only heatExchanger/heater/phaseChanger read
+     the pin first).
+  2. `bin/choupo-import` re-seals heatExchanger01 and heatExchanger03 (its
+     agreement check drops the `utility <hx> heating.-.carried` row).
+  3. `solidDryer` gets an exhaust-saturation limit (a fog is no longer
+     published as vf = 1); the stale Theory Guide sentence on its X_final.
+  4. A `phaseSet VLLE` feed PRODUCED by another unit: report and producer read
+     it the same way.
+  5. The C36 #1 saturation refusal reaches a unit's own `thermo {}` world and
+     the time-integrated binaries' authored inlets.
+  6. Stale file:line citations (what-water-dat-does-not-say.md, the C33
+     table), condenser01's "saturated vapour" header, `gateManifest` claims.
+Status: dispatched 2026-10-05.
+
 **C36. "AVANÇA COMO ACHARES MELHOR" (Vítor, 2026-10-05, verbatim, answering
 the C35 close-out report and its open list).**  The commander takes the open
 items of that list on its stated recommendations, each one revertable merge
