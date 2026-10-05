@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/diluateFeed -- THE MODEL WINE: potassium hydrogen tartrate (KHT) at
+  15 mol/m3 in water, 3000 L/h (the stack record's design flow).
+
+  The water is 3000 kg/h (166.525 kmol/h) so that the stack's carrier volume
+  (rho 1000 kg/m3, the dilute-carrier approximation the unit announces) is
+  3 m3/h, and 15 mol/m3 x 3 m3/h = 0.045 kmol/h of each ion.
+
+  The 15 mol/m3 is an AUTHOR-SET ASSUMPTION (a round number), not a measured
+  wine.  Ethanol and every other wine solute are ABSENT -- system/flowsheetDict
+  says why, and what that costs.  T = 298.15 K for the reason given in the
+  flowsheetDict header, section 4.
+\*---------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water    166.5251203144 kmol/h;
+    K        0.045 kmol/h;
+    HTart    0.045 kmol/h;
+}
+
+T               298.15 K;
+P               250000 Pa;

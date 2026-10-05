@@ -1,0 +1,70 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-10-05";
+    importerVersion    "3";
+    records
+    {
+        "assets/CMX_AMX.dat"
+        {
+            type          imported;
+            sha256        "a359365178b0fbd1d14171119548e06e3607ef1b92269e9641efc3c6b9fd3da0";
+            computationalSha256 "4a12e9fa8288cbbf0ac0063867a0c5466b50b996b7624d3ba01a75f8519662ec";
+            origin        "data/standards/assets/CMX_AMX.dat";
+            originSha256  "88c38df1456dc40661ccd0d754e5c118893c0024de29b5804529626dd112fd78";
+            release       Choupo-2608;
+        }
+        "assets/EurodiaED-100P-50.dat"
+        {
+            type          imported;
+            sha256        "fafd775f9ca42a78e53b7a40dbb15187cdd485916a99ddb7453bb10f83687080";
+            computationalSha256 "2466e34490d73bf269be54e72821168628ecf3447701bdf3650861e422aac3a8";
+            origin        "data/standards/assets/EurodiaED-100P-50.dat";
+            originSha256  "5b55ab9b872495dda47d55bdcf96cf20f814cf1fcf6aabbc45d0fb29581b841f";
+            release       Choupo-2608;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
+            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            origin        "data/standards/components/water.dat";
+            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            release       Choupo-2608;
+        }
+        "species/HTart.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-10-05";
+        }
+        "species/K.dat"
+        {
+            type          imported;
+            sha256        "670b8a8c757e1813fd356a9b8b932612cab61605fb463ebe66161909def440ee";
+            computationalSha256 "af2233c5a34a7a1ef8004915d86bff50da7cb66395aa634505fdf42093fe20b8";
+            origin        "data/standards/species/K.dat";
+            originSha256  "670b8a8c757e1813fd356a9b8b932612cab61605fb463ebe66161909def440ee";
+            release       Choupo-2608;
+        }
+    }
+}
