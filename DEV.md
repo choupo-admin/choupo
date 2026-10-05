@@ -2007,7 +2007,8 @@ Each lands as ONE revertable merge with its moved golden rows listed.
  12. evapDryer02 renamed for what binds it (exhaust saturation).
  13. convDryer01's two round-off residual rows removed.
  14. The published git history is NOT rewritten; DEV.md C7 aligned with the
-     ruling record.
+     ruling record.  [DONE 2026-10-05, branch `claude/c35-cases`: C7's two
+     "his to take" sentences now record the rejection.]
  15. The two archive stubs are deleted.
  16. Vítor's own deck stays his.
 Status: dispatched 2026-10-05.
@@ -3070,6 +3071,10 @@ superheated chest is REFUSED there, falsely, not mispriced).
      its own costs (every clone diverges, every existing tag and link is
      affected), and it is Vítor's decision, not the assistant's.  A scrub
      presented as closing the legal question would be false comfort.
+     **RULED 2026-10-05 (C35 item 14): the published history is NOT
+     rewritten.**  That is the posture `no-competitor-is-named-here.md` §6
+     already recorded: the ruling binds what the tree carries from here on,
+     and the history keeps what was lawful when it was written.
 
      **NOT DONE, and why it was not fired off unattended:** the two studies
      are referenced from FOUR places, two of which are not prose —
@@ -3088,11 +3093,11 @@ superheated chest is REFUSED there, falsely, not mispriced).
      to the ruling record, and `decision-records.md` names only the ruling.
      The category-2 allowlist is `COMPETITOR_EXEMPT`.  Nothing to fix.
 
-     **WHAT REMAINS (2026-10-05):** (B) is Vítor's; (C) is permanent; and
-     whether the PUBLISHED git history is rewritten is Vítor's decision --
-     note that `no-competitor-is-named-here.md` §6 and its index row record
-     history-rewriting as REJECTED, while the paragraph above calls it his
-     to take.  Those two must be made to agree, and which way is his.
+     **WHAT REMAINS (2026-10-05):** (B) is Vítor's; (C) is permanent.  The
+     PUBLISHED git history is NOT rewritten -- REJECTED, ruled by Vítor
+     2026-10-05 (C35 item 14), in agreement with
+     `no-competitor-is-named-here.md` §6 and its index row; it is no longer
+     an open question.
 
 **C6. THE GREEN AMMONIA CASE STUDY (commissioned 2026-09-24; the largest
      thing in this file).**  Vitor: put the generals to review the green

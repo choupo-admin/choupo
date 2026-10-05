@@ -127,6 +127,7 @@ TAUGHT and a history record that names a retired grammar is doing its job.
   history to remove a name would break every clone and every commit hash this
   project's records cite, to hide something that was lawful when it was
   written.  The ruling binds what the tree carries from here on.
+  Confirmed by Vítor on 2026-10-05 (DEV.md C35 item 14).
 * **No claim is made that the ban list is complete.**  It holds eight product
   names; a ninth product mentioned tomorrow passes.  The list is in the gate
   and is the one home for it.
