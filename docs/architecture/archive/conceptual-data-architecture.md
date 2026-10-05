@@ -1,6 +1,6 @@
 > **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording, and the file's earlier name, are in git history (a stub at the old path points here).
 
-> **SUPERSEDED 2026-07-01 by [electrolyte-data-architecture.md](electrolyte-data-architecture.md)** — the 8-home / 2-axis architecture (no basisMaps, dissociatesTo on components, no "true species"). Kept for history.
+> **SUPERSEDED 2026-07-01 by [electrolyte-data-architecture.md](../electrolyte-data-architecture.md)** — the 8-home / 2-axis architecture (no basisMaps, dissociatesTo on components, no "true species"). Kept for history.
 
 # Choupo Data Architecture — the commercial simulators' conceptual model, glass-box implementation
 

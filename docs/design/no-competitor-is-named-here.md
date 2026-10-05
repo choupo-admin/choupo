@@ -81,7 +81,7 @@ words to make them comply is a worse fault than the one being fixed.
 
 **A name survives only where the name IS the evidence, and removing it would
 destroy the record rather than tidy it.**  That is a narrow test and it admits
-exactly three things:
+exactly four things:
 
 1. **`docs/legal/data-licensing-review-2026-08-11.md`.**  It quotes a
    project's own published statement about the licence of a database it
@@ -92,6 +92,9 @@ exactly three things:
 2. **`bin/curate/check_doctrine.py`.**  The gate must name the words it bans.
 3. **`.gitignore`.**  One ignored path for a private, local-only interop
    directory that is never uploaded.
+4. **This record.**  It names the two removed files so a reader can
+   retrieve them from git history (the fourth `COMPETITOR_EXEMPT` entry in
+   `check_doctrine.py`; this list said "three" until 2026-10-05).
 
 **The value-provenance cautions did NOT qualify, and this is the interesting
 half.**  `data/standards/species/K.dat` and
