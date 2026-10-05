@@ -121,13 +121,12 @@ int Heater::solve(const DictPtr& dict,
     //  (700 K) and probed a liquid leg the gas may not have (DEV.md
     //  C33/C34).  A produced inlet keeps its producer's answer.
     //  A PURE two-phase inlet DECLARES its quality (pinned, 0 < vf < 1, one
-    //  component): on its saturation curve (T, P) do not fix the split, and a
-    //  resolution at (T, P, z) would hand back one side of it by the last
-    //  digits of T.  Its pin is its state (C36 item 3).
+    //  component): on its saturation curve (T, P) do not fix the split, and
+    //  the one home returns the pin as its vf (DEV.md C37 item 1).  It is
+    //  kept besides to PRICE the inlet at it (C36 item 3).
     const auto   qInPinned = flashState::pinnedPureQuality(feedDict, z);
-    const scalar vf_in  = qInPinned ? *qInPinned
-        : flashState::resolvedInletVaporFraction(
-              feedDict, T_in, P_in, z, thermo, "heater inlet");
+    const scalar vf_in  = flashState::resolvedInletVaporFraction(
+        feedDict, T_in, P_in, z, thermo, "heater inlet");
     const bool   useGas = vf_in >= 0.5;
     //  Was that vf AUTHORED, or is it merely the upstream unit's answer?
     //  R-E2: only a DECLARATION is priced as one; a carried vf is re-resolved.

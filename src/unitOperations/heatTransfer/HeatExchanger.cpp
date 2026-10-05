@@ -62,9 +62,9 @@ int HeatExchanger::solve(const DictPtr& dict,
 
     //  `qPinned`: the quality a PURE two-phase inlet DECLARES (pinned,
     //  0 < vf < 1, one component), or -1.  On its saturation curve (T, P) do
-    //  not fix the split, so a resolution at (T, P, z) returns one side of the
-    //  curve by the last digits of T and loses it; this unit reads the pin
-    //  instead (`flashState::pinnedPureQuality`, C36 item 3).
+    //  not fix the split; `resolvedInletVaporFraction` returns the pin as the
+    //  inlet's vf (the one home, DEV.md C37 item 1), and this unit keeps it
+    //  besides to PRICE the inlet at it (`inletH` below, C36 item 3).
     struct Stream
     { std::string name; sVector z; scalar F = 0, T = 0, P = 0, vf = 0;
       scalar qPinned = -1.0; };
@@ -89,10 +89,7 @@ int HeatExchanger::solve(const DictPtr& dict,
             sd, s.T, s.P, s.z, thermo,
             "heatExchanger inlet '" + s.name + "'");
         if (const auto q = flashState::pinnedPureQuality(sd, s.z))
-        {
-            s.vf      = *q;
             s.qPinned = *q;
-        }
         return s;
     };
     Stream s0 = readStream(ins[0]);

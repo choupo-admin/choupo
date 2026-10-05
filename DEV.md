@@ -1994,6 +1994,20 @@ as one revertable merge with its moved rows listed:
   1. `flashState::resolvedInletVaporFraction` honours a pinned pure two-phase
      inlet for EVERY caller (today only heatExchanger/heater/phaseChanger read
      the pin first).
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  The rule
+     is in the one home: `resolvedInletVaporFraction` asks
+     `pinnedPureQuality` first (StreamEquilibrium.H:717), and so does its
+     sibling `resolveStreamThermalState` (:653, the column feed and the
+     evaporator chest).  The three units' vf overrides are gone
+     (HeatExchanger.cpp:88, Heater.cpp:128, PhaseChanger.cpp:232 call the
+     one home alone); each keeps the pin only to PRICE its inlet at it.
+     MEASURED: the corpus has no AUTHORED pinned pure two-phase inlet (the
+     five fractional `vaporFraction` files are produced streams, for which
+     the one home always returned the carried pin), so no golden moves; 14
+     targeted cases PASS.  The fixture that shows it -- heatExchanger03's
+     wetFeed declared as an authored inlet to a splitter -- published both
+     branches at vf = 0 and a 98.28 kW first-law residual before, the pin
+     (0.09917968728) and 0 kW after.  Gate `check_inlet_resolution` arm (k).]
   2. `bin/choupo-import` re-seals heatExchanger01 and heatExchanger03 (its
      agreement check drops the `utility <hx> heating.-.carried` row).
   3. `solidDryer` gets an exhaust-saturation limit (a fog is no longer

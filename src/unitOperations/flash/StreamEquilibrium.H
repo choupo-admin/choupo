@@ -68,6 +68,7 @@ Description
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/flash/IsothermalFlash.H"
+#include "unitOperations/flash/PureSaturationPlateau.H"
 
 #include <cmath>
 #include <cstdio>
@@ -645,6 +646,17 @@ inline StreamThermalState resolveStreamThermalState(const DictPtr&       streamD
     const bool   pinned    =
         streamDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
 
+    //  A PURE two-phase stream that DECLARES its quality: on its saturation
+    //  curve (T, P) do not fix the split, so the pin is the state and there is
+    //  nothing to resolve (the rule `resolvedInletVaporFraction` applies
+    //  below, DEV.md C37 item 1).
+    if (const auto q = pinnedPureQuality(streamDict, z))
+    {
+        st.vf     = *q;
+        st.origin = "declared by the stream (pure, on its saturation curve)";
+        return st;
+    }
+
     st.split = twoPhaseSplit(T, P, z, pinned, vfCarried, thermo,
                              locus, category);
 
@@ -693,6 +705,16 @@ inline scalar resolvedInletVaporFraction(const DictPtr&       streamDict,
     const scalar vfCarried = streamDict->lookupScalarOrDefault("vf", 0.0);
     const bool   pinned    =
         streamDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    //  A PURE two-phase inlet DECLARES its quality (pinned, 0 < vf < 1, one
+    //  present component): on its saturation curve (T, P) are ONE condition,
+    //  so a flash at (T, P, z) would hand back one side of the curve chosen
+    //  by the last digits of T and lose the pin.  The pin IS the state
+    //  (CLAUDE.md §3, the pure-component exception of the two-variable rule).
+    //  Read here, in the one home, for EVERY caller (DEV.md C37 item 1):
+    //  until then only heatExchanger, heater and phaseChanger asked
+    //  `pinnedPureQuality` first, and every other unit got one side of the
+    //  curve.
+    if (const auto q = pinnedPureQuality(streamDict, z)) return *q;
     //  Only an AUTHORED inlet is resolved: a produced stream keeps its
     //  producer's answer (column12's mixer writes the right vf at a
     //  fictitious T), the rule the flowsheet's own surface pass applies.
