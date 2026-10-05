@@ -419,6 +419,18 @@ pureSaturationProximity(scalar               T,
         //  taken on |ln K| itself.
         const scalar h = 1.0e-3;
         sp.lnK    = lnKat(T);
+        //  FAR from the curve the decision is already taken: return before
+        //  any evaluation away from the stream's own T.  The slope and the
+        //  Newton toward Tsat below only serve the refusal's message, and a
+        //  Newton started 20 K below Tsat asks the package for K at Tsat --
+        //  for water at 2 bar an extrapolated Antoine that then sat in the
+        //  caveat block of a run whose answer never used it (heatExchanger01,
+        //  found by the C36 full regression).
+        if (std::isfinite(sp.lnK) && std::fabs(sp.lnK) > sp.band)
+        {
+            sp.Tsat = NaN;
+            return sp;
+        }
         sp.dlnKdT = (lnKat(T + h) - lnKat(T - h)) / (2.0 * h);
         if (!std::isfinite(sp.lnK) || !std::isfinite(sp.dlnKdT)
             || std::fabs(sp.dlnKdT) < 1.0e-12)

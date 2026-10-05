@@ -1268,6 +1268,9 @@
   "SaturationLegs": [
    "src/unitOperations/flash/PureSaturationPlateau.H"
   ],
+  "SaturationProximity": [
+   "src/unitOperations/flash/StreamEquilibrium.H"
+  ],
   "ScalingIndexResult": [
    "src/thermo/electrolyte/ScalingIndices.H"
   ],
