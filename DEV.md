@@ -2024,6 +2024,11 @@ with its moved golden rows listed:
      `thermo {}` world (checked in the global one) and the time-integrated
      binaries (their driver stamps no authored inlet).  Record:
      docs/design/a-stream-is-fixed-by-two-variables.md §9.]
+     FULL REGRESSION AUTHORISED by Vítor 2026-10-05 ("Avança", answering the
+     commander's request with its §0.4 reason): the rule runs in
+     `Flowsheet::solve` on every choupoSolve case and asks the global
+     package for K on every pure authored inlet, a side effect only the
+     full sweep can rule out.
   2. ED counter-ion share stays z_i D_i c_i (Eqs. 12/13, already built).
   3. heatExchanger publishes a single-component two-phase outlet at Tsat with
      its vapour fraction pinned (the pure-component exception of the
