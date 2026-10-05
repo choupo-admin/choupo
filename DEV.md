@@ -2208,6 +2208,9 @@ as one revertable merge with its moved rows listed:
      docs/design/a-stream-is-fixed-by-two-variables.md §9.]
   6. Stale file:line citations (what-water-dat-does-not-say.md, the C33
      table), condenser01's "saturated vapour" header, `gateManifest` claims.
+FULL REGRESSION AUTHORISED by Vítor 2026-10-05 ("sim", answering the
+commander's §0.4 request for items 1, 4 and 5): run once on main with
+C37 #1/#4/#5 and C38 #1/#2 merged.
 Status: dispatched 2026-10-05.
 
 **C36. "AVANÇA COMO ACHARES MELHOR" (Vítor, 2026-10-05, verbatim, answering
