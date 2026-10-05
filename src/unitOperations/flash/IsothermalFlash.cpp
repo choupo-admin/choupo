@@ -239,6 +239,67 @@ FlashSolution solveSLE(const FlashInput&    in,
     return sol;
 }
 
+//  ---- WHICH PHASE A VLLE ANSWER PUTS ON WHICH PORT (2026-10-05) -----------
+//
+//  A `phaseSet VLLE` flash always emits three ports (vapour, liquid alpha,
+//  liquid beta), and its solution packs them differently by KIND: a genuine
+//  three-phase answer carries the vapour in `xVapor` / `betaVapor` and the
+//  ALPHA fraction in `V_over_F`; a VL fallback carries the vapour in `y` /
+//  `V_over_F`; an LL fallback carries the beta LIQUID there.  The ports were
+//  the only reader that unpacked all three right.  The duty priced a
+//  three-phase answer as if `V_over_F` were a vapour fraction and `y` a
+//  vapour (its beta LIQUID costed with a latent heat, its real vapour left
+//  out), and the KPIs published F_alpha = F(1 - beta_alpha) against an alpha
+//  port carrying F beta_alpha -- vlle03 pinned both.  So the unpacking has
+//  ONE home, and the ports, the duty and the KPIs all read it.
+struct VllePhase
+{
+    scalar  beta = 0.0;   //  fraction of the feed on this port
+    sVector z;            //  its composition
+    scalar  vf   = 0.0;   //  1 for the vapour port, 0 for a liquid one
+};
+struct VllePorts { VllePhase vapour, alpha, beta; };
+
+VllePorts vllePorts(const FlashSolution& sol, std::size_t n)
+{
+    VllePorts p;
+    p.vapour.vf = 1.0;
+    if (sol.threePhase)
+    {
+        p.vapour.beta = sol.betaVapor;
+        p.vapour.z    = sol.xVapor;
+        p.alpha.beta  = sol.V_over_F;
+        p.alpha.z     = sol.x;
+        p.beta.beta   = 1.0 - sol.betaVapor - sol.V_over_F;
+        p.beta.z      = sol.y;
+    }
+    else if (sol.liquidLiquid)
+    {
+        //  LL fallback: x = alpha, y = beta, V_over_F = the beta fraction.
+        //  Read off the solution's KIND, never off `sol.regime`: that string
+        //  is prose for a human, and the LL fallback's own wording
+        //  ("... VLLE attempt ...") contains "VL", so a substring test sent
+        //  its beta LIQUID out on the vapour port with vf = 1 (DEV.md
+        //  section 5, 2026-10-05).
+        p.vapour.z.assign(n, 0.0);
+        p.alpha.beta  = 1.0 - sol.V_over_F;
+        p.alpha.z     = sol.x;
+        p.beta.beta   = sol.V_over_F;
+        p.beta.z      = sol.y;
+    }
+    else
+    {
+        //  V+L fallback: x is the liquid, y the vapour.  A single liquid
+        //  (V_over_F = 0, y all zero) lands here too: everything on alpha.
+        p.vapour.beta = sol.V_over_F;
+        p.vapour.z    = sol.y;
+        p.alpha.beta  = 1.0 - sol.V_over_F;
+        p.alpha.z     = sol.x;
+        p.beta.z.assign(n, 0.0);
+    }
+    return p;
+}
+
 } // anonymous namespace
 
 FlashSolution
@@ -1612,6 +1673,19 @@ int IsothermalFlash::solve(const DictPtr& dict,
         {
             FlashInput fin; fin.F = 1.0; fin.T = T_feed; fin.P = P_feed; fin.z = in.z;
             FlashOptions fopts; fopts.verbosity = 0; fopts.phaseSet = opts.phaseSet;
+            //  A VLLE feed is resolved by a Gibbs minimisation whose answer
+            //  depends on its tolerances and its alpha/beta seeds; resolved
+            //  under the DEFAULTS it landed 1.7 % of the vapour fraction away
+            //  from the unit's own answer for the SAME state (vlle03:
+            //  beta_V 0.18891 vs 0.18580), a -3.16 kW duty for an identity
+            //  operation.  "The SAME solveCore this unit uses" (R-E1 above)
+            //  means the same options too.
+            if (opts.phaseSet == PhaseSet::VLLE)
+            {
+                fopts = opts;
+                fopts.verbosity    = 0;
+                fopts.residualSink = nullptr;
+            }
             //  A feed state the package cannot resolve is a NAMED gap, never a
             //  crashed case and never a silent fall-back to the old pricing:
             //  the duty would then be a number about a state the engine just
@@ -1723,17 +1797,55 @@ int IsothermalFlash::solve(const DictPtr& dict,
             // equilibrium PHASE compositions (x α-phase, y β-phase) so a feed
             // already at the drum's conditions reads Q = 0, not a phantom latent.
             const scalar bV = sol.V_over_F;
-            if (feedSplit)
+            if (sol.threePhase || feedSol.threePhase)
             {
-                const scalar bF = feedSol.V_over_F;
-                H_in = (1.0 - bF) * thermo.H_stream_formation(T_feed, P_feed, 0.0, feedSol.x)
-                     +        bF  * thermo.H_stream_formation(T_feed, P_feed,
-                                                               betaVfOf(feedSol), feedSol.y);
+                //  A THREE-PHASE ANSWER IS PRICED PORT BY PORT, THE WAY THE
+                //  ENERGY REPORT PRICES THOSE PORTS (2026-10-05).  The two-
+                //  phase blend below reads `V_over_F` as a vapour fraction
+                //  and `y` as a vapour; a three-phase solution carries the
+                //  ALPHA liquid fraction there and the BETA liquid in `y`, so
+                //  the blend charged a latent heat to a liquid and left the
+                //  real vapour out.  Each port -- and the feed -- goes through
+                //  `flashState::priceState`, the one home the report's
+                //  `streamH_elements` applies to the same streams, so the
+                //  duty and the unit's report row cannot part.  Per mole of
+                //  feed (F = the port's fraction), J/mol.
+                std::vector<std::string> notes;   // the report says these
+                H_in = flashState::priceState(T_feed, P_feed, in.z, 1.0,
+                                              pinned, vf_feed, thermo,
+                                              "feed of an isothermalFlash",
+                                              &notes);
+                if (sol.threePhase)
+                {
+                    const auto ports = vllePorts(sol, thermo.n());
+                    H_out = 0.0;
+                    for (const VllePhase* ph : { &ports.vapour, &ports.alpha,
+                                                 &ports.beta })
+                        if (ph->beta > 0.0)
+                            H_out += flashState::priceState(
+                                in.T, in.P, ph->z, ph->beta,
+                                /*pinned=*/false, ph->vf, thermo,
+                                "outlet of an isothermalFlash", &notes);
+                }
+                else
+                    H_out = (1.0 - bV) * thermo.H_stream_formation(in.T, in.P, 0.0, sol.x)
+                          +        bV  * thermo.H_stream_formation(in.T, in.P,
+                                                                   betaVfOf(sol), sol.y);
             }
             else
-                H_in = thermo.H_stream_formation(T_feed, P_feed, vf_priced, in.z);
-            H_out = (1.0 - bV) * thermo.H_stream_formation(in.T, in.P, 0.0, sol.x)
-                  +        bV  * thermo.H_stream_formation(in.T, in.P, betaVfOf(sol), sol.y);
+            {
+                if (feedSplit)
+                {
+                    const scalar bF = feedSol.V_over_F;
+                    H_in = (1.0 - bF) * thermo.H_stream_formation(T_feed, P_feed, 0.0, feedSol.x)
+                         +        bF  * thermo.H_stream_formation(T_feed, P_feed,
+                                                                   betaVfOf(feedSol), feedSol.y);
+                }
+                else
+                    H_in = thermo.H_stream_formation(T_feed, P_feed, vf_priced, in.z);
+                H_out = (1.0 - bV) * thermo.H_stream_formation(in.T, in.P, 0.0, sol.x)
+                      +        bV  * thermo.H_stream_formation(in.T, in.P, betaVfOf(sol), sol.y);
+            }
         }
         else if (opts.phaseSet == PhaseSet::LL || sol.liquidLiquid)
         {
@@ -1744,10 +1856,23 @@ int IsothermalFlash::solve(const DictPtr& dict,
         }
         else
         {
-            H_out = thermo.Hmixture(in.T, sol.V_over_F, sol.x, sol.y, T_feed);
+            //  No elements datum, so no report to agree with: a three-phase
+            //  state (outlet or the feed's own resolution) is the sum of its
+            //  three ports on the sensible datum -- the vapour as a vapour,
+            //  BOTH liquids as liquids (Hmixture would read the alpha
+            //  fraction as V/F and price the beta liquid as a vapour).
+            const auto hSensible = [&](const FlashSolution& s, scalar T) -> scalar
+            {
+                if (!s.threePhase)
+                    return thermo.Hmixture(T, s.V_over_F, s.x, s.y, T_feed);
+                const auto ports = vllePorts(s, thermo.n());
+                return ports.vapour.beta * thermo.Hvapour(T, ports.vapour.z, T_feed)
+                     + ports.alpha.beta  * thermo.Hliquid(T, ports.alpha.z, T_feed)
+                     + ports.beta.beta   * thermo.Hliquid(T, ports.beta.z, T_feed);
+            };
+            H_out = hSensible(sol, in.T);
             if (feedSplit)
-                H_in = thermo.Hmixture(T_feed, feedSol.V_over_F,
-                                       feedSol.x, feedSol.y, T_feed);
+                H_in = hSensible(feedSol, T_feed);
             else
                 H_in = thermo.Hliquid(T_feed, in.z, T_feed);   // sensible datum @ T_feed
         }
@@ -1848,50 +1973,14 @@ int IsothermalFlash::solve(const DictPtr& dict,
         // liquid_beta) so that the flowsheet's output names list can
         // remain fixed even when the optimum collapses to a 2-phase
         // configuration --- the absent phase appears with F = 0.
-        scalar bV, bA, bB;
-        sVector yV, xA, xB;
-        if (sol.threePhase)
-        {
-            bV = sol.betaVapor;
-            bA = sol.V_over_F;
-            bB = 1.0 - bV - bA;
-            yV = sol.xVapor;
-            xA = sol.x;
-            xB = sol.y;
-        }
-        else
-        {
-            // 2-phase fallback from the VLLE branch.  Which pair survived
-            // is read off the solution's KIND (`liquidLiquid`), never off
-            // `sol.regime`: that string is prose for a human, and the LL
-            // fallback's own wording ("... VLLE attempt ...") contains "VL",
-            // so a substring test sent its beta LIQUID out on the vapour
-            // port with vf = 1 (DEV.md section 5, 2026-10-05).
-            const bool llFallback = sol.liquidLiquid;
-            if (!llFallback)
-            {
-                // V+L: sol.x is the liquid, sol.y is the vapor.  A single
-                // liquid (V_over_F = 0, sol.y all zero) lands here too and
-                // emits the same flows either branch would: everything on
-                // liquid_alpha.
-                bV = sol.V_over_F;
-                bA = 1.0 - bV;
-                bB = 0.0;
-                yV = sol.y;
-                xA = sol.x;
-                xB.assign(thermo.n(), 0.0);
-            }
-            else
-            {
-                // LL: sol.x = α, sol.y = β, sol.V_over_F = β fraction
-                bV = 0.0;
-                bA = 1.0 - sol.V_over_F;
-                bB = sol.V_over_F;
-                yV.assign(thermo.n(), 0.0);
-                xA = sol.x;
-                xB = sol.y;
-            }
-        }
+        //  The port mapping has ONE home (`vllePorts`), which the duty and
+        //  the KPIs read too.
+        const auto ports = vllePorts(sol, thermo.n());
+        const scalar bV = ports.vapour.beta, bA = ports.alpha.beta,
+                     bB = ports.beta.beta;
+        const sVector& yV = ports.vapour.z;
+        const sVector& xA = ports.alpha.z;
+        const sVector& xB = ports.beta.z;
 
         ProcessStream vap;
         vap.name = "vapor";
@@ -1980,8 +2069,12 @@ int IsothermalFlash::solve(const DictPtr& dict,
     // LL vocabulary (Codex tutorial-audit P0.2): the second LIQUID is not a
     // vapour -- V_over_F is reserved for a real vapour fraction; an LL split
     // publishes betaFraction (= L_beta/F).  Same number, honest name.
-    if (isLL) kpis_["betaFraction"] = sol.V_over_F;
-    else      kpis_["V_over_F"]     = sol.V_over_F;
+    //  A THREE-PHASE answer's V_over_F field is the ALPHA liquid fraction
+    //  (the solution's packing); the KPI of that name is the VAPOUR's share
+    //  of the feed, which is what every reader of `V_over_F` takes it for.
+    if (isLL)                kpis_["betaFraction"] = sol.V_over_F;
+    else if (sol.threePhase) kpis_["V_over_F"]     = sol.betaVapor;
+    else                     kpis_["V_over_F"]     = sol.V_over_F;
     if (Q_valid && !isLL)                 // duty: + heating, - cooling [W]
     {
         // LL: two Hliquid calls WITHOUT an excess-enthalpy route coherent
@@ -2001,12 +2094,23 @@ int IsothermalFlash::solve(const DictPtr& dict,
         // never a silent absence (and never a fake Q = 0).
         std::cout << "  [duty] duty UNAVAILABLE -- " << Q_gap
                   << " (Q not published).\n";
-    kpis_["F_alpha"]   = in.F * (1.0 - sol.V_over_F);
-    kpis_["F_beta"]    = in.F * sol.V_over_F;
-    if (sol.threePhase)
+    if (opts.phaseSet == PhaseSet::VLLE)
     {
-        kpis_["beta_vapor"] = sol.betaVapor;
-        kpis_["F_vapor"]    = in.F * sol.betaVapor;
+        //  Each phase flow IS its port's flow: read off the same mapping the
+        //  ports are built from.  (The two-phase formulas below published
+        //  F_alpha = F(1 - beta_alpha) for a three-phase answer, against an
+        //  alpha port carrying F beta_alpha -- vlle03: 0.01647 vs 0.01131
+        //  kmol/s -- and F_beta = the ALPHA flow.)
+        const auto ports = vllePorts(sol, thermo.n());
+        kpis_["F_alpha"] = in.F * ports.alpha.beta;
+        kpis_["F_beta"]  = in.F * ports.beta.beta;
+        kpis_["F_vapor"] = in.F * ports.vapour.beta;
+        if (sol.threePhase) kpis_["beta_vapor"] = sol.betaVapor;
+    }
+    else
+    {
+        kpis_["F_alpha"] = in.F * (1.0 - sol.V_over_F);
+        kpis_["F_beta"]  = in.F * sol.V_over_F;
     }
     kpis_["phaseSet"]  =
           (opts.phaseSet == PhaseSet::VLLE) ? 2.0
@@ -2027,7 +2131,25 @@ int IsothermalFlash::solve(const DictPtr& dict,
     //  a large number that reads like a result).  The KPI set is therefore
     //  composition-dependent by design; existing goldens are untouched
     //  because the checker reads the rows a case already declares.
-    if (!isLL && sol.V_over_F > 1.0e-12 && sol.V_over_F < 1.0 - 1.0e-12)
+    //  A THREE-PHASE answer has TWO vapour-liquid pairs, and the bare K_i
+    //  slot would have to pick one; it used to publish x_beta/x_alpha -- a
+    //  LIQUID-LIQUID distribution ratio under the vapour-liquid name.  Each
+    //  pair is named instead: K_vapor_alpha_<i> = y_i/x_alpha,i and
+    //  K_vapor_beta_<i> = y_i/x_beta,i (their quotient is the liquid-liquid
+    //  ratio, which is therefore not published a third time).
+    if (sol.threePhase)
+    {
+        const auto ports = vllePorts(sol, thermo.n());
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+        {
+            const scalar y = i < ports.vapour.z.size() ? ports.vapour.z[i] : 0.0;
+            if (i < ports.alpha.z.size() && ports.alpha.z[i] > 1.0e-12)
+                kpis_["K_vapor_alpha_" + thermo.comp(i).name()] = y / ports.alpha.z[i];
+            if (i < ports.beta.z.size() && ports.beta.z[i] > 1.0e-12)
+                kpis_["K_vapor_beta_" + thermo.comp(i).name()] = y / ports.beta.z[i];
+        }
+    }
+    else if (!isLL && sol.V_over_F > 1.0e-12 && sol.V_over_F < 1.0 - 1.0e-12)
         for (std::size_t i = 0; i < thermo.n() && i < sol.x.size()
                                 && i < sol.y.size(); ++i)
             if (sol.x[i] > 1.0e-12)
@@ -2053,6 +2175,34 @@ void printFlashResult(const FlashSolution& sol,
     // (Codex P0.2: V/F is reserved for a real vapour fraction).
     //  Read off the solution's KIND, never parsed out of `sol.regime`.
     const bool llSplit = sol.liquidLiquid;
+    if (sol.threePhase)
+    {
+        //  Three phases: V_over_F holds the ALPHA fraction (the solution's
+        //  packing), so the two-phase lines below would print it as V/F.
+        const auto ports = vllePorts(sol, thermo.n());
+        std::cout << "  V/F:           " << std::fixed << std::setprecision(6)
+                  << ports.vapour.beta << "\n";
+        std::cout << "  alpha (La/F):  " << ports.alpha.beta << "\n";
+        std::cout << "  beta (Lb/F):   " << ports.beta.beta  << "\n";
+        std::cout << "  Vapor flow V:  " << (in.F * ports.vapour.beta * 3600.0)
+                  << " kmol/h\n";
+        std::cout << "  L_alpha flow:  " << (in.F * ports.alpha.beta * 3600.0)
+                  << " kmol/h\n";
+        std::cout << "  L_beta flow:   " << (in.F * ports.beta.beta * 3600.0)
+                  << " kmol/h\n";
+        std::cout << "\n  Component         z    x_alpha     x_beta          y\n";
+        std::cout <<   "  -----------------------------------------------------------\n";
+        for (std::size_t i = 0; i < in.z.size(); ++i)
+            std::cout << "  " << std::left << std::setw(14)
+                      << thermo.comp(i).name()
+                      << std::right << std::fixed << std::setprecision(6)
+                      << "  " << std::setw(8) << in.z[i]
+                      << "  " << std::setw(9) << ports.alpha.z[i]
+                      << "  " << std::setw(9) << ports.beta.z[i]
+                      << "  " << std::setw(9) << ports.vapour.z[i] << "\n";
+        std::cout << "====================================================================\n\n";
+        return;
+    }
     if (llSplit)
     {
         std::cout << "  beta (Lb/F):   " << std::fixed << std::setprecision(6)

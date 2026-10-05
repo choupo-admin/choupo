@@ -38,13 +38,39 @@ WHAT THIS CHECKS:
       `regime.find(` outside comments), sets `liquidLiquid = true` at BOTH
       liquid-liquid sites, and the three propertyOps readers that used to
       search for "two-phase liquid" read the field instead.
+  (e) THE THREE-PHASE ANSWER (DEV.md section 5, the same entry, closed
+      2026-10-05), on fresh runs of a COPY of
+      tutorials/steady/flash/vlle03_audit_artificial:
+      (e1) the three port flows sum to the feed; F_vapor, F_alpha and
+           F_beta each EQUAL their port (vapor, liquidA, liquidB); the
+           published V_over_F is the VAPOUR port's share of the feed; no
+           bare `K_<component>` is published (a three-phase answer names
+           the pair: K_vapor_alpha_<i>, K_vapor_beta_<i>); a duty is
+           published.  Before: F_alpha = F(1 - beta_alpha) = 0.01647
+           against a liquidA port of 0.01131, F_beta = the alpha flow,
+           V_over_F = beta_alpha = 0.4071, and K_<i> = x_beta/x_alpha.
+      (e2) THE DUTY IS THE REPORT'S: a FIXTURE copy of vlle03 whose three
+           synthetic components gain a `standardThermochemistry` block (the
+           shipped case has none, so its energy report is UNAVAILABLE and
+           cannot be compared with anything; the fixture's datum is
+           invented and only differences of it are read) must leave the
+           unit's `energyClosures` row with |remaining_kW| <= 1e-4 kW.
+           Before: the unit priced its beta LIQUID as a vapour and left the
+           real vapour out -- Q = 2.149 kW against the report's dH =
+           186.482 kW on that fixture.
 
 WHAT THIS DOES NOT CHECK.  Whether the split is RIGHT: the witness's NRTL
 pair is Choupo's own case-local regression and predicts a second liquid its
 own evidence does not show (that is why the witness can reach the fallback at
 all); it is a STRUCTURAL witness.  The VL fallback (a VLLE search that finds
-one liquid) has no corpus witness.  The THREE-PHASE answer's duty and its
-F_alpha / F_beta KPIs are not checked here (vlle03 pins what they print).
+one liquid) has no corpus witness.  Whether the THREE-PHASE duty is the
+physically right number on (e2)'s fixture: it agrees with the report, and
+the report resolves an unpinned stream with a VAPOUR-LIQUID flash only, so
+it prices that fixture's unpinned feed (at the drum's own T and P) as ONE
+liquid where the VLLE search finds three phases -- the 186.48 kW is the
+vapour's latent heat charged against a feed state that is not its own
+equilibrium.  The shipped case (no datum, sensible route) resolves its feed
+with the unit's own VLLE options and reads Q = 0.
 The propertyOps VL / one-phase classification still reads the regime string
 (PropertyScanTernary) and is not checked.
 
@@ -66,6 +92,16 @@ SABOTAGES (by hand, 2026-10-05; each restored with `git checkout` and
       exists because neither the ports nor the first law can see this.
   S4  restore PropertyScanBinary's `regime.find("two-phase liquid")`
       (source only; no witness runs that op) -> ONLY (d) FAILS, twice.
+  S5  (arm (e), 2026-10-05) restore the two-phase blend for a three-phase
+      answer on the datum route (`if (sol.threePhase || feedSol.threePhase)`
+      -> `if (false)`) -> ONLY (e2) FAILS: Q = 0 kW against the report's
+      186.48 kW (the feed's own VLLE resolution is mispriced the SAME way as
+      the outlet, so the blend now reads an identity -- a different wrong
+      number from the 2.149 kW before, caught by the same arm).
+  S6  restore `F_alpha = F(1 - V_over_F)` in the VLLE KPI block
+      -> ONLY (e1) FAILS: F_alpha 0.016470 against liquidA 0.011308 kmol/s.
+  S7  publish the solution's alpha fraction as V_over_F again
+      -> ONLY (e1) FAILS: V_over_F 0.40707 against a vapour share 0.18580.
 """
 import json
 import pathlib
@@ -94,6 +130,11 @@ PROPS_READERS = [
 #  is a separate finding (DEV.md section 5), not this gate's to hide.
 TOL_KW = 5.0e-2
 FLOW_EPS = 1.0e-12     # kmol/s
+#  (e): the three-phase witness, its KPI -> port map, and the unit-arm band
+#  `check_energy_closure` uses for a unit that publishes its own duty.
+WITNESS3 = "tutorials/steady/flash/vlle03_audit_artificial"
+PORTS3 = {"F_vapor": "vapor", "F_alpha": "liquidA", "F_beta": "liquidB"}
+TOL_UNIT_KW = 1.0e-4
 
 
 def strip_comments(text: str) -> str:
@@ -211,6 +252,75 @@ def main() -> int:
                             f"residual {r_kw} kW (tolerance {TOL_KW} kW) -- "
                             "a latent heat that never happened")
 
+    # (e) THE THREE-PHASE ANSWER ---------------------------------------------
+    with tempfile.TemporaryDirectory() as td:
+        ignore = shutil.ignore_patterns("converged", "reports", "log.*",
+                                        "iterations")
+        case = pathlib.Path(td) / "vlle03"
+        shutil.copytree(ROOT / WITNESS3, case, ignore=ignore)
+        rc, log = run(case)
+        res = result_json(log)
+        if rc != 0 or res is None:
+            fail.append(f"(e1) vlle03 did not run to a result (exit {rc})")
+        else:
+            st = res.get("streams", {})
+            kp = res.get("kpis", {}).get(UNIT, {})
+            fl = {k: float(st[k]["F"]) for k in ("feed",) + tuple(PORTS3.values())
+                  if k in st}
+            if len(fl) != 4:
+                fail.append(f"(e1) vlle03 does not publish feed + three ports: "
+                            f"{sorted(fl)}")
+            else:
+                fF = fl["feed"]
+                tot = sum(fl[p] for p in PORTS3.values())
+                if abs(tot - fF) > 1e-9 * fF:
+                    fail.append(f"(e1) the three ports do not conserve the "
+                                f"feed: {tot} != {fF} kmol/s")
+                for kpi, port in PORTS3.items():
+                    v = kp.get(kpi)
+                    if v is None or abs(float(v) - fl[port]) > 1e-9 * fF:
+                        fail.append(f"(e1) {kpi} = {v} kmol/s but its port "
+                                    f"{port} carries {fl[port]} kmol/s")
+                vf = kp.get("V_over_F")
+                share = fl[PORTS3["F_vapor"]] / fF
+                if vf is None or abs(float(vf) - share) > 1e-9:
+                    fail.append(f"(e1) V_over_F = {vf} but the vapour port "
+                                f"carries {share} of the feed")
+            bare = [k for k in kp if re.fullmatch(r"K_comp[A-C]", k)]
+            if bare:
+                fail.append(f"(e1) a three-phase answer publishes unnamed "
+                            f"K ratios {bare} (which pair?)")
+            if "Q_kW" not in kp:
+                fail.append("(e1) a three-phase answer publishes no duty")
+
+        fx = pathlib.Path(td) / "vlle03_datum"
+        shutil.copytree(ROOT / WITNESS3, fx, ignore=ignore)
+        for dat in sorted((fx / "constant" / "components").glob("comp*.dat")):
+            with dat.open("a") as f:
+                f.write("\n// FIXTURE (check_vlle_fallback arm (e2)): an "
+                        "invented datum so the energy report can run.\n"
+                        "standardThermochemistry\n{\n    dHf_298   0.0;\n"
+                        "    s_298     200.0;\n}\n")
+        rc, log = run(fx)
+        res = result_json(log)
+        if rc != 0 or res is None:
+            fail.append(f"(e2) the vlle03 datum fixture did not run (exit {rc})")
+        else:
+            kp = res.get("kpis", {}).get(UNIT, {})
+            rows = [r for r in res.get("energyClosures", [])
+                    if r.get("unit") == UNIT]
+            if "Q_kW" not in kp or not rows:
+                fail.append("(e2) the fixture publishes no duty or no energy "
+                            "closure row for the decanter -- nothing to compare")
+            else:
+                rem = float(rows[0].get("remaining_kW", float("nan")))
+                if not abs(rem) <= TOL_UNIT_KW:
+                    fail.append(f"(e2) the three-phase duty Q = {kp['Q_kW']} kW "
+                                f"leaves {rem} kW the energy report cannot "
+                                f"attribute (tolerance {TOL_UNIT_KW} kW): the "
+                                "duty is not priced the way the report prices "
+                                "the ports")
+
     if fail:
         print("check_vlle_fallback: FAILED")
         for f in fail:
@@ -221,9 +331,14 @@ def main() -> int:
           "F = 0, both liquid ports nonzero at vf = 0, LL vocabulary, plant "
           f"first law within {TOL_KW} kW), and the split's kind is read off "
           "the typed `liquidLiquid` field, never parsed from the regime "
-          "string, in IsothermalFlash.cpp and the three propertyOps readers.  "
+          "string, in IsothermalFlash.cpp and the three propertyOps readers; "
+          "and a THREE-PHASE answer (witness vlle03) publishes each phase "
+          "flow equal to its port, the ports summing to the feed, V_over_F "
+          "as the vapour's share, K ratios named by pair, and a duty the "
+          f"energy report closes to within {TOL_UNIT_KW} kW (datum fixture).  "
           "NOT checked: whether the split is right (a structural witness), "
-          "the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 %% vapour, inside the band), the three-phase duty, and the "
+          "the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 % vapour, inside the band), whether the report's "
+          "VL-only resolution of an unpinned VLLE feed is its equilibrium, and the "
           "ternary scan's VL / one-phase classification (still the string).")
     return 0
 

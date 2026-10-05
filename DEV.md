@@ -3265,7 +3265,20 @@ THREE-PHASE answer (`vlle03`) is priced in the unit's duty as
 the vapour, and publishes `F_alpha = F (1 - beta_alpha)` = 0.01647 kmol/s
 against its own liquidA port's 0.01131 (and `V_over_F` = beta_alpha, and
 liquid-liquid ratios as `K_`); all of it is pinned by vlle03's golden, so
-moving it is a list for Vitor.  The original entry follows.
+moving it is a list for Vitor.  **(2) CLOSED 2026-10-05 on branch
+`claude/c34-vlle03-three-phase` (commit ef0bd4dfc):** `vllePorts` is the one
+home for which phase goes on which port; the duty prices a three-phase outlet
+port by port (and the feed) through `flashState::priceState` on the datum
+route and as vapour + two liquids on the sensible route; F_alpha / F_beta /
+F_vapor equal their ports, `V_over_F` is the vapour's share, `K_` became
+`K_vapor_alpha_` / `K_vapor_beta_`; vlle03's rows re-recorded with the list in
+the commit; gate `check_vlle_fallback` arm (e).  FOUND, NOT FIXED: the energy
+report resolves an UNPINNED stream with a VAPOUR-LIQUID flash only, so on a
+datum fixture of vlle03 it prices the feed (at the drum's own T and P) as one
+liquid where the VLLE search finds three phases -- the unit's duty agrees with
+the report (186.48 kW, the vapour's latent heat), while the sensible route,
+resolving its feed with the unit's VLLE options, reads Q = 0.  Which reading
+an unpinned VLLE feed MEANS is Vitor's.  The original entry follows.
 `IsothermalFlash.cpp:1857` (now `:1870`) picked the
 two-phase fallback of a `phaseSet VLLE` flash by `sol.regime.find("VL")`, and
 the LL regime's own string (line 1000, now 1001) is "two-phase liquid (LL, VLLE attempt
