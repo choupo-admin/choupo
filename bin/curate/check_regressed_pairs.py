@@ -33,15 +33,32 @@ case-local one that did not earn promotion):
       holds out carries a DOI, the archive file and its sha256, a citation,
       the CAS + InChIKey of both compounds, and per-point uncertainties whose
       count equals its data rows.
+  (f) ONE LIQUID WHERE THE EVIDENCE SAYS ONE (C16 slice 2, 2026-10-05).  A
+      catalogue pair must not predict a liquid-liquid split anywhere in its
+      own validity span.  Its evidence is bubble temperatures of ONE liquid,
+      and a bubble-temperature scan solves for one liquid BY CONSTRUCTION --
+      so the held-out verdict cannot see a second one, and `validated` is
+      necessary, not sufficient.  Found on ethanol + cyclohexane: validated
+      at 0.094 % against a 0.41 % band, and splitting the liquid at every
+      temperature up to 358.8 K, across its whole span (the engine's own VLLE flash at
+      340 K splits a 43/57 feed, beta 0.48).  The test is the record's own
+      NRTL equation (the one its header states), Gibbs energy of mixing on
+      a 4000-point grid against its lower convex hull, at six temperatures
+      spanning the validity block -- an INDEPENDENT recomputation, not a
+      call into the engine.  Below the span is an extrapolation the record
+      announces; the arm does not look there (1-propanol + water splits
+      below 355.5 K, and its record says so).
 
 WHAT IT DOES NOT CHECK.  Whether the measurements are RIGHT -- each dataset
 says `reviewStatus transcribedNotCheckedAgainstArticle`, and reading them
 back against the articles is a curator's act.  Whether the band was the right
 one to declare -- only that the record carries the band the run used.
+Phase stability below a record's validity span, or for a case-local record.
 
-SABOTAGES (by hand, 2026-09-28): see docs/design/binary-pairs-from-open-
-measurements.md section 6.
+SABOTAGES (by hand): docs/design/binary-pairs-from-open-measurements.md
+section 4 (2026-09-28, arms a-e) and section 6.4 (2026-10-05, arm f).
 """
+import math
 import re
 import shutil
 import subprocess
@@ -114,6 +131,42 @@ def facts(text):
     }
 
 
+def nrtl_liquid_split(T, a12, b12, a21, b21, alpha, n=4000):
+    """Arm (f): the x1 interval over which the binary NRTL Gibbs energy of
+    mixing lies ABOVE its lower convex hull at T (a liquid-liquid split), or
+    None.  g/RT = x1 ln x1 + x2 ln x2 + x1 x2 [tau21 G21/(x1 + x2 G21) +
+    tau12 G12/(x2 + x1 G12)], tau_ij = a_ij + b_ij/T, G_ij = exp(-alpha
+    tau_ij) -- the equation the record header states, recomputed here."""
+    t12, t21 = a12 + b12 / T, a21 + b21 / T
+    G12, G21 = math.exp(-alpha * t12), math.exp(-alpha * t21)
+    pts = []
+    for k in range(1, n):
+        x1 = k / n
+        x2 = 1.0 - x1
+        g = (x1 * math.log(x1) + x2 * math.log(x2)
+             + x1 * x2 * (t21 * G21 / (x1 + x2 * G21) + t12 * G12 / (x2 + x1 * G12)))
+        pts.append((x1, g))
+    hull = []
+    for p in pts:                       # lower convex hull, monotone chain
+        while len(hull) >= 2 and ((hull[-1][0] - hull[-2][0]) * (p[1] - hull[-2][1])
+                                  - (hull[-1][1] - hull[-2][1]) * (p[0] - hull[-2][0])) <= 0:
+            hull.pop()
+        hull.append(p)
+    for (xa, ga), (xb, gb) in zip(hull, hull[1:]):
+        if xb - xa > 2.5 / n and any(
+                g - (ga + (gb - ga) * (x - xa) / (xb - xa)) > 1e-9
+                for x, g in pts if xa < x < xb):
+            return (xa, xb)
+    return None
+
+
+def validity_T(tokens):
+    """(min, max) in K from the validity block's temperature tokens."""
+    vals = re.findall(r"(min|max)\s+([0-9.eE+-]+)", " ".join(tokens))
+    d = {k: float(v) for k, v in vals}
+    return (d.get("min"), d.get("max"))
+
+
 def close(a, b, rel=1e-6, abs_=1e-6):
     if a is None or b is None:
         return a is b
@@ -160,11 +213,12 @@ def main():
     #  promotion.  Only the second kind is checked here on its own.
     std_names = {p.name for p in std}
     local = [p for p in local if p.name not in std_names]
-    fails, checked = [], []
-    if len(std) < 4:
+    fails, checked, stable_checked = [], [], []
+    if len(std) < 7:
         fails.append(f"only {len(std)} regressed record(s) under {STD.relative_to(ROOT)} "
-                     "-- the C16 floor is four; the scan surface has collapsed or "
-                     "the records lost their `fittedInCase`")
+                     "-- the C16 floor is seven (four from slice 1, three from slice 2); "
+                     "the scan surface has collapsed or the records lost their "
+                     "`fittedInCase`")
 
     tmp = Path(tempfile.mkdtemp(prefix="choupo-regressed-"))
     try:
@@ -189,6 +243,27 @@ def main():
                 fails.append(f"{tag}: verdict `{rf['verdict']}` in the CATALOGUE -- "
                              "only a validated fit is promoted; a fit that missed its "
                              "band lives in its own case")
+            if in_std:
+                tlo, thi = validity_T(rf["T"])
+                if tlo is None or thi is None or None in (rf["a_ij"], rf["b_ij"],
+                                                          rf["a_ji"], rf["b_ji"], rf["alpha"]):
+                    fails.append(f"{tag}: no readable validity temperature span or NRTL "
+                                 "parameters -- arm (f) cannot run, so it must not pass")
+                else:
+                    for k in range(6):
+                        T = tlo + (thi - tlo) * k / 5
+                        cut = nrtl_liquid_split(T, rf["a_ij"], rf["b_ij"], rf["a_ji"],
+                                                rf["b_ji"], rf["alpha"])
+                        if cut:
+                            fails.append(
+                                f"{tag}: predicts a LIQUID-LIQUID SPLIT at {T:.2f} K "
+                                f"(x_{rf['i']} {cut[0]:.3f} .. {cut[1]:.3f}), inside its own "
+                                f"validity span {tlo}-{thi} K -- its evidence is bubble "
+                                "temperatures of ONE liquid, which a bubble scan cannot "
+                                "contradict; a pair that splits that liquid stays in its "
+                                "case, not the catalogue")
+                            break
+                    stable_checked.append(rec_path.stem)
             if not case_rel or not (ROOT / case_rel / "system" / "propsDict").exists():
                 fails.append(f"{tag}: fittedInCase `{case_rel}` is not a case")
                 continue
@@ -246,10 +321,12 @@ def main():
           "parameters, evidence identity, validity span and held-out verdict "
           "equal what the run regresses now; only validated fits are in the "
           "catalogue; `interim` is voiced at run time; every dataset carries "
-          "DOI, archive sha256, CAS+InChIKey and per-point uncertainty.  NOT "
+          "DOI, archive sha256, CAS+InChIKey and per-point uncertainty; "
+          f"{len(stable_checked)} catalogue pair(s) predict ONE liquid across "
+          "their validity span (arm f, the record's NRTL recomputed).  NOT "
           "checked: whether the transcribed measurements agree with the "
-          "articles (a curator's read-back) or whether the band was well "
-          "chosen.")
+          "articles (a curator's read-back), whether the band was well "
+          "chosen, or phase stability below a validity span.")
     return 0
 
 

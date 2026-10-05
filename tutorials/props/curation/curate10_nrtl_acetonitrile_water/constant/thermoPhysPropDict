@@ -20,7 +20,10 @@
       alpha 0.30 FIXED (not identified by bubble temperatures alone).
 
   The inline pair below is the FIT'S STARTING POINT (all zero = ideal
-  mixing), not a result: the regressed pair is written by fit_nrtl as a proposal; promoted only if its held-out verdict is `validated`.
+  mixing), not a result: the regressed pair is the catalogue record
+  data/standards/parameters/NRTL/acetonitrile-water.dat, mirrored into this
+  case's constant/parameters/NRTL/ by the seal, and the scan operations read
+  it through their own `thermo {}` override.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

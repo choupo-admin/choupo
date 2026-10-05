@@ -20,7 +20,11 @@
       alpha 0.30 FIXED (not identified by bubble temperatures alone).
 
   The inline pair below is the FIT'S STARTING POINT (all zero = ideal
-  mixing), not a result: the regressed pair is written by fit_nrtl as a proposal; promoted only if its held-out verdict is `validated`.
+  mixing), not a result: the regressed pair passed its held-out test but was
+  NOT promoted (it predicts a second liquid inside its own validity span --
+  see system/propsDict); it is the AUTHORED record
+  constant/parameters/NRTL/cyclohexane-ethanol.dat of this case, and the
+  scan operations read it through their own `thermo {}` override.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

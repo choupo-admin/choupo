@@ -1,0 +1,141 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      acetonitrile;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ij  218.347370783;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ji  616.296481691;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "bcfb984a10389915";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/acetonitrile-water-bubble-je400531a.dat";
+            doi       "10.1021/je400531a";
+            sha256    "edd47a0f561183a4e83930823356df31104086f2203e1fce79bd027d5848225e";
+            provenance measured;
+            archiveFile "je400531a.xml";
+            system    "acetonitrile + water";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/acetonitrile-water-bubble-j.jct.2019.07.006.dat";
+            doi       "10.1016/j.jct.2019.07.006";
+            sha256    "75b54b8666e19e36e7423ac7f65b794e1c21ca09607019ae5e3495c6b0e990b0";
+            provenance measured;
+            archiveFile "j.jct.2019.07.006.xml";
+            system    "acetonitrile + water";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.012; max 0.982; n 19; }
+            validation  { min 0.0102; max 0.9549; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.136733099834;
+        acceptanceMaxAADPct 0.72;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.85 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.673 K, acetonitrile +0.082 K; measured with no pair involved), as a percentage of the held-out mean T (353.83 K) = 0.7131 %, rounded UP to two significant figures";
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_nrtl_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ij  218.347000127;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ji  616.296981205;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "bcfb984a10389915";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/acetonitrile-water-bubble-je400531a.dat";
+            doi       "10.1021/je400531a";
+            sha256    "edd47a0f561183a4e83930823356df31104086f2203e1fce79bd027d5848225e";
+            provenance measured;
+            archiveFile "je400531a.xml";
+            system    "acetonitrile + water";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/acetonitrile-water-bubble-j.jct.2019.07.006.dat";
+            doi       "10.1016/j.jct.2019.07.006";
+            sha256    "75b54b8666e19e36e7423ac7f65b794e1c21ca09607019ae5e3495c6b0e990b0";
+            provenance measured;
+            archiveFile "j.jct.2019.07.006.xml";
+            system    "acetonitrile + water";
+            pressure  "101300.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.012; max 0.982; n 19; }
+            validation  { min 0.0102; max 0.9549; n 12; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.136733090737;
+        acceptanceMaxAADPct 0.72;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.85 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.673 K, acetonitrile +0.082 K; measured with no pair involved), as a percentage of the held-out mean T (353.83 K) = 0.7131 %, rounded UP to two significant figures";
+    }
+}
+
+);

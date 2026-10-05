@@ -30,7 +30,7 @@
     6. choupoProps (this case)         fitParameters -> a proposal record
     7. promotion (a human act)         -> data/standards/parameters/NRTL/1Propanol-water.dat
                                        ONLY if the held-out verdict is `validated`
-    8. bin/choupo-import               the seal mirrors that record here, if it was promoted
+    8. bin/choupo-import               the seal mirrors that record here
 
   THE EVIDENCE.  FIT: doi 10.1021/je800436u (26 interior points, 100 kPa).
   HELD OUT: doi 10.1016/j.jct.2017.06.014 (19 interior points, 101.3 kPa).
@@ -54,9 +54,19 @@
   0.1 K is not outvoted by one measured to 1 K.  The held-out AAD is plain
   kelvin, unweighted.
 
-  WHAT THE RUN FOUND.  Not yet run: the datasets, the partition and the band
-  above were committed BEFORE the first fit, so the declaration can be read
-  against the result.
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+    * fit_nrtl: b_ij = -25.1 K, b_ji = 979.8 K, in-sample rms 0.52 K;
+      fit_nrtl_start2 lands on the same pair.  The in-sample reduced chi2 is
+      8.9: two parameters cannot follow the fit set within its own stated U
+      (0.09-0.89 K) -- recorded, not hidden by a third parameter.
+    * HELD OUT (101.3 kPa, no author in common): AAD 0.21 K (0.057 %)
+      against a band of 0.26 % -> `validated`; the pair is the catalogue
+      record NRTL/1Propanol-water.dat.
+    * Overlay on the held-out set: NRTL 0.21 K, UNIFAC 0.36 K, ideal 8.9 K.
+    * PHASE STABILITY, checked beside the verdict because the verdict cannot
+      see it: one liquid across the validity span (360.5-368.6 K), but BELOW
+      about 355.5 K the pair splits a liquid that is miscible in all
+      proportions.  The record says so, and the validity block is the guard.
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
   frame (ideal-gas vapour, the catalogue's Antoine records); nothing here
@@ -103,7 +113,10 @@ operations
         options
         {
             maxIter      80;
-            tolerance    1.0e-8;
+            tolerance    1.0e-6;   // NOT 1e-8: at 1e-8 the run reached b = (-25.10, 979.78)
+                                 //   and then rejected every step (chi2 changes below the
+                                 //   inner bubble-point noise) until lambda diverged; the
+                                 //   minimum is the same, and fit_nrtl_start2 lands on it
             fdStep       1.0e-4;
             lambda0      1.0e-3;
         }
@@ -156,7 +169,10 @@ operations
         options
         {
             maxIter      80;
-            tolerance    1.0e-8;
+            tolerance    1.0e-6;   // NOT 1e-8: at 1e-8 the run reached b = (-25.10, 979.78)
+                                 //   and then rejected every step (chi2 changes below the
+                                 //   inner bubble-point noise) until lambda diverged; the
+                                 //   minimum is the same, and fit_nrtl_start2 lands on it
             fdStep       1.0e-4;
             lambda0      1.0e-3;
         }
@@ -165,5 +181,97 @@ operations
         {
             parity     parity_start2.csv;
         }
+    }
+    {
+        name        txy_ideal;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { 1Propanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_ideal.csv; }
+    }
+    {
+        name        txy_unifac;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { 1Propanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFAC; } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_unifac.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { 1Propanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the catalogue record, sealed copy */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_nrtl.csv; }
+    }
+    {
+        name        txy_ideal_fitP;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 100 kPa;  composition { 1Propanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_ideal_fitP.csv; }
+    }
+    {
+        name        txy_unifac_fitP;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 100 kPa;  composition { 1Propanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFAC; } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_unifac_fitP.csv; }
+    }
+    {
+        name        txy_nrtl_fitP;
+        type        propertyScan1D;
+        vary        { variable x[1Propanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 100 kPa;  composition { 1Propanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the catalogue record, sealed copy */ } } }
+        }
+        properties  ( T_bubble  y_eq_1Propanol );
+        output      { file txy_nrtl_fitP.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      heldout_propanol_water;
+        component 1Propanol;
+        kind      txy;
+        models    ( txy_ideal  txy_unifac  txy_nrtl );
+        dataset   "constant/experiments/1Propanol-water-bubble-j.jct.2017.06.014.dat";
+        source    "held out: doi 10.1016/j.jct.2017.06.014";
+    }
+    {
+        name      fitset_propanol_water;
+        component 1Propanol;
+        kind      txy;
+        models    ( txy_ideal_fitP  txy_unifac_fitP  txy_nrtl_fitP );
+        dataset   "constant/experiments/1Propanol-water-bubble-je800436u.dat";
+        source    "IN-SAMPLE (the fit set): doi 10.1021/je800436u";
     }
 );
