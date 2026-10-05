@@ -54,6 +54,10 @@ WHAT THIS GATE CHECKS.
       liquid -- so a fixture that must be refused has to be the liquid one.
       That an undeclared SATURATED chest is now a rounding question rather
       than a refusal is a FINDING, recorded in DEV.md 4d D1, not hidden here.
+      Since C36 item 1 (2026-10-05) a pure undeclared chest AT T_SAT -- within
+      the flash's own tolerance of the curve -- is refused before any unit
+      runs as UNDETERMINED (check_overspecified_stream arm (g)); 392.17 K is
+      outside that band, so arm (a) still reaches THIS unit's refusal.
 
   (b) THE NEGATIVE: the same fixture with `phase gas;` on the chest RUNS.
       Without this arm the gate is satisfied by a unit that refuses

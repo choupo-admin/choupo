@@ -306,6 +306,12 @@ case/
   whose (T, P) sit on its saturation curve and do not fix the split: its pin
   stays, and the writer writes it back for nothing else -- a `converged/`
   view or an init0 seed of a mixture carries T and P and no third value.
+  Its mirror refuses too (C36 item 1, 2026-10-05): a PURE authored stream
+  declaring NO phase whose (T, P) lie ON its saturation curve -- |ln K|
+  within the flash's own tolerance, `flashState::
+  undeterminedSaturationRefusal`, applied once where the authored inlets
+  are stamped -- is UNDETERMINED (its side would be the last digits of T)
+  and refuses naming `phase liquid;`/`phase gas;` (gate arm (g)).
   The SURFACE draws the state the stream MEANS: after the solve every
   unpinned stream no unit produces is resolved once through
   `flashState::equilibriumAt` (the one home), and the stream table, the
