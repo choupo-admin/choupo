@@ -23729,6 +23729,16 @@ Data}, 1(4), 1047--1100 (1972). The NaCl $\gamma_\pm(m)$ and $\phi(m)$
 reference data the eNRTL kernel is validated against (AAD 1.8\,\% /
 1.4\,\%, \S\ref{ch:enrtl}).
 
+\bibitem{SongChen2009} Song and Chen, \emph{Ind.\ Eng.\ Chem.\ Res.}\
+\textbf{48}, 7788, 2009, DOI \texttt{10.1021/ie9004578}.  The
+multicomponent (multi-salt) symmetric eNRTL and its charge-fraction mixing
+rules (\S\ref{sec:enrtl-multisalt}); Choupo's \code{ENRTLMultiSalt}.
+
+\bibitem{BollasChenBarton2008} Bollas, Chen and Barton, \emph{AIChE J.}\
+\textbf{54}, 1608, 2008.  The \emph{refined} eNRTL that restores the
+Gibbs--Duhem consistency the published multi-salt mixing rules lose ---
+Choupo's \code{formulation consistent;}.
+
 \bibitem{Teas1968} Teas, J. P., ``Graphic Analysis of Resin Solubilities'',
 \emph{J. Paint Technol.}, 40 (516), 19--25 (1968).  The origin of the
 fractional-parameter ternary plot of Eq.~\eqref{eq:teas}.  Cited for the
@@ -23763,13 +23773,13 @@ Solutions of Volatile Weak Electrolytes'', \emph{AIChE J.}, 24(6),
 family and the estimation rules for the rest, under the authors' own
 caveat that they are ``preliminary results subject to change''.
 
-\bibitem{Parkhurst2013} Parkhurst, D. L. and Appelo, C. A. J., ``Description of Input and Examples for PHREEQC Version~3 --- A Computer Program for Speciation, Batch-Reaction, One-Dimensional Transport, and Inverse Geochemical Calculations'', U.S.\ Geological Survey Techniques and Methods, book~6, chap.~A43 (2013). The public-domain speciation engine whose mass-action databases (\file{phreeqc.dat}) Choupo's \file{speciation.dat} catalogue is derived from, and whose charge-balance percent-error convention (Eq.~\ref{eq:percent-error}) and charge-balance pH closure the speciation solver follows.
-
 \bibitem{Davies1962} Davies, C. W., \emph{Ion Association}, Butterworths,
 London, 1962. The extended Debye--H\"uckel ($\log_{10}\gamma_i =
 -Az_i^2[\sqrt I/(1+\sqrt I) - 0.3I]$, Eq.~\ref{eq:ed-davies}) used for
 the per-channel ionic activities, shared verbatim with the electrolyte
 speciation stack (Chapter~\ref{ch:electrolytes}).
+
+\bibitem{Parkhurst2013} Parkhurst, D. L. and Appelo, C. A. J., ``Description of Input and Examples for PHREEQC Version~3 --- A Computer Program for Speciation, Batch-Reaction, One-Dimensional Transport, and Inverse Geochemical Calculations'', U.S.\ Geological Survey Techniques and Methods, book~6, chap.~A43 (2013). The public-domain speciation engine whose mass-action databases (\file{phreeqc.dat}) Choupo's \file{speciation.dat} catalogue is derived from, and whose charge-balance percent-error convention (Eq.~\ref{eq:percent-error}) and charge-balance pH closure the speciation solver follows.
 
 \bibitem{MalmbergMaryott1956} Malmberg, C. G., \& Maryott, A. A.,
 ``Dielectric Constant of Water from 0\textdegree\ to 100\textdegree
@@ -23795,6 +23805,13 @@ function and the $m(\omega)$ correlation
 Two-Constant Equation of State'', \emph{Ind.\ Eng.\ Chem.\ Fundam.},
 15(1), 59--64 (1976). The Peng--Robinson cubic ($\Omega_a = 0.45724$,
 $\Omega_b = 0.07780$, $\kappa(\omega)$) implemented in \code{PR}.
+
+\bibitem{KrichevskyKasarnovsky1935} Krichevsky, I. R., \& Kasarnovsky,
+J. S., ``Thermodynamical calculations of solubilities of nitrogen and
+hydrogen in water at high pressures'', \emph{J.\ Am.\ Chem.\ Soc.},
+\textbf{57}(11), 2168--2171 (1935), DOI \texttt{10.1021/ja01314a036}.
+The Poynting correction of the Henry fugacity
+(Eq.~\ref{eq:henry-K-highP}).
 
 \bibitem{Sandler} Sandler, S. I.,
 \emph{Chemical, Biochemical, and Engineering Thermodynamics}, 5th ed.,
@@ -24164,6 +24181,17 @@ Wiley, 2001. The reference followed by Choupo's shared \code{electrochem}
 kernel for the Nernst equation, Faraday's law of electrolysis
 (Eq.~\ref{eq:ed-faraday}), and the Butler--Volmer stub.
 
+\bibitem{GeraldesAfonso2010} Geraldes, V., \& Afonso, M. D., ``Limiting
+current density in the electrodialysis of multi-ionic solutions'',
+\emph{J.\ Membr.\ Sci.}, 360, 499--508 (2010),
+doi:10.1016/j.memsci.2010.05.054.  The linearised Nernst--Planck model
+Choupo's \code{GeraldesAfonso2010} route implements: the effective
+diffusivity of a multi-ionic solution (Eq.~\ref{eq:ga-deff}), the limiting
+counter-ion transport numbers (Eqs.~\ref{eq:ga-tcem} and
+\ref{eq:ga-taem}), the explicit limiting current (Eq.~\ref{eq:ga-ilim}),
+and the EUR2C-7P18 bench stack with its own mass-transfer correlation and
+Table~4 measurements.
+
 \bibitem{Strathmann2004} Strathmann, H., \emph{Ion-Exchange Membrane
 Separation Processes}, Membrane Science and Technology Series 9,
 Elsevier, 2004. The standard text on electrodialysis; source of the
@@ -24186,17 +24214,6 @@ for locating the limiting current --- the minimum of the stack resistance
 $\Delta V/I$ against $1/I$ --- and the classical single-salt relation
 $i_\text{lim} = zFk\,c/(t_\text{cu}-t_\text{co})$
 (Eq.~\ref{eq:ed-ilim}) usually attached to the name.
-
-\bibitem{GeraldesAfonso2010} Geraldes, V., \& Afonso, M. D., ``Limiting
-current density in the electrodialysis of multi-ionic solutions'',
-\emph{J.\ Membr.\ Sci.}, 360, 499--508 (2010),
-doi:10.1016/j.memsci.2010.05.054.  The linearised Nernst--Planck model
-Choupo's \code{GeraldesAfonso2010} route implements: the effective
-diffusivity of a multi-ionic solution (Eq.~\ref{eq:ga-deff}), the limiting
-counter-ion transport numbers (Eqs.~\ref{eq:ga-tcem} and
-\ref{eq:ga-taem}), the explicit limiting current (Eq.~\ref{eq:ga-ilim}),
-and the EUR2C-7P18 bench stack with its own mass-transfer correlation and
-Table~4 measurements.
 
 \bibitem{RappPfromm1998} Rapp, H.-J., \& Pfromm, P. H.,
 ``Electrodialysis for chloride removal from the chemical recovery cycle
@@ -24359,23 +24376,6 @@ context of Appendix~C.
 % and Sandu1997 -- this guide's own closing paragraph of the stiff-ODE
 % chapter, where both stood in prose; Flory1953 --
 % src/unitOperations/reactor/PolymerKPIs.H.
-
-\bibitem{SongChen2009} Song and Chen, \emph{Ind.\ Eng.\ Chem.\ Res.}\
-\textbf{48}, 7788, 2009, DOI \texttt{10.1021/ie9004578}.  The
-multicomponent (multi-salt) symmetric eNRTL and its charge-fraction mixing
-rules (\S\ref{sec:enrtl-multisalt}); Choupo's \code{ENRTLMultiSalt}.
-
-\bibitem{BollasChenBarton2008} Bollas, Chen and Barton, \emph{AIChE J.}\
-\textbf{54}, 1608, 2008.  The \emph{refined} eNRTL that restores the
-Gibbs--Duhem consistency the published multi-salt mixing rules lose ---
-Choupo's \code{formulation consistent;}.
-
-\bibitem{KrichevskyKasarnovsky1935} Krichevsky, I. R., \& Kasarnovsky,
-J. S., ``Thermodynamical calculations of solubilities of nitrogen and
-hydrogen in water at high pressures'', \emph{J.\ Am.\ Chem.\ Soc.},
-\textbf{57}(11), 2168--2171 (1935), DOI \texttt{10.1021/ja01314a036}.
-The Poynting correction of the Henry fugacity
-(Eq.~\ref{eq:henry-K-highP}).
 
 \bibitem{SundaresanKrishnaswamy1978} Sundaresan, K. R., \& Krishnaswamy,
 P. R., ``Estimation of time delay, time constant parameters in time,
