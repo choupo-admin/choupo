@@ -22,8 +22,11 @@ per-component flows) -- the stream files gain explicit units whose conversion
 factor is exactly 1 (K, Pa, kmol/s), never a rescaled number.  Comments inside
 a unit's block travel with it.  A header written for THIS case (not the
 retired boilerplate) is carried into the new file with its first line
-re-addressed; the retired boilerplate is replaced by a header that describes
-the new file.
+re-addressed and, on a holdup record, one closing line naming the unit the
+file is the initial HOLDUP of (check_internal_states arm (q) holds every
+holdup record to that sentence, so a carried header without it would be a
+record the corpus refuses); the retired boilerplate is replaced by a header
+that describes the new file.
 
 Deterministic, idempotent (a case already migrated is reported and left
 alone), refuses a case that carries BOTH shapes, and refuses any path under
@@ -175,7 +178,19 @@ def add_topology(fd_text, uname, words):
 def holdup_file(uname, equipment, body_lines, head):
     out = []
     if head is not None:
-        out.append(head.rstrip("\n"))
+        #  A header written for THIS case is carried, and gains the one
+        #  sentence a holdup record owes its reader (check_internal_states
+        #  arm (q)): which vessel's starting state it is.  Added as its own
+        #  closing line, so the author's prose is not rewrapped.
+        lines = head.rstrip("\n").split("\n")
+        said = "the initial HOLDUP of '%s'" % uname
+        if said not in re.sub(r"\s+", " ", head):
+            line = "  This record is %s, the vessel's starting state." % said
+            if lines[-1].rstrip().endswith("*/"):
+                lines.insert(len(lines) - 1, line)
+            else:
+                lines.append("//" + line)
+        out += lines
     else:
         out += [BAR,
                 "  0/internalStates/%s -- the initial HOLDUP of '%s', the SINGLE" % (uname, uname),
@@ -230,7 +245,19 @@ def stream_file(sname, face_inner, head, routed):
 
     out = []
     if head is not None:
-        out.append(head.rstrip("\n"))
+        #  A header written for THIS case is carried, and gains the one
+        #  sentence a holdup record owes its reader (check_internal_states
+        #  arm (q)): which vessel's starting state it is.  Added as its own
+        #  closing line, so the author's prose is not rewrapped.
+        lines = head.rstrip("\n").split("\n")
+        said = "the initial HOLDUP of '%s'" % uname
+        if said not in re.sub(r"\s+", " ", head):
+            line = "  This record is %s, the vessel's starting state." % said
+            if lines[-1].rstrip().endswith("*/"):
+                lines.insert(len(lines) - 1, line)
+            else:
+                lines.append("//" + line)
+        out += lines
     else:
         out += [BAR,
                 "  0/%s -- the state of stream '%s' at t = 0: ONE file per stream," % (sname, sname),
