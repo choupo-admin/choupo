@@ -463,8 +463,10 @@ inline StreamThermalState resolveStreamThermalState(const DictPtr&       streamD
 //  flowsheet's post-solve surface pass takes (Flowsheet.cpp, 2026-10-03),
 //  made available to the units that read their inlet DURING the solve
 //  (valve, adiabaticFlash, heatExchanger, storageTank -- DEV.md C33; the
-//  mixer, splitter, cstr, pfr, conversionReactor, both columns, the three
-//  dryers, heater, phaseChanger and multiStreamHX -- C34), each in its own
+//  mixer, splitter, cstr, pfr, conversionReactor, shortcutColumn, the three
+//  dryers, heater, phaseChanger and multiStreamHX -- C34; the distillation
+//  column, both branches, through its `resolveFeedThermalState` -- C35/D1),
+//  each in its own
 //  thermo world.  Which readers were LEFT, and why, is the table in C33.  A pinned single phase is a declaration and is
 //  returned as carried; a resolution that fails or is refused leaves the
 //  carried value and is announced by `equilibriumAt` itself.

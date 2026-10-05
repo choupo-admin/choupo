@@ -31,7 +31,10 @@
 
   THE FEED IS LUYBEN'S PUBLISHED B1, not acetone06's answer -- the same choice
   and the same reason as in C1: it isolates the column.  His B1 is 40.56
-  kmol/h at 370 K, A 0.0001 / IPA 0.0951 / W 0.9048.  The CLOSED flowsheet
+  kmol/h at 370 K, A 0.0001 / IPA 0.0951 / W 0.9048 -- entered here as the
+  saturated liquid he means, at this model's 1 atm bubble point (357.46 K),
+  because at 370 K and 1 atm this UNIFAC makes it a vapour (0/B1 says why).
+  The CLOSED flowsheet
   (acetone08) is where the two columns finally see each other's real streams,
   and the difference between this case and that one is exactly the propagation
   the plant exists to show.
@@ -61,9 +64,10 @@ units
             distillateRate 5.88 kmol/h;
 
             //  B1 leaves C1's reboiler as a saturated liquid and enters here
-            //  as one; q = 1 with the feed's own temperature carrying its
-            //  enthalpy.
-            feedQuality    1.0;
+            //  as one.  That is said ONCE, by the stream (`phase liquid;` at
+            //  its bubble point, 0/B1); the column reads q = 1 from it.  A
+            //  `feedQuality 1.0` here beside his 370 K said the opposite of
+            //  the stream (a vapour at that T in this model) -- see 0/B1.
 
             P              1 atm;
         }

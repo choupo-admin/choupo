@@ -72,15 +72,42 @@ WHAT THIS GATE CHECKS.
       source arms and cannot tell a correct edit from a correct-looking one;
       this arm is what says the physics agrees.
 
+  (h) A SINGLE-PHASE FEED IS READ AS WHAT IT MEANS (2026-10-05, DEV.md §4d
+      D1, decided by Vitor in C35).  A feed that declares no phase and
+      resolves single-phase VAPOUR used to reach the column as the carried
+      default, a liquid -- so `feedQuality 1.0` "agreed" with a vapour, and
+      column03 and acetone07 published a first law out by the latent heat of
+      their whole feed (1149.69 kW and 464.10 kW).  The fixture's feed is
+      the same 50/50 benzene/toluene at 400 K, all vapour: under
+      `feedQuality 1.0` it must REFUSE, and say the state was resolved as a
+      SINGLE phase.
+
+  (i) THE MULTI-FEED BRANCH READS THE SAME WAY (same ruling).  A
+      `feeds ( ... )` column whose upper feed is two-phase and whose lower
+      feed is a vapour, neither declaring a phase, must (i1) REFUSE a
+      `quality 1.0` on the vapour feed, naming the resolved state, and (i2)
+      without it, RUN and price both feeds as the energy report prices them:
+      H_products - H_feeds from the report must equal the column's own
+      Q_reboiler + Q_condenser to 1e-6 kW.  That identity is the column's own
+      energy balance (Q_reboiler is its plug) written on the REPORT'S
+      enthalpies, so it holds exactly when, and only when, the two price every
+      stream alike; it is read this way rather than off the report's residual
+      because the report does not yet count a multi-feed column's duties at
+      its plant boundary (see NOT CHECKED).
+
 WHAT THIS GATE DOES NOT CHECK, said plainly rather than implied:
 
-  * THE MULTI-FEED BRANCH.  `solveSimultaneous`'s `feeds ( ... )` path reads
-    each feed's DECLARED `vf` and refuses a contradicting `quality`, but does
-    not RESOLVE an unpinned feed and does not price a two-phase one at the
-    equilibrium compositions.  Not live on today's corpus (every multi-feed
-    case declares single-phase feeds) and deliberately not fixed blind: the
-    two cases it would move, column04 and column08, are the two whose energy
-    residuals are undiagnosed.
+  * THE PLANT BOUNDARY OF A MULTI-FEED COLUMN.  The energy report classifies
+    a unit with >= 2 process inlets and >= 2 process outlets and no utility
+    stream as an internal process-to-process exchanger and drops its duties
+    from Q_boundary -- so a multi-feed column's condenser and reboiler never
+    reach the plant's first law.  That is the WHOLE of column04's and
+    column08's residuals (measured 2026-10-05: -78.693876 kW and
+    -891.980060 kW, each exactly -(Q_reboiler + Q_condenser)).  It is a
+    report defect, not this gate's rule, and arm (i2) is written to hold
+    either way.
+  * AN INLINE `feeds` ENTRY on the single-feed branch: a dict declaration,
+    not a stream, with no state to resolve; it keeps its `quality`.
   * WHETHER A DECLARED FEED STATE IS TRUE OF THE FEED.  A pinned
     `phase liquid;` at a temperature above the bubble point is a
     declaration the engine honours; this gate checks that the case says ONE
@@ -151,6 +178,47 @@ T               370 K;
 P               101325 Pa;
 %(vf)s"""
 
+#  The multi-feed fixture (arm (i)): two STREAM feeds through `inputs` and
+#  `operation.feeds`, the `simultaneous` branch.  The upper feed is column01's
+#  two-phase 50/50 at 370 K (V/F 0.697242); the lower one is a 40/60 vapour at
+#  395 K.  Neither declares a phase, so both are what their (T, P, z) mean.
+MULTI_FLOWSHEET = """\
+units
+(
+    {
+        name        probeColumn;
+        type        distillationColumn;
+        model       simultaneous;
+        inputs      ( feedA  feedB );
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            P              1.01325 bar;
+            feeds
+            (
+                { stream feedA; stage 5; }
+                { stream feedB; stage 10; %(quality)s}
+            );
+        }
+    }
+);
+"""
+
+MULTI_FEED = """\
+componentMolarFlows
+{
+    benzene    %(b)s kmol/h;
+    toluene    %(t)s kmol/h;
+}
+
+T               %(T)s K;
+P               101325 Pa;
+"""
+
 PRODUCT = """\
 componentMolarFlows
 {
@@ -182,6 +250,37 @@ def build_fixture(root: Path, quality: str, vf: str) -> Path:
     (case / "0" / "bottoms").write_text(
         PRODUCT % {"b": "0.94", "t": "49.06", "T": "382.89"})
     return case
+
+
+def build_multi_fixture(root: Path, quality: str) -> Path:
+    """The two-stream-feed column of arm (i).  `quality` is '' or a
+    `quality <q>; ` fragment placed on the lower (vapour) feed."""
+    case = root / "multiFeedProbe"
+    if case.exists():
+        shutil.rmtree(case)
+    (case / "system").mkdir(parents=True)
+    (case / "0").mkdir()
+    shutil.copytree(DONOR / "constant", case / "constant")
+    (case / "constant" / "propertyManifest").unlink(missing_ok=True)
+    (case / "system" / "controlDict").write_text(CONTROL)
+    (case / "system" / "flowsheetDict").write_text(
+        MULTI_FLOWSHEET % {"quality": quality})
+    (case / "0" / "feedA").write_text(MULTI_FEED % {"b": "25", "t": "25", "T": "370"})
+    (case / "0" / "feedB").write_text(MULTI_FEED % {"b": "20", "t": "30", "T": "395"})
+    (case / "0" / "distillate").write_text(
+        PRODUCT % {"b": "45", "t": "5", "T": "355.4"})
+    (case / "0" / "bottoms").write_text(
+        PRODUCT % {"b": "0", "t": "50", "T": "381.8"})
+    return case
+
+
+def result_number(out: str, block: str, key: str):
+    """A number off the result JSON the run prints, or None."""
+    m = re.search(r'"' + re.escape(block) + r'":\s*\{([^}]*)\}', out)
+    if not m:
+        return None
+    k = re.search(r'"' + re.escape(key) + r'":\s*(-?[0-9.eE+-]+)', m.group(1))
+    return float(k.group(1)) if k else None
 
 
 def run(case: Path):
@@ -322,6 +421,76 @@ def main() -> int:
                 "DECLARED by the stream -- the reader must be able to tell a "
                 "pin from a resolution.")
 
+        # ---- (h) a single-phase VAPOUR feed is not a saturated liquid -----
+        #  The 2026-10-05 half (DEV.md D1).  The fixture's feed is moved to
+        #  400 K, where the 50/50 mixture is all vapour (its dew point at
+        #  1 atm is ~372 K): an unpinned single-phase answer used to keep the
+        #  carried vf = 0, so `feedQuality 1.0` "agreed" with a vapour.
+        case = build_fixture(tmp, "            feedQuality    1.0;\n", "")
+        (case / "0" / "feed").write_text(
+            (case / "0" / "feed").read_text().replace("370 K", "400 K"))
+        rc, out = run(case)
+        if rc == 0:
+            failures.append(
+                "(h) a feed that DECLARES NO phase and resolves single-phase "
+                "VAPOUR at 400 K ran to exit 0 under `feedQuality 1.0`.  The "
+                "column is reading the carried default (a liquid) for a "
+                "single-phase answer again -- the shape that put the latent "
+                "heat of the whole feed into column03's (1149.69 kW) and "
+                "acetone07's (464.10 kW) first law.")
+        elif not re.search(r"vapour fraction 1\.000000 \(resolved single "
+                           r"phase at its own \(T, P, z\)\)", out):
+            failures.append(
+                "(h) the refusal fired but does not say the feed RESOLVED as "
+                "a single vapour phase (vapour fraction 1.000000, 'resolved "
+                "single phase at its own (T, P, z)') -- a reader must be told "
+                "the number came from the stream's own equilibrium.")
+
+        # ---- (i1) the multi-feed branch refuses on the RESOLVED state -----
+        case = build_multi_fixture(tmp, "quality 1.0; ")
+        rc, out = run(case)
+        if rc == 0:
+            failures.append(
+                "(i1) a multi-feed column whose lower feed resolves "
+                "single-phase VAPOUR ran to exit 0 under `quality 1.0`.  The "
+                "`feeds ( ... )` branch is reading each stream's CARRIED vf "
+                "again, not what the stream means.")
+        elif not re.search(r"vapour fraction 1\.000000, resolved single "
+                           r"phase at its own \(T, P, z\)", out):
+            failures.append(
+                "(i1) the multi-feed refusal fired but does not name the "
+                "RESOLVED state of the feed it refused")
+
+        # ---- (i2) the multi-feed branch, read and priced as the report -----
+        case = build_multi_fixture(tmp, "")
+        rc, out = run(case)
+        if rc != 0:
+            failures.append(
+                f"(i2) the multi-feed fixture with no `quality` did not run "
+                f"(exit {rc}).  Last lines:\n"
+                + "\n".join(out.strip().splitlines()[-6:]))
+        else:
+            hf = result_number(out, "globalEnergyBoundary", "H_feeds_kW")
+            hp = result_number(out, "globalEnergyBoundary", "H_products_kW")
+            qr = result_number(out, "probeColumn", "Q_reboiler_kW")
+            qc = result_number(out, "probeColumn", "Q_condenser_kW")
+            if None in (hf, hp, qr, qc):
+                failures.append(
+                    "(i2) could not read H_feeds/H_products from the report "
+                    "or Q_reboiler/Q_condenser from the column -- the arm "
+                    "cannot run, so it must not pass")
+            else:
+                gap = (hp - hf) - (qr + qc)
+                if abs(gap) > 1.0e-6:
+                    failures.append(
+                        f"(i2) the multi-feed column and the energy report "
+                        f"price its feeds differently: H_products - H_feeds "
+                        f"= {hp - hf:.6f} kW on the report's enthalpies, "
+                        f"Q_reboiler + Q_condenser = {qr + qc:.6f} kW on the "
+                        f"column's, a gap of {gap:.6f} kW.  A two-phase feed "
+                        "priced as a blend at z, or a vapour feed priced as "
+                        "the carried liquid, leaves exactly this.")
+
         # ---- (e) SOURCE: the second home stays deleted --------------------
         src = strip_comments(SRC.read_text())
         if re.search(r'lookupScalarOrDefault\(\s*"feedQuality"', src):
@@ -393,15 +562,20 @@ def main() -> int:
           "neither duty site prices the distillate at the top tray's "
           "temperature instead of the one it publishes; and the flagship "
           "column01_benzene_toluene closes its plant-boundary first law at or "
-          "below 1e-6 kW, read from the engine's own report.  SCANNED: a "
-          "fixture case written by this gate (four variants) and "
+          "below 1e-6 kW, read from the engine's own report; a feed that "
+          "resolves single-phase VAPOUR is not read as a saturated liquid, in "
+          "the single-feed branch and in the `feeds ( ... )` multi-feed "
+          "branch, which refuses a contradicting `quality` naming the "
+          "resolved state and prices a two-phase and a vapour feed as the "
+          "energy report does (H_products - H_feeds = Q_reboiler + "
+          "Q_condenser to 1e-6 kW).  SCANNED: fixture cases written by this "
+          "gate (six single-feed variants, two multi-feed) and "
           "src/unitOperations/distillation/DistillationColumn.cpp.  NOT "
-          "CHECKED: the simultaneous MULTI-feed branch, which reads each "
-          "feed's declared vf but neither resolves an unpinned one nor prices "
-          "a two-phase one at the equilibrium compositions (not live on "
-          "today's corpus); whether a DECLARED feed state is true of the feed; "
-          "and the reactive distillate temperature, which is knowingly the "
-          "top tray's and says so.")
+          "CHECKED: the plant boundary of a multi-feed column (the report "
+          "drops its duties as an internal exchanger's); an inline `feeds` "
+          "entry on the single-feed branch; whether a DECLARED feed state is "
+          "true of the feed; and the reactive distillate temperature, which "
+          "is knowingly the top tray's and says so.")
     return 0
 
 

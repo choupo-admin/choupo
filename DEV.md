@@ -1996,7 +1996,9 @@ Each lands as ONE revertable merge with its moved golden rows listed.
   1. ED multi-ion split: the counter-ion current is shared by conductivity
      share z_i D_i c_i (no new parameter); the full wine case follows.
   2. D1: the column reads its feed by the feed's own equilibrium; column03
-     and acetone07 are corrected to declare what they mean.
+     and acetone07 are corrected to declare what they mean.  [BUILT
+     2026-10-05 on branch `claude/c35-d1-column-feed`; see §4d D1, now
+     CLOSED, and the C33 table's column row.]
   3. Evaporator latent: the duty's latent heat is the enthalpy difference
      the energy report prices, not the Watson correlation.
   4. An unpinned feed to a `phaseSet VLLE` unit means its three-phase
@@ -2182,7 +2184,7 @@ read still prices an undeclared vapour as a liquid.
 | CSTR.cpp:106 | the outlet's inherited phase (:409, :851), the duty through priceState (:73), the multi-reaction T-solve basis (:575-718) | CONVERTED |
 | PFR.cpp:308 | the outlet's phase (:620, :1083), the reaction-heat phase (:645), the energy ODE's pricing (:948, :1032, :1244) | CONVERTED, line-neutral (EduTool citations PFR.cpp:373/647/804 unmoved) |
 | ConversionReactor.cpp:173 (default 1.0) and :249 | the outlet's carried phase (:287) and both duty terms through priceState | CONVERTED, one read for both paths; the 1.0 default is dead in a flowsheet (UnitInputs.cpp:257 always inserts `vf`) and is kept for a dict without the key.  Line-neutral above :230 |
-| DistillationColumn.cpp:1504 (multi-feed) | each feed's q (the MESH) and its blend pricing | LEFT -- the column's feed reading is ONE decision for both branches, and the single-feed branch's is §4d D1, RESERVED.  Measured: re-doing D1 refuses `column03_azeotrope_mesh` and `acetone07_luyben_column_C2` at exit 2, exactly as D1 records.  **Vítor's, with D1.** |
+| DistillationColumn.cpp:1504 (multi-feed) | each feed's q (the MESH) and its blend pricing | LEFT -- the column's feed reading is ONE decision for both branches, and the single-feed branch's is §4d D1, RESERVED.  Measured: re-doing D1 refuses `column03_azeotrope_mesh` and `acetone07_luyben_column_C2` at exit 2, exactly as D1 records.  **Vítor's, with D1.**  **CONVERTED 2026-10-05 (C35 item 2):** both branches read every stream feed through `resolveFeedThermalState`, which ends in `resolvedInletVaporFraction` for a single-phase answer; the multi-feed branch also prices a stage's one resolved feed at (x, y).  See §4d D1. |
 | ShortcutColumn.cpp:77 | q, hence Underwood's R_min (:159) | CONVERTED |
 | ElectrodialysisStack.cpp:97 | forwarded unchanged to both outlets (:725-726), never priced | LEFT: a pass-through label on a brine the unit's physics requires liquid; resolving it would run the electrolyte package's flash for no information |
 | SprayDryer.cpp:677, :679 | both inlet enthalpies through priceState (:680-684) | CONVERTED (air keeps its 1.0 default when the key is absent) -- the solidDryer01 gap of 2026-09-27 (undeclared hot air priced as a liquid), one unit over |
@@ -2201,7 +2203,7 @@ the mixer's two-phase default taken.  **No golden row moved.**  Witness
 `tutorials/steady/flowsheets/inletState01_undeclared_vapour`; gate
 `check_inlet_resolution` arms (i1) source and (i2) output (sabotages S1, S4).
 STILL READING AN AUTHORED INLET'S CARRIED vf, named: the distillation column
-(both branches, D1) and the evaporator chest (through
+(both branches, D1 -- CONVERTED 2026-10-05, C35 item 2) and the evaporator chest (through
 `resolveStreamThermalState`, whose single-phase reading is D1's subject; a
 superheated chest is REFUSED there, falsely, not mispriced).
 
@@ -3302,6 +3304,10 @@ defect — look for what else went with it.
 > §4c discipline applied to the assistant's own work.
 
 **D1. `resolveStreamThermalState` asks the EQUILIBRIUM, not the SPLIT.**
+   **DECIDED 2026-10-05 (Vítor, C35 item 2) and CLOSED for the COLUMN on
+   branch `claude/c35-d1-column-feed`; the EVAPORATOR-chest half is a
+   separate C35 slice.**  See "CLOSED, the column half" at the end of this
+   entry.
    `src/unitOperations/flash/StreamEquilibrium.H`.  `twoPhaseSplit` discards
    a converged SINGLE-PHASE answer, correctly for what it is asked; the
    resolver read it anyway and fell back to the CARRIED vapour fraction,
@@ -3343,6 +3349,68 @@ defect — look for what else went with it.
    pass).  Reverted again; the multi-feed branch was
    left with it, so the column reads its feeds by ONE rule until this is
    decided.  The other units' readers were converted (DEV.md C33 table).
+   CLOSED, the column half (2026-10-05, C35 item 2, Vítor: "the column
+   reads its feed by the feed's own equilibrium; column03 and acetone07 are
+   corrected to declare what they mean").  WHAT WAS DONE:
+     * `resolveFeedThermalState` (DistillationColumn.cpp, the column's one
+       resolver, called by the Wang-Henke branch, the recovery banner and
+       both `simultaneous` branches) now follows a converged SINGLE-phase
+       answer with `flashState::resolvedInletVaporFraction`: an unpinned
+       AUTHORED feed means its own equilibrium, a pinned or produced one
+       keeps what it carries.  Origin printed:
+       "resolved single phase at its own (T, P, z)".
+     * The multi-feed `feeds ( ... )` branch read each stream's CARRIED
+       `vf` (`sd->lookupScalarOrDefault("vf", 0.0)`); it now calls the same
+       resolver, and its `quality` refusal names the resolved state.  The
+       duty block prices a stage's ONE resolved feed at (x, y) in BOTH
+       branches (`stageFeedState`); a stage with an inline feed or more than
+       one feed keeps the blend, as the single-feed branch's inline-merge
+       guard already did.
+     * THE TWO CASES, decided from their own text.  Both were written
+       around a SATURATED LIQUID (column03's header: "feedQuality = 1.0
+       (saturated liquid)"; acetone07's: "B1 leaves C1's reboiler as a
+       saturated liquid and enters here as one"), and both starve with the
+       vapour their stated T actually is (re-measured: deleting
+       `feedQuality` alone gives "a stage vapour/liquid flow went
+       non-positive", exit 2, on each).  So each feed now declares
+       `phase liquid;` at its own bubble point under the case's own model,
+       ASKED OF THE ENGINE (`bubbleT` on the very stream: 354.4248 K for
+       column03's 30/70 ethanol/water under NRTL, 357.4681 K for B1 under
+       UNIFAC; the engine's own flash finds both feeds all vapour at their
+       old 363 K and 370 K), rounded DOWN to 0.01 K so the
+       stream's own equilibrium agrees with the pin, and the `feedQuality`
+       key is deleted (one home).  Luyben's 370 K stays in acetone07's
+       header and the programme record.
+     * GOLDENS, 8 rows each, every one the feed's sensible heat or the
+       closed first law (compositions, T profile and condenser duty are
+       unmoved -- the MESH is CMO, so the stages depend on q, which stayed
+       1): column03 -- feed T 363 -> 354.42; Q_reboiler and steamLP duty
+       935.614596 -> 956.239963 kW (+20.63 kW, 100 kmol/h of liquid
+       8.58 K colder); steamLP kg_s and eur_h with it; H_feeds -6579.159
+       -> -7749.475 kW (the report had priced the 363 K VAPOUR); Q_boundary
+       -17.360 -> +3.265 kW; residual 1149.690 -> 0 kW.  acetone07 -- B1 T
+       370 -> 357.46; Q_reboiler and steamLP duty 114.890216 -> 127.025517
+       kW (+12.14 kW); kg_s, eur_h with it; H_feeds -2714.770 -> -3191.008
+       kW; Q_boundary -6.046 -> +6.090 kW; residual 464.103 -> 0 kW.  Rows
+       that moved only at round-off (~1e-11 relative, the MESH re-converged
+       from a seed anchored on the new feed T) were NOT re-recorded.
+     * Both cases LEFT `check_energy_closure.KNOWN_OPEN` (196.80 % and
+       60.88 % -> 0.0000 %).  No other column case moved a number: 28 of
+       the 30 cases using `distillationColumn` are identical except that
+       column04's psat advisories are now raised first by the feed
+       resolution (an ordering change in its caveat block).
+   FOUND, NOT FIXED (a shared report path, so outside a sized slice):
+   column04's -78.693876 kW and column08's -891.980060 kW, the two
+   "undiagnosed" multi-feed residuals of CLAUDE.md §6, are EXACTLY
+   -(Q_reboiler + Q_condenser) of each column.  `EnergyBalanceReport.cpp`
+   classifies a unit with >= 2 process inlets and >= 2 process outlets and
+   no utility stream as an internal process-to-process exchanger
+   (`internalExchanger`) and drops its duty KPIs from the plant boundary,
+   so a multi-feed column's condenser and reboiler never reach the first
+   law.  The column's own balance closes on the report's enthalpies to
+   1e-9 kW (check_feed_thermal_state arm (i2)).  Unchanged by D1 (both
+   multi-feed cases' feeds resolve liquid).  Fixing it is a report change
+   every case goes through.
 
 ## 5. Known debts (severity-ish)
 
