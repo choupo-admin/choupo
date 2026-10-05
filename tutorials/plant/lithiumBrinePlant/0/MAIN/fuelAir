@@ -10,11 +10,48 @@
      componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
+/*  DESIGN BASIS OF THIS FLOW (2026-10-05, DEV.md C35 item 11).
+
+    This is the burner feed whose flue gas is FINISHING.dryer's drying
+    medium, so its size is the DRYER's design, and it is sized by the
+    dryer's own energy balance, not by trial:
+
+      * declared target: the product leaves with NO free water
+        (X_final = 0; Li2CO3 crystals carry free surface water only);
+      * the dryer's energy floor (EvaporativeDryer.H, limit 3): with the
+        solid leaving at its feed temperature T_w = 363.15 K the gas pays
+        for F_gas cp_gas (T_gas - T_w) / lambda(T_w) of evaporation.  At the
+        previous 39.08 kmol/h of fuel + air (flue gas at 950.58 K) the unit
+        printed 338.6037 kg/h evaporated of 1792.4925 kg/h fed, i.e.
+        8.6644 kg of water per kmol of gas -- LINEAR in F_gas while the
+        CH4 : O2 : N2 ratio, hence the adiabatic flame temperature and the
+        flue composition, is held;
+      * minimum gas = 1792.4925 / 8.6644 = 206.88 kmol/h (5.294 x);
+      * a 5 % margin on that minimum: 217.22 kmol/h, i.e. the previous
+        feed scaled by 5.5585 with the SAME ratio.  The run then reports
+        [complete-limited], X_final = 0, T_out = 385.3 K (22 K of approach
+        above the wet solid), exhaust a_w = 0.22.
+
+    WHY 5 % AND NOT A ROUNDER 20 %.  A 20 % margin was tried first and is
+    NOT taken: at that gas rate the unit's own hand energy balance (a Watson
+    latent heat, which goes to zero at water's critical temperature, 647 K,
+    and the free water warmed as a liquid at a constant cp) admits a
+    second, unphysical root above 647 K, and its bisection returned
+    T_out = 672 K.  That is an engine finding (DEV.md C35 item 11), not
+    something a case should hide by a choice of number -- but nor should a
+    case be designed on a supercritical "evaporation".  At 5 % the run was
+    measured to land on the physical root.
+
+    So the burner exit temperature is unchanged and only the amount of hot
+    gas grows.  Until 2026-10-05 this file carried 1/5.56 of this flow, and
+    once the dryer stopped evaporating water no heat paid for (C26 slice 2)
+    the product left at 98.5 wt% water. */
+
 componentMolarFlows
 {
-    CH4    1.0000572 kmol/h;
-    O2    8.000066801 kmol/h;
-    N2    30.079876 kmol/h;
+    CH4    5.5588 kmol/h;
+    O2    44.4681 kmol/h;
+    N2    167.1980 kmol/h;
 }
 
 T               298.15 K;

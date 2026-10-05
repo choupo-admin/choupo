@@ -2018,6 +2018,26 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      4.958 -> 3.584.]
  10. ammonia03's beds keep refusing (their lesson); no change.
  11. lithiumBrinePlant's dryer: air raised until the product leaves dry.
+     [DONE 2026-10-05, branch `claude/c35-cases`.  The burner feed
+     `0/MAIN/fuelAir` (its flue gas is the drying medium) is sized by the
+     dryer's own floor balance, written in that file: 8.6644 kg of water
+     per kmol of gas at the floor -> minimum 206.88 kmol/h for 1792.49 kg/h
+     of free water, + 5 % margin -> 217.22 kmol/h, same CH4 : O2 : N2 ratio
+     (x 5.5585), so the flame T is unchanged.  Result: [complete-limited],
+     X_final 0, T_out 385.33 K, a_w 0.22.  9 rows moved, all one reason
+     (the gas now pays for all the water): fuelAir.F and hotAir.F 0.0108556
+     -> 0.0603403 kmol/s; humidExhaust.F and cleanAir.F 0.0160766 ->
+     0.0879791; product.F 0.0225568 -> 0.000138889 (the Li2CO3 alone);
+     product/humidExhaust/cleanAir/fines T 363.15 -> 385.328 K (off the
+     floor).  hotAir.T drifted 1.7e-6 relative and was NOT re-pinned.
+     **ENGINE FINDING, not fixed (src/ was out of this slice):** a 20 %
+     margin was tried first and the unit returned T_out = 672.28 K, ABOVE
+     water's critical point -- its hand balance (Watson latent -> 0 at
+     647 K, the free water warmed as a liquid at a constant cp) has a
+     second, spurious root there, and the bisection's first midpoint
+     (~657 K) sends it into that half whenever the gas is large enough.
+     `check_evaporative_dryer` (a) now refuses a lithium T_out at or above
+     647.096 K (sabotage at 20 %: caught).  Whose fix: the unit's.]
  12. evapDryer02 renamed for what binds it (exhaust saturation).  [DONE
      2026-10-05, branch `claude/c35-cases`:
      `tutorials/steady/drying/evapDryer02_saturation_limited`; FASTSET,
@@ -2405,6 +2425,11 @@ superheated chest is REFUSED there, falsely, not mispriced).
      round-off pinned, the column13 shape; dropping the two rows is a row
      that MOVES, so it is his.  (P7) The continuous-dryer EduTool (option
      2), still deferred.
+     **RULED 2026-10-05 (C35):** P1 -> items 12 and 11 (the case renamed
+     `evapDryer02_saturation_limited`; the lithium plant's gas DESIGNED for
+     a dry product, so NO corpus case is heat-bound now and arm (b)'s warm
+     fixture is the heat-bound witness, its caveat-block replay checked
+     there); P6 -> item 13 (the two rows dropped).  P2-P5 and P7 stay his.
 
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o
