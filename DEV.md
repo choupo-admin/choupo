@@ -3608,6 +3608,26 @@ defect — look for what else went with it.
    1e-9 kW (check_feed_thermal_state arm (i2)).  Unchanged by D1 (both
    multi-feed cases' feeds resolve liquid).  Fixing it is a report change
    every case goes through.
+   **CLOSED 2026-10-05 (C35, branch `claude/c35-shared-path`, under the full
+   regression Vítor authorised for item 4):** internal-exchanger status is
+   read off what the unit IS -- `reporting::isProcessToProcessExchanger`
+   (`BalanceMath.H`, ONE home: `heatExchanger`, `multiStreamHX`,
+   `coolingTower`, the types whose energy-item KPI is heat passed between
+   their own process streams) -- with the port count kept as a NECESSARY
+   condition (an exchanger with a both-ends-tagged utility side still sends
+   its heat through `qBoundary`).  MEASURED: column04 -78.693876 -> 0 kW,
+   column08 -891.980060 -> ~-2e-12 kW, and a third member nobody had named,
+   `column05_reactive_methylacetate`, +0.163790 -> 0 kW (its reboiler
+   0.626731 and condenser -0.790521 kW were dropped the same way; under the
+   1 kW band, so never pinned).  Every other unit type the corpus runs with
+   >= 2 inlets and outlets (absorber, stripper, extractor, the three dryers,
+   electrodialysisStack, evaporator) publishes no boundary energy item, so
+   its status changes nothing; the antisolvent crystallisers (Q_kW, 2 in /
+   2 out) would have dropped their cooling duty the same way but publish no
+   energy boundary (no datum).  Both column pins left
+   `check_energy_closure.KNOWN_OPEN_KW`; its unit arm now holds every
+   `distillationColumn` row to 1e-4 kW (witnesses column04, column08,
+   column01).
    THE EVAPORATOR-CHEST HALF, DONE 2026-10-05 (C35 item 3, branch
    claude/c35-evaporator-latent), and measuring it found a second cause.
    `Evaporator.cpp` now reads an unpinned chest with no split through

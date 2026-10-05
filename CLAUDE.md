@@ -1192,13 +1192,15 @@ bands reach ONE sentence — and REFUSES a contradicting `feedQuality` naming bo
 numbers and both remedies with their values filled in.  Thirteen cases refused;
 eleven had the stream right and lost the dict key, two had only ever said it in
 the dict and now say it in the stream.  Every distillation case in the corpus
-closes its first law at 0.000000 kW except the two that stay pinned:
+closes its first law at 0.000000 kW -- the last two,
 `column04_multifeed_sidedraw` (-78.693876 kW) and
-`column08_radfrac_multidraw` (-891.980060 kW), both multi-feed -- DIAGNOSED
-2026-10-05 and not a column defect: each residual is exactly -(Q_reboiler +
-Q_condenser), because the energy report files a unit with >= 2 process inlets
-and >= 2 outlets as an internal exchanger and drops its duties from the plant
-boundary (DEV.md §4d D1, found-not-fixed).  The `simultaneous` MULTI-feed
+`column08_radfrac_multidraw` (-891.980060 kW), both multi-feed, were not a
+column defect: each residual was exactly -(Q_reboiler + Q_condenser), because
+the energy report filed a unit with >= 2 process inlets and >= 2 outlets as an
+internal exchanger and dropped its duties from the plant boundary.  CLOSED
+2026-10-05 (DEV.md §4d D1, C35): **an internal exchanger is decided by what
+the unit IS, never by its port count** (`reporting::
+isProcessToProcessExchanger`, one home).  The `simultaneous` MULTI-feed
 branch has resolved each stream feed and priced a two-phase one at (x, y)
 since the same day.  Also NOT done, named rather than implied: the WIDE route
 for the quality blend — making `H_stream_formation` itself flash, which is the true
