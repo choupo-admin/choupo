@@ -156,6 +156,26 @@ because a presence test was satisfied by something other than its subject:
           THE GATE IS FINE, which is the opposite of what it was run to
           find out.  Assert the edit applied before believing its verdict.
 
+SABOTAGE-VERIFIED 2026-10-04 for (i)/(j), by hand on the engine source,
+each restored by git and rebuilt:
+  S1  `resolvedInletVaporFraction` returns the carried value (the one home
+      bypassed).  (i2) fails five ways: the valve lets the 450 K vapour down
+      to 384.5 K at vf = 0.315, the mixer and both splitter branches publish
+      vf = 0, and the plant's first law misses by 1659.5 kW.
+  S2  the flash's operating discard disarmed (`if (false && ...)`, the call
+      left in place).  (j1) PASSES -- it reads the call -- and (j2) fails
+      three ways: the drum publishes 7.685 kmol/s of liquid, no site line,
+      no advisory.  The output arm is the one that can see a disarmed call.
+  S3  the valve's outlet search back to a bare `IsothermalFlash::solveCore`.
+      (j1) fails twice (no one-home call; a bare solveCore).
+  S4  the mixer stops asking the one home (`vf = vfCarried`).  SURVIVED its
+      first version's mixer-vf sub-check: the valve's PRODUCED vapour
+      outvoted the authored feedB, so the outlet stayed vapour either way and
+      only (i1) and the closure (258.9 kW) caught it.  feedB is now the larger
+      inlet, and S4 is caught three ways: (i1), M1 vf = 0, 1306.8 kW.
+  S5  `takeSupercriticalAsSinglePhase` hollowed (returns before it
+      discards; every caller intact).  (j2) fails three ways.
+
 SABOTAGE-VERIFIED 2026-08-09: reverting the R-E1 gate (unpinned feeds no
 longer re-flashed -- the pre-slice behaviour) reproduced the original
 defect and this gate named every instance: flash19 Q = 13.4913 kW with its

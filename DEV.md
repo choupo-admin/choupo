@@ -1921,6 +1921,12 @@ per-equation citation audit.  Wave 2: C4, C8, C16 slice 2, C26 slice 2, the
 unreserved parts of C2 and C7.  NOT taken, his: the tray cost set (C2), any
 history rewrite (C7), the evaporator latent, acetone07/column03, §4b.
 Status: wave 1 dispatched 2026-10-04.
+(A) DONE 2026-10-04 on `claude/c34a-inlet-vf-family`, not merged: the
+per-site verdicts are the table in C33; the supercritical discard is in §5's
+2026-09-26 entry; witness `inletState01_undeclared_vapour`, gate
+`check_inlet_resolution` arms (i)-(j), five hand sabotages, no golden row
+moved.  Two defaults taken and FLAGGED there (the mixer's two-phase authored
+inlet; the column left whole with D1).
 
 **C33. THE FOUR UNITS THAT STILL READ AN UNPINNED INLET'S DEFAULT `vf`
 (Vítor, 2026-10-04: "Podes avançar, mas com calma, porque o preço dos tokens
@@ -1952,13 +1958,50 @@ check_feed_thermal_state, check_layering OK; the four lesson tests holding
 shift, 113/113.  No full regression: the only executable change on the
 shared path is a flag no other unit reads.  NOT GATED: no corpus witness
 reaches the change, so nothing pins it; a witness is the next step if wanted.
+[GATED 2026-10-04, C34: witness `inletState01_undeclared_vapour` (the
+valve among its three units) and `check_inlet_resolution` arm (i).]
 ENUMERATED, NOT AUDITED (grep for a bare `vf` read, 2026-10-04): mixer,
 splitter, cstr, pfr, conversionReactor, shortcutColumn, the multi-feed
 column branch, electrodialysisStack, sprayDryer, solidDryer, convectiveDryer,
 heater, phaseChanger, multiStreamHX and the isothermal flash's feed read.
-Several resolve afterwards through `priceState`, which keeps the carried vf
-on a single-phase answer; which of them can see an all-vapour authored inlet
-has not been measured.
+**AUDITED 2026-10-04 (C34 wave 1, item A, branch
+`claude/c34a-inlet-vf-family`).**  `file:line` as read on `origin/main`
+296df2d9c; "what it decides" is read off the code, not the comment above it
+(two of those comments -- CSTR.cpp:100, PFR.cpp:302 -- said "the flowsheet
+has already inferred the feed phase", which for an authored inlet it had
+not).  `priceState` keeps the CARRIED vf on a single-phase answer
+(StreamEquilibrium.H:461-465), so a unit that prices through it with a bare
+read still prices an undeclared vapour as a liquid.
+
+| Site | What the value decides | Verdict |
+|---|---|---|
+| Mixer.cpp:126 | inlet enthalpy (H_stream_formation at vf, :116) and the outlet's dominant-phase vote (:166-201) | CONVERTED for a single-phase resolution.  A TWO-PHASE authored inlet keeps its carried vf, ANNOUNCED -- a stated default: on cavett01 (a 322 K, 18.6 bar two-phase feed) the resolved fraction flips M2's vote to vapour and the one-phase adiabatic Newton then finds no T_out in [150, 2500] K (exit 2).  **For Vítor.** |
+| Splitter.cpp:49 | copied into every branch's vf (:117); the branches are PRODUCED and nobody re-resolves them | CONVERTED |
+| CSTR.cpp:106 | the outlet's inherited phase (:409, :851), the duty through priceState (:73), the multi-reaction T-solve basis (:575-718) | CONVERTED |
+| PFR.cpp:308 | the outlet's phase (:620, :1083), the reaction-heat phase (:645), the energy ODE's pricing (:948, :1032, :1244) | CONVERTED, line-neutral (EduTool citations PFR.cpp:373/647/804 unmoved) |
+| ConversionReactor.cpp:173 (default 1.0) and :249 | the outlet's carried phase (:287) and both duty terms through priceState | CONVERTED, one read for both paths; the 1.0 default is dead in a flowsheet (UnitInputs.cpp:257 always inserts `vf`) and is kept for a dict without the key.  Line-neutral above :230 |
+| DistillationColumn.cpp:1504 (multi-feed) | each feed's q (the MESH) and its blend pricing | LEFT -- the column's feed reading is ONE decision for both branches, and the single-feed branch's is §4d D1, RESERVED.  Measured: re-doing D1 refuses `column03_azeotrope_mesh` and `acetone07_luyben_column_C2` at exit 2, exactly as D1 records.  **Vítor's, with D1.** |
+| ShortcutColumn.cpp:77 | q, hence Underwood's R_min (:159) | CONVERTED |
+| ElectrodialysisStack.cpp:97 | forwarded unchanged to both outlets (:725-726), never priced | LEFT: a pass-through label on a brine the unit's physics requires liquid; resolving it would run the electrolyte package's flash for no information |
+| SprayDryer.cpp:677, :679 | both inlet enthalpies through priceState (:680-684) | CONVERTED (air keeps its 1.0 default when the key is absent) -- the solidDryer01 gap of 2026-09-27 (undeclared hot air priced as a liquid), one unit over |
+| SolidDryer.cpp:174, :176 | both inlet enthalpies through priceState (:177-182) | CONVERTED, same reason |
+| ConvectiveDryer.cpp:126, :127 | a REFUSAL (the air must be vapour, the moisture liquid) read off the carried value | CONVERTED: undeclared hot air whose own equilibrium is a vapour no longer refuses; the refusal stands for a stream that resolves (or was produced, or declared) otherwise, and its message says so |
+| Heater.cpp:116 | `useGas`: the sensible rung, the Newton's upper bracket (700 vs 3000 K, :239), the leg the datum probe asks for (:154).  H_in itself was already resolved (`Hresolved`, :178) | CONVERTED |
+| PhaseChanger.cpp:224 | the latent/sensible SPLIT only (:442); H_in is resolved at :228 | CONVERTED |
+| MultiStreamHX.cpp:104 | h_in (:120) and the outlet's default phase | CONVERTED |
+| MultiStreamHX.cpp:118 | the DECLARED outlet vf in `operation.outlet` | LEFT: not an inlet read |
+| IsothermalFlash.cpp:1563 | the duty's carried fallback; an unpinned feed is re-flashed and priced on its resolution since 2026-08-09 (:1589-1683) | LEFT: already resolved (R-E1) |
+
+MEASURED: the 159 corpus cases that use any touched unit -- 155 PASS, 1
+EXPECTED-FAIL, 3 FAIL on the first build (column03, acetone07: D1 re-done;
+cavett01: the mixer) and all three PASS after the column was reverted and
+the mixer's two-phase default taken.  **No golden row moved.**  Witness
+`tutorials/steady/flowsheets/inletState01_undeclared_vapour`; gate
+`check_inlet_resolution` arms (i1) source and (i2) output (sabotages S1, S4).
+STILL READING AN AUTHORED INLET'S CARRIED vf, named: the distillation column
+(both branches, D1) and the evaporator chest (through
+`resolveStreamThermalState`, whose single-phase reading is D1's subject; a
+superheated chest is REFUSED there, falsely, not mispriced).
 
 **C32. AN EDUTOOL ON WHAT THE DEGREE SIGN MEANS: ENTHALPY, THE STANDARD
      STATE AND EQUILIBRIUM (asked 2026-10-03, Vítor, forwarding a brief
@@ -2893,6 +2936,16 @@ defect — look for what else went with it.
    named in CLAUDE.md §6 as exactly this shape, fixed once for the evaporator
    alone.  **No golden has been re-recorded**, per Vítor's standing rule that
    the list of what moves is shown to him first.
+   RE-MEASURED 2026-10-04 (C34 wave 1, item A), for the COLUMN half only:
+   giving the column's single-feed branch the single-phase reading
+   (`resolvedInletVaporFraction` after `resolveStreamThermalState`) refuses
+   exactly two of the 21 cases under `tutorials/steady/distillation/` --
+   `column03_azeotrope_mesh` and `acetone07_luyben_column_C2`, both on
+   `feedQuality 1` against a feed that resolves single-phase VAPOUR -- and
+   no other column case among the 159 run (`acetonePlant` and both strippers
+   pass).  Reverted again; the multi-feed branch was
+   left with it, so the column reads its feeds by ONE rule until this is
+   decided.  The other units' readers were converted (DEV.md C33 table).
 
 ## 5. Known debts (severity-ish)
 
@@ -3156,6 +3209,36 @@ by the suite (only stage D moved).  **`phaseChanger` CLOSED 2026-10-01**
 `resolveAt` that calls the one home): the rewritten green-ammonia case
 reached it -- its first inter-bed cooler, fed at 813 K, closed its own
 balance 331.8 kW short, and closes now.
+**THE REST CLOSED 2026-10-04 (C34 wave 1, item A).**  Each claim above was
+verified against the code first and all four were real: `Pipe.cpp:129`
+(inlet regime), `Valve.cpp:119` and `AdiabaticFlash.cpp:144` (the outlet
+searches) called `IsothermalFlash::solveCore` bare, and
+`IsothermalFlash.cpp:1543` (the drum's own operating answer) took
+`solveCore`'s answer unguarded.  phaseChanger's local rule -- a discarded
+root is replaced by the single fluid phase (V/F = 1, x = y = z), said once --
+moved to `StreamEquilibrium.H` as `takeSupercriticalAsSinglePhase` /
+`flashDiscardingSupercriticalSplit` / `reportSupercriticalDiscard`, and all
+five call it (the flash not for an LL phase set, whose fraction is not a
+vapour fraction, and none on a three-phase answer).  The valve and the
+adiabatic flash say it only when the CONVERGED answer was discarded.
+MEASURED: a one-drum fixture built from stage D's converged `reacted`
+(844.86 K, 200 bar) published 7.685 of 10.077 kmol/s as LIQUID and now
+publishes none; the 159 corpus cases using a touched unit moved no golden.
+NOT reached by any output arm, said plainly: the valve's and the adiabatic
+flash's outlet searches (their Newton bracket stops at 700 K and no corpus
+state below it resolves a supercritical root) and the pipe -- those ride the
+source arm (j1) alone.  Gate `check_inlet_resolution` (j1)/(j2), sabotages
+S2, S3, S5.  FOUND, NOT FIXED, for Vítor: (a) the pipe has no gas route at
+all -- an all-vapour feed (RR V/F = 1, or a discarded root) falls through to
+the incompressible-LIQUID path (`Pipe.cpp`, after the two-phase block);
+refusing it changes what the engine refuses (§4b); (b) an UNPINNED AUTHORED
+stream whose split is discarded keeps its carried vf (0, the liquid rung) in
+both `resolvedInletVaporFraction` and the flowsheet's surface pass, while an
+outlet search takes the single gas phase -- unit and report agree, both on
+the liquid rung for a gas above every Tc; the remedy is in the surface pass,
+a path every case goes through; (c) the one home's sentence ends "priced on
+the state it carries", which an outlet search does not do (it takes the gas
+phase) -- wording, phaseChanger's since 2026-10-01.
 
 **2026-09-25 -- ONE CONCEPT, TWO KEYS, IN ONE FUNCTION, AND THE DOCUMENTED
 ONE IS THE SILENT ONE.**  Found while building the C9 EduTool; every line

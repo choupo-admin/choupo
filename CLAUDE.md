@@ -317,8 +317,12 @@ case/
   it; `ProcessStream::authoredInlet`, stamped once before the first unit
   runs) through `flashState::resolvedInletVaporFraction`, single phase
   included -- never a produced one (column12's mixer writes the right vf at
-  a fictitious T); a dozen other units still read the carried `vf` and are
-  ENUMERATED in DEV.md C33, not audited (2026-10-04).  The
+  a fictitious T); since C34 (2026-10-04) every other inlet `vf` reader
+  does too, EXCEPT those DEV.md C33's audited table leaves with a reason --
+  the distillation column (both branches, reserved with §4d D1), the
+  electrodialysis stack, and a two-phase authored inlet into a `mixer`
+  (kept carried and announced, a stated default).  Witness
+  `inletState01_undeclared_vapour`, gate `check_inlet_resolution` (i).  The
   one-shot migrator is `bin/curate/migrate_overspecified_vf.py`.  Gate:
   `check_overspecified_stream`.  Record:
   [`docs/design/a-stream-is-fixed-by-two-variables.md`](docs/design/a-stream-is-fixed-by-two-variables.md).
@@ -1106,12 +1110,16 @@ both readers call it, gate `check_inlet_resolution` arm (h)).  Enumerated in
 the same commit, per the 2026-09-25 rule: every reader that goes THROUGH
 `StreamEquilibrium.H` (report, model-boundary ledger, `heater`,
 `heatExchanger`, `conversionReactor`, column feed, evaporator chest) already
-discarded; `pipe`'s inlet regime and the OUTLET searches of `valve`,
-`adiabaticFlash` and the flash's own operating resolution still call
-`solveCore` bare and are NAMED, not fixed -- no corpus case reaches them with
-a supercritical feed today (DEV.md §5, 2026-09-26).  `phaseChanger` was on
-that list and is CLOSED (2026-10-01): the rewritten green-ammonia case's
-first inter-bed cooler reached it, 331.8 kW short, the day it existed.
+discarded; the units that search their own OUTLET with a flash needed the
+other form of the rule -- the discarded root REPLACED by the single fluid
+phase, said once.  `phaseChanger` took it first (2026-10-01, its
+first inter-bed cooler 331.8 kW short the day the green-ammonia case
+existed), and on 2026-10-04 (C34) it moved to the one home
+(`flashState::flashDiscardingSupercriticalSplit`) and `pipe`'s inlet regime,
+the `valve`'s and `adiabaticFlash`'s outlet searches and the flash's own
+operating resolution all read it: a drum operated at 844.86 K published
+7.685 kmol/s of liquid and now publishes none (gate `check_inlet_resolution`
+arm (j); DEV.md §5, 2026-09-26).
 
 **THREE MORE, AND THE FLAGSHIP'S FIRST LAW (2026-09-27).**  The flagship's
 +34.41 kW was additive, and three of its four terms were this family: the
