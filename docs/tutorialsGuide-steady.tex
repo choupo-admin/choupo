@@ -4951,6 +4951,55 @@ Compare with flash01\_benzene\_toluene, where the same separation is asked as `i
 \end{tutgolden}
 
 \clearpage
+\tutentry{inletState01\_undeclared\_vapour}{tutorials/steady/flowsheets/inletState01\_undeclared\_vapour}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (V1) at (0.0,-0.0) {\textbf{V1}\\[-1pt]{\tiny valve}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M1) at (2.9,-0.0) {\textbf{M1}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (S1) at (0.0,-1.7) {\textbf{S1}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(V1.west)+(-1.05,0.00)$) -- ($(V1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedA};
+  \draw[->] (V1) -- (M1) node[midway, above, font=\tiny] {throttled};
+  \draw[->] ($(M1.west)+(-1.05,0.00)$) -- ($(M1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedB};
+  \draw[->] ($(S1.west)+(-1.05,0.00)$) -- ($(S1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedC};
+  \draw[->] ($(M1.east)+(0,0.00)$) -- ($(M1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {mixed};
+  \draw[->] ($(S1.east)+(0,-0.17)$) -- ($(S1.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {sideA};
+  \draw[->] ($(S1.east)+(0,0.17)$) -- ($(S1.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {sideB};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Witness: undeclared superheated vapours are read as vapours by the valve, the mixer and the splitter}
+\begin{tutnarrative}
+THE STATE A UNIT COMPUTES WITH MUST BE THE STATE ITS INLET MEANS.
+
+feedA (450 K, 3 bar) -$\to$ [V1 valve: 1.5 bar] -$\to$ throttled --+ +-$\to$ [M1 mixer] -$\to$ mixed feedB (420 K, 1.5 bar) --------------------------------------+
+
+feedC (420 K, 1.5 bar) -$\to$ [S1 splitter: 0.3 / 0.7] -$\to$ sideA + sideB
+
+The three feeds are benzene/toluene, each well above its dew point at its own pressure, and NONE declares `phase`. A stream file that declares no phase does not thereby declare a liquid: its (T, P, z) means its own equilibrium, and here that equilibrium is all vapour. The stream record still carries a default `vf = 0` until something resolves it, and for a domain inlet nothing upstream does -- so each unit that reads its inlet's phase resolves it itself, at the inlet's own (T, P, z), in its own thermo world (`flashState::resolvedInletVaporFraction`, the one home):
+
+V1 (valve). The isenthalpic let-down prices H\_in on the inlet's phase. Read as a liquid, H\_in is a liquid's and the outlet search lands tens of kelvin colder, part-condensed -- a valve that "condenses" a vapour. Read as what it is, an ideal-gas vapour has no Joule-Thomson effect and T\_out = T\_in. M1 (mixer). The inlets' phases price the inlet enthalpies AND vote for the outlet's dominant phase. feedB is the LARGER inlet (150 against 100 kmol/h) on purpose: the valve's outlet is a PRODUCED vapour that votes vapour either way, so only an authored inlet that carries the vote can show a mixer reading it as a liquid -- its vapour would then leave labelled a liquid. S1 (splitter). A splitter preserves the phase -- the phase the inlet MEANS. Its branches are PRODUCED streams that nobody re-resolves, so copying the carried default would publish two vapours as liquids.
+
+The plant's first law closes only if the units and the energy report read the same states. check\_inlet\_resolution arm (i) runs this case and holds all three readings and the closure.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feedA}{F}{0.0277777777778}
+\goldrow{stream}{feedA}{T}{450}
+\goldrow{stream}{feedB}{F}{0.0416666666667}
+\goldrow{stream}{feedB}{T}{420}
+\goldrow{stream}{feedC}{F}{0.0166666666667}
+\goldrow{stream}{feedC}{T}{420}
+\goldrow{stream}{mixed}{F}{0.0694444444444}
+\goldrow{stream}{mixed}{T}{432.508746466}
+\goldrow{stream}{sideA}{F}{0.005}
+\goldrow{stream}{sideA}{T}{420}
+\goldrow{stream}{sideB}{F}{0.0116666666667}
+\goldrow{stream}{sideB}{T}{420}
+\goldrow{stream}{throttled}{F}{0.0277777777778}
+\goldrow{stream}{throttled}{T}{450}
+\goldmore{16}
+\end{tutgolden}
+
+\clearpage
 \tutentry{plant01\_two\_sectors}{tutorials/steady/flowsheets/plant01\_two\_sectors}
 \tutwhat{Recursive plant: factory of two composite sectors (fractal step 3)}
 \begin{tutnarrative}

@@ -1,0 +1,99 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       acetone + ethanol   (x is acetone's liquid mole fraction)
+  pressure     101.32 kPa   (CONSTANT across the series)
+  points       19   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( acetone ethanol );
+pressure     101.32 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Ku, H. -C.; Tu, C. -H. (2005). Isobaric vapor liquid equilibria for mixtures of acetone, ethanol, and 2,2,4-trimethylpentane at 101.3 kPa. Fluid Phase Equilib.. doi:10.1016/j.fluid.2005.01.007";
+    archiveFile  "j.fluid.2005.01.007.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        9;
+    doi          "10.1016/j.fluid.2005.01.007";
+    sha256       "f1acfe9dcd9476d848a167c0a3fe983e5b719138dd99807652ad914b3f29eb62";
+    identity
+    {
+        acetone        { cas "67-64-1"; inchiKey "CSCPPACGZOOCGX-UHFFFAOYSA-N"; }
+        ethanol        { cas "64-17-5"; inchiKey "LFQSCWFLJHTTHZ-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.37 0.34 0.31 0.26 0.23 0.23 0.21 0.2 0.19 0.18 0.18 0.18 0.18 0.17 0.17 0.17 0.17 0.17 0.17 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 351.44 K; }
+        { x 1; T_bubble 329.26 K; }
+    );
+}
+
+columns
+(
+    { name x[acetone];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_acetone;  unit -;  }
+);
+
+data
+(
+      0.0440  348.91  0.1290
+      0.0850  346.65  0.2320
+      0.1320  344.53  0.3250
+      0.1750  342.69  0.4030
+      0.2270  341.17  0.4630
+      0.2760  339.81  0.5170
+      0.3280  338.39  0.5710
+      0.3800  337.32  0.6090
+      0.4330  336.24  0.6510
+      0.4810  335.37  0.6850
+      0.5380  334.51  0.7190
+      0.5860  333.78  0.7490
+      0.6390  333.06  0.7770
+      0.6880  332.43  0.8030
+      0.7450  331.81  0.8350
+      0.7960  331.2  0.8670
+      0.8490  330.66  0.8980
+      0.9010  330.17  0.9290
+      0.9510  329.69  0.9650
+);

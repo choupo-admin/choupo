@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  curate12_nrtl_ethanol_cyclohexane: an NRTL pair for ethanol + cyclohexane regressed to MEASURED
+    bubble temperatures from one article and scored on another it never saw.
+    See system/propsDict for the whole story.  */
+
+application   choupoProps;
+description   "NRTL ethanol-cyclohexane regressed to measured bubble temperatures (ThermoML locates, the article sources), held out against an independent study, drawn against both beside ideal and UNIFAC";
+verbosity     2;

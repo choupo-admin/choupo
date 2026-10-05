@@ -1,6 +1,6 @@
 # Binary pairs from open measurements
 
-**Status: FIRST PATH BUILT 2026-09-28 (DEV.md C16).**  Vítor asked for wider
+**Status: FIRST PATH BUILT 2026-09-28; SLICE 2 2026-10-05 (section 6) (DEV.md C16).**  Vítor asked for wider
 binary-interaction coverage from free, open sources, keeping provenance,
 commercial use and redistribution.  Two routes were named: import tables
 already published under compatible terms, and fit new parameters to the
@@ -283,3 +283,139 @@ Next, in order: read the ten series back against the articles and flip
 them to `checked`; settle the acetone-methanol disagreement; add a
 `P_bubble` residual kind so isothermal data count; then widen by the same
 rule, pair by pair, never in bulk.
+
+## 6. Slice 2 (2026-10-05): four more systems, and a verdict that cannot see a second liquid
+
+Same chain, same rules, same archive (the cache of 2026-09-28, sha256
+re-verified).  Nothing under `src/` changed.
+
+### 6.1 The systems, chosen before fitting
+
+Chosen by teaching value, each with at least two low-pressure bubble-
+temperature studies whose x is reported for the SAME component:
+
+| case | pair | why |
+|---|---|---|
+| curate09 | 1-propanol + water | completes the C1-C3 water + alcohol series beside methanol and isopropanol; minimum azeotrope; five studies, the most of any candidate |
+| curate10 | acetonitrile + water | the textbook system for pressure-swing distillation; minimum azeotrope |
+| curate11 | acetone + ethanol | two common solvents with a positive deviation and NO azeotrope -- the contrast to the rest of the family |
+| curate12 | ethanol + cyclohexane | the binary under heterogeneous azeotropic dehydration of ethanol (cyclohexane the entrainer) |
+
+Passed over, each for a reason that was measured: **methanol + benzene**
+(the aromatic the brief asked for) -- its two studies report x of DIFFERENT
+components, `extract-vle` has no reorientation, and a hand edit of a measured
+file is the act the chain exists to prevent, so the tool needs a
+`--x-of <component>` option first; **ethanol + p-xylene** -- ethanol's
+catalogue Antoine record ends at 369 K and the data run to 411 K, so the pair
+would absorb an extrapolated vapour pressure; **acetone + water, acetone +
+chloroform, THF + water, 1,4-dioxane + water, ethanol + toluene** -- no
+low-pressure bubble-T block in the archive; **benzene + toluene** -- five
+studies, but the catalogue's pair is a declared ideality assumption the
+benzene + toluene cases are built on, and replacing it is a corpus decision,
+not a widening.  Acetic acid pairs stay out for slice 1's reason (vapour
+dimerisation).
+
+**Partition rule (declared before any fit, in the case headers):** the fit
+set is the study with the most interior points; the held-out set is the next
+largest that shares NO author with it.  The archive carries no affiliations,
+so a shared author is the dependence the rule can check, and it checks no
+more: curate09's two studies have no author in common but may come from one
+department -- a read-back of the articles settles that.
+
+**Band:** slice 1's rule unchanged.  Where the held-out study reports no pure
+endpoint (curate12) the Antoine term is ZERO, the strict reading -- the band
+is then the measurement's own uncertainty alone.
+
+The declaration was committed BEFORE the first fit (the commit "C16 slice 2,
+step 1"), so it can be read against the result.
+
+### 6.2 Results
+
+| pair | b_ij, b_ji (K) | in-sample rms | held-out AAD | band | verdict | where it lives |
+|---|---|---|---|---|---|---|
+| 1-propanol-water | -25.1, 979.8 | 0.52 K | 0.21 K (0.057 %) | 0.26 % | validated | catalogue |
+| acetonitrile-water | 218.3, 616.3 | 0.52 K | 0.50 K (0.137 %) | 0.72 % | validated | catalogue |
+| acetone-ethanol | 149.8, 68.1 | 0.072 K | 0.093 K (0.028 %) | 0.14 % | validated | catalogue |
+| ethanol-cyclohexane | 354.7, 565.4 | 1.30 K | 0.32 K (0.094 %) | 0.41 % | validated | **its case only** |
+
+Overlay on each held-out set: NRTL beats UNIFAC everywhere it can be drawn
+(0.21 vs 0.36 K; 0.093 vs 0.79 K; 0.33 vs 0.59 K); acetonitrile carries no
+UNIFAC groups in its record, so curate10 draws ideal mixing only.  Both
+starts land on the same pair in all four.  Two numbers to read, not hide:
+curate09's in-sample reduced chi2 is 8.9 (two parameters cannot follow its
+fit set within the set's own U), and curate12's in-sample rms (1.30 K) is
+four times its held-out AAD.  curate09 runs its fit at `tolerance 1e-6`: at
+1e-8 the LM reached the same minimum and then rejected every step until
+lambda diverged, because chi2 changes there fall below the inner bubble-point
+noise.  The LM has no step-size stop; that is a tool gap, named, not fixed.
+
+**Coverage.**  Public NRTL pairs: 6 -> **9**.
+
+### 6.3 `validated` is necessary, not sufficient
+
+A bubble-temperature scan solves for ONE liquid by construction, so a held-out
+AAD on bubble temperatures cannot see a predicted second liquid.  Checked on
+each pair's own NRTL equation (Gibbs energy of mixing against its lower
+convex hull), the highest temperature at which each pair splits the liquid:
+
+| pair | predicted split up to | validity span | verdict on stability |
+|---|---|---|---|
+| 1-propanol-water | 355.5 K | 360.5-368.6 K | stable in span; splits BELOW it |
+| acetonitrile-water | 323.6 K | 350.0-367.6 K | stable in span; splits BELOW it |
+| acetone-ethanol | none above 200 K | 329.7-348.9 K | stable |
+| ethanol-cyclohexane | 358.8 K | 337.7-353.5 K | **splits across its whole span** |
+| isopropanol-water (slice 1) | 330.4 K | 353.1-371.4 K | stable in span; splits BELOW it |
+
+The engine agrees: a VLLE flash at 340 K and 3 bar with the ethanol +
+cyclohexane pair splits a 43/57 feed into two liquids (beta 0.48).  Both of
+its studies are filed by the archive as liquid + gas, one liquid.  A pair
+that contradicts its own evidence's phase count inside the span it claims
+would put a second liquid into every flash that reads it, and no
+bubble-temperature verdict could tell -- so it was NOT promoted, though
+`validated`.  It stays in curate12 as an authored record with the reason in
+its header.  The remedy (a third parameter constrained by the phase count, or
+LLE data) is a curation decision, Vitor's.
+
+The three that split BELOW their span are honest extrapolations -- each record
+says where, and why (the two-parameter b/T form grows tau as T falls) -- but
+1-propanol, isopropanol and acetonitrile are all miscible with water at room
+temperature, so a student who runs a cooler or decanter with these pairs below
+their validity span WILL get a false second liquid.  The validity block is the
+guard; whether the engine should ANNOUNCE a pair used outside its validity
+span is open (it does for a vapour-pressure Trange, not for a pair's).
+
+### 6.4 The gate's new arm, and its sabotages
+
+`check_regressed_pairs` arm (f): a catalogue pair must predict ONE liquid at
+six temperatures spanning its validity block, recomputed from the record's
+own parameters (independent of the engine).  By hand, 2026-10-05:
+
+- S1, curate12's record copied into `data/standards/parameters/NRTL/`: FAILED
+  on arm (f) ALONE -- arms (a)-(e) all pass it (it reproduces, it is
+  validated, it carries every field), which is the point.
+- S2, the hull test disarmed (threshold 1e-9 -> 1e9) with S1 in place: OK --
+  so arm (f) is the only thing in the tree that refuses that record.
+- S3, the validity parser blinded: FAILED on every catalogue record ("arm (f)
+  cannot run, so it must not pass"), not a silent pass.
+
+### 6.5 Found on the way, not fixed
+
+- **A VLLE flash that finds two LIQUIDS publishes the second as a GAS.**
+  `IsothermalFlash.cpp:1857` decides the two-phase fallback by
+  `sol.regime.find("VL")`, and the LL regime's own string (line 1000) reads
+  "two-phase liquid (LL, VLLE attempt ...)" -- "VLLE" contains "VL".  So the
+  beta liquid goes out on the vapour port with `vf = 1` / `phase gas;`, the
+  second liquid port carries zero, and the energy report books a 498 kW
+  residual on a 100 kmol/h decanter (scratch case, the curate12 pair).  No
+  corpus case reaches it today (`vlle03` solves three phases).  A one-word
+  fix in `src/`, outside this slice's licence; DEV.md section 5.
+- **No reorientation in `extract-vle`** (6.1): the next tool step before the
+  aromatics can be fitted.
+
+### 6.6 Still NOT done
+
+Reading the eighteen series back against their articles (flip to
+`checked`); settling acetone + methanol (the archive holds seven blocks of
+it -- a third study is the curator's tie-break, not the fitter's); a `P_bubble`
+residual; UNIQUAC/Wilson; `--x-of` in `extract-vle`; an LM step-size stop; a
+stability-constrained fit for alcohol + hydrocarbon pairs.

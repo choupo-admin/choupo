@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate10_nrtl_acetonitrile_water -- the thermophysical system.
+
+  gamma-phi at LOW PRESSURE, stated as assumptions because they are the
+  frame every number in this case is conditional on:
+    * vapour: IDEAL GAS (fugacity coefficient 1, no Poynting term) -- the
+      data run from 349 to 372 K at or below 101.3 kPa;
+    * pure components: the catalogue's own Antoine records, UNCHANGED --
+      their error at the held-out set's pure endpoints is measured in the
+      acceptance band's origin (system/propsDict), not fitted away;
+    * liquid: NRTL, tau_ij = a_ij + b_ij/T, G_ij = exp(-alpha tau_ij),
+      alpha 0.30 FIXED (not identified by bubble temperatures alone).
+
+  The inline pair below is the FIT'S STARTING POINT (all zero = ideal
+  mixing), not a result: the regressed pair is the catalogue record
+  data/standards/parameters/NRTL/acetonitrile-water.dat, mirrored into this
+  case's constant/parameters/NRTL/ by the seal, and the scan operations read
+  it through their own `thermo {}` override.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( acetonitrile  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;
+            binaryParameters   // the FIT'S starting point -- see the header
+            {
+                acetonitrile-water
+                {
+                    i acetonitrile;
+                    j water;
+                    a_ij 0;
+                    b_ij 0;
+                    a_ji 0;
+                    b_ji 0;
+                    alpha 0.30;
+                }
+            }
+        }
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

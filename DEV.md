@@ -1937,6 +1937,9 @@ per-site verdicts are the table in C33; the supercritical discard is in §5's
 `check_inlet_resolution` arms (i)-(j), five hand sabotages, no golden row
 moved.  Two defaults taken and FLAGGED there (the mixer's two-phase authored
 inlet; the column left whole with D1).
+Wave 2, C16 slice 2: DONE 2026-10-05 on `claude/c34-c16-slice2`, not
+merged -- four more regressed NRTL pairs, three promoted, one validated and
+held back for predicting a second liquid; see C16.
 
 **C33. THE FOUR UNITS THAT STILL READ AN UNPINNED INLET'S DEFAULT `vf`
 (Vítor, 2026-10-04: "Podes avançar, mas com calma, porque o preço dos tokens
@@ -2499,6 +2502,45 @@ superheated chest is REFUSED there, falsely, not mispriced).
      articles (`checked`); settle acetone-methanol; a `P_bubble` residual so
      isothermal P-x data count; UNIQUAC/Wilson where apt; then widen pair by
      pair by the same rule.
+
+     **SLICE 2 DONE 2026-10-05 (C34 wave 2; branch `claude/c34-c16-slice2`,
+     not merged; record section 6).**  The WIDENING half: four systems chosen
+     by teaching value before fitting -- 1-propanol + water (completes the
+     C1-C3 water + alcohol series), acetonitrile + water (pressure-swing
+     distillation), acetone + ethanol (positive deviation, no azeotrope),
+     ethanol + cyclohexane (the entrainer binary of ethanol dehydration) --
+     declared (datasets, partition, band) in a commit of their own BEFORE
+     the first fit.  Partition: fit on the study with the most interior
+     points, hold out the next largest sharing no author.  Cases
+     `curate09`..`curate12`.  All four VALIDATED on held-out data (0.057 %,
+     0.137 %, 0.028 %, 0.094 % against bands of 0.26, 0.72, 0.14, 0.41 %);
+     THREE promoted (public NRTL pairs 6 -> 9).  **Ethanol + cyclohexane was
+     validated and NOT promoted:** its pair predicts a liquid-liquid split up
+     to 358.8 K, across its whole validity span (337.7-353.5 K), where both
+     studies report one liquid -- the engine's VLLE flash splits a 43/57 feed
+     at 340 K.  A bubble-T scan solves for one liquid by construction, so the
+     verdict cannot see a second: `validated` is necessary, not sufficient.
+     New `check_regressed_pairs` arm (f): a catalogue pair must predict ONE
+     liquid across its validity span (record's NRTL recomputed; 3 sabotages,
+     S1 caught by arm (f) ALONE).  Also measured: 1-propanol + water,
+     acetonitrile + water and slice 1's isopropanol + water split BELOW their
+     validity spans (355.5, 323.6, 330.4 K) although all three are miscible
+     at room temperature -- each new record says so; whether the engine
+     should announce a PAIR used outside its validity span (it does for a
+     vapour-pressure Trange) is for Vitor.  Passed over, measured: methanol +
+     benzene (its two studies report x of different components and
+     `extract-vle` cannot reorient -- the aromatic waits on a `--x-of`
+     option), ethanol + p-xylene (ethanol's Antoine ends at 369 K), acetone +
+     water / acetone + chloroform / THF + water (no low-P bubble-T block).
+     curate09 fits at `tolerance 1e-6` (at 1e-8 the LM sat on the same
+     minimum rejecting steps until lambda diverged -- no step-size stop, a
+     tool gap).  Found, not fixed: the VLLE port defect (section 5,
+     2026-10-05).  No corpus golden moved (no unsealed NRTL case holds the
+     three new pairs' components).  **REMAINING:** read the eighteen series
+     back (`checked`); acetone-methanol; `P_bubble`; UNIQUAC/Wilson;
+     `--x-of`; a stability-constrained fit (alpha or a_ij freed under a
+     phase-count constraint) for alcohol + hydrocarbon pairs; then the next
+     pairs by the same rule.
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds
@@ -2958,6 +3000,21 @@ defect — look for what else went with it.
    decided.  The other units' readers were converted (DEV.md C33 table).
 
 ## 5. Known debts (severity-ish)
+
+**2026-10-05 -- A VLLE FLASH THAT FINDS TWO LIQUIDS PUBLISHES THE SECOND AS A
+GAS.  FOUND (C16 slice 2), NOT FIXED.**  `IsothermalFlash.cpp:1857` picks the
+two-phase fallback of a `phaseSet VLLE` flash by `sol.regime.find("VL")`, and
+the LL regime's own string (line 1000) is "two-phase liquid (LL, VLLE attempt
+found V beta ~ 0)" -- "VLLE" contains "VL".  So the beta LIQUID leaves on the
+vapour port with `vf = 1` (`phase gas;` in `converged/`), the second liquid
+port carries zero, and the energy report books the latent heat that never
+happened: 498.03 kW on a 100 kmol/h ethanol + cyclohexane decanter at 340 K
+and 3 bar (scratch case, the curate12 pair; record
+`docs/design/binary-pairs-from-open-measurements.md` 6.5).  No corpus case
+reaches it today -- `vlle03` is the only `phaseSet VLLE` case and it solves
+three phases.  The remedy is a test on the regime's KIND rather than a
+substring of its prose (the 2026-09-06 lesson: a string meant for a human is
+not a channel the engine should parse); a witness should pin it.
 
 **2026-10-01 -- A FEED DECLARED WITH T, P AND `vaporFraction` IS OVER-SPECIFIED,
 AND THE ENGINE NEITHER REFUSES IT NOR SHOWS WHAT IT USES.  CLOSED 2026-10-03

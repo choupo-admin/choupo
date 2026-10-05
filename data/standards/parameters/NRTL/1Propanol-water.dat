@@ -1,0 +1,134 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- 1Propanol(i) + water(j)
+
+  REGRESSED BY CHOUPO to measured bubble temperatures (DEV.md C16, record
+  docs/design/binary-pairs-from-open-measurements.md).  The two articles
+  named under `evidence` are the SOURCE of the measurements; the NIST/TRC
+  ThermoML Archive (ThermoML.v2020-09-30.tgz) was the finding aid that
+  located them and is not reproduced.  The PARAMETERS are Choupo's own
+  work, regressed and redistributed with the catalogue.
+
+  EQUATION AND CONVENTIONS (the ones src/thermo/activityCoefficient/NRTL.cpp
+  computes -- a record read under another convention is a different pair):
+      tau_ij = a_ij + b_ij / T      [b in K]      G_ij = exp(-alpha tau_ij)
+      ln gamma_i = sum_j tau_ji G_ji x_j / S_i
+                   + sum_j (x_j G_ij / S_j)(tau_ij - sum_k tau_kj G_kj x_k / S_j),
+      S_j = sum_k G_kj x_k.  Direction i->j as Renon & Prausnitz, AIChE J. 14
+      (1968) 135: tau_12 = (g_12 - g_22)/RT.  a_ij = a_ji = 0 and alpha = 0.30
+      were FIXED, not fitted: bubble temperatures alone do not identify them.
+
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own Antoine
+  records for both pure components.  A different vapour or pure-component
+  model changes what these numbers mean.
+
+  VALIDITY: the span of the fit evidence (`validity` below).  The held-out
+  test is `validation`.  reviewStatus interim: the measurements were
+  transcribed from the archive and have NOT been read back against the
+  articles; the fit has not been reviewed by a curator.  Promotion to
+  `reviewed` is Vitor's.
+
+  PHASE STABILITY (checked 2026-10-05 on the record's own NRTL equation,
+  and held by check_regressed_pairs arm (f)): across its validity span the
+  pair predicts ONE liquid, as the evidence requires.  BELOW about 355.5 K
+  it predicts a liquid-liquid split that 1-propanol + water, miscible in
+  all proportions, does not have -- the two-parameter b/T form grows tau
+  as T falls.  A flash, decanter or cooler run with this pair below its
+  validity span is an extrapolation that WILL split the liquid: the
+  validity block is the guard, read it.
+
+  REPRODUCE: run tutorials/props/curation/curate09_nrtl_propanol_water -- its fit writes
+  1Propanol-water.proposal.dat; its parameters, evidence, validity and validation
+  must equal this record's (bin/curate/check_regressed_pairs.py holds the
+  two to each other, so the record cannot drift from its evidence).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i 1Propanol; j water; }
+
+components  ( 1Propanol  water );
+model       NRTL;
+
+parameters
+{
+    i           1Propanol;
+    j           water;
+    a_ij        0.00000000;
+    b_ij        -25.09964672;
+    a_ji        0.00000000;
+    b_ji        979.77644383;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate09_nrtl_propanol_water";
+    reviewStatus  interim;
+    reviewReason  "regressed by Choupo from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression, redistributed with the catalogue; the measured points belong to the cited articles and are not reproduced in this record";
+    fitDate       "2026-10-05";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/1Propanol-water-bubble-je800436u.dat";
+            doi       "10.1021/je800436u";
+            sha256    "366c13f383188bd7e464f9e1f753bfec46ecf4390acc84a063609ea2ac53d061";
+            provenance measured;
+            archiveFile "je800436u.xml";
+            system    "1Propanol + water";
+            pressure  "100000.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/1Propanol-water-bubble-j.jct.2017.06.014.dat";
+            doi       "10.1016/j.jct.2017.06.014";
+            sha256    "3a875b77d80b507f0dc8a1e74cc61c4f39d7d6720c7dae79a58f0d0277719150";
+            provenance measured;
+            archiveFile "j.jct.2017.06.014.xml";
+            system    "1Propanol + water";
+            pressure  "101300.000000 Pa";
+        }
+    );
+    fingerprint "2541ea2367c5c613";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          213.20132638;
+    rms_K         0.52347230;
+    nDataPoints   26;
+    identifiable  true;
+    maxAbsCorr    0.91986419;
+
+    validity
+    {
+        temperature { min 360.49 K; max 368.64 K; }
+        pressure    { min 100000 Pa; max 100000 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validated;
+
+    heldOut
+    {
+        points      19;
+        aad_pct     0.056538;
+        aad_K       0.205310;
+        domain_x1   ( 0.058000 0.976000 );
+    }
+
+    acceptance
+    {
+        maxAAD      0.260000;   // per cent
+        origin      "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 0.22 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.703 K, 1Propanol +0.051 K; measured with no pair involved), as a percentage of the held-out mean T (362.46 K) = 0.2546 %, rounded UP to two significant figures";
+    }
+}

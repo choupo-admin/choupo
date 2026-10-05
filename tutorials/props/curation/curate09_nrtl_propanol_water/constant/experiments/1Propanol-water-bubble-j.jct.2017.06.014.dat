@@ -1,0 +1,99 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       1Propanol + water   (x is 1Propanol's liquid mole fraction)
+  pressure     101.3 kPa   (CONSTANT across the series)
+  points       19   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( 1Propanol water );
+pressure     101.3 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Cumplido, M.; Lladosa, E.; Loras, S.; Pla-Franco, J. (2017). Isobaric vapor-liquid equilibria for extractive distillation of 1-propanol + water mixture using thiocyanate-based ionic liquids. J. Chem. Thermodyn.. doi:10.1016/j.jct.2017.06.014";
+    archiveFile  "j.jct.2017.06.014.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        2;
+    doi          "10.1016/j.jct.2017.06.014";
+    sha256       "3a875b77d80b507f0dc8a1e74cc61c4f39d7d6720c7dae79a58f0d0277719150";
+    identity
+    {
+        1Propanol      { cas "71-23-8"; inchiKey "BDERNNFJNOPAEC-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 0.22 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 373.15 K; }
+        { x 1; T_bubble 370.35 K; }
+    );
+}
+
+columns
+(
+    { name x[1Propanol];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_1Propanol;  unit -;  }
+);
+
+data
+(
+      0.0580  362.34  0.3680
+      0.1020  361.61  0.3890
+      0.1470  361.33  0.3960
+      0.1900  361.16  0.4020
+      0.2460  361.01  0.4060
+      0.2880  360.91  0.4110
+      0.3300  360.86  0.4160
+      0.3790  360.76  0.4230
+      0.4330  360.72  0.4340
+      0.4820  360.76  0.4490
+      0.5290  360.86  0.4640
+      0.6020  361.14  0.4920
+      0.6760  361.87  0.5300
+      0.7050  362.05  0.5520
+      0.7680  362.81  0.5930
+      0.8380  364.28  0.6770
+      0.8920  365.75  0.7550
+      0.9390  367.47  0.8480
+      0.9760  369.07  0.9350
+);

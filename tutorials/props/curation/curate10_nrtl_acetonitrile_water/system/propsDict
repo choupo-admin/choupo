@@ -1,0 +1,249 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate10_nrtl_acetonitrile_water -- AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, END TO END.
+
+  WHY THIS SYSTEM.  a solvent every analytical laboratory recovers, and the
+  textbook system for PRESSURE-SWING distillation: a minimum-boiling
+  azeotrope near 349.6 K at 101.3 kPa (both studies).  The catalogue's
+  acetonitrile record carries no UNIFAC group decomposition, so the overlay
+  draws the pair beside ideal mixing only -- the predictive comparison is a
+  gap of the COMPONENT record, said here rather than filled by a
+  decomposition this case would have to invent.
+
+  THE CHAIN, EACH STEP A COMMAND (DEV.md C16; record
+  docs/design/binary-pairs-from-open-measurements.md):
+    1. bin/choupo-thermoml sync        the NIST/TRC ThermoML Archive
+                                       (ThermoML.v2020-09-30.tgz, doi
+                                       10.18434/mds2-2422, sha256-verified)
+    2. bin/choupo-thermoml identity    CAS -> InChIKey for the catalogue,
+                                       two resolvers that must agree
+    3. bin/choupo-thermoml vle-index   every binary VLE block, searchable
+    4. bin/choupo-thermoml vle-search acetonitrile water --geometry bubbleT
+    5. bin/choupo-thermoml extract-vle <file> --block N --interior-only
+                                       -> the two files under constant/experiments/
+    6. choupoProps (this case)         fitParameters -> a proposal record
+    7. promotion (a human act)         -> data/standards/parameters/NRTL/acetonitrile-water.dat
+                                       ONLY if the held-out verdict is `validated`
+    8. bin/choupo-import               the seal mirrors that record here
+
+  THE EVIDENCE.  FIT: doi 10.1021/je400531a (19 interior points, 101.3 kPa).
+  HELD OUT: doi 10.1016/j.jct.2019.07.006 (12 interior points, 101.3 kPa).
+  Chosen BEFORE any fit by the slice-2 partition rule: the FIT set is the
+  low-pressure bubble-temperature study with the most interior points; the
+  HELD-OUT set is the next largest that shares NO author with it (the
+  archive carries no affiliations, so a shared author is the dependence the
+  rule can check).  Each file names its article, its archive file and block,
+  the sha256 of the archive file, the two compounds' CAS and InChIKey, and
+  the per-point expanded uncertainty; each says `reviewStatus
+  transcribedNotCheckedAgainstArticle` because nobody has read the numbers
+  back against the paper yet, and the run announces it.  Pure-component
+  endpoints are set aside (they measure the vapour-pressure record, not the
+  pair) and kept in each file under `selection`.
+
+  THE FIT.  NRTL with a_ij = a_ji = 0 and alpha = 0.30 fixed: TWO
+  parameters (b_ij, b_ji), because bubble temperatures over the ranges
+  below do not identify more (fit_nrtl_ab in the methanol + water case asks
+  that question directly).  Each point is weighted by 1/U, U its OWN stated
+  expanded uncertainty (`weighting uncertainty;`), so a point measured to
+  0.1 K is not outvoted by one measured to 1 K.  The held-out AAD is plain
+  kelvin, unweighted.
+
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+    * fit_nrtl: b_ij = 218.3 K, b_ji = 616.3 K, in-sample rms 0.52 K;
+      fit_nrtl_start2 lands on the same pair.
+    * HELD OUT (101.3 kPa, no author in common): AAD 0.50 K (0.137 %)
+      against a band of 0.72 % -> `validated`; the pair is the catalogue
+      record NRTL/acetonitrile-water.dat.  The band is wide because the
+      held-out study states U95 = 1.69-1.85 K on every point: a held-out set
+      can only validate to the precision it was measured to.
+    * Overlay on the held-out set: NRTL 0.50 K, ideal 10.7 K (no UNIFAC: see
+      WHY THIS SYSTEM).
+    * PHASE STABILITY, checked beside the verdict because the verdict cannot
+      see it: one liquid across the validity span (350.0-367.6 K), but BELOW
+      about 323.6 K the pair splits a liquid that is miscible at room
+      temperature.  The record says so, and the validity block is the guard.
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
+  frame (ideal-gas vapour, the catalogue's Antoine records); nothing here
+  tests it at high pressure, against LLE, or with another vapour model.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/acetonitrile-water-bubble-je400531a.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/acetonitrile-water-bubble-j.jct.2019.07.006.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.72 percent;
+            origin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.85 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.673 K, acetonitrile +0.082 K; measured with no pair involved), as a percentage of the held-out mean T (353.83 K) = 0.7131 %, rounded UP to two significant figures";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( acetonitrile water );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   acetonitrile-water.proposal.dat;
+        }
+    }
+    //  THE SAME FIT FROM ANOTHER START.  A least-squares surface can hold
+    //  more than one minimum; if this lands where fit_nrtl landed, the pair
+    //  is the answer the data hold, not the answer a start point chose.
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/acetonitrile-water-bubble-je400531a.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/acetonitrile-water-bubble-j.jct.2019.07.006.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.72 percent;
+            origin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.85 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.673 K, acetonitrile +0.082 K; measured with no pair involved), as a percentage of the held-out mean T (353.83 K) = 0.7131 %, rounded UP to two significant figures";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( acetonitrile water );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+    {
+        name        txy_ideal;
+        type        propertyScan1D;
+        vary        { variable x[acetonitrile];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { acetonitrile 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_acetonitrile );
+        output      { file txy_ideal.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[acetonitrile];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { acetonitrile 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the catalogue record, sealed copy */ } } }
+        }
+        properties  ( T_bubble  y_eq_acetonitrile );
+        output      { file txy_nrtl.csv; }
+    }
+    {
+        name        txy_ideal_fitP;
+        type        propertyScan1D;
+        vary        { variable x[acetonitrile];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { acetonitrile 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_acetonitrile );
+        output      { file txy_ideal_fitP.csv; }
+    }
+    {
+        name        txy_nrtl_fitP;
+        type        propertyScan1D;
+        vary        { variable x[acetonitrile];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { acetonitrile 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* no inline pair: the catalogue record, sealed copy */ } } }
+        }
+        properties  ( T_bubble  y_eq_acetonitrile );
+        output      { file txy_nrtl_fitP.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      heldout_acetonitrile_water;
+        component acetonitrile;
+        kind      txy;
+        models    ( txy_ideal  txy_nrtl );
+        dataset   "constant/experiments/acetonitrile-water-bubble-j.jct.2019.07.006.dat";
+        source    "held out: doi 10.1016/j.jct.2019.07.006";
+    }
+    {
+        name      fitset_acetonitrile_water;
+        component acetonitrile;
+        kind      txy;
+        models    ( txy_ideal_fitP  txy_nrtl_fitP );
+        dataset   "constant/experiments/acetonitrile-water-bubble-je400531a.dat";
+        source    "IN-SAMPLE (the fit set): doi 10.1021/je400531a";
+    }
+);

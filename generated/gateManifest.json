@@ -1103,8 +1103,8 @@
     },
     "check_regressed_pairs": {
       "exit": 0,
-      "claim": "check_regressed_pairs: OK -- 5 regressed NRTL record(s) reproduced by re-running the case each names (ethanol-ethylAcetate (catalogue, validated); isopropanol-water (catalogue, validated); methanol-methylAcetate (catalogue, validated); methanol-water (catalogue, validated); acetone-methanol (case-local, notValidated)): parameters, evidence identity, validity span and held-out verdict equal what the run regresses now; only validated fits are in the catalogue; `interim` is voiced at run time; every dataset carries DOI, archive sha256, CAS+InChIKey and per-point uncertainty.  NOT checked: whether the transcribed measurements agree with the articles (a curator's read-back) or whether the band was well chosen.",
-      "seconds": 1.1
+      "claim": "check_regressed_pairs: OK -- 9 regressed NRTL record(s) reproduced by re-running the case each names (1Propanol-water (catalogue, validated); acetone-ethanol (catalogue, validated); acetonitrile-water (catalogue, validated); ethanol-ethylAcetate (catalogue, validated); isopropanol-water (catalogue, validated); methanol-methylAcetate (catalogue, validated); methanol-water (catalogue, validated); acetone-methanol (case-local, notValidated); cyclohexane-ethanol (case-local, validated)): parameters, evidence identity, validity span and held-out verdict equal what the run regresses now; only validated fits are in the catalogue; `interim` is voiced at run time; every dataset carries DOI, archive sha256, CAS+InChIKey and per-point uncertainty; 7 catalogue pair(s) predict ONE liquid across their validity span (arm f, the record's NRTL recomputed).  NOT checked: whether the transcribed measurements agree with the articles (a curator's read-back), whether the band was well chosen, or phase stability below a validity span.",
+      "seconds": 1.5
     },
     "check_drying_curve": {
       "exit": 0,

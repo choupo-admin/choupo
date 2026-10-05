@@ -1083,7 +1083,7 @@
         "key": "parameters.NRTL",
         "name": "NRTL binary-interaction pairs (public catalogue)",
         "source": "data/standards/parameters/NRTL/",
-        "count": 6
+        "count": 9
       },
       {
         "key": "parameters.UNIQUAC",

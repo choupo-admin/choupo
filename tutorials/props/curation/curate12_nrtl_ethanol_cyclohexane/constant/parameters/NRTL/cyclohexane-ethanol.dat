@@ -1,0 +1,141 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- ethanol(i) + cyclohexane(j)
+
+  REGRESSED BY CHOUPO to measured bubble temperatures (DEV.md C16, record
+  docs/design/binary-pairs-from-open-measurements.md).  The two articles
+  named under `evidence` are the SOURCE of the measurements; the NIST/TRC
+  ThermoML Archive (ThermoML.v2020-09-30.tgz) was the finding aid that
+  located them and is not reproduced.  The PARAMETERS are Choupo's own
+  work, regressed and redistributed with this case ONLY (validated, but NOT promoted -- see PHASE STABILITY).
+
+  EQUATION AND CONVENTIONS (the ones src/thermo/activityCoefficient/NRTL.cpp
+  computes -- a record read under another convention is a different pair):
+      tau_ij = a_ij + b_ij / T      [b in K]      G_ij = exp(-alpha tau_ij)
+      ln gamma_i = sum_j tau_ji G_ji x_j / S_i
+                   + sum_j (x_j G_ij / S_j)(tau_ij - sum_k tau_kj G_kj x_k / S_j),
+      S_j = sum_k G_kj x_k.  Direction i->j as Renon & Prausnitz, AIChE J. 14
+      (1968) 135: tau_12 = (g_12 - g_22)/RT.  a_ij = a_ji = 0 and alpha = 0.30
+      were FIXED, not fitted: bubble temperatures alone do not identify them.
+
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own Antoine
+  records for both pure components.  A different vapour or pure-component
+  model changes what these numbers mean.
+
+  VALIDITY: the span of the fit evidence (`validity` below).  The held-out
+  test is `validation`.  reviewStatus interim: the measurements were
+  transcribed from the archive and have NOT been read back against the
+  articles; the fit has not been reviewed by a curator.  Promotion to
+  `reviewed` is Vitor's.
+
+  PHASE STABILITY -- WHY THIS VALIDATED PAIR WAS NOT PROMOTED
+  (2026-10-05).  The held-out verdict is `validated`: bubble temperatures
+  are reproduced within the band declared before the fit.  But the pair
+  predicts a liquid-liquid split up to about 358.8 K, which covers the
+  whole of its own validity span (337.65-353.45 K): at 337.65 K its Gibbs
+  energy of mixing is non-convex between x(ethanol) = 0.25 and 0.63, and
+  the engine's own VLLE flash at 340 K and 3 bar splits a 43/57 feed into
+  two liquids (beta 0.48).  The evidence it was fitted to says ONE liquid:
+  the archive files both studies as liquid + gas equilibrium, not three
+  phases.  A pair that contradicts its own evidence's phase count inside
+  the span it claims would put a second liquid into every flash that reads
+  it -- an error no bubble-temperature verdict can see.  So it stays HERE,
+  as Choupo's regression on record; the remedy is a third parameter
+  (alpha, or a_ij/a_ji) constrained by the phase count, or LLE data -- a
+  curation decision, Vitor's.
+
+  REPRODUCE: run tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane -- its fit writes
+  cyclohexane-ethanol.proposal.dat; its parameters, evidence, validity and validation
+  must equal this record's (bin/curate/check_regressed_pairs.py holds the
+  two to each other, so the record cannot drift from its evidence).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i ethanol; j cyclohexane; }
+
+components  ( ethanol  cyclohexane );
+model       NRTL;
+
+parameters
+{
+    i           ethanol;
+    j           cyclohexane;
+    a_ij        0.00000000;
+    b_ij        354.74200053;
+    a_ji        0.00000000;
+    b_ji        565.38861392;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane";
+    reviewStatus  interim;
+    reviewReason  "regressed by Choupo from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression, kept in its case; the measured points belong to the cited articles and are not reproduced in this record";
+    fitDate       "2026-10-05";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/ethanol-cyclohexane-bubble-j.fluid.2018.07.013.dat";
+            doi       "10.1016/j.fluid.2018.07.013";
+            sha256    "bf89dc3bab99040fa861ace6d5ac84da32efae3e49783c85363a7686e5a8eac5";
+            provenance measured;
+            archiveFile "j.fluid.2018.07.013.xml";
+            system    "ethanol + cyclohexane";
+            pressure  "101300.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/ethanol-cyclohexane-bubble-j.fluid.2006.01.023.dat";
+            doi       "10.1016/j.fluid.2006.01.023";
+            sha256    "3c1f4f50a20823bb03b51a17ced7ea20491aa0687bbdf7b0b6715716002dbe16";
+            provenance measured;
+            archiveFile "j.fluid.2006.01.023.xml";
+            system    "ethanol + cyclohexane";
+            pressure  "101325.000000 Pa";
+        }
+    );
+    fingerprint "008a5aaa3c2340f5";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          125.86052723;
+    rms_K         1.30175361;
+    nDataPoints   25;
+    identifiable  true;
+    maxAbsCorr    0.94098374;
+
+    validity
+    {
+        temperature { min 337.65 K; max 353.45 K; }
+        pressure    { min 101300 Pa; max 101300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validated;
+
+    heldOut
+    {
+        points      14;
+        aad_pct     0.093962;
+        aad_K       0.323444;
+        domain_x1   ( 0.020000 0.990000 );
+    }
+
+    acceptance
+    {
+        maxAAD      0.410000;   // per cent
+        origin      "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.4 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (342.92 K) = 0.4083 %, rounded UP to two significant figures";
+    }
+}
