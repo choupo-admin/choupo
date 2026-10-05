@@ -1052,8 +1052,10 @@ const KPI_META: { [k: string]: { label: string; order: number } } = {
 const PHASE_SET_NAMES = ["VL", "LL", "VLLE"];
 
 // Per-phaseSet label overrides for the split KPIs (key = PHASE_SET_NAMES
-// entry).  VLLE keeps phase-neutral β wording: with three phases present the
-// β slot is the overall split, not a single nameable phase.
+// entry).  VLLE names all three: since 2026-10-05 the engine publishes each
+// VLLE phase flow as its PORT's flow (F_alpha, F_beta, F_vapor) and V_over_F
+// as the VAPOUR's share -- before that, a three-phase answer published the
+// alpha fraction under V_over_F and this table called it "β/F".
 const KPI_PHASE_LABELS: { [ps: string]: { [k: string]: string } } = {
   VL: {
     V_over_F: "V/F  (vapour fraction)",
@@ -1066,9 +1068,10 @@ const KPI_PHASE_LABELS: { [ps: string]: { [k: string]: string } } = {
     F_alpha:  "α-liquid flow [kmol/s]",
   },
   VLLE: {
-    V_over_F: "β/F  (β-phase fraction)",
-    F_beta:   "β-phase flow [kmol/s]",
-    F_alpha:  "α-phase flow [kmol/s]",
+    V_over_F: "V/F  (vapour fraction)",
+    F_vapor:  "vapour flow [kmol/s]",
+    F_beta:   "β-liquid flow [kmol/s]",
+    F_alpha:  "α-liquid flow [kmol/s]",
   },
 };
 

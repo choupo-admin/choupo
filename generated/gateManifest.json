@@ -1140,11 +1140,11 @@
       "exit": 0,
       "claim": "check_evaporative_dryer: OK -- the free-moisture dryer announces the limit its own answer satisfies (evapDryer01 complete, evapDryer02 saturation-bound above its floor with the payable heat named, the lithium plant's FINISHING.dryer heat-bound AT its floor below the exhaust cap, warned at the site and in the caveat block), evaporates at the floor exactly what the gas pays for (doubling the gas doubles the water removed, to 2e-9), and announces the zero heat capacity it defaults for NaCl.  NOT checked: its hand energy surface against the energy report (the report refuses these cases -- their salts carry no formation datum), whether the feed-temperature floor is right, or any measured dryer.",
       "seconds": 0.3
-},
+    },
     "check_vlle_fallback": {
       "exit": 0,
-      "claim": "check_vlle_fallback: OK -- a phaseSet VLLE flash whose search finds no vapour publishes TWO LIQUIDS (witness vlle04: vapour port F = 0, both liquid ports nonzero at vf = 0, LL vocabulary, plant first law within 0.05 kW), and the split's kind is read off the typed `liquidLiquid` field, never parsed from the regime string, in IsothermalFlash.cpp and the three propertyOps readers.  NOT checked: whether the split is right (a structural witness), the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 %% vapour, inside the band), the three-phase duty, and the ternary scan's VL / one-phase classification (still the string).",
-      "seconds": 0.1
+      "claim": "check_vlle_fallback: OK -- a phaseSet VLLE flash whose search finds no vapour publishes TWO LIQUIDS (witness vlle04: vapour port F = 0, both liquid ports nonzero at vf = 0, LL vocabulary, plant first law within 0.05 kW), and the split's kind is read off the typed `liquidLiquid` field, never parsed from the regime string, in IsothermalFlash.cpp and the three propertyOps readers; and a THREE-PHASE answer (witness vlle03) publishes each phase flow equal to its port, the ports summing to the feed, V_over_F as the vapour's share, K ratios named by pair, and a duty the energy report closes to within 0.0001 kW (datum fixture).  NOT checked: whether the split is right (a structural witness), the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 % vapour, inside the band), whether the report's VL-only resolution of an unpinned VLLE feed is its equilibrium, and the ternary scan's VL / one-phase classification (still the string).",
+      "seconds": 0.2
     }
   }
 }
