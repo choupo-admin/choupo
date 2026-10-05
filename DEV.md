@@ -1284,7 +1284,9 @@ accepts today, and that is a policy call.
      (CORRECTED 2026-10-05: "applied to this flowsheet's own throughput" was
      not measured -- 80 m3 at ammonia02's own converter inlet is 11 360
      Nm3/(m3 h), not the ~20 000 its comment said; the comment now says so
-     and the number is left for Vitor, see C8.)
+     and the number is left for Vitor, see C8.)  (RULED 2026-10-05, C35
+     item 9: the case now declares `spaceVelocity 20000; spaceVelocityBasis
+     normal; flowKey N_in_mol_s;` and its converter is 45.44 m3.)
 
 **C6-R2. BALANCES REVIEW (2026-09-24, read-only).  Vitor's instinct about
      the utility water was RIGHT, and it is right about the report he did not
@@ -2002,6 +2004,18 @@ Each lands as ONE revertable merge with its moved golden rows listed.
   7. Dryer solid floor: the gas wet-bulb temperature, not the feed T.
   8. Pipe with a vapour inlet: REFUSED by name until a compressible model exists.
   9. ammonia02 declares `spaceVelocity 20000; spaceVelocityBasis normal;`.
+     [DONE 2026-10-05, branch `claude/c35-cases`, with `flowKey N_in_mol_s`
+     (GHSV on the inlet gas, as ammoniaStaged03 declares): V_R 80 -> 45.4386
+     m3, verified.  17 rows moved, each because the converter volume moved:
+     the basis WORD; D 2.5701 -> 2.1284, H 15.421 -> 12.771, t_wall 0.2305
+     -> 0.1916, weight 229 625 -> 130 893 (the smaller vessel at L/D 6);
+     Q_gas 3.595 -> 3.931 m3/s (the flow KPI is now the inlet, 22 % more
+     moles than the outlet); purchased 104 405 -> 65 253, bareModule
+     21.26 M -> 11.06 M, totalModule 25.09 M -> 13.05 M EUR; and the
+     appraisal through FCI: FCI 67.39 M -> 55.27 M, TCI 77.50 M -> 63.56 M,
+     WC 10.11 M -> 8.29 M, COM_d 215.10 M -> 212.92 M (its FCI-proportional
+     terms), NPV 78.60 M -> 103.57 M, IRR 0.2561 -> 0.3416, paybackYears
+     4.958 -> 3.584.]
  10. ammonia03's beds keep refusing (their lesson); no change.
  11. lithiumBrinePlant's dryer: air raised until the product leaves dry.
  12. evapDryer02 renamed for what binds it (exhaust saturation).  [DONE
@@ -2914,7 +2928,9 @@ superheated chest is REFUSED there, falsely, not mispriced).
      not, because declaring the rule (`spaceVelocity 20000; spaceVelocityBasis
      normal;` -> 45.4 m3) moves ammonia02's converter size and cost golden
      -- WAITING ON VITOR (4b): keep the typed 80 m3, or let the case declare
-     the rule.
+     the rule.  **RULED 2026-10-05 (C35 item 9): the case declares the rule
+     (inlet gas, `flowKey N_in_mol_s`), V_R = 45.4386 m3, 17 golden rows
+     moved (listed in C35).**
 
      **D IS BUILT (2026-09-26, in an isolated worktree, under Vitor's
      authorisation of the same day).**  `tutorials/plant/ammoniaStaged04_kinetic`:

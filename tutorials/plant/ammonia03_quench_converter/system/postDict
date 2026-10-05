@@ -10,15 +10,17 @@
   postDict -- SIZING ONLY.  THIS CASE PUBLISHES NO COST, DELIBERATELY.
 
   ammonia02 sizes and costs its whole loop, converter included, from an
-  author-set catalyst volume of 80 m3.  This case will not repeat that, and
+  ASSUMED space velocity (20000 Nm3/(m3 h) on its inlet gas; until
+  2026-10-05 a typed 80 m3).  This case will not repeat that, and
   the reason is the lesson:
 
     A CATALYST BED'S SIZE IS ITS CATALYST VOLUME, AND A CATALYST VOLUME IS A
     KINETIC RESULT.  It follows from a rate law, a particle size, an
     approach-to-equilibrium and a space velocity.  This case has none of
     them -- every bed here runs to FULL EQUILIBRIUM, which is the same as
-    saying every bed is infinitely long.  Dividing 80 m3 across three beds
-    would need a rule; there is no rule, so there is no division.
+    saying every bed is infinitely long.  Dividing one converter volume
+    across three beds would need a rule; there is no rule, so there is no
+    division.
 
   So the three beds ARE declared below, with no design basis, and the engine
   REFUSES them by name on every run:
@@ -39,7 +41,8 @@
   vessel volume converts `unsized` into `falsely sized`; a CAPEX that quietly
   drops the reactor converts `uncosted` into `falsely costed`.  Neither a
   reader nor a gate can detect either.  For the loop appraisal, read
-  ammonia02 -- and read its 80 m3 knowing where it came from.  For the bed
+  ammonia02 -- and read its converter volume knowing it rests on an assumed
+  space velocity, not a rate law.  For the bed
   that CAN be sized, read `ammoniaStaged04_kinetic` (2026-09-26): its
   converter is a `pfr` whose volume a DesignSpec solves, and `type pfr` in
   its postDict sizes that volume as a shell and a catalyst charge -- the

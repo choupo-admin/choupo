@@ -77,7 +77,10 @@ is a fact; an absence in a comment is a sentence.
 
 **ammonia02's own converter cost stands, and it rests on an author-set 80 m³.**
 This case declines to divide that number by three, because no rule exists for
-doing so.
+doing so.  *(Superseded 2026-10-05, DEV.md C35 item 9: ammonia02 now
+declares `spaceVelocity 20000; spaceVelocityBasis normal;` on its inlet gas
+and its converter is 45.4 m³ -- still an assumed space velocity, not a rate
+law, so this case's refusal to divide it stands.)*
 
 ---
 
