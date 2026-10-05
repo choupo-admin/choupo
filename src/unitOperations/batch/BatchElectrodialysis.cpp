@@ -327,43 +327,50 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
         muPriced_ = true;
     }
 
-    // ---- exactly ONE cation and ONE anion ---------------------------------
-    //  See the header: splitting the counter-ion current between several
-    //  counter-ions is the membranes' SELECTIVITY, for which this tree
-    //  carries no data, and the limiting transport numbers of Eqs. 12/13
-    //  describe the film at the limit rather than that selectivity.
+    // ---- the counter-ions ------------------------------------------------
+    //  Until C35 (2026-10-05) a diluate with more than one cation or one
+    //  anion was REFUSED here, for want of a rule dividing the counter-ion
+    //  current between several counter-ions.  Vitor ruled one: the share
+    //  z_i D_i c_i over the counter-ions of each membrane (the paper's
+    //  Eqs. 12/13, at every current), with no new parameter -- and it has
+    //  ONE home, `edCell::counterIonRates`, which this unit asks at every
+    //  instant.  The REFERENCE cation (the one `demin_actual` and the hand
+    //  calculation are stated for) is the FIRST cation in component order,
+    //  the steady stack's own convention; on a single salt it is THE cation.
     const edCell::ChannelState ch0 =
         edCell::buildChannel(type(), thermo, fractions(state_.n), iWater_,
                              state_.T, *act_);
     {
-        std::vector<std::string> cats, ans;
+        bool haveCat = false, haveAn = false;
+        nCations_ = nAnions_ = 0;
+        ionComps_.clear();
         for (std::size_t k = 0; k < ch0.ion.size(); ++k)
         {
+            if (ch0.z[k] == 0.0) continue;
+            ionComps_.push_back(ch0.compIdx[k]);
             if (ch0.z[k] > 0.0)
-            { cats.push_back(ch0.ion[k].key); iCation_ = ch0.compIdx[k];
-              zCation_ = ch0.z[k]; cationName_ = ch0.ion[k].key; }
-            else if (ch0.z[k] < 0.0)
-            { ans.push_back(ch0.ion[k].key); iAnion_ = ch0.compIdx[k];
-              zAnion_ = std::abs(ch0.z[k]); anionName_ = ch0.ion[k].key; }
+            {
+                ++nCations_;
+                cationName_ += (haveCat ? " " : "") + ch0.ion[k].key;
+                if (!haveCat)
+                { iCation_ = ch0.compIdx[k]; zCation_ = ch0.z[k];
+                  refCationName_ = ch0.ion[k].key; haveCat = true; }
+            }
+            else
+            {
+                ++nAnions_;
+                anionName_ += (haveAn ? " " : "") + ch0.ion[k].key;
+                if (!haveAn)
+                { iAnion_ = ch0.compIdx[k]; zAnion_ = std::abs(ch0.z[k]);
+                  haveAn = true; }
+            }
         }
-        auto list = [](const std::vector<std::string>& v)
-        { std::string s; for (const auto& x : v) s += " " + x; return s; };
-        if (cats.size() != 1 || ans.size() != 1)
-            throw std::runtime_error(who + ": the diluate carries"
-                + std::to_string(cats.size()) + " cation(s) ("+ list(cats)
-                + " ) and " + std::to_string(ans.size()) + " anion(s) ("
-                + list(ans) + " ), and this unit models a SINGLE SALT --"
-                  " exactly one of each.  It is not a simplification for"
-                  " convenience: how the counter-ion current divides between"
-                  " two counter-ions is set by the MEMBRANES' selectivity"
-                  " between them, and no `kind IEM` record in this tree"
-                  " carries that.  The limiting transport numbers of"
-                  " Eqs. 12/13 describe the FILM at the limiting current and"
-                  " are a different quantity; using them as a split would"
-                  " invent exactly the parameter the 2010 model exists to"
-                  " remove.  The steady `electrodialysisStack` accepts a"
-                  " multi-ionic feed for its limiting-current PREDICTION,"
-                  " which needs no such split.");
+        if (!haveCat || !haveAn)
+            throw std::runtime_error(who + ": the diluate carries "
+                + std::to_string(nCations_) + " cation(s) and "
+                + std::to_string(nAnions_) + " anion(s) -- an electrodialysis"
+                  " rig needs at least one of each (a counter-ion for each"
+                  " membrane).");
     }
 
     n0D_ = state_.n;
@@ -374,6 +381,13 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
     const Instant s0 = evaluate(state_.n, nConc_);
     I0_    = s0.I;
     iLim0_ = s0.lc.i_lim;
+    //  The reference cation's INITIAL share of the CEM current: exactly 1.0
+    //  on one cation (so the single-salt hand calculation is unchanged to
+    //  the bit), its z D c share at t = 0 on several -- the straight line a
+    //  student draws from the initial state.
+    refShare0_ = 1.0;
+    for (std::size_t k = 0; k < s0.split.t.size(); ++k)
+        if (s0.chD.compIdx[k] == iCation_) refShare0_ = s0.split.t[k];
 
     // ---- announcements: nothing below changes a number --------------------
     auto say = [&](const char* tag, const std::string& msg, const char* cat)
@@ -395,6 +409,17 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
             " viscosity { model Vogel; } } }`, so the viscosity ratio the"
             " correction needs is unavailable, and the kinematic viscosity"
             " fell back to 1e-6 m2/s.", "provenance");
+    if (nCations_ > 1 || nAnions_ > 1)
+        say("model", "the diluate carries " + std::to_string(nCations_)
+            + " cation(s) (" + cationName_ + ") and "
+            + std::to_string(nAnions_) + " anion(s) (" + anionName_ + "):"
+            " the counter-ion current of each membrane is SHARED between its"
+            " counter-ions by z_i D_i c_i at every instant (Vitor's ruling"
+            " C35, 2026-10-05; the transport numbers of Geraldes & Afonso"
+            " 2010 Eqs. 12/13, applied at every current), with D_i the ions'"
+            " curated D0, and a membrane carrying several counter-ions takes"
+            " the MEAN of their own Nernst potentials.  No membrane"
+            " selectivity is modelled beyond it.", "model");
     if (!overLimitDeclared_)
         say("default", "no `overLimiting {}` model is declared, so the"
             " current efficiency stays at xi for the whole run.  If i"
@@ -485,8 +510,14 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
                   << "  cell pairs   " << N_ << "   area/pair "
                   << std::scientific << std::setprecision(4) << area_
                   << " m2   channel h " << hCh_ << " m\n" << std::defaultfloat
-                  << "  salt         " << cationName_ << " (z " << zCation_
-                  << ") / " << anionName_ << " (z -" << zAnion_ << ")\n"
+                  << ((nCations_ > 1 || nAnions_ > 1)
+                        ? "  ions         cations " + cationName_ + " / anions "
+                          + anionName_ + "  (shared by z D c; reference cation "
+                          + refCationName_ + ")\n"
+                        : "  salt         " + cationName_ + " (z "
+                          + std::to_string(static_cast<int>(zCation_)) + ") / "
+                          + anionName_ + " (z -"
+                          + std::to_string(static_cast<int>(zAnion_)) + ")\n")
                   << "  drive        "
                   << (drive_ == Drive::Current
                         ? "CONSTANT CURRENT " + std::to_string(IDeclared_) + " A"
@@ -571,8 +602,14 @@ BatchElectrodialysis::evaluate(const sVector& nD, const sVector& nC) const
     //  at that ion's own charge.
     const scalar rCat = edCell::meanActivityRatio(s.chD, s.chC, +1.0);
     const scalar rAn  = edCell::meanActivityRatio(s.chD, s.chC, -1.0);
-    s.E_cem = electrochem::nernst(+zCation_, rCat, state_.T);
-    s.E_aem = electrochem::nernst(-zAnion_, 1.0 / rAn, state_.T);
+    //  A membrane with several counter-ions (C35) takes the mean of their
+    //  own Nernst potentials; on one counter-ion the original expression.
+    s.E_cem = (nCations_ > 1)
+            ? edCell::meanNernstPotential(s.chD, s.chC, +1.0, state_.T)
+            : electrochem::nernst(+zCation_, rCat, state_.T);
+    s.E_aem = (nAnions_ > 1)
+            ? edCell::meanNernstPotential(s.chD, s.chC, -1.0, state_.T)
+            : electrochem::nernst(-zAnion_, 1.0 / rAn, state_.T);
     s.E_mem_pair = s.E_cem + s.E_aem;
 
     s.R_dil  = edCell::solutionResistance(s.chD, hCh_, area_);
@@ -604,16 +641,21 @@ BatchElectrodialysis::evaluate(const sVector& nD, const sVector& nC) const
     s.xiEff = (overLimit_ == OverLimiting::SaltFluxPlateau && s.iOverLim > 1.0)
             ? xi_ / s.iOverLim : xi_;
 
-    //  Faraday, per counter-ion, summed over the cell pairs; kmol/s.
-    const scalar NN = static_cast<scalar>(N_);
-    s.rCation = electrochem::faradayMolarRate(s.I, zCation_, s.xiEff) * NN * 1e-3;
-    s.rAnion  = electrochem::faradayMolarRate(s.I, zAnion_,  s.xiEff) * NN * 1e-3;
+    //  Faraday, per counter-ion, summed over the cell pairs; kmol/s.  The
+    //  counter-ions of one membrane SHARE its current by z_i D_i c_i (C35,
+    //  the ONE home edCell::counterIonRates); on one counter-ion per
+    //  membrane that is xi I N / (|z| F), bit for bit the single-salt rate.
+    s.split = edCell::counterIonRates(type(), s.chD, s.I, s.xiEff, N_);
+    s.r.assign(nD.size(), 0.0);
+    for (std::size_t k = 0; k < s.chD.ion.size(); ++k)
+        s.r[s.chD.compIdx[k]] = s.split.dn[k] * 1e-3;
+    if (s.split.exhausted) s.capped = true;
 
     //  NO SILENT CLAMP, and no silent creation either: a tank cannot give up
     //  an ion it no longer has.  The cut is applied to the SAME number on
     //  both sides of the membrane, so the pair's total is conserved exactly.
-    if (nD[iCation_] <= 0.0) { s.rCation = 0.0; s.capped = true; }
-    if (nD[iAnion_]  <= 0.0) { s.rAnion  = 0.0; s.capped = true; }
+    for (auto i : ionComps_)
+        if (nD[i] <= 0.0) { s.r[i] = 0.0; s.capped = true; }
     return s;
 }
 
@@ -655,10 +697,11 @@ sVector BatchElectrodialysis::odeDerivative(const sVector& y) const
     sVector d(2 * Nc + 1, 0.0);
     //  ONE number, two signs.  The rig is closed, so anything else would be
     //  a leak the campaign balance is right to report.
-    d[iCation_]          = -s.rCation;
-    d[Nc + iCation_]     = +s.rCation;
-    d[iAnion_]           = -s.rAnion;
-    d[Nc + iAnion_]      = +s.rAnion;
+    for (auto i : ionComps_)
+    {
+        d[i]      = -s.r[i];
+        d[Nc + i] = +s.r[i];
+    }
     //  The electrical work as an INTEGRATED STATE, so every reader of it
     //  agrees with the state the integrator accepted (the diafilter's
     //  permeated-volume lesson).  W -> kJ/s.
@@ -811,8 +854,8 @@ BatchElectrodialysis::trajectoryExtras() const
     //  straight line Faraday's law gives at the INITIAL current.
     const scalar actual = (n0D_[iCation_] > 0.0)
         ? 1.0 - state_.n[iCation_] / n0D_[iCation_] : 0.0;
-    const scalar removedIdeal = xi_ * I0_ * static_cast<scalar>(N_) * tNow_
-                              / (zCation_ * electrochem::Faraday) * 1.0e-3;
+    const scalar removedIdeal = refShare0_ * (xi_ * I0_ * static_cast<scalar>(N_) * tNow_
+                              / (zCation_ * electrochem::Faraday) * 1.0e-3);
     const scalar ideal = (n0D_[iCation_] > 0.0)
         ? std::min(removedIdeal / n0D_[iCation_], 1.0) : 0.0;
     x.emplace_back("deminActual", actual);
@@ -865,15 +908,28 @@ std::map<std::string, scalar> BatchElectrodialysis::kpis() const
     //  THE HAND CALCULATION, evaluated from THIS run's own initial current,
     //  its own inventory and its own declared xi -- never declared, so the
     //  gap between the two cannot have been arranged.
-    const scalar removedIdeal = xi_ * I0_ * static_cast<scalar>(N_) * tNow_
-                              / (zCation_ * electrochem::Faraday) * 1.0e-3;
+    const scalar removedIdeal = refShare0_ * (xi_ * I0_ * static_cast<scalar>(N_) * tNow_
+                              / (zCation_ * electrochem::Faraday) * 1.0e-3);
     k["demin_ideal"] = (n0D_[iCation_] > 0.0)
                      ? std::min(removedIdeal / n0D_[iCation_], 1.0) : 0.0;
     //  The time the straight line says the diluate is empty.  A real rig
     //  never gets there; the number is what the hand calculation promises.
-    k["t_idealComplete_s"] = (I0_ > 0.0)
+    k["t_idealComplete_s"] = (I0_ > 0.0 && refShare0_ > 0.0)
         ? n0D_[iCation_] * 1.0e3 * zCation_ * electrochem::Faraday
-          / (xi_ * I0_ * static_cast<scalar>(N_)) : 0.0;
+          / (xi_ * I0_ * static_cast<scalar>(N_)) / refShare0_ : 0.0;
+
+    //  C35: on a multi-ionic diluate, every counter-ion's own removal and
+    //  its share of its membrane's current NOW -- published ONLY there, so
+    //  a single-salt golden gains no row it never pinned.
+    if (nCations_ > 1 || nAnions_ > 1)
+    {
+        for (auto i : ionComps_)
+            k["demin_" + compNames_[i]] = (n0D_[i] > 0.0)
+                ? 1.0 - state_.n[i] / n0D_[i] : 0.0;
+        for (std::size_t kk = 0; kk < s.chD.ion.size(); ++kk)
+            if (s.chD.z[kk] != 0.0)
+                k["t_transfer_final_" + s.chD.ion[kk].key] = s.split.t[kk];
+    }
 
     k["m_dil_final"]  = (state_.n[iWater_] > 0.0)
         ? nD / (state_.n[iWater_] * edCell::MW_WATER_KG) : 0.0;

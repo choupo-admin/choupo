@@ -1,0 +1,65 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/diluateFeed -- THE WINE, as an ionic composition at 3000 L/h (the stack's
+  design flow).  EVERY CONCENTRATION BELOW IS AN AUTHOR-SET ASSUMPTION --
+  round numbers of the order a dry red wine at pH about 3.6 carries, NOT
+  transcribed from any measured wine and not derived from a speciation this
+  case performs (the stack does not speciate; see system/flowsheetDict):
+
+      ion        mmol/L   z     meq/L
+      K+         25.0     +1    25.0
+      Na+         5.0     +1     5.0
+      Ca2+        1.25    +2     2.5
+      Mg2+        4.0     +2     8.0
+      H+          0.25    +1     0.25     (pH 3.6 written as a concentration)
+      Cl-         1.1     -1     1.1
+      SO4 2-      6.025   -2    12.05     THE CLOSURE ION, see below
+      HTart-      8.0     -1     8.0      hydrogen tartrate
+      Tart 2-     1.5     -2     3.0      tartrate
+      HMal-       1.0     -1     1.0      hydrogen malate
+      Mal 2-      0.05    -2     0.1      malate
+      Lactate-    9.0     -1     9.0
+      H2PO4-      6.5     -1     6.5
+
+  ELECTRONEUTRALITY IS CLOSED ON SULFATE, and the closure is stated, not
+  hidden: the cations sum to 40.75 meq/L and the other anions to 28.70, so
+  6.025 mmol/L of SO4 2- carries the 12.05 meq/L gap.  That is more sulfate
+  than a wine should hold; the gap really stands for the anions this
+  composition does not declare (succinate, acetate and others a wine
+  carries), and the reader may move it.  The undissociated acids carry no
+  current and are not declared at all.
+
+  The water is 3000 kg/h, so that the engine's carrier volume (rho 1000
+  kg/m3, the dilute-carrier approximation the unit announces) equals the
+  wine's 3000 L/h and every mmol/L above is what the stack sees.  The real
+  wine holds less water -- the rest is ETHANOL, which cannot be declared
+  (system/flowsheetDict, first paragraph).
+\*---------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water    166.5251203144 kmol/h;
+    K        0.075 kmol/h;
+    Na       0.015 kmol/h;
+    Ca       0.00375 kmol/h;
+    Mg       0.012 kmol/h;
+    H        0.00075 kmol/h;
+    Cl       0.0033 kmol/h;
+    SO4      0.018075 kmol/h;
+    HTart    0.024 kmol/h;
+    Tart     0.0045 kmol/h;
+    HMal     0.003 kmol/h;
+    Mal      0.00015 kmol/h;
+    Lactate  0.027 kmol/h;
+    H2PO4    0.0195 kmol/h;
+}
+
+T               298.15 K;
+P               250000 Pa;

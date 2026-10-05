@@ -1,0 +1,62 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/internalStates/rig -- the initial HOLDUP of 'rig': the rig's TWO tanks,
+  the single source of truth (an inline initial{} block in flowsheetDict
+  is refused by the driver).
+
+  DILUATE      5 litres of water (0.2775418672 kmol) carrying 0.05 mol/kg of
+               NaCl AND 0.025 mol/kg of K2SO4, i.e. as ions:
+                   Na+    2.50e-4 kmol      Cl-    2.50e-4 kmol
+                   K+     2.50e-4 kmol      SO4 2- 1.25e-4 kmol
+               0.1 equivalents per kg on each side -- electroneutral, and
+               the same equivalent strength as edbatch01's 0.1 mol/kg NaCl.
+  CONCENTRATE  the same water carrying five times each ion (0.25 mol/kg NaCl
+               + 0.125 mol/kg K2SO4).
+
+  Every number above is an AUTHOR-SET assumption: a round mixed brine
+  chosen so that each membrane carries two counter-ions that differ in
+  mobility (K+ is 1.47 times faster than Na+) and, on the anion side, in
+  charge as well (SO4 2- against Cl-).  It is not a measured water.
+
+  Both tanks are at the SAME temperature and pressure: the rig is isothermal
+  and the block below carries one T and one P for it.
+\*---------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "rig";
+equipment   batchElectrodialysis;
+
+holdup
+{
+    T            298.15 K;
+    P            1.5 bar;
+    V            0.005;                // m3 (5 litres of diluate)
+    totalMoles   0.2784168672;         // kmol
+    molarComposition
+    {
+        water    0.9968572306;
+        Na       0.0008979341034;
+        K        0.0008979341034;
+        Cl       0.0008979341034;
+        SO4      0.0004489670517;
+    }
+
+    concentrate
+    {
+        totalMoles   0.2819168672;     // kmol
+        molarComposition
+        {
+            water    0.9844812407;
+            Na       0.004433931224;
+            K        0.004433931224;
+            Cl       0.004433931224;
+            SO4      0.002216965612;
+        }
+    }
+}

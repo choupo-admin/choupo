@@ -58,14 +58,15 @@ stale trajectory or a committed output):
       current is recomputed here from the run's own final E_mem and R_pair
       through U = N(E_mem + I R_pair) + E_electrodes, to 1e-9.
 
-  (f) ELEVEN REFUSALS, built from the witness in a temp dir and each required
+  (f) TEN REFUSALS, built from the witness in a temp dir and each required
       to exit non-zero AND to name its subject: no `stack`; no
       `diluateFlow`; `current` and `voltage` together; neither; a
-      `linearVelocity` typed beside the record; a multi-ionic diluate (two
-      cations); no `concentrate {}` block; a `T` inside it; an unknown
-      `overLimiting` model word (the message must carry the accepted list);
-      `limitingCurrent { model CowanBrown; }`; and a case declaring no
-      aqueous chemistry.
+      `linearVelocity` typed beside the record; no `concentrate {}` block; a
+      `T` inside it; an unknown `overLimiting` model word (the message must
+      carry the accepted list); `limitingCurrent { model CowanBrown; }`; and
+      a case declaring no aqueous chemistry.  (An ELEVENTH, a multi-ionic
+      diluate, stood here until 2026-10-05; C35 ruled the split it was
+      waiting for, and the same probe is now a POSITIVE in arm (j).)
 
   (g) ONE HOME, PROVED BY ARITHMETIC AND BY SOURCE.  The batch rig's
       `i_lim_initial` and `u_superficial` must equal `ed03_stack_record`'s
@@ -82,6 +83,15 @@ stale trajectory or a committed output):
       unit registered, the case valid, and the run dead on an empty
       catalogue.
 
+  (j) THE MULTI-IONIC RIG (C35, Vitor's ruling of 2026-10-05).  The
+      counter-ions of each membrane share its current by |z_i| D_i c_i, so
+      the FRACTIONAL depletion of each is proportional to its D0 alone.  On
+      edbatch03 (NaCl + K2SO4): the campaign closes at machine level;
+      ln(1 - demin_i)/D0_i is ONE number per membrane to 1e-6, read against
+      the species records' own D0; the final diluate rebuilt from the
+      declared inventory and the published removals is electroneutral to
+      1e-10, every trajectory row to 1e-7; the old three-ion refusal probe
+      now runs; and the single-salt witnesses publish no split KPI.
   (i) THE NETWORK WITNESSES.  ed06: four stages, currents STRICTLY
       decreasing, i_lim strictly decreasing, the same i/i_lim margin at every
       stage (the plant holds the margin, not the current), and stage 1's own
@@ -99,7 +109,8 @@ data (there is none); it does not check back-diffusion, water transport, a
 falling current efficiency from co-ion leakage, or any thermal effect,
 because the unit models none of them and says so.  It says nothing about the
 Nernst potential or the ohmic drop beyond the constant-voltage identity of
-(e).  It does not exercise a multi-ionic batch feed, which the unit REFUSES.
+(e).  On a multi-ionic feed it checks the split's rule and balance (arm (j))
+and nothing about the mean-Nernst membrane potential that feed takes.
 It does not exercise a stack record other than EUR2C-7P18 in batch, nor the
 `leveque` correlation branch, nor a case whose stack record names no membrane
 pair.  The `t_overLimiting_s` it pins is resolved to the TIME STEP by
@@ -195,7 +206,21 @@ what was predicted and both are kept as measured.
       four times over and by (d) -- the KPI, the log line, the timeline event
       and the advisory are four channels for one fact and all four go quiet.
 
-A TWELFTH edit was made and is NOT a sabotage, and it is the one worth
+SABOTAGE-VERIFIED 2026-10-05 for arm (j), on the ONE home of the split
+(EDCell.cpp) BY HAND, rebuilt, restored with git + `make all`:
+  S12 the old whole-current-each rule restored     CAUGHT by (j1): edbatch03
+      no longer runs -- the over-share empties the diluate and the engine
+      refuses "a channel carries no ions" after the warned crossing at
+      t = 1640 s.  The rule arms never got to speak; check_ed_stack (h)
+      catches the same sabotage by its balance.
+  S13 one counter-ion dropped from the denominator CAUGHT by (j1), the same
+      way ("the diluate carries no cation").
+  S14 the z^2 D c share                            CAUGHT by (j2) ONLY, on
+      the AEM: "ln(n/n0)/D0 is {'Cl': -4.75e8, 'SO4': -9.50e8} -- not one
+      number"; the CEM's two monovalent cations cannot tell the two rules
+      apart, and the charge balance holds under both.
+
+One further edit (2026-09-16) was made and is NOT a sabotage, and it is the one worth
 carrying forward.  The `noConcentrate` probe deleted the block by searching
 for the word `concentrate`, and the FIRST occurrence in the file is in its own
 header, which explains the block in prose -- so the probe cut a comment, ran
@@ -219,6 +244,7 @@ BUILD = ROOT / "build" / "linux64Gcc"
 BATCH = ROOT / "tutorials/batch/electrodialysis"
 EB1 = BATCH / "edbatch01_constant_current"
 EB2 = BATCH / "edbatch02_constant_voltage"
+EB3 = BATCH / "edbatch03_multiionic_split"
 ED03 = ROOT / "tutorials/steady/electrodialysis/ed03_stack_record"
 ED04 = ROOT / "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic"
 ED05 = ROOT / "tutorials/steady/electrodialysis/ed05_industrial_stack"
@@ -512,6 +538,9 @@ def main():
     # ---- (i) the network witnesses ---------------------------------------
     network()
 
+    # ---- (j) the multi-ionic rig (C35) -----------------------------------
+    multi_ionic()
+
     return report()
 
 
@@ -608,8 +637,6 @@ def refusals():
           "is not available in a BATCH rig")
     probe("noAqueous", lambda p: strip_aqueous(p),
           "the case declares no aqueous chemistry")
-    probe("threeIons", lambda p: make_three_ion(p),
-          "this unit models a SINGLE SALT")
 
 
 def strip_concentrate(p):
@@ -674,6 +701,142 @@ def make_three_ion(p):
         assert a in t, "three-ion probe anchor missing: %r" % a
         t = t.replace(a, b)
     f.write_text(t)
+
+
+def species_facts(case, name):
+    """(charge, D0) of a model species from the case's own constant/species/
+    record (a sealed case reads only that tier) or the catalogue's -- read by
+    this gate's own regex, never through the engine."""
+    for base in (Path(case) / "constant/species", ROOT / "data/standards/species"):
+        f = base / (name + ".dat")
+        if f.exists():
+            t = re.sub(r'/\*.*?\*/|//[^\n]*', '', f.read_text(), flags=re.S)
+            z = re.search(r'^\s*charge\s+([-+0-9.]+)\s*;', t, re.M)
+            D = re.search(r'\bD0\s*\{\s*value\s+([0-9.eE+-]+)', t)
+            return (float(z.group(1)) if z else None,
+                    float(D.group(1)) if D else None)
+    return (None, None)
+
+
+def diluate_inventory(case):
+    """kmol of each component in the DILUATE tank, from the case's own
+    0/internalStates/rig (the first totalMoles / molarComposition pair)."""
+    t = (Path(case) / "0/internalStates/rig").read_text()
+    t = re.sub(r'/\*.*?\*/|//[^\n]*', '', t, flags=re.S)
+    tot = float(re.search(r'totalMoles\s+([0-9.eE+-]+)\s*;', t).group(1))
+    body = re.search(r'molarComposition\s*\{([^}]*)\}', t).group(1)
+    return {m.group(1): tot * float(m.group(2))
+            for m in re.finditer(r'(\w+)\s+([0-9.eE+-]+)\s*;', body)}
+
+
+def multi_ionic():
+    """(j) THE MULTI-IONIC RIG (C35, Vitor 2026-10-05).  Until then this unit
+    REFUSED a diluate with more than one cation or anion.  The ruling shares
+    each membrane's current between its counter-ions by |z_i| D_i c_i, so
+    d ln n_i / dt = - D_i xi I N / (F SUM_j |z_j| D_j n_j): the FRACTIONAL
+    depletion rate of a counter-ion is proportional to its D0 alone, and
+    ln(n_i(t)/n_i(0)) / D_i is the SAME number for every counter-ion of one
+    membrane at every instant.  Held here, from the case's own inventory and
+    the species records' D0, never from the engine's arithmetic:
+      (j1) the witness edbatch03 (NaCl + K2SO4) RUNS and closes mass and every
+           element at machine level, like the single-salt rigs;
+      (j2) THE RULE: ln(1 - demin_i)/D_i agrees across the counter-ions of
+           each membrane to 1e-6 (the RK4 step, not the model, is the limit)
+           -- a z^2 D c share, or the old whole-current-each transfer, both
+           break it by tens of per cent;
+      (j3) CHARGE BALANCE: the final diluate, rebuilt from the declared
+           inventory and the published `demin_<ion>`, is electroneutral to
+           1e-10 of its ion equivalents, and every written trajectory row is
+           electroneutral to 1e-7 in its molalities (the CSV's 9 figures);
+      (j4) the three-ion probe (edbatch01 plus Mg2+, the diluate the unit
+           used to refuse) now RUNS to exit 0;
+      (j5) the single-salt witnesses publish no split KPI they never pinned."""
+    rc, out = run("choupoBatch", EB3)
+    if rc != 0:
+        failures.append("(j1) %s did not run (exit %d):\n%s"
+                        % (EB3.name, rc, out[-1500:]))
+        return
+    j = result_of(out)
+    k = j["kpis"]["rig"]
+    camp = j["kpis"]["campaign"]
+    for key in ("mass_closure_rel", "element_worst_closure_rel"):
+        v = camp.get(key)
+        if v is None or v > CLOSURE_MAX:
+            failures.append("(j1) %s: campaign %s = %r, not machine level"
+                            % (EB3.name, key, v))
+    inv = diluate_inventory(EB3)
+    facts = {c: species_facts(EB3, c) for c in inv if c != "water"}
+    for sign, label in ((+1, "CEM"), (-1, "AEM")):
+        ions = [c for c in facts if facts[c][0] * sign > 0]
+        if len(ions) < 2:
+            failures.append("(j2) %s: the %s carries %d counter-ion(s) -- the"
+                            " witness no longer exercises the split"
+                            % (EB3.name, label, len(ions)))
+            continue
+        vals = {}
+        for c in ions:
+            d = k.get("demin_" + c)
+            if d is None:
+                failures.append("(j2) %s: `demin_%s` is not published" % (EB3.name, c))
+                continue
+            vals[c] = math.log(1.0 - d) / facts[c][1]
+        if len(vals) == len(ions):
+            ref = list(vals.values())[0]
+            if not all(close(v, ref, 1e-6) for v in vals.values()):
+                failures.append(
+                    "(j2) %s: on the %s, ln(n/n0)/D0 is %s -- not one number.  The"
+                    " z D c share makes every counter-ion's FRACTIONAL depletion"
+                    " proportional to its D0 alone." % (EB3.name, label, vals))
+        tsum = sum(k.get("t_transfer_final_" + c, 0.0) for c in ions)
+        if not close(tsum, 1.0, 1e-9):
+            failures.append("(j2) %s: the %s's final shares sum to %.12g"
+                            % (EB3.name, label, tsum))
+    num = den = 0.0
+    for c, (zc, _D) in facts.items():
+        n = inv[c] * (1.0 - k.get("demin_" + c, float("nan")))
+        num += zc * n
+        den += abs(zc) * n
+    if not (abs(num) <= 1e-10 * den):
+        failures.append("(j3) %s: the final diluate carries net charge, %.3e of"
+                        " its ion equivalents" % (EB3.name, num / den if den else num))
+    cols = trajectory(EB3)
+    nrow = len(next(iter(cols.values()))) if cols else 0
+    rows = [{h: cols[h][i] for h in cols} for i in range(nrow)]
+    worst = 0.0
+    for r in rows:
+        num = den = 0.0
+        for c, (zc, _D) in facts.items():
+            m = r.get("m_dil_" + c, 0.0)
+            num += zc * m
+            den += abs(zc) * m
+        if den > 0.0:
+            worst = max(worst, abs(num) / den)
+    if not rows or worst > 1e-7:
+        failures.append("(j3) %s: a trajectory row carries net charge, worst %.3e"
+                        " of its ion equivalents (%d rows)" % (EB3.name, worst, len(rows)))
+
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td) / "threeIons"
+        copy_case(EB1, p)
+        make_three_ion(p)
+        rc3, out3 = run("choupoBatch", p)
+        if rc3 != 0:
+            failures.append("(j4) the three-ion probe (Na+, Mg2+, Cl-) did not run"
+                            " (exit %d) -- the unit should SHARE the CEM current"
+                            " between Na+ and Mg2+, not refuse:\n%s"
+                            % (rc3, out3[-800:]))
+
+    for case in (EB1, EB2):
+        rc5, out5 = run("choupoBatch", case)
+        j5 = result_of(out5) if rc5 == 0 else None
+        if j5 is None:
+            continue
+        leak = [kk for kk in j5["kpis"]["rig"]
+                if kk.startswith(("demin_", "t_transfer_"))
+                and kk not in ("demin_actual", "demin_ideal")]
+        if leak:
+            failures.append("(j5) %s: a single salt publishes split KPIs %s"
+                            % (case.name, leak))
 
 
 def strip_cpp_comments(t):
@@ -805,11 +968,16 @@ def report():
           "declared plateau and not an arrangement.  Held at constant voltage "
           "instead, the current decays 4.365 -> 2.018 A, the ratio never "
           "reaches 1, xi_eff stays exactly at the declared xi, and the stack "
-          "equation closes on the DECLARED voltage to 1e-9.  11 refusals fire "
+          "equation closes on the DECLARED voltage to 1e-9.  10 refusals fire "
           "by name, each on a case this gate BUILDS (no stack, no diluateFlow, "
           "both drives, neither, a velocity typed beside the record, a missing "
           "concentrate tank, a T inside it, an unknown over-limiting word, "
-          "CowanBrown, no aqueous chemistry, and a three-ion diluate).  ONE "
+          "CowanBrown, no aqueous chemistry).  A MULTI-IONIC rig runs (C35): "
+          "on edbatch03 (NaCl + K2SO4) it closes at machine level, "
+          "ln(n/n0)/D0 is one number per membrane to 1e-6 against the species "
+          "records' D0, both the final diluate and every trajectory row are "
+          "electroneutral, and the three-ion diluate this gate used to see "
+          "refused now runs.  ONE "
           "HOME is proved twice: the rig's t = 0 D_eff equals ed03's to 1e-12 "
           "and its i_lim, u, k_c,eff, Re and Sh to 1e-8 (the two cases declare "
           "the same flow through different grammars, so they agree only to the "
@@ -824,11 +992,12 @@ def report():
           "at the feed concentration in ed05.  "
           "NOT CHECKED: anything MEASURED -- no run of a recirculating rig is "
           "transcribed anywhere in this tree, so every number here is the "
-          "model's own, including the saltFluxPlateau claim. Back-diffusion, "
+          "model's own, including the saltFluxPlateau claim and the z D c share "
+          "itself (a RULING, not a measurement). Back-diffusion, "
           "water transport, co-ion leakage and every thermal effect are not "
           "modelled and not checked; the Nernst potential and the ohmic drop "
-          "are touched only through the constant-voltage identity; no "
-          "multi-ionic batch feed runs (the unit refuses one); no batch case "
+          "are touched only through the constant-voltage identity (the "
+          "mean-Nernst potential of a shared membrane not at all); no batch case "
           "uses a stack record other than EUR2C-7P18, the `leveque` branch or "
           "a record naming no membrane pair; and `t_overLimiting_s` is "
           "resolved to the time step by construction, not converged.")

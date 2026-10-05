@@ -1,0 +1,156 @@
+// [imported] origin "data/standards/assets/EUR2C-7P18.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  ELECTRODIALYSIS STACK: Eurodia Industrie EUR2C-7P18 bench unit
+
+  WHAT THIS RECORD IS.  The piece of hardware an `electrodialysisStack`
+  is run in: how many cell pairs, how much active area, the channel the
+  diluate flows through, the spacer, the hydraulic passes, the
+  mass-transfer correlation fitted to THIS stack, and the operating
+  limits.  A case names it (`stack EUR2C-7P18;` in the unit's operation)
+  and stops typing geometry -- and stops typing a CROSSFLOW VELOCITY,
+  which is not an operating knob at all but a consequence of the diluate
+  flow the unit already receives on its inlet stream.
+
+  VITOR'S RULING ON WHAT `activeArea` MEANS (2026-09-16), verbatim:
+  *the active area is the CELL-PAIR area; a stack of 50 m2 has 50 m2 of
+  anionic membrane AND 50 m2 of cationic membrane.*  So `activeArea` is
+  the cell-pair active area of the WHOLE stack.  Everything else is
+  DERIVED and ANNOUNCED by the engine, never stored here:
+      area per cell pair        = activeArea / cellPairs   = 0.020 m2
+      area per membrane KIND    = activeArea               = 0.140 m2
+      total membrane area       = 2 x activeArea           = 0.280 m2
+
+  VITOR'S RULING ON THE PASSES (2026-09-16): *the pass belongs to the
+  EQUIPMENT, not the operation.*  `hydraulicPasses` is here; a case that
+  also declares it beside `stack` is refused by name.
+
+  SOURCE OF THE FACTS (numbers transcribed; no prose):
+      V. Geraldes, M.D. Afonso, "Limiting current density in the
+      electrodialysis of multi-ionic solutions", J. Membr. Sci. 360
+      (2010) 499-508, doi:10.1016/j.memsci.2010.05.054.
+    Section 3.1: bench-scale ED unit EUR2C-7P18 (Eurodia Industrie,
+      France), a parallel path ED stack; seven anion- and seven
+      cation-exchange membranes forming SEVEN CELLS, plus two further
+      cation-exchange membranes forming the electrode compartments;
+      membranes Neosepta AMX-SB and CMX-SB (Tokuyama Soda); concentrate
+      and diluate channels 0.175 m long (L) and 0.114 m wide (W), giving
+      an effective mass-transfer area per membrane A of 0.020 m2; the
+      channels contain net-like spacers of non-conducting polymeric
+      material 7.7e-4 m thick (h).
+    Section 3.4 / Fig. 2: the mass-transfer correlation Sh = 0.29
+      Re^0.5 Sc^0.33 fitted to the stack's OWN limiting-current data for
+      NaCl at Re 50-86, average error 7 %; Sh on the diluate channel
+      height and the effective salt diffusivity, Re on the SUPERFICIAL
+      velocity and the same height, and the Schmidt exponent 1/3
+      POSTULATED rather than fitted.
+    Section 3.3: diluate flow rates 145, 175 and 230 L/h, corresponding
+      to superficial velocities 0.066, 0.080 and 0.11 m/s.
+
+  WHY `hydraulicPasses 1` IS A FACT AND NOT A GUESS.  The paper calls the
+  unit a "parallel path" stack, and the arithmetic closes: with all seven
+  diluate channels in parallel, 145 L/h over 7 x W x h gives 0.0656 m/s
+  and 175 L/h gives 0.0791 m/s, which are the paper's own 0.066 and
+  0.080 to both its digits.  (Its third entry, 0.11 m/s for 230 L/h,
+  does not close on any pass count -- the same division gives 0.1040 --
+  and the Re it lists there, 86, is likewise not proportional to the
+  other two.  The engine derives the velocity from the flow; it does not
+  reproduce that one printed figure.)
+
+  WHY activeArea IS NOT cellPairs x W x L.  The paper states BOTH the
+  channel dimensions (0.114 x 0.175 = 0.019950 m2 of spacer footprint)
+  and the effective mass-transfer area per membrane (0.020 m2).  They
+  are two different facts about the same cell and they differ by 0.25 %;
+  neither is derived from the other here.  The engine prints the
+  footprint beside the declared area and ANNOUNCES a disagreement above
+  5 %.
+
+  THE MEMBRANE GRADE.  The paper's stack carried Neosepta AMX-SB and
+  CMX-SB; `CMX_AMX` in this catalogue is the standard grade.  That
+  difference does NOT reach the limiting current predicted by
+  GeraldesAfonso2010 -- the model computes its own limiting transport
+  numbers from the ion diffusivities and takes the co-ion numbers as
+  null, so no membrane property enters it.  It DOES reach the ohmic drop
+  and the Nernst back-EMF, which read the record's areal resistances and
+  t_cu.  Curating the -SB grades is a separate act.
+\*---------------------------------------------------------------------------*/
+
+name            EUR2C-7P18;
+kind            edStack;
+manufacturer    "Eurodia Industrie";
+
+membranes       CMX_AMX;           // the `kind IEM` pair this stack is built with
+cellPairs       7;                 // seven cells (paper, section 3.1)
+activeArea      0.140 m2;          // CELL-PAIR area of the whole stack = 7 x 0.020 m2
+
+//  The diluate/concentrate channel.  The velocity is DERIVED from the flow.
+channelHeight   0.77 mm;           // 7.7e-4 m spacer thickness (paper, section 3.1)
+channelWidth    0.114 m;           // W (paper, section 3.1)
+channelLength   0.175 m;           // L (paper, section 3.1)
+spacerPorosity  0.90;              // ESTIMATE, see provenance
+spacerType      mesh;              // net-like spacer (paper, section 3.1).  A DECLARED
+                                   // fact, announced; no correlation selects on it today
+hydraulicPasses 1;                 // parallel path (see the header's arithmetic)
+
+//  THE SHERWOOD CORRELATION IS EQUIPMENT-AND-SPACER DATA, NOT A UNIVERSAL LAW.
+//  It was fitted to THIS stack with THIS spacer, from its own NaCl
+//  limiting-current measurements.  Sh = a Re^b Sc^c, with
+//      Sh = k_c,eff h / D_eff,  Re = rho u h / mu,  Sc = mu / (rho D_eff)
+//  and u the SUPERFICIAL velocity in the empty channel cross-section.
+massTransfer
+{
+    model          powerLaw;       // powerLaw | leveque
+    a              0.29;
+    b              0.5;
+    c              0.33;           // POSTULATED by the paper, not fitted -- see provenance
+    velocityBasis  superficial;    // superficial | interstitial
+}
+
+//  Checked against the run and ANNOUNCED when exceeded, never refused: a
+//  student may drive a stack past its rating on purpose and the run says
+//  so.  A limit this record does not declare is ABSENT and is not checked;
+//  the Eurodia data sheet is not in hand, so only two are stated and BOTH
+//  are marked estimates.
+limits
+{
+    i_max         200;             // A/m2 (raw SI) -- ESTIMATE, see provenance
+    T_max         313.15 K;        // ESTIMATE, see provenance
+}
+
+provenance
+{
+    source  "V. Geraldes, M.D. Afonso, Limiting current density in the electrodialysis of multi-ionic solutions, J. Membr. Sci. 360 (2010) 499-508, doi:10.1016/j.memsci.2010.05.054, sections 3.1 and 3.4";
+    licence "representative literature values, cited per value (the primary is the paper above); no vendor data sheet is redistributed here";
+
+    spacerPorosity
+    {
+        origin        estimated;
+        reviewStatus  unverified;
+        notes         "the paper states the spacer thickness but no porosity; 0.90 is typical of commercial net-like spacers, to be verified by weighing a spacer coupon: porosity = 1 - m/(rho_polymer * W * L * h)";
+    }
+
+    massTransfer
+    {
+        c
+        {
+            origin        estimated;
+            reviewStatus  unverified;
+            notes         "the paper POSTULATES the Schmidt exponent 1/3 (section 3.4) rather than fitting it; a and b ARE fitted to this stack's NaCl data.  To be verified by regressing c from limiting-current data over solutions of materially different effective diffusivity at fixed Re";
+        }
+    }
+
+    limits
+    {
+        i_max
+        {
+            origin        estimated;
+            reviewStatus  unverified;
+            notes         "the paper states no stack current-density ceiling; 200 A/m2 is the current density at which its Table 1 quotes the membrane resistances and brackets the highest limiting current it measured (198 A/m2).  To be verified against the Eurodia EUR2C data sheet, which states the stack's own ceiling";
+        }
+        T_max
+        {
+            origin        estimated;
+            reviewStatus  unverified;
+            notes         "the paper ran the stack at 20 +/- 1 C and states no ceiling; 313.15 K (40 C) is the operating maximum usually quoted for standard-grade Neosepta membranes.  To be verified against the ASTOM Neosepta product brochure for the AMX-SB / CMX-SB grades and against the Eurodia data sheet for the stack body";
+        }
+    }
+}

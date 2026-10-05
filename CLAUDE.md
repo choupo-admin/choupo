@@ -2541,30 +2541,43 @@ parts -- at constant current the crossing, at constant voltage the current
 itself decaying as the diluate loses conductivity.  `overLimiting { model
 saltFluxPlateau; }` (xi_eff = xi min(1, i_lim/i)) is OPT-IN and adds NO
 PARAMETER; the DEFAULT keeps xi and ANNOUNCES that it is then extrapolating
-past the crossing, and the current is never clamped either way.  A MULTI-IONIC
-batch feed REFUSES by name: the split of the counter-ion current between two
-counter-ions is the membranes' SELECTIVITY, which no `kind IEM` record
-carries, and Eqs. 12/13's limiting transport numbers describe the FILM at the
-limit and are a different quantity.  Fixed on the way: an ISOTHERMAL `mixer`
+past the crossing, and the current is never clamped either way.  **A
+MULTI-IONIC FEED RUNS, ON BOTH UNITS, SINCE C35 (Vitor's ruling of
+2026-10-05):** until then the batch rig REFUSED one and the steady stack gave
+every counter-ion the WHOLE current, xi I N/(|z_i| F), which is
+charge-balanced only with one counter-ion per membrane (ed04's ED1 diluate
+left carrying 1.8 % of its ion equivalents as net charge).  Now the
+counter-ions of each membrane SHARE its current by |z_i| D_i c_i -- the
+paper's Eqs. 12/13, applied at every current, NO new parameter -- in ONE
+home, `edCell::counterIonRates` (instantaneous, the batch) and
+`edCell::counterIonPassTransfer` (the same rule integrated in closed form
+along a pass, the steady stack), so each membrane moves exactly xi I N / F
+equivalents; a membrane with ONE counter-ion keeps the single-salt
+expression bit for bit (every single-salt result JSON byte-identical,
+measured).  The ruling's WORDS were "conductivity share" and its FORMULA z D
+c; the formula is what was built -- z^2 D c (the Hittorf number) differs from
+it only between counter-ions of different valence on one membrane, and is
+put to Vitor as a flag, not taken.  Not modelled: any selectivity the
+membranes add beyond the share.  Fixed on the way: an ISOTHERMAL `mixer`
 priced inlet enthalpies it was never going to read (the sum feeds only the
 ADIABATIC Newton's target), so a case DECLARING its outlet temperature was
 refused over an arithmetic the run does not perform -- no number moved.  **NOT
 done, said plainly:** back-diffusion, water transport, co-ion leakage and any
 thermal effect (the electrical work IS integrated exactly, but the heat it
 becomes is not, so the campaign first law is UNAVAILABLE rather than closed
-with a PLUG); and NOTHING here is validated against a measured rig.  RESERVED
-for Vitor: the multi-ion split rule -- and, found while building this and NOT
-fixed because it moves ed04's golden, **the steady unit's Faraday transfer is
-not charge-balanced on a feed of mixed valence** (every ion gets xi I N/(z_i
-F); measured on ed04, the ED1 diluate outlet carries +1.306e-8 kmol/h of net
-charge against 7.164e-7 equivalents, 1.8 %).  Witnesses
+with a PLUG); and NOTHING here is validated against a measured rig.  Witnesses
 `edbatch01_constant_current` (i_lim 643.04 -> 88.26 A/m2, crossing at 1593 s,
 86.27 % against the hand calculation's 91.41 %), `edbatch02_constant_voltage`
 (I 4.365 -> 2.018 A, i/i_lim never 1, 61.59 % against 85.51 %),
 `ed06_stages_in_series` (four stages, i_lim falling 15.6x, ONE shared margin)
-and `ed07_feed_and_bleed` (the stack never sees the feed).  Gate:
-`check_ed_batch` (11 by-hand sabotages, two of which did not do what was
-predicted).  Record:
+and `ed07_feed_and_bleed` (the stack never sees the feed); and since C35
+`edbatch03_multiionic_split` (NaCl + K2SO4: ln(n/n0)/D0 is one number per
+membrane) and `ed09_wine_multiionic` (the thirteen-ion wine the split
+unblocked; ethanol still refuses).  Gates: `check_ed_batch` (11 by-hand
+sabotages, two of which did not do what was predicted; arm (j) the
+multi-ionic rig) and `check_ed_stack` arm (h) (charge balance and the rule,
+recomputed; three sabotages, one -- the z^2 share -- caught ONLY by the rule
+arms, because it is charge-balanced).  Record:
 [`docs/design/the-limiting-current-that-falls-while-you-watch.md`](docs/design/the-limiting-current-that-falls-while-you-watch.md).
 
 **AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  An advisory

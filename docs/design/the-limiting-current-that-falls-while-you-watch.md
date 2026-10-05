@@ -269,13 +269,15 @@ that made it false — CLAUDE.md §10's rule, applied to a gate.
 
 Each of these is REFUSED or ANNOUNCED, never assumed:
 
-* **More than one cation or one anion — REFUSED by name.**  How the counter-ion
-  current divides between two counter-ions is set by the MEMBRANES' selectivity
-  between them, and no `kind IEM` record in this tree carries that.  The
-  limiting transport numbers of Eqs. 12/13 describe the FILM at the limiting
-  current and are a different quantity; using them as a split would invent
-  exactly the parameter the 2010 model exists to remove.  The steady unit keeps
-  its multi-ionic feed, because its `i_lim` PREDICTION needs no such split.
+* **Any membrane selectivity between counter-ions.**  This bullet used to read
+  "More than one cation or one anion — REFUSED by name", and it was true until
+  2026-10-05.  Vítor then ruled the rule this section had reserved (DEV.md §4c
+  C35 item 1, and §13 below): the counter-ions of a membrane share its current
+  by |z_i| D_i c_i, the limiting transport numbers of Eqs. 12/13 applied at
+  every current, with no new parameter.  A multi-ionic batch feed now RUNS.
+  What stays unmodelled is any preference the real membranes add on top of
+  that share — a Donnan preference for divalent ions, a monovalent-selective
+  layer — for which no `kind IEM` record carries data.
 * **Back-diffusion** of salt from the concentrate.  It is real and it is what
   stops a rig concentrating indefinitely, but it needs a membrane salt
   permeability that no record carries — a new declared parameter with no
@@ -329,24 +331,14 @@ that record.  Three things it taught are worth carrying beyond it:
 
 ## 11. RESERVED, and open
 
-**Vítor's.**  A multi-ionic BATCH feed needs a rule for how the counter-ion
-current divides between two counter-ions.  The candidate that costs no new
-parameter is to use the limiting transport numbers of Eqs. 12/13 as the split —
-but those describe the film AT the limiting current, not the membrane's
-selectivity below it, so adopting them is a modelling claim and his to make.
-Until then the unit refuses by name.
-
-**Found and NOT fixed (a finding, not this slice's to take).**  The steady
-`electrodialysisStack`'s Faraday transfer gives EVERY ion `xi I N / (z_i F)`,
-which is charge-balanced for a 1:1 salt and is **not** for a feed of mixed
-valence.  Measured on `ed04_limiting_current_multiionic` (Mg2+ / Cl- / SO4 2-):
-the ED1 diluate outlet carries a net charge of **+1.306e-8 kmol/h against
-7.164e-7 equivalents — 1.8 %** — and the concentrate outlet the mirror of it.
-The arithmetic is direct: the diluate loses `2 x (xi I N / 2F) = xi I N / F`
-cation equivalents against `xi I N / F + 2 x (xi I N / 2F) = 2 xi I N / F`
-anion equivalents.  Fixing it is a PHYSICS change that moves `ed04`'s golden
-and requires the same split rule reserved above, so it is named here and left.
-The new batch unit cannot inherit it, because it refuses a multi-ionic feed.
+**Both entries that stood here are CLOSED (2026-10-05, C35) — see §13.**  The
+first reserved a rule for a multi-ionic BATCH feed (then refused by name); the
+second recorded that the steady `electrodialysisStack` gave EVERY ion
+`xi I N / (z_i F)`, charge-balanced for a 1:1 salt and not for a feed of mixed
+valence — measured on `ed04_limiting_current_multiionic` (Mg2+ / Cl- / SO4 2-),
+the ED1 diluate outlet carried 1.8 % of its ion equivalents as net charge,
+because the diluate lost `xi I N / F` cation equivalents against
+`2 xi I N / F` anion equivalents.
 
 **Also not done, named rather than implied.**  No batch case uses a stack
 record other than `EUR2C-7P18`, the `leveque` correlation branch, or a record
@@ -372,3 +364,68 @@ is the model's own, the `saltFluxPlateau` claim included.
 | witnesses | `tutorials/batch/electrodialysis/edbatch01_constant_current`, `edbatch02_constant_voltage`, `tutorials/steady/electrodialysis/ed06_stages_in_series`, `ed07_feed_and_bleed` |
 | gate | `bin/curate/check_ed_batch.py` |
 | docs | `docs/ai/unit-ops.md`, `docs/tutorials-catalogue.md`, `docs/userGuide.tex`, `docs/theoryGuide.tex` (§ the limiting current in TIME and in SPACE) |
+
+---
+
+## 13. The counter-ion split (C35, 2026-10-05)
+
+**The ruling.**  Vítor, on the commander's recommendation (DEV.md §4c C35
+item 1): the counter-ions of each membrane share its current by
+
+    t_i = |z_i| D_i c_i / SUM_j |z_j| D_j c_j        (over that membrane's counter-ions)
+
+with D_i the ion's curated D0 and no new parameter.  This IS the limiting
+transport number of Eqs. (12)/(13), now applied at every current — the
+candidate §11 named, adopted by the person §11 said it belonged to.
+
+**One home, two forms.**  `edCell::counterIonRates` gives the instantaneous
+rates `ndot_i = t_i xi I N / (|z_i| F)` (the batch rig differentiates them);
+`edCell::counterIonPassTransfer` gives the same rule INTEGRATED along one pass
+of a flowing stack.  Because the shares depend on the local composition
+alone, the outlet depends only on the total charge passed, Q = xi I N / F, and
+the integral is closed-form: `n_i = n_i,in exp(-D_i tau)` with the one scalar
+tau fixed by `SUM |z_i| (n_i,in - n_i) = Q`.  No counter-ion is driven
+negative; a membrane is "exhausted" only when Q exceeds every counter-ion
+equivalent its diluate carries.  Evaluating the share once at the inlet
+instead would have capped fast ions (H+ in a wine) and broken the charge
+balance the ruling exists to restore.  Each membrane moves exactly Q
+equivalents, so both outlets are electroneutral.
+
+**What a student sees.**  `d ln n_i / dq = -D_i / SUM_j |z_j| D_j n_j`: the
+FRACTIONAL depletion of a counter-ion is proportional to its D0 and to nothing
+else about it — charge and concentration cancel — while its SHARE of the
+current is z D c.  `edbatch03_multiionic_split` (NaCl + K2SO4) and
+`ed09_wine_multiionic` show both.
+
+**Nothing single-salt moved.**  A membrane with one counter-ion keeps the old
+expression bit for bit, and every single-salt witness's result JSON (ed01-ed03,
+ed05-ed08, edbatch01-02) was compared against a build of the parent commit:
+byte-identical.  `ed04` gained its split KPIs and its 12 outlet-flow rows moved
+by 2.5e-6 to 3.9e-6 relative — the diluate now loses Q(1/2 + t_Cl + t_SO4/2)
+mol/s instead of 2Q.
+
+**Words and formula.**  The ruling's WORDS were "conductivity share"; its
+FORMULA was z D c.  The conductivity share proper (the Hittorf transport
+number the engine's own kappa is built on) is z^2 D c / SUM z^2 D c.  The two
+coincide for counter-ions of one valence and differ otherwise (on ed04's ED1,
+Cl- 4.52 % / SO4 2- 2.39 % removed under z D c against 3.38 % / 3.53 % under
+z^2 D c).  The formula was built, as written twice in the brief and once in
+DEV.md, and as the paper's own Eqs. 12/13; the alternative is put to Vítor.
+
+**The batch membrane potential** on a membrane with several counter-ions is
+the MEAN of their own Nernst potentials (`edCell::meanNernstPotential`);
+exactly the old expression on one counter-ion.  The steady stack's Nernst term
+still takes |z| = 1 for every ion (`ElectrodialysisStack.cpp`, "counter-ion
+charge magnitude 1 for NaCl"), which is wrong for Mg2+ — found, not fixed,
+because it moves ed04's voltage and is not this rule.
+
+**Gates.**  `check_ed_stack` arm (h) — the equivalents through the CEM and the
+AEM equal and equal to xi I N / F, every outlet electroneutral to 1e-9, each
+`demin_<ion>` recomputed by an independent bisection of the closed form to
+1e-9, a single salt untouched — and `check_ed_batch` arm (j) — the multi-ionic
+rig runs and closes at machine level, ln(n/n0)/D0 is one number per membrane
+to 1e-6, both tanks stay electroneutral, the old three-ion refusal probe now
+runs.  Three by-hand sabotages, recorded in the gates' docstrings: the old
+whole-current share and a counter-ion dropped from the denominator are both
+caught by the charge-balance arms; the z^2 D c share is charge-balanced and is
+caught ONLY by the rule arms, which is why they exist.

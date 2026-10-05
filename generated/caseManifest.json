@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 454,
+  "cases": 456,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -415,6 +415,22 @@
    "hasGolden": true
   },
   "tutorials/batch/electrodialysis/edbatch02_constant_voltage": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchElectrodialysis"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/electrodialysis/edbatch03_multiionic_split": {
    "application": "choupoBatch",
    "unitTypes": [
     "batchElectrodialysis"
@@ -3781,6 +3797,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/electrodialysis/ed09_wine_multiionic": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/evaporation/evaporator01_brine": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -6689,6 +6722,7 @@
     "tutorials/batch/drying/dryer02_characteristic_curves",
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
     "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
+    "tutorials/batch/electrodialysis/edbatch03_multiionic_split",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
     "tutorials/batch/membrane/diafilter02_fouling_decline",
     "tutorials/batch/reactor/batch01_first_order",
@@ -6939,6 +6973,7 @@
     "tutorials/steady/electrodialysis/ed06_stages_in_series",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution",
+    "tutorials/steady/electrodialysis/ed09_wine_multiionic",
     "tutorials/steady/evaporation/evaporator01_brine",
     "tutorials/steady/evaporation/evaporator02_triple_effect_sugar",
     "tutorials/steady/evaporation/evaporator03_co_current",
@@ -7198,7 +7233,8 @@
    ],
    "batchElectrodialysis": [
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
-    "tutorials/batch/electrodialysis/edbatch02_constant_voltage"
+    "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
+    "tutorials/batch/electrodialysis/edbatch03_multiionic_split"
    ],
    "batchReactor": [
     "tutorials/batch/combustion/ignition01_h2o2",
@@ -7376,6 +7412,7 @@
     "tutorials/steady/electrodialysis/ed06_stages_in_series",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution",
+    "tutorials/steady/electrodialysis/ed09_wine_multiionic",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
@@ -7389,7 +7426,8 @@
     "tutorials/steady/electrodialysis/ed05_industrial_stack",
     "tutorials/steady/electrodialysis/ed06_stages_in_series",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
-    "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution"
+    "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution",
+    "tutorials/steady/electrodialysis/ed09_wine_multiionic"
    ],
    "equilibriumReactor": [
     "tutorials/steady/reactors/equil01_reforming",
@@ -7828,6 +7866,7 @@
    "davies": [
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
     "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
+    "tutorials/batch/electrodialysis/edbatch03_multiionic_split",
     "tutorials/props/electrolyte/davies01_band_edge",
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
     "tutorials/props/electrolyte/pitzer_calcite_brine",
@@ -7845,6 +7884,7 @@
     "tutorials/steady/electrodialysis/ed06_stages_in_series",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution",
+    "tutorials/steady/electrodialysis/ed09_wine_multiionic",
     "tutorials/steady/flash/analysis01_water_analysis_inlet",
     "tutorials/steady/flash/analysis02_weighted_least_squares",
     "tutorials/steady/flash/flash09_nh3_water_reactive",
@@ -7911,6 +7951,7 @@
     "tutorials/batch/drying/dryer02_characteristic_curves",
     "tutorials/batch/electrodialysis/edbatch01_constant_current",
     "tutorials/batch/electrodialysis/edbatch02_constant_voltage",
+    "tutorials/batch/electrodialysis/edbatch03_multiionic_split",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
     "tutorials/batch/membrane/diafilter02_fouling_decline",
     "tutorials/batch/reactor/batch01_first_order",
@@ -8064,6 +8105,7 @@
     "tutorials/steady/electrodialysis/ed06_stages_in_series",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution",
+    "tutorials/steady/electrodialysis/ed09_wine_multiionic",
     "tutorials/steady/evaporation/evaporator01_brine",
     "tutorials/steady/evaporation/evaporator02_triple_effect_sugar",
     "tutorials/steady/evaporation/evaporator03_co_current",

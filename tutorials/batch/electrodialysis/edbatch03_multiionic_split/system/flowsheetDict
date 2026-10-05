@@ -1,0 +1,100 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  edbatch03_multiionic_split  --  a batch electrodialysis rig on a MIXED brine,
+  and two counter-ions on each membrane sharing its current.
+
+  THE OPERATION.  The rig of edbatch01 (Eurodia EUR2C-7P18, seven cell pairs,
+  175 L/h recirculation), but the diluate tank holds 0.05 mol/kg NaCl plus
+  0.025 mol/kg K2SO4 -- two cations (Na+, K+) on the cation-exchange
+  membrane and two anions (Cl-, SO4 2-) on the anion-exchange one.  The
+  rectifier is held at 2.0 A (100 A/m2 on one cell pair).
+
+  THE RULE (Vitor's ruling C35, 2026-10-05).  Until that day this unit
+  REFUSED a diluate with more than one cation or one anion, for want of a
+  rule dividing a membrane's current between its counter-ions.  The ruling
+  shares it by
+
+      t_k = |z_k| D_k c_k / SUM_j |z_j| D_j c_j      over that membrane's counter-ions
+
+  -- the transport numbers of Geraldes & Afonso, J. Membr. Sci. 360 (2010)
+  499-508, Eqs. (12)/(13), applied at every current and not only at the
+  limit -- with D the ions' curated D0 and NO new parameter.  Each ion then
+  leaves at t_k xi I N / (|z_k| F) mol/s, so each membrane moves exactly
+  xi I N / F equivalents and both tanks stay electroneutral.
+
+  WHAT A STUDENT SHOULD SEE.  Divide that rate by the ion's own inventory:
+
+      d ln n_k / dt  =  - D_k xi I N / ( F SUM_j |z_j| D_j n_j )
+
+  -- the FRACTIONAL depletion rate of a counter-ion is proportional to its
+  diffusivity and to nothing else about it, so on a log scale the
+  counter-ions of one membrane fall along straight lines whose slopes stand
+  in the ratio of their D0.  K+ (1.96e-9 m2/s) is depleted 1.47 times faster
+  than Na+ (1.33e-9) in log terms; Cl- (2.03e-9) 1.92 times faster than
+  SO4 2- (1.06e-9), the charge of the sulfate making no difference to its
+  FRACTIONAL rate (it carries twice the current per mole and so moves half
+  the moles per coulomb, exactly compensating its doubled share).  The run
+  publishes `demin_<ion>` for every ion and `t_transfer_final_<ion>`, the
+  shares at the end, and its trajectory carries every molality.
+
+  WHAT THE RUN MEASURES (every number is printed by this run; the golden
+  pins them):
+      i                       100.00 A/m2, flat, all 2400 s
+      i_lim                   696.83 A/m2 at t = 0, 244.39 at t = 2400 s
+                              (i/i_lim 0.144 -> 0.409: never crossed)
+      removed at t = 2400 s   K+ 69.77 %   Na+ 55.60 %      (CEM)
+                              Cl- 74.43 %  SO4 2- 50.94 %   (AEM)
+      share of the current    Na+ 0.404 -> 0.499 of the CEM's
+                              Cl- 0.657 -> 0.500 of the AEM's
+      material closure        0 on mass, 1.4e-15 on the worst element
+
+  READ THE SHARES BACKWARDS AND THE LESSON IS THERE.  At t = 0 the two
+  cations are equally concentrated, so K+, the faster, takes 0.596 of the
+  cation current; it therefore depletes faster, its c falls, and the share
+  drifts toward Na+.  The hand calculation `demin_ideal` (Faraday's law at
+  the INITIAL current AND the reference cation's INITIAL share, computed
+  from the run) predicts 50.68 % of the sodium removed; the run removes
+  55.60 %, because sodium's share of the current GROWS as potassium is
+  stripped -- the opposite sign from edbatch01's gap, and for a different
+  reason.  And ln(n/n0)/D0 comes out as one number for K+ and Na+, and one
+  number for Cl- and SO4 2-, to the integrator's precision.
+
+  WHAT IS PINNED AND WHAT IS NOT.  The golden pins the answer THIS model
+  gives.  The share z D c is a RULING, not a measurement: real ion-exchange
+  membranes add a preference between counter-ions of their own (a Donnan
+  preference for divalent ions, or a monovalent-selective layer) which no
+  `kind IEM` record in this tree carries and this unit does not model.  The
+  brine is an author-set assumption; nothing here is validated against a
+  measured rig.  The membrane potential of a membrane with two counter-ions
+  is taken as the MEAN of their own Nernst potentials (announced).  Back-
+  diffusion, water transport and every thermal effect are not modelled --
+  the unit's own header lists them.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        rig;
+        type        batchElectrodialysis;
+
+        operation
+        {
+            stack          EUR2C-7P18;   // the HARDWARE, as a record (ed03)
+            diluateFlow    175 L/h;      // the pump setting (edbatch01's)
+            //  CONSTANT CURRENT.  100 A/m2 on one cell pair -- below i_lim
+            //  for the whole run, so the over-limiting regime is never
+            //  entered; the model is declared so that silence means that.
+            current        2.0;           // A (raw SI)
+            xi             0.9;           // current efficiency (declared)
+            E_electrodes   1.5;           // V (raw SI), lumped, announced
+            overLimiting   { model none; }
+        }
+    }
+);

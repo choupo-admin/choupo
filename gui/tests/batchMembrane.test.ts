@@ -243,7 +243,7 @@ describe("detectDiafilter -- which unit in a run is a batch membrane vessel", ()
 
   it("does NOT open on an electrodialysis stack's concentrationFactor", () => {
     //  batchElectrodialysis publishes a key of that name for a different
-    //  quantity (BatchElectrodialysis.cpp:882); matching it would draw this
+    //  quantity (BatchElectrodialysis.cpp:938); matching it would draw this
     //  page over a stack.
     const ed: KpiMap = { ED: { concentrationFactor: 3.1, R_initial_NaCl: 0.9 } };
     expect(detectDiafilter(["ED.V_m3"], ed).active).toBe(false);

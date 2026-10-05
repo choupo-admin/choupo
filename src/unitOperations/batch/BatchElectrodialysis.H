@@ -81,6 +81,19 @@ Description
         dn_c/dt  = -xi_eff I N / (z_c F)   into the concentrate
         dn_a/dt  = -xi_eff I N / (|z_a| F) into the concentrate
         E_mem    = (RT/z_c F) ln(a_c,con/a_c,dil) + (RT/|z_a| F) ln(a_a,con/a_a,dil)
+
+    and on a MULTI-IONIC diluate (C35, Vitor's ruling of 2026-10-05) the
+    counter-ions k of one membrane share its current by
+
+        t_k      = |z_k| D_k c_k / SUM_j |z_j| D_j c_j   (Eqs. 12/13, every current)
+        dn_k/dt  = -t_k xi_eff I N / (|z_k| F)
+
+    through `edCell::counterIonRates`, the one home the steady stack's
+    pass-integrated split shares; each membrane then moves xi_eff I N / F
+    equivalents per instant, so the two tanks stay electroneutral.  Such a
+    membrane's potential is the MEAN of its counter-ions' own Nernst
+    potentials (`edCell::meanNernstPotential`); on one counter-ion it is the
+    expression above.
         R_pair   = R_CEM + R_AEM + h/(kappa_dil A) + h/(kappa_con A)
         U        = N (E_mem + I R_pair) + E_electrodes
         dW/dt    = U I
@@ -132,13 +145,15 @@ Description
 
     NOT MODELLED, said plainly so a green run cannot imply otherwise:
 
-      * MORE THAN ONE CATION OR ONE ANION.  A multi-ionic diluate is
-        REFUSED by name.  Splitting the counter-ion current between two
-        counter-ions is set by the MEMBRANES' selectivity between them, for
-        which this tree carries no data; the limiting transport numbers of
-        Eqs. 12/13 describe the FILM at the limiting current and are not
-        that selectivity.  Choosing one would be inventing the parameter
-        the 2010 model exists to remove.
+      * ANY MEMBRANE SELECTIVITY beyond the C35 share.  A multi-ionic
+        diluate was REFUSED here until 2026-10-05, because how the current
+        divides between counter-ions is in reality also set by the
+        MEMBRANES' preference between them, for which this tree carries no
+        data.  Vitor ruled the share z_i D_i c_i (the 2010 paper's Eqs.
+        12/13, which describe the film at the limit, applied at every
+        current) as the rule that costs no parameter; a monovalent-selective
+        membrane, a Donnan preference for divalent ions or a measured
+        separation factor is NOT modelled.
       * BACK-DIFFUSION of salt from the concentrate to the diluate.  It is
         real and it is what stops a real rig concentrating indefinitely, but
         it needs a membrane salt permeability that no `kind IEM` record
@@ -237,7 +252,8 @@ private:
         scalar I = 0.0, U = 0.0, i_dens = 0.0, iOverLim = 0.0, xiEff = 0.0;
         scalar E_mem_pair = 0.0, E_cem = 0.0, E_aem = 0.0;
         scalar R_pair = 0.0, R_dil = 0.0, R_conc = 0.0;
-        scalar rCation = 0.0, rAnion = 0.0;   // kmol/s leaving the diluate
+        edCell::CounterIonSplit split;        // per channel row (C35)
+        sVector r;                            // kmol/s leaving the diluate, per component
         bool   capped = false;
     };
     Instant evaluate(const sVector& nD, const sVector& nC) const;
@@ -272,10 +288,15 @@ private:
     OverLimiting overLimit_ = OverLimiting::None;
     bool         overLimitDeclared_ = false;
 
-    //  The counter-ion pair, resolved once: exactly one of each sign.
+    //  The counter-ions, resolved once.  iCation_ is the REFERENCE cation
+    //  (the first in component order) every demin number is stated for;
+    //  on a single salt it is THE cation, and iAnion_ THE anion.
     std::size_t  iCation_ = 0, iAnion_ = 0;
     scalar       zCation_ = 0.0, zAnion_ = 0.0;
-    std::string  cationName_, anionName_;
+    std::string  cationName_, anionName_, refCationName_;
+    int          nCations_ = 0, nAnions_ = 0;
+    std::vector<std::size_t> ionComps_;     // every charged component at t = 0
+    scalar       refShare0_ = 1.0;          // the reference cation's share at t = 0
 
     sVector n0D_, n0C_;
     scalar  I0_ = 0.0, iLim0_ = 0.0, V0dil_ = 0.0;

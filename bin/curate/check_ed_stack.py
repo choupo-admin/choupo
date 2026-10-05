@@ -86,14 +86,31 @@ stale converged/):
       EXITS 0; a twin of ed05 at a tenth of its flow sits far below the
       Reynolds band its correlation was fitted over and prints the
       `[extrapolation]` line, also at exit 0.  No witness prints either.
+  (h) THE COUNTER-ION SPLIT (C35, Vitor's ruling of 2026-10-05).  The
+      counter-ions of each membrane share its current by |z_i| D_i c_i, so
+      the transfer is charge-balanced on every feed.  On the six ed04 units
+      (Cl- and SO4 2- share the AEM) and ed09 (thirteen ions, both
+      membranes shared): the published equivalents moved through the CEM and
+      the AEM are equal (1e-11, the JSON's 12 figures) and equal to xi I N / F
+      recomputed from the declared xi (1e-10); every outlet stream is
+      electroneutral to 1e-9 of its ion equivalents (the defect was 1.8e-2);
+      each `demin_<ion>` equals the closed form n = n_in exp(-D tau),
+      recomputed here by an independent BISECTION from the 0/ inlet and the
+      species records' charge and D0 (1e-9); the shares of each membrane sum
+      to 1.  And a single salt is untouched: ed03's demineralisation is the
+      single-salt expression xi I N / (F n_in) (1e-10), and no single-salt
+      witness publishes a split KPI.
 
 WHAT THIS GATE DOES **NOT** COVER, stated so its green line cannot imply it.
 It does not check that an estimate is a GOOD estimate (nobody here has
 weighed a EUR2C spacer coupon).  It does not check the transcription against
 the PDF itself (the table is a human's second reading).  It says nothing
 about the single-salt MgCl2 or NaCl rows of Table 4, which no case runs.  It
-does not check the ohmic drop, the Nernst back-EMF or the Faraday transfer --
-those are ed01's goldens' business.  The `leveque` branch of a record's
+does not check the ohmic drop or the Nernst back-EMF -- those are ed01's
+goldens' business -- and of the Faraday transfer it checks only what arm (h)
+states.  In particular it does not check the steady stack's Nernst term,
+which takes |z| = 1 for every ion (found 2026-10-05, not fixed: it moves
+ed04's voltage and is not the split).  The `leveque` branch of a record's
 massTransfer block is reached by no record and no case.  The `interstitial`
 velocity basis is declared by no record.  `dP_max`, `flow_max` and the pH
 band are declared by no record and are therefore never checked against a run.
@@ -162,6 +179,25 @@ did not do what was predicted, and both are recorded as MEASURED:
       false)                                              CAUGHT by (g): the
       tenth-flow twin printed no [extrapolation] line.
 
+SABOTAGE-VERIFIED 2026-10-05 for arm (h), on `edCell` (EDCell.cpp) BY HAND,
+rebuilt, both ED gates run, restored with git + `make all`:
+  S13 the old rule restored -- every counter-ion given the WHOLE current
+      xi I N / (|z| F), capped at its inflow             CAUGHT by (h1)-(h3)
+      on all six ed04 units: "the CEM moved 1.30589797673e-05 equivalents/s
+      and the AEM 2.61179595347e-05", "outlet `ED1dilOut` carries net charge,
+      1.823e-02 of its ion equivalents" -- the very 1.8 % the 2026-09-16
+      record measured -- and "the AEM membrane's shares sum to 2".
+  S14 one counter-ion dropped from the denominator (the last of each
+      membrane's list left out of the sum the shares are normalised by)
+                                                         CAUGHT by (h1)-(h3):
+      AEM 1.99945876249e-05 against CEM 1.30589797673e-05, ED1dilOut 9.6e-03
+      net charge, shares summing to 1.531.
+  S15 the z^2 D c share (the "conductivity share" reading of the ruling's
+      WORDS, where the FORMULA ruled is z D c)          CAUGHT by (h2) ONLY:
+      "`demin_Cl` = 0.0338288373512, the z D c split recomputed here gives
+      0.0452443359999".  It is charge-balanced, so (h1) and (h3) PASS it --
+      which is why the rule is recomputed here and not merely its balance.
+
 A TENTH edit was made and is NOT a sabotage: the A13 identity of arm (e) was
 first written at 1e-12 and reported a failure whose two printed numbers were
 identical, because the result JSON carries 12 significant figures and the
@@ -198,6 +234,7 @@ ED01 = ROOT / "tutorials/steady/electrodialysis/ed01_nacl_desalination"
 ED03 = ROOT / "tutorials/steady/electrodialysis/ed03_stack_record"
 ED04 = ROOT / "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic"
 ED05 = ROOT / "tutorials/steady/electrodialysis/ed05_industrial_stack"
+ED09 = ROOT / "tutorials/steady/electrodialysis/ed09_wine_multiionic"
 MW_WATER = 0.0180153          # kg/mol, the unit's own molality closure
 RHO_CARRIER = 1000.0          # kg/m3, the dilute-carrier density the unit announces
 FARADAY = 96485.33212
@@ -414,6 +451,181 @@ def ions_of(kpi):
     return out
 
 
+# ------------------------------------------- the counter-ion split (C35)
+def species_facts(case, name):
+    """(charge, D0) of a model species, read by THIS gate's own regex from the
+    case's constant/species/ record (the tier a sealed case reads) or, absent
+    one there, the catalogue's -- never through the engine."""
+    for base in (Path(case) / "constant/species", ROOT / "data/standards/species"):
+        f = base / (name + ".dat")
+        if f.exists():
+            t = strip_comments(f.read_text())
+            z = re.search(r'^\s*charge\s+([-+0-9.]+)\s*;', t, re.M)
+            D = re.search(r'\bD0\s*\{\s*value\s+([0-9.eE+-]+)', t)
+            return (float(z.group(1)) if z else None,
+                    float(D.group(1)) if D else None)
+    return (None, None)
+
+
+def stream_flows(case, stream):
+    """kmol/s per component of a 0/ stream, from the case's own declaration."""
+    d = parse_record(Path(case) / "0" / stream)
+    return {k: si(v) for k, v in d["componentMolarFlows"].items()}
+
+
+def predicted_split(n_in, z, D, Q):
+    """THE RULE, written out here independently of the engine: on ONE
+    membrane the counter-ions share the current by |z| D c, integrated along
+    the pass -- n_k = n_k,in exp(-D_k tau), with tau from
+    SUM |z_k| (n_k,in - n_k) = Q.  Bisection (slow, obviously right) rather
+    than the engine's Newton.  Returns the removed fraction of each ion."""
+    E = sum(abs(z[k]) * n_in[k] for k in n_in)
+    if Q >= E:
+        return {k: 1.0 for k in n_in}
+    Dm = max(D[k] for k in n_in)
+    g = lambda tau: sum(abs(z[k]) * n_in[k] * -math.expm1(-D[k] / Dm * tau)
+                        for k in n_in) - Q
+    lo, hi = 0.0, 1.0
+    while g(hi) < 0.0:
+        hi *= 2.0
+    for _ in range(300):
+        mid = 0.5 * (lo + hi)
+        if g(mid) < 0.0:
+            lo = mid
+        else:
+            hi = mid
+    tau = 0.5 * (lo + hi)
+    return {k: -math.expm1(-D[k] / Dm * tau) for k in n_in}
+
+
+def declared_op(case, unit, key):
+    t = strip_comments((Path(case) / "system/flowsheetDict").read_text())
+    i = t.index("name        %s;" % unit) if ("name        %s;" % unit) in t \
+        else re.search(r'name\s+%s\s*;' % re.escape(unit), t).start()
+    m = re.search(r'\b%s\s+([0-9.eE+-]+)\s*;' % key, t[i:])
+    return float(m.group(1)) if m else None
+
+
+def counter_ion_split(outs, failures):
+    """(h) THE COUNTER-ION SPLIT (C35, Vitor 2026-10-05).  Until then every
+    counter-ion lost xi I N / (|z| F) -- the WHOLE current each -- and ed04's
+    ED1 diluate left with +1.8 % of its ion equivalents as net charge.  The
+    ruling shares each membrane's current between its counter-ions by
+    |z_i| D_i c_i; this arm holds four things, three of them recomputed here
+    from the case's own declarations and never from the engine's arithmetic:
+      (h1) CHARGE BALANCE.  On every unit whose membrane carries more than
+           one counter-ion, the published equivalents moved through the CEM
+           and through the AEM are EQUAL (to 1e-11, the result JSON carries 12
+           figures) and equal to xi I N / F (1e-10)
+           recomputed from the declared xi, the published I and N; and every
+           OUTLET stream is electroneutral to 1e-9 of its ion equivalents
+           (the defect was 1.8e-2).
+      (h2) THE RULE.  Each ion's published `demin_<ion>` equals the removal
+           recomputed here by an independent bisection of the closed form,
+           from the 0/ inlet, the species records' D0 and |z|, to 1e-9.
+      (h3) THE SHARE.  `t_transfer_<ion>` of each membrane sums to 1.
+      (h4) A SINGLE SALT IS UNTOUCHED.  ed03's demineralisation is the
+           single-salt expression xi I N / (F n_in) to 1e-10, and no
+           single-salt witness publishes a split KPI it never pinned."""
+    wit = []
+    for u in range(1, 7):
+        wit.append((ED04, "ED%d" % u, "ED%ddilIn" % u, ["ED%ddilOut" % u, "ED%dconOut" % u]))
+    wit.append((ED09, "edStack", "diluateFeed", ["diluate", "concentrate"]))
+    nchecked = 0
+    for case, unit, inlet, outlets in wit:
+        rc, out = outs[case]
+        if rc != 0:
+            continue
+        j = result_of(out)
+        k = (j or {}).get("kpis", {}).get(unit)
+        if k is None:
+            failures.append("(h) %s %s: no KPI block" % (case.name, unit))
+            continue
+        for need in ("eq_transferred_cem", "eq_transferred_aem"):
+            if need not in k:
+                failures.append("(h) %s %s: `%s` is not published -- a unit whose"
+                                " membrane carries two counter-ions must publish"
+                                " the equivalents it moved" % (case.name, unit, need))
+        if "eq_transferred_cem" not in k or "eq_transferred_aem" not in k:
+            continue
+        xi = declared_op(case, unit, "xi")
+        Q = xi * k["I"] * k["N_cellpairs"] / FARADAY
+        cem, aem = k["eq_transferred_cem"], k["eq_transferred_aem"]
+        if not close(cem, aem, 1e-11):
+            failures.append("(h1) %s %s: the CEM moved %.15g equivalents/s and the"
+                            " AEM %.15g -- the transfer is not charge-balanced"
+                            % (case.name, unit, cem, aem))
+        if not close(cem, Q, 1e-10):
+            failures.append("(h1) %s %s: %.15g equivalents/s through the CEM, but"
+                            " xi I N / F = %.15g" % (case.name, unit, cem, Q))
+        for sname in outlets:
+            st = j["streams"][sname]
+            num = den = 0.0
+            for comp, x in st["composition"].items():
+                if comp == "water":
+                    continue
+                zc, _ = species_facts(case, comp)
+                num += zc * x
+                den += abs(zc) * x
+            if den > 0.0 and abs(num) / den > 1e-9:
+                failures.append("(h1) %s: outlet `%s` carries net charge, %.3e of its"
+                                " ion equivalents" % (case.name, sname, num / den))
+        # (h2) the rule, recomputed
+        n_in = stream_flows(case, inlet)
+        z, D = {}, {}
+        for comp in n_in:
+            if comp == "water":
+                continue
+            z[comp], D[comp] = species_facts(case, comp)
+        for sign in (+1, -1):
+            ions = {c: n_in[c] * 1000.0 for c in z if z[c] * sign > 0}   # mol/s
+            if len(ions) < 2:
+                continue
+            want = predicted_split(ions, z, D, Q)
+            tsum = 0.0
+            for c in ions:
+                got = k.get("demin_" + c)
+                if got is None or not close(got, want[c], 1e-9):
+                    failures.append("(h2) %s %s: `demin_%s` = %r, the z D c split"
+                                    " recomputed here gives %.12g" % (case.name, unit,
+                                                                    c, got, want[c]))
+                tsum += k.get("t_transfer_" + c, 0.0)
+            if not close(tsum, 1.0, 1e-9):
+                failures.append("(h3) %s %s: the %s membrane's shares sum to %.12g"
+                                % (case.name, unit, "CEM" if sign > 0 else "AEM", tsum))
+        nchecked += 1
+    # (h4) the single salt
+    for case in (ED01, ED03, ED05):
+        rc, out = outs[case]
+        if rc != 0:
+            continue
+        j = result_of(out)
+        for unit, k in (j or {}).get("kpis", {}).items():
+            leak = [kk for kk in k if kk.startswith(("demin_", "t_transfer_", "eq_transferred_"))
+                    and kk != "demin_ratio"]
+            if leak:
+                failures.append("(h4) %s %s: a single salt publishes split KPIs %s"
+                                % (case.name, unit, leak))
+    rc, out = outs[ED03]
+    if rc == 0:
+        k = result_of(out)["kpis"]["edStack"]
+        xi = declared_op(ED03, "edStack", "xi")
+        n_na = stream_flows(ED03, "diluateFeed")["Na"] * 1000.0
+        want = xi * k["I"] * k["N_cellpairs"] / FARADAY / n_na
+        if not close(k["demin_ratio"], want, 1e-10):
+            failures.append("(h4) ed03: demin_ratio %.15g is not the single-salt"
+                            " expression xi I N / (F n_in) = %.15g"
+                            % (k["demin_ratio"], want))
+    if nchecked != 7:
+        failures.append("(h) only %d of the 7 multi-counter-ion units were checked"
+                        % nchecked)
+    else:
+        print("  [split] %d units with a shared membrane (ed04 ED1-ED6, ed09):"
+              " CEM equivalents == AEM equivalents == xi I N / F, every outlet"
+              " electroneutral, every demin_<ion> recomputed by bisection"
+              % nchecked)
+
+
 # ---------------------------------------------------------------- main
 def main():
     failures = []
@@ -576,7 +788,7 @@ def main():
 
     # ---------------- run the witnesses ------------------------------------
     outs = {}
-    for case in (ED01, ED03, ED04, ED05):
+    for case in (ED01, ED03, ED04, ED05, ED09):
         rc, out = run(case)
         outs[case] = (rc, out)
         if rc != 0:
@@ -834,6 +1046,9 @@ def main():
         print("      average |deviation| %.1f %% (the paper reports 9 %% for this system, "
               "section 4.3)" % (100 * sum(devs) / len(devs)))
 
+    # ---------------- (h) the counter-ion split (C35) ----------------------
+    counter_ion_split(outs, failures)
+
     # ---------------- (g) the announcements --------------------------------
     def estimate_lines(out, name):
         return re.findall(r"\[estimate\] stack '%s': `([\w.]+)` = \S+ \(SI\) is an "
@@ -918,11 +1133,18 @@ def main():
           "(the precision the result JSON carries) and its own Table 3 at 20 C to 1 %; the "
           "limiting transport numbers recompute from Eqs. 12/13; and all 6 MgCl2 + MgSO4 "
           "rows of Table 4 sit inside the paper's own 13 % band, printed with their "
-          "deviations.  "
+          "deviations.  THE COUNTER-ION SPLIT (C35): on ed04's six units and "
+          "ed09's thirteen-ion wine the equivalents through the CEM and the AEM "
+          "are equal and equal to xi I N / F, every outlet is electroneutral to "
+          "1e-9, and every demin_<ion> reproduces an independent bisection of "
+          "the z D c closed form to 1e-9; ed03's single salt keeps the "
+          "single-salt Faraday expression and no single-salt witness publishes "
+          "a split KPI.  "
           "NOT CHECKED: whether any estimate is a good one, whether any `measured` fact is "
           "correctly remembered, the transcription against the PDF, Table 4's NaCl and "
-          "MgCl2 rows (no case runs them), the ohmic drop / Nernst EMF / Faraday transfer "
-          "(ed01's goldens), the `leveque` correlation branch and the `interstitial` "
+          "MgCl2 rows (no case runs them), the ohmic drop / Nernst EMF "
+          "(ed01's goldens; the steady Nernst term takes |z| = 1 for every ion), "
+          "any membrane selectivity beyond the z D c share, the `leveque` correlation branch and the `interstitial` "
           "velocity basis (no record uses either), and dP_max / flow_max / the pH band (no "
           "record declares them).  Nothing here says the bench stack's correlation is VALID "
           "on a zig-zag spacer -- only that it is applied inside its own Reynolds band.  "

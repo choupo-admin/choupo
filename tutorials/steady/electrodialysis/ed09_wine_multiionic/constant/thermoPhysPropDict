@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the wine as thirteen ions in a water carrier.
+  Fourteen components: water and thirteen ions, each a case-local component
+  bridged to its model species (constant/components/, constant/species/).
+  ETHANOL IS NOT AMONG THEM, and cannot be: the stack sends every non-water
+  component through the aqueous-species bridge and refuses one with none
+  (system/flowsheetDict, first paragraph).  The aqueous activity model is
+  declared here, once, and the stack READS it.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+//  K is the FIRST cation, so it is the reference ion of the printed
+//  `demin` line; the conductivity target itself does not depend on the
+//  order of this list.
+components       ( water  K  Na  Ca  Mg  H  Cl  SO4  HTart  Tart  HMal  Mal  Lactate  H2PO4 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+    // The liquid IS an aqueous electrolyte solution -- declared here, once,
+    // independently of the phase equilibrium above (this stack computes no
+    // VLE).  Davies on an ionic strength of about 0.04 mol/kg.
+    aqueous
+    {
+        activityModel { model davies; }
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+//  THE LIQUID VISCOSITY IS DECLARED, and the limiting-current model reads it
+//  for Re, Sc and the Stokes-Einstein correction of the 25 C-referenced ion
+//  diffusivities to the run temperature (exactly 1 at 298.15 K) -- on PURE
+//  WATER, because this wine's ethanol is not in the composition.
+transport
+{
+    liquid
+    {
+        viscosity { model Vogel; }
+    }
+}

@@ -559,19 +559,28 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         return dil.F * 1000.0 * dil.z[compIdx];   // mol/s
     };
 
-    //  THE FARADAY SPLIT, ONE HOME (2026-09-19).  Every counter-ion in the
-    //  diluate loses xi I N / (|z_i| F) mol/s, capped at what the diluate
-    //  carries (announced when the cap binds).  It used to live inline after
-    //  the current was fixed; the conductivity target needs the OUTLET
-    //  composition inside its residual, so the arithmetic is a function now
-    //  and the product streams are built from the same call -- never a
-    //  second copy of the split.  Bit for bit the old loop.
+    //  THE FARADAY SPLIT, ONE HOME (2026-09-19; the RULE moved to
+    //  edCell::counterIonPassTransfer on 2026-10-05, C35).  Until C35 every
+    //  counter-ion in the diluate lost xi I N / (|z_i| F) mol/s -- the WHOLE
+    //  current each -- which is charge-balanced only when each membrane has
+    //  one counter-ion: on ed04 (Mg2+ / Cl- / SO4 2-) the AEM moved twice
+    //  the equivalents the CEM did and the ED1 diluate left with +1.8 % of
+    //  its ion equivalents as net charge.  Now the counter-ions of a
+    //  membrane SHARE the current by z_i D_i c_i (Vitor's ruling; the
+    //  paper's Eqs. 12/13), integrated along the pass, so each membrane
+    //  carries exactly xi I N / F equivalents; a membrane with ONE
+    //  counter-ion keeps the old expression and cap bit for bit.  The
+    //  conductivity target needs the OUTLET composition inside its
+    //  residual, so this is a function and the product streams are built
+    //  from the same call -- never a second copy of the split.
     struct FaradaySplit
     {
         sVector   FzD, FzC;              // kmol/s per component, after transfer
         bool      capBound   = false;
         scalar    removedRef = 0.0, refInflow = 0.0;
+        scalar    eqCation   = 0.0;      // cation equivalents moved [mol/s]
         SpeciesId refIon;                // the FIRST cation in component order
+        edCell::CounterIonSplit split;   // per channel row
     };
     auto faradaySplit = [&](scalar Icur) -> FaradaySplit
     {
@@ -583,19 +592,21 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
             s.FzD[i] = dil.F * dil.z[i];     // kmol/s per component (diluate)
             s.FzC[i] = con.F * con.z[i];     // kmol/s per component (concentrate)
         }
+        std::vector<scalar> avail(chD.ion.size(), 0.0);
+        for (std::size_t k = 0; k < chD.ion.size(); ++k)
+            avail[k] = s.FzD[chD.compIdx[k]] * 1000.0;     // mol/s present in diluate
+        s.split = edCell::counterIonPassTransfer(type(), chD, avail, Icur, xi, N);
+        s.capBound = s.split.exhausted;
         for (std::size_t k = 0; k < chD.ion.size(); ++k)
         {
             const std::size_t i = chD.compIdx[k];
-            const scalar zmag    = std::abs(chD.z[k]);
-            scalar dn = electrochem::faradayMolarRate(Icur, zmag, xi)
-                      * static_cast<scalar>(N);            // mol/s for THIS ion
-            const scalar avail = s.FzD[i] * 1000.0;        // mol/s present in diluate
-            if (dn > avail) { dn = avail; s.capBound = true; }
+            const scalar dn      = s.split.dn[k];          // mol/s for THIS ion
             const scalar dn_kmol = dn / 1000.0;            // kmol/s
             s.FzD[i] -= dn_kmol;
             s.FzC[i] += dn_kmol;
+            if (chD.z[k] > 0) s.eqCation += dn * std::abs(chD.z[k]);
             if (s.refIon.key.empty() && chD.z[k] > 0)
-            { s.refIon = chD.ion[k]; s.removedRef = dn; s.refInflow = avail; }
+            { s.refIon = chD.ion[k]; s.removedRef = dn; s.refInflow = avail[k]; }
         }
         return s;
     };
@@ -687,10 +698,17 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         const scalar z_ref = static_cast<scalar>(electrolyte::ionCharge(refIon));
         const scalar n_in  = diluateIonInflow(chD.compIdx[refK]);   // mol/s
         // demin(I) = (xi I N)/(|z| F) / n_in - target = 0  (linear -> direct, but
-        // solved via Newton-1D to KEEP the glass-box solver visible).
+        // solved via Newton-1D to KEEP the glass-box solver visible).  When
+        // the reference cation SHARES the CEM with other cations (C35) its
+        // removal is the split's, which is no longer linear in I -- the
+        // same residual, read off the one split.
+        int nCat = 0;
+        for (auto zz : chD.z) if (zz > 0.0) ++nCat;
         auto f  = [&](scalar Icur) {
-            const scalar removed = electrochem::faradayMolarRate(Icur, std::abs(z_ref), xi)
-                                 * static_cast<scalar>(N);
+            const scalar removed = (nCat <= 1)
+                ? electrochem::faradayMolarRate(Icur, std::abs(z_ref), xi)
+                  * static_cast<scalar>(N)
+                : faradaySplit(Icur).removedRef;
             return removed / n_in - target;
         };
         auto df = [&](scalar Icur) { const scalar d = 1e-3; return (f(Icur+d)-f(Icur-d))/(2*d); };
@@ -737,6 +755,15 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     finalise(outD, split.FzD);
     finalise(outC, split.FzC);
 
+    //  Does either membrane carry more than one counter-ion?  Only then is
+    //  the C35 split anything but the single-salt expression, and only then
+    //  does the unit print and publish it (no single-salt golden gains a
+    //  KPI it never pinned).
+    const bool multiCounterIon = (split.split.nCation > 1 || split.split.nAnion > 1);
+    scalar eqAnion = 0.0;
+    for (std::size_t k = 0; k < chD.ion.size(); ++k)
+        if (chD.z[k] < 0.0) eqAnion += split.split.dn[k] * std::abs(chD.z[k]);
+
     // ---- Stack voltage, power, efficiencies --------------------------------
     const scalar U = stackVoltage(I);
     const scalar W_electric = U * I;        // W
@@ -746,11 +773,12 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     const scalar demin = (refInflow > 0.0) ? removedRef / refInflow : 0.0;
 
     // current efficiency actually realised (counter-ion equivalents moved / charge)
-    // ~ xi by construction unless capped; report the capped value.
+    // ~ xi by construction unless capped; report the capped value.  The
+    // equivalents are summed over EVERY cation (C35): with several cations
+    // sharing the CEM, the reference cation alone carries only its share.
+    // On one cation the sum has one term and the number is unchanged.
     const scalar curEff = (I > 0.0)
-        ? (removedRef * std::abs(static_cast<scalar>(electrolyte::ionCharge(
-              refIonSp.key.empty() ? chD.ion.front() : refIonSp)))
-           * electrochem::Faraday) / (I * static_cast<scalar>(N))
+        ? (split.eqCation * electrochem::Faraday) / (I * static_cast<scalar>(N))
         : 0.0;
 
     // specific energy [kWh / m3 of diluate product].  Diluate volumetric flow ~
@@ -916,6 +944,30 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
                   << ")\n";
         std::cout << "  spec.E   = " << std::setprecision(4) << specEnergy
                   << " kWh/m3 diluate\n";
+        if (multiCounterIon)
+        {
+            //  C35: the split, printed so a student can recompute it.  The
+            //  share is the PASS AVERAGE (the shares move along the channel
+            //  as the composition does); each membrane's shares sum to 1.
+            std::cout << "  --- counter-ion split (C35: shared by z_i D_i c_i,"
+                         " Eqs. 12/13, integrated along the pass) ---\n";
+            for (std::size_t k = 0; k < chD.ion.size(); ++k)
+            {
+                if (chD.z[k] == 0.0) continue;
+                const scalar inflow = dil.F * dil.z[chD.compIdx[k]] * 1000.0;
+                std::cout << "      " << std::setw(8) << chD.ion[k].key
+                          << (chD.z[k] > 0 ? "  CEM" : "  AEM")
+                          << "   share " << std::setprecision(5)
+                          << split.split.t[k] << "   removed "
+                          << std::setprecision(3)
+                          << (inflow > 0.0 ? 100.0 * split.split.dn[k] / inflow : 0.0)
+                          << " %\n";
+            }
+            std::cout << "      equivalents moved: CEM " << std::scientific
+                      << std::setprecision(6) << split.eqCation
+                      << " mol/s, AEM " << eqAnion << " mol/s"
+                      << "  (each = xi I N / F unless exhausted)\n" << std::fixed;
+        }
         std::cout << "==================================================================\n";
     }
 
@@ -944,6 +996,15 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     //  refused: a student may drive a stack past its rating on purpose, and
     //  the run then says so in the log and the end-of-run caveat block.  A
     //  limit the record does not declare is ABSENT and is not checked.
+    if (multiCounterIon && verbosity >= 1)
+        std::cout << "  [model] " << unitLabel << ": the counter-ion current"
+                     " is SHARED between the counter-ions of each membrane by"
+                     " z_i D_i c_i (Vitor's ruling C35, 2026-10-05; the"
+                     " transport numbers of Geraldes & Afonso 2010 Eqs. 12/13,"
+                     " applied at every current), integrated along the pass,"
+                     " with D_i the ions' curated D0.  No membrane"
+                     " selectivity is modelled beyond it.\n";
+
     if (hasStack)
     {
         const EDStackLimits& lim = stk->limits();
@@ -995,6 +1056,24 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     kpis_["W_electric_kW"]            = W_electric / 1000.0;
     kpis_["E_mem_pair"]               = E_mem_pair;
     kpis_["R_pair"]                   = R_pair;
+    //  C35: each counter-ion's own removal and its pass-average share,
+    //  published ONLY where a membrane carries more than one counter-ion
+    //  (a single salt's split is the old expression, and its goldens gain
+    //  no row they never pinned).  The two equivalent totals are what the
+    //  charge balance is read from.
+    if (multiCounterIon)
+    {
+        for (std::size_t k = 0; k < chD.ion.size(); ++k)
+        {
+            if (chD.z[k] == 0.0) continue;
+            const scalar inflow = dil.F * dil.z[chD.compIdx[k]] * 1000.0;
+            kpis_["demin_" + chD.ion[k].key] =
+                (inflow > 0.0) ? split.split.dn[k] / inflow : 0.0;
+            kpis_["t_transfer_" + chD.ion[k].key] = split.split.t[k];
+        }
+        kpis_["eq_transferred_cem"] = split.eqCation;
+        kpis_["eq_transferred_aem"] = eqAnion;
+    }
     //  The conductivity form's own numbers, published ONLY on that form so no
     //  pre-existing golden gains an unpinned KPI (the module-record rule of
     //  2026-09-15): the two conductivities the target was taken on, and the

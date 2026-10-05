@@ -3307,10 +3307,12 @@ $\xi_{eff} = \xi \min(1, i_{lim}/i)$.  The DEFAULT is \code{none} --- the
 current efficiency stays put, the run warns that it is then extrapolating a
 model outside its validity, and the current is never clamped either way.
 
-Not modelled, and each refused or announced rather than assumed: more than
-one cation or one anion (refused by name --- the split of the counter-ion
-current between two counter-ions is the membranes' selectivity, which no
-record carries); back-diffusion from the concentrate; water transport;
+A diluate with several cations or anions runs: each membrane's current is
+shared between its counter-ions by $|z_i| D_i c_i$ (Theory Guide, the
+electrodialysis chapter; witness
+\file{edbatch03\_multiionic\_split}).  Not modelled, and each refused or
+announced rather than assumed: any selectivity the membranes add between
+counter-ions beyond that share; back-diffusion from the concentrate; water transport;
 co-ion leakage; any temperature transient (the Joule heat is removed by no
 modelled duty, so the campaign energy balance reports UNAVAILABLE and says
 why); the pumps; the electrode reactions, lumped into

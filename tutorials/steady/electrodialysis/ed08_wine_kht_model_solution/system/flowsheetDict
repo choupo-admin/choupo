@@ -25,18 +25,18 @@
                                                       // -> Choupo solves I
 
   (1) WHAT THE "WINE" HERE IS, AND WHY IT IS ONLY THAT.  The diluate is KHT
-      dissolved in water -- ONE 1:1 salt, K+ and HC4H4O6-, nothing else.  A
-      real wine carries a dozen ions and the steady stack cannot divide the
-      current among them honestly today: it gives EVERY counter-ion the same
-      Faraday share, xi I N / (|z_i| F), whatever each one brought.  On a
-      measured wine composition that strips the minor ions (H+, chloride,
-      malate) to zero while potassium loses a few per cent, and leaves the
-      diluate with a net charge.  How a real stack divides the current among
-      several counter-ions is the membranes' selectivity, which no membrane
-      record here carries, and the rule is RESERVED for Vitor.  On ONE
-      monovalent salt the same arithmetic is exact -- one cation, one anion,
-      equal shares, charge conserved -- so this case is the closest
-      composition the engine can carry WITHOUT that defect.
+      dissolved in water -- ONE 1:1 salt, K+ and HC4H4O6-, nothing else.
+      When this case was built (2026-10-05) the steady stack could not
+      divide the current among a real wine's dozen ions: it gave EVERY
+      counter-ion the whole Faraday share, xi I N / (|z_i| F), whatever each
+      one brought, which stripped the minor ions to zero and left the
+      diluate charged.  On ONE monovalent salt that arithmetic is exact --
+      one cation, one anion, charge conserved -- so the wine was reduced to
+      it.  The rule was supplied the same day (C35: the counter-ions of each
+      membrane SHARE its current by z_i D_i c_i), and the thirteen-ion wine
+      it unblocked is `ed09_wine_multiionic`.  This case stays as the
+      reduction a student can check by hand: on one salt the shared rule IS
+      the single-salt Faraday law, and nothing below moved.
 
   (2) WHAT THIS MODEL IGNORES, said plainly.
       * ETHANOL.  It is not in the feed because it cannot be: the stack sends
@@ -101,7 +101,7 @@
 
   (4) WHAT TO READ OFF THE LOG -- every headline number can be checked by
       hand:
-      * the CURRENT.  A 1:1 salt and an equal split, so 20 % of the
+      * the CURRENT.  A 1:1 salt, one counter-ion per membrane, so 20 % of the
         conductivity is 20 % of the salt: 0.2 x 0.045 kmol/h = 2.5e-3 mol/s
         of each ion, and I = 2.5e-3 x 96485 / (0.9 x 100) = 2.680 A.
       * the CONDUCTIVITY.  kappa = c (lambda_K + lambda_HT), lambda = F^2 D0

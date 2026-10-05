@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  edbatch03_multiionic_split / system/controlDict
+
+  The clock comes from the process.  At 2.0 A, seven cell pairs and xi 0.9,
+  each membrane moves 1.306e-4 equivalents per second, so the 0.5
+  equivalents the diluate tank starts with would be gone in about 3830 s if
+  the current never fell.  endTime 2400 s removes roughly 60 % of them,
+  enough for the faster counter-ions to have visibly outrun the slower ones,
+  while the limiting current stays above the applied current all run.
+
+  `timeStepping` is left at the default `fixed` (this unit's fixed path is
+  classical RK4 on its packed state); deltaT 1 s, as edbatch01.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+
+description   "Batch electrodialysis of a mixed NaCl + K2SO4 brine: two counter-ions on each membrane share its current by z D c";
+
+verbosity     3;
+
+startTime       0;
+endTime         2400;      // s
+deltaT          1;         // s   (fixed RK4)
+writeInterval   100;       // s

@@ -2724,19 +2724,19 @@ The diluate and the concentrate carry the SAME solution here, which is the paper
 \begin{tutgolden}
 \goldrow{stream}{ED1conIn}{F}{0.00223622618722}
 \goldrow{stream}{ED1conIn}{T}{293.15}
-\goldrow{stream}{ED1conOut}{F}{0.00223625230518}
+\goldrow{stream}{ED1conOut}{F}{0.00223624351959}
 \goldrow{stream}{ED1conOut}{T}{293.15}
 \goldrow{stream}{ED1dilIn}{F}{0.00223622618722}
 \goldrow{stream}{ED1dilIn}{T}{293.15}
-\goldrow{stream}{ED1dilOut}{F}{0.00223620006926}
+\goldrow{stream}{ED1dilOut}{F}{0.00223620885485}
 \goldrow{stream}{ED1dilOut}{T}{293.15}
 \goldrow{stream}{ED2conIn}{F}{0.00269889671236}
 \goldrow{stream}{ED2conIn}{T}{293.15}
-\goldrow{stream}{ED2conOut}{F}{0.00269892283032}
+\goldrow{stream}{ED2conOut}{F}{0.00269891404762}
 \goldrow{stream}{ED2conOut}{T}{293.15}
 \goldrow{stream}{ED2dilIn}{F}{0.00269889671236}
 \goldrow{stream}{ED2dilIn}{T}{293.15}
-\goldmore{250}
+\goldmore{298}
 \end{tutgolden}
 
 \clearpage
@@ -2947,13 +2947,13 @@ THE OPERATION. A young wine can deposit potassium hydrogen tartrate (KHT, potass
 
 stack EurodiaED-100P-50; // 100 cell pairs, 50 m2 membrane CMX\_AMX; // the record names no pair targetConductivityRemoval 0.20; // remove 20 \% of kappa // $\to$ Choupo solves I
 
-(1) WHAT THE "WINE" HERE IS, AND WHY IT IS ONLY THAT. The diluate is KHT dissolved in water -- ONE 1:1 salt, K+ and HC4H4O6-, nothing else. A real wine carries a dozen ions and the steady stack cannot divide the current among them honestly today: it gives EVERY counter-ion the same Faraday share, xi I N / (|z\_i| F), whatever each one brought. On a measured wine composition that strips the minor ions (H+, chloride, malate) to zero while potassium loses a few per cent, and leaves the diluate with a net charge. How a real stack divides the current among several counter-ions is the membranes' selectivity, which no membrane record here carries, and the rule is RESERVED for Vitor. On ONE monovalent salt the same arithmetic is exact -- one cation, one anion, equal shares, charge conserved -- so this case is the closest composition the engine can carry WITHOUT that defect.
+(1) WHAT THE "WINE" HERE IS, AND WHY IT IS ONLY THAT. The diluate is KHT dissolved in water -- ONE 1:1 salt, K+ and HC4H4O6-, nothing else. When this case was built (2026-10-05) the steady stack could not divide the current among a real wine's dozen ions: it gave EVERY counter-ion the whole Faraday share, xi I N / (|z\_i| F), whatever each one brought, which stripped the minor ions to zero and left the diluate charged. On ONE monovalent salt that arithmetic is exact -- one cation, one anion, charge conserved -- so the wine was reduced to it. The rule was supplied the same day (C35: the counter-ions of each membrane SHARE its current by z\_i D\_i c\_i), and the thirteen-ion wine it unblocked is `ed09\_wine\_multiionic`. This case stays as the reduction a student can check by hand: on one salt the shared rule IS the single-salt Faraday law, and nothing below moved.
 
 (2) WHAT THIS MODEL IGNORES, said plainly. ETHANOL. It is not in the feed because it cannot be: the stack sends every non-water component through the aqueous-species bridge, and `ethanol` declares none, so adding it REFUSES the run by name (measured on this case: `aqueousMapping: component 'ethanol' declares no aqueous mapping`). The solvent is pure water, so ethanol's effect on the ion activities, on the solution viscosity and dielectric constant, and therefore on every ion mobility, the conductivity and the limiting current, is ABSENT. EVERY OTHER WINE SOLUTE. No sodium, calcium, magnesium, chloride, sulfate or phosphate; no organic acid but the bitartrate (no malate, lactate, tartrate dianion); no sugars, phenolics or polysaccharides. In a real wine those anions carry part of the anion current, so this model OVERSTATES the bitartrate removed per ampere. ACID-BASE CHEMISTRY. No pH, no H+, no undissociated tartaric acid, no tartrate dianion: the stack carries ions as they are declared and speciates nothing, so the pH change a real treatment causes is not predicted. TARTRATE STABILITY ITSELF. The engine computes no KHT solubility in a hydroalcoholic medium and no saturation, so it cannot say whether 20 \% is ENOUGH. The target is the cellar's input, not the engine's answer. The stack's own simplifications, as in ed01-ed07: no water transport across the membranes, co-ion leakage lumped into xi, membrane resistances measured in 0.5 M NaCl (the CMX\_AMX record) applied to a 15 mol/m3 KHT solution, a lumped electrode term, no thermal effect (the energy balance is UNAVAILABLE: the ion components carry no enthalpy datum, and the run says so).
 
 (3) THE PROVENANCE OF EVERY NUMBER. THE STACK. data/standards/assets/EurodiaED-100P-50.dat -- Vitor Geraldes' recollection of an industrial unit he operated, marked `origin measured; reviewStatus unverified;` (100 cell pairs, 50 m2, two hydraulic passes, 0.7 mm channel, design flow 3000 L/h); its three estimates (channel width, spacer porosity, Schmidt exponent) are ANNOUNCED on every run. Its mass-transfer fit is the bench stack's, Geraldes \& Afonso, J. Membr. Sci. 360 (2010) 499-508, used inside its own Re band (this run: Re 62.85, band 50-86). THE MEMBRANES. data/standards/assets/CMX\_AMX.dat, cited in its own record. The stack record names no pair, so the case must. K+. data/standards/species/K.dat (D0 1.96e-9 m2/s, cited there). HC4H4O6-. The catalogue record carries NO diffusivity, so this case carries a CASE-LOCAL copy, constant/species/HTart.dat, whose D0 = 7.568e-10 m2/s is an ESTIMATE by Stokes-Einstein on a crystal-volume radius derived from the tree's own records, `origin estimated; reviewStatus unverified;`, ANNOUNCED on every run. No measured limiting conductance was read, so none is cited. AUTHOR-SET ASSUMPTIONS, in those words: the diluate at 15 mol/m3 KHT and the concentrate at 20 mol/m3 KHT (round numbers, not a measured wine or a plant's bleed set-point); both flows at 3000 L/h (the record's design flow); the 20 \% conductivity target; xi = 0.9; E\_electrodes = 2.0 V; P = 2.5 bar; and T = 298.15 K. WHY 25 C AND NOT A CELLAR TEMPERATURE. The ion diffusivities are referenced at 25 C. The limiting-current model corrects them to the run temperature by Stokes-Einstein, but the conductivity does not: it divides the 25 C D0 by R T at the run temperature, an engine inconsistency named and not fixed (it moves every ED golden). At 298.15 K the correction is exactly 1 and both read the SAME diffusivities, so the case avoids the inconsistency instead of teaching it.
 
-(4) WHAT TO READ OFF THE LOG -- every headline number can be checked by hand: the CURRENT. A 1:1 salt and an equal split, so 20 \% of the conductivity is 20 \% of the salt: 0.2 x 0.045 kmol/h = 2.5e-3 mol/s of each ion, and I = 2.5e-3 x 96485 / (0.9 x 100) = 2.680 A. the CONDUCTIVITY. kappa = c (lambda\_K + lambda\_HT), lambda = F\textasciicircum{}2 D0 / (R T): 15 x (7.361e-3 + 2.842e-3) = 0.1530 S/m in, 0.1224 out. The two ions are equal in number and K+ carries 72 \% of the current in the solution, because it diffuses 2.6 times faster. the LIMITING CURRENT. 65.7 A/m2, and it is set by the ANION membrane: the slow bitartrate depletes its film first (the cation-side value is 170.2 A/m2). At 5.36 A/m2 the stack runs at i/i\_lim = 0.082 -- nowhere near the limit on this model. the VOLTAGE. U = 7.98 V, of which 2.0 V is the lumped electrode term and 5.98 V the 100 cell pairs; P = 21.4 W, 0.0071 kWh per m3 of model wine.
+(4) WHAT TO READ OFF THE LOG -- every headline number can be checked by hand: the CURRENT. A 1:1 salt, one counter-ion per membrane, so 20 \% of the conductivity is 20 \% of the salt: 0.2 x 0.045 kmol/h = 2.5e-3 mol/s of each ion, and I = 2.5e-3 x 96485 / (0.9 x 100) = 2.680 A. the CONDUCTIVITY. kappa = c (lambda\_K + lambda\_HT), lambda = F\textasciicircum{}2 D0 / (R T): 15 x (7.361e-3 + 2.842e-3) = 0.1530 S/m in, 0.1224 out. The two ions are equal in number and K+ carries 72 \% of the current in the solution, because it diffuses 2.6 times faster. the LIMITING CURRENT. 65.7 A/m2, and it is set by the ANION membrane: the slow bitartrate depletes its film first (the cation-side value is 170.2 A/m2). At 5.36 A/m2 the stack runs at i/i\_lim = 0.082 -- nowhere near the limit on this model. the VOLTAGE. U = 7.98 V, of which 2.0 V is the lumped electrode term and 5.98 V the 100 cell pairs; P = 21.4 W, 0.0071 kWh per m3 of model wine.
 
 NOTHING HERE IS VALIDATED AGAINST A MEASURED WINE. The golden pins this model's answer. A full wine composition was run on 2026-09-19 and was parked, not shipped, for the reason in (1); DEV.md C4 records what a faithful wine case still needs. The rectifier below the stack only receives the stack's electrical power on an energy wire.
 
@@ -2974,6 +2974,67 @@ NOTHING HERE IS VALIDATED AGAINST A MEASURED WINE. The golden pins this model's 
 \goldrow{kpi}{edStack}{D\_ion\_K}{1.96e-09}
 \goldrow{kpi}{edStack}{E\_mem\_pair}{0.013980745806}
 \goldmore{40}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ed09\_wine\_multiionic}{tutorials/steady/electrodialysis/ed09\_wine\_multiionic}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (edStack) at (0.0,-0.0) {\textbf{edStack}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (rectifier) at (0.0,-1.7) {\textbf{rectifier}\\[-1pt]{\tiny electricLoad}};
+  \draw[->] ($(edStack.west)+(-1.05,-0.17)$) -- ($(edStack.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {diluateFeed};
+  \draw[->] ($(edStack.west)+(-1.05,0.17)$) -- ($(edStack.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {concentrateFeed};
+  \draw[->] ($(edStack.east)+(0,-0.17)$) -- ($(edStack.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {diluate};
+  \draw[->] ($(edStack.east)+(0,0.17)$) -- ($(edStack.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {concentrate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Electrodialysis for wine tartrate stabilisation on a thirteen-ion wine: 20 \% of the conductivity removed on the industrial stack, each membrane's current shared between its counter-ions by z D c (no ethanol)}
+\begin{tutnarrative}
+ED09 tartaric stabilisation of a wine carried as THIRTEEN IONS, on a CONDUCTIVITY target
+
+WHAT THIS CASE IS, AND WHAT ed08 IS NOT. ed08\_wine\_kht\_model\_solution reduces the wine to its stability-determining salt, KHT, because on ONE 1:1 salt the old Faraday transfer (every counter-ion given the WHOLE current, xi I N/(|z| F)) was exact. On a real wine it was not: the parked 2026-09-19 attempt at this case removed H+, Cl-, HMal- and Mal 2- ENTIRELY while K+ fell 6 \%, and left the diluate carrying net charge (DEV.md C4). Vitor ruled the missing rule on 2026-10-05 (C35): the counter-ions of each membrane SHARE its current by
+
+t\_i = |z\_i| D\_i c\_i / SUM\_j |z\_j| D\_j c\_j (no new parameter)
+
+-- the transport numbers of Geraldes \& Afonso, J. Membr. Sci. 360 (2010) 499-508, Eqs. (12)/(13), applied at every current -- integrated along the pass, with D\_i each ion's D0. Each membrane then moves exactly xi I N / F equivalents and the diluate leaves electroneutral. This case is the full wine that rule unblocks.
+
+1. ETHANOL IS NOT IN THIS WINE, AND THAT IS THE FIRST THING TO KNOW. A dry red carries about 13 \% v/v of ethanol and the stack cannot be told so: every non-water component passes through the aqueous-species bridge, and declaring `ethanol` in the components list REFUSES -- measured on a twin of this case on 2026-10-05: "aqueousMapping: component 'ethanol' declares no aqueous mapping", exit 2. So the engine prices the solvent as PURE WATER: Re and Sc on water's viscosity, every ion's conductivity on its infinite-dilution D0 in water. Mobilities scale with 1/viscosity, and a water-ethanol mixture is more viscous than water, so kappa\_in and kappa\_out are both overestimated by a common factor this case cannot compute; the RELATIVE target (20 \%) is insensitive to it, the absolute voltage and power are not. NAMED AND NOT BUILT: a neutral co-solvent carried through the mass balance and priced into the solvent viscosity and dielectric constant (DEV.md C4 (b)).
+
+2. THE WINE IS AN AUTHOR-SET COMPOSITION, closed on sulfate -- the table, the closure and what it stands for are in 0/diluateFeed. No number in it is transcribed from a measured wine and no source is cited for it; it is a round thirteen-ion composition of the order a dry red at pH about 3.6 carries, chosen so that the stack meets a wine's real spread of mobilities: H+ (D0 9.31e-9 m2/s) beside K+ (1.96e-9) beside Mg2+ (0.71e-9) on the cation membrane, Cl- (2.03e-9) beside six organic and inorganic anions on the anion membrane. The speciation is FIXED as declared: the stack does not speciate, so the H+ it removes is not replaced by the undissociated acids a real wine would re-dissociate (DEV.md C4 (d)).
+
+3. SIX DIFFUSIVITIES ARE ESTIMATES, AND THE RUN SAYS SO SIX TIMES. K, Na, Ca, Mg, H, Cl and SO4 carry curated D0 in the catalogue; HTart, Tart, H2PO4, HMal, Mal and Lactate are supplied CASE-LOCALLY under constant/species/, each `origin estimated; reviewStatus unverified;` with its derivation in the record (a Stokes-Einstein radius from the KHT crystal volume, scaled by molar mass; H2PO4- set equal to sulfate) and ANNOUNCED on every run. With the C35 rule these numbers now SET the split -- the bitartrate's estimated D0 decides how much of the anion current it carries -- so they matter more here than in ed08.
+
+4. THE TARGET IS CONDUCTIVITY, BECAUSE THAT IS WHAT IS MEASURED (Vitor: "na eletrodialise aponta para a condutividade, porque isso e que e medido"). `targetConductivityRemoval 0.20;` asks for 20 \% of the diluate's conductivity removed -- an AUTHOR-SET operating point, the same one ed08 uses -- and Choupo solves the current. The conductivity counts every ion with its own z\textasciicircum{}2 D0 c, so the target does not depend on the order of the components list. T = 298.15 K, as in ed08 and for ed08's reason (at 25 C the conductivity and the limiting current read the same diffusivities; DEV.md C4 (f)).
+
+WHAT THE RUN PRINTS (every number is this model's; the golden pins it):
+
+I = 6.710 A on 0.5 m2 per cell pair (i = 13.4 A/m2), U = 11.40 V, P = 76 W, 0.0255 kWh per m3 of wine; kappa 0.4789 $\to$ 0.3831 S/m; i\_lim = 225.2 A/m2, set by the ANION membrane, so i/i\_lim = 0.060.
+
+ion membrane share of its removed membrane's current K+ CEM 0.746 22.4 \% Na+ CEM 0.105 15.8 \% Ca2+ CEM 0.032 9.7 \% Mg2+ CEM 0.093 8.7 \% H+ CEM 0.023 70.0 \% Cl- AEM 0.051 35.1 \% SO4 2- AEM 0.324 20.2 \% HTart- AEM 0.159 14.9 \% Tart 2- AEM 0.059 14.9 \% HMal- AEM 0.021 15.4 \% Mal 2- AEM 0.002 15.5 \% Lactate- AEM 0.209 17.4 \% H2PO4- AEM 0.175 20.2 \%
+
+THE LESSON IS IN THE LAST COLUMN. The fraction of an ion removed depends on its D0 ALONE -- ln(1 - removed) / D0 is one number on each membrane -- so ions of equal D0 leave in equal FRACTION whatever their charge or concentration (HTart- and Tart 2-, which share an estimated D0; SO4 2- and H2PO4-, which share one by construction), the fast H+ and Cl- are stripped hardest, and the slow divalent cations least. The SHARE of the current, on the other hand, is set by z D c: potassium, the dominant cation, carries three quarters of the cation current. The equivalents moved through the two membranes are printed beside the table and are equal.
+
+WHAT IS PINNED AND WHAT IS NOT. The golden pins this model's answer. Nothing here is validated against a measured wine or a measured stack run: the composition is author-set, six D0 are announced estimates, the sulfate is a closure, the solvent is water, the speciation is frozen, and the share z D c is a RULING that leaves out any selectivity the real membranes add between counter-ions. Whether 20 \% of the conductivity removes enough KHT to stabilise the wine is NOT computed: that needs a KHT solubility in a hydroalcoholic medium (DEV.md C4 (e)), which the tree does not carry.
+
+diluateFeed (the wine) $\to$ +-----------------------+ $\to$ diluate (stabilised wine) | EurodiaED-100P-50 | concentrateFeed (brine) $\to$ | 100 pairs, CMX/AMX | $\to$ concentrate +-----------------------+ | (power, energy wire) v rectifier (electricLoad)
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{concentrate}{F}{0.0463012284647}
+\goldrow{stream}{concentrate}{T}{298.15}
+\goldrow{stream}{concentrateFeed}{F}{0.0462903111984}
+\goldrow{stream}{concentrateFeed}{T}{298.15}
+\goldrow{stream}{diluate}{F}{0.0463032897655}
+\goldrow{stream}{diluate}{T}{298.15}
+\goldrow{stream}{diluateFeed}{F}{0.0463142070318}
+\goldrow{stream}{diluateFeed}{T}{298.15}
+\goldrow{kpi}{edStack}{C\_ion\_Ca}{1.25}
+\goldrow{kpi}{edStack}{C\_ion\_Cl}{1.1}
+\goldrow{kpi}{edStack}{C\_ion\_H}{0.25}
+\goldrow{kpi}{edStack}{C\_ion\_H2PO4}{6.5}
+\goldrow{kpi}{edStack}{C\_ion\_HMal}{1}
+\goldrow{kpi}{edStack}{C\_ion\_HTart}{8}
+\goldmore{111}
 \end{tutgolden}
 
 \subsection{evaporation}
@@ -4747,17 +4808,17 @@ Equimolar feed (1/3, 1/3, 1/3). This case is the litmus test for the VLLE solver
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{stream}{liquidB}{F}{0.0113091924076}
 \goldrow{stream}{vapor}{F}{0.00516101398624}
-\goldrow{kpi}{decanter01}{F\_alpha}{0.0164702063938}
-\goldrow{kpi}{decanter01}{F\_beta}{0.011307571384}
+\goldrow{kpi}{decanter01}{F\_alpha}{0.011307571384}
+\goldrow{kpi}{decanter01}{F\_beta}{0.0113091924076}
 \goldrow{kpi}{decanter01}{F\_in}{0.0277777777778}
 \goldrow{kpi}{decanter01}{F\_vapor}{0.00516101398624}
 \goldrow{kpi}{decanter01}{P}{100000}
 \goldrow{kpi}{decanter01}{T}{350}
-\goldrow{kpi}{decanter01}{V\_over\_F}{0.407072569823}
+\goldrow{kpi}{decanter01}{V\_over\_F}{0.185796503505}
 \goldrow{kpi}{decanter01}{beta\_vapor}{0.185796503505}
 \goldrow{kpi}{decanter01}{phaseSet}{2}
-\goldrow{utility}{decanter01}{heating.steamLP.duty\_kW}{4.38784508636}
-\goldmore{12}
+\goldrow{stream}{feed}{T}{350}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage
