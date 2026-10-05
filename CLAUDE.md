@@ -1942,7 +1942,7 @@ name and the total said INCOMPLETE** until a set could be READ rather than
 typed -- an invented set converts *uncosted* into *falsely costed*, which no
 reader and no gate can detect.  **Since 2026-10-05 (DEV.md 4c C38 item 1) they
 are costed by the tray** on Turton's sieve-tray set as the authors' CAPCOST 2017
-program carries it (`costing/Turton.cpp` names the cells, and that the book's
+program carries it (`src/postProcessing/costing/Turton.cpp` names the cells, and that the book's
 own table was NOT read), the material CLASS declared as `trayMaterial` and
 never read off a material record's name; absent or unknown, the trays still
 refuse by name and the total still says INCOMPLETE.  Four traps paid for: the sizer's first
