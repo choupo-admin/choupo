@@ -22,15 +22,22 @@
 
     THIS CASE IS THE STARVED ONE.  Identical to evapDryer01_nacl except for
     the gas: 40 kmol/h instead of 600.  The announcement changes to
-    [energy-limited], a WARNING says the gas cannot supply the drying heat,
-    T_out is floored at the wet solid's own temperature, and 16.6 wt% of the
+    [saturation-limited]: the exhaust reaches its cap (a_w 0.95) at
+    T_out = 310.7 K having taken up 37.6 kg/h of water, and 16.6 wt% of the
     water stays on the crystal -- a dryer that does not dry, reported as such
     instead of returning a dry solid it cannot produce.
 
-    Read the exhaust humidity beside it: 0.95, exactly the cap.  Both limits
-    are within rounding of each other here, which is what the coupling means
-    -- the gas cools as it evaporates, and running out of heat and running
-    out of room are the same wall approached from two sides.
+    THE WALL THIS GAS MEETS IS ROOM, NOT HEAT -- whatever the case's name
+    says (the name is kept: other pages link to it).  The same NOTE says
+    what the heat could have paid for: cooled all the way to the solid's
+    feed temperature, 298.15 K, this gas could evaporate 48.9 kg/h, more than
+    the 37.6 kg/h it has room for.  The two limits are coupled --
+    evaporation cools the gas, which lowers what it can hold -- but they are
+    two walls, and at this gas rate the room wall comes first.  Until
+    2026-10-05 the unit called this answer energy-limited and warned that
+    T_out was floored at the feed temperature, beside a T_out 12.6 K above
+    it: it judged the limit on a hypothetical (all the water leaving), not
+    on the answer.  None of the numbers moved; the sentence did.
 */
 units
 (

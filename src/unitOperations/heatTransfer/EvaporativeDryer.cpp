@@ -29,11 +29,13 @@ License
 
 #include "EvaporativeDryer.H"
 #include "thermo/ThermoPackage.H"
+#include "core/Advisory.H"
 
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
@@ -122,6 +124,21 @@ int EvaporativeDryer::solve(const DictPtr& dict,
         ? dict->subDict("operation")->lookupScalar("maxExhaustHumidity") : 0.95;
 
     // Sensible heat capacities (evaluated at the mean film T).
+    //
+    //  THIS UNIT'S ENERGY BALANCE IS ITS OWN HAND SURFACE, and that is named
+    //  rather than hidden (2026-10-05, DEV.md C26).  The spray and solid
+    //  dryers moved to the formation surface the energy report prices on
+    //  (`flashState::priceState`, 2026-09-27); this one cannot follow them on
+    //  its corpus today, because the crystal it dries in every shipped case
+    //  (NaCl, Li2CO3) carries no formation datum -- a salt's solid enthalpy is
+    //  ION-DERIVED by rule (CLAUDE.md 5), so outside an electrolyte package
+    //  the report REFUSES the energy balance of these cases and `priceState`
+    //  would refuse the unit.  Moving it is therefore a change to what the
+    //  engine refuses, and is Vitor's.  What this surface must not do is
+    //  default a heat capacity in silence, so each default that is USED is
+    //  announced below.
+    const std::string who = "evaporativeDryer '"
+        + (dict->name().empty() ? type() : dict->name()) + "'";
     const scalar Tmid = 0.5 * (T_w + T_air);
     scalar cp_air = 0.0;                                                 // J/(mol.K)
     for (std::size_t i = 0; i < n; ++i)
@@ -129,22 +146,45 @@ int EvaporativeDryer::solve(const DictPtr& dict,
             cp_air += yAir[i] * thermo.comp(i).cpIdealGas().Cp(T_air);
     const scalar cpSolid = sol.hasCpSolid()   ? sol.cpSolid().Cp(Tmid) : 0.0;
     const scalar cpLiq   = solv.hasCpLiquid() ? solv.cpLiquid().Cp(Tmid) : 75.4;
+    if (!sol.hasCpSolid() && solid_mol > 0.0)
+    {
+        const std::string msg = "'" + sol.name() + "' carries no"
+            " `solidHeatCapacity {}`, so the sensible heat of warming the"
+            " crystal from its feed temperature to the outlet is taken as ZERO"
+            " in this unit's energy balance (a default, not a datum).  Curate"
+            " the record's solid heat capacity to price it.";
+        if (AdvisoryLog::instance().add("drying", "warning", who, msg))
+            std::cout << "  [EvaporativeDryer] DEFAULT: " << msg << "\n";
+    }
+    if (!solv.hasCpLiquid() && water_in > 0.0)
+    {
+        const std::string msg = "'" + solv.name() + "' carries no liquid"
+            " heat capacity, so the free water is warmed at a fixed 75.4"
+            " J/(mol K) (liquid water near 25 C -- a default, not a datum).";
+        if (AdvisoryLog::instance().add("drying", "warning", who, msg))
+            std::cout << "  [EvaporativeDryer] DEFAULT: " << msg << "\n";
+    }
+
+    // The energy balance on this surface, in W: what the air gives up cooling
+    // from T_air to Tout, minus what warming the solid and its water to Tout
+    // and evaporating `water_rem` at Tout cost.
+    auto fEner = [&](scalar Tout, scalar water_rem) -> scalar
+    {
+        const scalar supply = F_air * 1000.0 * cp_air * (T_air - Tout);
+        const scalar demand = (solid_mol * cpSolid + water_in * cpLiq) * 1000.0 * (Tout - T_w)
+                            + water_rem * 1000.0 * solv.Hvap_latent(Tout);
+        return supply - demand;
+    };
 
     // Adiabatic outlet T for a GIVEN removed-water rate (air cools to supply the
-    // latent + sensible load).  f(T)=supply-demand, bracketed on [T_w, T_air].
+    // latent + sensible load), bracketed on [T_w, T_air].  Below T_w this
+    // model does not go: the solid's feed temperature is its declared floor.
     auto Tout_for = [&](scalar water_rem) -> scalar
     {
-        auto fEner = [&](scalar Tout) -> scalar
-        {
-            const scalar supply = F_air * 1000.0 * cp_air * (T_air - Tout);
-            const scalar demand = (solid_mol * cpSolid + water_in * cpLiq) * 1000.0 * (Tout - T_w)
-                                + water_rem * 1000.0 * solv.Hvap_latent(Tout);
-            return supply - demand;
-        };
-        if (fEner(T_w) < 0.0) return T_w;                    // energy floor
+        if (fEner(T_w, water_rem) < 0.0) return T_w;         // energy floor
         scalar a = T_w, b = T_air;
         for (int it = 0; it < 80 && (b - a) > 1.0e-4; ++it)
-        { const scalar m = 0.5*(a+b); if (fEner(m) >= 0.0) a = m; else b = m; }
+        { const scalar m = 0.5*(a+b); if (fEner(m, water_rem) >= 0.0) a = m; else b = m; }
         return 0.5*(a+b);
     };
 
@@ -158,21 +198,42 @@ int EvaporativeDryer::solve(const DictPtr& dict,
         return (Psat > 0.0) ? y_w * P / Psat : 1.0;
     };
 
-    // Solve for the removed water: the FIRST limit that binds.  Try removing ALL
-    // the free water; if that would over-saturate the exhaust, bisect down to
-    // aw_max.  The energy floor is inside Tout_for.
+    // ---- WHICH LIMIT BINDS, decided at the answer (2026-10-05) -----------
+    //
+    //  THE HEAT THE AIR CAN PAY FOR.  With the solid leaving at its floor T_w
+    //  the sensible demand vanishes and the balance above is linear in the
+    //  evaporation, so its root is closed-form:
+    //      water_pay = F_air cp_air (T_air - T_w) / lambda(T_w).
+    //  Until 2026-10-05 this unit asked only whether removing ALL the free
+    //  water hit the floor, and two defects followed from that one question,
+    //  the first of them the solid dryer's of 2026-09-27:
+    //    * when the floor bound and the exhaust stayed below its cap, it
+    //      evaporated ALL the free water anyway with T_out at T_w -- the heat
+    //      for every kilogram beyond water_pay came from nowhere;
+    //    * when the exhaust cap bound first (evapDryer02, the lithium plant's
+    //      FINISHING.dryer), it still LABELLED the answer energy-limited and
+    //      warned that T_out was floored at the feed T, beside a T_out tens of
+    //      kelvin above it -- a hypothetical (all the water) reported as the
+    //      answer's limit.
+    //  Now the evaporation is capped by what the air can pay for, the exhaust
+    //  cap is solved inside that, and the limit announced is the one that
+    //  binds the answer.
+    const scalar lambda_w  = solv.Hvap_latent(T_w);                      // J/mol
+    const scalar water_pay = (lambda_w > 0.0)
+        ? std::max(0.0, F_air * cp_air * (T_air - T_w) / lambda_w) : water_in;
+    const bool   heatBinds = water_pay < water_in;
+    const scalar water_cap = heatBinds ? water_pay : water_in;           // kmol/s
+
     scalar water_rem;
     std::string limit;
-    const scalar Tout_full = Tout_for(water_in);
-    const bool energyLimited = (Tout_full <= T_w + 1.0e-6) && (water_in > 0.0);
-    if (aw_exhaust(water_in, Tout_full) <= aw_max)
+    if (aw_exhaust(water_cap, Tout_for(water_cap)) <= aw_max)
     {
-        water_rem = water_in;                                // all free water leaves
-        limit = energyLimited ? "energy" : "complete";
+        water_rem = water_cap;
+        limit = heatBinds ? "energy" : "complete";
     }
     else
     {
-        scalar lo = 0.0, hi = water_in;                      // aw increases with water_rem
+        scalar lo = 0.0, hi = water_cap;                     // aw increases with water_rem
         for (int it = 0; it < 80 && (hi - lo) > 1.0e-12; ++it)
         {
             const scalar m = 0.5*(lo+hi);
@@ -181,10 +242,11 @@ int EvaporativeDryer::solve(const DictPtr& dict,
         water_rem = 0.5*(lo+hi);
         limit = "saturation";
     }
-    if (energyLimited && limit != "energy")
-        limit = "energy";                                    // the floor dominates
 
-    const scalar T_out       = Tout_for(water_rem);
+    //  At the energy limit the solid leaves at its floor by construction
+    //  (water_pay is the balance's root there); Tout_for would return it only
+    //  to within its own 1e-4 K bracket, so the floor is written, not searched.
+    const scalar T_out       = (limit == "energy") ? T_w : Tout_for(water_rem);
     const scalar water_final = std::max(0.0, water_in - water_rem);      // stays on the cake
     const scalar X_final     = (solid_mass > 0.0) ? water_final * MW_solv / solid_mass : 0.0;
     const scalar aw_out      = aw_exhaust(water_rem, T_out);
@@ -205,7 +267,10 @@ int EvaporativeDryer::solve(const DictPtr& dict,
     if (dryFluid > 0.0)
         for (std::size_t i = 0; i < n; ++i)
             dry.z[i] = (i == iSolv ? water_final : F_w * zW[i]) / dryFluid;
-    dry.s.assign(n, 0.0);  dry.s[iSolid] = solid_mol;
+    //  EVERY crystal the feed carried leaves on the cake.  This copied the
+    //  FIRST solid only, so a feed carrying two crystalline phases lost the
+    //  second in silence (no corpus case carries two, so nothing moves).
+    dry.s = sW;
     produced_.push_back(dry);
 
     ProcessStream ex;
@@ -228,14 +293,34 @@ int EvaporativeDryer::solve(const DictPtr& dict,
     kpis_["air_in_kmol_h"]   = F_air * 3600.0;
 
     if (limit == "energy")
-        std::cout << "  [EvaporativeDryer] WARNING: the hot air cannot supply the"
-                     " drying heat -- T_out floored at the feed T; use hotter or"
-                     " more air.\n";
+    {
+        std::ostringstream msg;
+        msg << std::setprecision(4) << std::fixed
+            << "the hot air cannot pay for evaporating all the free water:"
+               " with the solid leaving at its feed temperature (" << T_w
+            << " K, this model's floor) it evaporates "
+            << (water_rem * MW_solv * 3600.0) << " kg/h of the "
+            << (water_in * MW_solv * 3600.0) << " kg/h fed, so the solid"
+               " leaves at X = " << X_final << " kg/kg with the exhaust at"
+               " a_w = " << aw_out << ", below its cap.  Use hotter or more"
+               " air.";
+        if (AdvisoryLog::instance().add("drying", "warning", who, msg.str()))
+            std::cout << "  [EvaporativeDryer] WARNING: " << msg.str() << "\n";
+    }
     else if (limit == "saturation")
+    {
         std::cout << "  [EvaporativeDryer] NOTE: air-capacity limited -- the exhaust"
                      " reached a_w = " << std::fixed << std::setprecision(2) << aw_max
-                  << "; residual free water stays on the cake (add more/drier air"
-                     " to finish).\n";
+                  << " at T_out = " << std::setprecision(1) << T_out << " K"
+                  << " having carried " << (water_rem * MW_solv * 3600.0)
+                  << " kg/h";
+        if (heatBinds)
+            std::cout << ", before the air ran out of heat (cooled to the"
+                         " solid's feed T it could pay for "
+                      << (water_pay * MW_solv * 3600.0) << " kg/h)";
+        std::cout << "; residual free water stays on the cake (add more/drier"
+                     " air to finish).\n";
+    }
 
     if (verbosity >= 2)
         std::cout << "\n======================  Evaporative Dryer Result  ================\n"

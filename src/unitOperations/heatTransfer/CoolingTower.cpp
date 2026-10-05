@@ -28,6 +28,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "CoolingTower.H"
+#include "Psychrometry.H"
 #include "thermo/ThermoPackage.H"
 
 #include <algorithm>
@@ -164,15 +165,21 @@ int CoolingTower::solve(const DictPtr& dict,
     const scalar cpL  = condensable.cpLiquid().Cp(0.5 * (T_Lin + T0 + 25.0))
                         / Mv * 1000.0;                                   // J/(kg.K)
 
+    //  The saturation humidity and the inlet wet bulb are the dryers' shared
+    //  psychrometry (Psychrometry.H), the arithmetic this unit wrote out for
+    //  itself until 2026-10-05; the refusal keeps naming the tower's remedy.
     auto Ysat = [&](scalar T) -> scalar
     {
-        const scalar pv = condensable.vp().Psat_Pa(T);
-        if (pv <= 0.0 || pv >= 0.95 * P)
-            throw std::runtime_error("CoolingTower: saturation humidity is"
-                " undefined at T = " + std::to_string(T) + " K (Psat out of"
-                " range at this pressure) -- the water inlet is too hot for"
-                " an evaporative tower at " + std::to_string(P / 1.0e5) + " bar.");
-        return (Mv / Mc) * pv / (P - pv);
+        try
+        {
+            return psychrometry::Ysat(condensable, Mv, Mc, P, T, "CoolingTower");
+        }
+        catch (const std::runtime_error& e)
+        {
+            throw std::runtime_error(std::string(e.what()) + " -- the water"
+                " inlet is too hot for an evaporative tower at "
+                + std::to_string(P / 1.0e5) + " bar.");
+        }
     };
     auto hHumid = [&](scalar T, scalar Y) -> scalar
     {
@@ -181,20 +188,11 @@ int CoolingTower::solve(const DictPtr& dict,
     auto hStar = [&](scalar T) -> scalar { return hHumid(T, Ysat(T)); };
 
     // ---- Inlet-air wet bulb (adiabatic saturation, Lewis = 1) --------------
-    // Solve  Ysat(Twb) - Y1 = (cpc + Y1 cpv)(T_Gin - Twb) / lambda(Twb).
-    auto fWb = [&](scalar Twb) -> scalar
-    {
-        const scalar lam = condensable.Hvap_latent(Twb) / Mv * 1000.0;
-        return Ysat(Twb) - Y1 - (cpc + Y1 * cpv) * (T_Gin - Twb) / lam;
-    };
-    scalar wbLo = T0 + 0.5, wbHi = T_Gin;
-    if (fWb(wbHi) < 0.0)
-        throw std::runtime_error("CoolingTower: the inlet air is supersaturated"
-            " (its humidity exceeds saturation at its own temperature) --"
-            " check the air inlet composition.");
-    for (int it = 0; it < 100 && (wbHi - wbLo) > 1.0e-7; ++it)
-    { const scalar m = 0.5 * (wbLo + wbHi); (fWb(m) >= 0.0 ? wbHi : wbLo) = m; }
-    const scalar T_wb = 0.5 * (wbLo + wbHi);
+    // Solve  Ysat(Twb) - Y1 = (cpc + Y1 cpv)(T_Gin - Twb) / lambda(Twb),
+    // by bisection on [273.65 K, T_Gin] to 1e-7 K, the humid heat at the
+    // tower's own mean air T -- the construction Psychrometry.H holds.
+    const scalar T_wb = psychrometry::wetBulb(condensable, Mv, Mc, cpc, cpv,
+                                              P, T_Gin, Y1, "CoolingTower");
 
     const scalar h1 = hHumid(T_Gin, Y1);                                 // air inlet
 

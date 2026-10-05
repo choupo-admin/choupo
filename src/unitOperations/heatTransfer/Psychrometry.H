@@ -52,9 +52,12 @@ Description
     moisture's and the dry carrier's molar masses [kg/kmol]; cp_c and cp_v
     are mass heat capacities [J/(kg K)].  Every refusal names its caller.
 
-    NOT moved, and named: CoolingTower's own wet-bulb lambda, which closes
-    over that unit's water-side state; it is the same construction and
-    should call this one the day that unit is next touched.
+    CoolingTower's own saturation humidity and wet-bulb bisection were the
+    same construction written out a third time; they call these since
+    2026-10-05 (coolingTower01's golden unmoved), its refusal still naming
+    the tower's own remedy.  The tower's Merkel enthalpy h* stays its own:
+    it is the classical psychrometric datum the Merkel method is taught on,
+    not a copy of anything here.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
