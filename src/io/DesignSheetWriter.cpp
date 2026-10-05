@@ -390,6 +390,15 @@ std::size_t write(const std::string&                       caseRoot,
                 o << "    sizeKey         " << cb.sizeKey << ";\n";
             if (!cb.correlation.empty())
                 o << "    correlation     " << cb.correlation << ";\n";
+            //  THE MATERIAL THE COST WAS PRICED IN, when it is not the item's
+            //  own (2026-10-05).  A tray stack is priced by the material
+            //  CLASS its case declared (`trayMaterial`), which may differ from
+            //  the column's construction material printed in the header; a
+            //  catalyst charge is priced per kilogram and has no construction
+            //  material at all.  Written only then, so every other sheet is
+            //  character-for-character what it was.
+            if (!cb.material.empty() && cb.material != sz.material)
+                o << "    pricedAs        \"" << cb.material << "\";\n";
             //  No unit word on the three costs: their unit is the CURRENCY,
             //  stated once by the `currency` key above.  Repeating it on each
             //  line would be three more homes for one fact, and `EUR_2026` is

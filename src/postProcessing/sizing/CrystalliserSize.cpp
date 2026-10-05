@@ -55,7 +55,7 @@ std::vector<EquipmentSizing> CrystalliserSize::size(const std::string& unitName,
 
     //  THE SIZE IS THE DECLARED WORKING VOLUME, passed through.  The MSMPR
     //  unit is a RATING model -- `operation.volume` is its input and
-    //  tau = V/Q its result -- so the Guthrie size key is the declaration,
+    //  tau = V/Q its result -- so the Turton size key is the declaration,
     //  and the basis says so.  Until 2026-09-05 this sizer computed
     //  `liquorFlow * residenceTime` and called the product m^3: liquorFlow is
     //  the unit's MOLAR flow (kmol/s, labelled so in Crystalliser.cpp), so the
@@ -75,7 +75,7 @@ std::vector<EquipmentSizing> CrystalliserSize::size(const std::string& unitName,
     d.equipmentType  = "crystalliser";
     d.material       = material.name;
     d.basis          = "V_magma = declared operation.volume (MSMPR working volume; pass-through)";
-    d.set("V_magma",        V_magma,      "m3");      // Guthrie sizeKey
+    d.set("V_magma",        V_magma,      "m3");      // Turton sizeKey
     d.set("throughput",     th->second,   "m3/s");    // Q, the VOLUMETRIC flow tau is taken on
     d.set("liquorFlow",     lf->second,   "kmol/s");  // the MOLAR liquor flow -- NOT a volume rate
     d.set("residenceTime",  rt->second,   "s");

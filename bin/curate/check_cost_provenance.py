@@ -95,7 +95,7 @@ that happened to agree with the model's.
 
   (k) SOURCE -- THE HEADER DOES NOT RE-DERIVE WHAT THE MODEL PRICED WITH, and
       each of the four price-index constants has exactly ONE home in
-      `Guthrie.{H,cpp}` outside comments.  A source arm, and the limit is
+      `Turton.{H,cpp}` outside comments.  A source arm, and the limit is
       worth stating rather than hiding: NO output arm can separate a header
       that re-reads the dict from one that draws the model, because when the
       case declares the key both find the same number and when it does not
@@ -119,6 +119,10 @@ that happened to agree with the model's.
       unit.  The specification sheet is the page somebody audits a project
       from, and an input the engine supplied that the page does not name
       reads as one the author declared.
+
+  (p) THE RETIRED NAME IS REFUSED (2026-10-05, DEV.md 4c C38 item 2).
+      `method Guthrie;` prices nothing and its refusal names `Turton`; the
+      source registers no `Guthrie` key.  See `check_retired_name_refused`.
 
   (o) A DECISION SAYS WHOSE IT IS.  `refuseOnMissingPrice` decides whether an
       appraisal REFUSES on an absent price or reports zero revenue, and it was
@@ -216,7 +220,8 @@ twice and (n) once.  This is the negative's own test, and it is the sabotage
 worth having: an announcement that fires on everything is the failure mode the
 end-of-run block exists to prevent, and it looks MORE thorough, not less.
 
-S17 -- the four in-class member initialisers restored in `Guthrie.H` beside
+S17 -- the four in-class member initialisers restored in `Guthrie.H` (named
+`Turton.H` since 2026-10-05, DEV.md 4c C38 item 2) beside
 the constructor that assigns all four unconditionally.  Arm (k), four times,
 one per literal.  Note what this sabotage does NOT do: it changes no output at
 all, because the initialisers were dead the whole time.  Only a source arm can
@@ -297,7 +302,7 @@ sizing
 
 costing
 {
-    method  Guthrie;
+    method  Turton;
     cepci   %g;
 }
 """ % (TAU, CEPCI_PROBE)
@@ -360,16 +365,16 @@ def check_price_index_arity(fails):
             "pricing factors.  A header that computes its own is the second "
             "home under another name (the 2026-09-05 first-law rule).")
 
-    g = strip_comments((ROOT / "src/postProcessing/costing/Guthrie.cpp")
+    g = strip_comments((ROOT / "src/postProcessing/costing/Turton.cpp")
                        .read_text(errors="replace")) \
-      + strip_comments((ROOT / "src/postProcessing/costing/Guthrie.H")
+      + strip_comments((ROOT / "src/postProcessing/costing/Turton.H")
                        .read_text(errors="replace"))
     for lit in ("2026.0", "820.0", "397.0", "0.92"):
         n = len(re.findall(re.escape(lit), g))
         if n > 1:
             fails.append(
                 "(k) the price-index literal %s appears %d times in "
-                "Guthrie.{H,cpp} outside comments.  It had three homes on "
+                "Turton.{H,cpp} outside comments.  It had three homes on "
                 "2026-09-06 -- the constructor's default, a dead in-class "
                 "member initialiser, and the pass's own header -- and they "
                 "agreed, which is what made the drift invisible." % (lit, n))
@@ -415,6 +420,58 @@ def check_policy_is_named(fails):
                     "it was assumed.  Silence has to keep meaning 'nothing "
                     "was assumed', or the announcement is noise the reader "
                     "learns to skip")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def check_retired_name_refused(fails):
+    """(p) THE RETIRED NAME IS REFUSED, AND THE REFUSAL NAMES ITS SUCCESSOR
+    (2026-10-05, DEV.md 4c C38 item 2).  The costing model was registered as
+    `Guthrie` while every coefficient in it was Turton's, then carried
+    `Guthrie` as an announced alias for a month.  The alias is gone: one
+    registered name, no dual reader.  Two halves, because each can be lost
+    without the other:
+
+      * SOURCE: `CostingModel.cpp` registers no `Guthrie` key.  An alias put
+        back would make the behavioural half below pass for the wrong reason
+        only if it also stayed silent, so the registration is checked where
+        it lives.
+      * BEHAVIOUR: a probe declaring `method Guthrie;` must not price -- no
+        costing row may be printed -- and its message must come through the
+        one refusal home (`unknown costing method 'Guthrie'`, with the
+        registered list) AND name `Turton` as the name to write, because the
+        closest-name suggestion cannot reach `Turton` from `Guthrie` and a
+        refusal that lists the registry without saying which entry replaced
+        the old word leaves the reader guessing."""
+    src = strip_comments((ROOT / "src/postProcessing/costing/CostingModel.cpp")
+                         .read_text(errors="replace"))
+    if re.search(r'registerType\(\s*"Guthrie"', src):
+        fails.append("(p) CostingModel.cpp registers `Guthrie` again -- the "
+                     "retired name is a second home for one model (the alias "
+                     "was retired 2026-10-05, DEV.md 4c C38 item 2)")
+    tmp = tempfile.mkdtemp(prefix="cost_retired_")
+    try:
+        d = Path(tmp) / "probe"
+        shutil.copytree(CASE, d)
+        (d / "system" / "postDict").write_text(
+            POST.replace("method  Turton;", "method  Guthrie;"))
+        if "method  Guthrie;" not in (d / "system" / "postDict").read_text():
+            fails.append("(p) the probe could not be built: the fixture no "
+                         "longer declares `method  Turton;`")
+            return
+        p = subprocess.run([str(BIN), str(d)], capture_output=True, text=True,
+                           cwd=str(ROOT), timeout=300)
+        out = p.stdout + p.stderr
+        if re.search(r"^\s+flash01\s+vessel\s+[\d.]+\s+[\d.]+\s+\d+", out, re.M):
+            fails.append("(p) `method Guthrie;` PRICED the probe -- the "
+                         "retired name is still accepted")
+        if "unknown costing method 'Guthrie'" not in out:
+            fails.append("(p) `method Guthrie;` is not refused through the "
+                         "one refusal home (`unknown costing method "
+                         "'Guthrie'` absent from the run's output)")
+        if "Write `method Turton;`" not in out:
+            fails.append("(p) the refusal of `method Guthrie;` does not name "
+                         "`Turton` as the name to write")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -713,6 +770,7 @@ def main():
 
     check_price_index_arity(fails)
     check_policy_is_named(fails)
+    check_retired_name_refused(fails)
 
     if fails:
         print("check_cost_provenance: FAIL")
@@ -750,7 +808,10 @@ def main():
           "NOT COVERED THERE: whether any default's VALUE is right -- L/D is "
           "2.5 in StirredTank and 3.0 in VesselSize for the same key, "
           "recorded and deliberately NOT reconciled (reserved for Vitor) -- "
-          "and the 19 other silent defaults named in the design record.")
+          "and the 19 other silent defaults named in the design record.  "
+          "AND, since 2026-10-05: the model's ONE registered name is "
+          "`Turton`, and `method Guthrie;` is REFUSED through the one "
+          "refusal home, naming `Turton` (source + behaviour).")
     return 0
 
 

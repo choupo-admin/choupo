@@ -70,7 +70,7 @@
      phantom reactor heater exists anywhere.
   4. MAKE EVERY MACHINE EXPLICIT so it can be SIZED AND COSTED: compressors by
      shaft power, exchangers by area, the converter + drums by vessel design
-     bases (space velocity / residence time) in system/postDict -> Guthrie
+     bases (space velocity / residence time) in system/postDict -> Turton
      costs -> the DCF economics in constant/economics.  Every unit operation
      carries its own sizing -- the doctrine.
   5. VALIDATE AGAINST MEASUREMENT AT EVERY JOINT: the reactor equilibrium

@@ -1260,7 +1260,7 @@ Read the printed table. The feed is a saturated liquid, so it joins the liquid t
 \goldrow{kpi}{column09}{T\_top}{355.689113032}
 \goldrow{kpi}{column09}{V\_rect}{0.0416666666667}
 \goldrow{kpi}{column09}{V\_strip}{0.022298836509}
-\goldmore{84}
+\goldmore{87}
 \end{tutgolden}
 
 \clearpage
@@ -2454,7 +2454,7 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
   \draw[->] ($(separator.east)+(0,0.17)$) -- ($(separator.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapProd};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Esterification plant: CAPEX (Guthrie) $\to$ OPEX (COM\_d) $\to$ discounted-cash-flow appraisal (NPV/IRR/payback)}
+\tutwhat{Esterification plant: CAPEX (Turton) $\to$ OPEX (COM\_d) $\to$ discounted-cash-flow appraisal (NPV/IRR/payback)}
 \begin{tutnarrative}
 A FIXED (designed) esterification plant, sized for a full economic appraisal rather than an optimisation:
 
@@ -5338,7 +5338,7 @@ The flash inherits T from its input stream (no explicit operation.T) --- propaga
   \draw[->] ($(separator.east)+(0,0.17)$) -- ($(separator.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapProd};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{process02 with full reports: balances + sizing + Guthrie costing}
+\tutwhat{process02 with full reports: balances + sizing + Turton costing}
 \begin{tutnarrative}
 Three-unit flowsheet --- physically realistic operation:
 
@@ -5347,9 +5347,9 @@ feed (350 K) hotStream (\textasciitilde{}362 K, 0.02 \% vap)   reactorOut     CS
 The flash inherits T from its input stream (no explicit operation.T) --- propagation through the flowsheet.
 
 \end{tutnarrative}
-\tutreadme{process01 with a heater between the reactor and the flash, and the two reports a project needs most: equipment sizing and Guthrie costing. The chain runs from system/postDict; reports \{ design \{\} economics \{\} \} in the controlDict $\ast$serialise$\ast$ what it produced into reports/design/sizing.csv and reports/economics/costs.csv.}
+\tutreadme{process01 with a heater between the reactor and the flash, and the two reports a project needs most: equipment sizing and Turton costing. The chain runs from system/postDict; reports \{ design \{\} economics \{\} \} in the controlDict $\ast$serialise$\ast$ what it produced into reports/design/sizing.csv and reports/economics/costs.csv.}
 \tutreadme{The golden (process side): heater 0.4 kW $\to$ 361.88 K; reactor X = 0.526; flash at 361.88 K with V/F 0.0562. The design side, from the run: reactor V\_R = 0.005 m$^3$, wall 3.15 mm, 3.7 kg of SS316; heater A = 0.0667 m$^2$ of SS304; costing totals ?155,475 purchased / ?917,756 bare module / ?1,082,952 total module, CEPCI 820/397 = 2.0655, 0.92 EUR/USD.}
-\tutreadme{1. The rules are declared, once, in postDict. sizing \{ units ( \{ unitName reactor; type stirredTank; material SS316; designRules \{ L\_over\_D 2.5; pressureDesign 3.0; ? \} \} ? ) \} and costing \{ method Guthrie; year 2026; cepci 820; cepci2001 397; usdToEur 0.92; \}. Every number in the tables descends from those lines and the run's own results --- nothing else. 2. The costing table prints its own arithmetic. Below the totals: the log-quadratic correlation, K1--K3 per item, B1/B2, F\_M, the CEPCI ratio, the currency, the 1.18 contingency --- and the source (Turton App. A). Recompute one line; check\_cost\_provenance does exactly that on every suite run and requires 0.1 \%. 3. READ THE TWO WARNINGS --- they are the real lesson of this case. [validity] WARNING: stirredTank 'reactor': size V\_R = 0.005 is OUTSIDE the correlation range [0.3, 520] and the heater's 0.0667 m$^2$ against [10, 1000]. A 1 kmol/h process is laboratory scale; Turton's correlations were fitted to plant scale, and the engine $\ast$extrapolates and says so$\ast$ rather than clamping. The ?1.06 M for a 0.4 kW exchanger is what an extrapolated correlation returns --- a number to distrust because you were told to. 4. A report draws, it does not recompute. Until 2026-09-02 this case carried the rules inside the report blocks (an older grammar), the reports failed by name on every run, and the golden --- which pins only the process KPIs --- never noticed. The README you are reading is why it was found.}
+\tutreadme{1. The rules are declared, once, in postDict. sizing \{ units ( \{ unitName reactor; type stirredTank; material SS316; designRules \{ L\_over\_D 2.5; pressureDesign 3.0; ? \} \} ? ) \} and costing \{ method Turton; year 2026; cepci 820; cepci2001 397; usdToEur 0.92; \}. Every number in the tables descends from those lines and the run's own results --- nothing else. 2. The costing table prints its own arithmetic. Below the totals: the log-quadratic correlation, K1--K3 per item, B1/B2, F\_M, the CEPCI ratio, the currency, the 1.18 contingency --- and the source (Turton App. A). Recompute one line; check\_cost\_provenance does exactly that on every suite run and requires 0.1 \%. 3. READ THE TWO WARNINGS --- they are the real lesson of this case. [validity] WARNING: stirredTank 'reactor': size V\_R = 0.005 is OUTSIDE the correlation range [0.3, 520] and the heater's 0.0667 m$^2$ against [10, 1000]. A 1 kmol/h process is laboratory scale; Turton's correlations were fitted to plant scale, and the engine $\ast$extrapolates and says so$\ast$ rather than clamping. The ?1.06 M for a 0.4 kW exchanger is what an extrapolated correlation returns --- a number to distrust because you were told to. 4. A report draws, it does not recompute. Until 2026-09-02 this case carried the rules inside the report blocks (an older grammar), the reports failed by name on every run, and the golden --- which pins only the process KPIs --- never noticed. The README you are reading is why it was found.}
 \tutreadme{Scale the feed to 100 kmol/h in 0/feed: the reactor volume the design rule wants lands inside the correlation window and the warning goes away. Then open economics01\_esterification\_dcf, where the same chain continues into OPEX, NPV and payback.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
@@ -8375,7 +8375,7 @@ Benzene/toluene distillation, used by the optimisation driver. Same column as se
   \draw[->] ($(separator.east)+(0,0.17)$) -- ($(separator.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapProd};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Minimise total module Guthrie cost of reactor + heater by varying reactor V\_R and heater Q}
+\tutwhat{Minimise total module Turton cost of reactor + heater by varying reactor V\_R and heater Q}
 \begin{tutnarrative}
 Same reactor $\to$ heater $\to$ separator flowsheet as process02\_with\_design. The optimisation driver varies two design variables:
 
@@ -8386,11 +8386,11 @@ In v0.34 the heater is credo-pure: it specifies Q (the absolute thermal power, h
 Initial guesses are placeholders -- overwritten by Nelder-Mead.
 
 \end{tutnarrative}
-\tutreadme{A small reactor $\to$ heater $\to$ separator process. The OptimizationDriver (Nelder-Mead) tunes two design variables to minimise the total Guthrie module cost of the two costed units (reactor + heater):}
+\tutreadme{A small reactor $\to$ heater $\to$ separator process. The OptimizationDriver (Nelder-Mead) tunes two design variables to minimise the total Turton module cost of the two costed units (reactor + heater):}
 \tutreadme{The heater is credo-pure: it specifies Q (the thermal power, hardware), not an outlet T. T\_out is a reported KPI, not a control variable.}
 \tutreadme{The optimum is not at the lower corner. Nelder-Mead converges (8 moves, simplexInit 0.15) to:}
 \tutreadme{Increasing Q monotonically lowers the objective: the simplex walks the cost from \textasciitilde{}2.0e6 EUR at Q$\approx$170 W down to \textasciitilde{}9.35e5 EUR at Q=500 W.}
-\tutreadme{The dominant cost is the heat exchanger (\textasciitilde{}916 k of the \textasciitilde{}935 k total). Its area follows A = Q / (U$\cdot$LMTD) = Q / 6000 m$^2$, so Q=500 W gives only A $\approx$ 0.083 m$^2$. The Turton shell-and-tube correlation used by the Guthrie model is valid for A ? [10, 1000] m$^2$; our exchanger is two orders of magnitude below Smin. In that extrapolated tail the correlation}
+\tutreadme{The dominant cost is the heat exchanger (\textasciitilde{}916 k of the \textasciitilde{}935 k total). Its area follows A = Q / (U$\cdot$LMTD) = Q / 6000 m$^2$, so Q=500 W gives only A $\approx$ 0.083 m$^2$. The Turton shell-and-tube correlation used by the costing model is valid for A ? [10, 1000] m$^2$; our exchanger is two orders of magnitude below Smin. In that extrapolated tail the correlation}
 \tutreadme{turns $\ast$upward$\ast$ as A shrinks (the quadratic term dominates for log10 A < 0), so a larger area is cheaper. The optimiser correctly exploits this: pushing Q to its upper bound grows A toward the correlation's valid range and slides down the cost curve. The reactor volume settles at an interior 0.00807 m$^3$ --- large enough for adequate conversion (X $\approx$ 0.64), small enough that its vessel cost (\textasciitilde{}19 k) stays a rounding error next to the exchanger.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
@@ -8483,7 +8483,7 @@ THE ECONOMIC TRADE-OFF (why this is a genuine optimum, not a corner)
 
 The heater runs at a FIXED partial duty, so the downstream flash SPLITS the reactor effluent into a light, ethyl-acetate-rich VAPOUR overhead (sold high) and a heavy, water/acid-rich LIQUID bottoms (sold cheap). Esterification conserves total mass; what conversion buys you is the RESHUFFLING of that mass toward the valuable overhead. Both knobs raise conversion -- and the CSTR is ISOTHERMAL at the feed temperature (CSTR.cpp: T = feed.T), so:
 
-V\_R (reactor volume) -- bigger V\_R raises the residence time tau = V\_R/Q, so conversion X = k.tau/(1 + k.tau) climbs, more acetic acid + ethanol turn into ethyl acetate, and the priced overhead grows and enriches (REVENUE up). But a bigger vessel costs more steel: the StirredTank sizing $\to$ Guthrie costing drives FCI (CAPEX) UP. Revenue rises with DIMINISHING returns as X saturates toward 1, while CAPEX keeps climbing -- so an NPV maximum exists.
+V\_R (reactor volume) -- bigger V\_R raises the residence time tau = V\_R/Q, so conversion X = k.tau/(1 + k.tau) climbs, more acetic acid + ethanol turn into ethyl acetate, and the priced overhead grows and enriches (REVENUE up). But a bigger vessel costs more steel: the StirredTank sizing $\to$ Turton costing drives FCI (CAPEX) UP. Revenue rises with DIMINISHING returns as X saturates toward 1, while CAPEX keeps climbing -- so an NPV maximum exists.
 
 T\_feed (feed/reactor temperature) -- higher T raises the Arrhenius rate constant k = A.exp(-Ea/RT), so X climbs too. T\_feed is the cheap conversion ACCELERATOR; its bounds are kept inside the window where the flash splits cleanly (below the temperature that boils the bottoms dry).
 
@@ -8511,7 +8511,7 @@ So this case still demonstrates constrained SQP, shadow prices and a KKT certifi
 \tutreadme{Take the economics01 ethyl-acetate plant and stop $\ast$fixing$\ast$ the design --- let the engine choose it. The hand-rolled SQP sizes and operates the reactor to maximise the net present value, subject to inequality caps, and prints the shadow prices (Lagrange multipliers) of the binding caps.}
 \tutreadme{The objective economics.NPV is a KPI published by the EconomicsPass in the system/postDict chain (sizing $\to$ costing $\to$ economics). The optimiser runs that whole post chain on every evaluation, so the economics scalars (economics.NPV, economics.FCI, ?) are reachable as ordinary objective/constraint paths --- exactly like a sweep reads them.}
 \tutreadme{The heater runs at a fixed partial duty, so the flash $\ast$splits$\ast$ the reactor effluent into a light ethyl-acetate-rich vapour overhead (the prime product at 1.55 ?/kg) and a heavy water/acid-rich liquid bottoms (a low-value byproduct at 0.30 ?/kg). Esterification conserves total mass; what conversion buys you is the reshuffling of that mass toward the valuable overhead.}
-\tutreadme{$\ast$ V\_R --- a bigger reactor raises the residence time $\tau$ = V\_R/Q, so the isothermal-CSTR conversion X = k$\cdot$$\tau$/(1+k$\cdot$$\tau$) climbs and the priced overhead grows. But a bigger vessel costs more steel --- the StirredTank sizing $\to$ Guthrie costing drives FCI (CAPEX) up. Revenue rises with diminishing returns (X saturates toward 1) while CAPEX keeps climbing $\to$ an NPV maximum exists. $\ast$ T\_feed --- a higher feed temperature raises the Arrhenius rate k = A$\cdot$exp(-E?/RT), the cheap conversion $\ast$accelerator$\ast$. Its bounds stay inside the window where the flash splits cleanly (below the \textasciitilde{}353 K edge that boils the bottoms dry).}
+\tutreadme{$\ast$ V\_R --- a bigger reactor raises the residence time $\tau$ = V\_R/Q, so the isothermal-CSTR conversion X = k$\cdot$$\tau$/(1+k$\cdot$$\tau$) climbs and the priced overhead grows. But a bigger vessel costs more steel --- the StirredTank sizing $\to$ Turton costing drives FCI (CAPEX) up. Revenue rises with diminishing returns (X saturates toward 1) while CAPEX keeps climbing $\to$ an NPV maximum exists. $\ast$ T\_feed --- a higher feed temperature raises the Arrhenius rate k = A$\cdot$exp(-E?/RT), the cheap conversion $\ast$accelerator$\ast$. Its bounds stay inside the window where the flash splits cleanly (below the \textasciitilde{}353 K edge that boils the bottoms dry).}
 \tutreadme{We deliberately set the size cap tighter than where the NPV-greedy design would otherwise stop, so the reactor-size constraint binds at the optimum.}
 \tutreadme{The optimiser drives the money-losing initial design (V\_R = 4 m$^3$, T\_feed = 350 K $\to$ NPV $\approx$ -164 M?) to a profitable, certified optimum:}
 \begin{tutgolden}

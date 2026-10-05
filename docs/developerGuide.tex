@@ -1483,7 +1483,7 @@ automatically --- no recompile needed.
 \begin{lstlisting}[language=dict]
 material <name>;
 rho          7900.0;     // kg/m^3
-F_M          1.0;        // Guthrie material factor
+F_M          1.0;        // Turton material factor
 sigma_y      138.0e6;    // Pa
 maxT         700.0;      // K
 maxP         50.0;       // bar
@@ -1790,10 +1790,10 @@ travels so the reader knows; converting is a separate, deliberate act.
 
 Register in \code{EquipmentSize::registerBuiltins()}.
 
-The \code{Guthrie} costing model reads \code{d.equipmentType} to
+The \code{Turton} costing model reads \code{d.equipmentType} to
 dispatch to the right correlation --- so if your new equipment needs
 new cost coefficients, edit
-\file{src/postProcessing/costing/Guthrie.cpp} accordingly.
+\file{src/postProcessing/costing/Turton.cpp} accordingly.
 
 % =====================================================================
 \section{Coding conventions}
@@ -2154,7 +2154,7 @@ post-processor. Read this twice before adding cross-layer logic.
 +-----------------------------------------------------------------+
 | Layer 3: PostProcessor (src/postProcessing/)                    |
 |   Sizing  -> equipment dimensions (V_R, A, t_wall, weight,...) |
-|   Costing -> Guthrie/Turton with CEPCI, USD->EUR                |
+|   Costing -> Turton (App. A) with CEPCI, USD->EUR               |
 |   (future) Reporting -> PDF / HTML / CSV bundles                |
 |   Augments SimulationResult; never re-enters the simulator.     |
 +-----------------------------------------------------------------+

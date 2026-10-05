@@ -420,7 +420,7 @@ src/
 │                         naming choupoProps `fitParameters`)
 ├── postProcessing/      PostProcessor abstract + SizingPass + CostingPass
 │   ├── sizing/                   EquipmentSize abstract + StirredTank + ShellTubeHX
-│   └── costing/                  CostingModel abstract + Guthrie
+│   └── costing/                  CostingModel abstract + Turton
 ├── propertyOps/         PropertyOperation abstract + the props BENCH ops (choupoProps)
 ├── reporting/           BalanceMath + the mass/element/energy balance reports
 ├── result/              the pipeline's OUTPUT records — SimulationResult,
@@ -1617,7 +1617,7 @@ arm (l).  Record:
 **EVERY SIZER STATES ITS BASIS, AND WRITING ONE FOUND A VOLUME IN KILOMOLES
 (2026-09-05).**  The Reports header promised a design basis for every item
 and one sizer in eight stated one.  Rule: a sizer states the rule that
-produced its Guthrie size key, AT the site where the rule is applied; a
+produced its Turton size key, AT the site where the rule is applied; a
 pass-through says it is one; `EquipmentSizing::basis` is the one home and
 `(not stated)` stays the rendering of an empty field on every surface, so a
 forgotten basis is visible rather than defaulted away.  Writing the string
@@ -1937,11 +1937,15 @@ the exchanger rule and the ASME wall (the latter had been written out identicall
 the column needed it twice more).  **Swaging is ECONOMIC, not thermodynamic:**
 the engine publishes both section diameters and their gap, states which way the
 15-20 % band points, builds the tower STRAIGHT at the wider section and prices
-no transition, because it has no correlation for one.  **The TRAYS refuse by
-name and the total says INCOMPLETE** -- `Guthrie`'s eight sets are all Turton's,
-trays fit none of them, and an invented set converts *uncosted* into *falsely
-costed*, which no reader and no gate can detect; a column costed by Choupo today
-is missing its tray cost and says so.  Four traps paid for: the sizer's first
+no transition, because it has no correlation for one.  **The TRAYS refused by
+name and the total said INCOMPLETE** until a set could be READ rather than
+typed -- an invented set converts *uncosted* into *falsely costed*, which no
+reader and no gate can detect.  **Since 2026-10-05 (DEV.md 4c C38 item 1) they
+are costed by the tray** on Turton's sieve-tray set as the authors' CAPCOST 2017
+program carries it (`costing/Turton.cpp` names the cells, and that the book's
+own table was NOT read), the material CLASS declared as `trayMaterial` and
+never read off a material record's name; absent or unknown, the trays still
+refuse by name and the total still says INCOMPLETE.  Four traps paid for: the sizer's first
 tray count was `nStages - 2` and was WRONG BY ONE (this solver's stage list
 carries the reboiler and not the condenser), so **the count comes from the pass
 that ENUMERATES trays** -- the fact, not a rule about the fact; the golden
@@ -1958,7 +1962,8 @@ A witness must declare the pass or nobody meets the capability
 Gates: `check_design_sheet` arm (m) (7 sabotages -- and the first attempt proved
 NOTHING, because the arm re-runs the case and `design/` is regenerated whole:
 **the sabotage has to land BETWEEN the run and the check**) ·
-`check_equipment_pinned`.  RESERVED for Vitor: a tray cost correlation.  NOT
+`check_equipment_pinned` (+ arm (m)'s tray recomputation, tied to CAPCOST's
+own worked tower).  NOT
 DONE: the column schematic (task #134), deliberately after the cost rather than
 before it.  Record:
 [`docs/design/one-unit-five-items-the-column-gets-a-size.md`](docs/design/one-unit-five-items-the-column-gets-a-size.md).
@@ -2000,12 +2005,12 @@ HEADER SAID IT DID (2026-09-26, commission C2).**  Rule: **a sizer for a
 RATING model READS the unit's own size and passes it through** -- the `pfr`
 sizer (`CatalystBedSize`, registered `pfr`) reads the bed's `V_R`, which is
 the outer driver's answer when a `designSpec` solves it, sizes the SHELL
-around it as a `vessel` on the EXISTING Guthrie set, and prices the CATALYST
+around it as a `vessel` on the EXISTING Turton vessel set, and prices the CATALYST
 CHARGE as a SECOND ITEM only from a DECLARED bulk density and unit price
 (`declared-unit-price`: the case's own money, NO index, NO F_BM, NO 1.18 --
 said on the printed line so the two cost shapes can be told apart; absent
 either input the charge REFUSES BY NAME through the one INCOMPLETE home the
-trays use).  No Guthrie set was invented and the basis claims only what the
+trays use).  No Turton set was invented and the basis claims only what the
 pass can see (*read from the unit*; the sizing pass has no view of the outer
 driver).  **The trap, and the measurement that stopped the slice first:**
 the post-processing chain did NOT run on a `designSpec`'s representative
@@ -2240,8 +2245,11 @@ worse than none); a missing-key refusal names the closest match.  NEVER EDIT
 `bin/runTests` WHILE IT RUNS; `bin/curate/runtests_verdict.py` is the ONE home
 for a harness verdict — *moved* only when a verdict was printed, anything else
 `could-not-run` (converted: `check_component_name_hint`,
-`check_friction_correlations`).  RESERVED for Vítor: the costing model is registered as
-`Guthrie` and every coefficient in the file is Turton's.  Gates:
+`check_friction_correlations`).  The costing model is NAMED for its numbers:
+`Turton` (class, files, the ONE registered key), every coefficient being
+Turton et al.'s App. A on Guthrie's bare-module form; `method Guthrie;` is
+REFUSED by name, naming `Turton` -- no alias (2026-10-05, DEV.md 4c C38 item
+2; arm (p)).  Gates:
 `check_postdict_audit` · `check_cost_provenance`.  Records:
 [`docs/design/the-key-nobody-read-in-the-postdict.md`](docs/design/the-key-nobody-read-in-the-postdict.md)
 and [`docs/design/a-cost-you-can-defend.md`](docs/design/a-cost-you-can-defend.md).

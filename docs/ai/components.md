@@ -978,7 +978,7 @@ Isotherm and bed properties for the fixed-bed, TSA and softener units.
 | `zeolite5A` |
 ## Construction materials
 
-Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
+Each carries ρ, F_M (Turton), σ_y, max T, max P.
 
 | Name |
 |---|

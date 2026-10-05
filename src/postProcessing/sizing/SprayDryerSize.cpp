@@ -49,7 +49,7 @@ std::vector<EquipmentSizing> SprayDryerSize::size(const std::string& unitName,
         throw std::runtime_error("SprayDryer: unit '" + unitName
             + "' has no 'water_evaporated' KPI -- is it a spray dryer?");
 
-    const scalar W_evap = we->second;       // kg/s   (Guthrie sizeKey)
+    const scalar W_evap = we->second;       // kg/s   (Turton sizeKey)
 
     const scalar P_des = designRules->lookupScalar("pressureDesign");   // required: a silent
         // 1 bar default costed pressure equipment as atmospheric while the

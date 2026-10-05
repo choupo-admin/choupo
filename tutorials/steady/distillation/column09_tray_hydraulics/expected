@@ -99,3 +99,6 @@ equipment column09/trays         values.D         1.22206001598    1e-4
 equipment column09/trays         values.nTrays    14               1e-4
 equipment column09/trays         values.traySpacing 0.5              1e-4
 kpi     column09               diameterDesigned 1                1e-4
+equipment column09/trays         cost.purchased   28357.7235313    1e-4
+equipment column09/trays         cost.bareModule  37252.8117041    1e-4
+equipment column09/trays         cost.totalModule 43958.3178108    1e-4

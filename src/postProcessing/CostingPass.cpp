@@ -300,7 +300,17 @@ int CostingPass::run(SimulationResult& result)
                      " the run's currency,\n"
                      "                                                          "
                      "      today's money -- NO index, NO F_M/F_P, NO 1.18;"
-                     " a catalyst charge]\n";
+                     " a catalyst charge]\n"
+                     //  THE FOURTH SHAPE (2026-10-05, DEV.md 4c C38 item 1):
+                     //  a tray stack is bought by the tray.  Its row prints
+                     //  K1..K3 for ONE tray on the area A, and F_BM, F_q
+                     //  where the other shapes print B1, B2.
+                     "  C_p = N x 10^( K1 + K2 log10 A + K3 (log10 A)^2 ) x"
+                     " CEPCI/CEPCI_2001 x EUR/USD   [tray-stack]\n"
+                     "  C_BM = C_p x F_BM x F_q;  F_q = 10^(0.4771 + 0.08516"
+                     " log10 N - 0.3473 (log10 N)^2) for N < 20, else 1\n"
+                     "                 (the B1, B2 column of a tray-stack row"
+                     " reads F_BM, F_q; F_M and F_P are not applied)\n";
         std::cout << "  index: CEPCI " << std::fixed << std::setprecision(1)
                   << cepci << " / " << cepci2001;
         if (cepci2001 > 0.0)
@@ -352,6 +362,8 @@ int CostingPass::run(SimulationResult& result)
             std::ostringstream sz, co, bb, fm;
             sz << cb.sizeKey << " = " << std::fixed << std::setprecision(4)
                << f("S");
+            if (cb.correlation == "tray-stack")
+                sz << ", N " << std::setprecision(0) << f("N");
             if (cb.correlation == "power-law")
                 //  Cp_ref runs to 1e5-1e6; four DECIMALS there is noise, so
                 //  the power-law row keeps significant digits by design.
@@ -366,8 +378,12 @@ int CostingPass::run(SimulationResult& result)
             else
                 co << std::fixed << std::setprecision(4) << f("K1") << ", "
                    << f("K2") << ", " << f("K3");
-            bb << std::fixed << std::setprecision(2) << f("B1") << ", "
-               << f("B2");
+            if (cb.correlation == "tray-stack")
+                bb << std::fixed << std::setprecision(2) << f("F_BM") << ", "
+                   << std::setprecision(3) << f("F_q");
+            else
+                bb << std::fixed << std::setprecision(2) << f("B1") << ", "
+                   << f("B2");
             fm << std::fixed << std::setprecision(2) << f("F_M")
                << " (" << cb.material << ")";
 
@@ -392,6 +408,17 @@ int CostingPass::run(SimulationResult& result)
                      "  Chemical Processes\", Appendix A (2001 USD basis).  "
                      "F_M is cited in its own\n  material record "
                      "(data/standards/assets/<material>.dat).\n";
+        //  The tray set's source is NAMED where it differs: it was read from
+        //  the authors' own program, not from the book's printed table.
+        bool anyTrays = false;
+        for (const auto& kv : result.costs)
+            if (kv.second.correlation == "tray-stack") anyTrays = true;
+        if (anyTrays)
+            std::cout << "  Tray stack (sieve K1-K3, F_BM by material class,"
+                         " F_q): CAPCOST 2017, the program distributed\n"
+                         "  with Turton et al. 5th ed., sheet \"Equipment"
+                         " Cost Data\" (Tower Trays, FBM, F_q) and its macro"
+                         " calculateTrayCosts.\n";
     }
     std::cout << "=====================================================================\n\n";
     return failures;

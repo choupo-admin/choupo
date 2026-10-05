@@ -39,13 +39,13 @@ Description
                          a straight cylinder of volume V_R at the declared
                          (or announced-default) L/D, ASME thin-wall through
                          `VesselMechanics` at the REQUIRED `pressureDesign`;
-                         costed on the Guthrie vessel set exactly as any
+                         costed on the Turton vessel set  exactly as any
                          vessel in the corpus.
         catalystCharge   the catalyst itself -> `catalystCharge`,
                          m_catalyst = V_R x catalystBulkDensity when the
                          density is DECLARED, priced at the DECLARED
                          `catalystPrice` (case money per kg, no index, no
-                         module factor -- `Guthrie` states the shape on its
+                         module factor -- `Turton` states  the shape on its
                          own line).  Absent the density, no mass is published
                          and the basis says why; absent the price, the item
                          is REFUSED BY NAME at costing time and the total
@@ -59,7 +59,7 @@ Description
         catalystBulkDensity   kg/m3   optional; enables m_catalyst_kg
         catalystPrice         EUR/kg  optional; enables the catalyst cost line
 
-    NOTHING HERE IS A COST CORRELATION.  No Guthrie set is invented for a
+    NOTHING HERE IS A COST CORRELATION.  No Turton set is invented for a
     catalyst bed: the shell reaches a set that already exists, and the
     catalyst is priced only from what the case declares.
 \*---------------------------------------------------------------------------*/

@@ -31,7 +31,7 @@ the directory gains siblings and nothing above it changes."*  This is that day,
 and that promise is what the slice was held to.
 
     design/column09/shell        the tower          costed as a vertical vessel
-    design/column09/trays        the tray stack     NOT COSTED
+    design/column09/trays        the tray stack     NOT COSTED (costed by the tray since 2026-10-05)
     design/column09/condenser    shell-and-tube
     design/column09/reboiler     shell-and-tube
     design/column09/refluxDrum   a drum             costed as a vessel
@@ -137,6 +137,27 @@ exactly what a coefficient set would need.  The console prints
 **A column costed by Choupo today is missing its tray cost.**  That sentence is
 the point, not an apology for it.
 
+**SUPERSEDED 2026-10-05 (DEV.md 4c C38 item 1, Vitor: "Faz tu!").**  The
+refusal held until a coefficient set could be READ from a source rather than
+typed from memory.  It was: Turton's sieve-tray set as CAPCOST 2017 carries
+it -- the costing program the authors distribute with the 5th edition,
+downloaded from Richard Turton's WVU faculty page -- sheet "Equipment Cost
+Data", block "Tower Trays" (K1 2.9949, K2 0.4465, K3 0.3961 on the tray
+area, 0.07-12.3 m2), block "FBM" (sieve: carbon steel 1.00, stainless 1.83,
+nickel alloy 5.58) and the quantity factor `F_q = 10^(0.4771 + 0.08516 log N
+- 0.3473 log^2 N)` for N < 20, else 1, with the shape (`C_p = N x C_p0`,
+`C_BM = C_p F_BM F_q`) read from the program's own macro
+`calculateTrayCosts`.  The BOOK's table and page were not read; what ties the
+program to the data already in the tree is that its vertical-vessel set is
+identical to `vesselCoeffs` digit for digit, and that its own worked tower
+(T-101) reproduces from the transcribed set on the CEPCI-397 basis, which
+`check_design_sheet` arm (m) recomputes.  The material CLASS is declared
+(`trayMaterial` in the column's designRules) and never read off the
+construction material's name; absent or unknown, the trays still refuse BY
+NAME and the total says INCOMPLETE.  The valve-tray and demister rows were NOT
+transcribed: nothing in Choupo sizes them.  `column09` gained three golden
+rows (the trays' purchased, bare-module and total-module costs); no row moved.
+
 ## Two defects this slice found in machinery it did not write
 
 **The golden `equipment` kind resolved on the UNIT.**  `get_equipment` matched
@@ -181,7 +202,7 @@ default looks like: `[assumed]` at its site, in the end-of-run caveat block, and
 
 ## NOT DONE, said plainly
 
-* **No tray cost.**  See above; it is a curation decision, not a coding one.
+* ~~**No tray cost.**~~  SHIPPED 2026-10-05 (C38 item 1); see the note above.
 * ~~**No column SCHEMATIC** (task #134).~~  SHIPPED the same day, once the cost
   existed: the order was deliberate — drawing first would have given a student
   a picture of a column whose cost did not exist yet.  See

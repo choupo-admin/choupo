@@ -17,7 +17,7 @@ Class
 Description
     Sizing for a centrifugal compressor / blower.  The characteristic size is
     the shaft POWER [kW], exposed by the compressor unit-op as the `W_shaft_kW`
-    KPI -- the Guthrie/Turton size driver for compressors (table A.1).  No
+    KPI -- the Turton size driver for compressors (table A.1).  No
     geometry: a compressor is bought by power.  F_P = 1 (Turton folds the
     discharge-pressure effect into the power itself, not a separate factor).
 \*---------------------------------------------------------------------------*/
