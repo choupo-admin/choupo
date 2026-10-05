@@ -1,0 +1,92 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       acetonitrile + water   (x is acetonitrile's liquid mole fraction)
+  pressure     101.3 kPa   (CONSTANT across the series)
+  points       12   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( acetonitrile water );
+pressure     101.3 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Li, Jinlong; Li, Jiashu; Zheng, Yeling; Peng, Changjun; Liu, Honglai (2019). Measurement and correlation of isobaric vapour-liquid equilibrium for the (acetonitrile + water) system containing different ionic liquids at atmospheric pressure. J. Chem. Thermodyn.. doi:10.1016/j.jct.2019.07.006";
+    archiveFile  "j.jct.2019.07.006.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        2;
+    doi          "10.1016/j.jct.2019.07.006";
+    sha256       "75b54b8666e19e36e7423ac7f65b794e1c21ca09607019ae5e3495c6b0e990b0";
+    identity
+    {
+        acetonitrile   { cas "75-05-8"; inchiKey "WEVYAHXRMPXWCK-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 1.85 1.78 1.7 1.69 1.69 1.69 1.69 1.69 1.69 1.69 1.69 1.69 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 373.12 K; }
+        { x 1; T_bubble 354.68 K; }
+    );
+}
+
+columns
+(
+    { name x[acetonitrile];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_acetonitrile;  unit -;  }
+);
+
+data
+(
+      0.0102  371.72  0.0628
+      0.0433  359.96  0.4445
+      0.0739  356.73  0.5218
+      0.1228  353.49  0.5592
+      0.2632  351.08  0.6282
+      0.3754  350.37  0.6421
+      0.4889  350.02  0.6535
+      0.5935  349.79  0.6669
+      0.6962  349.64  0.6939
+      0.7792  349.8  0.7258
+      0.8596  350.52  0.7741
+      0.9549  352.79  0.9015
+);

@@ -1,0 +1,91 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       acetone + ethanol   (x is acetone's liquid mole fraction)
+  pressure     101.3 kPa   (CONSTANT across the series)
+  points       11   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( acetone ethanol );
+pressure     101.3 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Chen, S.; Bao, Z.; Lu, Z.; Yang, Y.; Xu, W.; Chen, Z. et al. (2014). Vapor Liquid Equilibrium for the 1,1,1-Trifluorotrichloroethane + Sulfuryl Chloride System at 101.3 kPa. J. Chem. Eng. Data. doi:10.1021/je400544h";
+    archiveFile  "je400544h.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        4;
+    doi          "10.1021/je400544h";
+    sha256       "42881147f0310fdf427abc4f90cad0a45409e0b47fd81f2622589104bc17d830";
+    identity
+    {
+        acetone        { cas "67-64-1"; inchiKey "CSCPPACGZOOCGX-UHFFFAOYSA-N"; }
+        ethanol        { cas "64-17-5"; inchiKey "LFQSCWFLJHTTHZ-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.41 0.36 0.36 0.35 0.4 0.38 0.37 0.35 0.35 0.35 0.36 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 351.45 K; }
+        { x 1; T_bubble 329.37 K; }
+    );
+}
+
+columns
+(
+    { name x[acetone];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_acetone;  unit -;  }
+);
+
+data
+(
+      0.0760  346.97  0.2270
+      0.1100  345.41  0.2910
+      0.1660  343.14  0.3910
+      0.2400  340.68  0.4740
+      0.3260  338.49  0.5600
+      0.4020  336.88  0.6240
+      0.4950  335.31  0.6800
+      0.5640  334.09  0.7350
+      0.6590  332.8  0.7900
+      0.7430  331.71  0.8420
+      0.8910  330.15  0.9330
+);

@@ -1,0 +1,106 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       1Propanol + water   (x is 1Propanol's liquid mole fraction)
+  pressure     100.0 kPa   (CONSTANT across the series)
+  points       26   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( 1Propanol water );
+pressure     100.0 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Orchilles, A. V.; Miguel, P. J.; Vercher, E.; Martinez-Andreu, A. (2008). Isobaric Vapor-Liquid Equilibria for 1-Propanol + Water + 1-Ethyl-3-methylimidazolium Trifluoromethanesulfonate at 100 kPa. J. Chem. Eng. Data. doi:10.1021/je800436u";
+    archiveFile  "je800436u.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        0;
+    doi          "10.1021/je800436u";
+    sha256       "366c13f383188bd7e464f9e1f753bfec46ecf4390acc84a063609ea2ac53d061";
+    identity
+    {
+        1Propanol      { cas "71-23-8"; inchiKey "BDERNNFJNOPAEC-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.89 0.45 0.26 0.14 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.09 0.1 0.1 0.11 0.12 0.13 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 372.81 K; }
+        { x 1; T_bubble 369.87 K; }
+    );
+}
+
+columns
+(
+    { name x[1Propanol];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_1Propanol;  unit -;  }
+);
+
+data
+(
+      0.0080  368.64  0.1390
+      0.0140  366.69  0.2130
+      0.0280  364.09  0.2970
+      0.0480  362.46  0.3530
+      0.0750  361.56  0.3730
+      0.1110  361.15  0.3830
+      0.1500  360.99  0.3880
+      0.1920  360.85  0.3930
+      0.2330  360.73  0.3970
+      0.2690  360.65  0.4010
+      0.3110  360.59  0.4080
+      0.3520  360.53  0.4140
+      0.3960  360.51  0.4220
+      0.4400  360.49  0.4320
+      0.4840  360.52  0.4460
+      0.5240  360.57  0.4620
+      0.5730  360.77  0.4780
+      0.6180  360.98  0.4990
+      0.6690  361.33  0.5260
+      0.7260  361.98  0.5660
+      0.7730  362.66  0.6060
+      0.8200  363.61  0.6580
+      0.8730  364.92  0.7270
+      0.9160  366.2  0.7960
+      0.9560  367.77  0.8820
+      0.9770  368.56  0.9270
+);

@@ -1,0 +1,169 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate09_nrtl_propanol_water -- AN NRTL PAIR FROM PUBLISHED MEASUREMENTS, END TO END.
+
+  WHY THIS SYSTEM.  the third water + alcohol pair of the catalogue after
+  methanol and isopropanol, and the one with the homologue's minimum-boiling
+  azeotrope (both studies bottom out near 360.5 K): with methanol + water
+  and isopropanol + water it completes the C1-C3 series a first distillation
+  course compares.  The archive holds five low-pressure studies of it, the
+  most of any candidate.
+
+  THE CHAIN, EACH STEP A COMMAND (DEV.md C16; record
+  docs/design/binary-pairs-from-open-measurements.md):
+    1. bin/choupo-thermoml sync        the NIST/TRC ThermoML Archive
+                                       (ThermoML.v2020-09-30.tgz, doi
+                                       10.18434/mds2-2422, sha256-verified)
+    2. bin/choupo-thermoml identity    CAS -> InChIKey for the catalogue,
+                                       two resolvers that must agree
+    3. bin/choupo-thermoml vle-index   every binary VLE block, searchable
+    4. bin/choupo-thermoml vle-search 1Propanol water --geometry bubbleT
+    5. bin/choupo-thermoml extract-vle <file> --block N --interior-only
+                                       -> the two files under constant/experiments/
+    6. choupoProps (this case)         fitParameters -> a proposal record
+    7. promotion (a human act)         -> data/standards/parameters/NRTL/1Propanol-water.dat
+                                       ONLY if the held-out verdict is `validated`
+    8. bin/choupo-import               the seal mirrors that record here, if it was promoted
+
+  THE EVIDENCE.  FIT: doi 10.1021/je800436u (26 interior points, 100 kPa).
+  HELD OUT: doi 10.1016/j.jct.2017.06.014 (19 interior points, 101.3 kPa).
+  Chosen BEFORE any fit by the slice-2 partition rule: the FIT set is the
+  low-pressure bubble-temperature study with the most interior points; the
+  HELD-OUT set is the next largest that shares NO author with it (the
+  archive carries no affiliations, so a shared author is the dependence the
+  rule can check).  Each file names its article, its archive file and block,
+  the sha256 of the archive file, the two compounds' CAS and InChIKey, and
+  the per-point expanded uncertainty; each says `reviewStatus
+  transcribedNotCheckedAgainstArticle` because nobody has read the numbers
+  back against the paper yet, and the run announces it.  Pure-component
+  endpoints are set aside (they measure the vapour-pressure record, not the
+  pair) and kept in each file under `selection`.
+
+  THE FIT.  NRTL with a_ij = a_ji = 0 and alpha = 0.30 fixed: TWO
+  parameters (b_ij, b_ji), because bubble temperatures over the ranges
+  below do not identify more (fit_nrtl_ab in the methanol + water case asks
+  that question directly).  Each point is weighted by 1/U, U its OWN stated
+  expanded uncertainty (`weighting uncertainty;`), so a point measured to
+  0.1 K is not outvoted by one measured to 1 K.  The held-out AAD is plain
+  kelvin, unweighted.
+
+  WHAT THE RUN FOUND.  Not yet run: the datasets, the partition and the band
+  above were committed BEFORE the first fit, so the declaration can be read
+  against the result.
+
+  WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
+  frame (ideal-gas vapour, the catalogue's Antoine records); nothing here
+  tests it at high pressure, against LLE, or with another vapour model.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ji;  initial 0;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/1Propanol-water-bubble-je800436u.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/1Propanol-water-bubble-j.jct.2017.06.014.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.26 percent;
+            origin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 0.22 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.703 K, 1Propanol +0.051 K; measured with no pair involved), as a percentage of the held-out mean T (362.46 K) = 0.2546 %, rounded UP to two significant figures";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( 1Propanol water );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+            proposal   1Propanol-water.proposal.dat;
+        }
+    }
+    //  THE SAME FIT FROM ANOTHER START.  A least-squares surface can hold
+    //  more than one minimum; if this lands where fit_nrtl landed, the pair
+    //  is the answer the data hold, not the answer a start point chose.
+    {
+        name        fit_nrtl_start2;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ij;  initial 800;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ji;  initial -400;  min -3000;  max 3000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/1Propanol-water-bubble-je800436u.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/1Propanol-water-bubble-j.jct.2017.06.014.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.26 percent;
+            origin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 0.22 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.703 K, 1Propanol +0.051 K; measured with no pair involved), as a percentage of the held-out mean T (362.46 K) = 0.2546 %, rounded UP to two significant figures";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( 1Propanol water );
+            weighting   uncertainty;
+        }
+
+        options
+        {
+            maxIter      80;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            parity     parity_start2.csv;
+        }
+    }
+);
