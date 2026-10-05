@@ -65,14 +65,15 @@
 # tree the same way bin/runTests gathers cases and REFUSES when a walked
 # family has no line here.
 #
-# THE ONE FAMILY WITH NO REPRESENTATIVE, declared rather than silent:
+# THE FAMILIES WITH NO REPRESENTATIVE, declared rather than silent:
 #
-# EXCLUDED  tutorials/plant/ammonia02_full_plant  its golden carries 126 rows the
-#           first-law work of 2026-09-07 moved and Vitor has not re-recorded;
-#           walking it here would make --fast red on a KNOWN DEBT instead of on
-#           a regression, which is how a tier teaches people to ignore it.  The
-#           full sweep meets the case and reports the same rows.  This line
-#           EXPIRES the day those goldens are re-recorded -- put the case back.
+# (ammonia02_full_plant WAS excluded here, on a golden debt of 2026-09-07
+#  whose line said it EXPIRED the day those goldens were re-recorded.  They
+#  were, on 2026-09-14 (b9a61948a), and nobody put the case back.  It is back
+#  since 2026-10-05 (C36 item 5): it passes its golden, runs in 0.1-0.2 s
+#  measured, and it is one of the two plants that DECLARE a utility circuit,
+#  so check_mass_closure's atom-scope arm has a witness IN this tier rather
+#  than reading whatever an earlier sweep left on disk.)
 # EXCLUDED  tutorials/plant/acetonePlant  39.97 s -- over the 3 s per-case cap this list is built to; the tier is checked by the full sweep instead
 # EXCLUDED  tutorials/plant/ammonia03_quench_converter  5.7-5.8 s measured over three runs on 2026-09-21 -- over the 3 s per-case cap, and for a reason that is the case itself: three adiabatic gibbsReactor beds on a two-stream tear, each with its own outer Newton on temperature.  The full sweep meets it.  This line EXPIRES if the case ever comes in under the cap -- re-measure before believing it
 #
@@ -116,6 +117,7 @@ tutorials/steady/electrodialysis/ed02_over_limiting_current
 tutorials/steady/electrodialysis/ed03_stack_record
 
 tutorials/plant/ChemicalPlantTutorial
+tutorials/plant/ammonia02_full_plant
 tutorials/plant/ammoniaStaged01_yield
 tutorials/plant/ammoniaStaged02_equilibrium
 tutorials/plant/ammoniaStaged03_approach

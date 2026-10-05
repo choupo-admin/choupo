@@ -523,15 +523,15 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
 
     // ---- Stack voltage as a function of current I --------------------------
     // E_mem (per cell pair): CEM passes cations, AEM passes anions; each sees
-    // the (concentrate/diluate) activity ratio of its counter-ion.  We take the
-    // mean cation and mean anion activity ratio across the channels.
-    //  ONE HOME (edCell::meanActivityRatio): the batch rig takes the same
-    //  geometric mean over the same two channel states.
-    const scalar rCat = edCell::meanActivityRatio(chD, chC, +1.0);
-    const scalar rAn  = edCell::meanActivityRatio(chD, chC, -1.0);
-    // Nernst potential of each membrane (counter-ion charge magnitude 1 for NaCl).
-    const scalar E_cem = electrochem::nernst(+1.0, rCat, T);   // cation across CEM
-    const scalar E_aem = electrochem::nernst(-1.0, 1.0 / rAn, T); // anion across AEM (a_conc/a_dil w/ z<0)
+    // the (concentrate/diluate) activity ratio of its counter-ion, at that
+    // ion's OWN charge magnitude |z|.
+    //  ONE HOME (edCell::membranePotential, C36): the batch rig asks the
+    //  same function over the same two channel states.  Until C36 this
+    //  line used |z| = 1 for every ion, which is right only for a
+    //  monovalent counter-ion (ed09's Ca2+/Mg2+ and tartrate2- entered at
+    //  twice their own potential).
+    const scalar E_cem = edCell::membranePotential(chD, chC, +1.0, T);  // CEM
+    const scalar E_aem = edCell::membranePotential(chD, chC, -1.0, T);  // AEM
     const scalar E_mem_pair = E_cem + E_aem;                   // V per cell pair
 
     // Solution resistances per cell pair (one diluate + one concentrate channel):

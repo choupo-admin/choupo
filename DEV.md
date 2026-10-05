@@ -2003,8 +2003,40 @@ with its moved golden rows listed:
      its vapour fraction pinned (the pure-component exception of the
      two-variables rule); heater and phaseChanger checked for the same shape.
   4. The steady ED stack's Nernst term uses each ion's own |z| (ed04's Mg2+).
+     [BUILT 2026-10-05 on `claude/c36-nernst-fastarm`.  ONE home,
+     `edCell::membranePotential` (EDCell.cpp): one counter-ion in the
+     diluate -> `electrochem::nernst` at its own |z| (the single-salt
+     arithmetic, bit for bit); several -> `meanNernstPotential`.  The stack
+     (ElectrodialysisStack.cpp, the `E_cem`/`E_aem` lines) and the batch rig
+     both ask it; neither calls the Nernst equation itself.  MEASURED: NO
+     corpus row moves -- every ED log and result JSON is byte-identical
+     except ed04's console `AEM -0.00000` -> `0.00000` (a signed zero, no
+     golden reads it).  The premise "ed04 moves" was false: ed04's
+     concentrate inlets carry the diluate's own composition, so E_mem = 0
+     at any |z| (its README says so); ed09's concentrate holds only K+ and
+     HTart-, so every ion present in both channels is monovalent.  Gate
+     `check_ed_stack` arm (i) therefore BUILDS a divalent twin of ed04
+     (ED1's concentrate at 3x) where the old arithmetic gives 0.04438 V
+     against 0.02870 V, and recomputes E_mem_pair on 15 units;
+     `check_ed_batch` (g) holds the one home on the source.]
   5. `--fast`'s mass-closure atom arm judges only in-scope witnesses (it read
      leftover run outputs).
+     [BUILT 2026-10-05 on `claude/c36-nernst-fastarm`, BOTH remedies, and
+     why both: `check_mass_closure`'s atom arm now reads only the plants RUN
+     IN THIS PASS, and only through report files that pass's stdout names
+     (`[report] elementBalance -> <path>`, or `-> UNAVAILABLE`, which writes
+     the header-only table); a file on disk the run did not name is a
+     leftover, set aside and COUNTED in the claim; under the fast scope with
+     nothing to judge the claim says NOT JUDGED IN THIS SCOPE.  That is the
+     fix -- even with a witness in FASTSET, the old glob would still have
+     judged other plants' leftovers.  And `ammonia02_full_plant` is back in
+     FASTSET: its exclusion said it EXPIRED the day its goldens were
+     re-recorded, which happened 2026-09-14 (b9a61948a); it passes and runs
+     in 0.1-0.2 s, so the fast tier JUDGES the arm instead of only saying it
+     did not.  MEASURED on a worktree with every tutorials/ run output
+     removed: `--fast` PASS 68 / FAIL 0, the arm "judged on 1 plant";
+     standalone full scope: 240 steady cases, the arm judged on 2 plants
+     (ammonia02, ammonia03).  Sabotages S8/S9 in the gate's docstring.]
 Vítor's own deck stays his.  Status: dispatched 2026-10-05.
 
 **C35. THE SIXTEEN DECISIONS (Vítor, 2026-10-05, verbatim: "Decide as 16
@@ -2291,7 +2323,9 @@ proper is z^2 D c and differs only between counter-ions of different
 valence on one membrane (ed04 ED1: Cl 4.52 % / SO4 2.39 % removed under
 z D c, 3.38 % / 3.53 % under z^2 D c).  Found, not fixed: the steady stack's
 Nernst term takes |z| = 1 for every ion (wrong for ed04's Mg2+; moves ed04's
-voltage, not this rule).
+voltage, not this rule).  [CLOSED by C36 item 4, 2026-10-05 -- and the
+"moves ed04's voltage" half was wrong: ed04's E_mem is zero at any |z|,
+and no corpus row moved.]
 
 **C34. "AVANÇA COM TUDO" (Vítor, 2026-10-04, after the month summary).**
 Every open item that is NOT his to decide, taken in two waves of generals in
@@ -3757,7 +3791,9 @@ defect — look for what else went with it.
 ## 5. Known debts (severity-ish)
 
 **2026-10-05 -- `--fast` IS RED ON A CLEAN CHECKOUT THROUGH `check_mass_closure`'S
-ATOM-SCOPE ARM.  FOUND (C35), NOT FIXED.**  The arm looks through every
+ATOM-SCOPE ARM.  FOUND (C35); CLOSED THE SAME DAY by C36 item 5 (see §4c):
+the arm judges only plants run in this pass, through the files that pass
+says it wrote, and ammonia02 is back in FASTSET.**  The arm looks through every
 `tutorials/plant/*` run output for a plant publishing a process atom scope;
 the only two that declare `utilities` (ammonia02, ammonia03) are outside
 `tutorials/FASTSET`, so a fresh worktree has no such output and the arm

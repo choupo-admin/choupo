@@ -81,6 +81,35 @@ SABOTAGES PERFORMED (2026-09-08), each by hand against the rebuilt engine:
       case and filed its clean exit as evidence.  A side effect worth knowing:
       the witness declaration cannot now be deleted in silence.
 
+THE ATOM-SCOPE ARM JUDGES ONLY WHAT THIS PASS RAN (2026-10-05, C36 item 5).
+It used to glob every `tutorials/plant/*` for report CSVs on disk, so under
+`bin/runTests --fast` -- whose fast set then held no utility-declaring plant
+-- a clean checkout FAILED and a dirty one PASSED on an earlier sweep's run
+outputs.  Now it reads only plants RUN IN THIS PASS, and only through report
+files that pass's own stdout names (`[report] elementBalance -> <path>`, or
+`-> UNAVAILABLE`, which writes the header-only table at the same path); a
+file on disk the run did not name is a LEFTOVER, set aside and counted.
+Under the fast scope with nothing to judge it says NOT JUDGED IN THIS SCOPE
+-- never a pass, never a failure for an absence the scope chose.  (And
+ammonia02_full_plant is back in FASTSET, so the fast tier has a witness.)
+SABOTAGED BY HAND the same day, gate run with the --fast scope variables
+over a copy of the pass's cache:
+  S8  the scope filter removed (every `tutorials/plant/*` judged again, the
+      written-by check bypassed), ammonia02 OUT of scope:
+      -> with ammonia02's earlier CSVs on disk the arm said "judged on 1
+      plant"; with them moved away it said NOT JUDGED.  The verdict depended
+      on the leftovers again.  The fixed gate says NOT JUDGED in both states.
+  S9  the written-by check alone bypassed, ammonia02 IN scope but its cached
+      stdout stripped of the `[report] elementBalance ->` line (a report
+      that did not write this pass, its old file still on disk):
+      -> "judged on 1 plant" off the stale file.  The fixed gate sets it
+      aside: "1 plant(s) carried report files on disk that this pass did
+      NOT write (tutorials/plant/ammonia02_full_plant)".
+  Neither sabotage turns the gate red -- an arm that reads a leftover reads
+  a VALID file -- which is why the claim names how many plants it judged and
+  how many it set aside: the dependence is visible in the claim, not in the
+  exit code.
+
 WHAT THIS DOES NOT CHECK, said plainly:
   * ENERGY closure.  A different report, a different band, and the corpus
     carries known unattributed first-law residuals that are pinned elsewhere.
@@ -260,8 +289,45 @@ def refusal_arm():
 
 
 #  ---- The ATOM scope arm (2026-09-25) ------------------------------------
-def atom_scope_arm():
+REPORT_LINE = re.compile(r"\[report\] (massBalance|elementBalance) -> (\S+)")
+
+
+def written_by(txt, case, csv):
+    """True when THIS pass's stdout says it wrote `csv`.  The run names every
+    report file it writes (`[report] elementBalance -> <path>`); a file on
+    disk that the run in hand did not name is a LEFTOVER of some earlier run,
+    and a verdict read off it is a verdict about that run."""
+    want = csv.resolve()
+    for m in REPORT_LINE.finditer(txt):
+        if m.group(1) != csv.stem:
+            continue
+        #  `-> UNAVAILABLE` is still a write: ElementBalanceReport.cpp writes
+        #  the header-only table at the case's own path before saying so
+        #  (lithiumBrinePlant, whose salts carry no formation datum).
+        if m.group(2) == "UNAVAILABLE":
+            return True
+        got = Path(m.group(2))
+        if not got.is_absolute():
+            got = case / got
+        if got.resolve() == want:
+            return True
+    return False
+
+
+def atom_scope_arm(ran):
     """The declared circuits must come OUT of the atom balance too.
+
+    `ran` maps each plant case RUN IN THIS PASS to its stdout.  ONLY those
+    are judged, and only through report files that stdout says it wrote
+    (2026-10-05, C36 item 5).  Until then the arm globbed every
+    `tutorials/plant/*` for a `reports/balances/` on disk -- so under
+    `bin/runTests --fast`, whose fast set holds no utility-declaring plant,
+    a clean checkout FAILED ("no plant publishing a process atom scope")
+    and a dirty one PASSED on run outputs some earlier sweep had left
+    behind: a verdict about a run nobody made.  Under the fast scope with
+    no in-scope plant publishing a process scope, the arm says it was NOT
+    JUDGED in this scope -- never a pass, and never a failure for an
+    absence the scope itself chose.
 
     WHY THIS ARM EXISTS.  Vitor's instruction of 2026-09-24 was that the
     utility water should not clutter the global mass AND MOLAR balance.  The
@@ -296,10 +362,18 @@ def atom_scope_arm():
     """
     out = []
     seen = 0
-    for case in sorted(ROOT.glob("tutorials/plant/*")):
+    stale = []
+    for case in sorted(ran):
         mb = case / "reports" / "balances" / "massBalance.csv"
         eb = case / "reports" / "balances" / "elementBalance.csv"
         if not mb.is_file() or not eb.is_file():
+            continue
+        if not (written_by(ran[case], case, mb)
+                and written_by(ran[case], case, eb)):
+            #  On disk but NOT written by this pass: a leftover.  Never
+            #  judged -- in either direction -- and COUNTED, so the claim
+            #  says how many were set aside.
+            stale.append(case.relative_to(ROOT).as_posix())
             continue
         #  ASK THE ENGINE, DO NOT RE-READ THE DICT.  The first version of this
         #  arm decided `declares` by looking for the word `utilities` in the
@@ -357,12 +431,24 @@ def atom_scope_arm():
                 "check that BOTH ends of each circuit are excluded, not only "
                 "the supply (the return answers to a second name on a "
                 "sectored plant)." % rel)
+    staleNote = ("" if not stale else
+                 "; %d plant(s) carried report files on disk that this pass "
+                 "did NOT write (%s) -- leftovers, set aside unjudged"
+                 % (len(stale), ", ".join(stale)))
     if seen == 0 and not out:
+        if SCOPED:
+            return out, 0, (
+                "  THE ATOM-SCOPE ARM WAS NOT JUDGED IN THIS SCOPE: no plant "
+                "run by this pass publishes a process atom scope (%d plant(s) "
+                "in reach%s), so neither the presence nor the removal rule "
+                "was tested here.  The full sweep judges it."
+                % (len(ran), staleNote))
         out.append(
             "the atom-scope arm found NO plant publishing a process atom "
-            "scope.  It was built because two plants published one; a count "
-            "of zero means the scan went blind, not that the tree is clean.")
-    return out
+            "scope among the %d plant(s) run in this pass.  It was built "
+            "because two plants published one; a count of zero means the "
+            "scan went blind, not that the tree is clean%s." % (len(ran), staleNote))
+    return out, seen, staleNote
 
 
 def main() -> int:
@@ -383,6 +469,7 @@ def main() -> int:
     bad, checked, noBoundary, unrun, silent, announced = [], 0, [], [], [], []
     outOfScope = []
     processScope = 0        # cases whose closure was read on the PROCESS scope
+    ranPlants = {}          # plant case -> its stdout, RUN IN THIS PASS
     for case, declaresMB in steady_cases():
         rel = case.relative_to(ROOT).as_posix()
         txt, ranOk = output(case)
@@ -392,6 +479,8 @@ def main() -> int:
         if not ranOk:
             unrun.append(rel)
             continue
+        if case.parent == ROOT / "tutorials" / "plant":
+            ranPlants[case] = txt
         m = CLOSURE.search(txt)
         if m is None:
             if RAN.search(txt):
@@ -442,7 +531,9 @@ def main() -> int:
                  "retire the check.\n"))
         return 1
     bad += refusal_arm()
-    bad += atom_scope_arm()
+    atomBad, atomSeen, atomNote = atom_scope_arm(ranPlants)
+    atomNotJudged = atomNote if atomSeen == 0 else ""
+    bad += atomBad
 
     if bad:
         print("check_mass_closure: FAILED")
@@ -475,14 +566,19 @@ def main() -> int:
           "none, and the scope must ACTUALLY REMOVE something -- below 99 %% "
           "of the total on at least one element, because a scope that "
           "reproduces the total removes nothing and is the failure that "
-          "looks like success.  NOT CHECKED: whether those process figures "
+          "looks like success (%s).  NOT CHECKED: whether those process figures "
           "are RIGHT (they are a derived view of streams the goldens already "
           "pin), energy closure, and PER-UNIT closure (two "
-          "units can cancel and this arm would not see it).%s"
+          "units can cancel and this arm would not see it).%s%s"
           % (checked, BAND, processScope, len(PROBES), len(noBoundary),
              len(announced), len(unrun), len(silent),
+             ("NOT JUDGED in this scope" if atomNotJudged else
+              "judged on %d plant(s) run in this pass that publish a process "
+              "atom scope, each read through report files that pass says it "
+              "wrote%s" % (atomSeen, atomNote)),
              scope_sentence(checked + len(noBoundary) + len(announced)
-                            + len(unrun) + len(silent), len(outOfScope))))
+                            + len(unrun) + len(silent), len(outOfScope)),
+             atomNotJudged))
     return 0
 
 

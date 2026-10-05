@@ -74,8 +74,15 @@ stale trajectory or a committed output):
       diluate) -- they come from the same `edCell::predictiveLimitingCurrent`
       call, and two homes would show up in the last digits.  The source arm
       requires `ElectrodialysisStack.cpp` to CALL `edCell::` for the IEM pair,
-      the channel build, the mean activity ratio, the solution resistance and
-      the predictive current, and to define none of them.
+      the channel build, the membrane potential, the solution resistance and
+      the predictive current, and to define none of them; and since C36
+      (2026-10-05) BOTH units to ask `edCell::membranePotential` and neither
+      to call `electrochem::nernst` itself -- the steady stack's own copy
+      took |z| = 1 for every ion while this rig used each ion's own.
+      SABOTAGE-VERIFIED 2026-10-05: the stack's pre-C36 two lines restored
+      (`nernst(+1.0, rCat, T)` / `nernst(-1.0, 1/rAn, T)`), source arm only
+      -- CAUGHT twice by (g): no `edCell::membranePotential` call, and a
+      direct `electrochem::nernst` call.
 
   (h) THE REGISTRY CLOSURE.  `choupoBatch`'s own main must call
       `EDStackRegistry::loadFrom` -- a unit is not installed until everything
@@ -855,7 +862,10 @@ def source_arms():
         (ROOT / "src/unitOperations/electrochem/ElectrodialysisStack.cpp").read_text())
     cell = strip_cpp_comments(
         (ROOT / "src/unitOperations/electrochem/EDCell.cpp").read_text())
-    for fn in ("readIEMPair", "buildChannel", "meanActivityRatio",
+    #  `membranePotential` replaced `meanActivityRatio` in this list on
+    #  2026-10-05 (C36): the stack now asks the membrane potential itself,
+    #  at each ion's own |z|, and meanActivityRatio is called INSIDE it.
+    for fn in ("readIEMPair", "buildChannel", "membranePotential",
                "solutionResistance", "predictiveLimitingCurrent"):
         if ("edCell::" + fn) not in st:
             failures.append(
@@ -864,6 +874,23 @@ def source_arms():
                 " became its second caller" % fn)
         if ("\n" + fn) not in cell and (" " + fn + "(") not in cell:
             failures.append("(g) EDCell.cpp does not define `%s`" % fn)
+    #  THE MEMBRANE POTENTIAL HAS ONE HOME (C36).  Until then the stack
+    #  wrote its own `electrochem::nernst(+1.0, ...)` -- |z| = 1 for every
+    #  ion -- beside the batch rig's own-z branch: two homes, which
+    #  disagreed on every divalent counter-ion.  Both units now ask
+    #  edCell::membranePotential and neither calls the Nernst equation.
+    batch = strip_cpp_comments(
+        (ROOT / "src/unitOperations/batch/BatchElectrodialysis.cpp").read_text())
+    if "edCell::membranePotential" not in batch:
+        failures.append("(g) BatchElectrodialysis.cpp does not CALL"
+                        " `edCell::membranePotential` -- the membrane potential"
+                        " has ONE home, shared with the steady stack")
+    for nm, src in (("ElectrodialysisStack.cpp", st),
+                    ("BatchElectrodialysis.cpp", batch)):
+        if "electrochem::nernst" in src:
+            failures.append("(g) %s calls `electrochem::nernst` itself -- a"
+                            " second home for the membrane potential, which"
+                            " is edCell::membranePotential's" % nm)
     if re.search(r'^\s*(void|ChannelState|scalar)\s+readIEMPair\s*\(', st, re.M):
         failures.append(
             "(g) ElectrodialysisStack.cpp DEFINES readIEMPair again -- a"

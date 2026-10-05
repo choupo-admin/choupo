@@ -261,5 +261,21 @@ CounterIonSplit counterIonPassTransfer(const std::string&         who,
 scalar meanNernstPotential(const ChannelState& chD, const ChannelState& chC,
                            scalar sign, scalar T);
 
+//- THE MEMBRANE POTENTIAL OF ONE MEMBRANE, per cell pair [V] -- the ONE
+//  home both electrodialysis units ask (C36, 2026-10-05).  `sign` = +1
+//  is the cation-exchange membrane (its counter-ions are the cations),
+//  -1 the anion-exchange membrane.  Each counter-ion enters at ITS OWN
+//  charge magnitude |z|:
+//    * one counter-ion in the diluate: that ion's Nernst potential,
+//          E = R T / (|z| F) * ln(a_con / a_dil)
+//      (through `electrochem::nernst`, the arithmetic the single-salt
+//      path has always used, so a 1:1 salt is unchanged bit for bit);
+//    * several: `meanNernstPotential`, the mean of their own potentials.
+//  Until C36 the steady stack used |z| = 1 for EVERY ion, which halved
+//  nothing on a 1:1 salt and doubled a divalent counter-ion's term.  A
+//  membrane with no counter-ion in the diluate has no potential (0).
+scalar membranePotential(const ChannelState& chD, const ChannelState& chC,
+                         scalar sign, scalar T);
+
 } // namespace edCell
 } // namespace Choupo

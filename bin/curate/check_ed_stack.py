@@ -100,17 +100,34 @@ stale converged/):
       to 1.  And a single salt is untouched: ed03's demineralisation is the
       single-salt expression xi I N / (F n_in) (1e-10), and no single-salt
       witness publishes a split KPI.
+  (i) THE NERNST TERM AT EACH ION'S OWN CHARGE (C36, 2026-10-05).  Every
+      membrane's potential is the mean, over its counter-ions present in
+      both channels, of R T / (|z| F) ln(a_con / a_dil) -- the ONE home
+      `edCell::membranePotential`, which the batch rig asks too.  On all 15
+      units (ed01, ed03, ed04 x6, ed09, and a twin of ed04) the published
+      `E_mem_pair` equals that sum recomputed HERE from the case's own 0/
+      inlets, the species records' charges and a transcribed Davies slope
+      (1e-9).  NO SHIPPED WITNESS CAN SEE THE CHARGE: ed04's concentrate
+      inlets carry the diluate's own composition (E_mem = 0 at any |z|) and
+      ed09's concentrate carries only K+ and HTart-, so every ion present in
+      both channels is monovalent.  The arm therefore BUILDS the twin that
+      can -- ed04 with ED1's concentrate at three times the diluate's salt,
+      Mg2+ alone on the CEM, Cl- and SO4 2- sharing the AEM -- and requires
+      the |z| = 1 arithmetic to differ there by more than 10 % (it gives
+      0.04438 V against 0.02870 V), or the witness pins nothing.
 
 WHAT THIS GATE DOES **NOT** COVER, stated so its green line cannot imply it.
 It does not check that an estimate is a GOOD estimate (nobody here has
 weighed a EUR2C spacer coupon).  It does not check the transcription against
 the PDF itself (the table is a human's second reading).  It says nothing
 about the single-salt MgCl2 or NaCl rows of Table 4, which no case runs.  It
-does not check the ohmic drop or the Nernst back-EMF -- those are ed01's
-goldens' business -- and of the Faraday transfer it checks only what arm (h)
-states.  In particular it does not check the steady stack's Nernst term,
-which takes |z| = 1 for every ion (found 2026-10-05, not fixed: it moves
-ed04's voltage and is not the split).  The `leveque` branch of a record's
+does not check the ohmic drop -- ed01's goldens' business -- and of the
+Faraday transfer it checks only what arm (h) states.  The Nernst back-EMF is
+arm (i)'s, on the inlet compositions only (the stack evaluates it there); its
+activity model is Davies on every witness and no other is checked.  (Until
+C36 this paragraph said the steady stack took |z| = 1 for every ion and that
+fixing it would move ed04's voltage.  The first half was true and is fixed;
+the second was false -- ed04's E_mem is zero at any charge.)  The `leveque` branch of a record's
 massTransfer block is reached by no record and no case.  The `interstitial`
 velocity basis is declared by no record.  `dP_max`, `flow_max` and the pH
 band are declared by no record and are therefore never checked against a run.
@@ -197,6 +214,18 @@ rebuilt, both ED gates run, restored with git + `make all`:
       "`demin_Cl` = 0.0338288373512, the z D c split recomputed here gives
       0.0452443359999".  It is charge-balanced, so (h1) and (h3) PASS it --
       which is why the rule is recomputed here and not merely its balance.
+
+SABOTAGE-VERIFIED 2026-10-05 for arm (i), BY HAND, rebuilt, run, restored
+(`make all`):
+  S16 the stack's pre-C36 two lines restored, `nernst(+1.0, rCat, T)` and
+      `nernst(-1.0, 1/rAn, T)` -- |z| = 1 for every ion   CAUGHT by (i) on
+      the divalent twin ONLY: "ED1: E_mem_pair = 0.0443766544401 V, each ion
+      at its OWN |z| recomputed here gives 0.0286984956535 V".  Every shipped
+      witness PASSED it, which is why the twin exists.
+  S17 `edCell::meanNernstPotential` with its `/ |z|` replaced by `/ 1` (the
+      shared-membrane half alone; the single-counter-ion CEM untouched)
+                                                          CAUGHT by (i) on
+      the twin: 0.0339245485824 V published against 0.0286984956535 V.
 
 A TENTH edit was made and is NOT a sabotage: the A13 identity of arm (e) was
 first written at 1e-12 and reported a failure whose two printed numbers were
@@ -504,6 +533,127 @@ def declared_op(case, unit, key):
         else re.search(r'name\s+%s\s*;' % re.escape(unit), t).start()
     m = re.search(r'\b%s\s+([0-9.eE+-]+)\s*;' % key, t[i:])
     return float(m.group(1)) if m else None
+
+
+# ------------------------------------------- the Nernst term (C36)
+R_GAS = 8.314462618           # J/(mol K), core/Constants.H
+MW_WATER_KG = 0.0180153       # kg/mol, edCell's own molality closure
+
+
+def debye_huckel_factor(T):
+    """SolventProperties::debyeHuckelFactor, transcribed (the eps_w/rho_w
+    scaling of the Davies slope; exactly 1 at 298.15 K)."""
+    Tc = min(max(T, 273.15), 573.15)
+    x = Tc - 298.15
+    return 1.0 + x * (1.67320874e-03 + x * (7.92300440e-06 + x * (
+        3.05989121e-08 + x * (-2.51844044e-10 + x * 7.57942218e-13))))
+
+
+def davies_channel(case, stream, failures, tag):
+    """{ion: (z, m, gamma)} of a 0/ stream: molality on the water, Davies
+    gammas at the stream's own ionic strength -- recomputed here from the
+    case's declaration and the species records, never read from the engine."""
+    d = parse_record(Path(case) / "0" / stream)
+    flows = {k: si(v) for k, v in d["componentMolarFlows"].items()}
+    T = si(d["T"])
+    nw = flows.pop("water")
+    ions = {}
+    for k, n in flows.items():
+        if n <= 0.0:
+            continue
+        z, _D = species_facts(case, k)
+        if z is None:
+            failures.append("(i) %s: no charge found for `%s`" % (tag, k))
+            continue
+        ions[k] = [z, (n / nw) / MW_WATER_KG, 1.0]
+    I = 0.5 * sum(m * z * z for z, m, _g in ions.values())
+    A = 0.51 * debye_huckel_factor(T)
+    s = math.sqrt(I)
+    for v in ions.values():
+        v[2] = 10.0 ** (-A * v[0] ** 2 * (s / (1.0 + s) - 0.3 * I)) if I > 0 else 1.0
+    return ions, T
+
+
+def nernst_pair(dil, con, T, own_z=True):
+    """E_cem + E_aem per cell pair [V]: each membrane the MEAN, over its
+    counter-ions present in both channels, of R T / (|z| F) ln(a_con/a_dil).
+    `own_z=False` is the pre-C36 arithmetic (|z| = 1 for every ion), kept
+    only so the arm can prove its witness tells the two apart."""
+    E = 0.0
+    for cation in (True, False):
+        terms = []
+        for k, (z, mD, gD) in dil.items():
+            if (z > 0) != cation or k not in con:
+                continue
+            zC, mC, gC = con[k]
+            if mC > 0 and mD > 0:
+                terms.append(math.log(gC * mC / (gD * mD))
+                             / (abs(z) if own_z else 1.0))
+        if terms:
+            E += R_GAS * T / FARADAY * sum(terms) / len(terms)
+    return E
+
+
+def unit_inputs(case, unit):
+    t = strip_comments((Path(case) / "system/flowsheetDict").read_text())
+    m = re.search(r'name\s+%s\s*;' % re.escape(unit), t)
+    if not m:
+        return None
+    i = re.search(r'inputs\s*\(\s*(\S+)\s+(\S+)\s*\)', t[m.end():])
+    return (i.group(1), i.group(2)) if i else None
+
+
+def nernst_term(outs, twin_out, twin_case, failures):
+    """(i) THE NERNST TERM AT EACH ION'S OWN CHARGE (C36, Vitor's go-ahead
+    of 2026-10-05).  Until C36 the steady stack computed each membrane's
+    potential with |z| = 1 for every ion.  The witnesses could not see it:
+    ed04's concentrate inlets carry the diluate's own composition (E_mem = 0
+    at any z) and ed09's concentrate carries only K+ and HTart-, so every
+    ion present in both channels is monovalent.  So this arm BUILDS the case
+    that can: a twin of ed04 whose ED1 concentrate is the diluate's salt at
+    three times the concentration -- Mg2+ alone on the CEM, Cl- and SO4 2-
+    sharing the AEM.  There, and on every unit of ed01/ed03/ed04/ed09:
+    the published `E_mem_pair` equals the Davies/Nernst sum recomputed here
+    from the case's own 0/ inlets and the species records' charges (1e-9;
+    the JSON carries 12 figures).  On the twin the recomputation with
+    |z| = 1 must differ by more than 10 %, or the witness pins nothing."""
+    checked = 0
+    cases = [(c, outs[c]) for c in (ED01, ED03, ED04, ED09)] \
+        + [(twin_case, twin_out)]
+    for case, (rc, out) in cases:
+        j = result_of(out) if rc == 0 else None
+        if j is None:
+            failures.append("(i) %s did not run" % Path(case).name)
+            continue
+        for unit, kpi in j["kpis"].items():
+            if not isinstance(kpi, dict) or "E_mem_pair" not in kpi:
+                continue
+            ins = unit_inputs(case, unit)
+            if ins is None:
+                failures.append("(i) %s/%s: inputs not found in flowsheetDict"
+                                % (Path(case).name, unit))
+                continue
+            tag = "%s/%s" % (Path(case).name, unit)
+            dil, T = davies_channel(case, ins[0], failures, tag)
+            con, _ = davies_channel(case, ins[1], failures, tag)
+            want = nernst_pair(dil, con, T)
+            got = kpi["E_mem_pair"]
+            checked += 1
+            if not (abs(got - want) <= 1e-9 * max(abs(want), 1e-12)
+                    or abs(got - want) <= 1e-13):
+                failures.append("(i) %s: E_mem_pair = %.12g V, each ion at its "
+                                "OWN |z| recomputed here gives %.12g V (|z| = 1 "
+                                "for every ion would give %.12g V)"
+                                % (tag, got, want, nernst_pair(dil, con, T, False)))
+            if case == twin_case and unit == "ED1":
+                old = nernst_pair(dil, con, T, False)
+                print("  [nernst] divalent twin ED1: E_mem_pair %.9f V published, "
+                      "%.9f V recomputed at each ion's own |z|, %.9f V at |z| = 1"
+                      % (got, want, old))
+                if abs(want) <= 0.0 or abs(old - want) <= 0.10 * abs(want):
+                    failures.append("(i) the divalent twin does not discriminate: "
+                                    "own-z %.6g V vs |z|=1 %.6g V" % (want, old))
+    return checked
 
 
 def counter_ion_split(outs, failures):
@@ -1049,6 +1199,22 @@ def main():
     # ---------------- (h) the counter-ion split (C35) ----------------------
     counter_ion_split(outs, failures)
 
+    # ---------------- (i) the Nernst term at each ion's own charge (C36) ----
+    with tempfile.TemporaryDirectory() as tmp:
+        twin = Path(tmp) / "ed04_divalent_nernst"
+        copy_case(ED04, twin)
+        f = twin / "0" / "ED1conIn"
+        t = f.read_text()
+        t2 = re.sub(r'^(\s*(Mg|Cl|SO4)\s+)([0-9.eE+-]+)(\s+kmol/h;)',
+                    lambda m: "%s%.12g%s" % (m.group(1), 3.0 * float(m.group(3)),
+                                             m.group(4)), t, flags=re.M)
+        if t2.count("kmol/h;") != t.count("kmol/h;") or t2 == t:
+            failures.append("(i) could not build the divalent twin's ED1conIn")
+        f.write_text(t2)
+        nernst_units = nernst_term(outs, run(twin), twin, failures)
+        print("  [nernst] %d units: E_mem_pair recomputed from the 0/ inlets at "
+              "each ion's own |z|" % nernst_units)
+
     # ---------------- (g) the announcements --------------------------------
     def estimate_lines(out, name):
         return re.findall(r"\[estimate\] stack '%s': `([\w.]+)` = \S+ \(SI\) is an "
@@ -1139,11 +1305,15 @@ def main():
           "1e-9, and every demin_<ion> reproduces an independent bisection of "
           "the z D c closed form to 1e-9; ed03's single salt keeps the "
           "single-salt Faraday expression and no single-salt witness publishes "
-          "a split KPI.  "
+          "a split KPI.  THE NERNST TERM (C36): on all 15 units (ed01, ed03, "
+          "ed04 x6, ed09 and a divalent twin of ed04 built here, the only one "
+          "where a divalent counter-ion sees a gradient) E_mem_pair equals the "
+          "Davies/Nernst sum at each ion's OWN |z|, recomputed from the 0/ "
+          "inlets (1e-9), and the twin tells it from |z| = 1 by > 10 %.  "
           "NOT CHECKED: whether any estimate is a good one, whether any `measured` fact is "
           "correctly remembered, the transcription against the PDF, Table 4's NaCl and "
-          "MgCl2 rows (no case runs them), the ohmic drop / Nernst EMF "
-          "(ed01's goldens; the steady Nernst term takes |z| = 1 for every ion), "
+          "MgCl2 rows (no case runs them), the ohmic drop (ed01's goldens), "
+          "the Nernst EMF under any activity model but Davies, "
           "any membrane selectivity beyond the z D c share, the `leveque` correlation branch and the `interstitial` "
           "velocity basis (no record uses either), and dP_max / flow_max / the pH band (no "
           "record declares them).  Nothing here says the bench stack's correlation is VALID "
