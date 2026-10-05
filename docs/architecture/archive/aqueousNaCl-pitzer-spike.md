@@ -1,5 +1,7 @@
 # Vertical spike — `aqueousNaCl_pitzer`
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 > **This is a vertical SPIKE, not a general migration.** It proves the
 > [final property architecture](final-property-architecture.md) end-to-end for one
 > system (aqueous NaCl, Pitzer) by laying down one record of every kind. No engine
@@ -71,7 +73,7 @@ still serves every existing tutorial.
 
 ## Scope of this spike
 
-**This is a vertical spike for aqueous NaCl ONLY.** It proves the Aspen-like stack
+**This is a vertical spike for aqueous NaCl ONLY.** It proves the commercial-simulator-style stack
 end-to-end:
 
 ```
@@ -82,7 +84,7 @@ apparent component -> true species -> solid phase -> chemistry / salt equilibriu
 Only **NaCl** has been split through this path. **Legacy flat components remain
 unchanged.** Files such as
 `data/standards/components/{NaHCO3,Na2CO3,CaCO3,KCl,CaCl2,NaOH}.dat` are **NOT yet
-compliant** with the final Aspen-like architecture — this is expected; the task
+compliant** with the final commercial-simulator-style architecture — this is expected; the task
 was a NaCl vertical spike only. Do **not** read
 `data/standards/components/true/solids/halite.dat` as the complete solids
 inventory — it is only the solid phase needed for the NaCl spike.
@@ -104,7 +106,7 @@ is split; the molecular catalogue is likewise not migrated.)*
 `data/standards/components/NaHCO3.dat` is still a legacy FLAT component. It mixes
 in one file: apparent-component identity · the nonvolatile-salt role · solid
 density · solid Gibbs/enthalpy/entropy data · solid heat capacity ·
-tutorial/application prose. This is **not** the final Aspen-like layout. The
+tutorial/application prose. This is **not** the final commercial-simulator-style layout. The
 future split (DO NOT create these now — documented only):
 - `components/apparent/NaHCO3.dat` — apparent sodium bicarbonate component,
 - `components/true/aqueous/HCO3.dat` — bicarbonate true species,

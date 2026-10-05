@@ -1,5 +1,7 @@
 # The comfort loop — round 1 (2026-07-04)
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 **Mandate (Vitor):** "do not go around putting out fires — run the loop with the
 forum alongside, and stop only when EVERYONE feels comfortable."  (Translated
 from the Portuguese original: *"não andes a apagar fogos — loop acompanhado com
@@ -34,7 +36,7 @@ service session limit.  Findings, by surface:
 3. **materials/membranes/utilities/phases/chemistry/species (157)**:
    **143 missing header boxes** (all 96 chemistry, all 41 species, 3 phases,
    3 materials); 11 fully uncited (aluminium, SS304/SS316 partial, NF270/
-   SW30HR weak, 6 boron/Mn species); an 'Aspen-like' string in
+   SW30HR weak, 6 boron/Mn species); a commercial-simulator name in a string in
    chemistry/salts/sodiumHydroxide.dat (manuals rule: rephrase).
 4. **Engine announcements**: 11 asymmetries found (details in the workflow
    journal wf_1565d5ab-b72) — e.g. the phi-phi world announces itself but the

@@ -1,4 +1,5 @@
 <!--
+  Names redacted 2026-10-05 (DEV.md C7): product names in this record were replaced by neutral descriptions; the original wording is in git history.
   Choupo — Property-model architecture (DEV reference).
   The standing design contract for the property-model TREE: how it is shaped,
   how provenance flows, what we deliberately reject, and the repeatable recipe
@@ -22,7 +23,7 @@
 calculation problem solved at runtime.** The resolution is a glass-box artefact
 on disk (a `.dat` the student reviews and promotes), never a hidden decision
 tree firing inside a Newton iteration. This is the fork that separates Choupo
-from an Aspen-style backend, and it is non-negotiable.
+from a commercial-simulator-style backend, and it is non-negotiable.
 
 Corollary: provenance lives at the **data boundary** and the **validation
 boundary**. It is NEVER carried through the hot numerical path. A curated value
@@ -95,7 +96,7 @@ and carry it to the result JSON.
 
 ---
 
-## 3. What we REJECT from the Aspen-style brief (do not relitigate)
+## 3. What we REJECT from the commercial-simulator-style brief (do not relitigate)
 
 | Rejected | Why |
 |---|---|

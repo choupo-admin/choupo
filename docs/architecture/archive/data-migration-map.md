@@ -1,15 +1,17 @@
 # Choupo Data Architecture Migration Map
+
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
 > **SUPERSEDED 2026-06-30.** This early plan maps to a tree that was NOT built
 > (`species/ions/`, `models/electrolyte/...`). The migration ACTUALLY executed
-> follows [`aspen-like-migration-map.md`](aspen-like-migration-map.md):
+> follows [`conceptual-migration-map.md`](conceptual-migration-map.md):
 > ions->`components/true/aqueous/`, pairs/mixing/eNRTL->`parameters/electrolyte/...`,
 > minerals/speciation/gases/exchange->`chemistry/...`. The standards monoliths are
 > DELETED; the engine reads the per-file tree (dual-leg, case-local overlay first).
 > Kept for history only.
 
 
-> **SUPERSEDED (2026-06-29) by [`aspen-like-migration-map.md`](aspen-like-migration-map.md).**
-> Kept for history; read the Aspen migration map for the canonical plan.
+> **SUPERSEDED (2026-06-29) by [`conceptual-migration-map.md`](conceptual-migration-map.md).**
+> Kept for history; read that migration map for the canonical plan.
 
 > **This is a migration map only.** Existing files remain loadable during the
 > compatibility phase. The target architecture (see
@@ -117,10 +119,10 @@ monolithic files.
 
 ## Why this shape — and the one condition that justifies it
 
-This architecture follows the **conceptual** structure used by Aspen electrolyte
-systems: **apparent** components are user-facing, **true species** are
+This architecture follows the **conceptual** structure used by the commercial electrolyte
+simulators: **apparent** components are user-facing, **true species** are
 solver-facing, **reactions / equilibria** define the chemistry, and **property
-methods** provide model-specific parameters. Choupo should **not** copy Aspen's
+methods** provide model-specific parameters. Choupo should **not** copy their
 hidden databank/wizard style — it implements the same conceptual separation with
 **explicit open-source files that are easy to review, version, and extend through
 Git.**
@@ -132,4 +134,4 @@ Git.**
 > cost — the resolution graph, the flat-cache build, the dual-convention window —
 > is **not** justified. Decide Phase 5 before starting Phase 3.
 
-> **Choupo should be Aspen-like in ontology and OpenFOAM-like in file structure.**
+> **Choupo should be commercial-simulator-like in ontology and OpenFOAM-like in file structure.**

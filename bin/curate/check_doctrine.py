@@ -131,12 +131,18 @@ COMPETITOR_SKIP_PREFIX = ("generated/", "thirdParty/", "data/local/")
 #  reason per file rather than one blanket waiver.
 #
 #  THREE CLASSES, and they need different remedies:
-#    (A) ARCHIVED / SUPERSEDED architecture records whose own FILENAME carries
-#        the word (`archive/aspen-like-*.md`) or whose thesis was an explicit
-#        conceptual comparison.  Renaming them breaks every cross-link in the
-#        tree and rewriting superseded history is not a redaction but a
-#        forgery of the record of how this project decided things.  The
-#        remedy is a rename-with-redirect migration, measured first.
+#    (A) ARCHIVED / SUPERSEDED architecture records whose own FILENAME carried
+#        the word or whose thesis was an explicit conceptual comparison.
+#        CLOSED 2026-10-05 (DEV.md C7): 60 sites in 20 files.  The two
+#        archive records named after a product were renamed
+#        (`archive/conceptual-data-architecture.md`,
+#        `archive/conceptual-migration-map.md`) with a zero-site stub left at
+#        each old path for external links, every in-tree link moved, and the
+#        prose of all 20 records rewritten to describe the product by what it
+#        is -- every decision, date and argument unchanged, and a dated note
+#        at the top of each saying where the original wording is kept.
+#        The letter stays in this comment so a reader of the ledger can tell
+#        the class was retired, not forgotten; no file is pinned under it.
 #    (B) VÍTOR'S OWN SLIDE DECK, which recounts the HISTORY OF THE FIELD (the
 #        1976 project at MIT, the 1981 company, the proprietary era).  That is
 #        history, not comparison, and it is his deck: RESERVED for him.
@@ -154,32 +160,10 @@ COMPETITOR_SKIP_PREFIX = ("generated/", "thirdParty/", "data/local/")
 #
 #  MEASURED with the gate's own output, never typed.
 COMPETITOR_PINNED = {
-    "docs/architecture/archive/aspen-like-data-architecture.md": (7, "A"),
-    "docs/architecture/archive/data-ontology.md": (6, "A"),
-    "docs/architecture/archive/data-migration-map.md": (6, "A"),
-    "docs/property-consolidation-proposal.md": (5, "A"),
-    "docs/architecture/final-property-architecture.md": (5, "A"),
-    "docs/whatif-tinkering-promote.md": (4, "A"),
-    "docs/architecture/archive/aspen-like-migration-map.md": (4, "A"),
     "docs/slides/farelo_choupo.tex": (3, "B"),
-    "docs/design/process-safety-audit.md": (3, "A"),
-    "docs/architecture/archive/aqueousNaCl-pitzer-spike.md": (3, "A"),
-    "docs/whatif-kpi-instrument.md": (2, "A"),
-    "docs/property-architecture.md": (2, "A"),
-    "docs/design/the-order-a-reader-meets-a-reference.md": (2, "A"),
-    "docs/design/solution-directories-forum-2026-07-03.md": (2, "A"),
-    "docs/design/acetone-ipa-reference-case.md": (2, "A"),
-    "docs/architecture/property-dictionary-variants.md": (2, "A"),
     "bin/curate/chemsep_to_choupo.py": (2, "C"),
-    "docs/thermo-hierarchy.md": (1, "A"),
-    "docs/electrolyte-enthalpy-spec.md": (1, "A"),
-    "docs/design/gibbs-map-forum-2026-07-02.md": (1, "A"),
-    "docs/design/comfort-loop-2026-07-04.md": (1, "A"),
-    "docs/design/acetone-plant-closure-state.md": (1, "A"),
 }
 PIN_CLASS = {
-    "A": "archived or superseded architecture record; the remedy is a "
-         "rename-with-redirect migration, not a rewrite of decided history",
     "B": "V\u00edtor's own slide deck, recounting the history of the field rather "
          "than comparing products -- RESERVED for him",
     "C": "functional code: an importer's source-exclusion list, where the "

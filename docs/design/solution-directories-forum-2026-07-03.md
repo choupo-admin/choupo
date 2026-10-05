@@ -1,10 +1,12 @@
 # Solution directories (OpenFOAM-style 0/ 1/ 2/) — forum-ratified policy (2026-07-03)
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 **Trigger:** Vítor's screenshot of gibbs06 (a single-pass Gibbs case) — "weren't
 the streams supposed to be in folders 0/ 1/ 2/ like OpenFOAM?"
 
-**Forum: 6 voices** — OpenFOAM/CFD veteran, process-simulation expert (Aspen/
-gPROMS), computational-pedagogy professor, undergrad (no OpenFOAM),
+**Forum: 6 voices** — OpenFOAM/CFD veteran, process-simulation expert (commercial
+sequential-modular and equation-oriented simulators), computational-pedagogy professor, undergrad (no OpenFOAM),
 reproducibility/git engineer, credo-keeping architect.
 
 ## The unanimous verdict (6/6)

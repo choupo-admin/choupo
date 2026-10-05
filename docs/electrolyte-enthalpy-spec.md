@@ -1,5 +1,7 @@
 # Electrolyte solution enthalpy — build spec (draft for Vítor's OK)
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 *2026-06-09. Forum-derived (forum-electrolyte-enthalpy) **with Vítor's correction
 applied**: the electrolyte solution enthalpy is NOT "ideal mixture + Hᴱ". It is
 built on the aqueous **infinite-dilution reference** + the **relative apparent
@@ -95,8 +97,8 @@ calorimetrically fitted)`. So NaCl (osmotic-only) emits no bogus enthalpy, the
 - Calorimetric refit/validation target: **Parker, NSRDS-NBS 2 (1965)** — NaOH
   heats of dilution + apparent molar Cp_φ. US-gov public domain.
 - **EXCLUDED (licence):** Perry's / McCabe printed H-x chart (McGraw-Hill,
-  all-rights-reserved — the no-grant trap; not for fit OR AAD), Aspen ELECNRTL
-  databank, DIPPR/Yaws/NIST-no-grant.
+  all-rights-reserved — the no-grant trap; not for fit OR AAD), a commercial simulator's
+  electrolyte-NRTL databank, DIPPR/Yaws/NIST-no-grant.
 - Reuse — do NOT duplicate — `Component::electrolyteDissolutionEnthalpy` for the
   offset; it is `ΔH_soln,∞`, **not** `L_φ` (must not be reused as the curve).
 

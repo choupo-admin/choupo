@@ -1,11 +1,13 @@
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 > **SUPERSEDED 2026-07-01 by [electrolyte-data-architecture.md](electrolyte-data-architecture.md)** — the 8-home / 2-axis architecture (no basisMaps, dissociatesTo on components, no "true species"). Kept for history.
 
 # Choupo Data Ontology
 
-> **SUPERSEDED (2026-06-29) by [`aspen-like-data-architecture.md`](aspen-like-data-architecture.md)**
-> — the fuller Aspen-like model (apparent/true components, chemistry sets,
+> **SUPERSEDED (2026-06-29) by [`conceptual-data-architecture.md`](conceptual-data-architecture.md)**
+> — the fuller commercial-simulator-style model (apparent/true components, chemistry sets,
 > property methods, parameter databanks, **property packages as the centre**,
-> property sets). This first-cut 7-kind doc is kept for history; read the Aspen
+> property sets). This first-cut 7-kind doc is kept for history; read that
 > doc for the canonical proposal.
 
 > **Status: PROPOSAL (not yet implemented).** This document defines a *target*
@@ -306,13 +308,13 @@ belongs to; the component is the entry point that ties them together by name.
 
 ## The architecture in one phrase
 
-**Aspen-like ontology, OpenFOAM-like files, with arity-1 intrinsic properties
+**Commercial-simulator ontology, OpenFOAM-like files, with arity-1 intrinsic properties
 kept with the substance.**
 
-Choupo follows the *conceptual* structure used by Aspen electrolyte systems —
+Choupo follows the *conceptual* structure used by the commercial electrolyte simulators —
 apparent components are user-facing, true species are solver-facing,
 reactions/equilibria define the chemistry, and property methods supply
-model-specific parameters. Choupo does **not** copy Aspen's hidden
+model-specific parameters. Choupo does **not** copy their hidden
 databank/wizard style: it implements the same conceptual separation with
 **explicit, open-source files that are easy to review, version, and extend
 through Git.**

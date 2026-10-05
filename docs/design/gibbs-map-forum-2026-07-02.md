@@ -1,8 +1,10 @@
 # Gibbs equilibrium maps — forum-ratified design (2026-07-02)
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 **Status: DESIGN RATIFIED, NOT BUILT.** Forum: 3 professors (equilibrium
 thermodynamics, reaction engineering, computational pedagogy) + 3 users
-(chemical-engineering undergrad, methanol-synthesis PhD/Aspen power user,
+(chemical-engineering undergrad, methanol-synthesis PhD/commercial-simulator power user,
 thermodynamics TA).
 Verdict: **6/6 on the architecture**; amendments below are binding.
 

@@ -131,3 +131,17 @@ TAUGHT and a history record that names a retired grammar is doing its job.
   architecture work they supported needs re-reading, the git objects above are
   the archive, and re-deriving a finding from a public codebase is always
   available.
+
+## 7. The pinned remainder (2026-10-05)
+
+`check_doctrine` pins what one slice could not reach, two-sided, with a
+class per file.  The ARCHIVED-RECORD class is closed: 20 records were
+redacted in place (the product described by what it is, each record carrying
+a dated note that the original wording is in git history), and the two
+archive records whose FILE NAMES carried a product name were renamed to
+`docs/architecture/archive/conceptual-data-architecture.md` and
+`conceptual-migration-map.md`, with a zero-site stub at each old path so a
+link from outside the tree still resolves.  What stays pinned is Vítor's own
+slide deck (the history of the field; his to decide) and the importer's
+source-exclusion list (functional code; permanent).  DEV.md C7 carries the
+measurements.

@@ -1,5 +1,7 @@
 # Process safety in Choupo — an audit, before any implementation
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 Requested 2026-08-27 by Vítor Geraldes.  The brief was explicit: **audit
 first, architecture second, one minimal executable slice third.**  Nothing in
 this document is implemented.  It answers the ten questions asked, and it
@@ -122,7 +124,7 @@ the project's existing machinery does the work.
 
 ---
 
-## 3. What Aspen demonstrates is industry-relevant
+## 3. What a commercial process simulator demonstrates is industry-relevant
 
 Its public capability surface connects: process model → overpressure scenario
 → relief load → device sizing → inlet/outlet piping → blowdown → flare network
@@ -132,7 +134,7 @@ control-valve failure and exchanger tube rupture.
 **Read as a capability map, not an architecture.**  What it establishes is
 that the chain is real engineering work and that the scenarios above are the
 ones practitioners actually run.  What it does not establish is that a
-teaching simulator should have a Safety subsystem; Aspen's shape follows from
+teaching simulator should have a Safety subsystem; that product's shape follows from
 being a commercial suite that must cover a customer's whole workflow.
 
 The honest use of the comparison in the guide is one sentence about what the
@@ -444,7 +446,7 @@ the *rule* is API's, the pressure drop is ours.
 **Beyond S4** — two-phase relief, rupture disks, blowdown, flare networks,
 dynamic emergency analysis.  Each needs its own justification and its own
 witness.  **None is scheduled**, and saying so is part of the plan: a roadmap
-that lists everything Aspen does is feature parity wearing a schedule.
+that lists everything a commercial suite does is feature parity wearing a schedule.
 
 ---
 
