@@ -760,7 +760,8 @@ WARN-only — a rating never clamps a stream.
 word -- `distillationColumn` and, since 2026-09-26, `pfr` (`pressureDesign`
 REQUIRED; `L_over_D` else announced default; `catalystBulkDensity` and
 `catalystPrice` optional, each enabling one half of the catalyst charge and
-refused by name at cost time when absent).
+refused by name at cost time when absent), and `vessel`, whose
+`spaceVelocity` REQUIRES `spaceVelocityBasis normal|actual;` since 2026-10-05.
 
 Auto-init and ratings are emitted in the result JSON (`advisories`) and
 surfaced by the GUI (an amber run-complete toast + a list in the Streams

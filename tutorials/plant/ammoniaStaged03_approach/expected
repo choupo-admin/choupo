@@ -66,7 +66,7 @@ kpi     separator              Q_kW             -75708.8510779     1e-4
 kpi     separator              T                250                1e-4
 kpi     separator              V_over_F         0.70414371986      1e-4
 kpi     separator              phaseSet         0                  1e-4
-equipment converter            basis            catalyst_V_=_Q/SV  exact
+equipment converter            basis            catalyst_V_=_Q_normal/SV;_SV_declared_on_NORMAL_gas_volume_(273.15_K,_101325_Pa,_ideal_gas)_of_the_flow_KPI_N_in_mol_s exact
 equipment converter            values.D         1.58118503106      1e-4
 equipment converter            values.H         9.48711018636      1e-4
 equipment converter            values.L_over_D  6                  1e-4

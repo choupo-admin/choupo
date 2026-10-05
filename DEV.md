@@ -1017,7 +1017,8 @@ accepts today, and that is a policy call.
      names no witness).
 
 **C2. The ammonia converter: a DESIGN module and a COST (asked 2026-09-21,
-     "os alunos precisam urgentemente disso"; PARTIALLY DONE).**
+     "os alunos precisam urgentemente disso"; DONE 2026-09-26 on the kinetic
+     case, see the end of this entry; RE-MEASURED 2026-10-05).**
      `tutorials/plant/ammonia03_quench_converter` exists and carries a
      `system/postDict` with a `sizing` block, so the ASK was half met.  The
      half that was not is the reactor itself, and the case's own header says
@@ -1075,6 +1076,26 @@ accepts today, and that is a policy call.
      parent build -- an addition with nothing moved is within the
      commander's authority; a MOVED row still goes to Vitor first.  Record:
      `docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md`.
+     **RE-MEASURED 2026-10-05 (C34 wave): what of C2 is still open, and
+     whose.**  (1) `ammoniaStaged04_kinetic` sizes and costs its bed today
+     (`check_design_sheet` arm (n) green).  (2) `ammonia03_quench_converter`
+     still REFUSES `bed1 bed2 bed3` by name on every run -- verified by
+     running it -- and that refusal is the case's DECLARED LESSON, not a
+     defect: its three beds are `gibbsReactor`s at full equilibrium, which
+     have no length scale, and its postDict argues that dividing a volume
+     across them needs a rule nobody has.  Nothing of it is achievable
+     without either (a) typing a volume or a space velocity per bed --
+     the "invented volume" the case refuses in its own words -- or (b)
+     rebuilding the converter as three kinetic `pfr` beds with three
+     designSpecs on the per-bed approach (stage D's method), which is a
+     new case design, not a sizer: both change what the case teaches, so
+     both are VITOR's (pedagogical scope), and neither was started.  The
+     tray/catalyst Guthrie wall is not on the path either way (a pfr bed
+     costs its shell on the existing `vessel` set and its charge at a
+     declared price).  (3) The space-velocity BASIS trap C8 recorded is
+     closed under C8 the same day (`spaceVelocityBasis`), so a per-bed
+     GHSV, if Vitor chooses (a), can now be declared on the basis the
+     literature quotes.
 
 **C3. Per-EQUATION citation audit of the Theory Guide (asked 2026-09-22;
      NOT DONE at the granularity asked).**  He asked which of the guide's
@@ -1260,6 +1281,10 @@ accepts today, and that is a policy call.
      effectiveness factor at FEED -> a licensor's guaranteed charge at
      detailed design; `docs/design/how-a-process-design-is-staged.md` §6).
      Enough to cost a vessel, not enough to build one, and the case says so.
+     (CORRECTED 2026-10-05: "applied to this flowsheet's own throughput" was
+     not measured -- 80 m3 at ammonia02's own converter inlet is 11 360
+     Nm3/(m3 h), not the ~20 000 its comment said; the comment now says so
+     and the number is left for Vitor, see C8.)
 
 **C6-R2. BALANCES REVIEW (2026-09-24, read-only).  Vitor's instinct about
      the utility water was RIGHT, and it is right about the report he did not
@@ -2633,6 +2658,10 @@ superheated chest is REFUSED there, falsely, not mispriced).
         `mode adiabatic; P 200 bar; T 720 K;` and no approach of any kind, so
         every unit downstream of it is sized against a conversion no real
         converter reaches -- the fiction section 6 of the research names.
+        (STALE since 2026-10-01, re-measured 2026-10-05: the flagship's
+        `Converter/system/flowsheetDict` now declares `temperatureApproach
+        5;`, and the flagship carries no postDict at all since 2026-10-02 --
+        so the flagship has taken stage C's correction and costs nothing.)
      2. `temperatureApproach` is read by `GibbsReactor.cpp:141` and ANNOUNCED
         there in a comment that names the accident it guards against, and it
         is used by ZERO flowsheet cases in the corpus -- only by a README and
@@ -2719,14 +2748,42 @@ superheated chest is REFUSED there, falsely, not mispriced).
      Two assumptions are DECLARED as such with their sourced bands: A's 25 %
      per-pass conversion and C's 20 000 Nm3/(m3 h).  Building A exposed the
      `ConversionReactor` duty-surface defect (section 5, now fixed on main);
-     building C exposed the two-key defect (section 5) and a BASIS trap that
-     is still open: `VesselSize` computes Q on ACTUAL gas volume while every
-     published GHSV is on a normal basis -- at 700 K / 200 bar the ratio is
-     77, so an industrial GHSV typed straight into `designRules` under-sizes
-     the bed 77x at exit 0.  Also measured from the flagship's own golden:
-     its comment says 20 000 Nm3/(m3 h) and the number is ~10 200 -- the
+     building C exposed the two-key defect (section 5) and a BASIS trap:
+     `VesselSize` computed Q on ACTUAL gas volume while every published GHSV
+     is on a normal basis -- at 700 K / 200 bar the ratio is 77, so an
+     industrial GHSV typed straight into `designRules` under-sized the bed
+     77x at exit 0.  Also measured from the flagship's own golden: its
+     comment says 20 000 Nm3/(m3 h) and the number is ~10 200 -- the
      comment overstates by 1.8x, which is the whole argument for the rule
      being engine-visible.
+     **THE BASIS TRAP IS CLOSED (2026-10-05, C34 wave, branch
+     `claude/c34-c8-c2-remainder`).**  A `spaceVelocity` now REQUIRES
+     `spaceVelocityBasis normal;` (Nm3 at 273.15 K / 101325 Pa, ideal gas)
+     or `spaceVelocityBasis actual;` (the unit's own T and P) in the same
+     `designRules {}`; absent, the item is REFUSED by name with the
+     normal/actual ratio at the unit's own conditions quoted, and any other
+     word (`standard` included -- 15/20/25 degC at 1 bar or 1 atm by source)
+     is refused through `registryRefusal::message` naming the two accepted
+     words.  The engine does not GUESS.  The normal reference has ONE home
+     (`core/Constants.H`, `T_normal`/`P_normal`), read by both the sizer and
+     the PFR's `GHSV_normal_h` KPI.  Blast radius MEASURED first: ONE corpus
+     case sizes by space velocity (`ammoniaStaged03_approach`); it now
+     declares the literature's `spaceVelocity 20000; spaceVelocityBasis
+     normal;` instead of the hand-converted 259.665, the run prints the
+     conversion (`[basis] ... 259.665 1/h on ACTUAL gas (normal/actual =
+     77.02)`), and ONE golden row moved -- its `equipment converter basis`
+     WORD, because the sheet now says which basis in words; every numeric
+     row stays within 1e-4 (V_R moves by 7.4e-8 relative: the hand-rounded
+     259.665 against the exact 259.6651...).  Gate: `check_design_sheet`
+     arm (o), 4 by-hand sabotages, all caught.  The "flagship" comment is
+     STALE for `greenAmmoniaIndustrialN2` (its postDict left the base case
+     on 2026-10-02) and LIVE for `ammonia02_full_plant`, whose 80 m3 is
+     11 360 Nm3/(m3 h) on its own inlet (10 388 on the outlet), not the
+     ~20 000 its comment claimed: the COMMENT is corrected; the NUMBER is
+     not, because declaring the rule (`spaceVelocity 20000; spaceVelocityBasis
+     normal;` -> 45.4 m3) moves ammonia02's converter size and cost golden
+     -- WAITING ON VITOR (4b): keep the typed 80 m3, or let the case declare
+     the rule.
 
      **D IS BUILT (2026-09-26, in an isolated worktree, under Vitor's
      authorisation of the same day).**  `tutorials/plant/ammoniaStaged04_kinetic`:

@@ -557,6 +557,29 @@ density or a price you cannot source is declared as an assumption in a
 comment, in those words.  Worked case:
 `tutorials/plant/ammoniaStaged04_kinetic`.
 
+**A VESSEL SIZED BY SPACE VELOCITY DECLARES WHICH GAS VOLUME (2026-10-05).**
+`type vessel` builds its volume from ONE of `volume` (m3, author-set),
+`residenceTime` (s, on the ACTUAL gas flow at the unit's T and P) or
+`spaceVelocity` (1/h) -- and a `spaceVelocity` REQUIRES its basis beside it:
+
+```
+designRules
+{
+    spaceVelocity       20000;      // 1/h: Nm3 of gas per m3 of catalyst per hour
+    spaceVelocityBasis  normal;     // or `actual` -- REQUIRED, no default
+    flowKey             N_in_mol_s; // GHSV is quoted on the INLET gas
+    pressureDesign      220.0;      // bar
+}
+```
+
+`normal` is gas at 273.15 K and 101325 Pa as an ideal gas (the basis published
+GHSVs use); `actual` is gas at the unit's own T and P.  At 700 K and 200 bar
+the two differ by 77x, so the engine does not guess: a missing basis is
+refused by name with that ratio quoted, and any other word (`standard`
+included -- it means 15, 20 or 25 degC depending on the source) is refused
+naming the two accepted.  The run prints the conversion beside the volume.
+Worked case: `tutorials/plant/ammoniaStaged03_approach`.
+
 ## Where a numerical option lives — the four homes are INTENTIONAL
 
 Settled 2026-08-04 (Vítor, option A of

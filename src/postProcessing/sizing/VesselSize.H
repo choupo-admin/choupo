@@ -19,7 +19,11 @@ Description
     catalytic (equilibrium) reactor, a flash/knock-out drum, a separator.  The
     volume is a DESIGN choice, computed here from the unit's throughput (a
     simulation result) and ONE design basis in designRules:
-        spaceVelocity  [1/h]  -> V = Q_gas / SV        (catalytic reactor)
+        spaceVelocity  [1/h]  -> V = Q_gas / SV        (catalytic reactor;
+                                  REQUIRES `spaceVelocityBasis normal|actual;`
+                                  -- Q on NORMAL gas, 273.15 K / 101325 Pa,
+                                  or on ACTUAL gas at the unit's T and P;
+                                  absent or any other word is REFUSED)
         residenceTime  [s]    -> V = Q_gas * tau       (drum / separator)
         volume         [m^3]  -> V direct              (author-set)
     Q_gas [m^3/s] is built from a molar-flow KPI (designRules.flowKey, default

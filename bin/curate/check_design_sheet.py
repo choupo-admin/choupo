@@ -161,6 +161,30 @@ WHAT THIS CHECKS:
       the case's declared assumptions (its header says so in those words)
       and this arm only proves they reached the arithmetic unchanged.
 
+  (o) A SPACE VELOCITY CARRIES ITS DECLARED GAS-VOLUME BASIS (2026-10-05).
+      `VesselSize` used to divide the ACTUAL gas flow at the unit's own
+      (T, P) by whatever `spaceVelocity` was typed, while every published
+      GHSV is on NORMAL gas volume -- a factor of 77 at an ammonia
+      converter's 700 K / 200 bar, taken at exit 0.  On
+      `ammoniaStaged03_approach` (the one corpus case that sizes by space
+      velocity) the converter sheet's `V_R` is RECOMPUTED here from the
+      run's own `N_in_mol_s` KPI and the postDict's declared `spaceVelocity`
+      as N R T_n / P_n x 3600 / SV (T_n 273.15 K, P_n 101325 Pa), at the
+      sheet's printed precision, and the basis must say NORMAL.  Three
+      copies then run from a temp directory: one with the
+      `spaceVelocityBasis` statement deleted, which must refuse the
+      converter BY NAME (`spaceVelocityBasis` on the FAILED line) and quote
+      the normal/actual ratio at the unit's own conditions; one declaring
+      `standard`, which must refuse naming both accepted words; and one
+      declaring `actual` at 259.665 1/h, whose `V_R` is recomputed as
+      N R T / P x 3600 / SV from the KPI T and P -- so both branches are
+      held to arithmetic, not only the shipped one.
+      SABOTAGES, by hand, 2026-10-05: four, all caught; recorded with the
+      line each produced in `check_space_velocity_basis`.
+      NOT CHECKED: whether 20000 Nm3/(m3 h) is a sensible GHSV -- it is the
+      case's declared assumption; and any vessel sized by residence time,
+      which is on actual volume by its own physics and was never ambiguous.
+
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
@@ -236,6 +260,11 @@ COLUMN  = "tutorials/steady/distillation/column09_tray_hydraulics"
 #  representative pass at all, and the only one whose second item is priced
 #  from a DECLARED unit price rather than a Turton correlation.
 KINETIC = "tutorials/plant/ammoniaStaged04_kinetic"
+
+#  THE SPACE-VELOCITY WITNESS (2026-10-05).  The one corpus case that sizes a
+#  catalyst vessel from a declared `spaceVelocity`, and so the one whose
+#  `spaceVelocityBasis` declaration reaches the arithmetic.
+SPACEV  = "tutorials/plant/ammoniaStaged03_approach"
 
 TOL = 1.0e-6      # relative, between two projections of the same number
 
@@ -1352,6 +1381,151 @@ def check_catalyst_bed(problems, notes):
                  "density; total INCOMPLETE both times")
 
 
+def check_space_velocity_basis(problems, notes):
+    """(o) -- see the module docstring.  The RECOMPUTATION is the point: a
+    golden pins what the run PRINTS, and a bed sized on the wrong gas basis
+    prints a plausible volume; only arithmetic from the DECLARATION and the
+    unit's own KPIs can tell the two bases apart.
+
+    SABOTAGES, BY HAND, 2026-10-05, each on VesselSize.cpp, restored with
+    `cp` (md5 verified) and the engine rebuilt; the gate then returned OK:
+      S1  the NORMAL branch divides Q_actual (the old behaviour: the basis
+          word read and ignored)  -> FAILED: "the converter sheet says V_R =
+          0.24186478 m3, but N_in R T_n/P_n x 3600 / SV (...) is 18.628985
+          m3".
+      S2  the missing-basis refusal disabled and an absent basis read as
+          `actual`  -> FAILED: "without spaceVelocityBasis the converter is
+          not refused BY NAME".
+      S3  the unknown-word refusal disabled  -> FAILED: "`spaceVelocityBasis
+          standard` is not refused naming the accepted words (normal,
+          actual) (rc=0)".
+      S4  both branches divide Q_normal  -> FAILED: "on `actual` the sheet
+          says V_R = 1434.8476 m3, but N_in R T/P x 3600 / SV is 18.628986
+          m3" -- the arm that holds the branch no shipped case uses.
+    """
+    R, T_N, P_N = 8.314462618, 273.15, 101325.0
+
+    def kpis_of(out):
+        for line in out.splitlines():
+            if '"converter": {' in line and '"N_in_mol_s"' in line:
+                vals = {}
+                for key in ("N_in_mol_s", "T", "P"):
+                    m = re.search(r'"%s": *(-?[0-9][0-9.eE+-]*)' % key, line)
+                    if not m:
+                        break
+                    vals[key] = float(m.group(1))
+                if len(vals) == 3:
+                    return vals
+        return None
+
+    def sheet_V(case_dir):
+        f = case_dir / "design" / "converter" / "vessel"
+        if not f.is_file():
+            return None, None, ""
+        txt = f.read_text(errors="replace")
+        tok = re.search(r'^\s*V_R\s+([-\d.eE+]+)', txt, re.M)
+        return (float(tok.group(1)) if tok else None,
+                tok.group(1) if tok else None, txt)
+
+    rc, out, err = run_case(SPACEV)
+    if rc != 0:
+        problems.append("check_design_sheet(o): %s failed (rc=%d).\n    %s"
+                        % (SPACEV, rc, err.strip()[:300]))
+        return
+    k = kpis_of(out)
+    post = (ROOT / SPACEV / "system" / "postDict").read_text(errors="replace")
+    post_nc = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', post, flags=re.S))
+    sv = re.search(r'\bspaceVelocity\s+([0-9.eE+-]+)\s*;', post_nc)
+    bw = re.search(r'\bspaceVelocityBasis\s+(\w+)\s*;', post_nc)
+    if k is None or not sv or not bw or bw.group(1) != "normal":
+        problems.append("check_design_sheet(o): the witness publishes no "
+                        "converter N_in_mol_s/T/P KPI, or its postDict "
+                        "declares no `spaceVelocity` with `spaceVelocityBasis "
+                        "normal;` -- this arm CANNOT RUN and must not pass.")
+        return
+    SV = float(sv.group(1))
+    V, tok, txt = sheet_V(ROOT / SPACEV)
+    if V is None:
+        problems.append("check_design_sheet(o): no V_R on the converter sheet.")
+        return
+    want = k["N_in_mol_s"] * R * T_N / P_N * 3600.0 / SV
+    tol = 10.0 ** (-(_sig_digits(tok) - 1))
+    if not close(V, want, tol):
+        problems.append(
+            "check_design_sheet(o): the converter sheet says V_R = %s m3, but "
+            "N_in R T_n/P_n x 3600 / SV (%.12g x %.10g x %g / %g x 3600 / %g) "
+            "is %.6f m3 -- the NORMAL basis the case declares did not reach "
+            "the arithmetic." % (tok, k["N_in_mol_s"], R, T_N, P_N, SV, want))
+    if "NORMAL gas volume" not in txt:
+        problems.append("check_design_sheet(o): the converter sheet's basis "
+                        "does not say NORMAL gas volume.")
+
+    src = ROOT / SPACEV
+    #  ---- no basis declared: refused by name, with the ratio -------------
+    #  The probe deletes the STATEMENT, never the line (arm (n)'s lesson).
+    dst, rc2, out2, err2 = _run_copy(
+        src, lambda t: re.sub(r'\bspaceVelocityBasis\s+[^;]*;', '', t))
+    both = out2 + err2
+    ratio = k["P"] * T_N / (P_N * k["T"])
+    if rc2 != 0:
+        problems.append("check_design_sheet(o): the copy without "
+                        "spaceVelocityBasis failed (rc=%d) -- a missing basis "
+                        "must refuse the ITEM, never the run." % rc2)
+    elif not re.search(r'converter\s+FAILED:[^\n]*spaceVelocityBasis', both):
+        problems.append("check_design_sheet(o): without spaceVelocityBasis the "
+                        "converter is not refused BY NAME (no FAILED line "
+                        "naming `spaceVelocityBasis`).")
+    elif ("%.2f" % ratio) not in both:
+        problems.append("check_design_sheet(o): the missing-basis refusal does "
+                        "not quote the normal/actual ratio %.2f at the unit's "
+                        "own conditions." % ratio)
+    shutil.rmtree(dst.parent, ignore_errors=True)
+
+    #  ---- `standard`: refused naming the accepted words ------------------
+    dst, rc3, out3, err3 = _run_copy(
+        src, lambda t: re.sub(r'\bspaceVelocityBasis\s+normal\s*;',
+                              'spaceVelocityBasis standard;', t))
+    both = out3 + err3
+    if rc3 != 0 or not re.search(
+            r'converter\s+FAILED:[^\n]*space-velocity basis[^\n]*standard', both) \
+            or not re.search(r'Accepted[^\n]*normal[^\n]*actual', both):
+        problems.append("check_design_sheet(o): `spaceVelocityBasis standard` "
+                        "is not refused naming the accepted words (normal, "
+                        "actual) (rc=%d)." % rc3)
+    shutil.rmtree(dst.parent, ignore_errors=True)
+
+    #  ---- `actual`: the other branch, held to its own arithmetic ---------
+    SV_act = 259.665
+
+    def to_actual(t):
+        t = re.sub(r'\bspaceVelocity\s+[0-9.eE+-]+\s*;',
+                   'spaceVelocity %g;' % SV_act, t)
+        return re.sub(r'\bspaceVelocityBasis\s+normal\s*;',
+                      'spaceVelocityBasis actual;', t)
+    dst, rc4, out4, err4 = _run_copy(src, to_actual)
+    if rc4 != 0:
+        problems.append("check_design_sheet(o): the `actual` copy failed "
+                        "(rc=%d).\n    %s" % (rc4, err4.strip()[:300]))
+    else:
+        k4 = kpis_of(out4)
+        V4, tok4, txt4 = sheet_V(dst)
+        if k4 is None or V4 is None or "ACTUAL gas volume" not in txt4:
+            problems.append("check_design_sheet(o): the `actual` copy wrote no "
+                            "converter sheet on the ACTUAL basis -- the probe "
+                            "did not land.")
+        else:
+            want4 = k4["N_in_mol_s"] * R * k4["T"] / k4["P"] * 3600.0 / SV_act
+            if not close(V4, want4, 10.0 ** (-(_sig_digits(tok4) - 1))):
+                problems.append(
+                    "check_design_sheet(o): on `actual` the sheet says V_R = "
+                    "%s m3, but N_in R T/P x 3600 / SV is %.6f m3."
+                    % (tok4, want4))
+    shutil.rmtree(dst.parent, ignore_errors=True)
+    notes.append("space velocity: V_R %.4f m3 on NORMAL gas recomputed; no "
+                 "basis and `standard` refused by name; `actual` recomputed"
+                 % V)
+
+
 def main() -> int:
     problems, notes = [], []
 
@@ -1370,6 +1544,7 @@ def main() -> int:
                         "is then exercised by nothing." % COLUMN)
     check_column_items(problems, notes)
     check_catalyst_bed(problems, notes)
+    check_space_velocity_basis(problems, notes)
 
     check_ignored(problems)
     check_refusal(problems)
@@ -1395,7 +1570,12 @@ def main() -> int:
           "CHARGE's mass and price are RECOMPUTED from the case's declared "
           "density and unit price with no index and no module factor, and two "
           "copies run without the price and without the density each refuse "
-          "the charge BY NAME and mark the total INCOMPLETE), each "
+          "the charge BY NAME and mark the total INCOMPLETE) and on the "
+          "space-velocity witness (the converter's V_R RECOMPUTED from its "
+          "inlet KPI and the declared spaceVelocity on the NORMAL gas basis "
+          "the case declares; a copy with no basis and one declaring "
+          "`standard` each refused BY NAME, and one declaring `actual` "
+          "recomputed on the unit's own T and P), each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
           "sector, NO extra level where it does not); every `sizing {}` entry "
