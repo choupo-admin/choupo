@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the KHT model wine: one salt in a water carrier.
+
+  Three components: water and the two ions of potassium hydrogen tartrate,
+  each a case-local component bridged to its model species.  ETHANOL IS NOT
+  AMONG THEM, and cannot be: the stack sends every non-water component
+  through the aqueous-species bridge and refuses one with none
+  (system/flowsheetDict, section 2).  The aqueous activity model is declared
+  here, once, and the stack READS it (Davies: charge-only, so it is blind to
+  which anion this is).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water  K  HTart );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    // The liquid IS an aqueous electrolyte solution -- declared here, once,
+    // independently of the phase equilibrium above (this stack computes no
+    // VLE).  The stack READS this; it never freezes a model of its own.
+    aqueous
+    {
+        activityModel { model davies; }
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+//  THE LIQUID VISCOSITY IS DECLARED, and the limiting-current model reads it
+//  for the Reynolds and Schmidt numbers and for the Stokes-Einstein
+//  correction of the 25 C-referenced ion diffusivities to the run
+//  temperature.  At 298.15 K that correction is exactly 1.
+transport
+{
+    liquid
+    {
+        viscosity { model Vogel; }
+    }
+}

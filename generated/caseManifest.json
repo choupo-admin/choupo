@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 448,
+  "cases": 449,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -3700,6 +3700,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/evaporation/evaporator01_brine": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -6836,6 +6853,7 @@
     "tutorials/steady/electrodialysis/ed05_industrial_stack",
     "tutorials/steady/electrodialysis/ed06_stages_in_series",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
+    "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution",
     "tutorials/steady/evaporation/evaporator01_brine",
     "tutorials/steady/evaporation/evaporator02_triple_effect_sugar",
     "tutorials/steady/evaporation/evaporator03_co_current",
@@ -7271,6 +7289,7 @@
     "tutorials/steady/electrodialysis/ed05_industrial_stack",
     "tutorials/steady/electrodialysis/ed06_stages_in_series",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
+    "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
@@ -7283,7 +7302,8 @@
     "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic",
     "tutorials/steady/electrodialysis/ed05_industrial_stack",
     "tutorials/steady/electrodialysis/ed06_stages_in_series",
-    "tutorials/steady/electrodialysis/ed07_feed_and_bleed"
+    "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
+    "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution"
    ],
    "equilibriumReactor": [
     "tutorials/steady/reactors/equil01_reforming",
@@ -7732,6 +7752,7 @@
     "tutorials/steady/electrodialysis/ed05_industrial_stack",
     "tutorials/steady/electrodialysis/ed06_stages_in_series",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
+    "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution",
     "tutorials/steady/flash/analysis01_water_analysis_inlet",
     "tutorials/steady/flash/analysis02_weighted_least_squares",
     "tutorials/steady/flash/flash09_nh3_water_reactive",
@@ -7946,6 +7967,7 @@
     "tutorials/steady/electrodialysis/ed05_industrial_stack",
     "tutorials/steady/electrodialysis/ed06_stages_in_series",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
+    "tutorials/steady/electrodialysis/ed08_wine_kht_model_solution",
     "tutorials/steady/evaporation/evaporator01_brine",
     "tutorials/steady/evaporation/evaporator02_triple_effect_sugar",
     "tutorials/steady/evaporation/evaporator03_co_current",

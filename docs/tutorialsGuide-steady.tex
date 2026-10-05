@@ -2927,6 +2927,55 @@ WHAT IS PINNED AND WHAT IS NOT. The golden pins the answer this model gives. As 
 \goldmore{48}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ed08\_wine\_kht\_model\_solution}{tutorials/steady/electrodialysis/ed08\_wine\_kht\_model\_solution}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (edStack) at (0.0,-0.0) {\textbf{edStack}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (rectifier) at (0.0,-1.7) {\textbf{rectifier}\\[-1pt]{\tiny electricLoad}};
+  \draw[->] ($(edStack.west)+(-1.05,-0.17)$) -- ($(edStack.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {diluateFeed};
+  \draw[->] ($(edStack.west)+(-1.05,0.17)$) -- ($(edStack.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {concentrateFeed};
+  \draw[->] ($(edStack.east)+(0,-0.17)$) -- ($(edStack.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {diluate};
+  \draw[->] ($(edStack.east)+(0,0.17)$) -- ($(edStack.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {concentrate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Electrodialysis for wine tartrate stabilisation, reduced to a potassium hydrogen tartrate model solution: 20 \% of the conductivity removed on the industrial stack (no ethanol, no other wine ion)}
+\begin{tutnarrative}
+ED08 tartrate stabilisation of wine, REDUCED to a potassium hydrogen tartrate model solution
+
+THE OPERATION. A young wine can deposit potassium hydrogen tartrate (KHT, potassium bitartrate) crystals in the bottle. Electrodialysis prevents it by taking part of the wine's potassium and bitartrate out through a stack of cation- and anion-exchange membranes, and the cellar controls the operation by the drop of the wine's electrical CONDUCTIVITY, because that is what it can measure on line. This case runs that operation the way a cellar states it:
+
+stack EurodiaED-100P-50; // 100 cell pairs, 50 m2 membrane CMX\_AMX; // the record names no pair targetConductivityRemoval 0.20; // remove 20 \% of kappa // $\to$ Choupo solves I
+
+(1) WHAT THE "WINE" HERE IS, AND WHY IT IS ONLY THAT. The diluate is KHT dissolved in water -- ONE 1:1 salt, K+ and HC4H4O6-, nothing else. A real wine carries a dozen ions and the steady stack cannot divide the current among them honestly today: it gives EVERY counter-ion the same Faraday share, xi I N / (|z\_i| F), whatever each one brought. On a measured wine composition that strips the minor ions (H+, chloride, malate) to zero while potassium loses a few per cent, and leaves the diluate with a net charge. How a real stack divides the current among several counter-ions is the membranes' selectivity, which no membrane record here carries, and the rule is RESERVED for Vitor. On ONE monovalent salt the same arithmetic is exact -- one cation, one anion, equal shares, charge conserved -- so this case is the closest composition the engine can carry WITHOUT that defect.
+
+(2) WHAT THIS MODEL IGNORES, said plainly. ETHANOL. It is not in the feed because it cannot be: the stack sends every non-water component through the aqueous-species bridge, and `ethanol` declares none, so adding it REFUSES the run by name (measured on this case: `aqueousMapping: component 'ethanol' declares no aqueous mapping`). The solvent is pure water, so ethanol's effect on the ion activities, on the solution viscosity and dielectric constant, and therefore on every ion mobility, the conductivity and the limiting current, is ABSENT. EVERY OTHER WINE SOLUTE. No sodium, calcium, magnesium, chloride, sulfate or phosphate; no organic acid but the bitartrate (no malate, lactate, tartrate dianion); no sugars, phenolics or polysaccharides. In a real wine those anions carry part of the anion current, so this model OVERSTATES the bitartrate removed per ampere. ACID-BASE CHEMISTRY. No pH, no H+, no undissociated tartaric acid, no tartrate dianion: the stack carries ions as they are declared and speciates nothing, so the pH change a real treatment causes is not predicted. TARTRATE STABILITY ITSELF. The engine computes no KHT solubility in a hydroalcoholic medium and no saturation, so it cannot say whether 20 \% is ENOUGH. The target is the cellar's input, not the engine's answer. The stack's own simplifications, as in ed01-ed07: no water transport across the membranes, co-ion leakage lumped into xi, membrane resistances measured in 0.5 M NaCl (the CMX\_AMX record) applied to a 15 mol/m3 KHT solution, a lumped electrode term, no thermal effect (the energy balance is UNAVAILABLE: the ion components carry no enthalpy datum, and the run says so).
+
+(3) THE PROVENANCE OF EVERY NUMBER. THE STACK. data/standards/assets/EurodiaED-100P-50.dat -- Vitor Geraldes' recollection of an industrial unit he operated, marked `origin measured; reviewStatus unverified;` (100 cell pairs, 50 m2, two hydraulic passes, 0.7 mm channel, design flow 3000 L/h); its three estimates (channel width, spacer porosity, Schmidt exponent) are ANNOUNCED on every run. Its mass-transfer fit is the bench stack's, Geraldes \& Afonso, J. Membr. Sci. 360 (2010) 499-508, used inside its own Re band (this run: Re 62.85, band 50-86). THE MEMBRANES. data/standards/assets/CMX\_AMX.dat, cited in its own record. The stack record names no pair, so the case must. K+. data/standards/species/K.dat (D0 1.96e-9 m2/s, cited there). HC4H4O6-. The catalogue record carries NO diffusivity, so this case carries a CASE-LOCAL copy, constant/species/HTart.dat, whose D0 = 7.568e-10 m2/s is an ESTIMATE by Stokes-Einstein on a crystal-volume radius derived from the tree's own records, `origin estimated; reviewStatus unverified;`, ANNOUNCED on every run. No measured limiting conductance was read, so none is cited. AUTHOR-SET ASSUMPTIONS, in those words: the diluate at 15 mol/m3 KHT and the concentrate at 20 mol/m3 KHT (round numbers, not a measured wine or a plant's bleed set-point); both flows at 3000 L/h (the record's design flow); the 20 \% conductivity target; xi = 0.9; E\_electrodes = 2.0 V; P = 2.5 bar; and T = 298.15 K. WHY 25 C AND NOT A CELLAR TEMPERATURE. The ion diffusivities are referenced at 25 C. The limiting-current model corrects them to the run temperature by Stokes-Einstein, but the conductivity does not: it divides the 25 C D0 by R T at the run temperature, an engine inconsistency named and not fixed (it moves every ED golden). At 298.15 K the correction is exactly 1 and both read the SAME diffusivities, so the case avoids the inconsistency instead of teaching it.
+
+(4) WHAT TO READ OFF THE LOG -- every headline number can be checked by hand: the CURRENT. A 1:1 salt and an equal split, so 20 \% of the conductivity is 20 \% of the salt: 0.2 x 0.045 kmol/h = 2.5e-3 mol/s of each ion, and I = 2.5e-3 x 96485 / (0.9 x 100) = 2.680 A. the CONDUCTIVITY. kappa = c (lambda\_K + lambda\_HT), lambda = F\textasciicircum{}2 D0 / (R T): 15 x (7.361e-3 + 2.842e-3) = 0.1530 S/m in, 0.1224 out. The two ions are equal in number and K+ carries 72 \% of the current in the solution, because it diffuses 2.6 times faster. the LIMITING CURRENT. 65.7 A/m2, and it is set by the ANION membrane: the slow bitartrate depletes its film first (the cation-side value is 170.2 A/m2). At 5.36 A/m2 the stack runs at i/i\_lim = 0.082 -- nowhere near the limit on this model. the VOLTAGE. U = 7.98 V, of which 2.0 V is the lumped electrode term and 5.98 V the 100 cell pairs; P = 21.4 W, 0.0071 kWh per m3 of model wine.
+
+NOTHING HERE IS VALIDATED AGAINST A MEASURED WINE. The golden pins this model's answer. A full wine composition was run on 2026-09-19 and was parked, not shipped, for the reason in (1); DEV.md C4 records what a faithful wine case still needs. The rectifier below the stack only receives the stack's electrical power on an energy wire.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{concentrate}{F}{0.0462953111984}
+\goldrow{stream}{concentrate}{T}{298.15}
+\goldrow{stream}{concentrateFeed}{F}{0.0462903111984}
+\goldrow{stream}{concentrateFeed}{T}{298.15}
+\goldrow{stream}{diluate}{F}{0.0462769778651}
+\goldrow{stream}{diluate}{T}{298.15}
+\goldrow{stream}{diluateFeed}{F}{0.0462819778651}
+\goldrow{stream}{diluateFeed}{T}{298.15}
+\goldrow{kpi}{edStack}{C\_ion\_HTart}{15}
+\goldrow{kpi}{edStack}{C\_ion\_K}{15}
+\goldrow{kpi}{edStack}{D\_eff}{1.09196702002e-09}
+\goldrow{kpi}{edStack}{D\_ion\_HTart}{7.568e-10}
+\goldrow{kpi}{edStack}{D\_ion\_K}{1.96e-09}
+\goldrow{kpi}{edStack}{E\_mem\_pair}{0.013980745806}
+\goldmore{40}
+\end{tutgolden}
+
 \subsection{evaporation}
 \grouptheory{evaporation}
 \clearpage
@@ -4948,6 +4997,55 @@ Compare with flash01\_benzene\_toluene, where the same separation is asked as `i
 \goldrow{stream}{heated}{F}{0.0277777777778}
 \goldrow{stream}{heated}{T}{413.089781612}
 \goldmore{32}
+\end{tutgolden}
+
+\clearpage
+\tutentry{inletState01\_undeclared\_vapour}{tutorials/steady/flowsheets/inletState01\_undeclared\_vapour}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (V1) at (0.0,-0.0) {\textbf{V1}\\[-1pt]{\tiny valve}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M1) at (2.9,-0.0) {\textbf{M1}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (S1) at (0.0,-1.7) {\textbf{S1}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(V1.west)+(-1.05,0.00)$) -- ($(V1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedA};
+  \draw[->] (V1) -- (M1) node[midway, above, font=\tiny] {throttled};
+  \draw[->] ($(M1.west)+(-1.05,0.00)$) -- ($(M1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedB};
+  \draw[->] ($(S1.west)+(-1.05,0.00)$) -- ($(S1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedC};
+  \draw[->] ($(M1.east)+(0,0.00)$) -- ($(M1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {mixed};
+  \draw[->] ($(S1.east)+(0,-0.17)$) -- ($(S1.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {sideA};
+  \draw[->] ($(S1.east)+(0,0.17)$) -- ($(S1.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {sideB};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Witness: undeclared superheated vapours are read as vapours by the valve, the mixer and the splitter}
+\begin{tutnarrative}
+THE STATE A UNIT COMPUTES WITH MUST BE THE STATE ITS INLET MEANS.
+
+feedA (450 K, 3 bar) -$\to$ [V1 valve: 1.5 bar] -$\to$ throttled --+ +-$\to$ [M1 mixer] -$\to$ mixed feedB (420 K, 1.5 bar) --------------------------------------+
+
+feedC (420 K, 1.5 bar) -$\to$ [S1 splitter: 0.3 / 0.7] -$\to$ sideA + sideB
+
+The three feeds are benzene/toluene, each well above its dew point at its own pressure, and NONE declares `phase`. A stream file that declares no phase does not thereby declare a liquid: its (T, P, z) means its own equilibrium, and here that equilibrium is all vapour. The stream record still carries a default `vf = 0` until something resolves it, and for a domain inlet nothing upstream does -- so each unit that reads its inlet's phase resolves it itself, at the inlet's own (T, P, z), in its own thermo world (`flashState::resolvedInletVaporFraction`, the one home):
+
+V1 (valve). The isenthalpic let-down prices H\_in on the inlet's phase. Read as a liquid, H\_in is a liquid's and the outlet search lands tens of kelvin colder, part-condensed -- a valve that "condenses" a vapour. Read as what it is, an ideal-gas vapour has no Joule-Thomson effect and T\_out = T\_in. M1 (mixer). The inlets' phases price the inlet enthalpies AND vote for the outlet's dominant phase. feedB is the LARGER inlet (150 against 100 kmol/h) on purpose: the valve's outlet is a PRODUCED vapour that votes vapour either way, so only an authored inlet that carries the vote can show a mixer reading it as a liquid -- its vapour would then leave labelled a liquid. S1 (splitter). A splitter preserves the phase -- the phase the inlet MEANS. Its branches are PRODUCED streams that nobody re-resolves, so copying the carried default would publish two vapours as liquids.
+
+The plant's first law closes only if the units and the energy report read the same states. check\_inlet\_resolution arm (i) runs this case and holds all three readings and the closure.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feedA}{F}{0.0277777777778}
+\goldrow{stream}{feedA}{T}{450}
+\goldrow{stream}{feedB}{F}{0.0416666666667}
+\goldrow{stream}{feedB}{T}{420}
+\goldrow{stream}{feedC}{F}{0.0166666666667}
+\goldrow{stream}{feedC}{T}{420}
+\goldrow{stream}{mixed}{F}{0.0694444444444}
+\goldrow{stream}{mixed}{T}{432.508746466}
+\goldrow{stream}{sideA}{F}{0.005}
+\goldrow{stream}{sideA}{T}{420}
+\goldrow{stream}{sideB}{F}{0.0116666666667}
+\goldrow{stream}{sideB}{T}{420}
+\goldrow{stream}{throttled}{F}{0.0277777777778}
+\goldrow{stream}{throttled}{T}{450}
+\goldmore{16}
 \end{tutgolden}
 
 \clearpage

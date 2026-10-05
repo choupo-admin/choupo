@@ -1110,15 +1110,63 @@ accepts today, and that is a policy call.
      per row.
 
 **C4. An electrodialysis case for WINE (asked 2026-09-21 as a question;
-     NOT DONE).**  He asked whether a typical wine electrodialysis case had
-     been made.  Measured: the corpus carries nine ED cases
-     (`ed01`-`ed07`, `edbatch01`, `edbatch02`) and NONE is wine.
-     `tutorials/plant/tartaricAcid` carries the right chemistry — tartaric
-     acid, potassium bitartrate, calcium hydroxide — and uses **no
-     electrodialysis at all**.  Tartrate stabilisation by ED is the standard
-     industrial application and the two halves already exist separately.
-     Recorded as a question he asked, not as a commission he placed; it
-     becomes one the day he says so.
+     taken in C34 wave 2, 2026-10-05: the CLOSEST HONEST CASE is built, the
+     faithful one is NOT).**  He asked whether a typical wine
+     electrodialysis case had been made.  Measured then: nine ED cases
+     (`ed01`-`ed07`, `edbatch01`, `edbatch02`), none wine;
+     `tutorials/plant/tartaricAcid` carries the chemistry and no ED.
+
+     **WHAT ALREADY EXISTED, and the brief did not know it.**  A full wine
+     case was written on 2026-09-19 and PARKED on `claude/ed08-wine-wip`
+     (commit `5d274abc1`, "the wine case runs and its ion split is not
+     physical"; thirteen ions, six case-local species with estimated D0).
+     Its engine half shipped on main (`targetConductivityRemoval`, the D0
+     provenance announcement).  RE-MEASURED on main `ff9c4b52c` by running
+     that case unchanged: I = 1.4583 A, K+ demineralised 6.38 %, and H+,
+     Cl-, HMal- and Mal2- removed ENTIRELY (the cap binds) -- the steady
+     stack gives every counter-ion xi I N/(|z|F)
+     (`ElectrodialysisStack.cpp`, the `faradaySplit` lambda), so the
+     verdict of 2026-09-19 stands.  Ethanol re-measured too: declaring it
+     REFUSES (`aqueousMapping: component 'ethanol' declares no aqueous
+     mapping`).
+
+     **BUILT: `tutorials/steady/electrodialysis/ed08_wine_kht_model_solution`**
+     (branch `claude/c34-c4-wine-ed`, witness tier, sealed, golden of 50
+     new rows, no existing row moved).  The wine REDUCED to its
+     stability-determining salt, KHT in water at 15 mol/m3, on
+     `EurodiaED-100P-50` + `CMX_AMX` at 3000 L/h, operated by
+     `targetConductivityRemoval 0.20`.  On ONE 1:1 salt the equal Faraday
+     share is exact and charge-conserving, which is why this is the closest
+     composition the engine carries without the reserved defect.  Answer:
+     I = 2.680 A (checkable by hand), kappa 0.1530 -> 0.1224 S/m,
+     i_lim 65.7 A/m2 set by the ANION membrane (slow bitartrate),
+     i/i_lim 0.082, U 7.98 V, 0.0071 kWh/m3.  Its header states what it
+     ignores (ethanol -- refused, measured; every other wine ion and organic
+     acid; pH and acid-base; KHT solubility and stability; water transport)
+     and the provenance of every number: the stack and membrane records,
+     K+ D0 from the catalogue, HTart- D0 a case-local ESTIMATE (`origin
+     estimated; reviewStatus unverified;`, announced each run, no measured
+     conductance read so none cited), and every operating number an
+     AUTHOR-SET ASSUMPTION in those words.  T = 298.15 K on purpose: the
+     conductivity divides the 25 C D0 by R T at the run temperature with no
+     Stokes-Einstein correction while the limiting current applies one --
+     at 25 C both read the same diffusivities.
+
+     **WHAT A FAITHFUL WINE CASE STILL NEEDS, each Vitor's or curation:**
+     (a) the MULTI-ION CURRENT SPLIT in the steady stack (RESERVED: §6,
+     "THE LIMITING CURRENT THAT FALLS"; the same rule unblocks a multi-ionic
+     `batchElectrodialysis`, which refuses today); (b) a NEUTRAL CO-SOLVENT
+     carried through the stack's mass balance and priced into the
+     solvent's viscosity/dielectric constant (ethanol refuses today);
+     (c) curated, primary-cited D0 for HTart-, Tart2-, H2PO4- and species
+     records for malate and lactate (curation); (d) speciation inside the
+     stack, so H+/pH respond to the treatment; (e) a KHT saturation in a
+     hydroalcoholic medium, so the run can say whether the removal is
+     enough; (f) the kappa/D0 temperature inconsistency above (moves every
+     ED golden).  Two notes: the parked WIP still uses the name `ed08` and
+     must take another number if revived; and the WIP's composition cites a
+     primary (Siren et al. 2015) this session did not read, so this case
+     uses none of its numbers.
 
 **C6-R1. DESIGN REVIEW of the green ammonia plant (2026-09-24, read-only
      survey; every claim below re-verified by the commander against the
@@ -1927,6 +1975,10 @@ per-site verdicts are the table in C33; the supercritical discard is in §5's
 `check_inlet_resolution` arms (i)-(j), five hand sabotages, no golden row
 moved.  Two defaults taken and FLAGGED there (the mixer's two-phase authored
 inlet; the column left whole with D1).
+(C4) TAKEN 2026-10-05 on `claude/c34-c4-wine-ed`, not merged: the closest
+honest case (`ed08_wine_kht_model_solution`, a KHT model solution) is built;
+the faithful wine case stays blocked on the reserved multi-ion split -- C4
+lists the six missing pieces.
 
 **C33. THE FOUR UNITS THAT STILL READ AN UNPINNED INLET'S DEFAULT `vf`
 (Vítor, 2026-10-04: "Podes avançar, mas com calma, porque o preço dos tokens

@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/concentrateFeed -- the concentrate loop's feed: KHT at 20 mol/m3 in
+  water, 3000 L/h (0.060 kmol/h of each ion).
+
+  AUTHOR-SET ASSUMPTION, both numbers: a concentrate must conduct, and a loop
+  carrying the salt the wine gives up is the simplest one that does.  The
+  strength is a round number, not a plant's bleed set-point, and the flow is
+  set equal to the diluate's.
+\*---------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water    166.5251203144 kmol/h;
+    K        0.06 kmol/h;
+    HTart    0.06 kmol/h;
+}
+
+T               298.15 K;
+P               250000 Pa;
