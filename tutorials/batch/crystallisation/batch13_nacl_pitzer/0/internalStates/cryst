@@ -7,7 +7,8 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  0/internalStates/cryst -- the vessel's initial HOLDUP.
+  0/internalStates/cryst -- the initial HOLDUP of 'cryst', the vessel's
+  starting state.
 
   900 kg water + 399.7 kg NaCl = 7.60 mol/kg, a post-evaporation liquor held
   at 25 C.  Saturation there is NOT read from a curve: the Pitzer package

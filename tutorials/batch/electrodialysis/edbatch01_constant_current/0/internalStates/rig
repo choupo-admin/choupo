@@ -5,8 +5,9 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  0/internalStates/rig -- the rig's TWO tanks, the single source of truth (an
-  inline initial{} block in flowsheetDict is refused by the driver).
+  0/internalStates/rig -- the initial HOLDUP of 'rig': the rig's TWO tanks,
+  the single source of truth (an inline initial{} block in flowsheetDict
+  is refused by the driver).
 
   A recirculating electrodialysis rig has a diluate tank and a concentrate
   tank, and this unit holds BOTH: the diluate is the vessel's own state --

@@ -7,7 +7,8 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  0/internalStates/plant -- the paper's own initial state (section 3.2):
+  0/internalStates/plant -- the initial HOLDUP of 'plant', the paper's own
+  initial state (section 3.2):
 
       x0 = (m_A, m_B, m_C, m_E, m_P, m_G) = (10, 1, 0, 0, 0, 0) klb
 

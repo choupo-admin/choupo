@@ -1,5 +1,6 @@
 /*--------------------------------*- Choupo -*----------------------------------*\
-  0/internalStates/TANK -- DYNAMIC initial holdup: the 1 m3 tank filled with FEED
+  0/internalStates/TANK -- the initial HOLDUP of 'TANK' (DYNAMIC): the 1 m3
+  tank filled with FEED
   (glucose/water mole ratio 0.1994/199.8006, as in MIX.Feed).  MIX, NF and
   SPLIT hold no inventory and have no entry here.
 \*-----------------------------------------------------------------------------*/

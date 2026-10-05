@@ -138,6 +138,8 @@ STREAM_KEYS_OUT = ["out", "outputs", "outlet", "vapour", "liquid", "hotOut", "co
                    "gasOut", "liquidOut", "distillate", "bottoms", "permeate", "retentate",
                    "solids", "overflow", "underflow", "condensate"]
 
+SCALAR_NAME = r"([^\s;()]+)"
+
 def parse_units(case: Path):
     """[(name, type, [in streams], [out streams])] from flowsheetDict (best effort)."""
     p = case / "system/flowsheetDict"
@@ -181,14 +183,19 @@ def parse_units(case: Path):
         if not nm or not tp:
             continue
         ins, outs = [], []
+        #  The SCALAR form `key name;` takes a NAME, and a name holds no
+        #  parenthesis.  `\S+?` accepted one, so a stream whose name IS a
+        #  key word and sits LAST in a list -- `outputs ( offgas bottoms );`,
+        #  `outputs ( vap out );` -- read as `bottoms )` / `out )` and drew a
+        #  stray `)` as a stream on 67 flowsheets.
         for key in STREAM_KEYS_IN:
-            for mm in re.finditer(r"\b" + key + r"\s+(\S+?)\s*;", body):
+            for mm in re.finditer(r"\b" + key + r"\s+" + SCALAR_NAME + r"\s*;", body):
                 ins.append(mm.group(1))
             mm = re.search(r"\b" + key + r"\s*\(([^)]*)\)", body)
             if mm:
                 ins += mm.group(1).split()
         for key in STREAM_KEYS_OUT:
-            for mm in re.finditer(r"\b" + key + r"\s+(\S+?)\s*;", body):
+            for mm in re.finditer(r"\b" + key + r"\s+" + SCALAR_NAME + r"\s*;", body):
                 outs.append(mm.group(1))
             mm = re.search(r"\b" + key + r"\s*\(([^)]*)\)", body)
             if mm:

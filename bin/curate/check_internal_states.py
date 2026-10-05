@@ -151,7 +151,14 @@ WHAT THIS CHECKS:
       type -> kinds map is DERIVED from the engine's own source (the
       `readsInteriorKinds()` overrides, joined to `registerBuiltins()`), never
       tabulated here -- a table would be the second home this project spends
-      its slices closing.
+      its slices closing.  A `holdup` record (the time-integrated class's
+      interior, task #186) is a THIRD branch, because neither sentence is
+      true of it -- the drivers READ every holdup, and the authored one
+      already lives in `0/`: it must say `the initial HOLDUP of '<unit>'`
+      naming its OWN `unit` (or, restarted from a `<t>/`, carry the
+      writer's `THE HOLDUP OF ONE VESSEL at t =`), and must carry neither
+      steady sentence.  The arm had no such branch from 2026-09-30, when 78
+      tracked holdup records arrived, and failed on every one of them.
 
   (r) THE WRITER REFUSES A PROFILE WHOSE DECLARED AXIS IS ABSENT -- a SOURCE
       arm, and it can only be one: nothing a CASE declares can make a unit
@@ -1350,6 +1357,20 @@ def check_round_trip_crystalliser(problems, notes):
 COPY_SENTENCE = "COPY it into the case's `0/internalStates/`"
 NOREAD_SENTENCE = "THIS UNIT READS NO DECLARED INTERIOR"
 
+#  THE HOLDUP KIND (task #186, 2026-09-30) is the time-integrated class's
+#  interior, and NEITHER sentence above is true of it: the reads-nothing
+#  sentence is FALSE (both dynamic drivers READ every `holdup {}` through
+#  `InternalStateIO::readHoldups`), and a COPY-into-0/ instruction on a file
+#  that already IS 0/ says nothing.  What a holdup record is for is that it
+#  is the vessel's starting state, so the record says so and names the unit
+#  it declares -- held against its own `unit` key, so a header copied from
+#  another vessel's file is caught.  A `<t>/` record the writer produced and
+#  a reader renamed into `0/` is a legitimate restart and carries the
+#  WRITER's sentence instead (its source is checked to still emit it).
+HOLDUP_BLOCK = "holdup"
+HOLDUP_AUTHORED = "the initial HOLDUP of '%s'"
+HOLDUP_WRITTEN = "THE HOLDUP OF ONE VESSEL at t ="
+
 
 def interior_readers():
     """type key -> the kinds a unit of that type READS -- DERIVED from the
@@ -1399,11 +1420,39 @@ def check_header_sentence(problems, notes):
                         "read ANY interior kind -- the derivation is broken and the "
                         "arm would wave every COPY instruction through.")
         return
-    seen_copy = seen_noread = 0
+    seen_copy = seen_noread = seen_holdup = 0
+    writer_src = (ROOT / "src/io/InternalStateIO.cpp").read_text(errors="replace")
+    if HOLDUP_WRITTEN not in writer_src:
+        problems.append("check_internal_states(q): src/io/InternalStateIO.cpp no "
+                        "longer writes '%s' -- the holdup branch accepts that "
+                        "sentence on a restarted `<t>/` record and would be "
+                        "accepting a sentence nothing writes." % HOLDUP_WRITTEN)
     for f in live_records():
         txt = f.read_text(errors="replace")
         has_copy = COPY_SENTENCE in txt
         has_noread = NOREAD_SENTENCE in txt
+        parsed = parse_file(txt)
+        if HOLDUP_BLOCK in parsed["blocks"]:
+            #  The time-integrated kind: its own sentence, and NEITHER of the
+            #  steady ones (both are false of it -- see HOLDUP_BLOCK above).
+            seen_holdup += 1
+            unit = parsed["header"].get("unit", "")
+            flat = re.sub(r"\s+", " ", txt)
+            if has_copy or has_noread:
+                problems.append("check_internal_states(q): %s is a `holdup` record "
+                                "and carries the %s sentence, which is false of it: "
+                                "both dynamic drivers READ a holdup, and it already "
+                                "lives where a copy would put it."
+                                % (f.relative_to(ROOT),
+                                   "COPY" if has_copy else "reads-nothing"))
+            elif HOLDUP_AUTHORED % unit not in flat and HOLDUP_WRITTEN not in flat:
+                problems.append("check_internal_states(q): %s is a `holdup` record "
+                                "for unit '%s' and does not say \"%s\" -- a reader "
+                                "is told nothing about what the file is for (the "
+                                "vessel's starting state)."
+                                % (f.relative_to(ROOT), unit,
+                                   HOLDUP_AUTHORED % unit))
+            continue
         if has_copy and has_noread:
             problems.append("check_internal_states(q): %s carries BOTH the COPY "
                             "instruction and the reads-nothing sentence."
@@ -1436,14 +1485,16 @@ def check_header_sentence(problems, notes):
                             "exit 2." % (f.relative_to(ROOT), etype))
         seen_copy += 1 if has_copy else 0
         seen_noread += 1 if has_noread else 0
-    if seen_copy == 0 or seen_noread == 0:
+    if seen_copy == 0 or seen_noread == 0 or seen_holdup == 0:
         problems.append("check_internal_states(q): the corpus shows %d file(s) with "
-                        "the COPY instruction and %d with the reads-nothing sentence "
-                        "-- both branches must have a live case or the arm proves "
-                        "only one of them." % (seen_copy, seen_noread))
+                        "the COPY instruction, %d with the reads-nothing sentence "
+                        "and %d holdup record(s) -- every branch must have a live "
+                        "case or the arm proves only some of them."
+                        % (seen_copy, seen_noread, seen_holdup))
     else:
         notes.append("header sentence: %d file(s) say COPY, %d say the unit reads "
-                     "none" % (seen_copy, seen_noread))
+                     "none, %d holdup record(s) name the vessel they start"
+                     % (seen_copy, seen_noread, seen_holdup))
 
 
 # ---------------------------------------------------------------------------
@@ -2003,10 +2054,12 @@ def main() -> int:
           "copied into 0/ it refuses ONLY as the kind nothing reads -- never for "
           "a missing axis.  EVERY FILE'S HEADER SENTENCE IS TRUE OF ITS UNIT: a "
           "unit that reads its kind is told to COPY the file and which kind it "
-          "reads; a unit that reads none is told the copy would be refused, and "
-          "both branches have live cases (the type -> kinds map is derived from "
-          "the readsInteriorKinds() overrides joined to registerBuiltins(), not "
-          "tabulated).  THE WRITER REFUSES an axis-less profile at the partition "
+          "reads; a unit that reads none is told the copy would be refused; a "
+          "time-integrated `holdup` record, of which neither is true, says it is "
+          "`the initial HOLDUP of '<unit>'` naming its OWN unit and carries "
+          "neither steady sentence; all three branches have live cases (the "
+          "type -> kinds map is derived from the readsInteriorKinds() overrides "
+          "joined to registerBuiltins(), not tabulated).  THE WRITER REFUSES an axis-less profile at the partition "
           "seam, to stderr and to AdvisoryLog, without throwing.  THE HOMONYM: a "
           "stream and a unit both named column16 live "
           "at two paths, neither overwritten, and the run says so once.  No record "
