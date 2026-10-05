@@ -1982,6 +1982,36 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C35. THE SIXTEEN DECISIONS (Vítor, 2026-10-05, verbatim: "Decide as 16
+como recomendaste e autorizo a regressão completa do #4.").**  The commander
+had listed 16 open decisions with a recommendation each; Vítor ruled that
+each recommendation stands, and authorised the full regression item 4 needs.
+Each lands as ONE revertable merge with its moved golden rows listed.
+  1. ED multi-ion split: the counter-ion current is shared by conductivity
+     share z_i D_i c_i (no new parameter); the full wine case follows.
+  2. D1: the column reads its feed by the feed's own equilibrium; column03
+     and acetone07 are corrected to declare what they mean.
+  3. Evaporator latent: the duty's latent heat is the enthalpy difference
+     the energy report prices, not the Watson correlation.
+  4. An unpinned feed to a `phaseSet VLLE` unit means its three-phase
+     equilibrium, in the unit AND the energy report (full regression
+     AUTHORISED by Vítor for this item).
+  5. A pair used outside its validity span is ANNOUNCED, as vapour pressure is.
+  6. Ethanol + cyclohexane: re-regressed against LLE data if the archive has
+     them; otherwise it stays case-local, recorded.
+  7. Dryer solid floor: the gas wet-bulb temperature, not the feed T.
+  8. Pipe with a vapour inlet: REFUSED by name until a compressible model exists.
+  9. ammonia02 declares `spaceVelocity 20000; spaceVelocityBasis normal;`.
+ 10. ammonia03's beds keep refusing (their lesson); no change.
+ 11. lithiumBrinePlant's dryer: air raised until the product leaves dry.
+ 12. evapDryer02 renamed for what binds it (exhaust saturation).
+ 13. convDryer01's two round-off residual rows removed.
+ 14. The published git history is NOT rewritten; DEV.md C7 aligned with the
+     ruling record.
+ 15. The two archive stubs are deleted.
+ 16. Vítor's own deck stays his.
+Status: dispatched 2026-10-05.
+
 **C34. "AVANÇA COM TUDO" (Vítor, 2026-10-04, after the month summary).**
 Every open item that is NOT his to decide, taken in two waves of generals in
 separate worktrees on non-overlapping files, each integrated as one
