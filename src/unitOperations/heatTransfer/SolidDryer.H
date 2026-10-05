@@ -33,17 +33,30 @@ Description
     wet powder, downstream of a spray dryer or filter.
 
     Takes a WET solid (crystals/powder in s[] carrying residual moisture as
-    bound water in the fluid flow F) and dries it further toward the
-    EQUILIBRIUM moisture of the material at the drying-air condition:
+    bound water in the fluid flow F) and dries it further TOWARD the
+    EQUILIBRIUM moisture of the material at the drying-air condition,
 
-        X_final  =  min(X_in,  X_e )
-        X_e      =  GAB(a_w = relativeHumidity )   on the solid's sorption isotherm
+        X_e      =  GAB(a_w of the inlet air)   on the solid's sorption isotherm
 
     where X = kg water / kg dry solid.  The removed water leaves as vapour
     in the hot-air stream; the dryer is ADIABATIC and declares no duty --
     T_out closes H(out) = H(in) on the package's own enthalpy surface
-    (2026-09-27), and when the air cannot pay for X_e the powder leaves
-    wetter, announced.
+    (2026-09-27).  The water evaporated is the LEAST of three, and the one
+    that binds is announced (2026-10-05, DEV.md C37 item 3):
+
+        isotherm-reached   the powder reaches X_e (X_final = X_e, or X_in
+                           when the feed is already drier);
+        heat-bound         the air cannot pay for X_e even with the solid
+                           leaving at the air's wet bulb (the floor): only
+                           what it can pay for there evaporates;
+        saturation-bound   the exhaust would be supersaturated at its own
+                           T_out: the evaporation stops where the exhaust's
+                           humidity ratio reaches Y_sat(T_out) (a_w = 1, the
+                           shared `psychrometry`), so no fog is published as
+                           a vapour.
+
+    So X_final = min(X_in, X_e) only when the isotherm binds; otherwise the
+    powder leaves wetter, and the run says why.
 
     Equilibrium vs kinetics, the project rule: the equilibrium isotherm lives
     on the solid component's `sorption {}` block; a falling-rate KINETICS

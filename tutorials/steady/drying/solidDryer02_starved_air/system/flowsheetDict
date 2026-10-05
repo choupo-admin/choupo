@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solidDryer02_starved_air / flowsheetDict   (LEAF node)
+
+  solidDryer01_sugar with its hot air CUT FROM 800 TO 100 kmol/h -- the same
+  wet sugar (10 kmol/h sucrose, 38 kmol/h bound water, X_in = 0.20, at
+  330 K), the same air (420 K, 2 mol% water), one eighth of it.
+
+  WHAT IT SHOWS: the third limit of the solid dryer, SATURATION.  The air
+  can still PAY for the isotherm's 680.8 kg/h -- its sensible heat plus the
+  warm sugar's would cool the exhaust to ~318.6 K -- but 100 kmol/h of air
+  at 318.6 K cannot CARRY that water: it saturates (a_w = 1) at about
+  157 kg/h.  The dryer stops there, the powder leaves at X ~0.15 kg/kg
+  instead of the isotherm's X_eq ~0.001, and the run says so (the
+  `[saturation-bound]` result block and a WARNING in the caveat block).
+  Until 2026-10-05 (DEV.md C37 item 3) the unit evaporated all 680.8 kg/h,
+  priced the exhaust at its condensed equilibrium -- a fog carrying ~520 kg/h
+  of liquid water -- and published it as a vapour, vf = 1.
+
+  The outlet temperature barely moves between the two answers: a fog and a
+  saturated gas beside the same water left on the powder hold the same
+  enthalpy.  What moves is WHERE the water is -- which is the whole point.
+  Witness of check_evaporative_dryer arm (g).
+\*---------------------------------------------------------------------------*/
+name        solidDryer;
+type        solidDryer;
+
+boundary    { inlets ( wetSolid  hotAir );  outlets ( drySolid  humidExhaust ); }
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

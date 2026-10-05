@@ -2122,6 +2122,37 @@ Wet solid: 10 kmol/h sucrose (3423 kg/h) + 38 kmol/h bound water (X\_in=0.20). H
 \goldrow{kpi}{solidDryer}{water\_activity}{0.00431158404412}
 \goldrow{kpi}{solidDryer}{water\_removed}{0.189112936127}
 \goldrow{stream}{drySolid}{T}{346.659472289}
+\goldmore{9}
+\end{tutgolden}
+
+\clearpage
+\tutentry{solidDryer02\_starved\_air}{tutorials/steady/drying/solidDryer02\_starved\_air}
+\tutwhat{Solid dryer starved of air: the exhaust saturates before the sugar reaches its isotherm}
+\begin{tutnarrative}
+/ flowsheetDict (LEAF node)
+
+solidDryer01\_sugar with its hot air CUT FROM 800 TO 100 kmol/h -- the same wet sugar (10 kmol/h sucrose, 38 kmol/h bound water, X\_in = 0.20, at 330 K), the same air (420 K, 2 mol\% water), one eighth of it.
+
+WHAT IT SHOWS: the third limit of the solid dryer, SATURATION. The air can still PAY for the isotherm's 680.8 kg/h -- its sensible heat plus the warm sugar's would cool the exhaust to \textasciitilde{}318.6 K -- but 100 kmol/h of air at 318.6 K cannot CARRY that water: it saturates (a\_w = 1) at about 157 kg/h. The dryer stops there, the powder leaves at X \textasciitilde{}0.15 kg/kg instead of the isotherm's X\_eq \textasciitilde{}0.001, and the run says so (the `[saturation-bound]` result block and a WARNING in the caveat block). Until 2026-10-05 (DEV.md C37 item 3) the unit evaporated all 680.8 kg/h, priced the exhaust at its condensed equilibrium -- a fog carrying \textasciitilde{}520 kg/h of liquid water -- and published it as a vapour, vf = 1.
+
+The outlet temperature barely moves between the two answers: a fog and a saturated gas beside the same water left on the powder hold the same enthalpy. What moves is WHERE the water is -- which is the whole point. Witness of check\_evaporative\_dryer arm (g).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{drySolid}{F}{0.0109196509746}
+\goldrow{stream}{drySolid}{T}{318.606571264}
+\goldrow{stream}{hotAir}{F}{0.0277777777778}
+\goldrow{stream}{hotAir}{T}{420}
+\goldrow{stream}{humidExhaust}{F}{0.030191484481}
+\goldrow{stream}{humidExhaust}{T}{318.606571264}
+\goldrow{stream}{wetSolid}{F}{0.0133333576778}
+\goldrow{stream}{wetSolid}{T}{330}
+\goldrow{kpi}{solidDryer}{T\_out}{318.606571264}
+\goldrow{kpi}{solidDryer}{T\_wetbulb}{315.70439014}
+\goldrow{kpi}{solidDryer}{X\_equilibrium}{0.00109902098433}
+\goldrow{kpi}{solidDryer}{X\_final}{0.154259849734}
+\goldrow{kpi}{solidDryer}{X\_initial}{0.199991235822}
+\goldrow{kpi}{solidDryer}{air\_in\_kmol\_h}{100}
 \goldmore{8}
 \end{tutgolden}
 

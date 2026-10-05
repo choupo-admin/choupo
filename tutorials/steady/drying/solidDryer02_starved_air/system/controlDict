@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solidDryer02_starved_air  --  the solid dryer of solidDryer01_sugar fed one
+  eighth of the air: the exhaust saturates before the powder reaches its
+  sorption equilibrium, and the evaporation stops at saturation.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Solid dryer starved of air: the exhaust saturates before the sugar reaches its isotherm";
+verbosity     3;
+reports { streamTable {}  massBalance {} }

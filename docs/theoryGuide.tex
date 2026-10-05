@@ -21055,10 +21055,19 @@ refuses to, and so should the student.
 
 A contact / through-circulation \code{solidDryer} takes an
 \emph{already-solid} powder (crystals plus bound moisture) and polishes
-it down to the equilibrium moisture set by the air,
-$X_{\text{final}} = \min(X_{\text{in}}, X_e(\text{RH}))$, with the
-water removed and the duty as RESULTS.  Hardware-only: air temperature
-and relative humidity.  It complements the spray dryer (atomise a
+it \emph{toward} the equilibrium moisture $X_e$ set by the inlet air's
+relative humidity.  The air is a real stream: it brings the heat and
+carries the water away, the dryer is adiabatic and declares no duty, and
+the outlet temperature and the water removed are RESULTS.  The water
+evaporated is the least of three, and the run announces which one binds:
+the \emph{isotherm} ($X_{\text{final}} = \min(X_{\text{in}}, X_e)$), the
+\emph{heat} the air can pay for with the solid leaving at the air's
+wet-bulb temperature (the model's floor), or the \emph{saturation} of the
+exhaust at its own outlet temperature
+($Y \le Y_{\text{sat}}(T_{\text{out}})$, i.e.\ $a_w \le 1$).  So
+$X_{\text{final}} = \min(X_{\text{in}}, X_e)$ only when the isotherm
+binds; a starved or cold air leaves the powder wetter, and the run says
+why.  It complements the spray dryer (atomise a
 liquid $\to$ powder); the solid dryer finishes a solid --- the two ends
 of a drying train.
 
@@ -21077,7 +21086,10 @@ $\to$ constant-rate $\to$ falling-rate $\to$ equilibrium. \\
 \file{tutorials/steady/drying/sprayDryer02\_residence\_sweep} --- the chamber-height sweep, the
 drying curve appearing as the chamber grows. \\
 \file{tutorials/steady/drying/solidDryer01\_sugar} --- finishing a solid to the
-air-set equilibrium moisture.
+air-set equilibrium moisture. \\
+\file{tutorials/steady/drying/solidDryer02\_starved\_air} --- the same dryer with
+one eighth of the air: the exhaust saturates first, and the powder leaves
+wetter.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -23005,8 +23017,10 @@ air of a given relative humidity reaches an \emph{equilibrium moisture} $X_e(a_w
 capillaries and by sorption, its vapour pressure depressed) dries only under a
 lower humidity.  Choupo reads $X_e$ from a GAB isotherm on the solid component's
 \code{sorption} block, and no dryer takes a solid below it: the solid
-dryer's outlet is $X_{\text{final}}=\min(X_{\text{in}},X_e)$
-(\file{SolidDryer.cpp}), the spray dryer's is the drying curve evaluated at
+dryer's outlet is $X_{\text{final}}=\min(X_{\text{in}},X_e)$ when nothing
+else binds first --- the air may be unable to pay for the evaporation, or
+its exhaust unable to carry the water without supersaturating, and then the
+powder leaves wetter (\file{SolidDryer.cpp}); the spray dryer's is the drying curve evaluated at
 the residence time, never below $X_e$.
 
 \subsection{The drying-rate curve: constant and falling rate}

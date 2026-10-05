@@ -78,6 +78,23 @@ The gate holds, from the runs themselves:
       wet-bulb temperature and replayed in the caveat block; solidDryer01
       itself (fed at 330 K, above the wet bulb) keeps its isotherm answer
       with T_out above its floor.
+  (g) THE SOLID DRYER'S EXHAUST MAY NOT BE SUPERSATURATED (2026-10-05,
+      DEV.md C37 item 3): the witness solidDryer02_starved_air
+      (solidDryer01 with its air cut from 800 to 100 kmol/h) is
+      SATURATION-bound -- its result block says `[saturation-bound]`, the
+      exhaust's water activity RECOMPUTED HERE from the published exhaust
+      stream (y_w P / p_sat(T_out), p_sat from the case's own Antoine) lies
+      in [1 - 1e-6, 1], the powder leaves wetter than its isotherm, the
+      WARNING names what the isotherm would have removed and is replayed in
+      the caveat block, the water balance closes (exhaust water - air water
+      = water_removed), and the unit closes against the energy report to
+      1e-4 kW (its `energyClosures` row) with the plant residual below
+      1e-4 kW; solidDryer01 says `[isotherm-reached]` with its exhaust below
+      saturation and X_final = X_eq; the heat-bound fixture of (f) says
+      `[heat-bound]` with its exhaust at or below saturation.  Until then
+      the starved witness evaporated the isotherm's whole 680.8 kg/h into
+      100 kmol/h of air at 318.6 K and the exhaust, priced at its condensed
+      equilibrium, was published as vf = 1 -- a fog.
 
 BY-HAND SABOTAGES (2026-10-05, each restored with `git checkout` + `make
 all`):
@@ -94,13 +111,29 @@ all`):
   S3  SolidDryer.cpp: `T_floor = T_w` -> caught by (f): the fixture
       reaches its isotherm at T_out 311.95 K with its floor published as
       300 K, below the air's 315.70 K wet bulb.
+  S4  SolidDryer.cpp: the saturation test disabled (`aw_exhaust(...) <=
+      1.0` -> `true`) -> caught by (g): the starved witness says
+      `[isotherm-reached]` with its exhaust recomputed at a_w > 1;
+  S5  SolidDryer.cpp: the saturation bisection reads the exhaust's a_w at
+      the ISOTHERM answer's T instead of at each trial's own T_out
+      (`aw_exhaust(m, T_cap)`) -> caught by (g): the label is right and the
+      exhaust, recomputed from the published stream, sits at a_w =
+      1.000247 -- the arm's upper bound is what catches it.
+      A first S5 SURVIVED, and is recorded because it proves nothing: the
+      bisection keeping its supersaturated end (`water_rem = hi`) moves the
+      answer by the bisection's last step, 1e-13 relative, below the twelve
+      digits the result JSON carries -- a sabotage that changes no
+      observable is not a test of the arm.
 
 NOT CHECKED: this unit's energy balance against the energy REPORT -- it is a
 hand surface (constant gas Cp, a Watson latent heat), not the formation
 surface, and the report refuses its corpus cases outright (their salts carry
-no formation datum); the solid dryer's own exhaust saturation (it has no cap,
-and prices a supersaturated exhaust at its condensed equilibrium); any
-measured dryer.
+no formation datum); whether the PACKAGE resolves the solid dryer's
+saturated exhaust as a single vapour (the limit is the psychrometric
+saturation of the water alone; an ideal-solution package with Raoult's law on
+the extrapolated permanent-gas vapour pressures resolves a whisker of liquid
+at it -- 0.015 % of the starved witness's exhaust, priced identically by the
+unit and the report); any measured dryer.
 """
 import json
 import math
@@ -116,10 +149,12 @@ BIN = ROOT / "choupoSolve"
 EVAP01 = ROOT / "tutorials/steady/drying/evapDryer01_nacl"
 EVAP02 = ROOT / "tutorials/steady/drying/evapDryer02_energy_limited"
 SOLID01 = ROOT / "tutorials/steady/drying/solidDryer01_sugar"
+SOLID02 = ROOT / "tutorials/steady/drying/solidDryer02_starved_air"
 LITHIUM = ROOT / "tutorials/plant/lithiumBrinePlant"
 WARN = "[EvaporativeDryer] WARNING: the hot air cannot pay"
 NOTE = "[EvaporativeDryer] NOTE: air-capacity limited"
 SWARN = "[SolidDryer] WARNING: the hot air cannot pay"
+SSAT = "[SolidDryer] WARNING: the exhaust saturates"
 DEFAULT = "carries no `solidHeatCapacity {}`"
 TC_WATER = 647.096
 
@@ -159,6 +194,28 @@ def stream_T(out, stream, name):
     if not m:
         fail(f"{name}: no result row for stream '{stream}'")
     return float(m.group(1))
+
+
+def stream_json(out, stream, name):
+    """One stream's entry in the result JSON, parsed by the JSON parser."""
+    key = '"' + stream + '": { "F"'
+    at = out.find(key)
+    if at < 0:
+        fail(f"{name}: no result row for stream '{stream}'")
+    return json.JSONDecoder().raw_decode(out, at + len(stream) + 4)[0]
+
+
+def unit_closure(out, unit, name):
+    """The unit's `energyClosures` row: what remains of H_out - H_in once any
+    declared model-boundary step is credited, read from the engine."""
+    at = out.find('"energyClosures": ')
+    if at < 0:
+        fail(f"{name}: the run published no energyClosures")
+    rows = json.JSONDecoder().raw_decode(out, at + len('"energyClosures": '))[0]
+    for r in rows:
+        if r.get("unit") == unit:
+            return r["remaining_kW"]
+    fail(f"{name}: no energyClosures row for '{unit}'")
 
 
 def advisories(out):
@@ -441,6 +498,61 @@ def main():
             fail(f"(d) the solid dryer's floor {ks2['T_wetbulb']!r} K is not"
                  f" the air's wet bulb {twbS!r} K recomputed from its records")
 
+        # ---- (g) the solid dryer's exhaust may not be supersaturated -------
+        if "[heat-bound]" not in os2 or ks2["exhaust_humidity"] > 1.0:
+            fail("(g) the cold, starved fixture of (f) must say `[heat-bound]`"
+                 f" with its exhaust at or below saturation: {ks2}")
+        if ("[isotherm-reached]" not in os1 or SSAT in os1
+                or not ks1["exhaust_humidity"] < 1.0
+                or ks1["X_final"] != ks1["X_equilibrium"]):
+            fail("(g) solidDryer01 reaches its isotherm with an unsaturated"
+                 f" exhaust and must say `[isotherm-reached]`: {ks1}")
+        os3 = run(SOLID02, tmp, "solid02")
+        ks3 = kpis(os3, "solidDryer", "solidDryer02_starved_air")
+        if "[saturation-bound]" not in os3 or SSAT not in os3:
+            fail("(g) solidDryer02_starved_air (100 kmol/h of air) must be"
+                 " saturation-bound and say so, in its result block and in a"
+                 " WARNING")
+        if not replayed(os3, "the exhaust saturates"):
+            fail("(g) the saturation WARNING must be replayed in the caveat"
+                 " block")
+        if (not ks3["X_final"] > ks3["X_equilibrium"]
+                or not ks3["T_out"] > ks3["T_wetbulb"]):
+            fail("(g) the saturation-bound powder must leave wetter than its"
+                 f" isotherm, above its floor: {ks3}")
+        ex = stream_json(os3, "humidExhaust", "solidDryer02")
+        air = stream_json(os3, "hotAir", "solidDryer02")
+        w = record(SOLID02, "water")
+        A, B, C = block_coeffs(w, "vaporPressure", "Antoine", "water")
+        aw = (ex["composition"]["water"] * ex["P"]
+              / (1e5 * 10 ** (A - B / (ex["T"] + C))))
+        if not (1.0 - 1e-6 <= aw <= 1.0):
+            fail(f"(g) the starved witness's exhaust, recomputed from the"
+                 f" published stream, has a_w = {aw!r} at {ex['T']} K: it must"
+                 " be saturated and NOT supersaturated (in [1 - 1e-6, 1])")
+        if abs(ks3["exhaust_humidity"] - aw) > 1e-9:
+            fail(f"(g) the published exhaust_humidity"
+                 f" {ks3['exhaust_humidity']!r} is not the exhaust's own a_w"
+                 f" {aw!r}")
+        Mw = scalar_key(w, "MW", "water")
+        picked = (ex["F"] * ex["composition"]["water"]
+                  - air["F"] * air["composition"]["water"]) * Mw
+        if abs(picked - ks3["water_removed"]) > 1e-9 * ks3["water_removed"]:
+            fail(f"(g) the exhaust picked up {picked!r} kg/s of water but the"
+                 f" unit says it removed {ks3['water_removed']!r} kg/s")
+        m = re.search(re.escape(SSAT) + r".*carries ([0-9.]+) kg/h.*of the"
+                      r" ([0-9.]+) kg/h the isotherm would remove", os3)
+        if not m or not float(m.group(2)) > float(m.group(1)):
+            fail("(g) the saturation WARNING must name what the exhaust carried"
+                 " and the larger amount the isotherm would have removed")
+        rem = unit_closure(os3, "solidDryer", "solidDryer02")
+        mg = re.search(r'"globalEnergyBoundary": \{[^{}]*"residual_kW": '
+                       r"([-0-9.eE+]+)", os3)
+        if abs(rem) > 1e-4 or not mg or abs(float(mg.group(1))) > 1e-4:
+            fail(f"(g) the saturation-bound dryer must close against the energy"
+                 f" report to 1e-4 kW: unit remaining {rem!r} kW, plant"
+                 f" {mg.group(1) if mg else 'unpublished'} kW")
+
     print("check_evaporative_dryer: OK -- the free-moisture dryer announces"
           " the limit its own answer satisfies (evapDryer01 complete,"
           " evapDryer02 heat-bound AT the gas's wet bulb since its solid is fed"
@@ -451,10 +563,15 @@ def main():
           " of BOTH this unit and the solid dryer is the gas's wet bulb,"
           " recomputed from each case's own records to 1e-6 K and independent"
           " of the feed T; a 20 % over-gassed lithium dryer stays below its"
-          " gas inlet T and water's critical point.  NOT checked: the hand"
+          " gas inlet T and water's critical point; the solid dryer announces"
+          " its limit (solidDryer01 isotherm-reached, the cold fixture"
+          " heat-bound, solidDryer02_starved_air saturation-bound with its"
+          " exhaust recomputed at a_w in [1 - 1e-6, 1], wetter than its"
+          " isotherm, the water it picked up equal to water_removed, closing"
+          " against the energy report to 1e-4 kW).  NOT checked: the hand"
           " energy surface against the energy report (the report refuses these"
-          " cases), the solid dryer's exhaust saturation, or any measured"
-          " dryer.")
+          " cases), whether the package resolves the solid dryer's saturated"
+          " exhaust as one vapour, or any measured dryer.")
 
 
 if __name__ == "__main__":
