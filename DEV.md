@@ -2920,6 +2920,28 @@ superheated chest is REFUSED there, falsely, not mispriced).
            (they reach CLAUDE.md, `decision-records.md` and a dozen design
            records), rename, leave a stub at the old path, rewrite the prose
            inside.  One slice, no engine change.
+           **DONE 2026-10-05 (branch `claude/c34-c7-archive`), and measuring
+           first corrected this entry twice.**  Only TWO file names carried
+           the word, not four, and the class held 20 records (60 sites), not
+           19; the inbound links were five, in four files (three archive
+           siblings and `final-property-architecture.md`, whose link was
+           already broken -- it pointed beside itself rather than into
+           `archive/`), not CLAUDE.md, `decision-records.md` or a dozen
+           design records.  Renamed:
+           `archive/conceptual-data-architecture.md` and
+           `archive/conceptual-migration-map.md`, each with a zero-site stub
+           at its old path for links from outside the tree.  All 20 records
+           redacted in place -- every product name replaced by what it is
+           ("the commercial simulators", "a commercial process simulator"),
+           one quotation from a published paper ELIDED with the elision
+           marked, no decision, date or argument changed -- and each carries
+           a dated note that the original wording is in git history.  The
+           pin ledger went from 65 sites in 22 files to 5 in 2 (B and C
+           below), class A retired.  Sabotage: a name put back into a
+           cleaned file fails the gate as a NEW site.  What the stubs leave:
+           the two old FILE NAMES are still in the tree (as stubs), which is
+           the price of not breaking an outside link; deleting them is a
+           one-line act whenever Vítor prefers broken links to the names.
        (B) `docs/slides/farelo_choupo.tex`, 3 sites: the HISTORY OF THE FIELD
            (the 1976 project at MIT, the 1981 company, the proprietary era).
            That is history, not comparison, and it is **Vítor's own deck** —
@@ -2956,6 +2978,18 @@ superheated chest is REFUSED there, falsely, not mispriced).
      and one was running.  The sequence is: rewrite the two studies so they
      record the LESSON without the subject, update the four referrers, widen
      `check_doctrine` with the category-2 allowlist, sabotage it, full suite.
+     **STALE, measured 2026-10-05:** that sequence had already happened.
+     None of the four referrers names the removed studies or their paths:
+     `SolidPhase.H` and `check_ice_freezing.py` carry the LESSON as "an
+     open-source peer" with no subject, `solid-equilibrium-spike.md` points
+     to the ruling record, and `decision-records.md` names only the ruling.
+     The category-2 allowlist is `COMPETITOR_EXEMPT`.  Nothing to fix.
+
+     **WHAT REMAINS (2026-10-05):** (B) is Vítor's; (C) is permanent; and
+     whether the PUBLISHED git history is rewritten is Vítor's decision --
+     note that `no-competitor-is-named-here.md` §6 and its index row record
+     history-rewriting as REJECTED, while the paragraph above calls it his
+     to take.  Those two must be made to agree, and which way is his.
 
 **C6. THE GREEN AMMONIA CASE STUDY (commissioned 2026-09-24; the largest
      thing in this file).**  Vitor: put the generals to review the green

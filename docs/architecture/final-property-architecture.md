@@ -1,3 +1,5 @@
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 > **SUPERSEDED (2026-07-14) by [`property-architecture.md`](property-architecture.md)** —
 > the single consolidated property authority. Its declare→assemble→compute flow
 > (U1–U4) and the reference-rung idea are folded there, reconciled to the current
@@ -10,7 +12,7 @@
 > this read "CLOSED / CANONICAL, design settled 2026-06-30"; authority now lives
 > in `property-architecture.md`.) This was the umbrella document that unified the
 > three previously-separate threads into one architecture:
-> - **Layer 1 (data)** detailed in [`aspen-like-data-architecture.md`](aspen-like-data-architecture.md);
+> - **Layer 1 (data)** detailed in [`archive/conceptual-data-architecture.md`](archive/conceptual-data-architecture.md);
 > - **Layer 2 (curation/resolution)** is the 2026-06-05 contract in [`../property-architecture.md`](../property-architecture.md);
 > - **Layer 3 (runtime compute)** is the existing engine (`ThermoPackage` +
 >   `ActivityModel`/`EquationOfState`/`ElectrolyteModel`, post the A1–A3 refactors).
@@ -48,7 +50,7 @@ propertySets / reporting     (runtime-reportable quantities)
 
 ## The three layers
 
-### Layer 1 — Data (the Aspen-like ontology, ratified)
+### Layer 1 — Data (the commercial-simulator ontology, ratified)
 Eight kinds: **apparent components** (user-facing; intrinsic arity-1 props +
 `trueSpeciesMap`) · **true species** (solver-facing: ions, aqueous molecular) ·
 **solid phases** · **chemistry sets** (dissociation, speciation, salt
@@ -119,7 +121,7 @@ requires { apparentOrTrueComponents; binaryInteractionParameters; }
 provides { activityCoefficients; Kvalues; excessGibbsEnergy; }
 ```
 
-This **unifies the `ReferenceRung` forum with the Aspen method stack** — they stop
+This **unifies the `ReferenceRung` forum with the commercial simulators' method stack** — they stop
 being two threads — and closes the "what if it is not aqueous?" gap: a non-aqueous
 or melt method simply declares a different rung.
 
@@ -207,7 +209,7 @@ propertySets      { osmoticPressure; waterActivity; ionicStrength;
 - Ions / Pitzer pairs / minerals / binary pairs stay in their current paths during
   the compatibility phase; old paths remain loadable.
 - `generated/indexes/` + `generated/flatCaches/` preserve the runtime lookup while
-  the conceptual source records move toward the Aspen layout.
+  the conceptual source records move toward the commercial-simulator layout.
 - **Implementation status:** today a case's `thermoPackage` dict is parsed directly
   into a `ThermoPackage` (the degenerate path — it already works). The
   `ThermoPackageBuilder` + the `propertyPackage` front-end are **Phase-5 work**,
@@ -223,6 +225,6 @@ propertySets      { osmoticPressure; waterActivity; ionicStrength;
 > runtime-reportable quantities, not stored primary data. **Curation produces
 > `.dat`; runtime does not estimate.**
 
-> **Choupo uses Aspen-like declarative property packages with OpenFOAM-like
+> **Choupo uses commercial-simulator-style declarative property packages with OpenFOAM-like
 > explicit files: propertyPackage declares, ThermoPackageBuilder assembles,
 > ThermoPackage computes.**

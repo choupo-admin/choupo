@@ -1,5 +1,7 @@
 # Acetone from 2-propanol — reference-case anchor record
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 **Status: ANCHOR RECORD -- six cases now built from it.**  What follows is the
 numerical content of two primary sources, transcribed, plus an honest statement
 of what Choupo would still need to run the whole flowsheet.
@@ -91,7 +93,7 @@ Rates in **kmol s⁻¹ m⁻³**:
   conversion in the Turton reactor.  **They are FITTED TO THE DESIGN, not
   measured** — the paper says so, and a case using them must too.
 
-### 2.2 Equilibrium conversion (Aspen RGIBBS, at 623 K)
+### 2.2 Equilibrium conversion (the paper's commercial simulator, Gibbs-minimisation reactor block, at 623 K)
 
 | P (atm) | equilibrium conversion |
 |---|---|
@@ -105,7 +107,7 @@ Design conversion is held at **90 %** throughout the paper.
 ### 2.3 Thermodynamics
 
 **UNIQUAC**, stated explicitly ("UNIQUAC physical properties are used in the
-Aspen simulations").  Two facts that are independent validation targets:
+[…] simulations" — the product name elided 2026-10-05, C7).  Two facts that are independent validation targets:
 
 * **IPA/water azeotrope: 67.32 mol % IPA at 1 atm, 353.4 K.**
 * Normal boiling points: IPA **355.4 K**, water **373 K**, acetone **329.4 K**.

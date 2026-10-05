@@ -1,5 +1,7 @@
 # Proposed variants of `thermophysicalPropertiesDict`
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 An architecture document covering the 289 property dictionaries of the
 Choupo-2607 tutorials.  It does NOT describe the current transitional grammar.
 
@@ -731,10 +733,10 @@ Eng. Data* 50 (2005) 1470-1477, DOI 10.1021/je050111j.
 
 The separation was checked against two mature architectures:
 
-- A commercial simulator, `Literature/ASPEN/APRSYS 111 Physical Property Methods
-  and Models-1.pdf`, chapters 1 and 5: the electrolyte property method, solution
+- A commercial simulator's physical-property methods and models manual (a local
+  literature copy, not redistributed), chapters 1 and 5: the electrolyte property method, solution
   chemistry, apparent/real components and salt precipitation;
-- the same simulator, `Literature/ASPEN/AspUserGuide10-1.pdf`, chapters 6 and 27:
+- the same simulator's user guide (a local literature copy), chapters 6 and 27:
   `Chemistry ID`, global/local selection and the electrolyte reaction types;
 - USGS PHREEQC 3: a thermodynamic database separate from `SOLUTION`, candidate
   phases separate from `EQUILIBRIUM_PHASES`, and output separate in

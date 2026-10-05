@@ -1,5 +1,7 @@
 # The thermodynamic hierarchy — the organizing principle
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 *2026-06-11. The answer to "what hierarchy attacks everything from a flash to a
 NaOH antisolvent crystalliser with reaction and heats of mixing — without
 hacks?" Companion to [`property-architecture.md`](property-architecture.md)
@@ -21,7 +23,7 @@ never store derivatives.**
 
 **The test that kills slop:** if a tree node is *computable from another node*,
 it does not belong in the tree. `Kvalues`, `flash`, `waterActivity`,
-`excessEnthalpy` as data/model folders are filed OUTPUTS — the Aspen sin.
+`excessEnthalpy` as data/model folders are filed OUTPUTS — the commercial-simulator sin.
 
 ## Plane A — data, organized by REFERENCE STATE
 

@@ -1,5 +1,7 @@
 # Component Identity, Estimation & Transport — Consolidation Proposal
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 **Forum chair consolidation · 2026-06-06 · for Vítor's GO/NO-GO**
 Scope: how a component is identified, activated, estimated, and how transport
 properties fit the property architecture. Built strictly **ON** the SETTLED
@@ -51,7 +53,7 @@ correlations stand alone — a sibling of the EOS, never a child.
 - **`formula` and `CAS` are metadata** for human cross-reference and search,
   **never lookup keys**. Formula is provably non-unique (`C2H6O` = ethanol *and*
   dimethyl ether), so it can never be a key.
-- **No alias/synonym table.** That is precisely the Aspen "is it IPA /
+- **No alias/synonym table.** That is precisely the commercial-simulator "is it IPA /
   isopropanol / propan-2-ol / 67-63-0" bagunça we reject. For 59 components it
   earns nothing.
 
@@ -220,7 +222,7 @@ comment** `transport → EoS`; line 231 always writes
 transport to the EOS** — `PropertyEvaluator.cpp:110-113` shows only
 `Z / v_molar / H_R / S_R` call `thermo.eos()`; viscosity/conductivity/
 diffusivity take only `(T, x)`. The EOS picker on a transport scan is **a
-control that does not change the answer** — the exact Aspen lie Choupo refutes.
+control that does not change the answer** — the exact commercial-simulator lie Choupo refutes.
 **The fix is GUI-only; the engine is already correct.**
 
 ### The fix (GUI-only)
@@ -293,16 +295,16 @@ design (a transport plot HALTS loudly rather than fabricating).
 
 ---
 
-## 8. Q7 — INFORMATION ARCHITECTURE: what makes it NOT Aspen
+## 8. Q7 — INFORMATION ARCHITECTURE: what makes it NOT a commercial simulator
 
-| Axis | Choupo | Aspen failure it kills |
+| Axis | Choupo | commercial-simulator failure it kills |
 |---|---|---|
 | IDENTITY | the filename you type | name/synonym/CAS disambiguation zoo |
 | DATA | one `.dat`, four axioms | scattered databanks + opaque method sets |
 | ORIGIN | per-value chip, visible | "where did this number come from?" — unanswerable |
 | METHOD | one explicit factory per family, you pick because you SAW | property-method matrix + recommended-badge |
 
-**Anti-Aspen guarantees:** no property-method matrix, no databank zoo, no alias
+**Anti-commercial-simulator guarantees:** no property-method matrix, no databank zoo, no alias
 soup, no recommended-badge, no hidden coupling, **no EOS-knob-on-transport**.
 Every control either changes the answer or doesn't exist. Estimation is
 resolved at curation time into a glass-box `.dat` you review and promote — never

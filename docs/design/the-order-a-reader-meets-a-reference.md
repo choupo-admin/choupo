@@ -1,5 +1,7 @@
 # The order a reader meets a reference
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 *2026-09-19.  Record of a review of the Theory Guide by Pedro Mendes,
 co-author and curator of the guides, against `Choupo-2608` — the release a
 reader downloads today.  Three of his findings are acted on here; one is
@@ -386,8 +388,8 @@ four were verified.
 * **It is present in the `v2608` tag** (`docs/theoryGuide-STIFF-METHODS.pdf`,
   blob `1f0653a17e`, 202 pages), which is the release Pedro reviewed and the
   release a reader downloads today.
-* Its own title page says **"Version v0.2.0"**, and its text names **Aspen (4
-  occurrences) and HYSYS (1)** — which the manuals doctrine (settled
+* Its own title page says **"Version v0.2.0"**, and its text names **two commercial simulators
+  (one 4 times, the other once)** — which the manuals doctrine (settled
   2026-07-03, philosophy §4, enforced by `check_doctrine`) forbids in a
   user-facing manual.
 * **It never reached choupo.org.**  `bin/buildSite` and

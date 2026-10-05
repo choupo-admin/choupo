@@ -1,5 +1,7 @@
 # The acetone plant: what closes, what does not, and the one gap left
 
+> **Names redacted 2026-10-05 (DEV.md C7):** product names in this record were replaced by neutral descriptions; the original wording is in git history.
+
 **Status: CLOSED 2026-08-13.  The plant converges and lives in
 `tutorials/plant/acetonePlant`** -- Wegstein on one tear, 3 iterations,
 |r| 2.847 -> 1.785e-4, mass closure 100.000 %, elements 0.0000 %, sealed with
@@ -172,7 +174,7 @@ TOPOLOGY and his EQUIPMENT SPECIFICATIONS; it does not reproduce his stream
 table and the siblings measured, in advance, exactly why it cannot. When it
 converges, the comparison will be published with the same posture as
 `acetone06` and `acetone07`: a comparison with a published reference, never a
-validation, because every number in his table is his own Aspen/UNIQUAC output
+validation, because every number in his table is his own commercial-simulator/UNIQUAC output
 rather than a measurement.
 
 
