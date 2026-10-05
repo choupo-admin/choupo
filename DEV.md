@@ -1920,7 +1920,17 @@ and the tutorials-guide stray `)`; (C) C22's remaining text errors and C3's
 per-equation citation audit.  Wave 2: C4, C8, C16 slice 2, C26 slice 2, the
 unreserved parts of C2 and C7.  NOT taken, his: the tray cost set (C2), any
 history rewrite (C7), the evaporator latent, acetone07/column03, §4b.
-Status: wave 1 dispatched 2026-10-04.
+Status: wave 1 INTEGRATED 2026-10-05 -- B 88a1c6a2a (three red gates
+green for the right reason), C 6187d7b16 (C22 remaining text errors; C3 +15
+citations, 35 equations left unsourced for Vítor), A ff9c4b52c (12 more
+units read an authored inlet; supercritical discard in pipe/valve/
+adiabaticFlash/flash; witness inletState01; four gate arms); no existing
+golden row moved.  Wave 2 part 1 dispatched: C16 slice 2, C26 slice 2, C4.
+Part 2 after: C8 with C2's unreserved part (both in sizing), C7's
+remainder.  Open for Vítor from wave 1: the 35 unsourced equations and the
+cited-at-model-introduction convention (C3); the mixer's two-phase authored
+inlet (cavett01), a gas route for the pipe, a discarded split on an
+undeclared inlet (C33).
 (A) DONE 2026-10-04 on `claude/c34a-inlet-vf-family`, not merged: the
 per-site verdicts are the table in C33; the supercritical discard is in §5's
 2026-09-26 entry; witness `inletState01_undeclared_vapour`, gate
