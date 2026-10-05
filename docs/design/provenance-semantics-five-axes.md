@@ -317,7 +317,7 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 27 direct + 2207 per-value = 2234 across 490 files**
+**census: 30 direct + 2207 per-value = 2237 across 493 files**
 
 against the "~95 values across 72 files" above.  Two of the four numbers the
 first correction got right stayed right (`assumed` 16, `standard` 3); the
