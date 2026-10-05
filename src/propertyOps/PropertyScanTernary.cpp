@@ -48,11 +48,14 @@ namespace {
 // One categorical phase region per node, derived from the SAME fields the
 // isothermalFlash unit op reads.  The classification mirrors the VLLE branch
 // of IsothermalFlash::solveCore (src/unitOperations/flash/IsothermalFlash.cpp):
-//   threePhase==true                       -> VLLE  (line ~618: V + Lα + Lβ)
-//   regime "two-phase liquid (LL ..."      -> LL    (line ~590: two liquids)
-//   regime "two-phase (VL ..."             -> VL    (line ~606: vapour + liquid)
-//   regime "single liquid ..."             -> ONE_PHASE (line ~570)
-// If those regime strings are ever reworded, update this lambda in lock-step.
+//   threePhase   == true                   -> VLLE  (V + Lα + Lβ)
+//   liquidLiquid == true                   -> LL    (two liquids; a typed
+//                                             field since 2026-10-05, never
+//                                             parsed out of the regime prose)
+//   regime "two-phase (VL ..."             -> VL    (vapour + liquid)
+//   regime "single liquid ..."             -> ONE_PHASE
+// The VL / ONE_PHASE split still reads the regime string: if those strings
+// are ever reworded, update this lambda in lock-step.
 struct Klass
 {
     const char* region;
@@ -69,7 +72,7 @@ Klass classify(const FlashSolution& sol)
         const scalar bB = 1.0 - bV - bA;
         return { "VLLE", 3, bV, bA, bB };
     }
-    if (sol.regime.find("two-phase liquid") != std::string::npos)
+    if (sol.liquidLiquid)                          // the KIND, not the prose
     {
         const scalar bB = sol.V_over_F;            // a liquid fraction
         return { "LL", 2, 0.0, 1.0 - bB, bB };

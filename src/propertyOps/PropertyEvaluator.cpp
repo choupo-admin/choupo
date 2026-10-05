@@ -65,7 +65,7 @@ Hetero findHetero(const ThermoPackage& thermo, scalar P_Pa)
     in.T = 298.15;
     try {
         const FlashSolution s = IsothermalFlash::solveCore(in, thermo, lo);
-        if (s.regime.find("two-phase liquid") == std::string::npos
+        if (!s.liquidLiquid               // the split's KIND, never parsed from `regime`
             || s.x.size() != 2 || s.y.size() != 2
             || std::abs(s.x[0] - s.y[0]) < 1.0e-3) return h;      // miscible
         h.xa = std::min(s.x[0], s.y[0]);
@@ -78,7 +78,7 @@ Hetero findHetero(const ThermoPackage& thermo, scalar P_Pa)
         try {
             const FlashSolution s = IsothermalFlash::solveCore(f, thermo, vo);
             return s.betaVapor > 1.0e-6
-                || (s.V_over_F > 1.0e-6 && s.regime.find("(LL") == std::string::npos);
+                || (s.V_over_F > 1.0e-6 && !s.liquidLiquid);
         } catch (...) { return false; }
     };
     // bisect T on the LL -> vapour boundary = T_het (heteroazeotrope bubble)
@@ -292,7 +292,7 @@ scalar evaluateProperty(const std::string& propKey,
         try
         {
             const FlashSolution sol = IsothermalFlash::solveCore(in, thermo, opts);
-            const bool split = sol.regime.find("two-phase liquid") != std::string::npos
+            const bool split = sol.liquidLiquid   // the KIND, never parsed from `regime`
                 && sol.x.size() == 2 && sol.y.size() == 2
                 && std::abs(sol.x[0] - sol.y[0]) > 1.0e-3;
             return split ? 0.0 : 1.0;

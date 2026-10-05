@@ -5220,6 +5220,22 @@ PYEOF
     fi
     rm -f /tmp/fmgate.$$
 
+    # VLLE-fallback gate (2026-10-05, DEV.md section 5): a phaseSet VLLE
+    # flash whose search finds no vapour publishes TWO LIQUIDS.  The unit had
+    # decided which two-phase fallback it held by searching the regime prose
+    # for "VL" -- and "VLLE" contains it, so the second liquid left on the
+    # vapour port with vf = 1 and the report booked a 498 kW latent heat that
+    # never happened.  The split's kind is now a typed field of the solution.
+    if "$ROOT/bin/curate/check_vlle_fallback.py" > /tmp/vllefb.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "vlle-fallback-gate" "$(head -1 /tmp/vllefb.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_vlle_fallback.py)\n" "vlle-fallback-gate"
+        cat /tmp/vllefb.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/vllefb.$$
+
     # Charge-balance gate: when a case SOLVES its pH, electroneutrality is an
     # equation the solver imposes, so its residual on the ANSWER belongs at
     # round-off -- and a precipitating crystal, being neutral, may not move it.

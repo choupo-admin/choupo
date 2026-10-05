@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- gammaGamma: two named liquid phases on one NRTL
+  surface, plus an ideal-gas vapour (present -> the VLLE search is possible).
+
+  The NRTL pair is NOT inline: the activity model reads the case-local record
+  constant/parameters/NRTL/cyclohexane-ethanol.dat, an UNCHANGED copy of
+  curate12's regression (reviewStatus interim; NOT in the catalogue on
+  purpose -- it predicts a second liquid its own evidence does not show).
+  See system/flowsheetDict for why this witness wants exactly that.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( ethanol  cyclohexane );
+
+equilibrium
+{
+    formulation gammaGamma;         // 2+ liquid phases, one gamma surface each
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;             // no inline pair: the case-local record
+        }
+    }
+
+    liquidPhases
+    (
+        { name cyclohexaneRich; }
+        { name ethanolRich; }
+    );
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
