@@ -555,6 +555,10 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                     const bool asLiquid = (sp->vf <= 1.0e-9);
                     for (std::size_t i = 0; i < K.size(); ++i)
                     {
+                        //  A component the stream carries none of is not a
+                        //  term (C35, the flash's own rule): a ZERO nonvolatile
+                        //  (K = 0) used to abandon the whole test.
+                        if (sp->z[i] == 0.0) continue;
                         if (!(K[i] > 0.0) || !std::isfinite(K[i])) { g = 0.0; break; }
                         g += asLiquid ? sp->z[i] * (K[i] - 1.0)
                                       : sp->z[i] * (1.0 - 1.0 / K[i]);

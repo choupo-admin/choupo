@@ -24,8 +24,15 @@ flow arrangements.  This gate holds, from the run itself:
   (e) the step: nSteps 400 moves each X_out by < 1e-5 relative from the
       default 100 (the RK4 march has converged);
   (f) four refusals fired through the real reader on copies of the witness:
-      an air stream with no declared phase, an unknown flow word, X_c not
-      above the equilibrium moisture of the air, and a missing k_Y.
+      an air stream DECLARED liquid, an unknown flow word, X_c not above the
+      equilibrium moisture of the air, and a missing k_Y; and (f0) the same
+      air with NO declared phase RUNS (it resolves as vapour -- until
+      2026-10-05 the flash returned NaN on the package's absent sucrose and
+      that probe was refused for that reason alone; DEV.md 4d D1, C35).
+
+SABOTAGE (2026-10-05, C35, by hand, restored by checkout + `make all`): drop
+the `z_i = 0` skip from IsothermalFlash's g(V=0)/g(V=1) phase test -> "(f0)
+hot air at 420 K with no declared phase was REFUSED (exit 2)".
 
 NOT CHECKED: the dryer against any MEASURED dryer -- k_Y, X_c and the curve
 of the witness are hypothetical teaching values; and the solid's warm-up in
@@ -144,8 +151,16 @@ def main():
 
         air0 = (CASE / "0/hotAir").read_text()
         probes = [
-            ("air with no declared phase", "0/hotAir",
-             air0.replace("phase           gas;\n", ""), "declare `phase gas;`"),
+            #  2026-10-05 (C35): the probe used to DELETE the word, and the
+            #  refusal fired only because the air's own flash returned NaN
+            #  (the package's sucrose, which the air carries none of, has
+            #  K = 0, and the phase test summed 0/0).  The flash now skips an
+            #  absent component, undeclared hot air resolves as the vapour it
+            #  is -- arm (f0) below holds that -- and the refusal is probed
+            #  with air DECLARED liquid, a reading the dryer must refuse.
+            ("air declared liquid", "0/hotAir",
+             air0.replace("phase           gas;\n", "phase           liquid;\n"),
+             "declare `phase gas;`"),
             ("unknown flow word", "system/flowsheetDict",
              fs0.replace("flow              cocurrent;", "flow              parallel;"),
              "must be cocurrent or countercurrent"),
@@ -156,6 +171,22 @@ def main():
              fs0.replace("            k_Y               [1 -2 -1 0 0]  0.05;\n", "", 1),
              "k_Y"),
         ]
+        #  (f0) UNDECLARED hot air means its own equilibrium (R-E2): a vapour
+        #  at 420 K and 1 bar, so the dryer RUNS and reproduces the declared
+        #  witness's outlet.  Until 2026-10-05 it refused, for a NaN.
+        p0 = Path(tmp) / "undeclared"
+        if p0.exists():
+            shutil.rmtree(p0)
+        shutil.copytree(CASE, p0)
+        (p0 / "0/hotAir").write_text(air0.replace("phase           gas;\n", ""))
+        if (p0 / "0/hotAir").read_text() == air0:
+            fail("(f0) the undeclared-air probe edited nothing -- it cannot fire")
+        rc0, o0 = run(p0)
+        if rc0 != 0:
+            fail("(f0) hot air at 420 K with no declared phase was REFUSED "
+                 f"(exit {rc0}); an unpinned stream means its own equilibrium, "
+                 "which is a vapour -- has the flash's phase test started "
+                 "summing the absent sucrose (K = 0, 0/0) again?")
         for label, rel, text, needle in probes:
             orig = (CASE / rel).read_text()
             if text == orig:
@@ -179,8 +210,10 @@ def main():
           " streams to 1e-9, dries further counter-current than co-current"
           " on the same area and never below the air's X_eq, runs its"
           " profiles the way each arrangement must, is converged in its"
-          " step (nSteps 400 moves X_out < 1e-5), and refuses four malformed"
-          " declarations by name.  NOT checked: any measured dryer (the"
+          " step (nSteps 400 moves X_out < 1e-5), refuses four malformed"
+          " declarations by name (air declared liquid among them), and runs"
+          " the same air with NO declared phase, which resolves as the vapour"
+          " it is.  NOT checked: any measured dryer (the"
           " witness's k_Y, X_c and curve are hypothetical), or the solid's"
           " falling-rate warm-up, which the model does not have.")
     return 0

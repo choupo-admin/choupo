@@ -1254,10 +1254,14 @@ sensibly).  Every evaporator row now closes against the report to 1e-6 kW,
 eight pins left `check_energy_closure`, and `energy-T2:plant` is green.  A
 feed or chest with no enthalpy datum keeps the Watson balance, ANNOUNCED (the
 report is UNAVAILABLE there too).  A SUPERHEATED chest is read as the vapour
-it means (`resolvedInletVaporFraction`) -- but only where the package's flash
-resolves it: a chest carrying zero of a K = 0 nonvolatile makes the flash's
-dew test 0/0, so on every corpus package it is still refused, now naming
-that cause (DEV.md 4d D1).  Gate: `check_evaporator_chest_phase` arms (c1),
+it means (`resolvedInletVaporFraction`), on every package since C35
+(2026-10-05): a chest carrying zero of a K = 0 nonvolatile made the flash's
+dew test 0/0 = NaN, and **an absent component is not a term** in the flash's
+sums now (`IsothermalFlash.cpp` `RR`/`dRR_dV`/the phase test, `DewPoint`, the
+report's incipient-phase test).  What that made visible: an undeclared
+SATURATED chest is read by the last digits of T and P (DEV.md 4d D1), so
+`phase gas;` is still the one channel that does not depend on rounding.
+Gate: `check_evaporator_chest_phase` arms (c1),
 (c2), (i) (7 sabotages; two results did not
 match the prediction and are recorded as measured — S3 is caught STRUCTURALLY
 and not behaviourally, and a presence-based arm (e) was measured to survive S4

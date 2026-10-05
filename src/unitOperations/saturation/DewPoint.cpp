@@ -78,7 +78,9 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
         {
             auto K = thermo.Kvec(T, P, x, y);
             scalar s = 0.0;
-            for (std::size_t i = 0; i < n; ++i) s += y[i] / K[i];
+            //  An absent component is not a term (C35, the flash's rule): a
+            //  zero nonvolatile (K = 0) is 0/0 = NaN here.
+            for (std::size_t i = 0; i < n; ++i) if (y[i] != 0.0) s += y[i] / K[i];
             return s - 1.0;
         };
         auto df = [&](scalar T)
@@ -105,7 +107,11 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
         auto K = thermo.Kvec(Tdew, P, x, y);
         sVector xNew(n);
         scalar xsum = 0.0;
-        for (std::size_t i = 0; i < n; ++i) { xNew[i] = y[i] / K[i]; xsum += xNew[i]; }
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            xNew[i] = (y[i] == 0.0) ? 0.0 : y[i] / K[i];
+            xsum += xNew[i];
+        }
         for (auto& v : xNew) v /= xsum;
 
         scalar dsum = 0.0;

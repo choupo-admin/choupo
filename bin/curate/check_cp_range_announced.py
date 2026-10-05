@@ -119,6 +119,17 @@ SILENT_WINDOW = "Trange        (280  351);"
 #  against (280 340) AND integrates across the same window, so both arms
 #  (b) and (c) have a sentence to read on one choupoSolve case.
 LOUD = "tutorials/steady/utilities/utility01_dowtherm_preheat"
+#  THE SPAN WITNESS MOVED 2026-10-05 (DEV.md 4c C35, the flash's `z_i = 0`
+#  guard).  utility01's 619 K heater outlet carries ZERO dowthermA (K = 0),
+#  so its flash returned NaN and the stream was priced as the carried LIQUID,
+#  integrating a liquid Cp from 298.15 K past every window.  The flash now
+#  answers: the outlet VAPORISES (526.36 K, vf = 1, H conserved to 7e-9) and
+#  no liquid Cp is integrated -- the case keeps its POINT sentence (arm (b))
+#  and lost the SPAN one, for a reason that is the physics getting better,
+#  not the announcement going silent.  A witness that lost the property is
+#  replaced, never the arm weakened: column01_benzene_toluene integrates
+#  benzene's liquid Cp from 298.15 K to its tray temperatures, past (278 350).
+LOUD_SPAN = "tutorials/steady/distillation/column01_benzene_toluene"
 
 #  THE NON-INTERVAL BRANCH LEFT THIS GATE (AP3, 2026-08-05).
 #
@@ -230,18 +241,22 @@ def main() -> int:
             checked.append(f"point extrapolation announced ({Path(LOUD).name}, "
                            f"Trange {m.group(1)}-{m.group(2)})")
 
-        #  (c) THE SPAN IS ITS OWN SENTENCE.  The same case integrates past
-        #  the same windows, and that must be said in words a reader cannot
-        #  confuse with the point message: an interval, not a temperature,
-        #  and a SIZE, because "you extrapolated" without "by how much" is
-        #  the half of the fact nobody can act on.
+        #  (c) THE SPAN IS ITS OWN SENTENCE.  A case that integrates past a
+        #  window must say so in words a reader cannot confuse with the
+        #  point message: an interval, not a temperature, and a SIZE,
+        #  because "you extrapolated" without "by how much" is the half of
+        #  the fact nobody can act on.  Read on LOUD_SPAN (see above).
+        rc, out = run(SOLVE, ROOT / LOUD_SPAN)
+        if rc != 0:
+            fail.append(f"{Path(LOUD_SPAN).name} does not run (exit {rc})")
+            out = ""
         s = re.search(r'\[cp\].*integrated from ([\d.]+) K to ([\d.]+) K, a '
                       r'path that LEAVES its declared Trange '
                       r'\(([\d.]+) ([\d.]+)\) over ([\d.]+) K of its '
                       r'([\d.]+) K', out)
         if not s:
             fail.append(
-                f"{Path(LOUD).name} integrates a polynomial Cp across a "
+                f"{Path(LOUD_SPAN).name} integrates a polynomial Cp across a "
                 "declared window and does not say so in the span's own words. "
                 " Only Cp(T) was ever watched before 2026-08-19, and the "
                 "integral is the route every enthalpy actually travels.")

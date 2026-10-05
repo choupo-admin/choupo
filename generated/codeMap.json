@@ -1580,6 +1580,9 @@
   "VleConsistency": [
    "src/propertyOps/VleConsistency.H"
   ],
+  "VllePhase": [
+   "src/unitOperations/flash/IsothermalFlash.H"
+  ],
   "Vogel": [
    "src/thermo/transport/Vogel.H"
   ],

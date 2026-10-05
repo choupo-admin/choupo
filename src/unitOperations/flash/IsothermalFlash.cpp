@@ -54,11 +54,23 @@ namespace Choupo {
 
 namespace {
 
+//  AN ABSENT COMPONENT IS NOT A TERM (2026-10-05, DEV.md C35 / 4d D1).  Every
+//  sum over z_i below SKIPS z_i = 0.  The term it drops is exactly zero
+//  wherever it is defined, so every other state sums the same numbers, bit for
+//  bit; where it is NOT defined -- a nonvolatile (K = 0) the stream carries
+//  none of, at V = 1 -- it was 0 * (-1) / 0 = NaN, and one NaN poisons the
+//  sum.  A superheated evaporator chest (water, and zero of the liquor's
+//  sucrose or salt) then never read as vapour: the dew test `g(V=1)` was NaN,
+//  the flash returned an unconverged "two-phase" answer, and the engine
+//  refused a plainly superheated chest on every corpus package.
 scalar RR(const sVector& z, const sVector& K, scalar V)
 {
     scalar s = 0.0;
     for (std::size_t i = 0; i < z.size(); ++i)
+    {
+        if (z[i] == 0.0) continue;
         s += z[i] * (K[i] - 1.0) / (1.0 + V * (K[i] - 1.0));
+    }
     return s;
 }
 
@@ -67,6 +79,7 @@ scalar dRR_dV(const sVector& z, const sVector& K, scalar V)
     scalar s = 0.0;
     for (std::size_t i = 0; i < z.size(); ++i)
     {
+        if (z[i] == 0.0) continue;   // an absent component is not a term (above)
         scalar d = 1.0 + V * (K[i] - 1.0);
         s -= z[i] * (K[i] - 1.0) * (K[i] - 1.0) / (d * d);
     }
@@ -1148,9 +1161,14 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         }
 
         // ---- Phase test on current K's --------------------------------
+        //  A component the feed carries NONE of is skipped (see `RR`): its
+        //  term is 0 where defined and 0/0 = NaN for a nonvolatile (K = 0)
+        //  in g(V=1), which used to make a superheated evaporator chest
+        //  (water + zero sucrose) unclassifiable.
         scalar g_at_0 = 0.0, g_at_1 = 0.0;
         for (std::size_t i = 0; i < n; ++i)
         {
+            if (in.z[i] == 0.0) continue;
             g_at_0 += in.z[i] * (sol.K[i] - 1.0);
             g_at_1 += in.z[i] * (sol.K[i] - 1.0) / sol.K[i];
         }
@@ -1278,6 +1296,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         sVector x_subst(n), y_new(n);
         for (std::size_t i = 0; i < n; ++i)
         {
+            if (in.z[i] == 0.0) { x_subst[i] = 0.0; y_new[i] = 0.0; continue; }
             x_subst[i] = in.z[i] / (1.0 + sol.V_over_F * (sol.K[i] - 1.0));
             y_new[i]   = sol.K[i] * x_subst[i];
         }

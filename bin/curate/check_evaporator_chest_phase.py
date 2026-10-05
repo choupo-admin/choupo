@@ -46,6 +46,14 @@ WHAT THIS GATE CHECKS.
       remedy WITH THE FILE PATH FILLED IN, and the alternative (this is the
       wrong unit for a sensible-heat medium).  A refusal that states a rule
       without stating the edit teaches only unease (invariant I5).
+      The fixture's chest sits 0.008 K BELOW the donor's Tsat(200 kPa)
+      (T_SUB, since 2026-10-05, C35).  It sat AT Tsat until then and was
+      refused only because the flash could not answer (the NaN (c2) names);
+      with the flash answering, a state ON the curve is read by the last
+      digits of T and P -- 392.1781136 K reads as vapour, 392.17 K as
+      liquid -- so a fixture that must be refused has to be the liquid one.
+      That an undeclared SATURATED chest is now a rounding question rather
+      than a refusal is a FINDING, recorded in DEV.md 4d D1, not hidden here.
 
   (b) THE NEGATIVE: the same fixture with `phase gas;` on the chest RUNS.
       Without this arm the gate is satisfied by a unit that refuses
@@ -65,16 +73,18 @@ WHAT THIS GATE CHECKS.
            water-only package (`superheatW`) runs, publishes its chest at
            vf = 1, and the evaporator's own energy row closes against the
            report within 1e-4 kW.
-      (c2) WHERE IT DOES NOT, IT STILL REFUSES -- AND SAYS WHY.  In the
-           donor's water + sucrose package the chest carries ZERO sucrose
-           whose K is 0, so `IsothermalFlash`'s dew test sums z/K = 0/0 =
-           NaN, never classes the stream as superheated and returns an
-           unconverged "two-phase" answer; `equilibriumAt` discards it and
-           the carried default stands in the unit AND in the report.  The
-           refusal must name that cause ("could not resolve").  THIS IS A
-           STALE-PIN ARM: the day the flash's phase test skips z_i = 0 (a
-           one-line guard on a path every flash goes through, which needs a
-           full regression to take), (c2) fails and asks to become a (c1).
+      (c2) AND IN THE DONOR'S OWN water + sucrose PACKAGE (flipped
+           2026-10-05, DEV.md 4c C35 / 4d D1).  Until then it was a STALE-PIN
+           arm requiring a REFUSAL: the chest carries ZERO sucrose whose K is
+           0, so `IsothermalFlash`'s dew test summed z/K = 0/0 = NaN, never
+           classed the stream as superheated and returned an unconverged
+           "two-phase" answer, and the carried default 0 stood in the unit
+           AND the report.  The flash now skips a component the stream
+           carries none of (`RR`, `dRR_dV`, the g(V=0)/g(V=1) test and the
+           substitution step; the same guard in `DewPoint`'s sum y/K and in
+           the energy report's incipient-phase test), so this arm requires
+           what (c1) requires: the chest RUNS, publishes vf = 1, and the
+           evaporator's row closes within 1e-4 kW.
 
   (d) THE DECLARED-AND-WRONG ARM: a chest pinned `vaporFraction 0.5;` refuses
       too.  A half-condensed chest is not a saturated-vapour supply, and this
@@ -168,6 +178,16 @@ byte-identical (md5 checked against the pre-sabotage copy) and `make all`.
       superheated chest refused, but the refusal does not say the package
       COULD NOT RESOLVE its equilibrium" -- the diagnosis lives in the same
       branch, so a refusal that gives the wrong cause is caught too.
+
+SABOTAGE-VERIFIED 2026-10-05 (C35), arm (c2) as flipped, by hand, restored
+with git + `make all`:
+
+  Z1  drop the `z_i = 0` skip from the g(V=0)/g(V=1) phase test only (RR
+      and the substitution keep theirs) -> ONLY "(c2) a chest 37.8 K above
+      its saturation temperature in the donor's water + sucrose package did
+      not run (exit 2)"; (c1)'s water-only package has no zero component
+      and passes.  (W3 above was taken when (c2) was the stale pin; its
+      second message no longer exists.)
 
 SABOTAGE-VERIFIED 2026-09-12.  Each sabotage was applied, READ BACK OFF DISK to
 prove it landed, the engine rebuilt, the gate run, then reverted (md5 checked).
@@ -403,6 +423,12 @@ def result_json(out: str):
 #  first is the ambiguous state the corpus shipped; the second is the
 #  unambiguous one arm (c) needs.
 T_SAT = "392.1781136"
+#  (a)'s fixture (2026-10-05, C35): 0.008 K BELOW T_SAT, a state the flash
+#  reads as single-phase liquid.  At T_SAT itself the flash now ANSWERS (the
+#  phase test no longer goes NaN on the donor's zero sucrose), and on the
+#  curve its answer is set by the last digits: 392.1781136 K reads as vapour.
+#  The refusal is about a chest read as liquid, so its fixture must be one.
+T_SUB = "392.17"
 T_SUPERHEAT = "430.0"
 
 
@@ -411,11 +437,12 @@ def main() -> int:
     tmp = Path(tempfile.mkdtemp(prefix="choupo-chestphase-"))
     try:
         # ---- (a) the refusal fires, and names the edit --------------------
-        case = build_fixture(tmp, T_SAT, "", "nophase")
+        case = build_fixture(tmp, T_SUB, "", "nophase")
         rc, out = run(case)
         if rc == 0:
             failures.append(
-                "(a) an evaporator whose chest declares NO phase ran to exit "
+                "(a) an evaporator whose chest declares NO phase (and sits "
+                "0.008 K below Tsat, read as liquid) ran to exit "
                 "0.  Its duty is Q = F_chest * dHvap(T_steam), which asserts a "
                 "complete condensation; a chest read as liquid carries none of "
                 "that heat across the plant boundary.  That is -485.694246 kW "
@@ -492,27 +519,39 @@ def main() -> int:
                         "engine's own report.  A chest read as vapour must be "
                         "PRICED as the vapour it is read as." % (u, rem))
 
-        # ---- (c2) STALE-PIN: where the package cannot, it still refuses ---
+        # ---- (c2) the SAME superheated chest in the donor's water + sucrose
+        #      package RUNS too (flipped from a stale-pin arm, 2026-10-05, C35)
         case = build_fixture(tmp, T_SUPERHEAT, "", "superheat")
         rc, out = run(case)
-        if rc == 0:
+        if rc != 0:
             failures.append(
-                "(c2) the superheated chest in the donor's water + sucrose "
-                "package now RUNS.  Until 2026-10-05 it could not: the chest's "
-                "zero sucrose (K = 0) made IsothermalFlash's dew test 0/0 = "
-                "NaN, so the flash never classed it as superheated and the "
-                "carried default stood.  If that guard has been taken, this is "
-                "the GOOD news this arm is waiting for: turn (c2) into a "
-                "second (c1) -- require it to run, publish vf = 1 and close -- "
-                "and update Evaporator.cpp's comment and DEV.md 4d D1.")
-        elif "could not resolve" not in out:
-            failures.append(
-                "(c2) the superheated chest refused, but the refusal does not "
-                "say the package COULD NOT RESOLVE its equilibrium.  A reader "
-                "whose chest is plainly superheated must be told the engine "
-                "fell back to the carried default, not that it found a liquid "
-                "-- or the message reads as a bug in the engine.  Output "
-                "tail: " + out[-400:])
+                "(c2) a chest 37.8 K above its saturation temperature in the "
+                "donor's water + sucrose package did not run (exit %d).  It "
+                "carries ZERO sucrose, whose K is 0: if the flash's phase test "
+                "sums that component again, g(V=1) is 0/0 = NaN, the chest is "
+                "never classed as superheated and the carried default 0 is "
+                "refused as liquid (IsothermalFlash.cpp, `RR` / the g_at_1 "
+                "test: an absent component is not a term).  Output tail: %s"
+                % (rc, out[-400:]))
+        else:
+            res = result_json(out)
+            st = (res or {}).get("streams", {}).get("chest")
+            if st is None or float(st.get("vf", 0.0)) < 1.0 - 1.0e-9:
+                failures.append(
+                    "(c2) the water + sucrose superheated chest ran but is "
+                    "published at vf = %s, not 1."
+                    % (None if st is None else st.get("vf")))
+            rows = unit_rows(out)
+            if not rows:
+                failures.append(
+                    "(c2) the water + sucrose superheated-chest fixture "
+                    "published no evaporator row in `energyClosures` to read.")
+            for u, rem in rows or []:
+                if abs(rem) > UNIT_TOL_KW:
+                    failures.append(
+                        "(c2) the water + sucrose superheated-chest evaporator "
+                        "'%s' leaves %+.6f kW of its energy balance "
+                        "unattributed in the engine's own report." % (u, rem))
 
         # ---- (d) a DECLARED, two-phase chest refuses too ------------------
         case = build_fixture(tmp, T_SAT, "vaporFraction   0.5;\n", "half")
@@ -667,9 +706,9 @@ def main() -> int:
           "vapour, naming the stream, the state file, the `phase gas;` edit "
           "and the alternative that this is the wrong unit; the same fixture "
           "with the word present RUNS; a chest 37.8 K superheated RUNS, is "
-          "published at vf = 1 and closes where the package resolves it "
-          "(water-only), and still REFUSES naming the unresolved flash where "
-          "it cannot (water + sucrose, the stale-pin arm); a chest pinned "
+          "published at vf = 1 and closes, in a water-only package AND in "
+          "the donor's water + sucrose package, whose zero sucrose (K = 0) "
+          "the flash's phase test no longer sums; a chest pinned "
           "half-vapour refuses; all three outlets are pinned "
           "declarations and the condensate carries the CHEST's pressure; "
           "`resolveStreamThermalState` is defined once in src/ and called by "
