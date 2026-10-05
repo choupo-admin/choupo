@@ -7,7 +7,21 @@
 /*--- Luyben Figure 1, stream B1 (C1's bottoms): 40.56 kmol/h at 370 K, mole
      fractions A 0.0001 / IPA 0.0951 / W 0.9048.  Flows are those fractions
      times that total.  This is HIS stream, not acetone06's answer -- the
-     column is isolated here on purpose; acetone08 wires the real one. ---*/
+     column is isolated here on purpose; acetone08 wires the real one.
+
+     THE TEMPERATURE IS NOT HIS, AND THE PHASE IS (2026-10-05, DEV.md D1).
+     He gives no pressure for B1 and enters it into C2 as C1's bottoms -- a
+     SATURATED LIQUID.  At this case's 1 atm and under its own UNIFAC the
+     liquid of that composition boils at 357.468 K (the engine's bubbleT on
+     this very stream) and the engine's own flash at his 370 K finds it all
+     vapour (V/F = 1), and the column reads a feed by what it MEANS.  The case kept his 370 K beside `feedQuality 1.0` in the
+     column, and the two said different things: the column priced a liquid
+     while the energy report priced the vapour the stream is, a 464 kW
+     first-law residual, the latent heat of the whole feed.  So the stream
+     now says what the case meant: a saturated liquid at THIS model's bubble
+     point (rounded down to 0.01 K, so its own equilibrium agrees with the
+     pin), and the column's `feedQuality` is gone -- one home.  His 370 K
+     stays in the header above and in the programme record. ---*/
 
 componentMolarFlows
 {
@@ -16,5 +30,6 @@ componentMolarFlows
     water        36.6987880 kmol/h;
 }
 
-T               370 K;
+T               357.46 K;
 P               101325 Pa;
+phase           liquid;

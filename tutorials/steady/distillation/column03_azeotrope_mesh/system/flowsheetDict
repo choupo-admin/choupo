@@ -17,20 +17,21 @@
   NOT converge (200 outer iters).  The MESH Newton converges in ~5
   iterations to a PHYSICAL distillate (x_eth ~ 0.80, below the azeotrope).
 
-  Feed: 100 kmol/h, 30/70 ethanol/water, 1 atm.  The column feed enthalpy is
-  set by feedQuality = 1.0 (saturated liquid), NOT by the stream T: the stated
-  T = 363 K is ~7 K above the 30/70 bubble point (~355.5 K at 1 atm), so the
-  stream itself is slightly superheated — the MESH model uses feedQuality,
-  so the STAGE solution is set by that declaration.  It is not free,
-  though, and this line used to claim it was.  The engine announces on
-  every run of this case that the feed `is priced as LIQUID (vf = 0) at
-  T = 363 K ... its own Rachford-Rice residual there is g(V=0) = 0.393227,
-  i.e. it is ABOVE its bubble point and cannot hold that label; the
-  enthalpy priced for it is missing (or inventing) that phase change.`
-  So `feedQuality 1.0` (saturated liquid) and the stream's own state
-  disagree, the engine says so rather than refusing, and the ENTHALPY is
-  what carries the disagreement.  The plant boundary still closes at
-  0.000000 kW, because the same pricing is used on both sides of it.
+  Feed: 100 kmol/h, 30/70 ethanol/water, 1 atm, a SATURATED LIQUID -- said
+  once, by the stream: `phase liquid;` at the feed's own bubble point under
+  this case's NRTL, 354.42 K (the engine's bubbleT on this stream gives
+  354.4248 K; rounded DOWN so the feed's own equilibrium agrees with the
+  pin).  Until 2026-10-05 the stream said T = 363 K and the column said
+  `feedQuality 1.0`: at 363 K this feed is a VAPOUR (V/F = 1 by the
+  engine's own flash), so the case said two different things.  The column
+  priced a liquid, the energy report priced the vapour, and the plant
+  boundary carried a 1149.69 kW residual -- the latent heat of the feed --
+  that this header used to describe as closing.  The column now reads a
+  feed by what it MEANS (DEV.md D1), so the contradiction refused, and the
+  case was corrected to declare the saturated liquid it was designed
+  around.  A vapour feed at 363 K is NOT a drop-in alternative: with
+  q = 0 this specification (R = 2.5, D = 25 kmol/h) leaves the stripping
+  section without vapour, which the MESH reports as a non-positive flow.
   Column: 16 stages, feed at 8, R = 2.5, D = 25 kmol/h, method simultaneous.
 
   Expected: converged; x_D(ethanol) ~ 0.80 (< 0.894 azeotrope -- physical);
@@ -59,7 +60,6 @@ units
             feedStage      8;
             refluxRatio    2.5;
             distillateRate 25.0 kmol/h;
-            feedQuality    1.0;
             P              1.01325 bar;
         }
     }

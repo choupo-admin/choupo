@@ -402,12 +402,18 @@ def ratchet_kW(pin: float) -> float:
 #  single-phase answer makes both cases REFUSE their `feedQuality` -- a
 #  pedagogical decision about each case that is Vitor's, so they are PINNED
 #  here as measured and not fixed.
+#  BOTH LEFT on 2026-10-05 (DEV.md D1, decided by Vitor in C35): the column
+#  now reads a single-phase feed by its own equilibrium, both cases refused
+#  their `feedQuality 1.0`, and each was corrected to declare the saturated
+#  liquid it was designed around (`phase liquid;` at the feed's bubble point
+#  under the case's own model, the `feedQuality` key deleted).  Measured on
+#  the corrected cases, read off the engine's report:
+#    acetone07_luyben_column_C2  196.7990 % -> 0.0000 % (residual 0 kW)  LEFT
+#    column03_azeotrope_mesh      60.8760 % -> 0.0000 % (residual 0 kW)  LEFT
 KNOWN_OPEN = {
     "tutorials/plant/ChemicalPlantTutorial": 1.0300,
     "tutorials/plant/esterification2sector": 170.9790,
     "tutorials/plant/polycaprolactonePlant": 20.0100,
-    "tutorials/steady/distillation/acetone07_luyben_column_C2": 196.7990,
-    "tutorials/steady/distillation/column03_azeotrope_mesh": 60.8760,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/credo01_valve_heater_drum": 2.0940,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,

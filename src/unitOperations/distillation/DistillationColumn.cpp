@@ -234,9 +234,31 @@ FeedThermalState resolveFeedThermalState(const DictPtr&       feedDict,
 {
     const std::string sName =
         feedDict->lookupWordOrDefault("streamName", "the feed");
-    return flashState::resolveStreamThermalState(
-        feedDict, T, P, z, thermo,
-        "distillationColumn '" + unitName + "' feed '" + sName + "'", "model");
+    const std::string locus =
+        "distillationColumn '" + unitName + "' feed '" + sName + "'";
+    FeedThermalState st = flashState::resolveStreamThermalState(
+        feedDict, T, P, z, thermo, locus, "model");
+    //  A SINGLE-PHASE FEED IS READ AS WHAT IT MEANS TOO (2026-10-05, DEV.md
+    //  §4d D1, decided by Vítor in C35).  `resolveStreamThermalState` answers
+    //  "is there a split to price"; on a converged single-phase answer it
+    //  keeps the CARRIED vapour fraction, whose default is 0 -- so an unpinned
+    //  authored feed that resolves single-phase VAPOUR reached the MESH as a
+    //  saturated liquid (q = 1), the phasechange01 trap one unit over.  The
+    //  single-phase reading is `resolvedInletVaporFraction`, the one home
+    //  every other inlet reader went through in C33/C34; it returns the
+    //  carried value for a PINNED feed (a declaration is never re-solved) and
+    //  for a PRODUCED one (its producer's answer stands).
+    if (!st.split)
+    {
+        const scalar vfMeant = flashState::resolvedInletVaporFraction(
+            feedDict, T, P, z, thermo, locus);
+        if (vfMeant != st.vf)
+        {
+            st.vf     = vfMeant;
+            st.origin = "resolved single phase at its own (T, P, z)";
+        }
+    }
+    return st;
 }
 
 //  Price a feed on the state that was RESOLVED for it, by the rule
@@ -1460,18 +1482,23 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     std::size_t  NF = 0;
     sVector      z(n, 0.0);
 
-    //  The legacy single-feed branch resolves its feed's thermal state from
-    //  the STREAM (2026-09-12) and carries the resolution here so the duty
-    //  block below can price it at the equilibrium compositions.  The
-    //  multi-feed branch is NOT changed: it already reads each feed's state
-    //  from its own stream and already refuses a contradicting `quality`.
-    //  What it does NOT yet do is RESOLVE an unpinned feed or price a
-    //  two-phase one at (x, y) -- a named, measured gap, not live on today's
-    //  corpus (every multi-feed case declares single-phase feeds) and
-    //  deliberately not fixed blind, because the two cases it would move are
-    //  the two whose residuals are undiagnosed (column04, column08).
-    FeedThermalState primaryFeedState;
-    std::size_t      primaryFeedStage = static_cast<std::size_t>(-1);
+    //  EVERY FEED'S THERMAL STATE IS RESOLVED FROM ITS STREAM, IN BOTH
+    //  BRANCHES (the single-feed one since 2026-09-12; the multi-feed one
+    //  since 2026-10-05, DEV.md §4d D1, decided by Vítor in C35).  Each
+    //  resolution is kept per STAGE so the duty block below can price a
+    //  two-phase feed at its equilibrium compositions (x, y), the rule
+    //  `reporting/BalanceMath.H` prices the same stream by.  A stage that
+    //  receives MORE than one feed is a mixture of two declarations, and no
+    //  single resolution describes it: it keeps the blend at the merged q.
+    //  The multi-feed branch used to read each stream's CARRIED `vf`, so an
+    //  unpinned feed that resolves vapour or two-phase reached the MESH as a
+    //  liquid -- not live on the corpus that day (measured, see DEV.md D1).
+    std::vector<std::optional<FeedThermalState>> stageFeedState(N);
+    std::vector<int>                             stageFeedCount(N, 0);
+    auto noteFeed = [&](std::size_t j, const FeedThermalState* st) {
+        if (++stageFeedCount[j] == 1 && st) stageFeedState[j] = *st;
+        else                                stageFeedState[j].reset();
+    };
 
     if (multiFeed)   // ---- feeds are flowsheet streams, mapped to stages ----------
     {
@@ -1497,11 +1524,16 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             const scalar  Tfe = sd->lookupScalar("T", Dims::temperature);
             const sVector zf  = readComp(sd->subDict("composition"));
             // The feed's thermal state lives in the STREAM (information follows the
-            // streams): the McCabe--Thiele quality q = 1 - vf, with vf the vapour
-            // fraction the flowsheet flash already resolved.  A redundant
-            // operation.feeds.quality that DISAGREES is exactly the column08-class
-            // silent bug (a vapour feed declared liquid) -> REFUSE it loudly.
-            const scalar vfStream = sd->lookupScalarOrDefault("vf", 0.0);
+            // streams): the McCabe--Thiele quality q = 1 - vf, with vf what the
+            // stream MEANS -- its declaration when pinned, its producer's answer
+            // when produced, and otherwise its own equilibrium at (T, P, z),
+            // single phase included (the same one home as the single-feed
+            // branch).  A redundant operation.feeds.quality that DISAGREES is
+            // exactly the column08-class silent bug (a vapour feed declared
+            // liquid) -> REFUSE it loudly.
+            const FeedThermalState fst =
+                resolveFeedThermalState(sd, Tfe, P, zf, thermo, dict->name());
+            const scalar vfStream = fst.vf;
             const scalar qf = 1.0 - vfStream;
             if (fe->found("quality"))
             {
@@ -1510,13 +1542,15 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                     throw std::runtime_error("DistillationColumn: feed '" + sName
                         + "': operation.feeds.quality = " + std::to_string(qDecl)
                         + " contradicts the feed STREAM (vapour fraction "
-                        + std::to_string(vfStream) + " => q = " + std::to_string(qf)
+                        + std::to_string(vfStream) + ", " + fst.origin
+                        + " => q = " + std::to_string(qf)
                         + ").  A feed's thermal state lives in the stream, not the"
                         " column -- delete the `quality` and set the stream's"
                         " T and P (or its `phase gas|liquid;` pin) so the two"
                         " can never disagree.");
             }
             addFeed(st - 1, Ff, qf, Tfe, zf);
+            noteFeed(st - 1, &fst);
             if (first) { Tf = Tfe; NF = st; q = qf; z = zf; first = false; }
         }
     }
@@ -1531,13 +1565,13 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  SAME RULE AS WANG-HENKE, and the same one home reached from both --
         //  this branch used to read `feedQuality` with its own default, which
         //  is how one defect came to have two transcriptions.
-        primaryFeedState =
+        const FeedThermalState primaryFeedState =
             resolveFeedThermalState(feedDict, Tf, P, z, thermo, dict->name());
         refuseContradictoryFeedQuality(operDict, feedDict, primaryFeedState,
                                        Tf, dict->name());
         q = 1.0 - primaryFeedState.vf;
-        primaryFeedStage = NF - 1;
         addFeed(NF - 1, feedDict->lookupScalar("F", Dims::molarFlow), q, Tf, z);
+        noteFeed(NF - 1, &primaryFeedState);
 
         // legacy INLINE extra feeds (a side channel -- NOT on the flowsheet graph,
         // so the plant-boundary balance misses them; prefer `inputs (...)` streams).
@@ -1551,14 +1585,13 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 const scalar qf = fe->lookupScalarOrDefault("quality", 1.0);
                 const scalar Tfe = fe->lookupScalarOrDefault("T", Tf, Dims::temperature);
                 addFeed(st - 1, Ff, qf, Tfe, readComp(fe->subDict("composition")));
-                //  An inline feed MERGED onto the primary feed's stage makes
-                //  that stage's material a mixture of two declarations, and
-                //  the primary's resolved split no longer describes it.  Drop
-                //  the split rather than apply it to material it is not about;
-                //  the stage falls back to the blend, which is what this
-                //  branch has always done.  No corpus case does this.
-                if (st - 1 == primaryFeedStage)
-                    primaryFeedStage = static_cast<std::size_t>(-1);
+                //  An inline feed is a dict declaration, not a stream: it has
+                //  no state to resolve, so its stage keeps the blend.  MERGED
+                //  onto a resolved feed's stage it makes that stage's material
+                //  a mixture of two declarations, and `noteFeed` drops the
+                //  resolution rather than apply it to material it is not
+                //  about.  No corpus case does this.
+                noteFeed(st - 1, nullptr);
             }
     }
     // side draws:  sideDraws ( { stage k; phase liquid|vapor; rate ..; } ... )
@@ -2493,12 +2526,13 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         for (std::size_t j = 0; j < N; ++j)
         {
             if (Ffeed[j] <= 0.0) continue;
-            //  Where the feed's state was RESOLVED (the legacy single-feed
-            //  branch), price it at the equilibrium compositions -- the rule
-            //  `reporting/BalanceMath.H` prices the same stream by.  Every
-            //  other stage keeps the blend it has always used.
-            if (j == primaryFeedStage)
-                Hin += feedEnthalpy(primaryFeedState, Ffeed[j], feedT[j], P,
+            //  Where a stage's ONE feed was RESOLVED from its stream (both
+            //  branches), price it at the equilibrium compositions -- the
+            //  rule `reporting/BalanceMath.H` prices the same stream by.  A
+            //  stage holding an inline feed, or more than one feed, keeps
+            //  the blend at its merged q.
+            if (stageFeedState[j])
+                Hin += feedEnthalpy(*stageFeedState[j], Ffeed[j], feedT[j], P,
                                     zfeed[j], thermo, elem);
             else
                 Hin += H(Ffeed[j], feedT[j], 1.0 - qfeed[j], zfeed[j]);

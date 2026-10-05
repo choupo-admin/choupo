@@ -95,9 +95,12 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              `flashState::resolvedInletVaporFraction` and keeps no bare
              `lookupScalarOrDefault("vf"` beside it (comments stripped; the
              two named non-inlet reads in BARE_VF_ALLOWED excepted).  The
-             readers deliberately LEFT -- the distillation column (DEV.md §4d
-             D1, reserved), the electrodialysis stack, the isothermal flash's
-             own feed re-flash -- are the table in DEV.md C33.
+             distillation column joined on 2026-10-05 (DEV.md §4d D1, decided
+             by Vitor in C35), BOTH branches -- its single-feed `feed {}` and
+             its `feeds ( ... )` streams go through one resolver that ends in
+             this call.  The readers deliberately LEFT -- the electrodialysis
+             stack, the isothermal flash's own feed re-flash -- are the table
+             in DEV.md C33.
         (i2) OUTPUT: `inletState01_undeclared_vapour` feeds three undeclared
              superheated vapours to a valve, a mixer and a splitter.  The
              valve's T_out must equal its T_in within 0.5 K (an ideal-gas
@@ -235,6 +238,7 @@ INLET_READERS = [
     "reactor/PFR.cpp",
     "reactor/ConversionReactor.cpp",
     "distillation/ShortcutColumn.cpp",
+    "distillation/DistillationColumn.cpp",
     "heatTransfer/SprayDryer.cpp",
     "heatTransfer/SolidDryer.cpp",
     "heatTransfer/ConvectiveDryer.cpp",

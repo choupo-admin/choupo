@@ -8,9 +8,10 @@ Everything about that specification is ordinary.  The one line that is not is
 in the unit's third slot: **`model simultaneous;`**.
 
 The golden: **x_D = 0.8046** ethanol, **x_B = 0.8682** water, T_top
-**351.39 K**, T_bottom **357.71 K**, reboiler **935.61 kW**, condenser
+**351.39 K**, T_bottom **357.71 K**, reboiler **956.24 kW**, condenser
 **−952.97 kW**, and the plant-boundary first law closing at a residual of
-**0 kW**.
+**0 kW**.  The feed is a **saturated liquid at 354.42 K**, declared as one in
+`0/feed` (`phase liquid;` at its own bubble point).
 
 ## The lesson
 
@@ -35,7 +36,7 @@ The golden: **x_D = 0.8046** ethanol, **x_B = 0.8682** water, T_top
    `column01` separates benzene from toluene over **28.68 K** on fifteen
    stages.  Same kind of equipment, same kind of specification; the mixture
    is what collapsed the driving force, and the duties tell the same story —
-   935.61 kW of reboiler heat for a 25 kmol/h distillate.
+   956.24 kW of reboiler heat for a 25 kmol/h distillate.
 4. **The case asks for the profile, and the profile is where a column is
    read.**  `controlDict` declares `reports { streamTable massBalance
    profiles spreadsheet }`.  The `profiles` report prints T, x and y stage by
@@ -43,19 +44,22 @@ The golden: **x_D = 0.8046** ethanol, **x_B = 0.8682** water, T_top
    actually separating and how much of it is barely moving.  A column is
    specified in four numbers and understood in that table.
 
-5. **The run tells you something the answer does not, and it is worth
-   reading.**  Every execution of this case raises a validity notice about
-   the feed: it `is priced as LIQUID (vf = 0) at T = 363 K, P = 1.01325 bar,
-   but its own Rachford-Rice residual there is g(V=0) = 0.393227, i.e. it is
-   ABOVE its bubble point and cannot hold that label; the enthalpy priced for
-   it is missing (or inventing) that phase change.`  The case declares
-   `feedQuality 1.0` (a saturated liquid) and the MESH solves the stages from
-   that declaration, so the compositions above are what it asked for — but
-   the stream's own state at 363 K disagrees, and the enthalpy is where the
-   disagreement lands.  The plant boundary still closes at 0 kW, because the
-   same pricing is used on both sides of it.  Two things to take from that:
-   the engine announces rather than hides, and a balance that closes is not
-   the same as a balance that is right.
+5. **A feed's state is said once, by the stream.**  Until 2026-10-05 this
+   case said two things: `0/feed` put the feed at 363 K, and the column said
+   `feedQuality 1.0` (a saturated liquid).  At 363 K and 1 atm this mixture
+   is all vapour under the case's own NRTL (it boils at 354.42 K, and the
+   engine's own flash at 363 K finds V/F = 1), so the column priced a liquid
+   while the
+   energy report priced the vapour the stream is, and the plant boundary
+   carried a **1149.69 kW** residual -- the latent heat of the whole feed.
+   The engine now reads a feed by what it MEANS and refuses the
+   contradiction; the case was corrected to declare the saturated liquid it
+   was designed around, and the first law closes.  Two things to take from
+   that: a quantity with two homes will one day disagree with itself, and a
+   vapour feed is not a drop-in alternative here -- try deleting
+   `phase liquid;` and setting `T 363 K;` in `0/feed`: with q = 0 this
+   specification leaves the stripping section without vapour, and the MESH
+   says so by name.
 
 ## What to try
 

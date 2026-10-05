@@ -16,5 +16,11 @@ componentMolarFlows
     water    70 kmol/h;
 }
 
-T               363 K;
+//  A SATURATED LIQUID, said here and nowhere else: this case's NRTL puts
+//  the 30/70 bubble point at 354.4248 K (bubbleT on this stream), and the
+//  temperature is that rounded DOWN, so the stream's own equilibrium agrees
+//  with the pin.  It used to read 363 K, which this model makes a vapour --
+//  see the flowsheetDict header.
+T               354.42 K;
 P               101325 Pa;
+phase           liquid;

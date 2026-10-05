@@ -319,9 +319,12 @@ case/
   included -- never a produced one (column12's mixer writes the right vf at
   a fictitious T); since C34 (2026-10-04) every other inlet `vf` reader
   does too, EXCEPT those DEV.md C33's audited table leaves with a reason --
-  the distillation column (both branches, reserved with §4d D1), the
-  electrodialysis stack, and a two-phase authored inlet into a `mixer`
-  (kept carried and announced, a stated default).  Witness
+  the electrodialysis stack and a two-phase authored inlet into a `mixer`
+  (kept carried and announced, a stated default).  The distillation column
+  joined on 2026-10-05 (DEV.md §4d D1, decided in C35): both branches read
+  every stream feed by what it means, and `column03`/`acetone07`, whose
+  `feedQuality 1.0` beside a vapour T had hidden the latent heat of the
+  whole feed, now declare `phase liquid;` at their own bubble point.  Witness
   `inletState01_undeclared_vapour`, gate `check_inlet_resolution` (i).  The
   one-shot migrator is `bin/curate/migrate_overspecified_vf.py`.  Gate:
   `check_overspecified_stream`.  Record:
@@ -1184,14 +1187,16 @@ bands reach ONE sentence — and REFUSES a contradicting `feedQuality` naming bo
 numbers and both remedies with their values filled in.  Thirteen cases refused;
 eleven had the stream right and lost the dict key, two had only ever said it in
 the dict and now say it in the stream.  Every distillation case in the corpus
-closes its first law at 0.000000 kW except the two that are UNDIAGNOSED and
-stay pinned: `column04_multifeed_sidedraw` (-78.693876 kW) and
-`column08_radfrac_multidraw` (-891.980060 kW), both multi-feed with side draws,
-of which the fixes here explain only 1.6 and 2.1 kW.  Also NOT done, named
-rather than implied: the `simultaneous` MULTI-feed branch still reads each
-feed's DECLARED vf without resolving it (not live on today's corpus, and the
-two cases it would move are the two undiagnosed ones), and the WIDE route for
-the quality blend — making `H_stream_formation` itself flash, which is the true
+closes its first law at 0.000000 kW except the two that stay pinned:
+`column04_multifeed_sidedraw` (-78.693876 kW) and
+`column08_radfrac_multidraw` (-891.980060 kW), both multi-feed -- DIAGNOSED
+2026-10-05 and not a column defect: each residual is exactly -(Q_reboiler +
+Q_condenser), because the energy report files a unit with >= 2 process inlets
+and >= 2 outlets as an internal exchanger and drops its duties from the plant
+boundary (DEV.md §4d D1, found-not-fixed).  The `simultaneous` MULTI-feed
+branch has resolved each stream feed and priced a two-phase one at (x, y)
+since the same day.  Also NOT done, named rather than implied: the WIDE route
+for the quality blend — making `H_stream_formation` itself flash, which is the true
 one-home fix and whose blast radius nobody has measured.  412 golden rows moved
 across 28 cases, 0 added, 0 removed; nine entries left `check_energy_closure`'s
 KNOWN_OPEN.  Gate: `check_feed_thermal_state` (9 sabotages, all caught — and
