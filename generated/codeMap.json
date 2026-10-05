@@ -3043,6 +3043,9 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
@@ -4784,6 +4787,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/reporting/EnergyBalanceReport.cpp": [
@@ -4816,6 +4820,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/reporting/EnergyStreamsReport.cpp": [
@@ -4868,6 +4873,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/reporting/ModelBoundaryLedger.cpp": [
@@ -4900,6 +4906,7 @@
    "src/thermo/ThermoPackageBuilder.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/flowsheet/MemberFolder.H"
   ],
@@ -4988,6 +4995,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/reporting/StreamTableReport.cpp": [
@@ -5018,6 +5026,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/reporting/UtilitiesReport.cpp": [
@@ -6782,6 +6791,7 @@
    "src/unitOperations/distillation/DistillationColumn.H",
    "src/unitOperations/distillation/TrayHydraulics.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/saturation/BubblePoint.H"
   ],
@@ -6802,6 +6812,7 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/distillation/ShortcutColumn.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/saturation/BubblePoint.H"
   ],
@@ -6992,6 +7003,7 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/AdiabaticFlash.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/unitOperations/flash/IsothermalFlash.cpp": [
@@ -7024,6 +7036,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/unitOperations/flowsheet/Flowsheet.cpp": [
@@ -7078,6 +7091,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/flowsheet/Flowsheet.H",
    "src/unitOperations/flowsheet/MemberFolder.H",
@@ -7114,6 +7128,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/ConvectiveDryer.H",
    "src/unitOperations/heatTransfer/DryingCurve.H",
@@ -7184,6 +7199,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/Evaporator.H"
   ],
@@ -7250,6 +7266,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/MultiStreamHX.H"
   ],
@@ -7297,6 +7314,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/Psychrometry.H",
    "src/unitOperations/heatTransfer/SolidDryer.H"
@@ -7321,6 +7339,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/SprayDryer.H",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H"
@@ -7383,6 +7402,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/hydraulics/Pipe.H",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
@@ -7614,6 +7634,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/mixer/Mixer.H"
   ],
@@ -7632,6 +7653,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/mixer/Splitter.H"
   ],
@@ -7655,6 +7677,7 @@
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/CSTR.H",
    "src/unitOperations/reactor/CatalystPellet.H"
@@ -7679,6 +7702,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/ConversionReactor.H"
   ],
@@ -7744,6 +7768,7 @@
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/CatalystPellet.H",
    "src/unitOperations/reactor/PFR.H",
@@ -8282,6 +8307,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/storage/StorageTank.H"
   ],
@@ -8301,6 +8327,7 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/valve/Valve.H"
   ]
@@ -13684,6 +13711,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp"
   ],
   "src/unitOperations/flash/IsothermalFlash.H": [
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
@@ -13718,11 +13746,37 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/unitOperations/flash/PureSaturationPlateau.H": [
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/reporting/ElementBalanceReport.cpp",
+   "src/reporting/EnergyBalanceReport.cpp",
+   "src/reporting/MassBalanceReport.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
+   "src/reporting/SpreadsheetReport.cpp",
+   "src/reporting/StreamTableReport.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/ShortcutColumn.cpp",
+   "src/unitOperations/flash/AdiabaticFlash.cpp",
+   "src/unitOperations/flash/IsothermalFlash.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
+   "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
-   "src/unitOperations/heatTransfer/PhaseChanger.cpp"
+   "src/unitOperations/heatTransfer/MultiStreamHX.cpp",
+   "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
+   "src/unitOperations/heatTransfer/SprayDryer.cpp",
+   "src/unitOperations/hydraulics/Pipe.cpp",
+   "src/unitOperations/mixer/Mixer.cpp",
+   "src/unitOperations/mixer/Splitter.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/ConversionReactor.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/storage/StorageTank.cpp",
+   "src/unitOperations/valve/Valve.cpp"
   ],
   "src/unitOperations/flash/StreamEquilibrium.H": [
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
    "src/reporting/MassBalanceReport.cpp",
