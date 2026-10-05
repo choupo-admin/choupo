@@ -110,6 +110,9 @@ public:
     }
 
 private:
+    // `qInPinned` (both geometry modes): the quality a PURE two-phase feed
+    // DECLARES, or -1 -- its pin is its state (C36 item 3), read in solve().
+    //
     // The `model geometry;` resolution: a film-condensation HTC drives the
     // duty from the surface geometry + a coolant (the wall-T inner iteration),
     // instead of one of the six outlet-coordinate specs.  v1 = FILM
@@ -118,7 +121,7 @@ private:
                       const ThermoPackage& thermo,
                       int verbosity,
                       scalar F, scalar T_in, scalar P_in, scalar P_out,
-                      const sVector& z);
+                      const sVector& z, scalar qInPinned = -1.0);
 
     // The `model geometry;` BOILING branch: a Rohsenow nucleate-boiling flux
     // (with a student-supplied surface-fluid C_sf + citation) drives the duty
@@ -129,7 +132,7 @@ private:
                              const ThermoPackage& thermo,
                              int verbosity,
                              scalar F, scalar T_in, scalar P_in, scalar P_out,
-                             const sVector& z);
+                             const sVector& z, scalar qInPinned = -1.0);
 
     inline static const std::string type_ = "phaseChanger";
     std::vector<ProcessStream>      produced_;

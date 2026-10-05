@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 456,
+  "cases": 457,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -5211,6 +5211,21 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/heat/heatExchanger03_pure_water_plateau": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger",
+    "heater"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/heat/heatlink01_condenser_to_heater": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7067,6 +7082,7 @@
     "tutorials/steady/heat/coolingTower01_merkel",
     "tutorials/steady/heat/heatExchanger01_water_water",
     "tutorials/steady/heat/heatExchanger02_geometry_U",
+    "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
@@ -7513,6 +7529,7 @@
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/heat/heatExchanger01_water_water",
     "tutorials/steady/heat/heatExchanger02_geometry_U",
+    "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/power/combined01_brayton_rankine",
@@ -7528,6 +7545,7 @@
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
     "tutorials/steady/flowsheets/process02_reactor_hx_flash",
     "tutorials/steady/flowsheets/process02_with_design",
+    "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
@@ -8162,6 +8180,7 @@
     "tutorials/steady/heat/coolingTower01_merkel",
     "tutorials/steady/heat/heatExchanger01_water_water",
     "tutorials/steady/heat/heatExchanger02_geometry_U",
+    "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",

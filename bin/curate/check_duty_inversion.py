@@ -84,20 +84,78 @@ Sabotage 2 -- the announcement removed from the sensible fall-back:
 
 Restoring returns every arm to silence.
 
+ARMS (f)-(h), 2026-10-05 (DEV.md §4c C36 item 3) -- A PURE STREAM ON ITS
+SATURATION PLATEAU.  For one component H(T) jumps by the whole latent heat
+at Tsat(P), so a target enthalpy inside the jump has no root in T: the
+exchanger's bisection closed onto Tsat and published the nearer single
+phase, short of its duty (`utility02_hitec_csp_heater` at 40 bar, 3.06 kW).
+The witness `heatExchanger03_pure_water_plateau` puts BOTH sides of one
+exchanger inside their jumps (100 bar steam partly condensing, 40 bar
+feedwater partly boiling) and then a `heater` on the wet steam, whose inlet
+is the exchanger's PINNED plateau outlet and whose target lands inside the
+jump again.
+
+  (f) each exchanger outlet leaves with 0 < vf < 1 at T = Tsat(P), the
+      latter RECOMPUTED here from the case's own Antoine record (never read
+      off the engine), each side's published dH equals the duty to 1e-4 kW,
+      and the unit's own `H_closure_gap_kW` is <= 1e-4 kW;
+  (g) the heater's outlet is on the plateau too (0 < vf_out < 1, T_out ==
+      T_in) and its published dH equals Q to 1e-4 kW;
+  (h) the energy report leaves <= 1e-4 kW unattributed on either unit.
+
+SABOTAGE-VERIFIED 2026-10-05, by hand, sources restored byte-identical and
+rebuilt (`make all`) after each; OBSERVED output:
+
+Sabotage 4 -- the exchanger's plateau disabled (the target shifted out of
+the plateau test, `Htarget + 1.0e12`):
+
+    boilerHX outlet 'wetSteam' vf = 1 -- ... must leave ON the plateau
+    boilerHX side 'steam' -> 'wetSteam' changes H by -130.728458 kW against
+      a duty of -172.897340 kW
+    boilerHX outlet 'wetFeed' vf = 1 -- ...
+    boilerHX side 'feedwater' -> 'wetFeed' changes H by 1065.534373 kW
+      against a duty of 172.897340 kW
+    boilerHX.H_closure_gap_kW = 934.805914829
+    the energy report leaves 934.8059 kW unattributed on 'boilerHX'
+
+  Worth knowing: the defect does not always fall SHORT.  The side at Tsat
+  is labelled by whichever side of the curve the last digits of T select,
+  and here both read VAPOUR -- the feedwater "boiled" completely and was
+  credited 892.6 kW it never received.
+
+Sabotage 5 -- the exchanger's outlet pin dropped (`phasePinned = false` on
+both outlets; the vapour fraction is still written):
+
+    trimCooler changes H by -457.831119 kW against Q = -500 kW
+    the energy report leaves 42.1689 kW unattributed on 'trimCooler'
+
+  The exchanger itself still closes -- its own arms PASS -- because a pin is
+  for the READER: the heater re-resolved its inlet at (T, P, z), got one side
+  of the curve, and inverted from the wrong enthalpy.  Only (g)/(h) see it.
+
+Sabotage 6 -- the heater ignores its inlet's pin (`pinnedPureQuality`
+replaced by an empty optional): the same two lines as sabotage 5, to the
+digit -- the two ends of one contract, caught by the same arms.
+
 WHAT THIS DOES NOT CHECK, said plainly:
   * Whether T_out is RIGHT in absolute terms.  The first law fixes the
     outlet ENTHALPY; the temperature that enthalpy corresponds to is only as
     good as the vapour-pressure and Cp records behind it.  That is each
     case's golden, and no golden here is validated against measurement.
-  * Any unit other than `heater`.  `heatExchanger` (eps-NTU) reaches its
-    outlet temperatures from UA and a sensible Cp by the METHOD's own
-    definition, and is a separate question -- see the sibling survey in the
-    commit that added this gate.
+  * Any unit other than `heater`, EXCEPT the exchanger's pure-plateau
+    outlet of arms (f)/(h).  The exchanger's DUTY still comes from eps-NTU
+    on a sensible Cp, by the method's own definition; since 2026-09-08 its
+    outlet STATE is inverted from the enthalpy, and only the plateau half of
+    that inversion is held here.  `phaseChanger` tests its plateau before
+    any search and has no jump to land on; its plateau ENDS share the
+    exchanger's home (`flash/PureSaturationPlateau.H`) and are held by its
+    own cases' goldens, not by this gate.
   * The `cooler` direction beyond what process02 and the pseudo-component
     case exercise.  `cooler` is not a distinct unit: it is this same code
     with Q < 0, so it is fixed and broken by the same line.
 """
 import json
+import math
 import pathlib
 import re
 import shutil
@@ -116,6 +174,16 @@ SINGLE_PHASE = "tutorials/steady/thermo/air01_heater_expand"
 SINGLE_PHASE_UNIT = "airHeater"
 
 NO_DATUM = "tutorials/steady/flash/flash_pseudoComponent_petCut"
+
+#  (f)-(h): a PURE stream whose target enthalpy lies inside its latent jump
+#  (C36 item 3, 2026-10-05).
+PLATEAU = "tutorials/steady/heat/heatExchanger03_pure_water_plateau"
+PLATEAU_HX = "boilerHX"
+PLATEAU_HX_SIDES = (("steam", "wetSteam"), ("feedwater", "wetFeed"))
+PLATEAU_HEATER = "trimCooler"
+PLATEAU_HEATER_IN, PLATEAU_HEATER_OUT = "wetSteam", "condensate"
+PLATEAU_KW = 1.0e-4     # a unit on the plateau must close to this, in kW
+PLATEAU_TSAT_K = 1.0e-6 # T_out against Tsat(P) recomputed from the record
 
 BAND_PCT = 0.5          # closure, percentage points around 100
 BAND_KW_REL = 5.0e-3    # cross-check of the two publication paths
@@ -155,6 +223,23 @@ def closure(case: pathlib.Path, unit: str):
             except ValueError:
                 return None
     return None
+
+
+def antoine_tsat(case: pathlib.Path, component: str, P_Pa: float):
+    """Tsat(P) [K] from the case's OWN Antoine record, recomputed here, never
+    read off the engine: log10(P/bar) = A - B/(T + C).  None if the record
+    does not carry that form."""
+    rec = case / "constant" / "components" / (component + ".dat")
+    if not rec.is_file() or P_Pa <= 0.0:
+        return None
+    txt = rec.read_text()
+    m = re.search(r"vaporPressure\s*\{[^}]*model\s+Antoine\s*;[^}]*"
+                  r"coefficients\s*\(\s*([-+0-9.eE]+)\s+([-+0-9.eE]+)\s+"
+                  r"([-+0-9.eE]+)\s*\)", txt, re.S)
+    if not m:
+        return None
+    A, B, C = (float(g) for g in m.groups())
+    return B / (A - math.log10(P_Pa / 1.0e5)) - C
 
 
 def main() -> int:
@@ -246,6 +331,104 @@ def main() -> int:
                         "change -- and it did not SAY so.  A gap the engine "
                         "does not announce is a gap the reader cannot find.")
 
+        # ---- (f) (g) (h) a pure stream ON its saturation plateau ----------
+        pl = tmp / pathlib.Path(PLATEAU).name
+        shutil.copytree(ROOT / PLATEAU, pl)
+        rc, log = run(pl)
+        res = result(log) if rc == 0 else None
+        if rc != 0 or res is None:
+            fail.append(f"{pl.name}: run failed (rc={rc}) or published no "
+                        "result block")
+        else:
+            s = res.get("streams", {})
+            kx = res.get("kpis", {}).get(PLATEAU_HX, {})
+            kh = res.get("kpis", {}).get(PLATEAU_HEATER, {})
+            q = kx.get("Q_kW")
+            # (f) the exchanger: both outlets ON the plateau, at Tsat(P), and
+            #     each side delivering exactly the duty
+            for side, (sin, sout) in enumerate(PLATEAU_HX_SIDES):
+                if sin not in s or sout not in s or q is None:
+                    fail.append(f"{pl.name}: '{sin}'/'{sout}' or {PLATEAU_HX}"
+                                ".Q_kW not published -- the claim cannot be "
+                                "read")
+                    continue
+                o = s[sout]
+                if not (1.0e-6 < o.get("vf", -1.0) < 1.0 - 1.0e-6):
+                    fail.append(f"{pl.name}: {PLATEAU_HX} outlet '{sout}' "
+                                f"vf = {o.get('vf')} -- a pure stream whose "
+                                "target lies inside its latent jump must "
+                                "leave ON the plateau (0 < vf < 1), not as "
+                                "the nearer single phase")
+                tsat = antoine_tsat(pl, "water", o.get("P", 0.0))
+                if tsat is None:
+                    fail.append(f"{pl.name}: cannot recompute Tsat from the "
+                                "case's water record (Antoine form)")
+                elif abs(o.get("T", 0.0) - tsat) > PLATEAU_TSAT_K:
+                    fail.append(f"{pl.name}: '{sout}' T = {o.get('T')} K, "
+                                f"but Tsat(P) from the record is {tsat:.6f} "
+                                "K -- on the plateau the temperature IS Tsat")
+                dH = o["H_kW"] - s[sin]["H_kW"]
+                want = -q if side == 0 else q
+                if abs(dH - want) > PLATEAU_KW:
+                    fail.append(f"{pl.name}: {PLATEAU_HX} side '{sin}' -> "
+                                f"'{sout}' changes H by {dH:.6f} kW against "
+                                f"a duty of {want:.6f} kW -- short by the "
+                                "unboiled (or uncondensed) fraction's latent "
+                                "heat")
+            gap = kx.get("H_closure_gap_kW")
+            if gap is None or abs(gap) > PLATEAU_KW:
+                fail.append(f"{pl.name}: {PLATEAU_HX}.H_closure_gap_kW = "
+                            f"{gap} -- the unit must close in H to "
+                            f"{PLATEAU_KW} kW")
+            # (g) the heater: its inlet is the exchanger's PINNED plateau
+            #     outlet, and its outlet lands on the plateau again
+            if PLATEAU_HEATER_IN in s and PLATEAU_HEATER_OUT in s and kh:
+                vo = kh.get("vf_out", -1.0)
+                if not (1.0e-6 < vo < 1.0 - 1.0e-6):
+                    fail.append(f"{pl.name}: {PLATEAU_HEATER} vf_out = {vo} "
+                                "-- its target lies inside the jump too")
+                if abs(kh.get("T_out", 0.0) - kh.get("T_in", 1.0)) > \
+                        PLATEAU_TSAT_K:
+                    fail.append(f"{pl.name}: {PLATEAU_HEATER} moved T from "
+                                f"{kh.get('T_in')} to {kh.get('T_out')} K -- "
+                                "on the plateau only the quality changes")
+                dH = (s[PLATEAU_HEATER_OUT]["H_kW"]
+                      - s[PLATEAU_HEATER_IN]["H_kW"])
+                if abs(dH - kh.get("Q_kW", float("nan"))) > PLATEAU_KW \
+                        or kh.get("Q_kW") is None:
+                    fail.append(f"{pl.name}: {PLATEAU_HEATER} changes H by "
+                                f"{dH:.6f} kW against Q = {kh.get('Q_kW')} kW")
+            else:
+                fail.append(f"{pl.name}: {PLATEAU_HEATER} or its streams not "
+                            "published")
+            # (h) the REPORT prices the same states: every unit's remaining
+            #     imbalance <= PLATEAU_KW (a pin dropped between the two units
+            #     shows up here, as the heater's inlet priced on one side of
+            #     the curve)
+            f = pl / "reports" / "balances" / "energyBalance_byUnit.csv"
+            rows = {}
+            if f.is_file():
+                lines = f.read_text().split("\n\n")[0].splitlines()
+                hdr = [c.strip() for c in lines[0].split(",")] if lines else []
+                for line in lines[1:]:
+                    p = [c.strip() for c in line.split(",")]
+                    if len(p) == len(hdr):
+                        rows[p[0]] = dict(zip(hdr, p))
+            for unit in (PLATEAU_HX, PLATEAU_HEATER):
+                r = rows.get(unit)
+                try:
+                    rem = float(r["remaining_kW"]) if r else None
+                except (KeyError, ValueError):
+                    rem = None
+                if rem is None:
+                    fail.append(f"{pl.name}: no '{unit}' row with a "
+                                "remaining_kW in energyBalance_byUnit.csv")
+                elif abs(rem) > PLATEAU_KW:
+                    fail.append(f"{pl.name}: the energy report leaves "
+                                f"{rem} kW unattributed on '{unit}' -- the "
+                                "report and the unit price the plateau "
+                                "state differently")
+
     if fail:
         print("check_duty_inversion: FAILED")
         for f in fail:
@@ -258,9 +441,16 @@ def main() -> int:
           "stream enthalpies agree with the unit's declared Q, a single-phase "
           "gas heater is left exactly single-phase, and a case with no "
           "elements-datum enthalpy ANNOUNCES that its sensible inversion "
-          "cannot see a phase change.  NOT CHECKED: whether T_out is right in "
+          "cannot see a phase change; and a PURE stream whose target lies "
+          "inside its latent jump (heatExchanger03: a 100 bar partial "
+          "condenser and a 40 bar boiler in one exchanger, then a heater) "
+          "leaves ON its plateau -- 0 < vf < 1 at Tsat(P) recomputed from the "
+          f"case's own Antoine record to {PLATEAU_TSAT_K} K -- with each side "
+          f"and the heater delivering its duty to {PLATEAU_KW} kW and the "
+          "energy report agreeing.  NOT CHECKED: whether T_out is right in "
           "absolute terms (the first law fixes the outlet ENTHALPY, not the "
-          "records behind the temperature), and no unit other than `heater`.")
+          "records behind the temperature), `phaseChanger` (it tests its "
+          "plateau first and has no jump to land on), and a mixture.")
     return 0
 
 

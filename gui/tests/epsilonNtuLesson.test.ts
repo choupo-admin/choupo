@@ -171,9 +171,12 @@ describe("the design consequence, and the honest half", () => {
   });
 
   it("does not let the C_r = 0 curve be mistaken for a phase change the unit models", () => {
-    //  HeatExchanger.cpp changes T only -- F, z, P and vf pass through, and
-    //  c_p is read from the declared phase.  So the chart's C_r = 0 line is
-    //  reachable on the plot and NOT by boiling a stream in this unit.
+    //  HeatExchanger.cpp forms its DUTY from sensible capacity rates, c_p
+    //  read from the declared phase; the outlet state is inverted from the
+    //  enthalpy afterwards (vf a result since 2026-09-08, a pure stream's
+    //  plateau quality pinned since C36).  So the chart's C_r = 0 line is
+    //  reachable on the plot and NOT by boiling a stream in this unit's
+    //  eps-NTU.
     const l = ENTU_LIMITS.find((x) => x.id === "sensible-only")!;
     expect(prose(l.body)).toContain("is not something this unit solves");
     expect(prose(l.body)).toContain("starving one side's flow");
@@ -190,7 +193,7 @@ describe("the design consequence, and the honest half", () => {
     expect(prose(byId["no-pressure-drop"]!.body))
       .toContain("reported and not applied");
     //  The unit reads `flow` as a word from a CLOSED set and REFUSES
-    //  anything else by name (HeatExchanger.cpp:97-105).  The page claimed
+    //  anything else by name (HeatExchanger.cpp:109-117).  The page claimed
     //  the opposite -- that an unknown word falls back to counter-current
     //  silently -- describing behaviour deliberately removed from the
     //  engine, and this test pinned the stale wording verbatim, which is
