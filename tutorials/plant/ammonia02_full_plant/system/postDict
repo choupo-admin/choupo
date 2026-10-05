@@ -32,9 +32,17 @@
   WHAT STAGE OF DESIGN THIS IS, said where a reader audits rather than left to
   be inferred.  The economics block declares `estimateClass 4` -- AACE 18R-97's
   STUDY OR FEASIBILITY class, 1-15 % of complete project definition, method
-  "equipment factored or parametric".  The converter's 80 m3 is exactly that
-  method: a SPACE VELOCITY (~20000 Nm3/m3/h at a world-scale rate) applied to
-  this flowsheet's own throughput.  It is the first of the three volumes a
+  "equipment factored or parametric".  The converter's 80 m3 stands for that
+  method -- a SPACE VELOCITY applied to a throughput -- but it is TYPED, not
+  derived, and this paragraph used to say it was ~20000 Nm3/(m3 h) applied to
+  this flowsheet's own throughput.  MEASURED 2026-10-05, it is not: 80 m3 at
+  this run's own converter inlet (N_in_mol_s 11262.46 mol/s, 0 degC / 1 atm
+  ideal gas) is 11 360 Nm3/(m3 h) -- 10 388 on the outlet -- so the old
+  sentence overstated the space velocity by 1.76x.  The volume is left as it
+  is (changing it moves this case's cost golden, which is Vitor's call); the
+  engine-visible way to declare the rule is `spaceVelocity` with
+  `spaceVelocityBasis normal;`, as `ammoniaStaged03_approach` does, and at
+  20000 Nm3/(m3 h) that rule would give 45.4 m3.  It is the first of the three volumes a
   converter gets in a real project -- space velocity at feasibility, an
   integrated rate law with an effectiveness factor at FEED, a licensor's
   guaranteed charge at detailed design -- and it is enough to cost a vessel and
@@ -72,8 +80,10 @@ sizing
           designRules { U 700.0;  LMTD 60.0;   pressureDesign 200.0; } }
 
         // The CONVERTER: a high-pressure catalyst vessel.  Catalyst+internals
-        // volume ~80 m3 (from an ammonia space velocity ~20000 Nm3/m3/h at a
-        // world-scale rate); sized as a tall thick-wall vessel at 220 bar.
+        // volume 80 m3, AUTHOR-SET -- at this run's inlet flow it is a space
+        // velocity of 11 360 Nm3/(m3 h), not the ~20000 this comment used to
+        // claim (measured 2026-10-05; see the header).  Sized as a tall
+        // thick-wall vessel at 220 bar.
         { unitName converter;   type vessel;  material SS316;
           designRules { volume 80.0;  L_over_D 6.0;  pressureDesign 220.0;
                         corrosionAllow 0.004; } }

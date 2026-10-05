@@ -160,7 +160,7 @@ Sizing and costing (`system/postDict`):
 
 | item | size | basis the engine recorded | C_BM | C_TM |
 |---|---|---|---|---|
-| converter | V_R = **18.6290 m³**, D 1.5812 m, H 9.4871 m, wall 142.37 mm, 53 674 kg | `catalyst V = Q/SV` | 4 204 147 € | 4 960 893 € |
+| converter | V_R = **18.6290 m³**, D 1.5812 m, H 9.4871 m, wall 142.37 mm, 53 674 kg | `catalyst V = Q_normal/SV; SV declared on NORMAL gas volume …` | 4 204 147 € | 4 960 893 € |
 | separator | V_R = 11.7916 m³ | `drum V = Q*tau` | 3 292 176 € | 3 884 768 € |
 | let-down drum | V_R = 0.5288 m³ | `drum V = Q*tau` | 21 410 € | 25 264 € |
 | **total** | | | **7 517 733 €** | **8 870 925 €** |
@@ -175,19 +175,22 @@ engine does not pre-determine a single band for a class.  Read it there.
 
 ## 4. Why the converter's volume is a RULE, not a number
 
-`tutorials/plant/ammonia02_full_plant` and
-`tutorials/plant/greenAmmoniaIndustrialN2` both size this converter with
-a `designRules` block carrying a literal `volume` and put the provenance in a `//` comment beside
-it.  The design sheet then records the basis as `"volume (author-set)"` and
+`tutorials/plant/ammonia02_full_plant` sizes this converter with a
+`designRules` block carrying a literal `volume` and puts the provenance in a
+`//` comment beside it (the flagship `greenAmmoniaIndustrialN2` did the same
+until 2026-10-02, when its sizing and costing chain left the base case).
+Measured 2026-10-05: that comment says ~20 000 Nm³/(m³·h) while its own 80 m³
+at its own converter inlet is **11 360** Nm³/(m³·h) — a factor of 1.76 that
+no reader could see from the comment.  The design sheet then records the basis as `"volume (author-set)"` and
 says nothing about a space velocity, because there is nothing about a space
 velocity for it to read.  **A fact a reader must act on, living in a comment,
 is a fact no reader and no gate can check.**
 
-This case declares the rule instead, in grammar the engine already parses
-(`src/postProcessing/sizing/VesselSize.cpp:83-85`):
+This case declares the rule instead, in grammar the engine parses
+(`src/postProcessing/sizing/VesselSize.cpp`, the `spaceVelocity` branch):
 
 ```
-designRules { spaceVelocity 259.665;   flowKey N_in_mol_s;  ... }
+designRules { spaceVelocity 20000;  spaceVelocityBasis normal;  flowKey N_in_mol_s;  ... }
 ```
 
 so the volume becomes an engine **output** computed from this run's own
@@ -195,7 +198,7 @@ converter throughput, and the rule travels into the specification sheet at
 `design/converter/vessel`:
 
 ```
-basis       "catalyst V = Q/SV";
+basis       "catalyst V = Q_normal/SV; SV declared on NORMAL gas volume (273.15 K, 101325 Pa, ideal gas) of the flow KPI N_in_mol_s";
 ...
 assumed     ( corrosionAllow jointEfficiency );
 ```
@@ -212,31 +215,38 @@ number this case chose and a number the engine chose.  This is the one case in
 the corpus whose subject is that distinction, so it exercises it rather than
 silencing it.
 
-### The basis trap in `spaceVelocity` — a finding, not a workaround
+### The basis of a space velocity — declared, because the engine will not guess it
 
-`VesselSize` builds Q_gas as `N·R·T/P` **at the unit's own (T, P)**, so its
-`spaceVelocity` is on *actual* gas volume and `[1/h]` is the honest unit.
-**Every space velocity in the ammonia literature is quoted on normal or
-standard gas volume** — Nm³ of gas per m³ of catalyst per hour.  At these
-conditions the two differ by
+**Every space velocity in the ammonia literature is quoted on normal gas
+volume** — Nm³ of gas per m³ of catalyst per hour.  Read on *actual* gas
+volume at this converter's own 700 K and 200 bar, the same number sizes a bed
+smaller by
 
 ```
 Q_normal / Q_actual = (273.15 K × 2.0e7 Pa) / (101 325 Pa × 700 K) = 77.022
 ```
 
-so typing an industrial GHSV straight into this key under-sizes the bed by a
-factor of 77, **at exit 0, with a plausible-looking volume and every balance
-closing**.  The engine has no grammar for declaring which basis a space
-velocity is on, and nothing in it can detect the substitution.  That is
-recorded here and reported; no key was invented, because a key the engine does
-not read is a comment.
-
-The value declared is therefore stated in the engine's own basis, with the
-arithmetic in the open:
+Until 2026-10-05 `VesselSize` divided the **actual** flow by whatever number
+was typed, so an industrial GHSV typed straight in under-sized the bed 77×
+**at exit 0, with a plausible-looking volume and every balance closing**; this
+case carried the number pre-converted by hand (259.665 h⁻¹) and a warning not
+to copy it.  The basis is now a word the sizer reads —
+`spaceVelocityBasis normal;` (Nm³ at 273.15 K and 101 325 Pa, ideal gas) or
+`spaceVelocityBasis actual;` (m³ at the unit's own T and P) — and a
+`spaceVelocity` with no basis, or with any other word (`standard` included:
+15, 20 or 25 °C at 1 bar or 1 atm, depending on who says it), is **refused by
+name**, the refusal quoting the ratio at the unit's own conditions.  The run
+prints the conversion beside the volume it produced:
 
 ```
-20 000 Nm³/(m³·h) ÷ 77.022 = 259.665 h⁻¹   (actual gas, 700 K, 200 bar)
+[basis] vessel 'converter': spaceVelocity 20000 1/h on NORMAL gas volume; at (700 K, 200 bar)
+        that is 259.665 1/h on ACTUAL gas (normal/actual = 77.02) -> V = 18.629 m3
 ```
+
+The normal reference has ONE home (`core/Constants.H`, `T_normal` /
+`P_normal`), which stage D's PFR also reads for its `GHSV_normal_h` KPI — so
+this case's assumed 20 000 and stage D's computed value are on one basis by
+construction.
 
 **Where 20 000 Nm³/(m³·h) comes from: it is a declared assumption.**  Those are
 the words.  The only primary source retrieved that states a range is

@@ -3752,6 +3752,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -9796,6 +9797,7 @@
   ],
   "src/core/RegistryRefusal.H": [
    "src/core/RegistryRefusal.cpp",
+   "src/postProcessing/sizing/VesselSize.cpp",
    "src/solver/ODE/ODEIntegrator.cpp",
    "src/streams/UtilityCircuit.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",

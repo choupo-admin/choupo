@@ -55,4 +55,18 @@ constexpr scalar bar_to_Pa  = 1.0e5;
 constexpr scalar Pa_to_bar  = 1.0e-5;
 constexpr scalar atm_to_bar = 1.01325;
 
+// -- NORMAL gas volume (Nm3) ---------------------------------------------------
+//  The reference a "normal cubic metre" is measured at: 0 degC and 1 atm, the
+//  gas taken as IDEAL, so one mole occupies R*T_normal/P_normal = 22.414 L.
+//  It is a CONVENTION a quoted number carries, not a property of any gas, and
+//  it is the one every published space velocity (GHSV, Nm3 of gas per m3 of
+//  catalyst per hour) is stated on.  ONE home: the PFR's `GHSV_normal_h` KPI
+//  and the vessel sizer's `spaceVelocityBasis normal;` both read it here, so
+//  the KPI a reader sets beside a datasheet and the rule a case sizes a bed
+//  with cannot drift onto two different references.  "Standard" conditions
+//  are NOT this: they are 15, 20 or 25 degC at 1 bar or 1 atm depending on
+//  the source, which is why the sizer accepts no word `standard`.
+constexpr scalar T_normal   = 273.15;      // [K]
+constexpr scalar P_normal   = 101325.0;    // [Pa] 1 atm
+
 } // namespace Choupo::constant

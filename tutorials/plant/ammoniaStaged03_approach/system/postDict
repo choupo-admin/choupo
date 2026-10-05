@@ -23,10 +23,11 @@
   must act on, living in a comment, is the shape this project has now found
   five times.
 
-  This case declares the RULE instead, in grammar the engine already parses
-  (`src/postProcessing/sizing/VesselSize.cpp:83-85`):
+  This case declares the RULE instead, in grammar the engine parses
+  (`src/postProcessing/sizing/VesselSize.cpp`, the `spaceVelocity` branch):
 
-      spaceVelocity  ->  V = Q_gas / SV      basis "catalyst V = Q/SV"
+      spaceVelocity + spaceVelocityBasis  ->  V = Q_basis / SV
+      basis "catalyst V = Q_normal/SV; SV declared on NORMAL gas volume ..."
 
   so the volume becomes an ENGINE OUTPUT computed from this run's own
   converter throughput, the rule reaches `design/<unit>/<tag>` in the sheet's
@@ -37,30 +38,39 @@
   smaller because four moles become two.
 
   =========================================================================
-  THE BASIS OF THE NUMBER, AND THE TRAP IN IT -- READ THIS BEFORE COPYING
+  THE BASIS OF THE NUMBER -- DECLARED, BECAUSE THE ENGINE WILL NOT GUESS IT
   =========================================================================
-  `VesselSize` builds Q_gas as `N * R * T / P` at THE UNIT'S OWN (T, P) --
-  700 K and 200 bar here.  So its `spaceVelocity` is on ACTUAL gas volume,
-  and `[1/h]` is the honest unit for it.
-
-  EVERY SPACE VELOCITY IN THE AMMONIA LITERATURE IS QUOTED ON NORMAL OR
-  STANDARD GAS VOLUME -- Nm3 of gas per m3 of catalyst per hour.  Typing an
-  industrial GHSV straight into this key is wrong by the density ratio, which
-  at these conditions is
+  EVERY SPACE VELOCITY IN THE AMMONIA LITERATURE IS QUOTED ON NORMAL GAS
+  VOLUME -- Nm3 of gas per m3 of catalyst per hour.  The same number read on
+  ACTUAL gas volume, at this converter's own 700 K and 200 bar, sizes a bed
+  smaller by the density ratio
 
       Q_normal / Q_actual = (T_n * P_r) / (P_n * T_r)
                           = (273.15 K * 2.0e7 Pa) / (101325 Pa * 700 K)
                           = 77.022
 
-  -- a factor of 77, at exit 0, producing a plausible-looking volume.  The
-  engine has no grammar for declaring which basis a space velocity is on, and
-  nothing in it can detect the substitution.  That is a finding, recorded
-  here and reported, not worked around.
+  -- a factor of 77, and it used to be taken at exit 0 with a plausible
+  volume: until 2026-10-05 `VesselSize` divided the ACTUAL flow by whatever
+  was typed, so this file carried the number pre-converted by hand
+  (259.665 1/h) and a paragraph warning the next author not to copy it.  The
+  basis is now a WORD the sizer reads:
 
-  So the value below is stated in THE ENGINE'S OWN BASIS and the arithmetic
-  that produced it is here rather than in a reader's head:
+      spaceVelocityBasis normal;   Nm3 at 273.15 K and 101325 Pa, ideal gas
+      spaceVelocityBasis actual;   m3 at the unit's own T and P, ideal gas
 
-      20000 Nm3/(m3.h)  /  77.022  =  259.665 h^-1   (actual gas, 700 K, 200 bar)
+  and a `spaceVelocity` with no basis, or with any other word (`standard`
+  included -- 15, 20 or 25 degC at 1 bar or 1 atm, depending on who says
+  it), is REFUSED by name, the refusal quoting the ratio at the unit's own
+  conditions.  So the number below is the one the literature quotes, and
+  the run prints the conversion beside the volume it produced:
+
+      [basis] vessel 'converter': spaceVelocity 20000 1/h on NORMAL gas
+              volume; at (700 K, 200 bar) that is 259.665 1/h on ACTUAL gas
+
+  The sheet's `basis` field says NORMAL in words.  Stage D's PFR publishes
+  its own `GHSV_normal_h` KPI on the SAME reference (both read
+  `core/Constants.H`'s T_normal / P_normal), so C's assumed 20000 and D's
+  computed value are on one basis by construction.
 
   WHERE 20000 Nm3/(m3.h) COMES FROM: IT IS A DECLARED ASSUMPTION.  Those are
   the words.  The only primary source retrieved for this case that states a
@@ -112,7 +122,8 @@ sizing
     (
         //  THE CONVERTER.  The volume is NOT here; the RULE is.
         { unitName converter;  type vessel;  material SS316;
-          designRules { spaceVelocity 259.665;      // 1/h, ACTUAL gas at 700 K / 200 bar
+          designRules { spaceVelocity 20000;        // 1/h, Nm3 gas / (m3 catalyst h) -- ASSUMED, see above
+                        spaceVelocityBasis normal;  // the basis the number is quoted on
                         flowKey N_in_mol_s;         // GHSV is on the INLET gas
                         L_over_D 6.0;
                         pressureDesign 220.0; } }

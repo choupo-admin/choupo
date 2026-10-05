@@ -1164,10 +1164,10 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
 
         //  Space velocity on the NORMAL basis every published ammonia GHSV
         //  uses: cubic metres of gas at 0 degC and 1 atm, as an ideal gas
-        //  (R T_n / P_n per mole -- a convention, computed, not typed), per
-        //  cubic metre of bed per hour.  Stage C's `spaceVelocity` is on the
-        //  ACTUAL gas volume; this KPI is the one to set beside a datasheet.
-        const scalar Vn_m3_per_mol = constant::R * 273.15 / units::atm_to_Pa;
+        //  (R T_n / P_n per mole, the ONE home in core/Constants.H), per
+        //  cubic metre of bed per hour -- the basis stage C's vessel sizer
+        //  DECLARES (`spaceVelocityBasis normal;`), so the two compare.
+        const scalar Vn_m3_per_mol = constant::R * constant::T_normal / constant::P_normal;
         kpis_["GHSV_normal_h"] = F_in * Vn_m3_per_mol * 3600.0 / V_R;
 
         //  Residence time on the ACTUAL inlet gas, priced by the package's own
