@@ -3548,7 +3548,11 @@ int Flowsheet::solve(const DictPtr& dict,
     //  producer on every pass.  Measured on vlle03 under a datum: the
     //  vapour-liquid search read its feed as ONE liquid where the unit finds
     //  a vapour and two liquids, and the duty charged 186.48 kW to an
-    //  identity operation.
+    //  identity operation.  ONLY a stream that means its own equilibrium is
+    //  stamped: an AUTHORED inlet, or one a three-phase search published.
+    //  A heater's or a mixer's outlet keeps the vapour-liquid state its
+    //  producer priced (DEV.md C37 item 4, `flashState::
+    //  consumerSearchApplies`).
     {
         std::map<std::string, DictPtr> unitDictOf;
         for (const auto& u : units)
@@ -3562,6 +3566,9 @@ int Flowsheet::solve(const DictPtr& dict,
             {
                 auto st = streams_.find(in);
                 if (st == streams_.end()) continue;
+                //  A produced stream keeps its producer's answer unless a
+                //  three-phase search published it (DEV.md C37 item 4).
+                if (!flashState::consumerSearchApplies(st->second)) continue;
                 if (IsothermalFlash::inletEquilibriumOptions(
                         ud->second, thermo, st->second.T, st->second.P,
                         st->second.z))

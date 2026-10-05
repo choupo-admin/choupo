@@ -1703,9 +1703,16 @@ int IsothermalFlash::solve(const DictPtr& dict,
             : true;
         //  The search this unit resolves its feed with when it is richer than
         //  vapour-liquid (a `phaseSet VLLE` unit) -- the SAME call the energy
-        //  report makes on the stream (`reporting::streamSplit`).
-        const std::optional<FlashOptions> feedRecipe =
-            inletEquilibriumOptions(dict, thermo, T_feed, P_feed, in.z);
+        //  report makes on the stream (`reporting::streamSplit`).  Only for
+        //  a feed that means it: an authored inlet, or one a three-phase
+        //  search published.  A heater's or a mixer's outlet keeps the
+        //  vapour-liquid state its producer priced (DEV.md C37 item 4), and
+        //  the report reads it the same way, by the same rule.
+        const bool feedMeansThreePhase =
+            flashState::consumerSearchApplies(feedDict);
+        const std::optional<FlashOptions> feedRecipe = feedMeansThreePhase
+            ? inletEquilibriumOptions(dict, thermo, T_feed, P_feed, in.z)
+            : std::nullopt;
         bool feedSplit = wantSplit && !thermo.phasesOfType("vapor").empty();
         FlashSolution feedSol;
         if (feedSplit)
@@ -1723,6 +1730,8 @@ int IsothermalFlash::solve(const DictPtr& dict,
             //  report runs on this very stream (C35 item 4), so the unit and
             //  the report resolve one state, not two that agree today.
             if (feedRecipe) fopts = *feedRecipe;
+            else if (!feedMeansThreePhase && opts.phaseSet == PhaseSet::VLLE)
+                fopts.phaseSet = PhaseSet::VL;   // the producer's search
             //  A feed state the package cannot resolve is a NAMED gap, never a
             //  crashed case and never a silent fall-back to the old pricing:
             //  the duty would then be a number about a state the engine just
@@ -2028,6 +2037,9 @@ int IsothermalFlash::solve(const DictPtr& dict,
         vap.P    = in.P;
         vap.z    = yV;
         vap.vf   = 1.0;
+        //  Published by a three-phase search: a VLLE consumer downstream
+        //  may read it with its own (DEV.md C37 item 4).
+        vap.fromThreePhaseSearch = true;
         produced_.push_back(vap);
 
         ProcessStream alpha;
@@ -2037,6 +2049,7 @@ int IsothermalFlash::solve(const DictPtr& dict,
         alpha.P    = in.P;
         alpha.z    = xA;
         alpha.vf   = 0.0;
+        alpha.fromThreePhaseSearch = true;
         produced_.push_back(alpha);
 
         ProcessStream beta;
@@ -2046,6 +2059,7 @@ int IsothermalFlash::solve(const DictPtr& dict,
         beta.P     = in.P;
         beta.z     = xB;
         beta.vf    = 0.0;
+        beta.fromThreePhaseSearch = true;
         produced_.push_back(beta);
     }
     else

@@ -2014,6 +2014,31 @@ as one revertable merge with its moved rows listed:
      published as vf = 1); the stale Theory Guide sentence on its X_final.
   4. A `phaseSet VLLE` feed PRODUCED by another unit: report and producer read
      it the same way.
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  THE RULE,
+     one home: a stream means its consumer's search only when it is an
+     AUTHORED inlet or a three-phase search itself published it --
+     `flashState::consumerSearchApplies` (StreamEquilibrium.H, three
+     overloads: the rule, a `ProcessStream`, a unit's feed dict).  Read by
+     the flowsheet's `equilibriumConsumer` stamp (Flowsheet.cpp, so the
+     energy report and the stream table follow) and by the VLLE unit's own
+     feed pricing (IsothermalFlash.cpp `feedMeansThreePhase`; a feed it does
+     not mean is re-flashed with the PRODUCER's vapour-liquid search).  "The
+     producer itself is the VLLE unit" is read as: a stream a `phaseSet VLLE`
+     search PUBLISHED -- its three ports now carry
+     `ProcessStream::fromThreePhaseSearch`, which travels into the feed dict
+     (UnitInputs.cpp, written only when set) -- so a VLLE port fed to a
+     second VLLE unit keeps today's reading.  WITNESS
+     `tutorials/steady/flash/vlle05_produced_feed` (sealed; vlle03's
+     synthetic system with its three records ADOPTED carrying an invented,
+     labelled datum so the report runs): a heater publishes the decanter's
+     feed at 352.33 K, vf 0.0089 (vapour-liquid).  Before: the preheater's
+     row left 193.92 kW unattributed and the plant missed by -193.92 kW;
+     after: preheater -2.8e-5 kW (its Newton tolerance), decanter 0, plant
+     2.8e-5 kW, and the decanter's duty is 169.815 kW (the demixing of the
+     heater's outlet in the drum).  MOVED ROWS: none outside the new
+     witness, whose golden is new (47 rows); the only corpus `phaseSet VLLE`
+     cases (vlle03, vlle04) have authored feeds and PASS unchanged.  Gate
+     `check_vlle_fallback` arm (f).]
   5. The C36 #1 saturation refusal reaches a unit's own `thermo {}` world and
      the time-integrated binaries' authored inlets.
   6. Stale file:line citations (what-water-dat-does-not-say.md, the C33
@@ -2154,7 +2179,7 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      `check_vlle_fallback` arm (e3).  Moved rows: listed in the commit.
      NOT covered, said: a VLLE feed that ANOTHER unit produced is resolved
      with the consumer's search by the report while its producer priced it
-     vapour-liquid (no corpus case has one).]
+     vapour-liquid (no corpus case has one).  CLOSED by C37 item 4.]
      THE FULL REGRESSION (CLAUDE.md §0.4 reason, written before launch,
      2026-10-05): WHAT CHANGED since the last validation of `main`
      (2a403aac0) is three edits on shared paths, run ONCE on their

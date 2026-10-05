@@ -492,6 +492,42 @@ undeterminedSaturationRefusal(const std::string&   name,
 //  dict (`ProcessStream::equilibriumConsumer`, stamped by the flowsheet);
 //  this turns it into the search, through the ONE call the unit makes on its
 //  own feed.  Nothing for every other stream: the vapour-liquid default.
+//
+//  WHICH STREAMS MEAN THEIR CONSUMER'S SEARCH (2026-10-05, DEV.md C37 item 4).
+//  An AUTHORED inlet declares (T, P, z) and means its own equilibrium (R-E2),
+//  which for a feed to a unit that admits a vapour and two liquids is the
+//  three-phase one.  A PRODUCED stream is different: it keeps its PRODUCER's
+//  answer (CLAUDE.md §3), and a heater or a mixer resolved and priced its
+//  outlet vapour-liquid.  Re-reading that outlet with the consumer's
+//  three-phase search priced ONE stream two ways -- the producer's row and
+//  the report parted by the whole difference (193.92 kW on the witness
+//  `vlle05_produced_feed`, the heater's outlet two-phase vapour-liquid at
+//  352.3 K and three-phase under the decanter's search).  The exception is a
+//  stream a three-phase search itself published
+//  (`ProcessStream::fromThreePhaseSearch`): its producer's search IS that
+//  rich, so reading it with the consumer's does not overrule the producer.
+//  ONE rule, three readers: the flowsheet's stamp (`equilibriumConsumer`),
+//  hence the energy report and the stream table, and the VLLE unit's own
+//  pricing of its feed (through the feed dict, overload below).
+inline bool consumerSearchApplies(bool authoredInlet, bool fromThreePhaseSearch)
+{
+    return authoredInlet || fromThreePhaseSearch;
+}
+inline bool consumerSearchApplies(const ProcessStream& s)
+{
+    return consumerSearchApplies(s.authoredInlet, s.fromThreePhaseSearch);
+}
+//  A unit's feed dict (`UnitInputs`): `authoredInlet` is always written in a
+//  flowsheet; ABSENT means the unit was handed its feed outside one (a unit
+//  test, a bench), where the feed is the caller's own declaration.
+inline bool consumerSearchApplies(const DictPtr& feedDict)
+{
+    if (!feedDict) return true;
+    return consumerSearchApplies(
+        feedDict->lookupScalarOrDefault("authoredInlet", 1.0) > 0.5,
+        feedDict->lookupScalarOrDefault("fromThreePhaseSearch", 0.0) > 0.5);
+}
+
 inline std::optional<FlashOptions> consumerRecipe(const ProcessStream& s,
                                                   const ThermoPackage& thermo)
 {
