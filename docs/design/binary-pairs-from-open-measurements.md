@@ -374,7 +374,10 @@ would put a second liquid into every flash that reads it, and no
 bubble-temperature verdict could tell -- so it was NOT promoted, though
 `validated`.  It stays in curate12 as an authored record with the reason in
 its header.  The remedy (a third parameter constrained by the phase count, or
-LLE data) is a curation decision, Vitor's.
+LLE data) is a curation decision, Vitor's.  LLE data: the archive has NONE for this
+pair (searched by InChIKey on 2026-10-05, DEV.md C35 item 6 -- 19 binary
+blocks, every one of one liquid), so that route is closed until someone
+measures it; the record stays in its case.
 
 The three that split BELOW their span are honest extrapolations -- each record
 says where, and why (the two-parameter b/T form grows tau as T falls) -- but

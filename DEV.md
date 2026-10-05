@@ -2025,6 +2025,12 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      printed on every raise) caught on all three -- two lines each.]
   6. Ethanol + cyclohexane: re-regressed against LLE data if the archive has
      them; otherwise it stays case-local, recorded.
+     [DONE 2026-10-05, branch `claude/c35-pairs-pipe`: the archive has
+     none.  19 binary ethanol + cyclohexane blocks in ThermoML.v2020-09-30
+     (joined by InChIKey), all of ONE liquid; the only two-liquid blocks
+     naming both are ternaries whose second liquid is the third
+     component's.  The pair stays case-local in curate12, unpromoted; no
+     constraint invented, no case or golden touched.  Detail in C16.]
   7. Dryer solid floor: the gas wet-bulb temperature, not the feed T.
   8. Pipe with a vapour inlet: REFUSED by name until a compressible model exists.
      [DONE 2026-10-05, branch `claude/c35-pairs-pipe`.  MEASURED first: the
@@ -2838,6 +2844,25 @@ superheated chest is REFUSED there, falsely, not mispriced).
      `--x-of`; a stability-constrained fit (alpha or a_ij freed under a
      phase-count constraint) for alcohol + hydrocarbon pairs; then the next
      pairs by the same rule.
+     **ETHANOL + CYCLOHEXANE AGAINST LLE DATA (C35 item 6, 2026-10-05):
+     the archive has NONE, so the pair stays case-local.**  Searched in
+     ThermoML.v2020-09-30 (the same tarball, sha256 231161b5... verified by `sync` on
+     2026-09-28 and re-hashed today; data.nist.gov answered 503 on 2026-10-05, so the unpacked
+     copy a C16 worktree had made was READ, not re-downloaded), joined BY
+     INCHIKEY (cyclohexane XDTMQSROBMDMFD-UHFFFAOYSA-N, ethanol
+     LFQSCWFLJHTTHZ-UHFFFAOYSA-N): 1190 files carry cyclohexane, 456 carry
+     both, and they hold 19 BINARY ethanol + cyclohexane blocks -- VLE
+     (x-y, boiling T, azeotrope, Psat), density, refractive index,
+     permittivity, viscosity, speed of sound, Cp, H^E, diffusion -- and NOT
+     ONE with two liquid phases (`Liquid mixture 1/2`), a consolute
+     temperature or a mutual solubility.  Two ternary sources do carry two
+     liquids (j.fluid.2005.07.015, water + ethanol + cyclohexane VLLE;
+     je700741x, 2,2,2-trifluoroethanol + ethanol + cyclohexane LLE at
+     288-308 K), but their second liquid is made by the third component;
+     they are not mutual-solubility data on this pair and were not used.
+     Every binary block the archive holds is of ONE liquid.  Per the
+     ruling, no constraint was invented: the record stays in curate12 (and
+     its copy in vlle04), unpromoted, with the reason in its header.
 **C8. THE STAGED DESIGN SEQUENCE, as industry actually does it — and an
      EduTool that teaches it on the green ammonia plant (commissioned
      2026-09-24).**  Vítor: build the case as best industrial practice builds
