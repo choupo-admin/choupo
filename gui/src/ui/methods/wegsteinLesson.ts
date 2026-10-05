@@ -322,7 +322,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "of them and they are not the same number. The Wegstein CLASS "
       + "defaults to [-5, 0] (src/solver/Wegstein.H:73-74); the RECYCLE loop "
       + "constructs it with [-1, 0] "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3118-3119). A Choupo "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3156-3157). A Choupo "
       + "recycle that declares nothing therefore runs at the gentler clamp.",
   },
   {
@@ -377,7 +377,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "norm of the change in the packed tear vector falls below the "
       + "declared tolerance — a flow in kmol/s, a handful of mole fractions "
       + "and a temperature in kelvin, added in quadrature with no scaling "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3138, the norm at "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3176, the norm at "
       + ":2043-2052). A temperature near 360 dominates a flow near 1e-4 by "
       + "six orders of magnitude, so a run can satisfy that test with the "
       + "temperature pinned to six digits and the recycle flow still several "
@@ -481,7 +481,7 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
       + "the vapour fraction sitting on the torn stream is whatever the "
       + "previous sweep left there — the engine says so in its own words on "
       + "the Newton side, calling it the phase proxy "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3327-3330). So the state "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3365-3368). So the state "
       + "handed to the first consumer of a tear is an assumption about three "
       + "quantities carrying a fourth along for the ride, and only at "
       + "convergence, when the assumption and its image agree, is it a state "

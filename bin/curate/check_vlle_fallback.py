@@ -70,15 +70,32 @@ WHAT THIS CHECKS:
            unit priced its feed the report's way -- Q = 186.48 kW, the
            vapour's latent heat charged to an identity operation, which
            (e2) could not see because unit and report agreed on it.
+  (f) A PRODUCED FEED KEEPS ITS PRODUCER'S ANSWER (DEV.md C37 item 4,
+      2026-10-05), on a fresh run of a COPY of the witness
+      tutorials/steady/flash/vlle05_produced_feed: a heater (`preheater`,
+      Q = 50 kW) produces the VLLE decanter's feed, solving and pricing it
+      on the vapour-liquid surface (352.33 K, vf 0.0089).  The consumer's
+      three-phase search may re-read a stream only when it MEANS it -- an
+      authored inlet, or one a three-phase search published
+      (`flashState::consumerSearchApplies`).
+      (f1) OUTPUT: the preheater's and the decanter's `energyClosures` rows
+           and the plant first law each within TOL_UNIT_KW.  Before: the
+           report read `heated` with the decanter's search, the preheater's
+           row left 193.92 kW unattributed and the plant missed by
+           -193.92 kW, at exit 0.
+      (f2) SOURCE: `consumerSearchApplies` is DEFINED once (StreamEquilib-
+           rium.H, three overloads, one rule), the flowsheet's stamp and the
+           decanter's feed pricing both CALL it, and the three VLLE ports
+           set `fromThreePhaseSearch = true` (comments stripped).
 
 WHAT THIS DOES NOT CHECK.  Whether the split is RIGHT: the witness's NRTL
 pair is Choupo's own case-local regression and predicts a second liquid its
 own evidence does not show (that is why the witness can reach the fallback at
 all); it is a STRUCTURAL witness.  The VL fallback (a VLLE search that finds
-one liquid) has no corpus witness.  A stream fed to a VLLE unit that
-ANOTHER unit produced (a mixer's outlet): the report resolves it with the
-consumer's search while its producer priced it vapour-liquid -- no corpus
-case has one, so nothing here can see that pair.
+one liquid) has no corpus witness.  A VLLE port fed to a SECOND VLLE
+unit (the one case where a produced stream means its consumer's search,
+`fromThreePhaseSearch`): no witness; (f2) holds the ports' stamp by source
+only.
 The propertyOps VL / one-phase classification still reads the regime string
 (PropertyScanTernary) and is not checked.
 
@@ -119,6 +136,14 @@ SABOTAGES (by hand, 2026-10-05; each restored with `git checkout` and
       FAIL: 186.482 kW unattributed, plant residual -186.482 kW, feed vf 0
       against the unit's beta_vapor 0.18580 (the unit alone resolving its
       feed three-phase, the defect's mirror image).
+  S10 (arm (f), C37 item 4) `consumerSearchApplies` answers true for every
+      stream (the pre-C37 reading: every feed of a VLLE unit means its
+      search) -> ONLY (f1) FAILS, twice: the preheater leaves 193.923 kW
+      unattributed and the plant misses by -193.923 kW.  The decanter's row
+      stays closed under the sabotage -- the unit and the report agree with
+      each other on the wrong state, which is why the arm reads the
+      PRODUCER's row.  (f2) passes: it reads the source, which still calls
+      the rule.
 """
 import json
 import pathlib
@@ -156,6 +181,11 @@ FLOW_EPS = 1.0e-12     # kmol/s
 WITNESS3 = "tutorials/steady/flash/vlle03_audit_artificial"
 PORTS3 = {"F_vapor": "vapor", "F_alpha": "liquidA", "F_beta": "liquidB"}
 TOL_UNIT_KW = 1.0e-4
+#  (f): a VLLE decanter fed by a HEATER's outlet (C37 item 4).
+WITNESS5 = "tutorials/steady/flash/vlle05_produced_feed"
+PRODUCER5 = "preheater"
+ONE_HOME = ROOT / "src/unitOperations/flash/StreamEquilibrium.H"
+FLOWSHEET_SRC = ROOT / "src/unitOperations/flowsheet/Flowsheet.cpp"
 
 
 def strip_comments(text: str) -> str:
@@ -363,6 +393,56 @@ def main() -> int:
                             f"own search finds a vapour share {bv}: the stream "
                             "table and the unit read two different states")
 
+    # (f) A PRODUCED FEED KEEPS ITS PRODUCER'S ANSWER (C37 item 4) ----------
+    home = strip_comments(ONE_HOME.read_text())
+    n_def = len(re.findall(r"inline\s+bool\s+consumerSearchApplies\s*\(",
+                           home))
+    if n_def != 3:
+        fail.append(f"(f2) `consumerSearchApplies` is defined {n_def} time(s) "
+                    "in StreamEquilibrium.H; expected its three overloads "
+                    "(the rule, a stream, a feed dict) and no second home")
+    for src_path, who in ((FLOWSHEET_SRC, "the flowsheet's equilibriumConsumer "
+                           "stamp"), (FLASH_SRC, "the decanter's feed pricing")):
+        if not re.search(r"flashState::consumerSearchApplies\s*\(",
+                         strip_comments(src_path.read_text())):
+            fail.append(f"(f2) {src_path.name} does not call "
+                        f"`flashState::consumerSearchApplies` -- {who} re-reads "
+                        "a produced stream with the consumer's three-phase "
+                        "search again")
+    n_ports = len(re.findall(r"\b(vap|alpha|beta)\.fromThreePhaseSearch\s*="
+                             r"\s*true\s*;", flash))
+    if n_ports != 3:
+        fail.append(f"(f2) {n_ports} VLLE port(s) set `fromThreePhaseSearch "
+                    "= true`; all three must, or a VLLE port fed to a second "
+                    "VLLE unit loses the search that published it")
+    with tempfile.TemporaryDirectory() as td:
+        ignore = shutil.ignore_patterns("converged", "reports", "log.*",
+                                        "iterations")
+        case = pathlib.Path(td) / "vlle05"
+        shutil.copytree(ROOT / WITNESS5, case, ignore=ignore)
+        rc, log = run(case)
+        res = result_json(log)
+        if rc != 0 or res is None:
+            fail.append(f"(f1) vlle05_produced_feed did not run (exit {rc})")
+        else:
+            rows = {r.get("unit"): r for r in res.get("energyClosures", [])}
+            for u in (PRODUCER5, UNIT):
+                r = rows.get(u)
+                rem = None if r is None else float(r.get("remaining_kW",
+                                                          float("nan")))
+                if rem is None or not abs(rem) <= TOL_UNIT_KW:
+                    fail.append(
+                        f"(f1) `{u}` leaves {rem} kW the energy report cannot "
+                        f"attribute (tolerance {TOL_UNIT_KW} kW): the heater's "
+                        "outlet was re-read with the decanter's three-phase "
+                        "search while its producer priced it vapour-liquid "
+                        "(193.92 kW before C37 item 4)")
+            geb = res.get("globalEnergyBoundary") or {}
+            r5 = geb.get("residual_kW")
+            if r5 is None or abs(float(r5)) > TOL_UNIT_KW:
+                fail.append(f"(f1) the witness's plant first law reads "
+                            f"residual {r5} kW (tolerance {TOL_UNIT_KW} kW)")
+
     if fail:
         print("check_vlle_fallback: FAILED")
         for f in fail:
@@ -381,10 +461,16 @@ def main() -> int:
           "and an unpinned feed at the drum's own state means its THREE-phase "
           "equilibrium in the unit, the report and the stream table alike "
           f"(Q = 0 and plant residual within {TOL_UNIT_KW} kW, feed vf = the "
-          "unit's beta_vapor).  "
+          "unit's beta_vapor); and a feed ANOTHER unit produced keeps its "
+          "producer's answer (witness vlle05: a heater's vapour-liquid outlet "
+          f"read the heater's way by the report and the decanter, both rows "
+          f"and the plant within {TOL_UNIT_KW} kW; the rule "
+          "`consumerSearchApplies` in one home, called by the stamp and the "
+          "unit, the three VLLE ports marked as published by a three-phase "
+          "search).  "
           "NOT checked: whether the split is right (a structural witness), "
-          "the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 % vapour, inside the band), a VLLE feed "
-          "another unit produced (no witness), and the "
+          "the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 % vapour, inside the band), a VLLE port "
+          "fed to a second VLLE unit (source only), and the "
           "ternary scan's VL / one-phase classification (still the string).")
     return 0
 

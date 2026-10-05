@@ -420,7 +420,7 @@ export const BODE_LIMITS: readonly LessonLimit[] = [
       + "phase margin.  What the engine has is a time integrator and the "
       + "`frequencyResponse {}` experiment, which MEASURES one point of a "
       + "Bode diagram per run "
-      + "(src/dynamicDriver/DynamicDriver.cpp:1811-1858).  The measured "
+      + "(src/dynamicDriver/DynamicDriver.cpp:1841-1888).  The measured "
       + "curve on this page is that experiment, swept.  The constructed "
       + "curve, the elements and both margins are classical arithmetic "
       + "drawn in the browser and are not an engine answer.",
@@ -452,7 +452,7 @@ export const BODE_LIMITS: readonly LessonLimit[] = [
     title: "The measurement has a phase lag of its own, and it is not removed.",
     body: "The engine applies the sine drive as a ZERO-ORDER HOLD: it is "
       + "evaluated at the start of each step and held constant across it "
-      + "(src/dynamicDriver/DynamicDriver.cpp:1564-1566).  A held sinusoid "
+      + "(src/dynamicDriver/DynamicDriver.cpp:1594-1596).  A held sinusoid "
       + "trails the continuous one by half a step, so the response the fit "
       + "reads carries a lag of exactly ω·Δt/2 radians — the hold puts it "
       + "there, not the act of reading the states on a grid.  Here Δt "

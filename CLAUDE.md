@@ -311,7 +311,9 @@ case/
   within the flash's own tolerance, `flashState::
   undeterminedSaturationRefusal`, applied once where the authored inlets
   are stamped -- is UNDETERMINED (its side would be the last digits of T)
-  and refuses naming `phase liquid;`/`phase gas;` (gate arm (g)).
+  and refuses naming `phase liquid;`/`phase gas;` (gate arm (g)); since C37
+  item 5 also in the own `thermo {}` world of each unit that consumes it,
+  and on the time-integrated binaries' authored inlets (arms (h), (i)).
   The SURFACE draws the state the stream MEANS: after the solve every
   unpinned stream no unit produces is resolved once through
   `flashState::equilibriumAt` (the one home), and the stream table, the

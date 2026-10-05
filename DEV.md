@@ -2080,6 +2080,20 @@ as one revertable merge with its moved rows listed:
   1. `flashState::resolvedInletVaporFraction` honours a pinned pure two-phase
      inlet for EVERY caller (today only heatExchanger/heater/phaseChanger read
      the pin first).
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  The rule
+     is in the one home: `resolvedInletVaporFraction` asks
+     `pinnedPureQuality` first (StreamEquilibrium.H:717), and so does its
+     sibling `resolveStreamThermalState` (:653, the column feed and the
+     evaporator chest).  The three units' vf overrides are gone
+     (HeatExchanger.cpp:88, Heater.cpp:128, PhaseChanger.cpp:232 call the
+     one home alone); each keeps the pin only to PRICE its inlet at it.
+     MEASURED: the corpus has no AUTHORED pinned pure two-phase inlet (the
+     five fractional `vaporFraction` files are produced streams, for which
+     the one home always returned the carried pin), so no golden moves; 14
+     targeted cases PASS.  The fixture that shows it -- heatExchanger03's
+     wetFeed declared as an authored inlet to a splitter -- published both
+     branches at vf = 0 and a 98.28 kW first-law residual before, the pin
+     (0.09917968728) and 0 kW after.  Gate `check_inlet_resolution` arm (k).]
   2. `bin/choupo-import` re-seals heatExchanger01 and heatExchanger03 (its
      agreement check drops the `utility <hx> heating.-.carried` row).
   3. `solidDryer` gets an exhaust-saturation limit (a fog is no longer
@@ -2148,8 +2162,50 @@ as one revertable merge with its moved rows listed:
      nothing.]
   4. A `phaseSet VLLE` feed PRODUCED by another unit: report and producer read
      it the same way.
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  THE RULE,
+     one home: a stream means its consumer's search only when it is an
+     AUTHORED inlet or a three-phase search itself published it --
+     `flashState::consumerSearchApplies` (StreamEquilibrium.H, three
+     overloads: the rule, a `ProcessStream`, a unit's feed dict).  Read by
+     the flowsheet's `equilibriumConsumer` stamp (Flowsheet.cpp, so the
+     energy report and the stream table follow) and by the VLLE unit's own
+     feed pricing (IsothermalFlash.cpp `feedMeansThreePhase`; a feed it does
+     not mean is re-flashed with the PRODUCER's vapour-liquid search).  "The
+     producer itself is the VLLE unit" is read as: a stream a `phaseSet VLLE`
+     search PUBLISHED -- its three ports now carry
+     `ProcessStream::fromThreePhaseSearch`, which travels into the feed dict
+     (UnitInputs.cpp, written only when set) -- so a VLLE port fed to a
+     second VLLE unit keeps today's reading.  WITNESS
+     `tutorials/steady/flash/vlle05_produced_feed` (sealed; vlle03's
+     synthetic system with its three records ADOPTED carrying an invented,
+     labelled datum so the report runs): a heater publishes the decanter's
+     feed at 352.33 K, vf 0.0089 (vapour-liquid).  Before: the preheater's
+     row left 193.92 kW unattributed and the plant missed by -193.92 kW;
+     after: preheater -2.8e-5 kW (its Newton tolerance), decanter 0, plant
+     2.8e-5 kW, and the decanter's duty is 169.815 kW (the demixing of the
+     heater's outlet in the drum).  MOVED ROWS: none outside the new
+     witness, whose golden is new (47 rows); the only corpus `phaseSet VLLE`
+     cases (vlle03, vlle04) have authored feeds and PASS unchanged.  Gate
+     `check_vlle_fallback` arm (f).]
   5. The C36 #1 saturation refusal reaches a unit's own `thermo {}` world and
      the time-integrated binaries' authored inlets.
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  STEADY:
+     `Flowsheet::solve`, after the global check, asks the world of each unit
+     that consumes a pure, authored, unpinned inlet under its own
+     `thermo {}` / property context (`thermoFor`, built once and cached) --
+     the world `resolvedInletVaporFraction` reads that inlet in; a stream
+     refused globally is not asked twice; the refusal names the unit's
+     world.  TIME-INTEGRATED: `dynamicDriver`'s 0/ seeding applies the same
+     refusal to its authored inlets (consumed, produced by no unit),
+     prefixed by the binary's name.  The whole message has one home,
+     `flashState::undeterminedStreamsMessage`.  The C36 rule is kept: the
+     probe returns before evaluating K away from the stream's own T unless
+     within the band.  MEASURED: pure benzene at 1 bar is on flash01's ideal
+     curve at 352.826 K and on an SRK-vapour unit's at 351.925 K; unsteady02's
+     pure compA at 455.608 K.  Moved rows: none -- the 23 time-integrated
+     cases and the 8 per-unit-world cases PASS (listed in the commit).  Gate
+     `check_overspecified_stream` arms (h), (i).  Record:
+     docs/design/a-stream-is-fixed-by-two-variables.md §9.]
   6. Stale file:line citations (what-water-dat-does-not-say.md, the C33
      table), condenser01's "saturated vapour" header, `gateManifest` claims.
 Status: dispatched 2026-10-05.
@@ -2188,7 +2244,8 @@ with its moved golden rows listed:
      engine's own vf until a run refuses; (g2) declared runs; (g3) a mixture
      at its bubble point untouched).  NOT covered, said: a unit's own
      `thermo {}` world (checked in the global one) and the time-integrated
-     binaries (their driver stamps no authored inlet).  Record:
+     binaries (their driver stamps no authored inlet) -- both CLOSED by
+     C37 item 5.  Record:
      docs/design/a-stream-is-fixed-by-two-variables.md §9.]
      FULL REGRESSION AUTHORISED by Vítor 2026-10-05 ("Avança", answering the
      commander's request with its §0.4 reason): the rule runs in
@@ -2288,7 +2345,7 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      `check_vlle_fallback` arm (e3).  Moved rows: listed in the commit.
      NOT covered, said: a VLLE feed that ANOTHER unit produced is resolved
      with the consumer's search by the report while its producer priced it
-     vapour-liquid (no corpus case has one).]
+     vapour-liquid (no corpus case has one).  CLOSED by C37 item 4.]
      THE FULL REGRESSION (CLAUDE.md §0.4 reason, written before launch,
      2026-10-05): WHAT CHANGED since the last validation of `main`
      (2a403aac0) is three edits on shared paths, run ONCE on their

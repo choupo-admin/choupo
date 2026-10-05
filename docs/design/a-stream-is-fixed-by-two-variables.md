@@ -347,7 +347,32 @@ untouched.  Sabotages, each applied, built, the gate run, then restored:
 | S1 the refusal disabled (`if (false && !undetermined.empty())`) | (g): 33 runs, bracket closed at 352.82606370863505 K, no refusal |
 | S2 the `phasePinned` skip removed (a declared stream checked too) | (g2) both: the declared pure stream refused at exit 2 |
 
-NOT covered, said plainly: a unit's own `thermo {}` world (the band is checked
-in the case's global world, the one the stream table and the energy report
-resolve the stream in), and the time-integrated binaries (their driver stamps
-no authored inlet).
+That paragraph used to end "NOT covered, said plainly: a unit's own
+`thermo {}` world, and the time-integrated binaries".  Both are covered since
+DEV.md C37 item 5 (2026-10-05):
+
+* **A unit's own world.**  `Flowsheet::solve` asks, after the global world,
+  the world of each unit that CONSUMES a pure, authored, unpinned inlet under
+  its own `thermo {}` or property context (`thermoFor`, built once and cached
+  for the solve) — the world the unit resolves that inlet in.  A curve the
+  global package places elsewhere may pass through the stream there:
+  measured, pure benzene at 1 bar sits on flash01's ideal curve at
+  352.826 K and on the curve of a splitter carrying an SRK vapour at
+  351.925 K.  The refusal is the same sentence, with the unit's world named
+  after it; a stream already refused globally is not asked twice.
+* **The time-integrated binaries.**  `dynamicDriver`'s 0/ seeding applies the
+  same refusal to its authored inlets (consumed, produced by no unit) in the
+  one world that driver builds, prefixed by the binary's name
+  (`choupoSemiContinuous: UNDETERMINED STREAM STATE ...`).  The refusal's
+  whole message has one home, `flashState::undeterminedStreamsMessage`.
+  choupoBatch reads no `0/<stream>` file and has no authored inlet.
+
+The C36 rule is kept on both: the probe returns before evaluating K anywhere
+but at the stream's own `T` unless the stream is within the band, so a stream
+far from its curve costs one K evaluation at its own state and raises nothing.
+Gate `check_overspecified_stream` arms (h) (the splitter, bisected on its own
+branch reading; (h2) the same `T` without the override runs) and (i)
+(unsteady02's pure compA fed to `choupoSemiContinuous` at its curve,
+455.608 K, refuses; 1 K above, it runs).  Sabotage: both checks disarmed in
+one build — (h) bisected 33 runs to 351.9253291527 K with no refusal, (i)
+failed four ways (no binary, file, component; exit 0).
