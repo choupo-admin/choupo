@@ -2005,6 +2005,38 @@ as one revertable merge with its moved rows listed:
   6. Stale file:line citations (what-water-dat-does-not-say.md, the C33
      table), condenser01's "saturated vapour" header, `gateManifest` claims.
 Status: dispatched 2026-10-05.
+  Items 2 and 6 BUILT 2026-10-05 on `claude/c37-housekeeping` (not merged),
+  one commit each, NO golden row moved:
+   2. CAUSE: `validate_staged_agrees` looked every `utility` row up as
+      `<tier>.<utility>.<field>` on an ALLOCATED entry, so the
+      `<tier>.<port>.carried|unserved` row of an UNALLOCATED one (e26e5591d)
+      searched for a utility called `-` and read MISSING.  FIX: ONE Python
+      home for the row rule, `bin/curate/utility_rows.py` (a restatement of
+      bin/runTests' `get_utility`), called by the importer AND by
+      `check_utility_allocation_pinned`, whose both-ways comparison against
+      the rows runTests' awk generator wrote is what holds the Python and
+      awk copies together (OK, 707 quantities, 99 cases).  The awk copy
+      stays: moving the suite's own checker is a path every case goes
+      through.  The importer also names the kinds it does not read instead
+      of filing them all as "aad/csv" (`boundary` rows are still not
+      compared at seal time -- named, not built).  heatExchanger01 and
+      heatExchanger03 RE-SEALED (water.dat 2607 -> 2608 in 01, the utility
+      lineup sealed into both); result JSON identical leaf for leaf before
+      and after; both PASS.
+   6a. what-water-dat-does-not-say.md: Evaporator.cpp :373 -> :383, :325 ->
+      :335, HeatExchanger.cpp :201 -> :231, PhaseChanger.cpp :704, 1140 ->
+      :764, 1206; the C34 audit table's ElectrodialysisStack forward is at
+      :743-744 today (its dated :725-726 kept beside it).
+   6b. condenser01: `0/steam` declares `phase gas;` at its stated 372.76 K and
+      the header says why -- 372.76 K is IF97's Tsat(1 bar), the curve the
+      condenser reads, while the package's K-values read the record's
+      Antoine (Tsat(1 bar) = 372.09 K), which is where the "0.67 K
+      superheated" reading came from.  Result JSON byte-identical.  FINDING
+      for Vítor, not fixed: `ThermoPackage::Kvec_Raoult` reads
+      `Component::vp()` even where a `pureFluids` IF97 route owns the dome,
+      so one package carries two saturation curves for water.
+   6c. `generated/gateManifest.json` regenerated in full (the last commit on
+      the branch).
 
 **C36. "AVANÇA COMO ACHARES MELHOR" (Vítor, 2026-10-05, verbatim, answering
 the C35 close-out report and its open list).**  The commander takes the open
