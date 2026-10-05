@@ -351,6 +351,12 @@ AND VALIDITY` block drops from 4 entries to 3).
 it is real physics work, and choosing which surface is right is not a decision
 an assistant takes.
 
+**RULED AND CLOSED 2026-10-05 (DEV.md 4c C35 item 3):** the duty's latent heat
+is the package's `h(chest) − h(condensate)` (D2), and the process side is priced
+on the same surface (D3, which the unit's row needs as well); every evaporator
+row now closes to 1e-6 kW and the six pins are gone — `Evaporator.cpp`, THE
+LATENT HEAT THE REPORT PRICES.
+
 **No pin is removed by this commit except `phasechange01`'s**, which is removed
 rather than re-measured because it closes exactly (§7.1); `designSpec01`'s is
 re-measured downward (§7.3).  The band in

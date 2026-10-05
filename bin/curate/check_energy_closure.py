@@ -109,9 +109,11 @@ WHAT THIS DOES NOT CHECK, said plainly:
     cancelling.  `energyBalance_byUnit.csv` localises it and ammonia02 is the
     proof that the localisation itself can be wrong.  ONE per-unit arm exists
     since 2026-09-27 (below): the units whose energy balance is H_out = H_in
-    BY CONSTRUCTION -- an adiabatic sprayDryer/solidDryer/convectiveDryer, and a
-    cstr/conversionReactor that published Q_kW -- must leave nothing
-    unattributed.  Every other unit is judged only through the plant sum.
+    BY CONSTRUCTION -- an adiabatic sprayDryer/solidDryer/convectiveDryer, an
+    evaporator (its heat crosses as its own chest/condensate streams; joined
+    2026-10-05), and a cstr/conversionReactor that published Q_kW -- must
+    leave nothing unattributed.  Every other unit is judged only through the
+    plant sum.
 
 THE UNIT ARM, SABOTAGE-VERIFIED 2026-09-27 by hand on a SCOPED run (a cache
 of seven cases: the flagship, sprayDryer01/05, solidDryer01, cstr07, cstr01,
@@ -133,6 +135,13 @@ restore:
   U4  break the gate's own header pattern (`>>>  UNIT`) -> five "the unit arm
       did not READ its witness" failures: an arm that reads nothing does not
       pass.
+  U5  (2026-10-05, the evaporator joins the arm) restore the evaporator's
+      Watson duty -> "unit 'CONCENTRATION.Evap1' (evaporator) leaves -21.0456
+      kW", Evap2 -10.3209, evaporator02's effect1/2/3 -152.9702 / -62.7408 /
+      -46.5438, evaporator06/07/09 and model2 -16.1038, evaporator08
+      -26.8397 kW; the plant arm then re-fails on the eight pins this commit
+      removed (the flagship 2.9810 %).  Restored byte-identical (md5) +
+      `make all`.
   * A CASE THE REPORT NEVER RUNS FOR (under an outerDict the chain does not
     run).  Those are LISTED, never silently skipped.
   * A CASE WHOSE ENERGY BALANCE THE ENGINE REFUSED for want of an enthalpy
@@ -403,7 +412,6 @@ def ratchet_kW(pin: float) -> float:
 #  pedagogical decision about each case that is Vitor's, so they are PINNED
 #  here as measured and not fixed.
 KNOWN_OPEN = {
-    "tutorials/plant/ChemicalPlantTutorial": 1.0300,
     "tutorials/plant/esterification2sector": 170.9790,
     "tutorials/plant/polycaprolactonePlant": 20.0100,
     "tutorials/steady/distillation/acetone07_luyben_column_C2": 196.7990,
@@ -414,7 +422,6 @@ KNOWN_OPEN = {
     "tutorials/steady/gibbs/gibbs07_wgs_cooled": 150.7280,
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash": 150.7280,
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": 150.6790,
-    "tutorials/steady/optimisation/designSpec01_triple_equal_areas": 2.3240,
     "tutorials/steady/reactors/pfr_polyesterification": 18.3420,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,
@@ -441,14 +448,8 @@ KNOWN_OPEN_KW = {
     "tutorials/steady/distillation/column04_multifeed_sidedraw": -78.6939,
     "tutorials/steady/distillation/column08_radfrac_multidraw": -891.9801,
     "tutorials/steady/distillation/shortcut01_benzene_toluene": -1.0804,
-    "tutorials/steady/evaporation/evaporator02_triple_effect_sugar": 134.1741,
-    "tutorials/steady/evaporation/evaporator06_nacl_pitzer": 17.8991,
-    "tutorials/steady/evaporation/evaporator07_nacl_enrtl": 17.6269,
-    "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat": 17.9760,
-    "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine": 18.4102,
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 42.8610,
     "tutorials/steady/heat/coolingTower01_merkel": 1.5666,
-    "tutorials/steady/thermoTest/model2_pitzer_evaporator": 17.8991,
     "tutorials/steady/userops/userOp01_yield_reactor": 2.1701,
 }
 
@@ -485,7 +486,19 @@ KNOWN_OPEN_KW = {
 #  `convectiveDryer` joined 2026-10-05 (DEV.md C26): it balances on the
 #  package's formation surface by construction (2026-09-29), a claim its own
 #  gate held only at PLANT level until then.
+#  `evaporator` joined 2026-10-05 (DEV.md 4c C35 item 3, Vitor's ruling: the
+#  duty's latent heat is the enthalpy difference the report prices, not the
+#  Watson correlation).  Its heat crosses as MATERIAL -- chest steam in,
+#  condensate out, both its own streams -- so it declares no energy item and
+#  the report's remainder for it IS the enthalpy change across its five
+#  streams.  It used to leave +17.6 ... +18.4 kW there on every single-effect
+#  brine case and -89.1 / -16.3 / -28.8 kW on the triple effect's three
+#  effects; the flagship's Evap1 + Evap2 (-10.4180 - 0.3773 kW) were the
+#  whole of what kept `energy-T2:plant` red.  A no-datum evaporator (its feed
+#  or chest carries a component with no enthalpy datum) publishes no closure
+#  row, because the report is UNAVAILABLE for it -- `noLedger`, never judged.
 UNIT_ADIABATIC = {"sprayDryer", "solidDryer", "convectiveDryer"}
+UNIT_MATERIAL_HEAT = {"evaporator"}
 UNIT_DUTY_IS_DH = {"cstr", "conversionReactor"}
 UNIT_TOL_KW = 1.0e-4
 #  WITNESSES the arm must READ whenever their case is in scope, so it cannot
@@ -499,6 +512,16 @@ UNIT_WITNESSES = {
     ("tutorials/steady/drying/solidDryer01_sugar", "solidDryer"),
     ("tutorials/steady/drying/convDryer01_sugar_curve", "co"),
     ("tutorials/steady/drying/convDryer01_sugar_curve", "counter"),
+    #  The evaporator: the flagship's two effects, a single-effect brine on
+    #  a Pitzer package (its liquor carries L_phi on the liquid surface) and
+    #  the triple effect, whose chests 2 and 3 are the previous effects'
+    #  PRODUCED vapour.
+    ("tutorials/plant/ChemicalPlantTutorial", "CONCENTRATION.Evap1"),
+    ("tutorials/plant/ChemicalPlantTutorial", "CONCENTRATION.Evap2"),
+    ("tutorials/steady/evaporation/evaporator06_nacl_pitzer", "evap"),
+    ("tutorials/steady/evaporation/evaporator02_triple_effect_sugar", "effect1"),
+    ("tutorials/steady/evaporation/evaporator02_triple_effect_sugar", "effect2"),
+    ("tutorials/steady/evaporation/evaporator02_triple_effect_sugar", "effect3"),
 }
 UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
 
@@ -520,7 +543,7 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
     every unit it JUDGED, so the witness check can tell read from unread."""
     types = dict(UNIT_HEADER.findall(txt))
     if not any(t in UNIT_ADIABATIC or t in UNIT_DUTY_IS_DH
-               for t in types.values()):
+               or t in UNIT_MATERIAL_HEAT for t in types.values()):
         return
     closures = json_block(txt, "energyClosures")
     kpis = json_block(txt, "kpis") or {}
@@ -533,6 +556,13 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
         if t in UNIT_ADIABATIC:
             why = ("an ADIABATIC %s declares no energy item, so this is the "
                    "enthalpy change across its own streams" % t)
+        elif t in UNIT_MATERIAL_HEAT:
+            why = ("an %s's heat crosses as MATERIAL (chest steam in, "
+                   "condensate out, both its own streams), so it declares no "
+                   "energy item and this is the enthalpy change across its "
+                   "own streams -- its duty must be the enthalpy difference "
+                   "the report prices, h(chest) - h(condensate), and its "
+                   "process side priced on the same surface" % t)
         elif t in UNIT_DUTY_IS_DH and "Q_kW" in kpis.get(unit, {}):
             why = ("a %s publishes Q_kW = H_out - H_in on the streams it "
                    "publishes, so nothing may remain unattributed" % t)
@@ -895,7 +925,9 @@ def main() -> int:
           "not); PER-UNIT closure in general, where a plant can close globally "
           "with two units cancelling -- EXCEPT the unit arm: %d unit(s) whose "
           "energy balance is H_out = H_in by construction (adiabatic "
-          "sprayDryer/solidDryer/convectiveDryer; a cstr/conversionReactor "
+          "sprayDryer/solidDryer/convectiveDryer; an evaporator, whose heat "
+          "crosses as its own chest and condensate streams; a "
+          "cstr/conversionReactor "
           "that published "
           "Q_kW) leave no more than %.0e kW unattributed in the report, "
           "every in-scope witness among %d was read, and %d case(s) running "
