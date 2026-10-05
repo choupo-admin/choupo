@@ -600,16 +600,12 @@ BatchElectrodialysis::evaluate(const sVector& nD, const sVector& nC) const
     //  The Nernst membrane potential, per cell pair, on REAL activities --
     //  each membrane sees the concentrate/diluate ratio of its COUNTER-ion,
     //  at that ion's own charge.
-    const scalar rCat = edCell::meanActivityRatio(s.chD, s.chC, +1.0);
-    const scalar rAn  = edCell::meanActivityRatio(s.chD, s.chC, -1.0);
     //  A membrane with several counter-ions (C35) takes the mean of their
     //  own Nernst potentials; on one counter-ion the original expression.
-    s.E_cem = (nCations_ > 1)
-            ? edCell::meanNernstPotential(s.chD, s.chC, +1.0, state_.T)
-            : electrochem::nernst(+zCation_, rCat, state_.T);
-    s.E_aem = (nAnions_ > 1)
-            ? edCell::meanNernstPotential(s.chD, s.chC, -1.0, state_.T)
-            : electrochem::nernst(-zAnion_, 1.0 / rAn, state_.T);
+    //  ONE HOME since C36 (edCell::membranePotential), which the steady
+    //  stack asks too.
+    s.E_cem = edCell::membranePotential(s.chD, s.chC, +1.0, state_.T);
+    s.E_aem = edCell::membranePotential(s.chD, s.chC, -1.0, state_.T);
     s.E_mem_pair = s.E_cem + s.E_aem;
 
     s.R_dil  = edCell::solutionResistance(s.chD, hCh_, area_);

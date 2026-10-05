@@ -448,5 +448,23 @@ scalar meanNernstPotential(const ChannelState& chD, const ChannelState& chC,
                    : 0.0;
 }
 
+scalar membranePotential(const ChannelState& chD, const ChannelState& chC,
+                         scalar sign, scalar T)
+{
+    int    nCounter = 0;
+    scalar zCounter = 0.0;          // |z| of the FIRST counter-ion
+    for (std::size_t k = 0; k < chD.ion.size(); ++k)
+    {
+        if (chD.z[k] == 0.0 || (chD.z[k] > 0) != (sign > 0)) continue;
+        if (nCounter == 0) zCounter = std::abs(chD.z[k]);
+        ++nCounter;
+    }
+    if (nCounter == 0) return 0.0;
+    if (nCounter > 1)  return meanNernstPotential(chD, chC, sign, T);
+    const scalar r = meanActivityRatio(chD, chC, sign);
+    return (sign > 0) ? electrochem::nernst(+zCounter, r, T)
+                      : electrochem::nernst(-zCounter, 1.0 / r, T);
+}
+
 } // namespace edCell
 } // namespace Choupo

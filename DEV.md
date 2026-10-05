@@ -2003,6 +2003,22 @@ with its moved golden rows listed:
      its vapour fraction pinned (the pure-component exception of the
      two-variables rule); heater and phaseChanger checked for the same shape.
   4. The steady ED stack's Nernst term uses each ion's own |z| (ed04's Mg2+).
+     [BUILT 2026-10-05 on `claude/c36-nernst-fastarm`.  ONE home,
+     `edCell::membranePotential` (EDCell.cpp): one counter-ion in the
+     diluate -> `electrochem::nernst` at its own |z| (the single-salt
+     arithmetic, bit for bit); several -> `meanNernstPotential`.  The stack
+     (ElectrodialysisStack.cpp, the `E_cem`/`E_aem` lines) and the batch rig
+     both ask it; neither calls the Nernst equation itself.  MEASURED: NO
+     corpus row moves -- every ED log and result JSON is byte-identical
+     except ed04's console `AEM -0.00000` -> `0.00000` (a signed zero, no
+     golden reads it).  The premise "ed04 moves" was false: ed04's
+     concentrate inlets carry the diluate's own composition, so E_mem = 0
+     at any |z| (its README says so); ed09's concentrate holds only K+ and
+     HTart-, so every ion present in both channels is monovalent.  Gate
+     `check_ed_stack` arm (i) therefore BUILDS a divalent twin of ed04
+     (ED1's concentrate at 3x) where the old arithmetic gives 0.04438 V
+     against 0.02870 V, and recomputes E_mem_pair on 15 units;
+     `check_ed_batch` (g) holds the one home on the source.]
   5. `--fast`'s mass-closure atom arm judges only in-scope witnesses (it read
      leftover run outputs).
 Vítor's own deck stays his.  Status: dispatched 2026-10-05.
@@ -2291,7 +2307,9 @@ proper is z^2 D c and differs only between counter-ions of different
 valence on one membrane (ed04 ED1: Cl 4.52 % / SO4 2.39 % removed under
 z D c, 3.38 % / 3.53 % under z^2 D c).  Found, not fixed: the steady stack's
 Nernst term takes |z| = 1 for every ion (wrong for ed04's Mg2+; moves ed04's
-voltage, not this rule).
+voltage, not this rule).  [CLOSED by C36 item 4, 2026-10-05 -- and the
+"moves ed04's voltage" half was wrong: ed04's E_mem is zero at any |z|,
+and no corpus row moved.]
 
 **C34. "AVANÇA COM TUDO" (Vítor, 2026-10-04, after the month summary).**
 Every open item that is NOT his to decide, taken in two waves of generals in
