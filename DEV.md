@@ -1988,6 +1988,25 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C36. "AVANÇA COMO ACHARES MELHOR" (Vítor, 2026-10-05, verbatim, answering
+the C35 close-out report and its open list).**  The commander takes the open
+items of that list on its stated recommendations, each one revertable merge
+with its moved golden rows listed:
+  1. A PURE undeclared stream within a narrow band of its own saturation
+     temperature is REFUSED by name, asking for `phase liquid;`/`phase gas;`
+     (the C35 #4 finding: such a stream was classified by the last digits of
+     T).  The band is measured on the corpus first; a corpus stream inside it
+     is fixed by declaring what its case means, never by widening the band
+     silently.
+  2. ED counter-ion share stays z_i D_i c_i (Eqs. 12/13, already built).
+  3. heatExchanger publishes a single-component two-phase outlet at Tsat with
+     its vapour fraction pinned (the pure-component exception of the
+     two-variables rule); heater and phaseChanger checked for the same shape.
+  4. The steady ED stack's Nernst term uses each ion's own |z| (ed04's Mg2+).
+  5. `--fast`'s mass-closure atom arm judges only in-scope witnesses (it read
+     leftover run outputs).
+Vítor's own deck stays his.  Status: dispatched 2026-10-05.
+
 **C35. THE SIXTEEN DECISIONS (Vítor, 2026-10-05, verbatim: "Decide as 16
 como recomendaste e autorizo a regressão completa do #4.").**  The commander
 had listed 16 open decisions with a recommendation each; Vítor ruled that
