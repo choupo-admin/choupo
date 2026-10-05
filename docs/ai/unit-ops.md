@@ -1177,8 +1177,13 @@ Dry a NON-sorbing solid (a crystalline inorganic — e.g. Li₂CO₃) of its
 sorption isotherm exists or is consulted.  Free water evaporates into a real
 hot-air stream (constant-rate) until the **first of three announced limits**
 binds: all water gone · the exhaust air saturates (`maxExhaustHumidity`,
-default 0.95) · the air runs out of heat (energy floor).  Saturation and the
-adiabatic outlet T are solved coupled (evaporation cools the air).  No duty.
+default 0.95) · the air runs out of heat (energy floor: the solid leaves at
+its feed T and only the water the air can pay for there evaporates).
+Saturation and the adiabatic outlet T are solved coupled (evaporation cools
+the air); the limit announced is the one the answer satisfies.  No duty.  Its
+energy balance is the unit's own hand surface (constant air Cp, Watson latent
+heat), and a heat capacity it must default (a salt with no
+`solidHeatCapacity`) is announced.
 ```
 inputs  (wetSolid  hotAir );   outputs (drySolid  humidExhaust );
 operation { maxExhaustHumidity 0.95; }   // optional

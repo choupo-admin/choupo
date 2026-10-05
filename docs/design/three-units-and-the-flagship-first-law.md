@@ -221,7 +221,12 @@ and `T_out` 346.66 K against the old 347.51 K.
 that still compute an energy equation on a surface of their own; none is in
 the flagship, none was touched): `evaporator` (Watson latent, RESERVED);
 `evaporativeDryer` (constant-Cp air, Watson latent -- its two cases close
-within the 1 kW band today); `coolingTower` (pinned -14.5302 kW);
+within the 1 kW band today [CORRECTED 2026-10-05, DEV.md C26: they do not
+close and do not fail -- the report REFUSES their energy balance, NaCl
+carrying no formation datum, so no band ever judged them.  The same unit
+was evaporating 0.2887 kg/s of water no heat paid for on the lithium brine
+plant, unseen for the same reason; fixed on the unit's own surface, which
+stays its own]); `coolingTower` (pinned -14.5302 kW);
 `absorber`/`stripper` (pinned -27.9838 / +19.8710 kW); the CSTR's ADIABATIC
 and JACKETED temperature solves, which still price the blend (their duty is
 now resolved, so a disagreement would show as a nonzero remainder --

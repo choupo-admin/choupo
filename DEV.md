@@ -2171,6 +2171,80 @@ superheated chest is REFUSED there, falsely, not mispriced).
      Considered and NOT taken: a tool for the continuous dryer
      (Vitor's option 2, deferred).  The solid's falling-rate warm-up (a
      solid energy balance) stays the named physics gap in both dryers.
+     **SLICE 4 BUILT 2026-10-05 (C34 wave 2's "C26 slice 2", branch
+     `claude/c34-c26-slice2`, off ff9c4b52c; every claim below measured
+     there first).**  Taken because it is the open, unreserved remainder:
+     no EduTool text, no new refusal, no new physics.
+     (1) **THE "OPEN" SENTENCE IN SLICE 2 WAS ALREADY STALE.**  The
+     SolidDryer's cp-based balance was moved onto `flashState::priceState`
+     by D-ET2 (9f7917a46, merged ac06effef on 2026-10-03;
+     SolidDryer.cpp:186-216), and `solidDryer01_sugar` closes its plant at
+     0.0000 kW (run, not read); `check_energy_closure` U2 holds it.  Closed.
+     (2) **THE EVAPORATIVE DRYER DECIDED ITS LIMIT ON A HYPOTHETICAL.**  At
+     ff9c4b52c it asked only whether removing ALL the free water hit the
+     T_w floor (EvaporativeDryer.cpp:166 `Tout_full = Tout_for(water_in)`)
+     and then overrode any answer with that verdict (:185 `limit =
+     "energy"; // the floor dominates`).  Two defects, measured: on
+     `lithiumBrinePlant`'s FINISHING.dryer T_out sat AT the 363.15 K floor
+     WITH the exhaust at the 0.95 cap -- 0.3827 kg/s evaporated where the
+     air pays for 0.0941 kg/s there, so **0.2887 kg/s (1039 kg/h) of water
+     left with no heat behind it**, about 0.66 MW at water's ~2.28 MJ/kg
+     latent heat, invisible because that plant's energy balance is
+     UNAVAILABLE (NaCl and Li2CO3 carry no formation datum); and
+     `evapDryer02` was labelled energy-limited with a WARNING "T_out floored
+     at the feed T" beside a T_out of 310.7 K.  Now the heat the air can pay
+     for at the floor is closed-form, `water_pay = F_air cp_air (T_air -
+     T_w) / lambda(T_w)` (EvaporativeDryer.cpp:222), the exhaust cap is
+     solved INSIDE it (:225), the limit announced is the one the answer
+     satisfies (:232), the energy WARNING rides `AdvisoryLog` into the
+     caveat block (:307) and the saturation NOTE names what the heat could
+     have paid for.  Riding with it, each a silence and none moving a
+     number: the DEFAULT zero solid heat capacity (NaCl has no
+     `solidHeatCapacity`) and the 75.4 J/(mol K) liquid default are
+     announced (:156, :164); `dry.s` carries every crystal, not the first
+     (:273).  **THE UNIT STAYS ON ITS OWN HAND SURFACE, said in its header**:
+     moving it to `priceState` makes all three corpus cases refuse for want
+     of a salt formation datum -- a change to what the engine refuses.
+     (3) `CoolingTower` calls `psychrometry::Ysat` and `wetBulb`
+     (CoolingTower.cpp:175, :194), the copy Psychrometry.H named; the
+     tower's console and result JSON are BYTE-IDENTICAL on
+     `coolingTower01_merkel`; its Merkel h* stays its own (the classical
+     datum the method is taught on).  (4) `check_energy_closure`'s unit arm
+     now judges `convectiveDryer` (+ witnesses `convDryer01` co/counter):
+     slice 2's "closes by construction" had been held at PLANT level only.
+     GOLDENS MOVED, three rows, all `lithiumBrinePlant`, one reason (the
+     heat-from-nowhere water no longer evaporates): `stream.cleanAir.F` and
+     `stream.humidExhaust.F` 0.0320991487231 -> 0.0160765700214 kmol/s,
+     `stream.product.F` 0.00653418461064 -> 0.0225567633123 kmol/s (the
+     0.01602 kmol/s of water stays on the cake; T rows unmoved at the
+     floor).  `evapDryer02` moves inside its tolerance only (the bisection
+     interval shrank: T_out 310.725305 -> 310.725208 K).  Its header and
+     description said energy-limited and now say what binds; the
+     tutorials guide was regenerated and rebuilt (it also gained
+     `inletState01_undeclared_vapour`, which C34-A had not regenerated).
+     Gate `check_evaporative_dryer` (arms (a) each corpus case's announced
+     limit against its own answer, (b) doubling the gas at the floor
+     doubles the water to 2e-9, (c) the default announced; four by-hand
+     sabotages, each caught: S1 the cap ignoring the heat -> (a) lithium;
+     S2 all the water evaporated below the cap -> (b); S3 the label
+     override restored -> (a) evapDryer02; S4 the default silenced -> (c)).
+     **LEFT FOR VITOR, each a proposal, none taken:** (P1) `evapDryer02` is
+     NAMED energy_limited and is saturation-bound; rename it, or redesign
+     its inputs so heat binds (heat can bind before the cap only when the
+     wet solid is warm, because the cap is read at the floor T_w) -- the
+     only heat-bound case today is the lithium plant, whose dryer receives
+     a slurry at X = 79 kg/kg and now leaves it at 64 (98.5 wt% water):
+     the plant's dryer is under-aired, a case-design question.  (P2) The
+     T_w floor itself, in this unit and the solid dryer: a real solid cools
+     toward the gas's wet bulb; allowing it changes the model's domain.
+     (P3) This unit on the formation surface, which needs its salts priced
+     outside an electrolyte package or the cases moved into one.  (P4) The
+     falling-rate warm-up (unchanged).  (P5) The n < 1 RK4 landing 2.4e-6
+     below X_eq (unchanged, named in slice 1).  (P6) `convDryer01` pins
+     `energyResidual_kW` at 1.08e-7 and -4.87e-10 kW with reltol 1e-4 --
+     round-off pinned, the column13 shape; dropping the two rows is a row
+     that MOVES, so it is his.  (P7) The continuous-dryer EduTool (option
+     2), still deferred.
 
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o

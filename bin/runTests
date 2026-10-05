@@ -3414,6 +3414,20 @@ PYEOF
     fi
     rm -f /tmp/convdry.$$
 
+    # evaporative-dryer gate (2026-10-05, DEV.md C26).  The free-moisture
+    # dryer announces the limit its own answer satisfies, evaporates at its
+    # floor only what the gas pays for (doubling the gas doubles the water),
+    # and announces the zero heat capacity it defaults for a salt.
+    if "$ROOT/bin/curate/check_evaporative_dryer.py" > /tmp/evapdry.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "evaporative-dryer-gate" "$(head -1 /tmp/evapdry.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_evaporative_dryer.py)\n" "evaporative-dryer-gate"
+        cat /tmp/evapdry.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/evapdry.$$
+
     # quasi-steady gate (2026-09-30, #185).  A steady unit inside a
     # transient: the NF feed-and-bleed start-up must END on membrane18's
     # steady answer, its mass residual must converge with deltaT, and four

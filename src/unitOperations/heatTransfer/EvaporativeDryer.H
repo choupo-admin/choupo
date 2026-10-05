@@ -46,11 +46,22 @@ Description
         (1) all free water is gone            (X_final -> 0);
         (2) the exhaust air reaches saturation (a_w -> a_w_max, default 0.95)
             --- the constant-rate air-capacity limit;
-        (3) the air cannot supply the latent + sensible heat (energy floor).
+        (3) the air cannot supply the latent + sensible heat (energy floor):
+            the solid leaves at its feed temperature, this model's floor, and
+            ONLY the water the air can pay for there evaporates,
+            F_air cp_air (T_air - T_w) / lambda(T_w).
 
     Saturation and the adiabatic outlet T are COUPLED (evaporation cools the
     air, which lowers its carrying capacity): solved self-consistently by a
-    bisection on the removed water.  Every binding limit is ANNOUNCED.
+    bisection on the removed water, inside the evaporation the air can pay
+    for.  The limit ANNOUNCED is the one that binds the answer (2026-10-05:
+    it used to be the one that would have bound had ALL the water left).
+
+    The energy balance is this unit's own hand surface (constant air Cp at
+    the air's inlet T, a Watson latent heat), NOT the formation surface the
+    energy report prices on: the crystals of its shipped cases carry no
+    formation datum (a salt's is ion-derived), so the report refuses their
+    energy balance.  A heat capacity it must DEFAULT is announced.
 
         inputs  ( wetSolid  hotAir );   outputs ( drySolid  humidExhaust );
 \*---------------------------------------------------------------------------*/

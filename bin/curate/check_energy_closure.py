@@ -109,7 +109,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
     cancelling.  `energyBalance_byUnit.csv` localises it and ammonia02 is the
     proof that the localisation itself can be wrong.  ONE per-unit arm exists
     since 2026-09-27 (below): the units whose energy balance is H_out = H_in
-    BY CONSTRUCTION -- an adiabatic sprayDryer/solidDryer, and a
+    BY CONSTRUCTION -- an adiabatic sprayDryer/solidDryer/convectiveDryer, and a
     cstr/conversionReactor that published Q_kW -- must leave nothing
     unattributed.  Every other unit is judged only through the plant sum.
 
@@ -482,7 +482,10 @@ KNOWN_OPEN_KW = {
 #  Precision: the report prints kW to four decimals, so a remainder below
 #  UNIT_TOL_KW is zero to the report's own precision; the units solve their
 #  balances to a microwatt.
-UNIT_ADIABATIC = {"sprayDryer", "solidDryer"}
+#  `convectiveDryer` joined 2026-10-05 (DEV.md C26): it balances on the
+#  package's formation surface by construction (2026-09-29), a claim its own
+#  gate held only at PLANT level until then.
+UNIT_ADIABATIC = {"sprayDryer", "solidDryer", "convectiveDryer"}
 UNIT_DUTY_IS_DH = {"cstr", "conversionReactor"}
 UNIT_TOL_KW = 1.0e-4
 #  WITNESSES the arm must READ whenever their case is in scope, so it cannot
@@ -494,6 +497,8 @@ UNIT_WITNESSES = {
     ("tutorials/plant/ChemicalPlantTutorial", "FERMENTATION.Fermentor"),
     ("tutorials/steady/drying/sprayDryer01_sugar", "dryer"),
     ("tutorials/steady/drying/solidDryer01_sugar", "solidDryer"),
+    ("tutorials/steady/drying/convDryer01_sugar_curve", "co"),
+    ("tutorials/steady/drying/convDryer01_sugar_curve", "counter"),
 }
 UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
 
@@ -890,7 +895,8 @@ def main() -> int:
           "not); PER-UNIT closure in general, where a plant can close globally "
           "with two units cancelling -- EXCEPT the unit arm: %d unit(s) whose "
           "energy balance is H_out = H_in by construction (adiabatic "
-          "sprayDryer/solidDryer; a cstr/conversionReactor that published "
+          "sprayDryer/solidDryer/convectiveDryer; a cstr/conversionReactor "
+          "that published "
           "Q_kW) leave no more than %.0e kW unattributed in the report, "
           "every in-scope witness among %d was read, and %d case(s) running "
           "such a unit published no per-unit ledger (the report did not run "
