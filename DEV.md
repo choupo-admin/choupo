@@ -2174,9 +2174,12 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      647.096 K (sabotage at 20 %: caught).  Whose fix: the unit's.]
  12. evapDryer02 renamed for what binds it (exhaust saturation).  [DONE
      2026-10-05, branch `claude/c35-cases`:
-     `tutorials/steady/drying/evapDryer02_saturation_limited`; FASTSET,
+     a "saturation-limited" name (that day only); FASTSET,
      check_evaporative_dryer, caseManifest and the Tutorials Guide follow;
-     no GUI test or doc outside DEV.md named it; no golden row moved.]
+     no GUI test or doc outside DEV.md named it; no golden row moved.
+     RENAMED BACK the same day to `evapDryer02_energy_limited`: item 7's
+     wet-bulb floor made the case heat-bound at its floor again, and it is
+     the corpus's only energy-limited dryer case.]
  13. convDryer01's two round-off residual rows removed.  [DONE 2026-10-05,
      branch `claude/c35-cases`: `kpi co energyResidual_kW 1.08e-7` and
      `kpi counter energyResidual_kW -4.87e-10` deleted by hand, the reason
@@ -2580,7 +2583,7 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
      that MOVES, so it is his.  (P7) The continuous-dryer EduTool (option
      2), still deferred.
      **RULED 2026-10-05 (C35):** P1 -> items 12 and 11 (the case renamed
-     `evapDryer02_saturation_limited`; the lithium plant's gas DESIGNED for
+     `evapDryer02_energy_limited`; the lithium plant's gas DESIGNED for
      a dry product, so NO corpus case is heat-bound now and arm (b)'s warm
      fixture is the heat-bound witness, its caveat-block replay checked
      there); P6 -> item 13 (the two rows dropped); P2 -> item 7 (the floor
