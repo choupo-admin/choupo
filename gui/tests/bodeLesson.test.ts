@@ -284,6 +284,8 @@ describe("every file:line this page cites into the engine resolves", () => {
     ["src/dynamicDriver/DynamicDriver.cpp", 1853, "fit_residual_rel"],
     // the drive
     ["src/control/signal/Signals.H", 124, "amplitude*sin"],
+    // the half-step lag: the drive is held across the step (C22 slice 2)
+    ["src/dynamicDriver/DynamicDriver.cpp", 1565, "zero-order hold"],
     // "one point of a Bode plot" — the engine's own words for what it measures
     ["src/control/signal/Signal.H", 42, "one point of a Bode plot"],
     // the tank whose lag the page derives

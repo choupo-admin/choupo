@@ -132,10 +132,17 @@ export const TEAR_STEPS: readonly LessonStep[] = [
       + "solver, and they need opposite remedies: the first needs a tear and "
       + "an iteration; the second needs the units moved. Declaring a tear "
       + "for the second compensates a typing mistake with an artificial "
-      + "iteration, and gets a converged wrong answer.",
+      + "iteration: with no loop behind it the iteration settles on the "
+      + "producer's answer, so the number comes out right, but the plan "
+      + "now claims a recycle the plant does not have and hides the mistake "
+      + "— which is why Choupo refuses it rather than running it. Leaving "
+      + "it undeclared is what gives the wrong answer: the consumer reads "
+      + "its 0/ seed.",
     derivation: [
       { step: "Take the backward edge from producer P to consumer C. Ask "
-          + "whether C can reach P by following forward edges." },
+          + "whether C can reach P by following the plant's edges — ALL of "
+          + "them, forward and backward, as the engine does: a loop may "
+          + "close through another backward edge." },
       { step: "If it can, the edge closes a cycle and is a real recycle. "
           + "This is a TEAR." },
       { step: "If it cannot, there is no loop: the producer is simply "

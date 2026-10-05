@@ -297,7 +297,9 @@ Y &= 1 - \exp\!\left[ \frac{1 + 54.4\,X}{11 + 117.2\,X} \cdot \frac{X - 1}{\sqrt
       + "inspect and no place to see where the separation is actually "
       + "happening.  The feed stage comes from Kirkbride, which is another "
       + "empirical fit, not a derivation.  And with α held constant, α can "
-      + "never equal one, so no azeotrope is representable at all: point a "
+      + "never CROSS one — an azeotrope is exactly where α passes through one "
+      + "as the composition changes — so no azeotrope is representable at "
+      + "all: point a "
       + "shortcut column at ethanol/water and it will return a stage count, "
       + "and that count will be an answer to a system that does not exist.",
     formula: String.raw`\begin{aligned}
@@ -343,7 +345,9 @@ export const FUG_LIMITS: readonly { id: string; title: string; body: string }[] 
       + "A real column runs colder at the top than at the bottom and its α "
       + "varies over that span; none of that variation is in these numbers. "
       + "The hard consequence is not inaccuracy but expressiveness: a constant "
-      + "α can never equal one, so no azeotrope is representable at all.",
+      + "α can never CROSS one, and an azeotrope is a point where α passes "
+      + "through one with composition, so no azeotrope is representable at "
+      + "all.",
   },
   {
     id: "constant-molar-overflow",

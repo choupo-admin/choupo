@@ -185,9 +185,12 @@ export const THIELE_STEPS: readonly {
     title: "You cannot measure φ. You can measure η·φ².",
     body: "To compute φ you need k and D_eff — the two things you were "
       + "trying to establish.  This is circular, and the way out is the "
-      + "WEISZ-PRATER criterion, which is built only from quantities you can "
-      + "actually observe: the rate the pellet is delivering right now, its "
-      + "size, and the surface concentration.  Well below 1 and you are "
+      + "WEISZ-PRATER criterion, which replaces the intrinsic k by what you "
+      + "can actually observe: the rate the pellet is delivering right now, "
+      + "its size, and the surface concentration.  It still needs D_eff — "
+      + "an ESTIMATE, from the pellet's porosity and tortuosity, not from "
+      + "the reaction — so it is a judgement under that estimate's "
+      + "uncertainty, not a measurement.  Well below 1 and you are "
       + "kinetically controlled; well above 1 and you are not.  It answers "
       + "the design question without ever asking for the intrinsic rate.",
     formula: "M_W = η·φ_Λ²  =  (r_obs · Λ²) / (D_eff · c_s),   Λ = V/S",
@@ -971,7 +974,9 @@ export function ThielePelletTool(): JSX.Element {
             phase boundary: nothing happens abruptly there, the diffusion
             limitation grows smoothly, and conventional practice often uses a
             tighter figure (of order 0.3) before calling internal diffusion
-            negligible.  What the crossing marks is that your flask constant
+            negligible — and that figure, too, belongs to ONE of the two
+            conventions above, which whoever quotes it must name before it is
+            compared with either number.  What the crossing marks is that your flask constant
             has stopped describing your bed by a margin you can no longer
             ignore.
           </Text>

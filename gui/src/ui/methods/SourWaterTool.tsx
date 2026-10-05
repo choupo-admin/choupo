@@ -45,8 +45,10 @@ License
 
   It walks tutorials/steady/distillation/stripper02_sour_water_h2s, whose
   chemistry is anchored one layer down by edwards02/03 against Edwards et al.
-  (1978) Tables 7 and 8 -- so the numbers here rest on a published
-  measurement, which is not true of most of this shelf and is said out loud.
+  (1978) Tables 7 and 8 -- reproducing the paper's own PREDICTIONS from its
+  own equations, with its measurements quoted there as context only.  That
+  is a verification of a transcription, not a validation against measured
+  data, and the page says so out loud.
 
   ZERO PHYSICS IN TYPESCRIPT: nothing is computed here.
 \*---------------------------------------------------------------------------*/
@@ -74,11 +76,12 @@ export const SOURWATER_STEPS = [
       + "`speciation {}` block that decomposes the liquid into the species "
       + "the equilibrium is actually solved in.  Neither is derived from the "
       + "other by convention — the bridge is DECLARED on the component, and "
-      + "the reader verifies m = A n against the same bridges.",
+      + "the reader verifies m = A n against the same bridges, where m is "
+      + "the master-species TOTALS on the same molar basis as n.",
     where: [
       { sym: "K₁, K₂", means: "dissociation constants of the sulfide family at T", unit: "—" },
-      { sym: "m_i", means: "molality of aqueous species i", unit: "mol/kg" },
-      { sym: "A", means: "the declared stoichiometric bridge, component → species", unit: "—" },
+      { sym: "m", means: "the master-species totals the apparent amounts map onto — an AMOUNT on the same basis as n, not a molality despite the letter", unit: "mol" },
+      { sym: "A", means: "the declared stoichiometric bridge, component → master species", unit: "—" },
       { sym: "n", means: "the apparent component amounts (the flowsheet's state)", unit: "mol" },
     ],
     assumes: "That the case DECLARES which networks exist.  A component with "
@@ -94,7 +97,7 @@ export const SOURWATER_STEPS = [
       + "given, electroneutrality is one more row.  Together they are a "
       + "small nonlinear system solved by Newton at every point where a "
       + "composition is needed.",
-    eq: "m_species = K(T) · Π_j (γ_j m_j)^ν_j          (mass action)\n"
+    eq: "γ_species m_species = K(T) · Π_j (γ_j m_j)^ν_j   (mass action)\n"
       + "Σ_species ν_ji m_species = n_j                (master balance)\n"
       + "Σ_species z_species m_species = 0             (electroneutrality)",
     after: "The temperature enters through K, by van't Hoff on the record's "
@@ -108,7 +111,8 @@ export const SOURWATER_STEPS = [
       { sym: "γ_j", means: "activity coefficient of species j (Davies, Pitzer or Edwards)", unit: "—" },
       { sym: "ν_ji", means: "stoichiometric coefficient of master j in species i", unit: "—" },
       { sym: "z", means: "charge of a species", unit: "—" },
-      { sym: "n_j", means: "total moles of master species j from the apparent basis", unit: "mol" },
+      { sym: "m_j, m_species", means: "molality of master j, of a formed species", unit: "mol/kg" },
+      { sym: "n_j", means: "total of master species j from the apparent basis, PER KILOGRAM OF WATER — a molality, so that the balance adds like to like", unit: "mol/kg" },
     ],
     assumes: "That the curated records for these families exist and are "
       + "reachable from THIS feed.  A record the feed cannot reach is "
@@ -157,7 +161,9 @@ export const SOURWATER_STEPS = [
       + "follow the carbonate out — m_HCO3 collapses from 0.14620364 to "
       + "5.6325275e-06 while m_HS goes the other way, 0.27828666 to "
       + "0.28854884.  The departing ammonia and the accumulating sulfide "
-      + "acidify faster than the departing carbonate alkalinises.",
+      + "acidify faster than the departing carbonate alkalinises.  (The "
+      + "molalities are read from stage 2, the feed stage, down to the "
+      + "reboiler: the top stage carries no sulfide at all.)",
     where: [
       { sym: "m_HCO3", means: "molality of bicarbonate on the tray", unit: "mol/kg" },
       { sym: "m_HS", means: "molality of bisulfide on the tray", unit: "mol/kg" },
@@ -172,32 +178,47 @@ export const SOURWATER_STEPS = [
   {
     n: 5,
     title: "Where the numbers come from",
-    body: "Almost nothing on this shelf is validated against measurement, "
-      + "and this page is one of the exceptions — so it is worth being "
-      + "precise about what is anchored and what is not.",
+    body: "Almost nothing on this shelf is checked against a published "
+      + "reference, and this page is one of the exceptions — but the "
+      + "reference is a published MODEL's own predictions, not a "
+      + "measurement, so it is worth being precise about what is anchored "
+      + "and what is not.",
     after: "The CHEMISTRY under this column is pinned one layer down by two "
       + "witness cases that reproduce Edwards, Maurer, Newman & Prausnitz, "
       + "AIChE J. 24(6):966-976 (1978) — its Table 7 for the NH₃-CO₂-water "
       + "system and Table 8 for NH₃-H₂S-water — with the paper's own "
-      + "truncated Pitzer expansion, its own parameters, and bands sized to "
-      + "the measured residual rather than chosen to pass.  The COLUMN "
+      + "truncated Pitzer expansion and its own parameters, compared with "
+      + "the paper's PREDICTED values (its measurements are quoted as context "
+      + "only), with bands sized to the residual measured between the two "
+      + "rather than chosen to pass.  That verifies a transcription of a "
+      + "published model; it does not validate the model against measured "
+      + "data.  The COLUMN "
       + "itself is not validated against anything: its stage count, feed "
       + "position and reflux are a teaching configuration, and its golden "
       + "records that the answer has not MOVED, never that it is right.",
     where: [],
     assumes: "That an anchored property model under an unanchored unit gives "
-      + "an unanchored answer.  It does.  The anchor buys confidence in the "
-      + "chemistry, not in the column.",
+      + "an unanchored answer.  It does.  The anchor buys confidence that the "
+      + "chemistry is the paper's — and none at all in the column.",
     cites: "tutorials/props/electrolyte/edwards02_table7_vle",
   },
 ] as const;
 
+/** One row per quantity, one column per profile STAGE, every cell a row the
+ *  golden pins (profile row index = stage - 1).  The old table had one "top"
+ *  column holding stage 1's pH beside stage 2's bicarbonate and bisulfide --
+ *  stage 1 carries no sulfide at all -- so the two stages are now apart, and
+ *  a cell the golden does not pin is "—" rather than borrowed from a
+ *  neighbour (C22 slice 2). */
 export const SOURWATER_TABLE = [
-  { q: "pH", top: "8.4947876", bottom: "7.6090598" },
-  { q: "m_HCO3  [mol/kg]", top: "0.14620364", bottom: "5.6325275e-06" },
-  { q: "m_HS  [mol/kg]", top: "0.27828666", bottom: "0.28854884" },
-  { q: "m_H2Saq  [mol/kg]", top: "0", bottom: "0.008247863" },
-  { q: "T  [K]", top: "356.430868413", bottom: "372.031545213" },
+  { q: "pH", s1: "8.4947876", s2: "8.2089848", s8: "7.6090598" },
+  { q: "m_HCO3  [mol/kg]", s1: "—", s2: "0.14620364", s8: "5.6325275e-06" },
+  { q: "m_HS  [mol/kg]", s1: "0", s2: "0.27828666", s8: "0.28854884" },
+  { q: "m_H2Saq  [mol/kg]", s1: "0", s2: "—", s8: "0.008247863" },
+  //  T: the golden pins the distillate and bottoms STREAMS, which leave at
+  //  the stage-1 and stage-8 temperatures (356.43087 / 372.03155 K in the
+  //  profile, equal to the profile's printed precision).
+  { q: "T  [K]", s1: "356.430868413", s2: "—", s8: "372.031545213" },
 ] as const;
 
 export function SourWaterTool(): JSX.Element {
@@ -256,22 +277,27 @@ export function SourWaterTool(): JSX.Element {
       <Box>
         <Title order={5}>Down the column</Title>
         <Text size="sm" mt={4} mb={8}>
-          Tray 0 (condenser) to tray 7 (reboiler), off the run's own profile.
+          Stages 1 (top), 2 (feed) and 8 (reboiler), off the run's own
+          profile.  The top stage carries no sulfide at all, so the
+          bisulfide and bicarbonate are followed from stage 2; a dash is a
+          value the golden does not pin.
         </Text>
         <Table withTableBorder withColumnBorders striped>
           <Table.Thead>
             <Table.Tr>
               <Table.Th>quantity</Table.Th>
-              <Table.Th>top</Table.Th>
-              <Table.Th>bottom</Table.Th>
+              <Table.Th>stage 1 (top)</Table.Th>
+              <Table.Th>stage 2 (feed)</Table.Th>
+              <Table.Th>stage 8 (reboiler)</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {SOURWATER_TABLE.map((r) => (
               <Table.Tr key={r.q}>
                 <Table.Td><Code style={{ fontSize: 11 }}>{r.q}</Code></Table.Td>
-                <Table.Td>{r.top}</Table.Td>
-                <Table.Td>{r.bottom}</Table.Td>
+                <Table.Td>{r.s1}</Table.Td>
+                <Table.Td>{r.s2}</Table.Td>
+                <Table.Td>{r.s8}</Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>

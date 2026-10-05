@@ -150,8 +150,11 @@ y &= \frac{\bar L}{\bar V}\,x - \frac{B}{\bar V}\,x_B
           + "heat, so q = 1; a saturated vapour needs none, so q = 0; a "
           + "sub-cooled liquid needs more than one, so q > 1.", eq: "" },
       { step: "What the feed does to the internal flows follows directly "
-          + "from that definition — the liquid gains the liquid FRACTION of "
-          + "the feed, and the vapour loses the rest.",
+          + "from that definition — the liquid gains qF and the vapour "
+          + "(1 − q)F.  Between 0 and 1, q is the liquid FRACTION of the "
+          + "feed; outside that range it is not a fraction at all — a "
+          + "sub-cooled feed (q > 1) also condenses vapour on the feed "
+          + "stage, and a superheated one (q < 0) evaporates liquid.",
         eq: String.raw`\bar L = L + q\, F \qquad V = \bar V + (1 - q)\, F`},
       { step: "Subtract the two operating-line balances, one from the "
           + "other, and use the overall balance F·z_F = D·x_D + B·x_B.  "

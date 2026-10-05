@@ -380,8 +380,10 @@ export const WITNESS_TAU_S =
   / (WITNESS_FEED_KMOL_S.compA + WITNESS_FEED_KMOL_S.compB);
 
 /** Accepted states per drive period.  It fixes the time step, and through it
- *  the ONE systematic error of the measurement: reading the state on a grid
- *  of step dt lags the continuous answer by half a step, so the fitted phase
+ *  the ONE systematic error of the measurement: the engine holds the drive
+ *  constant across each step (a zero-order hold, DynamicDriver.cpp's
+ *  fixed-step loop), and a held sinusoid lags the continuous one by half a
+ *  step -- the hold, not the reading of states on a grid -- so the fitted phase
  *  carries a bias of exactly -w dt/2 = -pi/STEPS_PER_PERIOD radians — the
  *  SAME at every frequency, because dt is set from the period.  The witness
  *  case's own header names this bias for its single frequency; here it

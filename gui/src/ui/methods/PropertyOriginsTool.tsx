@@ -96,7 +96,9 @@ export const ANATOMY = [
     field: "MW",
     question: "How heavy is a mole?",
     cite: "src/thermo/Component.H · every mass anywhere",
-    note: "The one field with no model behind it — a weighing. Every kg in "
+    note: "The one field with no model behind it: the sum of the standard "
+      + "atomic weights over the formula — not a weighing of the substance, "
+      + "though the atomic weights themselves are measured. Every kg in "
       + "every balance routes through it.",
   },
   {
@@ -104,7 +106,9 @@ export const ANATOMY = [
     question: "Where do H and S start counting?",
     cite: "src/thermo/Component.cpp · h_pure_ig / s_pure_ig",
     note: "The caloric anchors: the elements-convention enthalpy datum and "
-      + "the MEASURED third-law entropy. Every duty, every Kp, every "
+      + "the third-law entropy — measured where the record cites a "
+      + "measurement, and a visible gap where it does not (the acetone "
+      + "estimate below leaves s_298 open). Every duty, every Kp, every "
       + "exergy stands on them (the entropy page walks the ledger).",
   },
   {
@@ -120,8 +124,10 @@ export const ANATOMY = [
     cite: "src/thermo/equationOfState/SRK.cpp · a(T) = a_c·α(Tr; ω)",
     note: "Asleep under idealGas; they wake when a case declares a cubic. "
       + "ω is a PARAMETER OF A MODEL as much as a property of a substance "
-      + "— it is regressed from a vapour-pressure correlation, not "
-      + "measured on a bench.",
+      + "— it is DEFINED by the vapour pressure at T_r = 0.7, "
+      + "ω = −log₁₀(P_sat/P_c) − 1 there, so it is read off vapour-pressure "
+      + "data or a correlation, never measured on a bench of its own — and "
+      + "in the estimate below it comes from (Tb, Tc, Pc) by Lee–Kesler.",
   },
   {
     field: "Tb, HvapTb",
@@ -143,15 +149,16 @@ export const ANATOMY = [
     question: "What is the molecule MADE of?",
     cite: "src/propertyOps/EstimateComponent.cpp · Joback decomposition",
     note: "The curation recipe: when nobody measured a constant, the "
-      + "molecule is priced by its parts — visibly, group by group, as "
-      + "the table above shows.",
+      + "molecule is priced by its parts, group by group.  The table above "
+      + "shows the TOTALS of that pricing, not the per-group sum, and its ω "
+      + "row is not a group sum at all.",
   },
 ] as const;
 
 /** The questions this page installs. */
 export const ORIGINS_INTERROGATION = [
   "Who measured this number — or is it fitted, or estimated? (The record's provenance tags answer.)",
-  "Is it a property of the substance or a parameter of a model — which correlation was ω regressed from?",
+  "Is it a property of the substance or a parameter of a model — which vapour-pressure data or correlation was ω read from?",
   "What is the estimation method's typical error on THIS property class — and does your design survive it?",
   "Is the datum on the rung the record declares (ideal gas / pure liquid / pure solid)?",
   "If the value is an estimate, who reviews it before it enters the catalogue?",
@@ -165,7 +172,7 @@ function EstimateTable({ d }: { d: { [k: string]: number } }) {
       <Group justify="space-between" px="sm" py={6}
         style={{ borderBottom: `2px solid ${GRID}` }}>
         <Text size="xs" c={INK} fw={700} tt="uppercase">
-          acetone, priced by its parts — 2×CH₃ + 1 ketone (Joback)
+          acetone, priced by its parts — 2×CH₃ + 1 ketone (Joback; ω by Lee–Kesler from the estimated Tb, Tc, Pc)
         </Text>
       </Group>
       <Group px="sm" py={4} style={{ borderBottom: `1px solid ${GRID}` }}>
@@ -276,9 +283,11 @@ export function PropertyOriginsTool(): JSX.Element {
           )}
           {d && <EstimateTable d={d} />}
           <Text size="sm" mt={6}>
-            A couple of percent on the criticals, a few tenths on the
-            formation enthalpy — good enough to size a first design, and
-            exactly the number you must NOT forget you are standing on.
+            A couple of percent on the boiling point and the criticals —
+            good enough to size a first design, and exactly the number you
+            must NOT forget you are standing on.  The formation enthalpy is
+            estimated too, but the case cites no reference for it, so how far
+            off it is cannot be read here: that is what “uncited” means.
             The engine writes the estimate as a reviewable
             <em> proposal file</em>, with its gaps left as visible TODOs;
             it never slips an estimate into the catalogue, because

@@ -339,7 +339,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
     derivation: [
       { step: "What Wegstein has: one number per variable, the diagonal seen "
           + "along one direction.",
-        eq: String.raw`s_i \text{ approximates the partial derivative of } g_i \text{ in } x_i`},
+        eq: String.raw`s_i \text{ is a secant along the path: the partial derivative of } g_i \text{ in } x_i \text{ only if every other variable stood still}`},
       { step: "What Newton has: every cross-term, so a step accounts for a "
           + "change in one variable feeding back through another.",
         eq: String.raw`J = \frac{\mathrm{d}G}{\mathrm{d}x} - I, \qquad J\, \mathrm{d}x = -r`},

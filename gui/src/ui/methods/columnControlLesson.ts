@@ -223,8 +223,10 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
         + "selected tray moves when you change it.", unit: "the handle's own" },
       { sym: "\\Delta u",
         means: "The size of the step applied to u in the finite "
-        + "difference.  It cancels in the ratio, which is why the criterion "
-        + "compares trays rather than measuring a gain.", unit: "u's own" },
+        + "difference.  It does not cancel: ΔT(n)/Δu IS a finite-difference "
+        + "estimate of the steady-state GAIN of tray n to the handle.  The "
+        + "same Δu serves every tray, so the argmax ranks the trays by that "
+        + "gain.", unit: "u's own" },
     ],
     note: "The sign is where the trap lives.  The temperature response "
       + "changes sign somewhere between the two ends of the column, and a "
@@ -232,7 +234,9 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
       + "steep the profile looks there — which the slope criterion cannot "
       + "warn you about, because it never asks the handle a question.  Note "
       + "also what the substitution assumes: temperature stands for "
-      + "composition exactly only for a binary at a fixed pressure.",
+      + "composition exactly only for a ZEOTROPIC binary at a fixed "
+      + "pressure — an azeotropic one gives two compositions the same "
+      + "bubble point.",
   },
   {
     n: 5,
@@ -298,9 +302,11 @@ export const COLUMN_CONTROL_LIMITS: readonly {
   {
     id: "temperature-for-composition",
     title: "Temperature stands for composition only under conditions.",
-    body: "For a binary at fixed pressure, bubble-point temperature and "
-      + "liquid composition are in one-to-one correspondence and the "
-      + "substitution is exact. With more than two components many "
+    body: "For a zeotropic binary at fixed pressure, bubble-point "
+      + "temperature and liquid composition are in one-to-one correspondence "
+      + "and the substitution is exact. An azeotropic binary has a "
+      + "temperature extremum, and compositions on either side of it share "
+      + "a bubble point. With more than two components many "
       + "compositions share a bubble point; and if the column pressure moves, "
       + "the temperature moves with no composition change at all. Both are "
       + "limits of the substitution, not of the thermocouple.",

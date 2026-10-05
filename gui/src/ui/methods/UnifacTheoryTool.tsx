@@ -92,13 +92,14 @@ export const UNIFAC_STEPS = [
     title: "The group interaction, and the one temperature dependence",
     body: "Between two group types sits one number a_mn, published in a "
       + "table, asymmetric (a_mn ≠ a_nm), and entering exactly one place:",
-    eq: "Ψ_mk = exp( −a_mn / T )      (Ψ = 1 within one main group, a = 0)",
+    eq: "Ψ_mn = exp( −a_mn / T )      (Ψ = 1 within one main group, a = 0)",
     after: "Groups belonging to the SAME main group — CH₃ and CH₂ both "
       + "belong to main group CH₂ — interact with a = 0, hence Ψ = 1: "
       + "athermally.  A model that distinguished them energetically would "
       + "be claiming that a methyl feels a methylene, which the table does "
-      + "not claim.  As in NRTL, temperature enters this model in exactly "
-      + "one exponential and nowhere else.",
+      + "not claim.  Temperature enters this model in exactly one "
+      + "exponential and nowhere else — unlike NRTL, where it enters through "
+      + "τ itself as well as through exp(−ατ).",
     assumes: "One number per ordered main-group pair, temperature-"
       + "independent, valid across every molecule those groups appear in.",
     cites: "UNIFAC.cpp:248-254",
@@ -107,8 +108,10 @@ export const UNIFAC_STEPS = [
     n: 4,
     title: "The group activity coefficient — UNIQUAC's residual, one level down",
     body: "Now the same expression you have already seen, with groups where "
-      + "molecules used to be.  Area fractions first, then the activity of "
-      + "each group in whatever surroundings it finds:",
+      + "molecules used to be.  Area fractions first — X_m is the GROUP mole "
+      + "fraction, the number of groups m over the total number of groups "
+      + "in the mixture — then the activity of each group in whatever "
+      + "surroundings it finds:",
     eq: "Θ_m = Q_m X_m / Σ_n Q_n X_n\n"
       + "ln Γ_k = Q_k [ 1 − ln( Σ_m Θ_m Ψ_mk )"
       + " − Σ_m Θ_m Ψ_km / ( Σ_n Θ_n Ψ_nm ) ]",
@@ -201,9 +204,10 @@ export function UnifacTheoryTool(): JSX.Element {
           NRTL's gap is <em>nobody has fitted YOUR pair</em>: it closes by
           regressing data, and the tree has a fitter for exactly that.
           UNIFAC's gap is <em>the PUBLISHED TABLE has holes</em> — Hansen
-          1991 genuinely does not report every main-group pair — so no
-          amount of your own data closes it, because the missing number is a
-          missing entry in somebody else's matrix.
+          1991 genuinely does not report every main-group pair — so your
+          own data closes it only by regressing that group pair yourself,
+          and the result is a NEW, named parameterisation, not a hole filled
+          in somebody else's published matrix.
         </Text>
         <Text size="sm" mt={6}>
           Which is why the engine treats them differently.  Refusing on a

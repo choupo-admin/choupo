@@ -569,9 +569,10 @@ export function BodeTool(): JSX.Element {
           )}
           <Text size="sm" mt={6}>
             The phase gap is not noise and it is not the construction being
-            wrong: it is the MEASUREMENT&apos;s own lag. The fit reads accepted
-            states on a grid of step Δt, which trails the continuous answer by
-            half a step, so the fitted phase carries exactly −ω·Δt/2. This
+            wrong: it is the MEASUREMENT&apos;s own lag. The engine holds the
+            sine drive constant across each step of length Δt (a zero-order
+            hold), and a held sinusoid trails the continuous one by half a
+            step, so the fitted phase carries exactly −ω·Δt/2. This
             sweep sets Δt to the drive period over {STEPS_PER_PERIOD}, so that
             bias is the same at every point:{" "}
             −π/{STEPS_PER_PERIOD} = {fmtExp(SAMPLING_PHASE_BIAS_RAD, 3)} rad ={" "}

@@ -60,8 +60,10 @@ export const LC_STEPS = [
     body: "Raoult's law assumes a molecule's neighbours are drawn at random "
       + "from the mixture, so a molecule of 1 in a 50/50 mixture is "
       + "surrounded by half 1 and half 2.  In a real liquid that is false "
-      + "whenever the molecules prefer each other: ethanol near water sits "
-      + "in a neighbourhood richer in water than the bulk is.  Call the "
+      + "whenever the molecules have preferences: ethanol and water deviate "
+      + "POSITIVELY from Raoult's law, each preferring its own kind, so an "
+      + "ethanol molecule sits in a neighbourhood richer in ethanol than the "
+      + "bulk is.  Call the "
       + "LOCAL mole fraction x_ji — the fraction of the molecules around a "
       + "central molecule i that are of type j.  Every model on this page "
       + "is one answer to: how is x_ji related to the bulk x_j?",
@@ -212,9 +214,13 @@ export function LocalCompositionTool(): JSX.Element {
           Every model on this page needs numbers fitted to <em>your</em> pair.
           A textbook stops there.  An implementation cannot: it has to do
           something when the pair is not in the catalogue, and what Choupo
-          does is run that pair at <Code>τ = 0</Code>, which is{" "}
-          <strong>exactly ideal</strong> — γ = 1, Raoult's law, as though the
-          molecules had no preference at all.
+          does is run that pair with no interaction energy:{" "}
+          <Code>τ = 0</Code> in NRTL, <Code>Λ = 1</Code> in Wilson,{" "}
+          <Code>τ = 1</Code> in UNIQUAC.  In NRTL and Wilson that pair is
+          then <strong>exactly ideal</strong> — γ = 1, Raoult's law, as though
+          the molecules had no preference at all.  UNIQUAC is the exception:
+          its combinatorial (size-and-shape) term does not vanish, so the pair
+          is athermal, not ideal.
         </Text>
         <Text size="sm" mt={6}>
           That is a defensible choice and a dangerous one, so it is neither

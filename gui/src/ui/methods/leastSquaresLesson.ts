@@ -105,7 +105,8 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "possible at all, and it buys a closed-form linear step. What it "
       + "ASSUMES is an error structure: minimising the sum of squares is the "
       + "maximum-likelihood estimate exactly when the measurement errors are "
-      + "independent, have zero mean, and all have the SAME variance. That is "
+      + "independent, NORMALLY distributed, have zero mean, and all have the "
+      + "SAME variance. That is "
       + "a claim about the laboratory, not a law of mathematics. If some "
       + "points are more trustworthy than others you should weight them by "
       + "their own uncertainty; Choupo's bubble-temperature residual is "
@@ -143,8 +144,10 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "minimised in one step. But near the current guess it very nearly is. "
       + "Linearise each residual about the current parameters, substitute the "
       + "linearisation into the sum of squares, and what is left is an "
-      + "ordinary quadratic in the STEP — which has exactly one minimum and is "
-      + "found by one linear solve. That is Gauss-Newton, and the matrix in it "
+      + "ordinary quadratic in the STEP — which has exactly one minimum, "
+      + "provided the Jacobian has full column rank (no parameter's effect is "
+      + "a combination of the others'), and is found by one linear solve. "
+      + "That is Gauss-Newton, and the matrix in it "
       + "is the whole reason the method is cheap: it is built from FIRST "
       + "derivatives only.",
     derivation: [
@@ -541,8 +544,9 @@ export const LS_LIMITS: readonly LessonLimit[] = [
     id: "error-structure",
     title: "Least squares assumes an error structure nobody checked",
     body: "Minimising the plain sum of squares is the maximum-likelihood "
-      + "answer when the measurement errors are independent, zero-mean and "
-      + "all of the same size. Nothing in this run tests any of those. The "
+      + "answer when the measurement errors are independent, normally "
+      + "distributed, zero-mean and all of the same size. Nothing in this run "
+      + "tests any of those. The "
       + "dataset declares no per-point uncertainty, so the fit treats a point "
       + "at the azeotrope and a point in the dilute corner as equally "
       + "trustworthy, which the underlying measurements almost certainly are "

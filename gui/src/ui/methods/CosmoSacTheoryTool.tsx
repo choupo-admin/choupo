@@ -165,9 +165,11 @@ export const COSMO_STEPS = [
       + "It is worth seeing that the ONLY place temperature enters this "
       + "model is the RT in that exponential.  The σ-profiles do not "
       + "depend on T, and neither does ΔW.",
-    assumes: "The liquid is a random mixture of surface segments — each "
-      + "segment sees the AVERAGE composition of the mixture's surface, "
-      + "never a preferred neighbour.",
+    assumes: "The liquid is a mixture of independent surface segments.  "
+      + "Their pairings are NOT random — the exp(−ΔW/RT) in the equation "
+      + "Boltzmann-weights every contact, so a segment does prefer "
+      + "partners it pairs well with — but nothing beyond the pair is "
+      + "tracked: no geometry, no neighbour of a neighbour.",
     cites: "CosmoSac.cpp:118-133",
   },
   {
@@ -199,7 +201,10 @@ export const COSMO_STEPS = [
     eq: "r_i = V_i / r₀ ,   q_i = A_i / q₀ ,   l_i = (z/2)(r_i − q_i) − (r_i − 1)\n"
       + "ln γ_i^comb = ln(φ_i/x_i) + (z/2) q_i ln(θ_i/φ_i) + l_i "
       + "− (φ_i/x_i) Σ_j x_j l_j",
-    after: "The engine forms φ_i/x_i and θ_i/x_i as ratios and never "
+    after: "Here φ_i = x_i r_i / Σ_j x_j r_j is the VOLUME fraction and "
+      + "θ_i = x_i q_i / Σ_j x_j q_j the AREA fraction of component i, and "
+      + "z = 10 is the lattice coordination number.  "
+      + "The engine forms φ_i/x_i and θ_i/x_i as ratios and never "
       + "divides by x_i, so the expression stays finite at infinite "
       + "dilution — the limit where an activity coefficient matters most "
       + "and where a naive transcription of this formula returns NaN.",
@@ -213,13 +218,16 @@ export const COSMO_STEPS = [
     title: "Put them together",
     eq: "ln γ_i = ln γ_i^comb + ln γ_i^res",
     body: "That is the whole model.  Two σ-profiles, two areas, two "
-      + "volumes, eight constants — and not one number fitted to the pair "
-      + "in front of you.  Everything the model will ever say about "
-      + "water/ethanol was decided before anyone thought about mixing "
-      + "them.",
+      + "volumes, eight universal constants — and not one number fitted to "
+      + "the pair in front of you.  The constants are not innocent of "
+      + "mixtures: several of them (the misfit factor α', the "
+      + "hydrogen-bonding c_HB and σ_HB) were regressed once, by the model's "
+      + "authors, on mixture data for many systems.  What was decided "
+      + "before anyone mixed water and ethanol is everything SPECIFIC to "
+      + "that pair.",
     after: "Which is the claim to test, and the reason the comparison page "
-      + "exists: predictive means “no mixture data used”, never “as "
-      + "accurate as a fit”.",
+      + "exists: predictive means “no data for THIS mixture used”, never "
+      + "“as accurate as a fit”.",
     assumes: "That the two contributions are SEPARABLE and simply add — "
       + "that the entropy of packing different-sized molecules and the "
       + "energy of pairing their surfaces can be computed independently "
