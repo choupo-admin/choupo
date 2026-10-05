@@ -145,8 +145,11 @@ COMPETITOR_SKIP_PREFIX = ("generated/", "thirdParty/", "data/local/")
 #        The letter stays in this comment so a reader of the ledger can tell
 #        the class was retired, not forgotten; no file is pinned under it.
 #    (B) VÍTOR'S OWN SLIDE DECK, which recounts the HISTORY OF THE FIELD (the
-#        1976 project at MIT, the 1981 company, the proprietary era).  That is
-#        history, not comparison, and it is his deck: RESERVED for him.
+#        1976 project at MIT, the 1981 company, the proprietary era).  CLOSED
+#        2026-10-05 (DEV.md C38 item 3, Vitor: "Faz tu!"): 3 sites in 1 file.
+#        Each product name became a neutral description of what it was; the
+#        history, the dates and the argument are unchanged.  The letter stays
+#        here, as (A)'s does, so the class reads as retired, not forgotten.
 #    (C) `chemsep_to_choupo.py`'s EXCLUDED list, where the names are
 #        FUNCTIONAL CODE -- source words the importer refuses to import from,
 #        a licence duty this project states in CLAUDE.md §10.  The name IS the
@@ -161,12 +164,9 @@ COMPETITOR_SKIP_PREFIX = ("generated/", "thirdParty/", "data/local/")
 #
 #  MEASURED with the gate's own output, never typed.
 COMPETITOR_PINNED = {
-    "docs/slides/farelo_choupo.tex": (3, "B"),
     "bin/curate/chemsep_to_choupo.py": (2, "C"),
 }
 PIN_CLASS = {
-    "B": "V\u00edtor's own slide deck, recounting the history of the field rather "
-         "than comparing products -- RESERVED for him",
     "C": "functional code: an importer's source-exclusion list, where the "
          "name IS the licence evidence",
 }

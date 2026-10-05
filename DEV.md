@@ -2001,7 +2001,15 @@ reserved for him).**  The commander takes them, each one revertable merge:
      pass, the old word REFUSED by name naming the new one (no dual reader).
   3. Vítor's deck `docs/slides/farelo_choupo.tex` (C7 class B): its three
      product names replaced by neutral descriptions like the other records,
-     its pin dropped from `check_doctrine`.
+     its pin dropped from `check_doctrine`.  **DONE 2026-10-05:** the 1976
+     MIT project, the 1981 company and the products of the proprietary era
+     are described by what they were (dates, the DOE funding, the 2002
+     consolidation and the talk's argument unchanged; the acquired rival's
+     name and the other vendors' names went with them, since the ban list is
+     eight words and the ruling is not); the PDF rebuilt with
+     `pdflatex` (no Makefile rule builds the deck; its header names the
+     command); the pin ledger went from 5 sites in 2 files to 2 in 1, only
+     class C left.
   4. Catalyst beds: the bed shell is costed on the vessel set and the charge
      on its declared price since C2; no further reserved decision remains.
 Status: dispatched 2026-10-05.
@@ -3472,7 +3480,10 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
        (B) `docs/slides/farelo_choupo.tex`, 3 sites: the HISTORY OF THE FIELD
            (the 1976 project at MIT, the 1981 company, the proprietary era).
            That is history, not comparison, and it is **Vítor's own deck** —
-           RESERVED for him.
+           RESERVED for him.  **DONE 2026-10-05 (C38 item 3, Vítor: "Faz
+           tu!"):** each product name replaced by a neutral description of
+           what it was, the history and the argument intact, the pin
+           dropped; a name put back fails the gate as a NEW site.
        (C) `chemsep_to_choupo.py`'s `EXCLUDED` list, 2 sites: FUNCTIONAL CODE,
            the source words the importer refuses to import from.  Permanent.
 
@@ -3516,7 +3527,8 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
      to the ruling record, and `decision-records.md` names only the ruling.
      The category-2 allowlist is `COMPETITOR_EXEMPT`.  Nothing to fix.
 
-     **WHAT REMAINS (2026-10-05):** (B) is Vítor's; (C) is permanent.  The
+     **WHAT REMAINS (2026-10-05):** (B) is CLOSED (C38 item 3); (C) is
+     permanent and is the only pin left.  The
      PUBLISHED git history is NOT rewritten -- REJECTED, ruled by Vítor
      2026-10-05 (C35 item 14), in agreement with
      `no-competitor-is-named-here.md` §6 and its index row; it is no longer

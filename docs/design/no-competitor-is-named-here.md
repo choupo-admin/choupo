@@ -147,7 +147,9 @@ archive records whose FILE NAMES carried a product name were renamed to
 `conceptual-migration-map.md`.  A zero-site stub was first left at each old
 path so a link from outside the tree would still resolve; Vítor ruled the
 stubs deleted the same day (DEV.md C35 item 15), so the old file names are
-gone from the tree.  What stays pinned is Vítor's own
-slide deck (the history of the field; his to decide) and the importer's
-source-exclusion list (functional code; permanent).  DEV.md C7 carries the
-measurements.
+gone from the tree.  Vítor's own slide deck (the history of the field) was
+first left to him and then, at his order ("Faz tu!", DEV.md C38 item 3),
+redacted the same way: each product name became a neutral description of
+what it was, with the dates and the argument unchanged.  What stays pinned is
+the importer's source-exclusion list alone (functional code, where the name
+IS the licence evidence; permanent).  DEV.md C7 carries the measurements.
