@@ -77,6 +77,7 @@ Description
 #pragma once
 
 #include "ActivityModel.H"
+#include "thermo/PairAudit.H"
 #include "thermo/ThermoPackage.H"
 
 #include <vector>
@@ -107,6 +108,9 @@ private:
     std::vector<scalar> aMat_;    // a_ij [K]
     std::vector<scalar> bMat_;    // b_ij [-]
     std::vector<scalar> cMat_;    // c_ij [1/K]
+
+    // The declared temperature span of each pair RECORD, read at gamma().
+    PairSpanGuard spanGuard_;
 
     scalar a(std::size_t i, std::size_t j) const { return aMat_[i*n_ + j]; }
     scalar b(std::size_t i, std::size_t j) const { return bMat_[i*n_ + j]; }

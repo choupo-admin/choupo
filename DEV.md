@@ -1999,6 +1999,30 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      equilibrium, in the unit AND the energy report (full regression
      AUTHORISED by Vítor for this item).
   5. A pair used outside its validity span is ANNOUNCED, as vapour pressure is.
+     [DONE 2026-10-05, branch `claude/c35-pairs-pipe`.  `PairSpanGuard`
+     (`src/thermo/PairAudit.H`, beside the ONE parser that reads the span):
+     NRTL, UNIQUAC and Wilson copy each pair RECORD's declared temperature
+     span at construction and check it at `gamma(T, x)`; a pair whose two
+     components are both present, evaluated outside its span, raises ONE
+     `validity` advisory through `addAnnouncedOnce` (key per pair, so once
+     per pair per run; the console line `[pair-span] NRTL pair i-j: used at
+     T = ... K, BELOW|ABOVE its declared validity span (lo hi K) by ... K`),
+     reaching the end-of-run caveat block.  Mirrors the Henry pair's Trange
+     (`HenrysLaw.cpp:136`) and the vapour-pressure window
+     (`VaporPressureModel.cpp:161`).  No number moved: the 54 cases that
+     declare NRTL/UNIQUAC/Wilson (or carry their pair files) PASS 54/0, no
+     golden row moved.  Twelve of them now announce: flash21 (ethanol-water
+     at 258 K), crystalliser09 (278 K), vlle04 (cyclohexane-ethanol at
+     365 K) and the nine curation cases (their held-out bubble scans walk
+     0.4-11.6 K above the FIT span -- true, and now said).  NOT guarded:
+     INLINE pairs (no provenance, so no span), and an infinite-dilution
+     gamma of an absent component.  Gate: `check_regressed_pairs` arm (g)
+     (the three water pairs below their spans announce once, into the
+     advisories, say nothing inside, and publish the same gammas as a
+     span-less inline twin); sabotages by hand, each restored with git +
+     `make all`: S1 (the `gamma()` check removed) caught on all three pairs
+     -- no line, no advisory; S2 (the once-per-run latch dropped, the line
+     printed on every raise) caught on all three -- two lines each.]
   6. Ethanol + cyclohexane: re-regressed against LLE data if the archive has
      them; otherwise it stays case-local, recorded.
   7. Dryer solid floor: the gas wet-bulb temperature, not the feed T.
@@ -2773,7 +2797,8 @@ superheated chest is REFUSED there, falsely, not mispriced).
      validity spans (355.5, 323.6, 330.4 K) although all three are miscible
      at room temperature -- each new record says so; whether the engine
      should announce a PAIR used outside its validity span (it does for a
-     vapour-pressure Trange) is for Vitor.  Passed over, measured: methanol +
+     vapour-pressure Trange) was for Vitor -- RULED 2026-10-05, C35 item 5:
+     it does now (`[pair-span]`).  Passed over, measured: methanol +
      benzene (its two studies report x of different components and
      `extract-vle` cannot reorient -- the aromatic waits on a `--x-of`
      option), ethanol + p-xylene (ethanol's Antoine ends at 369 K), acetone +

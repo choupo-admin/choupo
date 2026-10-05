@@ -69,6 +69,7 @@ Dictionary form:
 #pragma once
 
 #include "ActivityModel.H"
+#include "thermo/PairAudit.H"
 #include "thermo/ThermoPackage.H"
 
 #include <vector>
@@ -98,6 +99,9 @@ private:
     std::vector<scalar> aMat_;   // a_ij
     std::vector<scalar> bMat_;   // b_ij  [K]
     std::vector<scalar> alphaMat_;
+
+    // The declared temperature span of each pair RECORD, read at gamma().
+    PairSpanGuard spanGuard_;
 
     // Helper indexing
     scalar a    (std::size_t i, std::size_t j) const { return aMat_    [i*n_ + j]; }

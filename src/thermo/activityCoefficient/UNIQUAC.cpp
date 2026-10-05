@@ -214,6 +214,8 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
                                   tier, file.string(), provSource };
                 fillPairAudit(r, provDict, names[i] + "-" + names[j],
                               tier == "standard");
+                if (provDict)   // a record's declared span is guarded (C35 item 5)
+                    spanGuard_.add("UNIQUAC", i, j, names[i] + "-" + names[j], r);
                 ThermoResolutionLog::instance().add(std::move(r));
             }
         }
@@ -229,6 +231,10 @@ sVector UNIQUAC::gamma(scalar T, const sVector& x) const
 {
     if (x.size() != n_)
         throw std::runtime_error("UNIQUAC::gamma: x.size() != n_components");
+
+    // A pair used outside the temperature span its record declares is
+    // ANNOUNCED (thermo/PairAudit.H, PairSpanGuard); no number changes.
+    spanGuard_.check(T, x);
 
     // tau_ij at this T.  A_ij(T) = a_ij + b_ij*T + c_ij*T^2 (Winkelman Eq. 10);
     // tau_ij = exp(-A_ij/T) (Eq. 7).  c = 0 recovers the linear a + b*T form.

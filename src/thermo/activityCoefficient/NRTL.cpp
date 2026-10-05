@@ -160,6 +160,9 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
     {
         PairResolution r{ "NRTL", ni, nj, status, source, provSource };
         fillPairAudit(r, provDict, ni + "-" + nj, status == "standard");
+        if (provDict)   // a record's declared span is guarded (C35 item 5)
+            spanGuard_.add("NRTL", findIndex(names, ni), findIndex(names, nj),
+                           ni + "-" + nj, r);
         ThermoResolutionLog::instance().add(std::move(r));
     };
 
@@ -345,6 +348,10 @@ sVector NRTL::gamma(scalar T, const sVector& x) const
                               << ") -- transient tolerated, convergence must"
                                  " clear it\n";
             }
+
+    // A pair used outside the temperature span its record declares is
+    // ANNOUNCED (thermo/PairAudit.H, PairSpanGuard); no number changes.
+    spanGuard_.check(T, x);
 
     // τ and G at this T
     std::vector<scalar> tau(n_*n_, 0.0);

@@ -382,7 +382,10 @@ says where, and why (the two-parameter b/T form grows tau as T falls) -- but
 temperature, so a student who runs a cooler or decanter with these pairs below
 their validity span WILL get a false second liquid.  The validity block is the
 guard; whether the engine should ANNOUNCE a pair used outside its validity
-span is open (it does for a vapour-pressure Trange, not for a pair's).
+span was open here, and Vitor ruled it on 2026-10-05 (DEV.md C35 item 5): it
+does, through `PairSpanGuard` (`src/thermo/PairAudit.H`) -- `[pair-span]`,
+once per pair per run, into the caveat block, no number moved --
+held by `check_regressed_pairs` arm (g).
 
 ### 6.4 The gate's new arm, and its sabotages
 
