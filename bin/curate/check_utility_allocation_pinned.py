@@ -39,14 +39,17 @@ WHAT THIS DOES NOT CHECK, said plainly:
     sectors and the like); they are counted and named in the OK line rather
     than silently dropped, but nothing is demanded of them.
 """
+import json
 import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import utility_rows  # noqa: E402  -- the ONE Python home of the row rule
+
 ROOT = Path(__file__).resolve().parents[2]
-FIELDS = ("duty_kW", "T", "kg_s", "eur_h")
 
 #  Single-pass cache (2026-08-24): when bin/runTests invokes this gate it
 #  hands the directory where the suite's OWN case pass saved each clean
@@ -67,13 +70,6 @@ def cached_stdout(case: Path):
         return f.read_text(errors="replace")
     except OSError:
         return None
-
-
-def norm(s: str) -> str:
-    """Whitespace -> `_`.  A golden row's key is whitespace-delimited, so a
-    name that carries a space cannot appear in one verbatim.  ONE rule, mirrored
-    by `bin/runTests`' generator and extractor."""
-    return re.sub(r"[ \t]+", "_", s)
 
 
 def candidates():
@@ -115,43 +111,37 @@ def published(case: Path):
         if proc.returncode != 0:
             return set(), None  # a failing case is the suite's problem, not this gate's
         txt = proc.stdout
-    line = next((l for l in txt.splitlines()
-                 if '"utilityAllocation":' in l), None)
-    if line is None:
+    m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>",
+                  txt, re.S)
+    if m is None:
+        return set(), None
+    try:
+        res = json.loads(m.group(1))
+    except ValueError:
+        return set(), None
+    allocs = res.get("utilityAllocation")
+    if not allocs:
         return set(), None
     keys = set()
-    for rec in re.split(r'\}, *\{', line):
-        u = re.search(r'"unit": "([^"]*)"', rec)
-        t = re.search(r'"tier": "([^"]*)"', rec)
-        if not (u and t):
+    for e in allocs:
+        #  THE GENERATOR'S RULES, from their ONE Python home
+        #  (bin/curate/utility_rows.py, 2026-10-05) -- a gate that derives
+        #  its keys differently from the writer measures the difference
+        #  between the two, which is the arity sin inside the machinery
+        #  built to enforce it (paid for on this gate's first run).  The
+        #  importer reads its seal-agreement rows through the same home, so
+        #  this gate's both-ways comparison against the rows bin/runTests'
+        #  awk generator wrote is what keeps the Python and the awk copies
+        #  of the rule together.  An unallocated entry is one
+        #  `<tier>.<port>.carried|unserved` row, its kind the typed
+        #  `carried` field (2026-09-03); an allocated one is pinned by its
+        #  utility's (whitespace-normalised) name and numbers.
+        unit = e.get("unit")
+        if not unit:
             continue
-        #  THE SAME TWO RULES THE GENERATOR APPLIES, and they are here rather
-        #  than inferred because a gate that derives its keys differently from
-        #  the writer measures the difference between the two -- which is the
-        #  arity sin, inside the machinery built to enforce it.  Both were
-        #  paid for on this gate's first run.
-        if '"allocated": true' not in rec:
-            #  An unallocated duty's `utility` field is PROSE ("(none
-            #  adequate)", "(carried: ...)"), never a name; it is pinned by one
-            #  row keyed on the port, whose KIND is the record's typed
-            #  `carried` field (2026-09-03) -- `carried` for a duty met by the
-            #  unit's own streams or a heat-link, `unserved` for one no
-            #  catalogue utility can meet.  The same rule as the writer's.
-            p = re.search(r'"port": "([^"]*)"', rec)
-            port = norm(p.group(1)) if p and p.group(1) else "-"
-            kind = "carried" if '"carried": true' in rec else "unserved"
-            keys.add((u.group(1), t.group(1), port, kind))
-            continue
-        w = re.search(r'"utility": "([^"]*)"', rec)
-        if not w:
-            continue
-        #  A real name may carry a space -- `electricity (generated)` is the
-        #  credit an electrochemical cell earns -- and a golden row's key is
-        #  whitespace-delimited, so it is normalised on both sides.
-        name = norm(w.group(1))
-        for f in FIELDS:
-            if re.search(r'"%s": *-?[0-9]' % f, rec):
-                keys.add((u.group(1), t.group(1), name, f))
+        for k in utility_rows.row_values(e):
+            parts = k.split(".")
+            keys.add((unit, parts[0], ".".join(parts[1:-1]), parts[-1]))
     return keys, None
 
 
