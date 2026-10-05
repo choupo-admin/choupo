@@ -151,7 +151,8 @@ WHAT THIS CHECKS:
       the case are run from a temp directory: one WITHOUT `catalystPrice`,
       which must REFUSE the charge by name (`catalystPrice` in the FAILED
       line), keep the shell costed, and print `TOTALS (EUR) -- INCOMPLETE`
-      naming `converter/catalystCharge` (the tray precedent, ONE home); one
+      naming `converter/catalystCharge` (the INCOMPLETE home the trays
+      shared); one
       WITHOUT `catalystBulkDensity`, whose charge sheet must publish NO mass,
       state `mass not derivable` in its basis, and refuse at cost time
       naming the density.  Sabotage-verified BY HAND, restored with `cp`;
@@ -232,6 +233,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
 """
 import csv
 import os
+import math
 import re
 import shutil
 import subprocess
@@ -919,8 +921,8 @@ COLUMN_ITEMS = ("shell", "trays", "condenser", "reboiler", "refluxDrum")
 def check_column_items(problems, notes):
     """(m) A unit that realises SEVERAL physical items writes one sheet per
     item, each naming itself; the two exchanger areas and the tower height are
-    RECOMPUTED from the case's own declaration; and the tray stack is sized and
-    NOT costed.
+    RECOMPUTED from the case's own declaration; and the tray stack's cost is
+    recomputed by hand from its printed size (since 2026-10-05).
 
     WHY EACH HALF IS HERE.
 
@@ -946,11 +948,12 @@ def check_column_items(problems, notes):
         their relative difference.  A shell quietly sized on the NARROWER
         section would flood, and no other arm anywhere could see it.
 
-      * THE TRAYS ARE NOT COSTED, AND THE RUN SAYS SO.  Choupo ships no tray
-        cost correlation and will not invent one; the danger is not the gap but
-        a gap that stops being announced, leaving a column total that reads
-        complete.  So: the trays sheet carries NO `cost {}` block, and the
-        console says INCOMPLETE and names the item.
+      * THE TRAYS ARE COSTED BY THE TRAY (since 2026-10-05; until then
+        they were refused by name, Choupo having no tray set).  The cost is
+        RECOMPUTED from the sheet's A and nTrays with a reference set this
+        gate transcribes itself, which is tied to the source program's own
+        worked tower; and the refusal is kept alive on a probe copy that
+        declares no material class.  See `check_tray_stack`.
 
     SABOTAGE-VERIFIED, seven of them, BY HAND and never by patching a source
     and rebuilding.  The first attempt proved NOTHING and is worth writing
@@ -964,6 +967,8 @@ def check_column_items(problems, notes):
     section; (4) the tray count back to `nStages - 2`; (5) the trays gain an
     invented cost block; (6) a sheet stops naming its item; (7) `swageGap` is
     not the difference of the two sections the sheet itself publishes.
+    (Sabotage (5) guarded the tray REFUSAL, which was the decision then; the
+    tray cost has its own four in `check_tray_stack` since 2026-10-05.)
 
     NOT CHECKED HERE: whether U, LMTD or the residence time are sensible --
     they are the author's declaration and this arm only proves they reached the
@@ -1126,22 +1131,241 @@ def check_column_items(problems, notes):
             notes.append("sections %.3f / %.3f m, gap %.1f %%, straight tower"
                          % (dr, ds, 100.0 * (big - sml) / big))
 
-    #  ---- the trays are sized and NOT costed, and the run says so ----------
-    if sheets["trays"]["cost"]:
+    #  ---- the trays are COSTED BY THE TRAY, and the cost recomputes --------
+    check_tray_stack(sheets, out, problems, notes)
+
+
+#  THE REFERENCE TRAY SET, transcribed HERE independently of the engine and
+#  from the same source (2026-10-05, DEV.md 4c C38 item 1): CAPCOST 2017
+#  (`capcost_2017_rev2.xlsm`, the program distributed with Turton,
+#  Shaeiwitz, Bhattacharyya & Whiting, 5th ed., downloaded from Richard
+#  Turton's WVU faculty page), sheet "Equipment Cost Data":
+#    Tower Trays / Sieve, C257:G257 -> K1, K2, K3, Amin, Amax
+#    FBM / Sieve, D262 (CS), D263 (SS), D265 (Ni-alloy)
+#    B267 -> the F_q formula; macro `calculateTrayCosts` -> F_q = 1 for N >= 20
+#  The book's printed table and page were NOT read; see Turton.cpp.
+TRAY_SIEVE = (2.9949, 0.4465, 0.3961)
+TRAY_AREA_RANGE = (0.07, 12.3)
+TRAY_FBM = {"carbonSteel": 1.00, "stainlessSteel": 1.83, "nickelAlloy": 5.58}
+#  The program's own worked tower, "T-101": 32 sieve trays, D 2.1 m, H 23 m,
+#  carbon-steel shell.  Its "Base Equipment Cost" and "Base Bare Module Cost"
+#  cells are formulas `ROUND(<k> * CEPCI, ...)`, and these are the two k's --
+#  the cost per unit of CEPCI of the shell plus the trays at the carbon-steel
+#  base (F_BM 1, F_P 1).  The program computes areas with pi = 3.14.
+CAPCOST_T101 = {"D": 2.1, "H": 23.0, "N": 32,
+                "baseEquipment_perCEPCI": 318.664206642066,
+                "baseBareModule_perCEPCI": 741.819188191882}
+#  The vertical-vessel set the engine's `vesselCoeffs` carries, which the same
+#  program sheet carries identically (B239:F239, B1/B2 C244:D244).
+VESSEL_VERTICAL = (3.4974, 0.4485, 0.1074, 2.25, 1.82)
+
+
+def tray_quantity_factor(n):
+    if n >= 20:
+        return 1.0
+    l = math.log10(n)
+    return 10.0 ** (0.4771 + 0.08516 * l - 0.3473 * l * l)
+
+
+def tray_cp0_2001(area):
+    k1, k2, k3 = TRAY_SIEVE
+    l = math.log10(area)
+    return 10.0 ** (k1 + k2 * l + k3 * l * l)
+
+
+def _cost_factors(text):
+    """The `factors {}` scalars of a sheet's `cost {}` block, and its words."""
+    t = re.sub(r'/\*.*?\*/', '', text, flags=re.S)
+    m = re.search(r'^cost\s*\n\{(.*?)^\}', t, re.S | re.M)
+    if not m:
+        return {}, {}
+    body = m.group(1)
+    f = {}
+    fm = re.search(r'factors\s*\{(.*?)\}', body, re.S)
+    if fm:
+        for line in fm.group(1).splitlines():
+            mm = re.match(r'\s*(\w+)\s+([-\d.eE+]+)\s*;', line)
+            if mm:
+                f[mm.group(1)] = float(mm.group(2))
+    words = dict(re.findall(r'^\s*(correlation|sizeKey|pricedAs)\s+"?([^";\n]+)"?\s*;',
+                            body, re.M))
+    return f, words
+
+
+def check_tray_stack(sheets, out, problems, notes):
+    """(m, trays) THE TRAY STACK IS COSTED BY THE TRAY, AND THE COST IS
+    RECOMPUTED HERE FROM THE SHEET'S OWN SIZE (2026-10-05, DEV.md 4c C38
+    item 1).  Four claims, each a different way the cost could be wrong:
+
+      * THE ANCHOR.  The reference set above reproduces the source program's
+        OWN worked tower (CAPCOST's T-101) to 1e-5 on the CEPCI-397 basis --
+        so the gate's transcription is tied to a number the source computed,
+        not only to the engine's transcription of the same cells.
+      * THE COEFFICIENTS.  The K1..K3 and F_BM the sheet publishes are the
+        reference values for the class the case declared.
+      * THE ARITHMETIC.  From the sheet's `A` and `nTrays` alone, with the
+        reference set and the sheet's own index factors:
+            C_p  = N x 10^(K1 + K2 log A + K3 log^2 A) x CEPCI/CEPCI_2001 x fx
+            C_BM = C_p x F_BM x F_q(N);   C_TM = 1.18 C_BM
+        must land on the sheet's three costs to 1e-6.  The case has 14 trays,
+        so F_q != 1 and its N < 20 branch is exercised.
+      * THE TOTAL IS COMPLETE, and the refusal still works when the class is
+        not declared (a probe copy with the `trayMaterial` line removed: the
+        trays refuse BY NAME, the total says INCOMPLETE naming them, and the
+        other four items are still costed).  An unknown class word refuses
+        through the one refusal home.
+
+    SABOTAGE-VERIFIED 2026-10-05, by hand, each restored with `cp` and the
+    engine rebuilt; every line below was OBSERVED:
+      T1  Turton.cpp: K3 0.3961 -> 0.3916 (a transposed digit).  The
+          coefficient check fires, and so does the arithmetic -- on a cost
+          that moved only 0.005 %, because log10 A is small at A = 1.17 m2;
+          the coefficient check is what names the cause.
+      T2  Turton.cpp: F_q dropped from C_BM.  bareModule and totalModule
+          fire (37252 recomputed against 28358 printed); purchased does not,
+          correctly -- F_q is not in C_p.
+      T3  Turton.cpp: an absent `trayMaterial` silently priced as carbon
+          steel.  The no-class probe fires four times (no refusal, no
+          remedy, no INCOMPLETE, a cost block written).
+      T4  this gate's TRAY_SIEVE K1 2.9949 -> 2.9494 (the GATE's
+          transcription drifting).  Only the anchor fires: the CAPCOST
+          T-101 reproduction lands at 300.68 against 318.66 per CEPCI.
+    NOT CHECKED: the stainless and nickel-alloy F_BM values beyond their
+    transcription (the T-101 anchor is a carbon-steel base cost, so only
+    F_BM(CS) = 1 is tied to a computed number), the valve-tray and demister
+    rows (not transcribed: no unit sizes them), and the tray AREA's
+    definition (pi D^2 / 4 at the tower diameter, the sizer's -- Turton's
+    program uses the same cross-section with pi = 3.14)."""
+    #  -- the anchor, pure arithmetic --------------------------------------
+    k1, k2, k3, b1, b2 = VESSEL_VERTICAL
+    pi = 3.14
+    d, h, n = CAPCOST_T101["D"], CAPCOST_T101["H"], CAPCOST_T101["N"]
+    v = pi * (d / 2) ** 2 * h
+    a = pi * (d / 2) ** 2
+    lv = math.log10(v)
+    cv = 10.0 ** (k1 + k2 * lv + k3 * lv * lv)
+    ct = n * tray_cp0_2001(a) * tray_quantity_factor(n)
+    base_eq = (cv + n * tray_cp0_2001(a)) / 397.0
+    base_bm = (cv * (b1 + b2) + ct * TRAY_FBM["carbonSteel"]) / 397.0
+    if not (close(base_eq, CAPCOST_T101["baseEquipment_perCEPCI"], 1e-5)
+            and close(base_bm, CAPCOST_T101["baseBareModule_perCEPCI"], 1e-5)):
         problems.append(
-            "check_design_sheet(m): the trays sheet carries a `cost {}` block. "
-            " Choupo ships no tray cost correlation and inventing one is a "
-            "CURATION act inside what is reserved -- an invented coefficient "
-            "set turns `uncosted` into `falsely costed`, which no reader and "
-            "no gate can detect.")
-    if "INCOMPLETE" not in out or "column09/trays" not in out:
+            "check_design_sheet(m): the reference tray set no longer "
+            "reproduces CAPCOST's own worked tower T-101 (base equipment "
+            "%.6f vs %.6f, base bare module %.6f vs %.6f per unit CEPCI) -- "
+            "the transcription in this gate has drifted from its source."
+            % (base_eq, CAPCOST_T101["baseEquipment_perCEPCI"], base_bm,
+               CAPCOST_T101["baseBareModule_perCEPCI"]))
+        return
+    notes.append("reference tray set reproduces CAPCOST T-101 (%.4f, %.4f "
+                 "per CEPCI)" % (base_eq, base_bm))
+
+    #  -- the shipped case --------------------------------------------------
+    trays = sheets["trays"]
+    text = (ROOT / COLUMN / "design" / "column09" / "trays").read_text(
+        errors="replace")
+    fac, words = _cost_factors(text)
+    if not trays["cost"] or not fac:
         problems.append(
-            "check_design_sheet(m): the costing console does not mark the "
-            "column total INCOMPLETE and name `column09/trays`.  A total that "
-            "omits an item and does not say so reads as complete, and every "
-            "FCI / NPV / IRR built on it inherits the omission in silence.")
-    else:
-        notes.append("trays sized, NOT costed, and the total says INCOMPLETE")
+            "check_design_sheet(m): the trays sheet carries no `cost {}` "
+            "block -- the tray stack is not costed although the case declares "
+            "its material class.")
+        return
+    post = (ROOT / COLUMN / "system" / "postDict").read_text(errors="replace")
+    post_nc = re.sub(r'//[^\n]*', '', post)
+    mw = re.search(r'^\s*trayMaterial\s+(\w+)\s*;', post_nc, re.M)
+    if not mw or mw.group(1) not in TRAY_FBM:
+        problems.append("check_design_sheet(m): %s declares no recognised "
+                        "`trayMaterial`, so the witness cannot price its "
+                        "trays." % COLUMN)
+        return
+    cls = mw.group(1)
+    if words.get("correlation") != "tray-stack":
+        problems.append("check_design_sheet(m): the trays cost names "
+                        "correlation %r, not `tray-stack`."
+                        % words.get("correlation"))
+    for key, want in (("K1", TRAY_SIEVE[0]), ("K2", TRAY_SIEVE[1]),
+                      ("K3", TRAY_SIEVE[2]), ("F_BM", TRAY_FBM[cls])):
+        if not close(fac.get(key), want, 1e-9):
+            problems.append(
+                "check_design_sheet(m): the trays sheet publishes %s = %s; "
+                "the sieve-tray reference (CAPCOST 2017) for class %s is %s."
+                % (key, fac.get(key), cls, want))
+    area = trays["sizing"].get("A", (None, ""))[0]
+    ntr = trays["sizing"].get("nTrays", (None, ""))[0]
+    if not area or not ntr:
+        problems.append("check_design_sheet(m): the trays sheet has no A or "
+                        "nTrays to recompute the cost from.")
+        return
+    if not (TRAY_AREA_RANGE[0] <= area <= TRAY_AREA_RANGE[1]):
+        notes.append("tray area %.4f m2 is outside the set's range -- the "
+                     "witness exercises an extrapolation" % area)
+    idx = fac.get("cepci", 0.0) / fac.get("cepci2001", 1.0) * fac.get("usdToEur", 0.0)
+    fq = tray_quantity_factor(ntr)
+    cp = ntr * tray_cp0_2001(area) * idx
+    cbm = cp * TRAY_FBM[cls] * fq
+    ctm = 1.18 * cbm
+    got = trays["cost"]
+    for key, want in (("purchased", cp), ("bareModule", cbm), ("totalModule", ctm)):
+        if not close(got.get(key), want, 1e-6):
+            problems.append(
+                "check_design_sheet(m): the trays %s cost is %s; recomputed "
+                "from the sheet's A = %.6g m2 and N = %g with the reference "
+                "sieve set, F_BM(%s) and F_q(N) = %.6f it is %.6f."
+                % (key, got.get(key), area, ntr, cls, fq, want))
+    if not close(fac.get("F_q"), fq, 1e-6):
+        problems.append("check_design_sheet(m): the trays sheet publishes "
+                        "F_q = %s; F_q(%g) = %.7f." % (fac.get("F_q"), ntr, fq))
+    if "INCOMPLETE" in out:
+        problems.append("check_design_sheet(m): the column's costing total "
+                        "still reads INCOMPLETE although every item, the "
+                        "trays included, is priceable.")
+    notes.append("trays costed by the tray: A %.4f m2, N %g, F_q %.4f, C_TM "
+                 "%.0f recomputed" % (area, ntr, fq, ctm))
+
+    #  -- the refusal, on a probe copy ------------------------------------
+    def drop_class(t):
+        return "\n".join(l for l in t.splitlines()
+                         if not re.match(r'\s*trayMaterial\s', l)) + "\n"
+
+    def bad_class(t):
+        return re.sub(r'(trayMaterial\s+)\w+', r'\1stainless', t)
+
+    for label, edit, need in (
+            ("no trayMaterial", drop_class,
+             ("is not costed: its material class is not declared",
+              "trayMaterial <carbonSteel | stainlessSteel | nickelAlloy>")),
+            ("unknown trayMaterial", bad_class,
+             ("unknown tray material class 'stainless'",
+              "Accepted: carbonSteel stainlessSteel nickelAlloy"))):
+        dst, rc2, out2, err2 = _run_copy(ROOT / COLUMN, edit)
+        try:
+            both = out2 + err2
+            if rc2 != 0:
+                problems.append("check_design_sheet(m): the %s probe failed "
+                                "to run (rc=%d)." % (label, rc2))
+                continue
+            for phrase in need:
+                if phrase not in both:
+                    problems.append(
+                        "check_design_sheet(m): the %s probe does not refuse "
+                        "the trays by name (missing: %r)." % (label, phrase))
+            if "TOTALS (EUR) -- INCOMPLETE" not in both or \
+               "OMITS 1 unit(s) that could not be costed: column09/trays" not in both:
+                problems.append(
+                    "check_design_sheet(m): the %s probe does not mark the "
+                    "total INCOMPLETE naming exactly column09/trays." % label)
+            if (dst / "design" / "column09" / "trays").is_file():
+                ff, _ = _cost_factors((dst / "design" / "column09" / "trays")
+                                      .read_text(errors="replace"))
+                if ff:
+                    problems.append(
+                        "check_design_sheet(m): the %s probe still wrote a "
+                        "cost block on the trays sheet." % label)
+        finally:
+            shutil.rmtree(dst.parent, ignore_errors=True)
+    notes.append("trays refused by name with no / an unknown material class; "
+                 "total INCOMPLETE naming them")
 
 
 def _sig_digits(tok: str) -> int:
@@ -1565,7 +1789,11 @@ def main() -> int:
           "condenser, reboiler, reflux drum -- whose two exchanger areas, "
           "tower height, per-section diameters and swage gap are RECOMPUTED "
           "here from the case declaration and the run KPIs, and whose tray "
-          "stack is sized, uncosted and named INCOMPLETE on the total) and on "
+          "stack's cost is RECOMPUTED by hand from its printed size with a "
+          "sieve-tray set this gate transcribes from CAPCOST 2017 and ties to "
+          "that program's own worked tower, while copies declaring no or an "
+          "unknown tray material class refuse the trays BY NAME and mark the "
+          "total INCOMPLETE) and on "
           "the kinetic-bed witness (one `pfr`, two items: the SHELL's V_R is "
           "the unit's own solved KPI to the sheet's printed precision, the "
           "CHARGE's mass and price are RECOMPUTED from the case's declared "

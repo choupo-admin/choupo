@@ -25,7 +25,7 @@ Description
     design project.
 
         shell        the tower                    -> costed as a vertical vessel
-        trays        the tray stack               -> NOT COSTED (see below)
+        trays        the tray stack               -> costed by the tray (below)
         condenser    a shell-and-tube exchanger
         reboiler     a shell-and-tube exchanger
         refluxDrum   a horizontal/vertical drum   -> costed as a vessel
@@ -83,14 +83,19 @@ Description
     name with the remedy and simply not built.  A student who declares only
     the shell gets a shell and a sentence saying what to add for the rest.
 
-    THE TRAY STACK IS SIZED AND NOT COSTED, DELIBERATELY.  `Turton` holds 
-    eight coefficient sets and every coefficient in that file is Turton's.
-    There is no tray set in it, and entering one is a CURATION act that lands
-    inside what is reserved: inventing K1/K2/K3 for a sieve tray would convert
-    "uncosted" into "falsely costed", which no reader and no gate can detect.
-    So `Turton` refuses the `sieveTrays` type BY NAME and says what a
-    coefficient set would need.  A column costed by Choupo today is missing
-    its tray cost, and it says so.
+    THE TRAY STACK IS A SEPARATE ITEM, COSTED BY THE TRAY (2026-10-05).
+    Until that day it was sized and REFUSED at cost time, by name, because no
+    coefficient set in the costing model fitted a tray and inventing one would
+    have converted "uncosted" into "falsely costed".  Turton's sieve-tray set
+    (as CAPCOST 2017, the authors' own program, carries it) is now in
+    `costing/Turton.cpp`, with its source cells and what was NOT read stated
+    there.  This sizer publishes what that set prices from -- `A` (the tower
+    cross-section) and `nTrays` -- and carries the author's `trayMaterial`
+    word, the material CLASS Turton's F_BM is chosen by, to the costing model
+    untouched.  An absent or unknown class refuses BY NAME at cost time and
+    the total says INCOMPLETE by exactly the trays: the class is never read
+    off the construction material's name, and trays are often a different
+    metal from the shell.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

@@ -2963,10 +2963,14 @@ objects --- a shell, a tray stack, a condenser, a reboiler and a reflux drum
 \code{hydraulics \{\}} block already computed; \emph{U}, the approach
 temperature and the drum residence time are yours to declare, and an item
 whose rules you did not declare is named and NOT built rather than sized on a
-default nobody chose. \textbf{The tray stack is sized and not costed}: Choupo
-carries no purchased-cost correlation for trays and will not invent one, so
-that item refuses by name and the totals line reads
-\code{TOTALS (EUR) -- INCOMPLETE}. See
+default nobody chose. \textbf{The tray stack is costed by the tray}: one
+sieve tray priced from the tower cross-section (Turton's set, as the authors'
+CAPCOST program carries it), times the tray count, times a bare-module factor
+for the trays' material class and a quantity factor for fewer than 20 trays.
+Declare the class as \code{trayMaterial carbonSteel;} (or
+\code{stainlessSteel}, \code{nickelAlloy}) in the column's
+\code{designRules}; without it the trays refuse by name and the totals line
+reads \code{TOTALS (EUR) -- INCOMPLETE}. See
 \file{tutorials/steady/distillation/column09\_tray\_hydraulics}.
 
 \begin{lstlisting}

@@ -1999,6 +1999,45 @@ reserved for him).**  The commander takes them, each one revertable merge:
      coefficient transcribed from a source the general actually reads and
      cites; if no such source is readable, the refusal stays and the reason
      is recorded -- an invented set is never shipped.
+     [BUILT 2026-10-05 on branch `claude/c38-costing`.  WHAT WAS SEARCHED:
+     the tree (no tray coefficient anywhere; `thirdParty/`, `data/local/`
+     empty of costing data); the web.  Pearson's public sample chapters of the
+     4th and 5th editions stop before Appendix A.  WHAT WAS READ: CAPCOST 2017
+     (`capcost_2017_rev2.xlsm`), the costing program the authors distribute
+     with the 5th edition, downloaded from Richard Turton's WVU faculty page:
+     sheet "Equipment Cost Data", block "Tower Trays", row Sieve, cells
+     C257:G257 (K1 2.9949, K2 0.4465, K3 0.3961, A 0.07-12.3 m2); block
+     "FBM", Sieve column, D262/D263/D265 (carbon steel 1.00, stainless 1.83,
+     Ni-alloy 5.58); cell B267 (F_q = 10^(0.4771 + 0.08516 log N - 0.3473
+     log^2 N)); and the program's macro `calculateTrayCosts` (F_q = 1 for
+     N >= 20; C_p = N x 10^(...) x CEPCI/397; C_BM = C_p F_BM F_q).  WHAT WAS
+     NOT READ: the book's own Appendix A table and page -- so no edition /
+     table / page is cited per coefficient, and the citation is the program's
+     cells instead.  What ties the program to the data already shipped: its
+     vertical-vessel set equals `vesselCoeffs` digit for digit, and its own
+     worked tower T-101 (32 sieve trays, D 2.1 m, H 23 m) reproduces from the
+     transcribed set to 4e-7 relative on the CEPCI-397 basis (with the
+     program's own pi = 3.14) -- `check_design_sheet` arm (m) recomputes it.
+     The stainless and nickel-alloy F_BM are transcribed only (the anchor is a
+     carbon-steel base cost).  Valve trays and demisters NOT transcribed: no
+     Choupo unit sizes them.  ENGINE: `Turton::cost` routes `sieveTrays` to
+     the tray-stack shape (`correlation tray-stack`); the material CLASS is a
+     DECLARATION, `trayMaterial carbonSteel | stainlessSteel | nickelAlloy;`
+     in the column's designRules, carried by `ColumnSize` through the new
+     `EquipmentSizing::costWords` -- never read off the construction
+     material's name (trays are often a different metal from the shell, and
+     F_BM spans 1 to 5.58).  Absent or unknown, the trays still REFUSE by name
+     (the unknown word through `registryRefusal::message`) and the total
+     reads INCOMPLETE.  A sheet whose cost was priced in a material other than
+     its own header's prints `pricedAs` in its cost block (catalyst charges
+     gain that line too: "none: catalyst priced per kg").  GOLDENS:
+     `column09_tray_hydraulics` declares `trayMaterial carbonSteel;` and gains
+     3 rows (trays cost.purchased 28357.72, bareModule 37252.81, totalModule
+     43958.32); NO row moved -- no golden pins a column total.  The column's
+     TOTALS line went from INCOMPLETE (436 079 EUR C_TM) to 480 038 EUR.
+     Gate: `check_design_sheet` arm (m) (`check_tray_stack`: anchor,
+     coefficients, by-hand recomputation from the sheet's A and nTrays, two
+     refusal probes; 4 sabotages).]
   2. THE COSTING MODEL'S NAME: registered `Guthrie` while every coefficient is
      Turton's.  Renamed to what it is (`Turton`), the corpus migrated in one
      pass, the old word REFUSED by name naming the new one (no dual reader).

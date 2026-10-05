@@ -29,6 +29,7 @@ License
 #include "Turton.H"
 
 #include "core/Advisory.H"
+#include "core/RegistryRefusal.H"
 
 #include <cmath>
 #include <map>
@@ -36,6 +37,7 @@ License
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 namespace Choupo {
 
@@ -150,6 +152,77 @@ const EquipCoeffs compressorCoeffs {
     false, 0.0, 1.0, 0.6, 2001.0
 };
 
+//  ---- THE TRAY STACK (2026-10-05, DEV.md 4c C38 item 1) -------------------
+//
+//  A tray is bought BY THE TRAY, so its shape is not the per-item one above:
+//
+//      log10 C_p0  = K1 + K2 log10 A + K3 (log10 A)^2     (one tray, 2001 USD)
+//      C_p         = N x C_p0                             (the whole stack)
+//      C_BM        = C_p x F_BM x F_q
+//      log10 F_q   = 0.4771 + 0.08516 log10 N - 0.3473 (log10 N)^2  if N < 20
+//      F_q         = 1                                              if N >= 20
+//
+//  with A the tower cross-section [m2] and N the number of trays.  No
+//  pressure factor (a tray does not hold pressure) and no material factor
+//  F_M: Turton prices the tray's material through F_BM, by material class.
+//
+//  WHERE EVERY NUMBER BELOW WAS READ, and what was NOT read.  The values were
+//  transcribed on 2026-10-05 from CAPCOST 2017 (file `capcost_2017_rev2.xlsm`),
+//  the costing program the authors distribute with Turton, Shaeiwitz,
+//  Bhattacharyya & Whiting, "Analysis, Synthesis and Design of Chemical
+//  Processes", 5th ed. (Pearson, 2018), downloaded from Richard Turton's
+//  faculty page at West Virginia University:
+//    * K1, K2, K3, Amin, Amax  -- worksheet "Equipment Cost Data", block
+//      "Tower Trays", row "Sieve", cells C257:G257;
+//    * F_BM                    -- same worksheet, block "FBM", column
+//      "Sieve", rows "CS" (D262), "SS" (D263) and "Ni-alloy" (D265);
+//    * F_q and its N < 20 rule -- the formula printed in cell B267, and the
+//      program's own macro `calculateTrayCosts`, which also states the shape
+//      above (C_p = N x 10^(...) x CEPCI/397; C_BM = C_p x F_BM x F_q;
+//      F_q = 1 for N >= 20).
+//  The BOOK's own table and page were NOT read: the program is the authors'
+//  machine-readable copy of the same Appendix A, and two facts tie it to the
+//  data this file already carried -- its vertical-vessel set is identical, to
+//  the last digit, to `vesselCoeffs` above (3.4974, 0.4485, 0.1074, 0.3-520,
+//  B1 2.25, B2 1.82), and its own worked tower (T-101: 32 sieve trays,
+//  D 2.1 m, H 23 m) reproduces from these numbers on the CEPCI-397 basis --
+//  `check_design_sheet` arm (m) recomputes that anchor.  The CAPCOST VALVE-tray
+//  and demister rows are NOT transcribed: no Choupo unit sizes either (the
+//  hydraulics pass rates sieve trays only), and a set no item can reach is a
+//  coefficient nobody checks.
+struct TrayCoeffs
+{
+    scalar K1, K2, K3;
+    scalar Amin, Amax;            // validity range of A [m2]
+};
+
+const TrayCoeffs sieveTrayCoeffs { 2.9949, 0.4465, 0.3961, 0.07, 12.3 };
+
+//  F_BM by the tray's MATERIAL CLASS.  The case DECLARES the class
+//  (`trayMaterial` in the column's designRules): trays are often a different
+//  material from the shell -- CAPCOST's own example is stainless trays in a
+//  carbon-steel tower -- and reading a class out of a construction-material
+//  record's NAME would be the name identity this project bans.
+struct TrayMaterialFactor
+{
+    const char* word;
+    scalar      F_BM;
+};
+
+const TrayMaterialFactor sieveTrayFBM[] =
+{
+    { "carbonSteel",    1.00 },
+    { "stainlessSteel", 1.83 },
+    { "nickelAlloy",    5.58 },
+};
+
+scalar trayQuantityFactor(scalar N)
+{
+    if (N >= 20.0) return 1.0;
+    const scalar l = std::log10(N);
+    return std::pow(10.0, 0.4771 + 0.08516 * l - 0.3473 * l * l);
+}
+
 const EquipCoeffs& coeffsFor(const std::string& equipType)
 {
     if (equipType == "stirredTank")  return vesselCoeffs;
@@ -161,33 +234,10 @@ const EquipCoeffs& coeffsFor(const std::string& equipType)
     if (equipType == "cyclone")      return cycloneCoeffs;
     if (equipType == "compressor")   return compressorCoeffs;
 
-    //  THE TRAY STACK IS REFUSED BY NAME, AND THAT IS THE DECISION (2026-09-07).
-    //
-    //  A distillation column's shell, condenser, reboiler and reflux drum all
-    //  reach a coefficient set that is already in this file -- Turton prices a
-    //  tower as a vertical vessel and the two exchangers as what they are, so
-    //  the column sizer brought NO new data into the tree.  The trays did not,
-    //  and no set here fits them: they are bought by the tray, not by a
-    //  volume, an area or a shaft power.
-    //
-    //  Writing K1/K2/K3 for a sieve tray would be a CURATION act inside what
-    //  Vitor reserved (every coefficient in this file is Turton's), and an
-    //  invented set converts "uncosted" into "falsely costed" -- which no
-    //  reader and no gate can detect, while a refusal is visible on the first
-    //  run.  A visible gap is strictly better than an invisible falsehood.
-    if (equipType == "sieveTrays")
-        throw std::runtime_error("Turton: the TRAY STACK is not costed."
-            "\n  Choupo carries no purchased-cost correlation for trays, and"
-            " will not invent one: the eight sets in\n  `Turton.cpp` are"
-            " Turton's, and adding a ninth is a curation act, not a coding"
-            " one.\n  A set would need, from a primary source: the size"
-            " DRIVER (tray area or tower diameter, and the\n  number of"
-            " trays), its validity range, K1/K2/K3 or a cited anchor with an"
-            " exponent, the bare-module\n  factors B1/B2, and the tray TYPE"
-            " and MATERIAL the correlation was published for.\n  Until then"
-            " this column's capital cost is its shell, its two exchangers and"
-            " its drum -- and it is\n  INCOMPLETE by exactly the trays."
-            "  The `TOTALS (EUR) -- INCOMPLETE` line above says so.");
+    //  The TRAY STACK does not come through here: it is bought by the tray,
+    //  on its own correlation shape, and `Turton::cost` routes it to
+    //  `costTrayStack` before this lookup is reached (2026-10-05, DEV.md 4c
+    //  C38 item 1).
 
     throw std::runtime_error("Turton: no cost correlation for equipment '"
         + equipType + "'");
@@ -393,6 +443,107 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
         out.sizeKey     = "m_catalyst_kg";
         out.correlation = "declared-unit-price";
         out.material    = "none: catalyst priced per kg";
+        out.currency    = "EUR";
+        return out;
+    }
+
+    //  THE TRAY STACK, ON ITS OWN SHAPE (2026-10-05, DEV.md 4c C38 item 1).
+    //  The set, its source and what was not read are at `sieveTrayCoeffs`.
+    //  Absent a declared tray material class this REFUSES BY NAME, and the
+    //  costing pass's INCOMPLETE mechanism names the item under the total --
+    //  the same home the catalyst charge uses; there is no default class,
+    //  because F_BM moves the stack's cost by a factor of up to 5.6.
+    if (dim.equipmentType == "sieveTrays")
+    {
+        auto need = [&](const char* k) -> scalar {
+            auto it = dim.values.find(k);
+            if (it == dim.values.end())
+                throw std::runtime_error("Turton: the TRAY STACK of '"
+                    + dim.unitName + "' has no '" + k + "' in its sizing"
+                      " record -- nothing to price it from");
+            return it->second;
+        };
+        const scalar A = need("A");
+        const scalar N = need("nTrays");
+        if (!(A > 0.0) || !(N >= 1.0))
+            throw std::runtime_error("Turton: the TRAY STACK of '"
+                + dim.unitName + "' has a non-positive tray area or fewer"
+                  " than one tray -- nothing is priced from that");
+
+        std::vector<std::string> accepted;
+        for (const auto& f : sieveTrayFBM) accepted.push_back(f.word);
+        auto wit = dim.costWords.find("trayMaterial");
+        if (wit == dim.costWords.end())
+        {
+            std::string list;
+            for (const auto& w : accepted) list += (list.empty() ? "" : " | ") + w;
+            throw std::runtime_error("Turton: the TRAY STACK of '"
+                + dim.unitName + "' is not costed: its material class is not"
+                  " declared.\n  Declare `trayMaterial <" + list + ">;` in"
+                  " this column's designRules.  Turton prices a tray's"
+                  " material through its bare-module factor F_BM (1.00 /"
+                  " 1.83 / 5.58 for sieve trays), not through the shell's"
+                  " F_M, and trays are often\n  a different material from"
+                  " the shell -- so the class is the author's to state and"
+                  " is never read off the\n  construction material's name."
+                  "  Until then the total below is INCOMPLETE by exactly the"
+                  " trays.");
+        }
+        const std::string& word = wit->second;
+        scalar F_BM = -1.0;
+        for (const auto& f : sieveTrayFBM)
+            if (word == f.word) F_BM = f.F_BM;
+        if (F_BM < 0.0)
+            throw std::runtime_error("Turton: the TRAY STACK of '"
+                + dim.unitName + "': "
+                + registryRefusal::message("tray material class", word,
+                                           accepted, "Accepted"));
+
+        const auto& t = sieveTrayCoeffs;
+        if (A < t.Amin || A > t.Amax)
+        {
+            std::ostringstream v;
+            v << std::defaultfloat << std::setprecision(4)
+              << "  [validity] WARNING: sieveTrays '" << dim.unitName
+              << "': tray area A = " << A << " m2 is OUTSIDE the correlation"
+                 " range [" << t.Amin << ", " << t.Amax << "] -- cost"
+                 " EXTRAPOLATED, treat with caution.\n";
+            std::cout << v.str();
+        }
+
+        const scalar lA       = std::log10(A);
+        const scalar Cp0_2001 = std::pow(10.0, t.K1 + t.K2 * lA + t.K3 * lA * lA);
+        const scalar Cp_2001  = N * Cp0_2001;
+        const scalar Cp       = Cp_2001 * (cepci_ / cepci2001_) * usdToEur_;
+        const scalar F_q      = trayQuantityFactor(N);
+        const scalar C_BM     = Cp * F_BM * F_q;
+        const scalar C_TM     = 1.18 * C_BM;
+
+        CostBreakdown out;
+        out.unitName        = dim.unitName;
+        out.purchasedCost   = Cp;
+        out.bareModuleCost  = C_BM;
+        out.totalModuleCost = C_TM;
+        //  F_M and F_P are NOT applied, and are published as ones so the
+        //  shared table's columns read true rather than blank.
+        out.factors["F_M"]            = 1.0;
+        out.factors["F_P"]            = 1.0;
+        out.factors["F_BM"]           = F_BM;
+        out.factors["F_q"]            = F_q;
+        out.factors["N"]              = N;
+        out.factors["K1"]             = t.K1;
+        out.factors["K2"]             = t.K2;
+        out.factors["K3"]             = t.K3;
+        out.factors["S"]              = A;
+        out.factors["Cp_2001"]        = Cp_2001;
+        out.factors["C_TM_over_C_BM"] = 1.18;
+        out.factors["cepci"]          = cepci_;
+        out.factors["cepci2001"]      = cepci2001_;
+        out.factors["usdToEur"]       = usdToEur_;
+        out.factors["year"]           = year_;
+        out.sizeKey     = "A";
+        out.correlation = "tray-stack";
+        out.material    = word;
         out.currency    = "EUR";
         return out;
     }

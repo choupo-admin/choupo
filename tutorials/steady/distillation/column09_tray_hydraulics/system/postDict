@@ -14,7 +14,7 @@
   operation and, on the ground, five things somebody buys:
 
       shell        the tower                    costed as a vertical vessel
-      trays        the tray stack               NOT COSTED -- see below
+      trays        the tray stack               costed by the tray -- see below
       condenser    a shell-and-tube exchanger
       reboiler     a shell-and-tube exchanger
       refluxDrum   a drum for the condensate    costed as a vessel
@@ -47,12 +47,19 @@
     * drum       5 minutes of condensate holdup, the usual operability figure.
   Change them and every area, weight and cost below changes with them.
 
-  THE TRAY STACK IS SIZED AND NOT COSTED, AND THE RUN SAYS SO.  Choupo's
-  costing model holds eight coefficient sets and every coefficient in it is
-  Turton's; there is no tray set, and inventing one would turn "uncosted" into
-  "falsely costed", which no reader could detect.  So the trays refuse by name,
-  the totals line reads INCOMPLETE, and the capital cost of this column is its
-  shell, its two exchangers and its drum -- missing exactly the trays.
+  THE TRAY STACK IS COSTED BY THE TRAY (since 2026-10-05).  A tray is bought
+  by the tray, so it has its own shape: one tray's purchased cost from the
+  tower cross-section A, times the number of trays N, times a bare-module
+  factor F_BM chosen by the trays' MATERIAL CLASS, times a quantity factor F_q
+  that is above 1 for fewer than 20 trays (a short run costs more per tray).
+  The coefficients are Turton's sieve-tray set as the authors' own program
+  (CAPCOST 2017) carries it; the run prints the source.  The material class is
+  DECLARED below (`trayMaterial`): trays are often a different metal from the
+  shell, F_BM moves the stack's cost by up to 5.6x, and the class is never
+  read off the construction material's name.  Delete that line and the trays
+  refuse by name and the totals line reads INCOMPLETE -- which is what this
+  case printed until the set was added, because inventing one would have
+  turned "uncosted" into "falsely costed".
 \*---------------------------------------------------------------------------*/
 
 sizing
@@ -71,6 +78,12 @@ sizing
                 pressureDesign  2.0;        // bar (atmospheric column, x2 margin)
                 corrosionAllow  0.003;      // m
                 jointEfficiency 1.0;
+
+                //  The TRAYS' material class, which prices them (F_BM): one of
+                //  carbonSteel | stainlessSteel | nickelAlloy.  Carbon steel
+                //  here, like the shell -- a hydrocarbon service with no
+                //  corrosion argument for anything better.
+                trayMaterial    carbonSteel;
 
                 //  The two end spaces are left UNDECLARED on purpose, so this
                 //  case shows what an engine default looks like when it is

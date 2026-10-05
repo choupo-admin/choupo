@@ -23580,6 +23580,33 @@ correlation set the code transcribes (\cite{Turton}, App.~A;
    C_{\mathrm{TM}} \;=\; 1.18 \, C_{\mathrm{BM}}.
 \end{equation}
 
+\subsection{Tray stacks: bought by the tray}
+
+A tray is priced per tray, not per item, so a column's tray stack has its own
+shape.  With $A$ the tower cross-section and $N$ the number of trays,
+\begin{equation}
+   C_p \;=\; N \cdot 10^{\,K_1 + K_2 \log_{10} A + K_3 (\log_{10} A)^2},
+   \qquad
+   C_{\mathrm{BM}} \;=\; C_p\, F_{\mathrm{BM}}\, F_q,
+\end{equation}
+\begin{equation}
+   \log_{10} F_q \;=\; 0.4771 + 0.08516 \log_{10} N
+                     - 0.3473 (\log_{10} N)^2 \quad (N < 20),
+   \qquad F_q = 1 \quad (N \ge 20),
+\end{equation}
+with no pressure factor and no $F_M$: the trays' material enters through
+$F_{\mathrm{BM}}$, chosen by the material class the case declares
+(\code{trayMaterial carbonSteel | stainlessSteel | nickelAlloy;} in the
+column's \code{designRules}).  For sieve trays $K_1 = 2.9949$,
+$K_2 = 0.4465$, $K_3 = 0.3961$ on $0.07 \le A \le 12.3$~m$^2$ and
+$F_{\mathrm{BM}} = 1.00 / 1.83 / 5.58$.  These were read from CAPCOST 2017,
+the costing program the authors of \cite{Turton} distribute with its 5th
+edition (sheet \emph{Equipment Cost Data}, blocks \emph{Tower Trays} and
+\emph{FBM}, and its macro \code{calculateTrayCosts}); the book's printed
+table was not consulted.  $F_q > 1$ for a short run: at fourteen trays the
+bare-module cost carries $F_q = 1.31$ (\file{column09\_tray\_hydraulics}).  The tray cost is then escalated and
+converted exactly as below, and $C_{\mathrm{TM}} = 1.18\,C_{\mathrm{BM}}$.
+
 \subsection{Year and currency scaling}
 
 Costs are escalated from the Turton reference year (2001) to the user's

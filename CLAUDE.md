@@ -1937,11 +1937,15 @@ the exchanger rule and the ASME wall (the latter had been written out identicall
 the column needed it twice more).  **Swaging is ECONOMIC, not thermodynamic:**
 the engine publishes both section diameters and their gap, states which way the
 15-20 % band points, builds the tower STRAIGHT at the wider section and prices
-no transition, because it has no correlation for one.  **The TRAYS refuse by
-name and the total says INCOMPLETE** -- `Turton`'s eight sets are all Turton's,
-trays fit none of them, and an invented set converts *uncosted* into *falsely
-costed*, which no reader and no gate can detect; a column costed by Choupo today
-is missing its tray cost and says so.  Four traps paid for: the sizer's first
+no transition, because it has no correlation for one.  **The TRAYS refused by
+name and the total said INCOMPLETE** until a set could be READ rather than
+typed -- an invented set converts *uncosted* into *falsely costed*, which no
+reader and no gate can detect.  **Since 2026-10-05 (DEV.md 4c C38 item 1) they
+are costed by the tray** on Turton's sieve-tray set as the authors' CAPCOST 2017
+program carries it (`costing/Turton.cpp` names the cells, and that the book's
+own table was NOT read), the material CLASS declared as `trayMaterial` and
+never read off a material record's name; absent or unknown, the trays still
+refuse by name and the total still says INCOMPLETE.  Four traps paid for: the sizer's first
 tray count was `nStages - 2` and was WRONG BY ONE (this solver's stage list
 carries the reboiler and not the condenser), so **the count comes from the pass
 that ENUMERATES trays** -- the fact, not a rule about the fact; the golden
@@ -1958,7 +1962,8 @@ A witness must declare the pass or nobody meets the capability
 Gates: `check_design_sheet` arm (m) (7 sabotages -- and the first attempt proved
 NOTHING, because the arm re-runs the case and `design/` is regenerated whole:
 **the sabotage has to land BETWEEN the run and the check**) ·
-`check_equipment_pinned`.  RESERVED for Vitor: a tray cost correlation.  NOT
+`check_equipment_pinned` (+ arm (m)'s tray recomputation, tied to CAPCOST's
+own worked tower).  NOT
 DONE: the column schematic (task #134), deliberately after the cost rather than
 before it.  Record:
 [`docs/design/one-unit-five-items-the-column-gets-a-size.md`](docs/design/one-unit-five-items-the-column-gets-a-size.md).
