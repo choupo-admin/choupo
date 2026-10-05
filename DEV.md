@@ -1998,6 +1998,32 @@ with its moved golden rows listed:
      T).  The band is measured on the corpus first; a corpus stream inside it
      is fixed by declaring what its case means, never by widening the band
      silently.
+     [BUILT 2026-10-05 on branch `claude/c36-saturation-band` (not merged;
+     the full regression it needs is NOT yet authorised).  The rule:
+     `flashState::undeterminedSaturationRefusal` (StreamEquilibrium.H,
+     beside `equilibriumAt`), applied ONCE in `Flowsheet::solve` where the
+     authored inlets are stamped (the stamp moved above the lint seam, so
+     `choupo-lint` raises it).  THE BAND is the numerics: |ln K| <= the
+     flash's own tolerance (`FlashOptions::tolerance`, 1e-8) -- inside it
+     |RR(V)| <= ~|ln K| for every V, so every vapour fraction meets the
+     resolving flash's own convergence criterion; ~3e-7 K for water at
+     392 K.  MEASURED on the corpus first (an instrumented build over the
+     262 choupoSolve cases): 46 authored, unpinned, pure streams; the
+     nearest is `reboiler_water_copper`'s feed at |ln K| = 3.4e-3 (0.093 K
+     subcooled), then `condenser01_film_nusselt`'s steam at 2.4e-2 (0.67 K
+     superheated, its header says "saturated vapour"); NONE inside the band,
+     no case edited, no golden moved.  So any band up to ~1e-3 in |ln K|
+     (~0.03 K for water) would also reach no corpus case -- a wider band is a
+     modelling judgement, not taken.  The C35 fixture value itself,
+     392.1781136 K, sits at |ln K| = 9.18e-9 against the package's own
+     Tsat(200 kPa) = 392.1781133 K: inside, but at 0.92 of the band -- a
+     seven-decimal Tsat typed by hand is only just caught.  Gate:
+     `check_overspecified_stream` arm (g) (bisects a pure feed on the
+     engine's own vf until a run refuses; (g2) declared runs; (g3) a mixture
+     at its bubble point untouched).  NOT covered, said: a unit's own
+     `thermo {}` world (checked in the global one) and the time-integrated
+     binaries (their driver stamps no authored inlet).  Record:
+     docs/design/a-stream-is-fixed-by-two-variables.md §9.]
   2. ED counter-ion share stays z_i D_i c_i (Eqs. 12/13, already built).
   3. heatExchanger publishes a single-component two-phase outlet at Tsat with
      its vapour fraction pinned (the pure-component exception of the
@@ -3704,6 +3730,16 @@ defect — look for what else went with it.
    rounding.  Whether a pure-component stream within some band of its
    saturation curve should count as UNDETERMINED (refused unless pinned)
    is a rule nobody has written, and is Vítor's.
+   **RULED and BUILT 2026-10-05 (C36 item 1, branch
+   `claude/c36-saturation-band`):** inside a band set by the flash's own
+   tolerance (|ln K| <= 1e-8, ~3e-7 K for water) such a stream is REFUSED
+   as UNDETERMINED before any unit runs, naming `phase liquid;`/`phase
+   gas;`; the fixture's 392.1781136 K is inside it (|ln K| = 9.18e-9) and
+   now refuses there.  OUTSIDE the band the flash decides cleanly and the
+   side is still the one the author's rounding chose -- 392.17 K (0.008 K
+   below, ~2.6e4 band-widths away) reads liquid and reaches the evaporator's own
+   refusal, as arm (a) requires.  The corpus has no stream inside the band
+   (nearest |ln K| = 3.4e-3).
    WHAT THE REGRESSION SHOWED IT MOVED (the full sweep of C35 item 4):
      * `utility01_dowtherm_preheat` -- its heater outlet carries ZERO
        dowthermA (K = 0); the exchanger's Q -> T inversion priced every
