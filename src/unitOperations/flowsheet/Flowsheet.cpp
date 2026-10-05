@@ -2854,26 +2854,64 @@ int Flowsheet::solve(const DictPtr& dict,
     //  a unit's search and about produced streams, for which "declare the
     //  phase" is not a remedy anyone can apply.  Checked in the case's global
     //  thermophysical world, the one the stream table and the energy report
-    //  resolve the stream in.  Every offender is collected before refusing.
+    //  resolve the stream in -- AND in the world of each unit that CONSUMES
+    //  it under its own `thermo {}` (or property context), because that is
+    //  the world the unit resolves its inlet in (`resolvedInletVaporFraction`
+    //  in the unit's package): a saturation curve that the global package
+    //  places a millikelvin away may pass through the stream in the unit's
+    //  (DEV.md C37 item 5).  A unit's own world is asked only for a PURE,
+    //  authored, unpinned inlet -- the only stream the rule can refuse --
+    //  and `thermoFor` builds that world once and caches it for the solve.
+    //  Every offender is collected before refusing.
     {
         std::vector<std::string> undetermined;
+        std::set<std::string> refusedGlobally;
+        auto isCandidate = [&](const std::string& nm, const ProcessStream& s)
+        {
+            return s.authoredInlet && !s.phasePinned && s.F > 0.0
+                && canonicalPaths.count(nm);
+        };
         for (const auto& [nm, s] : streams_)
         {
-            if (!s.authoredInlet || s.phasePinned || s.F <= 0.0
-                || !canonicalPaths.count(nm)) continue;
+            if (!isCandidate(nm, s)) continue;
             if (auto why = flashState::undeterminedSaturationRefusal(
                     nm, "0/" + statePathOf(nm), s.T, s.P, s.z, thermo))
+            {
                 undetermined.push_back(*why);
+                refusedGlobally.insert(nm);
+            }
+        }
+        std::map<std::string, DictPtr> unitDictOf;
+        for (const auto& u : units)
+            unitDictOf[u->lookupWordOrDefault("name", "")] = u;
+        for (const auto& fu : topology_)
+        {
+            std::vector<std::string> pureInlets;
+            for (const auto& in : fu.ins)
+            {
+                const auto st = streams_.find(in);
+                if (st == streams_.end() || refusedGlobally.count(in)
+                    || !isCandidate(in, st->second)
+                    || !flashState::soleComponent(st->second.z)) continue;
+                pureInlets.push_back(in);
+            }
+            const auto ud = unitDictOf.find(fu.name);
+            if (pureInlets.empty() || ud == unitDictOf.end()) continue;
+            const ThermoPackage& world = thermoFor(fu.name, ud->second, thermo);
+            if (&world == &thermo) continue;            // the global world: done
+            for (const auto& in : pureInlets)
+            {
+                const auto& s = streams_.at(in);
+                if (auto why = flashState::undeterminedSaturationRefusal(
+                        in, "0/" + statePathOf(in), s.T, s.P, s.z, world))
+                    undetermined.push_back(*why + "  (Checked in the OWN "
+                        "thermophysical world of unit '" + fu.name
+                        + "', which consumes it.)");
+            }
         }
         if (!undetermined.empty())
-        {
-            std::string msg = "UNDETERMINED STREAM STATE -- "
-                + std::to_string(undetermined.size())
-                + " authored stream(s) sit on a pure component's saturation "
-                  "curve with no phase declared:";
-            for (const auto& u : undetermined) msg += "\n  * " + u;
-            throw std::runtime_error(msg);
-        }
+            throw std::runtime_error(
+                flashState::undeterminedStreamsMessage(undetermined));
     }
 
     // ---- choupo-lint: validate and stop (read-only, same seam) -----------

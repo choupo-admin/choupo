@@ -2041,6 +2041,23 @@ as one revertable merge with its moved rows listed:
      `check_vlle_fallback` arm (f).]
   5. The C36 #1 saturation refusal reaches a unit's own `thermo {}` world and
      the time-integrated binaries' authored inlets.
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  STEADY:
+     `Flowsheet::solve`, after the global check, asks the world of each unit
+     that consumes a pure, authored, unpinned inlet under its own
+     `thermo {}` / property context (`thermoFor`, built once and cached) --
+     the world `resolvedInletVaporFraction` reads that inlet in; a stream
+     refused globally is not asked twice; the refusal names the unit's
+     world.  TIME-INTEGRATED: `dynamicDriver`'s 0/ seeding applies the same
+     refusal to its authored inlets (consumed, produced by no unit),
+     prefixed by the binary's name.  The whole message has one home,
+     `flashState::undeterminedStreamsMessage`.  The C36 rule is kept: the
+     probe returns before evaluating K away from the stream's own T unless
+     within the band.  MEASURED: pure benzene at 1 bar is on flash01's ideal
+     curve at 352.826 K and on an SRK-vapour unit's at 351.925 K; unsteady02's
+     pure compA at 455.608 K.  Moved rows: none -- the 23 time-integrated
+     cases and the 8 per-unit-world cases PASS (listed in the commit).  Gate
+     `check_overspecified_stream` arms (h), (i).  Record:
+     docs/design/a-stream-is-fixed-by-two-variables.md §9.]
   6. Stale file:line citations (what-water-dat-does-not-say.md, the C33
      table), condenser01's "saturated vapour" header, `gateManifest` claims.
 Status: dispatched 2026-10-05.
@@ -2079,7 +2096,8 @@ with its moved golden rows listed:
      engine's own vf until a run refuses; (g2) declared runs; (g3) a mixture
      at its bubble point untouched).  NOT covered, said: a unit's own
      `thermo {}` world (checked in the global one) and the time-integrated
-     binaries (their driver stamps no authored inlet).  Record:
+     binaries (their driver stamps no authored inlet) -- both CLOSED by
+     C37 item 5.  Record:
      docs/design/a-stream-is-fixed-by-two-variables.md §9.]
      FULL REGRESSION AUTHORISED by Vítor 2026-10-05 ("Avança", answering the
      commander's request with its §0.4 reason): the rule runs in

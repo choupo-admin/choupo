@@ -486,6 +486,24 @@ undeterminedSaturationRefusal(const std::string&   name,
           "docs/design/a-stream-is-fixed-by-two-variables.md";
 }
 
+//  The refusal of a whole run, from every offender collected first.  ONE
+//  sentence for every binary that applies the rule (DEV.md C37 item 5): the
+//  steady flowsheet (`Flowsheet::solve`, the global world and each unit's
+//  own) and the time-integrated driver (`dynamicDriver`).  `who` prefixes
+//  it ("" for choupoSolve, which has always refused unprefixed).
+inline std::string undeterminedStreamsMessage(
+    const std::vector<std::string>& undetermined,
+    const std::string&              who = "")
+{
+    std::string msg = (who.empty() ? std::string() : who + ": ")
+        + "UNDETERMINED STREAM STATE -- "
+        + std::to_string(undetermined.size())
+        + " authored stream(s) sit on a pure component's saturation "
+          "curve with no phase declared:";
+    for (const auto& u : undetermined) msg += "\n  * " + u;
+    return msg;
+}
+
 //  ---- THE SEARCH A STREAM'S CONSUMER RESOLVES IT WITH (2026-10-05) --------
 //
 //  C35 item 4.  A stream fed to a `phaseSet VLLE` flash carries that unit's
