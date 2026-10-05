@@ -1138,7 +1138,7 @@
     },
     "check_evaporative_dryer": {
       "exit": 0,
-      "claim": "check_evaporative_dryer: OK -- the free-moisture dryer announces the limit its own answer satisfies (evapDryer01 complete, evapDryer02 saturation-bound above its floor with the payable heat named, the lithium plant's designed FINISHING.dryer complete with T_out between its floor and water's critical point), evaporates at the floor exactly what the gas pays for (doubling the gas doubles the water removed, to 2e-9, the WARNING replayed in the caveat block), and announces the zero heat capacity it defaults for NaCl.  NOT checked: its hand energy surface against the energy report (the report refuses these cases -- their salts carry no formation datum), whether the feed-temperature floor is right, or any measured dryer.",
+      "claim": "check_evaporative_dryer: OK -- the free-moisture dryer announces the limit its own answer satisfies (evapDryer01 complete, evapDryer02 heat-bound AT the gas's wet bulb since its solid is fed below it, a warm-solid twin saturation-bound with the payable heat named, the lithium plant complete), evaporates at the floor what the gas pays for (affine in the gas to 1e-9, the WARNING replayed), announces the zero heat capacity it defaults for NaCl; the floor of BOTH this unit and the solid dryer is the gas's wet bulb, recomputed from each case's own records to 1e-6 K and independent of the feed T; a 20 % over-gassed lithium dryer stays below its gas inlet T and water's critical point.  NOT checked: the hand energy surface against the energy report (the report refuses these cases), the solid dryer's exhaust saturation, or any measured dryer.",
       "seconds": 0.3
     },
     "check_vlle_fallback": {

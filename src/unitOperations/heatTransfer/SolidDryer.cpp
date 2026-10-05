@@ -150,7 +150,7 @@ int SolidDryer::solve(const DictPtr& dict,
     //   whole balance is
     //       H(dry solid, T_out) + H(humid exhaust, T_out)
     //           = H(wet solid, T_w) + H(hot air, T_air),
-    //   solved for T_out in [T_w, T_air].
+    //   solved for T_out in [T_floor, T_air], T_floor the GAS'S WET BULB.
     //
     //   ON THE SURFACE THE STREAMS ARE PRICED ON, AND NEVER BY INVENTING HEAT
     //   (2026-09-27).  This used to be a constant-Cp air balance against a
@@ -165,10 +165,17 @@ int SolidDryer::solve(const DictPtr& dict,
     //   air cannot pay, the solid still leaves at T_w -- this model's
     //   declared floor, unchanged -- and the evaporation is what the air CAN
     //   pay for, so the powder leaves WETTER than the isotherm allows, and the
-    //   run says so.  Whether the outlet should instead fall below the feed
-    //   temperature toward the air's adiabatic-saturation temperature (which
-    //   would dry further) is a change to this model's domain and is not
-    //   taken here.
+    //   run says so.
+    //
+    //   THE FLOOR IS THE GAS'S WET BULB (2026-10-05, DEV.md C35 item 7,
+    //   Vitor's ruling).  The powder and the exhaust leave at ONE
+    //   temperature, and a wet solid in a gas cools toward the gas's wet-bulb
+    //   (adiabatic-saturation) temperature, not toward its own feed
+    //   temperature: until 2026-10-05 the floor was T_w, so a warm powder
+    //   could not give its sensible heat to the evaporation (the flagship's
+    //   DRYING.BD, energy-limited at its 349.68 K feed T) and a cold one let
+    //   the exhaust leave below the gas's wet bulb.  The wet bulb is the
+    //   shared psychrometry's (`psychrometry::gasWetBulb`).
     const std::string who = "solidDryer '" + (dict->name().empty() ? type() : dict->name()) + "'";
     //  The inlets' phases: an UNPINNED authored inlet means its own
     //  equilibrium (R-E2), single phase included -- `priceState` keeps the
@@ -214,18 +221,32 @@ int SolidDryer::solve(const DictPtr& dict,
                                     who + " exhaust", nullptr);
         return H;
     };
+    const scalar T_floor = psychrometry::gasWetBulb(thermo, yAir, iSolv,
+                                                    T_air, P_air, who);
+    if (H_out(T_floor, 0.0) - H_in > 0.0)
+    {
+        std::ostringstream m;
+        m << std::setprecision(4) << std::fixed << who << ": the air cannot"
+             " bring the wet solid from its feed temperature (" << T_w
+          << " K) up to the air's wet-bulb temperature (" << T_floor
+          << " K, this model's floor) even evaporating nothing -- it is "
+          << (H_out(T_floor, 0.0) - H_in) << " kW short.  The outlet would"
+             " lie below the air's wet bulb, where this model does not go."
+             "  Use more or hotter air, or a warmer feed.";
+        throw std::runtime_error(m.str());
+    }
     scalar T_out, water_rem;
-    const bool energyLimited = (H_out(T_w, water_rem_target) - H_in > 0.0);
+    const bool energyLimited = (H_out(T_floor, water_rem_target) - H_in > 0.0);
     if (energyLimited)
     {
         //  The air cannot pay for the isotherm's target even with the solid
-        //  leaving at its feed T: evaporate what it can pay for (H_out is
+        //  leaving at the floor: evaporate what it can pay for (H_out is
         //  monotone increasing in the evaporation -- vapour costs more than
         //  liquid).
-        T_out = T_w;
+        T_out = T_floor;
         scalar lo = 0.0, hi = water_rem_target;
         for (int it = 0; it < 200 && (hi - lo) > 1.0e-15 * std::max(1.0, water_rem_target); ++it)
-        { const scalar m = 0.5*(lo+hi); if (H_out(T_w, m) - H_in > 0.0) hi = m; else lo = m; }
+        { const scalar m = 0.5*(lo+hi); if (H_out(T_floor, m) - H_in > 0.0) hi = m; else lo = m; }
         water_rem = 0.5 * (lo + hi);
     }
     else
@@ -237,14 +258,14 @@ int SolidDryer::solve(const DictPtr& dict,
         solver::NROptions o;
         o.tolerance = 1.0e-9;                 // kW -- a microwatt
         o.maxIter   = 200;
-        o.lower     = T_w;
+        o.lower     = T_floor;
         o.upper     = T_air;
         o.bracket   = true;
         o.monotoneIncreasing = true;
-        auto r = solver::newton1D(g, dg, 0.5 * (T_w + T_air), o);
+        auto r = solver::newton1D(g, dg, 0.5 * (std::max(T_w, T_floor) + T_air), o);
         if (!r.converged)
             throw std::runtime_error(who + ": the adiabatic energy balance"
-                " H(out) = H(in) did not converge for T_out in [T_w, T_air]"
+                " H(out) = H(in) did not converge for T_out in [T_floor, T_air]"
                 " (residual " + std::to_string(r.residual) + " kW).");
         T_out = r.x;
     }
@@ -278,6 +299,7 @@ int SolidDryer::solve(const DictPtr& dict,
     kpis_["drySolid_flow"]  = solid_mass + water_final * MW_solv;
     kpis_["water_activity"] = aw;
     kpis_["T_out"]          = T_out;
+    kpis_["T_wetbulb"]      = T_floor;                // K, the floor
     kpis_["air_in_kmol_h"]  = F_air * 3600.0;
 
     if (energyLimited)
@@ -285,8 +307,9 @@ int SolidDryer::solve(const DictPtr& dict,
         std::ostringstream msg;
         msg << std::setprecision(4) << std::fixed
             << "the hot air cannot pay for drying to the isotherm's equilibrium"
-               " moisture: with the solid leaving at its feed temperature ("
-            << T_w << " K, this model's floor) it evaporates "
+               " moisture: with the solid leaving at the air's wet-bulb"
+               " temperature (" << T_floor << " K, this model's floor) it"
+               " evaporates "
             << (water_rem * MW_solv * 3600.0) << " kg/h of the "
             << (water_rem_target * MW_solv * 3600.0) << " kg/h the isotherm"
                " would remove, so the powder leaves at X = " << X_final

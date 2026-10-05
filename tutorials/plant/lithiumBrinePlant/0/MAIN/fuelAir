@@ -45,7 +45,20 @@
     So the burner exit temperature is unchanged and only the amount of hot
     gas grows.  Until 2026-10-05 this file carried 1/5.56 of this flow, and
     once the dryer stopped evaporating water no heat paid for (C26 slice 2)
-    the product left at 98.5 wt% water. */
+    the product left at 98.5 wt% water.
+
+    AFTER C35 ITEM 7 (2026-10-05, same day; no number here changed).  The
+    basis above was computed on the dryer's floor as it then was, the
+    solid's FEED temperature.  The floor is now the gas's WET-BULB
+    temperature (346.30 K for this flue gas), so the same gas would pay for
+    more water at its floor and the 5 % margin is wider than stated; the
+    flow is kept, by ruling.  And the spurious root above 647 K that
+    excluded a 20 % margin is fixed in the unit (the outlet is the first
+    root above the floor, below water's Tc): the 20 % gas now returns
+    T_out = 446.56 K, which `check_evaporative_dryer` arm (e) runs.  The
+    floor change alone would have sent even THIS flow to that root (the
+    first bisection midpoint on [346.30, 950.58] K is above Tc), so the two
+    shipped together. */
 
 componentMolarFlows
 {

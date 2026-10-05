@@ -28,6 +28,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EvaporativeDryer.H"
+#include "Psychrometry.H"
 #include "thermo/ThermoPackage.H"
 #include "core/Advisory.H"
 
@@ -35,6 +36,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include "thermo/vaporPressure/VaporPressureModel.H"
@@ -166,8 +168,9 @@ int EvaporativeDryer::solve(const DictPtr& dict,
     }
 
     // The energy balance on this surface, in W: what the air gives up cooling
-    // from T_air to Tout, minus what warming the solid and its water to Tout
-    // and evaporating `water_rem` at Tout cost.
+    // from T_air to Tout, minus what warming (or cooling) the solid and its
+    // water from their feed T_w to Tout and evaporating `water_rem` at Tout
+    // cost.
     auto fEner = [&](scalar Tout, scalar water_rem) -> scalar
     {
         const scalar supply = F_air * 1000.0 * cp_air * (T_air - Tout);
@@ -176,21 +179,69 @@ int EvaporativeDryer::solve(const DictPtr& dict,
         return supply - demand;
     };
 
-    // Adiabatic outlet T for a GIVEN removed-water rate (air cools to supply the
-    // latent + sensible load), bracketed on [T_w, T_air].  Below T_w this
-    // model does not go: the solid's feed temperature is its declared floor.
+    // ---- THE FLOOR IS THE GAS'S WET BULB (2026-10-05, DEV.md C35 item 7) --
+    //
+    //  The solid and the exhaust leave at ONE temperature, and a wet solid in
+    //  a gas cools toward the gas's wet-bulb temperature -- the adiabatic-
+    //  saturation temperature of that gas -- not toward its own feed
+    //  temperature.  Until 2026-10-05 the floor was the solid's feed T: a
+    //  warm cake could not give its own sensible heat to the evaporation,
+    //  and a cold one let the exhaust leave below the gas's wet bulb.  The
+    //  wet bulb is the shared psychrometry's (`psychrometry::gasWetBulb`,
+    //  the construction the cooling tower and the convective and batch
+    //  dryers read).
+    const scalar T_floor = psychrometry::gasWetBulb(thermo, yAir, iSolv,
+                                                    T_air, P, who);
+
+    // ---- THE OUTLET T IS THE FIRST ROOT ABOVE THE FLOOR (2026-10-05) -----
+    //
+    //  This surface's latent heat is Watson's, which VANISHES at the
+    //  moisture's critical temperature, while the free water is warmed as a
+    //  liquid at a constant cp -- so close below Tc the demand can FALL with
+    //  T, and fEner has a second, spurious root there and a third above Tc.
+    //  The bisection on [floor, T_air] took its first midpoint above Tc
+    //  whenever the gas was hot (the lithium plant's 950 K flue gas with a
+    //  20 % gas margin: T_out 672.28 K, DEV.md C35 item 11).  Now the
+    //  bracket stops at the moisture's critical temperature -- this surface
+    //  cannot price the water past it -- and the root taken is the FIRST
+    //  sign change above the floor: a scan of 400 steps, then a bisection
+    //  inside the step to 1e-9 K.  When the balance has no root below Tc
+    //  the answer is NaN, and the caller decides (a trial: below the cap;
+    //  the answer: refused by name).
+    const scalar T_top = std::min(T_air, std::nextafter(solv.Tc(), 0.0));
     auto Tout_for = [&](scalar water_rem) -> scalar
     {
-        if (fEner(T_w, water_rem) < 0.0) return T_w;         // energy floor
-        scalar a = T_w, b = T_air;
-        for (int it = 0; it < 80 && (b - a) > 1.0e-4; ++it)
-        { const scalar m = 0.5*(a+b); if (fEner(m, water_rem) >= 0.0) a = m; else b = m; }
-        return 0.5*(a+b);
+        if (fEner(T_floor, water_rem) < 0.0) return T_floor;   // energy floor
+        if (!(T_top > T_floor)) return T_floor;
+        constexpr int NSCAN = 400;
+        const scalar dT = (T_top - T_floor) / NSCAN;
+        scalar a = T_floor;
+        for (int k = 1; k <= NSCAN; ++k)
+        {
+            const scalar b = (k == NSCAN) ? T_top : T_floor + dT * k;
+            if (fEner(b, water_rem) < 0.0)
+            {
+                scalar lo = a, hi = b;
+                for (int it = 0; it < 100 && (hi - lo) > 1.0e-9; ++it)
+                {
+                    const scalar m = 0.5*(lo+hi);
+                    if (fEner(m, water_rem) >= 0.0) lo = m; else hi = m;
+                }
+                return 0.5*(lo+hi);
+            }
+            a = b;
+        }
+        return std::numeric_limits<scalar>::quiet_NaN();   // no root below Tc
     };
 
     // Exhaust water activity if 'water_rem' is evaporated into the air at T_out.
+    //  A trial whose balance has no root below the moisture's critical
+    //  temperature puts the exhaust above it, where p_sat exceeds every
+    //  partial pressure an exhaust below the critical pressure can carry:
+    //  that trial is below any cap a_w_max < 1, and is reported as 0.
     auto aw_exhaust = [&](scalar water_rem, scalar Tout) -> scalar
     {
+        if (std::isnan(Tout)) return 0.0;
         const scalar F_ex = F_air + water_rem;
         const scalar y_w  = (F_ex > 0.0)
             ? (yAir[iSolv] * F_air + water_rem) / F_ex : 0.0;
@@ -200,10 +251,12 @@ int EvaporativeDryer::solve(const DictPtr& dict,
 
     // ---- WHICH LIMIT BINDS, decided at the answer (2026-10-05) -----------
     //
-    //  THE HEAT THE AIR CAN PAY FOR.  With the solid leaving at its floor T_w
-    //  the sensible demand vanishes and the balance above is linear in the
+    //  THE HEAT THE AIR CAN PAY FOR.  With the solid leaving at its floor
+    //  T_floor (the gas's wet bulb) the balance above is linear in the
     //  evaporation, so its root is closed-form:
-    //      water_pay = F_air cp_air (T_air - T_w) / lambda(T_w).
+    //      water_pay = [F_air cp_air (T_air - T_floor)
+    //                   - (n_s cp_s + n_w cp_w)(T_floor - T_w)] / lambda(T_floor).
+    //  (Until 2026-10-05 the floor WAS T_w and the sensible term vanished.)
     //  Until 2026-10-05 this unit asked only whether removing ALL the free
     //  water hit the floor, and two defects followed from that one question,
     //  the first of them the solid dryer's of 2026-09-27:
@@ -218,9 +271,22 @@ int EvaporativeDryer::solve(const DictPtr& dict,
     //  Now the evaporation is capped by what the air can pay for, the exhaust
     //  cap is solved inside that, and the limit announced is the one that
     //  binds the answer.
-    const scalar lambda_w  = solv.Hvap_latent(T_w);                      // J/mol
-    const scalar water_pay = (lambda_w > 0.0)
-        ? std::max(0.0, F_air * cp_air * (T_air - T_w) / lambda_w) : water_in;
+    const scalar lambda_f  = solv.Hvap_latent(T_floor);                  // J/mol
+    const scalar heat_f    = fEner(T_floor, 0.0);                         // W
+    if (heat_f < 0.0)
+    {
+        std::ostringstream m;
+        m << std::setprecision(4) << std::fixed << who << ": the gas cannot"
+             " bring the wet solid from its feed temperature (" << T_w
+          << " K) up to the gas's wet-bulb temperature (" << T_floor
+          << " K, this model's floor) even evaporating nothing -- it is "
+          << (-heat_f / 1000.0) << " kW short.  The outlet would lie below"
+             " the gas's wet bulb, where this model does not go.  Use more"
+             " or hotter gas, or a warmer feed.";
+        throw std::runtime_error(m.str());
+    }
+    const scalar water_pay = (lambda_f > 0.0)
+        ? heat_f / (1000.0 * lambda_f) : water_in;                        // kmol/s
     const bool   heatBinds = water_pay < water_in;
     const scalar water_cap = heatBinds ? water_pay : water_in;           // kmol/s
 
@@ -246,7 +312,21 @@ int EvaporativeDryer::solve(const DictPtr& dict,
     //  At the energy limit the solid leaves at its floor by construction
     //  (water_pay is the balance's root there); Tout_for would return it only
     //  to within its own 1e-4 K bracket, so the floor is written, not searched.
-    const scalar T_out       = (limit == "energy") ? T_w : Tout_for(water_rem);
+    const scalar T_out       = (limit == "energy") ? T_floor : Tout_for(water_rem);
+    if (std::isnan(T_out))
+    {
+        std::ostringstream m;
+        m << std::setprecision(2) << std::fixed << who << ": the energy"
+             " balance has no outlet temperature below the moisture's critical"
+             " temperature (" << solv.Tc() << " K) for the "
+          << (water_rem * MW_solv * 3600.0) << " kg/h it evaporates -- the"
+             " gas (" << T_air << " K, " << (F_air * 3600.0) << " kmol/h)"
+             " carries more heat than the evaporation and the warm-up absorb"
+             " below it.  This unit prices the free water as a liquid and"
+             " evaporates it at a Watson latent heat that vanishes at Tc, so"
+             " it cannot price an outlet there.  Use less or cooler gas.";
+        throw std::runtime_error(m.str());
+    }
     const scalar water_final = std::max(0.0, water_in - water_rem);      // stays on the cake
     const scalar X_final     = (solid_mass > 0.0) ? water_final * MW_solv / solid_mass : 0.0;
     const scalar aw_out      = aw_exhaust(water_rem, T_out);
@@ -290,6 +370,7 @@ int EvaporativeDryer::solve(const DictPtr& dict,
     kpis_["drySolid_flow"]   = solid_mass + water_final * MW_solv;       // kg/s
     kpis_["exhaust_humidity"]= aw_out;
     kpis_["T_out"]           = T_out;
+    kpis_["T_wetbulb"]       = T_floor;                                  // K, the floor
     kpis_["air_in_kmol_h"]   = F_air * 3600.0;
 
     if (limit == "energy")
@@ -297,7 +378,8 @@ int EvaporativeDryer::solve(const DictPtr& dict,
         std::ostringstream msg;
         msg << std::setprecision(4) << std::fixed
             << "the hot air cannot pay for evaporating all the free water:"
-               " with the solid leaving at its feed temperature (" << T_w
+               " with the solid leaving at the gas's wet-bulb temperature ("
+            << T_floor
             << " K, this model's floor) it evaporates "
             << (water_rem * MW_solv * 3600.0) << " kg/h of the "
             << (water_in * MW_solv * 3600.0) << " kg/h fed, so the solid"
@@ -316,7 +398,7 @@ int EvaporativeDryer::solve(const DictPtr& dict,
                   << " kg/h";
         if (heatBinds)
             std::cout << ", before the air ran out of heat (cooled to the"
-                         " solid's feed T it could pay for "
+                         " gas's wet bulb it could pay for "
                       << (water_pay * MW_solv * 3600.0) << " kg/h)";
         std::cout << "; residual free water stays on the cake (add more/drier"
                      " air to finish).\n";

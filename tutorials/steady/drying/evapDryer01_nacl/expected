@@ -17,3 +17,4 @@ stream  drySolid               T                360.675490975    1e-4
 stream  hotGas                 T                400              1e-4
 stream  humidExhaust           T                360.675490975    1e-4
 stream  wetSolid               T                298.15           1e-4
+kpi     dryer                  T_wetbulb        308.892481017    1e-4

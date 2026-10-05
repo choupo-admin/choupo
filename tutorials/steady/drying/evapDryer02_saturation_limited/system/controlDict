@@ -3,6 +3,6 @@
 |        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
-description   "The same dryer starved of gas: 40 kmol/h instead of 600, so the exhaust saturates and 16.6 wt% of the water stays on the crystal";
+description   "The same dryer starved of gas: 40 kmol/h instead of 600, so the gas runs out of heat at its wet bulb and 16.6 wt% of the water stays on the crystal";
 verbosity     3;
 reports { streamTable {}  massBalance {} }

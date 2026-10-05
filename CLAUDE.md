@@ -1136,8 +1136,10 @@ it, and each row closes at 0.0000 kW.  The spray dryer's kinetics are now
 evaluated at the exhaust it publishes, the unknown is the evaporation, and the
 root is BRACKETED -- a plain substitution cycled with period two near
 saturation, where the GAB isotherm is steeper than the energy balance.  The
-solid dryer keeps its `T_w` floor and evaporates only what the air can pay
-for, ANNOUNCED.  The flagship reads +10.79 kW (1.0298 %): the evaporators,
+solid dryer keeps a floor and evaporates only what the air can pay for,
+ANNOUNCED -- the floor was the feed `T_w` then, and is the air's WET BULB
+since 2026-10-05 (DEV.md C35 item 7, both this unit and `evaporativeDryer`,
+through `psychrometry::gasWetBulb`).  The flagship reads +10.79 kW (1.0298 %): the evaporators,
 reserved.  **And a case gap rode with it, as it did on 2026-09-25:**
 `solidDryer01`'s 372.66 kW was 365.78 kW of humid hot air that declared no
 phase and was priced as a LIQUID (the permanent-gas screen does not fire on a
