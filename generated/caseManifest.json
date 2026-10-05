@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 458,
+  "cases": 459,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -4524,6 +4524,24 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flash/vlle05_produced_feed": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heater",
+    "isothermalFlash"
+   ],
+   "unitModels": [
+    "gibbsMinimisation"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flowsheets/acetone03_luyben_reaction_section": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7051,6 +7069,7 @@
     "tutorials/steady/flash/vlle01_waterButanol",
     "tutorials/steady/flash/vlle03_audit_artificial",
     "tutorials/steady/flash/vlle04_two_liquids_decanter",
+    "tutorials/steady/flash/vlle05_produced_feed",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
@@ -7557,6 +7576,7 @@
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
+    "tutorials/steady/flash/vlle05_produced_feed",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
     "tutorials/steady/flowsheets/process02_reactor_hx_flash",
     "tutorials/steady/flowsheets/process02_with_design",
@@ -7622,6 +7642,7 @@
     "tutorials/steady/flash/vlle01_waterButanol",
     "tutorials/steady/flash/vlle03_audit_artificial",
     "tutorials/steady/flash/vlle04_two_liquids_decanter",
+    "tutorials/steady/flash/vlle05_produced_feed",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
@@ -7847,6 +7868,7 @@
     "tutorials/steady/flash/flash21_freeze_concentration",
     "tutorials/steady/flash/vlle03_audit_artificial",
     "tutorials/steady/flash/vlle04_two_liquids_decanter",
+    "tutorials/steady/flash/vlle05_produced_feed",
     "tutorials/steady/flowsheets/process04_research_workflow",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
     "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars",
