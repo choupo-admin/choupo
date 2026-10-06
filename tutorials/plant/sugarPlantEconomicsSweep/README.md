@@ -22,16 +22,19 @@ plant from sub-economic, through break-even, to clearly profitable:
 
 | sucrose (mol frac) | IRR | discounted payback | NPV (EUR) |
 |------:|----:|------:|----------:|
-| 0.090 |  0.9 % | — | −14.6 M |
-| 0.104 |  6.6 % | — | −5.7 M |
-| 0.118 | 11.6 % | 9.3 yr | +2.8 M |
-| 0.132 | 16.2 % | 7.1 yr | +11.1 M |
-| 0.146 | 20.4 % | 5.7 yr | +19.2 M |
-| 0.160 | 24.4 % | 4.8 yr | +27.0 M |
+| 0.090 |  5.6 % | — | −6.7 M |
+| 0.104 | 11.9 % | 9.2 yr | +3.0 M |
+| 0.118 | 17.6 % | 6.6 yr | +12.7 M |
+| 0.132 | 23.0 % | 5.1 yr | +22.4 M |
+| 0.146 | 28.2 % | 4.2 yr | +32.1 M |
+| 0.160 | 33.2 % | 3.5 yr | +41.8 M |
+
+(Measured 2026-10-06 from `sweep_results.csv`, after the BD dryer's air was
+sized for the richest point -- the design basis is written in `0/MAIN/BdAir`.)
 
 Richer juice → more crystalline sugar per unit feed → more revenue against an
 almost-unchanged plant cost → the IRR climbs and the payback appears and
-shortens.  The NPV crosses zero between 0.104 and 0.118.
+shortens.  The NPV crosses zero between 0.090 and 0.104.
 
 ## The two companion cases
 

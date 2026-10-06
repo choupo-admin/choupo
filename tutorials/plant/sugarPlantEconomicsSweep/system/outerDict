@@ -26,12 +26,14 @@
   break-even point, so the IRR / NPV / payback trade-off is visible end to end:
 
       sucrose   IRR      payback     NPV
-      0.090     0.9 %    --          -14.6 M EUR
-      0.104     6.6 %    --           -5.7 M EUR
-      0.118    11.6 %    9.3 yr       +2.8 M EUR
-      0.132    16.2 %    7.1 yr      +11.1 M EUR
-      0.146    20.4 %    5.7 yr      +19.2 M EUR
-      0.160    24.4 %    4.8 yr      +27.0 M EUR
+      0.090     5.6 %    --           -6.7 M EUR
+      0.104    11.9 %    9.2 yr       +3.0 M EUR
+      0.118    17.6 %    6.6 yr      +12.7 M EUR
+      0.132    23.0 %    5.1 yr      +22.4 M EUR
+      0.146    28.2 %    4.2 yr      +32.1 M EUR
+      0.160    33.2 %    3.5 yr      +41.8 M EUR
+  (measured 2026-10-06, sweep_results.csv, after BD's air was sized for the
+  richest point -- see 0/MAIN/BdAir.)
 
   A single CAPEX number cannot show this trade-off; the sweep can.  For the
   FULL itemised single-point appraisal (FCI / TCI / COM_d / NPV / IRR /
