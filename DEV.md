@@ -2072,7 +2072,7 @@ reserved for him).**  The commander takes them, each one revertable merge:
      class C left.
   4. Catalyst beds: the bed shell is costed on the vessel set and the charge
      on its declared price since C2; no further reserved decision remains.
-Status: dispatched 2026-10-05.
+Status: dispatched 2026-10-05; items 1-3 MERGED into main 2026-10-05/06, item 4 needed nothing.
 
 **C37. THE C35/C36 LOOSE ENDS (Vítor, 2026-10-05, verbatim: "Trata tu disso
 o melhor que souberes", answering the commander's list of six).**  Each lands
@@ -2080,7 +2080,7 @@ as one revertable merge with its moved rows listed:
   1. `flashState::resolvedInletVaporFraction` honours a pinned pure two-phase
      inlet for EVERY caller (today only heatExchanger/heater/phaseChanger read
      the pin first).
-     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  The rule
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (merged into main since).  The rule
      is in the one home: `resolvedInletVaporFraction` asks
      `pinnedPureQuality` first (StreamEquilibrium.H:717), and so does its
      sibling `resolveStreamThermalState` (:653, the column feed and the
@@ -2098,7 +2098,7 @@ as one revertable merge with its moved rows listed:
      agreement check drops the `utility <hx> heating.-.carried` row).
   3. `solidDryer` gets an exhaust-saturation limit (a fog is no longer
      published as vf = 1); the stale Theory Guide sentence on its X_final.
-     [BUILT 2026-10-05 on `claude/c37-solid-dryer-saturation` (not merged).
+     [BUILT 2026-10-05 on `claude/c37-solid-dryer-saturation` (merged into main since).
      MEASURED first, at 32dbe5577: `SolidDryer.cpp:239-271` evaporated the
      isotherm's target (or what the heat paid for at the floor) and asked
      nothing of the exhaust; `:220` priced the exhaust UNPINNED, so
@@ -2162,7 +2162,7 @@ as one revertable merge with its moved rows listed:
      nothing.]
   4. A `phaseSet VLLE` feed PRODUCED by another unit: report and producer read
      it the same way.
-     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  THE RULE,
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (merged into main since).  THE RULE,
      one home: a stream means its consumer's search only when it is an
      AUTHORED inlet or a three-phase search itself published it --
      `flashState::consumerSearchApplies` (StreamEquilibrium.H, three
@@ -2189,7 +2189,7 @@ as one revertable merge with its moved rows listed:
      `check_vlle_fallback` arm (f).]
   5. The C36 #1 saturation refusal reaches a unit's own `thermo {}` world and
      the time-integrated binaries' authored inlets.
-     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  STEADY:
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (merged into main since).  STEADY:
      `Flowsheet::solve`, after the global check, asks the world of each unit
      that consumes a pure, authored, unpinned inlet under its own
      `thermo {}` / property context (`thermoFor`, built once and cached) --
@@ -2214,7 +2214,7 @@ as one revertable merge with its moved rows listed:
      (`K`, `Kvec`, `Kvec_Raoult`, the Henry Poynting anchor) read the
      record's Antoine -- 1 bar boils at 372.09 K to the flash and 372.76 K
      to the enthalpy surface.  BUILT 2026-10-06 on `claude/c39-if97-dome`
-     (not merged): the declared method OWNS its component's saturation
+     (merged into main as a5f1e112f, 2026-10-06): the declared method OWNS its component's saturation
      curve wherever the package is asked; ONE home `saturationPressure`
      (src/thermo/pureFluid/SaturationCurve), reached by `ThermoPackage::Psat`
      and by both phases; outside IF97's window (273.15 .. 647.096 K) the
@@ -2282,8 +2282,8 @@ with its moved golden rows listed:
      T).  The band is measured on the corpus first; a corpus stream inside it
      is fixed by declaring what its case means, never by widening the band
      silently.
-     [BUILT 2026-10-05 on branch `claude/c36-saturation-band` (not merged;
-     the full regression it needs is NOT yet authorised).  The rule:
+     [BUILT 2026-10-05 on branch `claude/c36-saturation-band` (merged into main since;
+     after the full regression Vítor authorised ("Avança")).  The rule:
      `flashState::undeterminedSaturationRefusal` (StreamEquilibrium.H,
      beside `equilibriumAt`), applied ONCE in `Flowsheet::solve` where the
      authored inlets are stamped (the stamp moved above the lint seam, so
@@ -2358,7 +2358,7 @@ with its moved golden rows listed:
      removed: `--fast` PASS 68 / FAIL 0, the arm "judged on 1 plant";
      standalone full scope: 240 steady cases, the arm judged on 2 plants
      (ammonia02, ammonia03).  Sabotages S8/S9 in the gate's docstring.]
-Vítor's own deck stays his.  Status: dispatched 2026-10-05.
+Vítor's own deck stays his.  Status: dispatched 2026-10-05; items 1, 3, 4 and 5 MERGED into main.
 
 **C35. THE SIXTEEN DECISIONS (Vítor, 2026-10-05, verbatim: "Decide as 16
 como recomendaste e autorizo a regressão completa do #4.").**  The commander
@@ -2373,7 +2373,7 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      CLOSED, and the C33 table's column row.]
   3. Evaporator latent: the duty's latent heat is the enthalpy difference
      the energy report prices, not the Watson correlation.  DONE 2026-10-05
-     on `claude/c35-evaporator-latent` (not merged): every evaporator row
+     on `claude/c35-evaporator-latent` (merged into main since): every evaporator row
      closes against the report, eight `check_energy_closure` pins removed,
      `energy-T2:plant` green; the evaporator-chest half of 4d D1 taken (see
      there: still refused on corpus packages, for a flash cause named --
@@ -2628,7 +2628,7 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      `claude/c35-cases`: no in-tree link reached them; check_doctrine reads
      content, not names, so its ledger is unchanged.]
  16. Vítor's own deck stays his.
-Status: dispatched 2026-10-05.
+Status: dispatched 2026-10-05; every item MERGED into main.
 (item 1) DONE 2026-10-05 on `claude/c35-ed-split`, not merged: the split has
 ONE home, `edCell::counterIonRates` (instantaneous, the batch rig) and
 `edCell::counterIonPassTransfer` (the same rule integrated in closed form
@@ -2666,7 +2666,7 @@ green for the right reason), C 6187d7b16 (C22 remaining text errors; C3 +15
 citations, 35 equations left unsourced for Vítor), A ff9c4b52c (12 more
 units read an authored inlet; supercritical discard in pipe/valve/
 adiabaticFlash/flash; witness inletState01; four gate arms); no existing
-golden row moved.  Wave 2 part 1 dispatched: C16 slice 2, C26 slice 2, C4.
+golden row moved.  Wave 2 COMPLETE (see below); its part 1 was: C16 slice 2, C26 slice 2, C4.
 Part 2 after: C8 with C2's unreserved part (both in sizing), C7's
 remainder.  Open for Vítor from wave 1: the 35 unsourced equations and the
 cited-at-model-introduction convention (C3); the mixer's two-phase authored
@@ -4217,10 +4217,9 @@ every published number (compared at 1e-12 relative) under the first commit.
 
 **2026-10-05 -- `phaseChanger`'S PLATEAU ENDS WERE SCALED, NOT TRANSLATED.
 FOUND (C36 item 3); FIXED on branch `claude/c36-pure-twophase-outlet` in its
-own commit, the two goldens NOT RE-RECORDED -- the moved rows are Vitor's
-(CLAUDE.md §10), listed in that commit; until he rules,
-`reboiler_water_copper` and `condenser01_film_nusselt` FAIL their goldens
-on that commit, for this stated reason.**  Three sites (`PhaseChanger.cpp`, the duty mode and both
+own commit, the two goldens NOT RE-RECORDED on that commit -- the moved rows were
+listed in it; they were re-recorded on 2026-10-05 under C36's mandate
+(1d7842629, "Re-record the 16 phaseChanger rows") and both cases PASS.**  Three sites (`PhaseChanger.cpp`, the duty mode and both
 geometry modes) extrapolated the saturated legs from two interior qualities
 as h_f = (h_lo - eps h_hi)/(1 - 2 eps), h_g = (h_hi - eps h_lo)/(1 - 2 eps).
 With h_lo = h_L + eps L, h_hi = h_L + (1 - eps) L that is h_L (1 - eps) /
