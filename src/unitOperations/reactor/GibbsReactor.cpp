@@ -172,6 +172,11 @@ int GibbsReactor::solve(const DictPtr& dict,
 
     const scalar F_in_kmols = feedDict->lookupScalar("F", Dims::molarFlow);
     const scalar T_guess   = operDict->lookupScalar("T", Dims::temperature);
+    if (!(T_guess > 0.0))
+        throw std::runtime_error("GibbsReactor: operation.T = "
+            + std::to_string(T_guess) + " K is at or below absolute zero --"
+            " the reactor temperature (or, in adiabatic mode, the outer"
+            " Newton's seed) is absolute (DEV.md 4c C40)");
     const scalar P         = operDict->lookupScalar("P", Dims::pressure);
     const std::string mode = operDict->lookupWordOrDefault("mode", "isothermal");
     if (mode != "isothermal" && mode != "adiabatic")
@@ -443,6 +448,17 @@ int GibbsReactor::solve(const DictPtr& dict,
         //  run says so below, instead of stepping on a penalty in silence.
         std::vector<scalar> penalisedT;
         auto fT = [&](scalar Tt) -> scalar {
+            //  `nro.bracket` is false, so `nro.lower` binds only the seed and a
+            //  Newton step may leave physics entirely (gibbs05 given
+            //  `Q -2.0e5;` walked to T = -100 K).  No state exists there:
+            //  REFUSE by name rather than evaluate one (DEV.md 4c C40).
+            if (!(Tt > 0.0))
+                throw std::runtime_error("GibbsReactor (adiabatic): the outer"
+                    " Newton on T stepped to " + std::to_string(Tt) + " K, at"
+                    " or below absolute zero -- the declared duty Q has no"
+                    " adiabatic outlet this feed can reach.  Check the sign"
+                    " and size of `Q` (kJ per kmol of feed; positive = heat"
+                    " INTO the reactor) or the seed `operation.T`.");
             auto e = method->solve(prob, Tt, {});
             if (!e.converged) { penalisedT.push_back(Tt); return 1.0e30; }
             return enthalpy(e, Tt) - H_in - Q_J_s;

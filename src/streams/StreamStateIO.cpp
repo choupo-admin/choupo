@@ -3117,6 +3117,15 @@ ProcessStream readStreamState(const fs::path&       file,
     //  axis, no derived{} second layer.  A LEGACY derived{ vaporFraction }
     //  (written by the earlier grammar) is still honoured on read.
     s.T  = d->lookupScalarOrDefault("T", 0.0, Dims::temperature);
+    //  A stream's T is ABSOLUTE, so a DECLARED one at or below 0 K describes
+    //  no state at all and is refused by name (DEV.md 4c C40): it used to run
+    //  into the solver and die on a non-finite amount.  An ABSENT T keeps its
+    //  0 default -- that is the completeness contract's to judge, not this.
+    if (d->found("T") && !(s.T > 0.0))
+        throw std::runtime_error("stream state '" + name + "': T = "
+            + std::to_string(s.T) + " K is at or below absolute zero -- a"
+            " stream's temperature is absolute (write `T 25 degC;` or"
+            " `T 298.15 K;`)");
     s.P  = d->lookupScalarOrDefault("P", 0.0, Dims::pressure);
     // Phase PIN (read only, no thermodynamics here).  Two readable forms:
     //   `phase gas|liquid;`  -- a phase-INTENT boundary spec (this feed enters

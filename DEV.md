@@ -1991,6 +1991,27 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C40. "RESOLVE O PONTO1 E FICAMOS POR AQUI ATÉ SÁBADO" (Vítor, 2026-10-06,
+verbatim, answering the commander's status report; point 1 was the two engine
+debts the commander can take without him).**
+  1. An UNPINNED authored stream whose two-phase root is DISCARDED (above every
+     present component's Tc, CLAUDE.md §6 2026-09-26) kept its carried vf = 0
+     and was priced on the LIQUID rung, in `resolvedInletVaporFraction` and in
+     the flowsheet's post-solve surface pass (§5, 2026-09-26, item (b)).  It
+     now reads the one fluid phase it can be, on the vapour leg -- the
+     replacement `takeSupercriticalAsSinglePhase` already makes for an outlet
+     search; `equilibriumAt` reports the discard through a new `discardedOut`;
+     a pinned or produced stream is unchanged; the discard sentence says so.
+     NOT changed, named: `resolveStreamThermalState` (a PRICING reader, and
+     the surface pass now hands the report vf = 1 for these streams).
+  2. A declared absolute temperature at or below 0 K is REFUSED by name: on a
+     stream state (`StreamStateIO`, only when `T` is declared) and on a
+     `gibbsReactor`'s `operation.T`; and the adiabatic Gibbs outer Newton
+     REFUSES a trial at or below 0 K (`bracket = false` let gibbs05 given
+     `Q -2.0e5;` walk to T = -100 K) instead of evaluating it (§5, the C11
+     slice's "NAMED, NOT DONE" (1)).  Probed on gibbs05 copies, both refuse.
+Status: built 2026-10-06 on `claude/c40-supercritical-and-zero-kelvin`.
+
 **C38. THE RESERVED ITEMS, TAKEN (Vítor, 2026-10-05, verbatim: "Não quero que
 deixes comigo!!!! Faz tu!", answering the commander's list of what stayed
 reserved for him).**  The commander takes them, each one revertable merge:

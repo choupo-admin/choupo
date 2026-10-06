@@ -173,8 +173,10 @@ supercriticalSplitDiscarded(const FlashSolution& fs,
                  : std::string("at a temperature"))
         + " above the highest critical temperature of any"
           " component present (" + std::to_string(TcMax) + " K): no"
-          " liquid can exist there, so the split is DISCARDED and this"
-          " stream is priced on the state it carries.  A root like"
+          " liquid can exist there, so the split is DISCARDED: a stream"
+          " whose state nothing declares is the one fluid phase it can be,"
+          " read on the vapour leg; a declared or produced state is"
+          " priced as it is carried.  A root like"
           " this comes from a correlation evaluated far outside its"
           " declared window -- read the [henry] and [psat]"
           " extrapolation lines for this run";
@@ -257,7 +259,8 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
                                                   const std::string&   locus,
                                                   const char*          category,
                                                   std::string*         deferTo = nullptr,
-                                                  const FlashOptions*  recipe  = nullptr)
+                                                  const FlashOptions*  recipe  = nullptr,
+                                                  bool*                discardedOut = nullptr)
 {
     const bool resolvable = pinned
         ? (vfCarried > 1.0e-9 && vfCarried < 1.0 - 1.0e-9)
@@ -336,7 +339,10 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
     //  `takeSupercriticalAsSinglePhase` leaves a three-phase answer alone.
     if (!fs.threePhase && !fs.liquidLiquid
         && supercriticalSplitDiscarded(fs, T, z, thermo, locus, category, deferTo))
+    {
+        if (discardedOut) *discardedOut = true;
         return std::nullopt;
+    }
     return fs;
 }
 
@@ -774,9 +780,16 @@ inline scalar resolvedInletVaporFraction(const DictPtr&       streamDict,
     //  fictitious T), the rule the flowsheet's own surface pass applies.
     if (streamDict->lookupScalarOrDefault("authoredInlet", 0.0) < 0.5)
         return vfCarried;
+    //  A DISCARDED split (above every present Tc) leaves an UNPINNED authored
+    //  stream the one fluid phase it can be, on the vapour leg -- the same
+    //  replacement `takeSupercriticalAsSinglePhase` makes for an outlet
+    //  search.  Keeping the carried 0 priced a gas above every Tc on the
+    //  LIQUID rung (DEV.md 5, 2026-09-26 (b); closed by 4c C40).  A pinned
+    //  stream is a declaration and keeps it.
+    bool discarded = false;
     auto fs = equilibriumAt(T, P, z, pinned, vfCarried, thermo, locus,
-                            "streamState");
-    if (!fs) return vfCarried;
+                            "streamState", nullptr, nullptr, &discarded);
+    if (!fs) return (discarded && !pinned) ? 1.0 : vfCarried;
     return (fs->V_over_F <= 1.0e-9)       ? 0.0
          : (fs->V_over_F >= 1.0 - 1.0e-9) ? 1.0 : fs->V_over_F;
 }
