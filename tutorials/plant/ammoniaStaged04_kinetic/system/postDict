@@ -29,7 +29,7 @@
     shell           the pressure vessel around the bed: a straight cylinder
                     of the bed's own volume at the declared L/D, ASME
                     thin-wall at pressureDesign.  COSTED as a `vessel` on the
-                    Guthrie vessel set already in Choupo (Turton App. A), the
+                    Turton vessel set already in Choupo (App. A), the      
                     same way stage C, ammonia02 and the flagship cost theirs.
                     NO head space, distributor, support grid or internals: the
                     shell is the bed's envelope, not a vendor drawing.

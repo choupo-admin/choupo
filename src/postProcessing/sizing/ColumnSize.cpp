@@ -231,7 +231,7 @@ std::vector<EquipmentSizing> ColumnSize::size(const std::string& unitName,
     items.push_back(std::move(shell));
 
     //  ---- THE TRAY STACK ----------------------------------------------
-    //  Sized, published, and NOT COSTED: see the header.  It is a separate
+    //  Sized, published, and costed by the tray: see the header.  A separate
     //  item rather than three more keys on the shell because it is a separate
     //  purchase, from a separate vendor, with a separate delivery -- and
     //  because burying an uncosted item inside a costed one is how a total
@@ -251,6 +251,15 @@ std::vector<EquipmentSizing> ColumnSize::size(const std::string& unitName,
         trays.set("D",           D,                             "m");
         trays.set("A",           0.25 * constant::pi * D * D,   "m2");
         trays.set("traySpacing", traySpacing,                   "m");
+        //  THE TRAYS' MATERIAL CLASS, carried to the costing model as the
+        //  author declared it (2026-10-05, DEV.md 4c C38 item 1).  Read here
+        //  only to pass it on: the class is Turton's F_BM vocabulary and the
+        //  costing model is what refuses an absent or unknown word, by name,
+        //  leaving the trays sized and the total INCOMPLETE.  `material`
+        //  above stays the column's construction material; the class that
+        //  PRICED the trays is the cost's own `material`.
+        if (designRules->found("trayMaterial"))
+            trays.costWords["trayMaterial"] = designRules->lookupWord("trayMaterial");
         items.push_back(std::move(trays));
     }
 

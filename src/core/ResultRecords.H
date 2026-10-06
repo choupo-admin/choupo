@@ -200,6 +200,17 @@ struct EquipmentSizing
     //  is pinned, if at all, through the cost total it produces.
     std::map<std::string, scalar>                costInputs;
 
+    //  A DECLARED WORD THE COSTING MODEL READS (2026-10-05, DEV.md 4c C38
+    //  item 1).  The tray stack is priced by its material CLASS (Turton's
+    //  F_BM: carbon steel, stainless steel, nickel alloy), and the class is a
+    //  word the case declares (`trayMaterial` in the column's designRules) --
+    //  neither a size nor a number, so it fits neither map above.  Keyed by
+    //  the designRules word it came from, exactly as `costInputs` is; the
+    //  model that consumes it publishes it as the cost's `material`, so the
+    //  costing table and costs.csv show the class that priced the item.  Not
+    //  emitted under `equipment.values`.
+    std::map<std::string, std::string>           costWords;
+
     //  WHICH RULE PRODUCED THE SIZE.  `VesselSize` computed exactly this
     //  string in three careful branches ("drum V = Q*tau", "catalyst V =
     //  Q/SV", "volume (author-set)") and then discarded it with `(void)basis`

@@ -466,7 +466,7 @@ convergence and augment the result (they never change the solution):
 
 ```
 sizing    { ... }                 // equipment sizes from the converged duties
-costing   { method Turton; ... }  // cost from the sizes (case-sensitive; `Guthrie` is an announced alias)
+costing   { method Turton; ... }  // cost from the sizes (case-sensitive; the former name `Guthrie` is refused, naming `Turton`)
 economics { ... }                 // cash-flow aggregation over the costed plant
 pinchPass { dTmin 20 K; }         // pinch TARGETS (P1): the Linnhoff-Flower
                                   // problem table printed cascade by cascade,
@@ -515,10 +515,14 @@ column that declares none is refused by name -- there is no separate diameter
 correlation.  U, the approach temperature and the drum residence time do NOT
 follow from a converged column and are yours; an item whose sub-block is absent
 is ANNOUNCED and simply not built, because a default U would be priced into the
-capital cost as though you had chosen it.  **The tray stack is sized and NOT
-costed** -- Choupo carries no purchased-cost correlation for trays and will not
-invent one -- so that item refuses by name and the capital total reads
-`TOTALS (EUR) -- INCOMPLETE`.  Worked case:
+capital cost as though you had chosen it.  **The tray stack is costed by the
+tray** (since 2026-10-05): Turton's sieve-tray set prices one tray from the
+tower cross-section, times the tray count, times F_BM for the trays' material
+CLASS and a quantity factor F_q for fewer than 20 trays.  Declare the class in
+the column's designRules -- `trayMaterial carbonSteel;` (or `stainlessSteel`,
+`nickelAlloy`); it is never read off the construction material's name, because
+trays are often a different metal from the shell.  Without it the trays refuse
+by name and the capital total reads `TOTALS (EUR) -- INCOMPLETE`.  Worked case:
 `tutorials/steady/distillation/column09_tray_hydraulics`.
 
 **A PLUG-FLOW CATALYST BED IS A SHELL AND A CATALYST CHARGE (2026-09-26).**
@@ -543,7 +547,7 @@ rebuilds it from a throughput; its `designRules {}`:
 
 Two items under `design/<unit>/`: `shell` (a straight cylinder of the bed
 volume at L/D, ASME wall at `pressureDesign`, costed as a `vessel` on the
-existing Guthrie set) and `catalystCharge` (`m = V_R x catalystBulkDensity`,
+existing Turton vessel set) and `catalystCharge` (`m = V_R x catalystBulkDensity`,
 costed at `catalystPrice x m` with NO price index, NO material or module
 factor and NO contingency -- the costing table prints the shape word
 `declared-unit-price` and the price beside it).  Absent the density the charge
@@ -552,7 +556,7 @@ the charge is REFUSED BY NAME at costing time and the total reads `TOTALS
 (EUR) -- INCOMPLETE` naming it.  The basis reads *catalyst volume V_R read
 from the unit* and nothing more: the sizing pass cannot see the outer driver,
 so whether the volume was solved or typed is said in the case, not by the
-sizer.  There is no Guthrie set for a catalyst bed and none is invented; a
+sizer.  There is no Turton set for a catalyst bed and none is invented; a
 density or a price you cannot source is declared as an assumption in a
 comment, in those words.  Worked case:
 `tutorials/plant/ammoniaStaged04_kinetic`.

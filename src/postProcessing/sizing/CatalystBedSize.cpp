@@ -103,7 +103,7 @@ std::vector<EquipmentSizing> CatalystBedSize::size(const std::string& unitName,
     const auto mech = vesselMechanics::wall(D, H, pressureDesign, material,
                                             jointEff, corrosionAllow);
 
-    shell.set("V_R",            V_R,            "m3");    // Guthrie vessel sizeKey
+    shell.set("V_R",            V_R,            "m3");    // Turton vessel sizeKey
     shell.set("D",              D,              "m");
     shell.set("H",              H,              "m");
     shell.set("L_over_D",       L_over_D,       "-");
@@ -117,7 +117,7 @@ std::vector<EquipmentSizing> CatalystBedSize::size(const std::string& unitName,
     //  Its mass follows from V_R and a bulk density the CASE declares; its
     //  price is the case's too.  Neither is estimated here, and neither
     //  absence is defaulted: no density -> no mass, said in the basis; no
-    //  price -> refused by name where the price would be used (Guthrie),
+    //  price -> refused by name where the price would be used (Turton),
     //  so the costing total reads INCOMPLETE and names this item.
     EquipmentSizing charge;
     charge.unitName      = unitName;

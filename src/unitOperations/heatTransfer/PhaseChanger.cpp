@@ -226,8 +226,9 @@ int PhaseChanger::solve(const DictPtr& dict,
     //  included: the carried default 0 booked the whole of a superheated
     //  vapour's cooling as condensation (DEV.md C33/C34).  -1 when the dict
     //  carries no `vf` at all: then the feed is re-flashed below.
+    //  A pure two-phase feed's pin comes back from the one home as its vf
+    //  (DEV.md C37 item 1).
     const scalar vf_in_decl = !feedDict->found("vf") ? -1.0
-        : qInPinned ? *qInPinned          // a pure two-phase feed's pin
         : flashState::resolvedInletVaporFraction(feedDict, T_in, P_in, z,
                                                  thermo, "phaseChanger inlet");
     scalar H_in;

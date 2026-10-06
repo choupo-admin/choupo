@@ -35,7 +35,7 @@ Description
     Used by:
       * EquipmentSize  — needs σ_y for wall-thickness (ASME §VIII), ρ
                           for weight, max-T / max-P checks
-      * CostingModel   — needs the Guthrie/Turton material factor F_M
+      * CostingModel   — needs the Turton material factor F_M
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -50,7 +50,7 @@ struct Material
 {
     std::string name;
     scalar      density   = 0.0;   // ρ        [kg/m³]
-    scalar      F_M       = 1.0;   //           Guthrie/Turton material factor
+    scalar      F_M       = 1.0;   //           Turton material factor
                                     //          (carbonSteel = 1.0)
     scalar      sigma_y   = 0.0;   // σ_y      [MPa]  allowable stress (ASME)
     scalar      maxT      = 0.0;   //          [K]    max service temperature

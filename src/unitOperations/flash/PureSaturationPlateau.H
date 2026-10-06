@@ -222,8 +222,11 @@ inline std::optional<scalar> qualityAtJump(const BracketedRoot& r,
 //  For such a stream (T, P) sit on the saturation curve and do not fix the
 //  split; the pin IS the state (CLAUDE.md §3).  A reader that resolves the
 //  stream by a flash at (T, P, z) gets one side of the curve, chosen by the
-//  last digits of T, and loses the pin -- so a unit that prices its INLET
-//  through such a resolution must ask this first.  (The energy report does
+//  last digits of T, and loses the pin -- so the one home that reads an
+//  inlet's vapour fraction, `flashState::resolvedInletVaporFraction` (and
+//  `resolveStreamThermalState` beside it), asks this first, for every unit
+//  (DEV.md C37 item 1); a unit calls it directly only to PRICE its inlet at
+//  the pin.  (The energy report does
 //  not need to: `flashState::priceState` prices the CARRIED vapour fraction
 //  whenever the resolution is not a split, which for a pure stream it never
 //  is.)

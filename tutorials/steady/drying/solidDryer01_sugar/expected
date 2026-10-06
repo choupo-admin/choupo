@@ -22,3 +22,4 @@ boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -9423.75561039   1e-4
 boundary global                 residual_kW      1.81898940355e-12 1e-4
 kpi     solidDryer             T_wetbulb        315.705897235    1e-4
+kpi     solidDryer             exhaust_humidity 0.175354451046   1e-4

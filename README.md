@@ -33,7 +33,7 @@ directories, modular thermo, file-based component database, browser GUI
 > with recycle (Newton-on-tears, or Wegstein) and fractal multi-sector
 > plants; outer drivers (sweep, Nelder-Mead optimisation, DesignSpec,
 > LM fitting); declarative `reports {}` (stream table, mass + energy
-> balances, sizing, Guthrie costing, computed variables, coloured
+> balances, sizing, Turton costing, computed variables, coloured
 > `.ods`).  Hand-rolled Newton, Wegstein, RK4, Nelder-Mead,
 > Levenberg-Marquardt, Michelsen TPD.  Built-in physical-
 > dimensions tracking on every dict scalar.  Web GUI (React + Mantine +
@@ -191,7 +191,7 @@ The five binaries share `src/{core,thermo,solver,materials,unitOperations,contro
 | Direct minimisation             | Nelder-Mead simplex (relative-per-axis tolerance) |
 | Phase stability                 | Michelsen TPD detector; LL + VLLE flash via Gibbs-energy minimisation on the simplex with multi-start |
 | Outer drivers                   | `sweep` (sensitivity), `gridSweep`, `paretoSweep` (multi-objective front), `optimization` (Nelder-Mead minimisation of KPI / cost / `costTotal`), `designSpec`.  (`fitBinaryPair` is RETIRED — the factory throws, naming `fitParameters`; pair regression lives in `choupoProps`, with identifiability diagnostics and a golden.) |
-| Post-processing                 | sizing (`stirredTank`, `shellTubeHX`), Guthrie costing (`method guthrie`), Materials registry (`carbonSteel` / `SS304` / `SS316` / `aluminium`) |
+| Post-processing                 | sizing (`stirredTank`, `shellTubeHX`), Turton costing (`method Turton`), Materials registry (`carbonSteel` / `SS304` / `SS316` / `aluminium`) |
 | Flowsheet machinery             | sequential-modular with Wegstein on tear streams |
 | Web GUI                         | React + Mantine + React Flow + Plotly; all three binaries as WebAssembly, dispatched by `controlDict.application`; time-series trajectory plots for dynamic cases; drag-resizable output panel + pop-out windows |
 

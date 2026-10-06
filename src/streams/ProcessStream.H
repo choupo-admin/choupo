@@ -115,6 +115,15 @@ struct ProcessStream
     //  itself makes, so the unit and the report price ONE state.  Opaque
     //  here: `streams` may not read `unitOperations`.
     std::shared_ptr<Dictionary> equilibriumConsumer;
+    //  PUBLISHED BY A THREE-PHASE SEARCH (2026-10-05, DEV.md C37 item 4).
+    //  Set by the unit that produced this stream when its own search was
+    //  vapour-liquid-liquid (today the three ports of a `phaseSet VLLE`
+    //  isothermalFlash), false everywhere else.  A PRODUCED stream keeps its
+    //  producer's answer (CLAUDE.md §3), so a consumer's richer search may
+    //  re-read it only when the producer's search was that rich too; a
+    //  heater's or a mixer's outlet means the vapour-liquid state its
+    //  producer priced (`flashState::consumerSearchApplies`, the one rule).
+    bool        fromThreePhaseSearch = false;
     // Specific molar enthalpy at the ELEMENTS reference (formation
     // datum, 298.15 K).  Populated by Flowsheet::solve once the case
     // has converged, via thermo.H_stream_formation(T, P, vf, z) when

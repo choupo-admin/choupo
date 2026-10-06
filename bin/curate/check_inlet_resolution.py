@@ -127,6 +127,26 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              searches (their bracket stops at 700 K, and no corpus state
              below it resolves a supercritical root) and the pipe -- those
              ride (j1) alone.
+  (k) A PINNED PURE TWO-PHASE INLET IS READ AT ITS PIN, BY EVERY UNIT
+      (2026-10-05, DEV.md C37 item 1).  On a pure component's saturation
+      curve (T, P) are ONE condition; a stream that declares `vaporFraction
+      q;` there carries its state in the pin, and a flash at (T, P, z) hands
+      back one side of the curve chosen by the last digits of T.  Until C37
+      only heatExchanger, heater and phaseChanger asked
+      `flashState::pinnedPureQuality` before resolving; every other unit
+      reading its inlet through `resolvedInletVaporFraction` lost the pin.
+        (k1) SOURCE: `pinnedPureQuality` is CALLED inside the one home
+             (StreamEquilibrium.H: `resolvedInletVaporFraction` and
+             `resolveStreamThermalState`, so exactly two calls, comments
+             stripped), and none of the three units overrides the resolved
+             vf with the pin any more (`s.vf = *q`, `qInPinned ? *qInPinned`
+             -- a second home for the rule beside the one home).
+        (k2) OUTPUT: a fixture -- heatExchanger03's own water record and its
+             published wetFeed (pure water, 515.579742 K, 40 bar, pinned
+             `vaporFraction 0.09917968728`) declared as an AUTHORED inlet to
+             a splitter, a unit with no pre-check of its own -- must publish
+             BOTH branches at that vapour fraction, and the plant must close
+             its first law to 1e-6 kW.
   (e) flash13_acetic_ethanol_vacuum_flash keeps a LARGE duty -- the
       negative control.  Its feed is at 1 atm and it operates at 0.65 atm,
       so its 669 kW is genuine pressure-drop work; a gate that drove every
@@ -178,6 +198,17 @@ each restored by git and rebuilt:
       inlet, and S4 is caught three ways: (i1), M1 vf = 0, 1306.8 kW.
   S5  `takeSupercriticalAsSinglePhase` hollowed (returns before it
       discards; every caller intact).  (j2) fails three ways.
+
+SABOTAGE-VERIFIED 2026-10-05 for (k), by hand on the engine source,
+restored by git and rebuilt:
+  S1  `resolvedInletVaporFraction` stops asking `pinnedPureQuality` (the
+      line removed), the binary rebuilt, the source then restored WITHOUT a
+      rebuild so the run read the sabotaged engine against the intact
+      source.  (k1) PASSES -- it reads the restored source -- and (k2) fails
+      three ways: both splitter branches publish vf = 0 for an inlet pinned
+      at 0.09917968728, and the fixture's first law misses by 98.2787 kW
+      (the unboiled fraction's latent heat, priced on one side of the
+      curve).  The output arm is the one that sees the engine.
 
 SABOTAGE-VERIFIED 2026-08-09: reverting the R-E1 gate (unpinned feeds no
 longer re-flashed -- the pre-slice behaviour) reproduced the original
@@ -256,6 +287,19 @@ BARE_VF_ALLOWED = {
     "mixer/Mixer.cpp": r"\bvfCarried\s*=\s*sd->lookupScalarOrDefault",
 }
 WITNESS = "tutorials/steady/flowsheets/inletState01_undeclared_vapour"
+#  (k) the pinned pure two-phase inlet: heatExchanger03's water and its own
+#  published wet feedwater, re-declared as an AUTHORED inlet to a splitter.
+PURE_PIN_SRC = "tutorials/steady/heat/heatExchanger03_pure_water_plateau"
+PURE_PIN_STREAM = "wetFeed"
+#  The override each of the three units carried before C37 (a second home).
+PURE_PIN_UNITS = {
+    "heatTransfer/HeatExchanger.cpp": r"\bs\.vf\s*=\s*\*q\b",
+    "heatTransfer/Heater.cpp": r"qInPinned\s*\?\s*\*qInPinned\s*:\s*"
+                               r"flashState::resolvedInletVaporFraction",
+    "heatTransfer/PhaseChanger.cpp": r"qInPinned\s*\?\s*\*qInPinned\s*"
+                                     r":\s*flashState::"
+                                     r"resolvedInletVaporFraction",
+}
 #  (j) the units that search their own OUTLET (or regime) with a flash
 OUTLET_SEARCHERS = [
     "valve/Valve.cpp",
@@ -636,6 +680,66 @@ def main() -> int:
             fail.append("(j1) IsothermalFlash.cpp's operating resolution does "
                         "not call `flashState::takeSupercriticalAsSinglePhase`")
 
+        # (k1) SOURCE: the pin is read in the one home, and only there.
+        n_pp = len(re.findall(r"\bpinnedPureQuality\s*\(", home))
+        if n_pp != 2:
+            fail.append(
+                f"(k1) `pinnedPureQuality` is called {n_pp} time(s) in "
+                "StreamEquilibrium.H outside comments; expected exactly 2 -- "
+                "`resolvedInletVaporFraction` and `resolveStreamThermalState` "
+                "must read a pure two-phase inlet's pin before resolving it "
+                "(DEV.md C37 item 1), or every unit but three gets one side "
+                "of the saturation curve")
+        for rel, pat in PURE_PIN_UNITS.items():
+            src = strip_comments((UNITS / rel).read_text())
+            if re.search(pat, src):
+                fail.append(
+                    f"(k1) {rel} overrides its resolved inlet vf with the pin "
+                    "again -- the rule has a second home beside "
+                    "`resolvedInletVaporFraction`")
+
+        # (k2) OUTPUT: an authored pinned pure two-phase inlet to a splitter.
+        pp_src = ROOT / PURE_PIN_SRC
+        pin_txt = (pp_src / "0" / PURE_PIN_STREAM).read_text()
+        mq = re.search(r"^\s*vaporFraction\s+([0-9.eE+-]+)\s*;", pin_txt,
+                       re.M)
+        pp = tmp / "purePinSplitter"
+        (pp / "system").mkdir(parents=True)
+        (pp / "0").mkdir()
+        shutil.copytree(pp_src / "constant", pp / "constant")
+        shutil.copy(pp_src / "system" / "controlDict",
+                    pp / "system" / "controlDict")
+        for nm in ("wet", "a", "b"):
+            (pp / "0" / nm).write_text(pin_txt)
+        (pp / "system" / "flowsheetDict").write_text(
+            "units\n(\n    {\n        name S1;\n        type splitter;\n"
+            "        inputs ( wet );\n        outputs ( a b );\n"
+            "        operation { fractions ( 0.5 0.5 ); }\n    }\n);\n")
+        rc, plog = run(pp)
+        if not mq:
+            fail.append(f"(k2) {PURE_PIN_SRC}/0/{PURE_PIN_STREAM} no longer "
+                        "declares a vaporFraction -- the fixture has no pin")
+        elif rc != 0:
+            fail.append("(k2) the pure-pin splitter fixture did not run "
+                        f"(rc={rc})")
+        else:
+            q = float(mq.group(1))
+            for side in ("a", "b"):
+                m = re.search(r'"' + side + r'":\s*\{[^}]*"vf":\s*'
+                              r'([-0-9.eE+]+)', plog)
+                if not m or abs(float(m.group(1)) - q) > 1e-9:
+                    fail.append(
+                        f"(k2) the splitter published `{side}` at vf = "
+                        f"{m.group(1) if m else None} from an authored PURE "
+                        f"water inlet pinned at vaporFraction {q} on its "
+                        "saturation curve: the pin was resolved away into one "
+                        "side of the curve (DEV.md C37 item 1)")
+            m = re.search(r'"globalEnergyBoundary":\s*\{[^}]*"residual_kW":'
+                          r'\s*([-0-9.eE+]+)', plog)
+            if not m or abs(float(m.group(1))) > 1e-6:
+                fail.append("(k2) the pure-pin fixture's first law does not "
+                            f"close (residual {m.group(1) if m else None} kW)")
+
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
         shutil.copytree(ROOT / CONTROL, ctrl)
@@ -676,7 +780,11 @@ def main() -> int:
           "plant's first law closed.  EVERY OUTLET SEARCH DISCARDS THE SAME "
           f"ROOT: {len(OUTLET_SEARCHERS)} searchers through "
           "`flashDiscardingSupercriticalSplit` (source), and a drum operated "
-          "at 844.86 K publishes no liquid.  NOT "
+          "at 844.86 K publishes no liquid.  A PINNED PURE TWO-PHASE INLET "
+          "IS READ AT ITS PIN BY EVERY UNIT: the one home asks "
+          "`pinnedPureQuality` (source, no second home in the three units "
+          "that used to), and an authored wet-steam inlet split in two "
+          "leaves on both branches at its declared quality.  NOT "
           "CHECKED: whether a NON-zero duty is right (only the identity has a "
           "closed form); the multi-condition cases' duties, which ride their "
           "goldens; whether the 1e-3 incipient band is the right number (it "

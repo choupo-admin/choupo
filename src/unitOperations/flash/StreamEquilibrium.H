@@ -68,6 +68,7 @@ Description
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/flash/IsothermalFlash.H"
+#include "unitOperations/flash/PureSaturationPlateau.H"
 
 #include <cmath>
 #include <cstdio>
@@ -485,12 +486,66 @@ undeterminedSaturationRefusal(const std::string&   name,
           "docs/design/a-stream-is-fixed-by-two-variables.md";
 }
 
+//  The refusal of a whole run, from every offender collected first.  ONE
+//  sentence for every binary that applies the rule (DEV.md C37 item 5): the
+//  steady flowsheet (`Flowsheet::solve`, the global world and each unit's
+//  own) and the time-integrated driver (`dynamicDriver`).  `who` prefixes
+//  it ("" for choupoSolve, which has always refused unprefixed).
+inline std::string undeterminedStreamsMessage(
+    const std::vector<std::string>& undetermined,
+    const std::string&              who = "")
+{
+    std::string msg = (who.empty() ? std::string() : who + ": ")
+        + "UNDETERMINED STREAM STATE -- "
+        + std::to_string(undetermined.size())
+        + " authored stream(s) sit on a pure component's saturation "
+          "curve with no phase declared:";
+    for (const auto& u : undetermined) msg += "\n  * " + u;
+    return msg;
+}
+
 //  ---- THE SEARCH A STREAM'S CONSUMER RESOLVES IT WITH (2026-10-05) --------
 //
 //  C35 item 4.  A stream fed to a `phaseSet VLLE` flash carries that unit's
 //  dict (`ProcessStream::equilibriumConsumer`, stamped by the flowsheet);
 //  this turns it into the search, through the ONE call the unit makes on its
 //  own feed.  Nothing for every other stream: the vapour-liquid default.
+//
+//  WHICH STREAMS MEAN THEIR CONSUMER'S SEARCH (2026-10-05, DEV.md C37 item 4).
+//  An AUTHORED inlet declares (T, P, z) and means its own equilibrium (R-E2),
+//  which for a feed to a unit that admits a vapour and two liquids is the
+//  three-phase one.  A PRODUCED stream is different: it keeps its PRODUCER's
+//  answer (CLAUDE.md §3), and a heater or a mixer resolved and priced its
+//  outlet vapour-liquid.  Re-reading that outlet with the consumer's
+//  three-phase search priced ONE stream two ways -- the producer's row and
+//  the report parted by the whole difference (193.92 kW on the witness
+//  `vlle05_produced_feed`, the heater's outlet two-phase vapour-liquid at
+//  352.3 K and three-phase under the decanter's search).  The exception is a
+//  stream a three-phase search itself published
+//  (`ProcessStream::fromThreePhaseSearch`): its producer's search IS that
+//  rich, so reading it with the consumer's does not overrule the producer.
+//  ONE rule, three readers: the flowsheet's stamp (`equilibriumConsumer`),
+//  hence the energy report and the stream table, and the VLLE unit's own
+//  pricing of its feed (through the feed dict, overload below).
+inline bool consumerSearchApplies(bool authoredInlet, bool fromThreePhaseSearch)
+{
+    return authoredInlet || fromThreePhaseSearch;
+}
+inline bool consumerSearchApplies(const ProcessStream& s)
+{
+    return consumerSearchApplies(s.authoredInlet, s.fromThreePhaseSearch);
+}
+//  A unit's feed dict (`UnitInputs`): `authoredInlet` is always written in a
+//  flowsheet; ABSENT means the unit was handed its feed outside one (a unit
+//  test, a bench), where the feed is the caller's own declaration.
+inline bool consumerSearchApplies(const DictPtr& feedDict)
+{
+    if (!feedDict) return true;
+    return consumerSearchApplies(
+        feedDict->lookupScalarOrDefault("authoredInlet", 1.0) > 0.5,
+        feedDict->lookupScalarOrDefault("fromThreePhaseSearch", 0.0) > 0.5);
+}
+
 inline std::optional<FlashOptions> consumerRecipe(const ProcessStream& s,
                                                   const ThermoPackage& thermo)
 {
@@ -645,6 +700,17 @@ inline StreamThermalState resolveStreamThermalState(const DictPtr&       streamD
     const bool   pinned    =
         streamDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
 
+    //  A PURE two-phase stream that DECLARES its quality: on its saturation
+    //  curve (T, P) do not fix the split, so the pin is the state and there is
+    //  nothing to resolve (the rule `resolvedInletVaporFraction` applies
+    //  below, DEV.md C37 item 1).
+    if (const auto q = pinnedPureQuality(streamDict, z))
+    {
+        st.vf     = *q;
+        st.origin = "declared by the stream (pure, on its saturation curve)";
+        return st;
+    }
+
     st.split = twoPhaseSplit(T, P, z, pinned, vfCarried, thermo,
                              locus, category);
 
@@ -693,6 +759,16 @@ inline scalar resolvedInletVaporFraction(const DictPtr&       streamDict,
     const scalar vfCarried = streamDict->lookupScalarOrDefault("vf", 0.0);
     const bool   pinned    =
         streamDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    //  A PURE two-phase inlet DECLARES its quality (pinned, 0 < vf < 1, one
+    //  present component): on its saturation curve (T, P) are ONE condition,
+    //  so a flash at (T, P, z) would hand back one side of the curve chosen
+    //  by the last digits of T and lose the pin.  The pin IS the state
+    //  (CLAUDE.md §3, the pure-component exception of the two-variable rule).
+    //  Read here, in the one home, for EVERY caller (DEV.md C37 item 1):
+    //  until then only heatExchanger, heater and phaseChanger asked
+    //  `pinnedPureQuality` first, and every other unit got one side of the
+    //  curve.
+    if (const auto q = pinnedPureQuality(streamDict, z)) return *q;
     //  Only an AUTHORED inlet is resolved: a produced stream keeps its
     //  producer's answer (column12's mixer writes the right vf at a
     //  fictitious T), the rule the flowsheet's own surface pass applies.

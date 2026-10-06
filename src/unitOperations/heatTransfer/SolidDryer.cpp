@@ -139,7 +139,8 @@ int SolidDryer::solve(const DictPtr& dict,
     //  refused by name now, as the batch dryer always refused it.
     const scalar X_eq = psychrometry::gabMoisture(sol, aw, "SolidDryer");
     //  The moisture the isotherm allows.  NOT yet the moisture the powder
-    //  leaves with: the air may be unable to pay for it (see below).
+    //  leaves with: the air may be unable to pay for it, or its exhaust
+    //  unable to carry it (see below).
     const scalar X_target    = std::min(X_in, X_eq);
     const scalar water_rem_target =
         std::max(0.0, water_in - X_target * solid_mass / MW_solv);      // kmol/s
@@ -235,24 +236,12 @@ int SolidDryer::solve(const DictPtr& dict,
              "  Use more or hotter air, or a warmer feed.";
         throw std::runtime_error(m.str());
     }
-    scalar T_out, water_rem;
-    const bool energyLimited = (H_out(T_floor, water_rem_target) - H_in > 0.0);
-    if (energyLimited)
+    //  The outlet T for an evaporation `rem` the air can pay for above the
+    //  floor (H_out(T_floor, rem) <= H_in): the root of H(out) = H(in) in
+    //  [T_floor, T_air].
+    auto Tout_for = [&](scalar rem) -> scalar
     {
-        //  The air cannot pay for the isotherm's target even with the solid
-        //  leaving at the floor: evaporate what it can pay for (H_out is
-        //  monotone increasing in the evaporation -- vapour costs more than
-        //  liquid).
-        T_out = T_floor;
-        scalar lo = 0.0, hi = water_rem_target;
-        for (int it = 0; it < 200 && (hi - lo) > 1.0e-15 * std::max(1.0, water_rem_target); ++it)
-        { const scalar m = 0.5*(lo+hi); if (H_out(T_floor, m) - H_in > 0.0) hi = m; else lo = m; }
-        water_rem = 0.5 * (lo + hi);
-    }
-    else
-    {
-        water_rem = water_rem_target;
-        auto g  = [&](scalar T) { return H_out(T, water_rem) - H_in; };
+        auto g  = [&](scalar T) { return H_out(T, rem) - H_in; };
         auto dg = [&](scalar T) { const scalar dT = 1.0e-3;
                                   return (g(T + dT) - g(T - dT)) / (2.0 * dT); };
         solver::NROptions o;
@@ -267,8 +256,88 @@ int SolidDryer::solve(const DictPtr& dict,
             throw std::runtime_error(who + ": the adiabatic energy balance"
                 " H(out) = H(in) did not converge for T_out in [T_floor, T_air]"
                 " (residual " + std::to_string(r.residual) + " kW).");
-        T_out = r.x;
+        return r.x;
+    };
+
+    // ---- THE EXHAUST MAY NOT BE SUPERSATURATED (2026-10-05, DEV.md C37
+    //      item 3, Vitor's ruling) ---------------------------------------
+    //
+    //  Until 2026-10-05 this unit had no limit on what its exhaust could
+    //  carry: the evaporation was the isotherm's target (or what the heat
+    //  paid for), whatever humidity that left in the gas at T_out.  An
+    //  exhaust carrying more water than saturation allows at its own T_out
+    //  was then PRICED at its condensed equilibrium (`priceState` resolves
+    //  the split) and PUBLISHED as vf = 1 -- a fog sold as a vapour.
+    //  Measured (DEV.md C35 item 7): solidDryer01 with its air cut to
+    //  100 kmol/h still reached its isotherm, at 318.6 K.  Now the exhaust's
+    //  humidity ratio may not exceed Y_sat(T_out), i.e. its water activity
+    //  a_w = p_w / p_sat(T_out) may not exceed 1 -- the two statements are
+    //  one, through the shared psychrometry (`psychrometry::Ysat`,
+    //  `airWaterActivity`, the construction the evaporative dryer, the
+    //  convective dryer and the cooling tower read).  `airWaterActivity` is
+    //  used because it stays defined where Y_sat does not (p_sat >= 0.95 P).
+    //  The limit is SATURATION itself, a_w = 1: unlike `evaporativeDryer`'s
+    //  `maxExhaustHumidity` (a design margin, default 0.95) it is not a knob.
+    scalar mDryCarrier = 0.0, nDryCarrier = 0.0;          // per kmol of air
+    for (std::size_t i = 0; i < n; ++i)
+        if (i != iSolv && yAir[i] > 0.0)
+        { nDryCarrier += yAir[i]; mDryCarrier += yAir[i] * thermo.comp(i).MW(); }
+    if (!(nDryCarrier > 0.0))
+        throw std::runtime_error(who + ": the drying air carries no dry"
+            " carrier -- its humidity ratio is not defined");
+    const scalar Mc = mDryCarrier / nDryCarrier;          // kg/kmol
+    auto aw_exhaust = [&](scalar rem, scalar T) -> scalar
+    {
+        const scalar Y = (yAir[iSolv] * F_air + rem) * MW_solv
+                       / (mDryCarrier * F_air);            // kg/kg dry carrier
+        return psychrometry::airWaterActivity(solv, MW_solv, Mc, P, T, Y, who);
+    };
+
+    // ---- WHICH LIMIT BINDS, decided at the answer ----------------------
+    //  heat:  the air cannot pay for the isotherm's target even with the
+    //         solid leaving at the floor -> evaporate what it CAN pay for
+    //         there (H_out is monotone increasing in the evaporation --
+    //         vapour costs more than liquid);
+    //  saturation: the exhaust of that evaporation, at its own T_out, would
+    //         be supersaturated -> the evaporation is the one that leaves
+    //         the exhaust exactly saturated (a_w rises monotonically with the
+    //         evaporation: more water in the gas AND a colder outlet), taken
+    //         on the unsaturated side of the bisection;
+    //  isotherm: neither binds.
+    const bool heatBinds = (H_out(T_floor, water_rem_target) - H_in > 0.0);
+    scalar water_pay = water_rem_target;                  // kmol/s
+    if (heatBinds)
+    {
+        scalar lo = 0.0, hi = water_rem_target;
+        for (int it = 0; it < 200 && (hi - lo) > 1.0e-15 * std::max(1.0, water_rem_target); ++it)
+        { const scalar m = 0.5*(lo+hi); if (H_out(T_floor, m) - H_in > 0.0) hi = m; else lo = m; }
+        water_pay = 0.5 * (lo + hi);
     }
+    //  At the heat limit the solid leaves at its floor by construction
+    //  (water_pay is the balance's root there), so the floor is written,
+    //  not searched.
+    const scalar T_cap = heatBinds ? T_floor : Tout_for(water_pay);
+    scalar T_out, water_rem;
+    std::string limit;
+    if (aw_exhaust(water_pay, T_cap) <= 1.0)
+    {
+        water_rem = water_pay;
+        T_out     = T_cap;
+        limit     = heatBinds ? "heat-bound" : "isotherm-reached";
+    }
+    else
+    {
+        scalar lo = 0.0, hi = water_pay;
+        for (int it = 0; it < 200 && (hi - lo) > 1.0e-13 * water_pay; ++it)
+        {
+            const scalar m = 0.5*(lo+hi);
+            if (aw_exhaust(m, Tout_for(m)) > 1.0) hi = m; else lo = m;
+        }
+        water_rem = lo;                                    // a_w <= 1
+        T_out     = Tout_for(water_rem);
+        limit     = "saturation-bound";
+    }
+    const scalar aw_out = aw_exhaust(water_rem, T_out);
     const scalar water_final = std::max(0.0, water_in - water_rem);    // kept in the powder
     const scalar X_final     = (solid_mass > 0.0) ? water_final * MW_solv / solid_mass : 0.0;
 
@@ -300,9 +369,16 @@ int SolidDryer::solve(const DictPtr& dict,
     kpis_["water_activity"] = aw;
     kpis_["T_out"]          = T_out;
     kpis_["T_wetbulb"]      = T_floor;                // K, the floor
+    kpis_["exhaust_humidity"] = aw_out;               // a_w at T_out, <= 1
     kpis_["air_in_kmol_h"]  = F_air * 3600.0;
 
-    if (energyLimited)
+    //  THE LIMIT THAT BINDS IS ANNOUNCED (C37 item 3): all three in the
+    //  result block below (`[isotherm-reached]`, `[heat-bound]`,
+    //  `[saturation-bound]`); the two that leave the powder wetter than the
+    //  isotherm allows also as a WARNING that rides AdvisoryLog into the
+    //  caveat block, printed only when AdvisoryLog takes it as new (an
+    //  identical message from a recycle's re-solve is not printed again).
+    if (limit == "heat-bound")
     {
         std::ostringstream msg;
         msg << std::setprecision(4) << std::fixed
@@ -315,8 +391,26 @@ int SolidDryer::solve(const DictPtr& dict,
                " would remove, so the powder leaves at X = " << X_final
             << " kg/kg instead of X_eq = " << X_eq << ".  Use hotter or more"
                " air.";
-        AdvisoryLog::instance().add("drying", "warning", who, msg.str());
-        std::cout << "  [SolidDryer] WARNING: " << msg.str() << "\n";
+        if (AdvisoryLog::instance().add("drying", "warning", who, msg.str()))
+            std::cout << "  [SolidDryer] WARNING: " << msg.str() << "\n";
+    }
+    else if (limit == "saturation-bound")
+    {
+        std::ostringstream msg;
+        msg << std::setprecision(4) << std::fixed
+            << "the exhaust saturates before the powder reaches the isotherm's"
+               " equilibrium moisture: at T_out = " << T_out << " K it carries "
+            << (water_rem * MW_solv * 3600.0) << " kg/h (a_w = " << aw_out
+            << ") of the " << (water_rem_target * MW_solv * 3600.0)
+            << " kg/h the isotherm would remove";
+        if (heatBinds)
+            msg << " (its heat, cooled to the air's wet bulb, could have paid"
+                   " for " << (water_pay * MW_solv * 3600.0) << " kg/h)";
+        msg << ", so the powder leaves at X = " << X_final << " kg/kg instead"
+               " of X_eq = " << X_eq << ".  More evaporation would leave a fog"
+               " in the exhaust.  Use more or drier air.";
+        if (AdvisoryLog::instance().add("drying", "warning", who, msg.str()))
+            std::cout << "  [SolidDryer] WARNING: " << msg.str() << "\n";
     }
     if (verbosity >= 2)
         std::cout << "\n=========================  Solid Dryer Result  ===================\n"
@@ -331,6 +425,8 @@ int SolidDryer::solve(const DictPtr& dict,
                   << "  Adiabatic outlet T_out = " << std::setprecision(1) << T_out
                   << " K   (air cooled " << std::setprecision(1) << (T_air - T_out)
                   << " K to supply the heat -- NO external duty)\n"
+                  << "  Exhaust a_w at T_out = " << std::setprecision(4) << aw_out
+                  << "   [" << limit << "]\n"
                   << "==================================================================\n\n";
     return 0;
 }

@@ -120,6 +120,7 @@ Description
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "unitOperations/dynamic/DynamicUnitOperation.H"
+#include "unitOperations/flash/StreamEquilibrium.H"   // the C36 #1 saturation refusal
 #include "thermo/ElementComposition.H"
 #include "io/InternalStateIO.H"
 #include "io/SolutionWriter.H"
@@ -263,6 +264,35 @@ static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList,
             std::cout << "  [state] 0/" << rel << ": a product -- nothing"
                          " consumes it, so its value at t = 0 is its"
                          " producer's outlet; the file is read and not used\n";
+    }
+
+    //  A PURE AUTHORED INLET ON ITS OWN SATURATION CURVE, WITH NO PHASE
+    //  DECLARED, IS REFUSED -- the rule `choupoSolve` applies (DEV.md C36
+    //  item 1), applied here to this class's authored inlets (C37 item 5).
+    //  An authored inlet is a stream a unit CONSUMES and no unit PRODUCES
+    //  (a routed stream's file is only its value until the first step
+    //  overwrites it with the producer's outlet, so "declare the phase" is
+    //  not a remedy for it).  This driver builds ONE thermophysical world;
+    //  the rule and its band are `flashState::undeterminedSaturationRefusal`,
+    //  which returns before evaluating K anywhere but at the stream's own T
+    //  unless the stream is within the band.  Every offender is collected
+    //  before refusing.
+    {
+        std::vector<std::string> undetermined;
+        for (const auto& w : consumed)
+        {
+            if (produced.count(w)) continue;
+            const ProcessStream& s = state.at(w);
+            if (s.phasePinned || s.F <= 0.0) continue;
+            std::string rel = w;
+            std::replace(rel.begin(), rel.end(), '.', '/');
+            if (auto why = flashState::undeterminedSaturationRefusal(
+                    w, "0/" + rel, s.T, s.P, s.z, thermo))
+                undetermined.push_back(*why);
+        }
+        if (!undetermined.empty())
+            throw std::runtime_error(flashState::undeterminedStreamsMessage(
+                undetermined, binaryName));
     }
 
     //  An inlet{} / inlets{} entry from a stream state, printed at the

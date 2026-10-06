@@ -238,6 +238,10 @@ Vitor**, alongside the narrower question of whether the costing table should
 print its basis (2001 USD, CEPCI 397 -> target, USD->EUR rate) beside the
 total, so that four hidden decisions stop hiding behind one number.
 
+**The naming half is RESOLVED (2026-10-05, DEV.md 4c C38 item 2):** the
+model is `Turton` and `method Guthrie;` is refused by name, naming `Turton`.
+The `method Guthrie;` quoted in section 1 is the postDict as it stood then.
+
 
 ## 9. The process lesson, paid for in a killed suite
 

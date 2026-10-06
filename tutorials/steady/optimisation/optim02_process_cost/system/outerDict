@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  Minimise the total module cost (sum of Guthrie totalModuleCost across
+  Minimise the total module cost (sum of Turton totalModuleCost across
   every costed unit) for a small reactor -> heater -> separator process,
   by tuning two design variables:
 
@@ -16,7 +16,7 @@
                           (credo-pure: hardware, not outlet T)
 
   Pedagogical note: this case uses only CAPEX (purchased + bare-module
-  + total-module cost via Guthrie correlations).  The optimum is NOT the
+  + total-module cost via Turton correlations).  The optimum is NOT the
   lower corner one might naively expect.  Nelder-Mead (8 moves) lands at:
 
       reactor.V_R = 0.008070 m^3   (INTERIOR, not on a bound)

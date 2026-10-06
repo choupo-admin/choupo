@@ -186,7 +186,7 @@ int SizingPass::run(SimulationResult& result)
                 if      (dims.values.count("V_R")) { sizeKey = sized("V_R"); sizeVal = dims.values.at("V_R"); }
                 else if (dims.values.count("A"))   { sizeKey = sized("A");   sizeVal = dims.values.at("A");   }
                 //  A CATALYST CHARGE'S SIZE IS ITS MASS (2026-09-26): the
-                //  one item in the corpus whose Guthrie size driver is
+                //  one item in the corpus whose Turton size driver is
                 //  neither a volume nor an area.
                 else if (dims.values.count("m_catalyst_kg"))
                 { sizeKey = sized("m_catalyst_kg"); sizeVal = dims.values.at("m_catalyst_kg"); }

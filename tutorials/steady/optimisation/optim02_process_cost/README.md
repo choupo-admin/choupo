@@ -1,7 +1,7 @@
 # optim02_process_cost — minimise total module cost
 
 A small **reactor → heater → separator** process. The `OptimizationDriver`
-(Nelder-Mead) tunes two design variables to minimise the **total Guthrie
+(Nelder-Mead) tunes two design variables to minimise the **total Turton
 module cost** of the two costed units (reactor + heater):
 
 | variable                | meaning              | box bounds          |
@@ -30,7 +30,7 @@ cost from ~2.0e6 EUR at Q≈170 W down to ~9.35e5 EUR at Q=500 W.
 
 The dominant cost is the heat exchanger (~916 k of the ~935 k total). Its
 area follows `A = Q / (U·LMTD) = Q / 6000` m², so Q=500 W gives only
-**A ≈ 0.083 m²**. The Turton shell-and-tube correlation used by the Guthrie
+**A ≈ 0.083 m²**. The Turton shell-and-tube correlation used by the costing
 model is valid for `A ∈ [10, 1000] m²`; our exchanger is **two orders of
 magnitude below `Smin`**. In that extrapolated tail the correlation
 
@@ -48,7 +48,7 @@ that its vessel cost (~19 k) stays a rounding error next to the exchanger.
 ## What the student should take away
 
 1. The `OptimizationDriver` wires correctly into the post-processing chain
-   (sizing → Guthrie costing) so `result.costs` is populated before the
+   (sizing → Turton costing) so `result.costs` is populated before the
    objective is read.
 2. The Nelder-Mead simplex contracts cleanly and parks one variable on an
    active box constraint (Q at its upper bound) while the other lands in the

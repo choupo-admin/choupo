@@ -1,0 +1,75 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  vlle05_produced_feed  --  a `phaseSet VLLE` decanter whose feed ANOTHER
+  unit produced: whose search does that stream mean?
+
+  A STRUCTURAL WITNESS on vlle03's synthetic system (compA, compB, compC:
+  not real substances).  Its three component records are ADOPTED copies that
+  carry an INVENTED formation datum (dHf_298 = 0, s_298 = 200 for all three)
+  so that the energy report runs; only differences of it are read.  No
+  number here is a property of any real mixture.
+
+  THE QUESTION.  An unpinned (T, P, z) means its own equilibrium (R-E2), and
+  for a feed to a unit that admits a vapour and TWO liquids that equilibrium
+  is the three-phase one -- which is why, since DEV.md C35 item 4, a stream
+  fed to a VLLE flash is resolved with the flash's own search by the energy
+  report and the stream table.  But a PRODUCED stream keeps its PRODUCER's
+  answer (CLAUDE.md §3).  `preheater` is a heater: it solves for the outlet
+  whose enthalpy is H_in + Q on the VAPOUR-LIQUID surface, and publishes
+  `heated` at 352.33 K with vf = 0.0089 -- one liquid and a whisker of
+  vapour.  Under the decanter's three-phase search the same (T, P, z) is two
+  liquids and a fifth of vapour.
+
+  WHAT WENT WRONG (measured 2026-10-05, before C37 item 4).  The report
+  re-read `heated` with the decanter's search while the heater had priced
+  it vapour-liquid: the preheater's row left 193.92 kW unattributed and the
+  plant's first law missed by -193.92 kW, at exit 0.
+
+  THE RULE (DEV.md C37 item 4).  A stream means its CONSUMER's search only
+  when it is an AUTHORED inlet or a three-phase search itself published it
+  (`flashState::consumerSearchApplies`).  `heated` is a heater's outlet, so
+  the report, the stream table and the decanter's own duty all read the
+  state the heater published; the demixing it undergoes in the drum is the
+  decanter's duty (169.8 kW at 350 K), and every row closes.
+
+  What to read: the energy balance by unit (both rows close) and the plant
+  first law; the decanter's `Q_kW`, which is the cost of bringing the
+  heater's vapour-liquid outlet to the drum's three-phase state.
+  Gate: check_vlle_fallback arm (f).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        preheater;
+        type        heater;
+        in          feed;
+        outputs     ( heated );
+        operation   { Q  50 kW; }
+    }
+    {
+        name        decanter01;
+        type        isothermalFlash;
+        model       gibbsMinimisation;      // the machine, NAMED (type -> model -> operation)
+        in          heated;
+        outputs     ( vapor  liquidA  liquidB );
+
+        operation
+        {
+            T          350.0 K;
+            P          1.0 bar;
+            phaseSet   VLLE;
+            alphaRich  compA;
+            betaRich   compB;
+        }
+        compositionTol   1e-5;
+        maxOuterIter     200;
+    }
+);

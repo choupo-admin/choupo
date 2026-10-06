@@ -176,7 +176,8 @@ what the student MEETS.  So, for September:
    structure.
 
 Reserved to Vítor, untouched: the catalogue reseal (`Choupo-2607` in the
-sealed manifests), `paper/README.md`, the Guthrie/Turton attribution, the
+sealed manifests), `paper/README.md`, the Guthrie/Turton attribution
+(decided 2026-10-05, C38 item 2: the model is `Turton`), the
 Burcat citation ruling, P-swing, speciation aliases, the basis mass
 migration.
 
@@ -454,7 +455,9 @@ correct under either design.
 >   golden — so a case declaring `Turton` was answered `Guthrie` on screen.
 >   The class keeps its name (the bare-module FORM is Guthrie's, 1969); the
 >   METHOD it reports is `Turton` (whose coefficients these are, App. A), and
->   the two are different questions.  No number moved.
+>   the two are different questions.  No number moved.  (Superseded 2026-10-05,
+>   C38 item 2: the class and its files are `Turton` too, and `Guthrie` is
+>   refused by name.)
 > * **R8 — should a plant PRODUCT sit at the domain level, and does the
 >   plant's label become the file's name?**  The 2026-09-07 lowest-common-
 >   ancestor rule settled inlets and internal streams; a plant OUTLET is
@@ -1988,22 +1991,226 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C38. THE RESERVED ITEMS, TAKEN (Vítor, 2026-10-05, verbatim: "Não quero que
+deixes comigo!!!! Faz tu!", answering the commander's list of what stayed
+reserved for him).**  The commander takes them, each one revertable merge:
+  1. TRAY COST: a published tray correlation (Turton's sieve/valve tray set
+     and its quantity factor) is added to the costing model ONLY with every
+     coefficient transcribed from a source the general actually reads and
+     cites; if no such source is readable, the refusal stays and the reason
+     is recorded -- an invented set is never shipped.
+     [BUILT 2026-10-05 on branch `claude/c38-costing`.  WHAT WAS SEARCHED:
+     the tree (no tray coefficient anywhere; `thirdParty/`, `data/local/`
+     empty of costing data); the web.  Pearson's public sample chapters of the
+     4th and 5th editions stop before Appendix A.  WHAT WAS READ: CAPCOST 2017
+     (`capcost_2017_rev2.xlsm`), the costing program the authors distribute
+     with the 5th edition, downloaded from Richard Turton's WVU faculty page:
+     sheet "Equipment Cost Data", block "Tower Trays", row Sieve, cells
+     C257:G257 (K1 2.9949, K2 0.4465, K3 0.3961, A 0.07-12.3 m2); block
+     "FBM", Sieve column, D262/D263/D265 (carbon steel 1.00, stainless 1.83,
+     Ni-alloy 5.58); cell B267 (F_q = 10^(0.4771 + 0.08516 log N - 0.3473
+     log^2 N)); and the program's macro `calculateTrayCosts` (F_q = 1 for
+     N >= 20; C_p = N x 10^(...) x CEPCI/397; C_BM = C_p F_BM F_q).  WHAT WAS
+     NOT READ: the book's own Appendix A table and page -- so no edition /
+     table / page is cited per coefficient, and the citation is the program's
+     cells instead.  What ties the program to the data already shipped: its
+     vertical-vessel set equals `vesselCoeffs` digit for digit, and its own
+     worked tower T-101 (32 sieve trays, D 2.1 m, H 23 m) reproduces from the
+     transcribed set to 4e-7 relative on the CEPCI-397 basis (with the
+     program's own pi = 3.14) -- `check_design_sheet` arm (m) recomputes it.
+     The stainless and nickel-alloy F_BM are transcribed only (the anchor is a
+     carbon-steel base cost).  Valve trays and demisters NOT transcribed: no
+     Choupo unit sizes them.  ENGINE: `Turton::cost` routes `sieveTrays` to
+     the tray-stack shape (`correlation tray-stack`); the material CLASS is a
+     DECLARATION, `trayMaterial carbonSteel | stainlessSteel | nickelAlloy;`
+     in the column's designRules, carried by `ColumnSize` through the new
+     `EquipmentSizing::costWords` -- never read off the construction
+     material's name (trays are often a different metal from the shell, and
+     F_BM spans 1 to 5.58).  Absent or unknown, the trays still REFUSE by name
+     (the unknown word through `registryRefusal::message`) and the total
+     reads INCOMPLETE.  A sheet whose cost was priced in a material other than
+     its own header's prints `pricedAs` in its cost block (catalyst charges
+     gain that line too: "none: catalyst priced per kg").  GOLDENS:
+     `column09_tray_hydraulics` declares `trayMaterial carbonSteel;` and gains
+     3 rows (trays cost.purchased 28357.72, bareModule 37252.81, totalModule
+     43958.32); NO row moved -- no golden pins a column total.  The column's
+     TOTALS line went from INCOMPLETE (436 079 EUR C_TM) to 480 038 EUR.
+     Gate: `check_design_sheet` arm (m) (`check_tray_stack`: anchor,
+     coefficients, by-hand recomputation from the sheet's A and nTrays, two
+     refusal probes; 4 sabotages).]
+  2. THE COSTING MODEL'S NAME: registered `Guthrie` while every coefficient is
+     Turton's.  Renamed to what it is (`Turton`), the corpus migrated in one
+     pass, the old word REFUSED by name naming the new one (no dual reader).
+     [BUILT 2026-10-05 on branch `claude/c38-costing`.  MEASURED FIRST: the
+     key `Turton` had been registered since 2026-09-03 with `Guthrie` as an
+     ANNOUNCED alias, and all 12 corpus `costing {}` blocks already said
+     `method Turton;` -- so NO postDict needed migrating and no migrator was
+     written.  What was left: the class and its files
+     (`src/postProcessing/costing/Turton.{H,cpp}`), the alias registration
+     (deleted), and the prose that named the model (src comments, the
+     guides, README, docs/ai, tutorial READMEs/descriptions, the models
+     catalogue).  `method Guthrie;` now REFUSES through
+     `registryRefusal::message` (exit 2) with a line naming `Turton`.  No
+     golden row and no result-JSON key carried the word (`type()` already
+     returned `Turton`), so NO row moved.  Guthrie stays cited for what is
+     his: the bare-module FORM.  NOT renamed, said rather than hidden: the
+     `F_M feeds the Guthrie module-costing pass` header comment in the
+     construction-material records (`data/standards/assets/*.dat` and their
+     case-local copies) -- curated records, comment only, and a comment
+     edit in a sealed copy is announced as cosmetic drift on every run.
+     Gate: `check_cost_provenance` arm (p).]
+  3. Vítor's deck `docs/slides/farelo_choupo.tex` (C7 class B): its three
+     product names replaced by neutral descriptions like the other records,
+     its pin dropped from `check_doctrine`.  **DONE 2026-10-05:** the 1976
+     MIT project, the 1981 company and the products of the proprietary era
+     are described by what they were (dates, the DOE funding, the 2002
+     consolidation and the talk's argument unchanged; the acquired rival's
+     name and the other vendors' names went with them, since the ban list is
+     eight words and the ruling is not); the PDF rebuilt with
+     `pdflatex` (no Makefile rule builds the deck; its header names the
+     command); the pin ledger went from 5 sites in 2 files to 2 in 1, only
+     class C left.
+  4. Catalyst beds: the bed shell is costed on the vessel set and the charge
+     on its declared price since C2; no further reserved decision remains.
+Status: dispatched 2026-10-05.
+
 **C37. THE C35/C36 LOOSE ENDS (Vítor, 2026-10-05, verbatim: "Trata tu disso
 o melhor que souberes", answering the commander's list of six).**  Each lands
 as one revertable merge with its moved rows listed:
   1. `flashState::resolvedInletVaporFraction` honours a pinned pure two-phase
      inlet for EVERY caller (today only heatExchanger/heater/phaseChanger read
      the pin first).
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  The rule
+     is in the one home: `resolvedInletVaporFraction` asks
+     `pinnedPureQuality` first (StreamEquilibrium.H:717), and so does its
+     sibling `resolveStreamThermalState` (:653, the column feed and the
+     evaporator chest).  The three units' vf overrides are gone
+     (HeatExchanger.cpp:88, Heater.cpp:128, PhaseChanger.cpp:232 call the
+     one home alone); each keeps the pin only to PRICE its inlet at it.
+     MEASURED: the corpus has no AUTHORED pinned pure two-phase inlet (the
+     five fractional `vaporFraction` files are produced streams, for which
+     the one home always returned the carried pin), so no golden moves; 14
+     targeted cases PASS.  The fixture that shows it -- heatExchanger03's
+     wetFeed declared as an authored inlet to a splitter -- published both
+     branches at vf = 0 and a 98.28 kW first-law residual before, the pin
+     (0.09917968728) and 0 kW after.  Gate `check_inlet_resolution` arm (k).]
   2. `bin/choupo-import` re-seals heatExchanger01 and heatExchanger03 (its
      agreement check drops the `utility <hx> heating.-.carried` row).
   3. `solidDryer` gets an exhaust-saturation limit (a fog is no longer
      published as vf = 1); the stale Theory Guide sentence on its X_final.
+     [BUILT 2026-10-05 on `claude/c37-solid-dryer-saturation` (not merged).
+     MEASURED first, at 32dbe5577: `SolidDryer.cpp:239-271` evaporated the
+     isotherm's target (or what the heat paid for at the floor) and asked
+     nothing of the exhaust; `:220` priced the exhaust UNPINNED, so
+     `priceState` resolved a supersaturated one at its condensed equilibrium
+     while `:285` published it with vf = 1.  The witness, solidDryer01 with
+     its air cut from 800 to 100 kmol/h (now the case
+     `solidDryer02_starved_air`), evaporated all 680.81 kg/h at 318.611 K into
+     an exhaust whose package flash resolves ~524 kg/h of liquid.  NOW: the
+     evaporation is the least of three and the one that binds is announced
+     in the result block (`[isotherm-reached]` / `[heat-bound]` /
+     `[saturation-bound]`), the last two also as a WARNING replayed in the
+     caveat block (printed once per pass, not once per recycle re-solve):
+     the exhaust's humidity ratio may not exceed Y_sat(T_out) -- written as
+     a_w = p_w / p_sat(T_out) <= 1 through `psychrometry::airWaterActivity`
+     (the same statement, and defined where `Ysat` refuses, p_sat >= 0.95 P);
+     a_w rises monotonically with the evaporation (more water AND a colder
+     outlet), so the saturated evaporation is bisected on [0, the isotherm's
+     or the heat's cap], each trial at its OWN T_out, keeping the unsaturated
+     end.  The limit is saturation itself, a_w = 1, not a knob (the
+     evaporative dryer's `maxExhaustHumidity` 0.95 is a design margin).  New
+     KPI `exhaust_humidity` (the exhaust's a_w).  The witness: 156.54 kg/h
+     carried at a_w = 1.0000, T_out 318.6066 K (the fog answer's 318.6114 K
+     -- a fog and a saturated gas beside the same water left on the powder
+     hold the same enthalpy; what moves is WHERE the water is), X_final
+     0.1543 against X_eq 0.0011, the unit and the plant closing at
+     7e-12 kW.  GOLDENS: NO row moved -- solidDryer01, the flagship
+     (DRYING.BD isotherm-reached, exhaust a_w 0.1469), lithiumBrinePlant,
+     evapDryer01/02, convDryer01 and sprayDryer01/05 are byte-identical in
+     every published number (an old/new build compared token by token), and
+     sprayDryer02-04/06/07 PASS their goldens (they do not reach this
+     unit); appended: `exhaust_humidity`
+     on solidDryer01 (0.175354451046); the new witness's golden recorded
+     whole.  `sugarPlantEconomicsSweep` (no golden) MOVES: its BD reached its
+     isotherm into a fog on its later solves and now announces
+     saturation-bound on six of them -- the exhaust carrying 145.63 to
+     147.89 kg/h at ~321.3-321.4 K where the isotherm would remove 147.16
+     to 245.71 kg/h; on the stream table it prints, the dry powder's water
+     mole fraction moves 0.17015 -> 0.17507 (X 0.0112 against X_eq
+     0.0108).  Its dryer is marginally under-aired, a case-design question
+     left to Vitor.  NAMED, NOT
+     FIXED: the limit is the psychrometric saturation of the WATER alone;
+     the case's ideal-solution package applies Raoult's law to N2/O2/Ar on
+     their extrapolated Antoine, so its dew sum at a_w = 1 is 1.0014 and it
+     resolves a whisker of liquid at the saturated answer (V/F 0.99985,
+     0.016 kmol/h on the witness), priced identically by the unit and the
+     report.  Theory Guide: the two X_final sentences (the solid-dryer
+     section and the drying chapter's equilibrium paragraph) now name the
+     three limits; the PDF rebuilt; the Tutorials Guide, the case
+     manifest and the release inventory regenerated for the new witness
+     and the Tutorials Guide PDF rebuilt; docs/ai/unit-ops.md and CLAUDE.md
+     §6 name the limit.  Gate: `check_evaporative_dryer` arm
+     (g) (the witness saturation-bound with its exhaust's a_w RECOMPUTED
+     from the published stream in [1 - 1e-6, 1], wetter than its isotherm,
+     water picked up = water_removed, the unit's energyClosures row and the
+     plant within 1e-4 kW; solidDryer01 isotherm-reached; the (f) fixture
+     heat-bound); the witness joins `check_energy_closure`'s UNIT_WITNESSES.
+     Sabotages: S4 the saturation test disabled -> (g); S5 the bisection
+     reading a_w at the isotherm answer's T -> (g) at a_w 1.000247; a first
+     S5 (keeping the supersaturated bisection end) SURVIVED -- it moves the
+     answer 1e-13 relative, below the JSON's twelve digits, and proves
+     nothing.]
   4. A `phaseSet VLLE` feed PRODUCED by another unit: report and producer read
      it the same way.
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  THE RULE,
+     one home: a stream means its consumer's search only when it is an
+     AUTHORED inlet or a three-phase search itself published it --
+     `flashState::consumerSearchApplies` (StreamEquilibrium.H, three
+     overloads: the rule, a `ProcessStream`, a unit's feed dict).  Read by
+     the flowsheet's `equilibriumConsumer` stamp (Flowsheet.cpp, so the
+     energy report and the stream table follow) and by the VLLE unit's own
+     feed pricing (IsothermalFlash.cpp `feedMeansThreePhase`; a feed it does
+     not mean is re-flashed with the PRODUCER's vapour-liquid search).  "The
+     producer itself is the VLLE unit" is read as: a stream a `phaseSet VLLE`
+     search PUBLISHED -- its three ports now carry
+     `ProcessStream::fromThreePhaseSearch`, which travels into the feed dict
+     (UnitInputs.cpp, written only when set) -- so a VLLE port fed to a
+     second VLLE unit keeps today's reading.  WITNESS
+     `tutorials/steady/flash/vlle05_produced_feed` (sealed; vlle03's
+     synthetic system with its three records ADOPTED carrying an invented,
+     labelled datum so the report runs): a heater publishes the decanter's
+     feed at 352.33 K, vf 0.0089 (vapour-liquid).  Before: the preheater's
+     row left 193.92 kW unattributed and the plant missed by -193.92 kW;
+     after: preheater -2.8e-5 kW (its Newton tolerance), decanter 0, plant
+     2.8e-5 kW, and the decanter's duty is 169.815 kW (the demixing of the
+     heater's outlet in the drum).  MOVED ROWS: none outside the new
+     witness, whose golden is new (47 rows); the only corpus `phaseSet VLLE`
+     cases (vlle03, vlle04) have authored feeds and PASS unchanged.  Gate
+     `check_vlle_fallback` arm (f).]
   5. The C36 #1 saturation refusal reaches a unit's own `thermo {}` world and
      the time-integrated binaries' authored inlets.
+     [BUILT 2026-10-05 on `claude/c37-stream-state` (not merged).  STEADY:
+     `Flowsheet::solve`, after the global check, asks the world of each unit
+     that consumes a pure, authored, unpinned inlet under its own
+     `thermo {}` / property context (`thermoFor`, built once and cached) --
+     the world `resolvedInletVaporFraction` reads that inlet in; a stream
+     refused globally is not asked twice; the refusal names the unit's
+     world.  TIME-INTEGRATED: `dynamicDriver`'s 0/ seeding applies the same
+     refusal to its authored inlets (consumed, produced by no unit),
+     prefixed by the binary's name.  The whole message has one home,
+     `flashState::undeterminedStreamsMessage`.  The C36 rule is kept: the
+     probe returns before evaluating K away from the stream's own T unless
+     within the band.  MEASURED: pure benzene at 1 bar is on flash01's ideal
+     curve at 352.826 K and on an SRK-vapour unit's at 351.925 K; unsteady02's
+     pure compA at 455.608 K.  Moved rows: none -- the 23 time-integrated
+     cases and the 8 per-unit-world cases PASS (listed in the commit).  Gate
+     `check_overspecified_stream` arms (h), (i).  Record:
+     docs/design/a-stream-is-fixed-by-two-variables.md §9.]
   6. Stale file:line citations (what-water-dat-does-not-say.md, the C33
      table), condenser01's "saturated vapour" header, `gateManifest` claims.
+FULL REGRESSION AUTHORISED by Vítor 2026-10-05 ("sim", answering the
+commander's §0.4 request for items 1, 4 and 5): run once on main with
+C37 #1/#4/#5 and C38 #1/#2 merged.
 Status: dispatched 2026-10-05.
   Items 2 and 6 BUILT 2026-10-05 on `claude/c37-housekeeping` (not merged),
   one commit each, NO golden row moved:
@@ -2072,7 +2279,8 @@ with its moved golden rows listed:
      engine's own vf until a run refuses; (g2) declared runs; (g3) a mixture
      at its bubble point untouched).  NOT covered, said: a unit's own
      `thermo {}` world (checked in the global one) and the time-integrated
-     binaries (their driver stamps no authored inlet).  Record:
+     binaries (their driver stamps no authored inlet) -- both CLOSED by
+     C37 item 5.  Record:
      docs/design/a-stream-is-fixed-by-two-variables.md §9.]
      FULL REGRESSION AUTHORISED by Vítor 2026-10-05 ("Avança", answering the
      commander's request with its §0.4 reason): the rule runs in
@@ -2172,7 +2380,7 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      `check_vlle_fallback` arm (e3).  Moved rows: listed in the commit.
      NOT covered, said: a VLLE feed that ANOTHER unit produced is resolved
      with the consumer's search by the report while its producer priced it
-     vapour-liquid (no corpus case has one).]
+     vapour-liquid (no corpus case has one).  CLOSED by C37 item 4.]
      THE FULL REGRESSION (CLAUDE.md §0.4 reason, written before launch,
      2026-10-05): WHAT CHANGED since the last validation of `main`
      (2a403aac0) is three edits on shared paths, run ONCE on their
@@ -2299,7 +2507,9 @@ Each lands as ONE revertable merge with its moved golden rows listed.
      condensed equilibrium (a fog published as vf = 1) -- e.g.
      solidDryer01 with its air cut to 100 kmol/h still reaches the
      isotherm at 318.6 K; that is what lets its warm-fed cases stay above
-     the new floor.  Gate `check_evaporative_dryer` extended: (a) the
+     the new floor.  [FIXED 2026-10-05, C37 item 3: the evaporation stops
+     where the exhaust saturates, announced; the witness is
+     `solidDryer02_starved_air`.]  Gate `check_evaporative_dryer` extended: (a) the
      corpus limits, (a') the saturation fixture, (b) the evaporation affine
      in the gas at the floor (second difference to 1e-9), (c) the default,
      (d) the floor recomputed from each case's own records (Antoine,
@@ -2790,7 +3000,11 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
      there); P6 -> item 13 (the two rows dropped); P2 -> item 7 (the floor
      is the gas's wet bulb in both dryers; DONE on branch
      `claude/c35-dryer-floor` -- and it makes evapDryer02 heat-bound again,
-     see item 7).  P3-P5 and P7 stay his.
+     see item 7).  P3-P5 and P7 stay his.  The gap item 7's general FOUND
+     -- the solid dryer had no exhaust-saturation limit, so a starved air
+     published a fog as vf = 1 -- is closed by C37 item 3 (2026-10-05): its
+     evaporation now stops where the exhaust saturates, announced, gate
+     `check_evaporative_dryer` arm (g).
 
 **C22. A 44-TOOL EXTERNAL PEDAGOGICAL REVIEW, TO BE ANALYSED CRITICALLY
      (asked 2026-09-28; Vitor: "nao quero que sejas cao rafeiro -- tu es o
@@ -3486,7 +3700,10 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
        (B) `docs/slides/farelo_choupo.tex`, 3 sites: the HISTORY OF THE FIELD
            (the 1976 project at MIT, the 1981 company, the proprietary era).
            That is history, not comparison, and it is **Vítor's own deck** —
-           RESERVED for him.
+           RESERVED for him.  **DONE 2026-10-05 (C38 item 3, Vítor: "Faz
+           tu!"):** each product name replaced by a neutral description of
+           what it was, the history and the argument intact, the pin
+           dropped; a name put back fails the gate as a NEW site.
        (C) `chemsep_to_choupo.py`'s `EXCLUDED` list, 2 sites: FUNCTIONAL CODE,
            the source words the importer refuses to import from.  Permanent.
 
@@ -3530,7 +3747,8 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
      to the ruling record, and `decision-records.md` names only the ruling.
      The category-2 allowlist is `COMPETITOR_EXEMPT`.  Nothing to fix.
 
-     **WHAT REMAINS (2026-10-05):** (B) is Vítor's; (C) is permanent.  The
+     **WHAT REMAINS (2026-10-05):** (B) is CLOSED (C38 item 3); (C) is
+     permanent and is the only pin left.  The
      PUBLISHED git history is NOT rewritten -- REJECTED, ruled by Vítor
      2026-10-05 (C35 item 14), in agreement with
      `no-competitor-is-named-here.md` §6 and its index row; it is no longer

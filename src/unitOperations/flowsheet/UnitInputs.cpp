@@ -60,6 +60,8 @@ DictPtr streamToDict(const ProcessStream& s, const ThermoPackage& thermo)
     //  that ask; a unit cannot be harmed by a key it does not read.
     out->insert("phasePinned", s.phasePinned ? 1.0 : 0.0);
     out->insert("authoredInlet", s.authoredInlet ? 1.0 : 0.0);
+    //  Written only when set, so every other feed dict is unchanged.
+    if (s.fromThreePhaseSearch) out->insert("fromThreePhaseSearch", 1.0);
     out->insert("streamName", s.name);
     auto cd = std::make_shared<Dictionary>("composition");
     for (std::size_t i = 0; i < thermo.n(); ++i)
@@ -260,6 +262,9 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
         //  one.  Carried as a scalar because the feed dict is scalar-valued.
         feed->insert("phasePinned", s.phasePinned ? 1.0 : 0.0);
         feed->insert("authoredInlet", s.authoredInlet ? 1.0 : 0.0);
+        //  Which search published it (DEV.md C37 item 4): written only when
+        //  a three-phase search did, so every other feed dict is unchanged.
+        if (s.fromThreePhaseSearch) feed->insert("fromThreePhaseSearch", 1.0);
         //  WHICH stream this is.  A refusal that says "your dict contradicts
         //  the feed" and cannot say WHICH feed sends the reader hunting; the
         //  unit dict drops `in` when it is composed (it is a wire, not a

@@ -29,7 +29,7 @@ Class
     Choupo::CostingModel
 
 Description
-    Abstract base for a capital-cost estimation method (Guthrie/Turton,
+    Abstract base for a capital-cost estimation method (Turton App. A,
     Lang factors,...).  Reads a EquipmentSizing record + a
     Material record and produces a CostBreakdown.
 
