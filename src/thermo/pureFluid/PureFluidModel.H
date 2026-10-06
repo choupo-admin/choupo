@@ -95,6 +95,7 @@ SourceFiles
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace Choupo {
@@ -130,6 +131,17 @@ public:
     // its frozen, closed-form region-4 quadratic (Release Table 36).  Additive
     // -- existing kernels keep working untouched via the default.
     virtual scalar T_sat(scalar p_Pa) const;
+
+    // The temperature window [T_lo, T_hi] on which p_sat(T) is DEFINED -- for
+    // IF97, region 4: the triple point to the critical point.  Pure virtual:
+    // a kernel that cannot say where its saturation curve ends cannot be
+    // asked for it by the package (C39, 2026-10-06).  The package's ONE home
+    // for a component's saturation pressure (`saturationPressure`,
+    // thermo/pureFluid/SaturationCurve.H) reads p_sat inside this window and
+    // the component record's own correlation outside it, ANNOUNCED -- above
+    // the critical point there is no saturation curve to ask, and below the
+    // triple point the liquid line this kernel draws does not exist.
+    virtual std::pair<scalar, scalar> saturationWindow() const = 0;
 
     // ----- Transport properties on the model's OWN formulation -----------
     //

@@ -284,7 +284,7 @@ int SprayDryer::solve(const DictPtr& dict,
 
     auto Ysat = [&](scalar T) -> scalar
     {
-        const scalar Pw = solv.vp().Psat_Pa(T);
+        const scalar Pw = thermo.Psat(iSolv, T);
         return (Pw < 0.99 * P_air) ? (MW_w / MW_dry) * Pw / (P_air - Pw) : 10.0;
     };
     auto gwb = [&](scalar Twb) -> scalar
@@ -510,7 +510,7 @@ int SprayDryer::solve(const DictPtr& dict,
         const scalar n_w_ex   = F_air * yAir[iSolv] + n_evap_ex;
         const scalar F_ex     = F_air + n_evap_ex;
         const scalar y_w_ex   = (F_ex > 0.0) ? n_w_ex / F_ex : 0.0;
-        const scalar Psat_out = solv.vp().Psat_Pa(Tex);
+        const scalar Psat_out = thermo.Psat(iSolv, Tex);
         a_w = (Psat_out > 0.0) ? std::min(0.99, y_w_ex * P_air / Psat_out) : 0.0;
 
         // GAB equilibrium moisture Xe(a_w).

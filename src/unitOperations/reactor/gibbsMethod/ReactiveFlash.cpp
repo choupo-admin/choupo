@@ -60,7 +60,7 @@ GibbsEquilibrium ReactiveFlash::equilibrium(const GibbsProblem& p, scalar T,
     for (std::size_t i = 0; i < N; ++i)
     {
         if (!p.condensable[i]) continue;
-        Psat[i] = thermo.comp(p.compIdx[i]).vp().Psat_Pa(T);
+        Psat[i] = thermo.Psat(p.compIdx[i], T);
         const scalar y_i = eq.nGas[i] / eq.Ntotal_gas;
         if (y_i * P > Psat[i]) act.push_back(i);
     }

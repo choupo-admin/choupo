@@ -5403,6 +5403,7 @@
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/pureFluid/SaturationCurve.H",
    "src/thermo/solution/SolutionPair.H",
    "src/thermo/solution/SolutionRegistry.H",
    "src/thermo/transport/CorrelationVerify.H",
@@ -5980,6 +5981,8 @@
    "src/thermo/activityCoefficient/Wilson.H",
    "src/thermo/phase/LiquidPhase.H",
    "src/thermo/phase/Phase.H",
+   "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/pureFluid/SaturationCurve.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/thermo/phase/Phase.cpp": [
@@ -6008,6 +6011,8 @@
    "src/thermo/Component.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/phase/SolidPhase.H",
+   "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/pureFluid/SaturationCurve.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/thermo/phase/VaporPhase.cpp": [
@@ -6030,6 +6035,18 @@
    "src/thermo/iapws/IF97.H",
    "src/thermo/pureFluid/IF97WaterFluid.H",
    "src/thermo/pureFluid/PureFluidModel.H"
+  ],
+  "src/thermo/pureFluid/SaturationCurve.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/pureFluid/SaturationCurve.H",
+   "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/thermo/reaction/RateLaw.cpp": [
    "src/core/Dictionary.H",
@@ -8448,6 +8465,7 @@
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
+   "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
    "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
@@ -8785,6 +8803,7 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
+   "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/solution/SolutionPair.cpp",
@@ -9090,6 +9109,7 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
+   "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/solution/SolutionPair.cpp",
@@ -9438,6 +9458,7 @@
    "src/thermo/phase/Phase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
+   "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
@@ -9691,6 +9712,7 @@
    "src/thermo/phase/Phase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
+   "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/transport/Andrade.cpp",
@@ -10234,6 +10256,7 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
+   "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
@@ -11828,6 +11851,7 @@
    "src/thermo/phase/Phase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
+   "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/transport/Andrade.cpp",
@@ -13182,10 +13206,19 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/ThermoPackage.cpp",
+   "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
+   "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp"
+  ],
+  "src/thermo/pureFluid/SaturationCurve.H": [
+   "src/thermo/ThermoPackage.cpp",
+   "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/phase/SolidPhase.cpp",
+   "src/thermo/pureFluid/SaturationCurve.cpp"
   ],
   "src/thermo/reaction/RateLaw.H": [
    "src/thermo/reaction/RateLaw.cpp",
@@ -13443,6 +13476,7 @@
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
+   "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/vaporPressure/AmbroseWalton.cpp",
    "src/thermo/vaporPressure/Antoine.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",

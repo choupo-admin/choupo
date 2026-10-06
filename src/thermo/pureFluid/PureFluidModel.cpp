@@ -76,6 +76,11 @@ scalar IF97WaterFluid::T_sat(scalar p_Pa) const
     return IF97::Tsat(p_Pa);  // region 4 inverse, closed form, [K]
 }
 
+std::pair<scalar, scalar> IF97WaterFluid::saturationWindow() const
+{
+    return { IF97::Tmin, IF97::Tcrit };   // region 4: 273.15 K .. 647.096 K
+}
+
 // --- Transport: (T,p) -> density from IF97, then the IAPWS transport kernels.
 //     The contract is (T,p); the (rho,T) dependence of the R12-08/R15-11
 //     kernels is an internal detail bridged here via IF97::props(p,T).rho.

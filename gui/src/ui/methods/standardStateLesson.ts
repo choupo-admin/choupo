@@ -251,7 +251,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       + "are one function (`Component::h_pure_ig`, src/thermo/Component.cpp:1429, "
       + "\"ONE implementation of the standard-state enthalpy, not two\"), the "
       + "residual is added in `ThermoPackage::H_real` "
-      + "(src/thermo/ThermoPackage.cpp:1183), and the `propertyPoint` operation "
+      + "(src/thermo/ThermoPackage.cpp:1200), and the `propertyPoint` operation "
       + "this page runs publishes the two halves and their sum "
       + "(src/propertyOps/PropertyPoint.cpp:79).  The elements' reference "
       + "phases are what the tables say they are — graphite for carbon, the "
