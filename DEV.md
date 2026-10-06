@@ -2227,9 +2227,10 @@ as one revertable merge with its moved rows listed:
 FULL REGRESSION AUTHORISED by Vítor 2026-10-05 ("sim", answering the
 commander's §0.4 request for items 1, 4 and 5): run once on main with
 C37 #1/#4/#5 and C38 #1/#2 merged.
-Status: dispatched 2026-10-05.
-  Items 2 and 6 BUILT 2026-10-05 on `claude/c37-housekeeping` (not merged),
-  one commit each, NO golden row moved:
+Status: dispatched 2026-10-05; CLOSED 2026-10-06 (items 2 and 6 merged into
+main the day work resumed, after Vítor's "Retoma").
+  Items 2 and 6 BUILT 2026-10-05 on `claude/c37-housekeeping`, merged
+  2026-10-06, one commit each, NO golden row moved:
    2. CAUSE: `validate_staged_agrees` looked every `utility` row up as
       `<tier>.<utility>.<field>` on an ALLOCATED entry, so the
       `<tier>.<port>.carried|unserved` row of an UNALLOCATED one (e26e5591d)
@@ -2254,12 +2255,22 @@ Status: dispatched 2026-10-05.
       the header says why -- 372.76 K is IF97's Tsat(1 bar), the curve the
       condenser reads, while the package's K-values read the record's
       Antoine (Tsat(1 bar) = 372.09 K), which is where the "0.67 K
-      superheated" reading came from.  Result JSON byte-identical.  FINDING
-      for Vítor, not fixed: `ThermoPackage::Kvec_Raoult` reads
-      `Component::vp()` even where a `pureFluids` IF97 route owns the dome,
-      so one package carries two saturation curves for water.
-   6c. `generated/gateManifest.json` regenerated in full (the last commit on
-      the branch).
+      superheated" reading came from.  Result JSON byte-identical.  The
+      FINDING it raised -- `ThermoPackage::Kvec_Raoult` read `Component::vp()`
+      even where a `pureFluids` IF97 route owns the dome, so one package
+      carried two saturation curves for water -- is CLOSED by C39
+      (2026-10-06, the bracketed note above).
+   6c. `generated/gateManifest.json` regenerated in full on 2026-10-06
+      (every gate exit 0), `check_inlet_resolution`'s claim re-observed
+      after C39 changed it.
+  Follow-ups taken the same day, each its own merge: the Theory Guide's
+  vertical-vessel B1/B2 (it quoted the horizontal 1.49/1.52; the code applies
+  2.25/1.82); `sugarPlantEconomicsSweep`'s BD air sized for the richest
+  sweep point (150 -> 300 kmol/h, design basis in `0/MAIN/BdAir`, every
+  point now `[isotherm-reached]`; the case ships no golden, its stale prose
+  table replaced by the measured one); three asset records that still named
+  the retired Guthrie costing pass; `generated/codeMap.json` regenerated
+  from a clean build (the committed one had read a stale `Guthrie.d`).
 
 **C36. "AVANÇA COMO ACHARES MELHOR" (Vítor, 2026-10-05, verbatim, answering
 the C35 close-out report and its open list).**  The commander takes the open
