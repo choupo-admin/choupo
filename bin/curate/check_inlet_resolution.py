@@ -147,6 +147,29 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              a splitter, a unit with no pre-check of its own -- must publish
              BOTH branches at that vapour fraction, and the plant must close
              its first law to 1e-6 kW.
+  (l) A DECLARED PURE-FLUID METHOD OWNS ITS COMPONENT'S SATURATION CURVE
+      (2026-10-06, DEV.md 4c C39).  A case declaring `pureFluids { water {
+      method IF97; } }` priced pure water's enthalpy on IF97 while every
+      saturation pressure the package handed out read the record's Antoine,
+      so at 1 bar the flash boiled water at 372.09 K and the enthalpy
+      surface at 372.76 K: a stream between them was a vapour to one reader
+      and a liquid to the other.
+        (l1) SOURCE: `saturationPressure` (thermo/pureFluid/SaturationCurve)
+             is DEFINED once; `ThermoPackage::Psat` and both phases
+             (LiquidPhase, SolidPhase) call it; ThermoPackage.cpp reads no
+             record `vp()` at all; and a record saturation read
+             (`vp().Psat_Pa` / `vp.Psat_Pa`) appears in src/ only in the
+             files of SAT_READ_ALLOWED, each of which holds no package with
+             a declared method (the reasons are beside the list and in
+             docs/design/a-saturation-curve-with-two-homes.md).  A new unit
+             reading `comp(i).vp()` past a declared method fails here.
+        (l2) OUTPUT: condenser01's own IF97 package and two AUTHORED pure
+             water inlets at 1 bar that declare no phase, each split in two:
+             `low` at 372.40 K (above the Antoine boiling point, BELOW
+             IF97's) must leave both branches as LIQUID, and `high` at
+             372.95 K (above both) as VAPOUR -- the control that the fixture
+             is not liquid by construction.  The plant's first law must
+             close to 1e-6 kW.
   (e) flash13_acetic_ethanol_vacuum_flash keeps a LARGE duty -- the
       negative control.  Its feed is at 1 atm and it operates at 0.65 atm,
       so its 669 kW is genuine pressure-drop work; a gate that drove every
@@ -209,6 +232,27 @@ restored by git and rebuilt:
       at 0.09917968728, and the fixture's first law misses by 98.2787 kW
       (the unboiled fraction's latent heat, priced on one side of the
       curve).  The output arm is the one that sees the engine.
+
+SABOTAGE-VERIFIED 2026-10-06 for (l), by hand on the engine source, each
+restored from a copy and the tree rebuilt with `make all` at the end:
+  S1  `ThermoPackage::Psat` reads the record (`return
+      components_.at(i).vp().Psat_Pa(T_K);`), rebuilt -- the one home
+      bypassed at the package door.  (l1) fails three ways (no
+      `saturationPressure` call, a `vp()` read, a record saturation read in
+      a file not allowed) and (l2) fails twice: `lowA`/`lowB` leave at
+      vf = 1.  Then the SOURCE restored without a rebuild: (l1) PASSES -- it
+      reads the restored source -- and (l2) still fails on both branches.
+      The output arm is the one that sees the engine.
+  S2  `LiquidPhase::fEffective` back to `(*components_)[i].vp().Psat_Pa(T)`
+      (source only).  (l1) fails twice, naming LiquidPhase.cpp.  No output
+      arm reaches it: an IF97 package carries no second liquid or solid, so
+      no corpus flash asks `Kvec_phases` there -- a SOURCE arm by necessity.
+  S3  `psychrometry::Ysat` back to `thermo.comp(iMoist).vp().Psat_Pa(T)`
+      (source only).  (l1) fails, naming Psychrometry.H -- the shape of a
+      future unit reading the record past a declared method.
+  S4  `saturationPressure`'s window disarmed (`if (false && ...)`, the call
+      sites intact), rebuilt.  (l1) PASSES -- every call is in place -- and
+      (l2) fails on both `low` branches.
 
 SABOTAGE-VERIFIED 2026-08-09: reverting the R-E1 gate (unpinned feeds no
 longer re-flashed -- the pre-slice behaviour) reproduced the original
@@ -300,6 +344,38 @@ PURE_PIN_UNITS = {
                                      r":\s*flashState::"
                                      r"resolvedInletVaporFraction",
 }
+#  (l) the declared pure-fluid method owns the saturation curve (C39).  The
+#  IF97 package is condenser01's own; the record saturation reads that stay
+#  in src/, each in a file that holds no package with a declared method:
+SAT_HOME = ROOT / "src/thermo/pureFluid/SaturationCurve.cpp"
+SAT_PKG = ROOT / "src/thermo/ThermoPackage.cpp"
+SAT_PHASES = [ROOT / "src/thermo/phase/LiquidPhase.cpp",
+              ROOT / "src/thermo/phase/SolidPhase.cpp"]
+SAT_READ_ALLOWED = {
+    #  the one home itself: the record answers where no method is declared
+    #  and outside a declared method's window (announced).
+    "src/thermo/pureFluid/SaturationCurve.cpp",
+    #  the component's own formation-entropy leg at 298.15 K: the record's
+    #  own datum, below the package.
+    "src/thermo/Component.cpp",
+    #  the reactive electrolyte builder: its formulation refuses a
+    #  `pureFluids {}` block (ThermoPackageBuilder: "transport/pureFluids on
+    #  formulation ... is not wired natively").
+    "src/thermo/ThermoPackageBuilder.cpp",
+    #  props ops on a BARE record (no package): the speciate op's solvent
+    #  leg and the freezing-point op's own ice phase.
+    "src/propertyOps/Speciate.cpp",
+    "src/propertyOps/FreezingPoint.cpp",
+    #  the heater's and the phase changer's dome bisection for a dominant
+    #  component that is NOT effectively pure; a flagged component there
+    #  takes `pureFluid(dom).T_sat` when pure, and a mixed flagged phase is
+    #  refused by the enthalpy route before this line is reached.
+    "src/unitOperations/heatTransfer/Heater.cpp",
+    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+}
+SAT_SRC = "tutorials/steady/heat/condenser01_film_nusselt"
+SAT_LOW_K, SAT_HIGH_K = 372.40, 372.95
+
 #  (j) the units that search their own OUTLET (or regime) with a flash
 OUTLET_SEARCHERS = [
     "valve/Valve.cpp",
@@ -740,6 +816,95 @@ def main() -> int:
                 fail.append("(k2) the pure-pin fixture's first law does not "
                             f"close (residual {m.group(1) if m else None} kW)")
 
+        # (l1) SOURCE: one home for a component's saturation curve.
+        home_src = strip_comments(SAT_HOME.read_text())
+        n_def = len(re.findall(r"^scalar\s+saturationPressure\s*\(",
+                               home_src, re.M))
+        if n_def != 1:
+            fail.append(f"(l1) `saturationPressure` is defined {n_def} time(s) "
+                        "in SaturationCurve.cpp; expected exactly 1")
+        pkg_src = strip_comments(SAT_PKG.read_text())
+        if not re.search(r"\bsaturationPressure\s*\(", pkg_src):
+            fail.append("(l1) ThermoPackage.cpp does not call "
+                        "`saturationPressure` -- `ThermoPackage::Psat` is not "
+                        "the declared method's door")
+        if re.search(r"\bvp\s*\(\s*\)", pkg_src):
+            fail.append("(l1) ThermoPackage.cpp reads a record `vp()` again: "
+                        "a K-value there would read the record's curve past a "
+                        "declared pure-fluid method (ask `Psat(i, T)`)")
+        for ph in SAT_PHASES:
+            if not re.search(r"\bsaturationPressure\s*\(",
+                             strip_comments(ph.read_text())):
+                fail.append(f"(l1) {ph.relative_to(ROOT)} does not read its "
+                            "reference saturation pressure through "
+                            "`saturationPressure`")
+        sat_pat = re.compile(r"\bvp\s*\(\s*\)\s*\.\s*Psat_Pa|\bvp\s*\.\s*Psat_Pa")
+        for f in sorted((ROOT / "src").rglob("*")):
+            if f.suffix not in (".cpp", ".H") or not f.is_file():
+                continue
+            rel = str(f.relative_to(ROOT))
+            if rel in SAT_READ_ALLOWED:
+                continue
+            if sat_pat.search(strip_comments(f.read_text())):
+                fail.append(f"(l1) {rel} reads a component record's "
+                            "saturation curve (`vp().Psat_Pa`) -- past a "
+                            "declared pure-fluid method; ask the package "
+                            "(`thermo.Psat(i, T)`), or add the file to "
+                            "SAT_READ_ALLOWED with the reason it holds no "
+                            "package with a declared method")
+
+        # (l2) OUTPUT: two authored pure-water inlets between and above the
+        #  two curves, under condenser01's own IF97 package.
+        sat_src = ROOT / SAT_SRC
+        sp = tmp / "if97Dome"
+        (sp / "system").mkdir(parents=True)
+        (sp / "0").mkdir()
+        shutil.copytree(sat_src / "constant", sp / "constant")
+        shutil.copy(sat_src / "system" / "controlDict",
+                    sp / "system" / "controlDict")
+        for nm, T in (("low", SAT_LOW_K), ("high", SAT_HIGH_K)):
+            txt = ("componentMolarFlows\n{\n    water    100 kmol/h;\n}\n\n"
+                   f"T               {T} K;\nP               100000 Pa;\n")
+            for out in (nm, nm + "A", nm + "B"):
+                (sp / "0" / out).write_text(txt)
+        (sp / "system" / "flowsheetDict").write_text(
+            "units\n(\n"
+            "    {\n        name SL;\n        type splitter;\n"
+            "        inputs ( low );\n        outputs ( lowA lowB );\n"
+            "        operation { fractions ( 0.5 0.5 ); }\n    }\n"
+            "    {\n        name SH;\n        type splitter;\n"
+            "        inputs ( high );\n        outputs ( highA highB );\n"
+            "        operation { fractions ( 0.5 0.5 ); }\n    }\n"
+            ");\n")
+        rc, slog = run(sp)
+        if not re.search(r"^\s*pureFluids\b", (sat_src / "constant" /
+                         "thermoPhysPropDict").read_text(), re.M):
+            fail.append(f"(l2) {SAT_SRC} no longer declares `pureFluids` -- "
+                        "the fixture has no declared method")
+        elif rc != 0:
+            fail.append(f"(l2) the IF97 dome fixture did not run (rc={rc})")
+        else:
+            for side, want, why in (
+                    ("lowA", 0.0, f"{SAT_LOW_K} K is below IF97's boiling "
+                     "point at 1 bar (372.76 K) and above the record "
+                     "Antoine's (372.09 K): the K-value read the record's "
+                     "curve past the declared method"),
+                    ("lowB", 0.0, "as lowA"),
+                    ("highA", 1.0, f"{SAT_HIGH_K} K is above both boiling "
+                     "points -- the control"),
+                    ("highB", 1.0, "as highA")):
+                m = re.search(r'"' + side + r'":\s*\{[^}]*"vf":\s*'
+                              r'([-0-9.eE+]+)', slog)
+                if not m or abs(float(m.group(1)) - want) > 1e-9:
+                    fail.append(f"(l2) the splitter published `{side}` at vf "
+                                f"= {m.group(1) if m else None}, expected "
+                                f"{want}: {why}")
+            m = re.search(r'"globalEnergyBoundary":\s*\{[^}]*"residual_kW":'
+                          r'\s*([-0-9.eE+]+)', slog)
+            if not m or abs(float(m.group(1))) > 1e-6:
+                fail.append("(l2) the IF97 dome fixture's first law does not "
+                            f"close (residual {m.group(1) if m else None} kW)")
+
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
         shutil.copytree(ROOT / CONTROL, ctrl)
@@ -784,14 +949,22 @@ def main() -> int:
           "IS READ AT ITS PIN BY EVERY UNIT: the one home asks "
           "`pinnedPureQuality` (source, no second home in the three units "
           "that used to), and an authored wet-steam inlet split in two "
-          "leaves on both branches at its declared quality.  NOT "
+          "leaves on both branches at its declared quality.  A DECLARED "
+          "PURE-FLUID METHOD OWNS ITS COMPONENT'S SATURATION CURVE: "
+          "`saturationPressure` is the one home (source; the package and "
+          f"both phases call it, and {len(SAT_READ_ALLOWED)} named files "
+          "alone read a record's curve), and under condenser01's IF97 "
+          f"package pure water at 1 bar is a liquid at {SAT_LOW_K} K and a "
+          f"vapour at {SAT_HIGH_K} K, first law closed.  NOT "
           "CHECKED: whether a NON-zero duty is right (only the identity has a "
           "closed form); the multi-condition cases' duties, which ride their "
           "goldens; whether the 1e-3 incipient band is the right number (it "
           "is a stated choice); the valve's, the adiabatic flash's and the "
           "pipe's discard by OUTPUT (no corpus state reaches them -- source "
-          "only); and any vapourless package, which the test "
-          "skips by hasEos().")
+          "only); any vapourless package, which the test "
+          "skips by hasEos(); and the IF97 saturation curve OUTSIDE its "
+          "window (273.15 .. 647.096 K), where the record answers announced "
+          "-- no output arm reaches it.")
     return 0
 
 

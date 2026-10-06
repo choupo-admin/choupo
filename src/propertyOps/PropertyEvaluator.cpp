@@ -150,7 +150,7 @@ scalar evaluateProperty(const std::string& propKey,
         // null model and SEGFAULT.  Fail loudly so callers (PropertyScan*) can
         // catch it and write nan instead of crashing the whole run.
         const Component& c = thermo.comp(i);
-        if (!c.hasVaporPressure())
+        if (!thermo.hasSaturationCurve(i))
             throw std::runtime_error(
                 "Psat: '" + c.name()
                 + "' has no vapour-pressure model (not a volatile component)");
@@ -164,7 +164,7 @@ scalar evaluateProperty(const std::string& propKey,
                 "Psat: '" + c.name() + "' is supercritical over (part of) the "
                 "range (Tc = " + std::to_string(c.Tc())
                 + " K) -- no vapour pressure exists above the critical point");
-        return c.vp().Psat_Pa(T);
+        return thermo.Psat(i, T);
     }
 
     if (matchPerComp("gamma", i))

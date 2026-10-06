@@ -75,12 +75,15 @@ public:
     // Borrowed-pointer re-bind after the owning ThermoPackage is moved.
     void rebindComponents(const std::vector<Component>* comps) override
     { components_ = comps; }
+    void rebindPureFluids(const PureFluidMap* pf) override
+    { pureFluids_ = pf; }
 
 private:
     std::string name_;
     inline static const std::string typeName_ = "liquid";
     std::unique_ptr<ActivityModel>      activity_;
     const std::vector<Component>*       components_ = nullptr;   // borrowed
+    const PureFluidMap*                 pureFluids_ = nullptr;   // borrowed
     std::size_t                         n_ = 0;
 };
 

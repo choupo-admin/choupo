@@ -83,7 +83,7 @@ int CoolingTower::solve(const DictPtr& dict,
         const scalar     Ps = s->lookupScalar("P", Dims::pressure);
         const bool permanentGas = (c.Tc() > 0.0 && Ts > c.Tc());
         const bool liquidHere   = !permanentGas && c.hasVaporPressure()
-                               && c.vp().Psat_Pa(Ts) < Ps;
+                               && thermo.Psat(iMax, Ts) < Ps;
         if (liquidHere)
         {
             if (waterDict)
@@ -172,7 +172,7 @@ int CoolingTower::solve(const DictPtr& dict,
     {
         try
         {
-            return psychrometry::Ysat(condensable, Mv, Mc, P, T, "CoolingTower");
+            return psychrometry::Ysat(thermo, iW, Mv, Mc, P, T, "CoolingTower");
         }
         catch (const std::runtime_error& e)
         {
@@ -191,7 +191,7 @@ int CoolingTower::solve(const DictPtr& dict,
     // Solve  Ysat(Twb) - Y1 = (cpc + Y1 cpv)(T_Gin - Twb) / lambda(Twb),
     // by bisection on [273.65 K, T_Gin] to 1e-7 K, the humid heat at the
     // tower's own mean air T -- the construction Psychrometry.H holds.
-    const scalar T_wb = psychrometry::wetBulb(condensable, Mv, Mc, cpc, cpv,
+    const scalar T_wb = psychrometry::wetBulb(thermo, iW, Mv, Mc, cpc, cpv,
                                               P, T_Gin, Y1, "CoolingTower");
 
     const scalar h1 = hHumid(T_Gin, Y1);                                 // air inlet

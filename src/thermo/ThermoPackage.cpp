@@ -59,6 +59,7 @@ License
 #include "solution/SolutionRegistry.H"
 #include "thermo/DerivedClosures.H"   // closures::rackettVliq (liquid Vm)
 #include "core/Advisory.H"
+#include "thermo/pureFluid/SaturationCurve.H"
 #include "thermo/RecordResolver.H"   // case-local mirrored constant/mixtures/ (sealing)
 
 #include <limits>
@@ -113,6 +114,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         aqueous_            = std::move(o.aqueous_);
         speciator_          = std::move(o.speciator_);
         for (auto& p : phases_) if (p) p->rebindComponents(&components_);
+        for (auto& p : phases_) if (p) p->rebindPureFluids(&pureFluid_);
     }
     return *this;
 }
@@ -131,6 +133,20 @@ const EquationOfState& ThermoPackage::eos() const
 
 const PureFluidModel& ThermoPackage::pureFluid(std::size_t i) const
 { return *pureFluid_.at(i); }
+
+scalar ThermoPackage::Psat(std::size_t i, scalar T_K) const
+{
+    const auto it = pureFluid_.find(i);
+    return saturationPressure(components_.at(i),
+                              it == pureFluid_.end() ? nullptr
+                                                     : it->second.get(),
+                              T_K);
+}
+
+bool ThermoPackage::hasSaturationCurve(std::size_t i) const
+{
+    return pureFluid_.count(i) > 0 || components_.at(i).hasVaporPressure();
+}
 
 electrolyte::SpeciationResult
 ThermoPackage::speciateAqueous(const electrolyte::SpeciationInput& in,
@@ -512,6 +528,9 @@ void ThermoPackage::readPureFluids(const DictPtr& pf)
         pureFluid_[i] = PureFluidModel::New(pf->subDict(key),
                                             components_[i].MW());
     }
+    //  The liquid's reference fugacity reads the same saturation curve the
+    //  package's K-values do (C39): hand every phase the methods.
+    for (auto& p : phases_) if (p) p->rebindPureFluids(&pureFluid_);
     // Glass-box: announce the override as loudly as the per-unit thermo
     // cascade.  IF97 carries the IAPWS triple-point datum, regions 1/2/4.
     for (std::size_t i = 0; i < n(); ++i)
@@ -708,8 +727,7 @@ scalar ThermoPackage::K(std::size_t i, scalar T, scalar P,
 {
     auto gam = activity_->gamma(T, x);
     auto phi = eos_     ->phi  (T, P, y);
-    scalar Psat = components_[i].vp().Psat_Pa(T);
-    return gam[i] * Psat / (phi[i] * P);
+    return gam[i] * Psat(i, T) / (phi[i] * P);
 }
 
 sVector ThermoPackage::Kvec(scalar T, scalar P,
@@ -792,8 +810,8 @@ sVector ThermoPackage::Kvec(scalar T, scalar P,
                 // Poynting anchored at the SOLVENT's saturation pressure.
                 scalar Ps = 0.0;
                 const std::size_t sIdx = indexOf(solventName_);
-                if (components_[sIdx].hasVaporPressure())
-                    Ps = components_[sIdx].vp().Psat_Pa(T);
+                if (hasSaturationCurve(sIdx))
+                    Ps = Psat(sIdx, T);
                 Hcorr *= std::exp(hl.v_inf() * (P - Ps)
                                   / (constant::R * T));
             }
@@ -808,8 +826,7 @@ sVector ThermoPackage::Kvec(scalar T, scalar P,
             continue;
         }
 
-        scalar Psat = components_[i].vp().Psat_Pa(T);
-        K[i] = gam[i] * Psat / (phi[i] * P);
+        K[i] = gam[i] * Psat(i, T) / (phi[i] * P);
     }
     return K;
 }
@@ -1017,7 +1034,7 @@ sVector ThermoPackage::Kvec_Raoult(scalar T, scalar P) const
             K[i] = hl.H(T) / P;
             continue;
         }
-        K[i] = components_[i].vp().Psat_Pa(T) / P;
+        K[i] = Psat(i, T) / P;
     }
     return K;
 }

@@ -58,7 +58,7 @@ GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
     for (std::size_t i = 0; i < N; ++i)
     {
         if (!p.condensable[i]) continue;
-        const scalar Psat = thermo.comp(p.compIdx[i]).vp().Psat_Pa(T);
+        const scalar Psat = thermo.Psat(p.compIdx[i], T);
         const scalar y_i  = eq.nGas[i] / eq.Ntotal_gas;
         if (y_i * P > Psat) { ++nSuper; cond = static_cast<int>(i); PsatC = Psat; }
         if (log) { const std::string sp = thermo.comp(p.compIdx[i]).name();   // the test, as records

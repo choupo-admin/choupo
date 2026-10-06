@@ -245,7 +245,7 @@ int EvaporativeDryer::solve(const DictPtr& dict,
         const scalar F_ex = F_air + water_rem;
         const scalar y_w  = (F_ex > 0.0)
             ? (yAir[iSolv] * F_air + water_rem) / F_ex : 0.0;
-        const scalar Psat = solv.vp().Psat_Pa(Tout);
+        const scalar Psat = thermo.Psat(iSolv, Tout);
         return (Psat > 0.0) ? y_w * P / Psat : 1.0;
     };
 

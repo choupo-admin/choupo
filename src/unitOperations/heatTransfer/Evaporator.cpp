@@ -621,7 +621,7 @@ int Evaporator::solve(const DictPtr& dict,
     {
         if (!onSurface)
             return Q_required_noDatum(VoF, T_boil) - Q_J_s;
-        const scalar P_op = solv.vp().Psat_Pa(T_boil - BPE_of(VoF, T_boil));
+        const scalar P_op = thermo.Psat(iSolvent, T_boil - BPE_of(VoF, T_boil));
         return F_mol_s * ((1.0 - VoF) * h_conc_at(T_boil, P_op, xL_of(VoF))
                           +        VoF * h_vap_at(T_boil, P_op)
                           -              h_feed)
@@ -703,7 +703,7 @@ int Evaporator::solve(const DictPtr& dict,
         }
     }
     const scalar T_sat_pure_at_Pop = T_boil - BPE;
-    const scalar P_op = solv.vp().Psat_Pa(T_sat_pure_at_Pop);
+    const scalar P_op = thermo.Psat(iSolvent, T_sat_pure_at_Pop);
     const scalar Tsat_pure = T_sat_pure_at_Pop;
 
     // -------------------------------------------------------------------

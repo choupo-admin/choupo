@@ -124,7 +124,7 @@ int SolidDryer::solve(const DictPtr& dict,
     const scalar MW_solv = solv.MW();
 
     // ---- Relative humidity FROM THE AIR STREAM (not a parameter) -------
-    const scalar Psat_air = solv.vp().Psat_Pa(T_air);
+    const scalar Psat_air = thermo.Psat(iSolv, T_air);
     const scalar p_w_air  = yAir[iSolv] * P;
     const scalar aw = std::min(0.99, std::max(0.0, (Psat_air > 0.0) ? p_w_air / Psat_air : 0.0));
 
@@ -290,7 +290,7 @@ int SolidDryer::solve(const DictPtr& dict,
     {
         const scalar Y = (yAir[iSolv] * F_air + rem) * MW_solv
                        / (mDryCarrier * F_air);            // kg/kg dry carrier
-        return psychrometry::airWaterActivity(solv, MW_solv, Mc, P, T, Y, who);
+        return psychrometry::airWaterActivity(thermo, iSolv, MW_solv, Mc, P, T, Y, who);
     };
 
     // ---- WHICH LIMIT BINDS, decided at the answer ----------------------

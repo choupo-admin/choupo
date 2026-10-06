@@ -47,9 +47,11 @@ Description
         dG_fus(T)  = dHfus * (1 - T/Tfus)
 
     at the crystal's index, and ZERO at every other -- the purity claim.
-    Psat comes from the SAME components_[i].vp().Psat_Pa(T) call
-    LiquidPhase::fEffective uses, so the two phases cannot drift onto
-    different references, and Kvec_phases already derives K from fEffective.
+    Psat comes from the SAME `saturationPressure` call LiquidPhase::
+    fEffective makes (thermo/pureFluid/SaturationCurve.H, the one home of a
+    component's saturation curve since C39), handed the same declared
+    pure-fluid method, so the two phases cannot drift onto different
+    references, and Kvec_phases already derives K from fEffective.
     Freezing-point depression therefore falls out of K = 1 as
     ln a_w = -dG_fus/(R T) with no code of its own: nothing above this class
     knows a solid is present.  That was the point -- the rest of the codebase
@@ -137,9 +139,13 @@ private:
     //  SOURCE vector, which is a dangling read inside fEffective.
     const std::vector<Component>* components_ = nullptr;
 
+    const PureFluidMap* pureFluids_ = nullptr;   // borrowed, as above
+
 public:
     void rebindComponents(const std::vector<Component>* comps) override
     { components_ = comps; }
+    void rebindPureFluids(const PureFluidMap* pf) override
+    { pureFluids_ = pf; }
 };
 
 } // namespace Choupo

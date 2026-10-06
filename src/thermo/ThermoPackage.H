@@ -597,6 +597,20 @@ public:
     bool                     hasPureFluid(std::size_t i) const
     { return pureFluid_.count(i) > 0; }
     const PureFluidModel&    pureFluid(std::size_t i) const;   // .cpp
+
+    // THE SATURATION PRESSURE [Pa] OF COMPONENT i AT T [K] -- the package's
+    // ONE door to a component's saturation curve (C39, 2026-10-06).  A
+    // declared pure-fluid method owns the curve inside its own window; the
+    // component record's correlation answers otherwise (and, for a flagged
+    // component, outside the method's window, announced).  The rule lives
+    // in `saturationPressure` (thermo/pureFluid/SaturationCurve.H), which
+    // LiquidPhase reaches too; every K-value, Poynting anchor, humidity and
+    // Gibbs condensed-phase term that holds the package asks HERE, never
+    // `comp(i).vp()` -- that would read the record past a declared method.
+    scalar Psat(std::size_t i, scalar T_K) const;
+    // True when component i has a saturation curve to ask: a declared
+    // pure-fluid method or a record vapour-pressure correlation.
+    bool   hasSaturationCurve(std::size_t i) const;
     // True iff component i carries essentially all of the phase (x_i >= thr).
     static bool isEffectivelyPure(const sVector& z, std::size_t i,
                                   scalar thr = 0.999);

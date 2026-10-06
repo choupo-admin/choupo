@@ -2208,6 +2208,22 @@ as one revertable merge with its moved rows listed:
      docs/design/a-stream-is-fixed-by-two-variables.md §9.]
   6. Stale file:line citations (what-water-dat-does-not-say.md, the C33
      table), condenser01's "saturated vapour" header, `gateManifest` claims.
+     [FINDING of the item-6 general on condenser01, filed as C39: a case
+     declaring `pureFluids { water { method IF97; } }` priced water's
+     enthalpy on IF97 while every saturation pressure the package handed out
+     (`K`, `Kvec`, `Kvec_Raoult`, the Henry Poynting anchor) read the
+     record's Antoine -- 1 bar boils at 372.09 K to the flash and 372.76 K
+     to the enthalpy surface.  BUILT 2026-10-06 on `claude/c39-if97-dome`
+     (not merged): the declared method OWNS its component's saturation
+     curve wherever the package is asked; ONE home `saturationPressure`
+     (src/thermo/pureFluid/SaturationCurve), reached by `ThermoPackage::Psat`
+     and by both phases; outside IF97's window (273.15 .. 647.096 K) the
+     record answers, announced.  28 record reads routed, 7 left with their
+     reasons.  150 of 151 sampled cases byte-identical to `a99e59370`;
+     `rankine02_water` moves no number and loses a FALSE `[phase]`
+     accusation against its saturated condensate.  No golden row moves.
+     Gate `check_inlet_resolution` arm (l) (4 by-hand sabotages).  Record:
+     docs/design/a-saturation-curve-with-two-homes.md.]
 FULL REGRESSION AUTHORISED by Vítor 2026-10-05 ("sim", answering the
 commander's §0.4 request for items 1, 4 and 5): run once on main with
 C37 #1/#4/#5 and C38 #1/#2 merged.

@@ -886,7 +886,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             for (std::size_t i = 0; i < n; ++i)
             {
                 const scalar Psat =
-                    std::max<scalar>(thermo.comp(i).vp().Psat_Pa(in.T), 1.0e-30);
+                    std::max<scalar>(thermo.Psat(i, in.T), 1.0e-30);
                 const scalar lnY = std::log(y [i]) + std::log(in.P / Psat);
                 const scalar lnA = std::log(xA[i]) + std::log(std::max<scalar>(gA[i], 1.0e-30));
                 const scalar lnB = std::log(xB[i]) + std::log(std::max<scalar>(gB[i], 1.0e-30));
@@ -1210,9 +1210,9 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                               << thermo.comp(i).name() << "-"
                               << thermo.solventName() << ".dat";
                 }
-                else if (thermo.comp(i).hasVaporPressure())
+                else if (thermo.hasSaturationCurve(i))
                 {
-                    scalar Psat = thermo.comp(i).vp().Psat_Pa(in.T);
+                    scalar Psat = thermo.Psat(i, in.T);
                     std::cout << "  Psat = " << std::fixed << std::setprecision(4)
                               << (Psat * 1.0e-5) << " bar";
                 }
