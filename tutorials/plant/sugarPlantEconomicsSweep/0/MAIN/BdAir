@@ -10,10 +10,20 @@
      componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
+/*  DESIGN BASIS (2026-10-06).  BD is adiabatic: this air both pays the latent
+    heat and carries the water away, so it is sized for the RICHEST point of the
+    sweep (RawJuice sucrose 0.160), where the powder must lose 245.7 kg/h to reach
+    its isotherm's X_eq.  At 150 kmol/h (this file's earlier value) the exhaust
+    saturated at ~148 kg/h on four of the six points and the powder left wetter
+    than X_eq ([saturation-bound]; DEV.md 4c C37 item 3 is the rule that says so).
+    At 300 kmol/h every point reaches the isotherm, the worst exhaust leaving at
+    a_w = 0.87 -- a margin, not a coincidence of the last digit.  Same humidity as
+    before (6.5 mol% water), same 380 K.  */
+
 componentMolarFlows
 {
-    water    9.75 kmol/h;
-    N2    140.25 kmol/h;
+    water    19.5 kmol/h;
+    N2    280.5 kmol/h;
 }
 
 T               380 K;
