@@ -52,6 +52,10 @@ from hashlib import sha256 as _sha256
 from datetime import date
 from pathlib import Path
 
+#  The `utility` golden row's rule has ONE Python home (C37 item 2).
+sys.path.insert(0, str(Path(__file__).resolve().parent / "curate"))
+import utility_rows  # noqa: E402
+
 IMPORTER_VERSION = "3"
 
 # A sealed record must never point the builder back at the installation
@@ -1439,6 +1443,7 @@ def validate_staged_agrees(staged, out):
     kpis = res.get("kpis", {}) or {}
     bad = []
     skipped = 0
+    skipped_kinds = {}
     compared = 0
     for line in exp.read_text().splitlines():
         line = line.split("#")[0].strip()
@@ -1474,31 +1479,31 @@ def validate_staged_agrees(staged, out):
         elif kind == "closure":
             got = (res.get("energyClosures") or {}).get(name, {}).get(key)
         elif kind == "utility":
-            #  utility <unit> <tier.utility.field> -- the allocation table is
+            #  utility <unit> <tier.name.field> -- the allocation table is
             #  a LIST.  Added 2026-08-23: esterification2sector resealed as
             #  "agreeing" while its stream and utility rows had moved 17-20%,
             #  because this reader silently skipped every kind it did not
             #  know -- the Edwards gap inside the checker built to close it.
-            #  WHITESPACE IN A UTILITY NAME IS `_` IN THE GOLDEN, and this
-            #  reader compared the raw word (2026-09-19, found by ed08's
-            #  rectifier: "electricity (generated)" is written
-            #  `electricity_(generated)` by bin/runTests, ON BOTH SIDES, so
-            #  every seal carrying such a row was refused as MISSING --
-            #  fail-closed, which is why nobody had sealed one).  Normalise
-            #  exactly as runTests does; a stricter reading of the same key
-            #  is not a stricter check, it is a different key.
-            parts = key.split(".")
-            got = None
-            if len(parts) == 3:
-                for e in (res.get("utilityAllocation") or []):
-                    if (e.get("unit") == name and e.get("tier") == parts[0]
-                            and re.sub(r"\s+", "_", str(e.get("utility", "")))
-                                == parts[1]):
-                        got = e.get(parts[2])
-                        break
+            #  Whitespace in a utility name is `_` in the golden (2026-09-19,
+            #  ed08's "electricity (generated)").
+            #  THE KEY HAS THREE SHAPES, NOT ONE (2026-10-05, DEV.md 4c C37
+            #  item 2): an UNALLOCATED entry is pinned by one
+            #  `<tier>.<port>.carried|unserved` row (e26e5591d, 2026-09-03),
+            #  and this reader, which knew only `<tier>.<utility>.<field>`,
+            #  read every such row as MISSING -- heatExchanger01 and
+            #  heatExchanger03 could not be re-sealed.  The rule now has ONE
+            #  Python home, bin/curate/utility_rows.py, which restates
+            #  bin/runTests' get_utility and is held to its generator by
+            #  check_utility_allocation_pinned.
+            got = utility_rows.lookup(res.get("utilityAllocation"), name, key)
         else:
-            skipped += 1                   # aad/csv: file- or dataset-based,
-            continue                       # not readable from this JSON
+            #  A kind this reader does not read is COUNTED BY NAME, never
+            #  filed under a label it does not fit: this line used to call
+            #  every skipped row "aad/csv" while `boundary`, `equipment` and
+            #  the other result-JSON kinds were skipped beside them.
+            skipped += 1
+            skipped_kinds[kind] = skipped_kinds.get(kind, 0) + 1
+            continue
         compared += 1
         if got is None:
             bad.append("%s %s.%s MISSING from the sealed run" % (kind, name, key))
@@ -1530,7 +1535,9 @@ def validate_staged_agrees(staged, out):
     print("  validation: staged case ran with the catalogue hidden AND"
           " reproduced its `expected` golden (%d row(s) compared%s)"
           % (compared,
-             (", %d aad/csv row(s) outside this reader" % skipped)
+             (", %d row(s) of kinds this reader does not read: %s"
+              % (skipped, ", ".join("%s x%d" % kv
+                                    for kv in sorted(skipped_kinds.items()))))
              if skipped else ""))
 
 

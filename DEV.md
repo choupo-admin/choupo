@@ -2227,7 +2227,50 @@ as one revertable merge with its moved rows listed:
 FULL REGRESSION AUTHORISED by Vítor 2026-10-05 ("sim", answering the
 commander's §0.4 request for items 1, 4 and 5): run once on main with
 C37 #1/#4/#5 and C38 #1/#2 merged.
-Status: dispatched 2026-10-05.
+Status: dispatched 2026-10-05; CLOSED 2026-10-06 (items 2 and 6 merged into
+main the day work resumed, after Vítor's "Retoma").
+  Items 2 and 6 BUILT 2026-10-05 on `claude/c37-housekeeping`, merged
+  2026-10-06, one commit each, NO golden row moved:
+   2. CAUSE: `validate_staged_agrees` looked every `utility` row up as
+      `<tier>.<utility>.<field>` on an ALLOCATED entry, so the
+      `<tier>.<port>.carried|unserved` row of an UNALLOCATED one (e26e5591d)
+      searched for a utility called `-` and read MISSING.  FIX: ONE Python
+      home for the row rule, `bin/curate/utility_rows.py` (a restatement of
+      bin/runTests' `get_utility`), called by the importer AND by
+      `check_utility_allocation_pinned`, whose both-ways comparison against
+      the rows runTests' awk generator wrote is what holds the Python and
+      awk copies together (OK, 707 quantities, 99 cases).  The awk copy
+      stays: moving the suite's own checker is a path every case goes
+      through.  The importer also names the kinds it does not read instead
+      of filing them all as "aad/csv" (`boundary` rows are still not
+      compared at seal time -- named, not built).  heatExchanger01 and
+      heatExchanger03 RE-SEALED (water.dat 2607 -> 2608 in 01, the utility
+      lineup sealed into both); result JSON identical leaf for leaf before
+      and after; both PASS.
+   6a. what-water-dat-does-not-say.md: Evaporator.cpp :373 -> :383, :325 ->
+      :335, HeatExchanger.cpp :201 -> :231, PhaseChanger.cpp :704, 1140 ->
+      :764, 1206; the C34 audit table's ElectrodialysisStack forward is at
+      :743-744 today (its dated :725-726 kept beside it).
+   6b. condenser01: `0/steam` declares `phase gas;` at its stated 372.76 K and
+      the header says why -- 372.76 K is IF97's Tsat(1 bar), the curve the
+      condenser reads, while the package's K-values read the record's
+      Antoine (Tsat(1 bar) = 372.09 K), which is where the "0.67 K
+      superheated" reading came from.  Result JSON byte-identical.  The
+      FINDING it raised -- `ThermoPackage::Kvec_Raoult` read `Component::vp()`
+      even where a `pureFluids` IF97 route owns the dome, so one package
+      carried two saturation curves for water -- is CLOSED by C39
+      (2026-10-06, the bracketed note above).
+   6c. `generated/gateManifest.json` regenerated in full on 2026-10-06
+      (every gate exit 0), `check_inlet_resolution`'s claim re-observed
+      after C39 changed it.
+  Follow-ups taken the same day, each its own merge: the Theory Guide's
+  vertical-vessel B1/B2 (it quoted the horizontal 1.49/1.52; the code applies
+  2.25/1.82); `sugarPlantEconomicsSweep`'s BD air sized for the richest
+  sweep point (150 -> 300 kmol/h, design basis in `0/MAIN/BdAir`, every
+  point now `[isotherm-reached]`; the case ships no golden, its stale prose
+  table replaced by the measured one); three asset records that still named
+  the retired Guthrie costing pass; `generated/codeMap.json` regenerated
+  from a clean build (the committed one had read a stale `Guthrie.d`).
 
 **C36. "AVANÇA COMO ACHARES MELHOR" (Vítor, 2026-10-05, verbatim, answering
 the C35 close-out report and its open list).**  The commander takes the open
@@ -2712,7 +2755,7 @@ read still prices an undeclared vapour as a liquid.
 | ConversionReactor.cpp:173 (default 1.0) and :249 | the outlet's carried phase (:287) and both duty terms through priceState | CONVERTED, one read for both paths; the 1.0 default is dead in a flowsheet (UnitInputs.cpp:257 always inserts `vf`) and is kept for a dict without the key.  Line-neutral above :230 |
 | DistillationColumn.cpp:1504 (multi-feed) | each feed's q (the MESH) and its blend pricing | LEFT -- the column's feed reading is ONE decision for both branches, and the single-feed branch's is §4d D1, RESERVED.  Measured: re-doing D1 refuses `column03_azeotrope_mesh` and `acetone07_luyben_column_C2` at exit 2, exactly as D1 records.  **Vítor's, with D1.**  **CONVERTED 2026-10-05 (C35 item 2):** both branches read every stream feed through `resolveFeedThermalState`, which ends in `resolvedInletVaporFraction` for a single-phase answer; the multi-feed branch also prices a stage's one resolved feed at (x, y).  See §4d D1. |
 | ShortcutColumn.cpp:77 | q, hence Underwood's R_min (:159) | CONVERTED |
-| ElectrodialysisStack.cpp:97 | forwarded unchanged to both outlets (:725-726), never priced | LEFT: a pass-through label on a brine the unit's physics requires liquid; resolving it would run the electrolyte package's flash for no information |
+| ElectrodialysisStack.cpp:97 | forwarded unchanged to both outlets (:743-744 today; :725-726 on 296df2d9c), never priced | LEFT: a pass-through label on a brine the unit's physics requires liquid; resolving it would run the electrolyte package's flash for no information |
 | SprayDryer.cpp:677, :679 | both inlet enthalpies through priceState (:680-684) | CONVERTED (air keeps its 1.0 default when the key is absent) -- the solidDryer01 gap of 2026-09-27 (undeclared hot air priced as a liquid), one unit over |
 | SolidDryer.cpp:174, :176 | both inlet enthalpies through priceState (:177-182) | CONVERTED, same reason |
 | ConvectiveDryer.cpp:126, :127 | a REFUSAL (the air must be vapour, the moisture liquid) read off the carried value | CONVERTED: undeclared hot air whose own equilibrium is a vapour no longer refuses; the refusal stands for a stream that resolves (or was produced, or declared) otherwise, and its message says so |

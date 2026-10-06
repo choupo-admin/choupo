@@ -23,7 +23,7 @@
   the duty is Q = h_cond * A * dT_film and the outlet is the dome-flash at
   that duty.
 
-      steam (saturated vapour, 1 bar, vf = 1)
+      steam (saturated vapour, 1 bar, declared `phase gas;`)
         -> condenser (model geometry: NusseltFilm + cooling-water film)
         -> condensate (two-phase, vf ~ 0.55)   + Q (RESULT)
 
@@ -45,6 +45,12 @@
 
   All film/saturation properties are IAPWS-IF97 water.  The case carries
   its own constant/components/water.dat (case-local copy).
+  WHY THE STEAM DECLARES ITS PHASE: 372.76 K is IF97's Tsat(1 bar),
+  372.756 K, so the steam is saturated on the curve this unit reads.  The
+  package's VLE K-values read the record's Antoine fit instead, whose
+  Tsat(1 bar) is 372.09 K -- undeclared, the same (T, P) is read as vapour
+  0.67 K superheated.  Either way it is a vapour; `phase gas;` states it
+  without depending on which curve the last digits of T fall beside.
   ASSUMPTION stated plainly: the coolant is treated as ISOTHERMAL at its inlet
   T (its ~10 K heat-up is neglected, so dT = Tsat - T_in slightly OVERSTATES
   the true LMTD -- the computed area errs a few % small).  The utility
