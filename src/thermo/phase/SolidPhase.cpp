@@ -33,6 +33,8 @@ License
 #include <cmath>
 #include <iostream>
 #include "thermo/Component.H"
+#include "thermo/pureFluid/PureFluidModel.H"
+#include "thermo/pureFluid/SaturationCurve.H"
 
 #include <stdexcept>
 
@@ -140,7 +142,13 @@ sVector SolidPhase::fEffective(scalar T, scalar, const sVector& x) const
 
     sVector f(x.size(), 0.0);     // every other component: zero, by the
                                   // purity claim declared in the header
-    f[crystalIdx_] = c.vp().Psat_Pa(T)
+    const PureFluidModel* pf = nullptr;
+    if (pureFluids_)
+    {
+        const auto it = pureFluids_->find(crystalIdx_);
+        if (it != pureFluids_->end()) pf = it->second.get();
+    }
+    f[crystalIdx_] = saturationPressure(c, pf, T)
                    * std::exp(-dGfus / (constant::R * T));
     return f;
 }

@@ -29,6 +29,8 @@ License
 #include "LiquidPhase.H"
 #include "core/Constants.H"
 #include "thermo/Component.H"
+#include "thermo/pureFluid/PureFluidModel.H"
+#include "thermo/pureFluid/SaturationCurve.H"
 #include "thermo/activityCoefficient/Wilson.H"
 #include "thermo/activityCoefficient/UNIFAC.H"
 #include "thermo/activityCoefficient/UNIQUAC.H"
@@ -66,8 +68,16 @@ sVector LiquidPhase::fEffective(scalar T, scalar /*P_Pa*/, const sVector& x) con
         // reference (1 Pa) rather than forcing a fake vaporPressure into the
         // component's data.  The hammer lives HERE, explicit and announced,
         // not disguised as a bogus 1e-20 bar Psat in a duplicated record.
-        const scalar fRef = (*components_)[i].hasVaporPressure()
-            ? (*components_)[i].vp().Psat_Pa(T)
+        //  The saturation pressure is the package's (C39): a declared
+        //  pure-fluid method owns its component's curve here too.
+        const PureFluidModel* pf = nullptr;
+        if (pureFluids_)
+        {
+            const auto it = pureFluids_->find(i);
+            if (it != pureFluids_->end()) pf = it->second.get();
+        }
+        const scalar fRef = (pf || (*components_)[i].hasVaporPressure())
+            ? saturationPressure((*components_)[i], pf, T)
             : 1.0;
         f[i] = gamma[i] * fRef;
     }

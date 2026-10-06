@@ -129,8 +129,8 @@ int VleConsistency::run(const DictPtr& dict,
         const scalar y1 = convUnit(flat[r * nc + cy], unit[cy]);
         const scalar x2 = 1.0 - x1, y2 = 1.0 - y1;
         if (x1 <= 0.0 || x1 >= 1.0) continue;   // pure ends: gamma is 0/0; gamma^inf handled below
-        const scalar Ps1 = thermo.comp(i1).vp().Psat_Pa(T);
-        const scalar Ps2 = thermo.comp(i2).vp().Psat_Pa(T);
+        const scalar Ps1 = thermo.Psat(i1, T);
+        const scalar Ps2 = thermo.Psat(i2, T);
         const scalar g1 = y1 * P_Pa / (x1 * Ps1);
         const scalar g2 = y2 * P_Pa / (x2 * Ps2);
         if (g1 <= 0.0 || g2 <= 0.0) continue;

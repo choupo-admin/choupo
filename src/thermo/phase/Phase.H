@@ -65,6 +65,7 @@ Description
 namespace Choupo {
 
 class Component;
+class PureFluidModel;
 
 class Phase
 {
@@ -93,6 +94,17 @@ public:
     // Default no-op; LiquidPhase, which borrows &components_ for its reference
     // fugacity, overrides it.
     virtual void rebindComponents(const std::vector<Component>* /*comps*/) {}
+
+    // Point a phase at its package's declared pure-fluid methods (C39,
+    // 2026-10-06): the map the package owns, keyed by component index.  A
+    // phase that reads a SATURATION PRESSURE must read it where the package
+    // does (`saturationPressure`, thermo/pureFluid/SaturationCurve.H), or a
+    // declared IF97 water would boil at one temperature in Kvec and another
+    // in Kvec_phases.  Called after the methods are read and again whenever
+    // the package moves.  Default no-op; LiquidPhase and SolidPhase
+    // override it.
+    using PureFluidMap = std::map<std::size_t, std::unique_ptr<PureFluidModel>>;
+    virtual void rebindPureFluids(const PureFluidMap* /*pf*/) {}
 
     // ---- Factory (run-time selection) -------------------------------------
     using Factory = std::function<std::unique_ptr<Phase>(const DictPtr&,

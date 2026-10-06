@@ -243,7 +243,7 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
     //      Y = (Mv/Mc) p_v / (P - p_v)  =>  p_v = P Y / (Y + Mv/Mc).
     //  The GAB expression is SolidDryer's, verbatim: one model, two units.
     // -----------------------------------------------------------------
-    const scalar awRaw = psychrometry::airWaterActivity(moist, Mv, Mc, P,
+    const scalar awRaw = psychrometry::airWaterActivity(thermo, iWater_, Mv, Mc, P,
                                                         T_air_, Y_air_, who);
     aw_ = std::min(0.99, std::max(0.0, awRaw));
     if (verbosity_ >= 1 && awRaw > 0.99)
@@ -285,10 +285,10 @@ void BatchDryer::initialise(const DictPtr&       unitDict,
     const scalar cpc = carr.cpIdealGas().Cp(T_air_)  / Mc * 1000.0;  // J/(kg K)
     const scalar cpv = moist.cpIdealGas().Cp(T_air_) / Mv * 1000.0;
 
-    T_wb_ = psychrometry::wetBulb(moist, Mv, Mc, cpc, cpv, P, T_air_, Y_air_,
+    T_wb_ = psychrometry::wetBulb(thermo, iWater_, Mv, Mc, cpc, cpv, P, T_air_, Y_air_,
                                   who + " (operation.air)");
 
-    const scalar dY = psychrometry::Ysat(moist, Mv, Mc, P, T_wb_, who) - Y_air_;
+    const scalar dY = psychrometry::Ysat(thermo, iWater_, Mv, Mc, P, T_wb_, who) - Y_air_;
     if (dY <= 0.0)
         throw std::runtime_error(who + ": the saturation humidity at the"
             " wet bulb does not exceed the declared air humidity -- there is"

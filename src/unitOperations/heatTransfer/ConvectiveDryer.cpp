@@ -257,7 +257,7 @@ int ConvectiveDryer::solve(const DictPtr& dict,
     };
     auto Twb = [&](scalar T, scalar Y) -> scalar
     {
-        return psychrometry::wetBulb(moist, Mv, Mc, cpDry(T),
+        return psychrometry::wetBulb(thermo, iW, Mv, Mc, cpDry(T),
                                      moist.cpIdealGas().Cp(T) / Mv * 1000.0,
                                      P, T, Y, who);
     };
@@ -292,7 +292,7 @@ int ConvectiveDryer::solve(const DictPtr& dict,
         for (int it = 0; it < 60 && (hi - lo) > 1.0e-7; ++it)
         { const scalar m = 0.5 * (lo + hi); (g(m) >= 0.0 ? hi : lo) = m; }
         const scalar T = 0.5 * (lo + hi);
-        if (psychrometry::airWaterActivity(moist, Mv, Mc, P, T, Y, who) >= 1.0)
+        if (psychrometry::airWaterActivity(thermo, iW, Mv, Mc, P, T, Y, who) >= 1.0)
             throw InfeasibleMarch("the air would be saturated inside the dryer");
         return T;
     };
@@ -308,9 +308,9 @@ int ConvectiveDryer::solve(const DictPtr& dict,
             throw InfeasibleMarch("negative air humidity", true);
         L.T  = solveT(X, L.Y, Hconst);
         L.Tw = Twb(L.T, L.Y);
-        const scalar Rc = std::max(0.0, kY * (psychrometry::Ysat(moist, Mv, Mc,
+        const scalar Rc = std::max(0.0, kY * (psychrometry::Ysat(thermo, iW, Mv, Mc,
                                         P, L.Tw, who) - L.Y));
-        const scalar awRaw = psychrometry::airWaterActivity(moist, Mv, Mc, P,
+        const scalar awRaw = psychrometry::airWaterActivity(thermo, iW, Mv, Mc, P,
                                                             L.T, L.Y, who);
         const scalar aw = std::min(0.99, awRaw);
         if (awRaw > 0.99) awCeiling = true;
@@ -366,7 +366,7 @@ int ConvectiveDryer::solve(const DictPtr& dict,
     };
 
     //  The equilibrium moisture of the air AS FED: no outlet can go below it.
-    const scalar awIn = psychrometry::airWaterActivity(moist, Mv, Mc, P, T_aIn,
+    const scalar awIn = psychrometry::airWaterActivity(thermo, iW, Mv, Mc, P, T_aIn,
                                                        Y_in, who);
     const scalar Xeq_in = psychrometry::gabMoisture(sol, std::min(0.99, awIn), who);
     if (X_c <= Xeq_in)

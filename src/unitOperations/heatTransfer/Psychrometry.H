@@ -57,6 +57,12 @@ Description
                        solid in a gas cools toward the gas's wet bulb, not
                        toward its own feed temperature.
 
+    p_sat is the PACKAGE's (`ThermoPackage::Psat`, C39 2026-10-06): the
+    helpers take the package and the moisture's index rather than its
+    Component, so a declared pure-fluid method (`pureFluids { water {
+    method IF97; } }`) owns the moisture's saturation curve here as it does
+    in every K-value -- never the record's correlation past it.
+
     Humidities are kg moisture per kg DRY carrier; Mv and Mc are the
     moisture's and the dry carrier's molar masses [kg/kmol]; cp_c and cp_v
     are mass heat capacities [J/(kg K)].  Every refusal names its caller.
@@ -84,10 +90,11 @@ Description
 namespace Choupo {
 namespace psychrometry {
 
-inline scalar Ysat(const Component& moist, scalar Mv, scalar Mc, scalar P,
-                   scalar T, const std::string& who)
+inline scalar Ysat(const ThermoPackage& thermo, std::size_t iMoist,
+                   scalar Mv, scalar Mc, scalar P, scalar T,
+                   const std::string& who)
 {
-    const scalar pv = moist.vp().Psat_Pa(T);
+    const scalar pv = thermo.Psat(iMoist, T);
     if (pv <= 0.0 || pv >= 0.95 * P)
         throw std::runtime_error(who + ": the saturation humidity is"
             " undefined at T = " + std::to_string(T) + " K (the"
@@ -98,12 +105,13 @@ inline scalar Ysat(const Component& moist, scalar Mv, scalar Mc, scalar P,
 
 //- The air's water activity, UNCLIPPED (the caller decides and announces
 //  what it does above the isotherm's range).
-inline scalar airWaterActivity(const Component& moist, scalar Mv, scalar Mc,
+inline scalar airWaterActivity(const ThermoPackage& thermo,
+                               std::size_t iMoist, scalar Mv, scalar Mc,
                                scalar P, scalar T, scalar Y,
                                const std::string& who)
 {
     const scalar pv   = P * Y / (Y + Mv / Mc);
-    const scalar Psat = moist.vp().Psat_Pa(T);
+    const scalar Psat = thermo.Psat(iMoist, T);
     if (Psat <= 0.0)
         throw std::runtime_error(who + ": the moisture's vapour pressure at"
             " the air temperature is not positive -- the water"
@@ -127,14 +135,16 @@ inline scalar gabMoisture(const Component& sol, scalar aw,
          / ((1.0 - Ka) * (1.0 - Ka + sol.sorpC() * Ka));
 }
 
-inline scalar wetBulb(const Component& moist, scalar Mv, scalar Mc,
+inline scalar wetBulb(const ThermoPackage& thermo, std::size_t iMoist,
+                      scalar Mv, scalar Mc,
                       scalar cpc, scalar cpv, scalar P, scalar T, scalar Y,
                       const std::string& who)
 {
+    const Component& moist = thermo.comp(iMoist);
     auto fWb = [&](scalar Twb) -> scalar
     {
         const scalar lam = moist.Hvap_latent(Twb) / Mv * 1000.0;     // J/kg
-        return Ysat(moist, Mv, Mc, P, Twb, who) - Y
+        return Ysat(thermo, iMoist, Mv, Mc, P, Twb, who) - Y
              - (cpc + Y * cpv) * (T - Twb) / lam;
     };
     scalar lo = 273.65, hi = T;
@@ -157,18 +167,18 @@ inline scalar wetBulb(const Component& moist, scalar Mv, scalar Mc,
     //  0.95 P, the question has no answer and is refused by name.
     const scalar Tc   = moist.Tc();
     const scalar Ttop = (Tc > 0.0 && T >= Tc) ? std::nextafter(Tc, 0.0) : T;
-    if (Ttop < T && moist.vp().Psat_Pa(Ttop) < 0.95 * P)
+    if (Ttop < T && thermo.Psat(iMoist, Ttop) < 0.95 * P)
         throw std::runtime_error(who + ": the gas at " + std::to_string(T)
             + " K is above the moisture's critical temperature, and at "
             + std::to_string(P) + " Pa its saturation pressure never reaches"
             " 0.95 P below it -- this psychrometry has no wet bulb there");
-    if (moist.vp().Psat_Pa(Ttop) >= 0.95 * P)
+    if (thermo.Psat(iMoist, Ttop) >= 0.95 * P)
     {
         scalar a = lo, b = Ttop;
         for (int it = 0; it < 100 && (b - a) > 1.0e-9; ++it)
         {
             const scalar m = 0.5 * (a + b);
-            (moist.vp().Psat_Pa(m) >= 0.95 * P ? b : a) = m;
+            (thermo.Psat(iMoist, m) >= 0.95 * P ? b : a) = m;
         }
         hi = a;
     }
@@ -218,7 +228,7 @@ inline scalar gasWetBulb(const ThermoPackage& thermo, const sVector& y,
     const scalar cpc = (cpMolar / nDry) / Mc * 1000.0;           // J/(kg K)
     const scalar cpv = moist.cpIdealGas().Cp(T) / Mv * 1000.0;   // J/(kg K)
     const scalar Y   = (y[iMoist] > 0.0) ? y[iMoist] * Mv / mDry : 0.0;
-    return wetBulb(moist, Mv, Mc, cpc, cpv, P, T, Y, who);
+    return wetBulb(thermo, iMoist, Mv, Mc, cpc, cpv, P, T, Y, who);
 }
 
 } // namespace psychrometry

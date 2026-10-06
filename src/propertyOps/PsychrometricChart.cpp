@@ -120,8 +120,9 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
     csv << "T_C,Y,curve\n";
     csv << std::fixed << std::setprecision(6);
 
+    const std::size_t iCond = thermo.indexOf(condensableN);
     auto psat = [&](double T_K) -> double {
-        try { return cond->vp().Psat_Pa(T_K); } catch (const std::exception&) { return -1.0; }
+        try { return thermo.Psat(iCond, T_K); } catch (const std::exception&) { return -1.0; }
     };
     auto Ysat = [&](double T_K) -> double {
         const double pv = psat(T_K);
