@@ -165,9 +165,11 @@ amounts (GibbsMethod.cpp, `gibbsPrimalSeed`) and ANNOUNCED.
       caveat about the answer.
   (v) THE PATH NOT TAKEN: at equil03's own 1100 K the least-squares route
       converges and nothing about a re-seed is said.
-  (w) THE CAUSE TRAVELS: a solve no route converges (T = -100 K, the only
-      input measured to defeat both; a future T <= 0 refusal makes it STALE
-      by design) refuses with the unit's line naming BOTH stops; and the
+  (w) A DECLARED T <= 0 K REFUSES naming absolute zero, and so does an
+      adiabatic outer Newton trial at or below 0 K (gibbs05 given Q = -2e5;
+      DEV.md 4c C40 -- the -100 K probe was the only input measured to
+      defeat both routes, so the cause-naming refusal it held has no live
+      witness now, said rather than implied); and the
       adiabatic outer Newton that does not converge (gibbs05 given Q = 2e5
       kJ/kmol: exit 0 at a state ~990 kW off its energy balance, measured)
       is announced in the caveat block and the result JSON -- DEV.md 5 A3
@@ -192,7 +194,7 @@ amounts (GibbsMethod.cpp, `gibbsPrimalSeed`) and ANNOUNCED.
     U6 GibbsReactor.cpp: the outer-non-convergence announcement dropped
        -> (w).
     U7 GibbsReactor.cpp: the cause left off the "did NOT converge" line
-       -> (w).
+       -> (w) before C40; UNWITNESSED since (see (w)).
 
 WHAT THIS GATE DOES NOT COVER, stated so its green line cannot imply it.
 It does not judge whether any approach magnitude is RIGHT for any bed (the
@@ -638,16 +640,27 @@ def feed_far_arms(td: str) -> None:
                      "least-squares route converges -- an aid said where none "
                      "was used")
 
-    # (w) THE REFUSAL NAMES ITS CAUSE.  A declared T of -100 K defeats both
-    #     routes (the only input measured to do so); the unit's line must
-    #     carry WHY, not a bare "did NOT converge".  A future refusal of
-    #     T <= 0 K by name would make this probe STALE, by design.
+    # (w) A DECLARED T AT OR BELOW 0 K IS REFUSED BY NAME (DEV.md 4c C40).
+    #     This probe used to be the only input measured to defeat BOTH
+    #     routes, held to a refusal naming its cause; the T <= 0 refusal
+    #     made it stale, as this comment had said it would.  The refusal now
+    #     comes before any route runs, so it must name absolute zero.  WHAT
+    #     WAS LOST, said: no live input defeats both routes any more, so
+    #     sabotage U7 (the cause left off the "did NOT converge" line) has no
+    #     witness here; U1 is still caught by (u).
     rc, out, _ = run(gibbs_only(td, "far_neg", -100.0, 1.0))
-    if rc == 0 or not re.search(r"did NOT converge \(final \|F\| = [^)]*\): "
-                                r"the element-potential Newton stopped from "
-                                r"its least-squares seed", out):
-        fails.append(f"(w) a Gibbs solve that no route converges did not "
-                     f"refuse naming the cause (exit {rc})")
+    if rc == 0 or "at or below absolute zero" not in out:
+        fails.append(f"(w) a declared T of -100 K was not refused naming "
+                     f"absolute zero (exit {rc})")
+    #     AND THE ADIABATIC OUTER NEWTON MAY NOT STEP BELOW 0 K: gibbs05
+    #     given Q = -2e5 kJ/kmol walked to T = -100 K before C40.
+    cn = fixture(td, "outerBelowZero", src=GIBBS05,
+                 fs=[("T          1500.0 K;", "T          1500.0 K;  Q -2.0e5;")])
+    rcn, outn, _ = run(cn)
+    if rcn == 0 or "outer Newton on T stepped to" not in outn \
+            or "absolute zero" not in outn:
+        fails.append(f"(w) the adiabatic outer Newton's trial below 0 K was "
+                     f"not refused by name (exit {rcn})")
     #     THE ADIABATIC OUTER NEWTON THAT DOES NOT CONVERGE IS ANNOUNCED
     #     (DEV.md 5 A3: it was a bare cerr line).  gibbs05 given a duty of
     #     2e5 kJ per kmol of feed: the outer Newton stops at its 30th step,
