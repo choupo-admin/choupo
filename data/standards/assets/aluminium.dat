@@ -1,8 +1,8 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Material: Aluminium (wrought, commercially-pure 1xxx-class typical)
 
-  Costing + construction-limits record: F_M feeds the Guthrie module-
-  costing pass; sigma_y / maxT / maxP bound the design envelope;
+  Costing + construction-limits record: F_M feeds the Turton costing
+  pass (Guthrie's bare-module form); sigma_y / maxT / maxP bound the design envelope;
   thermalConductivity is the HX wall-conduction value.
 
   Sources
