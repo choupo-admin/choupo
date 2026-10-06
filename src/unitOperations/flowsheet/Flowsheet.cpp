@@ -3634,11 +3634,16 @@ int Flowsheet::solve(const DictPtr& dict,
             if (s.phasePinned || produced.count(nm) || s.F <= 0.0
                 || boundaryAliases_.count(nm)) continue;
             const auto recipe = flashState::consumerRecipe(s, thermo);
+            //  A discarded split (above every present Tc) leaves this
+            //  unpinned stream the one fluid phase it can be: the vapour
+            //  leg, as `resolvedInletVaporFraction` reads it (DEV.md 4c C40).
+            bool discarded = false;
             auto fs = flashState::equilibriumAt(s.T, s.P, s.z, false, s.vf,
                                                 thermo, "stream '" + nm + "'",
                                                 "streamState", nullptr,
-                                                recipe ? &*recipe : nullptr);
-            if (!fs) continue;
+                                                recipe ? &*recipe : nullptr,
+                                                &discarded);
+            if (!fs) { if (discarded) s.vf = 1.0; continue; }
             //  The VAPOUR share, whatever the answer's kind: a three-phase
             //  answer's `V_over_F` is its alpha LIQUID fraction.
             s.vf = flashState::vapourFractionOf(*fs);
