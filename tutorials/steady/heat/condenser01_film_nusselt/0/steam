@@ -18,8 +18,7 @@ componentMolarFlows
 T               372.76 K;
 P               100000 Pa;
 //  Saturated vapour, DECLARED.  372.76 K is IAPWS-IF97's Tsat(1 bar) =
-//  372.756 K, the curve the condenser's film model reads; the package's
-//  K-values read the record's Antoine curve, whose Tsat(1 bar) is 372.09 K,
-//  so an UNDECLARED stream here is read as vapour 0.67 K superheated.  The
-//  word, not the last digits of T, says which side of the dome it is on.
+//  372.756 K, the curve the film model and (DEV.md C39) the package's
+//  K-values both read.  On the curve the side is the last digits of T; the
+//  word, not those digits, says which side of the dome it is on.
 phase           gas;

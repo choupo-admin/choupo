@@ -2011,20 +2011,16 @@ debts the commander can take without him).**
      `Q -2.0e5;` walk to T = -100 K) instead of evaluating it (§5, the C11
      slice's "NAMED, NOT DONE" (1)).  Probed on gibbs05 copies, both refuse.
 Status: built 2026-10-06 on `claude/c40-supercritical-and-zero-kelvin`,
-NOT merged.  Validated: build, `--fast` (PASS 68 / FAIL 0 / EXPECTED-FAIL 5),
-both refusals probed on gibbs05 copies, and the gates that read the touched
-files (inlet resolution, impossible phase pins, caveat surface, v2 refusals,
-energy closure, layering, compile clean, wasm dialect, adiabatic approach
-direction, code map) -- all OK; `check_reaction_subset_approach` arm (w)
+MERGED 2026-10-06.  FULL REGRESSION AUTHORISED by Vítor 2026-10-06 ("faz a
+regressão completa"), run once on the branch on top of main 8443fbe28:
+PASS 688 / FAIL 1 / EXPECTED-FAIL 6; NO case moved.  The one failure was the
+Tutorials Guide gate, stale on main since C37 item 6b changed condenser01's
+header without regenerating it -- and that header had been made false by C39
+(the package's K-values no longer read the Antoine); both corrected, the guide
+regenerated.  Before: build, `--fast`, both refusals probed on gibbs05 copies,
+the gates that read the touched files; `check_reaction_subset_approach` arm (w)
 went stale as its own comment predicted and now holds the two refusals (its
-cause-naming refusal has no live witness since, said in the gate).  WAITING
-ON VÍTOR: item 1 changes the post-solve surface pass, a path every case goes
-through, so §0.4 needs a FULL regression and his authorisation before the
-merge.  Reason for it: what changed is the vapour fraction an unpinned
-authored stream reads when its split is discarded; it reaches every steady
-case's surface pass and every unit inlet read through
-`resolvedInletVaporFraction`; targeted checks cannot list which corpus
-streams hit a discard, because only a run announces one.
+cause-naming refusal has no live witness since, said in the gate).
 
 **C38. THE RESERVED ITEMS, TAKEN (Vítor, 2026-10-05, verbatim: "Não quero que
 deixes comigo!!!! Faz tu!", answering the commander's list of what stayed
