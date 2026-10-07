@@ -42,14 +42,16 @@
       "exclusiveMinimum": 0,
       "title": "Superheat above saturation",
       "description": "Leave the outlet this far ABOVE its saturation temperature.",
-      "unit": "K"
+      "unit": "K",
+      "quantity": "temperatureDifference"
     },
     "subcool": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Subcooling below saturation",
       "description": "Leave the outlet this far BELOW its saturation temperature.",
-      "unit": "K"
+      "unit": "K",
+      "quantity": "temperatureDifference"
     },
     "outletT": {
       "type": "number",
