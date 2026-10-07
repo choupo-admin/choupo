@@ -209,6 +209,46 @@ WHAT THIS CHECKS:
       terminal-temperature LMTD on a cooler where something condenses is an
       approximation the basis states rather than a number this arm can
       improve.
+      SINCE 2026-10-07 (DEV.md 4c C48) THE SHIPPED CASE DESIGNS ITS
+      EXCHANGERS (arm (s)), so this arm runs an ESTIMATE TWIN: a copy whose
+      `design {}` blocks are taken out, each cooler given back the U it
+      declared before (`ESTIMATE_U`, transcribed) and the FEHE sent back to
+      its rated area.  Routes 2 and 3 are otherwise exercised by no corpus
+      case.  Re-sabotaged on the twin the same day: the LMTD helper made an
+      arithmetic mean -> FAILED on all five coolers (LMTD and A).
+
+  (s) A DESIGNED EXCHANGER IS RECOMPUTED FROM ITS OWN SHEET (2026-10-07,
+      DEV.md 4c C48).  A `design { method Kern; ... }` block makes U a
+      RESULT: the run finds the smallest tube count delivering the duty and
+      writes the bundle, both films, five resistances, F, the area required
+      and installed, the utility flow and both pressure drops.  On
+      `greenAmmoniaIndustrialN2` (all six exchangers) every sheet is held to
+      arithmetic written out again here: the declarations reach the sheet
+      (tube sizes, passes, shells, both foulings, the wall conductivity of
+      the material RECORD); nTubes = tubesPerPass x passes; A = n_shells pi
+      d_o L N; the shell ID from Sinnott's table (transcribed here too) plus
+      12 mm; each film resistance from its h, the wall from ln(d_o/d_i); U
+      and U_clean from the sum; F from Bowman-Mueller-Nagle's 1-2 formula
+      (written out again) on the run's terminal temperatures; the LMTD; the
+      utility flow from the utility record's dutyPerKg; the FEHE's A_rated /
+      U_rated from its own flowsheetDict; A >= A_required; the cost's size S
+      is the installed A; a condensing outlet's basis says gas film and
+      OVER-SIZES; every basis says DILUTE-gas.  Copies then refuse BY NAME:
+      no `fouling {}`, `U` beside `design {}`, two tube passes on the
+      crossing FEHE, no `utilitySideFilm` on the boiling Chiller.
+      SABOTAGES, by hand, 2026-10-07, restored with `cp` and rebuilt:
+        S1 inside fouling not referred to the outside area -> FAILED, U on
+           all six; S2 the 1-2 F square-rooted -> FAILED, F and A_required
+           on the four 2-pass coolers (R and S swapped instead made all four
+           infeasible -> FAILED, four sheets missing); S3 the record given
+           A_required for A -> FAILED, A on all six; S4 a sheet's nTubes
+           edited BETWEEN the run and the check -> FAILED, nTubes, A, shell
+           ID and baffles; S5 the condensing sentence dropped -> FAILED on
+           the WaterCooler and the Chiller.
+      NOT CHECKED: that N is the SMALLEST count (the arm would have to
+      re-price the films at N - 1; it holds only A >= A_required), the film
+      coefficients themselves (they need the properties, which a gate cannot
+      recompute without a second thermo package), and the pressure drops.
 
   (q) A STORAGE TANK IS SIZED FROM ITS STREAM AND PRICED ON THE ROW THE
       PROGRAM CARRIES (2026-10-07, DEV.md 4c C44 slice 2).  On
@@ -619,6 +659,19 @@ def known_unit_names():
     return set(re.findall(r'\{\s*"([^"]+)"\s*,\s*UnitSpec', src))
 
 
+def known_gui_unit_names():
+    """Every unit name the GUI's dict parser accepts (`gui/src/dict/units.ts`,
+    the mirror of core/Units.cpp).  READ, never listed: the two tables are a
+    known second home, and the day a sizer writes a word the C++ table has and
+    the GUI table lacks, the GUI refuses the WHOLE sheet -- which is what C48's
+    `m2.K/W` and `W/m/K` did to every designed exchanger (found 2026-10-07,
+    DEV.md 4c C51)."""
+    src = (ROOT / "gui/src/dict/units.ts").read_text(errors="replace")
+    i = src.index("const TABLE")
+    body = src[i:src.index("\n};", i)]
+    return set(re.findall(r'^\s*"?([^"\s:]+)"?\s*:\s*\{\s*factor', body, re.M))
+
+
 def declared_sizer_units():
     """Every unit word a sizer DECLARES at its `d.set` site, over ALL sizers.
 
@@ -674,8 +727,9 @@ def check_unit_words_readable(all_units, problems, notes):
     `d.set`."""
     wordchars = tokenizer_word_chars()
     known = known_unit_names()
+    guiKnown = known_gui_unit_names()
     declared = declared_sizer_units()
-    if not wordchars or not known or not declared:
+    if not wordchars or not known or not guiKnown or not declared:
         problems.append(
             "check_design_sheet(k): could not read the tokenizer's word-char "
             "set, the unit table, or any `d.set` unit word out of src/ -- this "
@@ -705,6 +759,15 @@ def check_unit_words_readable(all_units, problems, notes):
                 "`unknown unit suffix`.  Either register it or convert the "
                 "value at the `d.set` site (converting MOVES a number: see "
                 "SHEET_UNIT_WORDS_UNPARSEABLE)."
+                % (where, key, word))
+        elif word not in guiKnown:
+            problems.append(
+                "%s: sizing value '%s' declares the unit '%s', which "
+                "core/Units.cpp registers and the GUI's mirror "
+                "(gui/src/dict/units.ts) does NOT -- the engine reads the "
+                "sheet and the GUI refuses the whole of it, so every datasheet "
+                "drawn from it says the sheet is unreadable.  Add the word to "
+                "the GUI table at the same factor."
                 % (where, key, word))
 
     for f, key, word in declared:
@@ -761,7 +824,13 @@ def check_gui_fixture(problems, notes):
     for.  The column schematic READS them: it colours each nozzle by the
     temperature the run wrote.  So the reason expired the moment the reader
     arrived, which is the rule about burying an absence you have just filled.
-    The cost block is still NOT held, because still nothing reads it back."""
+    The cost block and the `exchanger {}` block are NOT held here, and the
+    reason changed on 2026-10-07 (DEV.md 4c C51): the exchanger datasheet
+    now READS both, but its tests read the ENGINE's own sheets through the
+    GUI witness setup (`gui/tests/witnessOutputs.ts` runs the green-ammonia
+    plant with this tree's binary), not a transcription -- so there is no
+    copy here for the two to drift between.  None of the five fixtures
+    below carries either block's reader."""
     norm = lambda s: " ".join(s.split())
     #  EACH FIXTURE IS ITS OWN TEMPLATE LITERAL, and the wanted lines must all
     #  land in ONE of them (2026-09-07).  This arm used to search the WHOLE
@@ -1803,6 +1872,50 @@ def check_space_velocity_basis(problems, notes):
                  % V)
 
 
+#  THE ESTIMATE TWIN OF THE EXCHANGER WITNESS (2026-10-07, DEV.md 4c C48).
+#  The shipped case DESIGNS its six exchangers (route 4, arm (s)); routes 2
+#  and 3 -- a declared U against a utility, and a rated unit's own area --
+#  are still the engine's and are exercised by NO shipped case any more.  So
+#  arm (p) runs a COPY whose `design {}` blocks are taken out: each cooler
+#  gets back the U it declared before C48 (the values below are that
+#  postDict's, transcribed), and the FEHE goes back to its rated area.
+ESTIMATE_U = {"N2Cooler": 300.0, "Intercooler": 450.0, "Aftercooler": 500.0,
+              "WaterCooler": 500.0, "Chiller": 500.0}
+
+
+def _drop_block(text, name):
+    """Remove every `<name> { ... }` (balanced braces) from `text`."""
+    out, i = [], 0
+    pat = re.compile(r'\b%s\s*\{' % re.escape(name))
+    while True:
+        m = pat.search(text, i)
+        if not m:
+            out.append(text[i:])
+            return "".join(out)
+        out.append(text[i:m.start()])
+        depth, j = 0, m.end() - 1
+        while j < len(text):
+            if text[j] == "{":
+                depth += 1
+            elif text[j] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        i = j + 1
+
+
+def estimate_twin(text):
+    """The postDict with the exchanger designs taken out (see ESTIMATE_U)."""
+    text = re.sub(r'/\*.*?\*/', '', text, flags=re.S)
+    text = re.sub(r'//[^\n]*', '', text)
+    text = _drop_block(text, "design")
+    for unit, U in ESTIMATE_U.items():
+        text = re.sub(r'(\{\s*unitName\s+%s\s*;[^{]*designRules\s*\{)' % unit,
+                      lambda m: m.group(1) + " U %g; " % U, text, count=1)
+    return text
+
+
 def check_exchanger_routes(problems, notes):
     """(p) -- see the module docstring.  The RECOMPUTATION is the point: a
     golden pins what the run PRINTS, and an LMTD computed from the wrong end
@@ -1828,7 +1941,10 @@ def check_exchanger_routes(problems, notes):
           published U*A*LMTD does not reproduce its duty (the case's
           postDict header says why).
     """
-    case = ROOT / HXROUTE
+    #  THE TWIN (C48): the shipped case designs; routes 2 and 3 are held on a
+    #  copy with the designs taken out.  `case` is that copy from here on.
+    twin, rc, out, err = _run_copy(ROOT / HXROUTE, estimate_twin)
+    case = twin
     post = (case / "system" / "postDict").read_text(errors="replace")
     post_nc = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', post, flags=re.S))
     entries = re.findall(
@@ -1844,16 +1960,18 @@ def check_exchanger_routes(problems, notes):
         elif not u and not ut and not re.search(r'\bLMTD\b', rules):
             rated.append(unit)
     if not routed or not rated:
-        problems.append("check_design_sheet(p): %s declares %d cooler(s) on a "
-                        "`utility` and %d rated exchanger(s) -- this arm needs "
-                        "at least one of each and CANNOT RUN; it must not pass."
+        problems.append("check_design_sheet(p): the estimate twin of %s "
+                        "declares %d cooler(s) on a `utility` and %d rated "
+                        "exchanger(s) -- this arm needs at least one of each "
+                        "and CANNOT RUN; it must not pass."
                         % (HXROUTE, len(routed), len(rated)))
+        shutil.rmtree(twin.parent, ignore_errors=True)
         return
 
-    rc, out, err = run_case(HXROUTE)
     if rc != 0:
-        problems.append("check_design_sheet(p): %s failed (rc=%d).\n    %s"
-                        % (HXROUTE, rc, err.strip()[:300]))
+        problems.append("check_design_sheet(p): the estimate twin of %s failed"
+                        " (rc=%d).\n    %s" % (HXROUTE, rc, err.strip()[:300]))
+        shutil.rmtree(twin.parent, ignore_errors=True)
         return
 
     def kpi_line(unit):
@@ -1975,6 +2093,7 @@ def check_exchanger_routes(problems, notes):
                             "refused BY NAME (no `%s  FAILED:` line matching "
                             "/%s/)." % (what, unit, pat))
         shutil.rmtree(dst.parent, ignore_errors=True)
+    shutil.rmtree(twin.parent, ignore_errors=True)
 
     notes.append("exchanger routes: %d sheet(s) recomputed (LMTD from the run "
                  "and the utility record, the rated area passed through); "
@@ -2457,6 +2576,326 @@ def check_inventory(problems, notes):
                  % (len(lines), n_phase, tank_total))
 
 
+
+#  ---- arm (s): THE DETAILED EXCHANGER DESIGN (2026-10-07, DEV.md 4c C48) --
+#  Sinnott's bundle constants K1, n1 for D_b = d_o (N/K1)^(1/n1), per
+#  (pattern, tube passes) -- transcribed HERE as well as in the engine's
+#  htc/ShellTubeDesign.cpp, so a transcription error in either disagrees with
+#  the other.  The bundle-to-shell clearance is the kernel's fixed 12 mm.
+SINNOTT = {
+    ("triangular", 1): (0.319, 2.142), ("triangular", 2): (0.249, 2.207),
+    ("triangular", 4): (0.175, 2.285), ("triangular", 6): (0.0743, 2.499),
+    ("triangular", 8): (0.0365, 2.675),
+    ("square", 1): (0.215, 2.207), ("square", 2): (0.156, 2.291),
+    ("square", 4): (0.158, 2.263), ("square", 6): (0.0402, 2.617),
+    ("square", 8): (0.0331, 2.643),
+}
+SHELL_CLEARANCE = 0.012
+
+
+def bowman_F(T1, T2, t1, t2):
+    """The LMTD correction of one 1-2 shell (Bowman, Mueller & Nagle 1940),
+    written out again here from the R-S form; an isothermal side is F = 1."""
+    if abs(T1 - T2) < 1e-9 * max(abs(T1), 1.0) or \
+            abs(t2 - t1) < 1e-9 * max(abs(t1), 1.0):
+        return 1.0
+    R = (T1 - T2) / (t2 - t1)
+    S = (t2 - t1) / (T1 - t1)
+    if abs(R - 1.0) < 1e-6:
+        r2 = math.sqrt(2.0)
+        return (S * r2 / (1 - S)) / math.log((2 - S * (2 - r2)) / (2 - S * (2 + r2)))
+    rt = math.sqrt(R * R + 1)
+    return rt * math.log((1 - S) / (1 - R * S)) / (
+        (R - 1) * math.log((2 - S * (R + 1 - rt)) / (2 - S * (R + 1 + rt))))
+
+
+def _block_body(text, start):
+    """The body of the `{ ... }` that opens at or after `start`."""
+    i = text.index("{", start)
+    depth, j = 0, i
+    while j < len(text):
+        if text[j] == "{":
+            depth += 1
+        elif text[j] == "}":
+            depth -= 1
+            if depth == 0:
+                return text[i + 1:j]
+        j += 1
+    return ""
+
+
+def _len_m(tok, unit):
+    return float(tok) * {"m": 1.0, "mm": 1e-3, "cm": 1e-2}[unit]
+
+
+def design_entries(post_nc):
+    """unit -> {material, utility, rules (dict of the design block)} for every
+    shellTubeHX entry carrying a `design {}` block."""
+    out = {}
+    for m in re.finditer(r'\{\s*unitName\s+(\w+)\s*;\s*type\s+shellTubeHX\s*;'
+                         r'\s*material\s+(\w+)\s*;', post_nc):
+        unit, mat = m.group(1), m.group(2)
+        rules = _block_body(post_nc, post_nc.index("designRules", m.end()))
+        dm = re.search(r'\bdesign\s*\{', rules)
+        if not dm:
+            continue
+        d = _block_body(rules, dm.start())
+        ut = re.search(r'\butility\s+(\w+)\s*;', _drop_block(rules, "design"))
+        e = {"material": mat, "utility": ut.group(1) if ut else None}
+        for k in ("tubeOD", "tubeID", "tubeLength", "tubePitch"):
+            mm = re.search(r'\b%s\s+([0-9.eE+-]+)\s*(mm|cm|m)\s*;' % k, d)
+            e[k] = _len_m(mm.group(1), mm.group(2)) if mm else None
+        for k in ("tubePasses", "baffleSpacingRatio", "shellsInSeries"):
+            mm = re.search(r'\b%s\s+([0-9.eE+-]+)\s*;' % k, d)
+            e[k] = float(mm.group(1)) if mm else None
+        mm = re.search(r'\btubePattern\s+(\w+)\s*;', d)
+        e["tubePattern"] = mm.group(1) if mm else None
+        fb = re.search(r'\bfouling\s*\{([^}]*)\}', d)
+        for side in ("tubeSide", "shellSide"):
+            mm = re.search(r'\b%s\s+([0-9.eE+-]+)\s*m2\.K/W\s*;' % side,
+                           fb.group(1)) if fb else None
+            e["foul_" + side] = float(mm.group(1)) if mm else None
+        mm = re.search(r'\butilitySideFilm\s+([0-9.eE+-]+)\s*W/m2/K\s*;', d)
+        e["utilitySideFilm"] = float(mm.group(1)) if mm else None
+        out[unit] = e
+    return out
+
+
+def check_exchanger_design(problems, notes):
+    """(s) -- see the module docstring.  Every number a design sheet carries
+    is RECOMPUTED here from the sheet's own other numbers, the case's
+    declarations, the material and utility RECORDS and the run's KPIs, with
+    arithmetic written out again in this file: the area from the tubes, U
+    from the five resistances, each resistance from its film / wall /
+    fouling, the shell from Sinnott's table, F from Bowman's formula, the
+    LMTD from the terminal temperatures, the utility flow from the record's
+    duty per kg, the cost size from the installed area.  A golden pins what
+    the run PRINTS; only this can see a design that is wrong but stable.
+
+    SABOTAGES, BY HAND, 2026-10-07: five, listed with what each produced in
+    the module docstring under (s).  The sheet sabotage (S4) has to land
+    BETWEEN the run and the check -- the run regenerates design/ whole --
+    which is why the check is `check_exchanger_design_on`, callable on a
+    run already made.
+    """
+    case = ROOT / HXROUTE
+    post = (case / "system" / "postDict").read_text(errors="replace")
+    post_nc = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', post, flags=re.S))
+    entries = design_entries(post_nc)
+    singles = [u for u, e in entries.items() if e["utility"]]
+    doubles = [u for u, e in entries.items() if not e["utility"]]
+    if not singles or not doubles:
+        problems.append("check_design_sheet(s): %s declares %d utility-served "
+                        "and %d two-stream exchanger design(s) -- this arm needs "
+                        "at least one of each and CANNOT RUN; it must not pass."
+                        % (HXROUTE, len(singles), len(doubles)))
+        return
+    rc, out, err = run_case(HXROUTE)
+    if rc != 0:
+        problems.append("check_design_sheet(s): %s failed (rc=%d)." % (HXROUTE, rc))
+        return
+    return check_exchanger_design_on(case, out, entries, problems, notes)
+
+
+def _utility_record(name):
+    f = ROOT / "data" / "standards" / "utilities" / (name + ".dat")
+    t = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '',
+               f.read_text(errors="replace"), flags=re.S))
+    g = lambda k, u: re.search(r'^\s*%s\s+([0-9.eE+-]+)\s*%s\s*;' % (k, u), t, re.M)
+    a, b, q = g("T_in", "K"), g("T_out", "K"), g("dutyPerKg", "")
+    mech = re.search(r'^\s*mechanism\s+(\w+)\s*;', t, re.M)
+    return (float(a.group(1)), float(b.group(1)), float(q.group(1)),
+            mech.group(1) if mech else "")
+
+
+def _material_k(name):
+    f = ROOT / "data" / "standards" / "assets" / (name + ".dat")
+    m = re.search(r'^\s*thermalConductivity\s+([0-9.eE+-]+)\s*;',
+                  f.read_text(errors="replace"), re.M)
+    return float(m.group(1)) if m else None
+
+
+def check_exchanger_design_on(case, out, entries, problems, notes):
+    def kpi_line(unit):
+        for line in out.splitlines():
+            if ('"%s": {' % unit) in line and '"Q_kW"' in line:
+                return line
+        return ""
+
+    def kpi(line, key):
+        m = re.search(r'"%s": *(-?[0-9][0-9.eE+-]*)' % key, line)
+        return float(m.group(1)) if m else None
+
+    def flow_area(unit):
+        f = (case / unit / "system" / "flowsheetDict").read_text(errors="replace")
+        a = re.search(r'\barea\s+([0-9.eE+-]+)\s*m2\s*;', f)
+        u = re.search(r'\bU\s+([0-9.eE+-]+)\s*W/m2/K\s*;', f)
+        return (float(a.group(1)) if a else None, float(u.group(1)) if u else None)
+
+    checked = 0
+    for unit, e in entries.items():
+        f = case / "design" / unit / "shellTubeHX"
+        if not f.is_file():
+            problems.append("check_design_sheet(s): %s designs %s, and no sheet "
+                            "design/%s/shellTubeHX was written." % (HXROUTE, unit, unit))
+            continue
+        text = f.read_text(errors="replace")
+        sh = parse_sheet(text)["sizing"]
+        v = lambda k: sh[k][0] if k in sh else None
+        need = ("A", "U", "U_clean", "LMTD", "F", "Q_kW", "nTubes", "tubesPerPass",
+                "tubePasses", "shellsInSeries", "shellID", "tubeOD", "tubeID",
+                "tubeLength", "R_film_tube", "R_wall", "R_film_shell",
+                "R_foul_tube", "R_foul_shell", "h_tube", "h_shell", "wallK",
+                "A_required", "baffleSpacing")
+        miss = [k for k in need if v(k) is None]
+        if miss:
+            problems.append("check_design_sheet(s): %s's sheet carries no %s."
+                            % (unit, ", ".join(miss)))
+            continue
+
+        def hold(what, got, want, tol=TOL):
+            if not close(got, want, tol):
+                problems.append("check_design_sheet(s): %s's sheet says %s = "
+                                "%.9g, but %.9g is recomputed." % (unit, what,
+                                                                   got, want))
+        #  the declarations reach the sheet
+        for k in ("tubeOD", "tubeID", "tubeLength"):
+            hold(k + " (declared)", v(k), e[k])
+        hold("tubePasses (declared)", v("tubePasses"), e["tubePasses"])
+        hold("shellsInSeries (declared)", v("shellsInSeries"),
+             e["shellsInSeries"] or 1.0)
+        hold("R_foul_tube (declared)", v("R_foul_tube"), e["foul_tubeSide"])
+        hold("R_foul_shell (declared)", v("R_foul_shell"), e["foul_shellSide"])
+        hold("wallK (the %s record)" % e["material"], v("wallK"),
+             _material_k(e["material"]))
+        #  the bundle
+        N, nP, nS = v("nTubes"), v("tubesPerPass"), v("shellsInSeries")
+        hold("nTubes = tubesPerPass x tubePasses", N, nP * v("tubePasses"))
+        OD, ID, L = v("tubeOD"), v("tubeID"), v("tubeLength")
+        hold("A = n_shells pi d_o L N", v("A"), nS * math.pi * OD * L * N)
+        K1, n1 = SINNOTT[(e["tubePattern"], int(v("tubePasses")))]
+        Ds = OD * (N / K1) ** (1.0 / n1) + SHELL_CLEARANCE
+        hold("shellID (Sinnott + 12 mm)", v("shellID"), Ds)
+        hold("baffleSpacing = ratio x shellID", v("baffleSpacing"),
+             e["baffleSpacingRatio"] * Ds)
+        #  the resistances, each from its source, and U from their sum
+        hold("R_film_tube = (d_o/d_i)/h_tube", v("R_film_tube"),
+             (OD / ID) / v("h_tube"))
+        hold("R_film_shell = 1/h_shell", v("R_film_shell"), 1.0 / v("h_shell"))
+        hold("R_wall = (d_o/2) ln(d_o/d_i)/k_w", v("R_wall"),
+             0.5 * OD * math.log(OD / ID) / v("wallK"))
+        Rclean = v("R_film_tube") + v("R_wall") + v("R_film_shell")
+        hold("U_clean = 1/(R_tube + R_wall + R_shell)", v("U_clean"), 1.0 / Rclean)
+        hold("U = 1/(... + R_foul_shell + R_foul_tube d_o/d_i)", v("U"),
+             1.0 / (Rclean + v("R_foul_shell") + v("R_foul_tube") * OD / ID))
+        if e["utilitySideFilm"] is not None:
+            hold("h_shell (declared utilitySideFilm)", v("h_shell"),
+                 e["utilitySideFilm"])
+        #  the temperatures: LMTD and F, from the run
+        line = kpi_line(unit)
+        Q = kpi(line, "Q_kW")
+        if e["utility"]:
+            t_in, t_out, dpk, mech = _utility_record(e["utility"])
+            Ti, To = kpi(line, "T_in"), kpi(line, "T_out")
+            if Q < 0:
+                d1, d2, T1, T2, t1, t2 = Ti - t_out, To - t_in, Ti, To, t_in, t_out
+            else:
+                d1, d2, T1, T2, t1, t2 = t_out - Ti, t_in - To, t_in, t_out, Ti, To
+            hold("mdot_utility = |Q|/dutyPerKg", v("mdot_utility") or -1.0,
+                 abs(Q) * 1000.0 / dpk)
+        else:
+            Thi, Tho = kpi(line, "T_hot_in"), kpi(line, "T_hot_out")
+            tci, tco = kpi(line, "T_cold_in"), kpi(line, "T_cold_out")
+            d1, d2, T1, T2, t1, t2 = Thi - tco, Tho - tci, Thi, Tho, tci, tco
+            A_r, U_r = flow_area(unit)
+            hold("A_rated (the unit's declared area)", v("A_rated") or -1.0, A_r)
+            hold("U_rated (the unit's declared U)", v("U_rated") or -1.0, U_r)
+        lm = d1 if abs(d1 - d2) < 1e-9 * max(d1, d2) else (d1 - d2) / math.log(d1 / d2)
+        hold("LMTD (counter-current, terminal)", v("LMTD"), lm)
+        F = 1.0 if int(v("tubePasses")) == 1 else bowman_F(T1, T2, t1, t2)
+        hold("F (Bowman-Mueller-Nagle 1-2)", v("F"), F)
+        Areq = abs(Q) * 1000.0 / (v("U") * F * lm)
+        hold("A_required = |Q|/(U F LMTD)", v("A_required"), Areq)
+        if v("A") < v("A_required") * (1 - 1e-9):
+            problems.append("check_design_sheet(s): %s installs %.6g m2 < the "
+                            "%.6g m2 it requires -- an UNDERSIZED design."
+                            % (unit, v("A"), v("A_required")))
+        #  the cost is on the INSTALLED area
+        jm = re.search(r'"unit": "%s", "item": "%s", "type": "shellTubeHX".*?'
+                       r'"sizeKey": "A".*?"S": ([0-9.eE+-]+)' % (unit, unit), out)
+        if not jm:
+            problems.append("check_design_sheet(s): %s's cost record names no "
+                            "size S on key A." % unit)
+        else:
+            hold("the cost's size S (the installed A)", float(jm.group(1)), v("A"))
+        #  a condensing duty says so, and says which way it errs
+        outlet = re.search(r'^outlets\s*\{(.*?)^\}', text, re.S | re.M)
+        vfs = [float(x) for x in re.findall(r'vapourFraction\s+([0-9.eE+-]+)\s*;',
+                                            outlet.group(1))] if outlet else []
+        basis = re.search(r'^basis\s+"([^"]*)"', text, re.M)
+        btxt = basis.group(1) if basis else ""
+        if e["utility"] and vfs and 1e-9 < vfs[0] < 1 - 1e-9:
+            if "CONDENSES" not in btxt or "OVER-SIZES" not in btxt:
+                problems.append("check_design_sheet(s): %s's outlet is two-phase "
+                                "(vf %.4f) and its basis does not say the design is "
+                                "on the gas film and OVER-SIZES." % (unit, vfs[0]))
+        if "DILUTE-gas" not in btxt:
+            problems.append("check_design_sheet(s): %s's basis does not say its "
+                            "gas transport is DILUTE-gas." % unit)
+        checked += 1
+
+    #  ---- probes: copies, each refusing ONE item BY NAME ------------------
+    def edit_design(unit, f):
+        def ed(t):
+            m = re.search(r'\{\s*unitName\s+%s\s*;' % unit, t)
+            k = t.index("design", t.index("designRules", m.end()) + 11)
+            body_start = t.index("{", k)
+            body = _block_body(t, k)
+            end = body_start + 1 + len(body)
+            return t[:body_start + 1] + f(body) + t[end:]
+        return ed
+
+    single, double = [u for u in entries if entries[u]["utility"]], \
+                     [u for u in entries if not entries[u]["utility"]]
+    boiler = [u for u in entries if entries[u]["utilitySideFilm"] is not None]
+    probes = [
+        ("no `fouling {}` on %s" % single[0],
+         edit_design(single[0], lambda b: _drop_block(b, "fouling")),
+         single[0], r'declares no `fouling'),
+        ("`U` beside `design {}` on %s" % single[0],
+         lambda t: re.sub(r'(\{\s*unitName\s+%s\s*;[^{]*designRules\s*\{)'
+                          % single[0], lambda m: m.group(1) + " U 500; ", t,
+                          count=1),
+         single[0], r'design \{\}` block AND `U`'),
+        ("two tube passes on the crossing %s" % double[0],
+         edit_design(double[0], lambda b: re.sub(
+             r'\bshellsInSeries\s+[^;]*;', '',
+             re.sub(r'\btubePasses\s+[^;]*;', 'tubePasses 2;', b))),
+         double[0], r'1-2 correction F'),
+    ]
+    if boiler:
+        probes.append(("no `utilitySideFilm` on the boiling %s" % boiler[0],
+                       edit_design(boiler[0], lambda b: re.sub(
+                           r'\butilitySideFilm\s+[^;]*;', '', b)),
+                       boiler[0], r'BOILS'))
+    for what, ed, unit, pat in probes:
+        dst, rcp, outp, errp = _run_copy(case, ed)
+        both = outp + errp
+        if rcp != 0:
+            problems.append("check_design_sheet(s): the copy with %s failed "
+                            "(rc=%d) -- a refused design must refuse the ITEM, "
+                            "never the run." % (what, rcp))
+        elif not re.search(r'%s\s+FAILED:[^\n]*%s' % (unit, pat), both):
+            problems.append("check_design_sheet(s): a copy with %s is not "
+                            "refused BY NAME (no `%s  FAILED:` line matching "
+                            "/%s/)." % (what, unit, pat))
+        shutil.rmtree(dst.parent, ignore_errors=True)
+
+    notes.append("exchanger designs: %d sheet(s) recomputed (area, shell, five "
+                 "resistances, U, F, LMTD, utility flow, cost size); %d probes "
+                 "refused by name" % (checked, len(probes)))
+
+
 def main() -> int:
     problems, notes = [], []
 
@@ -2479,6 +2918,7 @@ def main() -> int:
     check_exchanger_routes(problems, notes)
     check_storage(problems, notes)
     check_inventory(problems, notes)
+    check_exchanger_design(problems, notes)
 
     check_ignored(problems)
     check_refusal(problems)
@@ -2514,11 +2954,16 @@ def main() -> int:
           "the case declares; a copy with no basis and one declaring "
           "`standard` each refused BY NAME, and one declaring `actual` "
           "recomputed on the unit's own T and P) and on the exchanger-routes "
-          "witness (every cooler declaring a `utility` has its LMTD and area "
+          "witness's ESTIMATE TWIN (its exchanger designs taken out: every "
+          "cooler declaring a `utility` has its LMTD and area "
           "RECOMPUTED from its own T_in/T_out KPIs, the declared U and the "
           "utility record; the rated interchanger's area is its own declared "
           "one; copies with an LMTD beside a utility, a temperature cross and "
-          "a cooler with no basis each refused BY NAME) and on the storage "
+          "a cooler with no basis each refused BY NAME) and on the same "
+          "witness's six Kern DESIGNS (area, shell, five resistances, U, F, "
+          "LMTD, utility flow and cost size RECOMPUTED from each sheet, the "
+          "case and the records; four malformed designs refused BY NAME) and "
+          "on the storage "
           "witness (the product tanks' density, volumes, count and three "
           "costs RECOMPUTED from the case's records, its declarations, the "
           "stream's own mass flow and the CAPCOST fixed-roof row; LOWER BOUND "
@@ -2537,7 +2982,7 @@ def main() -> int:
           "(%s) -- a report this writer does not produce, which is the only "
           "arm that could catch a port mass computed without the crystals.  "
           "EVERY sizing unit word survives the tokenizer's own word-char set "
-          "and is a name core/Units.cpp registers, except the %d pinned in "
+          "and is a name core/Units.cpp AND the GUI parser's mirror (gui/src/dict/units.ts) register, except the %d pinned in "
           "SHEET_UNIT_WORDS_UNPARSEABLE (whose remedy MOVES a "
           "number and is reserved) -- the arm that closed this gate's own "
           "declared blind spot and found three on the day it was written; and "

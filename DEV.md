@@ -1991,6 +1991,56 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C51. THE EXCHANGER DATASHEET DRAWS THE KERN DESIGN FROM ITS SHEET (Vítor,
+2026-10-07, verbatim, on the green-ammonia FEHE "HX datasheet" pop-out on
+www.choupo.org: "Fodas! O design continua uma merda!").**  The live site is
+main, where C48 is not merged, so he saw the old pass-through sheet.  The
+deeper defect, measured: `gui/src/ui/HeatExchangerDatasheet.tsx` drew its
+schematic and its RATING / TUBE / SHELL / HYDRAULIC sections from the UNIT's
+KPIs and the unit dict's `geometry {}`, which exist only when a
+`heatExchanger` runs `model geometry|design`.  The C48 design lives on the
+SIZER's sheet (`design/<unit>/shellTubeHX`), so even with C48 merged all six
+exchangers would have drawn "tube count not declared", "0 baffles" and
+dashes, with ~50 raw keys dumped; the five `phaseChanger` coolers were never
+offered a datasheet at all (the trigger needed a `U` KPI).  And a second
+defect, found on the way: C48 added `m2.K/W` and `W/m/K` to
+`src/core/Units.cpp` and NOT to the GUI's mirror `gui/src/dict/units.ts`, so
+the GUI's parser refused every designed sheet whole -- the datasheet would
+have said the run wrote a sheet "this reader could not parse".
+BUILT 2026-10-07 on branch `claude/c51-hx-datasheet-design` (from
+`claude/c48-hx-detailed-design`, NOT merged; it waits on C48).  ENGINE: the
+Kern route publishes what it DECIDED about each side as data -- an
+`exchanger {}` block on the sheet (role process/utility/hot/cold, the
+streams, the utility and its record supply/return T, regime gas/liquid/
+condensing/boils, film computed/declared, the correlation, the tube pattern,
+the controlling resistance, and which `sizing {}` keys the case DECLARED or
+were read from the UNIT or a RECORD) -- `ExchangerService` in
+`core/ResultRecords.H`, sheet-only, not in the result JSON, so no golden
+moves (the case's 53 C48 rows are still the only moved ones).  GUI: the ONE
+sheet reader (`case/designSheet.ts`) reads `exchanger {}` and `cost {}`; the
+units mirror gains the two words; `case/hxDatasheet.ts` (pure, React-free)
+builds a TEMA-style specification sheet from the sheet alone -- schematic
+with the real pass arrangement (partitions in front channel and rear head,
+head TYPE not drawn as designed), shells in series, the real baffle count,
+shell ID and tube length dimensioned, nozzles labelled with fluid and
+temperature, a tube-layout inset; SERVICE, THERMAL DESIGN (rated A/U beside
+the designed, which is costed), PERFORMANCE tube side | shell side,
+RESISTANCES, CONSTRUCTION, COST, the basis clause by clause with its WARNING
+clauses and the condensing over-size statement set apart.  Every value in the
+unit its sizer declared, converted only within one unit family the dict table
+knows, and marked in ink AND word: Choupo / declared / from the unit / from a
+record (the shared provenance vocabulary gained the last two).  Any unit
+whose sheet carries a Kern design gets the datasheet (Properties panel and
+Reports).  A sheet with no design keeps the old page unchanged.  Gate
+`check_design_sheet` arm (k) now also requires every sizer unit word to be in
+the GUI mirror (sabotage: dropping `m2.K/W` from it fires 5 problems).  Test
+`gui/tests/hxDatasheet.test.ts` on the engine's real sheets (three witness
+outputs added).  NOT done: the cost-correlation range warning (FEHE and
+Chiller A outside [10, 1000] m2) is an advisory of the costing pass and is
+not on the sheet, so the datasheet cannot show it; mechanical data (nozzle
+sizes, TEMA head letters, tube-sheet thickness) is not computed by Choupo
+and not drawn.  Status: built and validated 2026-10-07; merges with C48.
+
 **C50. A DRILLED UNIT RAN FROM THE PLANT'S SEED, NOT FROM THE RUN IT CAME
 OUT OF (Vítor, 2026-10-07, verbatim: "Eu corro o flowsheet principal. Depois
 quando abro o reator de gibbs, ele aparece sem os dados convergidos
@@ -2056,11 +2106,43 @@ its own duty and compared with its declared 2000 m2 (its answer is not
 moved).  Condensing duty (WaterCooler, Chiller) is outside a single-phase
 Kern and is said so on the sheet, never silently priced as single-phase.
 Status: dispatched 2026-10-07 to a general in a worktree; golden rows that
-MOVE go to Vítor as a list before any re-record.  BUILT, reviewed and validated
-2026-10-07; NOT merged -- it lives on branch `claude/c48-hx-detailed-design`
-(pushed), and its 53 moved golden rows, each with its reason, are in the
-appendix of that branch's docs/design/an-exchanger-designed-not-estimated.md,
-waiting for Vítor's approval.
+MOVE go to Vítor as a list before any re-record.
+BUILT 2026-10-07 on branch `claude/c48-hx-detailed-design`, NOT merged.  ONE
+kernel: the Kern arithmetic moved verbatim to `htc/ShellTubeDesign`
+(+ per-side fouling, the 1-2 F of Bowman-Mueller-Nagle, friction-factor
+validity flags); `heatExchanger` calls it, byte-identical on all 14 of its
+cases, and gains OPTIONAL `foulingTubeSide`/`foulingShellSide`.  `shellTubeHX`
+gains route 4, `design { method Kern; ... }`: the bundle and the fouling
+DECLARED (an undeclared fouling REFUSES; `0` is a stated clean design), the
+smallest tube count solved, U a RESULT, the installed area costed.  Process
+side priced by the case's package at the mean terminal T (the case gained a
+dilute-gas `transport {}`, and `diluteSolution` now wires one); utility side by
+a `thermophysicalSystem {}` in the utility's OWN record (coolingWater: IF97),
+its flow |Q|/dutyPerKg.  Condensing duties (WaterCooler, Chiller) on the gas
+film of the vapour that leaves -- safe side, said; the boiling-NH3 film TYPED
+(2500 W/m2/K, said).  FEHE: one tube pass, four shells in series, 1837 m2 at
+U 468 against its declared 2000 m2 at U 550 (published as A_rated/U_rated,
+the loop's answer unmoved; the DESIGNED area costed).  Found on the way: the
+case's seal did not carry the utilities its C44 sizing names (the hidden-
+catalogue validation sized no cooler, at exit 0) and `bin/choupo-import`
+crashed on an `equipment ... basis` golden row -- both fixed; the seal grew
+(water.dat, utilities, assets) and the sealed run equals the unsealed one.
+53 golden rows MOVE (6 exchangers x A, U, weight, 3 costs, basis; 11
+economics KPIs, FCI -0.84 %) -- NOT recorded, the list goes to Vítor; 235 new
+rows appended.  Gate `check_design_sheet` arm (s) (5 sabotages caught), arm
+(p) moved to an estimate twin.  Record:
+`docs/design/an-exchanger-designed-not-estimated.md`.
+
+Status 2026-10-07 (commander): REVIEWED and VALIDATED on branch
+`claude/c48-hx-detailed-design` with main merged in -- the 66 cases the
+change can reach (every gammaPhi case declaring transport, every
+diluteSolution case) PASS 65 / FAIL 1, the one failure being
+greenAmmoniaIndustrialN2 on exactly the 53 moved rows listed, with their
+reasons, in the appendix of docs/design/an-exchanger-designed-not-estimated.md.
+NOT MERGED: the rows wait for Vítor's approval (Saturday).
+APPROVED by Vítor 2026-10-07 ("sim"): the 53 rows (plus WC_gross, which
+moved inside its tolerance by exactly WC_net's -6565.4 EUR) re-recorded on
+the C51 branch; merged to main with C51.
 
 **C47. A VISIBLE COUNTER OF VISITS AND DOWNLOADS (Vítor, 2026-10-07: "E
 sabes se se pode criar um contador para número de acessos e downloads, que

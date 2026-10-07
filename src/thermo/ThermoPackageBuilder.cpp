@@ -2074,15 +2074,102 @@ bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
         if (v2->found("phases")) return false;
         return eq->subDict("liquid")->found("activityModel");
     }
-    // The other formulations carry no transport/pureFluids wiring yet -- a
-    // system declaring them lands on the dispatch's named refusal.
-    if (v2->found("transport") || v2->found("pureFluids"))
+    // diluteSolution carries the transport wiring (C48, 2026-10-07) but no
+    // pureFluids; the other formulations carry neither yet -- a system
+    // declaring them lands on the dispatch's named refusal.
+    if (v2->found("pureFluids"))
+        return false;
+    if (v2->found("transport") && form != "diluteSolution")
         return false;
     if (form == "phiPhi") return true;
     if (form == "gammaGamma") return true;   // both pair forms wired natively
     if (form == "diluteSolution") return true;
     if (form == "electrolyteGammaPhi") return true;
     return false;
+}
+
+//  THE v2 `transport {}` BLOCK -> the canonical flat hierarchy the
+//  ThermoPackage reads.  ONE home since 2026-10-07 (DEV.md 4c C48): it
+//  was written inside the gammaPhi branch, and diluteSolution REFUSED a
+//  transport block naming exactly this act ("the gammaPhi wiring exists;
+//  extending it is a per-formulation act").  The concrete case that
+//  named it: greenAmmoniaIndustrialN2's exchanger designs need the loop
+//  gas's viscosity and conductivity.  Moved verbatim; null when the
+//  system declares no transport.
+static DictPtr v2TransportDict(const DictPtr& v2)
+{
+    // T13 transport: the authored phase-structured block maps onto the
+    // canonical flat hierarchy -- as DICT OBJECTS (no text emission);
+    // mixingRule stays non-selectable (refused, never by accident).
+    DictPtr transportDict;
+    if (v2->found("transport"))
+    {
+        struct Map { const char* v2phase; const char* v2prop; const char* v1key; };
+        static const Map maps[] = {
+            {"vapour", "viscosity",           "viscosity"},
+            {"vapour", "thermalConductivity", "thermalConductivity"},
+            {"vapour", "diffusivity",         "diffusivity"},
+            {"liquid", "viscosity",           "liquidViscosity"},
+            {"liquid", "thermalConductivity", "liquidConductivity"},
+            {"liquid", "diffusivity",         "liquidDiffusivity"},
+            {"interface", "surfaceTension",   "surfaceTension"},
+        };
+        auto tr = v2->subDict("transport");
+        transportDict = std::make_shared<Dictionary>("transport");
+        for (const auto& mrow : maps)
+        {
+            if (!tr->found(mrow.v2phase)) continue;
+            auto ph = tr->subDict(mrow.v2phase);
+            if (!ph->found(mrow.v2prop)) continue;
+            auto pb = ph->subDict(mrow.v2prop);
+            if (pb->found("mixingRule"))
+                throw std::runtime_error("thermophysicalPropertySystem:"
+                    " transport mixingRule is not SELECTABLE yet -- the"
+                    " implemented rule is announced by the model; declare"
+                    " only `model <X>;` (a selectable rule is a future,"
+                    " deliberate extension -- never an accident).");
+            auto mb = std::make_shared<Dictionary>(mrow.v1key);
+            mb->insert("model", pb->entryValue("model"));
+            transportDict->insert(mrow.v1key, EntryValue(mb));
+        }
+
+        //  A DECLARED TRANSPORT BLOCK THAT MAPS TO NOTHING IS REFUSED.
+        //
+        //  This loop walks a fixed table of (phase, property) pairs and
+        //  skips anything it does not recognise.  A block written in the
+        //  FLAT legacy dialect -- `transport { thermalConductivity Eucken;
+        //  diffusivity Fuller; }` -- matches no row, so every key in it
+        //  was dropped and `transportDict` came out EMPTY BUT NON-NULL:
+        //  readTransportBlock then ran over nothing, the package reported
+        //  no diffusivity and no thermal conductivity, and the run said
+        //  nothing at all.  psychro01_n2_water declared exactly that, with
+        //  a comment above it saying the op "computes it from these models
+        //  rather than assuming the coincidence" -- and the op had never
+        //  once seen them.  A declaration nobody reads is a comment.
+        if (transportDict->keys().empty())
+        {
+            std::string declared;
+            for (const auto& k : tr->keys())
+            {
+                if (!declared.empty()) declared += ", ";
+                declared += k;
+            }
+            throw std::runtime_error("thermophysicalPropertySystem:"
+                " the `transport {}` block declares " + declared
+                + " and NOT ONE of those reaches a model.  This grammar is"
+                  " PHASE-STRUCTURED: write `transport { vapour {"
+                  " thermalConductivity { model Eucken; } diffusivity {"
+                  " model Fuller; } } }`, with `liquid {}` for"
+                  " liquidViscosity / liquidConductivity /"
+                  " liquidDiffusivity and `interface {}` for"
+                  " surfaceTension.  The flat form"
+                  " (`thermalConductivity Eucken;` directly under"
+                  " transport) is silently DROPPED, which is why this"
+                  " refuses rather than running without the models you"
+                  " asked for.");
+        }
+    }
+    return transportDict;
 }
 
 // The formulation dispatch proper.  Wrapped by buildV2 below, which attaches
@@ -2491,9 +2578,12 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                       << "; pairs declared inside the solutes group."
                          "  Assembled NATIVELY from the v2 grammar (no"
                          " translated intermediate).\n";
+        //  Transport rides the same mapping as gammaPhi's (C48); absent,
+        //  the call is the one this branch always made.
+        DictPtr transportDict = v2TransportDict(v2);
         ThermoPackage out;
         out.assembleTwoPhase(v2->lookupWordList("components"), idealAct,
-                             eosDict, "gammaPhi", db);
+                             eosDict, "gammaPhi", db, transportDict);
         out.applySolution(solvent, solutes);
         return out;
     }
@@ -2617,77 +2707,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         auto eosDict = std::make_shared<Dictionary>("equationOfState");
         eosDict->insert("model", vap);
 
-        // T13 transport: the authored phase-structured block maps onto the
-        // canonical flat hierarchy -- as DICT OBJECTS (no text emission);
-        // mixingRule stays non-selectable (refused, never by accident).
-        DictPtr transportDict;
-        if (v2->found("transport"))
-        {
-            struct Map { const char* v2phase; const char* v2prop; const char* v1key; };
-            static const Map maps[] = {
-                {"vapour", "viscosity",           "viscosity"},
-                {"vapour", "thermalConductivity", "thermalConductivity"},
-                {"vapour", "diffusivity",         "diffusivity"},
-                {"liquid", "viscosity",           "liquidViscosity"},
-                {"liquid", "thermalConductivity", "liquidConductivity"},
-                {"liquid", "diffusivity",         "liquidDiffusivity"},
-                {"interface", "surfaceTension",   "surfaceTension"},
-            };
-            auto tr = v2->subDict("transport");
-            transportDict = std::make_shared<Dictionary>("transport");
-            for (const auto& mrow : maps)
-            {
-                if (!tr->found(mrow.v2phase)) continue;
-                auto ph = tr->subDict(mrow.v2phase);
-                if (!ph->found(mrow.v2prop)) continue;
-                auto pb = ph->subDict(mrow.v2prop);
-                if (pb->found("mixingRule"))
-                    throw std::runtime_error("thermophysicalPropertySystem:"
-                        " transport mixingRule is not SELECTABLE yet -- the"
-                        " implemented rule is announced by the model; declare"
-                        " only `model <X>;` (a selectable rule is a future,"
-                        " deliberate extension -- never an accident).");
-                auto mb = std::make_shared<Dictionary>(mrow.v1key);
-                mb->insert("model", pb->entryValue("model"));
-                transportDict->insert(mrow.v1key, EntryValue(mb));
-            }
-
-            //  A DECLARED TRANSPORT BLOCK THAT MAPS TO NOTHING IS REFUSED.
-            //
-            //  This loop walks a fixed table of (phase, property) pairs and
-            //  skips anything it does not recognise.  A block written in the
-            //  FLAT legacy dialect -- `transport { thermalConductivity Eucken;
-            //  diffusivity Fuller; }` -- matches no row, so every key in it
-            //  was dropped and `transportDict` came out EMPTY BUT NON-NULL:
-            //  readTransportBlock then ran over nothing, the package reported
-            //  no diffusivity and no thermal conductivity, and the run said
-            //  nothing at all.  psychro01_n2_water declared exactly that, with
-            //  a comment above it saying the op "computes it from these models
-            //  rather than assuming the coincidence" -- and the op had never
-            //  once seen them.  A declaration nobody reads is a comment.
-            if (transportDict->keys().empty())
-            {
-                std::string declared;
-                for (const auto& k : tr->keys())
-                {
-                    if (!declared.empty()) declared += ", ";
-                    declared += k;
-                }
-                throw std::runtime_error("thermophysicalPropertySystem:"
-                    " the `transport {}` block declares " + declared
-                    + " and NOT ONE of those reaches a model.  This grammar is"
-                      " PHASE-STRUCTURED: write `transport { vapour {"
-                      " thermalConductivity { model Eucken; } diffusivity {"
-                      " model Fuller; } } }`, with `liquid {}` for"
-                      " liquidViscosity / liquidConductivity /"
-                      " liquidDiffusivity and `interface {}` for"
-                      " surfaceTension.  The flat form"
-                      " (`thermalConductivity Eucken;` directly under"
-                      " transport) is silently DROPPED, which is why this"
-                      " refuses rather than running without the models you"
-                      " asked for.");
-            }
-        }
+        DictPtr transportDict = v2TransportDict(v2);
         // G4: pureFluids{} rides verbatim -- a per-component multi-property
         // surface override, announced.
         DictPtr pureFluidsDict;

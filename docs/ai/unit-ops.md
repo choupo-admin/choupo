@@ -554,6 +554,16 @@ operation
 }
 ```
 
+`model geometry;` rates a declared tube bundle (U and area COMPUTED from the
+tubes, Gnielinski/Kern films and the wall) and `model design;` sizes one for a
+target outlet temperature; both read `operation.geometry {}` and both accept,
+OPTIONALLY, `foulingTubeSide <R> m2.K/W;` and `foulingShellSide <R> m2.K/W;`
+there (absent = a clean bundle, the run as it always was; declared, U falls
+and `U_clean`, `R_foul_inner`, `R_foul_outer` are published).  The Kern
+arithmetic is the same kernel the sizing pass's `shellTubeHX` `design {}`
+route uses (`htc/ShellTubeDesign`).  Witnesses
+`hxWorkflow1_design_from_duty`, `hxWorkflow2_rate_designed`.
+
 ### `evaporator`  (Mode-2 credo-pure)
 Single-effect.  Hardware = `area` + `U`.  Heating-side `inputs[1]` is
 the chest (steam -- declare `phase gas;` on a saturated supply); the unit

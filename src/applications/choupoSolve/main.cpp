@@ -827,6 +827,8 @@ try
     //  the block describes ONE pass out of N (see the outerDict branch).
     std::size_t nPasses = 0;
     std::shared_ptr<const ThermoPackage> postThermo;   // see `thermoForPost`
+    std::map<const Dictionary*, std::shared_ptr<const ThermoPackage>>
+        systemThermo;                                   // see `thermoForSystem`
     auto simulate = [&](const DictPtr& flowDictForRun,
                         const StreamOverrides& overrides) {
         ++nPasses;
@@ -852,6 +854,22 @@ try
                 postThermo = std::make_shared<const ThermoPackage>(
                     ThermoPackageBuilder::build(packageDict, db, chemPtr));
             return postThermo;
+        };
+        //  A DECLARED SYSTEM OTHER THAN THE CASE'S (C48): an exchanger
+        //  design's utility side.  Built on request against the case's own
+        //  database (so a sealed case resolves its records as it resolves its
+        //  own), cached per declaration for the process; no chemistry -- a
+        //  utility's fluid carries none.
+        r.thermoForSystem = [&systemThermo, &db](const DictPtr& sys)
+            -> std::shared_ptr<const ThermoPackage>
+        {
+            if (!sys) return nullptr;
+            auto it = systemThermo.find(sys.get());
+            if (it != systemThermo.end()) return it->second;
+            auto pkg = std::make_shared<const ThermoPackage>(
+                ThermoPackageBuilder::build(sys, db, nullptr));
+            systemThermo[sys.get()] = pkg;
+            return pkg;
         };
         return r;
     };

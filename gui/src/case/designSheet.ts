@@ -54,6 +54,56 @@ export interface DesignPort {
   vapourFraction?: number;
 }
 
+/** ONE SIDE of a DESIGNED shell-and-tube exchanger, as the sheet's
+ *  `exchanger {}` block states it (2026-10-07, DEV.md 4c C51).  Every word is
+ *  the ENGINE's decision -- which fluid is in the tubes, whether it condenses,
+ *  whether its film was computed or declared -- written as data so a drawing
+ *  never has to parse the basis sentence or re-derive the choice.  A process
+ *  side's temperatures are on the sheet's ports (`inlet`/`outlet` name them);
+ *  a utility side's supply and return come from its record and are written
+ *  here, in K, because no port carries them. */
+export interface ExchangerSideSheet {
+  /** `process` | `utility` | `hot` | `cold`. */
+  role: string;
+  inlet: string;
+  outlet: string;
+  utility: string;
+  /** `gas` | `liquid` | `condensing` | `boils` | `condenses`. */
+  regime: string;
+  /** `computed` | `declared`. */
+  film: string;
+  correlation: string;
+  Tin?: number;     // K
+  Tout?: number;    // K
+}
+
+export interface ExchangerSheet {
+  tubePattern: string;
+  /** `tube-side` | `shell-side` | `wall`: the largest CLEAN resistance, as
+   *  the design kernel ranked it. */
+  controlling: string;
+  tube: ExchangerSideSheet;
+  shell: ExchangerSideSheet;
+  /** `sizing {}` keys the CASE declared. */
+  declared: string[];
+  /** `sizing {}` keys read from the rating UNIT. */
+  fromUnit: string[];
+  /** `sizing {}` keys read from a data RECORD (a material, a utility). */
+  fromRecord: string[];
+}
+
+/** The sheet's `cost {}` block, when a costing pass ran.  The three totals
+ *  carry no unit word: their unit is `currency`, stated once. */
+export interface DesignCost {
+  currency: string;
+  sizeKey: string;
+  correlation: string;
+  purchased?: number;
+  bareModule?: number;
+  totalModule?: number;
+  factors: DesignValue[];
+}
+
 export interface DesignSheet {
   /** The unit as the ENGINE names it -- qualified (`CONCENTRATION.Evap2`) on
    *  a fractal case, bare on a flat one. */
@@ -84,6 +134,11 @@ export interface DesignSheet {
    *  connection the engine does not model. */
   inlets: DesignPort[];
   outlets: DesignPort[];
+  /** Present only on a DESIGNED exchanger (the Kern route); null on every
+   *  other sheet, including an exchanger sized by area alone. */
+  exchanger: ExchangerSheet | null;
+  /** Present only when a costing pass priced this item. */
+  cost: DesignCost | null;
 }
 
 /*  A scalar as `toJson` hands it over.  The dict grammar's named-unit form
@@ -141,6 +196,68 @@ function readPorts(block: unknown): DesignPort[] {
   return ports;
 }
 
+const isDict = (v: unknown): v is { [k: string]: unknown } =>
+  !!v && typeof v === "object" && !Array.isArray(v);
+
+const words = (v: unknown): string[] =>
+  Array.isArray(v) ? v.filter((a): a is string => typeof a === "string") : [];
+
+/** A temperature written `<n> K` on the sheet, read in K.  Any other unit
+ *  word is not guessed at: the value is left undefined, never converted by
+ *  an assumption about what the writer meant. */
+function kelvin(v: unknown): number | undefined {
+  const s = splitValue(v);
+  return s && (s.unit === "K" || s.unit === "") ? s.value : undefined;
+}
+
+function readExchangerSide(raw: unknown): ExchangerSideSheet {
+  const p = isDict(raw) ? raw : {};
+  return {
+    role: word(p, "role"),
+    inlet: word(p, "inlet"),
+    outlet: word(p, "outlet"),
+    utility: word(p, "utility"),
+    regime: word(p, "regime"),
+    film: word(p, "film"),
+    correlation: word(p, "correlation"),
+    Tin: kelvin(p["Tin"]),
+    Tout: kelvin(p["Tout"]),
+  };
+}
+
+function readExchanger(raw: unknown): ExchangerSheet | null {
+  if (!isDict(raw)) return null;
+  return {
+    tubePattern: word(raw, "tubePattern"),
+    controlling: word(raw, "controlling"),
+    tube: readExchangerSide(raw["tubeSide"]),
+    shell: readExchangerSide(raw["shellSide"]),
+    declared: words(raw["declared"]),
+    fromUnit: words(raw["fromUnit"]),
+    fromRecord: words(raw["fromRecord"]),
+  };
+}
+
+function readCost(raw: unknown): DesignCost | null {
+  if (!isDict(raw)) return null;
+  const n = (k: string): number | undefined => splitValue(raw[k])?.value;
+  const factors: DesignValue[] = [];
+  if (isDict(raw["factors"]))
+    for (const [key, v] of Object.entries(raw["factors"])) {
+      const s = splitValue(v);
+      if (s) factors.push({ key, value: s.value, unit: s.unit });
+    }
+  return {
+    currency: word(raw, "currency"),
+    sizeKey: word(raw, "sizeKey"),
+    correlation: word(raw, "correlation"),
+    purchased: n("purchased"),
+    bareModule: n("bareModule"),
+    totalModule: n("totalModule"),
+    factors,
+  };
+}
+
 /** Parse one `design/.../<equipmentTag>` file.  Returns null for anything that
  *  is not a specification sheet -- the record identifies ITSELF
  *  (`recordType designSheet;`), which is the same rule the interior-state
@@ -178,6 +295,8 @@ export function parseDesignSheet(text: string): DesignSheet | null {
     assumed,
     inlets: readPorts(j["inlets"]),
     outlets: readPorts(j["outlets"]),
+    exchanger: readExchanger(j["exchanger"]),
+    cost: readCost(j["cost"]),
   };
 }
 

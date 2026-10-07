@@ -66,6 +66,7 @@ import {
 import { useStore } from "../state/store.js";
 import { massBalance } from "../case/balances.js";
 import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
+import { findKernDesign, kernView } from "../case/hxDatasheet.js";
 import { columnDatasheetHtml } from "./ColumnDatasheet.js";
 import {
   parseDesignSheet, unitDesignSheets, type DesignPort, type DesignSheet,
@@ -102,10 +103,13 @@ export function ReportsWorkspace() {
 
 function ReportsBody({ runResult }: { runResult: RunResult }) {
   // Equipment datasheets: every heatExchanger unit whose run produced a U
-  // (geometry/design mode) gets a one-click datasheet, same as the unit panel.
+  // (geometry/design mode) gets a one-click datasheet, same as the unit panel
+  // -- and so does ANY unit whose sizing sheet carries a Kern design (a
+  // `phaseChanger` cooler publishes no U; DEV.md 4c C51).
   const flowUnits = useStore.getState().caseFiles.flowsheet?.["units"] as UnitSpec[] | undefined;
   const hxUnits = (flowUnits ?? []).filter(
-    (u) => u?.type === "heatExchanger" && runResult.kpis?.[u.name]?.["U"] !== undefined);
+    (u) => !!u && ((u.type === "heatExchanger" && runResult.kpis?.[u.name]?.["U"] !== undefined)
+      || findKernDesign(runResult.designFiles, u.name) !== null));
   //  THE COLUMNS THE RUN ACTUALLY SIZED.  A column with no `sizing {}` block in
   //  its postDict has no specification sheet and therefore nothing to draw, so
   //  it gets no row -- the same rule the exchanger list follows, and the reason
@@ -462,6 +466,26 @@ function ExchangersBody({ runResult, units }: { runResult: RunResult; units: Uni
     <Stack gap={6}>
       {units.map((u) => {
         const k = runResult.kpis?.[u.name] ?? {};
+        //  A Kern design is summarised from its SHEET, in the units the
+        //  sheet declared; the rating line below stays for every other unit.
+        const kern = findKernDesign(runResult.designFiles, u.name);
+        if (kern) {
+          const v = kernView(kern);
+          const c = (key: string, unit: string, d: number) => v.q(key, unit, d)?.text ?? "—";
+          const line = `${u.name} — Kern design: `
+            + `${v.shells > 1 ? `${v.shells} shells × ` : ""}${v.nTubes} tubes, `
+            + `${v.passes} pass${v.passes === 1 ? "" : "es"}, shell ID ${c("shellID", "mm", 0)}, `
+            + `U ${c("U", "W/m2/K", 0)}, A ${c("A", "m2", 1)}`;
+          return (
+            <Group key={u.name} justify="space-between" wrap="nowrap"
+              style={{ borderBottom: "1px solid #2a2a2a", paddingBottom: 4 }}>
+              <Text size="sm" ff="monospace">{line}</Text>
+              <Button size="compact-xs" variant="light" onClick={() => openHxSheet(u)}>
+                Open datasheet
+              </Button>
+            </Group>
+          );
+        }
         return (
           <Group key={u.name} justify="space-between" wrap="nowrap"
             style={{ borderBottom: "1px solid #2a2a2a", paddingBottom: 4 }}>

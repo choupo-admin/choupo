@@ -93,14 +93,47 @@ its header says which basis each item rests on:
 | items | sized by |
 |---|---|
 | 4 compressors | their own shaft power (the run's result) |
-| 5 coolers | A = Q/(U·LMTD): U declared, the LMTD computed from the cooler's own inlet/outlet temperatures and a named utility (cooling water, or ammonia boiling at 1 atm for the chiller) |
-| `FEHE` | its own rated area (2000 m², declared on the unit) |
+| 5 coolers | a **Kern shell-and-tube design**: the tube bundle and the fouling declared, the number of tubes, the shell, both film coefficients, U, F, the area and both pressure drops computed — against a named utility (cooling water, or ammonia boiling at 1 atm for the chiller) |
+| `FEHE` | the same Kern design, both sides process gas, four 1-1 shells in series; the unit's own declared 2000 m² is published beside the designed area |
 | `Converter` | a catalyst vessel on an **assumed** space velocity — a Gibbs reactor has no volume of its own |
 | 3 drums | vapour residence time; for the two let-down drums, which are liquid drums, that volume is a **lower bound** |
 | `NH3Storage` | 21 days of production of `ProductNH3`, refrigerated at 1 atm, 90 % working level, at most 30 000 m³ per tank — two tanks |
 
 The design sheets land in `design/<unit>/` after a run (the two product
 tanks in `design/NH3Storage/tank1` and `tank2`).
+
+### The exchangers, designed
+
+An area from A = Q/(U·LMTD) with a typed U is an estimate: it has no tubes,
+no shell, no film coefficients, no fouling and no pressure drop. Here each
+exchanger is **designed** by the Kern method (DEV.md 4c C48): the author
+chooses the bundle — 1 in tubes with a 2.77 mm wall, 6.1 m long, at 1.25
+tube diameters, the passes, the baffle spacing — and the fouling on each
+side; the run then finds the **smallest number of tubes** for which
+
+    U · F · LMTD · (π d_o L N) ≥ |Q|
+
+with U computed from the two films, the tube wall and the fouling. The gas
+goes in the tubes (it is the high-pressure side); the cooling water in the
+shell. What the sheet in `design/<unit>/shellTubeHX` gives a group to check:
+N, the shell ID, h on each side, the five resistances that add up to 1/U,
+F (1-2 shell, Bowman–Mueller–Nagle), the area required and installed, the
+cooling-water flow (|Q| over the utility record's own duty per kg) and both
+pressure drops. Three things to read before quoting it:
+
+* **The gas viscosity and conductivity are dilute-gas values** (Chung,
+  Eucken). At 150 bar the real gas is more viscous and more conductive.
+* **The WaterCooler and the Chiller condense ammonia.** They are designed on
+  the **gas film of the vapour that leaves** — the condensate film, which is
+  better, is not credited — so their areas are on the safe side, and their
+  pressure drop is a single-phase estimate. The sheet says so.
+* **The chiller's boiling-ammonia coefficient is typed** (2500 W/m²/K), not
+  computed: no boiling correlation is wired into the design.
+
+The FEHE comes out at ~1840 m² over four shells with U ≈ 470 W/m²/K — the
+flowsheet's own interchanger declares 2000 m² at U = 550. The design's area
+is the one costed; the declared one is published beside it, and the
+flowsheet's answer is not moved.
 
 ### Product storage
 

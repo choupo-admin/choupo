@@ -233,13 +233,15 @@ export const ENTU_LIMITS: readonly { id: string; title: string; body: string }[]
   },
   {
     id: "no-fouling",
-    title: "No fouling resistance anywhere.",
+    title: "No fouling resistance on this page.",
     body: "The overall resistance carries a film on each side and, in "
-      + "geometry mode, the tube wall. There is no fouling term, no "
-      + "cleanliness factor and no allowance for one, so every number here "
-      + "describes a clean exchanger on its first day. How much extra area a "
-      + "real design carries is usually decided by exactly the term that is "
-      + "missing.",
+      + "geometry mode, the tube wall. In the epsNTU mode this page runs "
+      + "there is no fouling term and no cleanliness factor, so every number "
+      + "here describes a clean exchanger on its first day. The geometry "
+      + "mode accepts an optional fouling resistance per side, and the "
+      + "sizing pass's detailed design requires one -- because how much "
+      + "extra area a real design carries is usually decided by exactly "
+      + "that term.",
   },
   {
     id: "no-pressure-drop",

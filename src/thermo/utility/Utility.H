@@ -49,6 +49,7 @@ Description
 
 #pragma once
 
+#include "core/Dictionary.H"
 #include "core/Types.H"
 
 #include <string>
@@ -89,6 +90,17 @@ struct Utility
 
     // Pedagogy
     std::string description;
+
+    //  HOW THIS UTILITY'S OWN PROPERTIES ARE EVALUATED (2026-10-07, DEV.md 4c
+    //  C48): an optional `thermophysicalSystem { ... }` block in the record,
+    //  in the case grammar (`recordType thermophysicalPropertySystem;`).  An
+    //  exchanger DESIGN needs the utility side's density, viscosity,
+    //  conductivity and heat capacity, and the utility is not one of the
+    //  case's components -- so the record that says what the utility IS
+    //  (`components ( water );`, its P and T) is also the ONE home of how
+    //  its fluid is priced, for every case that names it.  Null when the
+    //  record declares none; a design that needs it then refuses by name.
+    DictPtr thermophysicalSystem;
 };
 
 } // namespace Choupo

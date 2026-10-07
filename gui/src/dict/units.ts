@@ -201,6 +201,15 @@ const TABLE: Record<string, UnitSpec> = {
   "kW/(m^2.K)": { factor: 1.0e3,  affine: false },
   "kW/(m2.K)":  { factor: 1.0e3,  affine: false },
 
+  // area-specific thermal resistance → m²·K/W, and thermal conductivity →
+  // W/(m·K).  Added to src/core/Units.cpp by the Kern design slice (DEV.md
+  // 4c C48) and NOT here, so every designed exchanger's specification sheet
+  // -- which writes its fouling and film resistances in `m2.K/W` and its
+  // wall conductivity in `W/m/K` -- was a file this parser refused whole,
+  // and the GUI reported the sheets as unreadable (found 2026-10-07, C51).
+  "m2.K/W": { factor: 1.0, affine: false },
+  "W/m/K":  { factor: 1.0, affine: false },
+
   // molar mass → kg/kmol
   "kg/kmol": { factor: 1.0, affine: false },
   "g/mol": { factor: 1.0, affine: false },
