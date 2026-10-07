@@ -2014,6 +2014,19 @@ postDict as items attached to boundary streams ("o postDict é boa ideia!").
 STILL OPEN: product storage days, whether an H2 buffer is in scope, the
 receivable/payable/cash days.  Slice 1 (size every unit, existing sizers
 first) dispatched 2026-10-07 -- it depends on none of the open answers.
+Slice 1 (sizing + costing, no storage, no economics) BUILT 2026-10-07 on
+branch `claude/c44-slice1-sizing`, MERGED the same day: a `system/postDict` sizing
+and costing (Turton) 14 of the 17 units -- 4 compressors by shaft power; 5
+coolers as `shellTubeHX` on a declared U with the LMTD COMPUTED from the
+unit's own T_in/T_out and a named utility record (new `ShellTubeHX` route,
+`utility <name>;`; `LMTD` beside it refuses); the rated FEHE on its own
+2000 m2 (new pass-through route when no U/LMTD/utility is declared); the
+Converter as a `vessel` on the ASSUMED GHSV 20000 Nm3/(m3 h) (ammonia02's);
+the three drums on vapour residence -- a LOWER BOUND for the two let-down
+drums, which are liquid drums (no liquid-density route exists in the sizing
+pass; it is the inventory slice's question too).  Mixers and the splitter
+are not equipment.  140 golden rows appended; gate `check_design_sheet` arm
+(p).
 
 **C43. REACTION ENTHALPY LEADS TO STANDARD STATE (Vítor, 2026-10-07: "Revê a
 navegação pedagógica das EduTools do CHOUPO, sobretudo a ligação entre

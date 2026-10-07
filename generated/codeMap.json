@@ -3711,7 +3711,9 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
-   "src/thermo/ThermoPackage.H"
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/utility/Utility.H",
+   "src/thermo/utility/UtilityCatalogue.H"
   ],
   "src/postProcessing/sizing/SprayDryerSize.cpp": [
    "src/core/Advisory.H",
@@ -13434,6 +13436,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
    "src/streams/UtilityCircuit.cpp",
@@ -13444,6 +13447,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
    "src/streams/UtilityCircuit.cpp",

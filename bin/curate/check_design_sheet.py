@@ -186,6 +186,30 @@ WHAT THIS CHECKS:
       case's declared assumption; and any vessel sized by residence time,
       which is on actual volume by its own physics and was never ambiguous.
 
+  (p) AN EXCHANGER'S LMTD IS NOT TYPED WHERE THE RUN KNOWS IT (2026-10-07,
+      DEV.md 4c C44).  `ShellTubeHX` has three routes: `U` + `LMTD` (both
+      author-set, the original), `U` + `utility <name>` (the LMTD computed
+      counter-current from the unit's own `T_in`/`T_out` KPIs and the
+      utility record's `T_in`/`T_out`), and neither (a RATED unit's own
+      `area` passed through).  On `greenAmmoniaIndustrialN2` every cooler
+      declaring a `utility` has its sheet's `LMTD` and `A` RECOMPUTED here
+      from the run's KPI line, the postDict's `U` and the utility record
+      read from `data/standards/utilities/`, at the sheet's printed
+      precision; the rated FEHE's sheet `A` must equal the area its own
+      flowsheetDict declares, and its `U`/`LMTD` the unit's own KPIs.  Three
+      copies then run: one adding `LMTD` beside a `utility` (refused BY
+      NAME, the run still exit 0), one with the Chiller's utility switched
+      to `coolingWater` (a temperature cross, refused BY NAME), and one with
+      a cooler's `U` and `utility` deleted (it publishes no area, so it is
+      refused naming the two declarations that would size it).
+      SABOTAGES, by hand, 2026-10-07, on ShellTubeHX.cpp, restored with
+      `cp` and the engine rebuilt: recorded with the line each produced in
+      `check_exchanger_routes`.
+      NOT CHECKED: whether the declared U values are sensible, and the
+      terminal-temperature LMTD on a cooler where something condenses is an
+      approximation the basis states rather than a number this arm can
+      improve.
+
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
@@ -267,6 +291,11 @@ KINETIC = "tutorials/plant/ammoniaStaged04_kinetic"
 #  catalyst vessel from a declared `spaceVelocity`, and so the one whose
 #  `spaceVelocityBasis` declaration reaches the arithmetic.
 SPACEV  = "tutorials/plant/ammoniaStaged03_approach"
+
+#  THE EXCHANGER-ROUTES WITNESS (2026-10-07).  The one corpus case whose
+#  coolers declare a `utility` instead of an LMTD, and whose rated
+#  interchanger is sized on its own area.
+HXROUTE = "tutorials/plant/greenAmmoniaIndustrialN2"
 
 TOL = 1.0e-6      # relative, between two projections of the same number
 
@@ -1751,6 +1780,184 @@ def check_space_velocity_basis(problems, notes):
                  % V)
 
 
+def check_exchanger_routes(problems, notes):
+    """(p) -- see the module docstring.  The RECOMPUTATION is the point: a
+    golden pins what the run PRINTS, and an LMTD computed from the wrong end
+    of a utility, or a rated area replaced by a computed one, prints a
+    plausible area; only arithmetic from the run's KPIs, the declared U and
+    the utility RECORD can see it.
+
+    SABOTAGES, BY HAND, 2026-10-07, each on ShellTubeHX.cpp, restored with
+    `cp` and the engine rebuilt; the gate then returned OK:
+      S1  co-current terminal differences (T_in - t_in, T_out - t_out)
+          -> FAILED on all four cooling-water coolers, e.g. "N2Cooler's
+          sheet says LMTD = 47.941815, but the counter-current LMTD of
+          process 473.769 -> 313.15 K against coolingWater 298.15 -> 308.15
+          K is 62.715109 K".  The CHILLER did not fire, and cannot: its
+          utility boils at one temperature (T_in = T_out), so co-current
+          and counter-current are the same arithmetic there.
+      S2  the `utility` + `LMTD` refusal disabled  -> FAILED: "a copy with
+          LMTD beside utility on N2Cooler is not refused BY NAME".
+      S3  route 3 computing A = |Q|/(U*LMTD) from the unit's own U and
+          LMTD instead of passing its area through  -> FAILED: "rated
+          FEHE's sheet says A = 1562.7184 m2, but its own flowsheetDict
+          declares area 2000 m2" -- the two differ because the exchanger's
+          published U*A*LMTD does not reproduce its duty (the case's
+          postDict header says why).
+    """
+    case = ROOT / HXROUTE
+    post = (case / "system" / "postDict").read_text(errors="replace")
+    post_nc = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', post, flags=re.S))
+    entries = re.findall(
+        r'\{\s*unitName\s+(\w+)\s*;\s*type\s+shellTubeHX\s*;[^{]*'
+        r'designRules\s*\{([^}]*)\}', post_nc)
+    routed = []        # (unit, U, utility)
+    rated = []         # unit
+    for unit, rules in entries:
+        u = re.search(r'\bU\s+([0-9.eE+-]+)\s*;', rules)
+        ut = re.search(r'\butility\s+(\w+)\s*;', rules)
+        if ut and u:
+            routed.append((unit, float(u.group(1)), ut.group(1)))
+        elif not u and not ut and not re.search(r'\bLMTD\b', rules):
+            rated.append(unit)
+    if not routed or not rated:
+        problems.append("check_design_sheet(p): %s declares %d cooler(s) on a "
+                        "`utility` and %d rated exchanger(s) -- this arm needs "
+                        "at least one of each and CANNOT RUN; it must not pass."
+                        % (HXROUTE, len(routed), len(rated)))
+        return
+
+    rc, out, err = run_case(HXROUTE)
+    if rc != 0:
+        problems.append("check_design_sheet(p): %s failed (rc=%d).\n    %s"
+                        % (HXROUTE, rc, err.strip()[:300]))
+        return
+
+    def kpi_line(unit):
+        for line in out.splitlines():
+            if ('"%s": {' % unit) in line and '"Q_kW"' in line:
+                return line
+        return ""
+
+    def kpi(line, key):
+        m = re.search(r'"%s": *(-?[0-9][0-9.eE+-]*)' % key, line)
+        return float(m.group(1)) if m else None
+
+    def sheet_tok(unit, key):
+        f = case / "design" / unit / "shellTubeHX"
+        if not f.is_file():
+            return None, None
+        m = re.search(r'^\s*%s\s+([-\d.eE+]+)' % key,
+                      f.read_text(errors="replace"), re.M)
+        return (float(m.group(1)), m.group(1)) if m else (None, None)
+
+    def utility_T(name):
+        f = ROOT / "data" / "standards" / "utilities" / (name + ".dat")
+        if not f.is_file():
+            return None
+        t = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '',
+                   f.read_text(errors="replace"), flags=re.S))
+        a = re.search(r'^\s*T_in\s+([0-9.eE+-]+)\s+K\s*;', t, re.M)
+        b = re.search(r'^\s*T_out\s+([0-9.eE+-]+)\s+K\s*;', t, re.M)
+        return (float(a.group(1)), float(b.group(1))) if a and b else None
+
+    checked = 0
+    for unit, U, uname in routed:
+        line = kpi_line(unit)
+        Q, Ti, To = kpi(line, "Q_kW"), kpi(line, "T_in"), kpi(line, "T_out")
+        uT = utility_T(uname)
+        if None in (Q, Ti, To) or uT is None:
+            problems.append("check_design_sheet(p): %s publishes no Q_kW/T_in/"
+                            "T_out KPI, or utility record '%s' declares no "
+                            "T_in/T_out in K -- the LMTD cannot be recomputed."
+                            % (unit, uname))
+            continue
+        t_in, t_out = uT
+        if Q < 0.0:
+            d1, d2 = Ti - t_out, To - t_in
+        else:
+            d1, d2 = t_out - Ti, t_in - To
+        lm = d1 if abs(d1 - d2) < 1e-9 * max(d1, d2) else (d1 - d2) / math.log(d1 / d2)
+        A = abs(Q) * 1000.0 / (U * lm)
+        for key, want in (("LMTD", lm), ("A", A)):
+            got, tok = sheet_tok(unit, key)
+            if got is None:
+                problems.append("check_design_sheet(p): %s's sheet carries no "
+                                "`%s`." % (unit, key))
+            elif not close(got, want, 10.0 ** (-(_sig_digits(tok) - 1))):
+                problems.append(
+                    "check_design_sheet(p): %s's sheet says %s = %s, but the "
+                    "counter-current LMTD of process %.6g -> %.6g K against "
+                    "%s %.6g -> %.6g K is %.6f K, and |Q|/(U*LMTD) with the "
+                    "case's U = %g is %.6f m2."
+                    % (unit, key, tok, Ti, To, uname, t_in, t_out, lm, U, A))
+        checked += 1
+
+    for unit in rated:
+        fd = (case / unit / "system" / "flowsheetDict").read_text(errors="replace")
+        m = re.search(r'\barea\s+([0-9.eE+-]+)\s*m2\s*;', fd)
+        line = kpi_line(unit)
+        got, tok = sheet_tok(unit, "A")
+        if not m or got is None:
+            problems.append("check_design_sheet(p): rated %s declares no "
+                            "`area ... m2` in its flowsheetDict, or its sheet "
+                            "carries no `A` -- nothing to hold." % unit)
+            continue
+        if not close(got, float(m.group(1)), 10.0 ** (-(_sig_digits(tok) - 1))):
+            problems.append("check_design_sheet(p): rated %s's sheet says A = "
+                            "%s m2, but its own flowsheetDict declares area %s "
+                            "m2 -- the rated area was not passed through."
+                            % (unit, tok, m.group(1)))
+        for key in ("U", "LMTD"):
+            g, gt = sheet_tok(unit, key)
+            k = kpi(line, key)
+            if g is None or k is None or \
+                    not close(g, k, 10.0 ** (-(_sig_digits(gt) - 1))):
+                problems.append("check_design_sheet(p): rated %s's sheet %s = "
+                                "%s is not the unit's own %s KPI (%s)."
+                                % (unit, key, gt, key, k))
+        checked += 1
+
+    #  ---- probes: three copies, each refusing ONE item BY NAME ----------
+    def edit_rules(unit, f):
+        def ed(t):
+            pat = re.compile(r'(\{\s*unitName\s+%s\s*;[^{]*designRules\s*\{)'
+                             r'([^}]*)(\})' % unit)
+            return pat.sub(lambda mm: mm.group(1) + f(mm.group(2)) + mm.group(3),
+                           t, count=1)
+        return ed
+
+    victim = routed[0][0]
+    probes = (
+        ("LMTD beside utility on %s" % victim,
+         edit_rules(victim, lambda r: r + " LMTD 30; "), victim,
+         r'BOTH[^\n]*utility[^\n]*LMTD'),
+        ("the Chiller served by coolingWater (a temperature cross)",
+         edit_rules("Chiller", lambda r: re.sub(r'\butility\s+\w+\s*;',
+                                                'utility coolingWater;', r)),
+         "Chiller", r'temperature cross'),
+        ("%s with its U and utility deleted (no rated area)" % victim,
+         edit_rules(victim, lambda r: re.sub(r'\b(U|utility)\s+[^;]*;', '', r)),
+         victim, r'publishes no `area`'),
+    )
+    for what, ed, unit, pat in probes:
+        dst, rcp, outp, errp = _run_copy(case, ed)
+        both = outp + errp
+        if rcp != 0:
+            problems.append("check_design_sheet(p): the copy with %s failed "
+                            "(rc=%d) -- a refused exchanger must refuse the "
+                            "ITEM, never the run." % (what, rcp))
+        elif not re.search(r'%s\s+FAILED:[^\n]*%s' % (unit, pat), both):
+            problems.append("check_design_sheet(p): a copy with %s is not "
+                            "refused BY NAME (no `%s  FAILED:` line matching "
+                            "/%s/)." % (what, unit, pat))
+        shutil.rmtree(dst.parent, ignore_errors=True)
+
+    notes.append("exchanger routes: %d sheet(s) recomputed (LMTD from the run "
+                 "and the utility record, the rated area passed through); "
+                 "three probes refused by name" % checked)
+
+
 def main() -> int:
     problems, notes = [], []
 
@@ -1770,6 +1977,7 @@ def main() -> int:
     check_column_items(problems, notes)
     check_catalyst_bed(problems, notes)
     check_space_velocity_basis(problems, notes)
+    check_exchanger_routes(problems, notes)
 
     check_ignored(problems)
     check_refusal(problems)
@@ -1804,7 +2012,12 @@ def main() -> int:
           "inlet KPI and the declared spaceVelocity on the NORMAL gas basis "
           "the case declares; a copy with no basis and one declaring "
           "`standard` each refused BY NAME, and one declaring `actual` "
-          "recomputed on the unit's own T and P), each "
+          "recomputed on the unit's own T and P) and on the exchanger-routes "
+          "witness (every cooler declaring a `utility` has its LMTD and area "
+          "RECOMPUTED from its own T_in/T_out KPIs, the declared U and the "
+          "utility record; the rated interchanger's area is its own declared "
+          "one; copies with an LMTD beside a utility, a temperature cross and "
+          "a cooler with no basis each refused BY NAME), each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
           "sector, NO extra level where it does not); every `sizing {}` entry "

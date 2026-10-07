@@ -81,7 +81,25 @@ catalyst volumes need a rate law: a plug-flow reactor
 * the purge scrubber and the let-down gas recovery;
 * the cooling water, the refrigeration cycle and the steam system: each
   cooler declares an outlet temperature and its duty is the heat to remove;
-* sizing and economics.
+* the storage tanks, the working capital and the economics.
+
+## Sizing and costing
+
+[`system/postDict`](system/postDict) sizes and costs (Turton, 2026 EUR)
+the fourteen units that are pieces of equipment; the two mixers and the
+purge splitter are pipe junctions and are not. Every design number in it
+is an author-set assumption declared on its own line with its reason, and
+its header says which basis each item rests on:
+
+| items | sized by |
+|---|---|
+| 4 compressors | their own shaft power (the run's result) |
+| 5 coolers | A = Q/(U·LMTD): U declared, the LMTD computed from the cooler's own inlet/outlet temperatures and a named utility (cooling water, or ammonia boiling at 1 atm for the chiller) |
+| `FEHE` | its own rated area (2000 m², declared on the unit) |
+| `Converter` | a catalyst vessel on an **assumed** space velocity — a Gibbs reactor has no volume of its own |
+| 3 drums | vapour residence time; for the two let-down drums, which are liquid drums, that volume is a **lower bound** |
+
+The design sheets land in `design/<unit>/` after a run.
 
 ## Engine notes
 
