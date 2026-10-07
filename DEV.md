@@ -1991,6 +1991,26 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C44. GREEN AMMONIA: SIZE EVERY UNIT AND THE STORAGE, KEEP EACH ITEM'S
+INVENTORY, AND ESTIMATE THE WORKING CAPITAL (Vítor, 2026-10-07, verbatim:
+"Vamos nos focar agora no caso Green Amonia. Primeiro, eu quero dimensionar
+todas as operações unitárias, incluindo tanques de armazenamento de
+[matérias-primas e] produtos que acabam por ser um item muito importante do
+investimento. Também quero ficar com a quantidade de matérias primas e
+produtos retidas em cada equipamento, porque isso vai fazer parte do capital
+circulante. Também quero no final ficar com uma estimativa do capital
+circulante e de fundo de maneio, que sempre me fez um pouco de confusão").**
+Case: `tutorials/plant/greenAmmoniaIndustrialN2` (17 units, no postDict
+today).  Measured 2026-10-07 before proposing: sizers exist for compressor,
+vessel, shellTubeHX, stirredTank, pfr (catalyst bed), column, evaporator,
+crystalliser, sprayDryer, cyclone (`EquipmentSize.cpp:73-96`); NONE for
+gibbsReactor or phaseChanger, and no storage item of any kind; working
+capital is ONE fraction of FCI (`EconomicsPass.cpp:388`, default 0.15),
+with no inventory behind it.  The definitions a student is told (capital
+circulante vs fundo de maneio) and the storage basis are PEDAGOGY and
+DESIGN BASIS -- put to Vítor before building.
+Status: scope proposed 2026-10-07, waiting on his answers.
+
 **C43. REACTION ENTHALPY LEADS TO STANDARD STATE (Vítor, 2026-10-07: "Revê a
 navegação pedagógica das EduTools do CHOUPO, sobretudo a ligação entre
 Reaction Enthalpy e Standard State ... Não quero reescrever nem duplicar o
