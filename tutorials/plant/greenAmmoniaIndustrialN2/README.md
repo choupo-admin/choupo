@@ -81,7 +81,7 @@ catalyst volumes need a rate law: a plug-flow reactor
 * the purge scrubber and the let-down gas recovery;
 * the cooling water, the refrigeration cycle and the steam system: each
   cooler declares an outlet temperature and its duty is the heat to remove;
-* the storage tanks, the working capital and the economics.
+* the working capital and the economics.
 
 ## Sizing and costing
 
@@ -98,8 +98,48 @@ its header says which basis each item rests on:
 | `FEHE` | its own rated area (2000 m², declared on the unit) |
 | `Converter` | a catalyst vessel on an **assumed** space velocity — a Gibbs reactor has no volume of its own |
 | 3 drums | vapour residence time; for the two let-down drums, which are liquid drums, that volume is a **lower bound** |
+| `NH3Storage` | 21 days of production of `ProductNH3`, refrigerated at 1 atm, 90 % working level, at most 30 000 m³ per tank — two tanks |
 
-The design sheets land in `design/<unit>/` after a run.
+The design sheets land in `design/<unit>/` after a run (the two product
+tanks in `design/NH3Storage/tank1` and `tank2`).
+
+### Product storage
+
+A storage tank is not a flowsheet unit, so it is declared in the postDict,
+**attached to the boundary stream it stores** (`storage ( ... )` in
+`system/postDict`). Its volume is
+
+    V = storageTime × ṁ / (ρ_liquid × fillFraction)
+
+split into equal tanks of at most `maxTankVolume`; ṁ is the stream's own
+mass flow and ρ its liquid density at the state it carries, from the case's
+own property package. Every number in the basis (21 days, 90 %, 30 000 m³)
+is a design assumption, not a datum.
+
+Two things a group should read before quoting the tanks:
+
+* **The cost is a lower bound.** The only tank correlation read (CAPCOST
+  2017, the authors' program for Turton's Appendix A) prices an
+  *atmospheric* API fixed-roof tank. Ammonia here is stored refrigerated at
+  −35 °C, in an insulated, double-containment tank that costs more. No
+  factor is invented to close the gap; the run says LOWER BOUND on every
+  tank.
+* **The density is probably about 12 % high, so the tanks are about 12 %
+  small.** The run prices liquid ammonia at 238 K at ~769 kg/m³. The NH₃
+  record's `Vliq` (2.50 × 10⁻⁵ m³/mol, i.e. 681 kg/m³) is read by the
+  engine as a 25 °C datum and extrapolated to −35 °C with Rackett; 681
+  kg/m³ is, however, the figure usually quoted for liquid ammonia near its
+  *normal boiling point*, not at 25 °C (this has not been checked against a
+  primary source here). If the record's value is the boiling-point one,
+  the density at 238 K is ~684 kg/m³ and every liquid volume sized from it
+  is ~12 % larger. Correcting a record is a curation act and was not done
+  in this case.
+
+Not stored here, by decision: the **hydrogen buffer** and the **nitrogen
+supply** belong to the electrolyser and the air separation unit, outside
+this battery limit. Adding a store is one more entry in `storage ( ... )`;
+a *gas* is refused by name, because a gas store is a pressure vessel or a
+holder, which the tank sizer does not model.
 
 ## Engine notes
 

@@ -2027,6 +2027,25 @@ drums, which are liquid drums (no liquid-density route exists in the sizing
 pass; it is the inventory slice's question too).  Mixers and the splitter
 are not equipment.  140 golden rows appended; gate `check_design_sheet` arm
 (p).
+Slice 2 (product storage) BUILT 2026-10-07 on branch `claude/c44-slices2-4`,
+NOT merged: `sizing { storage ( { name; stream; material; storageTime <n>
+day; fillFraction; maxTankVolume; } ) }` -- a postDict item attached to a
+boundary stream, V = t x mdot / (rho_liq x fill) split into equal tanks
+(`StorageTankSize`), each costed on CAPCOST 2017's atmospheric API fixed-roof
+row (`Turton.cpp`, cells C204:I204) and said to be a LOWER BOUND when the
+liquid is stored below 0 degC.  The density comes from the case's own package
+through a new on-demand hook (`SimulationResult::thermoForPost`, choupoSolve
+only) and the ONE selection `storageTank` already made
+(`thermo/PricedDensity`, moved out of `StorageTank.cpp` verbatim).  Green
+ammonia: 21 days of `ProductNH3`, 90 % fill, at most 30 000 m3 -> two tanks
+of 17 898 m3.  H2 buffer and N2 supply outside battery limits, said in the
+case.  30 golden rows appended; gate `check_design_sheet` arm (q).  TWO
+FINDINGS: (1) the commission's "no storage item of any kind" was FALSE -- the
+`storageTank` UNIT exists (holdup KPIs, no sizer, no cost; ammonia02/03); (2)
+the NH3 record's `Vliq` (681 kg/m3) reads as a 25 C datum and Rackett takes it
+to ~769 kg/m3 at 238 K, while 681 is the figure usually quoted at the normal
+boiling point -- if so every liquid volume from it is ~12 % small (a curation
+question for Vitor, not changed).
 
 **C43. REACTION ENTHALPY LEADS TO STANDARD STATE (Vítor, 2026-10-07: "Revê a
 navegação pedagógica das EduTools do CHOUPO, sobretudo a ligação entre

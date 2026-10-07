@@ -210,6 +210,18 @@ WHAT THIS CHECKS:
       approximation the basis states rather than a number this arm can
       improve.
 
+  (q) A STORAGE TANK IS SIZED FROM ITS STREAM AND PRICED ON THE ROW THE
+      PROGRAM CARRIES (2026-10-07, DEV.md 4c C44 slice 2).  On
+      `greenAmmoniaIndustrialN2` the store attached to `ProductNH3` has its
+      density RECOMPUTED from the case's component records, its volumes and
+      tank count from the postDict's declarations and the stream's own
+      `F_mass`, and each tank's three costs from the CAPCOST 2017
+      fixed-roof row transcribed in this gate; the LOWER BOUND of a
+      refrigerated store priced as an atmospheric tank must be said per
+      tank; copies refuse a unitless storage time and a vapour stream BY
+      NAME, and a larger tank ceiling makes ONE tank.  Sabotages in
+      `check_storage`.
+
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
@@ -1958,6 +1970,248 @@ def check_exchanger_routes(problems, notes):
                  "three probes refused by name" % checked)
 
 
+#  THE CAPCOST 2017 FIXED-ROOF TANK ROW, transcribed HERE as well as in
+#  `Turton.cpp` (2026-10-07): worksheet "Equipment Cost Data", block "Tank
+#  Data", row "Fixed Roof", cells C204:I204.  A recomputation that read the
+#  engine's own constants would agree with any transcription error.
+TANK_K = (4.8509, -0.3973, 0.1445)
+TANK_B1, TANK_VMIN, TANK_VMAX = 1.1, 90.0, 30000.0
+
+
+def _record_scalars(path: Path, keys):
+    t = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '',
+               path.read_text(errors="replace"), flags=re.S))
+    out = {}
+    for k in keys:
+        m = re.search(r'^\s*%s\s+([-0-9.eE+]+)' % k, t, re.M)
+        if m:
+            out[k] = float(m.group(1))
+    return out
+
+
+def _anchored_rackett_rho(case: Path, comp: dict, T: float):
+    """The LIQUID density `ThermoPackage::density` documents, recomputed from
+    the case's own component records: per component V = Vliq x
+    Rackett(T)/Rackett(298.15) (bare Rackett where no Vliq), mole-weighted;
+    a component at or above its Tc is given no volume (PhaseDensity.H).
+    Returns (rho, excluded mole fraction)."""
+    R = 8.314462618
+    def rack(Tk, Tc, Pc_Pa, w):
+        Tr = Tk / Tc
+        return (R * Tc / Pc_Pa) * (0.29056 - 0.08775 * w) ** (1.0 + (1.0 - Tr) ** (2.0 / 7.0))
+    zs, mbar, vmix, excl = 0.0, 0.0, 0.0, 0.0
+    sub = {}
+    for name, z in comp.items():
+        rec = _record_scalars(case / "constant" / "components" / (name + ".dat"),
+                              ("MW", "Tc", "Pc", "omega", "Vliq"))
+        if z <= 0.0:
+            continue
+        if T >= rec["Tc"]:
+            excl += z
+            continue
+        sub[name] = (z, rec)
+    zs = sum(z for z, _ in sub.values())
+    for name, (z, rec) in sub.items():
+        Pc = rec["Pc"] * 1.0e5
+        if "Vliq" in rec:
+            v = rec["Vliq"] * rack(T, rec["Tc"], Pc, rec["omega"]) / \
+                rack(298.15, rec["Tc"], Pc, rec["omega"])
+        else:
+            v = rack(T, rec["Tc"], Pc, rec["omega"])
+        mbar += z / zs * rec["MW"] / 1000.0
+        vmix += z / zs * v
+    return mbar / vmix, excl
+
+
+def check_storage(problems, notes):
+    """(q) A STORAGE TANK IS SIZED FROM ITS STREAM AND COSTED ON THE ROW THE
+    PROGRAM CARRIES (2026-10-07, DEV.md 4c C44 slice 2).  On
+    `greenAmmoniaIndustrialN2`, whose postDict attaches `NH3Storage` to the
+    boundary stream `ProductNH3`:
+
+      * the tank's `massFlow` is the stream's own published `F_mass`;
+      * its `rho` is RECOMPUTED from the case's component records (the
+        anchored-Rackett liquid route, dissolved supercritical gases given no
+        volume) at the stream's published T and composition;
+      * V_stored = storageTime x massFlow / rho, V_tanks = V_stored /
+        fillFraction, N = ceil(V_tanks / maxTankVolume), V_R = V_tanks / N
+        -- RECOMPUTED from the postDict's own declarations, and exactly N
+        sheets `design/NH3Storage/tank1..N` must exist carrying that V_R;
+      * each tank's purchased, bare-module and total-module cost RECOMPUTED
+        from the fixed-roof row transcribed above, the costing block's CEPCI
+        and currency, B1 = 1.1, and 1.18;
+      * the stored liquid is below 0 degC, so the run must say LOWER BOUND
+        on the costing line of every tank and in the caveat block;
+      * three copies: `storageTime` with no unit, the store attached to the
+        VAPOUR stream FlashGas, each refused BY NAME (the run still exit 0);
+        and `maxTankVolume 50000`, which must make ONE tank of V_tanks.
+
+    SABOTAGES, BY HAND, 2026-10-07, each restored with `cp` and the engine
+    rebuilt; the gate then returned OK:
+      S1  StorageTankSize.cpp: V_tanks = V_stored (fillFraction ignored)
+          -> FAILED: "NH3Storage/tank1 values.V_tanks = 32215.6846634,
+          recomputed 35795.2052", and the V_R, the three costs and the
+          sheet's V_R with it.
+      S2  Turton.cpp: the refrigerated-service line suppressed  -> FAILED:
+          "NH3Storage/tank1 stores a liquid at 238.15 K and its costing line
+          does not say LOWER BOUND" (both tanks).
+      S3  Turton.cpp: the tank row's size key V_R -> V_tanks (each tank
+          priced at the WHOLE store's volume)  -> FAILED: "tank1
+          cost.purchased = 2075006.28365, recomputed 1131204.02".
+      S4  StorageTankSize.cpp: the unit requirement on storageTime removed
+          -> FAILED: "a copy with storageTime with no unit is not refused BY
+          NAME".
+    NOT CHECKED: whether 21 days, 0.90 and 30 000 m3 are the right design
+    basis -- they are the case's declared assumptions -- and whether the
+    package's density is the TRUE density of liquid ammonia (it is the
+    engine's; see the case README for the finding about the record's Vliq).
+    """
+    case = ROOT / HXROUTE
+    post = (case / "system" / "postDict").read_text(errors="replace")
+    post_nc = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', post, flags=re.S))
+    m = re.search(r'\bstorage\s*\(\s*\{([^}]*)\}', post_nc)
+    if not m:
+        problems.append("check_design_sheet(q): %s declares no `storage ( { "
+                        "... } )` entry -- this arm CANNOT RUN; it must not "
+                        "pass." % HXROUTE)
+        return
+    ent = m.group(1)
+
+    def word(k):
+        mm = re.search(r'\b%s\s+(\w+)\s*;' % k, ent)
+        return mm.group(1) if mm else None
+
+    def num(k):
+        mm = re.search(r'\b%s\s+([-0-9.eE+]+)\s*(\w*)\s*;' % k, ent)
+        return (float(mm.group(1)), mm.group(2)) if mm else (None, None)
+
+    name, stream = word("name"), word("stream")
+    t_val, t_unit = num("storageTime")
+    fill, _ = num("fillFraction")
+    vmax, _ = num("maxTankVolume")
+    if None in (name, stream, t_val, fill, vmax) or t_unit not in ("day", "h"):
+        problems.append("check_design_sheet(q): the storage entry does not "
+                        "declare name/stream/storageTime (in day or h)/"
+                        "fillFraction/maxTankVolume -- nothing to recompute.")
+        return
+    t_day = t_val if t_unit == "day" else t_val / 24.0
+
+    cm = re.search(r'\bcosting\s*\{([^}]*)\}', post_nc)
+    cepci = float(re.search(r'\bcepci\s+([0-9.]+)', cm.group(1)).group(1))
+    cepci01 = float(re.search(r'\bcepci2001\s+([0-9.]+)', cm.group(1)).group(1))
+    fx = float(re.search(r'\busdToEur\s+([0-9.]+)', cm.group(1)).group(1))
+
+    rc, out, err = run_case(HXROUTE)
+    if rc != 0:
+        problems.append("check_design_sheet(q): %s failed (rc=%d)." % (HXROUTE, rc))
+        return
+    sl = next((l for l in out.splitlines()
+               if l.strip().startswith('"%s": {' % stream) and '"F_mass"' in l), "")
+    fm = re.search(r'"F_mass": *([-0-9.eE+]+)', sl)
+    Tm = re.search(r'"T": *([-0-9.eE+]+)', sl)
+    comp = {k: float(v) for k, v in
+            re.findall(r'"(\w+)": *([-0-9.eE+]+)',
+                       (re.search(r'"composition": *\{([^}]*)\}', sl) or
+                        re.search(r'()', '')).group(1))}
+    if not (fm and Tm and comp):
+        problems.append("check_design_sheet(q): stream %s is not in the result "
+                        "JSON with F_mass, T and composition." % stream)
+        return
+    mdot, T = float(fm.group(1)), float(Tm.group(1))
+    rho, excl = _anchored_rackett_rho(case, comp, T)
+
+    V_stored = t_day * 86400.0 * mdot / rho
+    V_tanks = V_stored / fill
+    N = max(1, math.ceil(V_tanks / vmax - 1e-9))
+    V_R = V_tanks / N
+
+    eq = [l for l in out.splitlines() if '"item": "%s/tank' % name in l]
+    if len(eq) != N:
+        problems.append("check_design_sheet(q): %s should be %d tank(s) "
+                        "(V_tanks %.6g m3 / at most %.6g m3), the result "
+                        "carries %d." % (name, N, V_tanks, vmax, len(eq)))
+    lc = math.log10(V_R)
+    cp = 10.0 ** (TANK_K[0] + TANK_K[1] * lc + TANK_K[2] * lc * lc) \
+        * cepci / cepci01 * fx
+    want = {"values.massFlow": mdot, "values.rho": rho,
+            "values.V_stored": V_stored, "values.V_tanks": V_tanks,
+            "values.V_R": V_R, "values.nTanks": N,
+            "cost.purchased": cp, "cost.bareModule": TANK_B1 * cp,
+            "cost.totalModule": 1.18 * TANK_B1 * cp}
+    for line in eq:
+        item = re.search(r'"item": "([^"]+)"', line).group(1)
+        for key, w in want.items():
+            sub, k = key.split(".")
+            blk = re.search(r'"%s": \{([^}]*)' % ("values" if sub == "values" else "cost"),
+                            line)
+            g = re.search(r'"%s": *(-?[0-9.eE+]+)' % k, blk.group(1) if blk else "")
+            if not g or not close(float(g.group(1)), w, 1e-6):
+                problems.append("check_design_sheet(q): %s %s = %s, recomputed "
+                                "%.9g (storageTime %g day x F_mass %.9g kg/s / "
+                                "rho %.9g kg/m3, fill %g, at most %g m3; "
+                                "CAPCOST fixed roof)."
+                                % (item, key, g.group(1) if g else "(absent)",
+                                   w, t_day, mdot, rho, fill, vmax))
+        tag = item.split("/", 1)[1]
+        f = case / "design" / name / tag
+        if not f.is_file():
+            problems.append("check_design_sheet(q): no sheet design/%s/%s."
+                            % (name, tag))
+        else:
+            sz = parse_sheet(f.read_text(errors="replace"))["sizing"]
+            if "V_R" not in sz or not close(sz["V_R"][0], V_R, 1e-6):
+                problems.append("check_design_sheet(q): sheet design/%s/%s "
+                                "V_R %s against %.9g." % (name, tag,
+                                sz.get("V_R"), V_R))
+        if T < 273.15 and not re.search(
+                r"\[lower bound\] storageTank '%s'" % re.escape(item), out):
+            problems.append("check_design_sheet(q): %s stores a liquid at "
+                            "%.2f K and its costing line does not say LOWER "
+                            "BOUND." % (item, T))
+    if T < 273.15 and not re.search(r'"category": "costing"[^\n]*REFRIGERATED', out):
+        problems.append("check_design_sheet(q): the refrigerated-storage floor "
+                        "is not in the run's caveat record.")
+
+    def edit_store(f):
+        return lambda t: re.sub(r'(\bstorage\s*\(\s*\{)([^}]*)(\})',
+                                lambda mm: mm.group(1) + f(mm.group(2)) + mm.group(3),
+                                t, count=1)
+    probes = (
+        ("storageTime with no unit",
+         edit_store(lambda e: re.sub(r'storageTime\s+[^;]*;', 'storageTime 21;', e)),
+         r'carries no unit'),
+        ("the store attached to the vapour stream FlashGas",
+         edit_store(lambda e: re.sub(r'\bstream\s+\w+\s*;', 'stream FlashGas;', e)),
+         r'is a vapour'),
+    )
+    for what, ed, pat in probes:
+        dst, rcp, outp, errp = _run_copy(case, ed)
+        if rcp != 0:
+            problems.append("check_design_sheet(q): the copy with %s failed "
+                            "(rc=%d) -- a refused store must refuse the ITEM, "
+                            "never the run." % (what, rcp))
+        elif not re.search(r'%s\s+FAILED:[^\n]*%s' % (name, pat), outp + errp):
+            problems.append("check_design_sheet(q): a copy with %s is not "
+                            "refused BY NAME (/%s/)." % (what, pat))
+        shutil.rmtree(dst.parent, ignore_errors=True)
+    dst, rcp, outp, errp = _run_copy(case, edit_store(
+        lambda e: re.sub(r'maxTankVolume\s+[^;]*;', 'maxTankVolume 50000;', e)))
+    one = [l for l in outp.splitlines() if '"item": "%s/tank' % name in l]
+    vr1 = re.search(r'"V_R": *([-0-9.eE+]+)', one[0]) if len(one) == 1 else None
+    if rcp != 0 or len(one) != 1 or not vr1 or \
+            not close(float(vr1.group(1)), V_tanks, 1e-6):
+        problems.append("check_design_sheet(q): with maxTankVolume 50000 the "
+                        "store should be ONE tank of %.9g m3; the copy made %d "
+                        "(rc=%d)." % (V_tanks, len(one), rcp))
+    shutil.rmtree(dst.parent, ignore_errors=True)
+
+    notes.append("storage: %s on %s, %d tank(s) of %.1f m3 recomputed from "
+                 "%g day x %.4g kg/s / %.2f kg/m3 / %g (%.3g mole fraction "
+                 "given no volume), costed on the CAPCOST fixed-roof row, "
+                 "LOWER BOUND said; three probes" % (name, stream, N, V_R,
+                 t_day, mdot, rho, fill, excl))
+
+
 def main() -> int:
     problems, notes = [], []
 
@@ -1978,6 +2232,7 @@ def main() -> int:
     check_catalyst_bed(problems, notes)
     check_space_velocity_basis(problems, notes)
     check_exchanger_routes(problems, notes)
+    check_storage(problems, notes)
 
     check_ignored(problems)
     check_refusal(problems)
@@ -2017,7 +2272,12 @@ def main() -> int:
           "RECOMPUTED from its own T_in/T_out KPIs, the declared U and the "
           "utility record; the rated interchanger's area is its own declared "
           "one; copies with an LMTD beside a utility, a temperature cross and "
-          "a cooler with no basis each refused BY NAME), each "
+          "a cooler with no basis each refused BY NAME) and on the storage "
+          "witness (the product tanks' density, volumes, count and three "
+          "costs RECOMPUTED from the case's records, its declarations, the "
+          "stream's own mass flow and the CAPCOST fixed-roof row; LOWER BOUND "
+          "said per tank for refrigerated storage; a unitless storage time "
+          "and a vapour stream refused BY NAME), each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
           "sector, NO extra level where it does not); every `sizing {}` entry "

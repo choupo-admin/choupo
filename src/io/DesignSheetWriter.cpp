@@ -268,7 +268,22 @@ std::size_t write(const std::string&                       caseRoot,
 
         //  ---- the ports ------------------------------------------------
         auto uit = unitOf.find(uname);
-        if (uit == unitOf.end())
+        //  A STORAGE ITEM IS ATTACHED TO A STREAM, NOT A UNIT (2026-10-07,
+        //  DEV.md 4c C44 slice 2): no flowsheet unit is a tank, so its sheet
+        //  names the stream it stores and draws that stream as its one inlet
+        //  -- the state the tank was sized from.  Written only for such an
+        //  item, so every other sheet is character-for-character what it was.
+        if (!sz.stream.empty())
+        {
+            o << "//  A STORAGE ITEM: not a flowsheet unit.  It is attached to"
+                 " the boundary stream\n//  below and sized from that"
+                 " stream's own flow and state.\n";
+            o << "inlets\n{\n";
+            o << portBlock(0, sz.stream, PortRoles::of(roles, sz.stream),
+                           result, thermo);
+            o << "}\n\n";
+        }
+        else if (uit == unitOf.end())
         {
             o << "//  This unit is not in the flattened topology, so its\n"
                  "//  inlets and outlets are unknown here.  Stated rather\n"

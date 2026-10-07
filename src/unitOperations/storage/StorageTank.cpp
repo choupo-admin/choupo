@@ -17,6 +17,7 @@ File
 
 #include "StorageTank.H"
 #include "core/Advisory.H"
+#include "thermo/PricedDensity.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 
 #include <cmath>
@@ -134,26 +135,14 @@ int StorageTank::solve(const DictPtr& dict,
     //  and how much of the stream they are, so the reader judges the
     //  approximation instead of being handed it.  A large excluded fraction
     //  is a finding this unit reports, not one it decides about.
-    sVector zPriced(n, 0.0);
-    scalar  keptFrac = 0.0;
-    std::string dropped;
-    scalar      droppedFrac = 0.0;
-    for (std::size_t i = 0; i < n && i < z.size(); ++i)
-    {
-        if (!(z[i] > 0.0)) continue;
-        sVector pure(n, 0.0); pure[i] = 1.0;
-        scalar rhoPure = 0.0;
-        try { rhoPure = thermo.density(T, P, pure, ph); }
-        catch (const std::exception&) { rhoPure = 0.0; }
-        if (rhoPure > 0.0 && std::isfinite(rhoPure))
-        { zPriced[i] = z[i]; keptFrac += z[i]; }
-        else
-        {
-            droppedFrac += z[i];
-            if (!dropped.empty()) dropped += ", ";
-            dropped += thermo.comp(i).name();
-        }
-    }
+    //  THE SELECTION HAS ONE HOME (`thermo/PricedDensity`, moved there
+    //  verbatim 2026-10-07 when the sizing pass became its second caller).
+    const pricedDensity::Selection sel =
+        pricedDensity::select(thermo, T, P, z, ph);
+    const sVector&     zPriced     = sel.zPriced;
+    const scalar       keptFrac    = sel.keptFraction;
+    const std::string& dropped     = sel.dropped;
+    const scalar       droppedFrac = sel.droppedFraction;
     if (!(keptFrac > 0.0))
         throw std::runtime_error(
             "storageTank: NO component present has a "
@@ -162,7 +151,6 @@ int StorageTank::solve(const DictPtr& dict,
             + std::to_string(P * 1.0e-5) + " bar, so the holdup MASS cannot be"
               " computed -- and a tank whose inventory is unknown is exactly"
               " the number this unit exists to supply.");
-    for (auto& v : zPriced) v /= keptFrac;
 
     if (!dropped.empty())
     {

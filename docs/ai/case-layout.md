@@ -584,6 +584,38 @@ included -- it means 15, 20 or 25 degC depending on the source) is refused
 naming the two accepted.  The run prints the conversion beside the volume.
 Worked case: `tutorials/plant/ammoniaStaged03_approach`.
 
+**A STORAGE TANK IS ATTACHED TO A BOUNDARY STREAM (2026-10-07).**  A raw
+material or a product tank is equipment the plant buys, and no flowsheet unit
+is one, so it is declared in `sizing {}` beside `units`, naming the stream it
+stores:
+
+```
+storage
+(
+    { name          NH3Storage;
+      stream        ProductNH3;     // a LIQUID stream; a gas is refused by name
+      material      SS304;
+      storageTime   21 day;         // the unit is REQUIRED: a bare 21 is 21 SECONDS
+      fillFraction  0.90;           // working level / tank volume
+      maxTankVolume 30000;          // m3 per tank; more volume -> more tanks
+    }
+);
+```
+
+`V = storageTime x mdot / (rho_liquid x fillFraction)`, split into equal tanks
+of at most `maxTankVolume`, one item and one sheet each
+(`design/NH3Storage/tank1`, `tank2`, ...).  `mdot` is the stream's own mass
+flow and `rho` its liquid density at the state it carries, on the case's own
+package, announced on the run.  Every key is required -- a default storage
+time is a design basis nobody chose.  Each tank is costed on the CAPCOST 2017
+**atmospheric API fixed-roof** row (90 to 30 000 m3, no material or pressure
+factor); a liquid stored below 0 degC is a REFRIGERATED tank that costs more,
+and the run says LOWER BOUND on every such tank.  A stream above 1.5 bar
+(pressurised storage) is refused.  This is a postDict ITEM, not the
+`storageTank` UNIT (`docs/ai/unit-ops.md`): the unit is a buffer inside the
+flowsheet that reports a holdup and is not sized or costed; the item is the
+tank the plant buys.  Worked case: `tutorials/plant/greenAmmoniaIndustrialN2`.
+
 ## Where a numerical option lives — the four homes are INTENTIONAL
 
 Settled 2026-08-04 (Vítor, option A of

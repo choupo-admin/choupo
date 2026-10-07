@@ -246,6 +246,14 @@ struct EquipmentSizing
     //  call that records it.
     std::vector<std::string>                     assumed;
 
+    //  THE BOUNDARY STREAM A STORAGE ITEM IS ATTACHED TO (2026-10-07, DEV.md
+    //  4c C44 slice 2).  A storage tank is not a flowsheet unit -- nothing in
+    //  the topology solves it -- yet it is equipment the plant buys, sized
+    //  from a stream the flowsheet does carry.  Vitor ruled it a postDict
+    //  item attached to that stream.  EMPTY for every item a unit realises,
+    //  so no existing surface changes.
+    std::string                                  stream;
+
     void assume(const std::string& key)
     {
         for (const auto& k : assumed) if (k == key) return;

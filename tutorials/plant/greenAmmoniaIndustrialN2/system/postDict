@@ -5,10 +5,10 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   postDict -- SIZING and COSTING of every unit that is a piece of equipment
-  (DEV.md 4c C44, slice 1).  No economics block: the storage tanks, the
-  per-equipment inventory and the working capital are later slices, and an
-  NPV built before them would be a confident number about a plant whose
-  tanks and working capital are missing.
+  (DEV.md 4c C44, slice 1) and of the PRODUCT STORAGE (slice 2).  No
+  economics block yet: the per-equipment inventory and the working capital
+  are later slices, and an NPV built before them would be a confident
+  number about a plant whose working capital is missing.
 
   WHAT IS SIZED, AND ON WHAT BASIS.  Fourteen of the seventeen units:
 
@@ -63,6 +63,37 @@
                       below the vessel correlation's range, and the costing
                       pass says so).  Named, not fixed: it is the
                       per-equipment inventory slice's question too.
+
+    storage     (1)   NH3Storage, attached to the boundary stream ProductNH3
+                      (`storage ( ... )` below; Vitor ruled a tank a postDict
+                      item attached to a stream, DEV.md 4c C44).  Basis, all
+                      AUTHOR-SET design assumptions, none cited:
+                        * 21 days of production -- the commander's decision
+                          for this case, a design basis, not a datum;
+                        * refrigerated atmospheric storage at the
+                          StorageFlash outlet (238.15 K, 1 atm), the
+                          state the stream carries;
+                        * a working level of 90 % of the tank volume;
+                        * at most 30 000 m3 per tank -- the ceiling of the
+                          tank cost correlation, so every tank is priced
+                          inside its range.
+                      V = 21 day x mdot / (rho x 0.90), split into equal tanks.
+                      rho is the case's own liquid density at 238.15 K
+                      (announced on the run; READ the README: the NH3
+                      record's Vliq gives ~769 kg/m3 there, which is likely
+                      ~12 % high, so the tanks are likely ~12 % small).
+                      COST: the only tank row read (CAPCOST 2017, the
+                      authors' program for Turton App. A) is an ATMOSPHERIC
+                      API fixed-roof tank.  A refrigerated, insulated,
+                      double-containment ammonia tank costs more, so the
+                      storage cost below is a LOWER BOUND, said on every run.
+                      NOT STORED HERE, by decision: the HYDROGEN buffer and
+                      the NITROGEN supply belong to the electrolyser and the
+                      ASU, outside this battery limit (the flowsheet header
+                      says so).  Adding an H2 store is one more entry in
+                      `storage ( ... )` -- but a gas is refused by name: a
+                      gas store is a pressure vessel or a holder, which this
+                      tank sizer does not model.
 
   WHAT IS NOT SIZED, and why it is not an omission: LoopMix, MakeupMix and
   PurgeSplit are a tee and two pipe junctions -- no vessel, no area, no
@@ -168,6 +199,19 @@ sizing
                         flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3;  pressureDesign 2;                         // 1.1 x 1.013 bar
                         corrosionAllow 0.003;  jointEfficiency 1.0; } }
+    );
+
+    //  ---- storage: attached to a boundary stream (see the header) ----
+    storage
+    (
+        { name          NH3Storage;
+          stream        ProductNH3;      // the product, at 238.15 K and 1 atm
+          material      SS304;           // below 0 C (the rule above); the tank
+                                         // row carries NO material factor
+          storageTime   21 day;          // days of production -- AUTHOR-SET
+          fillFraction  0.90;            // working level / tank volume -- AUTHOR-SET
+          maxTankVolume 30000;           // m3 per tank: the correlation's ceiling
+        }
     );
 }
 costing
