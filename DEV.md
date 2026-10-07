@@ -1991,6 +1991,28 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C52. THE GIBBS CONVERTER'S 30.6 MW HAS NO UTILITY, AND NOBODY SAYS SO
+(Vítor, 2026-10-07, verbatim: "o reator gibbs não devia ter utilidade de
+calor?!!!").**  Measured on greenAmmoniaIndustrialN2: the Converter
+(`gibbsReactor`, isothermal at 733.15 K) publishes `Q_kW = -30605.3`, and
+the energy report prices it (`energyBalance_byUnit.csv`), but the utility
+allocation reads ONLY the KPI `Q` in W (plus the column's two keys):
+`src/reporting/UtilityAllocationReport.cpp:283` `if (auto q = kf("Q"))`.
+`gibbsReactor`, `cstr`, `conversionReactor`, `equilibriumReactor`, `pfr`,
+`crystalliser` and `coolingTower` publish `Q_kW` only (grep of `kpis_["Q`
+in src/unitOperations), so their duties are DROPPED from the allocation --
+not allocated, not listed as unserved, absent from C_UT and from the
+"N duties could not be allocated" count, and drawn with no duty stub on the
+canvas.  A duty dropped in silence is the 2026-08-03 rule broken ("unserved
+records LISTED, never dropped").  Two halves, both Vítor's: (1) the fix is a
+shared path -- the allocation runs on every steady case, so utility rows,
+C_UT and the economics move corpus-wide and a FULL regression is needed
+(§0.4 authorisation); (2) what serves 30.6 MW released at 460 C is a design
+decision: the catalogue holds only CONSUMING utilities, so the automatic pick
+would dump it into cooling water, where a real ammonia loop raises HP steam
+in a waste-heat boiler (a credit) -- that needs a steam-GENERATION utility
+record, a curation act.  Status: diagnosed 2026-10-07, waiting on Vítor.
+
 **C51. THE EXCHANGER DATASHEET DRAWS THE KERN DESIGN FROM ITS SHEET (Vítor,
 2026-10-07, verbatim, on the green-ammonia FEHE "HX datasheet" pop-out on
 www.choupo.org: "Fodas! O design continua uma merda!").**  The live site is
