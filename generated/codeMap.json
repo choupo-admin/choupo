@@ -1199,6 +1199,9 @@
   "ReconciliationRequest": [
    "src/streams/AnalysisReconciler.H"
   ],
+  "RecycleLoop": [
+   "src/result/SimulationResult.H"
+  ],
   "Report": [
    "src/reporting/Report.H"
   ],
