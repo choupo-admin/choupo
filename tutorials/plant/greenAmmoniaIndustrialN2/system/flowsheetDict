@@ -54,7 +54,10 @@
   the hydrogen (the feed here is pure H2); the cold gas/gas exchanger before
   the chiller (so the chiller duty is an upper bound); the purge scrubber and
   the let-down gas recovery; the cooling water, the refrigeration cycle and
-  the steam system; sizing and economics.
+  the steam system; the storage tanks, the working capital and the
+  economics.  The equipment IS sized and costed, in system/postDict, on
+  design assumptions declared there (the converter on an ASSUMED space
+  velocity -- its true catalyst volume is still the rate law's).
 
   WHAT THE GROUPS SHOULD NOTICE.  The base data's 18 % per-pass conversion
   (~12 % NH3 out) is a KINETIC figure: at 460 C the equilibrium allows more,

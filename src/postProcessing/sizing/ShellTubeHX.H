@@ -33,14 +33,20 @@ Description
 
     Inputs (from result.kpis[unitName]):
         Q_kW             — duty [kW]
-    Inputs (from designRules):
-        U                — overall heat-transfer coefficient [W/(m²·K)]
-        LMTD             — log-mean temperature difference [K]
-        pressureDesign   — design pressure [bar]
+        T_in, T_out      — process temperatures [K]   (route 2 only)
+        area, U, LMTD    — a rated unit's own values  (route 3 only)
+    Inputs (from designRules), ONE of three routes:
+        1. U + LMTD      — both author-set [W/(m²·K)], [K]
+        2. U + utility   — U author-set; the LMTD computed counter-current
+                           from the unit's T_in/T_out and the named utility
+                           record's T_in/T_out (declaring LMTD too refuses)
+        3. neither       — a rated exchanger: its own published `area`
+                           passed through (refuses if it publishes none)
+        pressureDesign   — design pressure [bar], every route
         material         — already passed in
 
     Output:
-        A = Q / (U · LMTD)               [m²]
+        A = Q / (U · LMTD) [m²], or the unit's own area on route 3
         approximate weight (TEMA shell + tubes scaled from Turton charts)
 \*---------------------------------------------------------------------------*/
 

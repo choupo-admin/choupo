@@ -1,0 +1,180 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  The base case of the project base data (v2)  |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- SIZING and COSTING of every unit that is a piece of equipment
+  (DEV.md 4c C44, slice 1).  No economics block: the storage tanks, the
+  per-equipment inventory and the working capital are later slices, and an
+  NPV built before them would be a confident number about a plant whose
+  tanks and working capital are missing.
+
+  WHAT IS SIZED, AND ON WHAT BASIS.  Fourteen of the seventeen units:
+
+    compressors (4)   N2Boost MakeupComp1 MakeupComp2 RecycleComp
+                      by SHAFT POWER, the unit's own result (pass-through).
+    exchangers  (6)   N2Cooler Intercooler Aftercooler WaterCooler Chiller
+                      A = Q/(U*LMTD): the duty is the unit's, U is DECLARED
+                      below, and the LMTD is COMPUTED counter-current from
+                      the unit's own inlet/outlet temperatures and the
+                      UTILITY named below (its record in
+                      data/standards/utilities/ holds the utility's
+                      temperatures).  No LMTD is typed: the inlet of every
+                      cooler here is a compressor discharge, which moves the
+                      day a group re-tunes a shaft power, and a typed LMTD
+                      would stand still while it moved.  The LMTD is on the
+                      TERMINAL temperatures, so on the WaterCooler and the
+                      Chiller, where a little ammonia condenses along the
+                      way, it is an approximation the basis states.
+                      FEHE: the interchanger is a RATED heatExchanger -- it
+                      declares its own area (2000 m2) and the run publishes
+                      it with its U and its LMTD -- so the sizer passes the
+                      unit's own area through and declares no U or LMTD of
+                      its own.  Its sheet's U and LMTD are the unit's, and
+                      they do NOT reproduce its duty (U*A*LMTD ~77 MW
+                      against Q ~61 MW): the exchanger forms Q by eps-NTU
+                      on constant heat capacities and then places the
+                      outlet temperatures on the enthalpy surface, and its
+                      own console line prints that check.  The AREA is
+                      what is costed, and it is the unit's declaration.
+                      Its 2000 m2, and the Chiller's ~1150 m2,
+                      are above the cost correlation's 1000 m2 ceiling (a
+                      real plant splits such a duty over several shells),
+                      and the costing pass says so on every run.
+    converter   (1)   a catalyst VESSEL on a DECLARED space velocity.  The
+                      Gibbs reactor has no kinetics, so it has no volume of
+                      its own; V = Q_normal(inlet) / SV is a design BASIS,
+                      not a result.  The 20000 1/h (Nm3 gas / (m3 catalyst
+                      h), normal basis, on the INLET gas) is the same
+                      ASSUMED feasibility figure ammonia02 uses -- not a
+                      datum for any catalyst.  A rate law sizes the beds
+                      (ammoniaStaged04_kinetic); that is the groups' task 2.
+    drums       (3)   Separator LetdownHP StorageFlash, by VAPOUR residence
+                      time (V = Q_vapour * tau, ideal gas), the precedent
+                      ammonia02 sets.  READ THIS: the Separator is a
+                      knock-out drum and the basis fits it; the two LET-DOWN
+                      drums are LIQUID drums -- 99.6 % and 98.6 % of the moles
+                      entering them leave as liquid -- and their size is set
+                      by liquid holdup, which this basis does not contain.
+                      A liquid-holdup basis needs a liquid density, and the
+                      sizing pass has no route to one today; their volumes
+                      below are therefore LOWER BOUNDS (LetdownHP comes out
+                      below the vessel correlation's range, and the costing
+                      pass says so).  Named, not fixed: it is the
+                      per-equipment inventory slice's question too.
+
+  WHAT IS NOT SIZED, and why it is not an omission: LoopMix, MakeupMix and
+  PurgeSplit are a tee and two pipe junctions -- no vessel, no area, no
+  driver -- so they are not costed equipment and no item is invented for
+  them.  Outside the battery limit, as the flowsheet header says: the
+  electrolysers, the ASU, the cooling-water system, the refrigeration
+  package and the steam system.
+
+  EVERY DESIGN NUMBER BELOW IS AN AUTHOR-SET DESIGN ASSUMPTION, declared
+  with its reason on its line, and none cites a source because none was
+  read.  The rules they follow:
+    * pressureDesign = 1.1 x the highest operating pressure the item sees,
+      rounded UP to a whole bar.  The whole loop shares one: 1.1 x 151.27 bar
+      (the make-up compressor discharge, the loop's highest pressure) ->
+      167 bar.  For a compressor the value is recorded only: the
+      correlation folds the discharge pressure into the power (F_P = 1).
+    * MATERIAL, one rule: SS316 where the process side exceeds the carbon
+      steel record's maxT (700 K) -- the converter outlet is at 733 K;
+      SS304 where it goes below 0 C, because austenitic stainless keeps its
+      toughness there and the generic carbon-steel record states no
+      minimum design temperature; carbon steel everywhere else, HYDROGEN
+      SERVICE INCLUDED.  The material records carry no hydrogen-service
+      limit, so whether carbon steel resists hydrogen at these partial
+      pressures and temperatures is NOT checked here -- it is the groups'
+      materials question, and moving an item to SS316 is one word.  Every
+      item designed above 100 bar also exceeds the material records' maxP
+      (100 bar); the vessel sizer warns about its two (Converter,
+      Separator) on every run, and the exchanger sizer checks no rating at
+      all -- the ASME wall is still computed and priced.  For a compressor
+      the material is recorded only (the correlation's F_BM 2.7 carries no
+      material factor).
+    * U: gas coolers against water 300-500 W/m2/K, the low end for the
+      30 bar nitrogen, the high end for the hydrogen-rich loop gas at
+      150 bar.
+    * vessels: a fully radiographed joint (jointEfficiency 1.0) and 3 mm of
+      corrosion allowance; L/D 6 for the catalyst vessel (ammonia02's), 3
+      for the drums.
+
+  The price constants are ammonia02's (CEPCI 2026 = 820 is a projection,
+  not a published index value; EUR/USD 0.92).
+\*---------------------------------------------------------------------------*/
+sizing
+{
+    units
+    (
+        //  ---- compressors: the shaft power is the unit's own result ------
+        { unitName N2Boost;      type compressor;  material carbonSteel;      // dry N2, 474 K discharge
+          designRules { pressureDesign 34; } }                                 // 1.1 x 30.2 bar
+        { unitName MakeupComp1;  type compressor;  material carbonSteel;      // H2/N2, 420 K discharge
+          designRules { pressureDesign 74; } }                                 // 1.1 x 66.7 bar
+        { unitName MakeupComp2;  type compressor;  material carbonSteel;      // H2/N2, 425 K discharge
+          designRules { pressureDesign 167; } }                                // the loop's
+        { unitName RecycleComp;  type compressor;  material SS304;            // suction at -20 C
+          designRules { pressureDesign 167; } }                                // the loop's
+
+        //  ---- coolers: U declared, LMTD from the run and the utility ----
+        { unitName N2Cooler;     type shellTubeHX;  material carbonSteel;
+          designRules { U 300;                     // W/m2/K, N2 at 30 bar against water
+                        utility coolingWater;      // 25 -> 35 C, the plant tower
+                        pressureDesign 34; } }
+        { unitName Intercooler;  type shellTubeHX;  material carbonSteel;
+          designRules { U 450;                     // W/m2/K, H2/N2 at 67 bar against water
+                        utility coolingWater;
+                        pressureDesign 74; } }
+        { unitName Aftercooler;  type shellTubeHX;  material carbonSteel;
+          designRules { U 500;                     // W/m2/K, H2/N2 at 150 bar against water
+                        utility coolingWater;
+                        pressureDesign 167; } }
+        { unitName WaterCooler;  type shellTubeHX;  material carbonSteel;
+          designRules { U 500;                     // W/m2/K, loop effluent at 150 bar against water
+                        utility coolingWater;
+                        pressureDesign 167; } }
+        { unitName Chiller;      type shellTubeHX;  material SS304;            // process side to -20 C
+          designRules { U 500;                     // W/m2/K, loop gas against boiling ammonia
+                        utility refrigerationNH3;  // -33.3 C, ammonia boiling at 1 atm
+                        pressureDesign 167; } }
+
+        //  ---- the interchanger: RATED, its own area passed through ------
+        { unitName FEHE;         type shellTubeHX;  material SS316;            // hot side 733 K
+          designRules { pressureDesign 167; } }
+
+        //  ---- the converter: a catalyst vessel on a declared basis ------
+        { unitName Converter;    type vessel;  material SS316;                 // 733 K outlet
+          designRules { spaceVelocity 20000;        // 1/h, Nm3 gas / (m3 catalyst h) -- ASSUMED
+                        spaceVelocityBasis normal;  // the basis the number is quoted on
+                        flowKey N_in_mol_s;         // GHSV is on the INLET gas
+                        L_over_D 6;  pressureDesign 167;
+                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+
+        //  ---- the drums: vapour residence (see the header) --------------
+        { unitName Separator;    type vessel;  material SS304;                 // -20 C
+          designRules { residenceTime 45;           // s of vapour, a knock-out drum
+                        flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3;  pressureDesign 167;
+                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+        { unitName LetdownHP;    type vessel;  material SS304;                 // -20 C
+          designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
+                        flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3;  pressureDesign 22;                        // 1.1 x 20 bar
+                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+        { unitName StorageFlash; type vessel;  material SS304;                 // -35 C
+          designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
+                        flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3;  pressureDesign 2;                         // 1.1 x 1.013 bar
+                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+    );
+}
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;        // projection, author-set (see the header)
+    cepci2001 397;        // the correlation's own basis year
+    usdToEur  0.92;
+}
