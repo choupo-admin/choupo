@@ -1991,13 +1991,37 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C47. A VISIBLE COUNTER OF VISITS AND DOWNLOADS (Vítor, 2026-10-07: "E
+sabes se se pode criar um contador para número de acessos e downloads, que
+fique visível?").**  Measured: the site's analytics hook exists
+(`site/analytics.conf`, GoatCounter, cookieless, injected by bin/buildSite)
+but holds NO site code -- no account was ever created, so nothing is counted
+today; the GitHub releases carry no assets (download_count 0, nothing to
+download -- the app runs in the browser).  Answered with the options; the
+account is his act.  Status: waiting on him.
+
+**C46. HOW BIG CHOUPO IS, COUNTED AND SHOWN (Vítor, 2026-10-07: "Podes ver
+quantas linhas de código tem? Faz como o openfoam e tenta usar uma definição
+que maximize o número de linhas", then "ok. Põe isso").**  `bin/curate/
+line_count.py`: every line of every git-tracked UTF-8 text file, comments and
+blanks included, broken down by what the files are (most of the total is
+data, and most of the data are group-contribution ESTIMATES -- the page says
+so).  The landing's size line is filled by bin/buildSite from that script
+and `generated/releaseInventory.json` when the site is built; a build that
+cannot count REMOVES the line.  Not a gate: the count moves every commit.
+The commander's first wording, "a 30,000-record property database", was
+FALSE (28,447 of those files are estimates, the curated catalogue is 604
+components) and was withdrawn before it reached the page.  README now opens
+with the link to www.choupo.org.  Also fixed: C45's entry above named the
+simulators outside the marked block and turned check_doctrine red on main.
+
 **C45. THE LANDING PAGE IS FOUND BY "OPEN SOURCE CHEMICAL PROCESS SIMULATOR",
 AND MAY COMPARE BY NAME (Vítor, 2026-10-07, after pasting a search engine's
 indexing advice; then, verbatim, on the commander's objection that naming
 competitors broke C7: "Que se lixe! Isto é guerra e eu posso fazer
-comparação desde que não viole regras básicas, não é? 'CHOUPO vs DWSIM /
-Aspen!'").**  THIS NARROWS C7, by his ruling, for ONE page: `site/index.html`
-may name DWSIM, DWSIM Pro and Aspen Plus inside ONE marked block
+comparação desde que não viole regras básicas, não é? 'CHOUPO vs [the two
+simulators]!'" -- the names elided here, because C7 still binds this file).**  THIS NARROWS C7, by his ruling, for ONE page: `site/index.html`
+may name other simulators inside ONE marked block
 (`<!-- COMPARISON:BEGIN ... -->` .. `<!-- COMPARISON:END -->`), and
 `check_doctrine` blanks that block and nothing else (a name elsewhere on the
 page still fails; a missing marker pair fails -- two by-hand sabotages, both
@@ -2005,8 +2029,8 @@ caught).  The basic rules kept, which are EU comparative-advertising law's:
 every cell is a fact the product publishes about itself, read 2026-10-07 and
 cited under the table; no claim about what another product cannot do; the
 trademarks used only to identify, with the notice.  Correction carried from
-the search engine's own suggestion, which was FALSE: DWSIM is GPL-3.0 and
-free like Choupo (its paid edition is DWSIM Pro, a cloud service), so
+the search engine's own suggestion, which was FALSE: the open-source one is
+GPL-3.0 and free like Choupo (its paid edition is a cloud service), so
 "free vs commercial" and "glass-box vs black-box" could not be written
 against it.  Also: the hero paragraph names the searched terms and the unit
 operations; the JSON-LD gains codeRepository, sameAs, offers, keywords and

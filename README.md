@@ -1,5 +1,8 @@
 # Choupo
 
+**Run it in your browser, nothing to install: [www.choupo.org](https://www.choupo.org)**
+&nbsp;·&nbsp; [model catalogue](https://www.choupo.org/models/) &nbsp;·&nbsp; [releases and citation](https://www.choupo.org/releases/)
+
 **Choupo is a free and open-source chemical process simulator** written in C++17 (GPL-3.0-or-later) — educational, glass-box, file-first case
 directories, modular thermo, file-based component database, browser GUI
 (WASM).
