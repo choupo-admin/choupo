@@ -1991,6 +1991,28 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C49. THE PROPERTIES PANEL CONVERTS A TEMPERATURE DIFFERENCE AS A
+TEMPERATURE, AND NEVER CONVERTS A SCALAR WRITTEN WITH ITS UNIT (Vítor,
+2026-10-07, verbatim: "a temperatura de aproximação fica estranha quando mudo
+de ºC para K. Por outro lado a T de operação fica sempre em K, mesmo quando
+muda para outras unidades").**  Seen on the green-ammonia Converter
+(`temperatureApproach 5;`, `T 733.15 K;`).  Measured: the panel's
+`renderFieldValue` (gui/src/ui/PropertyPanel.tsx) sent every number whose
+schema unit is "K" through the ABSOLUTE formatter, so a 5 K approach read
+5 - 273.15 = -268 degC; and it converted only a bare NUMBER, while a scalar
+written with its unit reaches the panel as the string "733.15 K", so the
+operating T was printed as written whatever the Units menu said.  Fixed in
+ONE home, `gui/src/ui/fieldDisplay.ts` (pure, tested): a schema field may
+declare `"quantity": "temperatureDifference"` (the ten that are: every
+`temperatureApproach`, `superheat`, `subcool`), which converts by the scale
+and never by the offset; a "<n> <unit>" string is read to SI through the
+dict's unit table, only within the field's own unit family, before it is
+formatted; an unknown `quantity` word refuses at schema load.  An EDITABLE
+field keeps being edited in the unit the file wrote (the tinkering rule,
+unchanged) and now shows the menu's value beside it as a hint when the two
+differ.  Test `gui/tests/fieldDisplay.test.ts`.  Status: built and tested
+2026-10-07.
+
 **C48. GREEN AMMONIA: THE EXCHANGERS DESIGNED IN DETAIL, NOT A = Q/(U*LMTD)
 (Vítor, 2026-10-07, verbatim: "Eu estive a ver e os permutadores não estão
 dimensionados de forma detalhada").**  Measured before dispatch: the six

@@ -45,6 +45,12 @@ export interface OperationField {
   type: "number" | "string";
   integer?: boolean;  // true when the JSON Schema type was "integer"
   unit?: string;
+  //  A temperature DIFFERENCE (an approach, a superheat, a subcooling) is
+  //  declared `"unit": "K", "quantity": "temperatureDifference"` in its
+  //  schema.  It converts by the scale and never by the offset: 5 K is a
+  //  5 degC difference, and reading it as an absolute temperature printed
+  //  -268 degC (C49, 2026-10-07).  Absent = an absolute value.
+  quantity?: "temperatureDifference";
   min?: number;       // numeric minimum (inclusive or exclusive — see strictMin)
   strictMin?: boolean;
   max?: number;
@@ -64,6 +70,7 @@ interface RawProperty {
   title?: string;
   description?: string;
   unit?: string;
+  quantity?: string;
   default?: number | string;
   minimum?: number;
   maximum?: number;
@@ -129,6 +136,13 @@ function parseField(key: string,
 ): OperationField {
   const t = Array.isArray(p.type) ? p.type[0] : p.type;
   const type = t === "number" || t === "integer" ? "number" : "string";
+  //  A declared word the panel dispatches on refuses a word it does not
+  //  know, and a difference is only a difference OF something it converts.
+  if (p.quantity !== undefined
+      && (p.quantity !== "temperatureDifference" || p.unit !== "K"))
+    throw new Error(`operation schema field '${key}': quantity '${p.quantity}'`
+      + ` with unit '${p.unit ?? ""}' -- the only declared quantity is`
+      + ` 'temperatureDifference', on a field whose unit is 'K'`);
   const integer = t === "integer";
 
   // JSON Schema Draft 2020-12 uses numeric exclusiveMinimum / Maximum.
@@ -164,6 +178,8 @@ function parseField(key: string,
     type,
     integer,
     unit: p.unit,
+    ...(p.quantity === "temperatureDifference"
+      ? { quantity: "temperatureDifference" as const } : {}),
     min,
     strictMin,
     max,
