@@ -196,6 +196,44 @@ cp "$root/generated/modelsCatalogue.json"  "$dist/" 2>/dev/null || true
 #  check_method_tools.py independently keeps equal to the registry.
 node "$root/bin/curate/method_tools.mjs" >/dev/null 2>&1 || true
 cp "$root/generated/methodTools.json" "$dist/" 2>/dev/null || true
+#  THE SAME LIST, IN THE HTML A CRAWLER READS (DEV.md 4c C45).  The landing
+#  fills #edutoolsGrid by fetch() at run time, so a search engine that does
+#  not execute JavaScript saw only "Loading the EduTools...".  The SAME
+#  artefact is written into the static page here, grouped by the same shelves
+#  the script draws -- one source, two renderings, and the script still
+#  replaces it in a browser.  A missing artefact leaves the page as it was.
+python3 - "$dist/index.html" "$root/generated/methodTools.json" <<'PY' || true
+import html, json, sys
+page, art = sys.argv[1], sys.argv[2]
+try:
+    doc = json.load(open(art, encoding="utf-8"))
+except (OSError, ValueError):
+    sys.exit(0)
+tools = doc.get("tools") or []
+if not tools:
+    sys.exit(0)
+e = lambda s: html.escape(str(s or ""), quote=True)
+card = lambda t: ('<a class="edutool" href="%s" target="_blank" rel="noopener">'
+                  '<h3>%s</h3><p>%s</p><span class="edutool-go">Open in Choupo &rarr;</span></a>'
+                  % (e(t.get("href")), e(t.get("label")), e(t.get("teaches"))))
+discs = doc.get("disciplines") or []
+shelved = [(d, [t for t in tools if t.get("discipline") == d]) for d in discs]
+shelved = [(d, items) for d, items in shelved if items]
+off = [t for t in tools if t.get("discipline") not in discs]
+if shelved and not off:
+    body = "".join('<h3 class="edutool-shelf">%s</h3>' % e(d) + "".join(map(card, items))
+                   for d, items in shelved)
+else:
+    body = "".join(map(card, tools))
+src = open(page, encoding="utf-8").read()
+hook = '<p class="edutool-msg" id="edutoolsLoading">Loading the EduTools…</p>'
+if hook in src:
+    src = src.replace(hook, body, 1)
+    src = src.replace('<span id="edutoolsCount">…</span>',
+                      '<span id="edutoolsCount">%d</span>' % len(tools), 1)
+    open(page, "w", encoding="utf-8").write(src)
+    print("edutools: %d tools written into the static landing" % len(tools))
+PY
 cp "$src"/*.svg "$dist/" 2>/dev/null || true
 cp "$src"/*.png "$dist/" 2>/dev/null || true    # landing logo (logo2.png) + any raster art
 cp "$src"/*.webp "$dist/" 2>/dev/null || true   # compressed landing product imagery

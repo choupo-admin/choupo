@@ -14,7 +14,7 @@
 <meta property="og:url" content="https://www.choupo.org/">
 <meta property="og:image" content="https://www.choupo.org/logo2.png">
   <link rel="canonical" href="https://www.choupo.org/">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Choupo","alternateName":"CHOUPO","url":"https://www.choupo.org/","applicationCategory":"EducationalApplication","operatingSystem":"Web browser, Linux","programmingLanguage":"C++","license":"https://www.gnu.org/licenses/gpl-3.0.html","isAccessibleForFree":true,"author":{"@type":"Person","name":"Vítor Geraldes"},"description":"Free and open-source, glass-box chemical process simulator: steady, batch, dynamic, control and property workflows."}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Choupo","alternateName":"CHOUPO","url":"https://www.choupo.org/","applicationCategory":"ScientificApplication","applicationSubCategory":"Chemical process simulation","operatingSystem":"Web browser, Linux","programmingLanguage":"C++","license":"https://www.gnu.org/licenses/gpl-3.0.html","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"codeRepository":"https://github.com/choupo-admin/choupo","sameAs":["https://github.com/choupo-admin/choupo"],"keywords":"open source chemical process simulator, chemical engineering simulation software, process flowsheet simulator, steady-state and dynamic simulation, thermodynamics, distillation, reactors, membranes, WebAssembly","featureList":["Steady-state flowsheet simulation with recycle convergence","Batch, semi-continuous and process-control simulation","Thermodynamic property models and parameter fitting","Mass, element and energy balances on every run","Equipment sizing and Turton capital costing","Runs in the browser through WebAssembly, no installation"],"author":{"@type":"Person","name":"Vítor Geraldes"},"description":"Free and open-source, glass-box chemical process simulator: steady, batch, dynamic, control and property workflows."}</script>
 <meta name="twitter:card" content="summary">
 <style>
   :root {
@@ -349,6 +349,13 @@
     .footer-grid { display: grid; }
   }
   .h1-sub{display:block;font-size:.34em;font-weight:500;letter-spacing:.02em;text-transform:none;opacity:.88;margin-top:.25em}
+  .compare-wrap { overflow-x: auto; margin-top: 22px; }
+  .compare { border-collapse: collapse; min-width: 640px; width: 100%; font-size: 15px; }
+  .compare th, .compare td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .compare thead th { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .compare tbody th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .compare td.na { color: var(--muted); font-style: italic; }
+  .compare-note { color: var(--muted); font-size: 13px; margin-top: 14px; max-width: 900px; }
 </style>
 </head>
 <body>
@@ -375,7 +382,7 @@
     <p class="eyebrow">Free, glass-box, GPL-3.0 — steady, batch, dynamic, control and properties</p>
     <h1>CHOUPO <span class="h1-sub">Open Source Chemical Process Simulator</span></h1>
     <p class="hero-tagline">The process simulator that shows its work.</p>
-    <p class="hero-copy">Choupo is a free and open-source chemical process simulator written in C++17. Build steady, batch and controlled processes; inspect thermodynamics; fit property models; and follow the balances and nonlinear solves all the way to the answer.</p>
+    <p class="hero-copy">Choupo is a free and open-source chemical process simulator: chemical engineering flowsheet simulation software for steady-state and dynamic processes, written in C++17 and run in your browser through WebAssembly, with nothing to install. Build steady, batch and controlled processes; inspect thermodynamics; fit property models; and follow the balances and nonlinear solves all the way to the answer &mdash; flash and phase equilibrium, MESH distillation, CSTR, PFR and Gibbs reactors, heat exchangers, compressors, reverse-osmosis and nanofiltration membranes, electrodialysis, crystallisation and drying.</p>
     <div class="hero-actions">
       <!--  TWO RUN BUTTONS, and both of them run what they say.  A visitor
            may want the development line or the release, and until today
@@ -487,6 +494,34 @@ material balance    <span class="ok">CLOSED</span>
 energy balance      <span class="hot">reported</span></pre>
     </div>
   </section>
+
+  <!-- COMPARISON:BEGIN  (Vítor's ruling 2026-10-07, DEV.md 4c C45: the landing
+       page may compare Choupo with named simulators.  Every cell is a FACT
+       read from the vendor's own public page on 2026-10-07 (sources below
+       the table); nothing here describes what another product cannot do
+       unless its own page says so.  check_doctrine allows a competitor name
+       ONLY between these two markers.) -->
+  <section class="section" id="compare" style="background:var(--white)">
+    <div class="wrap">
+      <div class="section-head"><p class="eyebrow">How it compares</p><h2>Choupo vs DWSIM vs Aspen Plus</h2></div>
+      <p class="lede">Three process simulators a chemical engineering student is likely to meet, compared on facts each one publishes about itself.</p>
+      <div class="compare-wrap">
+      <table class="compare">
+        <thead><tr><th></th><th>Choupo</th><th>DWSIM</th><th>DWSIM Pro</th><th>Aspen Plus</th></tr></thead>
+        <tbody>
+          <tr><th>Licence</th><td>GPL-3.0, open source</td><td>GPL-3.0, open source</td><td>commercial subscription</td><td>commercial (academic licences through institutions)</td></tr>
+          <tr><th>Cost to a student</th><td>free, no account</td><td>free</td><td>paid plans</td><td>through the institution's licence</td></tr>
+          <tr><th>Where it runs</th><td>any modern browser (WebAssembly, computes on your machine) &mdash; or native Linux build</td><td>desktop install: Windows, Linux, macOS</td><td>browser, vendor-hosted cloud</td><td>desktop install, Windows</td></tr>
+          <tr><th>Source code</th><td>open</td><td>open</td><td>closed extension of DWSIM</td><td>closed</td></tr>
+          <tr><th>Case files</th><td>plain-text dictionaries, diffable in git</td><td colspan="3" class="na">see each product's documentation</td></tr>
+          <tr><th>Solver trace in the run</th><td>every Newton iteration, residual, balance and data source printed</td><td colspan="3" class="na">see each product's documentation</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="compare-note">Checked 2026-10-07 against each product's public pages: DWSIM &mdash; <a class="text-link" href="https://github.com/DanWBR/dwsim">github.com/DanWBR/dwsim</a> and <a class="text-link" href="https://dwsim.org/index.php/download">dwsim.org</a>; DWSIM Pro &mdash; <a class="text-link" href="https://dwsim.org/?p=1175">dwsim.org (“Why DWSIM Pro?”)</a>; Aspen Plus &mdash; <a class="text-link" href="https://www.aspentech.com/en/products/engineering/aspen-plus">aspentech.com</a>, and a university installation page for its licensing and platform (<a class="text-link" href="https://kb.wisc.edu/cbe/page.php?id=56101">kb.wisc.edu</a>: “Aspen is a Windows only program”, licensed through a licence server). If a cell is out of date, open an issue and it will be corrected. Aspen Plus is a trademark of Aspen Technology, Inc.; DWSIM and DWSIM Pro belong to their respective owners. Names are used only to identify the products compared; no affiliation or endorsement is implied.</p>
+    </div>
+  </section>
+  <!-- COMPARISON:END -->
 
   <section class="section dark" id="capabilities">
     <div class="wrap">
