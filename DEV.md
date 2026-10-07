@@ -2014,6 +2014,14 @@ postDict as items attached to boundary streams ("o postDict é boa ideia!").
 STILL OPEN: product storage days, whether an H2 buffer is in scope, the
 receivable/payable/cash days.  Slice 1 (size every unit, existing sizers
 first) dispatched 2026-10-07 -- it depends on none of the open answers.
+  The open answers DELEGATED (Vítor, 2026-10-07: "avança como achares
+  melhor"); the commander's stated defaults, author-set design basis, each
+  reversible by one line of the case: NH3 product storage 21 days,
+  refrigerated atmospheric; the H2 buffer and N2 storage OUTSIDE battery
+  limits (the electrolyser and the ASU own them); receivables 30 days of
+  sales, payables 30 days of purchases, minimum cash 15 days of cash
+  operating cost; inventories valued at COST.  Slices 2-4 (storage, inventory,
+  working capital) dispatched the same day on `claude/c44-slices2-4`.
 Slice 1 (sizing + costing, no storage, no economics) BUILT 2026-10-07 on
 branch `claude/c44-slice1-sizing`, MERGED the same day: a `system/postDict` sizing
 and costing (Turton) 14 of the 17 units -- 4 compressors by shaft power; 5
