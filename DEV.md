@@ -2009,7 +2009,11 @@ capital is ONE fraction of FCI (`EconomicsPass.cpp:388`, default 0.15),
 with no inventory behind it.  The definitions a student is told (capital
 circulante vs fundo de maneio) and the storage basis are PEDAGOGY and
 DESIGN BASIS -- put to Vítor before building.
-Status: scope proposed 2026-10-07, waiting on his answers.
+Status: scope proposed 2026-10-07.  ANSWERED: storage tanks live in the
+postDict as items attached to boundary streams ("o postDict é boa ideia!").
+STILL OPEN: product storage days, whether an H2 buffer is in scope, the
+receivable/payable/cash days.  Slice 1 (size every unit, existing sizers
+first) dispatched 2026-10-07 -- it depends on none of the open answers.
 
 **C43. REACTION ENTHALPY LEADS TO STANDARD STATE (Vítor, 2026-10-07: "Revê a
 navegação pedagógica das EduTools do CHOUPO, sobretudo a ligação entre
