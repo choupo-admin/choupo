@@ -202,3 +202,70 @@ values given back), since no shipped case exercises those routes any more.
 * The exchangers' held inventory is still NOT DECLARED (C44 slice 3); the
   design now has the geometry a tube-side volume would need.
 * The unit's optional fouling has no shipped witness.
+
+
+## Appendix: the 53 golden rows that move, AWAITING VÍTOR (2026-10-07)
+
+Not recorded.  `bin/runTests` on this branch fails greenAmmoniaIndustrialN2 on
+exactly these rows and on nothing else (the 65 other cases the change can
+reach -- every gammaPhi case declaring transport, every diluteSolution case,
+every heatExchanger case, every case sizing a shellTubeHX or a column -- PASS,
+measured 2026-10-07 on the branch with main merged in).  When Vítor approves
+the list, `bin/runTests --record tutorials/plant/greenAmmoniaIndustrialN2`
+re-pins them and the branch can merge.
+
+```
+equipment Aftercooler basis                  (old sentence) -> (design sentence)  the basis sentence of the design route replaces the A = Q/(U*LMTD) / pass-through sentence
+equipment Aftercooler values.A                        221.561 -> 192.63           (-13.06 %)  the designed, INSTALLED area (n_shells pi d_o L N, smallest N meeting U F LMTD A >= |Q|) replaces A = Q/(U_typed LMTD) (FEHE: replaces the unit's rated 2000 m2, now published as A_rated)
+equipment Aftercooler values.U                            500 -> 642.414          (+28.48 %)  U is COMPUTED (films + wall + declared fouling, dirty) instead of typed (FEHE: instead of the unit's own 550)
+equipment Aftercooler values.weight                   6646.84 -> 5778.9           (-13.06 %)  the sheet weight is 30 kg/m2 x A x rho_mat/7850 -- follows A
+equipment Aftercooler cost.purchased                  61907.9 -> 58100.8          (-6.15 %)  Turton purchased cost on the new A
+equipment Aftercooler cost.bareModule                  260771 -> 244735           (-6.15 %)  Turton bare-module cost on the new A
+equipment Aftercooler cost.totalModule                 307710 -> 288787           (-6.15 %)  Turton total-module cost on the new A
+equipment Chiller basis                      (old sentence) -> (design sentence)  the basis sentence of the design route replaces the A = Q/(U*LMTD) / pass-through sentence
+equipment Chiller values.A                             1150.5 -> 1072.11          (-6.81 %)  the designed, INSTALLED area (n_shells pi d_o L N, smallest N meeting U F LMTD A >= |Q|) replaces A = Q/(U_typed LMTD) (FEHE: replaces the unit's rated 2000 m2, now published as A_rated)
+equipment Chiller values.U                                500 -> 536.8            (+7.36 %)  U is COMPUTED (films + wall + declared fouling, dirty) instead of typed (FEHE: instead of the unit's own 550)
+equipment Chiller values.weight                       35174.4 -> 32777.9          (-6.81 %)  the sheet weight is 30 kg/m2 x A x rho_mat/7850 -- follows A
+equipment Chiller cost.purchased                       161050 -> 153372           (-4.77 %)  Turton purchased cost on the new A
+equipment Chiller cost.bareModule                 1.23565e+06 -> 1.17674e+06      (-4.77 %)  Turton bare-module cost on the new A
+equipment Chiller cost.totalModule                1.45806e+06 -> 1.38855e+06      (-4.77 %)  Turton total-module cost on the new A
+equipment FEHE basis                         (old sentence) -> (design sentence)  the basis sentence of the design route replaces the A = Q/(U*LMTD) / pass-through sentence
+equipment FEHE values.A                                  2000 -> 1836.79          (-8.16 %)  the designed, INSTALLED area (n_shells pi d_o L N, smallest N meeting U F LMTD A >= |Q|) replaces A = Q/(U_typed LMTD) (FEHE: replaces the unit's rated 2000 m2, now published as A_rated)
+equipment FEHE values.U                                   550 -> 468.171          (-14.88 %)  U is COMPUTED (films + wall + declared fouling, dirty) instead of typed (FEHE: instead of the unit's own 550)
+equipment FEHE values.weight                          61146.5 -> 56156.8          (-8.16 %)  the sheet weight is 30 kg/m2 x A x rho_mat/7850 -- follows A
+equipment FEHE cost.purchased                          242012 -> 226662           (-6.34 %)  Turton purchased cost on the new A
+equipment FEHE cost.bareModule                    2.30053e+06 -> 2.15462e+06      (-6.34 %)  Turton bare-module cost on the new A
+equipment FEHE cost.totalModule                   2.71462e+06 -> 2.54245e+06      (-6.34 %)  Turton total-module cost on the new A
+equipment Intercooler basis                  (old sentence) -> (design sentence)  the basis sentence of the design route replaces the A = Q/(U*LMTD) / pass-through sentence
+equipment Intercooler values.A                          238.5 -> 185.82           (-22.09 %)  the designed, INSTALLED area (n_shells pi d_o L N, smallest N meeting U F LMTD A >= |Q|) replaces A = Q/(U_typed LMTD) (FEHE: replaces the unit's rated 2000 m2, now published as A_rated)
+equipment Intercooler values.U                            450 -> 645.458          (+43.44 %)  U is COMPUTED (films + wall + declared fouling, dirty) instead of typed (FEHE: instead of the unit's own 550)
+equipment Intercooler values.weight                   7154.99 -> 5574.59          (-22.09 %)  the sheet weight is 30 kg/m2 x A x rho_mat/7850 -- follows A
+equipment Intercooler cost.purchased                  64082.9 -> 57185.6          (-10.76 %)  Turton purchased cost on the new A
+equipment Intercooler cost.bareModule                  242410 -> 216319           (-10.76 %)  Turton bare-module cost on the new A
+equipment Intercooler cost.totalModule                 286044 -> 255257           (-10.76 %)  Turton total-module cost on the new A
+equipment N2Cooler basis                     (old sentence) -> (design sentence)  the basis sentence of the design route replaces the A = Q/(U*LMTD) / pass-through sentence
+equipment N2Cooler values.A                           104.998 -> 84.6404          (-19.39 %)  the designed, INSTALLED area (n_shells pi d_o L N, smallest N meeting U F LMTD A >= |Q|) replaces A = Q/(U_typed LMTD) (FEHE: replaces the unit's rated 2000 m2, now published as A_rated)
+equipment N2Cooler values.U                               300 -> 414.859          (+38.29 %)  U is COMPUTED (films + wall + declared fouling, dirty) instead of typed (FEHE: instead of the unit's own 550)
+equipment N2Cooler values.weight                      3149.95 -> 2539.21          (-19.39 %)  the sheet weight is 30 kg/m2 x A x rho_mat/7850 -- follows A
+equipment N2Cooler cost.purchased                     45562.9 -> 42323.1          (-7.11 %)  Turton purchased cost on the new A
+equipment N2Cooler cost.bareModule                     160377 -> 148973           (-7.11 %)  Turton bare-module cost on the new A
+equipment N2Cooler cost.totalModule                    189245 -> 175789           (-7.11 %)  Turton total-module cost on the new A
+equipment WaterCooler basis                  (old sentence) -> (design sentence)  the basis sentence of the design route replaces the A = Q/(U*LMTD) / pass-through sentence
+equipment WaterCooler values.A                        685.302 -> 712.147          (+3.92 %)  the designed, INSTALLED area (n_shells pi d_o L N, smallest N meeting U F LMTD A >= |Q|) replaces A = Q/(U_typed LMTD) (FEHE: replaces the unit's rated 2000 m2, now published as A_rated)
+equipment WaterCooler values.U                            500 -> 533.614          (+6.72 %)  U is COMPUTED (films + wall + declared fouling, dirty) instead of typed (FEHE: instead of the unit's own 550)
+equipment WaterCooler values.weight                   20559.1 -> 21364.4          (+3.92 %)  the sheet weight is 30 kg/m2 x A x rho_mat/7850 -- follows A
+equipment WaterCooler cost.purchased                   114377 -> 117164           (+2.44 %)  Turton purchased cost on the new A
+equipment WaterCooler cost.bareModule                  481784 -> 493523           (+2.44 %)  Turton bare-module cost on the new A
+equipment WaterCooler cost.totalModule                 568506 -> 582357           (+2.44 %)  Turton total-module cost on the new A
+kpi economics COM_d                               4.43893e+08 -> 4.43831e+08      (-0.01 %)  follows FCI (Turton COM_d carries FCI terms)
+kpi economics FCI                                  4.1577e+07 -> 4.12297e+07      (-0.84 %)  sum of the six exchanger cost moves
+kpi economics NPV                                -4.12426e+08 -> -4.11744e+08     (-0.17 %)  follows FCI and COM_d
+kpi economics TCI                                 9.28176e+07 -> 9.24638e+07      (-0.38 %)  follows FCI
+kpi economics WC                                  5.12406e+07 -> 5.1234e+07       (-0.01 %)  = WC_net
+kpi economics WC_fractionRule                     6.23655e+06 -> 6.18446e+06      (-0.84 %)  0.15 x FCI, printed for comparison
+kpi economics WC_minimumCash                      1.82422e+07 -> 1.82396e+07      (-0.01 %)  15 days of COM_d
+kpi economics WC_net                              5.12406e+07 -> 5.1234e+07       (-0.01 %)  gross - payables; its cost-valued terms move
+kpi economics WC_processInventory                     12380.7 -> 12379.1          (-0.01 %)  process inventory valued at COST (COM_d per kg)
+kpi economics WC_productStock                     2.83767e+07 -> 2.83727e+07      (-0.01 %)  product stock valued at COST (COM_d per kg)
+kpi economics productionCostPerKg                     1.14485 -> 1.14468          (-0.01 %)  COM_d / production
+```

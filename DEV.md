@@ -2063,6 +2063,14 @@ rows appended.  Gate `check_design_sheet` arm (s) (5 sabotages caught), arm
 (p) moved to an estimate twin.  Record:
 `docs/design/an-exchanger-designed-not-estimated.md`.
 
+Status 2026-10-07 (commander): REVIEWED and VALIDATED on branch
+`claude/c48-hx-detailed-design` with main merged in -- the 66 cases the
+change can reach (every gammaPhi case declaring transport, every
+diluteSolution case) PASS 65 / FAIL 1, the one failure being
+greenAmmoniaIndustrialN2 on exactly the 53 moved rows listed, with their
+reasons, in the appendix of docs/design/an-exchanger-designed-not-estimated.md.
+NOT MERGED: the rows wait for Vítor's approval (Saturday).
+
 **C47. A VISIBLE COUNTER OF VISITS AND DOWNLOADS (Vítor, 2026-10-07: "E
 sabes se se pode criar um contador para número de acessos e downloads, que
 fique visível?").**  Measured: the site's analytics hook exists
