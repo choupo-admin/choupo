@@ -57,8 +57,8 @@
 import type { CaseFiles } from "./types.js";
 import type { JsonDict } from "../dict/index.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
-import { readEdges } from "./toGraph.js";
-import { localStreamNames, sliceRunResult } from "./resultSlice.js";
+import { readEdges, zeroStatePath } from "./toGraph.js";
+import { frozenStreamStateText, localStreamNames, sliceRunResult } from "./resultSlice.js";
 
 /** One stream's state, in the shape `bootCase.withFeeds` freezes into `0/`. */
 export interface SeedStream {
@@ -89,11 +89,12 @@ export function memberPorts(
   member: string,
 ): { boundaryFeeds: Record<string, string>;
      boundaryOutlets: string[];
+     outletMap: Record<string, string>;
      ports: Record<string, string> } {
   const boundaryFeeds: Record<string, string> = {};
   const outletMap: Record<string, string> = {};
   if (!parentFlowsheet)
-    return { boundaryFeeds, boundaryOutlets: [], ports: {} };
+    return { boundaryFeeds, boundaryOutlets: [], outletMap, ports: {} };
   //  A connection endpoint is `<member>/<port>`; the SLASH is the dict's
   //  separator and the only thing read here.  Deliberately NOT a dot: the
   //  dotted form is the engine's FLATTENED name, and reading a port out of
@@ -114,6 +115,7 @@ export function memberPorts(
   return {
     boundaryFeeds,
     boundaryOutlets: Object.keys(outletMap),
+    outletMap,
     ports: { ...boundaryFeeds, ...outletMap },
   };
 }
@@ -144,7 +146,7 @@ export function buildDrillSeed(
   const local = localStreamNames(subFiles.flowsheet as JsonDict | undefined);
   if (local.length === 0) return null;
 
-  const { boundaryFeeds, boundaryOutlets, ports } =
+  const { boundaryFeeds, boundaryOutlets, outletMap, ports } =
     memberPorts(parentFlowsheet, member);
   const leaf = ((subFiles.flowsheet as { units?: Array<{ name?: unknown }> }
                  | undefined)?.units ?? [])[0]?.name;
@@ -153,6 +155,7 @@ export function buildDrillSeed(
     localStreamNames: local,
     boundaryFeeds,
     boundaryOutlets,
+    boundaryOutletMap: outletMap,
     ...(typeof leaf === "string" && leaf ? { leafUnitName: leaf } : {}),
   });
 
@@ -200,4 +203,50 @@ export function feedsKeyFor(sub: string): string {
 /** The ONE-SHOT stash key for the inherited slice (consumed by bootCase). */
 export function inheritKeyFor(sub: string): string {
   return `choupo.inherit.${sub}`;
+}
+
+/**
+ * Freeze a drill's feeds into the child's `0/` (what `bootCase` does with the
+ * `?feeds=` / `?inherit=` stashes), and decide which of two candidate states
+ * a feed STARTS from.
+ *
+ * WHY THE SECOND ARGUMENT (DEV.md 4c C50, 2026-10-07).  Vítor ran the
+ * green-ammonia plant, drilled into the Converter, saw its feed at the
+ * converged 151 bar -- and on Run the feed became 8 bar, 208 degC and
+ * 296 t/h: the PLANT's initial guess for that stream, its `0/PreheatedFeed`.
+ * A drilled unit folder carries no `0/`, so the registry PROJECTS the root's
+ * `0/` into it (`projectRootStreamState`), and this function's rule "a `0/`
+ * the sub-case already carries always wins" counted that projection as the
+ * sub-case's own.  It is not: it is the parent's SEED, and a recycle seed is
+ * the one state of a plant that is known to be wrong.  So a path the
+ * registry PROJECTED yields to the drill's state; a path the sub-case
+ * AUTHORED still wins over everything, as it always did.
+ */
+export function applyDrillFeeds(
+  files: CaseFiles,
+  defs: Record<string, unknown>,
+  projected: ReadonlySet<string>,
+): CaseFiles {
+  if (!Object.keys(defs).length) return files;
+  const present = { ...(files.rawFiles ?? {}), ...(files.extraFiles ?? {}) };
+  const raw = { ...(files.rawFiles ?? {}) };
+  const extra = { ...(files.extraFiles ?? {}) };
+  let added = false;
+  for (const [nm, def] of Object.entries(defs)) {
+    if (!def || typeof def !== "object" || Array.isArray(def)) continue;
+    const have = zeroStatePath(present, nm);
+    if (have !== undefined) {
+      if (!projected.has(have)) continue;      // authored: it wins
+      delete raw[have];                        // projected seed: it yields
+      delete extra[have];
+    }
+    const d = def as { F?: number; T?: number; P?: number;
+                       molarComposition?: Record<string, number> };
+    extra[`0/${nm}`] = frozenStreamStateText({
+      F: d.F ?? 0, T: d.T ?? 298.15, P: d.P ?? 101325,
+      composition: d.molarComposition ?? {},
+    });
+    added = true;
+  }
+  return added ? { ...files, rawFiles: raw, extraFiles: extra } : files;
 }

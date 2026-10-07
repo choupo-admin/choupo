@@ -1991,6 +1991,26 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C50. A DRILLED UNIT RAN FROM THE PLANT'S SEED, NOT FROM THE RUN IT CAME
+OUT OF (Vítor, 2026-10-07, verbatim: "Eu corro o flowsheet principal. Depois
+quando abro o reator de gibbs, ele aparece sem os dados convergidos
+anteriores! E quando mando correr, a pressão de entrada passa para 8 bar!!").**
+Measured on greenAmmoniaIndustrialN2/Converter: the registry PROJECTS the
+root's `0/` into a drilled unit folder (`projectRootStreamState`,
+gui/src/cases/tutorials.ts), and `bootCase`'s rule "a 0/ the sub-case already
+carries always wins" counted that projection as the sub-case's own -- so the
+drill's converged feed (151 bar, 378 degC, 152 t/h) was dropped and Run used
+the plant's recycle SEED `0/PreheatedFeed` (8 bar, 208 degC, 296 t/h).
+Separately, the inherited slice renamed the leaf's INLET into scope
+(`PreheatedFeed` -> `Feed`) but not its OUTLET (`HotEffluent` -> `Out`), so
+the drilled tab opened with its product empty.  Fixed: the registry records
+which `0/` paths it projected (`TutorialEntry.projectedZero`); ONE home,
+`drillSeed.applyDrillFeeds`, lets a projected path yield to the drill's state
+while an AUTHORED one still wins; `SliceOptions.boundaryOutletMap` mirrors
+`boundaryFeeds`.  Tests `gui/tests/drillProjectedSeed.test.ts` (on the real
+registry entry) and `drillSeed.test.ts`.  Status: built and tested
+2026-10-07.
+
 **C49. THE PROPERTIES PANEL CONVERTS A TEMPERATURE DIFFERENCE AS A
 TEMPERATURE, AND NEVER CONVERTS A SCALAR WRITTEN WITH ITS UNIT (Vítor,
 2026-10-07, verbatim: "a temperatura de aproximação fica estranha quando mudo
@@ -2036,7 +2056,11 @@ its own duty and compared with its declared 2000 m2 (its answer is not
 moved).  Condensing duty (WaterCooler, Chiller) is outside a single-phase
 Kern and is said so on the sheet, never silently priced as single-phase.
 Status: dispatched 2026-10-07 to a general in a worktree; golden rows that
-MOVE go to Vítor as a list before any re-record.
+MOVE go to Vítor as a list before any re-record.  BUILT, reviewed and validated
+2026-10-07; NOT merged -- it lives on branch `claude/c48-hx-detailed-design`
+(pushed), and its 53 moved golden rows, each with its reason, are in the
+appendix of that branch's docs/design/an-exchanger-designed-not-estimated.md,
+waiting for Vítor's approval.
 
 **C47. A VISIBLE COUNTER OF VISITS AND DOWNLOADS (Vítor, 2026-10-07: "E
 sabes se se pode criar um contador para número de acessos e downloads, que
