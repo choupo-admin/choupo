@@ -117,6 +117,25 @@ export const ENTHALPY_STEPS: readonly LessonStep[] = [
     note: "THE LAW HOLDS ALONG ONE PHASE.  If a species changes phase between "
       + "298.15 K and T — water condensing, a salt melting — its enthalpy "
       + "jumps by the latent heat on the way, and the integral alone misses it.",
+    //  DEV.md 4c C43 (Vítor, 2026-10-07): a pointer to where the chain
+    //  continues, never a copy of Standard State's own derivation.
+    leadsTo: {
+      tool: "standard-state",
+      toolLabel: "Standard State",
+      stepTitle: "Where the 1/T² comes from",
+      body: "Kirchhoff tells us how the reaction enthalpy changes with "
+        + "temperature.  Gibbs–Helmholtz then connects the reaction enthalpy "
+        + "to how the reaction Gibbs energy over T changes with temperature, "
+        + "and ΔG° = −RT ln K turns that into van 't Hoff: how the equilibrium "
+        + "constant changes.  One structure, three links:",
+      chain: String.raw`\Delta_r c_p^\circ
+\xrightarrow{\ \text{Kirchhoff}\ }
+\Delta_r H^\circ(T)
+\xrightarrow{\ \text{Gibbs--Helmholtz}\ }
+\frac{\Delta_r G^\circ(T)}{T}
+\xrightarrow{\ \Delta_r G^\circ = -RT\ln K\ }
+K(T)`,
+    },
   },
   {
     n: 3,

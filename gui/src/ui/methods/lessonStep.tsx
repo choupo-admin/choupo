@@ -76,6 +76,7 @@
 import { Box, Text, Title } from "@mantine/core";
 
 import { renderTex, splitInlineTex } from "./lessonTex.js";
+import { setActiveMethodTool, type MethodToolId } from "./registry.js";
 
 /** One symbol, bound to the words it stands for.
  *
@@ -122,6 +123,21 @@ export interface LessonStep {
    *  substitution being made, or the assumption being spent. */
   derivation?: readonly { readonly step: string; readonly eq?: string }[];
   note?: string;
+  /** WHERE THIS STEP LEADS, in ANOTHER EduTool (DEV.md 4c C43).
+   *
+   *  Vítor, 2026-10-07: a student who learns Kirchhoff in Reaction Enthalpy
+   *  may never see that the next links of the same chain -- Gibbs-Helmholtz,
+   *  then van 't Hoff -- are taught in Standard State.  A pointer, never a
+   *  copy: the other page keeps its content, this one names the step it
+   *  continues at and switches to that tool.  `chain` is the one-line map of
+   *  the whole structure, drawn as display TeX. */
+  leadsTo?: {
+    readonly tool: MethodToolId;
+    readonly toolLabel: string;
+    readonly stepTitle: string;
+    readonly body: string;
+    readonly chain?: string;
+  };
 }
 
 /** A limit: something the construction cannot show, named rather than implied. */
@@ -222,6 +238,30 @@ export function LessonStepView({ step }: { step: LessonStep }): JSX.Element {
         </Box>
       )}
       {step.note && <Text size="sm" c="dimmed">{step.note}</Text>}
+      {step.leadsTo && (
+        <Box my={10} px="sm" py={8}
+          style={{ border: `1px solid ${BORDER}`, borderRadius: 4,
+                   borderLeft: "3px solid var(--mantine-color-accent-5)" }}>
+          <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={6}>
+            where does this lead?
+          </Text>
+          <Text size="sm">{step.leadsTo.body}</Text>
+          {step.leadsTo.chain && (
+            <Box mt={6}><Tex src={step.leadsTo.chain} mode="display" /></Box>
+          )}
+          <Text size="sm" mt={6}>
+            {"→ Continue to "}
+            <Text span component="a" href="#" fw={600} c="accent"
+              onClick={(e) => {
+                e.preventDefault();
+                const lt = step.leadsTo;
+                if (lt) setActiveMethodTool(lt.tool);
+              }}>
+              {step.leadsTo.toolLabel} — “{step.leadsTo.stepTitle}”
+            </Text>
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 }
