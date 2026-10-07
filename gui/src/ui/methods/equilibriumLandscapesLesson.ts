@@ -269,7 +269,7 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
     title: "The GLOBAL caveat, drawn: thermal NO inside a flame",
     body: "The engine prints, on every run that declares an approach, that "
       + "the parameter is GLOBAL and cannot resolve per-reaction approaches "
-      + "(GibbsReactor.cpp:364–368; the map's own line at GibbsMapOp.cpp:"
+      + "(GibbsReactor.cpp:369–368; the map's own line at GibbsMapOp.cpp:"
       + "149–157).  The thermal-NO witness makes the sentence into a curve.  "
       + "NO formation from N₂ and O₂ is endothermic: its equilibrium mole "
       + "fraction RISES with temperature over many decades, which is why the page draws it on a log axis.  "

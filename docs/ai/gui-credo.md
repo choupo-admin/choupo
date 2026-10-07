@@ -405,9 +405,11 @@ back to the dicts (the dict topology is immutable from the GUI).
 
 ### Stream-class show/hide
 The canvas carries view-only toggles (NOT case data) to show/hide
-classes of stream: **energy** wires (W / Q), **recycle** tear edges,
-and **utility** streams (incl. the column duty stubs).  Default: all
-shown.  This lets a reader declutter a busy flowsheet without editing
+classes of stream: **energy** wires (W / Q) and **utility** streams
+(incl. the column duty stubs).  The **recycle** chip toggles the CUT MARK
+on a tear, never the pipe: a recycle is process material and is drawn
+SOLID like any other stream, the solver's cut marked on it by a break
+symbol (Vítor, 2026-10-07; DEV.md 4c C41).  Default: all shown.  This lets a reader declutter a busy flowsheet without editing
 anything.
 
 ### Column duty stubs

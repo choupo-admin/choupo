@@ -980,17 +980,20 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             onCommit: commitEdgeCenters,
             onReset: onEdgeCenterReset,
             showNumbers: show.numbers,
+            //  The recycle chip shows/hides the CUT MARK on a tear, never the
+            //  pipe itself: a recycle carries material like any other stream.
+            showCut: show.recycle,
             dashKind: dashKind !== "process"
               ? dashKind : (ps?.phase === "empty" ? "empty" : "process"),
             num: numberOf(label),   // ABSOLUTE number (overrides toGraph local)
             ...(boundary ? { boundary: { refused: boundary.refused } } : {}),
           },
           // Visualisation filter: hide this edge when its class is toggled
-          // off (energy wire / recycle tear / utility stream).  Process
-          // material is never hidden.
+          // off (energy wire / utility stream).  Process material is never
+          // hidden -- and a recycle IS process material, so the `recycle`
+          // chip toggles its cut mark (TearEdge), not the pipe (C41).
           hidden: (isEnergy && !show.energy)
-               || (isTear   && !show.recycle)
-               || (isUtility && !show.utility)
+               || (isUtility && !show.utility && !isTear)
                || (isDuty   && !show.utility),
           // Arrow at the destination end --- shows flow direction
           // (critical for students reading a flowsheet).  Default
@@ -1321,6 +1324,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                     strokeDasharray={d.dash ?? undefined}
                     opacity={d.opacity}
                   />
+                  {d.mark === "cut" && (
+                    <g stroke="currentColor" strokeWidth={1.5}>
+                      <line x1={8} y1={6} x2={11} y2={0} />
+                      <line x1={11} y1={6} x2={14} y2={0} />
+                    </g>
+                  )}
                 </svg>
                 <Text size="10px" c="dimmed">{d.label}</Text>
               </Box>

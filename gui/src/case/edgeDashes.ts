@@ -75,6 +75,14 @@ export interface DashSpec {
    * refuses to repaint -- so the legend must not claim a colour either.
    */
   colour?: string;
+  /**
+   * A MARK drawn ON an otherwise ordinary wire instead of a pattern along
+   * it.  `cut` is the recycle tear: the pipe is a pipe like any other, and
+   * what is special about it is a POINT -- where the sequential solver cuts
+   * the loop -- so the point is marked and the stroke stays solid (Vítor,
+   * 2026-10-07, DEV.md 4c C41: "elas são correntes como as outras!").
+   */
+  mark?: "cut";
 }
 
 /**
@@ -92,12 +100,17 @@ export const DASH_KINDS: readonly DashSpec[] = [
   },
   {
     kind: "tear",
-    dash: "10 5",
+    //  SOLID since 2026-10-07 (C41): a recycle is material in a pipe, so it
+    //  is drawn as one; the break mark on it is the solver's cut.
+    dash: null,
     opacity: 1,
+    mark: "cut",
     label: "recycle cut",
     meaning:
-      "a tear stream the solver cuts to break a loop, declared in"
-      + " system/solverDict; the long dash marks the back edge",
+      "a recycle stream: a pipe like any other.  The break mark is where"
+      + " the sequential solver CUTS the loop -- it guesses this stream,"
+      + " solves round the loop and iterates until the guess and the"
+      + " answer agree (the tear declared in system/solverDict)",
   },
   {
     kind: "utility",

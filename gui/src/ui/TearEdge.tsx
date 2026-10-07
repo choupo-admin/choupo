@@ -64,6 +64,8 @@ interface TearData {
   boundary?: BoundaryBadgeData;
   showNumbers?: boolean;
   num?: number;
+  /** draw the solver's CUT mark on this recycle (the `recycle` chip) */
+  showCut?: boolean;
   [k: string]: unknown;
 }
 
@@ -124,7 +126,7 @@ export function TearEdge({
 
   const labelX = (sX + tX) / 2;
   const labelY = busY;
-  // Lift the name chip ABOVE the underbus so the thick dashed recycle stroke can
+  // Lift the name chip ABOVE the underbus so the thick recycle stroke can
   // never run through the text (the model-boundary badge stays just below the bus,
   // so name and badge sit on opposite sides of the line, both legible).
   const labelTextY = busY - 15;
@@ -165,9 +167,38 @@ export function TearEdge({
   // when a node is far to the side.
   const busSpan = Math.max(48, Math.abs(tX - sX));
 
+  //  THE CUT MARK (DEV.md 4c C41).  A recycle is a pipe like any other and
+  //  is drawn SOLID; what is special about it is a POINT -- where the
+  //  sequential solver cuts the loop -- so that point carries a break mark,
+  //  the draughtsman's two slanted strokes across a line.  A quarter of the
+  //  way along the underbus from the source, clear of the grab handle and
+  //  the name chip at its middle.  The gap between the strokes is painted in
+  //  the canvas colour so the line reads as BROKEN there, which is the fact.
+  const cutX = sX + (tX - sX) * 0.25;
+  const wire = Number((style as { strokeWidth?: number } | undefined)?.strokeWidth ?? 2);
+  const half = wire / 2 + 6;          // the strokes outreach the wire on both sides
+  const lean = 3;                     // the slant, in px each way
+  const canvasBg = "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))";
+
   return (
     <>
       <BaseEdge path={d} markerEnd={markerEnd} style={style} />
+      {td.showCut !== false && (
+        <g pointerEvents="visibleStroke">
+          <title>
+            Recycle cut: the sequential solver guesses this stream, solves round
+            the loop and iterates until the guess and the answer agree (the
+            tear declared in system/solverDict).  The pipe itself is a pipe like
+            any other.
+          </title>
+          <line x1={cutX - lean} y1={busY + half} x2={cutX + lean} y2={busY - half}
+                stroke={canvasBg} strokeWidth={5} />
+          <line x1={cutX - lean - 3} y1={busY + half} x2={cutX + lean - 3} y2={busY - half}
+                stroke={strokeColor} strokeWidth={2} strokeLinecap="round" />
+          <line x1={cutX - lean + 3} y1={busY + half} x2={cutX + lean + 3} y2={busY - half}
+                stroke={strokeColor} strokeWidth={2} strokeLinecap="round" />
+        </g>
+      )}
       {/* Wide grab strip along the underbus + a visible move-point dot. */}
       <EdgeLabelRenderer>
         <div

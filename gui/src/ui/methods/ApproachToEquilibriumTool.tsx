@@ -47,7 +47,7 @@ License
 
   THE SIGN IS THE ENGINE'S (ruled 2026-09-26).  A case declares
   `temperatureApproach` as a MAGNITUDE; a negative value is refused by name
-  (GibbsReactor.cpp:288-299), and the engine assigns the direction from the
+  (GibbsReactor.cpp:293-304), and the engine assigns the direction from the
   isothermal enthalpy change between the feed and its true equilibrium at the
   physical T (`GibbsReactor::approachDirection`, :67-106).  This panel reads
   the SAME quantity the same way -- on these witnesses the feed and the
@@ -82,7 +82,7 @@ License
   prose and is NOT a witness here.  The divergence IS the third caveat.
 
   THE FEED TEMPERATURE MOVES WITH THE REACTOR, and that is what makes `Q_kW`
-  readable.  GibbsReactor.cpp:652 publishes `Q_kW = H_out - H_in` with H_in at
+  readable.  GibbsReactor.cpp:668 publishes `Q_kW = H_out - H_in` with H_in at
   the FEED temperature, so with a feed left behind it carries sensible heat and
   its sign stops being the thermicity (measured: the shift reactor at 1200 K
   with an 800 K feed reports +2.04 kW and is exothermic).  With both at the
@@ -203,7 +203,7 @@ export function verdictOf(
 }
 
 /** The thermicity WORD the engine's own duty carries, or null when the run
- *  published none.  Sign convention is GibbsReactor.cpp:652 — `Q_kW` is heat
+ *  published none.  Sign convention is GibbsReactor.cpp:668 — `Q_kW` is heat
  *  ADDED to the process to hold T, so a negative duty is heat removed. */
 export function thermicityOf(Q_kW: number | null):
   "exothermic" | "endothermic" | "thermally neutral" | null {
@@ -226,7 +226,7 @@ export function engineSignOf(
 }
 
 /** The magnitude knob.  Its floor is 0 because the engine's is: a negative
- *  `temperatureApproach` is refused by name (GibbsReactor.cpp:288-299), so a
+ *  `temperatureApproach` is refused by name (GibbsReactor.cpp:293-304), so a
  *  slider that offered one would teach a declaration the engine rejects. */
 export const DT_KNOB: PanelKnob = {
   id: "dT", label: "approach |ΔT| — a MAGNITUDE; the engine picks the direction",
@@ -438,7 +438,7 @@ export function ApproachToEquilibriumTool(): JSX.Element {
           Since 2026-09-26 the author declares only a MAGNITUDE and the engine
           assigns the sign from the thermicity you see above; a negative
           <code>temperatureApproach</code> is refused by name
-          (<code>GibbsReactor.cpp:288–299</code>). A Gibbs reactor is told no
+          (<code>GibbsReactor.cpp:293–299</code>). A Gibbs reactor is told no
           reactions, so it takes its thermicity from the one extent it has —
           the transformation from its own feed to the true equilibrium at T,
           solved once more before the detuned solve
