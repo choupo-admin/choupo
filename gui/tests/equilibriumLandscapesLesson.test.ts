@@ -105,7 +105,7 @@ describe("the equilibrium-landscapes lesson", () => {
 
   it("draws the GLOBAL caveat on thermal NO and calls it a model limitation", () => {
     const s = all(5);
-    expect(s).toContain("GibbsReactor.cpp:364–368");
+    expect(s).toContain("GibbsReactor.cpp:369–368");
     expect(s).toContain("reports MORE NO than the true equilibrium");
     expect(s).toContain("LIMITATION OF THE SINGLE-NUMBER MODEL, NOT A FINDING ABOUT FLAMES");
     expect(prose(step(5).formula!)).toContain(String.raw`\ce{N2 + O2 <=> 2 NO}`);

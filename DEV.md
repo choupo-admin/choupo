@@ -1991,6 +1991,28 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C41. RECYCLES ARE STREAMS LIKE THE OTHERS (Vítor, 2026-10-07, verbatim:
+"as recirculações ficam a tracejado, mas isso fica esquisito porque elas são
+correntes como as outras! Como achas que pode ficar mais elegante?", then
+"ok! Podes refazer?" on the commander's proposal).**  A tear is drawn SOLID;
+the solver's cut is a break MARK on it (two slanted strokes, with a hover
+title saying what a cut is); the `recycle` chip toggles the mark and never
+hides the pipe (a recycle is material); the legend's "recycle cut" row draws
+the mark.  `edgeDashes.ts` gains `mark: "cut"`; the dash pattern `10 5` is
+retired.  NOT built, and the commander's proposal claimed it was cheap on a
+false premise: highlighting the whole LOOP needs the cycle each tear closes,
+and the engine does NOT publish it (`Flowsheet::validateSequentialPlan`
+finds cycles, the result JSON carries none) -- deriving it in the GUI would
+be a second home for the plan's cycle detection.  The engine publishing
+each tear's cycle is the next slice if he wants the loop drawn.
+  Found while validating it: C40 (2026-10-06) moved lines in
+`GibbsReactor.cpp` and `Flowsheet.cpp` that EduTool lessons cite by
+file:line, and its validation did not run `--gui` (CLAUDE.md §10 requires it
+when lines move in a cited engine file), so `main` carried two red lesson
+tests overnight.  The 29 citations were re-pointed through a line map of the
+C40 diff, not by hand.  Validated: `bin/runTests --gui` PASS 27 / FAIL 0
+(4722 tests), typecheck clean.
+
 **C40. "RESOLVE O PONTO1 E FICAMOS POR AQUI ATÉ SÁBADO" (Vítor, 2026-10-06,
 verbatim, answering the commander's status report; point 1 was the two engine
 debts the commander can take without him).**

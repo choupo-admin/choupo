@@ -33,9 +33,10 @@ describe("the table is the one home", () => {
     expect(() => dashSpec("nonsense" as DashKind)).toThrow(/no spec/);
   });
 
-  it("only `process` is solid", () => {
+  it("a solid wire is `process`, or a recycle carrying its cut MARK (C41)", () => {
     for (const d of DASH_KINDS) {
       if (d.kind === "process") expect(d.dash).toBeNull();
+      else if (d.kind === "tear") { expect(d.dash).toBeNull(); expect(d.mark).toBe("cut"); }
       else expect(typeof d.dash).toBe("string");
     }
   });
@@ -85,7 +86,9 @@ describe("the ambiguous patterns are RECORDED, not papered over", () => {
 
 describe("the style the canvas spreads", () => {
   it("carries the pattern, and opacity only when it is not 1", () => {
-    expect(dashStyle("tear")).toEqual({ strokeDasharray: "10 5" });
+    //  A recycle is a pipe: solid, with the cut MARKED on it (C41).
+    expect(dashStyle("tear")).toEqual({});
+    expect(dashSpec("tear").mark).toBe("cut");
     expect(dashStyle("empty")).toEqual({ strokeDasharray: "4 4", opacity: 0.55 });
     expect(dashStyle("process")).toEqual({});
   });
@@ -111,11 +114,11 @@ describe("the legend lists what is PRESENT, like the phase legend beside it", ()
     expect(legendDashes([])).toHaveLength(0);
   });
 
-  it("every row can be drawn: a label, a meaning and a pattern", () => {
+  it("every row can be drawn: a label, a meaning and a pattern OR a mark", () => {
     for (const r of legendDashes(DASH_KINDS.map((d) => d.kind))) {
       expect(r.label.length).toBeGreaterThan(0);
       expect(r.meaning.length).toBeGreaterThan(0);
-      expect(r.dash).toBeTruthy();
+      expect(Boolean(r.dash) || r.mark === "cut").toBe(true);
     }
   });
 });
