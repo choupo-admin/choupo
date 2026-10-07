@@ -210,6 +210,17 @@ const std::map<std::string, UnitSpec>& table()
         { "kW/(m^2.K)", UnitSpec{ 1.0e3,    Dims::heatTransfer_h } },
         { "kW/(m2.K)",  UnitSpec{ 1.0e3,    Dims::heatTransfer_h } },
 
+        // ----- area-specific thermal resistance -> m2.K/W ---------------
+        //   A TEMA fouling factor, and the film/wall/fouling resistances an
+        //   exchanger specification sheet publishes (2026-10-07, DEV.md 4c
+        //   C48).  The spelling is made of tokenizer word characters only.
+        { "m2.K/W",     UnitSpec{ 1.0,      Dims::thermalResistance } },
+
+        // ----- thermal conductivity -> W/(m.K) ---------------------------
+        //   A tube wall's conductivity on the same sheet; `W/(m.K)` would
+        //   not survive the tokenizer (`(` is not a word character).
+        { "W/m/K",      UnitSpec{ 1.0,      Dims::thermalCond } },
+
         // ----- molar mass → kg/kmol -------------------------------------
         { "kg/kmol", UnitSpec{ 1.0,         Dims::molarMass } },
         { "g/mol",   UnitSpec{ 1.0,         Dims::molarMass } },   // numerically equal

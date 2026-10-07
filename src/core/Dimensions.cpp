@@ -64,6 +64,7 @@ const std::vector<std::pair<Dimensions, std::string>>& prettyNames()
         { Dims::surfaceTension,     "N/m"           },
         { Dims::heatTransfer_h,     "W/(m^2.K)"     },
         { Dims::UA,                 "W/K"           },
+        { Dims::thermalResistance,  "m^2.K/W"       },
         { Dims::permeabilityWater,  "m/(s.Pa)"      },
         { Dims::inverseTime,        "1/s"           },
         { Dims::area,               "m^2"           },

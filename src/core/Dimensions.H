@@ -184,6 +184,10 @@ inline constexpr Dimensions diffusivity    = {  0,  2, -1,  0,  0 };  // m²/s
 inline constexpr Dimensions surfaceTension = {  1,  0, -2,  0,  0 };  // N/m
 inline constexpr Dimensions heatTransfer_h = {  1,  0, -3, -1,  0 };  // W/(m²·K)
 inline constexpr Dimensions UA             = {  1,  2, -3, -1,  0 };  // W/K   (h · A)
+//  An area-specific thermal resistance, m2 K/W = 1/h (2026-10-07, DEV.md 4c
+//  C48): a TEMA fouling factor declared in a postDict and the film, wall and
+//  fouling resistances an exchanger specification sheet publishes.
+inline constexpr Dimensions thermalResistance = { -1,  0,  3,  1,  0 };  // m²·K/W
 inline constexpr Dimensions massTransferCoeff = velocity;             // m/s   (k_film)
 
 // ----- membrane --------------------------------------------------

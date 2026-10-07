@@ -29,6 +29,7 @@ License
 #include "HeatExchanger.H"
 
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
+#include "unitOperations/heatTransfer/htc/ShellTubeDesign.H"
 #include "materials/MaterialRegistry.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/ThermoAnnounce.H"
@@ -275,30 +276,19 @@ int HeatExchanger::solve(const DictPtr& dict,
             throw std::runtime_error("HeatExchanger(geometry): tubePattern must"
                 " be 'triangular' or 'square' (got '" + pattern + "')");
         const bool tri = (pattern == "triangular");
-        // Kern equivalent diameter D_e = C/d_o (p^2 - c*d_o^2):
-        //   square:     C = 1.27, c = 0.785 (= pi/4)
-        //   triangular: C = 1.10, c = 0.917
-        const scalar deC = tri ? 1.10  : 1.27;
-        const scalar deK = tri ? 0.917 : 0.785;
-        const scalar D_e = deC / tubeOD * (pitch * pitch - deK * tubeOD * tubeOD);
-        // Sinnott bundle-diameter constants K1, n1 per (pattern, passes):
-        //   D_b = d_o (N / K1)^(1/n1).
-        auto bundleK1n1 = [&](int np) -> std::pair<scalar,scalar>
-        {
-            if (tri) switch (np) {
-                case 1:  return {0.319, 2.142};
-                case 2:  return {0.249, 2.207};
-                case 4:  return {0.175, 2.285};
-                case 6:  return {0.0743, 2.499};
-                default: return {0.0365, 2.675};   // 8
-            } else switch (np) {
-                case 1:  return {0.215, 2.207};
-                case 2:  return {0.156, 2.291};
-                case 4:  return {0.158, 2.263};
-                case 6:  return {0.0402, 2.617};
-                default: return {0.0331, 2.643};    // 8
-            }
-        };
+        //  THE KERN ARITHMETIC LIVES IN ONE HOME (2026-10-07, DEV.md 4c C48):
+        //  `htc/ShellTubeDesign`, shared with the sizing pass's `design {}`
+        //  route, so a plant's specification sheet and this unit cannot
+        //  disagree about the equivalent diameter, the Sinnott bundle table,
+        //  the films, the wall, the eps-NTU relation or the pressure drops.
+        //  Moved verbatim; every witness of this unit is byte-identical.
+        //  (The wall conductivity joins the bundle below, once it is read.)
+        shellTubeDesign::TubeBundle bundle;
+        bundle.tubeID = tubeID;  bundle.tubeOD = tubeOD;
+        bundle.tubeLength = tubeL;  bundle.pitch = pitch;
+        bundle.passes = passes;  bundle.triangular = tri;
+        // Kern equivalent diameter D_e = C/d_o (p^2 - c*d_o^2) (the kernel).
+        const scalar D_e = shellTubeDesign::equivalentDiameter(bundle);
         // Wall conductivity: explicit `wallK` or `wallMaterial <name>;`.
         scalar wallK = 0.0;
         if (g->found("wallK")) wallK = g->lookupScalar("wallK");
@@ -313,6 +303,23 @@ int HeatExchanger::solve(const DictPtr& dict,
         }
         else throw std::runtime_error("HeatExchanger(geometry): give `wallK`"
             " or `wallMaterial <name>;` in the geometry block");
+        bundle.wallK = wallK;
+        //  FOULING, OPTIONAL (2026-10-07, DEV.md 4c C48).  A TEMA fouling
+        //  factor per side, on that side's own area, in m2.K/W.  ABSENT means
+        //  a CLEAN bundle -- what this unit has always rated and designed,
+        //  and the kernel's zero default keeps that arithmetic bit for bit;
+        //  so a case that declares none runs exactly as before and nothing
+        //  new is printed or published for it.  Declared, it enters U in both
+        //  the design search and the rating, and U_clean is published beside.
+        const bool   fouled   = g->found("foulingTubeSide")
+                             || g->found("foulingShellSide");
+        const scalar foulTube = g->found("foulingTubeSide")
+            ? g->lookupScalar("foulingTubeSide", Dims::thermalResistance) : 0.0;
+        const scalar foulShell = g->found("foulingShellSide")
+            ? g->lookupScalar("foulingShellSide", Dims::thermalResistance) : 0.0;
+        if (foulTube < 0.0 || foulShell < 0.0)
+            throw std::runtime_error("HeatExchanger(geometry): a fouling"
+                " resistance must be >= 0 (m2.K/W)");
         if (tubeID <= 0 || tubeOD <= tubeID || tubeL <= 0
             || baffle <= 0 || pitch <= tubeOD
             || (!isDesign && (nTubes <= 0 || shellID <= 0)))
@@ -379,16 +386,11 @@ int HeatExchanger::solve(const DictPtr& dict,
                     " counter/co-current.");
             const scalar UA_req = Qreq / LMTDd;                 // W/K
 
-            // shell ID implied by N tubes (Kern/Sinnott bundle correlation,
-            // triangular pitch, 1 pass: D_b = d_o (N/K1)^(1/n1) + clearance).
-            // NB: plain scalars, not a structured binding -- C++17 forbids a
-            // lambda capturing structured-binding names (clang enforces it).
-            const auto k1n1 = bundleK1n1(passes);
-            const scalar K1 = k1n1.first, n1 = k1n1.second;
+            // shell ID implied by N tubes (Kern/Sinnott bundle correlation:
+            // D_b = d_o (N/K1)^(1/n1) + clearance) -- the kernel's.
             auto shellFromN = [&](int N) -> scalar
             {
-                const scalar clear = 0.012;   // bundle-to-shell clearance [m]
-                return tubeOD * std::pow(N / K1, 1.0 / n1) + clear;
+                return shellTubeDesign::shellFromTubes(bundle, N);
             };
             // COMPACT trial: the DELIVERED DUTY for a trial (N, Ds) via the SAME
             // eps-NTU (incl. the 1-2 penalty for multi-pass) used downstream --
@@ -396,61 +398,34 @@ int HeatExchanger::solve(const DictPtr& dict,
             // U*A.  This is what makes the sized exchanger actually reach the
             // spec temperature even when a 1-shell/2-tube-pass F-correction (F<1)
             // means U*A = Q/LMTD would UNDER-size it.
-            const scalar rho_t = streamRho(tubeS), mu_t = streamMu(tubeS),
-                         lam_t = streamLambda(tubeS), cp_t = streamMassCp(tubeS, tubeS.T);
-            const scalar mdot_t = streamMdot(tubeS);
-            const scalar rho_s = streamRho(shellS), mu_s = streamMu(shellS),
-                         lam_s = streamLambda(shellS), cp_s = streamMassCp(shellS, shellS.T);
-            const scalar mdot_s = streamMdot(shellS);
-            const scalar r_i = 0.5 * tubeID, r_o = 0.5 * tubeOD;
-            const scalar Cprime = pitch - tubeOD;
+            shellTubeDesign::SideFluid ft, fs;
+            ft.rho = streamRho(tubeS);  ft.mu = streamMu(tubeS);
+            ft.lambda = streamLambda(tubeS);  ft.cp = streamMassCp(tubeS, tubeS.T);
+            ft.mdot = streamMdot(tubeS);  ft.heating = (tubeS.T < shellS.T);
+            fs.rho = streamRho(shellS);  fs.mu = streamMu(shellS);
+            fs.lambda = streamLambda(shellS);  fs.cp = streamMassCp(shellS, shellS.T);
+            fs.mdot = streamMdot(shellS);  fs.heating = (shellS.T < tubeS.T);
             const scalar Cmin = std::min(Ch, Cc), Cmax = std::max(Ch, Cc);
             const scalar CrD = Cmin / Cmax, dTin = Th_in - Tc_in;
             auto trialDuty = [&](int N) -> scalar
             {
                 const scalar Ds = shellFromN(N);
-                const scalar A_tf = M_PI * 0.25 * tubeID * tubeID
-                                  * (N / std::max(passes, 1));
-                const scalar u_t = mdot_t / (rho_t * A_tf);
-                HeatTransferContext ct; ct.u = u_t; ct.d_h = tubeID;
-                ct.lambda = lam_t; ct.mu = mu_t; ct.rho = rho_t; ct.cp = cp_t;
-                ct.heating = (tubeS.T < shellS.T);
-                const scalar h_i = tubeCorr->evaluate(ct).h;
-                const scalar A_s = Ds * Cprime * baffle / pitch;
-                const scalar G_s = mdot_s / A_s;
-                HeatTransferContext cs; cs.u = G_s / rho_s; cs.d_h = D_e;
-                cs.lambda = lam_s; cs.mu = mu_s; cs.rho = rho_s; cs.cp = cp_s;
-                cs.heating = (shellS.T < tubeS.T);
-                const scalar h_o = shellCorr->evaluate(cs).h;
-                const scalar Uv = 1.0 / (r_o / (r_i * h_i)
-                                + r_o * std::log(r_o / r_i) / wallK + 1.0 / h_o);
-                const scalar NTUv = Uv * (M_PI * tubeOD * tubeL * N) / Cmin;
-                scalar epsv;
-                if (passes >= 2)
-                {
-                    const scalar root = std::sqrt(1.0 + CrD * CrD);
-                    const scalar E = std::exp(-NTUv * root);
-                    epsv = 2.0 / ((1.0 + CrD) + root * (1.0 + E) / (1.0 - E));
-                }
-                else if (counter)
-                {
-                    if (std::abs(1.0 - CrD) < 1.0e-9) epsv = NTUv / (1.0 + NTUv);
-                    else { const scalar e = std::exp(-NTUv * (1.0 - CrD));
-                           epsv = (1.0 - e) / (1.0 - CrD * e); }
-                }
-                else epsv = (1.0 - std::exp(-NTUv * (1.0 + CrD))) / (1.0 + CrD);
+                const scalar h_i = shellTubeDesign::tubeSide(
+                    bundle, N, ft, *tubeCorr).film.h;
+                const scalar h_o = shellTubeDesign::shellSide(
+                    bundle, Ds, baffle, fs, *shellCorr).film.h;
+                const scalar Uv = shellTubeDesign::overall(bundle, h_i, h_o,
+                                    foulTube, foulShell).U;
+                const scalar NTUv = Uv * shellTubeDesign::outsideArea(bundle, N)
+                                  / Cmin;
+                const scalar epsv = shellTubeDesign::effectiveness(
+                    NTUv, CrD, passes, counter);
                 return epsv * Cmin * dTin;                 // delivered duty [W]
             };
             (void) UA_req;   // kept for the announce; sizing now targets the duty
-            // delivered duty grows monotonically with N -> bisect on N for Qreq.
-            int Nlo = 1, Nhi = 4;
-            while (trialDuty(Nhi) < Qreq && Nhi < 100000) Nhi *= 2;
-            while (Nhi - Nlo > 1)
-            {
-                const int Nm = (Nlo + Nhi) / 2;
-                if (trialDuty(Nm) < Qreq) Nlo = Nm; else Nhi = Nm;
-            }
-            nTubes  = Nhi;                       // round UP: never undersize
+            // delivered duty grows monotonically with N -> the kernel's search
+            // (doubling, then bisection, rounding UP: never undersize).
+            nTubes  = shellTubeDesign::smallestCount(trialDuty, Qreq);
             shellID = shellFromN(nTubes);
             if (verbosity >= 1)
                 std::cout << "  [design] duty target " << std::fixed
@@ -464,72 +439,66 @@ int HeatExchanger::solve(const DictPtr& dict,
                           << "; check dP below, then rate).\n";
         }
 
-        // --- TUBE side hydraulics -----------------------------------------
-        const scalar rho_t = streamRho(tubeS), mu_t = streamMu(tubeS),
-                     lam_t = streamLambda(tubeS), cp_t = streamMassCp(tubeS, tubeS.T);
-        const scalar mdot_t = streamMdot(tubeS);   // kg/s
-        const scalar A_tube_flow = M_PI * 0.25 * tubeID * tubeID
-                                 * (nTubes / std::max(passes, 1)); // tubes per pass
-        const scalar u_t = mdot_t / (rho_t * A_tube_flow);
-        HeatTransferContext ctx_t;
-        ctx_t.u = u_t; ctx_t.d_h = tubeID; ctx_t.lambda = lam_t;
-        ctx_t.mu = mu_t; ctx_t.rho = rho_t; ctx_t.cp = cp_t;
-        ctx_t.heating = (tubeS.T < shellS.T);
-        const HeatTransferResult rt = tubeCorr->evaluate(ctx_t);
+        // --- TUBE side hydraulics (the kernel) ----------------------------
+        shellTubeDesign::SideFluid ftr, fsr;
+        ftr.rho = streamRho(tubeS);  ftr.mu = streamMu(tubeS);
+        ftr.lambda = streamLambda(tubeS);  ftr.cp = streamMassCp(tubeS, tubeS.T);
+        ftr.mdot = streamMdot(tubeS);  ftr.heating = (tubeS.T < shellS.T);
+        const shellTubeDesign::TubeSideState tside =
+            shellTubeDesign::tubeSide(bundle, nTubes, ftr, *tubeCorr);
+        const scalar u_t = tside.u;
+        const HeatTransferResult rt = tside.film;
         const scalar h_i = rt.h;
 
-        // --- SHELL side hydraulics (Kern method) --------------------------
-        // (D_e computed above, per tube pattern.)
+        // --- SHELL side hydraulics (Kern method, the kernel) --------------
         // Crossflow area at the shell centreline: A_s = D_s * C' * B / p,
         // with the clearance C' = p - d_o.
-        const scalar Cprime = pitch - tubeOD;
-        const scalar A_s = shellID * Cprime * baffle / pitch;
-        const scalar mdot_s = streamMdot(shellS);  // kg/s
-        const scalar rho_s = streamRho(shellS), mu_s = streamMu(shellS),
-                     lam_s = streamLambda(shellS), cp_s = streamMassCp(shellS, shellS.T);
-        const scalar G_s = mdot_s / A_s;                  // crossflow mass flux
-        const scalar u_s = G_s / rho_s;                   // shell crossflow velocity
-        HeatTransferContext ctx_s;
-        ctx_s.u = u_s; ctx_s.d_h = D_e; ctx_s.lambda = lam_s;
-        ctx_s.mu = mu_s; ctx_s.rho = rho_s; ctx_s.cp = cp_s;
-        ctx_s.heating = (shellS.T < tubeS.T);
-        const HeatTransferResult rs = shellCorr->evaluate(ctx_s);
+        fsr.mdot = streamMdot(shellS);  // kg/s
+        fsr.rho = streamRho(shellS);  fsr.mu = streamMu(shellS);
+        fsr.lambda = streamLambda(shellS);  fsr.cp = streamMassCp(shellS, shellS.T);
+        fsr.heating = (shellS.T < tubeS.T);
+        const shellTubeDesign::ShellSideState sside =
+            shellTubeDesign::shellSide(bundle, shellID, baffle, fsr, *shellCorr);
+        const scalar G_s = sside.G;                       // crossflow mass flux
+        const scalar u_s = sside.u;                       // shell crossflow velocity
+        const HeatTransferResult rs = sside.film;
         const scalar h_o = rs.h;
 
         // --- Overall U on the OUTSIDE area, with the cylindrical wall -----
         //   1/U_o = 1/h_o + r_o ln(r_o/r_i)/k_wall + r_o/(r_i h_i)
-        const scalar r_i = 0.5 * tubeID, r_o = 0.5 * tubeOD;
-        const scalar R_inner = r_o / (r_i * h_i);
-        const scalar R_wall  = r_o * std::log(r_o / r_i) / wallK;
-        const scalar R_outer = 1.0 / h_o;
-        const scalar Rsum    = R_inner + R_wall + R_outer;
-        U = 1.0 / Rsum;
+        //            (+ R_f,o + R_f,i r_o/r_i when fouling is declared)
+        //  With no fouling declared the kernel's terms are zero and this is
+        //  the clean coefficient, bit for bit what this unit always computed.
+        const shellTubeDesign::Resistances res =
+            shellTubeDesign::overall(bundle, h_i, h_o, foulTube, foulShell);
+        const scalar R_inner = res.R_inner;
+        const scalar R_wall  = res.R_wall;
+        const scalar R_outer = res.R_outer;
+        U = res.U;
         // Total outside heat-transfer area.
-        A = M_PI * tubeOD * tubeL * nTubes;
+        A = shellTubeDesign::outsideArea(bundle, nTubes);
 
         // controlling resistance (largest of the three).
-        if (R_inner >= R_wall && R_inner >= R_outer) controllingResistance = "tube-side";
-        else if (R_outer >= R_wall)                  controllingResistance = "shell-side";
-        else                                         controllingResistance = "wall";
+        controllingResistance = res.controlling;
 
-        // --- PRESSURE DROP (Kern, both sides) -----------------------------
+        // --- PRESSURE DROP (Kern, both sides; the kernel) -----------------
         // Tube side: friction over all passes + the turnaround (return) losses.
         //   f_t (Fanning) = 0.079 Re^-0.25 (turbulent smooth, Blasius-type,
         //   valid Re 4e3-1e5); dP = (4 f L n_p / d_i + 4 n_p)(rho u^2 / 2),
         //   the 4 velocity-heads-per-pass being Kern's return-loss allowance.
-        const scalar f_tube = (rt.Re > 0.0) ? 0.079 * std::pow(rt.Re, -0.25) : 0.0;
-        const scalar velHead_t = 0.5 * rho_t * u_t * u_t;
-        const scalar dP_tube = (4.0 * f_tube * tubeL * passes / tubeID
-                              + 4.0 * passes) * velHead_t;              // Pa
+        const shellTubeDesign::TubePressureDrop tdp =
+            shellTubeDesign::tubePressureDrop(bundle, ftr.rho, u_t, rt.Re);
+        const scalar f_tube  = tdp.f;
+        const scalar dP_tube = tdp.dP;                                  // Pa
         // Shell side (Kern): f_s = exp(0.576 - 0.19 ln Re_s), 400<Re<1e6;
         //   dP = f_s G_s^2 D_s (N_b+1) / (2 rho D_e), viscosity correction
         //   (mu/mu_w)^0.14 = 1 (isothermal-wall v1, consistent with h_o).
-        const int    nBaffles = std::max(0,
-            static_cast<int>(std::round(tubeL / baffle)) - 1);
-        const scalar f_shell = (rs.Re > 0.0)
-            ? std::exp(0.576 - 0.19 * std::log(rs.Re)) : 0.0;
-        const scalar dP_shell = f_shell * G_s * G_s * shellID
-                              * (nBaffles + 1) / (2.0 * rho_s * D_e);   // Pa
+        const shellTubeDesign::ShellPressureDrop sdp =
+            shellTubeDesign::shellPressureDrop(bundle, shellID, baffle,
+                                               fsr.rho, G_s, D_e, rs.Re);
+        const int    nBaffles = sdp.nBaffles;
+        const scalar f_shell  = sdp.f;
+        const scalar dP_shell = sdp.dP;                                 // Pa
 
         //  THE PRESSURE DROP IS COMPUTED, PUBLISHED -- AND NOT APPLIED.
         //
@@ -576,6 +545,14 @@ int HeatExchanger::solve(const DictPtr& dict,
         geomKpis["R_wall"]    = R_wall;
         geomKpis["R_inner"]   = R_inner;
         geomKpis["R_outer"]   = R_outer;
+        //  Published ONLY when fouling was declared, so a clean case's KPI
+        //  table (and every golden that pins it) is what it always was.
+        if (fouled)
+        {
+            geomKpis["R_foul_inner"] = res.R_foulInner;   // referred to the outside
+            geomKpis["R_foul_outer"] = res.R_foulOuter;
+            geomKpis["U_clean"]      = res.U_clean;
+        }
         // controllingResistance as a numeric code (the word is in the SEE):
         //   0 = tube-side, 1 = shell-side, 2 = wall.
         geomKpis["controllingResistanceCode"] =
@@ -614,8 +591,15 @@ int HeatExchanger::solve(const DictPtr& dict,
             std::cout << "  Resistances (on outside area):\n"
                       << "     R_inner = " << std::scientific << std::setprecision(3)
                       << R_inner << ",  R_wall = " << R_wall
-                      << ",  R_outer = " << R_outer << " (m^2.K/W)\n"
-                      << "     controlling resistance: " << controllingResistance << "\n";
+                      << ",  R_outer = " << R_outer << " (m^2.K/W)\n";
+            if (fouled)
+                std::cout << "     fouling (declared): R_f,i r_o/r_i = "
+                          << res.R_foulInner << ",  R_f,o = " << res.R_foulOuter
+                          << " (m^2.K/W);  U_clean = " << std::fixed
+                          << std::setprecision(1) << res.U_clean
+                          << std::scientific << "\n";
+            std::cout << "     controlling resistance: "
+                      << controllingResistance << "\n";
             std::cout << std::fixed
                       << "  U  = " << std::setprecision(1) << U
                       << " W/(m^2.K)  (RESULT),   area = " << std::setprecision(2)
@@ -705,23 +689,13 @@ int HeatExchanger::solve(const DictPtr& dict,
         const scalar Cmin = std::min(Ch, Cc), Cmax = std::max(Ch, Cc);
         Cr  = Cmin / Cmax;
         NTU = U * A / Cmin;
-        if (tubePasses >= 2)
-        {
-            // 1 shell pass, 2N tube passes (the U-tube / multi-pass TEMA E-shell):
-            //   eps = 2 / { (1+Cr) + sqrt(1+Cr^2) (1+E)/(1-E) },  E = exp(-NTU sqrt(1+Cr^2)).
-            // Lower than pure counter-current -- one tube pass runs co-current
-            // (the built-in LMTD F-correction, F<1), which is exactly why a
-            // multi-pass exchanger needs more area for the same duty.
-            const scalar root = std::sqrt(1.0 + Cr * Cr);
-            const scalar E = std::exp(-NTU * root);
-            eps = 2.0 / ((1.0 + Cr) + root * (1.0 + E) / (1.0 - E));
-        }
-        else if (counter)
-        {
-            if (std::abs(1.0 - Cr) < 1.0e-9) eps = NTU / (1.0 + NTU);
-            else { const scalar e = std::exp(-NTU * (1.0 - Cr)); eps = (1.0 - e) / (1.0 - Cr * e); }
-        }
-        else eps = (1.0 - std::exp(-NTU * (1.0 + Cr))) / (1.0 + Cr);
+        //  1 shell / 2N tube passes, counter- or co-current: the ONE home of
+        //  the relation (`htc/ShellTubeDesign`), shared with the design
+        //  search above and with the sizing pass.  A multi-pass exchanger's
+        //  eps is lower than pure counter-current -- one tube pass runs
+        //  co-current (the built-in LMTD F-correction, F<1), which is
+        //  exactly why it needs more area for the same duty.
+        eps = shellTubeDesign::effectiveness(NTU, Cr, tubePasses, counter);
         Q      = eps * Cmin * (Th_in - Tc_in);
         Th_out = Th_in - Q / Ch;
         Tc_out = Tc_in + Q / Cc;
