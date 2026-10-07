@@ -30,6 +30,17 @@
  *    DECLARED BY THE   the rating geometry the AUTHOR wrote.  Publishing a
  *    CASE              rating INPUT as a design OUTPUT would be the falsest
  *                      line on the sheet.
+ *
+ *  A KERN DESIGN IS DRAWN FROM ITS SHEET (2026-10-07, DEV.md 4c C51).  When
+ *  the run's specification sheet carries a Kern design (`design { method
+ *  Kern; }`, the sheet's `exchanger {}` block), the page is the TEMA-style
+ *  specification sheet `case/hxDatasheet.ts` builds from that sheet alone --
+ *  bundle, passes, shells in series, baffles, both sides' films, resistances,
+ *  hydraulics and cost.  The page below, built on the unit's KPIs and
+ *  `geometry {}`, drew such a design as "tube count not declared", "0
+ *  baffles" and a column of dashes, because a design on the SIZER's sheet
+ *  puts nothing in either.  A sheet with no design (an area-only route, a
+ *  column's condenser or reboiler) keeps the page below exactly as it was.
  */
 import { Button, Group, Stack, Text } from "@mantine/core";
 import { IconFileText, IconTableExport } from "@tabler/icons-react";
@@ -39,6 +50,9 @@ import type { StreamResult } from "../adapters/SolverAdapter.js";
 import { lookupDesignSheet, type DesignSheet, type DesignSheetLookup }
   from "../case/designSheet.js";
 import { findRunStream } from "./streamPopOut.js";
+import { kernDatasheetHtml, kernDesignOf, kernView, type KernDesign }
+  from "../case/hxDatasheet.js";
+import { PROVENANCE_WORD } from "../case/equipmentSchematic.js";
 import { downloadOds } from "../case/odsExport.js";
 
 type Kpis = { [k: string]: number };
@@ -306,8 +320,11 @@ export function HeatExchangerDatasheet({ unit, kpis }: { unit: UnitSpec; kpis: K
   const designFiles = useStore((s) => s.runResult?.designFiles);
   const sides = resolveSides(unit, streams)
     ?? { tube: { name: "tube" }, shell: { name: "shell" } };
-  if (kpis["U"] === undefined) return null;   // needs a rated/designed run
   const found = lookupDesignSheet(designFiles, unit.name, EQUIPMENT);
+  const kern = kernDesignOf(found.sheet);
+  //  A rated/designed unit, or a Kern design on the sheet -- the latter is how
+  //  a `phaseChanger` cooler, which publishes no U, reaches its datasheet.
+  if (kpis["U"] === undefined && !kern) return null;
 
   // Open the datasheet in a NEW TAB (Vitor prefers a tab).  A blob URL + a real
   // anchor click opens ONE tab and never doubles up (the old window.open with
@@ -315,7 +332,10 @@ export function HeatExchangerDatasheet({ unit, kpis }: { unit: UnitSpec; kpis: K
   // fallback too -- the tab+popup bug).  The HTML carries its own Print button.
   const openTab = () => {
     let built: string;
-    try { built = buildDatasheetHtml(unit, kpis, sides.tube, sides.shell, found); }
+    try {
+      built = kern ? kernDatasheetHtml(unit.name, kern)
+                   : buildDatasheetHtml(unit, kpis, sides.tube, sides.shell, found);
+    }
     catch (e) {
       built = `<pre style="padding:16px;color:#900;font-family:monospace">`
         + `Datasheet build failed:\n${String(e instanceof Error ? e.stack : e)}</pre>`;
@@ -327,7 +347,7 @@ export function HeatExchangerDatasheet({ unit, kpis }: { unit: UnitSpec; kpis: K
     setTimeout(() => URL.revokeObjectURL(url), 10000);
   };
   const exportOds = () => downloadOds(unit.name, ["quantity", "value", "unit", "source"],
-    datasheetOdsRows(kpis, found.sheet), `${unit.name}_datasheet.ods`);
+    datasheetOdsRows(kpis, found.sheet, kern), `${unit.name}_datasheet.ods`);
   return (
     <Stack gap={6}>
       <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Datasheet</Text>
@@ -344,11 +364,19 @@ export function HeatExchangerDatasheet({ unit, kpis }: { unit: UnitSpec; kpis: K
 /** The .ods rows, carrying the SAME partition the page draws: a spreadsheet
  *  that dropped the provenance column would be the one surface where a design
  *  output and a rating result look alike again. */
-export function datasheetOdsRows(kpis: Kpis, sheet: DesignSheet | null):
-  (string | number)[][] {
+export function datasheetOdsRows(kpis: Kpis, sheet: DesignSheet | null,
+  kern: KernDesign | null = null): (string | number)[][] {
   const rows: (string | number)[][] = [];
-  for (const v of sheet?.sizing ?? [])
-    rows.push([v.key, v.value, v.unit === "-" ? "" : v.unit, "sized by Choupo (design/)"]);
+  //  A Kern design says, key by key, which values the case DECLARED and which
+  //  were read from the unit or a record; the spreadsheet carries that word,
+  //  the same one the page prints.
+  const who = kern ? kernView(kern).who : null;
+  for (const v of sheet?.sizing ?? []) {
+    const w = who ? who(v.key) : "choupo";
+    rows.push([v.key, v.value, v.unit === "-" ? "" : v.unit,
+      w === "choupo" ? "sized by Choupo (design/)"
+                     : `${PROVENANCE_WORD[w]} (design/)`]);
+  }
   const rating: [string, string][] = [
     ["Q_kW", "kW"], ["LMTD", "K"], ["U", "W/(m2.K)"], ["area", "m2"],
     ["dP_tube_kPa", "kPa"], ["dP_shell_kPa", "kPa"], ["nBaffles", "-"],
@@ -363,16 +391,21 @@ export function datasheetOdsRows(kpis: Kpis, sheet: DesignSheet | null):
 }
 
 /** Build the standalone datasheet HTML for a heat-exchanger unit + its KPIs
- *  (re-used by the Reports tab).  Returns null if the unit has no U yet. */
+ *  (re-used by the Reports tab).  A Kern design on the run's sheet is drawn
+ *  from the sheet; otherwise returns null if the unit has no U yet. */
 export function heatExchangerDatasheetHtml(
   unit: UnitSpec, kpis: Kpis | undefined,
   streams: StreamResult[] | undefined,
   designFiles?: { [relPath: string]: string }): string | null {
+  const found = lookupDesignSheet(designFiles, unit.name, EQUIPMENT);
+  const kern = kernDesignOf(found.sheet);
+  if (kern) {
+    try { return kernDatasheetHtml(unit.name, kern); } catch { return null; }
+  }
   if (!kpis || kpis["U"] === undefined) return null;
   const sides = resolveSides(unit, streams)
     ?? { tube: { name: "tube" }, shell: { name: "shell" } };
   try {
-    return buildDatasheetHtml(unit, kpis, sides.tube, sides.shell,
-      lookupDesignSheet(designFiles, unit.name, EQUIPMENT));
+    return buildDatasheetHtml(unit, kpis, sides.tube, sides.shell, found);
   } catch { return null; }
 }

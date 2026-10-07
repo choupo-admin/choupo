@@ -668,6 +668,7 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
             " nothing to design.");
 
     Side tube, shell;
+    ExchangerSide xTube, xShell;    // what the sheet's `exchanger {}` says (C51)
     std::string basisFluids;        // the sentence on where properties come from
     std::vector<std::string> notes; // conditional statements for the basis
     scalar LMTD = 0.0, Thi = 0, Tho = 0, tci = 0, tco = 0;
@@ -724,6 +725,12 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         P.Tprops    = ps.film.T;
         requireCorr(P, processInTubes ? "tubeSide" : "shellSide");
         notes.push_back(ps.note);
+        ExchangerSide& XP = processInTubes ? xTube : xShell;
+        XP.role   = "process";
+        XP.inlet  = fu->ins[0];
+        XP.outlet = fu->outs[0];
+        XP.regime = ps.condensing ? "condensing"
+                  : (ps.film.vapour ? "gas" : "liquid");
 
         //  the utility side
         if (!(ut.dutyPerKg > 0.0))
@@ -733,6 +740,15 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         Side& Uside = processInTubes ? shell : tube;
         const char* ublock = processInTubes ? "shellSide" : "tubeSide";
         Uside.name = "utility " + uName;
+        ExchangerSide& XU = processInTubes ? xShell : xTube;
+        XU.role    = "utility";
+        XU.utility = uName;
+        XU.Tin     = ut.T_in;
+        XU.Tout    = ut.T_out;
+        XU.regime  = ut.mechanism == "evaporation"  ? "boils"
+                   : ut.mechanism == "condensation" ? "condenses"
+                   : (ut.state.find("iquid") == std::string::npos ? "gas"
+                                                                  : "liquid");
         if (ut.mechanism == "sensible")
         {
             if (dg->found("utilitySideFilm"))
@@ -875,6 +891,16 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         requireCorr(shell, "shellSide");
         notes.push_back(hs.note);
         notes.push_back(cs.note);
+        {
+            const std::size_t h = hot0 ? 0 : 1, c = 1 - h;
+            ExchangerSide& XH = hotInTubes ? xTube : xShell;
+            ExchangerSide& XC = hotInTubes ? xShell : xTube;
+            XH.role = "hot";   XH.inlet = fu->ins[h];  XH.outlet = fu->outs[h];
+            XH.regime = hs.film.vapour ? "gas" : "liquid";
+            XC.role = "cold";  XC.inlet = fu->ins[c];  XC.outlet = fu->outs[c];
+            XC.regime = cs.condensing ? "condensing"
+                      : (cs.film.vapour ? "gas" : "liquid");
+        }
         basisFluids = tubeName + " in the tubes; both streams priced by the"
             " case's package (density on its phase route, heat capacity the"
             " derivative of its enthalpy, DILUTE-gas viscosity and"
@@ -1107,6 +1133,31 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
     if (haveShellDP) d.set("dP_shell", sdp.dP / 1000.0, "kPa");
     if (A_rated > 0.0) d.set("A_rated", A_rated, "m2");
     if (U_rated > 0.0) d.set("U_rated", U_rated, "W/m2/K");
+
+    //  ---- what flows where, and who chose each key (C51) -----------------
+    //  The sheet's `exchanger {}` block: the decisions above, stated as data
+    //  so a datasheet draws them instead of parsing the basis.
+    auto filmOf = [](ExchangerSide& x, const Side& s)
+    {
+        x.film = s.declaredFilm ? "declared" : "computed";
+        if (!s.declaredFilm && s.corr) x.correlation = s.corr->type();
+    };
+    filmOf(xTube, tube);
+    filmOf(xShell, shell);
+    d.exchanger.tube        = xTube;
+    d.exchanger.shell       = xShell;
+    d.exchanger.tubePattern = pattern;
+    d.exchanger.controlling = e.r.controlling;
+    d.exchanger.declared = { "tubeOD", "tubeID", "tubeLength", "tubePitch",
+                             "tubePasses", "R_foul_tube", "R_foul_shell",
+                             "pressureDesign" };
+    if (dg->found("shellsInSeries"))
+        d.exchanger.declared.push_back("shellsInSeries");
+    if (tube.declaredFilm)  d.exchanger.declared.push_back("h_tube");
+    if (shell.declaredFilm) d.exchanger.declared.push_back("h_shell");
+    d.exchanger.fromRecord = { "wallK" };
+    if (A_rated > 0.0) d.exchanger.fromUnit.push_back("A_rated");
+    if (U_rated > 0.0) d.exchanger.fromUnit.push_back("U_rated");
 
     char line[560];
     std::snprintf(line, sizeof(line),

@@ -492,7 +492,7 @@ describe("the schematic is dispatched on the equipment word", () => {
   });
 
   it("says WHY a kind has no drawing, in that kind's own terms", () => {
-    expect(noSchematicReason("shellTubeHX")).toMatch(/RATING geometry/);
+    expect(noSchematicReason("shellTubeHX")).toMatch(/by its area\s+alone/);
     expect(noSchematicReason("vessel")).toMatch(/labelled box beats a wrong picture/i);
     expect(noSchematicReason("vessel")).toMatch(/'vessel'/);
   });
@@ -711,7 +711,7 @@ describe("the printable page", () => {
     expect(html).toContain("SIZED BY CHOUPO  ·  design/…/condenser");
     expect(html).toContain("SIZED BY CHOUPO  ·  design/…/reboiler");
     expect(html).toMatch(/No schematic is registered for equipment kind 'vessel'/);
-    expect(html).toMatch(/RATING geometry/);
+    expect(html).toMatch(/by its area\s+alone/);
   });
 
   it("says it is NOT a mechanical data sheet, and draws no nozzle size", () => {

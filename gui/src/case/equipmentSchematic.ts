@@ -36,21 +36,32 @@ import type { DesignPort, DesignSheet, DesignValue } from "./designSheet.js";
 
 /*  ---- Provenance: one vocabulary, two channels ------------------------- */
 
-/** Who chose a number on a drawing.  There is no third value: either the run
- *  computed it or the author wrote it down.  A quantity whose provenance is
- *  unknown does not get drawn. */
-export type Provenance = "choupo" | "declared";
+/** Who chose a number on a drawing.  A quantity whose provenance is unknown
+ *  does not get drawn.
+ *
+ *  It used to say "there is no third value", and for the column that is still
+ *  true.  A DESIGNED exchanger (2026-10-07, DEV.md 4c C51) put two more on one
+ *  page: the FEHE's rated area and U are READ FROM THE UNIT (the flowsheet
+ *  converged on them; the design is set beside them, not over them), and the
+ *  tube wall's conductivity and a utility's supply/return temperatures are
+ *  READ FROM A DATA RECORD (the material, the utility) -- neither chosen by
+ *  this case nor computed by this run.  The engine says which, key by key, in
+ *  the sheet's `exchanger {}` block; nothing here infers it. */
+export type Provenance = "choupo" | "declared" | "unit" | "record";
 
 /** The ink each provenance uses, matching the section headers of the page the
  *  drawing sits on -- green for SIZED BY CHOUPO, grey for DECLARED BY THE
- *  CASE.  The page and the picture must not use two palettes for one fact. */
+ *  CASE, the rating blue for a number read from the unit, violet for one read
+ *  from a record.  The page and the picture must not use two palettes for one
+ *  fact. */
 export const PROVENANCE_INK: { [P in Provenance]: string } =
-  { choupo: "#2f6d4f", declared: "#4a4a4a" };
+  { choupo: "#2f6d4f", declared: "#4a4a4a", unit: "#37536e", record: "#6a4c93" };
 
 /** The word, because colour is not readable aloud, does not survive a
  *  greyscale print, and is not what a reader quotes in a report. */
 export const PROVENANCE_WORD: { [P in Provenance]: string } =
-  { choupo: "Choupo", declared: "declared" };
+  { choupo: "Choupo", declared: "declared", unit: "from the unit",
+    record: "from a record" };
 
 /** A label with its provenance stated in words.  Used for every dimension. */
 export function marked(text: string, who: Provenance): string {
@@ -496,11 +507,12 @@ export function columnTowerSvg(d: ColumnDrawing): ColumnSchematic {
  *
  *  Keyed on the sheet's own `equipment` word -- the same registered-type word
  *  the sizers are keyed on -- so a new kind is one entry here and no reader
- *  changes.  It is deliberately SMALL: `shellTubeHX` is NOT in it, because the
- *  exchanger schematic is drawn from the RATING geometry (tube count, passes,
- *  baffles, pitch) that a specification sheet does not carry, and drawing a
- *  bundle from `A` alone would be inventing the very numbers the exchanger
- *  datasheet marks as back-figured.
+ *  changes.  It is deliberately SMALL: `shellTubeHX` is NOT in it, because a
+ *  shell-and-tube sheet carries a bundle only when it is a Kern DESIGN, and
+ *  that sheet is drawn by the exchanger datasheet (`case/hxDatasheet.ts`),
+ *  which reads it whole.  Every other `shellTubeHX` sheet -- a column's
+ *  condenser and reboiler among them -- is sized by area alone, and drawing a
+ *  bundle from `A` would invent the very numbers nobody computed.
  *
  *  `sieveTrays` is the word that identifies a distillation TOWER, and the
  *  tower is drawn from the tray sheet TOGETHER WITH its `shell` sibling.  The
@@ -521,9 +533,10 @@ export function hasSchematic(equipment: string): boolean {
  *  can reach the inputs it needs. */
 export function noSchematicReason(equipment: string): string {
   if (equipment === "shellTubeHX")
-    return "No schematic here: the shell-and-tube drawing is built from the "
-      + "RATING geometry — tube count, passes, baffles, pitch — which a "
-      + "specification sheet does not carry.";
+    return "No schematic here: this sheet sizes the exchanger by its area "
+      + "alone and carries no bundle — tube count, passes, baffles, shell "
+      + "ID — to draw.  A sheet from a Kern design (`design { method Kern; }` "
+      + "in the postDict) carries one, and the exchanger datasheet draws it.";
   return `No schematic is registered for equipment kind '${equipment}'. `
     + "A labelled box beats a wrong picture: nothing is approximated from "
     + "another kind's geometry.";

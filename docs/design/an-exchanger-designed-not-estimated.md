@@ -203,6 +203,22 @@ values given back), since no shipped case exercises those routes any more.
   design now has the geometry a tube-side volume would need.
 * The unit's optional fouling has no shipped witness.
 
+## 8. Addendum (C51, 2026-10-07): the sheet says what flows where
+
+The GUI's exchanger datasheet could not draw this design: it read the
+unit's KPIs and `geometry {}`, which a design on the sizer's sheet does not
+fill, and the GUI parser refused the sheet whole, because `m2.K/W` and
+`W/m/K` were added to `src/core/Units.cpp` and not to its mirror
+`gui/src/dict/units.ts`.  Both are fixed (DEV.md 4c C51).  The route now
+also writes an `exchanger {}` block on the sheet -- each side's role,
+streams or utility (with the record's supply and return T), regime, film
+computed or declared, correlation; the tube pattern; the controlling
+resistance; and which `sizing {}` keys the case declared or were read from
+the unit or a record -- so the datasheet draws the engine's decisions
+instead of parsing the basis.  Sheet-only: the result JSON, the basis and
+every golden row are unchanged.  `check_design_sheet` arm (k) now holds
+every sizer unit word to the GUI mirror as well.
+
 
 ## Appendix: the 53 golden rows that move, AWAITING VÍTOR (2026-10-07)
 

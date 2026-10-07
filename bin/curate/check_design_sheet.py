@@ -659,6 +659,19 @@ def known_unit_names():
     return set(re.findall(r'\{\s*"([^"]+)"\s*,\s*UnitSpec', src))
 
 
+def known_gui_unit_names():
+    """Every unit name the GUI's dict parser accepts (`gui/src/dict/units.ts`,
+    the mirror of core/Units.cpp).  READ, never listed: the two tables are a
+    known second home, and the day a sizer writes a word the C++ table has and
+    the GUI table lacks, the GUI refuses the WHOLE sheet -- which is what C48's
+    `m2.K/W` and `W/m/K` did to every designed exchanger (found 2026-10-07,
+    DEV.md 4c C51)."""
+    src = (ROOT / "gui/src/dict/units.ts").read_text(errors="replace")
+    i = src.index("const TABLE")
+    body = src[i:src.index("\n};", i)]
+    return set(re.findall(r'^\s*"?([^"\s:]+)"?\s*:\s*\{\s*factor', body, re.M))
+
+
 def declared_sizer_units():
     """Every unit word a sizer DECLARES at its `d.set` site, over ALL sizers.
 
@@ -714,8 +727,9 @@ def check_unit_words_readable(all_units, problems, notes):
     `d.set`."""
     wordchars = tokenizer_word_chars()
     known = known_unit_names()
+    guiKnown = known_gui_unit_names()
     declared = declared_sizer_units()
-    if not wordchars or not known or not declared:
+    if not wordchars or not known or not guiKnown or not declared:
         problems.append(
             "check_design_sheet(k): could not read the tokenizer's word-char "
             "set, the unit table, or any `d.set` unit word out of src/ -- this "
@@ -745,6 +759,15 @@ def check_unit_words_readable(all_units, problems, notes):
                 "`unknown unit suffix`.  Either register it or convert the "
                 "value at the `d.set` site (converting MOVES a number: see "
                 "SHEET_UNIT_WORDS_UNPARSEABLE)."
+                % (where, key, word))
+        elif word not in guiKnown:
+            problems.append(
+                "%s: sizing value '%s' declares the unit '%s', which "
+                "core/Units.cpp registers and the GUI's mirror "
+                "(gui/src/dict/units.ts) does NOT -- the engine reads the "
+                "sheet and the GUI refuses the whole of it, so every datasheet "
+                "drawn from it says the sheet is unreadable.  Add the word to "
+                "the GUI table at the same factor."
                 % (where, key, word))
 
     for f, key, word in declared:
@@ -801,7 +824,13 @@ def check_gui_fixture(problems, notes):
     for.  The column schematic READS them: it colours each nozzle by the
     temperature the run wrote.  So the reason expired the moment the reader
     arrived, which is the rule about burying an absence you have just filled.
-    The cost block is still NOT held, because still nothing reads it back."""
+    The cost block and the `exchanger {}` block are NOT held here, and the
+    reason changed on 2026-10-07 (DEV.md 4c C51): the exchanger datasheet
+    now READS both, but its tests read the ENGINE's own sheets through the
+    GUI witness setup (`gui/tests/witnessOutputs.ts` runs the green-ammonia
+    plant with this tree's binary), not a transcription -- so there is no
+    copy here for the two to drift between.  None of the five fixtures
+    below carries either block's reader."""
     norm = lambda s: " ".join(s.split())
     #  EACH FIXTURE IS ITS OWN TEMPLATE LITERAL, and the wanted lines must all
     #  land in ONE of them (2026-09-07).  This arm used to search the WHOLE
@@ -2953,7 +2982,7 @@ def main() -> int:
           "(%s) -- a report this writer does not produce, which is the only "
           "arm that could catch a port mass computed without the crystals.  "
           "EVERY sizing unit word survives the tokenizer's own word-char set "
-          "and is a name core/Units.cpp registers, except the %d pinned in "
+          "and is a name core/Units.cpp AND the GUI parser's mirror (gui/src/dict/units.ts) register, except the %d pinned in "
           "SHEET_UNIT_WORDS_UNPARSEABLE (whose remedy MOVES a "
           "number and is reserved) -- the arm that closed this gate's own "
           "declared blind spot and found three on the day it was written; and "

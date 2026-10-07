@@ -389,6 +389,62 @@ std::size_t write(const std::string&                       caseRoot,
             o << " );\n";
         }
 
+        //  ---- WHAT FLOWS WHERE, for a DESIGNED exchanger (2026-10-07,
+        //  DEV.md 4c C51) -------------------------------------------------
+        //  The decisions the Kern route took about each side -- which fluid,
+        //  which role, whether it condenses, whether its film was computed or
+        //  declared -- and which `sizing {}` keys the case declared or were
+        //  read from the unit or a record.  KEYS, never second values: every
+        //  number stays in `sizing {}` and the ports.  Written only for such
+        //  an item, so every other sheet is character-for-character what it
+        //  was.
+        if (sz.exchanger.present())
+        {
+            const auto& x = sz.exchanger;
+            auto side = [&](const char* name, const ExchangerSide& s)
+            {
+                o << "    " << name << "\n    {\n";
+                o << "        role        " << s.role << ";\n";
+                if (!s.inlet.empty())
+                    o << "        inlet       \"" << s.inlet << "\";\n";
+                if (!s.outlet.empty())
+                    o << "        outlet      \"" << s.outlet << "\";\n";
+                if (!s.utility.empty())
+                    o << "        utility     " << s.utility << ";\n";
+                o << "        regime      " << s.regime << ";\n";
+                o << "        film        " << s.film << ";\n";
+                if (!s.correlation.empty())
+                    o << "        correlation " << s.correlation << ";\n";
+                if (s.Tin >= 0.0)
+                    o << "        Tin         " << num(s.Tin) << " K;\n";
+                if (s.Tout >= 0.0)
+                    o << "        Tout        " << num(s.Tout) << " K;\n";
+                o << "    }\n";
+            };
+            auto keys = [&](const char* name, const std::vector<std::string>& v)
+            {
+                if (v.empty()) return;
+                o << "    " << std::left << std::setw(12) << name << "(";
+                for (const auto& k : v) o << " " << k;
+                o << " );\n";
+            };
+            o << "\n//  What flows on each side, as the design route decided it;"
+                 " the temperatures of a\n//  process side are on its ports"
+                 " above.  The key lists say which `sizing {}`\n//  values the"
+                 " CASE declared and which were read from the rating unit or a"
+                 " data\n//  record; every other value is the sizer's own"
+                 " result.\nexchanger\n{\n";
+            o << "    tubePattern " << x.tubePattern << ";\n";
+            if (!x.controlling.empty())
+                o << "    controlling " << x.controlling << ";\n";
+            side("tubeSide", x.tube);
+            side("shellSide", x.shell);
+            keys("declared", x.declared);
+            keys("fromUnit", x.fromUnit);
+            keys("fromRecord", x.fromRecord);
+            o << "}\n";
+        }
+
         //  ---- WHAT THE ITEM HOLDS (2026-10-07, DEV.md 4c C44 slice 3) --
         //  Written only for an item that declared an inventory, so every
         //  other sheet is character-for-character what it was.  `held` is a

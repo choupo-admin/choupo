@@ -1991,6 +1991,56 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C51. THE EXCHANGER DATASHEET DRAWS THE KERN DESIGN FROM ITS SHEET (Vítor,
+2026-10-07, verbatim, on the green-ammonia FEHE "HX datasheet" pop-out on
+www.choupo.org: "Fodas! O design continua uma merda!").**  The live site is
+main, where C48 is not merged, so he saw the old pass-through sheet.  The
+deeper defect, measured: `gui/src/ui/HeatExchangerDatasheet.tsx` drew its
+schematic and its RATING / TUBE / SHELL / HYDRAULIC sections from the UNIT's
+KPIs and the unit dict's `geometry {}`, which exist only when a
+`heatExchanger` runs `model geometry|design`.  The C48 design lives on the
+SIZER's sheet (`design/<unit>/shellTubeHX`), so even with C48 merged all six
+exchangers would have drawn "tube count not declared", "0 baffles" and
+dashes, with ~50 raw keys dumped; the five `phaseChanger` coolers were never
+offered a datasheet at all (the trigger needed a `U` KPI).  And a second
+defect, found on the way: C48 added `m2.K/W` and `W/m/K` to
+`src/core/Units.cpp` and NOT to the GUI's mirror `gui/src/dict/units.ts`, so
+the GUI's parser refused every designed sheet whole -- the datasheet would
+have said the run wrote a sheet "this reader could not parse".
+BUILT 2026-10-07 on branch `claude/c51-hx-datasheet-design` (from
+`claude/c48-hx-detailed-design`, NOT merged; it waits on C48).  ENGINE: the
+Kern route publishes what it DECIDED about each side as data -- an
+`exchanger {}` block on the sheet (role process/utility/hot/cold, the
+streams, the utility and its record supply/return T, regime gas/liquid/
+condensing/boils, film computed/declared, the correlation, the tube pattern,
+the controlling resistance, and which `sizing {}` keys the case DECLARED or
+were read from the UNIT or a RECORD) -- `ExchangerService` in
+`core/ResultRecords.H`, sheet-only, not in the result JSON, so no golden
+moves (the case's 53 C48 rows are still the only moved ones).  GUI: the ONE
+sheet reader (`case/designSheet.ts`) reads `exchanger {}` and `cost {}`; the
+units mirror gains the two words; `case/hxDatasheet.ts` (pure, React-free)
+builds a TEMA-style specification sheet from the sheet alone -- schematic
+with the real pass arrangement (partitions in front channel and rear head,
+head TYPE not drawn as designed), shells in series, the real baffle count,
+shell ID and tube length dimensioned, nozzles labelled with fluid and
+temperature, a tube-layout inset; SERVICE, THERMAL DESIGN (rated A/U beside
+the designed, which is costed), PERFORMANCE tube side | shell side,
+RESISTANCES, CONSTRUCTION, COST, the basis clause by clause with its WARNING
+clauses and the condensing over-size statement set apart.  Every value in the
+unit its sizer declared, converted only within one unit family the dict table
+knows, and marked in ink AND word: Choupo / declared / from the unit / from a
+record (the shared provenance vocabulary gained the last two).  Any unit
+whose sheet carries a Kern design gets the datasheet (Properties panel and
+Reports).  A sheet with no design keeps the old page unchanged.  Gate
+`check_design_sheet` arm (k) now also requires every sizer unit word to be in
+the GUI mirror (sabotage: dropping `m2.K/W` from it fires 5 problems).  Test
+`gui/tests/hxDatasheet.test.ts` on the engine's real sheets (three witness
+outputs added).  NOT done: the cost-correlation range warning (FEHE and
+Chiller A outside [10, 1000] m2) is an advisory of the costing pass and is
+not on the sheet, so the datasheet cannot show it; mechanical data (nozzle
+sizes, TEMA head letters, tube-sheet thickness) is not computed by Choupo
+and not drawn.  Status: built and validated 2026-10-07; merges with C48.
+
 **C49. THE PROPERTIES PANEL CONVERTS A TEMPERATURE DIFFERENCE AS A
 TEMPERATURE, AND NEVER CONVERTS A SCALAR WRITTEN WITH ITS UNIT (Vítor,
 2026-10-07, verbatim: "a temperatura de aproximação fica estranha quando mudo

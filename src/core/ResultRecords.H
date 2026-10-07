@@ -136,6 +136,51 @@ struct ItemInventory
     }
 };
 
+//  WHAT FLOWS WHERE IN A DESIGNED SHELL-AND-TUBE EXCHANGER (2026-10-07,
+//  DEV.md 4c C51).  The Kern design route (`ShellTubeHX`, `design {}`)
+//  decides which fluid is in the tubes and which in the shell, which side is
+//  a utility and which a process stream, whether a side condenses, and
+//  whether a film was COMPUTED or DECLARED -- and until this record it said
+//  so only inside the prose of its `basis`, so a datasheet that wanted to
+//  draw the tube side had either to parse a sentence or to re-derive the
+//  decision from the case.  Both would be a second home.  The sizer fills
+//  this, the sheet writer prints it as an `exchanger {}` block, and nothing
+//  else reads it: it is NOT emitted in the result JSON (the golden
+//  `equipment` kind pins sizes and the basis, and none of those moved).
+//  EMPTY (`present()` false) on every item but a Kern design, so every other
+//  sheet is character-for-character what it was.
+struct ExchangerSide
+{
+    std::string role;          // process | utility | hot | cold
+    std::string inlet;         // the flowsheet stream entering this side
+    std::string outlet;        //   ... and leaving it (empty for a utility)
+    std::string utility;       // the utility record (empty for a process side)
+    std::string regime;        // gas | liquid | condensing | boils | condenses
+    std::string film;          // computed | declared
+    std::string correlation;   // the film correlation's word, empty if declared
+    scalar      Tin  = -1.0;   // [K] a UTILITY side's supply, from its record;
+    scalar      Tout = -1.0;   //     its return.  < 0: not written (a process
+                               //     side's temperatures are on its ports)
+};
+
+struct ExchangerService
+{
+    ExchangerSide            tube;
+    ExchangerSide            shell;
+    std::string              tubePattern;   // square | triangular
+    std::string              controlling;   // tube-side | shell-side | wall:
+                                            // the largest CLEAN resistance
+    //  PROVENANCE OF THE SIZING KEYS, as keys and never as second values (the
+    //  `assumed` rule): what the CASE declared, what was read from the rating
+    //  UNIT, what was read from a data RECORD.  Every other key of the item's
+    //  `sizing {}` is the sizer's own result.
+    std::vector<std::string> declared;
+    std::vector<std::string> fromUnit;
+    std::vector<std::string> fromRecord;
+
+    bool present() const { return !tube.role.empty(); }
+};
+
 // Geometric / mechanical sizing of a single piece of equipment, as
 // produced by the SizingPass (vessel diameter, height, wall thickness,
 // heat exchanger area, etc.).  Named `EquipmentSizing` rather than
@@ -312,6 +357,10 @@ struct EquipmentSizing
     //  slice 3).  Empty when the case declared no inventory for it, and
     //  every surface then says "not declared" -- never zero kilograms.
     ItemInventory                                inventory;
+
+    //  WHAT FLOWS ON EACH SIDE, for a DESIGNED exchanger only (2026-10-07,
+    //  DEV.md 4c C51; see `ExchangerService` above).  Sheet-only.
+    ExchangerService                             exchanger;
 
     void assume(const std::string& key)
     {

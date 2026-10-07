@@ -68,6 +68,7 @@ import { IconAlertTriangle, IconExternalLink, IconInfoCircle, IconX } from "@tab
 import { popOutFileHtml } from "./filePopOut.js";
 import { findRunStream, popOutSingleStream } from "./streamPopOut.js";
 import { HeatExchangerDatasheet } from "./HeatExchangerDatasheet.js";
+import { findKernDesign } from "../case/hxDatasheet.js";
 import { ColumnDatasheet } from "./ColumnDatasheet.js";
 import { caseThermo, thermoSentence,
   type ThermoReading } from "../case/caseThermo.js";
@@ -368,6 +369,12 @@ function UnitDetails({
   // contract only).
   const hxComputed = unit.type === "heatExchanger"
     && (unit.model === "geometry" || unit.model === "design");
+  //  A Kern DESIGN on the run's specification sheet gives ANY unit an
+  //  exchanger datasheet -- a `phaseChanger` cooler publishes no U and was
+  //  never offered one (DEV.md 4c C51).
+  const designFiles = useStore((s) => s.runResult?.designFiles);
+  const hasKernSheet = useMemo(() => findKernDesign(designFiles, unit.name) !== null,
+    [designFiles, unit.name]);
   const missingRequired = schema
     ? schema.fields.filter((f) => f.required && operation[f.key] === undefined
         && !(hxComputed && (f.key === "area" || f.key === "U")))
@@ -393,7 +400,7 @@ function UnitDetails({
         )}
       </Stack>
 
-      {unit.type === "heatExchanger" && kpis && (
+      {(unit.type === "heatExchanger" || hasKernSheet) && kpis && (
         <HeatExchangerDatasheet unit={unit} kpis={kpis} />
       )}
 

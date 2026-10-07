@@ -127,6 +127,25 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "newtonLog.csv",
     readBy: ["elementPotentialLesson.test.ts"],
   },
+  //  The Kern-designed exchanger datasheet (C51): the specification sheets
+  //  the green-ammonia plant's sizing pass writes under `design/` -- a
+  //  two-stream interchanger in four shells, a condensing cooler against
+  //  cooling water, and a condensing chiller against a boiling refrigerant.
+  {
+    caseDir: "tutorials/plant/greenAmmoniaIndustrialN2",
+    file: "design/FEHE/shellTubeHX",
+    readBy: ["hxDatasheet.test.ts"],
+  },
+  {
+    caseDir: "tutorials/plant/greenAmmoniaIndustrialN2",
+    file: "design/WaterCooler/shellTubeHX",
+    readBy: ["hxDatasheet.test.ts"],
+  },
+  {
+    caseDir: "tutorials/plant/greenAmmoniaIndustrialN2",
+    file: "design/Chiller/shellTubeHX",
+    readBy: ["hxDatasheet.test.ts"],
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by
