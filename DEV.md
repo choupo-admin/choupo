@@ -1991,6 +1991,31 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C48. GREEN AMMONIA: THE EXCHANGERS DESIGNED IN DETAIL, NOT A = Q/(U*LMTD)
+(Vítor, 2026-10-07, verbatim: "Eu estive a ver e os permutadores não estão
+dimensionados de forma detalhada").**  Measured before dispatch: the six
+exchangers of `tutorials/plant/greenAmmoniaIndustrialN2` are sized by
+`ShellTubeHX` (`src/postProcessing/sizing/ShellTubeHX.cpp:84-176`) as A =
+Q/(U*LMTD) with an AUTHOR-SET U (300-500 W/m2/K, postDict) -- no tubes, no
+shell, no film coefficients, no fouling, no pressure drop; five are
+`phaseChanger` units against no second stream (`WaterCooler/system/
+flowsheetDict`: `outletT 313.15 K` only) and the FEHE is a rated
+`heatExchanger` on a declared area and U (`FEHE/system/flowsheetDict`).  The
+engine ALREADY carries a Kern design inside the two-stream unit
+(`HeatExchanger.cpp:337-470` `model design;` -- Gnielinski tube side, Kern
+shell side, Sinnott bundle diameter, N tubes bisected on the duty, Kern dP
+both sides, witness `hxWorkflow1_design_from_duty`), reachable by no sizer
+and with NO fouling resistance.  Commission: every exchanger of the case gets
+a TEMA-style thermal and hydraulic design on its sizing sheet -- tube
+geometry, N tubes, passes, shell ID, baffles, h_i, h_o, fouling, wall, U
+COMPUTED, F correction, area, utility flow, dP both sides -- from ONE design
+kernel shared with the unit (no second home for Kern), the FEHE designed from
+its own duty and compared with its declared 2000 m2 (its answer is not
+moved).  Condensing duty (WaterCooler, Chiller) is outside a single-phase
+Kern and is said so on the sheet, never silently priced as single-phase.
+Status: dispatched 2026-10-07 to a general in a worktree; golden rows that
+MOVE go to Vítor as a list before any re-record.
+
 **C47. A VISIBLE COUNTER OF VISITS AND DOWNLOADS (Vítor, 2026-10-07: "E
 sabes se se pode criar um contador para número de acessos e downloads, que
 fique visível?").**  Measured: the site's analytics hook exists
