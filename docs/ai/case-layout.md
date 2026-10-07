@@ -584,6 +584,56 @@ included -- it means 15, 20 or 25 degC depending on the source) is refused
 naming the two accepted.  The run prints the conversion beside the volume.
 Worked case: `tutorials/plant/ammoniaStaged03_approach`.
 
+**A SHELL-AND-TUBE EXCHANGER CAN BE DESIGNED, NOT ONLY ESTIMATED (2026-10-07).**
+`type shellTubeHX` has four routes, chosen by what `designRules` declares:
+`U` + `LMTD` (A = Q/(U LMTD), both typed); `U` + `utility <name>` (the LMTD
+computed from the unit's own temperatures and the utility record); nothing (a
+rated `heatExchanger`'s own area passed through); and a `design {}` block --
+a Kern thermal and hydraulic DESIGN, in which U is a RESULT (declaring `U` or
+`LMTD` beside it is refused):
+
+```
+designRules
+{
+    utility        coolingWater;     // one-stream unit: the utility on the other side
+    pressureDesign 34;               // bar
+    design
+    {
+        method         Kern;                       // the only accepted word
+        processSide    tube;                       // tube | shell (one-stream units)
+        // tubeStream  <inlet>;                    // INSTEAD, on a two-stream heatExchanger
+        tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+        tubePitch 31.75 mm;  tubePattern square;   // or triangular
+        tubePasses     2;                          // 1, 2, 4, 6 or 8
+        shellsInSeries 1;                          // optional; > 1 only with 1 tube pass
+        baffleSpacingRatio 1.0;                    // baffle spacing / shell ID
+        tubeSide  { model Gnielinski; }            // REQUIRED: no default correlation
+        shellSide { model Kern; }
+        fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.00035 m2.K/W; }   // REQUIRED; 0 = clean, said
+        // utilitySideFilm 2500 W/m2/K;            // REQUIRED for a boiling/condensing utility
+    }
+}
+```
+
+The run finds the smallest number of tubes with U F LMTD (n_shells pi d_o L N)
+>= |Q| and writes N, the shell ID (Sinnott bundle + 12 mm), the baffles, both
+films, the five resistances whose sum is 1/U, U clean and dirty, F (one 1-2
+shell, Bowman-Mueller-Nagle; 1 for one pass or an isothermal utility), the
+area required and installed, the utility flow (|Q| over the record's
+`dutyPerKg`) and both Kern pressure drops; the INSTALLED area is costed.  The
+process side is priced by the case's own package at the mean of its terminal
+temperatures -- so that package must declare gas or liquid `transport {}`
+models -- and a sensible utility by the `thermophysicalSystem {}` its own
+record in `data/standards/utilities/` declares (`coolingWater` carries IF97
+water; a SEALED case then needs `water.dat`, which `bin/choupo-import` adds).
+A process side that partly CONDENSES is designed on the gas film of the vapour
+that leaves (the condensate film is not credited: the area is on the safe
+side) and says so; one that boils, or condenses totally, is refused by name.
+Every correlation used outside its window is announced.  On a two-stream
+`heatExchanger` the unit's own declared area and U are published beside the
+design as `A_rated` / `U_rated` and move nothing.  Worked case:
+`tutorials/plant/greenAmmoniaIndustrialN2` (all six exchangers).
+
 **A STORAGE TANK IS ATTACHED TO A BOUNDARY STREAM (2026-10-07).**  A raw
 material or a product tank is equipment the plant buys, and no flowsheet unit
 is one, so it is declared in `sizing {}` beside `units`, naming the stream it

@@ -58,3 +58,20 @@ equilibrium
         fugacityModel SRK;
     }
 }
+
+//  TRANSPORT (2026-10-07, DEV.md 4c C48).  No unit of this flowsheet reads a
+//  transport property, so this block moves no number of the solve; it is here
+//  because system/postDict DESIGNS the six exchangers in detail (Kern), and a
+//  film coefficient needs the gas's viscosity and conductivity.  Chung (gas mu
+//  from Tc, Pc, omega, M) and Eucken (gas k from Cp and mu), mixed by Wilke's
+//  rule -- DILUTE-GAS models: at the loop's 150 bar the real gas is more
+//  viscous and more conductive than this, and every exchanger sheet says so
+//  in its basis.  Chung announces, per component, what it estimates.
+transport
+{
+    vapour
+    {
+        viscosity           { model Chung; }    // gas mu   (Tc, Pc, omega, M)
+        thermalConductivity { model Eucken; }   // gas k    (Cp + mu)
+    }
+}

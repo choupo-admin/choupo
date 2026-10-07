@@ -1452,7 +1452,18 @@ def validate_staged_agrees(staged, out):
         f = line.split()
         if len(f) < 4:
             continue
-        kind, name, key, want = f[0], f[1], f[2], float(f[3])
+        kind, name, key = f[0], f[1], f[2]
+        #  A kind this reader does not compare is skipped BEFORE its value is
+        #  parsed (2026-10-07, DEV.md 4c C48): an `equipment <unit> basis`
+        #  row pins a SENTENCE, compared `exact` as a word, and parsing it as
+        #  a float first crashed the importer with a traceback on every case
+        #  that carries one (greenAmmoniaIndustrialN2 since C44 slice 1) --
+        #  a reseal that could not even reach its own skip below.
+        if kind not in ("diag", "kpi", "stream", "closure", "utility"):
+            skipped += 1
+            skipped_kinds[kind] = skipped_kinds.get(kind, 0) + 1
+            continue
+        want = float(f[3])
         tol = float(f[4]) if len(f) > 4 else 1e-4
         if kind == "diag":
             got = diags.get(name, {}).get(key)

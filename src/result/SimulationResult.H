@@ -77,6 +77,7 @@ Description
 namespace Choupo {
 
 class ThermoPackage;   // only through `thermoForPost` below -- never included
+class Dictionary;      // only through `thermoForSystem` below
 
 
 //  `FlatUnit` used to be declared HERE, and that is what made `core` reach up
@@ -186,6 +187,19 @@ struct SimulationResult
     //  one.  It is the case's GLOBAL package: a unit with its own `thermo {}`
     //  world is priced on the global one, and the pass that asks says so.
     std::function<std::shared_ptr<const ThermoPackage>()>         thermoForPost;
+    //  A DECLARED SYSTEM OTHER THAN THE CASE'S, built on demand against the
+    //  case's own component database (2026-10-07, DEV.md 4c C48): an
+    //  exchanger design prices its UTILITY side -- cooling water is not one
+    //  of an ammonia loop's components -- with the system the utility's own
+    //  record declares (`thermophysicalSystem {}` in data/standards/
+    //  utilities/<name>.dat).  The records it names are resolved exactly as
+    //  the case's are, so a SEALED case must carry them (the seal refuses
+    //  by name otherwise, and `bin/choupo-import` grows it).  Same posture
+    //  as `thermoForPost`: built only when a pass asks, choupoSolve only,
+    //  empty elsewhere -- and a pass that needs it then refuses by name.
+    std::function<std::shared_ptr<const ThermoPackage>(
+                      const std::shared_ptr<Dictionary>&)>
+                                                                   thermoForSystem;
     std::optional<BinaryTxy>                                       txy;
     // Utility consumption summary.  Aggregated across the
     // flowsheet by ProcessStream::category.  Key is the user-defined

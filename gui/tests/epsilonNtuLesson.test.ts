@@ -193,7 +193,7 @@ describe("the design consequence, and the honest half", () => {
     expect(prose(byId["no-pressure-drop"]!.body))
       .toContain("reported and not applied");
     //  The unit reads `flow` as a word from a CLOSED set and REFUSES
-    //  anything else by name (HeatExchanger.cpp:109-117).  The page claimed
+    //  anything else by name (HeatExchanger.cpp:112-126).  The page claimed
     //  the opposite -- that an unknown word falls back to counter-current
     //  silently -- describing behaviour deliberately removed from the
     //  engine, and this test pinned the stale wording verbatim, which is

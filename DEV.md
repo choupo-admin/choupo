@@ -2015,6 +2015,31 @@ moved).  Condensing duty (WaterCooler, Chiller) is outside a single-phase
 Kern and is said so on the sheet, never silently priced as single-phase.
 Status: dispatched 2026-10-07 to a general in a worktree; golden rows that
 MOVE go to Vítor as a list before any re-record.
+BUILT 2026-10-07 on branch `claude/c48-hx-detailed-design`, NOT merged.  ONE
+kernel: the Kern arithmetic moved verbatim to `htc/ShellTubeDesign`
+(+ per-side fouling, the 1-2 F of Bowman-Mueller-Nagle, friction-factor
+validity flags); `heatExchanger` calls it, byte-identical on all 14 of its
+cases, and gains OPTIONAL `foulingTubeSide`/`foulingShellSide`.  `shellTubeHX`
+gains route 4, `design { method Kern; ... }`: the bundle and the fouling
+DECLARED (an undeclared fouling REFUSES; `0` is a stated clean design), the
+smallest tube count solved, U a RESULT, the installed area costed.  Process
+side priced by the case's package at the mean terminal T (the case gained a
+dilute-gas `transport {}`, and `diluteSolution` now wires one); utility side by
+a `thermophysicalSystem {}` in the utility's OWN record (coolingWater: IF97),
+its flow |Q|/dutyPerKg.  Condensing duties (WaterCooler, Chiller) on the gas
+film of the vapour that leaves -- safe side, said; the boiling-NH3 film TYPED
+(2500 W/m2/K, said).  FEHE: one tube pass, four shells in series, 1837 m2 at
+U 468 against its declared 2000 m2 at U 550 (published as A_rated/U_rated,
+the loop's answer unmoved; the DESIGNED area costed).  Found on the way: the
+case's seal did not carry the utilities its C44 sizing names (the hidden-
+catalogue validation sized no cooler, at exit 0) and `bin/choupo-import`
+crashed on an `equipment ... basis` golden row -- both fixed; the seal grew
+(water.dat, utilities, assets) and the sealed run equals the unsealed one.
+53 golden rows MOVE (6 exchangers x A, U, weight, 3 costs, basis; 11
+economics KPIs, FCI -0.84 %) -- NOT recorded, the list goes to Vítor; 235 new
+rows appended.  Gate `check_design_sheet` arm (s) (5 sabotages caught), arm
+(p) moved to an estimate twin.  Record:
+`docs/design/an-exchanger-designed-not-estimated.md`.
 
 **C47. A VISIBLE COUNTER OF VISITS AND DOWNLOADS (Vítor, 2026-10-07: "E
 sabes se se pode criar um contador para número de acessos e downloads, que

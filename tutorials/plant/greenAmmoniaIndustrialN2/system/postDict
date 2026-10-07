@@ -36,33 +36,78 @@
     compressors (4)   N2Boost MakeupComp1 MakeupComp2 RecycleComp
                       by SHAFT POWER, the unit's own result (pass-through).
     exchangers  (6)   N2Cooler Intercooler Aftercooler WaterCooler Chiller
-                      A = Q/(U*LMTD): the duty is the unit's, U is DECLARED
-                      below, and the LMTD is COMPUTED counter-current from
-                      the unit's own inlet/outlet temperatures and the
-                      UTILITY named below (its record in
-                      data/standards/utilities/ holds the utility's
-                      temperatures).  No LMTD is typed: the inlet of every
-                      cooler here is a compressor discharge, which moves the
-                      day a group re-tunes a shaft power, and a typed LMTD
-                      would stand still while it moved.  The LMTD is on the
-                      TERMINAL temperatures, so on the WaterCooler and the
-                      Chiller, where a little ammonia condenses along the
-                      way, it is an approximation the basis states.
-                      FEHE: the interchanger is a RATED heatExchanger -- it
-                      declares its own area (2000 m2) and the run publishes
-                      it with its U and its LMTD -- so the sizer passes the
-                      unit's own area through and declares no U or LMTD of
-                      its own.  Its sheet's U and LMTD are the unit's, and
-                      they do NOT reproduce its duty (U*A*LMTD ~77 MW
-                      against Q ~61 MW): the exchanger forms Q by eps-NTU
-                      on constant heat capacities and then places the
-                      outlet temperatures on the enthalpy surface, and its
-                      own console line prints that check.  The AREA is
-                      what is costed, and it is the unit's declaration.
-                      Its 2000 m2, and the Chiller's ~1150 m2,
-                      are above the cost correlation's 1000 m2 ceiling (a
-                      real plant splits such a duty over several shells),
-                      and the costing pass says so on every run.
+                      FEHE -- DESIGNED in detail by the Kern method
+                      (`design {}` below; DEV.md 4c C48), no longer
+                      A = Q/(U*LMTD) on a typed U.  The AUTHOR chooses the
+                      bundle and the fouling; the RUN finds the smallest
+                      number of tubes N for which
+                          U * F * LMTD * n_shells * pi d_o L N >= |Q|,
+                      U on the outside area from the two films (Gnielinski
+                      in the tubes, Kern on the shell), the tube wall (the
+                      item's material record's conductivity) and the
+                      declared fouling; F of one 1-2 shell (Bowman, Mueller
+                      & Nagle 1940), or 1 for one tube pass or a boiling
+                      utility.  The SAME kernel the two-stream heatExchanger
+                      unit rates and designs with (htc/ShellTubeDesign).
+                      The sheet carries N, the shell ID, the baffles, h on
+                      each side, the five resistances whose sum is 1/U, U
+                      clean and dirty, F, the area required and installed,
+                      the utility flow and both pressure drops.  The
+                      INSTALLED area is what is costed.
+                      Properties: the process gas by the case's own package
+                      (constant/thermoPhysPropDict, whose `transport {}`
+                      exists for this) at the MEAN of its terminal
+                      temperatures and its inlet pressure; the cooling water
+                      by the system its OWN record declares (IF97,
+                      data/standards/utilities/coolingWater.dat), its flow
+                      |Q| / dutyPerKg.  The LMTD is still COMPUTED from the
+                      unit's own temperatures and the utility's -- no
+                      temperature is typed: every cooler inlet here is a
+                      compressor discharge, which moves the day a group
+                      re-tunes a shaft power.
+                      THE CHOICES, all AUTHOR-SET, none cited:
+                        * tubes 25.4 mm OD x 2.77 mm wall (19.86 mm ID),
+                          6.096 m (20 ft), pitch 31.75 mm (1.25 OD) -- the
+                          gas in the TUBES, because it is the high-pressure
+                          side; SQUARE pitch where the cooling water is on
+                          the shell (cleanable lanes), triangular elsewhere;
+                        * 2 tube passes on the water coolers; 4 on the
+                          Chiller (its utility boils, so F = 1 whatever the
+                          passes and passes only buy gas velocity); ONE on
+                          the FEHE -- its ends cross (hot out 336 K, cold out
+                          651 K), so no 1-2 shell can serve it -- over FOUR
+                          6.1 m shells in counter-current series;
+                        * baffles at 1.0 x the shell ID, the widest
+                          customary spacing: at 0.4 x the shell ID (the first
+                          trial, measured) the water side lost 1.2-4.7 bar;
+                        * fouling 0.0002 m2.K/W on the process gas, 0.00035
+                          on the tower water, 0.0002 on the refrigerant --
+                          TEMA-typical orders of magnitude; no table was read;
+                        * the Chiller's BOILING-ammonia coefficient, 2500
+                          W/m2/K, is TYPED (`utilitySideFilm`): a boiling
+                          film is not a single-phase correlation and none is
+                          wired into the design, so it is declared, said on
+                          the sheet, and no shell-side pressure drop is
+                          computed for it.
+                      THREE THINGS THE SHEETS SAY, read them:
+                        * the gas viscosity and conductivity are DILUTE-GAS
+                          values (Chung, Eucken); at 150 bar the real gas is
+                          more viscous and more conductive;
+                        * the WaterCooler and the Chiller CONDENSE ammonia:
+                          they are designed on the GAS film of the vapour
+                          that leaves (its own equilibrium vapour, its own
+                          mass flow), the condensate film -- which is better
+                          -- not credited, so they are on the SAFE side; their
+                          pressure drop is the whole inlet flow as gas;
+                        * the FEHE's own 2000 m2 (U 550, declared on the
+                          unit, which forms the loop's answer) is published
+                          beside the design as A_rated / U_rated and moves
+                          nothing; the DESIGNED area is costed, because it is
+                          the hardware that delivers the same duty on
+                          computed films and declared fouling.
+                      Several exchangers exceed the cost correlation's
+                      1000 m2 ceiling (a real plant splits such a duty over
+                      several shells), and the costing pass says so.
     converter   (1)   a catalyst VESSEL on a DECLARED space velocity.  The
                       Gibbs reactor has no kinetics, so it has no volume of
                       its own; V = Q_normal(inlet) / SV is a design BASIS,
@@ -146,9 +191,8 @@
       all -- the ASME wall is still computed and priced.  For a compressor
       the material is recorded only (the correlation's F_BM 2.7 carries no
       material factor).
-    * U: gas coolers against water 300-500 W/m2/K, the low end for the
-      30 bar nitrogen, the high end for the hydrogen-rich loop gas at
-      150 bar.
+    * U is no longer declared: it is each exchanger's design RESULT (the
+      exchanger paragraph above lists what IS declared instead).
     * vessels: a fully radiographed joint (jointEfficiency 1.0) and 3 mm of
       corrosion allowance; L/D 6 for the catalyst vessel (ammonia02's), 3
       for the drums.
@@ -197,31 +241,83 @@ sizing
         { unitName RecycleComp;  type compressor;  material SS304;            // suction at -20 C
           designRules { pressureDesign 167; } }                                // the loop's
 
-        //  ---- coolers: U declared, LMTD from the run and the utility ----
+        //  ---- the six exchangers: DESIGNED in detail (Kern), see header ----
+        //  Every geometry and fouling number below is AUTHOR-SET (see the
+        //  header for each one's reason); U, N, the shell, the films, F, the
+        //  area and both pressure drops are the design's RESULTS.
         { unitName N2Cooler;     type shellTubeHX;  material carbonSteel;
-          designRules { U 300;                     // W/m2/K, N2 at 30 bar against water
-                        utility coolingWater;      // 25 -> 35 C, the plant tower
-                        pressureDesign 34; } }
+          designRules { utility coolingWater;      // 25 -> 35 C, the plant tower
+                        pressureDesign 34;
+                        design { method Kern;
+                                 processSide tube;            // the 30 bar gas in the tubes
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;   // 1 in, 2.77 mm wall
+                                 tubeLength 6.096 m;          // 20 ft
+                                 tubePitch 31.75 mm;  tubePattern square;  // 1.25 OD, cleanable water lanes
+                                 tubePasses 2;
+                                 baffleSpacingRatio 1.0;      // B = 1.0 x shell ID: see the header
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide  0.0002  m2.K/W;    // clean process gas
+                                           shellSide 0.00035 m2.K/W; }  // treated tower water
+                               } } }
         { unitName Intercooler;  type shellTubeHX;  material carbonSteel;
-          designRules { U 450;                     // W/m2/K, H2/N2 at 67 bar against water
-                        utility coolingWater;
-                        pressureDesign 74; } }
+          designRules { utility coolingWater;
+                        pressureDesign 74;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.00035 m2.K/W; }
+                               } } }
         { unitName Aftercooler;  type shellTubeHX;  material carbonSteel;
-          designRules { U 500;                     // W/m2/K, H2/N2 at 150 bar against water
-                        utility coolingWater;
-                        pressureDesign 167; } }
+          designRules { utility coolingWater;
+                        pressureDesign 167;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.00035 m2.K/W; }
+                               } } }
         { unitName WaterCooler;  type shellTubeHX;  material carbonSteel;
-          designRules { U 500;                     // W/m2/K, loop effluent at 150 bar against water
-                        utility coolingWater;
-                        pressureDesign 167; } }
+          designRules { utility coolingWater;      // part of the NH3 condenses: gas-film basis
+                        pressureDesign 167;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.00035 m2.K/W; }
+                               } } }
         { unitName Chiller;      type shellTubeHX;  material SS304;            // process side to -20 C
-          designRules { U 500;                     // W/m2/K, loop gas against boiling ammonia
-                        utility refrigerationNH3;  // -33.3 C, ammonia boiling at 1 atm
-                        pressureDesign 167; } }
-
-        //  ---- the interchanger: RATED, its own area passed through ------
+          designRules { utility refrigerationNH3;  // -33.3 C, ammonia boiling at 1 atm
+                        pressureDesign 167;
+                        design { method Kern;  processSide tube;   // a kettle: gas in the tubes
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern triangular;  // clean refrigerant
+                                 tubePasses 4;                // F = 1 here: passes buy gas velocity
+                                 baffleSpacingRatio 1.0;      // tube supports only: the film is declared
+                                 tubeSide  { model Gnielinski; }
+                                 utilitySideFilm 2500 W/m2/K; // boiling NH3 -- AUTHOR-SET, see header
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
         { unitName FEHE;         type shellTubeHX;  material SS316;            // hot side 733 K
-          designRules { pressureDesign 167; } }
+          designRules { pressureDesign 167;
+                        design { method Kern;
+                                 tubeStream HotEffluent;      // the hot effluent in the tubes
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern triangular;
+                                 tubePasses 1;                // counter-current: the ends cross
+                                 shellsInSeries 4;            // 4 x 6.1 m shells in series
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
 
         //  ---- the converter: a catalyst vessel on a declared basis ------
         { unitName Converter;    type vessel;  material SS316;                 // 733 K outlet

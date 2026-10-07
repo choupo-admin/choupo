@@ -83,6 +83,10 @@ Utility readUtilityFile(const fs::path& file)
     u.driveEfficiency = d->lookupScalarOrDefault("driveEfficiency", 1.0);
 
     u.description = d->lookupWordOrDefault("description", "");
+    //  Optional (C48): how the utility's own fluid is priced.  Kept as the
+    //  parsed block -- the sizer hands it to the package builder unchanged.
+    if (d->found("thermophysicalSystem"))
+        u.thermophysicalSystem = d->subDict("thermophysicalSystem");
     return u;
 }
 

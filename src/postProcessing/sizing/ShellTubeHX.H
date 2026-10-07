@@ -35,18 +35,25 @@ Description
         Q_kW             — duty [kW]
         T_in, T_out      — process temperatures [K]   (route 2 only)
         area, U, LMTD    — a rated unit's own values  (route 3 only)
-    Inputs (from designRules), ONE of three routes:
+    Inputs (from designRules), ONE of four routes:
         1. U + LMTD      — both author-set [W/(m²·K)], [K]
         2. U + utility   — U author-set; the LMTD computed counter-current
                            from the unit's T_in/T_out and the named utility
                            record's T_in/T_out (declaring LMTD too refuses)
         3. neither       — a rated exchanger: its own published `area`
                            passed through (refuses if it publishes none)
+        4. design {}     — a Kern thermal and hydraulic DESIGN (2026-10-07,
+                           DEV.md 4c C48): the bundle and the fouling
+                           declared, the tube count SOLVED, U a result, the
+                           films from htc/ShellTubeDesign (the kernel the
+                           heatExchanger unit uses); `U`/`LMTD` beside it
+                           refuse.  See ShellTubeHX.cpp, "ROUTE 4".
         pressureDesign   — design pressure [bar], every route
         material         — already passed in
 
     Output:
-        A = Q / (U · LMTD) [m²], or the unit's own area on route 3
+        A = Q / (U · LMTD) [m²], the unit's own area on route 3, or the
+        INSTALLED area of the design on route 4 (with the whole design)
         approximate weight (TEMA shell + tubes scaled from Turton charts)
 \*---------------------------------------------------------------------------*/
 
