@@ -22,7 +22,7 @@
   the per-iteration PHYSICAL residuals — the recycle mass and energy imbalance
   as a fraction of what enters the plant — as convergence curves named
   "Mass balance (global)" and "Energy balance (global)"
-  (src/applications/choupoSolve/main.cpp:299-302).  This module contributes
+  (src/applications/choupoSolve/main.cpp:300-303).  This module contributes
   NOTHING to that plane but the dict overrides that ask for it and arithmetic
   on the engine's own published numbers.  It evaluates no physics.
 

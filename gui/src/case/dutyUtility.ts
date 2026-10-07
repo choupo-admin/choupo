@@ -25,7 +25,7 @@
  * pinned both as `unserved` and heatExchanger01 stood for a month as
  * 93.79 kW of UNSERVED HEATING."*
  *
- * The engine emits it (`ResultEmitter.cpp:664` writes `"carried": ...`).  The
+ * The engine emits it (`ResultEmitter.cpp:687` writes `"carried": ...`).  The
  * GUI's `UtilityAllocationRow` never declared it, so the canvas had only the
  * prose to draw and drew it.  A typed fact published and not read is the same
  * defect as one never published, one surface along.

@@ -274,6 +274,9 @@ public:
     //  project bans, and which misfiles any two streams sharing a leaf name
     //  across sectors.  So it travels as data, from the moment it is final.
     const std::vector<std::string>& tearStreams() const { return tears_; }
+    //  The loop each tear cuts, as the plan validator found it (C42).
+    const std::map<std::string, SimulationResult::RecycleLoop>& recycleLoops() const
+    { return recycleLoops_; }
 
     // Energy wires resolved during the last solve().  See
     // EnergyWire in SimulationResult.H.  The value reflects the FINAL
@@ -331,7 +334,9 @@ private:
     // UNREACHED accounting).
     std::vector<std::string> validateSequentialPlan(
         const std::vector<std::string>& tears,
-        int                             verbosity) const;
+        int                             verbosity,
+        std::map<std::string, SimulationResult::RecycleLoop>* loopsOut
+            = nullptr) const;
 
     bool init0_      = false;
     bool init0Force_ = false;
@@ -350,6 +355,7 @@ private:
     //  the moment the list is final -- the same instant the sequential-plan
     //  validator is allowed to read it.
     std::vector<std::string>                               tears_;
+    std::map<std::string, SimulationResult::RecycleLoop>  recycleLoops_;
     std::vector<EnergyWire>                                energyWires_;
     std::map<std::string, std::map<std::string, scalar>>   unitKpis_;
     std::map<std::string, std::vector<scalar>>             unitResiduals_;

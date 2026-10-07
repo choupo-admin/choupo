@@ -76,6 +76,7 @@ import type {
   ExperimentalDataset,
   ValidationBlock,
   ModelBoundary,
+  RecycleLoop,
   OperationResult,
   PairResolution,
   RunResult,
@@ -167,7 +168,7 @@ export class WasmAdapter implements SolverAdapter {
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
         const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
-          utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
+          utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, recycleLoops, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
@@ -194,6 +195,7 @@ export class WasmAdapter implements SolverAdapter {
         if (advisories && advisories.length > 0) result.advisories = advisories;
         if (divergences && divergences.length > 0) result.divergences = divergences;
         if (modelBoundaries && modelBoundaries.length > 0) result.modelBoundaries = modelBoundaries;
+        if (recycleLoops && recycleLoops.length > 0) result.recycleLoops = recycleLoops;
         if (operationResults && operationResults.length > 0) result.operationResults = operationResults;
         if (thermoResolution && thermoResolution.length > 0) result.thermoResolution = thermoResolution;
         if (componentCoverage && componentCoverage.length > 0) result.componentCoverage = componentCoverage;
@@ -383,6 +385,8 @@ export function extractStructured(log: string,
   divergences?: Divergence[];
   /** Model-boundary audit findings (adjacent units on different thermo models). */
   modelBoundaries?: ModelBoundary[];
+  /** The loop each declared tear cuts (engine `recycleLoops`, C42). */
+  recycleLoops?: RecycleLoop[];
   /** Per-operation diagnostics from a choupoProps run (fit stats). */
   operationResults?: OperationResult[];
   /** Binary-pair resolution provenance. */
@@ -623,6 +627,9 @@ export function extractStructured(log: string,
 ...(parsed.modelBoundaries && parsed.modelBoundaries.length > 0
       ? { modelBoundaries: parsed.modelBoundaries }
     : {}),
+...(parsed.recycleLoops && parsed.recycleLoops.length > 0
+      ? { recycleLoops: parsed.recycleLoops }
+    : {}),
 ...(operationResults ? { operationResults } : {}),
 ...(thermoResolution ? { thermoResolution } : {}),
 ...(componentCoverage ? { componentCoverage } : {}),
@@ -716,6 +723,7 @@ interface ResultPayload {
    *  advisories, carried under its JSON name here and renamed at the seam. */
   problemDivergence?: Divergence[];
   modelBoundaries?: ModelBoundary[];
+  recycleLoops?: RecycleLoop[];
   convergence?: { [unitName: string]: number[] };
   profiles?: {
     [unitName: string]: {

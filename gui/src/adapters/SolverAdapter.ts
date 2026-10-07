@@ -501,6 +501,13 @@ export interface GlobalMassBoundary {
   utility_fraction_pct: number;
 }
 
+/** One declared tear's loop, as published by the engine (`recycleLoops`). */
+export interface RecycleLoop {
+  tear: string;
+  units: string[];
+  streams: string[];
+}
+
 export interface RunResult {
   status: "done" | "error";
   log: string;
@@ -634,6 +641,10 @@ export interface RunResult {
    *  readout; surfaced so the student SEES the inconsistency, never a silent
    *  T-nudge. */
   modelBoundaries?: ModelBoundary[];
+  /** The loop each declared tear cuts -- its units and streams, qualified
+   *  names, as the engine's sequential-plan validator FOUND them (DEV.md 4c
+   *  C42).  The canvas highlights a loop from this and never re-detects one. */
+  recycleLoops?: RecycleLoop[];
   /** Per-operation diagnostics from a choupoProps run (fit stats, scan
    *  counts).  Empty/absent for choupoSolve runs.  The Fit view reads the
    *  `fitParameters` entries. */

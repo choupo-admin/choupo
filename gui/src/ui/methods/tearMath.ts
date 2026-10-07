@@ -24,9 +24,9 @@
   against the declared tears before any state work.  It DETECTS every material
   cycle, names the chain it found, and refuses SEVEN ways by name — MISSING
   TEAR, INVALID ORDER, FORWARD TEAR, OFF-CYCLE TEAR, INLET TEAR, UNKNOWN TEAR,
-  UNCONSUMED TEAR (src/unitOperations/flowsheet/Flowsheet.cpp:4407-4480) — and
+  UNCONSUMED TEAR (src/unitOperations/flowsheet/Flowsheet.cpp:4408-4525) — and
   where the problem is the order it prints a valid one to paste
-  (src/unitOperations/flowsheet/Flowsheet.cpp:4483-4514).  SEVEN and not six:
+  (src/unitOperations/flowsheet/Flowsheet.cpp:4528-4559).  SEVEN and not six:
   CLAUDE.md 6's own summary of this contract lists six and omits UNCONSUMED
   TEAR, and the engine's own source is the authority.  What it will NOT do is CHOOSE the cut:
   `tearSelection auto` is named and deliberately deferred.  Cycle detection is
@@ -301,7 +301,7 @@ export function judgePlan(
     const c = pos.get(e.to as number) ?? 0;
     //  `c <= p` and not `c < p`: a unit consuming its own output is a genuine
     //  one-unit cycle, and the engine counts it as backward for that reason
-    //  (src/unitOperations/flowsheet/Flowsheet.cpp:4455-4458).
+    //  (src/unitOperations/flowsheet/Flowsheet.cpp:4456-4459).
     if (c > p) continue;
     const cyc = cycles.find((y) => y.edges.includes(e.name)) ?? null;
     backward.push({
@@ -375,7 +375,7 @@ export function bestOrder(g: TeachGraph): BestOrder {
 
 /** The engine's own way of naming a cycle in a refusal, reproduced so the
  *  construction and the run beside it read in one vocabulary
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:4380-4389). */
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:4381-4390). */
 // ---- Judging a DECLARATION: an order, and the tears the reader chose --------
 
 /*  WHY THIS EXISTS BESIDE `judgePlan`, and why it is not the same function.
@@ -389,7 +389,7 @@ export function bestOrder(g: TeachGraph): BestOrder {
  *  page was the single button that withdraws the witness case's declaration.
  *
  *  So this is a TRANSCRIPTION of `Flowsheet::validateSequentialPlan`
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:4317-4480), in the same two
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:4317-4525), in the same two
  *  passes and the same order: the ordered walk first (:4414-4446), then the
  *  declared-tear pass (:4448-4501).  It is the same posture `wegsteinStep`
  *  takes toward `Wegstein::step` -- the arithmetic is the engine's, the toy
@@ -577,7 +577,7 @@ export function withdrawTearOverrides(): DictOverride[] {
  *  Verbatim is the point: these sentences are the contract, they carry the
  *  cycle the engine found and the remedy it recommends, and paraphrasing them
  *  here would be a second home for a refusal message.  The prefixes are the
- *  engine's own words (src/unitOperations/flowsheet/Flowsheet.cpp:4407-4480)
+ *  engine's own words (src/unitOperations/flowsheet/Flowsheet.cpp:4408-4525)
  *  and the leading sentence is at :2744-2749. */
 const FINDING_WORDS = [
   "MISSING TEAR", "INVALID ORDER", "FORWARD TEAR", "OFF-CYCLE TEAR",
@@ -593,7 +593,7 @@ export function planFindings(log: string | null | undefined): string[] {
 
 /** The engine ANNOUNCING a valid plan: `[plan] material recycle: tear 'x'
  *  cuts A -> B --x--> A`, printed at verbosity 2 and above
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:4530-4531).  A valid recycle
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:4575-4576).  A valid recycle
  *  shows its cut; it is never implicit. */
 export function planAnnouncements(log: string | null | undefined): string[] {
   if (!log) return [];

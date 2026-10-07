@@ -1991,6 +1991,34 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C43. REACTION ENTHALPY LEADS TO STANDARD STATE (Vítor, 2026-10-07: "Revê a
+navegação pedagógica das EduTools do CHOUPO, sobretudo a ligação entre
+Reaction Enthalpy e Standard State ... Não quero reescrever nem duplicar o
+conteúdo do Standard State. Quero apenas criar uma ligação clara entre as
+duas EduTools", then "Depois faz só isto e pára").**  The thermodynamics was
+judged correct by him; the defect is NAVIGATION.  At the end of Reaction
+Enthalpy's Kirchhoff step, a "Where does this lead?" box: the chain
+ΔCp° -(Kirchhoff)-> ΔH°(T) -(Gibbs-Helmholtz)-> ΔG°(T)/T -(ΔG° = -RT ln K)->
+K(T), and a link to Standard State step 10 ("Where the 1/T² comes from").
+No Standard State content duplicated.
+
+**C42. THE ENGINE PUBLISHES EACH RECYCLE'S LOOP, AND THE CANVAS LIGHTS IT
+(Vítor, 2026-10-07: "Faz já", after the commander's C41 proposal had claimed
+the engine already published the loop -- it did not, and that false claim
+is this entry's reason; CLAUDE.md §10's rule that every engine fact in a
+proposal is measured first was the one broken).**  `Flowsheet::
+validateSequentialPlan` already found each tear's cycle to judge the plan; it
+now WRITES it (an optional `loopsOut`): a unit is on the loop when a backward
+consumer of the tear reaches it and it reaches the tear's producer, a stream
+when its producer and one consumer are.  `SimulationResult::recycleLoops`,
+emitted as the `recycleLoops` block (only when a tear exists -- every
+tear-free result JSON is byte-identical).  The GUI reads it
+(`gui/src/case/recycleLoops.ts`, membership only, exact names, a sector box
+through the engine's `unitSectors`), and the `recycle` chip -- now default
+OFF -- lights every unit and stream of the loop with a cyan halo; the cut
+mark is always drawn.  The block carries names, no number, so no golden row
+kind is owed for it.
+
 **C41. RECYCLES ARE STREAMS LIKE THE OTHERS (Vítor, 2026-10-07, verbatim:
 "as recirculações ficam a tracejado, mas isso fica esquisito porque elas são
 correntes como as outras! Como achas que pode ficar mais elegante?", then
@@ -1999,9 +2027,9 @@ the solver's cut is a break MARK on it (two slanted strokes, with a hover
 title saying what a cut is); the `recycle` chip toggles the mark and never
 hides the pipe (a recycle is material); the legend's "recycle cut" row draws
 the mark.  `edgeDashes.ts` gains `mark: "cut"`; the dash pattern `10 5` is
-retired.  NOT built, and the commander's proposal claimed it was cheap on a
-false premise: highlighting the whole LOOP needs the cycle each tear closes,
-and the engine does NOT publish it (`Flowsheet::validateSequentialPlan`
+retired.  NOT built THEN (built by C42 the same day), and the commander's proposal
+claimed it was cheap on a false premise: highlighting the whole LOOP needs
+the cycle each tear closes, and the engine did NOT publish it (`Flowsheet::validateSequentialPlan`
 finds cycles, the result JSON carries none) -- deriving it in the GUI would
 be a second home for the plan's cycle detection.  The engine publishing
 each tear's cycle is the next slice if he wants the loop drawn.
