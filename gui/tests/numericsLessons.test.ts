@@ -422,18 +422,18 @@ describe("every file:line these pages cite into the engine resolves", () => {
     //  288-291 and still covers it; this list holds the ONE line that must
     //  carry the string.  (Drift found 2026-09-16 by an unrelated slice --
     //  a pre-existing red that had nothing to do with it.)
-    ["src/applications/choupoSolve/main.cpp", 302, "Mass balance (global)"],
+    ["src/applications/choupoSolve/main.cpp", 303, "Mass balance (global)"],
     ["src/streams/ProcessStream.H", 80, "kmol/s"],
     // --- tear streams: the plan contract
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 4317, "Flowsheet::validateSequentialPlan"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4407, "MISSING TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4415, "INVALID ORDER"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4443, "INLET TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4450, "UNCONSUMED TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4461, "FORWARD TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4473, "OFF-CYCLE TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4530, "[plan] material recycle"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4458, "c <= p->second"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4408, "MISSING TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4416, "INVALID ORDER"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4444, "INLET TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4451, "UNCONSUMED TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4462, "FORWARD TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4518, "OFF-CYCLE TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4575, "[plan] material recycle"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4459, "c <= p->second"],
     // --- the QP
     ["src/solver/ActiveSetQP.cpp", 151, "N&W Algorithm 16.3"],
     ["src/solver/ActiveSetQP.cpp", 270, "N&W eq. 16.41"],
