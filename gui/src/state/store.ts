@@ -41,8 +41,7 @@ import type { ScratchEdit, ScratchEdits } from "../case/scratch.js";
 import type { RunInputs } from "../case/staleness.js";
 import type { JsonDict } from "../dict/json.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
-import { frozenStreamStateText } from "../case/resultSlice.js";
-import { zeroStateText } from "../case/toGraph.js";
+import { applyDrillFeeds } from "../case/drillSeed.js";
 // RESULT_WORKSPACES: the ONE list of workspaces that draw a run (ui/workspaces.ts).
 // That module imports from here TYPE-ONLY, so this is not a runtime cycle.
 import { RESULT_WORKSPACES } from "../ui/workspaces.js";
@@ -448,24 +447,13 @@ function bootCase(): {
         // producing nothing.  Stream state never enters the flowsheet dict
         // (the engine refuses a streams{} block); a 0/ state the sub-case
         // already carries for a name always wins.
-        const withFeeds = (files: CaseFiles, defs: Record<string, unknown>): CaseFiles => {
-          if (!Object.keys(defs).length) return files;
-          const present = { ...(files.rawFiles ?? {}), ...(files.extraFiles ?? {}) };
-          const extra = { ...(files.extraFiles ?? {}) };
-          let added = false;
-          for (const [nm, def] of Object.entries(defs)) {
-            if (zeroStateText(present, nm) !== undefined) continue;
-            if (!def || typeof def !== "object" || Array.isArray(def)) continue;
-            const d = def as { F?: number; T?: number; P?: number;
-                               molarComposition?: Record<string, number> };
-            extra[`0/${nm}`] = frozenStreamStateText({
-              F: d.F ?? 0, T: d.T ?? 298.15, P: d.P ?? 101325,
-              composition: d.molarComposition ?? {},
-            });
-            added = true;
-          }
-          return added ? { ...files, extraFiles: extra } : files;
-        };
+        // A PROJECTED 0/ (the parent's seed, copied in by the registry) yields
+        // to the drill's state; an AUTHORED one wins (drillSeed.applyDrillFeeds,
+        // C50 -- the converter's feed went from 151 bar to the plant's 8 bar
+        // recycle guess on Run).
+        const projected = new Set(t.projectedZero ?? []);
+        const withFeeds = (files: CaseFiles, defs: Record<string, unknown>): CaseFiles =>
+          applyDrillFeeds(files, defs, projected);
         // (a) the explicit stash from the drill (STABLE key -> survives F5).
         const feedsKey = q.get("feeds");
         if (feedsKey) {

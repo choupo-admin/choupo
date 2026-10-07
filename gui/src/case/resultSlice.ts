@@ -78,6 +78,11 @@ export interface SliceOptions {
    *  outlet is an intermediate stream in the PARENT (role "intermediate") and
    *  would otherwise be missed on the OUTPUTS side. */
   boundaryOutlets?: string[];
+  /** A boundary OUTLET's name in the parent, by its local name (`Out` ->
+   *  `HotEffluent`), for an outlet the prefix-strip cannot reach -- a drilled
+   *  LEAF's ports.  The mirror of `boundaryFeeds`; without it a drilled unit
+   *  opened with its feed filled and its product empty (C50, 2026-10-07). */
+  boundaryOutletMap?: Record<string, string>;
 }
 
 /** Strip the scope prefix off a flattened name.  Accepts both the engine's
@@ -197,6 +202,11 @@ export function sliceRunResult(
   // unprefixed.  Pull it in under the local inlet name, keeping its converged
   // values.  A scope-own stream already placed under that name wins.
   for (const [local, parentName] of Object.entries(opts.boundaryFeeds ?? {})) {
+    if (byName.has(local)) continue;
+    const src = parent.streams.find((s) => s.name === parentName);
+    if (src) { byName.set(local, { ...src, name: local }); order.push(local); }
+  }
+  for (const [local, parentName] of Object.entries(opts.boundaryOutletMap ?? {})) {
     if (byName.has(local)) continue;
     const src = parent.streams.find((s) => s.name === parentName);
     if (src) { byName.set(local, { ...src, name: local }); order.push(local); }

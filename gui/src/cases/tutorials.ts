@@ -186,6 +186,10 @@ export interface TutorialEntry {
    *  (the identifier stays `<category>/<shortName>`).  "" if the category is
    *  not sub-classed (unsteady / ctrl / plant: too few to bother). */
   subclass: string;
+  /** A drilled sub-node only: the `0/` paths the registry PROJECTED from
+   *  the root case's own `0/` (the parent's seed, never the sub-case's
+   *  authored state).  A drill's converged feed replaces them (C50). */
+  projectedZero?: string[];
   /** One-line description extracted from controlDict.description (may be empty). */
   description: string;
   /** The binary this case runs on -- `controlDict.application`, read from the
@@ -590,11 +594,18 @@ function subNodesFor(rootName: string,
     // stores streams sector-OWNED under 0/<SECTOR>/; a re-rooted sector/unit
     // reads them by NAME -- without this the drilled tab shows no values).
     const subFsText = sub["system/flowsheetDict"];
-    if (subFsText && !Object.keys(sub).some((r) => r.startsWith("0/")))
+    //  The projected paths are REMEMBERED: they are the parent's seed, not
+    //  the sub-case's own state, and a drill's converged feed must replace
+    //  them on Run (drillSeed.applyDrillFeeds, C50).
+    let projectedZero: string[] = [];
+    if (subFsText && !Object.keys(sub).some((r) => r.startsWith("0/"))) {
       // `dir` (the member's folder path under the case root) lets the projection
       // resolve boundary-inlet renames up the whole ancestor chain, so a nested
       // unit's feed traces to the root 0/ it is stored under.
-      Object.assign(sub, projectRootStreamState(subFsText, files, dir));
+      const projection = projectRootStreamState(subFsText, files, dir);
+      projectedZero = Object.keys(projection);
+      Object.assign(sub, projection);
+    }
 
     // The sub-node's identifier is the ROOT case's FULL name + the folder path,
     // so a drill lookup (`${tutorialName}/${child}`) matches.  Using shortName
@@ -616,6 +627,7 @@ function subNodesFor(rootName: string,
         application: applicationOf(sub["system/controlDict"]),
         tier: "",   // a sub-node inherits no audience; the ROOT case declares it
         files: cf,
+        ...(projectedZero.length ? { projectedZero } : {}),
       });
     } catch {
       // a sub-node missing a required dict (no flowsheetDict,...) -- skip it
