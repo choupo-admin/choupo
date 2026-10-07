@@ -645,6 +645,32 @@ is listed as NOT DECLARED -- never as zero.  Published on the design sheet
 (`equipment[].inventory`, pinned by the golden `equipment` kind as
 `inventory.<key>`).
 
+**THE WORKING CAPITAL MAY BE BUILT UP INSTEAD OF A FRACTION (2026-10-07).**  In
+the postDict's `economics {}` block, `workingCapital 0.15;` (or no key) keeps
+the fraction of FCI.  Declared as a BLOCK it builds the working capital from
+what the plant holds and owes:
+
+```
+workingCapital
+{
+    rawMaterialStock   0 day;   // days of purchases in stock (raw materials with no tank)
+    receivables       30 day;   // days of sales customers owe
+    payables          30 day;   // days of raw-material purchases owed
+    minimumCash       15 day;   // days of COM_d kept as cash
+}
+```
+
+Every key is required and needs its unit (a bare number is seconds).  GROSS
+(current assets, *capital circulante*) = raw-material stock + process inventory
+(the items' held inventories) + product stock (storage items on a priced product
+stream) + receivables + minimum cash; NET (*fundo de maneio*) = gross - payables,
+and the NET is the cash flow's WC (year 0 out, last year back).  Everything held
+is valued at COST: a component a priced raw material brings in at that price, any
+other at COM_d per kg of product -- never at the sales price.  Published as
+`kpis.economics.WC_*` (pinned by the `kpi` kind), the `economics.workingCapital`
+object, and `reports/economics/workingCapital.csv`, with 0.15 x FCI printed
+beside it for comparison.  Worked case: `tutorials/plant/greenAmmoniaIndustrialN2`.
+
 ## Where a numerical option lives — the four homes are INTENTIONAL
 
 Settled 2026-08-04 (Vítor, option A of

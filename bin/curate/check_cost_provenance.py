@@ -124,6 +124,15 @@ that happened to agree with the model's.
       `method Guthrie;` prices nothing and its refusal names `Turton`; the
       source registers no `Guthrie` key.  See `check_retired_name_refused`.
 
+  (q) THE WORKING CAPITAL BUILT UP RECOMPUTES, GROSS AND NET (2026-10-07,
+      DEV.md 4c C44 slice 4).  On greenAmmoniaIndustrialN2 every line of
+      `workingCapital { ... }` -- raw-material stock, process inventory,
+      product stock (valued at COST), receivables, minimum cash, payables --
+      is recomputed from the case's declarations and the run's published
+      streams and held inventories; the net is the cash flow's WC; the
+      fraction form keeps WC = 0.15 x FCI with no build-up; a unitless or a
+      missing day count is refused BY NAME.  See `check_working_capital`.
+
   (o) A DECISION SAYS WHOSE IT IS.  `refuseOnMissingPrice` decides whether an
       appraisal REFUSES on an absent price or reports zero revenue, and it was
       a float read with a silent default.  Two probes, built here because
@@ -476,6 +485,200 @@ def check_retired_name_refused(fails):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+#  THE WORKING-CAPITAL WITNESS (2026-10-07, DEV.md 4c C44 slice 4): the one
+#  corpus case that declares `workingCapital { ... }` as a model.
+WCCASE = ROOT / "tutorials/plant/greenAmmoniaIndustrialN2"
+
+
+def _nc(text):
+    return re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', text, flags=re.S))
+
+
+def _kpi_line(out, unit):
+    for line in out.splitlines():
+        if line.strip().startswith('"%s": {' % unit) and '"FCI"' in line:
+            return dict((k, float(v)) for k, v in re.findall(
+                r'"(\w+)": *(-?[0-9][0-9.eE+-]*)', line))
+    return None
+
+
+def check_working_capital(fails):
+    """(q) THE WORKING CAPITAL BUILT UP RECOMPUTES, GROSS AND NET (2026-10-07,
+    DEV.md 4c C44 slice 4).  On greenAmmoniaIndustrialN2, which declares
+    `workingCapital { rawMaterialStock; receivables; payables; minimumCash; }`
+    in days, every line is RECOMPUTED here from the case's own declarations
+    and the run's published streams and items -- never from the engine's
+    arithmetic:
+
+      * R and C_RM from constant/economics' prices x each stream's F_mass x
+        3600 x streamFactor x 8760; the revenue KPI must be R;
+      * the cost of manufacture per kg of product = COM_d / annual product
+        mass; each component held valued at the price of the raw material
+        that carries most of it (by mass) and any other at that cost --
+        NEVER at the sales price;
+      * process inventory = the held `mass.<c>` of every item that is not a
+        product tank x its unit cost; product stock = the product tanks';
+        raw-material stock = days/365 x the purchases of each raw material
+        (no raw-material tank here);
+      * receivables = days/365 x R, minimum cash = days/365 x COM_d,
+        payables = days/365 x C_RM;
+      * gross = the five assets, NET = gross - payables, and the run's `WC`
+        IS the net, TCI = FCI + net, year 0 of the cash flow invests
+        -(FCI + net), and the fraction-rule comparison is 0.15 x FCI;
+      * the console says both names, GROSS (capital circulante) and NET
+        (fundo de maneio).
+    Probes, on copies: `workingCapital 0.15;` must give WC = 0.15 x FCI and
+    publish NO build-up (the old rule untouched); a unitless `receivables 30;`
+    and a missing `payables` are each refused BY NAME.
+
+    SABOTAGES, BY HAND, 2026-10-07, in EconomicsPass.cpp, each restored with
+    `cp` and the engine rebuilt; the gate then returned OK:
+      S1  the cash flow given the GROSS figure (`WC = wcb.gross`)  -> FAILED:
+          "economics.WC = 78499704.8517, recomputed 51240571.88", TCI and
+          year 0 with it.
+      S2  held material valued at the SALES price (R / product mass in place
+          of COM_d / product mass)  -> FAILED: "economics.WC_productStock =
+          24786513.2033, recomputed 28376722.41", and the totals.
+      S3  the unit requirement on the days removed  -> FAILED: "a unitless
+          `receivables 30;` is not refused BY NAME".
+      S4  payables not subtracted (`net = gross`)  -> FAILED:
+          "economics.WC_net = 78499704.8517, recomputed 51240571.88".
+    NOT CHECKED: whether 30/30/15 days are the right policy -- the case's
+    declared assumptions -- and whether valuing product at COM_d per kg (cost
+    of manufacture, overheads included) is the accounting a given reader
+    wants; the rule is printed, so it can be argued with.
+    """
+    post = _nc((WCCASE / "system" / "postDict").read_text(errors="replace"))
+    m = re.search(r'\bworkingCapital\s*\{([^}]*)\}', post)
+    if not m:
+        fails.append("(q) %s declares no `workingCapital { ... }` model -- this "
+                     "arm CANNOT RUN and must not pass." % WCCASE.name)
+        return
+    days = {k: float(v) for k, v in re.findall(r'\b(\w+)\s+([0-9.]+)\s*day\s*;',
+                                               m.group(1))}
+    sf = float(re.search(r'\bstreamFactor\s+([0-9.]+)', post).group(1))
+    H = sf * 8760.0
+    prices = _nc((WCCASE / "constant" / "economics").read_text(errors="replace"))
+
+    def priced(block):
+        b = re.search(r'\b%s\s*\((.*?)\n\);' % block, prices, re.S).group(1)
+        return [(s, float(p)) for s, p in re.findall(
+            r'stream\s+(\w+)\s*;\s*price\s+([0-9.]+)\s*;', b)]
+    raws, prods = priced("rawMaterials"), priced("products")
+
+    p = subprocess.run([str(BIN), str(WCCASE)], capture_output=True, text=True,
+                       cwd=str(ROOT), timeout=600)
+    out = p.stdout + p.stderr
+    if p.returncode != 0:
+        fails.append("(q) %s failed (rc=%d)" % (WCCASE.name, p.returncode))
+        return
+    e = _kpi_line(out, "economics")
+    if e is None:
+        fails.append("(q) the run publishes no economics KPI line")
+        return
+
+    def stream(name):
+        sl = next((l for l in out.splitlines()
+                   if l.strip().startswith('"%s": {' % name) and '"F_mass"' in l), "")
+        fm = float(re.search(r'"F_mass": *([-0-9.eE+]+)', sl).group(1))
+        comp = {k: float(v) for k, v in re.findall(
+            r'"(\w+)": *([-0-9.eE+]+)', re.search(r'"composition": *\{([^}]*)\}', sl).group(1))}
+        return fm, comp
+    mw = {}
+    for f in (WCCASE / "constant" / "components").glob("*.dat"):
+        mm = re.search(r'^\s*MW\s+([0-9.eE+-]+)', _nc(f.read_text(errors="replace")), re.M)
+        mw[f.stem] = float(mm.group(1))
+
+    R = sum(pr * stream(s)[0] * 3600.0 * H for s, pr in prods)
+    C_RM = sum(pr * stream(s)[0] * 3600.0 * H for s, pr in raws)
+    prodMass = sum(stream(s)[0] * 3600.0 * H for s, _ in prods)
+    c_prod = e["COM_d"] / prodMass
+    #  the raw material carrying most of each component, by mass
+    best = {}
+    for s, pr in raws:
+        fm, comp = stream(s)
+        mbar = sum(z * mw[c] for c, z in comp.items())
+        for c, z in comp.items():
+            kg = fm * z * mw[c] / mbar
+            if kg > best.get(c, (0.0, 0.0))[0]:
+                best[c] = (kg, pr)
+    cost = lambda c: best[c][1] if c in best else c_prod
+
+    tank_stream = re.search(r'\bstorage\s*\(\s*\{[^}]*\bstream\s+(\w+)', post).group(1)
+    prod_streams = {s for s, _ in prods}
+    proc, prodstock = 0.0, 0.0
+    for line in out.splitlines():
+        if '"inventory": {' not in line:
+            continue
+        item = re.search(r'"item": "([^"]+)"', line).group(1)
+        inv = dict((k, float(v)) for k, v in re.findall(
+            r'"mass\.(\w+)": *(-?[0-9][0-9.eE+-]*)',
+            re.search(r'"inventory": \{([^}]*)\}', line).group(1)))
+        v = sum(kg * cost(c) for c, kg in inv.items() if c != "total")
+        if item.startswith(re.search(r'\bstorage\s*\(\s*\{[^}]*\bname\s+(\w+)',
+                                     post).group(1) + "/") and tank_stream in prod_streams:
+            prodstock += v
+        else:
+            proc += v
+    want = {
+        "WC_rawMaterialStock": days["rawMaterialStock"] / 365.0 * C_RM,
+        "WC_processInventory": proc,
+        "WC_productStock": prodstock,
+        "WC_receivables": days["receivables"] / 365.0 * R,
+        "WC_minimumCash": days["minimumCash"] / 365.0 * e["COM_d"],
+        "WC_payables": days["payables"] / 365.0 * C_RM,
+        "productionCostPerKg": c_prod,
+        "revenue": R,
+    }
+    want["WC_gross"] = (want["WC_rawMaterialStock"] + proc + prodstock
+                        + want["WC_receivables"] + want["WC_minimumCash"])
+    want["WC_net"] = want["WC_gross"] - want["WC_payables"]
+    want["WC"] = want["WC_net"]
+    want["TCI"] = e["FCI"] + want["WC_net"]
+    want["WC_fractionRule"] = 0.15 * e["FCI"]
+    for k, w in want.items():
+        g = e.get(k)
+        if g is None or abs(g - w) > 1e-6 * max(abs(w), 1.0):
+            fails.append("(q) economics.%s = %s, recomputed %.6f from the case's "
+                         "declarations and the run's streams and items" % (k, g, w))
+    y0 = re.search(r'\{ "year": 0, "investment": (-?[0-9.eE+-]+)', out)
+    if not y0 or abs(float(y0.group(1)) + e["FCI"] + want["WC_net"]) > \
+            1e-6 * (e["FCI"] + want["WC_net"]):
+        fails.append("(q) year 0 of the cash flow does not invest -(FCI + NET "
+                     "working capital)")
+    for phrase in ("GROSS working capital (capital circulante)",
+                   "NET working capital (fundo de maneio)",
+                   "the fraction rule this replaces"):
+        if phrase not in out:
+            fails.append("(q) the console does not say `%s`" % phrase)
+
+    #  ---- probes on copies -----------------------------------------------
+    def probe(edit):
+        tmp = tempfile.mkdtemp(prefix="cost_wc_")
+        d = Path(tmp) / WCCASE.name
+        shutil.copytree(WCCASE, d, ignore=shutil.ignore_patterns(
+            "design", "reports", "converged", "postProcessing"))
+        pd = d / "system" / "postDict"
+        pd.write_text(edit(pd.read_text(errors="replace")))
+        q = subprocess.run([str(BIN), str(d)], capture_output=True, text=True,
+                           cwd=str(ROOT), timeout=600)
+        shutil.rmtree(tmp, ignore_errors=True)
+        return q.returncode, q.stdout + q.stderr
+    blk = re.compile(r'workingCapital\s*\{[^}]*\}', re.S)
+    rc, o = probe(lambda t: blk.sub("workingCapital 0.15;", t, count=1))
+    ef = _kpi_line(o, "economics")
+    if rc != 0 or ef is None or abs(ef["WC"] - 0.15 * ef["FCI"]) > 1e-6 * ef["FCI"] \
+            or "WC_gross" in ef:
+        fails.append("(q) with `workingCapital 0.15;` the run must keep WC = "
+                     "0.15 x FCI and publish no build-up (rc=%d)" % rc)
+    rc, o = probe(lambda t: re.sub(r'receivables\s+30\s+day;', 'receivables 30;', t, count=1))
+    if rc == 0 or not re.search(r'receivables[^\n]*carries no unit', o):
+        fails.append("(q) a unitless `receivables 30;` is not refused BY NAME")
+    rc, o = probe(lambda t: re.sub(r'payables\s+30\s+day;', '', t, count=1))
+    if rc == 0 or "payables <n> day;" not in o:
+        fails.append("(q) a missing `payables` is not refused BY NAME")
+
+
 def main():
     if not BIN.exists():
         print("check_cost_provenance: FAIL -- choupoSolve missing; run `make all`")
@@ -771,6 +974,7 @@ def main():
     check_price_index_arity(fails)
     check_policy_is_named(fails)
     check_retired_name_refused(fails)
+    check_working_capital(fails)
 
     if fails:
         print("check_cost_provenance: FAIL")
@@ -778,7 +982,12 @@ def main():
             print("  - " + f)
         return 1
 
-    print("check_cost_provenance: OK -- the costing total RECOMPUTES to 0.1 % "
+    print("check_cost_provenance: OK -- the WORKING CAPITAL built up on "
+          "greenAmmoniaIndustrialN2 RECOMPUTES line by line (stocks valued at "
+          "COST, receivables, cash, payables; GROSS = capital circulante, NET = "
+          "fundo de maneio = the cash flow's WC), the fraction form is "
+          "untouched and malformed day counts are refused by name; "
+          "the costing total RECOMPUTES to 0.1 % "
           "from the printed coefficients, indices and factors alone (nothing "
           "read from source or JSON), the two tables agree on F_M, the size "
           "names the rule that produced it, the ideal-gas volumetric flow is "

@@ -503,6 +503,37 @@ struct CashFlowYear
     scalar cumulativeDCF    = 0.0;  // running sum of discountedCF
 };
 
+// THE WORKING CAPITAL BUILT UP FROM WHAT THE PLANT HOLDS AND OWES (2026-10-07,
+// DEV.md 4c C44 slice 4).  Present only when the case declares the
+// componentised model (`workingCapital { ... }` in the economics block);
+// absent, the working capital stays the one fraction of FCI it always was.
+//
+//   gross (current assets)  = raw-material stock + process inventory
+//                           + product stock + receivables + minimum cash
+//   net                     = gross - payables (current liabilities)
+//
+// Every term is a declared number of DAYS times a flow the run computed, or
+// a held mass the sizing pass computed times a unit cost the run computed.
+struct WorkingCapitalLine
+{
+    std::string key;           // stable word: rawMaterialStock, receivables, ...
+    std::string label;         // what a reader is told
+    scalar      value = 0.0;   // EUR
+    std::string rule;          // the arithmetic, in one line
+};
+
+struct WorkingCapitalBuildUp
+{
+    bool                            present = false;
+    std::vector<WorkingCapitalLine> assets;        // the current assets
+    std::vector<WorkingCapitalLine> liabilities;   // the current liabilities
+    scalar                          gross = 0.0;   // sum of assets
+    scalar                          net   = 0.0;   // gross - liabilities
+    scalar                          fractionRule = 0.0;     // the old figure
+    scalar                          fractionUsed = 0.0;     // its fraction
+    scalar                          productionCostPerKg = 0.0;   // EUR/kg product
+};
+
 // Headline economic appraisal scalars + the year-by-year DCF table.  Populated
 // by EconomicsPass; mirrors result.kpis["economics"] but typed and complete
 // (the table the .ods / .csv DCF spreadsheet is built from).
@@ -529,6 +560,7 @@ struct EconomicsSummary
     scalar                    accHi         = +50.0; // AACE band high (%)
     std::string               currency      = "EUR";
     std::vector<CashFlowYear> cashFlow;              // rows t = 0..N
+    WorkingCapitalBuildUp     workingCapital;        // present only when declared
 };
 
 } // namespace Choupo

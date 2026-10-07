@@ -80,8 +80,7 @@ catalyst volumes need a rate law: a plug-flow reactor
   upper bound;
 * the purge scrubber and the let-down gas recovery;
 * the cooling water, the refrigeration cycle and the steam system: each
-  cooler declares an outlet temperature and its duty is the heat to remove;
-* the working capital and the economics.
+  cooler declares an outlet temperature and its duty is the heat to remove.
 
 ## Sizing and costing
 
@@ -135,6 +134,12 @@ Two things a group should read before quoting the tanks:
   is ~12 % larger. Correcting a record is a curation act and was not done
   in this case.
 
+Not stored here, by decision: the **hydrogen buffer** and the **nitrogen
+supply** belong to the electrolyser and the air separation unit, outside
+this battery limit. Adding a store is one more entry in `storage ( ... )`;
+a *gas* is refused by name, because a gas store is a pressure vessel or a
+holder, which the tank sizer does not model.
+
 ### What each item holds
 
 The working capital needs to know how much material is *inside* the plant
@@ -164,11 +169,58 @@ exchangers are listed as **NOT DECLARED** — they hold gas, but no sizer
 publishes the volume they hold it in, and none is invented. The golden is
 the authority on these numbers; this table is a reading of one run.
 
-Not stored here, by decision: the **hydrogen buffer** and the **nitrogen
-supply** belong to the electrolyser and the air separation unit, outside
-this battery limit. Adding a store is one more entry in `storage ( ... )`;
-a *gas* is refused by name, because a gas store is a pressure vessel or a
-holder, which the tank sizer does not model.
+## Economics and working capital
+
+`system/postDict` ends with an `economics {}` block (Turton's cost of
+manufacture and a discounted cash flow) priced from
+[`constant/economics`](constant/economics). **Every price there is an
+author-set assumption** — H₂ at 4.50 EUR/kg, N₂ at 0.05 EUR/kg, ammonia at
+1.00 EUR/kg — chosen so the appraisal runs, not market data; replace each
+with a dated, cited figure before quoting a result. At those prices the
+hydrogen alone costs more than the ammonia sells for, and the appraisal
+says so: NPV is strongly negative and there is no IRR. That is the
+economics of green ammonia at an assumed hydrogen price, not a defect.
+
+### Working capital: *capital circulante* and *fundo de maneio*
+
+Working capital is the money a running plant keeps tied up in things that
+are not equipment: the material in its tanks and vessels, what its
+customers still owe it, and the cash it keeps to pay its bills.
+
+* The **gross** working capital — the **current assets** (*capital
+  circulante*) — is the sum of those.
+* Part of it is financed by the plant's **suppliers**, who are paid later
+  than they deliver: the **payables**, a current liability.
+* What is left — current assets minus current liabilities — is the **net**
+  working capital (*fundo de maneio*): the part the owners must actually put
+  in. It is invested once, at start-up, and recovered when the plant stops,
+  so the cash flow carries the **net** figure at year 0 and returns it in
+  the last year.
+
+Instead of the usual 15 % of the fixed capital, this case **builds it up**
+(`workingCapital { ... }` in the economics block):
+
+| line | rule (this case) |
+|---|---|
+| raw-material stock | 0 days — H₂ and N₂ arrive by pipe; their buffers are outside the battery limit |
+| process inventory | what the vessels hold (above), at cost |
+| product stock | what the two tanks hold — 21 days of production — at the **cost of making it** (COM_d per kg of product), never at its sales price |
+| receivables | 30 days of sales |
+| minimum cash | 15 days of the cash cost of manufacture (COM_d) |
+| **= gross** (*capital circulante*) | |
+| − payables | 30 days of raw-material purchases |
+| **= net** (*fundo de maneio*) | the WC of the cash flow |
+
+Every held component is valued at what it cost the plant: hydrogen and
+nitrogen at their purchase price, ammonia at the plant's cost of manufacture
+per kilogram. The run prints the build-up line by line, both totals, and
+the 15 %-of-FCI figure beside them for comparison; it writes them to
+`reports/economics/workingCapital.csv`. The days are design-basis
+assumptions for this case, not data. Here the product stock and the
+receivables dominate, and the net working capital comes out several times
+larger than 15 % of the fixed capital — because the fixed capital excludes
+the electrolysers and the ASU while the raw materials and product are
+priced in full.
 
 ## Engine notes
 

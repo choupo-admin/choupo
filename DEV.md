@@ -2061,6 +2061,21 @@ gate `check_design_sheet` arm (r) (SRK and Rackett densities recomputed from
 the records).  Also fixed: the costing header's `Year:`/`CEPCI:` digits
 inherited the sizing table's stream format (`2026`, `2026.0` or `2026.0000`
 by which item was sized last); formatted where printed now.
+Slice 4 (working capital) BUILT 2026-10-07 on the same branch, NOT merged:
+`workingCapital` in the economics block is either the old fraction (every
+existing economics case byte-identical, stdout and reports/economics, measured
+on all six) or a BLOCK of four day counts (rawMaterialStock, receivables,
+payables, minimumCash; units required) from which `buildWorkingCapital`
+builds GROSS (capital circulante: raw-material stock + process inventory +
+product stock + receivables + minimum cash) and NET (fundo de maneio = gross -
+payables); the NET is the cash flow's WC.  Held material valued at COST (a
+raw material's price, else COM_d per kg of product).  Green ammonia gains an
+economics pass and `constant/economics` (H2 4.50, N2 0.05, NH3 1.00 EUR/kg,
+labour 42 EUR/h -- every one AUTHOR-SET): gross 78.5 MEUR, net 51.2 MEUR
+against 0.15 x FCI = 6.2 MEUR; NPV -412 MEUR (the H2 alone costs more than the
+NH3 sells for at these assumed prices).  16 golden rows appended; gate
+`check_cost_provenance` arm (q).  The commander's days (0/30/30/15) and the
+prices are put to Vitor as assumptions.
 
 **C43. REACTION ENTHALPY LEADS TO STANDARD STATE (Vítor, 2026-10-07: "Revê a
 navegação pedagógica das EduTools do CHOUPO, sobretudo a ligação entre

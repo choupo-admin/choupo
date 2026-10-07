@@ -1637,6 +1637,12 @@
   "Wilson": [
    "src/thermo/activityCoefficient/Wilson.H"
   ],
+  "WorkingCapitalBuildUp": [
+   "src/core/ResultRecords.H"
+  ],
+  "WorkingCapitalLine": [
+   "src/core/ResultRecords.H"
+  ],
   "Yang2020": [
    "src/propertyOps/Yang2020.H"
   ],

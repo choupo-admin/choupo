@@ -5,11 +5,9 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   postDict -- SIZING and COSTING of every unit that is a piece of equipment
-  (DEV.md 4c C44, slice 1), of the PRODUCT STORAGE (slice 2) and of what
-  each vessel HOLDS while the plant runs (slice 3).  No economics block
-  yet: the working capital is the next slice, and an NPV built before it
-  would be a confident number about a plant whose working capital is
-  missing.
+  (DEV.md 4c C44, slice 1), of the PRODUCT STORAGE (slice 2), of what each
+  vessel HOLDS while the plant runs (slice 3), and the ECONOMIC APPRAISAL
+  with its WORKING CAPITAL built up from those holdings (slice 4).
 
   INVENTORY (what each item holds, "retida em cada equipamento").  An item
   may declare `inventory { held ( { stream <s>; fraction <f>; } ... ); }`:
@@ -157,6 +155,33 @@
 
   The price constants are ammonia02's (CEPCI 2026 = 820 is a projection,
   not a published index value; EUR/USD 0.92).
+
+  ECONOMICS (slice 4).  Prices are in constant/economics, every one an
+  AUTHOR-SET assumption (its header says so).  The appraisal knobs below
+  are ammonia02's, also assumptions.  N_np, the number of processing steps
+  Turton's labour correlation counts (compressors, exchangers, reactors;
+  not drums, tanks or pumps), is COUNTED from this flowsheet: 4 + 6 + 1 =
+  11.
+
+  WORKING CAPITAL, BUILT UP instead of 15 % of FCI.  The working capital is
+  the money a running plant keeps tied up in things that are not equipment.
+  Its GROSS figure -- the current assets, "capital circulante" -- is:
+    raw-material stock    0 days: H2 and N2 arrive by pipe from the
+                          electrolyser and the ASU, and their buffers are
+                          outside this battery limit (the commander's
+                          decision, DEV.md C44);
+    process inventory     what the vessels hold (slice 3), at cost;
+    product stock         what the two product tanks hold -- 21 days of
+                          production -- at the cost of making it, never at
+                          its sales price;
+    receivables           30 days of sales;
+    minimum cash          15 days of the cash cost of manufacture (COM_d).
+  Its NET figure -- "fundo de maneio" -- is the gross minus what the plant
+  owes its suppliers (payables, 30 days of raw-material purchases).  The net
+  is what the owners put in at year 0 and recover at the end, and it is the
+  WC of the cash flow.  The run prints both, line by line, beside the 15 %
+  figure for comparison.  The days are the commander's decisions for this
+  case (DEV.md C44), design-basis assumptions, not data.
 \*---------------------------------------------------------------------------*/
 sizing
 {
@@ -253,4 +278,32 @@ costing
     cepci     820;        // projection, author-set (see the header)
     cepci2001 397;        // the correlation's own basis year
     usdToEur  0.92;
+}
+economics
+{
+    method              discountedCashFlow;
+    projectLife         15;          // yr -- assumption (ammonia02's)
+    constructionPeriod  1;
+    discountRate        0.10;        // assumption
+    taxRate             0.21;        // assumption
+    depreciation        straightLine;
+    depreciableLife     9;           // yr
+    salvageFraction     0.0;
+    streamFactor        0.90;        // 7884 h/yr on stream -- assumption
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    N_np                11;          // 4 compressors + 6 exchangers + 1 reactor
+    estimateClass       4;
+    accuracyBand        ( -30 50 );  // the wide corner of Class 4 -- chosen
+    refuseOnMissingPrice 1;
+
+    //  THE WORKING CAPITAL, built up (see the header).  Every key needs its
+    //  unit: a bare number would be read as SECONDS.
+    workingCapital
+    {
+        rawMaterialStock   0 day;    // H2 and N2 by pipe; no stock here
+        receivables       30 day;    // days of sales customers owe
+        payables          30 day;    // days of raw-material purchases owed
+        minimumCash       15 day;    // days of cash operating cost (COM_d)
+    }
 }
