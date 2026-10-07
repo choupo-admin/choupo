@@ -30,9 +30,13 @@ License
 #include "core/Advisory.H"
 #include "materials/MaterialRegistry.H"
 #include "sizing/EquipmentSize.H"
+#include "sizing/Inventory.H"
 #include "sizing/StorageTankSize.H"
 
 #include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <set>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -46,6 +50,117 @@ License
 
 namespace Choupo {
 
+namespace {
+
+//  THE INVENTORY TABLE (2026-10-07, DEV.md 4c C44 slice 3): what each sized
+//  item HOLDS, per phase and per component, and the plant's total -- printed,
+//  and written to `reports/inventory/inventory.csv`.  Printed ONLY when some
+//  item declared an inventory or one was refused, so a case that declares
+//  none prints and writes exactly what it did before.
+//
+//  AN ITEM WITH NO DECLARED INVENTORY IS LISTED BY NAME, never counted as
+//  zero kilograms: a compressor or an exchanger holds gas the run did not
+//  size a volume for, and "not declared" is the true statement about it.
+void reportInventory(const SimulationResult& result,
+                     const std::vector<std::string>& refused)
+{
+    bool any = !refused.empty();
+    for (const auto& [id, sz] : result.sizings)
+        if (sz.inventory.present()) { any = true; break; }
+    if (!any) return;
+
+    std::set<std::string> comps;
+    for (const auto& [id, sz] : result.sizings)
+        for (const auto& [c, kg] : sz.inventory.massOf()) comps.insert(c);
+
+    std::cout << "\n=====================  Inventory held in equipment  "
+                 "=================\n";
+    std::cout << "  m = V x fraction x rho x w, each phase at the state of the"
+                 " stream named for it\n";
+    std::cout << "  " << std::left << std::setw(22) << "item"
+              << std::setw(8)  << "phase"
+              << std::setw(22) << "stream"
+              << std::right << std::setw(10) << "fraction"
+              << std::setw(13) << "V (m3)"
+              << std::setw(12) << "rho (kg/m3)"
+              << std::setw(16) << "mass (kg)" << "\n  "
+              << std::string(101, '-') << "\n";
+    std::map<std::string, scalar> plant;
+    scalar plantTotal = 0.0;
+    std::vector<std::string> notDeclared;
+    for (const auto& [id, sz] : result.sizings)
+    {
+        if (!sz.inventory.present()) { notDeclared.push_back(id); continue; }
+        for (const auto& h : sz.inventory.phases)
+            std::cout << "  " << std::left << std::setw(22) << id
+                      << std::setw(8)  << h.phase
+                      << std::setw(22) << h.stream << std::right
+                      << std::setw(10) << std::fixed << std::setprecision(3)
+                      << h.fraction
+                      << std::setw(13) << std::setprecision(3) << h.volume
+                      << std::setw(12) << std::setprecision(2) << h.rho
+                      << std::setw(16) << std::setprecision(1) << h.mass << "\n";
+        for (const auto& [c, kg] : sz.inventory.massOf()) plant[c] += kg;
+        plantTotal += sz.inventory.total();
+    }
+    std::cout << "  " << std::string(101, '-') << "\n  plant total held:";
+    for (const auto& c : comps)
+        std::cout << "  " << c << " " << std::fixed << std::setprecision(1)
+                  << plant[c] << " kg";
+    std::cout << "  (total " << std::setprecision(1) << plantTotal << " kg)\n";
+    if (!notDeclared.empty())
+    {
+        std::cout << "  NOT DECLARED (no inventory computed -- not zero):";
+        for (const auto& n : notDeclared) std::cout << " " << n;
+        std::cout << "\n";
+    }
+    for (const auto& r : refused)
+    {
+        std::cout << "  REFUSED: " << r << "\n";
+        AdvisoryLog::instance().add("inventory", "warning", "inventory", r);
+    }
+    std::cout << "=====================================================================\n\n";
+
+    //  The CSV: one row per held phase, its mass split per component.
+    namespace fs = std::filesystem;
+    const fs::path dir = fs::path("reports") / "inventory";
+    std::error_code ec;
+    fs::create_directories(dir, ec);
+    std::ofstream f(dir / "inventory.csv");
+    if (!f.is_open())
+    {
+        std::cerr << "  [inventory] cannot write "
+                  << (dir / "inventory.csv").string() << "\n";
+        return;
+    }
+    f << "item,unit,equipment,volumeFrom,phase,stream,fraction,volume_m3,T_K,"
+         "P_Pa,rho_kg_m3,mass_kg";
+    for (const auto& c : comps) f << "," << c << "_kg";
+    f << "\n";
+    f << std::setprecision(10);
+    for (const auto& [id, sz] : result.sizings)
+        for (const auto& h : sz.inventory.phases)
+        {
+            f << id << "," << sz.unitName << "," << sz.equipmentType << ","
+              << sz.inventory.volumeFrom << "," << h.phase << "," << h.stream
+              << "," << h.fraction << "," << h.volume << "," << h.T << ","
+              << h.P << "," << h.rho << "," << h.mass;
+            for (const auto& c : comps)
+            {
+                auto it = h.massOf.find(c);
+                f << "," << (it == h.massOf.end() ? 0.0 : it->second);
+            }
+            f << "\n";
+        }
+    f << "TOTAL,,,,,,,,,,," << plantTotal;
+    for (const auto& c : comps) f << "," << plant[c];
+    f << "\n";
+    std::cout << "  [inventory] table -> " << (dir / "inventory.csv").string()
+              << "\n";
+}
+
+} // anonymous namespace
+
 SizingPass::SizingPass(const DictPtr& dict)
 :   sizingDict_(dict)
 {}
@@ -57,6 +172,7 @@ int SizingPass::run(SimulationResult& result)
     //  to tell an empty `sizings` that means "no pass" from one that means
     //  "every unit failed, and the reasons are printed above".
     result.sizingAttempted = true;
+
 
     //  WHICH SECTOR OWNS EACH UNIT.  Read from the flattened TOPOLOGY, which
     //  is where the hierarchy is known, and never recovered by splitting
@@ -307,6 +423,7 @@ int SizingPass::run(SimulationResult& result)
 
     std::string shown;              // the sector heading currently printed
     std::vector<std::string> notSized;
+    std::vector<std::string> inventoryRefused;     // C44 slice 3
     for (const auto& u : ordered)
     {
         const std::string uname    = u->lookupWord("unitName");
@@ -339,6 +456,26 @@ int SizingPass::run(SimulationResult& result)
             if (itemList.empty())
                 throw std::runtime_error("sizer '" + utype + "' produced no"
                     " equipment item for unit '" + uname + "'");
+            //  WHAT THE ITEM HOLDS (C44 slice 3), when the entry declares an
+            //  `inventory {}`.  A refused inventory does NOT cost the item
+            //  its size: the size stands, the inventory is named as refused.
+            if (u->found("inventory"))
+            {
+                if (itemList.size() != 1)
+                    inventoryRefused.push_back(uname + ": an `inventory {}` on a"
+                        " unit that realises " + std::to_string(itemList.size())
+                        + " items -- per-item inventories are not supported");
+                else
+                    try {
+                        itemList.front().inventory = inventory::declared(
+                            itemList.front(), u->subDict("inventory"), result,
+                            "inventory '" + uname + "'");
+                    }
+                    catch (const std::exception& e)
+                    {
+                        inventoryRefused.push_back(e.what());
+                    }
+            }
             for (auto& dims : itemList)
                 emitItem(uname, utype, matName, std::move(dims));
         }
@@ -371,7 +508,17 @@ int SizingPass::run(SimulationResult& result)
             const auto& material = MaterialRegistry::byName(matName);
             StorageTankSize sizer;
             for (auto& dims : sizer.size(sname, result, material, st))
+            {
+                try {
+                    dims.inventory = inventory::ofTank(dims, result,
+                        "inventory '" + dims.itemId() + "'");
+                }
+                catch (const std::exception& e)
+                {
+                    inventoryRefused.push_back(e.what());
+                }
                 emitItem(sname, sizer.type(), matName, std::move(dims));
+            }
         }
         catch (const std::exception& e)
         {
@@ -399,6 +546,8 @@ int SizingPass::run(SimulationResult& result)
                                     std::to_string(notSized.size()) + " unit(s)");
     }
     std::cout << "=====================================================================\n\n";
+
+    reportInventory(result, inventoryRefused);
     return failures;
 }
 

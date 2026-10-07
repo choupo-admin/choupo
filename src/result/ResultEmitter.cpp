@@ -752,6 +752,27 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 os << esc(k) << ": " << num(v);
             }
             os << " }";
+            //  WHAT THE ITEM HOLDS (2026-10-07, DEV.md 4c C44 slice 3), ONE
+            //  FLAT OBJECT so the golden `equipment` kind reads it as
+            //  `inventory.<key>`: `volume` [m3] the fractions apply to, per
+            //  held stream `<stream>.fraction` [-], `.volume` [m3], `.rho`
+            //  [kg/m3], `.mass` [kg]; `mass.<component>` [kg] and
+            //  `mass.total` [kg] over the phases.  Written BEFORE `cost`
+            //  (whose reader takes the rest of the line) and ONLY for an item
+            //  that declared one, so every other item's line is unchanged.
+            if (sz.inventory.present())
+            {
+                const auto& inv = sz.inventory;
+                os << ", \"inventory\": { \"volume\": " << num(inv.volume);
+                for (const auto& h : inv.phases)
+                    os << ", " << esc(h.stream + ".fraction") << ": " << num(h.fraction)
+                       << ", " << esc(h.stream + ".volume")   << ": " << num(h.volume)
+                       << ", " << esc(h.stream + ".rho")      << ": " << num(h.rho)
+                       << ", " << esc(h.stream + ".mass")     << ": " << num(h.mass);
+                for (const auto& [c, kg] : inv.massOf())
+                    os << ", " << esc("mass." + c) << ": " << num(kg);
+                os << ", \"mass.total\": " << num(inv.total()) << " }";
+            }
             auto ci = r.costs.find(itemKey);
             if (ci != r.costs.end())
             {

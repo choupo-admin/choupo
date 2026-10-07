@@ -222,6 +222,17 @@ WHAT THIS CHECKS:
       NAME, and a larger tank ceiling makes ONE tank.  Sabotages in
       `check_storage`.
 
+  (r) WHAT EACH ITEM HOLDS IS V x FRACTION x RHO x COMPOSITION (2026-10-07,
+      DEV.md 4c C44 slice 3).  On `greenAmmoniaIndustrialN2` every item
+      publishing an `inventory` has each held phase's density RECOMPUTED from
+      the case's records (anchored Rackett for a liquid, the SRK vapour root
+      for a gas), its mass and per-component split recomputed, its sheet's
+      total held to it, the two product tanks held to storageTime of
+      production, and the items without one listed as NOT DECLARED; copies
+      refuse a declared volume beside a sized V_R, a two-phase stream and
+      fractions above 1 BY NAME while the item keeps its size.  Sabotages in
+      `check_inventory`.
+
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
@@ -2212,6 +2223,240 @@ def check_storage(problems, notes):
                  t_day, mdot, rho, fill, excl))
 
 
+def _srk_vapour_rho(case: Path, comp: dict, T: float, P: float):
+    """SRK vapour density, kij = 0 (the case declares no binary block), the
+    LARGEST real root -- recomputed here from the component records with the
+    engine's own constants (Omega_a 0.42747, Omega_b 0.08664, Soave's m)."""
+    R = 8.314462618
+    zs = sum(comp.values())
+    recs = {n: _record_scalars(case / "constant" / "components" / (n + ".dat"),
+                               ("MW", "Tc", "Pc", "omega"))
+            for n in comp}
+    ai, bi = {}, {}
+    for n, r in recs.items():
+        Pc = r["Pc"] * 1.0e5
+        m = 0.48508 + 1.55171 * r["omega"] - 0.15613 * r["omega"] ** 2
+        alpha = (1.0 + m * (1.0 - math.sqrt(T / r["Tc"]))) ** 2
+        ai[n] = 0.42747 * R * R * r["Tc"] ** 2 / Pc * alpha
+        bi[n] = 0.08664 * R * r["Tc"] / Pc
+    y = {n: z / zs for n, z in comp.items()}
+    a = sum(y[i] * y[j] * math.sqrt(ai[i] * ai[j]) for i in y for j in y)
+    b = sum(y[i] * bi[i] for i in y)
+    A, B = a * P / (R * T) ** 2, b * P / (R * T)
+    #  Z^3 - Z^2 + (A - B - B^2) Z - A B = 0: the largest real root, by
+    #  Newton from Z = 1 (the vapour branch) -- no numpy in the gate.
+    Z = 1.0
+    for _ in range(200):
+        f = Z ** 3 - Z ** 2 + (A - B - B * B) * Z - A * B
+        d = 3 * Z * Z - 2 * Z + (A - B - B * B)
+        Z -= f / d
+    mbar = sum(y[n] * recs[n]["MW"] for n in y) / 1000.0
+    return mbar / (Z * R * T / P)
+
+
+def _stream_json(out: str, stream: str):
+    sl = next((l for l in out.splitlines()
+               if l.strip().startswith('"%s": {' % stream) and '"F_mass"' in l), "")
+    if not sl:
+        return None
+    g = lambda k: float(re.search(r'"%s": *([-0-9.eE+]+)' % k, sl).group(1))
+    comp = {k: float(v) for k, v in re.findall(
+        r'"(\w+)": *([-0-9.eE+]+)', re.search(r'"composition": *\{([^}]*)\}', sl).group(1))}
+    return {"T": g("T"), "P": g("P"), "vf": g("vf"), "F_mass": g("F_mass"),
+            "comp": comp}
+
+
+def check_inventory(problems, notes):
+    """(r) WHAT EACH ITEM HOLDS IS ITS VOLUME x FRACTION x DENSITY x
+    COMPOSITION, AND NOTHING ELSE (2026-10-07, DEV.md 4c C44 slice 3).  On
+    `greenAmmoniaIndustrialN2`, for every item whose result line carries an
+    `inventory` object:
+
+      * the volume is the item's own `V_R`; each held stream's fraction is
+        the one its postDict `held ( ... )` declares (a storage tank: its
+        `fillFraction`);
+      * each phase's density is RECOMPUTED from the case's component
+        records at the stream's published state -- the anchored-Rackett
+        liquid route (components the package cannot price alone given no
+        volume) or the SRK vapour root with kij = 0 -- and its mass is
+        V x fraction x rho;
+      * `mass.<c>` is the sum over the phases of mass x w_c, w from the
+        stream's published composition and the records' molar masses, and
+        `mass.total` their sum; the two product tanks together hold exactly
+        storageTime of production;
+      * the item's sheet carries an `inventory {}` block whose total is the
+        same number, and the console lists every sized item WITHOUT one
+        under NOT DECLARED (never as zero);
+      * three copies: a declared `volume` beside a sized V_R, a TWO-PHASE
+        stream, and fractions summing above 1 -- each REFUSED by name while
+        the item keeps its size and the run exits 0.
+
+    SABOTAGES, BY HAND, 2026-10-07, each restored with `cp` and the engine
+    rebuilt; the gate then returned OK:
+      S1  Inventory.cpp: a phase's volume = V (its fraction ignored)  ->
+          FAILED: "Converter HotEffluent.volume = 21.5822428747, recomputed
+          8.63289715", the mass and every component with it.
+      S2  PhaseDensity.cpp: the per-component split on MOLE fractions  ->
+          FAILED: "Converter mass.H2 = 120.796640979, recomputed 26.1629745".
+      S3  Inventory.cpp: the declared-volume-beside-V_R refusal removed  ->
+          FAILED: "a copy with a declared volume beside the Separator's sized
+          V_R is not refused BY NAME".
+      S4  SizingPass.cpp: the NOT DECLARED list suppressed  -> FAILED: "the
+          items with no declared inventory are not listed as NOT DECLARED".
+    NOT CHECKED: whether the declared fractions (bed voidage, liquid level)
+    are right -- they are the case's assumptions; and whether the engine's
+    densities are the TRUE ones (the README's Vliq finding).
+    """
+    case = ROOT / HXROUTE
+    post_nc = re.sub(r'//[^\n]*', '', re.sub(
+        r'/\*.*?\*/', '', (case / "system" / "postDict").read_text(errors="replace"),
+        flags=re.S))
+    declared = {}
+    for unit, body in re.findall(
+            r'\{\s*unitName\s+(\w+)\s*;[^{]*designRules\s*\{[^}]*\}\s*'
+            r'inventory\s*\{\s*held\s*\((.*?)\)\s*;\s*\}', post_nc, re.S):
+        declared[unit] = {s: float(f) for s, f in re.findall(
+            r'\{\s*stream\s+(\w+)\s*;\s*fraction\s+([0-9.eE+-]+)\s*;\s*\}', body)}
+    if not declared:
+        problems.append("check_design_sheet(r): %s declares no unit "
+                        "`inventory { held ( ... ); }` -- this arm CANNOT RUN; "
+                        "it must not pass." % HXROUTE)
+        return
+
+    rc, out, err = run_case(HXROUTE)
+    if rc != 0:
+        problems.append("check_design_sheet(r): %s failed (rc=%d)." % (HXROUTE, rc))
+        return
+    mw = {}
+    for f in (case / "constant" / "components").glob("*.dat"):
+        mw[f.stem] = _record_scalars(f, ("MW",))["MW"]
+
+    lines = [l for l in out.splitlines() if '"inventory": {' in l]
+    seen, tank_total, n_phase = set(), 0.0, 0
+    for line in lines:
+        item = re.search(r'"item": "([^"]+)"', line).group(1)
+        inv = dict((k, float(v)) for k, v in re.findall(
+            r'"([A-Za-z_][\w.]*)": *(-?[0-9][0-9.eE+-]*)',
+            re.search(r'"inventory": \{([^}]*)\}', line).group(1)))
+        vals = dict((k, float(v)) for k, v in re.findall(
+            r'"(\w+)": *(-?[0-9][0-9.eE+-]*)',
+            re.search(r'"values": \{([^}]*)\}', line).group(1)))
+        seen.add(item)
+        if "/tank" in item:
+            stm = re.search(r'storage\s*\(\s*\{[^}]*\bstream\s+(\w+)', post_nc).group(1)
+            held = {stm: vals["fillFraction"]}
+        else:
+            held = declared.get(item)
+            if held is None:
+                problems.append("check_design_sheet(r): %s publishes an "
+                                "inventory the postDict does not declare." % item)
+                continue
+        if not close(inv.get("volume", -1.0), vals["V_R"], 1e-9):
+            problems.append("check_design_sheet(r): %s inventory volume %s is "
+                            "not its own V_R %s." % (item, inv.get("volume"), vals["V_R"]))
+        want_c, total = {}, 0.0
+        for stream, frac in held.items():
+            sj = _stream_json(out, stream)
+            if sj is None:
+                problems.append("check_design_sheet(r): stream %s not in the "
+                                "result." % stream)
+                continue
+            if sj["vf"] <= 1e-9:
+                rho, _ = _anchored_rackett_rho(case, sj["comp"], sj["T"])
+            else:
+                rho = _srk_vapour_rho(case, sj["comp"], sj["T"], sj["P"])
+            m = vals["V_R"] * frac * rho
+            n_phase += 1
+            for key, w in (("fraction", frac), ("volume", vals["V_R"] * frac),
+                           ("rho", rho), ("mass", m)):
+                got = inv.get("%s.%s" % (stream, key))
+                if got is None or not close(got, w, 1e-6):
+                    problems.append("check_design_sheet(r): %s %s.%s = %s, "
+                                    "recomputed %.9g (V_R %.9g x %g x rho %.9g "
+                                    "at %.2f K, %.6g Pa, vf %g)."
+                                    % (item, stream, key, got, w, vals["V_R"],
+                                       frac, rho, sj["T"], sj["P"], sj["vf"]))
+            mbar = sum(z * mw[c] for c, z in sj["comp"].items())
+            for c, z in sj["comp"].items():
+                want_c[c] = want_c.get(c, 0.0) + m * z * mw[c] / mbar
+            total += m
+        for c, w in want_c.items():
+            got = inv.get("mass." + c)
+            if got is None or not close(got, w, 1e-6):
+                problems.append("check_design_sheet(r): %s mass.%s = %s, "
+                                "recomputed %.9g." % (item, c, got, w))
+        if not close(inv.get("mass.total", -1.0), total, 1e-6):
+            problems.append("check_design_sheet(r): %s mass.total = %s, "
+                            "recomputed %.9g." % (item, inv.get("mass.total"), total))
+        if "/tank" in item:
+            tank_total += total
+        name, _, tag = item.partition("/")
+        sheet = case / "design" / name / (tag if tag else re.search(
+            r'"type": "([^"]+)"', line).group(1))
+        txt = sheet.read_text(errors="replace") if sheet.is_file() else ""
+        mm = re.search(r'^inventory\s*\n\{.*?^\s*total\s+([-0-9.eE+]+)\s*kg\s*;',
+                       txt, re.S | re.M)
+        if not mm or not close(float(mm.group(1)), total, 1e-6):
+            problems.append("check_design_sheet(r): %s's sheet carries no "
+                            "`inventory {}` whose total is %.9g kg." % (item, total))
+
+    for u in declared:
+        if u not in seen:
+            problems.append("check_design_sheet(r): %s declares an inventory "
+                            "and the result publishes none." % u)
+    #  The two tanks together hold storageTime of production.
+    sm = re.search(r'storage\s*\(\s*\{([^}]*)\}', post_nc).group(1)
+    stream = re.search(r'\bstream\s+(\w+)', sm).group(1)
+    t_day = float(re.search(r'storageTime\s+([0-9.]+)\s*day', sm).group(1))
+    prod = t_day * 86400.0 * _stream_json(out, stream)["F_mass"]
+    if not close(tank_total, prod, 1e-6):
+        problems.append("check_design_sheet(r): the tanks hold %.9g kg, and "
+                        "%g day of %s is %.9g kg." % (tank_total, t_day, stream, prod))
+    nd = re.search(r'NOT DECLARED \(no inventory computed -- not zero\):([^\n]*)', out)
+    if not nd or "MakeupComp1" not in nd.group(1) or "Chiller" not in nd.group(1):
+        problems.append("check_design_sheet(r): the items with no declared "
+                        "inventory are not listed as NOT DECLARED.")
+
+    def edit_held(unit, f):
+        def ed(t):
+            pat = re.compile(r'(\{\s*unitName\s+%s\s*;.*?inventory\s*\{)(.*?)(\}\s*\})'
+                             % unit, re.S)
+            return pat.sub(lambda mm: mm.group(1) + f(mm.group(2)) + mm.group(3),
+                           t, count=1)
+        return ed
+    probes = (
+        ("a declared volume beside the Separator's sized V_R",
+         edit_held("Separator", lambda b: b + " volume 5; "), r'beside a sized V_R'),
+        ("the Separator holding the TWO-PHASE WaterCooledEffluent",
+         edit_held("Separator", lambda b: b.replace("UnreactedGas",
+                                                    "WaterCooledEffluent")),
+         r'TWO-PHASE'),
+        ("Separator fractions summing above 1",
+         edit_held("Separator", lambda b: b.replace("fraction 0.75", "fraction 0.85")),
+         r'sum to'),
+    )
+    for what, ed, pat in probes:
+        dst, rcp, outp, errp = _run_copy(case, ed)
+        both = outp + errp
+        if rcp != 0:
+            problems.append("check_design_sheet(r): the copy with %s failed "
+                            "(rc=%d) -- a refused inventory must refuse the "
+                            "INVENTORY, never the run." % (what, rcp))
+        elif not re.search(r"REFUSED: inventory 'Separator'[^\n]*%s" % pat, both):
+            problems.append("check_design_sheet(r): a copy with %s is not "
+                            "refused BY NAME (/%s/)." % (what, pat))
+        elif '"item": "Separator"' not in both or not re.search(
+                r'"item": "Separator"[^\n]*"values"', both):
+            problems.append("check_design_sheet(r): with %s the Separator lost "
+                            "its SIZE -- a refused inventory must keep it." % what)
+        shutil.rmtree(dst.parent, ignore_errors=True)
+
+    notes.append("inventory: %d item(s), %d held phase(s) recomputed "
+                 "(V x fraction x rho x w; rho from the records); the tanks "
+                 "hold %.6g kg = storageTime of production; three probes"
+                 % (len(lines), n_phase, tank_total))
+
+
 def main() -> int:
     problems, notes = [], []
 
@@ -2233,6 +2478,7 @@ def main() -> int:
     check_space_velocity_basis(problems, notes)
     check_exchanger_routes(problems, notes)
     check_storage(problems, notes)
+    check_inventory(problems, notes)
 
     check_ignored(problems)
     check_refusal(problems)
@@ -2277,7 +2523,11 @@ def main() -> int:
           "costs RECOMPUTED from the case's records, its declarations, the "
           "stream's own mass flow and the CAPCOST fixed-roof row; LOWER BOUND "
           "said per tank for refrigerated storage; a unitless storage time "
-          "and a vapour stream refused BY NAME), each "
+          "and a vapour stream refused BY NAME) and on the inventory "
+          "witness (every held phase's density, mass and per-component split "
+          "RECOMPUTED from the case's records and declarations, the tanks "
+          "held to storageTime of production, the undeclared items listed as "
+          "NOT DECLARED, three malformed declarations refused BY NAME), each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
           "sector, NO extra level where it does not); every `sizing {}` entry "

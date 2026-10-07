@@ -616,6 +616,35 @@ and the run says LOWER BOUND on every such tank.  A stream above 1.5 bar
 flowsheet that reports a holdup and is not sized or costed; the item is the
 tank the plant buys.  Worked case: `tutorials/plant/greenAmmoniaIndustrialN2`.
 
+**WHAT AN ITEM HOLDS (2026-10-07).**  A `units ( ... )` entry may declare, beside
+its `designRules {}`, the material it holds while the plant runs -- the
+in-process inventory a working capital is built from:
+
+```
+inventory
+{
+    held
+    (
+        { stream RawLiquid;     fraction 0.25; }   // the liquid level
+        { stream UnreactedGas;  fraction 0.75; }   // the vapour space
+    );
+    // volume 2.5;   // m3 -- ONLY for an item whose sizer publishes no V_R
+}
+```
+
+Per held phase `m = V x fraction x rho x w`: V the item's own `V_R`, rho and w
+the density and mass fractions of the NAMED stream at the state it carries
+(the phase is READ off that stream's vapour fraction; a two-phase stream is
+refused -- name a drum's vapour and liquid outlets, each one phase).  Fractions
+may sum to less than 1 (the rest is internals, catalyst or empty space, said);
+above 1, a declared `volume` beside a sized `V_R`, or a sizer with no volume and
+no declared one, each refuse the INVENTORY by name and keep the item's size.  A
+storage tank holds its own working level automatically.  An item with no block
+is listed as NOT DECLARED -- never as zero.  Published on the design sheet
+(`inventory {}`), in `reports/inventory/inventory.csv`, and in the result JSON
+(`equipment[].inventory`, pinned by the golden `equipment` kind as
+`inventory.<key>`).
+
 ## Where a numerical option lives — the four homes are INTENTIONAL
 
 Settled 2026-08-04 (Vítor, option A of

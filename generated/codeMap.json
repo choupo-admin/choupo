@@ -723,6 +723,9 @@
   "Heater": [
    "src/unitOperations/heatTransfer/Heater.H"
   ],
+  "HeldPhase": [
+   "src/core/ResultRecords.H"
+  ],
   "HenryIsotherm": [
    "src/thermo/adsorbent/IsothermModel.H"
   ],
@@ -782,6 +785,9 @@
   ],
   "IsothermalFlash": [
    "src/unitOperations/flash/IsothermalFlash.H"
+  ],
+  "ItemInventory": [
+   "src/core/ResultRecords.H"
   ],
   "Joback": [
    "src/propertyOps/Joback.H"
@@ -3457,6 +3463,7 @@
    "src/postProcessing/PostProcessor.H",
    "src/postProcessing/SizingPass.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/Inventory.H",
    "src/postProcessing/sizing/StorageTankSize.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -3691,6 +3698,28 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/EvaporatorSize.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
+  "src/postProcessing/sizing/Inventory.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/postProcessing/sizing/Inventory.H",
+   "src/postProcessing/sizing/PhaseDensity.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -8474,6 +8503,7 @@
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -8753,6 +8783,7 @@
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -9062,6 +9093,7 @@
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -9369,6 +9401,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -9440,6 +9473,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -9693,6 +9727,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -9937,6 +9972,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -10048,6 +10084,7 @@
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -10117,6 +10154,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -10210,6 +10248,7 @@
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -10734,7 +10773,12 @@
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp"
   ],
+  "src/postProcessing/sizing/Inventory.H": [
+   "src/postProcessing/SizingPass.cpp",
+   "src/postProcessing/sizing/Inventory.cpp"
+  ],
   "src/postProcessing/sizing/PhaseDensity.H": [
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp"
   ],
@@ -11171,6 +11215,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -11234,6 +11279,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -11362,6 +11408,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -11661,6 +11708,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -11867,6 +11915,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -12218,6 +12267,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -12486,6 +12536,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -12626,6 +12677,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",

@@ -135,6 +135,35 @@ Two things a group should read before quoting the tanks:
   is ~12 % larger. Correcting a record is a curation act and was not done
   in this case.
 
+### What each item holds
+
+The working capital needs to know how much material is *inside* the plant
+while it runs. An item in the postDict may declare
+
+    inventory { held ( { stream RawLiquid; fraction 0.25; }
+                       { stream UnreactedGas; fraction 0.75; } ); }
+
+and then holds, per phase, m = V × fraction × ρ × w: V its own sized
+volume, ρ and w the density and mass fractions of the stream named for that
+phase, at the state that stream carries (the phase is read off the stream).
+The converter (bed voidage 0.40), the separator (liquid level 0.25) and the
+two let-down drums (half full) declare one; every fraction is an assumption.
+The storage tanks hold their working level, 21 days of production.
+
+| item | held | kg |
+|---|---|---|
+| `NH3Storage` (2 tanks) | liquid ammonia | ~24.8 × 10⁶ |
+| `Separator` | liquid + loop gas | ~5 600 |
+| `StorageFlash` | liquid + flash gas | ~5 050 |
+| `Converter` | loop gas in the bed voids | ~190 |
+| `LetdownHP` | liquid + let-down gas | ~85 |
+
+The run prints this table, writes it to `reports/inventory/inventory.csv`
+and puts each item's block on its design sheet. The compressors and the
+exchangers are listed as **NOT DECLARED** — they hold gas, but no sizer
+publishes the volume they hold it in, and none is invented. The golden is
+the authority on these numbers; this table is a reading of one run.
+
 Not stored here, by decision: the **hydrogen buffer** and the **nitrogen
 supply** belong to the electrolyser and the air separation unit, outside
 this battery limit. Adding a store is one more entry in `storage ( ... )`;

@@ -82,6 +82,60 @@ Description
 
 namespace Choupo {
 
+// ONE PHASE AN ITEM HOLDS, AND HOW MUCH OF EACH COMPONENT IS IN IT
+// (2026-10-07, DEV.md 4c C44 slice 3).  A piece of equipment is not only a
+// capital cost: while the plant runs it is FULL of material, and that
+// material is money tied up for as long as the plant operates -- the
+// in-process inventory of the working capital.  The quantity is computed
+// from four DECLARED or PUBLISHED facts and nothing else:
+//
+//     m_i = V x fraction x rho(T, P, z) x w_i
+//
+// V the item's own sized volume (or, for an item whose sizer publishes no
+// volume, a holdup volume the case declares); `fraction` the share of V the
+// case says this phase occupies; rho the density of the phase at the state
+// of the stream the case names as carrying it, priced on the case's own
+// package; w_i that stream's mass fractions.  Each term is carried so a
+// reader -- and the gate -- can redo the product.
+struct HeldPhase
+{
+    std::string                   phase;      // "liquid" | "vapour"
+    std::string                   stream;     // the stream whose state it has
+    scalar                        fraction = 0.0;  // of V          [-]
+    scalar                        volume   = 0.0;  // V x fraction   [m3]
+    scalar                        T        = 0.0;  // [K]
+    scalar                        P        = 0.0;  // [Pa]
+    scalar                        rho      = 0.0;  // [kg/m3]
+    scalar                        mass     = 0.0;  // [kg]
+    std::map<std::string, scalar> massOf;          // per component  [kg]
+};
+
+struct ItemInventory
+{
+    //  EMPTY MEANS "NO INVENTORY WAS DECLARED FOR THIS ITEM", and every
+    //  surface draws it that way -- never as zero kilograms, which would be
+    //  a claim that the item is empty.
+    std::vector<HeldPhase>        phases;
+    scalar                        volume  = 0.0;   // the V the fractions apply to [m3]
+    std::string                   volumeFrom;      // "sized" | "declared"
+    std::string                   basis;           // one sentence: the rule
+
+    bool   present() const { return !phases.empty(); }
+    scalar total() const
+    {
+        scalar s = 0.0;
+        for (const auto& p : phases) s += p.mass;
+        return s;
+    }
+    std::map<std::string, scalar> massOf() const
+    {
+        std::map<std::string, scalar> m;
+        for (const auto& p : phases)
+            for (const auto& [c, kg] : p.massOf) m[c] += kg;
+        return m;
+    }
+};
+
 // Geometric / mechanical sizing of a single piece of equipment, as
 // produced by the SizingPass (vessel diameter, height, wall thickness,
 // heat exchanger area, etc.).  Named `EquipmentSizing` rather than
@@ -253,6 +307,11 @@ struct EquipmentSizing
     //  item attached to that stream.  EMPTY for every item a unit realises,
     //  so no existing surface changes.
     std::string                                  stream;
+
+    //  WHAT THE ITEM HOLDS while the plant runs (2026-10-07, DEV.md 4c C44
+    //  slice 3).  Empty when the case declared no inventory for it, and
+    //  every surface then says "not declared" -- never zero kilograms.
+    ItemInventory                                inventory;
 
     void assume(const std::string& key)
     {

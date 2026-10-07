@@ -2046,6 +2046,21 @@ the NH3 record's `Vliq` (681 kg/m3) reads as a 25 C datum and Rackett takes it
 to ~769 kg/m3 at 238 K, while 681 is the figure usually quoted at the normal
 boiling point -- if so every liquid volume from it is ~12 % small (a curation
 question for Vitor, not changed).
+Slice 3 (inventory held in each item) BUILT 2026-10-07 on the same branch, NOT
+merged: a units entry may declare `inventory { held ( { stream; fraction; } ) }`
+(or a `volume` where its sizer publishes none) and holds, per phase, V x
+fraction x rho x w on the named stream's own state (`sizing/Inventory`); a
+storage tank holds its working level.  Printed as a table, written to
+`reports/inventory/inventory.csv`, drawn on the design sheet, published as
+`equipment[].inventory` and pinned by the existing `equipment` kind (new key
+family `inventory.<key>`, reader and generator in `bin/runTests`, mirror in
+`check_equipment_pinned`).  Green ammonia: Converter (voidage 0.40),
+Separator (level 0.25), the two let-down drums (half full) declared; the
+compressors and exchangers are listed NOT DECLARED.  72 golden rows appended;
+gate `check_design_sheet` arm (r) (SRK and Rackett densities recomputed from
+the records).  Also fixed: the costing header's `Year:`/`CEPCI:` digits
+inherited the sizing table's stream format (`2026`, `2026.0` or `2026.0000`
+by which item was sized last); formatted where printed now.
 
 **C43. REACTION ENTHALPY LEADS TO STANDARD STATE (Vítor, 2026-10-07: "Revê a
 navegação pedagógica das EduTools do CHOUPO, sobretudo a ligação entre

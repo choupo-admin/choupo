@@ -563,7 +563,20 @@ get_equipment() {
             line = $0
             #  Narrow to the sub-object the key names, so a name that exists in
             #  two of them cannot be answered by the wrong one.
-            if (k ~ /^cost\.factors\./) {
+            if (k ~ /^inventory\./) {
+                #  WHAT THE ITEM HOLDS (2026-10-07, DEV.md 4c C44 slice 3):
+                #  one flat object; its keys carry dots (`mass.NH3`,
+                #  `<stream>.rho`), so the key is matched LITERALLY with
+                #  index(), never as a regular expression.
+                f = substr(k, length("inventory.") + 1)
+                if (match(line, /"inventory": \{[^}]*\}/) == 0) exit
+                line = substr(line, RSTART, RLENGTH)
+                p = index(line, "\"" f "\": ")
+                if (p == 0) exit
+                s = substr(line, p + length(f) + 4)
+                if (match(s, /^-?[0-9][0-9.eE+-]*/)) print substr(s, 1, RLENGTH)
+                exit
+            } else if (k ~ /^cost\.factors\./) {
                 f = substr(k, length("cost.factors.") + 1)
                 if (match(line, /"factors": \{[^}]*\}/) == 0) exit
                 line = substr(line, RSTART, RLENGTH); k2 = f
@@ -1334,6 +1347,19 @@ auto_generate() {
                             split(s, p, /": */); gsub(/^"/, "", p[1])
                             printf "equipment %-20s %-16s %-18s %s\n", \
                                    u, "values." p[1], p[2], tol
+                        }
+                }
+                #  WHAT THE ITEM HOLDS (C44 slice 3): every key of the flat
+                #  `inventory` object, whose keys carry dots.
+                if (match($0, /"inventory": \{[^}]*\}/)) {
+                    v = substr($0, RSTART+14, RLENGTH-14)
+                    n = split(v, kv, /, */)
+                    for (i = 1; i <= n; i++)
+                        if (match(kv[i], /"[A-Za-z_][A-Za-z0-9_.]*": *-?[0-9][0-9.eE+-]*/)) {
+                            s = substr(kv[i], RSTART, RLENGTH)
+                            split(s, p, /": */); gsub(/^"/, "", p[1])
+                            printf "equipment %-20s %-16s %-18s %s\n", \
+                                   u, "inventory." p[1], p[2], tol
                         }
                 }
                 #  The three totals only -- `factors` is stripped first so a

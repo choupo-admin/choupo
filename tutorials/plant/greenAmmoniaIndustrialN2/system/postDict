@@ -5,10 +5,33 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   postDict -- SIZING and COSTING of every unit that is a piece of equipment
-  (DEV.md 4c C44, slice 1) and of the PRODUCT STORAGE (slice 2).  No
-  economics block yet: the per-equipment inventory and the working capital
-  are later slices, and an NPV built before them would be a confident
-  number about a plant whose working capital is missing.
+  (DEV.md 4c C44, slice 1), of the PRODUCT STORAGE (slice 2) and of what
+  each vessel HOLDS while the plant runs (slice 3).  No economics block
+  yet: the working capital is the next slice, and an NPV built before it
+  would be a confident number about a plant whose working capital is
+  missing.
+
+  INVENTORY (what each item holds, "retida em cada equipamento").  An item
+  may declare `inventory { held ( { stream <s>; fraction <f>; } ... ); }`:
+  it then holds, per phase, V x fraction x rho x w, where V is its own
+  sized volume and rho and w the density and mass fractions of the stream
+  named for that phase, at the state that stream carries.  The phase is
+  READ off the stream, never declared.  Declared here, every fraction an
+  AUTHOR-SET ASSUMPTION:
+    Converter     the gas in the bed voids: 0.40 of the catalyst volume
+                  (a typical packed-bed voidage, not measured), at the
+                  converter outlet state (HotEffluent); the rest is catalyst.
+    Separator     a liquid level of 0.25 (RawLiquid) under 0.75 of gas
+                  (UnreactedGas).
+    LetdownHP     half liquid (LetdownLiquid), half gas (LetdownGas).
+    StorageFlash  half liquid (ProductNH3), half gas (FlashGas).
+  The two LET-DOWN drums' volumes are lower bounds (see below), so their
+  inventories are too.  The storage tanks hold their own working level --
+  21 days of production -- and declare nothing more.  NOT DECLARED, and the
+  run lists them by name rather than as zero: the compressors and the
+  exchangers.  They hold gas, but no sizer here publishes the volume they
+  hold it in, and none is invented.  For scale only: the whole 25 m3
+  Separator holds ~0.9 t of loop gas, against the tanks' ~25 000 t.
 
   WHAT IS SIZED, AND ON WHAT BASIS.  Fourteen of the seventeen units:
 
@@ -181,24 +204,33 @@ sizing
                         spaceVelocityBasis normal;  // the basis the number is quoted on
                         flowKey N_in_mol_s;         // GHSV is on the INLET gas
                         L_over_D 6;  pressureDesign 167;
-                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream HotEffluent;  fraction 0.40; } ); } }
+                                                  // bed voidage -- ASSUMED;
+                                                  // the rest is catalyst
 
         //  ---- the drums: vapour residence (see the header) --------------
         { unitName Separator;    type vessel;  material SS304;                 // -20 C
           designRules { residenceTime 45;           // s of vapour, a knock-out drum
                         flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3;  pressureDesign 167;
-                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream RawLiquid;     fraction 0.25; }     // liquid level -- ASSUMED
+                             { stream UnreactedGas;  fraction 0.75; } ); } }
         { unitName LetdownHP;    type vessel;  material SS304;                 // -20 C
           designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
                         flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3;  pressureDesign 22;                        // 1.1 x 20 bar
-                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream LetdownLiquid; fraction 0.50; }     // liquid level -- ASSUMED
+                             { stream LetdownGas;    fraction 0.50; } ); } }
         { unitName StorageFlash; type vessel;  material SS304;                 // -35 C
           designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
                         flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3;  pressureDesign 2;                         // 1.1 x 1.013 bar
-                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream ProductNH3;    fraction 0.50; }     // liquid level -- ASSUMED
+                             { stream FlashGas;      fraction 0.50; } ); } }
     );
 
     //  ---- storage: attached to a boundary stream (see the header) ----
