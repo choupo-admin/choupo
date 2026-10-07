@@ -76,9 +76,9 @@ describe("the parent's own connections decide which stream is which port", () =>
 
   it("a member with no connections gets nothing, not a guess", () => {
     expect(memberPorts(LOOP, "Separator"))
-      .toEqual({ boundaryFeeds: {}, boundaryOutlets: [], ports: {} });
+      .toEqual({ boundaryFeeds: {}, boundaryOutlets: [], outletMap: {}, ports: {} });
     expect(memberPorts(undefined, "Converter"))
-      .toEqual({ boundaryFeeds: {}, boundaryOutlets: [], ports: {} });
+      .toEqual({ boundaryFeeds: {}, boundaryOutlets: [], outletMap: {}, ports: {} });
   });
 });
 
@@ -99,6 +99,16 @@ describe("the seed the converter is handed", () => {
     expect(Object.keys(seed.feeds).sort()).toEqual(["Feed", "Out"]);
     expect(seed.feeds["Purge"]).toBeUndefined();
     expect(seed.feeds["PreheatedFeed"]).toBeUndefined();  // the LOCAL name wins
+  });
+
+  it("opens with the PRODUCT filled too, under its local name (C50)", () => {
+    //  The inherited slice pulled the renamed INLET in and not the renamed
+    //  OUTLET, so the drilled converter opened with `Out` empty.
+    const out = seed.inherited.streams.find((x) => x.name === "Out");
+    expect(out).toBeDefined();
+    expect(out!.T).toBeCloseTo(842, 6);
+    expect(out!.role).toBe("product");
+    expect(seed.inherited.streams.find((x) => x.name === "HotEffluent")).toBeUndefined();
   });
 
   it("never freezes the WRONG stream's numbers into the child", () => {

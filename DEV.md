@@ -2041,6 +2041,26 @@ not on the sheet, so the datasheet cannot show it; mechanical data (nozzle
 sizes, TEMA head letters, tube-sheet thickness) is not computed by Choupo
 and not drawn.  Status: built and validated 2026-10-07; merges with C48.
 
+**C50. A DRILLED UNIT RAN FROM THE PLANT'S SEED, NOT FROM THE RUN IT CAME
+OUT OF (Vítor, 2026-10-07, verbatim: "Eu corro o flowsheet principal. Depois
+quando abro o reator de gibbs, ele aparece sem os dados convergidos
+anteriores! E quando mando correr, a pressão de entrada passa para 8 bar!!").**
+Measured on greenAmmoniaIndustrialN2/Converter: the registry PROJECTS the
+root's `0/` into a drilled unit folder (`projectRootStreamState`,
+gui/src/cases/tutorials.ts), and `bootCase`'s rule "a 0/ the sub-case already
+carries always wins" counted that projection as the sub-case's own -- so the
+drill's converged feed (151 bar, 378 degC, 152 t/h) was dropped and Run used
+the plant's recycle SEED `0/PreheatedFeed` (8 bar, 208 degC, 296 t/h).
+Separately, the inherited slice renamed the leaf's INLET into scope
+(`PreheatedFeed` -> `Feed`) but not its OUTLET (`HotEffluent` -> `Out`), so
+the drilled tab opened with its product empty.  Fixed: the registry records
+which `0/` paths it projected (`TutorialEntry.projectedZero`); ONE home,
+`drillSeed.applyDrillFeeds`, lets a projected path yield to the drill's state
+while an AUTHORED one still wins; `SliceOptions.boundaryOutletMap` mirrors
+`boundaryFeeds`.  Tests `gui/tests/drillProjectedSeed.test.ts` (on the real
+registry entry) and `drillSeed.test.ts`.  Status: built and tested
+2026-10-07.
+
 **C49. THE PROPERTIES PANEL CONVERTS A TEMPERATURE DIFFERENCE AS A
 TEMPERATURE, AND NEVER CONVERTS A SCALAR WRITTEN WITH ITS UNIT (Vítor,
 2026-10-07, verbatim: "a temperatura de aproximação fica estranha quando mudo
@@ -2120,6 +2140,9 @@ diluteSolution case) PASS 65 / FAIL 1, the one failure being
 greenAmmoniaIndustrialN2 on exactly the 53 moved rows listed, with their
 reasons, in the appendix of docs/design/an-exchanger-designed-not-estimated.md.
 NOT MERGED: the rows wait for Vítor's approval (Saturday).
+APPROVED by Vítor 2026-10-07 ("sim"): the 53 rows (plus WC_gross, which
+moved inside its tolerance by exactly WC_net's -6565.4 EUR) re-recorded on
+the C51 branch; merged to main with C51.
 
 **C47. A VISIBLE COUNTER OF VISITS AND DOWNLOADS (Vítor, 2026-10-07: "E
 sabes se se pode criar um contador para número de acessos e downloads, que
