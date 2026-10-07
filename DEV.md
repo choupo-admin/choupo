@@ -2001,6 +2001,14 @@ Enthalpy's Kirchhoff step, a "Where does this lead?" box: the chain
 ΔCp° -(Kirchhoff)-> ΔH°(T) -(Gibbs-Helmholtz)-> ΔG°(T)/T -(ΔG° = -RT ln K)->
 K(T), and a link to Standard State step 10 ("Where the 1/T² comes from").
 No Standard State content duplicated.
+Status: DONE 2026-10-07.  A shared `LessonStep.leadsTo` field (a pointer
+to another EduTool: its label, the step it continues at, a sentence and the
+chain as display TeX; the link switches tool through `setActiveMethodTool`),
+used once, on Reaction Enthalpy's Kirchhoff step.  Test
+`gui/tests/lessonLeadsTo.test.ts` holds that the pointer lands on a LIVE tool
+at a step it really has and that the chain parses.  `bin/runTests --gui`
+PASS 27 / FAIL 0.  Not done: landing ON step 10 (the link opens the tool;
+the step is named), because the methods workspace has no step address.
 
 **C42. THE ENGINE PUBLISHES EACH RECYCLE'S LOOP, AND THE CANVAS LIGHTS IT
 (Vítor, 2026-10-07: "Faz já", after the commander's C41 proposal had claimed
