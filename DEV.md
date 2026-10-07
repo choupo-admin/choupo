@@ -1991,6 +1991,32 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C45. THE LANDING PAGE IS FOUND BY "OPEN SOURCE CHEMICAL PROCESS SIMULATOR",
+AND MAY COMPARE BY NAME (Vítor, 2026-10-07, after pasting a search engine's
+indexing advice; then, verbatim, on the commander's objection that naming
+competitors broke C7: "Que se lixe! Isto é guerra e eu posso fazer
+comparação desde que não viole regras básicas, não é? 'CHOUPO vs DWSIM /
+Aspen!'").**  THIS NARROWS C7, by his ruling, for ONE page: `site/index.html`
+may name DWSIM, DWSIM Pro and Aspen Plus inside ONE marked block
+(`<!-- COMPARISON:BEGIN ... -->` .. `<!-- COMPARISON:END -->`), and
+`check_doctrine` blanks that block and nothing else (a name elsewhere on the
+page still fails; a missing marker pair fails -- two by-hand sabotages, both
+caught).  The basic rules kept, which are EU comparative-advertising law's:
+every cell is a fact the product publishes about itself, read 2026-10-07 and
+cited under the table; no claim about what another product cannot do; the
+trademarks used only to identify, with the notice.  Correction carried from
+the search engine's own suggestion, which was FALSE: DWSIM is GPL-3.0 and
+free like Choupo (its paid edition is DWSIM Pro, a cloud service), so
+"free vs commercial" and "glass-box vs black-box" could not be written
+against it.  Also: the hero paragraph names the searched terms and the unit
+operations; the JSON-LD gains codeRepository, sameAs, offers, keywords and
+featureList; and `bin/buildSite` writes the EduTools list into the STATIC
+page from the same `methodTools.json` the script fetches, so a crawler that
+runs no JavaScript sees 49 tools instead of "Loading the EduTools...".
+NOT done, said: GitHub topics (outward-facing, his to approve); a Wikipedia
+entry (its conflict-of-interest rules advise against the author writing it);
+Search Console (his account).
+
 **C44. GREEN AMMONIA: SIZE EVERY UNIT AND THE STORAGE, KEEP EACH ITEM'S
 INVENTORY, AND ESTIMATE THE WORKING CAPITAL (Vítor, 2026-10-07, verbatim:
 "Vamos nos focar agora no caso Green Amonia. Primeiro, eu quero dimensionar

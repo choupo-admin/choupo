@@ -123,6 +123,32 @@ COMPETITOR_EXEMPT = {
 #  which quotes the ban), and a non-UTF-8 blob has no prose to scan.
 COMPETITOR_SKIP_PREFIX = ("generated/", "thirdParty/", "data/local/")
 
+#  A MARKED COMPARISON BLOCK (Vítor, 2026-10-07, DEV.md 4c C45: "isto é
+#  guerra e eu posso fazer comparação desde que não viole regras básicas").
+#  The ruling narrows C7 for ONE page: the landing may compare Choupo with
+#  named simulators on facts each publishes about itself.  The exemption is
+#  the BLOCK between the two markers, never the file -- a name anywhere else
+#  on the page still fails, and a marker pair that goes missing fails too (an
+#  exemption nothing reads is a ban nobody enforces).
+COMPARISON_BLOCKS = {
+    "site/index.html": ("<!-- COMPARISON:BEGIN", "<!-- COMPARISON:END -->"),
+}
+
+
+def blank_comparison(rel: str, lines: list) -> list:
+    """The lines with the declared comparison block blanked (numbering kept)."""
+    marks = COMPARISON_BLOCKS.get(rel)
+    if not marks:
+        return lines
+    begin = [i for i, l in enumerate(lines) if marks[0] in l]
+    end = [i for i, l in enumerate(lines) if marks[1] in l]
+    if len(begin) != 1 or len(end) != 1 or end[0] < begin[0]:
+        raise SystemExit(f"check_doctrine: FAILED -- {rel} must carry exactly "
+                         f"one '{marks[0]}' ... '{marks[1]}' pair (found "
+                         f"{len(begin)} / {len(end)}); the competitor "
+                         "exemption is that block and nothing else.")
+    return [("" if begin[0] <= i <= end[0] else l) for i, l in enumerate(lines)]
+
 #  ---- THE PINNED REMAINDER, MEASURED 2026-09-24, AND IT RATCHETS ----------
 #  The ruling was executed over everything a rewrite could reach without
 #  destroying evidence: ~20 files redacted in place and two studies of a named
@@ -203,7 +229,7 @@ def main() -> int:
         rel = path.relative_to(ROOT).as_posix()
         if rel in ALLOW:
             continue
-        lines = path.read_text(errors="replace").splitlines()
+        lines = blank_comparison(rel, path.read_text(errors="replace").splitlines())
         read_surfaces += 1
         for i, line in enumerate(lines):
             for name, pat, tolerable in RULES:
@@ -274,7 +300,8 @@ def main() -> int:
         except (UnicodeDecodeError, OSError):
             continue
         scanned += 1
-        hits = [(i + 1, line) for i, line in enumerate(text.splitlines())
+        hits = [(i + 1, line)
+                for i, line in enumerate(blank_comparison(rel, text.splitlines()))
                 if COMPETITOR.search(line)]
         pin = COMPETITOR_PINNED.get(rel)
         if pin is None:
