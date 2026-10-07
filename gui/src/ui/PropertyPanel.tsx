@@ -93,6 +93,7 @@ import type { JsonDict, JsonValue } from "../dict/index.js";
 import { parse, toJson } from "../dict/index.js";
 import { parseScalarString } from "../dict/json.js";
 import { lookupUnit, affineToK } from "../dict/units.js";
+import { displayHint, renderFieldValue as convertedFieldValue } from "./fieldDisplay.js";
 
 /** A flowsheetDict scalar can cross to JSON as a unit-bearing STRING
  *  ("380 K", "3 bar") rather than a canonical-SI number -- json.ts keeps the
@@ -1019,7 +1020,8 @@ function SchemaRow({
             </Tooltip>
           </Group>
         ) : editable ? (
-          <ScratchField path={scratchPath} raw={value} label={field.key} />
+          <ScratchField path={scratchPath} raw={value} label={field.key}
+            hint={displayHint(field, value, prefs)} />
         ) : (
           <Text size="sm" ff="monospace">{displayValue}</Text>
         )}
@@ -1140,10 +1142,13 @@ function ScratchField({
   path,
   raw,
   label,
+  hint,
 }: {
   path: string;
   raw: JsonValue | undefined;
   label: string;
+  // the same value in the Units-menu unit, when it differs from the file's
+  hint?: string | null;
 }) {
   const scratch = useStore((s) => s.scratchEdits[path]);
   const setScratch = useStore((s) => s.setScratch);
@@ -1189,6 +1194,7 @@ function ScratchField({
         hideControls
       />
       {unit && <Text size="xs" c="dimmed">{unit}</Text>}
+      {hint && !edited && <Text size="xs" c="dimmed" ff="monospace">{hint}</Text>}
       {edited && (
         <Group gap={2} wrap="nowrap" align="center">
           <Tooltip label={`on disk: ${from}${unit ? ` ${unit}` : ""} — tinkered, not saved`} withArrow>
@@ -1259,30 +1265,12 @@ function renderFieldValue(field: OperationField,
   value: JsonValue | undefined,
   prefs: DisplayPrefs,
 ): { displayValue: string; displayUnit: string | undefined } {
-  // Honour the TopBar Units menu for the three quantities the GUI knows
-  // how to convert.  For everything else, show the schema's declared unit
-  // as-is.
-  if (value !== undefined && typeof value === "number" && field.unit) {
-    if (field.unit === "K") {
-      return {
-        displayValue: `${formatTemperature(value, prefs.temperature)}`,
-        displayUnit: temperatureLabel(prefs.temperature),
-      };
-    }
-    if (field.unit === "Pa") {
-      return {
-        displayValue: `${formatPressure(value, prefs.pressure)}`,
-        displayUnit: prefs.pressure,
-      };
-    }
-    if (field.unit === "kmol/s") {
-      return {
-        displayValue: `${formatFlow(value, prefs.flow)}`,
-        displayUnit: prefs.flow,
-      };
-    }
-  }
-  return { displayValue: stringifyValue(value), displayUnit: field.unit };
+  // Honour the TopBar Units menu for the three quantities the GUI knows how
+  // to convert -- a bare number OR a "<n> <unit>" string, an absolute value
+  // OR a temperature difference (fieldDisplay.ts, C49).  Everything else
+  // shows the schema's declared unit as-is.
+  return convertedFieldValue(field, value, prefs)
+    ?? { displayValue: stringifyValue(value), displayUnit: field.unit };
 }
 
 function stringifyValue(v: JsonValue | undefined): string {

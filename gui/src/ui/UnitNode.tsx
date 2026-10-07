@@ -32,6 +32,7 @@ License
   unit-op type, and a compact key-value summary of the operation block.
 \*---------------------------------------------------------------------------*/
 
+import { renderFieldValue as convertedFieldValue } from "./fieldDisplay.js";
 import { Handle, Position, useUpdateNodeInternals, type NodeProps } from "@xyflow/react";
 import { Badge, Group, Stack, Text, Tooltip } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
@@ -517,8 +518,20 @@ function summarise(op: { [k: string]: JsonValue },
 ): { k: string; v: string }[] {
   const unitOf = (key: string): string | undefined =>
     schema?.fields.find((f) => f.key === key)?.unit;
+  // A field the schema describes goes through the Property panel's own
+  // converter (fieldDisplay.ts) FIRST, so the card and the panel cannot
+  // disagree -- they did, on a temperature DIFFERENCE read as an absolute
+  // temperature (C49).  fmtScalar stays the route for what that converter
+  // does not handle (duties in W, words, unknown fields).
+  const viaSchema = (key: string, v: JsonValue): string | null => {
+    const f = schema?.fields.find((x) => x.key === key);
+    const r = f ? convertedFieldValue(f, v, prefs) : null;
+    return r ? `${r.displayValue}${r.displayUnit ? ` ${r.displayUnit}` : ""}` : null;
+  };
   const out: { k: string; v: string }[] = [];
   for (const [k, v] of Object.entries(op)) {
+    const conv = typeof v === "string" && v.startsWith("$") ? null : viaSchema(k, v);
+    if (conv !== null) { out.push({ k, v: conv }); continue; }
     if (typeof v === "number") out.push({ k, v: fmtScalar(v, unitOf(k), prefs) });
     else if (typeof v === "string") {
       // A `$ref` (e.g. an iteratively-resolved duty) shows its converged value
