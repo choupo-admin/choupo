@@ -129,6 +129,19 @@ struct SimulationResult
     //  name identity this project bans, and it misfiles any two streams that
     //  share a leaf name across sectors.  Empty for a tear-free flowsheet.
     std::vector<std::string>                                       tearStreams;
+    //  THE LOOP EACH TEAR CUTS (DEV.md 4c C42): the units and the streams of
+    //  the material cycle(s) the tear edge closes, as the sequential-plan
+    //  validator FOUND them (`Flowsheet::validateSequentialPlan`, the one
+    //  home of the cycle detection).  A unit is on the loop when the tear's
+    //  consumer reaches it and it reaches the tear's producer; a stream is on
+    //  it when its producer and a consumer both are.  Topology, published so
+    //  a reader DRAWS the loop rather than re-detecting it.  Keyed by tear.
+    struct RecycleLoop
+    {
+        std::vector<std::string> units;
+        std::vector<std::string> streams;
+    };
+    std::map<std::string, RecycleLoop>                             recycleLoops;
     std::map<std::string, std::vector<scalar>>                     convergence;
     std::map<std::string, UnitProfile>                             profiles;
     std::map<std::string, EquipmentSizing>                         sizings;

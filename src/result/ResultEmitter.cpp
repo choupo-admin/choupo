@@ -574,6 +574,29 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << " ]";
     }
 
+    // ---- recycleLoops (DEV.md 4c C42) ----------------------------------
+    //   The loop each declared tear cuts, as the sequential-plan validator
+    //   found it: its units and its streams, qualified names.  The GUI
+    //   highlights a loop from this list and never re-detects one.
+    if (!r.recycleLoops.empty())
+    {
+        os << ",\n  \"recycleLoops\": [";
+        bool firstL = true;
+        for (const auto& [tear, loop] : r.recycleLoops)
+        {
+            os << (firstL ? " " : ", ");
+            firstL = false;
+            os << "{ \"tear\": " << esc(tear) << ", \"units\": [";
+            for (std::size_t k = 0; k < loop.units.size(); ++k)
+                os << (k ? ", " : " ") << esc(loop.units[k]);
+            os << " ], \"streams\": [";
+            for (std::size_t k = 0; k < loop.streams.size(); ++k)
+                os << (k ? ", " : " ") << esc(loop.streams[k]);
+            os << " ] }";
+        }
+        os << " ]";
+    }
+
     // ---- model-boundary audit (H conserved, T is the model-dependent readout)
     //   Internal streams where producer and consumer use different thermo
     //   models: the enthalpy the two models disagree about (kJ/mol + kW) and the

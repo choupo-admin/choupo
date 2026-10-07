@@ -60,6 +60,7 @@ import { caseMolarMass, meanMolarMass } from "../case/caseMolarMass.js";
 import type { DynamicInstant } from "../case/dynamicInstants.js";
 import { streamNumberResolver } from "../case/streamNumbering.js";
 import { dashKindOf, dashStyle, legendDashes, type DashKind } from "../case/edgeDashes";
+import { loopMembership } from "../case/recycleLoops";
 import { caseDescription } from "../case/caseDescription";
 import { boundaryForStream } from "../case/modelBoundary.js";
 import { tutorialByName } from "../cases/tutorials.js";
@@ -297,7 +298,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   // Visualisation filters (view-only, not case data): show/hide stream
   // classes so a busy plant declutters.  Process material is always on;
   // energy wires (W/Q), recycle tears and utility streams toggle.
-  const [show, setShow] = useState({ energy: true, recycle: true, utility: true, numbers: true });
+  //  `recycle` starts OFF: it lights the whole loop (C42), which is a view a
+  //  reader asks for, not the plant's resting drawing.  The cut mark on a
+  //  tear is always drawn -- it is a fact about the plan, not a highlight.
+  const [show, setShow] = useState({ energy: true, recycle: false, utility: true, numbers: true });
   //  THE NODE DETAIL LEVEL IS A READER PREFERENCE, and the other four chips
   //  beside it are not.  They are content FILTERS -- each disables itself
   //  when the case has none of that class -- and they are deliberately
@@ -768,6 +772,21 @@ function CanvasInner({ flowsheet, scrubInstant }: {
              maxFlow: mx, phasesPresent: present, propRange: range };
   }, [runResult, colorMode, colorScheme, colorMap, graph, mwMap]);
 
+  //  THE RECYCLE LOOPS the engine published (DEV.md 4c C42): with the
+  //  `recycle` chip on, every wire and unit of a loop wears a cyan halo (the
+  //  chip's own colour), because a recycle is the LOOP -- everything in it
+  //  converges together -- not the one edge the solver cuts.  Membership is
+  //  read from the run, never re-detected here.
+  const loops = useMemo(
+    () => loopMembership(
+      runResult?.recycleLoops,
+      (label) => runResult
+        ? findRunStream(runResult.streams, label, runResult.streamAliases)?.name
+        : undefined,
+      runResult?.unitSectors),
+    [runResult]);
+  const LOOP_HALO = "drop-shadow(0 0 5px var(--mantine-color-cyan-4))";
+
   // Annotate each unit node with `drillable` so UnitNode can show a
   // visual hint (a small external-link mark + a "double-click to open" hint).
   // The lookup is the same one openInNewWindow uses, so the hint never lies.
@@ -886,8 +905,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             if (dutyKW === undefined && typeof alloc.duty_kW === "number") dutyKW = alloc.duty_kW;
           }
         }
+        const unitOnLoop = show.recycle && n.type === "unitNode"
+          && loops.unitOnLoop((n.data as { name?: string }).name
+                              ?? n.id.slice("unit:".length));
         return {
 ...n,
+          ...(unitOnLoop ? { style: { ...(n.style ?? {}), filter: LOOP_HALO } } : {}),
           selected: n.id === selectedNodeId,
           hidden: (energyOnly && !show.energy)
                || (isUtilityTerminal && !show.utility)
@@ -912,7 +935,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     [nodes, selectedNodeId, drillableSub, phaseOf, utilityOf, resultStreamOf, show,
      showDetails, scratchEdits,
      handlePos, onHandleMove, onHandleReset, commitHandles, runResult, numberOf,
-     scrubOverlay, colorScheme],
+     scrubOverlay, colorScheme, loops],
   );
 
   const styledEdges: Edge[] = useMemo(
@@ -980,9 +1003,9 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             onCommit: commitEdgeCenters,
             onReset: onEdgeCenterReset,
             showNumbers: show.numbers,
-            //  The recycle chip shows/hides the CUT MARK on a tear, never the
-            //  pipe itself: a recycle carries material like any other stream.
-            showCut: show.recycle,
+            //  The CUT MARK on a tear is always drawn (the plan's fact); the
+            //  `recycle` chip lights the LOOP instead (C42), never hides a pipe.
+            showCut: true,
             dashKind: dashKind !== "process"
               ? dashKind : (ps?.phase === "empty" ? "empty" : "process"),
             num: numberOf(label),   // ABSOLUTE number (overrides toGraph local)
@@ -991,7 +1014,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           // Visualisation filter: hide this edge when its class is toggled
           // off (energy wire / utility stream).  Process material is never
           // hidden -- and a recycle IS process material, so the `recycle`
-          // chip toggles its cut mark (TearEdge), not the pipe (C41).
+          // chip lights its loop (C42), never hides the pipe (C41).
           hidden: (isEnergy && !show.energy)
                || (isUtility && !show.utility && !isTear)
                || (isDuty   && !show.utility),
@@ -1022,7 +1045,9 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             // Visible regardless of phase colour, doesn't repaint stroke.
             ...(isSelected
               ? { filter: "drop-shadow(0 0 4px var(--mantine-color-accent-3))" }
-              : {}),
+              : (show.recycle && label && loops.streamOnLoop(label))
+                ? { filter: LOOP_HALO }
+                : {}),
           },
           labelStyle: {
             fill: "light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1))",
@@ -1039,7 +1064,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       }),
     [graph.edges, selectedStreamName, phaseOf, utilityOf, maxFlow, show,
      edgeCenters, onEdgeCenterChange, commitEdgeCenters, onEdgeCenterReset,
-     runResult, numberOf, scrubOverlay, colorScheme],
+     runResult, numberOf, scrubOverlay, colorScheme, loops],
   );
 
   //  THE DASH LEGEND.  Derived from the kind each edge was STAMPED with, so

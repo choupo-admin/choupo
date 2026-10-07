@@ -2491,7 +2491,7 @@ int Flowsheet::solve(const DictPtr& dict,
     //  --lint reports the findings merged with its own list at the bail.
     std::vector<std::string> planFindings;
     if (!init0_)
-        planFindings = validateSequentialPlan(tears, verbosity);
+        planFindings = validateSequentialPlan(tears, verbosity, &recycleLoops_);
     if (!init0_ && !lint_ && !planFindings.empty())
     {
         std::string msg = "Flowsheet: the declared unit order is not a valid "
@@ -4316,7 +4316,8 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
 // ===========================================================================
 std::vector<std::string> Flowsheet::validateSequentialPlan(
     const std::vector<std::string>& tears,
-    int verbosity) const
+    int verbosity,
+    std::map<std::string, SimulationResult::RecycleLoop>* loopsOut) const
 {
     std::vector<std::string> findings;
     const std::size_t n = topology_.size();
@@ -4468,6 +4469,50 @@ std::vector<std::string> Flowsheet::validateSequentialPlan(
         bool onCycle = false;
         for (auto c : backward)
             if (!pathBetween(c, p->second).empty()) { onCycle = true; break; }
+        //  THE LOOP THIS TEAR CUTS, published (DEV.md 4c C42).  Every unit a
+        //  backward consumer reaches that itself reaches the producer is on a
+        //  cycle through this edge; a stream is on the loop when its producer
+        //  and one of its consumers both are.  The same adjacency the
+        //  decision above walked -- this is that finding written down, not a
+        //  second detection.
+        if (onCycle && loopsOut)
+        {
+            auto reach = [&](std::size_t from, bool forward)
+            {
+                std::vector<char> seen(n, 0);
+                std::vector<std::size_t> q{from};
+                seen[from] = 1;
+                for (std::size_t qi = 0; qi < q.size(); ++qi)
+                    for (std::size_t w = 0; w < n; ++w)
+                    {
+                        const bool edge = forward ? adj[q[qi]].count(w) > 0
+                                                  : adj[w].count(q[qi]) > 0;
+                        if (edge && !seen[w]) { seen[w] = 1; q.push_back(w); }
+                    }
+                return seen;
+            };
+            const auto toProducer = reach(p->second, /*forward=*/false);
+            std::vector<char> onLoop(n, 0);
+            for (auto c : backward)
+            {
+                const auto fromConsumer = reach(c, /*forward=*/true);
+                for (std::size_t u = 0; u < n; ++u)
+                    if (fromConsumer[u] && toProducer[u]) onLoop[u] = 1;
+            }
+            auto& loop = (*loopsOut)[t];
+            for (std::size_t u = 0; u < n; ++u)
+                if (onLoop[u]) loop.units.push_back(topology_[u].name);
+            for (const auto& [s, prod] : producerIdx)
+            {
+                if (!onLoop[prod]) continue;
+                for (std::size_t u = 0; u < n; ++u)
+                    if (onLoop[u]
+                        && std::find(topology_[u].ins.begin(),
+                                     topology_[u].ins.end(), s)
+                           != topology_[u].ins.end())
+                    { loop.streams.push_back(s); break; }
+            }
+        }
         if (!onCycle)
         {
             findings.push_back("OFF-CYCLE TEAR: '" + t + "' points backwards"
