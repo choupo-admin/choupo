@@ -752,6 +752,27 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 os << esc(k) << ": " << num(v);
             }
             os << " }";
+            //  WHAT THE ITEM HOLDS (2026-10-07, DEV.md 4c C44 slice 3), ONE
+            //  FLAT OBJECT so the golden `equipment` kind reads it as
+            //  `inventory.<key>`: `volume` [m3] the fractions apply to, per
+            //  held stream `<stream>.fraction` [-], `.volume` [m3], `.rho`
+            //  [kg/m3], `.mass` [kg]; `mass.<component>` [kg] and
+            //  `mass.total` [kg] over the phases.  Written BEFORE `cost`
+            //  (whose reader takes the rest of the line) and ONLY for an item
+            //  that declared one, so every other item's line is unchanged.
+            if (sz.inventory.present())
+            {
+                const auto& inv = sz.inventory;
+                os << ", \"inventory\": { \"volume\": " << num(inv.volume);
+                for (const auto& h : inv.phases)
+                    os << ", " << esc(h.stream + ".fraction") << ": " << num(h.fraction)
+                       << ", " << esc(h.stream + ".volume")   << ": " << num(h.volume)
+                       << ", " << esc(h.stream + ".rho")      << ": " << num(h.rho)
+                       << ", " << esc(h.stream + ".mass")     << ": " << num(h.mass);
+                for (const auto& [c, kg] : inv.massOf())
+                    os << ", " << esc("mass." + c) << ": " << num(kg);
+                os << ", \"mass.total\": " << num(inv.total()) << " }";
+            }
             auto ci = r.costs.find(itemKey);
             if (ci != r.costs.end())
             {
@@ -1111,6 +1132,34 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << "    \"estimateClass\": "     << e.estimateClass           << ",\n";
         os << "    \"accLo\": "             << num(e.accLo)              << ",\n";
         os << "    \"accHi\": "             << num(e.accHi)              << ",\n";
+        //  THE WORKING CAPITAL BUILT UP (2026-10-07, DEV.md 4c C44 slice 4),
+        //  ONLY when the case declared the model -- every fraction-of-FCI
+        //  case's JSON is byte-for-byte what it was.  The numbers are also
+        //  `kpis.economics.WC_*`, which the golden `kpi` kind pins; this
+        //  object carries the WORDS (each line's rule) a reader draws.
+        if (e.workingCapital.present)
+        {
+            const auto& w = e.workingCapital;
+            auto line = [&](const WorkingCapitalLine& l, bool first)
+            {
+                os << (first ? "\n" : ",\n") << "        { \"key\": " << esc(l.key)
+                   << ", \"label\": " << esc(l.label)
+                   << ", \"value\": " << num(l.value)
+                   << ", \"rule\": " << esc(l.rule) << " }";
+            };
+            os << "    \"workingCapital\": {\n      \"assets\": [";
+            for (std::size_t i = 0; i < w.assets.size(); ++i) line(w.assets[i], i == 0);
+            os << "\n      ],\n      \"liabilities\": [";
+            for (std::size_t i = 0; i < w.liabilities.size(); ++i)
+                line(w.liabilities[i], i == 0);
+            os << "\n      ],\n"
+               << "      \"gross\": " << num(w.gross)
+               << ", \"net\": " << num(w.net)
+               << ", \"fractionRule\": " << num(w.fractionRule)
+               << ", \"fractionUsed\": " << num(w.fractionUsed)
+               << ", \"productionCostPerKg\": " << num(w.productionCostPerKg)
+               << "\n    },\n";
+        }
         os << "    \"cashFlow\": [";
         for (std::size_t i = 0; i < e.cashFlow.size(); ++i)
         {

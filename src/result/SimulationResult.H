@@ -66,13 +66,17 @@ Description
                                     //   `result` and `unitOperations` include
                                     //   each other (debt D2).
 
+#include <functional>
 #include <map>
+#include <memory>
 #include <set>
 #include <optional>
 #include <string>
 #include <vector>
 
 namespace Choupo {
+
+class ThermoPackage;   // only through `thermoForPost` below -- never included
 
 
 //  `FlatUnit` used to be declared HERE, and that is what made `core` reach up
@@ -162,6 +166,26 @@ struct SimulationResult
     // through the emitter signature.  Empty when not populated; the
     // emitter then skips the F_mass field.
     std::map<std::string, scalar>                                  componentMolarMass;
+
+    //  THE CASE'S DECLARED PACKAGE, ON DEMAND, for a post-processing pass
+    //  that must PRICE A PHASE (2026-10-07, DEV.md 4c C44): a storage tank is
+    //  sized on the density of the liquid it holds, and an item's inventory
+    //  is its volume times the density of what fills it.  The sizing pass had
+    //  no route to a density at all -- every residence-time volume is
+    //  `N R T / P`, ideal gas, said on the sizing line -- because the package
+    //  lives on `runSimulation`'s stack and is gone by the time the chain
+    //  runs.
+    //
+    //  A FUNCTION, NOT A PACKAGE, AND THAT IS DELIBERATE.  Building a package
+    //  is not free and may announce itself, so it is built only when a pass
+    //  actually ASKS -- a postDict that declares no storage and no inventory
+    //  never calls this, and its run is byte-identical to what it was before
+    //  this member existed.  The binary that knows the declared dicts sets
+    //  it (choupoSolve, once per process, cached); EMPTY elsewhere, and a
+    //  pass that needs a density then refuses by name rather than guessing
+    //  one.  It is the case's GLOBAL package: a unit with its own `thermo {}`
+    //  world is priced on the global one, and the pass that asks says so.
+    std::function<std::shared_ptr<const ThermoPackage>()>         thermoForPost;
     std::optional<BinaryTxy>                                       txy;
     // Utility consumption summary.  Aggregated across the
     // flowsheet by ProcessStream::category.  Key is the user-defined

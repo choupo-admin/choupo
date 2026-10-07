@@ -5,10 +5,31 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   postDict -- SIZING and COSTING of every unit that is a piece of equipment
-  (DEV.md 4c C44, slice 1).  No economics block: the storage tanks, the
-  per-equipment inventory and the working capital are later slices, and an
-  NPV built before them would be a confident number about a plant whose
-  tanks and working capital are missing.
+  (DEV.md 4c C44, slice 1), of the PRODUCT STORAGE (slice 2), of what each
+  vessel HOLDS while the plant runs (slice 3), and the ECONOMIC APPRAISAL
+  with its WORKING CAPITAL built up from those holdings (slice 4).
+
+  INVENTORY (what each item holds, "retida em cada equipamento").  An item
+  may declare `inventory { held ( { stream <s>; fraction <f>; } ... ); }`:
+  it then holds, per phase, V x fraction x rho x w, where V is its own
+  sized volume and rho and w the density and mass fractions of the stream
+  named for that phase, at the state that stream carries.  The phase is
+  READ off the stream, never declared.  Declared here, every fraction an
+  AUTHOR-SET ASSUMPTION:
+    Converter     the gas in the bed voids: 0.40 of the catalyst volume
+                  (a typical packed-bed voidage, not measured), at the
+                  converter outlet state (HotEffluent); the rest is catalyst.
+    Separator     a liquid level of 0.25 (RawLiquid) under 0.75 of gas
+                  (UnreactedGas).
+    LetdownHP     half liquid (LetdownLiquid), half gas (LetdownGas).
+    StorageFlash  half liquid (ProductNH3), half gas (FlashGas).
+  The two LET-DOWN drums' volumes are lower bounds (see below), so their
+  inventories are too.  The storage tanks hold their own working level --
+  21 days of production -- and declare nothing more.  NOT DECLARED, and the
+  run lists them by name rather than as zero: the compressors and the
+  exchangers.  They hold gas, but no sizer here publishes the volume they
+  hold it in, and none is invented.  For scale only: the whole 25 m3
+  Separator holds ~0.9 t of loop gas, against the tanks' ~25 000 t.
 
   WHAT IS SIZED, AND ON WHAT BASIS.  Fourteen of the seventeen units:
 
@@ -64,6 +85,37 @@
                       pass says so).  Named, not fixed: it is the
                       per-equipment inventory slice's question too.
 
+    storage     (1)   NH3Storage, attached to the boundary stream ProductNH3
+                      (`storage ( ... )` below; Vitor ruled a tank a postDict
+                      item attached to a stream, DEV.md 4c C44).  Basis, all
+                      AUTHOR-SET design assumptions, none cited:
+                        * 21 days of production -- the commander's decision
+                          for this case, a design basis, not a datum;
+                        * refrigerated atmospheric storage at the
+                          StorageFlash outlet (238.15 K, 1 atm), the
+                          state the stream carries;
+                        * a working level of 90 % of the tank volume;
+                        * at most 30 000 m3 per tank -- the ceiling of the
+                          tank cost correlation, so every tank is priced
+                          inside its range.
+                      V = 21 day x mdot / (rho x 0.90), split into equal tanks.
+                      rho is the case's own liquid density at 238.15 K
+                      (announced on the run; READ the README: the NH3
+                      record's Vliq gives ~769 kg/m3 there, which is likely
+                      ~12 % high, so the tanks are likely ~12 % small).
+                      COST: the only tank row read (CAPCOST 2017, the
+                      authors' program for Turton App. A) is an ATMOSPHERIC
+                      API fixed-roof tank.  A refrigerated, insulated,
+                      double-containment ammonia tank costs more, so the
+                      storage cost below is a LOWER BOUND, said on every run.
+                      NOT STORED HERE, by decision: the HYDROGEN buffer and
+                      the NITROGEN supply belong to the electrolyser and the
+                      ASU, outside this battery limit (the flowsheet header
+                      says so).  Adding an H2 store is one more entry in
+                      `storage ( ... )` -- but a gas is refused by name: a
+                      gas store is a pressure vessel or a holder, which this
+                      tank sizer does not model.
+
   WHAT IS NOT SIZED, and why it is not an omission: LoopMix, MakeupMix and
   PurgeSplit are a tee and two pipe junctions -- no vessel, no area, no
   driver -- so they are not costed equipment and no item is invented for
@@ -103,6 +155,33 @@
 
   The price constants are ammonia02's (CEPCI 2026 = 820 is a projection,
   not a published index value; EUR/USD 0.92).
+
+  ECONOMICS (slice 4).  Prices are in constant/economics, every one an
+  AUTHOR-SET assumption (its header says so).  The appraisal knobs below
+  are ammonia02's, also assumptions.  N_np, the number of processing steps
+  Turton's labour correlation counts (compressors, exchangers, reactors;
+  not drums, tanks or pumps), is COUNTED from this flowsheet: 4 + 6 + 1 =
+  11.
+
+  WORKING CAPITAL, BUILT UP instead of 15 % of FCI.  The working capital is
+  the money a running plant keeps tied up in things that are not equipment.
+  Its GROSS figure -- the current assets, "capital circulante" -- is:
+    raw-material stock    0 days: H2 and N2 arrive by pipe from the
+                          electrolyser and the ASU, and their buffers are
+                          outside this battery limit (the commander's
+                          decision, DEV.md C44);
+    process inventory     what the vessels hold (slice 3), at cost;
+    product stock         what the two product tanks hold -- 21 days of
+                          production -- at the cost of making it, never at
+                          its sales price;
+    receivables           30 days of sales;
+    minimum cash          15 days of the cash cost of manufacture (COM_d).
+  Its NET figure -- "fundo de maneio" -- is the gross minus what the plant
+  owes its suppliers (payables, 30 days of raw-material purchases).  The net
+  is what the owners put in at year 0 and recover at the end, and it is the
+  WC of the cash flow.  The run prints both, line by line, beside the 15 %
+  figure for comparison.  The days are the commander's decisions for this
+  case (DEV.md C44), design-basis assumptions, not data.
 \*---------------------------------------------------------------------------*/
 sizing
 {
@@ -150,24 +229,46 @@ sizing
                         spaceVelocityBasis normal;  // the basis the number is quoted on
                         flowKey N_in_mol_s;         // GHSV is on the INLET gas
                         L_over_D 6;  pressureDesign 167;
-                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream HotEffluent;  fraction 0.40; } ); } }
+                                                  // bed voidage -- ASSUMED;
+                                                  // the rest is catalyst
 
         //  ---- the drums: vapour residence (see the header) --------------
         { unitName Separator;    type vessel;  material SS304;                 // -20 C
           designRules { residenceTime 45;           // s of vapour, a knock-out drum
                         flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3;  pressureDesign 167;
-                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream RawLiquid;     fraction 0.25; }     // liquid level -- ASSUMED
+                             { stream UnreactedGas;  fraction 0.75; } ); } }
         { unitName LetdownHP;    type vessel;  material SS304;                 // -20 C
           designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
                         flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3;  pressureDesign 22;                        // 1.1 x 20 bar
-                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream LetdownLiquid; fraction 0.50; }     // liquid level -- ASSUMED
+                             { stream LetdownGas;    fraction 0.50; } ); } }
         { unitName StorageFlash; type vessel;  material SS304;                 // -35 C
           designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
                         flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3;  pressureDesign 2;                         // 1.1 x 1.013 bar
-                        corrosionAllow 0.003;  jointEfficiency 1.0; } }
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream ProductNH3;    fraction 0.50; }     // liquid level -- ASSUMED
+                             { stream FlashGas;      fraction 0.50; } ); } }
+    );
+
+    //  ---- storage: attached to a boundary stream (see the header) ----
+    storage
+    (
+        { name          NH3Storage;
+          stream        ProductNH3;      // the product, at 238.15 K and 1 atm
+          material      SS304;           // below 0 C (the rule above); the tank
+                                         // row carries NO material factor
+          storageTime   21 day;          // days of production -- AUTHOR-SET
+          fillFraction  0.90;            // working level / tank volume -- AUTHOR-SET
+          maxTankVolume 30000;           // m3 per tank: the correlation's ceiling
+        }
     );
 }
 costing
@@ -177,4 +278,32 @@ costing
     cepci     820;        // projection, author-set (see the header)
     cepci2001 397;        // the correlation's own basis year
     usdToEur  0.92;
+}
+economics
+{
+    method              discountedCashFlow;
+    projectLife         15;          // yr -- assumption (ammonia02's)
+    constructionPeriod  1;
+    discountRate        0.10;        // assumption
+    taxRate             0.21;        // assumption
+    depreciation        straightLine;
+    depreciableLife     9;           // yr
+    salvageFraction     0.0;
+    streamFactor        0.90;        // 7884 h/yr on stream -- assumption
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    N_np                11;          // 4 compressors + 6 exchangers + 1 reactor
+    estimateClass       4;
+    accuracyBand        ( -30 50 );  // the wide corner of Class 4 -- chosen
+    refuseOnMissingPrice 1;
+
+    //  THE WORKING CAPITAL, built up (see the header).  Every key needs its
+    //  unit: a bare number would be read as SECONDS.
+    workingCapital
+    {
+        rawMaterialStock   0 day;    // H2 and N2 by pipe; no stock here
+        receivables       30 day;    // days of sales customers owe
+        payables          30 day;    // days of raw-material purchases owed
+        minimumCash       15 day;    // days of cash operating cost (COM_d)
+    }
 }

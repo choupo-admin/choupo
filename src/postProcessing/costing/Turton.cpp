@@ -152,6 +152,41 @@ const EquipCoeffs compressorCoeffs {
     false, 0.0, 1.0, 0.6, 2001.0
 };
 
+//  ---- A STORAGE TANK (2026-10-07, DEV.md 4c C44 slice 2) -----------------
+//
+//  An ATMOSPHERIC API FIXED-ROOF TANK, S = V [m3] of ONE tank:
+//
+//      log10 C_p = K1 + K2 log10 V + K3 (log10 V)^2        (2001 USD)
+//      C_BM      = C_p x (B1 + B2 F_M F_P) = 1.1 C_p       (B2 = 0)
+//
+//  WHERE EVERY NUMBER WAS READ.  Transcribed on 2026-10-07 from CAPCOST 2017
+//  (`capcost_2017_rev2.xlsm`, sha256 2747f01f...f428e4), the same program and
+//  the same download as the tray set below: worksheet "Equipment Cost Data",
+//  block "Tank Data", row "Fixed Roof", cells C204:I204 -- K1 4.8509, K2
+//  -0.3973, K3 0.1445, B1 1.1, B2 0, Vmin 90, Vmax 30000.  The block's own
+//  header labels the range "Vmin(m3/s) Vmax(m3/s)"; the program's input
+//  sheet ("Equipment Summary", cell C58) asks for the storage tank's
+//  "Volume (cubic meters)", so the range is read as m3 -- a volume, which
+//  is what a tank's size is.  The BOOK's table was NOT read.  B2 = 0 means
+//  the program prices a tank with NO material and NO pressure factor: the
+//  `material` an item declares is recorded on its sheet and moves no euro.
+//  The "Floating Roof" row (C205:I205) is NOT transcribed: no item here
+//  declares a floating roof, and a set nothing reaches is a set nothing
+//  checks.
+//
+//  WHAT IT DOES NOT PRICE, said on every run that uses it.  The program
+//  carries no refrigerated, insulated or double-containment tank.  A
+//  refrigerated store priced on this row is a LOWER BOUND, and the item
+//  carries the word (`service refrigerated`) so the costing line says so
+//  -- no factor is invented to close the gap.
+const EquipCoeffs storageTankCoeffs {
+    4.8509, -0.3973, 0.1445,
+    1.1,    0.0,
+    0.0, 0.0, 0.0,
+    90.0, 30000.0,
+    "V_R"
+};
+
 //  ---- THE TRAY STACK (2026-10-05, DEV.md 4c C38 item 1) -------------------
 //
 //  A tray is bought BY THE TRAY, so its shape is not the per-item one above:
@@ -233,6 +268,7 @@ const EquipCoeffs& coeffsFor(const std::string& equipType)
     if (equipType == "sprayDryer")   return sprayDryerCoeffs;
     if (equipType == "cyclone")      return cycloneCoeffs;
     if (equipType == "compressor")   return compressorCoeffs;
+    if (equipType == "storageTank")  return storageTankCoeffs;
 
     //  The TRAY STACK does not come through here: it is bought by the tray,
     //  on its own correlation shape, and `Turton::cost` routes it to
@@ -580,6 +616,21 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
               << c.Smax << "] -- cost EXTRAPOLATED, treat with caution.\n";
             std::cout << v.str();
         }
+    }
+
+    //  A REFRIGERATED STORE PRICED AS AN ATMOSPHERIC TANK SAYS SO ON ITS OWN
+    //  COSTING LINE (C44): the sizing pass announced it once per store; the
+    //  costing table is where a reader looks at the money, so the floor is
+    //  named there too, per tank.
+    if (dim.equipmentType == "storageTank")
+    {
+        auto sw = dim.costWords.find("service");
+        if (sw != dim.costWords.end() && sw->second == "refrigerated")
+            std::cout << "  [lower bound] storageTank '" << dim.itemId()
+                      << "': priced as an ATMOSPHERIC API fixed-roof tank"
+                         " (CAPCOST 2017, the only tank row read); a"
+                         " REFRIGERATED double-containment tank costs more,"
+                         " so this cost is a FLOOR.\n";
     }
 
     // Purchased cost in 2001 USD -- Turton log-quadratic OR single-anchor

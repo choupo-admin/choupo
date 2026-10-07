@@ -80,8 +80,7 @@ catalyst volumes need a rate law: a plug-flow reactor
   upper bound;
 * the purge scrubber and the let-down gas recovery;
 * the cooling water, the refrigeration cycle and the steam system: each
-  cooler declares an outlet temperature and its duty is the heat to remove;
-* the storage tanks, the working capital and the economics.
+  cooler declares an outlet temperature and its duty is the heat to remove.
 
 ## Sizing and costing
 
@@ -98,8 +97,130 @@ its header says which basis each item rests on:
 | `FEHE` | its own rated area (2000 m², declared on the unit) |
 | `Converter` | a catalyst vessel on an **assumed** space velocity — a Gibbs reactor has no volume of its own |
 | 3 drums | vapour residence time; for the two let-down drums, which are liquid drums, that volume is a **lower bound** |
+| `NH3Storage` | 21 days of production of `ProductNH3`, refrigerated at 1 atm, 90 % working level, at most 30 000 m³ per tank — two tanks |
 
-The design sheets land in `design/<unit>/` after a run.
+The design sheets land in `design/<unit>/` after a run (the two product
+tanks in `design/NH3Storage/tank1` and `tank2`).
+
+### Product storage
+
+A storage tank is not a flowsheet unit, so it is declared in the postDict,
+**attached to the boundary stream it stores** (`storage ( ... )` in
+`system/postDict`). Its volume is
+
+    V = storageTime × ṁ / (ρ_liquid × fillFraction)
+
+split into equal tanks of at most `maxTankVolume`; ṁ is the stream's own
+mass flow and ρ its liquid density at the state it carries, from the case's
+own property package. Every number in the basis (21 days, 90 %, 30 000 m³)
+is a design assumption, not a datum.
+
+Two things a group should read before quoting the tanks:
+
+* **The cost is a lower bound.** The only tank correlation read (CAPCOST
+  2017, the authors' program for Turton's Appendix A) prices an
+  *atmospheric* API fixed-roof tank. Ammonia here is stored refrigerated at
+  −35 °C, in an insulated, double-containment tank that costs more. No
+  factor is invented to close the gap; the run says LOWER BOUND on every
+  tank.
+* **The density is probably about 12 % high, so the tanks are about 12 %
+  small.** The run prices liquid ammonia at 238 K at ~769 kg/m³. The NH₃
+  record's `Vliq` (2.50 × 10⁻⁵ m³/mol, i.e. 681 kg/m³) is read by the
+  engine as a 25 °C datum and extrapolated to −35 °C with Rackett; 681
+  kg/m³ is, however, the figure usually quoted for liquid ammonia near its
+  *normal boiling point*, not at 25 °C (this has not been checked against a
+  primary source here). If the record's value is the boiling-point one,
+  the density at 238 K is ~684 kg/m³ and every liquid volume sized from it
+  is ~12 % larger. Correcting a record is a curation act and was not done
+  in this case.
+
+Not stored here, by decision: the **hydrogen buffer** and the **nitrogen
+supply** belong to the electrolyser and the air separation unit, outside
+this battery limit. Adding a store is one more entry in `storage ( ... )`;
+a *gas* is refused by name, because a gas store is a pressure vessel or a
+holder, which the tank sizer does not model.
+
+### What each item holds
+
+The working capital needs to know how much material is *inside* the plant
+while it runs. An item in the postDict may declare
+
+    inventory { held ( { stream RawLiquid; fraction 0.25; }
+                       { stream UnreactedGas; fraction 0.75; } ); }
+
+and then holds, per phase, m = V × fraction × ρ × w: V its own sized
+volume, ρ and w the density and mass fractions of the stream named for that
+phase, at the state that stream carries (the phase is read off the stream).
+The converter (bed voidage 0.40), the separator (liquid level 0.25) and the
+two let-down drums (half full) declare one; every fraction is an assumption.
+The storage tanks hold their working level, 21 days of production.
+
+| item | held | kg |
+|---|---|---|
+| `NH3Storage` (2 tanks) | liquid ammonia | ~24.8 × 10⁶ |
+| `Separator` | liquid + loop gas | ~5 600 |
+| `StorageFlash` | liquid + flash gas | ~5 050 |
+| `Converter` | loop gas in the bed voids | ~190 |
+| `LetdownHP` | liquid + let-down gas | ~85 |
+
+The run prints this table, writes it to `reports/inventory/inventory.csv`
+and puts each item's block on its design sheet. The compressors and the
+exchangers are listed as **NOT DECLARED** — they hold gas, but no sizer
+publishes the volume they hold it in, and none is invented. The golden is
+the authority on these numbers; this table is a reading of one run.
+
+## Economics and working capital
+
+`system/postDict` ends with an `economics {}` block (Turton's cost of
+manufacture and a discounted cash flow) priced from
+[`constant/economics`](constant/economics). **Every price there is an
+author-set assumption** — H₂ at 4.50 EUR/kg, N₂ at 0.05 EUR/kg, ammonia at
+1.00 EUR/kg — chosen so the appraisal runs, not market data; replace each
+with a dated, cited figure before quoting a result. At those prices the
+hydrogen alone costs more than the ammonia sells for, and the appraisal
+says so: NPV is strongly negative and there is no IRR. That is the
+economics of green ammonia at an assumed hydrogen price, not a defect.
+
+### Working capital: *capital circulante* and *fundo de maneio*
+
+Working capital is the money a running plant keeps tied up in things that
+are not equipment: the material in its tanks and vessels, what its
+customers still owe it, and the cash it keeps to pay its bills.
+
+* The **gross** working capital — the **current assets** (*capital
+  circulante*) — is the sum of those.
+* Part of it is financed by the plant's **suppliers**, who are paid later
+  than they deliver: the **payables**, a current liability.
+* What is left — current assets minus current liabilities — is the **net**
+  working capital (*fundo de maneio*): the part the owners must actually put
+  in. It is invested once, at start-up, and recovered when the plant stops,
+  so the cash flow carries the **net** figure at year 0 and returns it in
+  the last year.
+
+Instead of the usual 15 % of the fixed capital, this case **builds it up**
+(`workingCapital { ... }` in the economics block):
+
+| line | rule (this case) |
+|---|---|
+| raw-material stock | 0 days — H₂ and N₂ arrive by pipe; their buffers are outside the battery limit |
+| process inventory | what the vessels hold (above), at cost |
+| product stock | what the two tanks hold — 21 days of production — at the **cost of making it** (COM_d per kg of product), never at its sales price |
+| receivables | 30 days of sales |
+| minimum cash | 15 days of the cash cost of manufacture (COM_d) |
+| **= gross** (*capital circulante*) | |
+| − payables | 30 days of raw-material purchases |
+| **= net** (*fundo de maneio*) | the WC of the cash flow |
+
+Every held component is valued at what it cost the plant: hydrogen and
+nitrogen at their purchase price, ammonia at the plant's cost of manufacture
+per kilogram. The run prints the build-up line by line, both totals, and
+the 15 %-of-FCI figure beside them for comparison; it writes them to
+`reports/economics/workingCapital.csv`. The days are design-basis
+assumptions for this case, not data. Here the product stock and the
+receivables dominate, and the net working capital comes out several times
+larger than 15 % of the fixed capital — because the fixed capital excludes
+the electrolysers and the ASU while the raw materials and product are
+priced in full.
 
 ## Engine notes
 

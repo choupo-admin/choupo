@@ -91,9 +91,19 @@ int CostingPass::run(SimulationResult& result)
     const std::map<std::string, scalar> priced = model->pricingFactors();
     std::cout << "\n========================  Equipment Costing  =========================\n";
     std::cout << "  Method:  " << model->type();
+    //  FORMATTED HERE, NOT BY WHATEVER THE PASS BEFORE LEFT ON THE STREAM
+    //  (2026-10-07).  The header used to inherit the sizing table's last
+    //  `std::fixed` / precision, so the same declared `year 2026;` printed
+    //  `2026`, `2026.0` or `2026.0000` depending on which item happened to be
+    //  sized last.  A number the CASE declared is printed as it was declared.
     if (priced.count("year") && priced.count("cepci"))
-        std::cout << "    Year:  " << priced.at("year")
-                  << "    CEPCI: " << priced.at("cepci");
+    {
+        std::ostringstream h;
+        h << std::defaultfloat << std::setprecision(10)
+          << "    Year:  " << priced.at("year")
+          << "    CEPCI: " << priced.at("cepci");
+        std::cout << h.str();
+    }
     else
         std::cout << "    (this costing model publishes no price index, so"
                      " this header states none)";

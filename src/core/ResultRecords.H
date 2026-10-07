@@ -82,6 +82,60 @@ Description
 
 namespace Choupo {
 
+// ONE PHASE AN ITEM HOLDS, AND HOW MUCH OF EACH COMPONENT IS IN IT
+// (2026-10-07, DEV.md 4c C44 slice 3).  A piece of equipment is not only a
+// capital cost: while the plant runs it is FULL of material, and that
+// material is money tied up for as long as the plant operates -- the
+// in-process inventory of the working capital.  The quantity is computed
+// from four DECLARED or PUBLISHED facts and nothing else:
+//
+//     m_i = V x fraction x rho(T, P, z) x w_i
+//
+// V the item's own sized volume (or, for an item whose sizer publishes no
+// volume, a holdup volume the case declares); `fraction` the share of V the
+// case says this phase occupies; rho the density of the phase at the state
+// of the stream the case names as carrying it, priced on the case's own
+// package; w_i that stream's mass fractions.  Each term is carried so a
+// reader -- and the gate -- can redo the product.
+struct HeldPhase
+{
+    std::string                   phase;      // "liquid" | "vapour"
+    std::string                   stream;     // the stream whose state it has
+    scalar                        fraction = 0.0;  // of V          [-]
+    scalar                        volume   = 0.0;  // V x fraction   [m3]
+    scalar                        T        = 0.0;  // [K]
+    scalar                        P        = 0.0;  // [Pa]
+    scalar                        rho      = 0.0;  // [kg/m3]
+    scalar                        mass     = 0.0;  // [kg]
+    std::map<std::string, scalar> massOf;          // per component  [kg]
+};
+
+struct ItemInventory
+{
+    //  EMPTY MEANS "NO INVENTORY WAS DECLARED FOR THIS ITEM", and every
+    //  surface draws it that way -- never as zero kilograms, which would be
+    //  a claim that the item is empty.
+    std::vector<HeldPhase>        phases;
+    scalar                        volume  = 0.0;   // the V the fractions apply to [m3]
+    std::string                   volumeFrom;      // "sized" | "declared"
+    std::string                   basis;           // one sentence: the rule
+
+    bool   present() const { return !phases.empty(); }
+    scalar total() const
+    {
+        scalar s = 0.0;
+        for (const auto& p : phases) s += p.mass;
+        return s;
+    }
+    std::map<std::string, scalar> massOf() const
+    {
+        std::map<std::string, scalar> m;
+        for (const auto& p : phases)
+            for (const auto& [c, kg] : p.massOf) m[c] += kg;
+        return m;
+    }
+};
+
 // Geometric / mechanical sizing of a single piece of equipment, as
 // produced by the SizingPass (vessel diameter, height, wall thickness,
 // heat exchanger area, etc.).  Named `EquipmentSizing` rather than
@@ -245,6 +299,19 @@ struct EquipmentSizing
     //  a sizer takes goes through `designDefault::valueOr`, which is the one
     //  call that records it.
     std::vector<std::string>                     assumed;
+
+    //  THE BOUNDARY STREAM A STORAGE ITEM IS ATTACHED TO (2026-10-07, DEV.md
+    //  4c C44 slice 2).  A storage tank is not a flowsheet unit -- nothing in
+    //  the topology solves it -- yet it is equipment the plant buys, sized
+    //  from a stream the flowsheet does carry.  Vitor ruled it a postDict
+    //  item attached to that stream.  EMPTY for every item a unit realises,
+    //  so no existing surface changes.
+    std::string                                  stream;
+
+    //  WHAT THE ITEM HOLDS while the plant runs (2026-10-07, DEV.md 4c C44
+    //  slice 3).  Empty when the case declared no inventory for it, and
+    //  every surface then says "not declared" -- never zero kilograms.
+    ItemInventory                                inventory;
 
     void assume(const std::string& key)
     {
@@ -436,6 +503,37 @@ struct CashFlowYear
     scalar cumulativeDCF    = 0.0;  // running sum of discountedCF
 };
 
+// THE WORKING CAPITAL BUILT UP FROM WHAT THE PLANT HOLDS AND OWES (2026-10-07,
+// DEV.md 4c C44 slice 4).  Present only when the case declares the
+// componentised model (`workingCapital { ... }` in the economics block);
+// absent, the working capital stays the one fraction of FCI it always was.
+//
+//   gross (current assets)  = raw-material stock + process inventory
+//                           + product stock + receivables + minimum cash
+//   net                     = gross - payables (current liabilities)
+//
+// Every term is a declared number of DAYS times a flow the run computed, or
+// a held mass the sizing pass computed times a unit cost the run computed.
+struct WorkingCapitalLine
+{
+    std::string key;           // stable word: rawMaterialStock, receivables, ...
+    std::string label;         // what a reader is told
+    scalar      value = 0.0;   // EUR
+    std::string rule;          // the arithmetic, in one line
+};
+
+struct WorkingCapitalBuildUp
+{
+    bool                            present = false;
+    std::vector<WorkingCapitalLine> assets;        // the current assets
+    std::vector<WorkingCapitalLine> liabilities;   // the current liabilities
+    scalar                          gross = 0.0;   // sum of assets
+    scalar                          net   = 0.0;   // gross - liabilities
+    scalar                          fractionRule = 0.0;     // the old figure
+    scalar                          fractionUsed = 0.0;     // its fraction
+    scalar                          productionCostPerKg = 0.0;   // EUR/kg product
+};
+
 // Headline economic appraisal scalars + the year-by-year DCF table.  Populated
 // by EconomicsPass; mirrors result.kpis["economics"] but typed and complete
 // (the table the .ods / .csv DCF spreadsheet is built from).
@@ -462,6 +560,7 @@ struct EconomicsSummary
     scalar                    accHi         = +50.0; // AACE band high (%)
     std::string               currency      = "EUR";
     std::vector<CashFlowYear> cashFlow;              // rows t = 0..N
+    WorkingCapitalBuildUp     workingCapital;        // present only when declared
 };
 
 } // namespace Choupo

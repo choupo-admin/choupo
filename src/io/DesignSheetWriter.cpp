@@ -268,7 +268,22 @@ std::size_t write(const std::string&                       caseRoot,
 
         //  ---- the ports ------------------------------------------------
         auto uit = unitOf.find(uname);
-        if (uit == unitOf.end())
+        //  A STORAGE ITEM IS ATTACHED TO A STREAM, NOT A UNIT (2026-10-07,
+        //  DEV.md 4c C44 slice 2): no flowsheet unit is a tank, so its sheet
+        //  names the stream it stores and draws that stream as its one inlet
+        //  -- the state the tank was sized from.  Written only for such an
+        //  item, so every other sheet is character-for-character what it was.
+        if (!sz.stream.empty())
+        {
+            o << "//  A STORAGE ITEM: not a flowsheet unit.  It is attached to"
+                 " the boundary stream\n//  below and sized from that"
+                 " stream's own flow and state.\n";
+            o << "inlets\n{\n";
+            o << portBlock(0, sz.stream, PortRoles::of(roles, sz.stream),
+                           result, thermo);
+            o << "}\n\n";
+        }
+        else if (uit == unitOf.end())
         {
             o << "//  This unit is not in the flattened topology, so its\n"
                  "//  inlets and outlets are unknown here.  Stated rather\n"
@@ -372,6 +387,43 @@ std::size_t write(const std::string&                       caseRoot,
                  " yours.\nassumed          (";
             for (const auto& k : sz.assumed) o << " " << k;
             o << " );\n";
+        }
+
+        //  ---- WHAT THE ITEM HOLDS (2026-10-07, DEV.md 4c C44 slice 3) --
+        //  Written only for an item that declared an inventory, so every
+        //  other sheet is character-for-character what it was.  `held` is a
+        //  LIST, one entry per phase, because two phases of one item are two
+        //  states and a name-keyed block could hold only one per stream.
+        if (sz.inventory.present())
+        {
+            const auto& inv = sz.inventory;
+            o << "\ninventory\n{\n";
+            o << "    basis           \"" << inv.basis << "\";\n";
+            o << "    volumeFrom      " << inv.volumeFrom << ";\n";
+            o << entry("volume", inv.volume, "m3", 16);
+            o << "    held\n    (\n";
+            for (const auto& h : inv.phases)
+            {
+                o << "        {\n";
+                o << "            stream      \"" << h.stream << "\";\n";
+                o << "            phase       " << h.phase << ";\n";
+                o << "            fraction    [0 0 0 0 0] " << num(h.fraction) << ";\n";
+                o << "            volume      " << num(h.volume) << " m3;\n";
+                o << "            T           " << num(h.T) << " K;\n";
+                o << "            P           " << num(h.P) << " Pa;\n";
+                o << "            rho         " << num(h.rho) << " kg/m3;\n";
+                o << "            mass        " << num(h.mass) << " kg;\n";
+                o << "        }\n";
+            }
+            o << "    );\n";
+            o << "    mass\n    {\n";
+            for (const auto& [c, kg] : inv.massOf())
+                o << "        " << std::left << std::setw(12) << c
+                  << num(kg) << " kg;\n";
+            o << "        " << std::left << std::setw(12) << "total"
+              << num(inv.total()) << " kg;\n";
+            o << "    }\n";
+            o << "}\n";
         }
 
         //  ---- the cost, when a costing pass ran ------------------------

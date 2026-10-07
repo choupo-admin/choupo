@@ -119,6 +119,12 @@ def published(case: Path):
         if mv:
             for k in re.findall(r'"([A-Za-z_][A-Za-z0-9_]*)": *-?[0-9]', mv.group(1)):
                 keys.add((u, "values." + k))
+        #  WHAT THE ITEM HOLDS (2026-10-07, DEV.md 4c C44 slice 3): every key
+        #  of the flat `inventory` object, which carry dots.
+        mi = re.search(r'"inventory": \{([^}]*)\}', line)
+        if mi:
+            for k in re.findall(r'"([A-Za-z_][A-Za-z0-9_.]*)": *-?[0-9]', mi.group(1)):
+                keys.add((u, "inventory." + k))
         mc = re.search(r'"cost": \{(.*)$', line)
         if mc:
             body = re.sub(r'"factors": \{[^}]*\}', "", mc.group(1))
@@ -197,7 +203,7 @@ def main() -> int:
           f"{ncases} sizing case(s) are pinned in their goldens, in both "
           "directions (published implies pinned, pinned implies published), by"
           " the generator's own emission rule (basis when stated, every sizing"
-          " value, the three cost totals; never the costing factors, which"
+          " value, every held-inventory quantity, the three cost totals; never the costing factors, which"
           " check_cost_provenance recomputes from).  "
           f"{len(sweeps)} golden-less sweep(s) excused by name.  NOT CHECKED: whether"
           " any size or cost is RIGHT, whether a sizer STATES a basis (task"

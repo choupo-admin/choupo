@@ -826,6 +826,7 @@ try
     //  The end-of-run caveat block quotes it so a reader of a swept run knows
     //  the block describes ONE pass out of N (see the outerDict branch).
     std::size_t nPasses = 0;
+    std::shared_ptr<const ThermoPackage> postThermo;   // see `thermoForPost`
     auto simulate = [&](const DictPtr& flowDictForRun,
                         const StreamOverrides& overrides) {
         ++nPasses;
@@ -839,6 +840,19 @@ try
         // allocation -> the GUI's utilities/duty-stubs were empty for any case
         // with an outerDict.  Cheap; only on a converged pass.
         if (r.converged) r.utilityAllocation = allocateUtilities(r, flowDictForRun);
+        //  THE DECLARED PACKAGE, FOR A PASS THAT MUST PRICE A PHASE (C44).
+        //  Built on the FIRST request and kept for the process -- the
+        //  declaration does not change between an outer driver's passes --
+        //  so a postDict that never asks (no storage, no inventory) builds
+        //  nothing and prints nothing more than it did before.
+        r.thermoForPost = [&postThermo, &packageDict, &db, chemPtr]()
+            -> std::shared_ptr<const ThermoPackage>
+        {
+            if (!postThermo)
+                postThermo = std::make_shared<const ThermoPackage>(
+                    ThermoPackageBuilder::build(packageDict, db, chemPtr));
+            return postThermo;
+        };
         return r;
     };
 

@@ -2035,6 +2035,55 @@ drums, which are liquid drums (no liquid-density route exists in the sizing
 pass; it is the inventory slice's question too).  Mixers and the splitter
 are not equipment.  140 golden rows appended; gate `check_design_sheet` arm
 (p).
+Slice 2 (product storage) BUILT 2026-10-07 on branch `claude/c44-slices2-4`,
+NOT merged: `sizing { storage ( { name; stream; material; storageTime <n>
+day; fillFraction; maxTankVolume; } ) }` -- a postDict item attached to a
+boundary stream, V = t x mdot / (rho_liq x fill) split into equal tanks
+(`StorageTankSize`), each costed on CAPCOST 2017's atmospheric API fixed-roof
+row (`Turton.cpp`, cells C204:I204) and said to be a LOWER BOUND when the
+liquid is stored below 0 degC.  The density comes from the case's own package
+through a new on-demand hook (`SimulationResult::thermoForPost`, choupoSolve
+only) and the ONE selection `storageTank` already made
+(`thermo/PricedDensity`, moved out of `StorageTank.cpp` verbatim).  Green
+ammonia: 21 days of `ProductNH3`, 90 % fill, at most 30 000 m3 -> two tanks
+of 17 898 m3.  H2 buffer and N2 supply outside battery limits, said in the
+case.  30 golden rows appended; gate `check_design_sheet` arm (q).  TWO
+FINDINGS: (1) the commission's "no storage item of any kind" was FALSE -- the
+`storageTank` UNIT exists (holdup KPIs, no sizer, no cost; ammonia02/03); (2)
+the NH3 record's `Vliq` (681 kg/m3) reads as a 25 C datum and Rackett takes it
+to ~769 kg/m3 at 238 K, while 681 is the figure usually quoted at the normal
+boiling point -- if so every liquid volume from it is ~12 % small (a curation
+question for Vitor, not changed).
+Slice 3 (inventory held in each item) BUILT 2026-10-07 on the same branch, NOT
+merged: a units entry may declare `inventory { held ( { stream; fraction; } ) }`
+(or a `volume` where its sizer publishes none) and holds, per phase, V x
+fraction x rho x w on the named stream's own state (`sizing/Inventory`); a
+storage tank holds its working level.  Printed as a table, written to
+`reports/inventory/inventory.csv`, drawn on the design sheet, published as
+`equipment[].inventory` and pinned by the existing `equipment` kind (new key
+family `inventory.<key>`, reader and generator in `bin/runTests`, mirror in
+`check_equipment_pinned`).  Green ammonia: Converter (voidage 0.40),
+Separator (level 0.25), the two let-down drums (half full) declared; the
+compressors and exchangers are listed NOT DECLARED.  72 golden rows appended;
+gate `check_design_sheet` arm (r) (SRK and Rackett densities recomputed from
+the records).  Also fixed: the costing header's `Year:`/`CEPCI:` digits
+inherited the sizing table's stream format (`2026`, `2026.0` or `2026.0000`
+by which item was sized last); formatted where printed now.
+Slice 4 (working capital) BUILT 2026-10-07 on the same branch, NOT merged:
+`workingCapital` in the economics block is either the old fraction (every
+existing economics case byte-identical, stdout and reports/economics, measured
+on all six) or a BLOCK of four day counts (rawMaterialStock, receivables,
+payables, minimumCash; units required) from which `buildWorkingCapital`
+builds GROSS (capital circulante: raw-material stock + process inventory +
+product stock + receivables + minimum cash) and NET (fundo de maneio = gross -
+payables); the NET is the cash flow's WC.  Held material valued at COST (a
+raw material's price, else COM_d per kg of product).  Green ammonia gains an
+economics pass and `constant/economics` (H2 4.50, N2 0.05, NH3 1.00 EUR/kg,
+labour 42 EUR/h -- every one AUTHOR-SET): gross 78.5 MEUR, net 51.2 MEUR
+against 0.15 x FCI = 6.2 MEUR; NPV -412 MEUR (the H2 alone costs more than the
+NH3 sells for at these assumed prices).  16 golden rows appended; gate
+`check_cost_provenance` arm (q).  The commander's days (0/30/30/15) and the
+prices are put to Vitor as assumptions.
 
 **C43. REACTION ENTHALPY LEADS TO STANDARD STATE (Vítor, 2026-10-07: "Revê a
 navegação pedagógica das EduTools do CHOUPO, sobretudo a ligação entre
