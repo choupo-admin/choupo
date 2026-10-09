@@ -228,9 +228,38 @@ export function useMethodRun(
   witness: string | null,
   overrides: readonly DictOverride[],
   overridesKey: string,
-  binary: "choupoSolve" | "choupoBatch" | "choupoCtrl" | "choupoSemiContinuous" | "choupoProps",
-): { result: RunResult | null; err: string | null; busy: boolean;
-     log: string | null } {
+  binary: MethodBinary,
+): MethodRunState {
+  return useCaseFilesRun(
+    witness ? () => methodCase(witness, overrides) : null,
+    `${witness ?? ""}\u0000${overridesKey}`, binary);
+}
+
+export type MethodBinary =
+  "choupoSolve" | "choupoBatch" | "choupoCtrl" | "choupoSemiContinuous" | "choupoProps";
+
+export interface MethodRunState {
+  result: RunResult | null; err: string | null; busy: boolean;
+  log: string | null;
+}
+
+/** The run mechanics of `useMethodRun`, for a caller that builds its
+ *  CaseFiles some other way than by overriding a witness's scalars.
+ *
+ *  ADDED 2026-10-09 (DEV.md 4c C53, "How dictionaries assemble a case"),
+ *  whose breaks damage a COPY of a witness -- one deletes a 0/ file -- to
+ *  show the engine's refusal.  The edit itself stays in that page's own
+ *  module, and this module gains no way to add, delete or re-nest anything:
+ *  what moved here is only the debounce, the abort and the log capture, so
+ *  two pages do not each keep a copy of them.  `build` runs inside the
+ *  debounced effect and is NOT a dependency (callers build it inline);
+ *  `buildKey` must change whenever what `build` returns would.  A null
+ *  `build` stops any run and clears the state. */
+export function useCaseFilesRun(
+  build: (() => CaseFiles) | null,
+  buildKey: string,
+  binary: MethodBinary,
+): MethodRunState {
   const [result, setResult] = useState<RunResult | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [log, setLog] = useState<string | null>(null);
@@ -238,7 +267,7 @@ export function useMethodRun(
   const runSeq = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   useEffect(() => {
-    if (!witness) {
+    if (!build) {
       abortRef.current?.abort();
       setResult(null); setErr(null); setLog(null); setBusy(false);
       return;
@@ -251,7 +280,7 @@ export function useMethodRun(
       setBusy(true); setErr(null); setLog(null);
       void (async () => {
         try {
-          const files = methodCase(witness, overrides);
+          const files = build();
           const resolved = await resolveAdapter("wasm");
           if (seq !== runSeq.current) return;
           if (resolved.kind === "unavailable") {
@@ -279,10 +308,10 @@ export function useMethodRun(
       })();
     }, 300);
     return () => clearTimeout(t);
-    // overridesKey is the change signal for the overrides array (stable JSON
-    // of the knob values); the array identity itself is NOT a dependency so
-    // callers may build it inline.
+    // buildKey is the change signal for what `build` returns (for
+    // useMethodRun: the witness and the stable JSON of the knob values); the
+    // closure itself is NOT a dependency, so callers may build it inline.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [witness, overridesKey, binary]);
+  }, [buildKey, build === null, binary]);
   return { result, err, busy, log };
 }

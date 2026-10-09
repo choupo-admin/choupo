@@ -4,6 +4,7 @@
   "label": "EduTools",
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
   "disciplines": [
+    "How Choupo works",
     "Thermodynamics",
     "Separations & phase equilibria",
     "Heat transfer & energy",
@@ -11,8 +12,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 49,
-  "registryTools": 49,
+  "liveTools": 50,
+  "registryTools": 50,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -356,6 +357,13 @@
       "discipline": "Flowsheeting & numerics",
       "teaches": "That a Gibbs reactor never solves for its amounts: it solves for ONE potential per element and the log of the total, M + 1 unknowns however many species, with every species' stationarity built into the change of variables -- so no amount can ever go negative.  Watch the engine's own Newton, iterate by iterate: its first step cut to 1/64 by the line search, then the digits doubling.  Check by hand that each species' chemical potential is the sum of its atoms' potentials, which puts every reaction at equilibrium at once.  See a liquid and a solid added not by a bigger Newton but by a test on the gas answer and a one-dimensional search.  And meet the feed on which the least-squares seed makes the Jacobian singular at iteration 0, and the primal re-seed the engine announces.",
       "href": "/app/?workspace=methods&tool=element-potential"
+    },
+    {
+      "id": "case-assembly",
+      "label": "How dictionaries assemble a case",
+      "discipline": "How Choupo works",
+      "teaches": "What a Choupo case is on disk and how the engine puts it together, on the real flash01 case: system/ says HOW, constant/ says WITH WHAT, 0/ says FROM WHERE.  Click any file to see what it says and the line of the engine that reads it, follow the assembly move by move against the run's own log, see that topology is not state and that a stream is fixed by N_c + 2 numbers, see what a run writes back -- then break a copy of the case and read Choupo's refusal in its own words.",
+      "href": "/app/?workspace=methods&tool=case-assembly"
     }
   ]
 }

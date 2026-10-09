@@ -277,6 +277,9 @@ const BodeTool = lazy(() =>
 const TearStreamsTool = lazy(() =>
   import("./methods/TearStreamsTool.js")
     .then((m) => ({ default: m.TearStreamsTool })));
+const CaseAssemblyTool = lazy(() =>
+  import("./methods/CaseAssemblyTool.js")
+    .then((m) => ({ default: m.CaseAssemblyTool })));
 const WegsteinTool = lazy(() =>
   import("./methods/WegsteinTool.js")
     .then((m) => ({ default: m.WegsteinTool })));
@@ -492,6 +495,7 @@ export function MethodsWorkspace() {
             : tool === "bjerrum" ? <BjerrumTool />
             : tool === "bode" ? <BodeTool />
             : tool === "tear-streams" ? <TearStreamsTool />
+            : tool === "case-assembly" ? <CaseAssemblyTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />
