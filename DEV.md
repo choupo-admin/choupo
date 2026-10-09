@@ -1999,8 +1999,62 @@ montam um caso?").**  Measured: the registry (gui/src/ui/methods/registry.ts)
 holds 49 tools across thermodynamics, unit operations, reactions and
 numerics; none explains the case itself (folders, dictionaries, who reads
 what, in which order, where results land).  The pedagogical scope is
-Vítor's (CLAUDE.md §10): a proposal was put to him before any dispatch.
-Status: scope proposed 2026-10-09, waiting on his answer.
+Vítor's (CLAUDE.md §10): a proposal was put to him before any dispatch, and
+he answered "Avança que eu depois revejo e dou te feedback" -- build the
+proposal as a first version for his review.
+BUILT 2026-10-09 on branch `claude/c53-edutool-case-assembly` (NOT merged).
+A new shelf, "How Choupo works", FIRST in `METHOD_DISCIPLINES`, holding one
+`notes` page, `case-assembly` ("How dictionaries assemble a case"):
+`gui/src/ui/methods/CaseAssemblyTool.tsx` (the page),
+`caseAssemblyLesson.ts` (six steps + four limits, on the shared step
+renderer) and `caseAssembly.ts` (React-free data).  The witness is the real
+`tutorials/steady/flash/flash01_benzene_toluene`, read from the bundled
+tutorial registry -- no case text is typed into the lesson.  Steps: (1) a
+case is a folder; system/ HOW, constant/ WITH WHAT, 0/ FROM WHERE, the .cho
+and README.md opened by the GUI only; (2) the grammar -- entry, sub-dict,
+list, comments, units converted to SI with the dimension check, x_SI = f_u x
+on the case's own `1.0 bar` and `40 kmol/h`; (3) the assembly order as
+main.cpp does it, linked (`leadsTo`) to tear-streams; (4) topology is not
+state, n_spec = N_c + 2 on 0/feed's four numbers; (5) what a run writes and
+why it is never edited; (6) break a copy and read the refusal.  Three
+panels: the file tree (click a file: what it says, who reads it and when
+with the file:line, the file as it is); the assembly move by move beside the
+lines the page's OWN run of flash01 printed about itself (the run header,
+`[v2 native]`, `[state] seeded`, `Unit [0]`, `[flash] model`, ...); and what
+that run wrote (converged/, reports/, no design/ because no postDict).  Four
+breaks, each a one-click edit of an in-memory COPY run by the browser
+engine, the refusal lifted out of the run's log: delete 0/feed (Flowsheet.cpp
+completeness, "MISSING  0/feed"), misspell `activityModel ideal` as `idael`
+(ActivityModel.cpp, "unknown activity model 'idael'.  Did you mean
+'ideal'?"), add `vaporFraction 0.3;` beside T and P (StreamStateIO.cpp,
+"OVER-SPECIFIED"), and `100000 pa;` (Dictionary.cpp, "unknown unit suffix
+'pa'").  MEASURED on the way, and the reason every break edits 0/ or the
+thermoPhysPropDict: the browser re-serialises controlDict, flowsheetDict and
+solverDict through the GUI's own parser (`serialiseCase`), so a typo planted
+there would be refused by the GUI's parser, not the engine.  One shared
+change: `methodRun.ts` gains `useCaseFilesRun` (the debounce/abort/log of
+`useMethodRun`, which now delegates to it) -- it gains no way to edit a dict.
+Test `gui/tests/caseAssembly.test.ts`: every bundled file has one role and
+every keyword a role claims is declared in the real file; every one of the
+62 citations lands on its statement; no bare file:line in the page's
+sources; each break, serialised exactly as the worker receives it, is run
+by the NATIVE choupoSolve and must exit 2 with its refusal, and the intact
+case must converge and narrate every move the page reads, in order.
+`generated/methodTools.json` regenerated (50 live tools).  Its Theory Guide
+link is `ch:sm-architecture` (every live tool must carry one,
+tests/tabChrome.test.ts) -- whose rule 4 reads "solve in topological
+order" while the engine runs the DECLARED order and refuses an invalid one;
+the page teaches the engine's behaviour, and the wording of that chapter is
+Vítor's to reconcile.  NOT done: no
+EduTools Guide section (the guide writes up eight constructions and lists
+six more as undocumented -- most live tools, tear-streams included, have no
+section, so the brief's condition for adding one did not hold); backticks in
+the shared step renderer's prose are drawn literally, as on the other
+lessons (the page's own panels draw them as code); the browser screenshots
+were taken against the WASM published on www.choupo.org, because this
+container has no emscripten -- the native test is what proves the four
+refusals against this tree.  Status: built and validated 2026-10-09,
+waiting on Vítor's review.
 
 **C52. THE GIBBS CONVERTER'S 30.6 MW HAS NO UTILITY, AND NOBODY SAYS SO
 (Vítor, 2026-10-07, verbatim: "o reator gibbs não devia ter utilidade de

@@ -69,7 +69,7 @@ export type MethodToolId =
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
-  | "reaction-enthalpy" | "standard-state";
+  | "reaction-enthalpy" | "standard-state" | "case-assembly";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -102,6 +102,13 @@ export type MethodToolKind = typeof METHOD_TOOL_KINDS[number];
 //  bucket, because an unshelved tool here is a decision dodged, not a
 //  discovery surfaced.
 export const METHOD_DISCIPLINES = [
+  //  THE SHELF ABOUT THE TOOL ITSELF (2026-10-09, DEV.md 4c C53).  Vitor,
+  //  after a class: the students felt the EduTools said nothing about how
+  //  Choupo works -- what a case is on disk, who reads which file, what a
+  //  refusal means.  None of that is chemical engineering, so no existing
+  //  shelf can hold it without bending its name.  It sits FIRST because it
+  //  is what every page after it assumes.
+  "How Choupo works",
   "Thermodynamics",
   "Separations & phase equilibria",
   "Heat transfer & energy",
@@ -1089,6 +1096,29 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "the feed on which the least-squares seed makes the Jacobian singular "
       + "at iteration 0, and the primal re-seed the engine announces.",
     theory: "ch:gibbs-reactor",
+  },
+  //  COMMISSIONED 2026-10-09 (DEV.md 4c C53), the first page about Choupo
+  //  itself.  A NOTES page: it constructs nothing, it walks the real flash01
+  //  case file by file, the engine's assembly move by move, and lets the
+  //  reader break a copy and read the refusal.  First version, for Vitor's
+  //  review ("Avanca que eu depois revejo e dou te feedback").
+  {
+    id: "case-assembly",
+    label: "How dictionaries assemble a case",
+    discipline: "How Choupo works", kind: "notes",
+    status: "live",
+    teaches: "What a Choupo case is on disk and how the engine puts it "
+      + "together, on the real flash01 case: system/ says HOW, constant/ says "
+      + "WITH WHAT, 0/ says FROM WHERE.  Click any file to see what it says "
+      + "and the line of the engine that reads it, follow the assembly move "
+      + "by move against the run's own log, see that topology is not state "
+      + "and that a stream is fixed by N_c + 2 numbers, see what a run writes "
+      + "back -- then break a copy of the case and read Choupo's refusal in "
+      + "its own words.",
+    //  The Theory Guide's account of the architecture the case's files
+    //  encode: the flowsheet as a graph (topology first), every inlet fully
+    //  specified, units solved in order.
+    theory: "ch:sm-architecture",
   },
 ];
 
