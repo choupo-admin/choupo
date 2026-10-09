@@ -1991,6 +1991,17 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C53. EDUTOOLS THAT SAY HOW CHOUPO WORKS, STARTING WITH HOW THE
+DICTIONARIES ASSEMBLE A CASE (Vítor, 2026-10-09, after a class, verbatim:
+"Hoje estive com os alunos e sentiram que faltam EduTools a dizer como
+funciona o choupo! Podemos começar com um EduTools sobre como os dicionários
+montam um caso?").**  Measured: the registry (gui/src/ui/methods/registry.ts)
+holds 49 tools across thermodynamics, unit operations, reactions and
+numerics; none explains the case itself (folders, dictionaries, who reads
+what, in which order, where results land).  The pedagogical scope is
+Vítor's (CLAUDE.md §10): a proposal was put to him before any dispatch.
+Status: scope proposed 2026-10-09, waiting on his answer.
+
 **C52. THE GIBBS CONVERTER'S 30.6 MW HAS NO UTILITY, AND NOBODY SAYS SO
 (Vítor, 2026-10-07, verbatim: "o reator gibbs não devia ter utilidade de
 calor?!!!").**  Measured on greenAmmoniaIndustrialN2: the Converter
