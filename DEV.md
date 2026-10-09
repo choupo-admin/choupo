@@ -1991,6 +1991,29 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C54. THE SECOND "HOW CHOUPO WORKS" EDUTOOL: HOW TO READ A RUN'S LOG
+(Vítor, 2026-10-09, verbatim: "Faz esse!", answering the commander's ranked
+list of further EduTools, whose recommended next was the log).**  Scope as
+proposed: what the log is and where it goes; the header and what was
+assembled; the per-unit trace (Newton iterations, residuals, the
+announcements such as `[plan]`); the convergence verdict; the end-of-run
+caveat block; and the three kinds of message a student must tell apart -- an
+ADVISORY (the answer is qualified), a DIVERGENCE (the answer is to a
+different question), a REFUSAL (no answer, exit code 2).  Built on real runs
+in the browser, every engine claim cited file:line.  Status: dispatched
+2026-10-09.
+
+**NAMING RULING (Vítor, 2026-10-09, verbatim: "não chames 'fractais' porque
+já vimos que esse nome foi má escolha. Nós só temos dois níveis").**  A
+student-facing surface does not call the plant/sector layout "fractal": the
+engine has TWO levels, a plant and its sectors (plus each unit's own
+folder), and the word promises a recursion that does not exist.  New
+EduTools and lessons say "a plant and its sectors".  NOT done: the word
+still appears in CLAUDE.md (§3, §6, §10), docs/ai/case-layout.md and the GUI
+sources (measured 2026-10-09: CLAUDE.md 8, gui/src/cases/tutorials.ts 7,
+docs/ai/case-layout.md 5, gui/src/case/toGraph.ts 4, ...); renaming those is
+a sweep to be scheduled, not done in passing.
+
 **C53. EDUTOOLS THAT SAY HOW CHOUPO WORKS, STARTING WITH HOW THE
 DICTIONARIES ASSEMBLE A CASE (Vítor, 2026-10-09, after a class, verbatim:
 "Hoje estive com os alunos e sentiram que faltam EduTools a dizer como
