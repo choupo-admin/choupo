@@ -12,8 +12,8 @@
     "Hydraulics & control",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 50,
-  "registryTools": 50,
+  "liveTools": 51,
+  "registryTools": 51,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -364,6 +364,13 @@
       "discipline": "How Choupo works",
       "teaches": "What a Choupo case is on disk and how the engine puts it together, on the real flash01 case: system/ says HOW, constant/ says WITH WHAT, 0/ says FROM WHERE.  Click any file to see what it says and the line of the engine that reads it, follow the assembly move by move against the run's own log, see that topology is not state and that a stream is fixed by N_c + 2 numbers, see what a run writes back -- then break a copy of the case and read Choupo's refusal in its own words.",
       "href": "/app/?workspace=methods&tool=case-assembly"
+    },
+    {
+      "id": "run-log",
+      "label": "How to read a run's log",
+      "discipline": "How Choupo works",
+      "teaches": "Where a run's log goes and how loud it is (verbosity 0 to 4, measured), then the log itself, read on real runs in the browser: the header and what was assembled, a unit's Newton iterations, a convergence verdict in five numbers, a recycle whose units stay quiet until the tear converges, the balances, and the two blocks at the end.  Every line is coloured by the marker the engine printed it with, and a click names the line of the engine that printed it.  And the three messages a student must tell apart -- an advisory, a divergence, a refusal -- with the exit codes 0, 1 and 2 and what each asks you to do.",
+      "href": "/app/?workspace=methods&tool=run-log"
     }
   ]
 }
