@@ -2275,7 +2275,10 @@ would dump it into cooling water, where a real ammonia loop raises HP steam
 in a waste-heat boiler (a credit) -- that needs a steam-GENERATION utility
 record, a curation act.  Status: diagnosed 2026-10-07; both halves
 DELEGATED 2026-10-10 (SATURDAY BATCH above).
-BUILT 2026-10-10 on branch `claude/c52-reactor-duty-utility`, NOT merged.
+STATUS: MERGED 2026-10-10 (90010634e), with the 16 moved rows re-recorded
+after Vítor's approval ("avança") and his explicit authorisation of
+`bin/runTests --record` ("Eu autorizo"); semantic diff 16 moved, 0 added,
+0 removed.  BUILT 2026-10-10 on branch `claude/c52-reactor-duty-utility`.
 ONE HOME for "this unit has a duty": `reporting::unitHeatDuties`
 (src/reporting/BalanceMath.H), derived from the SAME `energyItemKpis()` the
 first law reads (its Heat items minus the internal-medium `duty_kW`), each on
