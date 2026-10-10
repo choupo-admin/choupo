@@ -123,9 +123,12 @@ export const METHOD_DISCIPLINES = [
   //  the first tool that does not fit it.  It sits AFTER the physics shelves
   //  and BEFORE the numerics because it is the question a student meets once
   //  the unit operations are known: in what order, and at what fidelity, is
-  //  a whole process designed and costed.  Candidates that could later share
-  //  it (route screening's gross margin, the pinch targets) stay where they
-  //  are until the owner moves them; moving a tool is an editorial act.
+  //  a whole process designed and costed.  Route screening MOVED here on
+  //  2026-10-10 (owner-delegated): its deciding filter is the gross margin
+  //  per route, Douglas' first economic potential, which is FEL-1 screening.
+  //  The pinch targets stay on "Heat transfer & energy": a composite curve
+  //  is a heat-integration construction first, whatever it later saves.
+  //  Moving a tool is an editorial act, taken by the owner, never by drift.
   "Process design & economics",
   //  THE SHELF THE NUMERICS LIVE ON (2026-09-12).  Three tools arrived at
   //  once -- choosing a tear, closing it with Wegstein, and the constrained
@@ -674,40 +677,6 @@ export const METHOD_TOOLS: MethodTool[] = [
     teaches: "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
     theory: "ch:pfr",
   },
-  //  COMMISSIONED 2026-09-25, and the origin is worth keeping beside the
-  //  entry: the architect of this project met the temperature approach to
-  //  equilibrium for the first time that day and asked for a page about it.
-  //  The engine has read the key since 2026-07-02 and announces it in three
-  //  sentences; nothing anywhere carried the teaching, and on that day no
-  //  flowsheet case in the corpus declared an approach of any kind
-  //  (`ammoniaStaged03_approach` declares one since; it runs at 200 bar
-  //  under SRK, where the page's two-run equivalence does not hold, so it is
-  //  named in the prose and is not a witness).  Since 2026-09-26 the author
-  //  declares a MAGNITUDE and the ENGINE assigns the sign; the page teaches
-  //  that.
-  //
-  //  `notes` rather than `construction`: there is no classical graphical
-  //  construction here.  It is a chapter you scroll with the engine running
-  //  inside it, which is the shape `what-is-temperature` established.
-  //  Route screening (C24, 2026-09-29): three known routes to methanol
-  //  through the paper filters, cheapest first -- margin, atom economy,
-  //  equilibrium, heat, selectivity, SELECT -- with kinetics last.
-  {
-    id: "route-screening",
-    label: "Screening routes to a product (methanol)",
-    discipline: "Reaction engineering", kind: "notes", status: "live",
-    teaches: "That routes to a product are screened on paper in order of "
-      + "cost, cheapest filter first: the stoichiometric gross margin, the "
-      + "atom economy, the equilibrium limit at the catalyst's temperature, "
-      + "the heat to remove, and whether the product is where the atoms go "
-      + "when every species is allowed; that direct oxidation of methane "
-      + "wins the first four and fails the fifth, because the combustion "
-      + "products lie far below methanol in Gibbs energy; that the "
-      + "remaining questions (Safety, Environmental, Legal, Economics, "
-      + "Control, Throughput) need no rate constant; and that the rate law "
-      + "is bought last, for the one route that survives.",
-    theory: "ch:gibbs-reactor",
-  },
   //  The reactor ladder (C23, 2026-09-28): one feed through the three rungs
   //  a design climbs -- a declared conversion, the equilibrium limit (with
   //  its approach temperature), the rate law -- in the order industry climbs
@@ -728,6 +697,21 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "on one water-gas-shift feed at 10 bar.",
     theory: "ch:conversion-reactor",
   },
+  //  COMMISSIONED 2026-09-25, and the origin is worth keeping beside the
+  //  entry: the architect of this project met the temperature approach to
+  //  equilibrium for the first time that day and asked for a page about it.
+  //  The engine has read the key since 2026-07-02 and announces it in three
+  //  sentences; nothing anywhere carried the teaching, and on that day no
+  //  flowsheet case in the corpus declared an approach of any kind
+  //  (`ammoniaStaged03_approach` declares one since; it runs at 200 bar
+  //  under SRK, where the page's two-run equivalence does not hold, so it is
+  //  named in the prose and is not a witness).  Since 2026-09-26 the author
+  //  declares a MAGNITUDE and the ENGINE assigns the sign; the page teaches
+  //  that.
+  //
+  //  `notes` rather than `construction`: there is no classical graphical
+  //  construction here.  It is a chapter you scroll with the engine running
+  //  inside it, which is the shape `what-is-temperature` established.
   {
     id: "approach-to-equilibrium",
     label: "Approach to equilibrium (Gibbs reactor)",
@@ -1181,6 +1165,33 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  estimate class qualifies, and its own warning that a DCF inherits
     //  every uncertainty upstream of it.
     theory: "ch:economics",
+  },
+  //  Route screening (C24, 2026-09-29): three known routes to methanol
+  //  through the paper filters, cheapest first -- margin, atom economy,
+  //  equilibrium, heat, selectivity, SELECT -- with kinetics last.
+  //  MOVED to this shelf from "Reaction engineering" (2026-10-10, owner-
+  //  delegated, after C58): the page's first and deciding filter is the
+  //  stoichiometric gross margin per route -- Douglas' first economic
+  //  potential -- and choosing among routes on paper before any rate law is
+  //  FEL-1 screening, the stage the Front-End Loading page above names it
+  //  under.  Its reaction-engineering filters (equilibrium, heat,
+  //  selectivity) are the content of that screening, not its question.
+  {
+    id: "route-screening",
+    label: "Screening routes to a product (methanol)",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    teaches: "That routes to a product are screened on paper in order of "
+      + "cost, cheapest filter first: the stoichiometric gross margin, the "
+      + "atom economy, the equilibrium limit at the catalyst's temperature, "
+      + "the heat to remove, and whether the product is where the atoms go "
+      + "when every species is allowed; that direct oxidation of methane "
+      + "wins the first four and fails the fifth, because the combustion "
+      + "products lie far below methanol in Gibbs energy; that the "
+      + "remaining questions (Safety, Environmental, Legal, Economics, "
+      + "Control, Throughput) need no rate constant; and that the rate law "
+      + "is bought last, for the one route that survives.",
+    theory: "ch:gibbs-reactor",
   },
 ];
 

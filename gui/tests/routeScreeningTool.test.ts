@@ -118,9 +118,12 @@ describe("the filters", () => {
 });
 
 describe("the page", () => {
-  it("is registered, live, under reaction engineering", () => {
+  it("is registered, live, on the process design & economics shelf", () => {
+    //  Moved from "Reaction engineering" on 2026-10-10: its deciding filter
+    //  is the gross margin per route (FEL-1 screening), not a reactor model.
     const t = METHOD_TOOLS.find((m) => m.id === "route-screening");
     expect(t?.status).toBe("live");
+    expect(t?.discipline).toBe("Process design & economics");
     expect(t?.theory).toBeTruthy();
   });
 
