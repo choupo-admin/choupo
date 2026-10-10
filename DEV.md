@@ -2036,6 +2036,21 @@ method Kern; }` blocks -- C48) and full Turton costing + DCF.  Status: SCOPE PUT
 TO VÍTOR 2026-10-10 (pedagogy is his, CLAUDE.md §10); build after C52
 merges, because C52 edits the same case (the converter's steam credit is a
 phase-2 term).
+DONE 2026-10-10, merged ac303268e (names delegated by Vítor: "resolve isso
+tudo"): `greenAmmoniaFeasibility` (FEL-2: Gibbs converter, duties only,
+pinch targets, `grossMargin_RM_UT` -- new EconomicsPass KPIs, arm (q) of
+`check_cost_provenance`), `greenAmmoniaFeasibility50bar` (an equilibrium
+speculation, its own case because no single knob moves the loop pressure
+and gridSweep runs no economics chain), `greenAmmoniaBasicDesign` (three
+Dyson-Simon beds with Kern interbed coolers raising HP steam, every
+exchanger by Kern, still `estimateClass 4`).  The base case is untouched
+but for one README paragraph.  Found and fixed: a unit folder at the plant
+root dropped an unresolved `reactions` list (`Flowsheet.cpp`).  NOT done:
+bed volumes by designSpec (a `$variable` in a unit folder does not resolve
+against the plant's), a converter shell and bed pressure drop, ammonia
+route screening (stage 1 exists for methanol only), and the pinch pass
+reads only a unit's first inlet/outlet (a two-stream exchanger would be
+misread; the feasibility case carries duties only).
 
 **SATURDAY BATCH (Vítor, 2026-10-10, verbatim: "avança como achares que
 fica melhor!", answering the commander's list of five open items).**  Taken
