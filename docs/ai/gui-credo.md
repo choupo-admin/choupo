@@ -695,6 +695,24 @@ they cannot see.  It was invisible to the test suite (jsdom has no layout)
 and reached only by the browser harness, which reported 94 unreachable
 controls at 390 px.
 
+**NOTHING IS LAID OUT PAST THE SCREEN'S RIGHT EDGE, EXCEPT A DRAWING THAT
+DECLARES IT PANS (2026-10-10).**  A grid column written `1fr` is
+`minmax(auto, 1fr)`, and `auto` is the column's min-content: one wide child
+-- a table given a `miw` precisely so it can scroll inside its own box --
+becomes the column's floor, and on a phone the whole column, its buttons
+with it, grows past the glass.  The track is `minmax(0, 1fr)` (tear-streams'
+order buttons had reached x ~ 476 at 390 px; active-set-qp and the
+ε-NTU chart the same day).
+A drawing that must be read at size (a row of units, a diagram whose labels
+would be 3 px if scaled) keeps a floor width inside a box that scrolls
+sideways, marked `data-pan-x`, and a line under `useNarrowViewport` tells the
+reader to swipe -- a phone shows no scrollbar until it is touched.
+`bin/checkGui` names every control past the right edge per page and FAILS a
+gated pass on one; the mark excuses a control only when its nearest
+horizontal scroller carries it AND fits the screen, because every
+`overflow-y: auto` workspace root is a horizontal scroller too and geometry
+alone would excuse the very defect.
+
 Planned entries are never filtered out by posture, and hover is never
 load-bearing: anything a tooltip says is a visible description in the panel.
 At 390 px the knobs panel starts folded by the measured default and opens as
