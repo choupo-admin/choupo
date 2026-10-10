@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  FEL-2: THE CONVERTER EFFLUENT IS COOLED AS A DUTY, NOT THROUGH AN
+//  EXCHANGER.  From the converter outlet (460 C) to 72 C, above the
+//  temperature at which its ammonia starts to condense, so this duty is
+//  sensible and the pinch pass can draw it as ONE straight segment (the
+//  WaterCooler after it carries the condensation).  72 C is an AUTHOR-SET
+//  split point, chosen only to keep the two regimes apart.  Unintegrated,
+//  the allocation sends this heat to cooling water; the pinch targets say
+//  how much of it could preheat the converter feed instead.
+
+type      phaseChanger;
+operation { outletT 345.15 K; }      // 72 C -- AUTHOR-SET split point, see above
+boundary  { inlets ( Feed );  outlets ( Out ); }

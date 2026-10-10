@@ -1,0 +1,9 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  The ONE make-up stage, 30 -> 50.4 bar (W_shaft re-tuned by running
+//  the case so the discharge lands there; read P_out).
+
+type      compressor;
+operation { W_shaft 3227 kW;  eta 0.75; }
+boundary  { inlets ( Feed );  outlets ( Out ); }

@@ -683,13 +683,12 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 }
                 if (!resolved) u->insert("reaction", rv);  // bare name -> global library
             }
-            // reactions ( r1 r2 ... ): the SAME per-node walk-up as the single
-            // `reaction` above.  Without this a whole-plant run resolves the list
-            // only against the ROOT constant/reactions -- so a sector that owns its
-            // own kinetics (the whole point of the per-sector constant/) is invisible
-            // from the root, and the reactor falls through to "missing sub-dictionary
-            // 'reaction'".  Resolve here, from the member's folder upward; leave an
-            // unresolved list alone for the global library (buildAugmentedDict 3a).
+            // reactions ( r1 r2 ... ): the SAME per-node walk-up as the single `reaction`
+            // above, so a sector that owns its kinetics is visible from the root.  An
+            // UNRESOLVED list is left for the global library (buildAugmentedDict 3a): it
+            // was DROPPED until 2026-10-10, and a unit folder at the plant root (whose
+            // walk-up never reaches the case's constant/reactions) failed with "missing
+            // sub-dictionary 'reaction'" (greenAmmoniaBasicDesign, DEV.md 4c C57).
             if (cd->found("reactions") && !cd->hasDictList("reactions"))
             {
                 const auto names = cd->lookupWordList("reactions");
@@ -717,6 +716,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                     if (all && !resolvedList.empty())
                         u->insert("reactions", EntryValue(resolvedList));
                 }
+                if (!u->found("reactions")) u->insert("reactions", cd->entryValue("reactions"));
             }
             // dryingCurve: the kinetics live WITH the unit (its own
             // constant/dryingKinetics), not the sector --- so resolve the

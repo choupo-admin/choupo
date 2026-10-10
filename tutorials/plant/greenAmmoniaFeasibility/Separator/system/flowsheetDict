@@ -1,0 +1,7 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+
+type      isothermalFlash;
+operation { T 253.15 K;  P 140 bar; }
+boundary  { inlets ( Feed );  outlets ( Liquid  Vapour ); }

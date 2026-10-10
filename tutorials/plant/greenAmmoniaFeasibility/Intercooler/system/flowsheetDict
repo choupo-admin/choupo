@@ -1,0 +1,7 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+
+type      phaseChanger;
+operation { outletT 313.15 K; }
+boundary  { inlets ( Feed );  outlets ( Out ); }

@@ -1,0 +1,8 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  Cooled to 40 C after the nitrogen booster.
+
+type      phaseChanger;
+operation { outletT 313.15 K; }
+boundary  { inlets ( Feed );  outlets ( Out ); }

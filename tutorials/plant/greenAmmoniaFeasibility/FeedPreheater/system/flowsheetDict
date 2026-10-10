@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  FEL-2: THE CONVERTER FEED IS HEATED AS A DUTY, NOT THROUGH AN EXCHANGER.
+//  The base case preheats the loop gas in a feed/effluent exchanger whose
+//  area and U are declared.  At the feasibility stage no exchanger exists
+//  yet: this unit lands the gas on the base data's 380 C converter inlet
+//  (section 2.4) and its duty is a RESULT.  The utility allocation serves
+//  it from the catalogue as if nothing were recovered; the pinch targets
+//  (system/postDict, pinchPass) say how much of it the converter effluent
+//  could pay instead.  That match is the next stage's design
+//  (tutorials/plant/greenAmmoniaBasicDesign installs the exchanger).
+
+type      phaseChanger;
+operation { outletT 653.15 K; }      // 380 C, the base data's converter inlet
+boundary  { inlets ( Feed );  outlets ( Out ); }

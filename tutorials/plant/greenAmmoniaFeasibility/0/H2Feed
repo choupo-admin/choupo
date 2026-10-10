@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    H2    4410 kmol/h;
+}
+T               313.15 K;
+P               30 bar;
+phase           gas;
+// Base data 2.3: 8.89 t/h at 40 C and 30 bar.  The < 100 ppm H2O + O2 of the
+// specification is NOT modelled -- see the header of system/flowsheetDict.

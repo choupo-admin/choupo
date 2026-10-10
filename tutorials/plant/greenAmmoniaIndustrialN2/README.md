@@ -10,6 +10,16 @@ source /path/to/Choupo/etc/bashrc
 runCase -f .
 ```
 
+The same plant is also described at two design stages, each a copy of this
+case with one thing changed:
+[`greenAmmoniaFeasibility`](../greenAmmoniaFeasibility) (FEL-2: no
+feed/effluent exchanger, every duty bought from a utility, pinch targets
+and the gross margin with the energy priced; with a 50 bar variant,
+[`greenAmmoniaFeasibility50bar`](../greenAmmoniaFeasibility50bar)) and
+[`greenAmmoniaBasicDesign`](../greenAmmoniaBasicDesign) (FEL-3: the
+converter as three adiabatic catalyst beds on a rate law, every exchanger
+designed).
+
 Seventeen units, no sectors, each in its **own folder** (`Converter/`,
 `Separator/`, …) with its `system/flowsheetDict` and its `.cho` marker. The
 plant's [`system/flowsheetDict`](system/flowsheetDict) holds the topology only —
