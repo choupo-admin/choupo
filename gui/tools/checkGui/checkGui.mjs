@@ -54,8 +54,27 @@ License
     6. proves its own sabotage is not vacuous, by performing the defect
        in-page and measuring its reach (exposure.mjs);
     7. reads every error the page or its WORKERS produced;
-    8. exits 1 if any control is covered or any page errored, 0 if neither,
-       2 if it could not honestly run.
+    8. exits 1 if any control is covered, any control is laid out PAST THE
+       RIGHT EDGE of a gated viewport, or any page errored; 0 if none of the
+       three; 2 if it could not honestly run.
+
+  PAST THE RIGHT EDGE -- its own finding since 2026-10-10.  A control whose
+  right edge lies beyond the viewport's width is a layout wider than the
+  screen, and it had been counted only as "clipped (not judged)" beside
+  controls merely folded below the fold, so the last such page (tear-streams,
+  order buttons at x ~ 476 and SVG stream nodes at x = 574 on a 390 px phone)
+  printed nothing a reader would stop at.  It is named per page now, listed
+  control by control, and FAILS a gated pass -- armed in the change that fixed
+  tear-streams, after a full walk measured zero at both viewports.  Its first
+  run found one more page the old count had hidden: entu, whose exchanger
+  picker reached x = 510 once the classroom run had produced a point (a walk
+  that measured before the run settled never saw it) -- fixed in the same
+  change, which is the argument for naming the finding.  ONE
+  exception, declared rather than guessed: a drawing that must be read at size
+  may sit in a box that pans sideways, marked `data-pan-x`; its controls are
+  listed as panned (not hidden) when the box itself fits the screen, and a
+  mark on a box wider than the screen excuses nothing (occlusion.mjs says why
+  geometry alone cannot tell such a box from an accident).
 
   THE REFUSAL POSTURE.  A gate that cannot run must not pass.  This project
   retired one that reported PASS on every run while both its inputs had been
@@ -518,7 +537,8 @@ async function main() {
       await page.setViewport(vp.w, vp.h, { mobile: vp.mobile, touch: vp.touch });
       const pass = {
         vp, findings: [], errored: [], exposure: [], extents: [],
-        offscreen: [], pagesChecked: 0, controlsChecked: 0, offViewport: 0,
+        offscreen: [], pastRight: [], panned: [],
+        pagesChecked: 0, controlsChecked: 0, offViewport: 0,
       };
       passes.push(pass);
 
@@ -645,6 +665,10 @@ async function main() {
         // (c) ARM 3 -- resolve what (a) had to skip.  LAST: it scrolls.
         const off = await page.evaluate(OFFSCREEN_PROBE);
         pass.extents.push({ tool: tool.id, ...off.extent });
+        if (off.pastRightEdge.length) {
+          pass.pastRight.push({ tool: tool.id, url, items: off.pastRightEdge });
+        }
+        if (off.pannedX.length) pass.panned.push({ tool: tool.id, items: off.pannedX });
         const offDefects = off.coveredAfterScroll.length + off.unreachableByScroll.length;
         if (off.reachableAfterScroll.length || offDefects || off.clippedByOverflow.length) {
           pass.offscreen.push({ tool: tool.id, url, ...off });
@@ -670,8 +694,21 @@ async function main() {
         else if (errs.length === 0) bits.push("clean");
         else bits.push("no covered control");
         if (offDefects) bits.push(`${offDefects} COVERED off-screen`);
-        if (off.clippedByOverflow.length) {
-          bits.push(`${off.clippedByOverflow.length} clipped (not judged)`);
+        //  PAST THE RIGHT EDGE is its own finding (2026-10-10): a layout wider
+        //  than the screen, which a reader cannot scroll down to.  It used to
+        //  hide inside the "clipped" count beside controls merely folded
+        //  below the fold; the clipped count now leaves out what this one
+        //  already names, so no control is counted under both words.
+        if (off.pastRightEdge.length) {
+          bits.push(`${off.pastRightEdge.length} PAST THE RIGHT EDGE`);
+        }
+        if (off.pannedX.length) {
+          bits.push(`${off.pannedX.length} in a declared pan box`);
+        }
+        const clippedNotPast = off.clippedByOverflow.filter(
+          (e) => !(e.control.box && e.control.box.x + e.control.box.w > vp.w));
+        if (clippedNotPast.length) {
+          bits.push(`${clippedNotPast.length} clipped (not judged)`);
         }
         const reach = exp.found ? `reach ${exp.reach}` : "reach n/a";
 
@@ -694,9 +731,17 @@ async function main() {
           log(`  UNREACHABLE (cannot be scrolled into the viewport) ${e.control.tag} `
             + `"${e.control.text || "(no text)"}" at rest ${fmtBox(e.control.box)}`);
         }
+        for (const e of off.pastRightEdge) {
+          log(`  PAST THE RIGHT EDGE (${vp.w}px) ${e.control.tag} `
+            + `"${e.control.text || "(no text)"}" ${fmtBox(e.control.box)}`
+            + (e.markedButWide
+              ? `  -- its box carries data-pan-x but is itself ${fmtBox(e.scroller.box)}`
+              : ""));
+        }
         if (errs.length) reportPageErrors(log, errs);
 
-        const interesting = r.covered.length > 0 || offDefects > 0 || errs.length > 0;
+        const interesting = r.covered.length > 0 || offDefects > 0 || errs.length > 0
+          || off.pastRightEdge.length > 0;
         if (SAVE_ALL_SHOTS || interesting) {
           mkdirSync(ARTIFACTS, { recursive: true });
           const png = await page.screenshot();
@@ -796,6 +841,15 @@ async function main() {
       + `   off-screen but reachable once scrolled to: ${offRest}`);
     log(`    clipped behind an overflow:hidden edge, unscrollable (listed, NOT judged): ${clipped}`);
     log(`    pages that errored: ${pass.errored.length}`);
+    const pastRight = pass.pastRight.reduce((n, p) => n + p.items.length, 0);
+    log(`    past the right edge (a layout wider than the screen): ${pastRight}`
+      + (pastRight ? ` on ${pass.pastRight.length} page(s): `
+        + pass.pastRight.map((p) => `${p.tool} (${p.items.length})`).join(", ") : ""));
+    const panned = pass.panned.reduce((n, p) => n + p.items.length, 0);
+    if (panned > 0) {
+      log(`    in a declared pan box (data-pan-x, the box fits the screen): ${panned} `
+        + `on ${pass.panned.map((p) => `${p.tool} (${p.items.length})`).join(", ")}`);
+    }
     const over = pass.extents.filter((e) => e.right > e.viewportW);
     if (over.length > 0) {
       const worst = over.reduce((a, b) => (b.right > a.right ? b : a));
@@ -855,7 +909,7 @@ async function main() {
 
   // -- the layout extent, as a fact ------------------------------------------
   const overflowing = passes.flatMap((p) =>
-    p.extents.filter((e) => e.right > e.viewportW || e.bottom > e.viewportH)
+    p.extents.filter((e) => e.rawRight > e.viewportW || e.bottom > e.viewportH)
       .map((e) => ({ label: p.vp.label, ...e })));
   if (overflowing.length > 0) {
     log("");
@@ -865,20 +919,23 @@ async function main() {
     log("  out there.  These are measurements, not verdicts:");
     for (const e of overflowing) {
       log(`    ${e.label}/${e.tool.padEnd(16)} controls reach x=${String(e.right).padStart(5)}, `
-        + `y=${String(e.bottom).padStart(4)}   viewport ${e.viewportW}x${e.viewportH}`);
+        + `y=${String(e.bottom).padStart(4)}   viewport ${e.viewportW}x${e.viewportH}`
+        + (e.rawRight !== e.right
+          ? `   (x=${e.rawRight} inside a declared pan box, whose own edge is the reach)`
+          : ""));
     }
   }
 
   log("");
   log("NOT COVERED BY THIS HARNESS (stated so a PASS is not over-read):");
-  log("  * TWO viewports only (1400x900 gated, 390x844 reported).  Everything");
+  log("  * TWO viewports only (1400x900 and 390x844, both gated).  Everything");
   log("    between and beyond them is unwalked, and Chromium is not WebKit --");
   log("    the phone pass emulates an iPhone's viewport and pointer, not Safari.");
   log("  * ONE workspace only (EduTools).  Case / Streams / Plots / Explore /");
   log("    Control / Reports / Log are not walked.");
   log("  * REACHABILITY only: does a click at a control's CENTRE reach it, at rest");
-  log("    or after scrolling to it.  Text collision, contrast and truncation are");
-  log("    not checked.");
+  log("    or after scrolling to it, and does any control lie past the screen's");
+  log("    right edge.  Text collision, contrast and truncation are not checked.");
   log("  * LAYOUT only.  It cannot judge whether a chart is right, whether a");
   log("    number is right, or whether a label reads well -- only who would");
   log("    receive the click.");
@@ -908,6 +965,16 @@ async function main() {
           .filter((o) => o.coveredAfterScroll.length + o.unreachableByScroll.length)
           .map((o) => o.tool).join(", ")}`);
     }
+    //  PAST THE RIGHT EDGE FAILS a gated pass (2026-10-10).  Armed only once
+    //  the walk was clean of it at both viewports -- tear-streams and entu,
+    //  the last pages laid out wider than a 390 px phone, were fixed in the
+    //  same change -- so the gate certifies a measured baseline, never a hope.
+    const pastRight = pass.pastRight.reduce((n, p) => n + p.items.length, 0);
+    if (pastRight > 0) {
+      reasons.push(`${pastRight} control(s) at ${pass.vp.label} laid out past the right `
+        + `edge of a ${pass.vp.w}px screen: `
+        + pass.pastRight.map((p) => `${p.tool} (${p.items.length})`).join(", "));
+    }
     if (pass.errored.length > 0) {
       reasons.push(`${pass.errored.reduce((n, e) => n + e.errors.length, 0)} page error(s) at `
         + `${pass.vp.label} on ${pass.errored.length} page(s): `
@@ -923,7 +990,7 @@ async function main() {
       const err = p.errored.reduce((n, e) => n + e.errors.length, 0);
       const clipX = p.offscreen.reduce(
         (n, o) => n + o.clippedByOverflow.filter((e) => e.clipAxis.includes("X")).length, 0);
-      const wide = p.extents.filter((e) => e.right > e.viewportW).length;
+      const wide = p.pastRight.length;
       return off + cov + err + clipX + wide > 0
         ? [`${p.vp.label} ${p.vp.w}x${p.vp.h}: ${cov} covered at rest, ${off} covered `
            + `off-screen, ${err} page error(s), ${clipX} clipped off the side with no `
