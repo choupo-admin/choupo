@@ -67,3 +67,12 @@ kpi     shift                  y_water          0.16409231685      1e-4
 boundary global               H_feeds_kW       118.564037367      1e-4
 boundary global               Q_boundary_kW    -837.641067802     1e-4
 boundary global               H_products_kW    -719.077030435     1e-4
+utility ammonia                cooling.coolingWater.duty_kW -876.97431761    1e-4
+utility ammonia                cooling.coolingWater.T 700              1e-4
+utility ammonia                cooling.coolingWater.kg_s 20.9802468328    1e-4
+utility ammonia                cooling.coolingWater.eur_h 1.26284301736    1e-4
+utility coking                 heating.-.unserved 1                1e-4
+utility shift                  cooling.coolingWater.duty_kW -3.44038833106   1e-4
+utility shift                  cooling.coolingWater.T 800              1e-4
+utility shift                  cooling.coolingWater.kg_s 0.0823059409343  1e-4
+utility shift                  cooling.coolingWater.eur_h 0.00495415919672 1e-4

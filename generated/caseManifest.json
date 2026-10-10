@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 459,
+  "cases": 462,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -1208,6 +1208,30 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/plant/greenAmmoniaBasicDesign": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/greenAmmoniaFeasibility": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/greenAmmoniaFeasibility50bar": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/plant/greenAmmoniaIndustrialN2": {
    "application": "choupoSolve",
    "thermo": {
@@ -1235,7 +1259,7 @@
      "ideal"
     ]
    },
-   "witnessClass": "sealedFractalPlant",
+   "witnessClass": "sealedSectoredPlant",
    "roles": [
     "witness"
    ],
@@ -6949,6 +6973,9 @@
     "tutorials/plant/ammoniaStaged03_approach",
     "tutorials/plant/ammoniaStaged04_kinetic",
     "tutorials/plant/esterification2sector",
+    "tutorials/plant/greenAmmoniaBasicDesign",
+    "tutorials/plant/greenAmmoniaFeasibility",
+    "tutorials/plant/greenAmmoniaFeasibility50bar",
     "tutorials/plant/greenAmmoniaIndustrialN2",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",

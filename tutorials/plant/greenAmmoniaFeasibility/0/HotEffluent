@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    N2     5637 kmol/h;
+    H2    16911 kmol/h;
+    NH3    5366 kmol/h;
+    Ar      330 kmol/h;
+}
+T               735 K;
+P               150 bar;
+phase           gas;
+// TEAR SEED, authored: an estimate of the bed-3 outlet (~19 % NH3 at ~460 C)
+// from the base data converter inlet taken to 5 K from equilibrium in three
+// beds.  The solver overwrites it.

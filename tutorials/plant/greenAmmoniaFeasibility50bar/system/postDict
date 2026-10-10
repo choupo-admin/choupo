@@ -1,0 +1,175 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  FEL-2 feasibility: duties, pinch, margin     |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- THE FEASIBILITY STAGE (FEL-2, an AACE Class 4 type study;
+  docs/design/how-a-process-design-is-staged.md 2.3).  Four passes:
+
+    pinchPass   the energy TARGETS of the process duties (Linnhoff-Flower
+                problem table, printed cascade by cascade).  It reads every
+                unit that publishes a generic duty `Q` -- the coolers, the
+                feed preheater and the three flash drums -- as one segment from its inlet to
+                its outlet temperature.  The converter is NOT in the
+                population: a Gibbs reactor publishes its duty as `Q_kW`
+                only, and a reaction heat is not a stream segment; it is
+                served by the declared steam generation (Converter/system/
+                flowsheetDict).  This flowsheet carries NO heat-exchanger
+                match on purpose: every duty is bought from, or sold to, a
+                utility, and the pinch says how much of that the matches of
+                the next stage could avoid.
+    sizing      a Class 4 equipment list: every exchanger on an ASSUMED U
+                (A = Q/(U*LMTD), the LMTD computed from the unit's own
+                temperatures and the named utility's record) -- the
+                fidelity 2.3 gives this stage; no tube, no shell, no film.
+    costing     Turton, 2026 EUR, the base case's price constants.
+    economics   Turton's cost of manufacture and a DCF, and -- the headline
+                of this stage -- the GROSS MARGIN, published by the
+                economics pass as two KPIs:
+                    grossMargin_RM     = R - C_RM          (stage 1's margin)
+                    grossMargin_RM_UT  = R - C_RM - C_UT   (with the energy)
+                C_UT is the utility allocation priced: electricity for the
+                compressors, cooling water, ammonia refrigeration, the
+                hot oil that heats the feed, and the converter's HP
+                steam CREDIT.
+
+  THE U VALUES ARE AUTHOR-SET ASSUMPTIONS, none cited -- the same numbers the
+  base case declared before its exchangers were designed (git history of
+  tutorials/plant/greenAmmoniaIndustrialN2/system/postDict, C44 slice 1),
+  plus two new ones: the EffluentCooler takes the WaterCooler's 500, and the
+  FeedPreheater 400 W/m2/K (loop gas against hot oil: at 320 C the
+  allocation picks dowthermA, not the salt).  An assumed U is
+  what a feasibility estimate carries; the basic-design case replaces every
+  one of them by a Kern design.
+
+  Everything else -- the compressors, the converter vessel on an ASSUMED
+  space velocity, the three drums, the product storage, the inventory, the
+  working capital and the appraisal knobs -- is the base case's, with the
+  same reasons (read tutorials/plant/greenAmmoniaIndustrialN2/system/
+  postDict; they are not repeated here).  Materials follow the base case's
+  rule: at 50 bar no process stream exceeds 700 K, so the converter, the
+  EffluentCooler and the FeedPreheater (oil side 350 C) are carbon steel.
+
+  N_np (Turton's labour count: compressors, exchangers, reactors) = 3 + 6 +
+  1 = 10, counted from this flowsheet.  pressureDesign: 1.1 x the loop's
+  highest pressure (the make-up discharge, 50.4 bar), rounded up: 56 bar.
+\*---------------------------------------------------------------------------*/
+pinchPass
+{
+    dTmin   10 K;      // process-process approach -- AUTHOR-SET, the utility
+                       // allocation's own default approach
+}
+sizing
+{
+    units
+    (
+        //  ---- compressors: the shaft power is the unit's own result ------
+        { unitName N2Boost;      type compressor;  material carbonSteel;
+          designRules { pressureDesign 34; } }                                 // 1.1 x 30.2 bar
+        { unitName MakeupComp1;  type compressor;  material carbonSteel;
+          designRules { pressureDesign 56; } }                                 // the loop's, 1.1 x ~50.5 bar
+        { unitName RecycleComp;  type compressor;  material SS304;            // suction at -20 C
+          designRules { pressureDesign 56; } }
+
+        //  ---- six exchangers on an ASSUMED U (FEL-2 fidelity) ----------
+        { unitName N2Cooler;     type shellTubeHX;  material carbonSteel;
+          designRules { U 300;                     // W/m2/K, N2 at 30 bar against water
+                        utility coolingWater;
+                        pressureDesign 34; } }
+        { unitName Aftercooler;  type shellTubeHX;  material carbonSteel;
+          designRules { U 500;                     // W/m2/K, H2/N2 at 50 bar against water
+                        utility coolingWater;
+                        pressureDesign 56; } }
+        { unitName FeedPreheater; type shellTubeHX; material carbonSteel;     // oil side at 350 C < 700 K
+          designRules { U 400;                     // W/m2/K, loop gas against hot oil
+                        utility dowthermA;         // 350 -> 270 C, what the allocation picks at 320 C
+                        pressureDesign 56; } }
+        { unitName EffluentCooler; type shellTubeHX; material carbonSteel;    // inlet at 673 K < 700 K
+          designRules { U 500;                     // W/m2/K, loop effluent at 50 bar against water
+                        utility coolingWater;
+                        pressureDesign 56; } }
+        { unitName WaterCooler;  type shellTubeHX;  material carbonSteel;
+          designRules { U 500;                     // W/m2/K, loop effluent at 50 bar against water
+                        utility coolingWater;
+                        pressureDesign 56; } }
+        { unitName Chiller;      type shellTubeHX;  material SS304;            // process side to -20 C
+          designRules { U 500;                     // W/m2/K, loop gas against boiling ammonia
+                        utility refrigerationNH3;  // -33.3 C, ammonia boiling at 1 atm
+                        pressureDesign 56; } }
+
+        //  ---- the converter: a catalyst vessel on a declared basis ------
+        { unitName Converter;    type vessel;  material carbonSteel;           // 673 K outlet < 700 K
+          designRules { spaceVelocity 20000;        // 1/h, Nm3 gas / (m3 catalyst h) -- ASSUMED
+                        spaceVelocityBasis normal;
+                        flowKey N_in_mol_s;
+                        L_over_D 6;  pressureDesign 56;
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream HotEffluent;  fraction 0.40; } ); } }
+
+        //  ---- the drums: vapour residence (base case's basis) ----------
+        { unitName Separator;    type vessel;  material SS304;
+          designRules { residenceTime 45;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3;  pressureDesign 56;
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream RawLiquid;     fraction 0.25; }
+                             { stream UnreactedGas;  fraction 0.75; } ); } }
+        { unitName LetdownHP;    type vessel;  material SS304;
+          designRules { residenceTime 60;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3;  pressureDesign 22;
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream LetdownLiquid; fraction 0.50; }
+                             { stream LetdownGas;    fraction 0.50; } ); } }
+        { unitName StorageFlash; type vessel;  material SS304;
+          designRules { residenceTime 60;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3;  pressureDesign 2;
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream ProductNH3;    fraction 0.50; }
+                             { stream FlashGas;      fraction 0.50; } ); } }
+    );
+
+    storage
+    (
+        { name          NH3Storage;
+          stream        ProductNH3;
+          material      SS304;
+          storageTime   21 day;          // AUTHOR-SET (base case)
+          fillFraction  0.90;            // AUTHOR-SET (base case)
+          maxTankVolume 30000;           // m3 per tank: the correlation's ceiling
+        }
+    );
+}
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;        // projection, author-set (base case)
+    cepci2001 397;
+    usdToEur  0.92;
+}
+economics
+{
+    method              discountedCashFlow;
+    projectLife         15;
+    constructionPeriod  1;
+    discountRate        0.10;
+    taxRate             0.21;
+    depreciation        straightLine;
+    depreciableLife     9;
+    salvageFraction     0.0;
+    streamFactor        0.90;        // 7884 h/yr on stream -- assumption
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    N_np                10;          // 3 compressors + 6 exchangers + 1 reactor
+    estimateClass       4;
+    accuracyBand        ( -30 50 );
+    refuseOnMissingPrice 1;
+
+    workingCapital
+    {
+        rawMaterialStock   0 day;
+        receivables       30 day;
+        payables          30 day;
+        minimumCash       15 day;
+    }
+}

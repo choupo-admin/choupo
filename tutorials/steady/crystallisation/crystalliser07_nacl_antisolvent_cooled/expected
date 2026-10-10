@@ -27,3 +27,7 @@ stream  crystals               T                278.15           1e-4
 stream  ethanol                T                298.15           1e-4
 stream  motherLiquor           T                278.15           1e-4
 kpi     cryst                  Q_kW             -82.72144242     1e-4
+utility cryst                  cooling.refrigerationNH3.duty_kW -82.72144242     1e-4
+utility cryst                  cooling.refrigerationNH3.T 278.15           1e-4
+utility cryst                  cooling.refrigerationNH3.kg_s 0.0603834798148  1e-4
+utility cryst                  cooling.refrigerationNH3.eur_h 4.71710753256    1e-4

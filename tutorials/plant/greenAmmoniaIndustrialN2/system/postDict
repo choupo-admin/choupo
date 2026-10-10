@@ -200,6 +200,21 @@
   The price constants are ammonia02's (CEPCI 2026 = 820 is a projection,
   not a published index value; EUR/USD 0.92).
 
+  UTILITIES, C_UT (DEV.md 4c C52).  C_UT is the utility allocation priced:
+  every heat duty a unit publishes is served by the lowest-grade utility in
+  constant/utilities/ that can take it across dTmin 10 K, carried by the
+  unit's own process streams (the FEHE), or LISTED unserved -- never dropped.
+  Until C52 the converter's ~30.6 MW was dropped (the allocation read no
+  reactor's duty).  It is now served by a DECLARED utility,
+  `utility steamGenerationHP;` on the Converter: HP steam raised in a
+  waste-heat boiler at the steamHP header's 41 bar, valued at -18 EUR/GJ --
+  a CREDIT, an AUTHOR-SET ASSUMPTION stated in the case-local record
+  constant/utilities/steamGenerationHP.dat (an upper bound: the steam is
+  worth that only if the plant uses it).  The credit is printed on its own
+  line under C_UT and published as C_UT_credit.  One duty stays UNSERVED:
+  the StorageFlash cools to -35 C and the coldest utility boils at -33.3 C,
+  so C_UT is a LOWER BOUND and says so.
+
   ECONOMICS (slice 4).  Prices are in constant/economics, every one an
   AUTHOR-SET assumption (its header says so).  The appraisal knobs below
   are ammonia02's, also assumptions.  N_np, the number of processing steps

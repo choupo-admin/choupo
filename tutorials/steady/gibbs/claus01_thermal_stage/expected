@@ -70,3 +70,7 @@ kpi     furnace                y_SO             0.000966981496972  1e-4
 kpi     furnace                y_SO2            0.0375428186739    1e-4
 kpi     furnace                y_carbonylSulfide 0.000369599531777  1e-4
 kpi     furnace                y_water          0.218849263376     1e-4
+utility boiler                 cooling.coolingWater.duty_kW -4243.35441135   1e-4
+utility boiler                 cooling.coolingWater.T 600              1e-4
+utility boiler                 cooling.coolingWater.kg_s 101.515655774    1e-4
+utility boiler                 cooling.coolingWater.eur_h 6.11043035235    1e-4

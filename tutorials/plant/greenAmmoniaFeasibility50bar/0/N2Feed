@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    N2    1469.853 kmol/h;
+    Ar    0.147 kmol/h;
+}
+T               298.15 K;
+P               8 bar;
+phase           gas;
+// Base data 2.3: 41.2 t/h from the on-site ASU, 99.99 % N2 and 100 ppm Ar
+// (the argon content is a design variable -- task 3 studies 10-1000 ppm).

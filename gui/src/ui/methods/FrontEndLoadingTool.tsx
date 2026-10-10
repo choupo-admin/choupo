@@ -36,9 +36,10 @@ License
   The plant cases that show Choupo at each stage's fidelity are named and
   linked, not run: the heaviest (greenAmmoniaIndustrialN2, seventeen units,
   two recycles, costing and DCF) is a whole plant, and running it to show a
-  number the page does not need would teach the wait, not the stage.  When
-  the C57 stage cases exist (frontEndLoading.ts, FEL_STAGES), one of them
-  can become a live witness here.
+  number the page does not need would teach the wait, not the stage.  The
+  C57 stage cases (greenAmmoniaFeasibility, its 50 bar variant and
+  greenAmmoniaBasicDesign) exist since 2026-10-10 and are linked from
+  FEL_STAGES; none is wired as a live witness.
 
   THE DATA AND THE ARITHMETIC are in frontEndLoading.ts and the prose in
   frontEndLoadingLesson.ts, both React-free and both held to the tree by

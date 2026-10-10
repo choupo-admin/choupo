@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  FEL-2 feasibility, a 50 bar loop            |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoSolve;
+
+//  AUDIENCE.  A SHOWCASE composes engineering (bin/curate/check_case_tiers):
+//  the feasibility study of greenAmmoniaFeasibility with its synthesis loop
+//  moved to 50 bar -- a plant at one design stage, compared with another.
+
+tier         showcase;
+description  "Green ammonia, 1200 t/day, at the FEASIBILITY stage with a 50 bar synthesis loop: the speculation of a catalyst that would approach equilibrium at 400 C and 50 bar. One make-up compression stage from the electrolyser's 30 bar, a Gibbs converter 5 K short of equilibrium, separation at 47 bar and -20 C; duties served by catalogue utilities, pinch targets, and the gross margin, to be read against the 150 bar case. An equilibrium model says what such a plant would earn, not that such a catalyst exists.";
+verbosity    3;
+
+reports
+{
+    streamTable   {}
+    massBalance   {}
+    energyBalance {}
+    computed      {}
+    spreadsheet   {}
+}

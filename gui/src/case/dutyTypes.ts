@@ -18,8 +18,21 @@ export const COLUMN_TYPES = new Set(["distillationColumn", "shortcutColumn"]);
 // column's reboiler/condenser.  isothermalFlash carries the latent-heat duty at
 // constant T when it vaporises part of the feed; a crystalliser removes the
 // sensible + crystallisation heat (its cooling duty).
+//
+// THE REACTORS AND THE PHASE CHANGER JOINED IN C52 (DEV.md 4c, 2026-10-10).
+// Each publishes a generic `Q_kW` the engine's utility allocation now serves
+// (`reporting::unitHeatDuties`, the engine's ONE home of "this unit has a
+// duty"); before C52 the allocation dropped the reactors' duties in silence,
+// so a 30 MW converter drew no stub at all.  This set is only the PRE-RUN
+// guess -- a type cannot say whether THIS reactor is adiabatic -- so once a
+// run exists the stub follows the engine (case/dutyUtility.ts
+// `dutyStubFromRun`): hidden when no allocation row exists for it, its sign
+// read off the row.  NOT here, by rule: a coolingTower (its duty is carried
+// between its own water and air), a tsaTwinBed (two ports, no stub drawn).
 export const HEAT_DUTY_TYPES = new Set([
   "heater", "heatExchanger", "cooler", "isothermalFlash", "flash", "crystalliser",
+  "phaseChanger",
+  "gibbsReactor", "cstr", "conversionReactor", "equilibriumReactor", "pfr",
 ]);
 
 // Of HEAT_DUTY_TYPES, the ones whose duty is COOLING by construction (stub docks

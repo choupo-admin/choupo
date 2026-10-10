@@ -527,6 +527,13 @@ def check_working_capital(fails):
         -(FCI + net), and the fraction-rule comparison is 0.15 x FCI;
       * the console says both names, GROSS (capital circulante) and NET
         (fundo de maneio).
+    The same arm holds the GROSS MARGIN (DEV.md 4c C57, 2026-10-10): the
+    published `C_RM` must be the recomputed raw-material bill,
+    `grossMargin_RM` = R - C_RM and `grossMargin_RM_UT` = R - C_RM - C_UT,
+    and the console must print the second line.  SABOTAGE, BY HAND,
+    2026-10-10: `grossMargin_RM_UT = R - C_RM` (C_UT dropped) -> FAILED:
+    "economics.grossMargin_RM_UT = 56079471.7729, recomputed
+    51005207.751824"; restored with `cp`, rebuilt, OK.
     Probes, on copies: `workingCapital 0.15;` must give WC = 0.15 x FCI and
     publish NO build-up (the old rule untouched); a unitless `receivables 30;`
     and a missing `payables` are each refused BY NAME.
@@ -629,6 +636,13 @@ def check_working_capital(fails):
         "WC_payables": days["payables"] / 365.0 * C_RM,
         "productionCostPerKg": c_prod,
         "revenue": R,
+        #  THE GROSS MARGIN (DEV.md 4c C57): the raw-material bill and the
+        #  two margins a feasibility study is decided on, from the SAME
+        #  recomputed R and C_RM; C_UT is the run's own (check_unit_duty_
+        #  allocation holds it to the allocation rows).
+        "C_RM": C_RM,
+        "grossMargin_RM": R - C_RM,
+        "grossMargin_RM_UT": R - C_RM - e.get("C_UT", float("nan")),
     }
     want["WC_gross"] = (want["WC_rawMaterialStock"] + proc + prodstock
                         + want["WC_receivables"] + want["WC_minimumCash"])
@@ -646,7 +660,8 @@ def check_working_capital(fails):
             1e-6 * (e["FCI"] + want["WC_net"]):
         fails.append("(q) year 0 of the cash flow does not invest -(FCI + NET "
                      "working capital)")
-    for phrase in ("GROSS working capital (capital circulante)",
+    for phrase in ("R - C_RM - C_UT",
+                   "GROSS working capital (capital circulante)",
                    "NET working capital (fundo de maneio)",
                    "the fraction rule this replaces"):
         if phrase not in out:

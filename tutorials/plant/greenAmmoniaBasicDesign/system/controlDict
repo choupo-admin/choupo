@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  FEL-3 basic design, kinetic beds            |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoSolve;
+
+//  AUDIENCE.  A SHOWCASE composes engineering (bin/curate/check_case_tiers):
+//  three kinetic catalyst beds with interbed waste-heat boilers inside two
+//  recycle cuts, every exchanger designed by Kern, and an appraisal are a
+//  plant at one design stage, not a feature being isolated.
+
+tier         showcase;
+description  "Green ammonia, 1200 t/day, at the BASIC-DESIGN stage (FEL-3 on the process side): the PEQ 2026-27 base case with its Gibbs converter replaced by three adiabatic catalyst beds on the Dyson-Simon (1968) rate law for an iron catalyst, two interbed coolers raising HP steam (a declared credit), and the feed/effluent exchanger preheating bed 1 against bed 3. Every exchanger is designed by the Kern method; the beds are sized from their own volumes with a declared catalyst charge; Turton costing and a DCF, still a study-type estimate.";
+verbosity    3;
+
+reports
+{
+    streamTable   {}
+    massBalance   {}
+    energyBalance {}
+    computed      {}
+    spreadsheet   {}
+}

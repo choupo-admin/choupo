@@ -1,0 +1,128 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  FEL-3 basic design: kinetic beds, Kern HX    |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  GREEN AMMONIA, 1200 t/day -- THE BASIC-DESIGN STAGE (FEL-3 on the PROCESS
+  side).  docs/design/how-a-process-design-is-staged.md 2.3 gives this
+  stage its fidelity: the reactor on real kinetics where they exist, the
+  exchangers rated against geometry.  Its cost (system/postDict) is still
+  Turton's equipment-factored method -- a Class 4 METHOD -- so this is FEL-3
+  in its process fidelity and a study-type estimate in its cost (README).
+
+  DERIVED FROM tutorials/plant/greenAmmoniaIndustrialN2 (the PEQ 2026-27 base
+  case): the same feeds, package, compressors, FEHE, coolers, separation,
+  let-down and utilities.  ONE block differs: the base case's single Gibbs
+  converter is replaced by THREE ADIABATIC CATALYST BEDS on the Dyson & Simon
+  (1968) rate law for an iron catalyst, with two INTERBED COOLERS that raise
+  HP steam (the base case's declared credit utility, now on the coolers,
+  since an adiabatic bed has no duty).  The FEHE now preheats bed 1 against
+  bed 3's effluent, which closes an ENERGY recycle through three kinetic
+  beds (the second tear in system/solverDict).
+
+          Recycle -[RecycleComp]------------------------------------------->[LoopMix] <- Makeup
+             ^                                                                  |
+             |                    +------ HotEffluent (tear) -------+           v
+             |                    v                                 |      [FEHE] cold side
+             |   CooledEffluent <-[FEHE] hot side                   |           | PreheatedFeed ~381 C
+             |        |                                             |           v
+             |   [WaterCooler] 40 C                                 |      [Bed1] -> 515 C
+             |        |                                             |           |
+             |   [Chiller] -20 C                                    |  [InterbedCooler1] -> 420 C  (HP steam)
+             |        |                                             |           |
+             |   [Separator] 140 bar -- RawLiquid -> let-down        |      [Bed2]  5 K approach
+             |        |                                             |           |
+             +--[PurgeSplit]-- Purge                                 |  [InterbedCooler2] -> 410 C  (HP steam)
+                                                                    |           |
+                                                                    +------ [Bed3]  5 K approach
+
+  WHERE EACH NUMBER COMES FROM: the base case's header for everything it
+  shares.  New here, every one AUTHOR-SET and said in its own file: the bed
+  volumes (each chosen by running the case against a stated criterion --
+  bed 1 leaves at 515 C, under the base data's 520 C catalyst limit; beds 2
+  and 3 leave 5 K short of equilibrium), the two interbed outlet
+  temperatures (420 and 410 C), and the recycle compressor's power,
+  re-tuned so the loop is again at the base case's 150.9 bar.
+
+  TOPOLOGY ONLY.  Stream state lives in 0/, one file per stream.
+\*---------------------------------------------------------------------------*/
+
+sectors
+(
+    N2Boost
+    N2Cooler
+    MakeupMix
+    MakeupComp1
+    Intercooler
+    MakeupComp2
+    Aftercooler
+    RecycleComp
+    LoopMix
+    FEHE
+    Bed1
+    InterbedCooler1
+    Bed2
+    InterbedCooler2
+    Bed3
+    WaterCooler
+    Chiller
+    Separator
+    PurgeSplit
+    LetdownHP
+    StorageFlash
+);
+
+boundary
+{
+    inlets   ( H2Feed  N2Feed );
+    outlets  ( ProductNH3  LetdownGas  FlashGas  Purge );
+}
+
+connections
+{
+    H2Feed              { to MakeupMix/H2; }
+    N2Feed              { to N2Boost/Feed; }
+    N2Compressed        { from N2Boost/Out;  to N2Cooler/Feed; }
+    N2Cooled            { from N2Cooler/Out;  to MakeupMix/N2; }
+    Makeup30            { from MakeupMix/Out;  to MakeupComp1/Feed; }
+    Makeup67            { from MakeupComp1/Out;  to Intercooler/Feed; }
+    Makeup67Cool        { from Intercooler/Out;  to MakeupComp2/Feed; }
+    Makeup150           { from MakeupComp2/Out;  to Aftercooler/Feed; }
+    Makeup              { from Aftercooler/Out;  to LoopMix/Makeup; }
+    Recycle             { from PurgeSplit/Recycle;  to RecycleComp/Feed; }
+    CompRecycle         { from RecycleComp/Out;  to LoopMix/Recycle; }
+    Mixed               { from LoopMix/Out;  to FEHE/Cold; }
+    PreheatedFeed       { from FEHE/ColdOut;  to Bed1/Feed; }
+    Bed1Out             { from Bed1/Out;  to InterbedCooler1/Feed; }
+    Bed2Feed            { from InterbedCooler1/Out;  to Bed2/Feed; }
+    Bed2Out             { from Bed2/Out;  to InterbedCooler2/Feed; }
+    Bed3Feed            { from InterbedCooler2/Out;  to Bed3/Feed; }
+    HotEffluent         { from Bed3/Out;  to FEHE/Hot; }
+    CooledEffluent      { from FEHE/HotOut;  to WaterCooler/Feed; }
+    WaterCooledEffluent { from WaterCooler/Out;  to Chiller/Feed; }
+    ChilledEffluent     { from Chiller/Out;  to Separator/Feed; }
+    RawLiquid           { from Separator/Liquid;  to LetdownHP/Feed; }
+    UnreactedGas        { from Separator/Vapour;  to PurgeSplit/Feed; }
+    Purge               { from PurgeSplit/Purge; }
+    LetdownLiquid       { from LetdownHP/Liquid;  to StorageFlash/Feed; }
+    LetdownGas          { from LetdownHP/Vapour; }
+    ProductNH3          { from StorageFlash/Liquid; }
+    FlashGas            { from StorageFlash/Vapour; }
+}
+
+variables
+{
+    NH3_t_h            { compute "ProductNH3.F * 17.0305 * 3.6"; }
+    NH3_t_day          { compute "NH3_t_h * 24"; }
+    W_compression_kW   { compute "N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + MakeupComp2.W_shaft_kW + RecycleComp.W_shaft_kW"; }
+    W_specific_kWh_t   { compute "W_compression_kW / NH3_t_h"; }
+    H2_specific_kg_t   { compute "H2Feed.F * 2.01588 * 3.6 * 1000 / NH3_t_h"; }
+    y_NH3_converter    { compute "Bed3.y_NH3_out"; }
+    V_catalyst_m3      { compute "Bed1.V_R + Bed2.V_R + Bed3.V_R"; }
+    Q_steam_kW         { compute "-(InterbedCooler1.Q_kW + InterbedCooler2.Q_kW)"; }
+    Q_refrigeration_kW { compute "-Chiller.Q_kW"; }
+    purge_kmol_h       { compute "Purge.F * 3600"; }
+    NH3_per_pass_kmol_h { compute "(PreheatedFeed.F - HotEffluent.F) * 3600"; }   // N2 + 3 H2 -> 2 NH3: one mole lost per NH3 made
+    recycle_ratio      { compute "Recycle.F / Makeup.F"; }                       // mol recycled per mol of make-up
+}

@@ -637,7 +637,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             if (!nsPrefix.empty())
                 u->insert("sector", nsPrefix.substr(0, nsPrefix.size() - 1));
             u->insert("type", cd->entryValue("type"));
-            for (const char* k : { "operation", "model", "thermo" })
+            for (const char* k : { "operation", "model", "thermo", "utility" })   // utility: C52, read by the allocation
                 if (cd->found(k)) u->insert(k, cd->entryValue(k));
             // reaction: PER-NODE resolution (Item 0 of the props foundation).
             // A sector/unit's kinetics live WITH it (its own constant/reactions),
@@ -683,13 +683,12 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 }
                 if (!resolved) u->insert("reaction", rv);  // bare name -> global library
             }
-            // reactions ( r1 r2 ... ): the SAME per-node walk-up as the single
-            // `reaction` above.  Without this a whole-plant run resolves the list
-            // only against the ROOT constant/reactions -- so a sector that owns its
-            // own kinetics (the whole point of the per-sector constant/) is invisible
-            // from the root, and the reactor falls through to "missing sub-dictionary
-            // 'reaction'".  Resolve here, from the member's folder upward; leave an
-            // unresolved list alone for the global library (buildAugmentedDict 3a).
+            // reactions ( r1 r2 ... ): the SAME per-node walk-up as the single `reaction`
+            // above, so a sector that owns its kinetics is visible from the root.  An
+            // UNRESOLVED list is left for the global library (buildAugmentedDict 3a): it
+            // was DROPPED until 2026-10-10, and a unit folder at the plant root (whose
+            // walk-up never reaches the case's constant/reactions) failed with "missing
+            // sub-dictionary 'reaction'" (greenAmmoniaBasicDesign, DEV.md 4c C57).
             if (cd->found("reactions") && !cd->hasDictList("reactions"))
             {
                 const auto names = cd->lookupWordList("reactions");
@@ -717,6 +716,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                     if (all && !resolvedList.empty())
                         u->insert("reactions", EntryValue(resolvedList));
                 }
+                if (!u->found("reactions")) u->insert("reactions", cd->entryValue("reactions"));
             }
             // dryingCurve: the kinetics live WITH the unit (its own
             // constant/dryingKinetics), not the sector --- so resolve the
@@ -2077,7 +2077,7 @@ int Flowsheet::solve(const DictPtr& dict,
     // Reset per-run state (stream registry + per-unit KPI table + per-
     // unit residual history + per-unit 1-D profiles).
     streams_.clear();
-    topology_.clear();
+    topology_.clear();  unitDicts_.clear();
     unitKpis_.clear();
     unitResiduals_.clear();
     globalMassResiduals_.clear();
@@ -2167,7 +2167,7 @@ int Flowsheet::solve(const DictPtr& dict,
         auto u = std::make_shared<Dictionary>(nodeName);
         u->insert("name", std::string(nodeName));
         u->insert("type", dict->entryValue("type"));
-        for (const char* k : { "operation", "model", "dryingCurve", "crystallisation", "thermo", "reaction" })
+        for (const char* k : { "operation", "model", "dryingCurve", "crystallisation", "thermo", "reaction", "utility" })
             if (dict->found(k)) u->insert(k, dict->entryValue(k));
         // A standalone unit MENTIONS its streams directly (sequential-modular:
         // a unit is defined by the streams it consumes and produces).  Preferred
@@ -2285,7 +2285,7 @@ int Flowsheet::solve(const DictPtr& dict,
         if (u->found("inputs"))   fu.ins = u->lookupWordList("inputs");
         else if (u->found("in"))  fu.ins = { u->lookupWord("in") };
         if (u->found("outputs"))  fu.outs = u->lookupWordList("outputs");
-        topology_.push_back(std::move(fu));
+        topology_.push_back(std::move(fu));  unitDicts_.push_back(u);   // C52: the dicts beside the topology
     }
 
     // ---- Manifest-based 0/ seeding (topology-first reader, forum #83) ---

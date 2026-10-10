@@ -1,0 +1,278 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  FEL-3 basic design: every exchanger designed |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- THE BASIC-DESIGN STAGE (FEL-3 on the process side).  The
+  sizing, costing, storage, inventory, working capital and appraisal of the
+  base case (tutorials/plant/greenAmmoniaIndustrialN2/system/postDict, whose
+  header gives every shared rule and its reason; they are not repeated
+  here), with the converter's items replaced:
+
+    the 8 exchangers  EVERY one DESIGNED by the Kern method, the base case's
+                      six exactly as it designs them, plus the two INTERBED
+                      COOLERS below.  No exchanger here is sized on an
+                      assumed U: U is each design's result.
+    InterbedCooler1/2 waste-heat boilers: the bed effluent in the TUBES (the
+                      high-pressure side), boiler feedwater boiling on the
+                      shell at the steamHP header's 41 bar -- the utility the
+                      cooler DECLARES (steamGenerationHP, the case-local
+                      credit record).  AUTHOR-SET, none cited:
+                        * the boiling-water film, 5000 W/m2/K, TYPED
+                          (`utilitySideFilm`), as the Chiller types its
+                          boiling ammonia: no boiling correlation is wired
+                          into the design, the sheet says so, and no shell-
+                          side pressure drop is computed;
+                        * ONE tube pass of 10 ft (3.048 m) tubes: a boiling
+                          utility makes F = 1 whatever the passes, and with
+                          two passes of 20 ft tubes (the first trial,
+                          measured) the gas lost ~13 bar in the tubes --
+                          the smallest bundle that carries the duty is a
+                          fast one;
+                        * fouling 0.0002 m2.K/W each side, the base case's
+                          process-gas and refrigerant values.
+    Bed1/2/3          the `pfr` sizer (CatalystBedSize) READS each bed's own
+                      V_R and sizes TWO items under it: the SHELL, a vessel
+                      of that volume at L/D 6 (the base case's converter
+                      ratio) costed on the Turton vessel set, and the
+                      CATALYST CHARGE, m = V_R x catalystBulkDensity, priced
+                      at catalystPrice -- a `declared-unit-price` line, no
+                      index, no module factor.  The two catalyst numbers,
+                      2500 kg/m3 and 15 EUR/kg, are AUTHOR-SET ASSUMPTIONS
+                      -- the same round numbers tutorials/plant/
+                      ammoniaStaged04_kinetic declares, with no source behind
+                      either; replace them with a vendor's.  No head space,
+                      distributor, support grid or internals: the shell is
+                      the bed's envelope.  Each bed is its own shell here;
+                      a real converter stacks them in one.
+
+  WHAT IS NOT DECLARED THAT THE BASE CASE DECLARED: the converter's
+  inventory (the bed voids).  The `pfr` sizer publishes no held volume of
+  gas, so the beds are listed as NOT DECLARED rather than given one.
+
+  N_np (Turton's labour count: compressors, exchangers, reactors) = 4 + 8 +
+  3 = 15, counted from this flowsheet (each bed counted as a reactor).
+
+  THE COST IS STILL A STUDY-TYPE ESTIMATE.  Turton's equipment-factored
+  method is AACE's Class 4 methodology; Class 3 is estimated from
+  semi-detailed unit costs and vendor quotations, which no part of Choupo
+  reads.  So `estimateClass 4` and its band stay below, unchanged: what
+  moved to FEL-3 here is the PROCESS fidelity, not the cost estimate.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        //  ---- compressors: the shaft power is the unit's own result ------
+        { unitName N2Boost;      type compressor;  material carbonSteel;      // dry N2, 474 K discharge
+          designRules { pressureDesign 34; } }                                 // 1.1 x 30.2 bar
+        { unitName MakeupComp1;  type compressor;  material carbonSteel;      // H2/N2, 420 K discharge
+          designRules { pressureDesign 74; } }                                 // 1.1 x 66.7 bar
+        { unitName MakeupComp2;  type compressor;  material carbonSteel;      // H2/N2, 425 K discharge
+          designRules { pressureDesign 167; } }                                // the loop's
+        { unitName RecycleComp;  type compressor;  material SS304;            // suction at -20 C
+          designRules { pressureDesign 167; } }                                // the loop's
+
+        //  ---- the six exchangers: DESIGNED in detail (Kern), see header ----
+        //  Every geometry and fouling number below is AUTHOR-SET (see the
+        //  header for each one's reason); U, N, the shell, the films, F, the
+        //  area and both pressure drops are the design's RESULTS.
+        { unitName N2Cooler;     type shellTubeHX;  material carbonSteel;
+          designRules { utility coolingWater;      // 25 -> 35 C, the plant tower
+                        pressureDesign 34;
+                        design { method Kern;
+                                 processSide tube;            // the 30 bar gas in the tubes
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;   // 1 in, 2.77 mm wall
+                                 tubeLength 6.096 m;          // 20 ft
+                                 tubePitch 31.75 mm;  tubePattern square;  // 1.25 OD, cleanable water lanes
+                                 tubePasses 2;
+                                 baffleSpacingRatio 1.0;      // B = 1.0 x shell ID: see the header
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide  0.0002  m2.K/W;    // clean process gas
+                                           shellSide 0.00035 m2.K/W; }  // treated tower water
+                               } } }
+        { unitName Intercooler;  type shellTubeHX;  material carbonSteel;
+          designRules { utility coolingWater;
+                        pressureDesign 74;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.00035 m2.K/W; }
+                               } } }
+        { unitName Aftercooler;  type shellTubeHX;  material carbonSteel;
+          designRules { utility coolingWater;
+                        pressureDesign 167;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.00035 m2.K/W; }
+                               } } }
+        { unitName WaterCooler;  type shellTubeHX;  material carbonSteel;
+          designRules { utility coolingWater;      // part of the NH3 condenses: gas-film basis
+                        pressureDesign 167;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.00035 m2.K/W; }
+                               } } }
+        { unitName Chiller;      type shellTubeHX;  material SS304;            // process side to -20 C
+          designRules { utility refrigerationNH3;  // -33.3 C, ammonia boiling at 1 atm
+                        pressureDesign 167;
+                        design { method Kern;  processSide tube;   // a kettle: gas in the tubes
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern triangular;  // clean refrigerant
+                                 tubePasses 4;                // F = 1 here: passes buy gas velocity
+                                 baffleSpacingRatio 1.0;      // tube supports only: the film is declared
+                                 tubeSide  { model Gnielinski; }
+                                 utilitySideFilm 2500 W/m2/K; // boiling NH3 -- AUTHOR-SET, see header
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
+        { unitName FEHE;         type shellTubeHX;  material SS316;            // hot side 733 K
+          designRules { pressureDesign 167;
+                        design { method Kern;
+                                 tubeStream HotEffluent;      // the hot effluent in the tubes
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
+                                 tubePitch 31.75 mm;  tubePattern triangular;
+                                 tubePasses 1;                // counter-current: the ends cross
+                                 shellsInSeries 4;            // 4 x 6.1 m shells in series
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 shellSide { model Kern; }
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
+
+        //  ---- the two interbed coolers: waste-heat boilers, DESIGNED (Kern) --
+        //  The bed effluent in the TUBES (the high-pressure side), boiler
+        //  feedwater boiling on the shell at the steamHP header's 41 bar.
+        //  F = 1 (a boiling utility); the passes only buy gas velocity.
+        { unitName InterbedCooler1; type shellTubeHX; material SS316;          // bed 1 outlet ~790 K
+          designRules { utility steamGenerationHP;  // HP steam raised -- the declared credit
+                        pressureDesign 167;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 3.048 m;   // 10 ft: see the header
+                                 tubePitch 31.75 mm;  tubePattern triangular;
+                                 tubePasses 1;                // F = 1 anyway (boiling); 1 pass keeps the gas dP down
+                                 baffleSpacingRatio 1.0;      // tube supports only: the film is declared
+                                 tubeSide  { model Gnielinski; }
+                                 utilitySideFilm 5000 W/m2/K; // boiling water -- AUTHOR-SET, see header
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
+        { unitName InterbedCooler2; type shellTubeHX; material SS316;
+          designRules { utility steamGenerationHP;
+                        pressureDesign 167;
+                        design { method Kern;  processSide tube;
+                                 tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 3.048 m;   // 10 ft: see the header
+                                 tubePitch 31.75 mm;  tubePattern triangular;
+                                 tubePasses 1;
+                                 baffleSpacingRatio 1.0;
+                                 tubeSide  { model Gnielinski; }
+                                 utilitySideFilm 5000 W/m2/K; // boiling water -- AUTHOR-SET, see header
+                                 fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
+                               } } }
+
+        //  ---- the three catalyst beds: sized by their KINETICS ---------
+        //  The `pfr` sizer READS each bed's own V_R -- the DesignSpec's
+        //  answer (system/outerDict) -- sizes the shell around it, and
+        //  prices the catalyst charge from the two DECLARED numbers below,
+        //  which are AUTHOR-SET ASSUMPTIONS (see the header).
+        { unitName Bed1;  type pfr;  material SS316;
+          designRules { pressureDesign       167;
+                        L_over_D             6.0;      // tall vessel, the base case's converter
+                        catalystBulkDensity  2500.0;   // kg/m3 -- AUTHOR-SET ASSUMPTION
+                        catalystPrice        15.0; } } // EUR/kg -- AUTHOR-SET ASSUMPTION
+        { unitName Bed2;  type pfr;  material SS316;
+          designRules { pressureDesign       167;
+                        L_over_D             6.0;
+                        catalystBulkDensity  2500.0;
+                        catalystPrice        15.0; } }
+        { unitName Bed3;  type pfr;  material SS316;
+          designRules { pressureDesign       167;
+                        L_over_D             6.0;
+                        catalystBulkDensity  2500.0;
+                        catalystPrice        15.0; } }
+
+        //  ---- the drums: vapour residence (see the header) --------------
+        { unitName Separator;    type vessel;  material SS304;                 // -20 C
+          designRules { residenceTime 45;           // s of vapour, a knock-out drum
+                        flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3;  pressureDesign 167;
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream RawLiquid;     fraction 0.25; }     // liquid level -- ASSUMED
+                             { stream UnreactedGas;  fraction 0.75; } ); } }
+        { unitName LetdownHP;    type vessel;  material SS304;                 // -20 C
+          designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
+                        flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3;  pressureDesign 22;                        // 1.1 x 20 bar
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream LetdownLiquid; fraction 0.50; }     // liquid level -- ASSUMED
+                             { stream LetdownGas;    fraction 0.50; } ); } }
+        { unitName StorageFlash; type vessel;  material SS304;                 // -35 C
+          designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
+                        flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3;  pressureDesign 2;                         // 1.1 x 1.013 bar
+                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+          inventory { held ( { stream ProductNH3;    fraction 0.50; }     // liquid level -- ASSUMED
+                             { stream FlashGas;      fraction 0.50; } ); } }
+    );
+
+    //  ---- storage: attached to a boundary stream (see the header) ----
+    storage
+    (
+        { name          NH3Storage;
+          stream        ProductNH3;      // the product, at 238.15 K and 1 atm
+          material      SS304;           // below 0 C (the rule above); the tank
+                                         // row carries NO material factor
+          storageTime   21 day;          // days of production -- AUTHOR-SET
+          fillFraction  0.90;            // working level / tank volume -- AUTHOR-SET
+          maxTankVolume 30000;           // m3 per tank: the correlation's ceiling
+        }
+    );
+}
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;        // projection, author-set (see the header)
+    cepci2001 397;        // the correlation's own basis year
+    usdToEur  0.92;
+}
+economics
+{
+    method              discountedCashFlow;
+    projectLife         15;          // yr -- assumption (ammonia02's)
+    constructionPeriod  1;
+    discountRate        0.10;        // assumption
+    taxRate             0.21;        // assumption
+    depreciation        straightLine;
+    depreciableLife     9;           // yr
+    salvageFraction     0.0;
+    streamFactor        0.90;        // 7884 h/yr on stream -- assumption
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    N_np                15;          // 4 compressors + 8 exchangers + 3 beds
+    estimateClass       4;
+    accuracyBand        ( -30 50 );  // the wide corner of Class 4 -- chosen
+    refuseOnMissingPrice 1;
+
+    //  THE WORKING CAPITAL, built up (see the header).  Every key needs its
+    //  unit: a bare number would be read as SECONDS.
+    workingCapital
+    {
+        rawMaterialStock   0 day;    // H2 and N2 by pipe; no stock here
+        receivables       30 day;    // days of sales customers owe
+        payables          30 day;    // days of raw-material purchases owed
+        minimumCash       15 day;    // days of cash operating cost (COM_d)
+    }
+}

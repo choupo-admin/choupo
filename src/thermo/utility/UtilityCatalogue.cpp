@@ -166,15 +166,36 @@ const Utility* UtilityCatalogue::pickForDuty(bool heating, scalar T,
     for (const auto& name : availableNames())
     {
         const Utility& u = byName(name);
-        if (heating && u.tier != "heating") continue;
-        if (!heating && u.tier != "cooling") continue;
-        if (u.dutyPerKg <= 0.0) continue;
-        scalar margin;
-        if (heating) { if (u.T_in < T + dTmin) continue; margin = u.T_in - T; }
-        else         { if (u.T_in > T - dTmin) continue; margin = T - u.T_in; }
+        if (u.cost < 0.0) continue;                 // a credit: declared, never picked
+        if (!canServe(u, heating, T, dTmin)) continue;
+        const scalar margin = heating ? u.T_in - T : T - u.T_in;
         if (margin < bestMargin) { bestMargin = margin; best = &u; }
     }
     return best;
+}
+
+bool UtilityCatalogue::canServe(const Utility& u, bool heating, scalar T,
+                                scalar dTmin, std::string* why)
+{
+    auto no = [why](const std::string& s) { if (why) *why = s; return false; };
+    const std::string need = heating ? "heating" : "cooling";
+    if (u.tier != need)
+        return no("its tier is '" + u.tier + "' and the duty needs " + need);
+    if (u.dutyPerKg <= 0.0)
+        return no("its record states no positive dutyPerKg, so no flow of it"
+                  " can be computed");
+    if (!(T > 0.0))
+        return no("the unit publishes no process temperature, so the"
+                  " temperature difference cannot be checked");
+    if (heating && u.T_in < T + dTmin)
+        return no("it delivers at T_in = " + std::to_string(u.T_in) + " K, below"
+                  " the process T " + std::to_string(T) + " K + dTmin "
+                  + std::to_string(dTmin) + " K");
+    if (!heating && u.T_in > T - dTmin)
+        return no("it receives heat at T_in = " + std::to_string(u.T_in) + " K,"
+                  " above the process T " + std::to_string(T) + " K - dTmin "
+                  + std::to_string(dTmin) + " K -- heat cannot flow into it");
+    return true;
 }
 
 } // namespace Choupo

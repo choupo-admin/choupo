@@ -23,3 +23,4 @@ kpi     reformer               Q_kW             57.7812038582    1e-4
 boundary global                 H_feeds_kW       -189.873475619   1e-4
 boundary global                 Q_boundary_kW    57.7812038582    1e-4
 boundary global                 H_products_kW    -132.092271761   1e-4
+utility reformer               heating.-.unserved 1                1e-4

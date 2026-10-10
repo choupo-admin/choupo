@@ -67,7 +67,24 @@ public:
     // (heating needs T_in >= T + dTmin; cooling needs T_in <= T - dTmin).
     // Returns nullptr when no catalogue utility is adequate (the caller
     // reports "(none adequate)", never silently drops the duty).
+    //
+    //  A CREDIT IS NEVER PICKED (2026-10-10, DEV.md 4c C52).  A utility whose
+    //  record carries a NEGATIVE cost is one the plant is paid for -- steam
+    //  RAISED in a waste-heat boiler -- and earning it means installing that
+    //  boiler, an equipment decision the case takes, never the allocator.  A
+    //  credit serves a duty only when the case DECLARES it (`utility <name>;`
+    //  on the unit, read by the utility allocation and held to `canServe`).
     static const Utility* pickForDuty(bool heating, scalar T, scalar dTmin);
+
+    //  CAN THIS UTILITY SERVE A DUTY OF THIS SIGN AT PROCESS TEMPERATURE T?
+    //  The ONE feasibility rule: the auto-pick filters on it and a DECLARED
+    //  utility is held to it (a declaration that fails it REFUSES, naming
+    //  `why`).  Tier matches the sign (heating / cooling), the record states a
+    //  positive dutyPerKg, T is known, and the temperature difference is at
+    //  least dTmin in the direction heat flows: heating needs T_in >= T +
+    //  dTmin, cooling needs T_in <= T - dTmin.
+    static bool canServe(const Utility& u, bool heating, scalar T, scalar dTmin,
+                         std::string* why = nullptr);
 };
 
 } // namespace Choupo

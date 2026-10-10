@@ -1,0 +1,114 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  FEL-2 feasibility: a 50 bar loop, speculated |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  GREEN AMMONIA, 1200 t/day -- THE FEASIBILITY STAGE AT A LOW LOOP PRESSURE.
+  The SAME study as tutorials/plant/greenAmmoniaFeasibility (FEL-2, duties
+  only, the same feeds, package, utilities and prices), with the synthesis
+  loop moved from 150 to 50 bar -- the speculation the stage allows: what
+  the plant would earn IF a catalyst approached equilibrium at 400 C and
+  50 bar.  An equilibrium model cannot say whether such a catalyst exists;
+  read the README before quoting anything from this case.
+
+  WHAT MOVED, and only this:
+    * the make-up: hydrogen arrives at 30 bar and nitrogen is boosted to
+      30 bar, so ONE intercooled stage (MakeupComp1 + Aftercooler) lands the
+      make-up on the loop; the base case's Intercooler and MakeupComp2 are
+      gone;
+    * the loop: converter at 50 bar and 400 C (5 K approach, the same
+      source as the 150 bar case), feed preheated to 320 C (80 K below the
+      outlet, as at 150 bar -- AUTHOR-SET), separator at 47 bar (the 150 bar
+      case's 10/150 loop pressure drop, scaled -- AUTHOR-SET), still -20 C;
+    * the recycle-tear seed (0/Recycle), moved to 47 bar;
+    * the two compressor powers, RE-TUNED by running the case so the make-up
+      discharge lands on 50.4 bar and the recycle on 50.0 bar (compressors
+      are specified by shaft power; read their P_out, and re-tune if a
+      flow moves).
+  Everything else -- the purge fraction, the let-down, the storage flash --
+  is the 150 bar case's.
+
+  N2Feed -[N2Boost]-[N2Cooler]-+
+                               +-[MakeupMix]-[MakeupComp1]-[Aftercooler]-+
+  H2Feed ----------------------+                                         |
+                                                                         v
+          Recycle -[RecycleComp]------------------------------------>[LoopMix]
+             ^                                                           |
+             |                                                  [FeedPreheater] 320 C
+             |                                                           |
+             |    [EffluentCooler] 72 C <----------------------- [Converter] 400 C, 50 bar
+             |          |
+             |    [WaterCooler] 40 C -- [Chiller] -20 C -- [Separator] 47 bar
+             |                                                 |
+             +--[PurgeSplit]-- Purge          RawLiquid -[LetdownHP]-[StorageFlash]- ProductNH3
+
+  TOPOLOGY ONLY.  Stream state lives in 0/, one file per stream.
+\*---------------------------------------------------------------------------*/
+
+sectors
+(
+    N2Boost
+    N2Cooler
+    MakeupMix
+    MakeupComp1
+    Aftercooler
+    RecycleComp
+    LoopMix
+    FeedPreheater
+    Converter
+    EffluentCooler
+    WaterCooler
+    Chiller
+    Separator
+    PurgeSplit
+    LetdownHP
+    StorageFlash
+);
+
+boundary
+{
+    inlets   ( H2Feed  N2Feed );
+    outlets  ( ProductNH3  LetdownGas  FlashGas  Purge );
+}
+
+connections
+{
+    H2Feed              { to MakeupMix/H2; }
+    N2Feed              { to N2Boost/Feed; }
+    N2Compressed        { from N2Boost/Out;  to N2Cooler/Feed; }
+    N2Cooled            { from N2Cooler/Out;  to MakeupMix/N2; }
+    Makeup30            { from MakeupMix/Out;  to MakeupComp1/Feed; }
+    MakeupHot           { from MakeupComp1/Out;  to Aftercooler/Feed; }
+    Makeup              { from Aftercooler/Out;  to LoopMix/Makeup; }
+    Recycle             { from PurgeSplit/Recycle;  to RecycleComp/Feed; }
+    CompRecycle         { from RecycleComp/Out;  to LoopMix/Recycle; }
+    Mixed               { from LoopMix/Out;  to FeedPreheater/Feed; }
+    PreheatedFeed       { from FeedPreheater/Out;  to Converter/Feed; }
+    HotEffluent         { from Converter/Out;  to EffluentCooler/Feed; }
+    CooledEffluent      { from EffluentCooler/Out;  to WaterCooler/Feed; }
+    WaterCooledEffluent { from WaterCooler/Out;  to Chiller/Feed; }
+    ChilledEffluent     { from Chiller/Out;  to Separator/Feed; }
+    RawLiquid           { from Separator/Liquid;  to LetdownHP/Feed; }
+    UnreactedGas        { from Separator/Vapour;  to PurgeSplit/Feed; }
+    Purge               { from PurgeSplit/Purge; }
+    LetdownLiquid       { from LetdownHP/Liquid;  to StorageFlash/Feed; }
+    LetdownGas          { from LetdownHP/Vapour; }
+    ProductNH3          { from StorageFlash/Liquid; }
+    FlashGas            { from StorageFlash/Vapour; }
+}
+
+variables
+{
+    NH3_t_h            { compute "ProductNH3.F * 17.0305 * 3.6"; }
+    NH3_t_day          { compute "NH3_t_h * 24"; }
+    W_compression_kW   { compute "N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + RecycleComp.W_shaft_kW"; }
+    W_specific_kWh_t   { compute "W_compression_kW / NH3_t_h"; }
+    H2_specific_kg_t   { compute "H2Feed.F * 2.01588 * 3.6 * 1000 / NH3_t_h"; }
+    y_NH3_converter    { compute "Converter.y_NH3"; }
+    Q_steam_kW         { compute "-Converter.Q_kW"; }
+    Q_refrigeration_kW { compute "-Chiller.Q_kW"; }
+    purge_kmol_h       { compute "Purge.F * 3600"; }
+    NH3_per_pass_kmol_h { compute "(PreheatedFeed.F - HotEffluent.F) * 3600"; }   // N2 + 3 H2 -> 2 NH3: one mole lost per NH3 made
+    recycle_ratio      { compute "Recycle.F / Makeup.F"; }                       // mol recycled per mol of make-up
+}

@@ -17,3 +17,7 @@ kpi     wgs                    tau_s            268.807168191    1e-4
 boundary global                 H_feeds_kW       -46.229778536    1e-4
 boundary global                 Q_boundary_kW    -4.55086758232   1e-4
 boundary global                 H_products_kW    -50.7806461183   1e-4
+utility wgs                    cooling.coolingWater.duty_kW -4.55086758232   1e-4
+utility wgs                    cooling.coolingWater.T 600              1e-4
+utility wgs                    cooling.coolingWater.kg_s 0.108872430199   1e-4
+utility wgs                    cooling.coolingWater.eur_h 0.00655324931855 1e-4

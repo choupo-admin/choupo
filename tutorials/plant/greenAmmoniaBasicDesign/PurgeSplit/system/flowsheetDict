@@ -1,0 +1,9 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  The purge fraction gives the base data's ~12 kmol/h purge (stream 8).
+//  Sweep it and watch argon and hydrogen loss move in opposite directions.
+
+type      splitter;
+operation { fractions ( 0.00085  0.99915 ); }
+boundary  { inlets ( Feed );  outlets ( Purge  Recycle ); }

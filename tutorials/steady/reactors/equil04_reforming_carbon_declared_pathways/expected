@@ -73,3 +73,6 @@ kpi     gibbs                  y_water          0.137413667226     1e-4
 boundary global               H_feeds_kW       -730.578175939     1e-4
 boundary global               Q_boundary_kW    307.162873389      1e-4
 boundary global               H_products_kW    -423.415302551     1e-4
+utility complete               heating.-.unserved 1                1e-4
+utility declared               heating.-.unserved 1                1e-4
+utility gibbs                  heating.-.unserved 1                1e-4

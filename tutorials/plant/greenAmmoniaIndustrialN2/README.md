@@ -10,6 +10,16 @@ source /path/to/Choupo/etc/bashrc
 runCase -f .
 ```
 
+The same plant is also described at two design stages, each a copy of this
+case with one thing changed:
+[`greenAmmoniaFeasibility`](../greenAmmoniaFeasibility) (FEL-2: no
+feed/effluent exchanger, every duty bought from a utility, pinch targets
+and the gross margin with the energy priced; with a 50 bar variant,
+[`greenAmmoniaFeasibility50bar`](../greenAmmoniaFeasibility50bar)) and
+[`greenAmmoniaBasicDesign`](../greenAmmoniaBasicDesign) (FEL-3: the
+converter as three adiabatic catalyst beds on a rate law, every exchanger
+designed).
+
 Seventeen units, no sectors, each in its **own folder** (`Converter/`,
 `Separator/`, …) with its `system/flowsheetDict` and its `.cho` marker. The
 plant's [`system/flowsheetDict`](system/flowsheetDict) holds the topology only —
@@ -81,6 +91,9 @@ catalyst volumes need a rate law: a plug-flow reactor
 * the purge scrubber and the let-down gas recovery;
 * the cooling water, the refrigeration cycle and the steam system: each
   cooler declares an outlet temperature and its duty is the heat to remove.
+  The converter's heat is **valued** as HP steam raised (see *Utilities*
+  below) — the waste-heat boiler, the steam header and whatever would use
+  the steam are not modelled.
 
 ## Sizing and costing
 
@@ -213,6 +226,39 @@ with a dated, cited figure before quoting a result. At those prices the
 hydrogen alone costs more than the ammonia sells for, and the appraisal
 says so: NPV is strongly negative and there is no IRR. That is the
 economics of green ammonia at an assumed hydrogen price, not a defect.
+
+### Utilities: what serves each duty, and the converter's steam credit
+
+Every heat duty a unit publishes is served by a plant utility, carried by
+its own process streams (the `FEHE`), or **listed as unserved** — never
+dropped (DEV.md 4c C52). The allocation picks, for each duty, the
+lowest-grade utility in `constant/utilities/` that can take it across a
+10 K approach: cooling water for the 40 °C coolers, ammonia boiling at
+−33 °C for the chiller, electricity for the compressors.
+
+The **converter** releases ~30.6 MW at 460 °C. Left to the automatic pick it
+would be dumped into cooling water and *charged for*. A real ammonia loop
+raises HP steam from that heat in a waste-heat boiler, so the case
+**declares** the service on the unit (`utility steamGenerationHP;` in
+[`Converter/system/flowsheetDict`](Converter/system/flowsheetDict)):
+
+| | |
+|---|---|
+| the record | [`constant/utilities/steamGenerationHP.dat`](constant/utilities/steamGenerationHP.dat) — saturated steam at the `steamHP` header's own 41 bar / 252 °C, feedwater taken at saturation |
+| steam raised | ~17.9 kg/s (~64 t/h) |
+| its value | **−18 EUR/GJ — a credit**, the price the plant would pay for the same steam from `steamHP.dat`; an **author-set assumption** and an *upper* bound (the steam is worth that only if something in the plant uses it) |
+| the credit | ~15.6 × 10⁶ EUR/yr, printed on its own line under C_UT |
+
+The record lives **in this case**, not in the public catalogue, because its
+price has no primary source behind it. A credit is never picked
+automatically — earning it means installing a boiler, which the case
+declares — and a declared utility that cannot serve its duty (wrong sign,
+or too hot to receive heat at 460 °C less 10 K) is **refused by name**.
+
+One duty stays **unserved** and the utility bill says LOWER BOUND because
+of it: the `StorageFlash` must cool to −35 °C and the coldest utility in the
+catalogue boils at −33.3 °C. That is a real finding about this design, not
+a defect.
 
 ### Working capital: *capital circulante* and *fundo de maneio*
 

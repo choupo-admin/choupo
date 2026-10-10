@@ -1,0 +1,9 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  Feed/effluent exchanger: the converter outlet preheats the converter
+//  feed to ~380 C (base data 2.4).
+
+type      heatExchanger;
+operation { area 2000 m2;  U 550 W/m2/K;  flow counter; }
+boundary  { inlets ( Hot  Cold );  outlets ( HotOut  ColdOut ); }

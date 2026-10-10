@@ -27,3 +27,7 @@ stream  NaOH_cake              T                298.15           1e-4
 stream  antisolvent            T                298.15           1e-4
 stream  liquor                 T                298.15           1e-4
 stream  motherLiquor           T                298.15           1e-4
+utility cryst                  heating.steamLP.duty_kW 72.7276039114    1e-4
+utility cryst                  heating.steamLP.T 298.15           1e-4
+utility cryst                  heating.steamLP.kg_s 0.0332697181662  1e-4
+utility cryst                  heating.steamLP.eur_h 3.14183248897    1e-4

@@ -99,7 +99,7 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
 
     //  ---- WHERE A STREAM LIVES, AND WHERE IT CROSSES ----------------------
     //
-    //  The wiring of a fractal plant is in the root `connections {}` block --
+    //  The wiring of a sectored plant is in the root `connections {}` block --
     //  TOPOLOGY, which never lives in a state view -- and the state is
     //  scattered across one folder per sector.  So nothing anywhere showed
     //  the two together, and `0/MAIN/` holding three streams while the

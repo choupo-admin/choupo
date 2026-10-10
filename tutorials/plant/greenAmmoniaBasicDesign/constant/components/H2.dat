@@ -1,0 +1,74 @@
+/*----------------------------------------------------------*\
+  constant/components/H2.dat -- MERGED sealed record: the standards base with
+  this case's partial overlay applied top-level (Choupo-2607 release).
+  Materialised by bin/choupo-import so the sealed case reads ONE
+  complete record with the catalogue hidden; provenance (base +
+  overlay hashes) is recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
+/*----------------------------------------------------------*\
+  constant/components/H2.dat -- MERGED sealed record: the standards base with
+  this case's partial overlay applied top-level (Choupo-2607 release).
+  Materialised by bin/choupo-import so the sealed case reads ONE
+  complete record with the catalogue hidden; provenance (base +
+  overlay hashes) is recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
+name  H2;
+
+formula     H2;
+
+CAS         1333-74-0;
+
+MW          2.016;
+
+Tc          33.18;
+
+Pc          13.13;
+
+omega       -0.220;
+
+Tb          20.39;
+
+HvapTb      904;
+
+Vliq        2.84e-5;
+
+diffusionVolume  6.12;
+
+standardThermochemistry
+{
+    dHf_298   0.0;                
+    s_298     130.680;            
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.54314   99.395   7.726);
+    Trange        (14  25);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    
+    coefficients  (27.14   9.274e-3   -1.381e-5   7.645e-9);
+    Trange        (250  1500);
+}
+
+aliases ( hydrogen );
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0383-PROF.txt bundled in usnistgov/COSMOSAC; CAS 1333-74-0";
+        licence     externalRestricted;   
+        installed   false;
+    }
+}
+
+role  solute;

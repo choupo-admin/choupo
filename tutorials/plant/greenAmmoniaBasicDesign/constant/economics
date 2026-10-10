@@ -1,0 +1,72 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  The base case of the project base data (v2)  |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  constant/economics -- the prices this appraisal is priced at (DEV.md 4c C44,
+  slice 4).  Currency: EUR per kg of the stream named.
+
+  EVERY PRICE BELOW IS AN AUTHOR-SET ASSUMPTION, and none cites a source,
+  because none was read.  They are round figures of the right order chosen
+  so the appraisal can run, NOT market data; a group replaces each with a
+  dated, cited figure before quoting an NPV.  The provenance block of each
+  says exactly that, in the words the engine carries to its output.
+
+  WHAT IS PRICED HERE AND WHAT IS NOT.
+    * the two RAW MATERIALS that cross the battery limit: electrolytic
+      hydrogen (H2Feed) and ASU nitrogen (N2Feed).  The electrolyser and the
+      ASU are outside this battery limit, so their electricity and capital
+      are inside these two prices, not in this plant's utility bill;
+    * the PRODUCT, liquid ammonia (ProductNH3);
+    * operating labour.
+    The UTILITIES (the compressors' electricity, cooling water, the ammonia
+    refrigeration and the let-down steam) are NOT priced here: the utility
+    allocation prices each duty from its record in data/standards/utilities/,
+    and the economics pass reads that bill.  The StorageFlash duty no
+    utility in the catalogue can serve is announced on the run as unpriced,
+    and the utility bill is then a LOWER BOUND, said on the run.
+    The purge (Purge) and the flash gases (LetdownGas, FlashGas) carry no
+    price: their hydrogen is lost, which the H2 price already charges, and
+    no credit is taken for them as fuel.
+\*---------------------------------------------------------------------------*/
+products
+(
+    {
+        stream    ProductNH3;
+        price     1.00;               // EUR/kg NH3 -- AUTHOR-SET: a "green"
+                                      // premium over grey ammonia, assumed
+        costYear  2026;
+        provenance
+        {
+            origin  "author-set assumption (DEV.md 4c C44), not a market price";
+            method  "round figure chosen for the appraisal to run; replace with a dated, cited price";
+        }
+    }
+);
+rawMaterials
+(
+    {
+        stream    H2Feed;             // electrolytic H2 at 30 bar
+        price     4.50;               // EUR/kg H2 -- AUTHOR-SET assumption
+        costYear  2026;
+        provenance
+        {
+            origin  "author-set assumption (DEV.md 4c C44), not a market price";
+            method  "round figure for the delivered cost of electrolytic hydrogen; replace with a dated, cited price";
+        }
+    }
+    {
+        stream    N2Feed;             // ASU nitrogen, 99.99 % N2, 100 ppm Ar
+        price     0.05;               // EUR/kg N2 -- AUTHOR-SET assumption
+        costYear  2026;
+        provenance
+        {
+            origin  "author-set assumption (DEV.md 4c C44), not a market price";
+            method  "round figure for the delivered cost of ASU nitrogen; replace with a dated, cited price";
+        }
+    }
+);
+labourRate      42.0;                 // EUR/h loaded operating labour -- the
+                                      // figure ammonia02 uses, an assumption
+labourRateYear  2026;

@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  INTERBED COOLER 2: lands bed 3's inlet at 410 C.  The heat the
+//  bed before it released is raised as HP steam in a waste-heat boiler --
+//  the same DECLARED credit utility the base case's converter declares
+//  (constant/utilities/steamGenerationHP.dat, an AUTHOR-SET price).  It can
+//  serve this duty because the gas leaves at 410 C, above the steam's 252 C
+//  plus the allocation's 10 K approach (UtilityCatalogue::canServe).
+//  410 C is an AUTHOR-SET design choice (a bed inlet in the range iron
+//  catalysts are run at; no source was read for the number).
+
+type      phaseChanger;
+utility   steamGenerationHP;
+operation { outletT 683.15 K; }      // 410 C, bed 3 inlet -- AUTHOR-SET
+boundary  { inlets ( Feed );  outlets ( Out ); }

@@ -1,0 +1,8 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  Cooling water, 40 C.  Which utility, and how much of it, is the group's.
+
+type      phaseChanger;
+operation { outletT 313.15 K; }
+boundary  { inlets ( Feed );  outlets ( Out ); }
