@@ -17,3 +17,7 @@ kpi     cryst                  Q_kW             -271.677114808   1e-4
 boundary global                 H_feeds_kW       -15772.7563326   1e-4
 boundary global                 Q_boundary_kW    -271.677114808   1e-4
 boundary global                 H_products_kW    -16044.4334474   1e-4
+utility cryst                  cooling.chilledWater.duty_kW -271.677114808   1e-4
+utility cryst                  cooling.chilledWater.T 293.15           1e-4
+utility cryst                  cooling.chilledWater.kg_s 12.9370054671    1e-4
+utility cryst                  cooling.chilledWater.eur_h 3.91215045324    1e-4

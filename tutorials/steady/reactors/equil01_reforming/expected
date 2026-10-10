@@ -21,3 +21,4 @@ stream  syngas                 T                1100             1e-4
 boundary global                 H_feeds_kW       -184.338218869   1e-4
 boundary global                 Q_boundary_kW    59.6424648629    1e-4
 boundary global                 H_products_kW    -124.695754006   1e-4
+utility reformer               heating.-.unserved 1                1e-4

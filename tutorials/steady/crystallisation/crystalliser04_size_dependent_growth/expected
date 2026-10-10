@@ -32,3 +32,7 @@ kpi     cryst                  V_magma          5                1e-4
 boundary global                 H_feeds_kW       -15772.7563326   1e-4
 boundary global                 Q_boundary_kW    -269.660031771   1e-4
 boundary global                 H_products_kW    -16042.4163644   1e-4
+utility cryst                  cooling.chilledWater.duty_kW -269.660031771   1e-4
+utility cryst                  cooling.chilledWater.T 293.15           1e-4
+utility cryst                  cooling.chilledWater.kg_s 12.8409538938    1e-4
+utility cryst                  cooling.chilledWater.eur_h 3.8831044575     1e-4

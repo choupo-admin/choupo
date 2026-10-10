@@ -53,3 +53,7 @@ boundary global                 H_feeds_kW       -51.7413268856   1e-4
 boundary global                 Q_boundary_kW    6.60674309732    1e-4
 boundary global                 H_products_kW    -45.134583787    1e-4
 boundary global                 residual_kW      -1.26056676208e-09 1e-4
+utility reactor                heating.steamLP.duty_kW 4.54350907969    1e-4
+utility reactor                heating.steamLP.T 324.806875283    1e-4
+utility reactor                heating.steamLP.kg_s 0.00207845795045 1e-4
+utility reactor                heating.steamLP.eur_h 0.196279592243   1e-4

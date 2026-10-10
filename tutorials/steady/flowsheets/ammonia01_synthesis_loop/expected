@@ -76,3 +76,7 @@ utility separator              cooling.refrigerationNH3.duty_kW -9.26788671373  
 utility separator              cooling.refrigerationNH3.T 250              1e-4
 utility separator              cooling.refrigerationNH3.kg_s 0.00676520178967 1e-4
 utility separator              cooling.refrigerationNH3.eur_h 0.528491971964   1e-4
+utility converter              heating.hitecSalt.duty_kW 0.190757721582   1e-4
+utility converter              heating.hitecSalt.T 700              1e-4
+utility converter              heating.hitecSalt.kg_s 0.00108385069081 1e-4
+utility converter              heating.hitecSalt.eur_h 0.0103009169654  1e-4

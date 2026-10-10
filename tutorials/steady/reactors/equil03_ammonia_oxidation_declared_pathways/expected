@@ -57,3 +57,15 @@ kpi     gibbs                  y_water          0.146341463415     1e-4
 boundary global               H_feeds_kW       606.040163118      1e-4
 boundary global               Q_boundary_kW    -818.016388716     1e-4
 boundary global               H_products_kW    -211.976225598     1e-4
+utility complete               cooling.coolingWater.duty_kW -220.198040979   1e-4
+utility complete               cooling.coolingWater.T 1100             1e-4
+utility complete               cooling.coolingWater.kg_s 5.26789571721    1e-4
+utility complete               cooling.coolingWater.eur_h 0.31708517901    1e-4
+utility declared               cooling.coolingWater.duty_kW -157.422265777   1e-4
+utility declared               cooling.coolingWater.T 1100             1e-4
+utility declared               cooling.coolingWater.kg_s 3.76608291334    1e-4
+utility declared               cooling.coolingWater.eur_h 0.22668806272    1e-4
+utility gibbs                  cooling.coolingWater.duty_kW -440.396081959   1e-4
+utility gibbs                  cooling.coolingWater.T 1100             1e-4
+utility gibbs                  cooling.coolingWater.kg_s 10.5357914344    1e-4
+utility gibbs                  cooling.coolingWater.eur_h 0.634170358021   1e-4

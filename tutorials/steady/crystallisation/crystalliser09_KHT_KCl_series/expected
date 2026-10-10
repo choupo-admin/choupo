@@ -71,3 +71,11 @@ stream  recoveredEthanol       T                351.329374323    1e-4
 stream  stillage               T                358.019009224    1e-4
 kpi     recovery               nFeeds           1                1e-4
 kpi     recovery               nSideDraws       0                1e-4
+utility cryst1                 cooling.refrigerationNH3.duty_kW -93.1162690166   1e-4
+utility cryst1                 cooling.refrigerationNH3.T 278.15           1e-4
+utility cryst1                 cooling.refrigerationNH3.kg_s 0.06797130449    1e-4
+utility cryst1                 cooling.refrigerationNH3.eur_h 5.3098621244     1e-4
+utility cryst2                 cooling.refrigerationNH3.duty_kW -19.1775502608   1e-4
+utility cryst2                 cooling.refrigerationNH3.T 278.15           1e-4
+utility cryst2                 cooling.refrigerationNH3.kg_s 0.0139988760495  1e-4
+utility cryst2                 cooling.refrigerationNH3.eur_h 1.09358062607    1e-4

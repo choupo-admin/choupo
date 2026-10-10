@@ -99,8 +99,7 @@ import { runControl } from "../case/runControl.js";
 import { readFlag, writeFlag, NODE_DETAILS_KEY } from "../state/prefs.js";
 import { operationScratch } from "../case/scratch.js";
 import { buildDrillSeed, feedsKeyFor, inheritKeyFor } from "../case/drillSeed.js";
-import type { DutyAllocationFacts } from "../case/dutyUtility.js";
-import { dutyStubFromRun } from "../case/dutyUtility.js";
+import { dutyStubFromRun, type DutyAllocationFacts } from "../case/dutyUtility.js";
 import { writeCaseFile } from "../cases/workspace.js";
 import { notifications } from "@mantine/notifications";
 

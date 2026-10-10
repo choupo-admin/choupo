@@ -789,3 +789,9 @@ equipment WaterCooler            values.tubesPerPass 732              1e-4
 equipment WaterCooler            values.u_shell   0.446865797635   1e-4
 equipment WaterCooler            values.u_tube    3.38698215443    1e-4
 equipment WaterCooler            values.wallK     50               1e-4
+kpi     economics              C_UT             5074264.02232    1e-4
+kpi     economics              C_UT_credit      -15635711.7884   1e-4
+utility Converter              cooling.steamGenerationHP.duty_kW -30605.2573041   1e-4
+utility Converter              cooling.steamGenerationHP.T 733.15           1e-4
+utility Converter              cooling.steamGenerationHP.kg_s 17.8560427679    1e-4
+utility Converter              cooling.steamGenerationHP.eur_h -1983.22067331   1e-4
