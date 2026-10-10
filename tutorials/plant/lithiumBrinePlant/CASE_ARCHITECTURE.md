@@ -1,7 +1,7 @@
-# lithiumBrinePlant — the fractal reference plant
+# lithiumBrinePlant — the sectored reference plant
 
 This IS the reference lithium-carbonate-from-brine plant, laid out in Choupo's
-fractal `sectors/<SECTOR>/unitOperations/<unit>/` architecture.  It runs end to
+plant-and-sectors `sectors/<SECTOR>/unitOperations/<unit>/` architecture.  It runs end to
 end: `runCase tutorials/plant/lithiumBrinePlant` converges, `0/` is complete
 (15 stream IDs == 15 state files), and mass closes on every element.  Each of the
 five sectors is a real thermodynamic subdomain (BRINE Pitzer · EXTRACTION NRTL LLE ·

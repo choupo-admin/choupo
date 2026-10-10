@@ -176,7 +176,7 @@ export function PropertyPanel() {
       const children = compositeMembers(flowsheet);
       if (children.includes(name)) {
         // A child is EITHER a leaf UNIT OP (its own dignified folder, `type ...`)
-        // or a composite SECTOR (`children ( ... )`).  A leaf is NOT a "fractal
+        // or a composite SECTOR (`children ( ... )`).  A leaf is NOT a "sector
         // sub-flowsheet" -- it is one unit op that happens to carry its own
         // folder, so show it as a UNIT (operation + KPIs), not as a sector.
         const childText = caseFiles.rawFiles?.[`${name}/system/flowsheetDict`]
@@ -1382,7 +1382,7 @@ function FileDetails({ rel, raw }: { rel: string; raw: string | undefined }) {
 // ---------------------------------------------------------------------------
 //   FolderDetails: list of files under a folder/sector, clickable to
 //   drill in.  Distinguishes "folder" (system/, constant/) from "sector"
-//   (a fractal sub-flowsheet folder with its own .cho and dicts).
+//   (a sector sub-flowsheet folder with its own .cho and dicts).
 // ---------------------------------------------------------------------------
 
 function FolderDetails({ name, kind, files }: {
@@ -1403,7 +1403,7 @@ function FolderDetails({ name, kind, files }: {
       </Text>
       {kind === "sector" && (
         <Text size="xs" c="dimmed">
-          Fractal sub-flowsheet.  Double-click the sector node on the canvas
+          A sector of the plant.  Double-click the sector node on the canvas
           to open it as its own case in a new window.
         </Text>
       )}

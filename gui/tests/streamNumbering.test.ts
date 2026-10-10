@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  Stream-numbering coverage for a fractal multi-sector plant.
+  Stream-numbering coverage for a multi-sector plant.
 
   Vitor reported "muitas correntes nao tem numero!" on the ChemicalPlantTutorial
   flowsheet: ~58% of streams (every unit->unit pipe INSIDE a sector) showed no
@@ -69,7 +69,7 @@ const MANIFEST_IDENTITIES = [
   "MAIN.ToFermentation", "PlantSteam", "RawJuice",
 ];
 
-describe("fractal plant stream numbering (ChemicalPlantTutorial)", () => {
+describe("sectored plant stream numbering (ChemicalPlantTutorial)", () => {
   it("numbers every stream in the view -- no interior pipe left unnumbered", () => {
     const raw: Record<string, string> = {};
     walkFiles(PLANT, PLANT, raw);

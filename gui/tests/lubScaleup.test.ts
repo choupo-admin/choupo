@@ -252,7 +252,7 @@ describe("readLabColumn -- the witness's own declared column", () => {
     expect(readLabColumn(files, "bed").L).toBeCloseTo(1.25, 12);
   });
 
-  it("matches a flattened fractal name on its last segment", () => {
+  it("matches a flattened sectored name on its last segment", () => {
     const files = methodCase(BREAKTHROUGH_WITNESS, []);
     expect(readLabColumn(files, "PURIFICATION.bed").unitFound).toBe(true);
   });

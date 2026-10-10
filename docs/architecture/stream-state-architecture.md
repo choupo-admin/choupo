@@ -1,12 +1,13 @@
-# Stream-state directories, fractal sectors & topological drill-in
+# Stream-state directories, sectors & topological drill-in
 
 **Status: RATIFIED 2026-07-06. This is the constitutional spine of the Choupo
 case. Do NOT reopen the ontology unless a concrete case proves the contract
 fails.** Origin: the stream-state-directory proposal + the external architecture
 review (`ansGPT2`), adopted with amendments R1/R3.
 
-The resulting Choupo model is no longer merely "OpenFOAM-like": it is a **fractal
-process graph** with **complete persistent state per current domain**,
+The resulting Choupo model is no longer merely "OpenFOAM-like": it is a **process graph
+of a plant and its sectors** (formerly called "fractal"; the name was
+retired 2026-10-09 because the layout has two levels, not a recursion) with **complete persistent state per current domain**,
 **topology-derived stream roles**, **sector drill-in by domain restriction**,
 **physical equipment design as a later realisation of process state**, and
 **economics as aggregation over designed equipment**.
@@ -126,7 +127,7 @@ lithiumBrinePlant/
 
 ## 2. The rules to freeze
 
-### 2.1 The graph is fractal
+### 2.1 The graph is a plant and its sectors
 The root `flowsheetDict` assembles SECTORS and inter-sector links only. Internal
 sector topology stays in the sector subgraph — never duplicated at the root.
 
@@ -184,7 +185,7 @@ BRINE -- halite -->|                        (a product of BRINE alone)
 It is recursive and there is no case analysis.  Internal to a sector → that
 sector.  Crossing two sectors → their common parent.  A plant-boundary inlet →
 the plant's own level.  Shared by consumers in several sectors → their lowest
-common ancestor.  It applies unchanged at any fractal depth.
+common ancestor.  It applies unchanged at any depth of nesting.
 
 **Why the producer rule was replaced.**  It picks ONE ENDPOINT OF AN EDGE and
 calls it the owner.  A unit is a NODE and belongs to a sector; a stream is an

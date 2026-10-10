@@ -440,7 +440,7 @@ solvent is named at the call site, the resolver uses the declared default
 **and announces it on every run**; off-default it **fails with a remedy** —
 never a silent water substitution.  See [`data-doctrine.md`](data-doctrine.md) §2.
 
-## The fractal cascade — where a refined number goes
+## The folder cascade — where a refined number goes
 
 A datum lives at the **highest level where it is TRUE**; a lower node only
 **overlays** it when the lower scope makes it *more true*.  The overlay merges

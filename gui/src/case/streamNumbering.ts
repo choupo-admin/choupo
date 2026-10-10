@@ -27,7 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  ABSOLUTE (global) stream numbering for a fractal case.
+  ABSOLUTE (global) stream numbering for a sectored case.
 
   A PFD number must be the SAME physical stream's identity everywhere it is
   seen -- in the parent plant AND when you drill into a sector (Vitor, 2026-06-
@@ -90,7 +90,7 @@ function parseFlowsheet(text: string, name: string): JsonDict | undefined {
   catch { return undefined; }
 }
 
-/** Build the absolute numbering for a whole fractal case rooted at
+/** Build the absolute numbering for a whole sectored case rooted at
  *  `rootFlowsheet` (its sub-sector flowsheetDicts come from `rootRawFiles`).
  *  Returns a resolver `(viewPath, localName) -> global number | undefined`.
  *  A flat (non-composite) root yields an empty union-find -> the resolver
@@ -178,7 +178,7 @@ export function globalStreamNumbering(
 
 /** The per-stream number resolver for the CURRENTLY OPEN view, keyed by the
  *  view's LOCAL stream name.  Uses the absolute (whole-plant) numbering when
- *  the view belongs to a registered fractal case; falls back to a per-view
+ *  the view belongs to a registered sectored case; falls back to a per-view
  *  local 1..N otherwise (a flat tutorial, or an external/local case with no
  *  registry root).  Canvas badges AND the Streams `#` column share this so
  *  they always agree. */
@@ -192,7 +192,7 @@ export function streamNumberResolver(
     const g = globalStreamNumbering(rp.rootFiles.flowsheet, rp.rootFiles.rawFiles);
     return (name: string) => g(rp.subPath, name);
   }
-  // Flat / non-fractal: per-view numbering (which IS global for one level).
+  // Flat / unsectored: per-view numbering (which IS global for one level).
   const local = viewFlowsheet
     ? streamNumbersForFlowsheet(viewFlowsheet, viewRawFiles)
     : new Map<string, number>();

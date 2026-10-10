@@ -321,7 +321,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     writeFlag(NODE_DETAILS_KEY, v);
   }, []);
 
-  // Fractal drill-down (step 4c): double-click a node that is itself a case
+  // Sector drill-down (step 4c): double-click a node that is itself a case
   // (a sector or unit folder with a.cho) to OPEN it in a NEW WINDOW, loaded
   // as a case in its own right via "?case=<sub-node>".
   const drillableSub = useCallback(
@@ -1125,7 +1125,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         // UX convention (file-manager style):
         //   single click  → select (selection card)
         //   double click  → "open" (new tab): streams pop out their
-        //     conditions; a fractal sub-case (sector / leaf with its own
+        //     conditions; a sub-case (sector / leaf with its own
         //     folder) drills in; a plain unit op opens its INTERNALS page
         //     (tables + plots + the What-if tab -- gui-credo §4).
         onNodeClick={(_, n) => selectNode(n.id)}
@@ -1133,7 +1133,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           if (n.type === "streamTerminal" && n.id.startsWith("stream:")) {
             popOutStreamByName(n.id.slice("stream:".length));
           } else if (drillableSub(n.id)) {
-            // Fractal sector / leaf sub-case: open it as its own case URL.
+            // Sector / leaf sub-case: open it as its own case URL.
             openInNewWindow(n.id);
           } else if (n.id.startsWith("unit:")) {
             const uname = n.id.slice("unit:".length);

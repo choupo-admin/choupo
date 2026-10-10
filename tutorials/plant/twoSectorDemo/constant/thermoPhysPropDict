@@ -11,7 +11,7 @@
   demo: 10 case-local components, NRTL liquid gamma (10 case-local pairs
   resolve from constant/parameters/NRTL -- no inline numbers, the catalogue
   records travel with the case), ideal-gas vapour.  Cascades DOWN to both
-  sectors (fractal constant/).
+  sectors (per-sector constant/).
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

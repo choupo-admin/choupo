@@ -458,7 +458,7 @@ bool SolutionWriter::writeStreamsFileChecked(
 "| tearResidual |r|2 = " << sci(meta.tearResidual)
          << "   tol " << sci(meta.tolerance) << "\n"
 "| written: " << nowIso() << "\n"
-"| PER-BRANCH snapshot (fractal): this file is the '" << label << "' view.  The\n"
+"| PER-BRANCH snapshot (per sector): this file is the '" << label << "' view.  The\n"
 "| plant view carries the boundary + inter-sector interface streams; a sector\n"
 "| view carries every stream touching one of its units.  An inter-sector face\n"
 "| appears on BOTH sides + in the plant view -- the interface IS the stream,\n"
@@ -540,7 +540,7 @@ void SolutionWriter::writeInstant(
     const std::map<std::string, Bc> roles =
         classifyStreams(units, tearSet, streams);
 
-    // ---- Bucket streams + units PER BRANCH (CHT-faithful, fractal) --------
+    // ---- Bucket streams + units PER BRANCH (CHT-faithful, per sector) ----
     //  Every stream is assigned to one or more "views":
     //    - the PLANT view (the empty-sector key "") gets the boundary streams
     //      (feed/product), the inter-sector interface streams (a face touching
@@ -916,7 +916,7 @@ int SolutionWriter::restartFromLatest(
     const fs::path instRoot = fs::path(caseRoot_) / "iterations" / pad;
     std::set<std::string> tearSet(tears.begin(), tears.end());
 
-    // PER-BRANCH restart: the instant is fractal.  An intra-sector tear (e.g.
+    // PER-BRANCH restart: the instant is split per sector.  An intra-sector tear (e.g.
     // FERMENTATION.Recycle) lives ONLY in its sector view
     // <n>/<sector>/streamFaces, not in the plant <n>/streamFaces (which carries
     // boundary + inter-sector faces).  So we scan EVERY streamFaces file in the

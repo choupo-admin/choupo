@@ -21,7 +21,7 @@ components       ( aceticAcid  ethanol  ethylAcetate  water );
 //  AUTHORISED APPROXIMATION -- and the honest statement of what it costs.
 //
 //  The SEPARATION sector's flash overrides the activity model to NRTL to
-//  demonstrate the fractal `constant/` walk-up: the ethylAcetate-water pair
+//  demonstrate the per-sector `constant/` walk-up: the ethylAcetate-water pair
 //  lives with the sector that needs it.  Four of the six binary pairs resolve;
 //  the two ACETIC-ACID pairs below have no curated record and would run ideal.
 //

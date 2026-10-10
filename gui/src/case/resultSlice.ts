@@ -27,7 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  Result slicing for fractal drill-in.  A parent run already computed EVERY
+  Result slicing for sector drill-in.  A parent run already computed EVERY
   internal stream of a composite child (the flattener namespaces them:
   "SECTOR.stream" streams, "SECTOR.unit" kpis).  When the student drills into
   that child, the new tab should open WITH those results -- not force a

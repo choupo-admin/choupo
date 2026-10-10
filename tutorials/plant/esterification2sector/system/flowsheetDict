@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*------------------------------*\
-  esterification2sector  --  a TWO-SECTOR fractal plant, WIRED.
+  esterification2sector  --  a TWO-SECTOR plant, WIRED.
 
       Feed (AcOH + EtOH)
             |
@@ -12,7 +12,7 @@
          liquid vapor      (sectors/SEPARATION/constant/parameters/NRTL/...);
                             ethanol-water is INHERITED from the standard library.
 
-  The point of the case is the FRACTAL `constant/`: components shared across the
+  The point of the case is the PER-SECTOR `constant/`: components shared across the
   plant, particular data (kinetics here, a fitted pair there) living with the
   sector that owns it, and the rest walked up to the standard catalogue.
 

@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*--- SEPARATION sector -- PROPERTY analyses (the flash's VLE).
-  Fractal: these belong to THIS sector; opening SEPARATION shows only these.
+  Per sector: these belong to THIS sector; opening SEPARATION shows only these.
   ethanol-water bubble-T vs x: ideal / NRTL / Wilson, vs DECHEMA lab data. */
 experimental
 (

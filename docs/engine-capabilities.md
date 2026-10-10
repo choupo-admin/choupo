@@ -249,7 +249,7 @@ never leaves the plant, and a bare sector label collides (`DRYING.Vapour` and
 `FERMENTATION.Vapour`).  Record:
 `docs/design/one-row-per-physical-stream.md`.
 
-**Label, sector and crossing (steady, fractal plants only)** — on a case whose
+**Label, sector and crossing (steady, sectored plants only)** — on a case whose
 units carry a stamped sector, `streamTable.csv` carries a `label` column after
 `role` — the plant's OWN outlet name for the stream (`DRYING.DryPowder` is
 labelled `Powder`), blank when the stream never leaves the plant, and present
@@ -262,7 +262,7 @@ consuming units sit in different sectors and empty otherwise.  Until
 2026-09-07 the column re-derived the retired producer rule under a comment
 saying it could not disagree with the folder; it disagreed the day the rule
 changed.
-They exist because the wiring of a fractal plant is in the root
+They exist because the wiring of a sectored plant is in the root
 `connections {}` block (topology, which never lives in a state view) while
 the state is scattered one folder per sector, so nothing showed the crossings
 together.  Both are fed by the STAMPED `FlatUnit::sector`, never by splitting
@@ -367,7 +367,7 @@ nobody reads the single-vessel witnesses as more.
 
 ---
 
-## 7. Fractal multi-sector flowsheets
+## 7. Multi-sector flowsheets
 
 `unit ⊂ sector ⊂ plant`, a recursive `flowsheetDict` shape (leaf: `type` +
 `operation` + `inputs ( … )` / `outputs ( … )`, with a `boundary { inlets;

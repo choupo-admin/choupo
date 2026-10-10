@@ -106,7 +106,7 @@ export interface DesignCost {
 
 export interface DesignSheet {
   /** The unit as the ENGINE names it -- qualified (`CONCENTRATION.Evap2`) on
-   *  a fractal case, bare on a flat one. */
+   *  a sectored case, bare on a flat one. */
   unit: string;
   /** The sector the flatten seam STAMPED, empty on a flat case.  Read, never
    *  recovered by splitting `unit` on a dot. */

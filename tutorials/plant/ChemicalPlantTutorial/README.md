@@ -1,7 +1,7 @@
-# chemicalPlantTutorial — the fractal-architecture proxy case
+# chemicalPlantTutorial — the plant-and-sectors proxy case
 
 This is the **development target** for the multi-sector "chemical plant"
-architecture (the fractal design worked out 2026-05-23). It is **not yet
+architecture (the plant-and-sectors design worked out 2026-05-23, then called "fractal"). It is **not yet
 runnable** by the engine — it is the *specification of where we are going*,
 materialised as a folder tree so we can build the engine toward it. Until
 the engine catches up, **this tree is read, not run.**
@@ -33,10 +33,10 @@ drying/          SD (spray dryer) → BD (extra solid drying) → CY (cyclone)
 
 | Principle | What to look for |
 |---|---|
-| **Fractal** | every level is a folder with `.cho + system/ + constant/` |
+| **Plant and sectors** | every level is a folder with `.cho + system/ + constant/` |
 | **Run-scope** | a `.cho` at every level → open/run a *unit*, a *sector*, or the *whole plant* |
 | **Overlay / cascade** | data resolve `standards → plant → sector → unit`, each level overriding only what it adds (same for `controlDict` and for boundary feeds) |
-| **Credo, fractal** | each node: *streams IN → box (params) → streams OUT*; a leaf's boundary feeds carry **defaults** so it runs isolated, and the parent **overrides** them when it cables |
+| **Credo, at every level** | each node: *streams IN → box (params) → streams OUT*; a leaf's boundary feeds carry **defaults** so it runs isolated, and the parent **overrides** them when it cables |
 
 ## What the engine still needs (the roadmap this case pins down)
 

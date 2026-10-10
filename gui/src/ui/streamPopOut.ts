@@ -229,7 +229,7 @@ ${specRows.length === 0 ? "" : `
  *  click handlers so the user can click a stream and immediately see
  *  it in a new tab.
  *
- *  Naming caveat: connections in fractal flowsheetDicts use SLASHES
+ *  Naming caveat: connections in sectored flowsheetDicts use SLASHES
  *  (`concentration/cryst/magma`), while the C++ solver emits stream
  *  names with DOTS (`concentration.cryst.magma`) in the JSON result.
  *  We try both forms when searching. */

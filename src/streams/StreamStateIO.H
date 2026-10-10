@@ -57,7 +57,7 @@ Description
 
     The flattened solver name `SECTOR.sub.stream` maps to the path
     `<dir>/SECTOR/sub/stream` (dots -> directory separators): the sector owns its
-    streams (the fractal tree).  The writer emits ONE deterministic resolved form;
+    streams (the plant/sector tree).  The writer emits ONE deterministic resolved form;
     the reader accepts every authored form and normalises to internal molar flows.
 \*---------------------------------------------------------------------------*/
 

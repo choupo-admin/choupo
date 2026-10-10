@@ -216,7 +216,7 @@ export function popOutUnitInternals(name: string): void {
     // No clone -> nothing to stash -> the tab would boot straight into the
     // "expired" panel.  Bail instead of opening a dead tab (this happens for a
     // node that is neither a stashable leaf unit nor a drillable sub-case, e.g.
-    // a fractal sector whose `.cho` marker is missing).  Mirrors popOutUnitFocus.
+    // a sector whose `.cho` marker is missing).  Mirrors popOutUnitFocus.
     if (!clone) return;
     try {
       writeStashes(clone);

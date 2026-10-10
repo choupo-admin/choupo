@@ -31,7 +31,7 @@ License
 
   Default smoothstep between two same-row nodes (Splitter on the right,
   Mixer on the left) routes through the GAP BETWEEN nodes -- which on a
-  fractal flowsheet means the back-edge passes visually THROUGH every
+  sectored flowsheet means the back-edge passes visually THROUGH every
   intermediate unit and looks like just another forward edge.
 
   This component draws an explicit U-turn BELOW (or above) the node row:

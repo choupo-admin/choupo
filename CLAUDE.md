@@ -227,15 +227,20 @@ case/
 
 * **A single isolated unit is just a `flowsheetDict` of length 1.**  No
   "standalone" mode — one consistent case format for everything.
-* **In a FRACTAL case a CAPS folder is always a level of the plant's
+* **In a SECTORED case a CAPS folder is always a level of the plant's
   geography, and a plant-level unit lives in `MAIN/`** (2026-09-05; `MAIN/`
   is the DOMAIN'S OWN LEVEL rather than a sector like the others since
-  2026-09-07).  The STATE views (`0/`, `converged/`) repeat the one geography
+  2026-09-07).  A sectored case is A PLANT AND ITS SECTORS -- two levels,
+  plus each unit's own folder; the layout was formerly called "fractal", a
+  name retired 2026-10-09 (Vítor: *"não chames 'fractais' ... Nós só temos
+  dois níveis"*) because it promises a recursion that does not exist.  Say
+  "a plant and its sectors" / "a sectored case"; gate
+  `check_glossary_bans`.  The STATE views (`0/`, `converged/`) repeat the one geography
   `MAIN · <SECTORS>`; a DERIVATIVE view carries only the levels it has
   something to say about, and its absence is a fact rather than a defect (a
   `design/` has no level for a sector whose units realise no sized item, and
   `iterations/` repeats the geography inside each INSTANT).  `system/` (HOW) and
-  `constant/` (WITH WHAT) sit at every level of the fractal and never inside
+  `constant/` (WITH WHAT) sit at every level of the case and never inside
   the geography.  A convention for humans, never inferred by the engine from
   capitals, never forced on a flat case (its units ARE the plant).  A stream's
   file goes at the lowest level containing every ENDPOINT of it — see the
@@ -365,8 +370,8 @@ case/
   directory.  `flowsheetDict` contains topology only; stream values live in
   `0/<stream>`.
 
-Full case-authoring detail (dict syntax, `recipe` actions, fractal
-multi-sector shape) → [`docs/ai/case-layout.md`](docs/ai/case-layout.md) and
+Full case-authoring detail (dict syntax, `recipe` actions, the
+plant-and-sectors shape) → [`docs/ai/case-layout.md`](docs/ai/case-layout.md) and
 [`docs/engine-capabilities.md`](docs/engine-capabilities.md) §7.
 
 ---
@@ -1656,7 +1661,7 @@ golden kind, rows appended corpus-wide with `--record-append` (adds only — a
 `--record` sweep would silently re-pin any drift within tolerance); the
 residual is pinned only when ≥ 1 W, threshold in the generator alone (the
 column13 lesson).  Found on the way: the flagship's golden was NEVER in the
-full suite — fractal `children` cases were skipped on a reason settled
+full suite — sectored `children` cases were skipped on a reason settled
 2026-06-08 — and is in the walk now; and three of its units did not close
 that day (Evap1 98.45 %, Cryst 110.66 %, Fermentor 82.02 %), the engine's own
 stated finding, left as such.  (Cryst and the Fermentor close at 100.00 %
@@ -2930,7 +2935,7 @@ other salts are spectators — 2026-09-27, record
 restricts to the ACTIVE components (feed `z > 0`) so a sparse stream in a big
 flowsheet still splits — inactive species stay 0 in both phases (mass conserved
 exactly; identical to the full search when all species are active).  Reference
-case: **`tutorials/plant/lithiumBrinePlant`** — a FRACTAL, WIRED plant, 5 sectors
+case: **`tutorials/plant/lithiumBrinePlant`** — a SECTORED, WIRED plant, 5 sectors
 as composite boxes across 4 worlds (Pitzer / NRTL LLE / Gibbs / molecular), mass
 closes on every element.  Cases are SELF-CONTAINED via a SEALED `constant/propertyManifest`
 + mirrored `constant/` records (`bin/choupo-import` materialises the dependency closure + a per-record
@@ -3068,7 +3073,7 @@ stays refused — it is on the other side of the boundary.  Gate:
 (`Database` overlays it field-by-field over the standard entry).
 
 The full capabilities narrative — props bench, recycle solver, energy streams,
-heat/utility credo, reports chain, fractal multi-sector flowsheets, the
+heat/utility credo, reports chain, multi-sector flowsheets, the
 database catalogue, known limitations, and the roadmap — lives in
 **[`docs/engine-capabilities.md`](docs/engine-capabilities.md)**.
 
@@ -3582,9 +3587,9 @@ split below).
   equation-oriented dream deferred in the roadmap).  Box: *all models are
   wrong, some are useful.*
 
-* **Fractal units + the MODEL-BOUNDARY rule — SETTLED 2026-06-08, forum 5/5, do
-  NOT relitigate.**  The flowsheet is fractal (composite sectors nest leaf
-  units); `flattenNode` collapses the tree to ONE flat solver problem with
+* **Sectored units + the MODEL-BOUNDARY rule — SETTLED 2026-06-08, forum 5/5, do
+  NOT relitigate.**  The flowsheet is a plant and its sectors (composite
+  sectors nest leaf units); `flattenNode` collapses the tree to ONE flat solver problem with
   `plant.sector.unit` names — the hierarchy is authoring/namespace only, never a
   recursive solver-within-a-solver.  Per-unit `thermo {}` REPLACES models, keeps
   components global (`thermoFor`).  Standalone "run one unit with frozen inlets"

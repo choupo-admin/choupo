@@ -136,7 +136,7 @@ void AdsorbentRegistry::loadFrom(const std::string& dataRoot)
 const Adsorbent& AdsorbentRegistry::byName(const std::string& name)
 {
     // Case-local overlay: the NEAREST constant/adsorbents/<name>.dat walking
-    // UP from the cwd ECLIPSES the standard entry whole --- the same fractal
+    // UP from the cwd ECLIPSES the standard entry whole --- the same folder
     // cascade as membranes / components, announced loudly (no silent crutch):
     // an adsorbent is curated data the case may legitimately carry.  Its
     // isotherms come from the case-local

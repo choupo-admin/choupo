@@ -57,7 +57,7 @@ def check_writer(tmp, bad):
     #  looked at the root alone and was satisfied by it; the day that unit
     #  moved into MAIN/ the root held no unit, the arm reported the projection
     #  "missing", and every sector's byUnit/ was sitting one level down.  A
-    #  gate that knows one layout of a fractal is a gate about one case.
+    #  gate that knows one layout of a sectored case is a gate about one case.
     by_dirs = [d for d in [inst / "byUnit"]
                + sorted(sd / "byUnit" for sd in inst.iterdir() if sd.is_dir() and sd.name != "byUnit")
                if d.exists()]

@@ -82,7 +82,7 @@ public:
 
     // THE single overlay entry point: apply a case-local
     // constant/components/<name>.dat `overlayOf` PARTIAL deep-merge over an
-    // already-loaded BASE dict (walk up from cwd, fractal cascade).  Shared by the
+    // already-loaded BASE dict (walk up from cwd, folder cascade).  Shared by the
     // SpeciationSolver, the ThermoPackageBuilder and loadComponent so the readers
     // stay one reader.  A case-local file WITHOUT `overlayOf` is a full
     // replacement/shadow record, handled by loadComponent, not here.

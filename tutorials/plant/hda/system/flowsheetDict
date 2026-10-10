@@ -5,14 +5,14 @@
     * an H2 gas loop          (GasSplit 95 % -> back to the Mixer)
     * an unreacted-toluene loop (Column bottoms -> back to the Mixer)
 
-  WHY FLAT, not the two-sector fractal we first attempted: a recycle closes only
+  WHY FLAT, not the two-sector plant we first attempted: a recycle closes only
   when its `tearStreams` declaration AND both endpoints live in the SAME flowsheet
   node.  The engine's tear-closing override (Flowsheet.cpp) is leaf-only and
   same-level-only -- it does NOT support CROSS-SECTOR (composite-to-composite)
   tears.  Both HDA loops run from the separation train back to the reactor feed,
   so no single sector owns both ends; they are inherently plant-level and must be
   flat (the proven process03_recycle pattern: each tear name is BOTH a Mixer
-  input AND a producer output, listed after the Mixer).  The fractal sector
+  input AND a producer output, listed after the Mixer).  The sector
   showcase lives elsewhere (the sector-internal recycle in the two-sector demo).
 
   Everything is at 35 bar so the recycles return at reactor pressure (the Mixer

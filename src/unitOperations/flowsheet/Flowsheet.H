@@ -35,7 +35,7 @@ Description
     architecture, docs/architecture/stream-state-architecture.md).  A
     `streams {}` block in any flowsheetDict is refused loudly.
 
-    The node is FRACTAL: a LEAF carries `type` directly ("a unit op is a
+    A node is one of three kinds: a LEAF carries `type` directly ("a unit op is a
     flowsheet of one"), a FLAT case carries an inline `units ( {...} {...} )`
     dict list, and a COMPOSITE lists member folders (`sectors` / `units` as
     word lists) cabled by named-edge `connections {}` -- flattenNode collapses

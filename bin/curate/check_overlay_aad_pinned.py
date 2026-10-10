@@ -39,7 +39,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
     TOGETHER, so no primary published it and it is a self-recorded regression
     row, never an `anchor`.  Pinning it says the agreement has not MOVED.
   * `tutorials/plant/` OVERLAYS.  The two esterification2sector sector dicts
-    carry overlays, and a fractal plant case is run-only in `bin/runTests` --
+    carry overlays, and a sectored plant case is run-only in `bin/runTests` --
     demanding a checked golden there would demand a golden nothing checks.
     They are SKIPPED and NAMED below, so the exclusion is visible rather than
     silent.

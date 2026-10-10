@@ -659,7 +659,7 @@ const word = (v: JsonValue | undefined): string | null =>
 
 /**
  * Read the vessel's declared operation from the case that produced the run.
- * `unit` is the KPI block's name; a flattened fractal name (`SECTOR.vessel`)
+ * `unit` is the KPI block's name; a flattened sectored name (`SECTOR.vessel`)
  * is matched on its last segment, exactly as the LUB page's reader does.
  * Every absence is NAMED in `missing` with the surface it would come from.
  */

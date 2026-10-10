@@ -1150,7 +1150,7 @@ else
     # choupoSolve flowsheet) that IS checked -- and (b) any case carrying a
     # `.known-broken` marker, which is pulled in DELIBERATELY so its breakage is
     # visible in the summary rather than hidden behind the run-only exclusion.
-    # A FRACTAL case (top flowsheetDict carries `children`: ChemicalPlantTutorial,
+    # A SECTORED case (top flowsheetDict carries `children`: ChemicalPlantTutorial,
     # esterification2sector, twoSectorDemo) otherwise stays run-only -- its
     # curate-vs-simulate sector dispatch is still an open call, so it is NOT
     # auto-checked even if a stale `expected` lingers from an earlier --record.
@@ -1159,7 +1159,7 @@ else
             pdir="$(dirname "$(dirname "$cd")")"
             if [ -f "$pdir/.known-broken" ]; then CASES+=("$pdir"); continue; fi
             [ -f "$pdir/expected" ] || continue
-            #  A FRACTAL case (top flowsheetDict carrying `children`) used to
+            #  A SECTORED case (top flowsheetDict carrying `children`) used to
             #  be skipped here too, on the reason that "its curate-vs-simulate
             #  sector dispatch is still an open call".  That call was settled
             #  2026-06-08 (flattenNode: one flat solver problem), and the
@@ -1167,7 +1167,7 @@ else
             #  ChemicalPlantTutorial shipped a golden the full suite never
             #  compared (only gates that run the case themselves saw it),
             #  found 2026-09-05 when Vitor asked.  A golden is a promise to
-            #  check; a case that ships one is in the walk, fractal or flat.
+            #  check; a case that ships one is in the walk, sectored or flat.
             CASES+=("$pdir")
         done < <(find "tutorials/plant" -path '*/system/controlDict' 2>/dev/null | sort)
     fi
@@ -5695,8 +5695,8 @@ for case_dir in "${CASES[@]}"; do
     fi
 done
 
-# --- standalone-branch regression (lean-fractal promise) ------------------
-#  The lean fractal layout PROMISES that any branch of a composite plant can be
+# --- standalone-branch regression (lean-sector-folder promise) ------------------
+#  The lean sector-folder layout PROMISES that any branch of a composite plant can be
 #  run on its OWN (./choupoSolve <plant>/<BRANCH>) with its inlets frozen.  The
 #  thermoPackage + component overlays already cascaded UP for a standalone
 #  branch, but the REACTIONS library did NOT -- so FERMENTATION run alone threw
@@ -5704,7 +5704,7 @@ done
 #  This guard pins the fix: the pilot branch must run alone, EXIT 0, AND
 #  ANNOUNCE where its reactions came from (the loud, non-silent cascade).  It is
 #  pilot-scoped (only on the full sweep) -- a general standalone-branch sweep
-#  would be too broad while the fractal layout is still a pilot.
+#  would be too broad while the sectored layout is still a pilot.
 if [ "$#" -eq 0 ]; then
     # --- the corpus-sweeping meta-gates, on the suite's OWN case pass -------
     #  Moved here from the pre-loop gate section (2026-08-24): each used to
@@ -5795,7 +5795,7 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/estclass.$$
 
-    # Sector-hierarchy gate (2026-09-04): a fractal plant's SECTORS must reach
+    # Sector-hierarchy gate (2026-09-04): a sectored plant's SECTORS must reach
     # the design table, both CSVs and the capital-by-sector block -- carried as
     # DATA from the flatten seam, never recovered by splitting a dotted name --
     # and a flat case must be left exactly as it was, with no invented root

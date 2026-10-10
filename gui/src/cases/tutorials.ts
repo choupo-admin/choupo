@@ -40,7 +40,7 @@ License
         ctrl/      <name>/...             process control (control loops)
         batch/     <subclass>/<name>/...  batch processes
         props/     <subclass>/<name>/...  thermophysical properties
-        plant/     <name>/...             integrated plant design (fractal)
+        plant/     <name>/...             integrated plant design (sectors)
 
   All five binaries are built as WASM (see make/wasm.mk) and runnable
   in the browser.
@@ -56,7 +56,7 @@ import type { CaseFiles } from "../case/types.js";
 // `constant/<sub>/<file>` (e.g. user-defined components at
 // constant/components/<name>.dat introduced ).  Files at
 // the top level of system/ or constant/ also match.
-// Bundle the INPUT files under each case.  Fractal cases nest
+// Bundle the INPUT files under each case.  Sectored cases nest
 // their sectors / units in subfolders (`<sector>/system/...`,
 // `<sector>/<unit>/system/...`), so we can no longer restrict the glob to
 // system/ + constant/ at the case root --- we grab the whole tree.  But we
@@ -211,7 +211,7 @@ export interface TutorialEntry {
   unsupportedReason?: string;
 }
 
-// Sub-node index (fractal): every node WITH a `.cho` below the case
+// Sub-node index (sectored cases): every node WITH a `.cho` below the case
 // root (a sector or unit) becomes a CASE in its own right --- re-rooted, with
 // thermoPackage/controlDict inherited from the nearest ancestor (the cascade).
 // Keyed by full path "plant/ChemicalPlantTutorial/CONCENTRATION".  Not shown
@@ -236,7 +236,7 @@ export const TUTORIALS_BY_CATEGORY: {
   { category: "ctrl",     label: "Process control", entries: [] },
   { category: "batch",    label: "Batch processes", entries: [] },
   { category: "props",    label: "Thermophysical properties", entries: [] },
-  { category: "plant",    label: "Plant design (fractal)", entries: [] },
+  { category: "plant",    label: "Plant design (sectors)", entries: [] },
 ];
 for (const t of TUTORIALS) {
   const g = TUTORIALS_BY_CATEGORY.find((x) => x.category === t.category);
@@ -249,7 +249,7 @@ for (const t of TUTORIALS) {
 // SUBFOLDERS on disk (e.g. tutorials/steady/membranes/membrane01_...).  The
 // case identifier therefore INCLUDES the sub-class (<cat>/<subclass>/<case>)
 // and the slug IS the folder name.  unsteady/, ctrl/ and plant/ stay flat (few
-// cases, and plant is fractal).  Below: which categories are sub-classed, the menu order
+// cases, and a plant is organised by sectors).  Below: which categories are sub-classed, the menu order
 // of the slugs, and a pretty label per slug for the Open-Case dialog.
 function isSubclassed(cat: string): boolean {
   return cat === "steady" || cat === "batch" || cat === "props";
@@ -376,7 +376,7 @@ function buildIndex(): TutorialEntry[] {
     // The case root is <cat>/<name> for FLAT categories (unsteady, ctrl, plant) and
     // <cat>/<subclass>/<name> for SUB-CLASSED ones (steady, batch, props).
     // `rel` is ANY path under the case root --- system/, constant/, OR a
-    // fractal subfolder (concentration/system/flowsheetDict,...).  The case
+    // sector subfolder (concentration/system/flowsheetDict,...).  The case
     // IDENTIFIER (`key`) includes the sub-class, matching the folder on disk.
     const m = /\/tutorials\/(.+)$/.exec(absPath);
     if (!m || !m[1]) return;
@@ -619,7 +619,7 @@ function subNodesFor(rootName: string,
         name,
         shortName: `${shortName}/${dir}`,
         category,
-        subclass: "", // fractal sub-nodes are reached by URL, not the menu
+        subclass: "", // sector sub-nodes are reached by URL, not the menu
         description: typeof rawDesc === "string" ? rawDesc : "",
         // A drilled sub-node runs on the binary its inherited controlDict
         // names (the cascade above copied the nearest ancestor's), read the

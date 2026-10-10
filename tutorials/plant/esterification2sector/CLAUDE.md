@@ -18,7 +18,7 @@ engine; HERE your job is this case.
   (the unit op reads it).  Say what you changed; the change is a visible dict diff.
 
 ## Intent (this case) -- keep updated as the project develops
-- **Goal:** a two-sector fractal plant (REACTION + SEPARATION) to exercise the
+- **Goal:** a two-sector plant (REACTION + SEPARATION) to exercise the
   unified props/thermo + per-sector `constant/`.  Esterification
   AcOH + EtOH -> EtOAc + H2O, then a flash split.
 - **Sectors (THERMO REGIONS), each one unit op:**

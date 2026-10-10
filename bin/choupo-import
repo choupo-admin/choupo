@@ -8,7 +8,7 @@
 #   choupo-import <caseDir> [--adopt-local <rel>]... [--overwrite <rel>]...
 #
 # Ownership, provenance and integrity live in `constant/propertyManifest`
-# (one per fractal context -- plant root + each sector that declares its own
+# (one per context -- plant root + each sector that declares its own
 # property system; each manifest claims ONLY files inside its own constant/).
 # Per claimed file the manifest records: relative path, installed sha256,
 # origin path, origin sha256, catalogue release, importer version, and the
@@ -36,7 +36,7 @@
 #      catalogue hidden) BEFORE anything is installed; the manifest is
 #      replaced LAST.
 #   6. Absolute paths, `..`, symlink escapes and duplicate claims are
-#      rejected.  In fractal plants each constant/ owns its own manifest and
+#      rejected.  In sectored plants each constant/ owns its own manifest and
 #      claims only within its own context.
 #
 # Curation-time tool (like bin/curate/*.py); the engine never estimates or
@@ -1596,7 +1596,7 @@ def main():
             + "\nmigrate first (delete the snapshot tree; hand-tuned records "
               "move to their mirrored constant/ homes), then re-run.")
 
-    # ---- closures per fractal context -------------------------------------
+    # ---- closures per context (plant root or sector) -------------------------------
     plant_pp = None
     for name in ("thermoPhysPropDict",):   # v1 propertyDict/propertyPackage are dead
         cand = caseDir / "constant" / name

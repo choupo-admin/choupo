@@ -34,7 +34,7 @@ Description
     Each retained OUTER recycle iteration is one "instant" --- a complete
     snapshot of the flowsheet stream registry.  FAITHFUL to OpenFOAM, the
     instant is a TIME DIRECTORY at the CASE ROOT (a bare iteration NUMBER:
-    `0/ 1/ 2/ 3/`, next to `constant/`, `system/` and the fractal sector
+    `0/ 1/ 2/ 3/`, next to `constant/`, `system/` and the sector
     folders), NOT nested under a `solution/` wrapper --- "the time speaks for
     itself".  The recycle outer-iteration counter is the "pseudo-time": it is
     NOT physical time and NOT the inner Newton iterations of a flash or column
@@ -47,13 +47,13 @@ Description
     the symlink is absent (symlink-hostile filesystems).
 
     LOADER SAFETY: numeric instant dirs at the case root are NEVER mistaken for
-    fractal sectors.  The fractal loader (Flowsheet flattenNode) iterates the
+    sectors.  The sector loader (Flowsheet flattenNode) iterates the
     DECLARED `children (...)` from flowsheetDict --- not a filesystem scan ---
     and only loads a child as a sector when `<child>/system/flowsheetDict`
     exists.  An instant dir has neither, so the case runs correctly with
     `0/ 1/ 2/ 3/` sitting beside the sector folders.
 
-    PER-BRANCH instants (CHT-faithful, fractal).  The flowsheet is fractal: each
+    PER-BRANCH instants (CHT-faithful, per sector).  The plant has sectors: each
     SECTOR (a top-level child of the plant) is an independently-analysable region.
     So an instant is written PER BRANCH, like a conjugate-heat-transfer mesh
     where each region carries its own field plus the boundary/interface faces it

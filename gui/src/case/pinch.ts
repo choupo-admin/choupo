@@ -80,10 +80,10 @@ export function thermalStreams(runResult: RunResult | null, flowsheet: JsonDict 
   const namesOf = (v: unknown): string[] =>
     Array.isArray(v) ? (v as string[]).map(String) : v === undefined || v === null ? [] : [String(v)];
 
-  // The unit list is FLAT only at the top level; a fractal plant's root carries
+  // The unit list is FLAT only at the top level; a sectored plant's root carries
   // `children`, not `units`, so flowsheet["units"] is empty for it.  Iterate the
   // run's KPIS instead (already flattened to plant.sector.unit) -- this works
-  // for BOTH flat and fractal cases.  flowsheet `units` (when present) only
+  // for BOTH flat and sectored cases.  flowsheet `units` (when present) only
   // feeds the stream-temperature fallback below.  (`COLUMN`/`type` no longer
   // needed: a column is detected by its reboiler/condenser kpis.)
   const unitByName = new Map<string, JsonDict>(units.map((u) => [String(u["name"]), u]));

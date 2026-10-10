@@ -152,7 +152,7 @@ function caseTree(rawFiles: { [p: string]: string }, caseName: string): string {
   //  declared dicts, the initial state and every sector's own tree.  What the
   //  RUN writes is excluded through caseTree.isRunOutput -- the ONE home for
   //  that fact (this used to be a positive list of three roots, which
-  //  silently hid every sector of a fractal case from the intro; and until
+  //  silently hid every sector of a sectored case from the intro; and until
   //  2026-09-06 it read the KIND, which would have listed
   //  `converged/internalStates/<unit>` -- a run output of kind "interior" --
   //  as a file the student wrote).  Root-level prose (README.md and the

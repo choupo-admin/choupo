@@ -31,7 +31,7 @@ describe("selection card fold — handle label", () => {
     expect(selectionLeafLabel("stream:feed")).toBe("feed");
   });
 
-  it("takes the leaf of a fractal dotted / slashed name", () => {
+  it("takes the leaf of a sectored dotted / slashed name", () => {
     expect(selectionLeafLabel("unit:plant.sector.flash1")).toBe("flash1");
     expect(selectionLeafLabel("stream:concentration/condensate1")).toBe("condensate1");
   });

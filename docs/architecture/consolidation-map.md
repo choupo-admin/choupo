@@ -31,7 +31,7 @@ flowchart TB
         direction LR
         TH["thermo/<br/>package inline in the case<br/>the one-knob rule"]
         SO["solver/<br/>Newton 1-D and n-D<br/>Wegstein · Michelsen"]
-        UO["unitOperations/<br/>explicit factory<br/>fractal, flattened"]
+        UO["unitOperations/<br/>explicit factory<br/>sectored, flattened"]
         ST["streams/<br/>state in files<br/>phases{} decomposes"]
         TH --- SO --- UO --- ST
     end

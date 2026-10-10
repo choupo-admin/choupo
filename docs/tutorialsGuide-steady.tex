@@ -4646,9 +4646,9 @@ The flash splits the feed into vapour + liquid (the pseudo-component participate
 
 \clearpage
 \tutentry{leaf01\_flash}{tutorials/steady/flash/leaf01\_flash}
-\tutwhat{Leaf-node form: isothermal flash benzene/toluene (fractal base case)}
+\tutwhat{Leaf-node form: isothermal flash benzene/toluene (sectored-layout base case)}
 \begin{tutnarrative}
-/ flowsheetDict (LEAF NODE -- fractal base case)
+/ flowsheetDict (LEAF NODE -- sectored-layout base case)
 
 A leaf carries `type` + `operation` (the unit) + `boundary` (its interface) + `streams` (the default feeds, so it runs isolated). No `units (...)` list. Compare flash01\_benzene\_toluene, which writes the SAME flash as a one-element units list -- identical physics, two roupas.
 
@@ -5111,7 +5111,7 @@ TWO tears still close all three loops: cut the two mixer outlets and every strea
 
 \clearpage
 \tutentry{composite01\_two\_flashes}{tutorials/steady/flowsheets/composite01\_two\_flashes}
-\tutwhat{Composite node: two flashes in series (fractal step 2)}
+\tutwhat{Composite node: two flashes in series (sectored-layout step 2)}
 \begin{tutnarrative}
 / flowsheetDict (COMPOSITE node)
 
@@ -5234,9 +5234,9 @@ The plant's first law closes only if the units and the energy report read the sa
 
 \clearpage
 \tutentry{plant01\_two\_sectors}{tutorials/steady/flowsheets/plant01\_two\_sectors}
-\tutwhat{Recursive plant: factory of two composite sectors (fractal step 3)}
+\tutwhat{Recursive plant: factory of two composite sectors (sectored-layout step 3)}
 \begin{tutnarrative}
-the RECURSIVE node (fractal step 3).
+the RECURSIVE node (sectored-layout step 3).
 
 A FACTORY whose children are SECTORS that are themselves composite (each a flowsheet of one flash). Recursion: plant $\to$ sector $\to$ unit. Tests nested namespacing (secA.fa, secB.fb) and multi-level cabling (feed $\to$ secA $\to$ secA/liquid $\to$ secB). The whole plant runs from one command.
 

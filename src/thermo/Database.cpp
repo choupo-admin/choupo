@@ -109,7 +109,7 @@ Database::applyCaseOverlay(const std::string& name, DictPtr baseDict,
     ResolvedComponentDict out;
     out.dict     = baseDict;
     out.baseFile = baseFile;
-    // Walk UP from the cwd (fractal cascade) for a case-local partial overlay.
+    // Walk UP from the cwd (folder cascade) for a case-local partial overlay.
     fs::path p = fs::current_path();
     for (int up = 0; up < 6; ++up)
     {
@@ -156,7 +156,7 @@ Component Database::loadComponent(const std::string& name) const
     // component absent from the standard catalogue still works alone
     // (a textbook problem with made-up properties, an industry mixture).
     // Case-local override: the NEAREST `constant/components/<name>.dat` found
-    // walking UP from the cwd (fractal cascade) --- so a sector inherits
+    // walking UP from the cwd (folder cascade) --- so a sector inherits
     // a material's sample data (sorption isotherm,...) declared at the plant
     // level, exactly as thermoPackage/controlDict cascade in main.
     fs::path caseLocal;
@@ -654,7 +654,7 @@ std::string Database::canonicalName(const std::string& token) const
         return token;
     // A CASE-LOCAL override named by the token wins too (self-contained credo):
     // a case carrying its own constant/components/<token>.dat must not be aliased
-    // away to the standard catalogue.  Same fractal cwd-walk as loadComponent.
+    // away to the standard catalogue.  Same folder cwd-walk as loadComponent.
     {
         fs::path p = fs::current_path();
         for (int up = 0; up < 6; ++up)
