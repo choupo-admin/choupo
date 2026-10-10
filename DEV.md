@@ -2012,7 +2012,15 @@ and pinch-composite are candidates, Vítor's call); notes only, no live run
 colours fail the palette validator in dark mode (compensated by A/B labels
 and a table version, not investigated); `bin/checkGui --screenshots`
 reported PAGE ERRORs on `wegstein` and `active-set-qp`, not this slice's
-pages, not investigated.
+pages, not investigated.  BOTH CLOSED 2026-10-10 (merged after C57): the
+dark-mode failure was the lightness band (orange-6 too light on the dark
+body; option B is orange-8 now); Wegstein's error was a duplicate glossary
+key `N_c` (a test now refuses a symbol glossed twice in a step);
+active-set-qp did not reproduce; checkGui skipped `four-ways-mixture`
+silently (a comment between `id:` and `label:`) and now refuses an id it
+cannot read.  route-screening moved to "Process design & economics".
+OPEN, small: on a phone, active-set-qp's knob inputs (560 px) run past a
+390 px screen.
 
 **C57. THE GREEN-AMMONIA PROJECT IN DESIGN PHASES: PHASE 2 (EQUILIBRIUM +
 HEAT, GROSS MARGIN WITH THERMAL ENERGY) AND PHASE 3 (KINETIC BEDS, EVERY
