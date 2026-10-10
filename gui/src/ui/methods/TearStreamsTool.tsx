@@ -104,47 +104,116 @@ function OrderDiagram({ g, order, marks, onToggle }: {
     return m === "tear" || m === "forward" ? "" : m;
   };
 
+  /*  A DRAWING READ AT SIZE, IN A BOX THAT PANS (2026-10-10).  The row is
+   *  778 to 1054 user units wide (four to six units), and scaled to a
+   *  390 px phone its 8.5-unit labels would be 3 px and its 18-unit touch
+   *  paths 6 px -- unreadable and untouchable.  So the drawing keeps a floor
+   *  width and the box around it scrolls sideways; on the desk the floor is
+   *  below the column and nothing scrolls.  `data-pan-x` DECLARES that
+   *  intent to bin/checkGui, which otherwise reports a control past the
+   *  screen's right edge as a layout wider than the screen (and checks that
+   *  the marked box itself fits the screen -- occlusion.mjs).  */
+  const narrow = useNarrowViewport();
   let laneUp = 0, laneDown = 0;
   return (
-    <Box style={{ width: "100%", overflowX: "auto" }}>
-      <svg viewBox={`0 0 ${w} ${h}`} width="100%"
-        style={{ display: "block", minWidth: Math.min(w, 620) }}
-        role="img"
-        aria-label={"The flowsheet's units in declared order, with each "
-          + "stream drawn as an arc above the row when it runs forward and "
-          + "below it when it runs backward"}>
-        {/* the units, left to right, in the order the solver walks them */}
-        {order.map((u, i) => (
-          <g key={u}>
-            <rect x={cx(u) - BOX_W / 2} y={yTop} width={BOX_W} height={BOX_H}
-              rx={4} fill="none" stroke={GRID} strokeWidth={1.5} />
-            <text x={cx(u)} y={yTop + 14} textAnchor="middle" fontSize={11}
-              fill="currentColor">{g.units[u]!.name}</text>
-            <text x={cx(u)} y={yTop + 26} textAnchor="middle" fontSize={8.5}
-              fill={INK}>{g.units[u]!.kind}</text>
-            <text x={cx(u)} y={yTop - 6} textAnchor="middle" fontSize={9}
-              fill={INK}>{i + 1}</text>
-          </g>
-        ))}
-        {g.edges.map((e) => {
-          //  A domain inlet or outlet: a stub, because it can never be torn.
-          if (!isInternal(e)) {
-            const u = (e.from ?? e.to) as number;
-            const inlet = e.from === null;
-            const x = cx(u) + (inlet ? -BOX_W / 2 - 26 : BOX_W / 2 + 26);
-            const y = yTop + BOX_H / 2;
-            const ink = inkOf(e.name);
+    <Box>
+      {/*  A phone shows no scrollbar until the box is touched, so the reader is
+           TOLD the row continues; otherwise the units cut off at the edge read
+           as the end of the flowsheet.  */}
+      {narrow && (
+        <Text size="xs" c="dimmed" mb={4}>
+          The row is wider than this screen: swipe the drawing sideways to see
+          all of it.
+        </Text>
+      )}
+      <Box data-pan-x="" style={{ width: "100%", overflowX: "auto" }}>
+        <svg viewBox={`0 0 ${w} ${h}`} width="100%"
+          style={{ display: "block", minWidth: Math.min(w, 620) }}
+          role="img"
+          aria-label={"The flowsheet's units in declared order, with each "
+            + "stream drawn as an arc above the row when it runs forward and "
+            + "below it when it runs backward"}>
+          {/* the units, left to right, in the order the solver walks them */}
+          {order.map((u, i) => (
+            <g key={u}>
+              <rect x={cx(u) - BOX_W / 2} y={yTop} width={BOX_W} height={BOX_H}
+                rx={4} fill="none" stroke={GRID} strokeWidth={1.5} />
+              <text x={cx(u)} y={yTop + 14} textAnchor="middle" fontSize={11}
+                fill="currentColor">{g.units[u]!.name}</text>
+              <text x={cx(u)} y={yTop + 26} textAnchor="middle" fontSize={8.5}
+                fill={INK}>{g.units[u]!.kind}</text>
+              <text x={cx(u)} y={yTop - 6} textAnchor="middle" fontSize={9}
+                fill={INK}>{i + 1}</text>
+            </g>
+          ))}
+          {g.edges.map((e) => {
+            //  A domain inlet or outlet: a stub, because it can never be torn.
+            if (!isInternal(e)) {
+              const u = (e.from ?? e.to) as number;
+              const inlet = e.from === null;
+              const x = cx(u) + (inlet ? -BOX_W / 2 - 26 : BOX_W / 2 + 26);
+              const y = yTop + BOX_H / 2;
+              const ink = inkOf(e.name);
+              const fault = faultOf(e.name);
+              //  WHICH WAY THE LABEL RUNS.  Outward, into the page margin,
+              //  wherever there IS a margin: to the left for an inlet, to the
+              //  right for the last unit's outlet.  A middle unit's outlet has
+              //  only the 34 px gap before the next box, which no label fits
+              //  in, so it keeps the inward anchor it has always had and sits
+              //  over its own unit -- a pre-existing crowding this slice does
+              //  not make worse and does not pretend to fix.
+              const outward = inlet
+                || (pos.get(u) ?? 0) === order.length - 1;
+              const anchor = outward === inlet ? "end" : "start";
+              return (
+                <g key={e.name} style={{ cursor: "pointer" }}
+                  onClick={() => onToggle(e.name)}
+                  role="button" tabIndex={0}
+                  aria-label={`declare or withdraw a tear on stream ${e.name}`}
+                  onKeyDown={(ev) => {
+                    if (ev.key === "Enter" || ev.key === " ") onToggle(e.name);
+                  }}>
+                  {/* a wide transparent hit path: an 8-point label and a
+                      1.2-pixel line are not something a finger can hit */}
+                  <line x1={inlet ? x - 6 : cx(u) + BOX_W / 2}
+                    x2={inlet ? cx(u) - BOX_W / 2 : x + 6} y1={y} y2={y}
+                    stroke="transparent" strokeWidth={18} />
+                  <line x1={inlet ? x : cx(u) + BOX_W / 2}
+                    x2={inlet ? cx(u) - BOX_W / 2 : x} y1={y} y2={y}
+                    stroke={ink} strokeWidth={fault ? 2 : 1.2}
+                    strokeDasharray={fault ? "5 3" : ""} />
+                  {/*  AWAY from the box.  An inlet's stub sits to the LEFT of
+                       its unit, so its label must be anchored at its right end
+                       and run leftwards into the margin; an outlet is the
+                       mirror.  Written the other way round -- which is how it
+                       was -- every label ran straight across the unit it
+                       belongs to, and the moment a refusal word was appended
+                       the collision was unreadable.  */}
+                  <text x={x} y={y - 5} textAnchor={anchor}
+                    fontSize={8.5} fill={fault ? ink : INK}>{e.name}</text>
+                  {/*  The refusal word goes on its OWN line rather than beside
+                       the name.  A stub has only the page margin to write in,
+                       and "freshFeed  (UNCONSUMED TEAR)" on one line is wider
+                       than any margin that leaves the boxes readable.  */}
+                  {fault && (
+                    <text x={x} y={y + 10} textAnchor={anchor}
+                      fontSize={8.5} fill={ink}>{fault}</text>
+                  )}
+                </g>
+              );
+            }
+            const a = cx(e.from as number), b = cx(e.to as number);
+            const back = (pos.get(e.to as number) ?? 0)
+              <= (pos.get(e.from as number) ?? 0);
+            const mark = marks[e.name] ?? "forward";
+            const colour = inkOf(e.name);
             const fault = faultOf(e.name);
-            //  WHICH WAY THE LABEL RUNS.  Outward, into the page margin,
-            //  wherever there IS a margin: to the left for an inlet, to the
-            //  right for the last unit's outlet.  A middle unit's outlet has
-            //  only the 34 px gap before the next box, which no label fits
-            //  in, so it keeps the inward anchor it has always had and sits
-            //  over its own unit -- a pre-existing crowding this slice does
-            //  not make worse and does not pretend to fix.
-            const outward = inlet
-              || (pos.get(u) ?? 0) === order.length - 1;
-            const anchor = outward === inlet ? "end" : "start";
+            const lane = back ? ++laneDown : ++laneUp;
+            const depth = 18 + (lane % 3) * 20;
+            const y0 = back ? yTop + BOX_H : yTop;
+            const y1 = back ? y0 + depth : y0 - depth;
+            const mid = (a + b) / 2;
+            const d = `M ${a} ${y0} C ${a} ${y1}, ${b} ${y1}, ${b} ${y0}`;
             return (
               <g key={e.name} style={{ cursor: "pointer" }}
                 onClick={() => onToggle(e.name)}
@@ -153,72 +222,24 @@ function OrderDiagram({ g, order, marks, onToggle }: {
                 onKeyDown={(ev) => {
                   if (ev.key === "Enter" || ev.key === " ") onToggle(e.name);
                 }}>
-                {/* a wide transparent hit path: an 8-point label and a
-                    1.2-pixel line are not something a finger can hit */}
-                <line x1={inlet ? x - 6 : cx(u) + BOX_W / 2}
-                  x2={inlet ? cx(u) - BOX_W / 2 : x + 6} y1={y} y2={y}
-                  stroke="transparent" strokeWidth={18} />
-                <line x1={inlet ? x : cx(u) + BOX_W / 2}
-                  x2={inlet ? cx(u) - BOX_W / 2 : x} y1={y} y2={y}
-                  stroke={ink} strokeWidth={fault ? 2 : 1.2}
-                  strokeDasharray={fault ? "5 3" : ""} />
-                {/*  AWAY from the box.  An inlet's stub sits to the LEFT of
-                     its unit, so its label must be anchored at its right end
-                     and run leftwards into the margin; an outlet is the
-                     mirror.  Written the other way round -- which is how it
-                     was -- every label ran straight across the unit it
-                     belongs to, and the moment a refusal word was appended
-                     the collision was unreadable.  */}
-                <text x={x} y={y - 5} textAnchor={anchor}
-                  fontSize={8.5} fill={fault ? ink : INK}>{e.name}</text>
-                {/*  The refusal word goes on its OWN line rather than beside
-                     the name.  A stub has only the page margin to write in,
-                     and "freshFeed  (UNCONSUMED TEAR)" on one line is wider
-                     than any margin that leaves the boxes readable.  */}
-                {fault && (
-                  <text x={x} y={y + 10} textAnchor={anchor}
-                    fontSize={8.5} fill={ink}>{fault}</text>
-                )}
+                <path d={d} fill="none" stroke="transparent" strokeWidth={18} />
+                <path d={d} fill="none" stroke={colour}
+                  strokeWidth={mark === "forward" ? 1.2 : 2}
+                  strokeDasharray={mark === "forward" ? "" : "5 3"} />
+                <text x={mid} y={back ? y1 + 10 : y1 - 3} textAnchor="middle"
+                  fontSize={8.5} fill={colour}>
+                  {e.name}
+                  {mark === "tear" ? "  (TEAR)" : fault ? `  (${fault})` : ""}
+                </text>
               </g>
             );
-          }
-          const a = cx(e.from as number), b = cx(e.to as number);
-          const back = (pos.get(e.to as number) ?? 0)
-            <= (pos.get(e.from as number) ?? 0);
-          const mark = marks[e.name] ?? "forward";
-          const colour = inkOf(e.name);
-          const fault = faultOf(e.name);
-          const lane = back ? ++laneDown : ++laneUp;
-          const depth = 18 + (lane % 3) * 20;
-          const y0 = back ? yTop + BOX_H : yTop;
-          const y1 = back ? y0 + depth : y0 - depth;
-          const mid = (a + b) / 2;
-          const d = `M ${a} ${y0} C ${a} ${y1}, ${b} ${y1}, ${b} ${y0}`;
-          return (
-            <g key={e.name} style={{ cursor: "pointer" }}
-              onClick={() => onToggle(e.name)}
-              role="button" tabIndex={0}
-              aria-label={`declare or withdraw a tear on stream ${e.name}`}
-              onKeyDown={(ev) => {
-                if (ev.key === "Enter" || ev.key === " ") onToggle(e.name);
-              }}>
-              <path d={d} fill="none" stroke="transparent" strokeWidth={18} />
-              <path d={d} fill="none" stroke={colour}
-                strokeWidth={mark === "forward" ? 1.2 : 2}
-                strokeDasharray={mark === "forward" ? "" : "5 3"} />
-              <text x={mid} y={back ? y1 + 10 : y1 - 3} textAnchor="middle"
-                fontSize={8.5} fill={colour}>
-                {e.name}
-                {mark === "tear" ? "  (TEAR)" : fault ? `  (${fault})` : ""}
-              </text>
-            </g>
-          );
-        })}
-        <text x={8} y={yTop - 24} fontSize={9} fill={INK}>forward (no cut)</text>
-        <text x={8} y={yTop + BOX_H + 56} fontSize={9} fill={INK}>
-          backward (needs a cut)
-        </text>
-      </svg>
+          })}
+          <text x={8} y={yTop - 24} fontSize={9} fill={INK}>forward (no cut)</text>
+          <text x={8} y={yTop + BOX_H + 56} fontSize={9} fill={INK}>
+            backward (needs a cut)
+          </text>
+        </svg>
+      </Box>
     </Box>
   );
 }
@@ -231,9 +252,23 @@ export function TearStreamsTool(): JSX.Element {
    *  sliders collide with their own labels and the plot is a stripe.  The
    *  posture comes from `useNarrowViewport`, the ONE detection home
    *  (methodsChrome), rather than from a CSS media query this file would then
-   *  own a second copy of.  */
+   *  own a second copy of.
+   *
+   *  `minmax(0, 1fr)` AND NOT `1fr` (2026-10-10).  A bare `1fr` is
+   *  `minmax(auto, 1fr)`, and `auto` is the track's MIN-CONTENT -- here the
+   *  backward-edge table, whose `miw={460}` sits inside an `overflowX: auto`
+   *  box precisely so it can scroll.  The grid read that 460 px as the
+   *  column's floor and grew the one phone column past a 390 px screen, so
+   *  the scroll box never scrolled and everything stretched to the column
+   *  went with it: the up/down order buttons ended at x ~ 476 and the
+   *  "declare what this order needs" button was 460 px wide (measured by
+   *  bin/checkGui).  A zero floor lets the column be the screen and the
+   *  table scroll inside it, as it was written to.  On the desk the content
+   *  fits the column, so the two spellings lay out identically there; the
+   *  same fix as ActiveSetQpTool's rail.  */
   const narrow = useNarrowViewport();
-  const rail = narrow ? "1fr" : "minmax(190px, 240px) 1fr";
+  const rail = narrow
+    ? "minmax(0, 1fr)" : "minmax(190px, 240px) minmax(0, 1fr)";
 
   const [graphId, setGraphId] = useState(TEACH_GRAPHS[0]!.id);
   const g = TEACH_GRAPHS.find((x) => x.id === graphId) ?? TEACH_GRAPHS[0]!;
@@ -336,7 +371,11 @@ export function TearStreamsTool(): JSX.Element {
           </Text>
         </Box>
 
+        {/*  STACKED ON A PHONE: three labels of 25-30 characters do not fit
+             side by side in 358 px, and a segment cut off at the screen's
+             edge is a teaching graph the reader cannot choose.  */}
         <SegmentedControl size="xs" fullWidth value={graphId}
+          orientation={narrow ? "vertical" : "horizontal"}
           onChange={setGraphId}
           data={TEACH_GRAPHS.map((x) => ({ value: x.id, label: x.label }))} />
         <Text size="sm">{g.blurb}</Text>

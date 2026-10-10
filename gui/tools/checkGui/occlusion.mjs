@@ -338,17 +338,66 @@ export const OFFSCREEN_PROBE = `(() => {
   // is 'overflow: hidden', so the document reports no overflow at all while
   // controls sit at x = 1251 in a 390 px viewport.  A reader needs the number,
   // not a boolean that a clipped layout makes false.
-  let right = 0, bottom = 0;
+  //
+  // PAST THE RIGHT EDGE, AND THE ONE DECLARED EXCEPTION (2026-10-10).
+  // A control whose right edge lies beyond the viewport's width is a layout
+  // wider than the screen -- the phone defect this harness kept finding
+  // (tear-streams' order buttons at x ~ 476 on a 390 px phone).  It is NOT
+  // the same thing as a control below the fold, which a user scrolls down
+  // to, and until today the two shared one "clipped (not judged)" count.
+  // Every such control is now listed by name in 'pastRightEdge'.
+  //
+  // The exception is a drawing that must be read AT SIZE and is put in a
+  // box that pans sideways on purpose: its controls lie past the edge and a
+  // finger reaches them by panning the box.  Geometry cannot tell that box
+  // from an accident -- every 'overflow-y: auto' workspace root computes to
+  // 'overflow-x: auto' too, so "inside a horizontal scroller that fits" would
+  // excuse the very defect this list exists for.  So the intent is DECLARED
+  // in the DOM ('data-pan-x' on the box) and VERIFIED here: the control's
+  // NEAREST horizontal scroller must carry the mark AND lie inside the
+  // viewport itself.  A mark on a box that is itself wider than the screen
+  // excuses nothing.  Such a control is listed in 'pannedX', not hidden, and
+  // the layout reach counts the BOX's right edge for it -- the box is what
+  // the page lays out; the drawing inside it is the box's own business.
+  const xScroller = (el) => {
+    for (let p = el.parentElement; p; p = p.parentElement) {
+      if (p === document.body || p === document.documentElement) return null;
+      const ox = getComputedStyle(p).overflowX;
+      if (ox === "auto" || ox === "scroll") return p;
+    }
+    return null;
+  };
+  let right = 0, rawRight = 0, bottom = 0;
+  out.pastRightEdge = [];
+  out.pannedX = [];
   for (const el of document.querySelectorAll(SEL)) {
     const r = el.getBoundingClientRect();
     if (r.width < 2 || r.height < 2) continue;
     const cs = getComputedStyle(el);
     if (cs.visibility === "hidden" || cs.display === "none"
         || parseFloat(cs.opacity || "1") === 0) continue;
-    right = Math.max(right, Math.round(r.right));
+    let laidOut = Math.round(r.right);
+    rawRight = Math.max(rawRight, laidOut);
+    if (laidOut > innerWidth) {
+      const box = xScroller(el);
+      const br = box ? box.getBoundingClientRect() : null;
+      const declared = box !== null && box.hasAttribute("data-pan-x")
+        && br.left >= -1 && Math.round(br.right) <= innerWidth;
+      if (declared) {
+        out.pannedX.push({ control: describe(el), panBox: describe(box) });
+        laidOut = Math.round(br.right);
+      } else {
+        out.pastRightEdge.push({
+          control: describe(el),
+          scroller: box ? describe(box) : null,
+          markedButWide: box !== null && box.hasAttribute("data-pan-x"),
+        });
+      }
+    }
+    right = Math.max(right, laidOut);
     bottom = Math.max(bottom, Math.round(r.bottom));
   }
-  out.extent = { right, bottom, viewportW: innerWidth, viewportH: innerHeight };
+  out.extent = { right, rawRight, bottom, viewportW: innerWidth, viewportH: innerHeight };
   out.documentOverflowsX =
     document.documentElement.scrollWidth > document.documentElement.clientWidth;
   out.scrollWidth = document.documentElement.scrollWidth;

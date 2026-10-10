@@ -251,8 +251,16 @@ describe("the tool renders it as a scrolling lesson", () => {
       .toBeGreaterThan(plot);
   });
 
-  it("puts the knobs in a two-column grid beside the chart", () => {
-    expect(SRC).toContain('gridTemplateColumns: "minmax(200px, 240px) 1fr"');
+  it("puts the knobs in a two-column grid beside the chart, one column on a phone", () => {
+    //  The desk keeps the rail beside the chart; a phone stacks them, the
+    //  posture read from the ONE home (methodsChrome.useNarrowViewport).
+    //  `minmax(0, 1fr)` and never a bare `1fr`: a bare one lets a child's
+    //  min-content widen the column past a 390 px screen (bin/checkGui's
+    //  past-the-right-edge arm, 2026-10-10).
+    expect(SRC).toContain("const narrow = useNarrowViewport();");
+    expect(SRC).toContain('? "minmax(0, 1fr)" : "minmax(200px, 240px) minmax(0, 1fr)"');
+    expect(SRC).toContain("gridTemplateColumns: rail");
+    expect(SRC).not.toContain('gridTemplateColumns: "minmax(200px, 240px) 1fr"');
     expect(SRC).toContain("<Stack gap={8}>{controls}</Stack>");
   });
 

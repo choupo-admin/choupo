@@ -74,6 +74,7 @@ License
 
 import { useMemo, useState } from "react";
 import { lessonStepper } from "./lessonStep.js";
+import { useNarrowViewport } from "./methodsChrome.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Select, Stack, Text,
   Title, Tooltip,
@@ -309,6 +310,18 @@ export function EpsilonNtuTool(): JSX.Element {
 
   const [source, setSource] = useState<Source>("classroom");
 
+  /*  ONE COLUMN ON A PHONE (2026-10-10), from `useNarrowViewport`, the ONE
+   *  posture home.  The knob rail kept its 200 px floor at 390 px and left
+   *  the chart column about 144 px, so the exchanger picker (180 px) ran
+   *  past the screen's right edge once the classroom run had produced a
+   *  point -- bin/checkGui's past-the-right-edge arm found it the day it was
+   *  armed (a 390 px walk measured before the run settled had not seen it).
+   *  `minmax(0, 1fr)`, not `1fr`, so no child's min-content can widen the
+   *  column past the screen; on the desk both spellings lay out the same.  */
+  const narrow = useNarrowViewport();
+  const rail = narrow
+    ? "minmax(0, 1fr)" : "minmax(200px, 240px) minmax(0, 1fr)";
+
   // ---- The classroom knobs + the self-feeding engine run -------------------
   const [knobs, setKnobs] = useState<EntuKnobs>(ENTU_DEFAULT_KNOBS);
   const overridesKey = JSON.stringify(knobs);
@@ -428,7 +441,7 @@ export function EpsilonNtuTool(): JSX.Element {
         )}
 
         <Box style={{ display: "grid", gap: 14,
-          gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+          gridTemplateColumns: rail }}>
           <Stack gap={8}>{controls}</Stack>
           <Box style={{ minWidth: 0 }}>
             {(!unit || !kpis || !match) ? (
