@@ -2042,7 +2042,12 @@ phone its toolbar folds into one `controls` popover (`ToolbarFold`, the
 credo's own remedy; reach 1084 -> 378 px, desk unchanged; the curve-forking
 controls go into the fold on a phone only, said in gui-credo.md).  The same
 walk found `tear-streams` at x = 574 of 390: dispatched, with checkGui
-learning to tell past-the-edge from below-the-fold.
+learning to tell past-the-edge from below-the-fold.  CLOSED 2026-10-10: tear-streams
+(574 -> 381) and entu (510 -> 378, found by the new check) use
+minmax(0, 1fr) on a phone; checkGui now FAILS a run on a control past the
+right edge at either viewport, excusing only a declared `data-pan-x`
+scroll box (convention in gui-credo.md).  Not yet seen end to end: a full
+walk exiting 1 on a real finding.
 
 **C57. THE GREEN-AMMONIA PROJECT IN DESIGN PHASES: PHASE 2 (EQUILIBRIUM +
 HEAT, GROSS MARGIN WITH THERMAL ENERGY) AND PHASE 3 (KINETIC BEDS, EVERY
