@@ -74,7 +74,7 @@ function assignStreamNumbers(view: FlowsheetView): Map<string, number> {
   // Order intent (kept stable so the canvas badge and the Streams `#` column
   // agree): boundary feeds first, then every produced stream, THEN any stream
   // that still has no number -- interior pipes, declared tears, and inputs that
-  // are not a unit output.  Without that last sweep a fractal/flattened view
+  // are not a unit output.  Without that last sweep a sectored/flattened view
   // left interior streams unnumbered ("muitas correntes nao tem numero"); now
   // EVERY stream that appears in the view (edge or table row) gets one.
   for (const u of view.units) {
@@ -701,7 +701,7 @@ export function flowsheetToGraph(
   return { nodes, edges, view, streamNumbers };
 }
 
-// A COMPOSITE node (fractal): `children` + `connections` instead of a
+// A COMPOSITE node (a sector): `children` + `connections` instead of a
 // `units` list.  Project it to a FlowsheetView so the existing layout/edges
 // code draws the sectors as boxes wired by the connections.  Each connection's
 // `from` IS the stream name (qualified `child/port` or a bare boundary inlet);
@@ -745,7 +745,7 @@ export function readEdges(
 // `units` is EITHER inline dict blocks (a flat case) OR a WORD list of dignified
 // folder names (a composite: three unit ops in their own folders).  Return the
 // folder names, or [] when `units` is inline / absent.
-// Resolve a fractal MEMBER's flowsheetDict text from the case rawFiles, mirroring
+// Resolve a sector MEMBER's flowsheetDict text from the case rawFiles, mirroring
 // the engine's resolveMemberBase: a member `<name>` may live directly at
 // `<name>/`, under `sectors/<name>/` (a real sector), or `unitOperations/<name>/`
 // (a dignified unit op) -- each with the dict at `system/flowsheetDict` or the lean
@@ -919,7 +919,7 @@ function readComposite(
   return { streams, units, tearStreams: tears, origins };
 }
 
-// A LEAF node (fractal): `type` + `operation` + `boundary` instead of
+// A LEAF node (a unit): `type` + `operation` + `boundary` instead of
 // a `units` list -- one unit op (its own flowsheet of one).  Project it to a
 // single-unit view so the canvas draws the unit with its feed/product
 // terminals when you open a leaf node on its own.

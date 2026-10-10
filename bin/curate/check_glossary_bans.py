@@ -82,9 +82,9 @@ for a stated reason:
     older record can connect the two names, and that is the only way the
     word may appear in live text.
 
-Identifiers that EMBED the old name (the `sealedFractalPlant` witness class)
-are not matched -- the pattern is a whole word -- and renaming them is a
-change of a key, not of wording, so it is Vitor's to take (DEV.md C56).
+Identifiers that EMBED the old name are not matched -- the pattern is a
+whole word.  The one there was, the witness class, was renamed
+`sealedSectoredPlant` on 2026-10-10 (DEV.md C56, after C52 merged).
 """
 import re
 import subprocess
@@ -180,17 +180,6 @@ SECTOR_NAMED_EXEMPT = {
         "constant/propertyManifest, and a re-seal is a curation act",
     "tutorials/plant/sugarPlantEconomicsSweep/constant/components/sucrose.dat":
         "same: a SEALED record, re-sealing is a curation act",
-    #  PENDING, not permanent: another general held these files when the
-    #  sweep ran (2026-10-10, DEV.md C56).  Each entry fails as STALE the day
-    #  the word leaves its file, so the list cannot outlive the debt.
-    "src/reporting/Report.H":
-        "PENDING -- held by another slice on 2026-10-10; sweep after it merges",
-    "src/reporting/StreamTableReport.cpp":
-        "PENDING -- held by another slice on 2026-10-10; sweep after it merges",
-    "src/reporting/Topology.H":
-        "PENDING -- held by another slice on 2026-10-10; sweep after it merges",
-    "gui/src/case/toGraph.ts":
-        "PENDING -- held by another slice on 2026-10-10; sweep after it merges",
 }
 
 

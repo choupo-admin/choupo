@@ -160,7 +160,7 @@ Legend: **Owner** = canonical home of the logic/representation ·
 - Prod → Cons: converged results → report artefacts; GUI only draws (`gui/src/case/balances.ts` owns the chart arithmetic — no second copy in a plot component)
 - Never: a second formula parser; a chart re-deriving per-component mass
 - Contract: CLAUDE.md §6 (2026-07-19 / 2026-08-02)
-- Witness: `sealedFractalPlant` · Gates: `check_element_composition`, `check_element_balance`, `check_default_reports`
+- Witness: `sealedSectoredPlant` · Gates: `check_element_composition`, `check_element_balance`, `check_default_reports`
 
 ## Batch, dynamic, post-processing
 
@@ -199,7 +199,7 @@ Legend: **Owner** = canonical home of the logic/representation ·
 - Prod → Cons: sealing acts → self-contained cases; the permalink hash (ADR, roadmap)
 - Never: a seal that changes physics (importer PROVES agreement vs the golden, not just exit 0); byte-hash as the claim
 - Contract: `docs/design/computational-seal-migration.md`; `docs/design/reproducible-permalink-sealing.md`
-- Witness: `sealedFractalPlant` · Gates: `check_seal_schema`
+- Witness: `sealedSectoredPlant` · Gates: `check_seal_schema`
 
 **V1 — Goldens, anchors and the witness tier (runTests)**
 - Owner: `bin/runTests` (kind = location, 6th column `anchor` = claim; `--witnesses` mode); `tutorials/WITNESSES` (the declared tier)

@@ -94,7 +94,7 @@ struct ReportContext
     std::filesystem::path    reportsDir;      // case/reports/  (created)
     int                      verbosity = 3;
 
-    // ---- Output layout (fractal-discipline pilot) -------------------------
+    // ---- Output layout (sector-discipline pilot) --------------------------
     //  DEFAULT (postProcessing == false): the original `reports/<sub>/` tree;
     //  every existing case keeps its exact paths (`reports/streams/...`,
     //  `reports/balances/...`).  Opt-in (`reportsLayout postProcessing;` in
