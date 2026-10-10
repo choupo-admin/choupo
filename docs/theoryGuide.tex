@@ -168,9 +168,15 @@ sentences and the rest of this manual reads as a footnote.
         specified.}  The simulator computes the outputs; the
         engineer specifies the inputs (or seeds them and the
         outer driver iterates).
-  \item \textbf{Solve in topological order.}  Each unit's
-        \texttt{solve()} runs once its inputs are known.  Recycles
-        are broken by \emph{tear streams} that the outer
+  \item \textbf{Solve in the declared order, and check it.}  Each
+        unit's \texttt{solve()} runs in the order the case declares
+        the units, once its inputs are known.  Choupo never re-sorts
+        that order behind the author's back: it checks it
+        (\texttt{Flowsheet::validateSequentialPlan}) --- every
+        material input must be a plant inlet, an EARLIER unit's
+        output, or a declared tear --- and refuses an order that
+        breaks the rule, naming a valid one.  Recycles are broken by
+        the \emph{tear streams} the author declares, which the outer
         Wegstein iteration converges \cite{Wegstein,Westerberg1979}.
   \item \textbf{Design targets live on top of the simulation,
         not inside it.}  An outer \emph{DesignSpec} manipulates the
@@ -209,7 +215,10 @@ attack the global flowsheet equations in three ways:
         (c) loops Wegstein over tear streams to close recycles.
         Each module is self-contained; the executive only routes
         streams.  This is the classic sequential-modular architecture,
-        the one Choupo uses.
+        the one Choupo uses --- with one deliberate difference in (a):
+        Choupo takes the order from the case and VALIDATES it rather
+        than computing it (rule 4 above), so the order a student reads
+        in the flowsheetDict is the order the engine runs.
   \item \textbf{Equation-oriented (EO).}  Strip every module
         of its $\mathtt{solve}()$ and dump all the algebraic
         equations from every unit into one big system.  Solve the

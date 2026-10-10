@@ -545,9 +545,12 @@ Full dict/units/thermo-override detail + examples →
 ### `controlDict` entries
 
 `application` (word, which binary), `description` (string, run-header label),
-`verbosity` (int, default `3`).  Verbosity: `0` silent · `1` +warnings ·
+`verbosity` (int, default `3`).  Verbosity: `0` quietest · `1` +warnings ·
 `2` +summary · `3` info — *Newton iterations visible* (pedagogical default) ·
-`4` debug.
+`4` debug.  Level `0` is NOT silent (measured 2026-10-09, DEV.md 4c C54): the
+header, the stream tables and each unit's banner still print, and the
+stderr announcements do not depend on the level; level `1` adds the
+divergence and caveat blocks (`main.cpp`, `if (verbosity >= 1)`).
 
 ### Heat of reaction — ONE enthalpy base (settled 2026-06-27, do NOT relitigate)
 

@@ -2000,13 +2000,12 @@ as follows, each recorded where it lives:
     `Q_kW` moves utility rows, C_UT and economics corpus-wide, which no
     targeted set can bound.  The moved golden rows still go to Vítor as a
     list before any `--record` (§10 standing instruction).  Dispatched.
-  - C55 (below): the GUI's layout leaves the tracked `.cho`.  Dispatched.
-  - C56 (below): the word "fractal" leaves every surface, after C55 (they
-    share GUI files).
-  - The verbosity-0 sentence of CLAUDE.md §5 corrected to what C54 measured
+  - C55 (below): examined and NOT done, with the reason recorded there.
+  - C56 (below): the word "fractal" leaves every surface.
+  - DONE 2026-10-10: the verbosity-0 sentence of CLAUDE.md §5 corrected to what C54 measured
     (the doc follows the engine; making level 0 silent would move console
     output nobody asked to move).
-  - Theory Guide `ch:sm-architecture` rule 4 corrected: the engine runs the
+  - DONE 2026-10-10: Theory Guide `ch:sm-architecture` rule 4 corrected: the engine runs the
     DECLARED order and refuses an invalid one, it does not sort.
 
 **C55. THE FLOWSHEET LAYOUT A STUDENT DRAGS IS NOT A TRACKED FILE (Vítor's
@@ -2015,11 +2014,21 @@ layout into collided with a restructured case; "porra! Mas aqui sempre
 funcionou!").**  Measured: `gui/src/state/layout.ts:112-170` stores the
 on-disk layout as JSON in the case's `<caseName>.cho` marker, a TRACKED file,
 so a local arrangement is a local modification of the repository that any
-upstream change to that marker turns into a refused pull.  Status:
-dispatched 2026-10-10.
+upstream change to that marker turns into a refused pull.  NOT DONE, BY
+JUDGEMENT (commander, 2026-10-10, under the batch's delegation): measured,
+45 of the 507 tracked tutorial `.cho` markers carry a CURATED layout that
+ships with the case, and the marker exists precisely so a layout travels with
+the case (`layout.ts:114-120`: written only by the explicit "Save layout to
+case", never on a drag).  Moving layouts to an ignored file would strip
+those 45 tutorials of their arrangement.  The refused pull was git doing its
+job: an uncommitted saved layout met an upstream restructure that deleted
+the folders it described.  The remedy is the workflow, not the code: commit
+a layout you want kept, or discard it (`git checkout -- <marker>`).  Revisit
+only if it recurs on a case that was NOT restructured.
 
 **C56. "FRACTAL" LEAVES THE PROJECT'S SURFACES (the 2026-10-09 naming
-ruling, scheduled by the 2026-10-10 batch).**  Status: queued after C55.
+ruling, scheduled by the 2026-10-10 batch).**  Status: dispatched
+2026-10-10.
 
 **C54. THE SECOND "HOW CHOUPO WORKS" EDUTOOL: HOW TO READ A RUN'S LOG
 (Vítor, 2026-10-09, verbatim: "Faz esse!", answering the commander's ranked
