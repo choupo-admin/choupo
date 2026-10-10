@@ -2019,8 +2019,10 @@ key `N_c` (a test now refuses a symbol glossed twice in a step);
 active-set-qp did not reproduce; checkGui skipped `four-ways-mixture`
 silently (a comment between `id:` and `label:`) and now refuses an id it
 cannot read.  route-screening moved to "Process design & economics".
-OPEN, small: on a phone, active-set-qp's knob inputs (560 px) run past a
-390 px screen.
+CLOSED the same day: active-set-qp's rail track is minmax(0, 1fr) and its
+inputs are 358 px on a 390 px phone.  checkGui's "clipped" on other pages
+means BELOW THE FOLD, not past the edge; the one page whose controls run
+past a phone's width is `property-surfaces` (x = 1187 of 390), OPEN.
 
 **C57. THE GREEN-AMMONIA PROJECT IN DESIGN PHASES: PHASE 2 (EQUILIBRIUM +
 HEAT, GROSS MARGIN WITH THERMAL ENERGY) AND PHASE 3 (KINETIC BEDS, EVERY
