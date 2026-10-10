@@ -69,7 +69,8 @@ export type MethodToolId =
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
-  | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log";
+  | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
+  | "front-end-loading";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -114,6 +115,18 @@ export const METHOD_DISCIPLINES = [
   "Heat transfer & energy",
   "Reaction engineering",
   "Hydraulics & control",
+  //  THE SHELF FOR HOW A DESIGN IS STAGED AND PAID FOR (2026-10-10, DEV.md
+  //  4c C58).  Front-End Loading -- the owner's stage-gate frame, the AACE
+  //  estimate classes, when an estimate can choose between two options -- is
+  //  project methodology, not reaction engineering, heat transfer or
+  //  numerics; filing it under any of them would bend that shelf's name for
+  //  the first tool that does not fit it.  It sits AFTER the physics shelves
+  //  and BEFORE the numerics because it is the question a student meets once
+  //  the unit operations are known: in what order, and at what fidelity, is
+  //  a whole process designed and costed.  Candidates that could later share
+  //  it (route screening's gross margin, the pinch targets) stay where they
+  //  are until the owner moves them; moving a tool is an editorial act.
+  "Process design & economics",
   //  THE SHELF THE NUMERICS LIVE ON (2026-09-12).  Three tools arrived at
   //  once -- choosing a tear, closing it with Wegstein, and the constrained
   //  QP inside every SQP step -- and not one of them is hydraulics, control,
@@ -1143,6 +1156,31 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  The same Theory Guide chapter as the first page: the architecture a
     //  run walks through, which is what its log narrates.
     theory: "ch:sm-architecture",
+  },
+  //  COMMISSIONED 2026-10-10 (DEV.md 4c C58): "Podes fazer um EduTool sobre
+  //  O que a industria usa: Front-End Loading (FEL)? Isso e muito
+  //  importante!".  A NOTES page built from one research record
+  //  (docs/design/how-a-process-design-is-staged.md); its AACE table is held
+  //  to the engine's one home (src/postProcessing/EstimateClass.H) by its
+  //  test.  First version, for Vitor's review.
+  {
+    id: "front-end-loading",
+    label: "Front-End Loading: how industry stages a design",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    teaches: "How an owner buys a process design in stages separated by "
+      + "gates (Front-End Loading, FEL), with FEED / basic engineering as "
+      + "the engineering work inside FEL-3, and why sources number the "
+      + "stages differently; what each stage decides, at what simulation "
+      + "fidelity, with which deliverables and which AACE 18R-97 estimate "
+      + "class; the range of ranges drawn as overlapping bands around your "
+      + "own point estimate; when two options whose difference lies inside "
+      + "the band are not yet decided by cost; and where Choupo stands at "
+      + "each stage, from the ammonia ladder to the green-ammonia base case.",
+    //  The Theory Guide's discounted-cash-flow section: the appraisal the
+    //  estimate class qualifies, and its own warning that a DCF inherits
+    //  every uncertainty upstream of it.
+    theory: "ch:economics",
   },
 ];
 
