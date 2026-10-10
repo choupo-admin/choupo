@@ -252,7 +252,15 @@ function discoverTools() {
     );
   }
   const src = readFileSync(path, "utf8");
-  const body = src.slice(src.indexOf("export const METHOD_TOOLS"));
+  //  WHOLE-LINE `//` comments are dropped before matching.  The pattern below
+  //  expects `label:` right after `id:`, and an entry may carry an editorial
+  //  comment between the two (four-ways-mixture does, explaining why the
+  //  models are in its label) -- that one entry went unwalked, in silence,
+  //  and the harness reported 51 live tools where the registry and
+  //  bin/curate/method_tools.mjs count 52.  Only lines that START with `//`
+  //  are dropped, so a URL inside a string is never touched.
+  const body = src.slice(src.indexOf("export const METHOD_TOOLS"))
+    .replace(/^[ \t]*\/\/.*$/gm, "");
   const tools = [];
   //  `kind:` sits between `label:` and `status:` since the SELECTION kind was
   //  named (heuristics-as-a-third-kind, 2026-08-18), and the pattern that
@@ -264,6 +272,17 @@ function discoverTools() {
   let m;
   while ((m = re.exec(body)) !== null) {
     tools.push({ id: m[1], label: m[2], status: m[3] });
+  }
+  //  Every `id:` in the array is a tool; one the pattern could not read is a
+  //  tool the walk would skip without saying so.  Refuse instead.
+  const ids = [...body.matchAll(/\bid:\s*"([a-z0-9-]+)"/g)].map((x) => x[1]);
+  const read = new Set(tools.map((t) => t.id));
+  const unread = ids.filter((id) => !read.has(id));
+  if (unread.length > 0) {
+    throw new Refusal(
+      `the registry pattern could not read ${unread.length} tool(s) out of ${path}: ${unread.join(", ")}`,
+      "the entry's shape differs from the others; widen the pattern in discoverTools() rather than skip the tool.",
+    );
   }
   const live = tools.filter((t) => t.status === "live");
   if (live.length === 0) {

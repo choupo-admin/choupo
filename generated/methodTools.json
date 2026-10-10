@@ -206,13 +206,6 @@
       "href": "/app/?workspace=methods&tool=levenspiel"
     },
     {
-      "id": "route-screening",
-      "label": "Screening routes to a product (methanol)",
-      "discipline": "Reaction engineering",
-      "teaches": "That routes to a product are screened on paper in order of cost, cheapest filter first: the stoichiometric gross margin, the atom economy, the equilibrium limit at the catalyst's temperature, the heat to remove, and whether the product is where the atoms go when every species is allowed; that direct oxidation of methane wins the first four and fails the fifth, because the combustion products lie far below methanol in Gibbs energy; that the remaining questions (Safety, Environmental, Legal, Economics, Control, Throughput) need no rate constant; and that the rate law is bought last, for the one route that survives.",
-      "href": "/app/?workspace=methods&tool=route-screening"
-    },
-    {
       "id": "reactor-ladder",
       "label": "The reactor ladder (stoichiometry, limit, rate)",
       "discipline": "Reaction engineering",
@@ -379,6 +372,13 @@
       "discipline": "Process design & economics",
       "teaches": "How an owner buys a process design in stages separated by gates (Front-End Loading, FEL), with FEED / basic engineering as the engineering work inside FEL-3, and why sources number the stages differently; what each stage decides, at what simulation fidelity, with which deliverables and which AACE 18R-97 estimate class; the range of ranges drawn as overlapping bands around your own point estimate; when two options whose difference lies inside the band are not yet decided by cost; and where Choupo stands at each stage, from the ammonia ladder to the green-ammonia base case.",
       "href": "/app/?workspace=methods&tool=front-end-loading"
+    },
+    {
+      "id": "route-screening",
+      "label": "Screening routes to a product (methanol)",
+      "discipline": "Process design & economics",
+      "teaches": "That routes to a product are screened on paper in order of cost, cheapest filter first: the stoichiometric gross margin, the atom economy, the equilibrium limit at the catalyst's temperature, the heat to remove, and whether the product is where the atoms go when every species is allowed; that direct oxidation of methane wins the first four and fails the fifth, because the combustion products lie far below methanol in Gibbs energy; that the remaining questions (Safety, Environmental, Legal, Economics, Control, Throughput) need no rate constant; and that the rate law is bought last, for the one route that survives.",
+      "href": "/app/?workspace=methods&tool=route-screening"
     }
   ]
 }

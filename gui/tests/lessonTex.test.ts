@@ -158,6 +158,22 @@ describe("every EduTool lesson equation is LaTeX that parses", () => {
     expect(broken.join("\n  ")).toBe("");
   }, 180_000);
 
+  //  A step that glosses one symbol twice is a content defect AND a render
+  //  defect: the glossary is keyed on `sym`, so React warns of a duplicate key
+  //  (bin/checkGui reported it as a PAGE ERROR on the Wegstein page, where a
+  //  plain-text "Nc" entry had become a second "N_c" when the equations moved
+  //  to LaTeX).  Held here, where every lesson's glossary is already read.
+  it("glosses each symbol at most once per step", async () => {
+    const pieces = (await everyPiece()).filter((p) => p.role === "where sym");
+    const seen = new Set<string>(), twice: string[] = [];
+    for (const p of pieces) {
+      const k = `${p.where}\u0000${p.src}`;
+      if (seen.has(k)) twice.push(`${p.where}: ${p.src}`);
+      seen.add(k);
+    }
+    expect(twice).toEqual([]);
+  }, 180_000);
+
   it("reports a parse failure instead of degrading it", () => {
     const r = renderTex(String.raw`\frac{1}{`, "display");
     expect(r.ok).toBe(false);

@@ -48,9 +48,16 @@ License
   THE CHART is inline SVG: one row per class, Class 5 at the top, the
   PESSIMISTIC band drawn pale and wide, the OPTIMISTIC band drawn solid and
   narrow inside it, the point estimate as a tick.  Two options take two hues
-  (blue, orange: CVD-separated, checked) and are ALSO labelled A and B on
-  every row, because colour alone is not identity; the table beside it is
-  the same numbers in a form that does not need the picture.
+  and are ALSO labelled A and B on every row, because colour alone is not
+  identity; the table beside it is the same numbers in a form that does not
+  need the picture.  The hues are Mantine blue-6 (#228be6) and orange-8
+  (#e8590c), and ONE pair serves both colour schemes: run through the dataviz
+  palette validator (lightness band, chroma floor, CVD separation,
+  normal-vision floor, 3:1 contrast) against the light body (#ffffff) and the
+  dark one (#172123, graphite dark-7), it passes every check in both.  The
+  first pick, orange-6 (#fd7e14), was too light for the dark band (OKLCH L
+  0.727 > 0.67, FAILED) and under 3:1 on white (2.5:1, WARN); orange-7 still
+  fails the dark band (0.685).  Re-run the validator before changing either.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
@@ -76,7 +83,7 @@ const INK = "var(--mantine-color-dimmed)";
 const TEXT = "var(--mantine-color-text)";
 const GRID = "var(--mantine-color-default-border)";
 const HUE_A = "var(--mantine-color-blue-6)";
-const HUE_B = "var(--mantine-color-orange-6)";
+const HUE_B = "var(--mantine-color-orange-8)";
 
 /** Defaults: round numbers, labelled as such on the page. */
 export const DEFAULT_POINT = 100;

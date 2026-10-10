@@ -129,8 +129,6 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
         + "numbered 1 to Nc", unit: "kmol/s" },
       { sym: "T", means: "temperature of the torn stream", unit: "K" },
       { sym: "N_c", means: "number of components in the flowsheet" },
-      { sym: "N_c", means: "the same count, written without the underscore "
-        + "where a subscript would nest inside another" },
     ],
     note: "So the Wegstein tear vector really does hold a flow of order "
       + "1e-4 kmol/s, several dimensionless fractions, and a temperature "
