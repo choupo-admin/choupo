@@ -2022,7 +2022,12 @@ cannot read.  route-screening moved to "Process design & economics".
 CLOSED the same day: active-set-qp's rail track is minmax(0, 1fr) and its
 inputs are 358 px on a 390 px phone.  checkGui's "clipped" on other pages
 means BELOW THE FOLD, not past the edge; the one page whose controls run
-past a phone's width is `property-surfaces` (x = 1187 of 390), OPEN.
+past a phone's width was `property-surfaces` -- CLOSED 0afa1fa57: on a
+phone its toolbar folds into one `controls` popover (`ToolbarFold`, the
+credo's own remedy; reach 1084 -> 378 px, desk unchanged; the curve-forking
+controls go into the fold on a phone only, said in gui-credo.md).  The same
+walk found `tear-streams` at x = 574 of 390: dispatched, with checkGui
+learning to tell past-the-edge from below-the-fold.
 
 **C57. THE GREEN-AMMONIA PROJECT IN DESIGN PHASES: PHASE 2 (EQUILIBRIUM +
 HEAT, GROSS MARGIN WITH THERMAL ENERGY) AND PHASE 3 (KINETIC BEDS, EVERY
