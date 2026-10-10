@@ -2004,7 +2004,15 @@ with what each DECIDES, at what simulation fidelity, with which deliverables
 and which estimate class; the AACE range of ranges drawn as overlapping
 bands; the lesson that two options whose difference lies inside the band
 are not yet decided at that class; mapped onto Choupo's ammonia ladder and
-the C57 cases.  Status: dispatched to a general, branch `claude/c58-fel-edutool`.
+the C57 cases.  DONE 2026-10-10, merged fa51e73d0: `FrontEndLoadingTool`
+on a new shelf "Process design & economics" (no tool moved; route-screening
+and pinch-composite are candidates, Vítor's call); notes only, no live run
+(the C57 cases are its future witnesses); the AACE copy is held to
+`EstimateClass.H` by `gui/tests/frontEndLoading.test.ts`.  OPEN: the chart
+colours fail the palette validator in dark mode (compensated by A/B labels
+and a table version, not investigated); `bin/checkGui --screenshots`
+reported PAGE ERRORs on `wegstein` and `active-set-qp`, not this slice's
+pages, not investigated.
 
 **C57. THE GREEN-AMMONIA PROJECT IN DESIGN PHASES: PHASE 2 (EQUILIBRIUM +
 HEAT, GROSS MARGIN WITH THERMAL ENERGY) AND PHASE 3 (KINETIC BEDS, EVERY
@@ -2023,7 +2031,8 @@ the synthesis loop alone (`ammoniaStaged01..04`: yield, equilibrium,
 approach, kinetic `pfr` with Dyson-Simon and a `designSpec` bed volume);
 `greenAmmoniaIndustrialN2` (the PEQ 2026-27 base case) is today a HYBRID --
 a phase-2 converter (`gibbsReactor`, 5 K approach) with phase-3 exchangers
-(Kern on all seven, C48) and full Turton costing + DCF.  Status: SCOPE PUT
+(Kern on six; corrected 2026-10-10, the postDict carries six `design {
+method Kern; }` blocks -- C48) and full Turton costing + DCF.  Status: SCOPE PUT
 TO VÍTOR 2026-10-10 (pedagogy is his, CLAUDE.md §10); build after C52
 merges, because C52 edits the same case (the converter's steam credit is a
 phase-2 term).
@@ -2382,7 +2391,8 @@ moved).  Condensing duty (WaterCooler, Chiller) is outside a single-phase
 Kern and is said so on the sheet, never silently priced as single-phase.
 Status: dispatched 2026-10-07 to a general in a worktree; golden rows that
 MOVE go to Vítor as a list before any re-record.
-BUILT 2026-10-07 on branch `claude/c48-hx-detailed-design`, NOT merged.  ONE
+STATUS: MERGED to main with C51 (see the end of this entry).  BUILT
+2026-10-07 on branch `claude/c48-hx-detailed-design`.  ONE
 kernel: the Kern arithmetic moved verbatim to `htc/ShellTubeDesign`
 (+ per-side fouling, the 1-2 F of Bowman-Mueller-Nagle, friction-factor
 validity flags); `heatExchanger` calls it, byte-identical on all 14 of its
