@@ -283,6 +283,9 @@ const CaseAssemblyTool = lazy(() =>
 const RunLogTool = lazy(() =>
   import("./methods/RunLogTool.js")
     .then((m) => ({ default: m.RunLogTool })));
+const FrontEndLoadingTool = lazy(() =>
+  import("./methods/FrontEndLoadingTool.js")
+    .then((m) => ({ default: m.FrontEndLoadingTool })));
 const WegsteinTool = lazy(() =>
   import("./methods/WegsteinTool.js")
     .then((m) => ({ default: m.WegsteinTool })));
@@ -500,6 +503,7 @@ export function MethodsWorkspace() {
             : tool === "tear-streams" ? <TearStreamsTool />
             : tool === "case-assembly" ? <CaseAssemblyTool />
             : tool === "run-log" ? <RunLogTool />
+            : tool === "front-end-loading" ? <FrontEndLoadingTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />

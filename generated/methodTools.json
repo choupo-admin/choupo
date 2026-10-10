@@ -10,10 +10,11 @@
     "Heat transfer & energy",
     "Reaction engineering",
     "Hydraulics & control",
+    "Process design & economics",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 51,
-  "registryTools": 51,
+  "liveTools": 52,
+  "registryTools": 52,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -371,6 +372,13 @@
       "discipline": "How Choupo works",
       "teaches": "Where a run's log goes and how loud it is (verbosity 0 to 4, measured), then the log itself, read on real runs in the browser: the header and what was assembled, a unit's Newton iterations, a convergence verdict in five numbers, a recycle whose units stay quiet until the tear converges, the balances, and the two blocks at the end.  Every line is coloured by the marker the engine printed it with, and a click names the line of the engine that printed it.  And the three messages a student must tell apart -- an advisory, a divergence, a refusal -- with the exit codes 0, 1 and 2 and what each asks you to do.",
       "href": "/app/?workspace=methods&tool=run-log"
+    },
+    {
+      "id": "front-end-loading",
+      "label": "Front-End Loading: how industry stages a design",
+      "discipline": "Process design & economics",
+      "teaches": "How an owner buys a process design in stages separated by gates (Front-End Loading, FEL), with FEED / basic engineering as the engineering work inside FEL-3, and why sources number the stages differently; what each stage decides, at what simulation fidelity, with which deliverables and which AACE 18R-97 estimate class; the range of ranges drawn as overlapping bands around your own point estimate; when two options whose difference lies inside the band are not yet decided by cost; and where Choupo stands at each stage, from the ammonia ladder to the green-ammonia base case.",
+      "href": "/app/?workspace=methods&tool=front-end-loading"
     }
   ]
 }

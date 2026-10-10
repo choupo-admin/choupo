@@ -1216,6 +1216,18 @@ in `docs/design-heuristics.md` (Class 5 → −30/+50, Class 4 → −20/+30) �
 the two disagree with each other, and both disagree with 18R-97.  There is no
 gate over either.
 
+**Superseded 2026-09-25, recorded here because this section was still read as
+current on 2026-10-10.**  The table now has ONE home,
+`src/postProcessing/EstimateClass.H` (all five classes, both ends of each
+range of ranges), which `EconomicsPass.cpp` includes and reads; the inverted
+two-branch step above is gone, an undeclared band is the class's pessimistic
+corner ANNOUNCED, and `docs/design-heuristics.md` reproduces the five rows
+under `bin/curate/check_estimate_class.py`, which holds them to the header.
+The Front-End Loading EduTool (DEV.md 4c C58) carries a third copy for the
+browser, held to the header field by field by
+`gui/tests/frontEndLoading.test.ts`.  §1.4's line numbers describe the code
+as it stood on 2026-09-24.
+
 ---
 
 ## 8. Not sourced
