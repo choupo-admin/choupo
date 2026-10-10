@@ -104,6 +104,10 @@ export interface UnitSpec {
   reaction?: string;
   energyOutputs?: EnergyOutputSpec[];
   energyInputs?: EnergyInputSpec[];
+  /** The plant utility the case DECLARES for this unit's single heat duty
+   *  (`utility <name>;` beside `type`; DEV.md 4c C52).  Read by the engine's
+   *  utility allocation, drawn on the duty stub before a run. */
+  utility?: string;
   [extra: string]: unknown;
 }
 

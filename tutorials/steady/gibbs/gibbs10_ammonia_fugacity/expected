@@ -20,3 +20,7 @@ stream  products               T                700              1e-4
 boundary global                 H_feeds_kW       3.36509834754    1e-4
 boundary global                 Q_boundary_kW    -3.68175302075   1e-4
 boundary global                 H_products_kW    -0.316654673206  1e-4
+utility ammonia                cooling.coolingWater.duty_kW -3.68175302075   1e-4
+utility ammonia                cooling.coolingWater.T 700              1e-4
+utility ammonia                cooling.coolingWater.kg_s 0.0880802158074  1e-4
+utility ammonia                cooling.coolingWater.eur_h 0.00530172434988 1e-4

@@ -27,3 +27,13 @@ boundary global                 H_feeds_kW       -1.09398418508   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -1.09398418508   1e-4
 boundary global                 residual_kW      -2.22044604925e-16 1e-4
+kpi     co2tsa                 T_adsorption     298              1e-4
+kpi     co2tsa                 T_regeneration   398              1e-4
+utility co2tsa                 heating.steamMP.duty_kW 1.045            1e-4
+utility co2tsa                 heating.steamMP.T 398              1e-4
+utility co2tsa                 heating.steamMP.kg_s 0.000524861878453 1e-4
+utility co2tsa                 heating.steamMP.eur_h 0.05643          1e-4
+utility co2tsa                 cooling.chilledWater.duty_kW -1.045           1e-4
+utility co2tsa                 cooling.chilledWater.T 298              1e-4
+utility co2tsa                 cooling.chilledWater.kg_s 0.0497619047619  1e-4
+utility co2tsa                 cooling.chilledWater.eur_h 0.015048         1e-4

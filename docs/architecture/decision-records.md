@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 155 records already exist
+## 1. Why an index, when 157 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 155 design records, **105 state a rejected alternative and 50 do not** —
+- Of 157 design records, **106 state a rejected alternative and 51 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -257,6 +257,8 @@ is this index failing its own purpose; they move below with their rulings.
 | [`binary-pairs-from-open-measurements.md`](../design/binary-pairs-from-open-measurements.md) | ADR | yes | **FIRST PATH BUILT 2026-09-28** (DEV.md C16) -- the licence determination for wider NRTL coverage from open sources, and the chain built on it.  REJECTED: importing ChemSep's `.ipd` pair tables (the LITE licence grants the pure-component databank "and ONLY" that, and the tables name DECHEMA in their headers) and the `thermo` package's byte-identical copy (its MIT licence does not relicense what it carries) -- both LOCAL ONLY, enforced by `check_source_licence`.  ADOPTED: Choupo's OWN regressions to measurements the ThermoML archive locates, joined to a component by InChIKey, fitted on one study, held out on another, band declared before the fit, promoted only as `reviewStatus interim`; gate `check_regressed_pairs`.  Nothing promoted to `reviewed`: that is Vítor's |
 | [`the-44-tool-review-triage.md`](../design/the-44-tool-review-triage.md) | STUDY | no | **TRIAGE 2026-09-28** (DEV.md C22) -- an external pedagogical review of the 44 EduTools, every claim that a text, formula, number or code is wrong checked against the current lesson source and the engine it cites.  Records the confirmed errors by damage, the engine defects the reviewer MISSED (each its own slice), the claims where the reviewer is wrong (so they are not re-raised), what was softened, what was fixed and the order of the remaining work |
 | [`the-approach-direction-is-read-from-the-answer.md`](../design/the-approach-direction-is-read-from-the-answer.md) | ADR | no | **SHIPPED 2026-10-03** (DEV.md §5, taken on the 2026-10-03 standing mandate) -- an adiabatic `temperatureApproach` read its SIGN at the outer Newton's seed, so a bed seeded hotter than its feed's own equilibrium temperature ended MORE converted than its equilibrium outlet, and a colder seed on the same case took the other sign.  RULE: in adiabatic mode the bed is solved once with no approach, the direction is read from feed -> that dT = 0 outlet, announced with the outlet T and the seed, and the bed re-solved with the signed magnitude; the probe's cost is published.  Isothermal mode untouched.  Witness `gibbs13_adiabatic_approach_direction`; gate `check_adiabatic_approach_direction` |
+| [`an-exchanger-designed-not-estimated.md`](../design/an-exchanger-designed-not-estimated.md) | ADR | no | **BUILT 2026-10-07** (DEV.md 4c C48, with the C51 addendum) -- the six exchangers of the green-ammonia case DESIGNED by the Kern method from ONE kernel shared with the two-stream unit (`htc/ShellTubeDesign`), fouling declared, U a result, the installed area costed; condensing duties on the gas film of the vapour that leaves, said.  Indexed 2026-10-10 by the C52 general, which found the record absent from this index (the gate had gone red on main); the summary is the record's own, not a re-reading |
+| [`a-duty-the-allocation-dropped.md`](../design/a-duty-the-allocation-dropped.md) | ADR | yes | **BUILT 2026-10-10** (DEV.md 4c C52) -- the utility allocation read a unit's duty only from `Q` (W) and a column's two keys, so every reactor's and crystalliser's `Q_kW` was priced by the first law and DROPPED (the green-ammonia converter's 30.6 MW).  ONE home, `reporting::unitHeatDuties`, derived from `energyItemKpis()`; the allocation reads the engine's composed unit dicts; `utility <name>;` beside `type` declares a service, held to `UtilityCatalogue::canServe` and refused by name when it cannot serve; a credit (negative cost) is declared, never auto-picked; carried rows are not unpriced duties.  The witness's converter raises HP steam as a CASE-LOCAL credit at an author-set -18 EUR/GJ.  REJECTED: a public steam-generation record, an auto-picked credit, the declaration inside `operation {}`, booking the steam as by-product revenue |
 
 ### Historical
 
@@ -309,7 +311,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**50 of 155 records state no rejected alternative.**  For a FORUM or a STUDY
+**51 of 157 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

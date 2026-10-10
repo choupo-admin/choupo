@@ -2264,7 +2264,60 @@ C_UT and the economics move corpus-wide and a FULL regression is needed
 decision: the catalogue holds only CONSUMING utilities, so the automatic pick
 would dump it into cooling water, where a real ammonia loop raises HP steam
 in a waste-heat boiler (a credit) -- that needs a steam-GENERATION utility
-record, a curation act.  Status: diagnosed 2026-10-07, waiting on Vítor.
+record, a curation act.  Status: diagnosed 2026-10-07; both halves
+DELEGATED 2026-10-10 (SATURDAY BATCH above).
+BUILT 2026-10-10 on branch `claude/c52-reactor-duty-utility`, NOT merged.
+ONE HOME for "this unit has a duty": `reporting::unitHeatDuties`
+(src/reporting/BalanceMath.H), derived from the SAME `energyItemKpis()` the
+first law reads (its Heat items minus the internal-medium `duty_kW`), each on
+its port with the KPI that carries its temperature (`heatDutyPorts()`; a Heat
+item with no port REFUSES).  `Q` (W) and `Q_kW` are checked to agree where a
+unit publishes both (heater, heatExchanger, isothermalFlash, phaseChanger
+compute one from the other), `Q` preferred, so their rows are byte-identical.
+The crystalliser's `T_op` joins the T / T_out chain; tsaTwinBed now publishes
+`T_regeneration` / `T_adsorption` for its two ported duties, which were
+dropped too.  The diagnosis was right with one addition and one correction:
+the TSA's duties were a second dropped class, and `coolingTower` publishes
+`Q_kW` but is CARRIED (water to air; the allocation now reads
+`isProcessToProcessExchanger` instead of its own two-type list).  NOT routed
+through the home, by stated reason: `PinchPass` (a duty as a stream SEGMENT
+from inlet to outlet T, which a reactor's heat is not) and
+`UtilitiesReport::dutyOfUnit` (the duty DELIVERED through utility STREAMS).
+The allocation reads the engine's composed unit dicts (`Flowsheet::unitDicts`
+-> `result.unitDicts`): the 2026-09-08 warning measured TRUE for this case
+(17 units in their own folders, root lists `sectors`) and is now closed for
+every choupoSolve result.  DECLARED UTILITY: `utility <name>;` beside `type`
+(copied through the flatten; not in `operation {}`, which the unit's key
+audit holds to "read by the unit"); a column port keeps
+`operation.<port>.utility`.  Either is held to `UtilityCatalogue::canServe`
+(tier = sign of the duty, dutyPerKg > 0, T known, dTmin) and REFUSES by name
+when it cannot serve, when the duty is carried, when it is not in the
+catalogue, or when the unit publishes no duty on that port.  `pickForDuty`
+never picks a credit (cost < 0).  ECONOMICS: a CARRIED row is no longer
+counted as an unpriced duty (the FEHE had been one of the witness's "2 duties
+could not be allocated"); credits are summed, never clamped, printed on their
+own line, and `C_UT` / `C_UT_credit` are published.  CASE: the Converter
+declares `steamGenerationHP`, a CASE-LOCAL record (constant/utilities/,
+unclaimed by the manifest; `bin/choupo-import` stages it untouched and the
+sealed run equals the unsealed one): HP steam at steamHP.dat's own 41 bar /
+525 K and latent heat, -18 EUR/GJ, an AUTHOR-SET assumption and an UPPER
+bound, said in the record, the README and the postDict header.  Witness:
+C_UT 20.71 -> 5.07 MEUR/yr (credit -15.64), COM_d 443.83 -> 424.60 MEUR/yr,
+NPV -411.7 -> -294.6 MEUR.  GUI: the reactors and phaseChanger get a duty
+stub; after a run the stub follows the allocation (idle without a row, sign
+from the row -- `case/dutyUtility.ts` `dutyStubFromRun`).  Gate
+`check_unit_duty_allocation` (4 by-hand sabotages, all caught).  Record
+`docs/design/a-duty-the-allocation-dropped.md`.  FULL REGRESSION (authorised
+above) on d160f0079: PASS 687 / FAIL 6 -- greenAmmonia (10 economics rows)
+and optim05 (NPV) on the moved rows; the utility-allocation gate on 86 duties
+published and not yet pinned (appended since, 320 rows, adds only); the GUI
+lesson citation FlowCanvas.tsx:448 moved by one import line (fixed); and two
+gates already red on main (code map stale since C48/C51, C48's record missing
+from the decision index), both regenerated / indexed here.  16 golden rows
+MOVE in four cases (11 outside their 1e-4 tolerance: greenAmmonia 10, optim05
+1; 5 inside: optim05, economics01, economics02), every one an economics KPI
+moved by C_UT -- NOT recorded; the list, with each row's reason, goes to
+Vítor.
 
 **C51. THE EXCHANGER DATASHEET DRAWS THE KERN DESIGN FROM ITS SHEET (Vítor,
 2026-10-07, verbatim, on the green-ammonia FEHE "HX datasheet" pop-out on

@@ -30,3 +30,7 @@ stream  brine                  T                298.15           1e-4
 stream  ethanol                T                298.15           1e-4
 stream  magma                  T                298.15           1e-4
 kpi     cryst                  V_magma          5                1e-4
+utility cryst                  cooling.chilledWater.duty_kW -6.1566687571    1e-4
+utility cryst                  cooling.chilledWater.T 298.15           1e-4
+utility cryst                  cooling.chilledWater.kg_s 0.293174702719   1e-4
+utility cryst                  cooling.chilledWater.eur_h 0.0886560301022  1e-4

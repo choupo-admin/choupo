@@ -52,3 +52,5 @@ kpi     reformerLow            y_water          0.048049273493     1e-4
 boundary global               H_feeds_kW       -247.877376367     1e-4
 boundary global               Q_boundary_kW    100.554841997      1e-4
 boundary global               H_products_kW    -147.32253437      1e-4
+utility reformerHigh           heating.-.unserved 1                1e-4
+utility reformerLow            heating.-.unserved 1                1e-4

@@ -579,6 +579,12 @@
   "ExchangeSpec": [
    "src/thermo/electrolyte/SpeciationSolver.H"
   ],
+  "ExchangerService": [
+   "src/core/ResultRecords.H"
+  ],
+  "ExchangerSide": [
+   "src/core/ResultRecords.H"
+  ],
   "Exergy": [
    "src/propertyOps/Exergy.H"
   ],
@@ -705,6 +711,9 @@
   "HeatCapacityModel": [
    "src/thermo/heatCapacity/HeatCapacityModel.H"
   ],
+  "HeatDutyPort": [
+   "src/reporting/BalanceMath.H"
+  ],
   "HeatExchanger": [
    "src/unitOperations/heatTransfer/HeatExchanger.H"
   ],
@@ -830,6 +839,9 @@
   ],
   "LiquidViscosityModel": [
    "src/thermo/transport/LiquidViscosityModel.H"
+  ],
+  "LmtdCorrection": [
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
   "LogNormalSize": [
    "src/core/distribution/LogNormalSize.H"
@@ -1220,6 +1232,9 @@
   "ResidualReport": [
    "src/solver/Convergence.H"
   ],
+  "Resistances": [
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
+  ],
   "ResolvedComponentDict": [
    "src/thermo/Database.H"
   ],
@@ -1304,11 +1319,20 @@
   "Selection": [
    "src/thermo/PricedDensity.H"
   ],
+  "ShellPressureDrop": [
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
+  ],
+  "ShellSideState": [
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
+  ],
   "ShellTubeHX": [
    "src/postProcessing/sizing/ShellTubeHX.H"
   ],
   "ShortcutColumn": [
    "src/unitOperations/distillation/ShortcutColumn.H"
+  ],
+  "SideFluid": [
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
   "Signal": [
    "src/control/signal/Signal.H"
@@ -1524,6 +1548,15 @@
   "TrayHydraulics": [
    "src/unitOperations/distillation/TrayHydraulics.H"
   ],
+  "TubeBundle": [
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
+  ],
+  "TubePressureDrop": [
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
+  ],
+  "TubeSideState": [
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
+  ],
   "Turbine": [
    "src/unitOperations/rotating/Turbine.H"
   ],
@@ -1537,6 +1570,9 @@
    "src/thermo/activityCoefficient/UNIQUAC.H"
   ],
   "UnitEnergy": [
+   "src/reporting/BalanceMath.H"
+  ],
+  "UnitHeatDuty": [
    "src/reporting/BalanceMath.H"
   ],
   "UnitIO": [
@@ -3765,6 +3801,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -3780,7 +3817,13 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/utility/Utility.H",
-   "src/thermo/utility/UtilityCatalogue.H"
+   "src/thermo/utility/UtilityCatalogue.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
+   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
   "src/postProcessing/sizing/SprayDryerSize.cpp": [
    "src/core/Advisory.H",
@@ -5139,19 +5182,26 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/reporting/BalanceMath.H",
    "src/reporting/Report.H",
    "src/reporting/UtilityAllocationReport.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
+   "src/streams/StreamMass.H",
    "src/streams/UtilityCircuit.H",
    "src/thermo/Component.H",
+   "src/thermo/ElementComposition.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/utility/Utility.H",
-   "src/thermo/utility/UtilityCatalogue.H"
+   "src/thermo/utility/UtilityCatalogue.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/result/ComponentIdentity.cpp": [
    "src/core/Advisory.H",
@@ -7330,7 +7380,8 @@
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/HeatExchanger.H",
-   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
+   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
   "src/unitOperations/heatTransfer/Heater.cpp": [
    "src/core/Advisory.H",
@@ -7489,6 +7540,13 @@
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H",
    "src/unitOperations/heatTransfer/htc/Rohsenow.H",
    "src/unitOperations/heatTransfer/htc/ZuberCHF.H"
+  ],
+  "src/unitOperations/heatTransfer/htc/ShellTubeDesign.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
   "src/unitOperations/hydraulics/Pipe.cpp": [
    "src/core/Advisory.H",
@@ -8991,6 +9049,7 @@
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
@@ -9301,6 +9360,7 @@
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
@@ -10020,6 +10080,7 @@
    "src/core/RegistryRefusal.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/solver/ODE/ODEIntegrator.cpp",
    "src/streams/UtilityCircuit.cpp",
@@ -10475,6 +10536,7 @@
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
@@ -11097,7 +11159,8 @@
    "src/reporting/MassBalanceReport.cpp",
    "src/reporting/ModelBoundaryLedger.cpp",
    "src/reporting/SpreadsheetReport.cpp",
-   "src/reporting/StreamTableReport.cpp"
+   "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp"
   ],
   "src/reporting/ComputedReport.H": [
    "src/reporting/ComputedReport.cpp",
@@ -11824,6 +11887,7 @@
    "src/reporting/ModelBoundaryLedger.cpp",
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp",
    "src/streams/UtilityCircuit.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
@@ -12228,6 +12292,7 @@
    "src/reporting/ModelBoundaryLedger.cpp",
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/thermo/Component.cpp",
    "src/thermo/ElementComposition.cpp",
@@ -13697,6 +13762,7 @@
   "src/unitOperations/UnitOperation.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -13710,6 +13776,7 @@
    "src/reporting/ModelBoundaryLedger.cpp",
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
@@ -13900,6 +13967,7 @@
   ],
   "src/unitOperations/flash/IsothermalFlash.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
@@ -13909,6 +13977,7 @@
    "src/reporting/ModelBoundaryLedger.cpp",
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
@@ -13935,12 +14004,14 @@
   ],
   "src/unitOperations/flash/PureSaturationPlateau.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
    "src/reporting/MassBalanceReport.cpp",
    "src/reporting/ModelBoundaryLedger.cpp",
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp",
@@ -13965,12 +14036,14 @@
   ],
   "src/unitOperations/flash/StreamEquilibrium.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
    "src/reporting/MassBalanceReport.cpp",
    "src/reporting/ModelBoundaryLedger.cpp",
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp",
@@ -14088,9 +14161,11 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
-   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp"
+   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp",
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.cpp"
   ],
   "src/unitOperations/heatTransfer/htc/Kern.H": [
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp"
@@ -14105,6 +14180,11 @@
   ],
   "src/unitOperations/heatTransfer/htc/Rohsenow.H": [
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp"
+  ],
+  "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H": [
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
+   "src/unitOperations/heatTransfer/HeatExchanger.cpp",
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.cpp"
   ],
   "src/unitOperations/heatTransfer/htc/ZuberCHF.H": [
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp"
