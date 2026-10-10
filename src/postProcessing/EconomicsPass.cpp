@@ -775,14 +775,34 @@ int EconomicsPass::run(SimulationResult& result)
     //  A number that cannot be computed is not zero.  The allocated rows are
     //  summed; the unallocated ones are COUNTED and named, and the caller is
     //  told the utility bill is a LOWER BOUND rather than a cost.
+    //
+    //  A CARRIED DUTY IS NOT AN UNPRICED ONE (DEV.md 4c C52).  The loop used
+    //  to count every unallocated row, and a carried row -- a process-process
+    //  exchanger's recovered heat, a duty met by a utility stream or a heat
+    //  link -- is unallocated BY DESIGN: there is nothing to buy.  So the
+    //  green-ammonia FEHE was counted as one of "2 duties that could not be
+    //  allocated" and its C_UT called a lower bound for a heat nobody pays
+    //  for.  Only an UNSERVED duty (no catalogue utility can meet it) leaves a
+    //  hole in the bill.
+    //
+    //  A CREDIT IS SUMMED, NEVER CLAMPED.  A row with a negative eur_h is heat
+    //  or power the plant SELLS or reuses (steam raised in a waste-heat
+    //  boiler, electricity generated); it reduces C_UT, and the credits are
+    //  printed on their own line so a net bill never hides a gross one.
     scalar C_UT = 0.0;
+    scalar C_UT_credit = 0.0;               // the negative part, EUR/yr (<= 0)
     std::size_t unpricedDuties = 0;
     for (const auto& a : result.utilityAllocation)
     {
-        if (a.allocated) C_UT += a.eur_h;   // €/h, priced against a utility
-        else             ++unpricedDuties;  // a real duty nobody could price
+        if (a.allocated)
+        {
+            C_UT += a.eur_h;                // €/h, priced against a utility
+            if (a.eur_h < 0.0) C_UT_credit += a.eur_h;
+        }
+        else if (!a.carried) ++unpricedDuties;  // a real duty nobody could price
     }
-    C_UT *= H;                    // €/yr
+    C_UT        *= H;             // €/yr
+    C_UT_credit *= H;             // €/yr
     if (unpricedDuties)
     {
         std::cerr << "[economics] " << unpricedDuties << " heat duty/duties"
@@ -1150,6 +1170,10 @@ int EconomicsPass::run(SimulationResult& result)
         std::cout << "   <-- " << unpricedDuties
                   << " duty/duties unpriced and NOT included";
     std::cout << "\n";
+    if (C_UT_credit < 0.0)
+        std::cout << "      of which CREDITS         = " << std::setw(14) << C_UT_credit
+                  << " EUR/yr  (steam raised / power generated; purchases = "
+                  << (C_UT - C_UT_credit) << " EUR/yr)\n";
     std::cout << "    C_WT (waste)  NOT COSTED     = " << std::setw(14) << C_WT
               << " EUR/yr  (explicit zero -- effluent/solids unpriced)\n";
     std::cout << "    1.23  x (C_RM+C_UT+C_WT)     = " << std::setw(14)
@@ -1242,6 +1266,11 @@ int EconomicsPass::run(SimulationResult& result)
     econ["WC"]           = WC;
     econ["TCI"]          = TCI;
     econ["COM_d"]        = COM_d;
+    //  The utility bill and its credits (C52): COM_d moves with C_UT, and a
+    //  bill that is not published cannot be pinned -- nor can the credit a
+    //  declared steam generation earns, which was invisible inside COM_d.
+    econ["C_UT"]         = C_UT;
+    econ["C_UT_credit"]  = C_UT_credit;
     econ["revenue"]      = R;
     econ["NPV"]          = NPV;
     econ["IRR"]          = haveIRR ? IRR : std::nan("");

@@ -266,6 +266,16 @@ public:
     // flowsheetDict at the top would only expose the boundary).
     const std::vector<FlatUnit>& topology() const { return topology_; }
 
+    //  THE FLATTENED UNIT DICTS, in topology order and under the same
+    //  qualified names (DEV.md 4c C52).  `FlatUnit` is topology by design --
+    //  four strings -- so a reader that needs a unit's own declarations (its
+    //  `energyInputs` wires, its declared `utility`, a column port's
+    //  `operation.<port>.utility`) had only the ROOT dict's `units` list, and
+    //  a plant whose units live in their own folders lists none there.  These
+    //  are the dicts the units were BUILT from -- the engine's own
+    //  composition, not a second walk of the folders.
+    const std::vector<DictPtr>& unitDicts() const { return unitDicts_; }
+
     //  THE RESOLVED TEAR LIST -- the qualified, flattened names the outer
     //  loop actually cut, not the bare words the case declared.  A composite
     //  sector's recycle enters as `SECTOR.stream`; the authored word is
@@ -350,6 +360,7 @@ private:
     std::map<std::string,std::string>                      boundaryOutletLabelOf_;  // identity -> the domain's own outlet name
     std::vector<ModelBoundaryFinding>                      modelBoundaries_;
     std::vector<FlatUnit>                                  topology_;
+    std::vector<DictPtr>                                   unitDicts_;   // see unitDicts()
 
     //  The tear list AS RESOLVED (see `tearStreams()`).  Stamped once, at
     //  the moment the list is final -- the same instant the sequential-plan

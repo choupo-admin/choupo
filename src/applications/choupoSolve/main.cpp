@@ -287,7 +287,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     r.boundaryAliasOf  = flowsheet.boundaryAliasOf();
     r.boundaryOutletLabelOf = flowsheet.boundaryOutletLabelOf();
     r.kpis        = flowsheet.unitKpis();
-    r.topology    = flowsheet.topology();
+    r.topology    = flowsheet.topology();  r.unitDicts = flowsheet.unitDicts();   // C52
     r.tearStreams = flowsheet.tearStreams();
     r.recycleLoops = flowsheet.recycleLoops();
     r.energyWires = flowsheet.energyWires();

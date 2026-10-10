@@ -637,7 +637,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             if (!nsPrefix.empty())
                 u->insert("sector", nsPrefix.substr(0, nsPrefix.size() - 1));
             u->insert("type", cd->entryValue("type"));
-            for (const char* k : { "operation", "model", "thermo" })
+            for (const char* k : { "operation", "model", "thermo", "utility" })   // utility: C52, read by the allocation
                 if (cd->found(k)) u->insert(k, cd->entryValue(k));
             // reaction: PER-NODE resolution (Item 0 of the props foundation).
             // A sector/unit's kinetics live WITH it (its own constant/reactions),
@@ -2077,7 +2077,7 @@ int Flowsheet::solve(const DictPtr& dict,
     // Reset per-run state (stream registry + per-unit KPI table + per-
     // unit residual history + per-unit 1-D profiles).
     streams_.clear();
-    topology_.clear();
+    topology_.clear();  unitDicts_.clear();
     unitKpis_.clear();
     unitResiduals_.clear();
     globalMassResiduals_.clear();
@@ -2167,7 +2167,7 @@ int Flowsheet::solve(const DictPtr& dict,
         auto u = std::make_shared<Dictionary>(nodeName);
         u->insert("name", std::string(nodeName));
         u->insert("type", dict->entryValue("type"));
-        for (const char* k : { "operation", "model", "dryingCurve", "crystallisation", "thermo", "reaction" })
+        for (const char* k : { "operation", "model", "dryingCurve", "crystallisation", "thermo", "reaction", "utility" })
             if (dict->found(k)) u->insert(k, dict->entryValue(k));
         // A standalone unit MENTIONS its streams directly (sequential-modular:
         // a unit is defined by the streams it consumes and produces).  Preferred
@@ -2285,7 +2285,7 @@ int Flowsheet::solve(const DictPtr& dict,
         if (u->found("inputs"))   fu.ins = u->lookupWordList("inputs");
         else if (u->found("in"))  fu.ins = { u->lookupWord("in") };
         if (u->found("outputs"))  fu.outs = u->lookupWordList("outputs");
-        topology_.push_back(std::move(fu));
+        topology_.push_back(std::move(fu));  unitDicts_.push_back(u);   // C52: the dicts beside the topology
     }
 
     // ---- Manifest-based 0/ seeding (topology-first reader, forum #83) ---

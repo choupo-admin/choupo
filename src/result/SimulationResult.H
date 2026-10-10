@@ -47,6 +47,7 @@ Description
 
 #include "core/Advisory.H"
 #include "core/ProblemDivergence.H"
+#include "core/Dictionary.H"         // DictPtr (unitDicts)
 #include "core/FlatUnit.H"          // topology, not output -- see that header
 #include "core/ResultRecords.H"      // the eight plain records this struct
                                     //   carries.  They are in `core` because
@@ -125,6 +126,12 @@ struct SimulationResult
     std::map<std::string,std::string>                              utilityCircuitOf;
     std::map<std::string, std::map<std::string, scalar>>           kpis;
     std::vector<FlatUnit>                                          topology;
+    //  The dicts the units were BUILT from, in `topology` order, under the
+    //  same qualified names (Flowsheet::unitDicts, DEV.md 4c C52).  For the
+    //  readers that need a unit's own declarations on a plant whose root
+    //  lists no `units` -- the utility allocation's work wires and declared
+    //  utilities.  Never emitted.
+    std::vector<DictPtr>                                           unitDicts;
 
     //  THE RESOLVED TEAR STREAMS -- the qualified, flattened names the outer
     //  loop cut.  Topology, like `topology` above, and here for the same

@@ -3121,6 +3121,25 @@ PYEOF
     fi
     rm -f /tmp/eco.$$
 
+    # unit-duty-allocation gate (DEV.md 4c C52, 2026-10-10).  The utility
+    # allocation read only the KPI `Q` (W) and a column's two port keys, so
+    # every reactor's and crystalliser's `Q_kW` -- priced by the first law --
+    # was DROPPED: not allocated, not listed unserved, absent from C_UT (the
+    # green-ammonia converter's 30.6 MW).  One home now
+    # (reporting::unitHeatDuties); this holds the source to it, every
+    # published duty to a row, the declared steam CREDIT on the witness, the
+    # auto-pick to never choosing a credit, and four refusals of a declared
+    # utility that cannot serve.  Sabotage-verified (see the gate).
+    if "$ROOT/bin/curate/check_unit_duty_allocation.py" > /tmp/uda.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "unit-duty-allocation-gate" "$(grep -m1 ': OK' /tmp/uda.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unit_duty_allocation.py)\n" "unit-duty-allocation-gate"
+        cat /tmp/uda.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/uda.$$
+
     # cp-range gate (AP3, 2026-08-05).  PolynomialCp assigned Tmin_/Tmax_ in
     # its constructor and NEVER read them again -- the declared validity
     # window was parsed and discarded, so I4 was unimplemented on the most

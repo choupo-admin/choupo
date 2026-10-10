@@ -100,6 +100,7 @@ import { readFlag, writeFlag, NODE_DETAILS_KEY } from "../state/prefs.js";
 import { operationScratch } from "../case/scratch.js";
 import { buildDrillSeed, feedsKeyFor, inheritKeyFor } from "../case/drillSeed.js";
 import type { DutyAllocationFacts } from "../case/dutyUtility.js";
+import { dutyStubFromRun } from "../case/dutyUtility.js";
 import { writeCaseFile } from "../cases/workspace.js";
 import { notifications } from "@mantine/notifications";
 
@@ -787,6 +788,23 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     [runResult]);
   const LOOP_HALO = "drop-shadow(0 0 5px var(--mantine-color-cyan-4))";
 
+  //  WHAT THE RUN SAYS ABOUT EACH SINGLE-DUTY STUB (DEV.md 4c C52): idle (the
+  //  engine published no duty for it -- an adiabatic reactor) or its sign.
+  //  ONE evaluation, read by the node AND by its dashed edge, so the two can
+  //  never disagree.  The decision is case/dutyUtility.ts's.
+  const dutyRun = useMemo(() => {
+    const m = new Map<string, { idle: boolean; tier: "heating" | "cooling" }>();
+    for (const n of graph.nodes) {
+      const d = n.data as { dutyPort?: string; ownerUnit?: string; tier?: string };
+      if (d.dutyPort !== "Q" || !d.ownerUnit) continue;
+      const pre = d.tier === "cooling" ? "cooling" : "heating";
+      const st = dutyStubFromRun(runResult?.utilityAllocation, d.ownerUnit, "",
+                                 runResult?.kpis?.[d.ownerUnit] !== undefined, pre);
+      m.set(n.id, { idle: st.idle, tier: st.tier });
+    }
+    return m;
+  }, [graph, runResult]);
+
   // Annotate each unit node with `drillable` so UnitNode can show a
   // visual hint (a small external-link mark + a "double-click to open" hint).
   // The lookup is the same one openInNewWindow uses, so the hint never lies.
@@ -905,6 +923,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             if (dutyKW === undefined && typeof alloc.duty_kW === "number") dutyKW = alloc.duty_kW;
           }
         }
+        const stubRun = dport === "Q" ? dutyRun.get(n.id) : undefined;
         const unitOnLoop = show.recycle && n.type === "unitNode"
           && loops.unitOnLoop((n.data as { name?: string }).name
                               ?? n.id.slice("unit:".length));
@@ -914,8 +933,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           selected: n.id === selectedNodeId,
           hidden: (energyOnly && !show.energy)
                || (isUtilityTerminal && !show.utility)
-               || (dport !== undefined && !show.utility),
+               || (dport !== undefined && !show.utility)
+               || (stubRun?.idle ?? false),
           data: {...(n.data as object), drillable, phaseColor, phaseLabel, phaseGlyph,
+                  ...(stubRun ? { tier: stubRun.tier } : {}),
                   utilityCategory, resolved, dutyKW, dutyAlloc, dutyEurH,
                   feedDrivenTag,
                   showNumbers: show.numbers,
@@ -935,7 +956,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     [nodes, selectedNodeId, drillableSub, phaseOf, utilityOf, resultStreamOf, show,
      showDetails, scratchEdits,
      handlePos, onHandleMove, onHandleReset, commitHandles, runResult, numberOf,
-     scrubOverlay, colorScheme, loops],
+     scrubOverlay, colorScheme, loops, dutyRun],
   );
 
   const styledEdges: Edge[] = useMemo(
@@ -980,7 +1001,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         const ov = (!isEnergy && !isDuty && label) ? scrubOverlay.get(label) : undefined;
         const ovColor = ov?.vf !== undefined
           ? phaseColorFromVf(ov.vf, colorScheme).color : undefined;
-        const color = (isEnergy || isDuty)
+        //  A single-duty stub's wire follows the RUN (C52): hidden with an
+        //  idle stub, coloured by the sign the engine published.
+        const stubRun = isDuty ? dutyRun.get(e.source) : undefined;
+        const color = stubRun
+          ? (stubRun.tier === "heating" ? "#e8590c" : "#22b8cf")
+          : (isEnergy || isDuty)
           ? (e.style as { stroke?: string } | undefined)?.stroke
               ?? "var(--mantine-color-accent-5)"
           : ps?.color ?? ovColor ?? "var(--mantine-color-accent-5)";
@@ -1017,7 +1043,8 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           // chip lights its loop (C42), never hides the pipe (C41).
           hidden: (isEnergy && !show.energy)
                || (isUtility && !show.utility && !isTear)
-               || (isDuty   && !show.utility),
+               || (isDuty   && !show.utility)
+               || (stubRun?.idle ?? false),
           // Arrow at the destination end --- shows flow direction
           // (critical for students reading a flowsheet).  Default
           // markerUnits ("strokeWidth"): the head scales WITH the line
@@ -1064,7 +1091,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       }),
     [graph.edges, selectedStreamName, phaseOf, utilityOf, maxFlow, show,
      edgeCenters, onEdgeCenterChange, commitEdgeCenters, onEdgeCenterReset,
-     runResult, numberOf, scrubOverlay, colorScheme, loops],
+     runResult, numberOf, scrubOverlay, colorScheme, loops, dutyRun],
   );
 
   //  THE DASH LEGEND.  Derived from the kind each edge was STAMPED with, so

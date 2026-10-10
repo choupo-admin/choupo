@@ -379,12 +379,16 @@ export function flowsheetToGraph(
     const tier: "heating" | "cooling" =
       typeof opQ === "number" ? (opQ >= 0 ? "heating" : "cooling")
       : COOLING_DUTY_TYPES.has(u.type) ? "cooling" : "heating";
-    const opUtil = (u.operation as { utility?: JsonValue } | undefined)?.["utility"];
+    //  The utility the case DECLARES for this duty: `utility <name>;` at the
+    //  unit's own level, beside `type` (DEV.md 4c C52) -- the key the
+    //  engine's allocation reads.  This used to read `operation.utility`, a
+    //  key no engine reader has ever read.
+    const declUtil = u.utility;
     nodes.push({
       id: `duty:${u.name}:Q`,
       type: "streamTerminal",
       data: { name: "duty", role: "utility", dutyPort: "Q", ownerUnit: u.name,
-              tier, utilityName: typeof opUtil === "string" ? opUtil : undefined },
+              tier, utilityName: typeof declUtil === "string" ? declUtil : undefined },
       position: { x: p.x + 35, y: tier === "cooling" ? p.y - 150 : p.y + 150 },
     });
   }
@@ -1025,6 +1029,8 @@ function readLeaf(flowsheet: JsonDict, rawFiles?: { [relPath: string]: string })
         in: inlets,
         outputs: outlets,
         operation: (flowsheet["operation"] ?? {}) as JsonDict,
+        utility: typeof flowsheet["utility"] === "string"
+          ? flowsheet["utility"] : undefined,
       },
     ],
   };
@@ -1087,6 +1093,7 @@ function readFlowsheet(
       in: inputs,
       outputs: (u["outputs"] ?? []) as string[],
       operation: (u["operation"] ?? {}) as JsonDict,
+      utility: typeof u["utility"] === "string" ? u["utility"] : undefined,
       reaction: u["reaction"] !== undefined ? String(u["reaction"]) : undefined,
       // batchStill's continuous distillate routing -- the recipe-edge pass
       // reads it; dropping it here made the still->receiver edge vanish.

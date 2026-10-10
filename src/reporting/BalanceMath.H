@@ -46,10 +46,12 @@ Description
 #include "unitOperations/flash/IsothermalFlash.H"   // solveCore: two-phase split enthalpy
 #include "unitOperations/flash/StreamEquilibrium.H" // the ONE resolve-and-price home
 
+#include <algorithm>
 #include <cmath>
 #include <map>
 #include <optional>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -267,6 +269,132 @@ inline bool isProcessToProcessExchanger(const std::string& unitType)
     return unitType == "heatExchanger"
         || unitType == "multiStreamHX"
         || unitType == "coolingTower";
+}
+
+//  WHICH HEAT DUTIES A UNIT PUBLISHES -- the ONE home of "this unit has a
+//  duty" (2026-10-10, DEV.md 4c C52).
+//
+//  The energy report has always put a unit's `Q_kW` on the plant boundary
+//  (`energyItemKpis` above); the utility allocation read only the KPI `Q`
+//  in W, plus the column's two port keys.  Every unit that publishes `Q_kW`
+//  alone -- gibbsReactor, cstr, conversionReactor, equilibriumReactor, pfr,
+//  crystalliser -- had its duty PRICED by the first law and DROPPED by the
+//  allocation: not allocated, not listed unserved, absent from C_UT and from
+//  the economics' count of unpriced duties.  The green-ammonia converter's
+//  -30 605 kW was the witness.  Two readers asking "does this unit have a
+//  duty" with two different key lists is the arity sin; the answer now has
+//  ONE home, derived from the SAME list the first law reads:
+//
+//      a boundary heat duty = an `energyItemKpis()` item of kind Heat that
+//      is not an internal-medium duty (`isInternalMediumDutyKpi`).
+//
+//  What this table adds is only what the allocation needs beyond the first
+//  law: the PORT a duty is served on (a column has two) and the KPI that
+//  carries the temperature the heat crosses at.  A Heat item with no row here
+//  is a maintainer's omission and REFUSES by name (`unitHeatDuties`) rather
+//  than being skipped -- skipping is exactly the defect this replaces.
+//
+//  THE SI TWIN.  Four units (heater, heatExchanger, isothermalFlash,
+//  phaseChanger) publish the generic duty twice: `Q` in W and `Q_kW`.  Each
+//  computes the second from the first (`Q_W / 1000`, read at their kpis_
+//  assignments), so the two agree by construction; they are CHECKED here
+//  anyway, and a disagreement refuses naming both numbers, because a unit
+//  publishing two different duties is a defect no reader should pick a side
+//  of.  `Q` is preferred when present, so every row those units published
+//  before this home existed is byte-identical.
+struct HeatDutyPort
+{
+    const char* kpi;       // the energy item (kW)
+    const char* port;      // "" = the unit's single generic duty
+    const char* tempKpi;   // the KPI holding the temperature it crosses at
+                           // ("" = the unit's own T, else T_out)
+};
+
+inline const std::vector<HeatDutyPort>& heatDutyPorts()
+{
+    //  ORDER IS THE ROW ORDER of the allocation (generic duty first, then the
+    //  column's reboiler and condenser, as before this home existed).
+    static const std::vector<HeatDutyPort> ports = {
+        {"Q_kW",                    "",                  ""},
+        {"Q_reboiler_kW",           "reboiler",          "T_bottom"},
+        {"Q_condenser_kW",          "condenser",         "T_top"},
+        {"Q_removed_kW",            "removed",           ""},
+        {"Q_regeneration_kW",       "regeneration",      "T_regeneration"},
+        {"Q_adsorption_cooling_kW", "adsorptionCooling", "T_adsorption"},
+    };
+    return ports;
+}
+
+struct UnitHeatDuty
+{
+    std::string kpi;       // which energy item it is
+    std::string port;      // "" for the generic duty
+    scalar      W = 0.0;   // signed, + heat INTO the process
+    scalar      T = -1.0;  // K, the process temperature it crosses at; -1 unknown
+};
+
+inline std::vector<UnitHeatDuty>
+unitHeatDuties(const std::map<std::string, scalar>& kpis, const std::string& unit)
+{
+    //  Every Heat item that crosses the boundary must have a port row.
+    for (const auto& [key, kind] : energyItemKpis())
+    {
+        if (kind != EnergyItemKind::Heat || isInternalMediumDutyKpi(key)) continue;
+        bool found = false;
+        for (const auto& p : heatDutyPorts()) if (key == p.kpi) { found = true; break; }
+        if (!found)
+            throw std::logic_error("reporting::unitHeatDuties: the energy item `"
+                + key + "` is a boundary heat duty (energyItemKpis) with no row in"
+                  " heatDutyPorts() -- the utility allocation would drop it in"
+                  " silence.  Add its port and temperature KPI there.");
+    }
+
+    auto find = [&kpis](const std::string& k) -> const scalar*
+    {
+        auto it = kpis.find(k);
+        return it == kpis.end() ? nullptr : &it->second;
+    };
+    //  The unit's own temperature: `T`, else `T_out`, else `T_op` (the
+    //  crystalliser publishes its magma temperature under that name and no
+    //  other, so its cooling duty had no temperature to be served at).  A
+    //  non-isothermal pfr publishes `T` as its INLET temperature: a duty
+    //  spread along a profile is served here at that one temperature, an
+    //  approximation said rather than refined.
+    auto unitT = [&find]() -> scalar
+    {
+        if (auto t = find("T"))     return *t;
+        if (auto t = find("T_out")) return *t;
+        if (auto t = find("T_op"))  return *t;
+        return -1.0;
+    };
+
+    std::vector<UnitHeatDuty> out;
+    for (const auto& p : heatDutyPorts())
+    {
+        const std::string key = p.kpi;
+        const scalar* kW = find(key);
+        const scalar* W  = (key == "Q_kW") ? find("Q") : nullptr;
+        if (!kW && !W) continue;
+        if (kW && W)
+        {
+            const scalar a = *W, b = *kW * 1000.0;
+            if (std::abs(a - b) > 1.0e-9 * std::max(std::abs(a), std::abs(b)) + 1.0e-6)
+                throw std::runtime_error("unit '" + unit + "' publishes two"
+                    " different duties: Q = " + std::to_string(a) + " W and"
+                    " Q_kW = " + std::to_string(*kW) + " kW.  They are one"
+                    " number in two units and must agree; no reader picks a"
+                    " side.  This is a defect in the unit's KPI publication.");
+        }
+        UnitHeatDuty d;
+        d.kpi  = key;
+        d.port = p.port;
+        d.W    = W ? *W : *kW * 1000.0;
+        const std::string tk = p.tempKpi;
+        const scalar* tp = tk.empty() ? nullptr : find(tk);
+        d.T = tp ? *tp : unitT();
+        out.push_back(std::move(d));
+    }
+    return out;
 }
 
 
