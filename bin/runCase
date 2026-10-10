@@ -305,7 +305,7 @@ if [ $rc -eq 0 ]; then
        && find "$CASE_ABS" -type d -name unitOperations -print -quit 2>/dev/null | grep -q .; then
         nsnap=0
         # A unit op lives at unitOperations/<u> (flat case) OR
-        # sectors/<S>/unitOperations/<u> (fractal plant) -- find them at any depth.
+        # sectors/<S>/unitOperations/<u> (sectored plant) -- find them at any depth.
         while IFS= read -r udir; do
             [ -d "$udir" ] || continue
             project_unit_streams "${udir%/}" "$CASE_ABS/converged" snapshot plantRunProjection

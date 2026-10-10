@@ -91,7 +91,7 @@ echo "buildCode: ensuring libchoupo.a is up to date ..."
 make -C "$ROOT" --no-print-directory lib
 
 # Which binary's entry to link against -- read the case's `application`
-# (walking UP, like the engine's fractal cascade; a composite sector inherits
+# (walking UP, like the engine's folder cascade; a composite sector inherits
 # the plant controlDict).  choupoSolve (default) for a flowsheet case;
 # choupoProps for a case whose own op is a PropertyOperation (a student's own
 # property-estimation method).

@@ -91,7 +91,12 @@ are the source of truth.
 
 ## The views repeat the plant
 
-Read a fractal case as **PLANT → SECTOR → UNIT / STREAM**, and read the
+A sectored case is **a plant and its sectors** — two levels, plus each
+unit's own folder.  (Older records use the name this layout was formerly called, "fractal";
+it was retired 2026-10-09 because it promised a recursion no case has.  Say
+"a plant and its sectors" or "a sectored case".)
+
+Read a sectored case as **PLANT → SECTOR → UNIT / STREAM**, and read the
 top-level folders that are not `system/` or `constant/` as **views of that
 same geography**.  The nine-line language a student needs:
 
@@ -116,7 +121,7 @@ the geography INSIDE each instant (`iterations/000000/MAIN/`), not at its own
 root, where the levels are the instants.  So the geography a student learns
 once is the STATE views' — do not read a missing `design/MAIN/` as a defect,
 and do not create one.  `system/` and `constant/` exist at every level of
-the fractal (the plant's, a sector's, a unit's) and never inside the
+the case (the plant's, a sector's, a unit's) and never inside the
 geography.  Record:
 [`../design/main-is-a-sector-and-the-views-repeat-the-plant.md`](../design/main-is-a-sector-and-the-views-repeat-the-plant.md).
 **A state view carries the streams AND each unit's interior**, the way an
@@ -285,7 +290,7 @@ tooltips.  Decided 2026-05-27.
 
 | Level | Style | Examples |
 |---|---|---|
-| **SECTOR** (fractal sub-flowsheet folder) | `UPPER_CASE` | `CONCENTRATION`, `DRYING`, `REACTION_SECTION` |
+| **SECTOR** (a sub-flowsheet folder of the plant) | `UPPER_CASE` | `CONCENTRATION`, `DRYING`, `REACTION_SECTION` |
 | **Unit operation** (a single piece of hardware) | `PascalCase` | `Evap1`, `Cryst`, `Reactor`, `Heater1`.  2-letter abbreviations stay all-caps: `BD`, `CY`, `SD`. |
 | **Stream** (process stream between units) | `PascalCase` | `RawJuice`, `Magma`, `Cond1`, `EvapVapour` |
 | **Plant / case root folder** | `PascalCase` | `ChemicalPlantTutorial`, `EthyleneOxidation` |
@@ -313,7 +318,7 @@ connections {                                 // NAMED edges: key = stream id
 
 **A plant-level unit lives in a sector — conventionally `MAIN/`** (2026-09-05),
 and **`MAIN/` is the DOMAIN'S OWN LEVEL rather than a sector like the others**
-(amended 2026-09-07).  In a fractal case every folder in CAPS is a level of the
+(amended 2026-09-07).  In a sectored case every folder in CAPS is a level of the
 plant's geography, so a unit that belongs to no specialised sector (the
 flagship's `JuiceSplitter`, which splits the raw juice between two lines) goes
 in `MAIN/` rather than beside the sectors at the root.  The plant's geography is
@@ -796,7 +801,7 @@ run time, and says so.
 
 The companion to `choupo-init0`, and the cheap step in the authoring loop
 (write → **lint** → fix → run).  It runs the whole load-and-compose path —
-dict grammar, thermo package (every component resolved), fractal flattening
+dict grammar, thermo package (every component resolved), flattening the sectors
 (all topology cabling), the `0/` completeness contract, tear resolution —
 plus the checks a run only surfaces mid-execution (unknown unit type,
 duplicate unit names, two producers of one stream), then stops before

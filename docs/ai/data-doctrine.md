@@ -182,7 +182,7 @@ explicitly") — never silently substitutes the water number.
 
 ---
 
-## 3. The fractal cascade — overlay-and-add is the only verb
+## 3. The folder cascade — overlay-and-add is the only verb
 
 **The invariant:** *a component is ONE molecule.  A datum lives at the highest
 level where it is TRUE; a lower node only OVERLAYS when it is MORE true for
@@ -385,7 +385,7 @@ Gas = methane (already carries `{Tc,Pc,ω}`).  New EOS = `pcSaft`, needing
 > by-name aqueous tier and a LOUD default-solvent line — never an implied
 > slot).  Models ride corresponding states off `critical{}` or carry a
 > flat model-named block, selected by the explicit factory,
-> overridable per node by a BLOCK-by-block fractal overlay.  A component is one
+> overridable per node by a BLOCK-by-block per-level overlay.  A component is one
 > molecule, whole at every level; equipment physics is a rate or a geometry,
 > never a component property.  No second species, no model, and no level is
 > ever implicit on disk — the student SEES it on every run, which is the one

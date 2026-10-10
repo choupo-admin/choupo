@@ -284,8 +284,8 @@ export const TEAR_LIMITS: readonly LessonLimit[] = [
   {
     id: "flat-only",
     title: "One flat level, where a real plant nests",
-    body: "The graphs here are flat. A fractal case declares sectors that "
-      + "contain units, and a recycle may live inside one sector or run "
+    body: "The graphs here are flat. A sectored case is a plant and its "
+      + "sectors that hold units, and a recycle may live inside one sector or run "
       + "between two. Choupo flattens the whole tree to one solver problem "
       + "before any of this happens, so the contract is the same — but the "
       + "names gain their sector prefix and the order you are choosing is "

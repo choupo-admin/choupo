@@ -29,7 +29,7 @@ WHAT THIS CHECKS.
   (a) VOCABULARY: every declared tier is one of witness / tutorial /
       showcase.  A typo is a silent demotion to nothing.
   (b) A SHOWCASE COMPOSES ENGINEERING: it must be a multi-unit flowsheet
-      (>= 2 units, or a fractal case with sectors).  A single unit cannot
+      (>= 2 units, or a case with sectors).  A single unit cannot
       demonstrate engineering composition, whatever its README says.
   (c) A TUTORIAL IS NARRATED: it must carry a README.md.  A lesson nobody
       wrote down is a witness with ambitions.
@@ -79,13 +79,13 @@ def main() -> int:
             #  Comment-stripped and NOT line-anchored: hda writes its units
             #  inline (`{ name Mixer;    type mixer;`), which a `^\s*name`
             #  pattern silently counts as zero.  Second time this arm was
-            #  written from a single example -- the first assumed one fractal
+            #  written from a single example -- the first assumed one sector-folder
             #  layout, this one assumed one formatting style.  A structural
             #  test must read the GRAMMAR, never a file's typography.
             body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)
             body = re.sub(r"//[^\n]*", "", body)
             units = len(re.findall(r"\bname\s+[A-Za-z_][\w.]*\s*;", body))
-            #  FRACTAL COMES IN MORE THAN ONE LAYOUT, and the first version of
+            #  SECTORS COME IN MORE THAN ONE LAYOUT, and the first version of
             #  this arm encoded exactly one: it looked for a `sectors/` folder
             #  (lithiumBrinePlant's shape) and failed sugarPlantEconomicsSweep,
             #  whose sectors are named directories at the case root
@@ -99,7 +99,7 @@ def main() -> int:
             #  sugarPlantEconomicsSweep puts them at the case root), and
             #  chasing layouts is what made this arm wrong twice.  The root
             #  flowsheetDict's own `sectors ( ... )` block is the grammar that
-            #  makes a case fractal, so that is what is read; the directory
+            #  makes a case sectored, so that is what is read; the directory
             #  walk stays only as a fallback for a case that nests without
             #  declaring.
             sectors = bool(re.search(r"^\s*sectors\b", body, re.M)) or any(
@@ -132,7 +132,7 @@ def main() -> int:
     print(f"check_case_tiers: OK -- {counts['witness']} witness(es), "
           f"{counts['tutorial']} tutorial(s), {counts['showcase']} showcase(s), "
           "recounted from the tree rather than trusted.  Every showcase is a "
-          "multi-unit or fractal flowsheet; every tutorial carries a README; "
+          "multi-unit or sectored flowsheet; every tutorial carries a README; "
           "absence of a `tier` key means WITNESS, so a slice's witness is born "
           "classified by its author doing nothing.  NOT CHECKED: whether any "
           "case sits in the RIGHT tier (a reading judgement about audience, "

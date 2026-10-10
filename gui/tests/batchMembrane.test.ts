@@ -456,7 +456,7 @@ describe("readVessel -- the witnesses' own declared operation", () => {
     expect(v.mode).toBe(c.mode);
   });
 
-  it("matches a flattened fractal name on its last segment", () => {
+  it("matches a flattened sectored name on its last segment", () => {
     const v = readVessel(
       methodCase(BATCH_MEMBRANE_WITNESS_CLEAN, []), "FILTRATION.retentate");
     expect(v.unitFound).toBe(true);

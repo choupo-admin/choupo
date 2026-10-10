@@ -19,7 +19,7 @@ halves of that, plus the arithmetic.
 
 WHAT THIS CHECKS:
 
-  (a) STAMPED IS CARRIED, and it is the AUTHORED sector.  For the fractal
+  (a) STAMPED IS CARRIED, and it is the AUTHORED sector.  For the sectored
       witness, every sizing row and every costing row names a sector, and the
       set of sectors equals the set of sector FOLDERS the case declares on
       disk.  Compared against the case's own directory layout, never against
@@ -208,7 +208,7 @@ needs a rebuild.  Observed, verbatim (truncated where a message is long):
   S4  arm (i) made VACUOUS (every endpoint discarded, not only the domain
       level) --
       "not one stream in the table crosses a sector boundary -- arm (i) has no
-       subject, and the fractal witness has stopped being fractal."
+       subject, and the sectored witness has stopped having sectors."
 
   S5  arm (j)'s flat witness pointed at a case that HAS sectors --
       "tutorials/steady/flowsheets/process02_with_design has no sectors and its
@@ -274,7 +274,7 @@ from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[2]
 
-FRACTAL = "tutorials/plant/ChemicalPlantTutorial"
+SECTORED = "tutorials/plant/ChemicalPlantTutorial"
 FLAT    = "tutorials/steady/flowsheets/process02_with_design"
 
 _CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
@@ -435,17 +435,17 @@ def main() -> int:
     problems, notes = [], []
 
     # ---------------------------------------------------------------- (a)
-    txt = stdout_of(FRACTAL)
+    txt = stdout_of(SECTORED)
     if txt is None:
-        print("check_sector_hierarchy: FAILED\n  %s does not run." % FRACTAL)
+        print("check_sector_hierarchy: FAILED\n  %s does not run." % SECTORED)
         return 1
 
-    declared, rootLeaves = authored_sectors(FRACTAL)
+    declared, rootLeaves = authored_sectors(SECTORED)
     if not declared:
         problems.append(
-            "%s declares no composite sector -- the fractal witness is not "
-            "fractal, so arm (a) has no subject.  Fix the witness, do not "
-            "retire the arm." % FRACTAL)
+            "%s declares no composite sector -- the sectored witness has no "
+            "sectors, so arm (a) has no subject.  Fix the witness, do not "
+            "retire the arm." % SECTORED)
 
     #  A heading must be a DECLARED composite.  Not every declared sector owns
     #  a sized unit (the postDict chooses what to size), so the relation is
@@ -454,7 +454,7 @@ def main() -> int:
     #  name split would produce.
     def check_set(got, where):
         if not got:
-            problems.append("%s: %s name no sector at all." % (FRACTAL, where))
+            problems.append("%s: %s name no sector at all." % (SECTORED, where))
             return
         stray = got - declared
         if stray:
@@ -463,34 +463,34 @@ def main() -> int:
                 "composite sector(s) (declared: %s; root-level leaf units: "
                 "%s).  A heading that is not a declared sector is what "
                 "recovering it from the unit name would produce."
-                % (FRACTAL, where, sorted(stray), sorted(declared),
+                % (SECTORED, where, sorted(stray), sorted(declared),
                    sorted(rootLeaves)))
 
     banners = set(re.findall(r'^\s*-- sector: (\S+)', txt, re.M))
     check_set(banners, "the sizing table's sector banners")
 
-    dcsv = find_csv(FRACTAL, "design", "sizing.csv")
+    dcsv = find_csv(SECTORED, "design", "sizing.csv")
     if dcsv is None:
-        problems.append("%s: no design sizing.csv was written." % FRACTAL)
+        problems.append("%s: no design sizing.csv was written." % SECTORED)
     else:
         head, rows = csv_rows(dcsv)
         if "sector" not in head:
             problems.append(
                 "%s: sizing.csv carries no `sector` column -- the hierarchy "
-                "reaches the screen and not the file a reader opens." % FRACTAL)
+                "reaches the screen and not the file a reader opens." % SECTORED)
         else:
             i = head.index("sector")
             check_set({r[i] for r in rows}, "sizing.csv")
 
     # ---------------------------------------------------------------- (c)
-    ecsv = find_csv(FRACTAL, "economics", "costs.csv")
+    ecsv = find_csv(SECTORED, "economics", "costs.csv")
     nsub = 0
     if ecsv is None:
-        problems.append("%s: no economics costs.csv was written." % FRACTAL)
+        problems.append("%s: no economics costs.csv was written." % SECTORED)
     else:
         head, rows = csv_rows(ecsv)
         if "sector" not in head:
-            problems.append("%s: costs.csv carries no `sector` column." % FRACTAL)
+            problems.append("%s: costs.csv carries no `sector` column." % SECTORED)
         else:
             si = head.index("sector")
             ti = next(i for i, h in enumerate(head) if h.startswith("totalModule_"))
@@ -506,36 +506,36 @@ def main() -> int:
             if set(subs) != set(per):
                 problems.append(
                     "%s: costs.csv subtotals %s against unit rows in sectors "
-                    "%s." % (FRACTAL, sorted(subs), sorted(per)))
+                    "%s." % (SECTORED, sorted(subs), sorted(per)))
             for s, v in sorted(subs.items()):
                 if abs(v - per.get(s, 0.0)) > 0.02:
                     problems.append(
                         "%s: costs.csv SUBTOTAL %s = %.2f, but its own unit "
-                        "rows sum to %.2f." % (FRACTAL, s, v, per.get(s, 0.0)))
+                        "rows sum to %.2f." % (SECTORED, s, v, per.get(s, 0.0)))
             if total is None:
-                problems.append("%s: costs.csv has no TOTAL row." % FRACTAL)
+                problems.append("%s: costs.csv has no TOTAL row." % SECTORED)
             elif abs(sum(subs.values()) - total) > 0.02:
                 problems.append(
                     "%s: costs.csv subtotals sum to %.2f against a TOTAL of "
                     "%.2f -- a unit is counted in a sector and not in the "
                     "total, or twice."
-                    % (FRACTAL, sum(subs.values()), total))
+                    % (SECTORED, sum(subs.values()), total))
 
     # The console block, and its shares.
     blk = re.search(r'---- capital by sector ----\n(.*?)\n\n', txt, re.S)
     if blk is None:
         problems.append(
             "%s: the costing console prints no `capital by sector` block."
-            % FRACTAL)
+            % SECTORED)
     else:
         shares = [float(x) for x in re.findall(r'([0-9]+\.[0-9])\s*%', blk.group(1))]
         if not shares:
             problems.append("%s: the capital-by-sector block states no shares."
-                            % FRACTAL)
+                            % SECTORED)
         elif abs(sum(shares) - 100.0) > 0.35:
             problems.append(
                 "%s: the sector shares sum to %.1f %%, not 100 %%."
-                % (FRACTAL, sum(shares)))
+                % (SECTORED, sum(shares)))
         else:
             notes.append("%d share(s) summing to %.1f %%"
                          % (len(shares), sum(shares)))
@@ -588,7 +588,7 @@ def main() -> int:
             "%s: the result JSON emits no `unitSectors` map, so the browser "
             "has no way to build the hierarchy except by splitting a dotted "
             "unit name -- which is exactly what this design refuses."
-            % FRACTAL)
+            % SECTORED)
     else:
         check_set(set(jsonSectors.values()), "the result JSON's `unitSectors`")
         #  Cross-check against the design CSV: two publications of one fact
@@ -605,7 +605,7 @@ def main() -> int:
                             "%s: sizing.csv files unit '%s' under sector '%s' "
                             "while the result JSON says '%s'.  One fact, two "
                             "publications, and they disagree."
-                            % (FRACTAL, r[0], want, got))
+                            % (SECTORED, r[0], want, got))
 
     # ---------------------------------------------------------------- (f)
     #  `equipment` is one JSON object per line inside a top-level array.
@@ -621,7 +621,7 @@ def main() -> int:
         problems.append(
             "%s: the result JSON emits no `equipment` array -- the sizing and "
             "costing passes ran and produced a table and two CSVs, and the app "
-            "still cannot draw one row of the plant's design." % FRACTAL)
+            "still cannot draw one row of the plant's design." % SECTORED)
     elif dcsv is not None:
         head, rows = csv_rows(dcsv)
         si = head.index("sector") if "sector" in head else None
@@ -629,13 +629,13 @@ def main() -> int:
             if r[0] not in equip:
                 problems.append(
                     "%s: sizing.csv lists unit '%s' and the result JSON's "
-                    "`equipment` array does not." % (FRACTAL, r[0]))
+                    "`equipment` array does not." % (SECTORED, r[0]))
             elif si is not None and r[si] != "(no sector)" \
                     and equip[r[0]][0] != r[si]:
                 problems.append(
                     "%s: unit '%s' is filed under sector '%s' in sizing.csv "
                     "and '%s' in the equipment array."
-                    % (FRACTAL, r[0], r[si], equip[r[0]][0]))
+                    % (SECTORED, r[0], r[si], equip[r[0]][0]))
         #  The MONEY must agree too: two publications of one cost that differ
         #  is the defect this whole slice exists to prevent.
         if ecsv is not None:
@@ -651,7 +651,7 @@ def main() -> int:
                         problems.append(
                             "%s: costs.csv gives unit '%s' a total module cost "
                             "of %s and the equipment array gives %s."
-                            % (FRACTAL, r[0], r[ti], got))
+                            % (SECTORED, r[0], r[ti], got))
 
 
     # ---------------------------------------------------------------- (h)
@@ -661,7 +661,7 @@ def main() -> int:
     #  its answer with `choupoSolve --manifest`, and this arm derives the same
     #  answer from the AUTHORED `connections {}` block, which the engine never
     #  reads for this purpose.  Four statements, and together they pin every
-    #  stream of a fractal case:
+    #  stream of a sectored case:
     #      an edge with a `to` and no `from`   -- a plant INLET -- lives at the
     #          domain's own level, `MAIN/`;
     #      an edge whose two ends are in DIFFERENT sectors -- a CROSSING --
@@ -673,7 +673,7 @@ def main() -> int:
     #  What this does NOT reach: a case nesting a sector inside a sector, where
     #  "the domain's own level" and "MAIN" stop coinciding with one tier.  No
     #  corpus case nests, and the arm says so rather than implying coverage.
-    STREAM_HOMES = (FRACTAL, "tutorials/plant/lithiumBrinePlant")
+    STREAM_HOMES = (SECTORED, "tutorials/plant/lithiumBrinePlant")
     DOMAIN = "MAIN"
     nhome = nstreams = 0
     for rel in STREAM_HOMES:
@@ -749,7 +749,7 @@ def main() -> int:
                 problems.append(
                     "%s: `%s` has a state file at the view ROOT (0/%s), loose "
                     "beside the sector folders.  That is the mixed level the "
-                    "2026-09-05 convention was adopted to remove: in a fractal "
+                    "2026-09-05 convention was adopted to remove: in a sectored "
                     "case every file in a view sits inside a level of the "
                     "plant's geography." % (rel, sid, p))
 
@@ -762,18 +762,18 @@ def main() -> int:
     #  that fires on the defect that started the slice: `Magma` filed inside
     #  CONCENTRATION, one of its two endpoints.
     ncross = 0
-    stbl = find_csv(FRACTAL, "streamTable", "streamTable.csv")
-    man = manifest_of(FRACTAL)
+    stbl = find_csv(SECTORED, "streamTable", "streamTable.csv")
+    man = manifest_of(SECTORED)
     if stbl is None:
         problems.append("%s: no streamTable.csv -- arm (i) has no independent "
-                        "witness to which streams cross." % FRACTAL)
+                        "witness to which streams cross." % SECTORED)
     elif man is not None:
         head, rows = csv_rows(stbl)
         if "crossing" not in head or "sector" not in head:
             problems.append(
                 "%s: streamTable.csv carries no `crossing`/`sector` column, so "
                 "nothing outside the ownership rule says which streams span "
-                "two sectors." % FRACTAL)
+                "two sectors." % SECTORED)
         else:
             ci, si2 = head.index("crossing"), head.index("sector")
             for r in rows:
@@ -797,18 +797,18 @@ def main() -> int:
                     problems.append(
                         "%s: `%s` crosses %s and the table files it in `%s`, "
                         "which is one of its own endpoints."
-                        % (FRACTAL, r[0], r[ci], r[si2]))
+                        % (SECTORED, r[0], r[ci], r[si2]))
                 sid = r[0]
                 if sid in man and str(PurePosixPath(man[sid]).parent) in ends:
                     problems.append(
                         "%s: `%s` crosses %s and its state file is at 0/%s, "
                         "inside one of its own endpoints."
-                        % (FRACTAL, sid, r[ci], man[sid]))
+                        % (SECTORED, sid, r[ci], man[sid]))
             if ncross == 0:
                 problems.append(
                     "%s: not one stream in the table crosses a sector boundary "
-                    "-- arm (i) has no subject, and the fractal witness has "
-                    "stopped being fractal." % FRACTAL)
+                    "-- arm (i) has no subject, and the sectored witness has "
+                    "stopped having sectors." % SECTORED)
 
     # ---------------------------------------------------------------- (l)
     #  ONE ROW PER PHYSICAL STREAM, and the plant's own name beside it.
@@ -832,7 +832,7 @@ def main() -> int:
         if dupes:
             problems.append(
                 "%s: streamTable.csv repeats %d stream id(s): %s.  One physical "
-                "stream, one row." % (FRACTAL, len(dupes), ", ".join(dupes)))
+                "stream, one row." % (SECTORED, len(dupes), ", ".join(dupes)))
         extra   = sorted(set(ids) - set(man))
         missing = sorted(set(man) - set(ids))
         if extra:
@@ -841,36 +841,36 @@ def main() -> int:
                 "does not name: %s.  Those are LABELS -- other names for a pipe "
                 "the table already drew -- and drawing them makes the plant "
                 "look bigger than it is."
-                % (FRACTAL, len(extra), ", ".join(extra)))
+                % (SECTORED, len(extra), ", ".join(extra)))
         if missing:
             problems.append(
                 "%s: %d stream(s) have a state file and no row in "
                 "streamTable.csv: %s.  The table and the state tree must count "
-                "the same streams." % (FRACTAL, len(missing), ", ".join(missing)))
+                "the same streams." % (SECTORED, len(missing), ", ".join(missing)))
         if "label" not in head:
             problems.append(
                 "%s: streamTable.csv carries no `label` column, so the plant's "
                 "own name for a stream it exports (`Powder`, `Stack`) appears "
                 "nowhere -- and the row is the qualified identity, which is not "
-                "that name." % FRACTAL)
+                "that name." % SECTORED)
         else:
             li = head.index("label")
             declaredOutlets = {n for n, frm, to in root_edges(
-                ROOT / FRACTAL / "system" / "flowsheetDict") if frm and not to}
+                ROOT / SECTORED / "system" / "flowsheetDict") if frm and not to}
             labelled = {r[0]: r[li].strip() for r in rows if r[li].strip()}
             nlabels = len(labelled)
             if not labelled:
                 problems.append(
                     "%s: the `label` column is empty on every row -- arm (l) "
                     "has no subject, and a plant that exports nine products "
-                    "under its own names has stopped saying so." % FRACTAL)
+                    "under its own names has stopped saying so." % SECTORED)
             for sid, lab in sorted(labelled.items()):
                 if lab not in declaredOutlets:
                     problems.append(
                         "%s: `%s` is labelled `%s`, which the root dict "
                         "declares as no boundary outlet.  A label is the name "
                         "the AUTHOR gave the plant's boundary, never one the "
-                        "report invented." % (FRACTAL, sid, lab))
+                        "report invented." % (SECTORED, sid, lab))
             for sid, lab in sorted(labelled.items()):
                 if roleOfRow(head, rows, sid) != "product":
                     problems.append(
@@ -878,7 +878,7 @@ def main() -> int:
                         "`%s`.  A stream the plant declared as an outlet is a "
                         "product; the row used to read `intermediate` because "
                         "`Topology` files a renamed product under the LABEL."
-                        % (FRACTAL, sid, lab,
+                        % (SECTORED, sid, lab,
                            roleOfRow(head, rows, sid)))
 
     #  ...AND THE FLAT WITNESS GAINS NO COLUMN.  A case whose plant renames
@@ -887,7 +887,7 @@ def main() -> int:
     #  pair already follows.
     #  The two report layouts name the directory differently (`reports/streams`
     #  vs the functionObject tree's `postProcessing/streamTable/0`), so ask for
-    #  both rather than assume the one the fractal witness happens to use.
+    #  both rather than assume the one the sectored witness happens to use.
     ftbl = (find_csv(FLAT, "streamTable", "streamTable.csv")
             or find_csv(FLAT, "streams", "streamTable.csv"))
     if ftbl is None:
@@ -932,7 +932,7 @@ def main() -> int:
     tmp = tempfile.mkdtemp(prefix="choupo_streamhome_")
     try:
         dst = os.path.join(tmp, "case")
-        shutil.copytree(str(ROOT / FRACTAL), dst,
+        shutil.copytree(str(ROOT / SECTORED), dst,
                         ignore=shutil.ignore_patterns("converged", "iterations",
                                                       "postProcessing", "design",
                                                       "economics"))
@@ -942,7 +942,7 @@ def main() -> int:
             problems.append(
                 "arm (k) could not stage its own subject: %s has no "
                 "0/MAIN/Magma to put back where the retired rule filed it."
-                % FRACTAL)
+                % SECTORED)
         else:
             shutil.move(src, os.path.join(dest_dir, "Magma"))
             r = subprocess.run([str(ROOT / "choupoSolve"), dst],
@@ -1020,7 +1020,7 @@ def main() -> int:
     #                   go through the ONE home `topLevelSector`;
     #    reads-chain -- the ownership rule itself, which now reads the chain
     #                   WHOLE (a stream lives at the LOWEST level containing
-    #                   every endpoint, at any fractal depth), so it must
+    #                   every endpoint, at any depth of nesting), so it must
     #                   consume the STAMPED chain and must not call the head
     #                   accessor to get there;
     #    supplies    -- hands the stamp over as data.
@@ -1137,7 +1137,7 @@ def main() -> int:
           "saying so is proven to flag all three removed constructs on its own "
           "probe.  WHERE EACH STREAM'S STATE FILE LIVES (the 2026-09-07 rule: "
           "the LOWEST level whose subtree contains every endpoint) is checked "
-          "for %d fractal case(s), %d stream(s) in all, by recomputing the "
+          "for %d sectored case(s), %d stream(s) in all, by recomputing the "
           "level from the AUTHORED root `connections {}` block and comparing "
           "it with the engine's published `--manifest`: a plant inlet and a "
           "sector-to-sector crossing at the domain's own level `MAIN/`, a "
@@ -1148,7 +1148,7 @@ def main() -> int:
           "each in NEITHER endpoint's folder.  %s has no sectors and all %d of "
           "its state files stay flat.  A file left at the address the retired "
           "rule gave is REFUSED and the move is %s.  ONE ROW PER PHYSICAL "
-          "STREAM: the fractal witness's streamTable draws %d row(s), exactly "
+          "STREAM: the sectored witness's streamTable draws %d row(s), exactly "
           "the manifest's stream ids and no label among them, and the %d row(s) "
           "the plant exports carry its OWN outlet name in a `label` column -- "
           "each one a name the root dict declares, each row filed as a product "
@@ -1162,7 +1162,7 @@ def main() -> int:
           "source); whether a stream's OWN 0/ file holds the right numbers "
           "(this arm is about the address, never the contents); and the GUI, "
           "which does not read the sector yet."
-          % (FRACTAL, len(declared), sorted(declared), nsub,
+          % (SECTORED, len(declared), sorted(declared), nsub,
              notes[0] if notes else "no shares read", FLAT,
              len(jsonSectors), len(equip), nread, nreads, nsupplies,
              nstream, nhome, nstreams, ncross, FLAT, nflat, reloc,

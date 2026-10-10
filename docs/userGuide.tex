@@ -389,7 +389,7 @@ for the code.
 \paragraph{Inheritance: a dict you do not write is inherited.}  A case
 that omits \file{controlDict}, \file{constant/thermoPhysPropDict} or a
 reaction library inherits it from the folder above (up to six levels).
-This is what makes the fractal layout work: a sector of a plant carries
+This is what makes the sectored layout work: a sector of a plant carries
 only what is genuinely its own --- typically its \file{flowsheetDict}
 and, when its chemistry differs, its own thermophysical system --- and
 still runs as a case in its own right, borrowing the rest from the plant
@@ -543,7 +543,7 @@ For the same honesty, a recycle that exhausts its iterations without
 converging now exits with status 1 and writes no \file{converged/} ---
 the directory's name is a promise.
 
-\paragraph{Sectors --- the fractal flowsheet.}  A big plant is
+\paragraph{Sectors --- a plant and its sectors.}  A big plant is
 organised as \emph{sectors} (composite sub-flowsheets), each a folder
 with its own \file{system/flowsheetDict} and, when it needs one, its own
 \file{constant/thermoPhysPropDict} (a sector may run a different
@@ -3975,7 +3975,7 @@ pick the one closest to what you want to do and edit from there.
 \code{recipe01\_react\_then\_distill}   & A scripted transfer between vessels. \\
 \code{ctrl01\_cstr\_temp\_control} / \code{ctrl02\_disturbance\_rejection} & PID tracking; step-disturbance rejection. \\
 \code{ed01\_nacl\_desalination}         & The electrodialysis stack, below and at the limiting current. \\
-\code{plant/lithiumBrinePlant}          & A fractal multi-sector plant across four thermodynamic worlds. \\
+\code{plant/lithiumBrinePlant}          & A multi-sector plant across four thermodynamic worlds. \\
 \bottomrule
 \end{tabularx}
 \end{center}

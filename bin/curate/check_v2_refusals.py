@@ -724,7 +724,7 @@ def advice_read_arm(tmp):
 #  this arm holds that on every route a thermophysicalPropertySystem reaches
 #  the builder by: choupoProps on a single-salt system (against a control that
 #  runs clean WITHOUT the line), choupoSolve on a SEALED corpus case with the
-#  line put back, and a SECTOR's own system inside a fractal plant (the
+#  line put back, and a SECTOR's own system inside a sectored plant (the
 #  thermoFor route).  A DOCS part keeps the pages a reader copies a case from
 #  (docs/ai, which bin/llmctx ships to an assistant, and the guides' .tex)
 #  from teaching the line again: a refused key in a listing is advice that
@@ -889,7 +889,7 @@ def main():
           " reader in the builder), plus the unread-apparent arm"
           " (`equilibrium.aqueous.apparentComponents` REFUSES by name through"
           " choupoProps on a single-salt system against a clean control,"
-          " choupoSolve on a sealed corpus case and a fractal plant's sector"
+          " choupoSolve on a sealed corpus case and a sectored plant's sector"
           " system; no docs/ai page or guide .tex teaches it)."
           "  DOMAIN: the v2"
           " grammar's own refusals, driven through choupoProps/choupoSolve on"

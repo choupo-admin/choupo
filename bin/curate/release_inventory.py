@@ -119,7 +119,7 @@ def release_id() -> str:
 
 def count_runnable_cases() -> int:
     """A runnable case = a `system/controlDict` that declares an `application`
-    (the binary to dispatch).  This excludes fractal sub-unit / sector folders
+    (the binary to dispatch).  This excludes unit and sector folders nested inside a case
     (which inherit and carry no application) so we count TOP-LEVEL cases only."""
     return sum(count_cases_by_tier().values())
 

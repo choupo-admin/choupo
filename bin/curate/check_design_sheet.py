@@ -19,7 +19,7 @@ regenerated whole on every run exactly as `converged/` is.
 
 WHAT THIS CHECKS:
 
-  (a) EVERY SIZED UNIT HAS A SHEET, AT THE RIGHT ADDRESS.  For the fractal
+  (a) EVERY SIZED UNIT HAS A SHEET, AT THE RIGHT ADDRESS.  For the sectored
       witness, one file per row of `sizing.csv`, under that row's OWN sector
       directory, named by that row's equipment type.  The expected path is
       built from the CSV -- never by splitting the unit name -- so a writer
@@ -312,7 +312,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
   * THE GUI.  The case file tree groups by the FIRST path segment and draws
     the rest as one row, so `design/` reaches the browser as a flat list.
     Making it a real tree is separate work and needs its own arm.
-  * EVERY CASE.  Two witnesses, one fractal and one flat, chosen because
+  * EVERY CASE.  Two witnesses, one sectored and one flat, chosen because
     between them they exercise both address shapes.  Only 9 of 233 steady
     tutorials declare a `sizing {}` block at all.  Arm (k) therefore sees only
     the unit words THOSE two write; a sizer no witness exercises can still
@@ -334,7 +334,7 @@ from debt_registry import SHEET_UNIT_WORDS_UNPARSEABLE   # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 
-FRACTAL = "tutorials/plant/ChemicalPlantTutorial"
+SECTORED = "tutorials/plant/ChemicalPlantTutorial"
 FLAT    = "tutorials/steady/flowsheets/process02_with_design"
 #  THE MULTI-ITEM WITNESS (2026-09-07).  The first case in the corpus where a
 #  single flowsheet unit is sized as SEVERAL physical objects: a distillation
@@ -801,7 +801,7 @@ def check_unit_words_readable(all_units, problems, notes):
 #  reporting that it had checked them.
 GUI_FIXTURES = (
     (FLAT,    "heater/shellTubeHX",                 "gui/tests/designSheet.test.ts"),
-    (FRACTAL, "FERMENTATION/Fermentor/stirredTank", "gui/tests/designSheet.test.ts"),
+    (SECTORED, "FERMENTATION/Fermentor/stirredTank", "gui/tests/designSheet.test.ts"),
     (COLUMN,  "column09/shell",                     "gui/tests/columnDatasheet.test.ts"),
     (COLUMN,  "column09/trays",                     "gui/tests/columnDatasheet.test.ts"),
     (COLUMN,  "column09/refluxDrum",                "gui/tests/columnDatasheet.test.ts"),
@@ -995,7 +995,7 @@ def check_crystalliser_volume(rel, sheets, problems, notes):
 
 def check_ignored(problems):
     """(g) Both directions of the .gitignore rule."""
-    case_file = ROOT / FRACTAL / "design" / "X" / "Y" / "z"
+    case_file = ROOT / SECTORED / "design" / "X" / "Y" / "z"
     case_file.parent.mkdir(parents=True, exist_ok=True)
     case_file.write_text("")
     rec = ROOT / "docs" / "design" / "__gate_probe.md"
@@ -1020,7 +1020,7 @@ def check_ignored(problems):
                 "silence, in a tree whose own rule is to write the record "
                 "before promoting.")
     finally:
-        shutil.rmtree(ROOT / FRACTAL / "design" / "X", ignore_errors=True)
+        shutil.rmtree(ROOT / SECTORED / "design" / "X", ignore_errors=True)
         rec.unlink(missing_ok=True)
 
     #  The second lock: the glob exclusion, so the rule survives a .gitignore edit.
@@ -2900,13 +2900,13 @@ def main() -> int:
     problems, notes = [], []
 
     all_units = []
-    n1 = check_case(FRACTAL, True,  problems, notes, all_units)
+    n1 = check_case(SECTORED, True,  problems, notes, all_units)
     n2 = check_case(FLAT,    False, problems, notes, all_units)
     n3 = check_case(COLUMN,  False, problems, notes, all_units)
 
     if n1 == 0:
         problems.append("%s: no sheet was checked at all -- the arms above "
-                        "cannot fire." % FRACTAL)
+                        "cannot fire." % SECTORED)
     if n2 == 0:
         problems.append("%s: no sheet was checked at all." % FLAT)
     if n3 == 0:
@@ -2932,7 +2932,7 @@ def main() -> int:
             print("  " + p)
         return 1
 
-    print("check_design_sheet: OK -- %d specification sheet(s) on the fractal "
+    print("check_design_sheet: OK -- %d specification sheet(s) on the sectored "
           "witness, %d on the flat one and %d on the multi-item column "
           "(one flowsheet unit, five physical items -- shell, trays, "
           "condenser, reboiler, reflux drum -- whose two exchanger areas, "

@@ -38,7 +38,7 @@ License
 
   RESOLUTION POLICY (every consumer goes through here):
 
-      nearest constant/<sub>              (walking UP the fractal cascade)
+      nearest constant/<sub>              (walking UP the folder cascade)
    -> data/standards/<sub>,  UNLESS the case is SEALED.
 
   SEALED = the nearest constant/propertyManifest declares `sealed true;`.
@@ -88,7 +88,7 @@ namespace records {
 
 namespace fs = std::filesystem;
 
-// Bounded walk UP the fractal cascade (unit -> sector -> plant), the same
+// Bounded walk UP the folder cascade (unit -> sector -> plant), the same
 // depth every retired ad-hoc leg used.
 inline constexpr int walkUpDepth = 8;
 

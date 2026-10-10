@@ -184,7 +184,7 @@ else:
         sys.exit(1)
     if "LOCAL override" not in out:
         print("FAIL  the per-unit override ran but was not ANNOUNCED -- the "
-              "cascade must be loud (CLAUDE.md, fractal units)")
+              "cascade must be loud (CLAUDE.md, sectored units)")
         sys.exit(1)
     print("  ok   the legal `thermo { ... }` override still runs, and says so")
 

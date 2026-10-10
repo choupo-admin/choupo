@@ -791,7 +791,7 @@ export function shapeStreams(payload: ResultPayload,
   //      block lists feeds explicitly; walk `units` to find which names
   //      are produced vs consumed.  Whatever is produced and never
   //      consumed is a product.
-  //   2. COMPOSITE case (fractal, `children` + `connections` + `boundary`):
+  //   2. COMPOSITE case (sectored, `children` + `connections` + `boundary`):
   //      the `boundary.inlets` are feeds and `boundary.outlets` are
   //      products by definition.  The unit walk below would miss them
   //      because composite roots have no `units` block.

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  Drilling into a fractal member must show its stream VALUES (2026-07-08).
+  Drilling into a sector member must show its stream VALUES (2026-07-08).
 
   The plant stores stream state sector-OWNED under `0/<SECTOR>/<stream>`.  A
   drilled sector (sectors/BRINE) or nested unit is re-rooted, so a plain

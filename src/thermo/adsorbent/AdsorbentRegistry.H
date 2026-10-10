@@ -40,7 +40,7 @@ Description
 
     `byName` also honours a case-local overlay: the nearest
     constant/adsorbents/<name>.dat walking UP from the cwd eclipses the
-    standard entry whole (the same fractal cascade as membranes /
+    standard entry whole (the same folder cascade as membranes /
     components), announced loudly.  Its isotherms come from the case-local
     constant/parameters/adsorption/equilibria/<name>/ when present, else
     from the standards catalogue (announced).

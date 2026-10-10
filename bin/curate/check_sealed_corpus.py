@@ -8,7 +8,7 @@ constant/propertyManifest.  No hunting through the installation catalogue to
 learn what a case consumed.
 
 Enforced here: every TOP-LEVEL case (it has its own system/controlDict and is
-not a fractal sub-unit of a parent case) must carry constant/propertyManifest.
+not a unit or sector folder nested inside a parent case) must carry constant/propertyManifest.
 
 The ONE named exemption: a LIVE-OVERLAY demo -- a case whose component records
 declare `overlayOf`, whose whole lesson is the field-by-field overlay resolving
@@ -53,7 +53,7 @@ tops = []
 for c in sorted(caseDirs):
     if not (c / "system" / "controlDict").exists():
         continue                          # a marker inside a composite: not a case
-    # a fractal sub-unit lives INSIDE another case directory
+    # a nested unit or sector folder lives INSIDE another case directory
     if any(par in caseDirs and (par / "system" / "controlDict").exists()
            for par in c.parents):
         continue

@@ -402,7 +402,7 @@ try
     Database db(dataRoot.empty() ? "" : dataRoot.string());
 
     // --- Dictionaries ---------------------------------------------------
-    //  Cascade resolution (fractal), identical to choupoSolve: a sector node
+    //  Cascade resolution (folder cascade), identical to choupoSolve: a sector node
     //  may omit the controlDict / thermoPhysPropDict it inherits from a PARENT
     //  folder level --- walk UP the tree until found (capped).  The propsDict
     //  is NEVER inherited: it IS the node's own analyses.  Without this a

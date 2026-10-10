@@ -108,7 +108,7 @@ function leafName(qname: string): string {
   return i < 0 ? qname : qname.slice(i + 1);
 }
 
-// First segment of the qualified name; the sector for fractal cases
+// First segment of the qualified name; the sector for sectored cases
 // ("CONCENTRATION.Evap1" -> "CONCENTRATION") or a synthetic "(top)"
 // group when the case is flat (units carry no namespace dot).
 function sectorOf(qname: string): string {

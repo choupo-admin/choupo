@@ -282,7 +282,7 @@ function scalarInRecord(body: string, key: string): number | null {
 /**
  * Read the lab column's declared geometry and its adsorbent's bulk density
  * from the case that produced the run.  `unit` is the KPI unit name
- * (`detectBreakthrough().unit`); a flattened fractal name (`SECTOR.bed`) is
+ * (`detectBreakthrough().unit`); a flattened sectored name (`SECTOR.bed`) is
  * matched on its last segment.  Every absence is NAMED in `missing`.
  */
 export function readLabColumn(files: CaseFiles | null, unit: string): LabColumn {

@@ -1558,7 +1558,7 @@ Referenced from a CSTR / PFR by name
 \begin{keyidea}
 \textbf{The reactions library cascades UP, like the thermophysical
 system.}  When a
-branch of a fractal plant (\S\ref{sec:fractal}) is run \emph{standalone}, its
+branch of a sectored plant (\S\ref{sec:sectors}) is run \emph{standalone}, its
 named-reaction library resolves by walking up the parent-folder chain (capped
 at six levels) exactly as the thermo package does, and \textbf{announces its
 origin} --- \code{reactions library: loaded --- LOCAL} vs \code{inherited from
@@ -2537,16 +2537,21 @@ entry no gate reads.
 \end{itemize}
 
 % =====================================================================
-\section{The fractal flowsheet --- nesting and \code{flattenNode}}
-\label{sec:fractal}
+\section{A plant and its sectors --- nesting and \code{flattenNode}}
+\label{sec:sectors}
 
 \begin{whatyoulllearn}
 How a plant of sectors of units collapses to ONE flat solver problem, why the
 hierarchy is namespace-only, and how a branch runs standalone.
 \end{whatyoulllearn}
 
-A Choupo case is a \textbf{fractal}: a composite \emph{sector} nests leaf units
-(or further sectors), to any depth.  But the solver never sees the tree.
+A sectored Choupo case is \textbf{a plant and its sectors}: the plant nests
+composite \emph{sectors}, and a sector nests leaf units.  (The layout was
+formerly called ``fractal''; the name was retired on 2026-10-09 because every
+case has those two levels and the word promised a recursion no case uses.
+\code{flattenNode} itself recurses and sets no depth limit, so the two levels
+are a convention of the corpus, not a refusal of the engine.)  The solver
+never sees the tree.
 \code{flattenNode} walks the declared children and collapses the hierarchy into
 \textbf{one flat solver problem} with dotted \code{plant.sector.unit} names ---
 the hierarchy is \emph{authoring and namespace} only, never a recursive
@@ -2562,7 +2567,7 @@ plant.
 sectors --- they are not declared children and have no \code{flowsheetDict}.
 \end{keyidea}
 
-\paragraph{Lean fractal folders + the dual-reader.}  A node's topology may live
+\paragraph{Lean sector folders + the dual-reader.}  A node's topology may live
 either way, both first-class:
 \begin{itemize}[leftmargin=*,nosep]
   \item the classic \file{<node>/system/flowsheetDict}, or
@@ -2571,7 +2576,7 @@ either way, both first-class:
 A \textbf{dual-reader} keeps both loading: the child loader reads
 \file{<child>/flowsheetDict} first and \emph{falls back} to
 \file{<child>/system/flowsheetDict}; the top-level \code{choupoSolve} does the
-same at the case root.  Existing fractal cases (esterification, twoSectorDemo)
+same at the case root.  Existing sectored cases (esterification, twoSectorDemo)
 load byte-identically through the fallback --- \textbf{no forced mass-migration}.
 
 \paragraph{A branch runs alone.}  Because both \code{thermoPhysPropDict}
@@ -2610,13 +2615,13 @@ instant, and a litter sweep purges stale numeric dirs.
 
 \paragraph{The layout --- instants at the CASE ROOT.}  An instant is a bare
 iteration-\emph{number} directory at the case root, beside \file{constant/},
-\file{system/} and the fractal sector folders.  ``The time speaks for itself'' ---
+\file{system/} and the sector folders.  ``The time speaks for itself'' ---
 there is no \file{solution/} wrapper.
 
 \begin{lstlisting}
 case/
   constant/  system/  reports/        # the usual case payload
-  FERMENTATION/  CONCENTRATION/  ...   # fractal SECTOR folders (alphabetic)
+  FERMENTATION/  CONCENTRATION/  ...   # sector folders (alphabetic)
   0/                                   # instant 0 (the initial seed)
     streams                              # ROOT flat stream table (the spine)
     FERMENTATION/ streams                # per-sector view
@@ -2633,7 +2638,7 @@ The payload file is named \code{streams}; \code{latest} is the
 highest-numbered instant (latestTime style --- restart discovers it by the max
 integer dir name).  A load-bearing \emph{all-digit filter} on the numeric-dir
 scan guarantees a sector folder (alphabetic) is never swept or mistaken for an
-instant, and the fractal loader iterating declared children (not a filesystem
+instant, and the sector loader iterating declared children (not a filesystem
 walk) guarantees the reverse.
 \end{keyidea}
 
@@ -3275,7 +3280,7 @@ How a class is shaped (the five rules)    & \S\ref{sec:class-rules} + \file{docs
 Writing and sabotaging a gate             & \S\ref{sec:gates} \\
 Where an accepted violation is recorded   & \file{bin/curate/debt\_registry.py} \\
 Energy datum / balance closure           & \S\ref{sec:energy-datum} \\
-Fractal flowsheet + instants             & \S\ref{sec:fractal}, \S\ref{sec:instants} \\
+Sectored flowsheet + instants             & \S\ref{sec:sectors}, \S\ref{sec:instants} \\
 Project conventions / AI rules           & \file{CLAUDE.md} \\
 User-facing how-to                       & \file{docs/userGuide.pdf} \\
 \bottomrule

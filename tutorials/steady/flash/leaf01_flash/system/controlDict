@@ -7,17 +7,17 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  leaf01_flash  --  the LEAF node form (fractal v0.57+).
+  leaf01_flash  --  the LEAF node form (v0.57+).
 
   Same physics as flash01_benzene_toluene, but written as a NODE that
   defines ONE unit directly (`type ...; operation {...}; boundary {...}`)
-  instead of a `units (...)` list.  This is the base case of the fractal
+  instead of a `units (...)` list.  This is the base case of the plant-and-sectors
   architecture: a unit operation IS a flowsheet of one.  The engine
   synthesises the one-unit list and solves it through the normal path.
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "Leaf-node form: isothermal flash benzene/toluene (fractal base case)";
+description   "Leaf-node form: isothermal flash benzene/toluene (sectored-layout base case)";
 
 verbosity     3;
 

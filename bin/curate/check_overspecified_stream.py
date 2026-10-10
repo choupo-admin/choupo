@@ -105,7 +105,7 @@ WHAT THIS GATE DOES NOT CHECK, said plainly:
     that the pin is ACCEPTED, not that the degenerate flash is right;
   * arm (h) reaches a unit's own world through ONE override (an SRK
     vapour on a splitter); a property-context world (`propertyContextBase`,
-    a fractal sector's own constant/) goes through the same `thermoFor` call
+    a sector's own constant/) goes through the same `thermoFor` call
     and is not exercised here;
   * choupoBatch, which reads no `0/<stream>` file (its vessels start from
     holdups), so it has no authored inlet to check.

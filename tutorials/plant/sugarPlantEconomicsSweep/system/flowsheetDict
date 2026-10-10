@@ -17,7 +17,7 @@
 
   A composite node: it has `children` (sub-flowsheets, here the sectors) and
   `connections` (the pipework between them).  The same shape a sector uses to
-  list its units -- one level up.  This is the fractal.
+  list its units -- one level up.  This is the plant-and-sectors shape.
 
   Naming convention (see docs/ai/case-layout.md):
     SECTORS in CAPS         : CONCENTRATION, DRYING, FERMENTATION

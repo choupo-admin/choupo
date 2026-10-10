@@ -4,7 +4,7 @@
 #   choupo-lint <caseDir>
 #
 # Runs the whole load-and-compose path -- dict grammar, thermo package (every
-# component resolved), fractal flattening (all topology cabling), the 0/
+# component resolved), flattening the sectors (all topology cabling), the 0/
 # COMPLETENESS contract, tear resolution -- plus the checks the regular run
 # only surfaces during execution (unknown unit type, duplicate names), then
 # stops at the same seam choupo-init0 uses, before anything solves or writes.

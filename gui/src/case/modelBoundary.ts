@@ -31,7 +31,7 @@ License
 
   The model-boundary audit names streams in the solver's FLATTENED form
   (e.g. "cryst2.finalLiquor") while a canvas edge label may carry the bare
-  authored form ("finalLiquor") -- or vice versa on a fractal case.  These
+  authored form ("finalLiquor") -- or vice versa on a sectored case.  These
   pure helpers resolve an audit entry for an edge / selected stream so the
   badge and the selection-card row appear AT the stream the audit names.
 

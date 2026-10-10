@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  leaf01_flash / flowsheetDict   (LEAF NODE -- fractal base case)
+  leaf01_flash / flowsheetDict   (LEAF NODE -- sectored-layout base case)
 
   A leaf carries `type` + `operation` (the unit) + `boundary` (its
   interface) + `streams` (the default feeds, so it runs isolated).  No

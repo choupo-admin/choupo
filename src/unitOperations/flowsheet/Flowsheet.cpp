@@ -230,7 +230,7 @@ struct CompositeTear
                                         // pre-seeded streams)
 };
 
-//  Recursively flatten a fractal NODE into leaf units (fractal step 2/3).
+//  Recursively flatten a flowsheet node into leaf units (sectored-layout step 2/3).
 //
 //  A node is COMPOSITE (`members` + `connections` + `boundary`) or LEAF
 //  (`type`).  We walk the tree, emitting one synthesised unit dict per LEAF
@@ -263,7 +263,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
     const std::map<std::string, ProcessStream>&     streamReg)
 {
     // Stream state never lives in a flowsheetDict -- at ANY level of the
-    // fractal tree.  The root reader refuses its own block in solve(); a
+    // plant/sector tree.  The root reader refuses its own block in solve(); a
     // nested sub-flowsheet must refuse just as loudly, naming the node.
     if (dict->found("streams"))
         throw std::runtime_error("Flowsheet: the sub-flowsheet '"
@@ -411,7 +411,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                   "OpenFOAM-style instant directories (0/ 1/ 2/) and be "
                   "gitignored.  Rename it with at least one letter.");
         DictPtr cd;
-        // DUAL-READER (fractal folder discipline).  A member node carries its
+        // DUAL-READER (sector-folder discipline).  A member node carries its
         // flowsheetDict in one of two places, tried in this order:
         //   (1) <member>/flowsheetDict        -- the LEAN layout: the dict rises
         //       to the node root, no sparse per-node system/ wrapper, so each
@@ -419,7 +419,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
         //       inherited constant/ + controlDict via the cascade).  This is the
         //       ChemicalPlantTutorial pilot's layout.
         //   (2) <member>/system/flowsheetDict -- the original layout, KEPT for
-        //       backwards-compat: the other fractal cases (esterification2sector,
+        //       backwards-compat: the other sectored cases (esterification2sector,
         //       twoSectorDemo) load UNCHANGED via this fallback.
         // The two are never both present for a given node; if neither exists the
         // member must be an inline block in the parent dict.
@@ -686,7 +686,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             // reactions ( r1 r2 ... ): the SAME per-node walk-up as the single
             // `reaction` above.  Without this a whole-plant run resolves the list
             // only against the ROOT constant/reactions -- so a sector that owns its
-            // own kinetics (the whole point of the fractal constant/) is invisible
+            // own kinetics (the whole point of the per-sector constant/) is invisible
             // from the root, and the reactor falls through to "missing sub-dictionary
             // 'reaction'".  Resolve here, from the member's folder upward; leave an
             // unresolved list alone for the global library (buildAugmentedDict 3a).
@@ -2130,7 +2130,7 @@ int Flowsheet::solve(const DictPtr& dict,
     //  below -- the streams to screen do not exist in the registry yet.)
 
     // ---- Read execution sequence & tear-stream declaration -------------
-    //  A flowsheetDict is a fractal NODE: a LEAF if it carries
+    //  A flowsheetDict is a flowsheet node: a LEAF if it carries
     //  `type` directly (one unit op --- "a unit op is a flowsheet of one"),
     //  a COMPOSITE if it carries a `units (...)` list.  For a leaf we
     //  synthesise the one-unit list here, so the rest of solve() is
@@ -2197,7 +2197,7 @@ int Flowsheet::solve(const DictPtr& dict,
     }
     else if (dict->found("sectors") || dict->found("units"))
     {
-        // COMPOSITE node (fractal step 2/3): flatten the members TREE
+        // COMPOSITE node (sectored-layout step 2/3): flatten the members TREE
         // recursively into namespaced leaf units, cabling per `connections` at
         // each level.  A member may itself be composite --- flattenNode recurses
         // (plant -> sector -> unit), so the same code lights up a sector run
@@ -2449,7 +2449,7 @@ int Flowsheet::solve(const DictPtr& dict,
         tears = solverDict_->lookupWordList("tearStreams");
     else if (dict->found("tearStreams"))
         tears = dict->lookupWordList("tearStreams");
-    // Composite tears (from any composite level inside the fractal
+    // Composite tears (from any composite level inside the sector
     // expansion): seed streams_ with the initial guess and add the
     // qualified name to the outer-loop tear list.  After this, internal
     // recycle in a sector iterates exactly like flat-case recycle.
@@ -3449,7 +3449,7 @@ int Flowsheet::solve(const DictPtr& dict,
         planConverged = finalConverged;
     }
 
-    // ---- Composite boundary outlets (fractal step 2): alias the chosen
+    // ---- Composite boundary outlets (sectored-layout step 2): alias the chosen
     //      member outputs under the parent's boundary-outlet names, so a
     //      parent (the plant) can cable `<sector>/<outlet>` next. ---------
     for (const auto& [src, alias] : outletAliases)
@@ -4586,7 +4586,7 @@ std::vector<std::string> Flowsheet::validateSequentialPlan(
 //
 //  By the time solve() reaches the lint seam, the loud path has already
 //  validated the dict grammar, the thermo package (every component resolved),
-//  the fractal flattening (all topology cabling), the 0/ COMPLETENESS
+//  flattening the sectors (all topology cabling), the 0/ COMPLETENESS
 //  contract and the tear resolution -- a defect in any of those threw before
 //  we got here.  What remains are the checks the regular path only surfaces
 //  DURING execution (an unknown unit type errors at that unit's turn) or not

@@ -537,7 +537,7 @@ try
               << "Database root:  " << db.root() << "\n\n";
 
     // ---- Required dictionaries -----------------------------------------
-    //  Cascade resolution (fractal): a sector / unit node may omit the
+    //  Cascade resolution (folder cascade): a sector / unit node may omit the
     //  thermoPhysPropDict or controlDict it inherits from a PARENT folder level ---
     //  walk UP the tree until the file is found (capped, to stay within the
     //  plant).  The flowsheetDict is NEVER inherited: it IS the node.
@@ -552,10 +552,10 @@ try
         return rel;   // fall back to the local path (fromFile reports the error)
     };
 
-    // DUAL-READER (fractal folder discipline, mirrors Flowsheet's child loader).
+    // DUAL-READER (sector-folder discipline, mirrors Flowsheet's child loader).
     // A case's flowsheetDict is in one of two places, tried in order:
     //   (1) <caseRoot>/flowsheetDict        -- the LEAN layout (the dict at the
-    //       node root, no sparse system/ wrapper).  A branch of a fractal plant
+    //       node root, no sparse system/ wrapper).  A branch of a sectored plant
     //       (e.g. .../ChemicalPlantTutorial/CONCENTRATION) is then itself a
     //       runnable case: open it directly and it solves with its own frozen
     //       inlets, writing its OWN instants in place.
@@ -681,7 +681,7 @@ try
 
     // reactions: the named-reaction library.  CASCADES UP the parent chain,
     // SYMMETRICALLY with constant/thermoPhysPropDict and the component overlays --
-    // so a branch of a fractal plant run STANDALONE
+    // so a branch of a sectored plant run STANDALONE
     // (./choupoSolve .../ChemicalPlantTutorial/FERMENTATION) still finds a
     // reaction (e.g. sucroseToEthanol) declared at a HIGHER folder level.
     // Before this, only thermo/components walked up and reactions did not, so
@@ -730,7 +730,7 @@ try
 
     // Report-output layout.  DEFAULT `reports` => the original `reports/<kind>/`
     // tree (every existing case keeps it unchanged).  Opt-in
-    // `reportsLayout postProcessing;` (the fractal-discipline pilot) => the
+    // `reportsLayout postProcessing;` (the sector-folder pilot) => the
     // CHT-faithful `postProcessing/<n>/<kind>/` tree, where <n> is the solved
     // instant (the converged pseudo-time).  This keeps the derived reports OUT
     // of the way of the instant `streams` field files and gitignores cleanly.

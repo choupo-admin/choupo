@@ -114,7 +114,7 @@ the complete initial state, one file per stream --- the flowsheet
 dictionary declares \emph{topology only}, and a stream's role (feed,
 internal, product) is inferred from that topology rather than declared.
 The steady solution is persisted to \code{converged/}, one file per
-stream, so a hierarchical (``fractal'') plant can be drilled into with the
+stream, so a plant organised in sectors can be drilled into with the
 child case materialised from the parent's persisted state.  Completeness
 is contractual: a missing stream file is a fatal error, and the
 \code{choupo-init0} tool materialises missing files by explicit

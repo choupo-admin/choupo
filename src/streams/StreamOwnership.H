@@ -90,7 +90,7 @@ Namespace
     by definition of the rule above.
 
     THE CHAIN IS READ WHOLE, not only its head.  The rule says LOWEST level and
-    applies unchanged at any fractal depth, so a stream internal to `A.B` lives
+    applies unchanged at any depth of nesting, so a stream internal to `A.B` lives
     at `A/B/`.  NOTHING IN THE CORPUS EXERCISES THAT: no case nests a sector
     inside a sector today, so every chain here is one segment and this
     degenerates to the previous "flat under the top-level sector" shape.  The
@@ -131,7 +131,7 @@ using SectorOfUnit = std::map<std::string, std::string>;
 
 // The folder that renders the DOMAIN'S OWN LEVEL in a case that has sectors.
 // ONE home for the literal.  Under the 2026-09-05 convention every CAPS folder
-// of a fractal case is a level of its geography and a plant-level UNIT lives in
+// of a sectored case is a level of its geography and a plant-level UNIT lives in
 // `MAIN/`; the 2026-09-07 amendment makes `MAIN/` the domain's OWN level rather
 // than a sector like the others, so plant-level STREAMS live there too.  A FLAT
 // case has no geography at all -- its units ARE the plant -- and gains no
@@ -139,7 +139,7 @@ using SectorOfUnit = std::map<std::string, std::string>;
 inline constexpr const char* domainLevelFolder = "MAIN";
 
 // The longest common dotted-segment PREFIX of a set of stamped sector chains:
-// the lowest level of the fractal whose subtree contains every one of them.
+// the lowest level of the case whose subtree contains every one of them.
 // Empty means the domain's own level (they share no sector, or one of them IS
 // the domain root).  Segment-wise, never character-wise: `A.BC` and `A.BD`
 // share the level `A`, not `A.B`.
@@ -176,7 +176,7 @@ inline std::string commonSectorPrefix(const std::vector<std::string>& chains)
 // stream: the LOWEST LEVEL whose subtree contains every endpoint, from who
 // produces and who consumes it in the FLAT topology and the STAMPED sector of
 // each unit.  `caseHasSectors` decides how the domain's own level renders --
-// `MAIN/` in a fractal case, the view root in a flat one.
+// `MAIN/` in a sectored case, the view root in a flat one.
 inline std::filesystem::path ownershipPath(
     const std::string&                                     stream,
     const std::map<std::string, std::string>&              producerOf,

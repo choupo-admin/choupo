@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*--- REACTION sector -- PROPERTY analyses (the reactor's kinetics).
-  Fractal: opening REACTION shows only these.  Acetic-acid consumption:
+  Per sector: opening REACTION shows only these.  Acetic-acid consumption:
   is it 1st or 2nd order?  Closed-form rate laws vs the raw batch lab data. */
 experimental
 (

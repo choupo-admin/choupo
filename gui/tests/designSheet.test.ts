@@ -77,7 +77,7 @@ sizing
 }
 `;
 
-//  FRACTAL: a STAMPED sector and a qualified unit name, plus the bracket
+//  SECTORED: a STAMPED sector and a qualified unit name, plus the bracket
 //  dimension form `[0 0 0 0 0]` a dimensionless value is written in.
 //
 //  ITS PORT BLOCKS WERE MISSING UNTIL 2026-09-07.  They were left out when

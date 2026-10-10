@@ -33,7 +33,7 @@ directories, modular thermo, file-based component database, browser GUI
 > (cyclone / bag filter / gas-solid splitter / crystalliser / spray +
 > solid dryer), and a spiral-wound NF/RO membrane (spacer k_film + ΔP
 > correlations, multi-element trains).  Sequential-modular flowsheets
-> with recycle (Newton-on-tears, or Wegstein) and fractal multi-sector
+> with recycle (Newton-on-tears, or Wegstein) and multi-sector
 > plants; outer drivers (sweep, Nelder-Mead optimisation, DesignSpec,
 > LM fitting); declarative `reports {}` (stream table, mass + energy
 > balances, sizing, Turton costing, computed variables, coloured
@@ -212,7 +212,7 @@ binary, and `listCases` prints that column from the case itself.
 | `ctrl/` | process control: design of control loops | `choupoCtrl` |
 | `batch/` | batch processes: recipes, vessels, campaigns | `choupoBatch` |
 | `props/` | thermophysical properties and the props bench | `choupoProps` |
-| `plant/` | integrated plant design (capstone, fractal multi-sector) | `choupoSolve` |
+| `plant/` | integrated plant design (capstone, multi-sector) | `choupoSolve` |
 
 **Counts are generated, never written here.**  The single source of truth
 is [`generated/releaseInventory.json`](generated/releaseInventory.json)

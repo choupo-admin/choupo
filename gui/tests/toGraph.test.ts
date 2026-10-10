@@ -63,7 +63,7 @@ describe("toGraph cycle safety (recycle / tear streams)", () => {
   }, 5000);
 });
 
-describe("toGraph composite nodes (fractal children + connections)", () => {
+describe("toGraph composite nodes (sector children + connections)", () => {
   it("draws a composite sector as child boxes wired by connections", () => {
     const g = flowsheetToGraph(
       loadFlowsheet("plant/ChemicalPlantTutorial/CONCENTRATION"),

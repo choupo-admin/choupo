@@ -568,7 +568,7 @@ void Dictionary::insert(const std::string& key, EntryValue value)
     //
     //  Only PARSE time, because programmatic updates are the legitimate use
     //  of overwriting.  The corpus was swept before this went in: zero
-    //  duplicates in 60 cases including the fractal plant, so nothing
+    //  duplicates in 60 cases including the sectored plant, so nothing
     //  authored is being outlawed retroactively.
     if (it != entries_.end() && parseTime_)
         throw std::runtime_error("dictionary: key '" + key + "' is declared"

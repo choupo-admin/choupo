@@ -276,7 +276,7 @@ export function PlotsWorkspace() {
       },
       //  THE PLANT'S OWN SHAPE, one group per SECTOR, its units inside.
       //
-      //  Everything above is a PLANT-WIDE view; a fractal plant also has
+      //  Everything above is a PLANT-WIDE view; a sectored plant also has
       //  structure, and until now the only trace of it in this navigator was
       //  a dotted prefix inside the profile plot's own dropdown -- so a
       //  student looking for "what did the concentration section do?" had to

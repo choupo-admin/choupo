@@ -461,7 +461,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
-FRACTAL = "tutorials/plant/ChemicalPlantTutorial"                   # sectors, sizeDistribution x2
+SECTORED = "tutorials/plant/ChemicalPlantTutorial"                   # sectors, sizeDistribution x2
 FLAT    = "tutorials/steady/distillation/column09_tray_hydraulics"  # stageProfile + marker
 SWEPT   = "tutorials/steady/heat/coolingTower01_merkel"             # T_K: NO file
 SWING   = "tutorials/steady/separation/psa01_h2_psa"                # componentIndex -> swingTable
@@ -478,7 +478,7 @@ TWO_READERS = "tutorials/plant/acetonePlant"    # TWO units that read one + one 
 #  reporting it as today's engine.  The domain is: what these runs just wrote,
 #  plus every interior record TRACKED in git (the authored `0/` half, which is
 #  what a student opens in the repository).
-FRESH = (FRACTAL, FLAT, SWING, SWEPT, CRYST, SEEDED)
+FRESH = (SECTORED, FLAT, SWING, SWEPT, CRYST, SEEDED)
 
 VIEW  = "converged"
 IROOT = "internalStates"      # InternalStateIO::ROOT, recounted
@@ -657,7 +657,7 @@ def check_case(rel, expect_sector, problems, notes):
         sector = sectors.get(unit, "")
         if expect_sector and not sector:
             problems.append("%s: unit '%s' publishes a profile and the JSON's "
-                            "unitSectors names no sector for it on a fractal case."
+                            "unitSectors names no sector for it on a sectored case."
                             % (rel, unit))
         d = root
         if sector:
@@ -1981,24 +1981,24 @@ def check_source(problems):
 
 def main() -> int:
     problems, notes = [], []
-    n1, k1 = check_case(FRACTAL, True, problems, notes)
+    n1, k1 = check_case(SECTORED, True, problems, notes)
     n2, k2 = check_case(FLAT, False, problems, notes)
     n3, k3 = check_case(SWING, False, problems, notes)
     if n1 == 0:
-        problems.append("%s: no file was checked -- the arms cannot fire." % FRACTAL)
+        problems.append("%s: no file was checked -- the arms cannot fire." % SECTORED)
     if n2 == 0:
         problems.append("%s: no file was checked." % FLAT)
     if "stageProfile" not in k2:
         problems.append("%s: no stageProfile block was written." % FLAT)
     if "sizeDistribution" not in k1:
-        problems.append("%s: no sizeDistribution block was written." % FRACTAL)
+        problems.append("%s: no sizeDistribution block was written." % SECTORED)
     if "swingTable" not in k3:
         problems.append("%s: the PSA profile is not filed as a swingTable block (%s)."
                         % (SWING, sorted(k3)))
     check_swept(problems, notes)
     #  (o3) FIRST, because it RUNS its cases: (o2) reads what is on disk, and
     #  the crystalliser's `converged/` is only this run's if this run wrote it.
-    for rel in (FRACTAL, CRYST, SWEPT):
+    for rel in (SECTORED, CRYST, SWEPT):
         check_axis_in_json(rel, problems)
     check_axis_present(problems, notes)
     check_round_trip(problems, notes)
@@ -2021,7 +2021,7 @@ def main() -> int:
         return 1
 
     print("check_internal_states: OK -- a state view carries the streams AND, under "
-          "internalStates/, ONE file per unit: %d file(s) on the fractal witness, "
+          "internalStates/, ONE file per unit: %d file(s) on the sectored witness, "
           "%d on the flat column and %d on the PSA bed, each at "
           "converged/internalStates/<SECTOR>/<unit> where the unit's STAMPED "
           "sector puts it (unitSectors from the JSON, never a split name; no "
@@ -2035,7 +2035,7 @@ def main() -> int:
           "carries the axis it declares (the records THIS run produced "
           "plus every one git tracks -- a converged/ tree this gate did not "
           "write is a stale artefact and is not read), and every profile the "
-          "fractal plant, the "
+          "sectored plant, the "
           "crystalliser and the cooling tower publish carries its own axis in the "
           "JSON -- the DECLINED T_K one included, because a declined profile "
           "writes no file and still reaches profile.csv, the spreadsheet and the "

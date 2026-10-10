@@ -1,4 +1,4 @@
-# esterification2sector — the fractal `constant/`, wired
+# esterification2sector — the per-sector `constant/`, wired
 
 A two-sector plant that exists to prove one thing: **data lives with the sector
 that owns it**, and a whole-plant run finds it there.

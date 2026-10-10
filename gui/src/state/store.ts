@@ -397,7 +397,7 @@ interface AppState {
 }
 
 // Boot case: a `?case=<name>` in the URL (set when a sector/unit is opened in
-// a new window, fractal step 4c) wins; otherwise the last session's case (a
+// a new window, sectored-layout step 4c) wins; otherwise the last session's case (a
 // tutorial is restored here, synchronously; a workspace case is restored
 // asynchronously via restoreWorkspaceSession after mount); otherwise the
 // default tutorial.  `inherited` carries the parent run's result sliced to

@@ -301,7 +301,7 @@ units
 Wrap in a DesignSpec on `$A, $F_steam` if you want to design for a
 final product concentration + a specific operating pressure.
 
-## 8. Fractal multi-sector "plant"
+## 8. Multi-sector "plant"
 (plant/ChemicalPlantTutorial)
 
 A plant is a TREE of folders.  Any `flowsheetDict` is ONE of two kinds:

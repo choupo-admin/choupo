@@ -13,7 +13,7 @@ with LLM help.
 ## 1. Identity
 
 The Choupo GUI is a **viewer** for a Choupo case directory.  It loads
-the plain-text dicts (`system/`, `constant/`, fractal sectors), runs
+the plain-text dicts (`system/`, `constant/`, sectors), runs
 the C++ solver compiled to WebAssembly in the browser, and renders
 the results.  The shell is deliberately minimal: a 32 px header
 (menu + brand + case + Run) over a **full-screen flowsheet canvas**,
@@ -384,7 +384,7 @@ SEEING the fork is the lesson.
   + composition bars.  The selection card ALSO updates.
 - **Double click** on a sector or unit that is itself a sub-case →
   `openInNewWindow(id)`.  New browser window loads the sub-case as its
-  own root case (fractal drill-in).
+  own root case (sector drill-in).
 - **Click on the canvas pane** → `selectNode(null)`.  The selection
   card disappears (the canvas is the resting state — there is no
   ThermoSummary fallback; the thermo summary lives as the ThermoView
@@ -547,7 +547,7 @@ this Credo before proposing**.
   (`<short>.cho` marker, `system/`, `constant/`, optional sectors).
 - **Stream** — a process stream (mass + energy carrier between units),
   NOT a data stream or React stream.
-- **Sector** — a sub-flowsheet folder in a fractal case (e.g.
+- **Sector** — a sub-flowsheet folder in a sectored case (e.g.
   `concentration/`, `drying/` inside the plant case).
 - **Workspace** — a content mode that toggles over the canvas,
   opened from the top menu; the lineup is context-dependent per case
