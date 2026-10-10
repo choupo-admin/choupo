@@ -28,7 +28,7 @@
   home, no drift).
 \*---------------------------------------------------------------------------*/
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Children, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionIcon, Alert, Badge, Box, Button, Chip, Code, Collapse, CopyButton, Group, Loader, NumberInput,
   Popover, SegmentedControl, Select, Stack, Switch, Text, Tooltip,
@@ -60,7 +60,7 @@ import {
   EXPLORE_SET_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
   panelBoxProps, usePanel, usePanelShortcut, type PanelHandle,
 } from "./panelContract.js";
-import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
+import { useMeasuredBoxWidth, useNarrowViewport } from "./methods/methodsChrome.js";
 import { binaryVleSpec, orderBinaryByVolatility } from "../case/methodFeeds.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
 import { type PlotKind, viewsFor } from "../case/exploreViews.js";
@@ -232,6 +232,10 @@ export function ExploreWorkspace() {
   const host = useMeasuredBoxWidth<HTMLDivElement>();
   const rail = usePanel(EXPLORE_SET_PANEL, { availablePx: host.width });
   usePanelShortcut(rail);
+  //  The phone posture, read from its ONE home (methodsChrome).  It decides
+  //  one thing here: whether the lens's controls sit inline in the toolbar or
+  //  fold behind a single menu-button (ToolbarFold).
+  const narrow = useNarrowViewport();
   // scan controls
   const [property, setProperty] = useState("Psat");
   const [axisVar, setAxisVar] = useState<"T" | "P">("T");
@@ -1309,6 +1313,14 @@ export function ExploreWorkspace() {
             const anyPulse = lenses.some((pt) => pulsing.has(pt.id));
             return (
               <Box className={anyPulse ? "choupo-lens-pulse" : undefined} style={{ borderRadius: 6 }}>
+                {/* On a phone the segments of a binary set alone are wider
+                    than the screen; the same lenses are offered as a Select
+                    (same gating, same value, same short names). */}
+                {narrow ? (
+                  <Select size="xs" w={124} aria-label="lens" allowDeselect={false}
+                    value={plotType} onChange={(v) => { if (v) setPlotType(v as PlotKind); }}
+                    data={lenses.map((pt) => ({ value: pt.id, label: LENS_SHORT[pt.id] ?? pt.label }))} />
+                ) : (
                 <SegmentedControl size="xs" color="accent" value={plotType}
                   onChange={(v) => setPlotType(v as PlotKind)}
                   data={lenses.map((pt) => ({
@@ -1319,10 +1331,18 @@ export function ExploreWorkspace() {
                       </Tooltip>
                     ),
                   }))} />
+                )}
               </Box>
             );
           })()}
 
+          {/* ON A PHONE the lens's own controls fold behind ONE menu-button
+              (ToolbarFold, below): the row they make is ~1000 px wide and the
+              toolbar may not wrap, so the credo's remedy for a control that
+              would force a second row -- fold it into a popover -- is applied
+              to the whole lineup at once.  The desk renders them inline,
+              unchanged.  (Not re-indented, to keep this change readable.) */}
+          <ToolbarFold fold={narrow}>
           {plotType === "scan" && (
             <>
               <ToolField label="Property">
@@ -1704,6 +1724,7 @@ export function ExploreWorkspace() {
               )}
             </Group>
           )}
+          </ToolbarFold>
 
           {/* resolution / performance knobs in the ⚙ overflow — not the
               physics, so they don't clutter the row.  size md → fits 44px. */}
@@ -1733,7 +1754,10 @@ export function ExploreWorkspace() {
           </Popover>
 
           {/* No Plot button — the view recomputes live on any change. */}
-          {busy && (
+          {/* On a phone the row has no room for it, and the plot below says
+              "computing" (or "recomputing", over a drawn plot) with its own
+              spinner already. */}
+          {busy && !narrow && (
             <Group gap={6} wrap="nowrap">
               <Loader size="xs" /><Text size="xs" c="dimmed">computing…</Text>
             </Group>
@@ -2234,6 +2258,67 @@ function ToolField({ label, children }: { label: string; children: React.ReactNo
   );
 }
 
+/** True inside ToolbarFold's popover: a ToolMenu there draws its control open
+ *  rather than as a second, nested popover. */
+const ToolbarFoldContext = createContext(false);
+
+/** THE PHONE FOLD of the one toolbar row.  On the desk (`fold` false) the
+ *  lens's controls render inline, exactly as before.  On a phone the same
+ *  controls -- property, axis, ranges, the (T, P) menu-buttons, the model
+ *  pickers, compare -- would lay out ~1000 px wide in a row that may not wrap
+ *  (gui-credo, the NO-REBLOAT invariant), so they are moved behind ONE
+ *  menu-button and listed in a column inside its popover.  The row keeps the
+ *  lens picker, this button, the options and Theory, and fits 390 px; the
+ *  plot's top edge does not move.  Measured 2026-10-10 with bin/checkGui:
+ *  the controls reached x = 1187 on a 390 px screen. */
+function ToolbarFold({ fold, children }: { fold: boolean; children: React.ReactNode }) {
+  //  The Selects inside open their OWN dropdowns, portaled out of this one,
+  //  and Mantine's click-outside would read a tap on one of their options as
+  //  a tap outside -- the fold would shut after every pick.  So the fold
+  //  closes on a tap outside its button AND outside every popover dropdown
+  //  (the Escape key and the button itself still close it).  Controlled, so
+  //  the button toggles it itself: Popover.Target does not, in that mode.
+  const [opened, setOpened] = useState(false);
+  const targetRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (!opened) return;
+    const onDown = (e: Event) => {
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      if (targetRef.current?.contains(t)) return;
+      if (t.closest(".mantine-Popover-dropdown")) return;
+      setOpened(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("touchstart", onDown);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("touchstart", onDown);
+    };
+  }, [opened]);
+  if (!fold) return <>{children}</>;
+  //  A lens with no controls of its own gets no empty button.
+  if (Children.toArray(children).length === 0) return null;
+  return (
+    <Popover position="bottom-start" withArrow shadow="md"
+      opened={opened} onChange={setOpened} closeOnClickOutside={false}>
+      <Popover.Target>
+        <Button ref={targetRef} size="xs" variant="default" rightSection={<IconChevronDown size={13} />}
+          onClick={() => setOpened((o) => !o)} style={{ flexShrink: 0 }}>
+          <Text span size="xs">controls</Text>
+        </Button>
+      </Popover.Target>
+      <Popover.Dropdown style={{ maxWidth: "calc(100vw - 16px)" }}>
+        <ToolbarFoldContext.Provider value={true}>
+          <Stack gap="xs" style={{ maxHeight: "calc(var(--choupo-vh) * 0.7)", overflowY: "auto" }}>
+            {children}
+          </Stack>
+        </ToolbarFoldContext.Provider>
+      </Popover.Dropdown>
+    </Popover>
+  );
+}
+
 /** A curve-moving toolbar control folded into a menu-button: the button SHOWS
  *  its committed value (`P 1 bar`, `γ NRTL`) and opens a fixed-position popover
  *  with the real Select / NumberInput — spatial stability (the control never
@@ -2248,6 +2333,16 @@ function ToolMenu({
   wide?: boolean;
   children: React.ReactNode;
 }) {
+  //  Inside the phone fold the menu-button would be a popover inside a
+  //  popover; there the control is drawn OPEN, under its label, instead.
+  if (useContext(ToolbarFoldContext)) {
+    return (
+      <Box>
+        <Text size="xs" c="dimmed" mb={2}>{label}</Text>
+        {children}
+      </Box>
+    );
+  }
   const btn = (
     <Button size="xs" variant="default" rightSection={<IconChevronDown size={13} />}
       style={{ flexShrink: 0 }}>

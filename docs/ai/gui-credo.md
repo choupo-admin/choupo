@@ -372,6 +372,12 @@ forbidden setup-dialog smell, §5). The one exception that stays INLINE rather
 than folding into a popover: a control that *forks the curve* (the scaling
 Davies/Pitzer activity model; the steam saturation/isobar mode) — because
 SEEING the fork is the lesson.
+**On a phone** (`useNarrowViewport`, the one posture home) the rule is applied
+to the whole lineup at once (2026-10-10): the lens's controls -- forks included
+-- fold behind ONE `controls` menu-button and are listed open inside its
+popover, and the lens picker becomes a Select, so the row fits 390 px without
+wrapping (`ToolbarFold` in `ExploreWorkspace.tsx`; it had laid its controls out
+to x = 1187).  The desk is unchanged.
 
 ## 4. Consolidated patterns
 
