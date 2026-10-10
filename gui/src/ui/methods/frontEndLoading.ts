@@ -192,13 +192,13 @@ export const FEL_NUMBERINGS: readonly Numbering[] = [
  *  Choupo stands at that fidelity.  `choupo` claims only what a case in the
  *  tree does, and every case named is checked to exist by the test.
  *
- *  WHERE THE C57 CASES WILL GO.  Vitor's green-ammonia project split by
- *  stage (DEV.md 4c C57: screening / feasibility / basic design; proposed
- *  names greenAmmoniaScreening / greenAmmoniaFeasibility /
- *  greenAmmoniaBasicDesign, not yet decided or built) maps one case onto
- *  each of the first three stages below.  When they exist they join
- *  `choupoCases` of their stage, and one of them may become the page's live
- *  witness; nothing on the page depends on them today. */
+ *  THE C57 CASES ARE LISTED (2026-10-10).  Vitor's green-ammonia project
+ *  split by stage (DEV.md 4c C57) put two plant cases in the tree, each a
+ *  copy of the base case with one thing changed: greenAmmoniaFeasibility
+ *  (and its 50 bar variant) on the feasibility stage, greenAmmoniaBasicDesign
+ *  on FEED.  The screening stage has no green-ammonia case: route screening
+ *  is the route-screening EduTool, on methanol.  None of them is run by the
+ *  page; they are linked, as every case here is. */
 export interface FelStage {
   id: "screening" | "feasibility" | "feed" | "execution";
   /** The names the stage goes by, in the record's words. */
@@ -258,12 +258,18 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "a specification sheet per sized item, an equipment-factored capital "
       + "cost (Turton) and a discounted-cash-flow appraisal.  The approach "
       + "loop sizes its converter from a declared space velocity.  The "
-      + "green-ammonia base case declares Class 4 in its own economics block, "
-      + "and it is a hybrid: a feasibility-stage converter (a Gibbs reactor "
-      + "5 K short of equilibrium) beside exchangers designed to the next "
-      + "stage's fidelity.",
+      + "green-ammonia feasibility case carries no exchanger network: every "
+      + "duty is bought from a utility, the pinch pass gives the targets, and "
+      + "the economics pass publishes the gross margin before and after the "
+      + "energy is priced -- at 150 bar and, as a speculation, at 50 bar.  "
+      + "The green-ammonia base case declares Class 4 too, and it is a "
+      + "hybrid: a feasibility-stage converter (a Gibbs reactor 5 K short of "
+      + "equilibrium) beside exchangers designed to the next stage's "
+      + "fidelity.",
     choupoCases: [
       "plant/ammoniaStaged03_approach",
+      "plant/greenAmmoniaFeasibility",
+      "plant/greenAmmoniaFeasibility50bar",
       "plant/greenAmmoniaIndustrialN2",
     ],
     choupoTools: ["approach-to-equilibrium", "pinch-composite"],
@@ -284,12 +290,16 @@ export const FEL_STAGES: readonly FelStage[] = [
     choupo: "The PROCESS side of it: the catalyst bed on a cited rate law "
       + "with its volume solved by the engine, and the six exchangers of the "
       + "green-ammonia base case designed in detail (Gnielinski in the tubes, "
-      + "Kern on the shell, the tube count found by the run).  "
+      + "Kern on the shell, the tube count found by the run).  The "
+      + "green-ammonia basic-design case puts both in one plant: three "
+      + "adiabatic beds on the rate law, interbed coolers raising steam, and "
+      + "every exchanger designed.  "
       + "The cost beside them stays equipment-factored, which is a Class 4 "
       + "method, so a Choupo 'basic design' is FEL-3 in its process fidelity "
       + "and a study-type estimate in its cost.",
     choupoCases: [
       "plant/ammoniaStaged04_kinetic",
+      "plant/greenAmmoniaBasicDesign",
       "plant/greenAmmoniaIndustrialN2",
     ],
     choupoTools: ["reactor-ladder", "entu"],

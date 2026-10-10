@@ -1189,6 +1189,24 @@ int EconomicsPass::run(SimulationResult& result)
                   << std::setw(12) << (p.price * p.massFlow * 3600.0 * H) << " EUR/yr\n";
     std::cout << "    R (total revenue)            = " << std::setw(14) << R << " EUR/yr\n";
 
+    //  THE GROSS MARGIN, BEFORE ANY CAPITAL (DEV.md 4c C57).  A design is
+    //  screened on its margin before it is costed: R - C_RM is the margin of
+    //  a route on paper (stoichiometry and prices), and R - C_RM - C_UT is
+    //  the margin once the heat and power the balances demand are priced.
+    //  Both are the SAME R, C_RM and C_UT printed above -- no second
+    //  arithmetic -- and neither depends on FCI, labour or COM_d's factors.
+    //  The second inherits C_UT's completeness: an unpriced duty makes it an
+    //  UPPER bound, and the label says so.
+    const scalar grossMargin_RM    = R - C_RM;
+    const scalar grossMargin_RM_UT = R - C_RM - C_UT;
+    std::cout << "\n  -- Gross margin (no capital, no labour) ------------------------\n";
+    std::cout << "    R - C_RM                     = " << std::setw(14) << grossMargin_RM
+              << " EUR/yr\n";
+    std::cout << "    R - C_RM - C_UT              = " << std::setw(14) << grossMargin_RM_UT
+              << " EUR/yr"
+              << (unpricedDuties ? "   <-- an UPPER bound: C_UT omits unpriced duties" : "")
+              << "\n";
+
     if (wcb.present)
     {
         std::cout << "\n  -- Working capital, built up (what the plant holds and owes) --\n"
@@ -1272,6 +1290,11 @@ int EconomicsPass::run(SimulationResult& result)
     econ["C_UT"]         = C_UT;
     econ["C_UT_credit"]  = C_UT_credit;
     econ["revenue"]      = R;
+    //  The raw-material bill and the two gross margins (C57): published so a
+    //  golden can pin the margin a feasibility study is decided on.
+    econ["C_RM"]              = C_RM;
+    econ["grossMargin_RM"]    = grossMargin_RM;
+    econ["grossMargin_RM_UT"] = grossMargin_RM_UT;
     econ["NPV"]          = NPV;
     econ["IRR"]          = haveIRR ? IRR : std::nan("");
     econ["paybackYears"] = std::isfinite(discPayback) ? discPayback : std::nan("");

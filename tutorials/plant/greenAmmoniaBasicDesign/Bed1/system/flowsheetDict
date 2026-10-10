@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  CATALYST BED 1 of 3 -- an ADIABATIC plug-flow bed on the Dyson & Simon
+//  (1968) rate law for an IRON catalyst (constant/reactions; the correlation
+//  object is src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}).
+//  Its inlet temperature is what the FEHE delivers; its outlet temperature and
+//  conversion are RESULTS.
+//
+//  THE VOLUME IS DECLARED, AND IT WAS CHOSEN AGAINST A STATED CRITERION.  The
+//  first bed is the hottest: an adiabatic bed fed at ~381 C heats itself as it
+//  converts, and run to a 5 K approach it would leave above the 520 C the
+//  base data give as the catalyst's limit.  So bed 1 is sized to LEAVE AT
+//  515 C, 5 K under that limit -- the run prints its `T_out` and its
+//  `approach_K`, read both.  Like the compressor powers, the number was found
+//  by running the case (a scan of V_R against T_out), and it moves the day a
+//  group changes anything upstream: re-tune it.  Why it is not solved by a
+//  DesignSpec, as tutorials/plant/ammoniaStaged04_kinetic solves its bed: a
+//  `$variable` in a unit FOLDER does not resolve against the plant's
+//  `variables {}` block, so an outer driver cannot reach it (see README).
+
+type      pfr;
+operation
+{
+    V_R          8.72 m3;       // catalyst bed -- chosen so the bed LEAVES at 515 C; see above
+    nSteps       400;           // RK4 axial steps
+    thermalMode  adiabatic;     // T is a RESULT: the bed heats itself
+}
+reactions ( ammoniaSynthesis );
+boundary  { inlets ( Feed );  outlets ( Out ); }

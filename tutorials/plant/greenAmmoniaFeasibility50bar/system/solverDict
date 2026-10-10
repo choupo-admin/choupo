@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solverDict -- the recycle plan.  ONE cut: the MATERIAL recycle (Recycle,
+  the separator vapour going back).  The base case's second cut -- the
+  converter outlet that preheats its own feed through the FEHE -- does not
+  exist at the feasibility stage: the feed is heated by a duty, not by the
+  effluent.
+\*---------------------------------------------------------------------------*/
+
+tearStreams        ( Recycle );
+recycleSolver       Newton;
+recycleTol          1e-8;
+recycleMaxIter      200;

@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    N2     6524 kmol/h;
+    H2    19572 kmol/h;
+    NH3     650 kmol/h;
+    Ar      325 kmol/h;
+}
+T               253.15 K;
+P               140 bar;
+phase           gas;
+// TEAR SEED, authored: the separator vapour of the base data (stream 7,
+// ~27 000 kmol/h, ~2.4 % NH3 and ~1.2 % Ar at -20 C).  The solver overwrites it.

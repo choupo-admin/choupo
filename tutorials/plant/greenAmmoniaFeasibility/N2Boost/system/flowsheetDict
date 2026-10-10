@@ -1,0 +1,7 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+
+type      compressor;
+operation { W_shaft 2110 kW;  eta 0.78; }
+boundary  { inlets ( Feed );  outlets ( Out ); }

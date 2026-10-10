@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  FEL-2 feasibility, 150 bar                   |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoSolve;
+
+//  AUDIENCE.  A SHOWCASE composes engineering (bin/curate/check_case_tiers):
+//  a recycle loop, an equilibrium converter with a declared steam credit,
+//  refrigerated separation, pinch targets and an economic appraisal are a
+//  plant at one design stage, not a feature being isolated.
+
+tier         showcase;
+description  "Green ammonia, 1200 t/day, at the FEASIBILITY stage (FEL-2, an AACE Class 4 type study): the PEQ 2026-27 base case with its feed/effluent exchanger taken out, so the converter feed is heated and the effluent cooled by DUTIES, each served by a catalogue utility; a Gibbs converter 5 K short of equilibrium at 150 bar and 460 C whose heat is raised as HP steam (a declared credit); pinch targets on the duties; exchangers on an assumed U; and the GROSS MARGIN before and after the energy is priced.";
+verbosity    3;
+
+reports
+{
+    streamTable   {}
+    massBalance   {}
+    energyBalance {}
+    computed      {}
+    spreadsheet   {}
+}

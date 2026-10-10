@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  THE CONVERTER IS ONE EQUILIBRIUM REACTOR -- the first-pass practice.
+//  A Gibbs reactor computes only the OUTLET: the equilibrium of the atoms
+//  that enter, at the declared temperature and pressure.  It has no
+//  volume and no path, so three Gibbs beds in series with coolers between
+//  them give exactly the outlet of ONE Gibbs reactor at the last bed's
+//  outlet temperature.  So: one reactor, at the converter OUTLET
+//  temperature, 5 K short of equilibrium; its duty is the reaction heat
+//  the intercoolers must remove (steam).  How many beds, and how big, is
+//  a question for a plug-flow reactor with a rate law
+//  (tutorials/plant/ammoniaStaged04_kinetic) -- task 2.
+//
+//  temperatureApproach: the ammonia content is the equilibrium one 5 K
+//  ABOVE the actual temperature (US 5,352,428, Bhakta & Grotz 1994: "the
+//  ammonia concentration corresponds to the equilibrium concentration at
+//  a temperature 5 C. above the actual temperature"; design range 0-30 C,
+//  preferably 1-10 C).  See tutorials/plant/ammoniaStaged03_approach.
+
+//  utility: WHAT SERVES ITS DUTY.  The ~22 MW the converter releases at
+//  400 C is raised as HP steam in a waste-heat boiler -- a CREDIT, not a
+//  bill -- so the case DECLARES the service (the allocator would otherwise
+//  pick the lowest-grade cooling that can take it, cooling water, and
+//  charge for throwing it away).  The record and its price, an AUTHOR-SET
+//  assumption, are constant/utilities/steamGenerationHP.dat.  A declared
+//  utility that cannot serve the duty (wrong sign, or too hot to receive
+//  heat at 400 C - dTmin) is REFUSED by name.
+
+type      gibbsReactor;
+utility   steamGenerationHP;
+operation
+{
+    T 673.15 K;  P 50 bar;            // converter OUTLET, 400 C, 50 bar -- the SPECULATION, see README
+    temperatureApproach 5;            // K, a magnitude; the engine assigns the sign
+    elements ( N  H  Ar );
+    species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
+              { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
+}
+boundary  { inlets ( Feed );  outlets ( Out ); }

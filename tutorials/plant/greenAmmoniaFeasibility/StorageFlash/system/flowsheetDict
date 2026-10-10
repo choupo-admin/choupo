@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  WHY -35 C AND NOT -33.4 C.  Liquid ammonia at 1 atm and its own boiling
+//  point is a PURE component ON its saturation curve: there K_NH3 = 1 and
+//  every vapour fraction satisfies the flash, so the answer is whatever
+//  the solver lands on (measured at -34 C: 85 % "vaporised", which is not
+//  a result).  The store is therefore declared 1.7 K below the boiling
+//  point, where the flash only releases the dissolved H2, N2 and Ar.  A
+//  real let-down is an ADIABATIC flash whose ammonia vapour returns to
+//  the refrigeration unit -- part of task 5.
+
+type      isothermalFlash;
+operation { T 238.15 K;  P 1.01325 bar; }   // -35 C, 1 atm
+boundary  { inlets ( Feed );  outlets ( Liquid  Vapour ); }
