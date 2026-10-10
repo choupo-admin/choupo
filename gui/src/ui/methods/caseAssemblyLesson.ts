@@ -191,6 +191,15 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
       + at("convergedOnlyIfConverged") + "). An edit made there is lost on "
       + "the next run. A value you want the next run to start from belongs "
       + "in 0/.",
+    leadsTo: {
+      tool: "run-log",
+      toolLabel: "How to read a run's log",
+      stepTitle: "A run talks, and the log is where it says what it did",
+      body: "Of everything a run writes, the log is the one to read first: "
+        + "it says what was assembled, how each unit converged, whether the "
+        + "problem solved is the problem posed, and what qualifies the "
+        + "answer. Reading it is the subject of the next page.",
+    },
   },
   {
     n: 6,
@@ -211,8 +220,8 @@ export const CASE_ASSEMBLY_LIMITS: readonly LessonLimit[] = [
   {
     id: "one-case",
     title: "One case, one program",
-    body: "flash01 is a flat, single-unit steady case. A fractal plant adds "
-      + "sector folders and a rule for which level a stream's file lives "
+    body: "flash01 is a flat, single-unit steady case. A plant and its "
+      + "sectors add sector folders and a rule for which level a stream's file lives "
       + "at; the time-integrated programs also read each vessel's interior "
       + "from 0/internalStates/ and write a folder per saved time; a "
       + "property study reads system/propsDict instead of a flowsheetDict. "

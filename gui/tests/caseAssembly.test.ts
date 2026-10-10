@@ -50,6 +50,7 @@ import {
   CASE_ASSEMBLY_LIMITS, CASE_ASSEMBLY_STEPS,
 } from "../src/ui/methods/caseAssemblyLesson.js";
 import { TEAR_STEPS } from "../src/ui/methods/tearLesson.js";
+import { RUN_LOG_STEPS } from "../src/ui/methods/runLogLesson.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import { filesToCaseFiles, tutorialByName } from "../src/cases/tutorials.js";
 import { serialiseCase } from "../src/adapters/WasmAdapter.js";
@@ -166,11 +167,19 @@ describe("the lesson", () => {
   });
 
   it("leads to a step that exists, on a tool that is live", () => {
-    for (const s of CASE_ASSEMBLY_STEPS) {
-      if (!s.leadsTo) continue;
+    //  The pages it points to, each with its own steps (the run-log pointer
+    //  arrived with DEV.md 4c C54).
+    const stepsOf: { [tool: string]: readonly { title: string }[] } = {
+      "tear-streams": TEAR_STEPS, "run-log": RUN_LOG_STEPS,
+    };
+    const pointers = CASE_ASSEMBLY_STEPS.filter((s) => s.leadsTo);
+    expect(pointers.map((s) => s.leadsTo!.tool).sort())
+      .toEqual(["run-log", "tear-streams"]);
+    for (const s of pointers) {
       expect(METHOD_TOOLS.find((m) => m.id === s.leadsTo!.tool)?.status)
         .toBe("live");
-      expect(TEAR_STEPS.map((t) => t.title)).toContain(s.leadsTo.stepTitle);
+      expect((stepsOf[s.leadsTo!.tool] ?? []).map((t) => t.title))
+        .toContain(s.leadsTo!.stepTitle);
     }
   });
 

@@ -2002,6 +2002,55 @@ ADVISORY (the answer is qualified), a DIVERGENCE (the answer is to a
 different question), a REFUSAL (no answer, exit code 2).  Built on real runs
 in the browser, every engine claim cited file:line.  Status: dispatched
 2026-10-09.
+BUILT 2026-10-09 on branch `claude/c54-edutool-run-log` (NOT merged).  A
+second `notes` page on the "How Choupo works" shelf, `run-log` ("How to read
+a run's log"): `gui/src/ui/methods/RunLogTool.tsx` (the page),
+`runLogLesson.ts` (seven steps + four limits) and `runLog.ts` (React-free:
+the citations, the markers, the classifier, the witnesses).  ONE panel: a
+log viewer over a real run, made by the browser engine on an in-memory copy
+through C53's `useCaseFilesRun`, of one of SEVEN witnesses -- flash01
+(verbosity selectable 0..4), bubbleT01 ("none raised"), process03 (a
+recycle), flash13 (the five-number verdict of `solver/Convergence.H`),
+shortcut01 (a divergence), process03 with `recycleMaxIter 1` (exit 1) and
+flash01 with C53's misspelt-model break (exit 2).  Every line is classified
+ONLY from what the engine prints: its own marker (69 markers -- 63 the
+engine's, 6 this app's -- each with the line that prints it), the block a
+marker opens, or the stderr
+line it continues; anything else is drawn as unclassified.  Above the log,
+"read the end first" lifts out of the same run the exit code (read from the
+worker's own `run_case returned rc=` line), the divergence verdict, the
+caveat block and, where present, the refusal or the failed verdict.  Each
+step carries buttons that load its run and select the line it means.  C53
+step 5 now `leadsTo` this page, and step 5 here leads to the Wegstein page
+(which runs process03 too).  Test `gui/tests/runLog.test.ts`: every
+citation lands on its statement, no bare file:line, the classifier's rules
+on synthetic logs; each witness serialised exactly as the worker receives
+it and run NATIVELY must exit with its code and print the markers the page
+uses it for; across the witnesses every engine marker is printed at least
+once; the advisory / divergence / refusal / not-converged lines the page
+draws are asserted verbatim; the numbers the lesson quotes (flash01's first
+Rachford-Rice step, flash13's five numbers) are the ones printed; and the
+verbosity table is MEASURED (flash01 at 0..4).  `generated/methodTools.json`
+regenerated (51 live tools).  MEASURED on the way, and put to Vitor rather
+than edited: (1) CLAUDE.md 5 reads "Verbosity: 0 silent"; verbosity 0 is
+NOT silent -- the header, both stream tables and every unit's banner print
+at 0 (measured), and on flash01 the stderr announcements
+([psat], [cp], [unmarked]) are byte-identical at every level; level 1 adds
+exactly the divergence and caveat blocks (main.cpp `if (verbosity >= 1)`).
+The page states the measured behaviour.  (2) Of the seven witnesses only
+the reactive flash prints the five-number verdict, and in the tree only
+`ReactiveVLE.cpp` prints `rawInitial`/`normInitial`; the page says "of the
+runs on this page" and claims nothing wider.  (3) `[unmarked]` records do
+not ride the advisory log (Database.cpp `announceOnce`, and
+AdvisorySummary.H says so), so bubbleT01 prints a "none raised" block AND two
+`[unmarked]` lines -- the page teaches it as the block's exact
+claim.  Also, per the naming ruling below, C53's limit "A fractal plant" now
+reads "A plant and its sectors".  NOT done: the time-integrated binaries'
+logs (stated as a limit); the GUI's own Log tab is unchanged (this page
+reads the log, it does not restyle the tab); the screenshots were taken
+against the WASM published on www.choupo.org because this container has no
+emscripten -- the native test is what proves the witnesses against this
+tree.  Status: built and validated 2026-10-09, waiting on Vitor's review.
 
 **NAMING RULING (Vítor, 2026-10-09, verbatim: "não chames 'fractais' porque
 já vimos que esse nome foi má escolha. Nós só temos dois níveis").**  A

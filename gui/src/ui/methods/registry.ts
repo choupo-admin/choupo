@@ -69,7 +69,7 @@ export type MethodToolId =
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
-  | "reaction-enthalpy" | "standard-state" | "case-assembly";
+  | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1118,6 +1118,30 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  The Theory Guide's account of the architecture the case's files
     //  encode: the flowsheet as a graph (topology first), every inlet fully
     //  specified, units solved in order.
+    theory: "ch:sm-architecture",
+  },
+  //  COMMISSIONED 2026-10-09 (DEV.md 4c C54), the second page about Choupo
+  //  itself, and the one the first page ends on: a run has been made, and
+  //  it said a great deal.  A NOTES page: real runs of seven witnesses in
+  //  the browser, every line classified by the marker the engine printed it
+  //  with.  First version, for Vitor's review ("Faz esse!").
+  {
+    id: "run-log",
+    label: "How to read a run's log",
+    discipline: "How Choupo works", kind: "notes",
+    status: "live",
+    teaches: "Where a run's log goes and how loud it is (verbosity 0 to 4, "
+      + "measured), then the log itself, read on real runs in the browser: "
+      + "the header and what was assembled, a unit's Newton iterations, a "
+      + "convergence verdict in five numbers, a recycle whose units stay "
+      + "quiet until the tear converges, the balances, and the two blocks at "
+      + "the end.  Every line is coloured by the marker the engine printed "
+      + "it with, and a click names the line of the engine that printed it.  "
+      + "And the three messages a student must tell apart -- an advisory, a "
+      + "divergence, a refusal -- with the exit codes 0, 1 and 2 and what "
+      + "each asks you to do.",
+    //  The same Theory Guide chapter as the first page: the architecture a
+    //  run walks through, which is what its log narrates.
     theory: "ch:sm-architecture",
   },
 ];
