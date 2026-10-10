@@ -1991,6 +1991,21 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C58. AN EDUTOOL ON FRONT-END LOADING: HOW INDUSTRY STAGES A PROCESS
+DESIGN (Vítor, 2026-10-10, verbatim: "Podes fazer um EduTool sobre O que a
+indústria usa: Front-End Loading (FEL)? Isso é muito importante!", then
+"Avança" to the scope).**  Measured before dispatch: the research record
+already exists (`docs/design/how-a-process-design-is-staged.md`, §1 AACE
+18R-97, §2.1-2.3 the FEL/FEED vocabularies and the stage x fidelity x
+deliverable table), and the engine has the ONE home of the AACE table
+(`src/postProcessing/EstimateClass.H:94-118`, the range of ranges, the
+pessimistic-corner default).  Scope (defaults, Vítor reviews): the stages
+with what each DECIDES, at what simulation fidelity, with which deliverables
+and which estimate class; the AACE range of ranges drawn as overlapping
+bands; the lesson that two options whose difference lies inside the band
+are not yet decided at that class; mapped onto Choupo's ammonia ladder and
+the C57 cases.  Status: dispatched to a general, branch `claude/c58-fel-edutool`.
+
 **C57. THE GREEN-AMMONIA PROJECT IN DESIGN PHASES: PHASE 2 (EQUILIBRIUM +
 HEAT, GROSS MARGIN WITH THERMAL ENERGY) AND PHASE 3 (KINETIC BEDS, EVERY
 EXCHANGER DESIGNED) (Vítor, 2026-10-10, verbatim: "começar primeiro por
