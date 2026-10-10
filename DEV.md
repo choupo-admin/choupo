@@ -1991,6 +1991,28 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C57. THE GREEN-AMMONIA PROJECT IN DESIGN PHASES: PHASE 2 (EQUILIBRIUM +
+HEAT, GROSS MARGIN WITH THERMAL ENERGY) AND PHASE 3 (KINETIC BEDS, EVERY
+EXCHANGER DESIGNED) (Vítor, 2026-10-10, verbatim: "começar primeiro por
+calcular a margem bruta de várias vias reacionais (1). Depois balanços com
+reatores de Gibbs/Equilíbrio, com troca de calor. Isto permite calcular a
+margem bruta incluindo energia térmica. Depois na fase 3 usar reatores PFR e
+dimensionar todos os permutadores de forma detalhada. Por isso, eu quero que
+descrevas o processo Green Ammonia numa fase (2) e numa fase (3). [...] Na
+fase (2) até dá para especular sobre o novo processo Haber-Bosch-2 que está
+atualmente em testes com catalisadores que permitem operar desde 30-60
+bar").**  Measured before anything is proposed: phase 1 exists as an
+EduTool for methanol only (`gui/src/ui/methods/RouteScreeningTool.tsx`,
+witness `screen01_methanol_routes`); the reactor-fidelity ladder exists for
+the synthesis loop alone (`ammoniaStaged01..04`: yield, equilibrium,
+approach, kinetic `pfr` with Dyson-Simon and a `designSpec` bed volume);
+`greenAmmoniaIndustrialN2` (the PEQ 2026-27 base case) is today a HYBRID --
+a phase-2 converter (`gibbsReactor`, 5 K approach) with phase-3 exchangers
+(Kern on all seven, C48) and full Turton costing + DCF.  Status: SCOPE PUT
+TO VÍTOR 2026-10-10 (pedagogy is his, CLAUDE.md §10); build after C52
+merges, because C52 edits the same case (the converter's steam credit is a
+phase-2 term).
+
 **SATURDAY BATCH (Vítor, 2026-10-10, verbatim: "avança como achares que
 fica melhor!", answering the commander's list of five open items).**  Taken
 as follows, each recorded where it lives:
