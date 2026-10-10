@@ -216,7 +216,7 @@ export function ActiveSetQpTool(): JSX.Element {
    *  (methodsChrome), rather than from a CSS media query this file would then
    *  own a second copy of.  */
   const narrow = useNarrowViewport();
-  const rail = narrow ? "1fr" : "minmax(190px, 240px) 1fr";
+  const rail = narrow ? "minmax(0, 1fr)" : "minmax(190px, 240px) minmax(0, 1fr)";  // minmax(0,..): a grid track never grows past the screen to fit its widest input
 
   const [g1, setG1] = useState(1);
   const [g2, setG2] = useState(2);
