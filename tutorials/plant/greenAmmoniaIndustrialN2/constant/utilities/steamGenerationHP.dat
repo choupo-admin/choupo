@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: high-pressure (HP) steam GENERATION -- a waste-heat boiler that
+  takes a process cooling duty and raises saturated steam at the plant's
+  HP header conditions.  A COOLING utility whose cost is NEGATIVE: the plant
+  is CREDITED for the steam, it does not pay for it.
+
+  THIS RECORD IS CASE-LOCAL, AND THAT IS DELIBERATE (DEV.md 4c C52).  It
+  is authored here, in this case's constant/utilities/, and NOT in
+  data/standards/utilities/: its price is an AUTHOR-SET ASSUMPTION with no
+  primary source behind it, and a public catalogue value with no source
+  would be a falsely-sourced record.  It is not imported by bin/choupo-import
+  and not claimed by constant/propertyManifest: an authored file the
+  importer never touches.
+
+  WHAT IT IS.  Boiler feedwater enters the boiler as SATURATED LIQUID at the
+  header pressure and leaves as SATURATED VAPOUR -- the same state, the same
+  pressure and the same temperature as the plant's steamHP record
+  (constant/utilities/steamHP.dat: 41.0 bar, 525.0 K).  So the heat it takes
+  per kg is the latent heat that record declares:
+      dutyPerKg = 1714000 J/kg      (steamHP.dat, Hvap of water at 41 bar)
+  NOT COUNTED, and said: the sensible heat that brings the feedwater from
+  the deaerator to saturation (an economiser outside this record), blowdown,
+  and boiler losses.  Raising the feedwater from a 105 C deaerator would
+  take about 655 kJ/kg more (saturated-liquid enthalpy ~1095 kJ/kg at
+  252 C against ~440 kJ/kg at 105 C, steam tables): ~38 % more heat per kg,
+  so ~28 % less steam from the same duty.
+
+  WHY THE MARGIN IS WIDE, and what it requires.  The allocation holds a
+  declared utility to `UtilityCatalogue::canServe`: a COOLING utility must
+  receive heat at T_in <= T_process - dTmin.  At the green-ammonia
+  converter's 733.15 K that is 525.0 <= 723.15 K -- 198 K to spare.  It
+  cannot serve a duty below 535 K (dTmin 10 K), and a declaration there is
+  REFUSED by name, never quietly re-routed.
+
+  NEVER PICKED AUTOMATICALLY.  `pickForDuty` skips every record with a
+  negative cost: earning a credit means INSTALLING a boiler, an equipment
+  decision the case declares (`utility steamGenerationHP;` on the unit),
+  never one the allocator takes on its own.
+
+  COST -- AN AUTHOR-SET ASSUMPTION, DERIVED IN THE OPEN, NOT A CITED PRICE.
+    The steam is valued at what the plant would pay for the SAME steam
+    from its HP header: steamHP.dat's own cost, 18.0 EUR/GJ (costYear
+    2022), with the sign reversed.  Because dutyPerKg is the same latent
+    heat, 1 GJ removed from the process is 1 GJ of HP steam raised, so
+        cost = -18.0 EUR/GJ of duty removed.
+    This is an UPPER BOUND on the credit: the steam is worth its purchase
+    price only if something inside the plant uses it in place of bought
+    steam (in a green-ammonia plant: a steam turbine driving a compressor,
+    or export to a neighbour).  This case declares no such consumer, so the
+    credit is what the steam WOULD be worth, not cash the plant already
+    banks.  Change the number here, and say why.
+\*---------------------------------------------------------------------------*/
+
+utility     steamGenerationHP;
+tier        cooling;
+mechanism   evaporation;               // feedwater boils at the header pressure
+
+components  ( water );
+state       saturatedLiquid;           // what ENTERS: feedwater at saturation
+P           41.0 bar;                  // steamHP.dat's header pressure
+T_in        525.0 K;                   // 251.9 C -- boiling: no temperature rise
+T_out       525.0 K;                   // 251.9 C -- saturated vapour leaves
+
+dutyPerKg   1714000.0;                 // J/kg, steamHP.dat's latent heat
+
+cost        -18.0;                     // EUR/GJ removed -- a CREDIT, see COST above
+costYear    2022;
+description "HP steam raised in a waste-heat boiler (41 bar, T_sat 252 C) -- a credit";

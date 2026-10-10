@@ -39,3 +39,7 @@ boundary global                 H_feeds_kW       -3997.0386631    1e-4
 boundary global                 Q_boundary_kW    -127.349716123   1e-4
 boundary global                 H_products_kW    -4124.38837922   1e-4
 boundary global                 residual_kW      0                1e-4
+utility reactor                heating.hitecSalt.duty_kW 840.263234652    1e-4
+utility reactor                heating.hitecSalt.T 623              1e-4
+utility reactor                heating.hitecSalt.kg_s 4.77422292416    1e-4
+utility reactor                heating.hitecSalt.eur_h 45.3742146712    1e-4

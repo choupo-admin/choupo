@@ -31,3 +31,7 @@ equipment REACTION.reactor       values.weight    93.142839948     1e-4
 equipment REACTION.reactor       cost.purchased   4476.4290636     1e-4
 equipment REACTION.reactor       cost.bareModule  34920.6231251    1e-4
 equipment REACTION.reactor       cost.totalModule 41206.3352877    1e-4
+utility REACTION.reactor       cooling.coolingWater.duty_kW -243.397169219   1e-4
+utility REACTION.reactor       cooling.coolingWater.T 360              1e-4
+utility REACTION.reactor       cooling.coolingWater.kg_s 5.82289878515    1e-4
+utility REACTION.reactor       cooling.coolingWater.eur_h 0.350491923676   1e-4

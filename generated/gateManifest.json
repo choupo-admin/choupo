@@ -493,8 +493,8 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40502 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 41340 tracked text file(s) outside the dated records, save a line explaining the old name; 10 file(s) are exempt by name, 4 of them PENDING a sweep that fails as stale once done.",
-      "seconds": 10.9
+      "claim": "check_glossary_bans: OK -- 41891 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 41343 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
+      "seconds": 10.8
     },
     "check_groups": {
       "exit": 0,
@@ -1145,6 +1145,11 @@
       "exit": 0,
       "claim": "check_workspace_truth: OK -- HEAD 39cb1732e9 is AHEAD of (17 commit(s), push soon -- the recycler eats local refs) origin/claude/c37-housekeeping (freshly fetched), and the poisoned overlay is absent.  NOT GUARANTEED: the recycler itself, and the window between this proof and the action it guards -- git's own non-fast-forward refusal is the backstop there.",
       "seconds": 1.1
+    },
+    "check_unit_duty_allocation": {
+      "exit": 0,
+      "claim": "check_unit_duty_allocation: OK -- every boundary heat duty a unit publishes reaches the utility allocation through ONE home (reporting::unitHeatDuties); source: one home, 6 duty port(s) read; witness: Converter -> steamGenerationHP, credit -15635712 EUR/yr, 1 unserved counted; coverage: 16 published duty/duties over 6 case(s), each with a row; undeclared: auto-pick coolingWater, never the credit; refusals: 4/4 fired with their reason.  NOT CHECKED: whether a declared price is right, the GUI half (gui/tests/reactorDutyStub.test.ts), and the pinch / utilities-consumption readers, which ask other questions.",
+      "seconds": 0.8
     }
   }
 }

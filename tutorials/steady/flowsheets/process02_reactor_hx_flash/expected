@@ -55,3 +55,7 @@ stream  vapProd                T                361.879907822    1e-4
 boundary global                 H_feeds_kW       -100.850423911   1e-4
 boundary global                 Q_boundary_kW    -0.918980957977  1e-4
 boundary global                 H_products_kW    -101.769401974   1e-4
+utility reactor                cooling.coolingWater.duty_kW -1.87948262728   1e-4
+utility reactor                cooling.coolingWater.T 350              1e-4
+utility reactor                cooling.coolingWater.kg_s 0.0449636992172  1e-4
+utility reactor                cooling.coolingWater.eur_h 0.00270645498328 1e-4

@@ -38,7 +38,7 @@ stagedColumn                tutorials/steady/distillation/column13_sour_water_st
 electrolyteCrystalliser     tutorials/steady/crystallisation/crystalliser05_nacl_pitzer
 membrane                    tutorials/steady/membranes/membrane06_pitzer
 recycleFlowsheet            tutorials/steady/flowsheets/cavett01_recycle_train
-sealedFractalPlant          tutorials/plant/lithiumBrinePlant
+sealedSectoredPlant          tutorials/plant/lithiumBrinePlant
 batchRecipe                 tutorials/batch/recipes/recipe01_react_then_distill
 dynamicControl              tutorials/ctrl/ctrl11_esterification_jacket
 propsBench                  tutorials/props/electrolyte/pitzer_gamma_hamer_wu

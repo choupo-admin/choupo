@@ -66,3 +66,4 @@ boundary global                 H_feeds_kW       284.307970808    1e-4
 boundary global                 Q_boundary_kW    -1276.97587088   1e-4
 boundary global                 H_products_kW    -650.760557071   1e-4
 boundary global                 residual_kW      -341.907343001   1e-4
+utility Reactor                heating.-.unserved 1                1e-4

@@ -187,6 +187,12 @@ int TSATwinBed::solve(const DictPtr& dict,
     kpis_.clear();
     kpis_["Q_regeneration_kW"] = QregenKW;
     kpis_["Q_adsorption_cooling_kW"] = -QregenKW;
+    //  The temperatures the two duties cross at (DEV.md 4c C52): the
+    //  utility allocation serves each at its own (reporting::heatDutyPorts),
+    //  and a duty published without one could only be listed as
+    //  "(unit T unknown)".
+    kpis_["T_regeneration"] = Tregen;
+    kpis_["T_adsorption"]   = Tads;
     kpis_["Q_sensible_per_cycle_kJ"] = sensibleJ / 1000.0;
     kpis_["Q_desorption_per_cycle_kJ"] = adsorptionHeatJ / 1000.0;
     kpis_["purgeRatio"] = purgeRatio;

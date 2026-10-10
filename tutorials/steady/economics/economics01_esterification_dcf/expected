@@ -6,9 +6,9 @@ stream  hotStream              F                0.138888888889   1e-4
 stream  liqProd                F                0.126899267211   1e-4
 stream  reactorOut             F                0.138888888889   1e-4
 stream  vapProd                F                0.011989621678   1e-4
-kpi     economics              COM_d            221241889.353    1e-4
+kpi     economics              COM_d            221259089.194    1e-4
 kpi     economics              FCI              407855.018165    1e-4
-kpi     economics              NPV              -964539867.664   1e-4
+kpi     economics              NPV              -964623359.271   1e-4
 kpi     economics              TCI              469033.27089     1e-4
 kpi     economics              WC               61178.2527248    1e-4
 kpi     economics              revenue          22620564.309     1e-4
@@ -82,3 +82,9 @@ equipment reactor                basis            V_R_=_declared_operation.V_R_(
 boundary global                 H_feeds_kW       -50425.2119553   1e-4
 boundary global                 Q_boundary_kW    -609.936345464   1e-4
 boundary global                 H_products_kW    -51035.1483036   1e-4
+kpi     economics              C_UT             225754.44322     1e-4
+kpi     economics              C_UT_credit      0                1e-4
+utility reactor                cooling.coolingWater.duty_kW -1231.71496101   1e-4
+utility reactor                cooling.coolingWater.T 350              1e-4
+utility reactor                cooling.coolingWater.kg_s 29.466865096     1e-4
+utility reactor                cooling.coolingWater.eur_h 1.77366954386    1e-4

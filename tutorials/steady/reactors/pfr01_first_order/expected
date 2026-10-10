@@ -15,3 +15,7 @@ kpi     reactor                tau_s            310.291329081    1e-4
 boundary global                 H_feeds_kW       -100.850423911   1e-4
 boundary global                 Q_boundary_kW    -2.39518182773   1e-4
 boundary global                 H_products_kW    -103.245605738   1e-4
+utility reactor                cooling.coolingWater.duty_kW -2.39518182773   1e-4
+utility reactor                cooling.coolingWater.T 350              1e-4
+utility reactor                cooling.coolingWater.kg_s 0.0573010006634  1e-4
+utility reactor                cooling.coolingWater.eur_h 0.00344906183193 1e-4

@@ -18,7 +18,17 @@
 //  a temperature 5 C. above the actual temperature"; design range 0-30 C,
 //  preferably 1-10 C).  See tutorials/plant/ammoniaStaged03_approach.
 
+//  utility: WHAT SERVES ITS DUTY.  The ~30.6 MW the converter releases at
+//  460 C is raised as HP steam in a waste-heat boiler -- a CREDIT, not a
+//  bill -- so the case DECLARES the service (the allocator would otherwise
+//  pick the lowest-grade cooling that can take it, cooling water, and
+//  charge for throwing it away).  The record and its price, an AUTHOR-SET
+//  assumption, are constant/utilities/steamGenerationHP.dat.  A declared
+//  utility that cannot serve the duty (wrong sign, or too hot to receive
+//  heat at 460 C - dTmin) is REFUSED by name.
+
 type      gibbsReactor;
+utility   steamGenerationHP;
 operation
 {
     T 733.15 K;  P 150 bar;           // converter OUTLET, 460 C -- a design choice

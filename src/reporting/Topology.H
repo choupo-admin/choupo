@@ -133,7 +133,7 @@ inline Topology readTopology(const DictPtr& flowsheetDict,
     }
     else if (flowsheetDict->found("type"))
     {
-        // Leaf node (fractal): one unit defined directly; its interface
+        // Leaf node (a unit): one unit defined directly; its interface
         // is in `boundary { inlets; outlets }`.  Mirror Flowsheet's synthesis.
         UnitIO io;
         io.name = flowsheetDict->lookupWordOrDefault("name", "node");

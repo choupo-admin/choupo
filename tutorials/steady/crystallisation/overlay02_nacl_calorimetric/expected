@@ -18,3 +18,7 @@ kpi     cryst                  solute_in        0.1948           1e-4
 kpi     cryst                  yield            0.18831616       1e-4
 stream  feed                   T                298.15           1e-4
 stream  magma                  T                298.15           1e-4
+utility cryst                  cooling.chilledWater.duty_kW -2.50670156624   1e-4
+utility cryst                  cooling.chilledWater.T 298.15           1e-4
+utility cryst                  cooling.chilledWater.kg_s 0.11936674125    1e-4
+utility cryst                  cooling.chilledWater.eur_h 0.0360965025539  1e-4

@@ -19,7 +19,7 @@
  * AND THE CAUSE IS A FACT THIS PROJECT ALREADY RULED ON.  The engine's
  * `UtilityAllocation.utility` is a NAME field that also carries PROSE when
  * there is no name to give: `r.utility = "(carried: " + carriedBy + ")"`
- * (src/reporting/UtilityAllocationReport.cpp:314).  On 2026-09-03 the record
+ * (src/reporting/UtilityAllocationReport.cpp:336).  On 2026-09-03 the record
  * gained a typed `carried` flag for exactly this reason, and said why in its
  * own words: *"prose is not a field a reader may test, so the golden format
  * pinned both as `unserved` and heatExchanger01 stood for a month as
@@ -108,4 +108,48 @@ export function dutyUtilityLabel(
   }
   const d = (declared ?? "").trim();
   return d.length > 0 ? { word: d, detail: null, kind: "declared" } : null;
+}
+
+/** What the run says about ONE duty stub, as far as the canvas needs it. */
+export interface DutyRowFacts extends DutyAllocationFacts {
+  unit: string;
+  port: string;
+  tier: string;
+}
+
+/**
+ * WHETHER A DOCKED DUTY STUB HAS A DUTY, AND WHICH WAY IT FLOWS -- decided by
+ * the RUN, never guessed by the canvas (DEV.md 4c C52).
+ *
+ * The stub is drawn BEFORE a run from the unit TYPE (`dutyTypes.ts`), because
+ * there is nothing else to draw from yet.  That set now holds the reactors
+ * (their `Q_kW` reached the utility allocation only in C52), and a reactor
+ * may be adiabatic: the type cannot say.  The engine can.  It publishes ONE
+ * `utilityAllocation` row per duty it has (`reporting::unitHeatDuties`, the
+ * one home of "this unit has a duty"), and none for a duty under 1 W.  So,
+ * once the unit has run:
+ *
+ *   - no row for (unit, port)  -> the stub is IDLE: the canvas hides it,
+ *     rather than drawing a duty the engine says is not there;
+ *   - a row                    -> its `tier` is the sign of the duty, and it
+ *     replaces the pre-run guess (a converter guessed "heating" from its type
+ *     releases 30 MW; the stub must not wear the heating icon over a
+ *     negative Q).
+ *
+ * Before a run (`unitRan` false) nothing is decided here: `idle` is false and
+ * the pre-run tier stands.
+ */
+export function dutyStubFromRun(
+  rows: readonly DutyRowFacts[] | undefined,
+  owner: string,
+  port: string,
+  unitRan: boolean,
+  preRunTier: "heating" | "cooling",
+): { row: DutyRowFacts | undefined; idle: boolean; tier: "heating" | "cooling" } {
+  const row = (rows ?? []).find((a) => a.unit === owner && a.port === port);
+  if (!unitRan) return { row, idle: false, tier: preRunTier };
+  if (!row) return { row, idle: true, tier: preRunTier };
+  const tier = row.tier === "cooling" ? "cooling"
+             : row.tier === "heating" ? "heating" : preRunTier;
+  return { row, idle: false, tier };
 }

@@ -93,8 +93,10 @@ interface StreamTerminalData {
   dutyPort?: "reboiler" | "condenser" | "Q" | "power" | "jacket";
   tier?: "heating" | "cooling" | "power";
   dutyKW?: number;
-  /** Utility named explicitly on the column port (operation.<port>.utility).
-   *  When absent the allocation picks one by temperature level. */
+  /** Utility the case DECLARES for this duty: on a column port
+   *  (operation.<port>.utility) or, for a single-duty unit, `utility <name>;`
+   *  beside its `type` (C52).  When absent the allocation picks one by
+   *  temperature level -- never a credit, which only a declaration earns. */
   utilityName?: string;
   /** The latest run's allocation FACTS for this duty (the solver's
    *  utilityAllocation row) --- authoritative; shown in preference to the
