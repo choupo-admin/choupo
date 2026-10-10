@@ -1991,6 +1991,21 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C59. THE AUTOMATIC FLOWSHEET LAYOUT IS SPAGHETTI; MAKE IT READABLE, ALWAYS
+(Vítor, 2026-10-10, verbatim: "o layout do flowsheet parece esparguete!
+Consegues gerar um layout mais optimizado que seja fácil de ler? E fazer isso
+sempre?", seen on the green-ammonia cases).**  Measured before dispatch:
+`gui/src/case/toGraph.ts:39` says "longest-path layering (Sugiyama-lite)";
+`:151-235` assign each unit its longest path from any feed (declared tears
+skipped), put EVERY feed at layer 0 and EVERY product at the last layer, and
+stack each layer in insertion order -- no crossing reduction, no
+straightening -- so a feed consumed deep in the plant and a purge leaving
+early draw edges across the whole canvas.  A case's curated layout in its
+`.cho` (`gui/src/state/layout.ts`, written only by "Save layout to case")
+keeps precedence (C55).  "Always" read as: the automatic layout is the one
+every case without a curated layout gets, and new cases are drawn by it.
+Status: dispatched to a general, branch `claude/c59-flowsheet-layout`.
+
 **C58. AN EDUTOOL ON FRONT-END LOADING: HOW INDUSTRY STAGES A PROCESS
 DESIGN (Vítor, 2026-10-10, verbatim: "Podes fazer um EduTool sobre O que a
 indústria usa: Front-End Loading (FEL)? Isso é muito importante!", then
