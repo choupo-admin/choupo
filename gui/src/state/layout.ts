@@ -117,7 +117,11 @@ export function saveLayout(caseName: string, patch: Partial<CaseLayout>): void {
 // the user drops back into the folder), so the layout travels WITH the case
 // (commit it, send it, reopen -> it comes back arranged).  Per the GUI credo
 // the GUI never writes to disk silently -- this file is only ever written by
-// that explicit action, never on a drag.
+// that explicit action, never on a drag.  (FlowCanvas used to write it on
+// every drag when served on localhost, which made a reader's arrangement a
+// local modification of a TRACKED file and a `git pull` refused it -- DEV.md
+// 4c C55; removed with C59, the explicit action is the canvas's `layout`
+// menu.)
 
 const CHO_SCHEMA = 1;
 
@@ -160,16 +164,52 @@ export function layoutFromChoText(text: string | undefined): CaseLayout {
   }
 }
 
-/** Combine two layouts, `primary` winning per-section when it has content.
- *  Used so the live localStorage working copy overrides the `.cho` snapshot
- *  ("the way I last left it" beats "the way it was shared"), while a freshly
- *  received case with no localStorage falls back to its shared `.cho`. */
+/** Combine two layouts: the live localStorage WORKING COPY over the case's
+ *  `.cho` snapshot ("the way I last left it" beats "the way it was shared"),
+ *  a freshly received case with no working copy falling back to its `.cho`,
+ *  and a case with neither drawn by the automatic layout (DEV.md 4c C59).
+ *
+ *  A working copy that carries NODES is a whole snapshot (see
+ *  `snapshotLayout`), so it wins whole: its empty edge or handle section
+ *  means "none moved", not "ask the .cho".  Only a legacy PARTIAL copy (one
+ *  that saved edges or handles but no nodes) still falls back per section. */
 export function mergeLayouts(primary: CaseLayout, fallback: CaseLayout): CaseLayout {
   const has = (o?: object) => !!o && Object.keys(o).length > 0;
+  if (has(primary.nodes))
+    return { nodes: primary.nodes, viewport: primary.viewport ?? fallback.viewport,
+             edges: primary.edges ?? {}, handles: primary.handles ?? {} };
   return {
-    nodes: has(primary.nodes) ? primary.nodes : fallback.nodes,
+    nodes: fallback.nodes,
     viewport: primary.viewport ?? fallback.viewport,
     edges: has(primary.edges) ? primary.edges : fallback.edges,
     handles: has(primary.handles) ? primary.handles : fallback.handles,
   };
+}
+
+/** THE WHOLE ARRANGEMENT AS DRAWN (Vítor, 2026-10-10: "the first time a case
+ *  is opened the arrangement is done by the automatic layout; once the user
+ *  has arranged it, you no longer move anything").  Taken the moment the
+ *  reader moves ANY node, connection point or edge bend: every node's
+ *  position -- including the ones the automatic layout placed and nobody
+ *  touched -- so a later improvement of the algorithm can never reshuffle
+ *  the untouched nodes around the one that was moved. */
+export function snapshotLayout(
+  nodes: { id: string; position: XY }[],
+  edges: { [id: string]: XY },
+  handles: { [key: string]: HandlePos },
+  viewport?: Viewport,
+): CaseLayout {
+  const pos: { [id: string]: XY } = {};
+  for (const n of nodes) pos[n.id] = { x: n.position.x, y: n.position.y };
+  return { nodes: pos, viewport, edges: { ...edges }, handles: { ...handles } };
+}
+
+/** Forget this browser's working copy of a case's arrangement: the case then
+ *  opens on its `.cho` layout if it ships one, else on the automatic one. */
+export function clearLayout(caseName: string): void {
+  if (!caseName) return;
+  const all = readAll();
+  if (!(caseName in all)) return;
+  delete all[caseName];
+  writeAll(all);
 }

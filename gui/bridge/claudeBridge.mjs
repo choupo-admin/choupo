@@ -513,8 +513,8 @@ function watchCaseTree(dir, onChange) {
   const add = (d) => {
     if (watchers.has(d)) return;
     // Skip VIEW-STATE / side-channel writes: the `.cho` layout marker (written
-    // by the GUI's own auto-save) and `.csv` artefacts.  Reacting to them would
-    // reload the case the instant the user drags a stream -- a reload loop.
+    // by the GUI's own "Save layout to case") and `.csv` artefacts.  Reacting
+    // to them would reload the case under the reader -- a reload loop.
     try {
       watchers.set(d, fsWatch(d, (_evt, filename) => {
         if (filename && /\.(cho|csv)$/.test(String(filename))) return;

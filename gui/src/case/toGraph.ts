@@ -36,8 +36,9 @@ License
 
   Edges are streams with a label.
 
-  Layout: longest-path layering (Sugiyama-lite), no external solver.
-  Good enough for flowsheets up to ~30 units; swap for dagre/ELK later.
+  Layout: a layered (Sugiyama) drawing, flow left to right -- see
+  flowsheetLayout.ts (DEV.md 4c C59); this file only describes the boxes,
+  their ports, the room their stubs need and the wires.  No dependency.
 \*---------------------------------------------------------------------------*/
 
 import type { Edge, Node } from "@xyflow/react";
@@ -48,6 +49,7 @@ import { scalarToSI } from "../dict/scalarSI.js";
 import type { FlowsheetView, StreamSpec, UnitSpec } from "./types.js";
 // The duty/work unit-type sets — SHARED with UnitNode.tsx (single source of
 // truth), so the stub node + edge here always match the handle there.
+import { layoutFlowsheet, type LayoutEdge, type LayoutNode } from "./flowsheetLayout.js";
 import { COLUMN_TYPES, HEAT_DUTY_TYPES, COOLING_DUTY_TYPES, POWER_DRAW_TYPES, PHASE_SPLIT_TYPES, DYNAMIC_HOLDUP_TYPES } from "./dutyTypes.js";
 
 export interface FlowsheetGraph {
@@ -58,6 +60,10 @@ export interface FlowsheetGraph {
    *  Display-only (GUI-derived, never written to the dict); the same map keys
    *  the canvas badges AND the Streams-table `#` column so they agree. */
   streamNumbers: Map<string, number>;
+  /** The ESTIMATED size of every node, the one the automatic layout used
+   *  (flowsheetLayout.ts) -- so a node placed later beside a saved
+   *  arrangement, and the layout metric, measure boxes the same way. */
+  sizes: Map<string, { width: number; height: number }>;
 }
 
 // Assign a stable PFD number to every stream in a view: feeds first (in unit
@@ -100,23 +106,135 @@ export function streamNumbersForFlowsheet(
   return assignStreamNumbers(readFlowsheet(flowsheet, rawFiles));
 }
 
-const X_STEP = 240;
-const X_STEP_COMPOSITE = 340;   // sectors + their inter-sector labels need air
-const Y_STEP = 130;
+//  Horizontal air between two columns of the layout: room for the wire, its
+//  arrow and its number badge.  A composite view (sectors as boxes) carries
+//  the `Producer/Port` namespaced label on inter-sector edges, so it gets more.
+const X_GAP = 110;
+const X_GAP_COMPOSITE = 150;
 const X_ORIGIN = 80;
 const Y_ORIGIN = 80;
+
+/*  ESTIMATED CARD SIZES.  The layout must exist before the first paint, so it
+    cannot measure; these are the sizes UnitNode / StreamTerminal render at the
+    default (full) detail level, MEASURED in Chromium on 2026-10-10 and
+    rounded UP -- an over-estimate costs a little air, an under-estimate costs
+    an overlap.  A NUMBER A HUMAN MUST CHECK BY LOOKING (nodeDetail.ts says the
+    same of its own): no test here renders a pixel.  */
+const UNIT_MIN_W = 190;          // UnitNode minWidth
+const UNIT_BASE_H = 84;          // header + type badge, no parameter lines
+const UNIT_LINE_H = 21;          // one `k = v` parameter line (xs mono + gap)
+const TERMINAL_W = 230;          // a feed/product terminal with its state line
+const TERMINAL_H = 64;
+const STUB_H = 42;               // a docked utility / power stub
+const STUB_GAP = 44;             // air between a box and its stub
+
+/** Port fraction along a side -- the same rule UnitNode's defaultFrac uses. */
+export function portFracOf(i: number, n: number): number {
+  if (n <= 1) return 0.5;
+  return 0.25 + 0.5 * (i / (n - 1));
+}
+
+/** How many `k = v` lines UnitNode's summarise() draws (at most three). */
+function summaryLines(u: UnitSpec): { n: number; chars: number } {
+  let n = 0;
+  let chars = 0;
+  for (const [k, v] of Object.entries(u.operation ?? {})) {
+    if (typeof v !== "number" && typeof v !== "string") continue;
+    n++;
+    chars = Math.max(chars, k.length + 3 + Math.min(14, String(v).length + 3));
+    if (n >= 3) break;
+  }
+  return { n, chars };
+}
+
+/** The estimated rendered size of a unit card. */
+export function unitCardSize(u: UnitSpec, composite: boolean): { width: number; height: number } {
+  const ins = Array.isArray(u.in) ? u.in.length : 1;
+  const lines = composite ? { n: 0, chars: 0 } : summaryLines(u);
+  const width = Math.max(UNIT_MIN_W, 130 + 7.5 * u.name.length, 30 + 7.3 * lines.chars);
+  const height = Math.max(
+    UNIT_BASE_H + (lines.n > 0 ? 4 + UNIT_LINE_H * lines.n : 0),
+    22 * Math.max(ins, u.outputs.length) + 20,
+  );
+  return { width: Math.round(width), height: Math.round(height) };
+}
+
+/** The estimated rendered size of a feed / product terminal. */
+export function terminalSize(name: string): { width: number; height: number } {
+  return { width: Math.round(Math.max(TERMINAL_W, 120 + 9 * name.length)), height: TERMINAL_H };
+}
+
+/** The estimated rendered size of a docked utility / power stub. */
+export function stubSize(port: string): { width: number; height: number } {
+  return { width: port === "power" ? 150 : 96, height: STUB_H };
+}
+
+/** A utility stub docked to a unit, and on which side of the box it sits. */
+export interface StubPlan {
+  port: "reboiler" | "condenser" | "Q" | "jacket" | "power";
+  side: "above" | "below";
+  width: number;
+}
+
+/** Heating or cooling, for a dynamicCSTR's jacket (pre-run sign). */
+function jacketHeating(
+  u: UnitSpec, flowsheet: JsonDict, rawFiles?: { [relPath: string]: string },
+): boolean {
+  const op = u.operation as { [k: string]: JsonValue } | undefined;
+  const tJacket = scalarToSI(op?.["T_jacket"]);
+  // Holdup initial T sets the pre-run jacket tier sign.  It lives in the
+  // vessel's own record, 0/internalStates/<unit> (task #186); the inline
+  // initial{} read below is refused by the engine and kept only so a draft
+  // on the canvas still draws a tier.
+  const rawUnits = (flowsheet["units"] ?? []) as JsonDict[];
+  const rawUnit = Array.isArray(rawUnits)
+    ? rawUnits.find((ru) => String(ru["name"]) === u.name) : undefined;
+  const tInitInline = scalarToSI((rawUnit?.["initial"] as JsonDict | undefined)?.["T"]);
+  const tInit = Number.isFinite(tInitInline)
+    ? tInitInline : (zeroInternalT(rawFiles, u.name) ?? NaN);
+  return !(Number.isFinite(tJacket) && Number.isFinite(tInit) && tJacket < tInit);
+}
+
+/** Every stub flowsheetToGraph docks to this unit -- the SAME conditions as the
+ *  stub nodes it builds, gathered once so the layout can keep their room free. */
+function stubPlanFor(
+  u: UnitSpec, flowsheet: JsonDict, rawFiles: { [relPath: string]: string } | undefined,
+  heatLinked: Set<string>, workCoupled: Set<string>,
+): StubPlan[] {
+  const plan: StubPlan[] = [];
+  if (COLUMN_TYPES.has(u.type)) {
+    if (!heatLinked.has(`${u.name}:reboiler`))
+      plan.push({ port: "reboiler", side: "below", width: stubSize("reboiler").width });
+    if (!heatLinked.has(`${u.name}:condenser`))
+      plan.push({ port: "condenser", side: "above", width: stubSize("condenser").width });
+  }
+  if (HEAT_DUTY_TYPES.has(u.type)) {
+    const opQ = (u.operation as { [k: string]: JsonValue } | undefined)?.["Q"];
+    const cooling = typeof opQ === "number" ? opQ < 0 : COOLING_DUTY_TYPES.has(u.type);
+    plan.push({ port: "Q", side: cooling ? "above" : "below", width: stubSize("Q").width });
+  }
+  if (DYNAMIC_HOLDUP_TYPES.has(u.type)) {
+    const ua = scalarToSI((u.operation as { [k: string]: JsonValue } | undefined)?.["UA"]);
+    if (Number.isFinite(ua) && ua > 0)
+      plan.push({ port: "jacket", side: jacketHeating(u, flowsheet, rawFiles) ? "below" : "above",
+                  width: stubSize("jacket").width });
+  }
+  const isDraw = POWER_DRAW_TYPES.has(u.type);
+  if (u.type === "electricLoad" || (isDraw && !workCoupled.has(u.name)))
+    plan.push({ port: "power", side: "below", width: stubSize("power").width });
+  return plan;
+}
+
+/** The room a unit's stubs need on one side of its box. */
+function stubClearance(plan: StubPlan[], side: "above" | "below"): number {
+  return plan.some((s) => s.side === side) ? STUB_GAP + STUB_H : 0;
+}
 
 export function flowsheetToGraph(
   flowsheet: JsonDict,
   rawFiles?: { [relPath: string]: string },
 ): FlowsheetGraph {
   const view = readFlowsheet(flowsheet, rawFiles);
-  // Composite views (sectors as units) draw wider cards AND carry the
-  // `Producer/Port` namespaced label on inter-sector edges -- both eat
-  // horizontal room.  Bump the layer step so adjacent cards don't kiss.
-  const xStep = view.units.some((u) => u.type === "sector")
-    ? X_STEP_COMPOSITE
-    : X_STEP;
 
   const producers = new Map<string, string>(); // stream -> unit name
   const consumers = new Map<string, string[]>();
@@ -148,94 +266,6 @@ export function flowsheetToGraph(
     if (producers.has(s) && !consumers.has(s)) products.add(s);
   }
 
-  // Layer index for every unit (longest path from any feed).
-  //
-  // Recycle / tear streams make this directed graph CYCLIC: a recycle
-  // stream is produced by a downstream unit and consumed by an upstream
-  // one (e.g. process03's `recycle`, evaporator05's `V1`/`V2`).
-  // Two complementary cycle-breakers:
-  //   (1) `visiting` -- the recursion stack; re-entering a unit returns
-  //       layer 1 (treats the back-edge as non-contributing).  Saves us
-  //       from infinite recursion on any cycle, even an unmarked one.
-  //   (2) `tearSet` -- streams the case author EXPLICITLY declared as
-  //       tears.  Skipping them in computeLayer makes the layout read
-  //       the right direction: the recycle's producer (e.g. Splitter)
-  //       stays DOWNSTREAM of the consumer (e.g. Mixer) instead of
-  //       being pulled in front of it by the longest-path rule.  The
-  //       tear edge is still drawn -- just as a back-edge in the
-  //       final React Flow render.
-  const tearSet = view.tearStreams ?? new Set<string>();
-  const unitLayer = new Map<string, number>();
-  const unitsByName = new Map(view.units.map((u) => [u.name, u]));
-  const visiting = new Set<string>();
-  const computeLayer = (name: string): number => {
-    const cached = unitLayer.get(name);
-    if (cached !== undefined) return cached;
-    if (visiting.has(name)) return 1;   // back-edge of an unmarked cycle: break it
-    visiting.add(name);
-    const u = unitsByName.get(name);
-    if (!u) { visiting.delete(name); return 0; }
-    const ins = Array.isArray(u.in) ? u.in : [u.in];
-    let max = 1;
-    for (const s of ins) {
-      if (tearSet.has(s)) continue;       // declared tear -> ignore for layering
-      const prod = producers.get(s);
-      if (prod) max = Math.max(max, computeLayer(prod) + 1);
-    }
-    visiting.delete(name);
-    unitLayer.set(name, max);
-    return max;
-  };
-  for (const u of view.units) computeLayer(u.name);
-
-  const maxLayer = Math.max(1,...unitLayer.values());
-
-  // Group nodes by layer for vertical distribution.
-  const layered: { layer: number; id: string; kind: "feed" | "unit" | "product" }[] = [];
-  for (const f of feeds) layered.push({ layer: 0, id: f, kind: "feed" });
-  for (const u of view.units) {
-    layered.push({ layer: unitLayer.get(u.name)!, id: u.name, kind: "unit" });
-  }
-  // Product terminals stack top->bottom grouped by their producing unit, and
-  // WITHIN a unit by its output order -- except a vapour/liquid separator,
-  // whose slots are (liquid, vapor) but which a PFD draws vapour-on-top: those
-  // outputs are reversed so the LIQUID terminal lands at the BOTTOM (matching
-  // the reversed output handles in UnitNode).
-  const phaseRankOf = (p: string): number => {
-    const owner = producers.get(p);
-    const u = owner ? unitsByName.get(owner) : undefined;
-    if (!u) return 0;
-    const j = u.outputs.indexOf(p);
-    if (j < 0) return 0;
-    return PHASE_SPLIT_TYPES.has(u.type) ? u.outputs.length - 1 - j : j;
-  };
-  const producerRankOf = (p: string): number => {
-    const owner = producers.get(p);
-    const idx = owner ? view.units.findIndex((u) => u.name === owner) : -1;
-    return idx < 0 ? Number.MAX_SAFE_INTEGER : idx;
-  };
-  const orderedProducts = [...products].sort(
-    (a, b) => producerRankOf(a) - producerRankOf(b) || phaseRankOf(a) - phaseRankOf(b),
-  );
-  for (const p of orderedProducts) layered.push({ layer: maxLayer + 1, id: p, kind: "product" });
-
-  const perLayer = new Map<number, string[]>();
-  for (const item of layered) {
-    const arr = perLayer.get(item.layer) ?? [];
-    arr.push(item.id);
-    perLayer.set(item.layer, arr);
-  }
-
-  const positions = new Map<string, { x: number; y: number }>();
-  for (const [layer, ids] of perLayer) {
-    const total = ids.length;
-    ids.forEach((id, i) => {
-      const x = X_ORIGIN + layer * xStep;
-      const y = Y_ORIGIN + (i - (total - 1) / 2) * Y_STEP + 220;
-      positions.set(id, { x, y });
-    });
-  }
-
   // Column ports that are HEAT-LINKED (consumed by some unit's energyInputs
   // `from <col>.<port>`, kind heat): their auto utility-stub is suppressed
   // and the column handle becomes a SOURCE feeding the link, not a target
@@ -263,6 +293,132 @@ export function flowsheetToGraph(
         }
       }
 
+  // THE LAYOUT (DEV.md 4c C59): a layered drawing computed by
+  // case/flowsheetLayout.ts -- declared tears are the back edges, feeds sit
+  // just before their consumer and products just after their producer,
+  // crossings are reduced and the main train is straightened.  This block
+  // only describes the picture to it: every box with its estimated size and
+  // its ports in the order UnitNode draws them, the room its docked utility
+  // stubs need, and every wire.  A curated `.cho` layout, or the reader's own
+  // arrangement, still wins over it (FlowCanvas.tsx).
+  const tearSet = view.tearStreams ?? new Set<string>();
+  const unitsByName = new Map(view.units.map((u) => [u.name, u]));
+  const composite = view.units.some((u) => u.type === "sector");
+  const stubsOf = new Map<string, StubPlan[]>();
+  for (const u of view.units) stubsOf.set(u.name, stubPlanFor(u, flowsheet, rawFiles, heatLinked, workCoupled));
+
+  const lNodes: LayoutNode[] = [];
+  for (const f of feeds)
+    lNodes.push({ id: `stream:${f}`, ...terminalSize(f),
+                  ins: [], outs: [{ id: f, frac: 0.5 }], terminal: true });
+  for (const u of view.units) {
+    const ins = Array.isArray(u.in) ? u.in : [u.in];
+    const size = unitCardSize(u, composite);
+    const plan = stubsOf.get(u.name) ?? [];
+    lNodes.push({
+      id: `unit:${u.name}`,
+      width: size.width,
+      height: size.height,
+      ins: ins.map((s, i) => ({ id: s, frac: portFracOf(i, ins.length) })),
+      outs: u.outputs.map((s, j) => ({
+        id: s,
+        frac: portFracOf(PHASE_SPLIT_TYPES.has(u.type) ? u.outputs.length - 1 - j : j, u.outputs.length),
+      })),
+      above: stubClearance(plan, "above"),
+      below: stubClearance(plan, "below"),
+    });
+  }
+  // Product terminals in a stable order: by producing unit, then its output
+  // slot (a separator's vapour above its liquid, as UnitNode draws it).
+  const phaseRankOf = (p: string): number => {
+    const owner = producers.get(p);
+    const u = owner ? unitsByName.get(owner) : undefined;
+    if (!u) return 0;
+    const j = u.outputs.indexOf(p);
+    if (j < 0) return 0;
+    return PHASE_SPLIT_TYPES.has(u.type) ? u.outputs.length - 1 - j : j;
+  };
+  const producerRankOf = (p: string): number => {
+    const owner = producers.get(p);
+    const idx = owner ? view.units.findIndex((u) => u.name === owner) : -1;
+    return idx < 0 ? Number.MAX_SAFE_INTEGER : idx;
+  };
+  const orderedProducts = [...products].sort(
+    (a, b) => producerRankOf(a) - producerRankOf(b) || phaseRankOf(a) - phaseRankOf(b),
+  );
+  for (const p of orderedProducts)
+    lNodes.push({ id: `stream:${p}`, ...terminalSize(p),
+                  ins: [{ id: p, frac: 0.5 }], outs: [], terminal: true });
+
+  const lEdges: LayoutEdge[] = [];
+  for (const u of view.units) {
+    const ins = Array.isArray(u.in) ? u.in : [u.in];
+    for (const s of ins) {
+      const sourceUnit = producers.get(s);
+      const source = sourceUnit ? `unit:${sourceUnit}` : `stream:${s}`;
+      lEdges.push({ id: `e:${source}->unit:${u.name}:${s}`, source, target: `unit:${u.name}`,
+                    sourcePort: s, targetPort: s, kind: tearSet.has(s) ? "tear" : "material" });
+    }
+    for (const o of u.outputs)
+      if (!consumers.has(o))
+        lEdges.push({ id: `e:unit:${u.name}->stream:${o}:${o}`, source: `unit:${u.name}`,
+                      target: `stream:${o}`, sourcePort: o, targetPort: o, kind: "material" });
+    //  An energy wire says nothing about which way the PROCESS flows (a
+    //  turbine may drive a compressor upstream of it), so it places a unit
+    //  only when that unit has no stream to be placed by -- an electrical
+    //  load, a motor -- and is otherwise left to the canvas to draw.
+    const streamless = (name: string) => {
+      const x = unitsByName.get(name);
+      if (!x) return false;
+      const xin = Array.isArray(x.in) ? x.in : [x.in];
+      return xin.filter((s) => !!s).length === 0 && x.outputs.length === 0;
+    };
+    for (const ein of u.energyInputs ?? []) {
+      const dot = ein.from.indexOf(".");
+      const src = dot > 0 ? ein.from.slice(0, dot) : "";
+      if (dot > 0 && (streamless(src) || streamless(u.name)))
+        lEdges.push({ id: `soft:energy:${ein.from}->${u.name}`, source: `unit:${src}`,
+                      target: `unit:${u.name}`, kind: "soft" });
+    }
+    const dt = (u as { dischargeTo?: unknown }).dischargeTo;
+    if (typeof dt === "string" && dt.length > 0)
+      lEdges.push({ id: `soft:discharge:${u.name}->${dt}`, source: `unit:${u.name}`,
+                    target: `unit:${dt}`, kind: "soft", targetFrac: 0 });
+  }
+  {
+    const recipeRaw = (flowsheet as { recipe?: unknown }).recipe;
+    if (Array.isArray(recipeRaw))
+      recipeRaw.forEach((evRaw, i) => {
+        const ev = evRaw as { action?: unknown; from?: unknown; to?: unknown };
+        if (ev.action !== "transfer" || typeof ev.from !== "string" || typeof ev.to !== "string") return;
+        lEdges.push({ id: `soft:recipe:${i}`, source: `unit:${ev.from}`, target: `unit:${ev.to}`,
+                      kind: "soft", targetFrac: 0 });
+      });
+  }
+
+  const layout = layoutFlowsheet(lNodes, lEdges, {
+    xGap: composite ? X_GAP_COMPOSITE : X_GAP,
+    originX: X_ORIGIN,
+    originY: Y_ORIGIN,
+  });
+  const positions = layout.positions;
+  const posOf = (id: string) => positions.get(id) ?? { x: X_ORIGIN, y: Y_ORIGIN };
+  // Where a docked stub sits: centred on its owner, above or below the box.
+  const stubPosition = (u: UnitSpec, plan: StubPlan): { x: number; y: number } => {
+    const p = posOf(`unit:${u.name}`);
+    const size = unitCardSize(u, composite);
+    const list = (stubsOf.get(u.name) ?? []).filter((s) => s.side === plan.side);
+    const k = list.indexOf(plan);
+    const n = list.length;
+    const x = p.x + size.width / 2 - plan.width / 2 + (k - (n - 1) / 2) * (plan.width + 16);
+    return plan.side === "below"
+      ? { x: Math.round(x), y: p.y + size.height + STUB_GAP }
+      : { x: Math.round(x), y: p.y - STUB_GAP - STUB_H };
+  };
+  const stubAt = (u: UnitSpec, port: StubPlan["port"]) => {
+    const plan = (stubsOf.get(u.name) ?? []).find((s) => s.port === port);
+    return plan ? stubPosition(u, plan) : posOf(`unit:${u.name}`);
+  };
   // Build React Flow nodes.
   const nodes: Node[] = [];
   for (const f of feeds) {
@@ -274,7 +430,7 @@ export function flowsheetToGraph(
       // not yet read here -- never a blank 0 K / 0 Pa.
       data: { name: f, role: "feed",
               stream: view.streams[f] ?? { F: 0, T: AMBIENT_T, P: AMBIENT_P, composition: {} } },
-      position: positions.get(f)!,
+      position: posOf(`stream:${f}`),
     });
   }
   // RECIPE-edge participation (batch campaigns): which units source/sink a
@@ -313,7 +469,7 @@ export function flowsheetToGraph(
       type: "unitNode",
       data: { unit: u, heatLinkedPorts: linkedPorts, powerStub,
               recipeOut: recipeOut.has(u.name), recipeIn: recipeIn.has(u.name) },
-      position: positions.get(u.name)!,
+      position: posOf(`unit:${u.name}`),
     });
   }
   for (const p of products) {
@@ -321,7 +477,7 @@ export function flowsheetToGraph(
       id: `stream:${p}`,
       type: "streamTerminal",
       data: { name: p, role: "product", stream: view.streams[p] ?? null },
-      position: positions.get(p)!,
+      position: posOf(`stream:${p}`),
     });
   }
 
@@ -334,8 +490,6 @@ export function flowsheetToGraph(
   // They belong to the toggleable `utility` class.
   for (const u of view.units) {
     if (!COLUMN_TYPES.has(u.type)) continue;
-    const p = positions.get(u.name);
-    if (!p) continue;
     // Explicit per-port utility named in the dict (operation.<port>.utility),
     // if any --- shown on the stub; otherwise the stub just reads its tier
     // (the auto-picked utility lives in the utilityAllocation report).
@@ -351,7 +505,7 @@ export function flowsheetToGraph(
         type: "streamTerminal",
         data: { name: "reboiler", role: "utility", dutyPort: "reboiler",
                 ownerUnit: u.name, tier: "heating", utilityName: portUtility("reboiler") },
-        position: { x: p.x + 35, y: p.y + 175 },
+        position: stubAt(u, "reboiler"),
       });
     if (!heatLinked.has(`${u.name}:condenser`))
       nodes.push({
@@ -359,7 +513,7 @@ export function flowsheetToGraph(
         type: "streamTerminal",
         data: { name: "condenser", role: "utility", dutyPort: "condenser",
                 ownerUnit: u.name, tier: "cooling", utilityName: portUtility("condenser") },
-        position: { x: p.x + 35, y: p.y - 150 },
+        position: stubAt(u, "condenser"),
       });
   }
 
@@ -370,8 +524,6 @@ export function flowsheetToGraph(
   // and the utilityAllocation row with empty port).
   for (const u of view.units) {
     if (!HEAT_DUTY_TYPES.has(u.type)) continue;
-    const p = positions.get(u.name);
-    if (!p) continue;
     // Pre-run tier guess: from a numeric Q in the dict, else the type
     // (cooler -> cooling, otherwise heating).  Post-run the sign of the
     // resolved Q is authoritative (FlowCanvas/StreamTerminal).
@@ -389,7 +541,7 @@ export function flowsheetToGraph(
       type: "streamTerminal",
       data: { name: "duty", role: "utility", dutyPort: "Q", ownerUnit: u.name,
               tier, utilityName: typeof declUtil === "string" ? declUtil : undefined },
-      position: { x: p.x + 35, y: tier === "cooling" ? p.y - 150 : p.y + 150 },
+      position: stubAt(u, "Q"),
     });
   }
 
@@ -404,26 +556,13 @@ export function flowsheetToGraph(
     const op = u.operation as { [k: string]: JsonValue } | undefined;
     const ua = scalarToSI(op?.["UA"]);
     if (!(Number.isFinite(ua) && ua > 0)) continue;
-    const p = positions.get(u.name);
-    if (!p) continue;
-    const tJacket = scalarToSI(op?.["T_jacket"]);
-    // Holdup initial T sets the pre-run jacket tier sign.  It lives in the
-    // vessel's own record, 0/internalStates/<unit> (task #186); the inline
-    // initial{} read below is refused by the engine and kept only so a draft
-    // on the canvas still draws a tier.
-    const rawUnits = (flowsheet["units"] ?? []) as JsonDict[];
-    const rawUnit = Array.isArray(rawUnits)
-      ? rawUnits.find((ru) => String(ru["name"]) === u.name) : undefined;
-    const tInitInline = scalarToSI((rawUnit?.["initial"] as JsonDict | undefined)?.["T"]);
-    const tInit = Number.isFinite(tInitInline)
-      ? tInitInline : (zeroInternalT(rawFiles, u.name) ?? NaN);
-    const heating = !(Number.isFinite(tJacket) && Number.isFinite(tInit) && tJacket < tInit);
+    const heating = jacketHeating(u, flowsheet, rawFiles);
     nodes.push({
       id: `duty:${u.name}:jacket`,
       type: "streamTerminal",
       data: { name: "jacket", role: "utility", dutyPort: "jacket", ownerUnit: u.name,
               tier: heating ? "heating" : "cooling" },
-      position: { x: p.x + 35, y: heating ? p.y + 150 : p.y - 150 },
+      position: stubAt(u, "jacket"),
     });
   }
 
@@ -436,15 +575,13 @@ export function flowsheetToGraph(
     const isGen  = u.type === "electricLoad";
     if (!isDraw && !isGen) continue;
     if (isDraw && workCoupled.has(u.name)) continue;   // mechanically driven -> no grid stub
-    const p = positions.get(u.name);
-    if (!p) continue;
     nodes.push({
       id: `duty:${u.name}:power`,
       type: "streamTerminal",
       data: { name: "power", role: "utility", dutyPort: "power", ownerUnit: u.name,
               tier: "power",
               utilityName: isGen ? "electricity (generated)" : "electricity" },
-      position: { x: p.x + 35, y: p.y + 150 },
+      position: stubAt(u, "power"),
     });
   }
 
@@ -462,8 +599,21 @@ export function flowsheetToGraph(
       const sourceUnit = producers.get(s);
       const source = sourceUnit ? `unit:${sourceUnit}` : `stream:${s}`;
       const isTear = tearSet.has(s);
+      const eid = `e:${source}->unit:${u.name}:${s}`;
+      //  A cycle nobody declared a tear for (a dynamic case, a loop drawn in
+      //  a sector view) is broken by the layout too, and its back edge is
+      //  ROUTED like a recycle -- but it carries no `kind: "tear"`, because
+      //  the cut mark says the solver guesses this stream, and here no
+      //  solver was told to.  `routeY` is where the layout put the run.
+      const back = layout.backEdges.has(eid);
+      const routeY = layout.routeY.get(eid);
+      const legs = layout.routeOutset.get(eid);
+      const route = {
+        ...(routeY !== undefined ? { routeY } : {}),
+        ...(legs ? { sourceOutset: legs.source, targetOutset: legs.target } : {}),
+      };
       edges.push({
-        id: `e:${source}->unit:${u.name}:${s}`,
+        id: eid,
         source,
         target: `unit:${u.name}`,
         // On the upstream side: if it's a unit, route from that
@@ -474,13 +624,17 @@ export function flowsheetToGraph(
         targetHandle: s,
         label: s,
         // Tear edges route via the custom TearEdge component, which
-        // draws an explicit U-turn BELOW the unit row.  Default
-        // smoothstep for same-row back-edges disappears behind
-        // intermediate nodes; the custom path keeps the recycle
-        // visually distinct.
-        type: isTear ? "tear" : "smoothstep",
+        // draws an explicit U-turn below (or above) the train, at the
+        // depth the layout chose.  Default smoothstep for same-row
+        // back-edges disappears behind intermediate nodes; the custom
+        // path keeps the recycle visually distinct.
+        type: isTear || back ? "tear" : "smoothstep",
         animated: false,
-        ...(isTear ? { data: { kind: "tear" }, zIndex: 1000 } : {}),
+        ...(isTear
+          ? { data: { kind: "tear", ...route }, zIndex: 1000 }
+          : back
+            ? { data: { backEdge: true, ...route }, zIndex: 1000 }
+            : {}),
       });
     }
     for (const o of u.outputs) {
@@ -698,7 +852,15 @@ export function flowsheetToGraph(
     }
   }
 
-  return { nodes, edges, view, streamNumbers };
+  const sizes = new Map<string, { width: number; height: number }>();
+  for (const n of lNodes) sizes.set(n.id, { width: n.width, height: n.height });
+  for (const n of nodes)
+    if (!sizes.has(n.id)) {
+      const port = (n.data as { dutyPort?: string }).dutyPort;
+      sizes.set(n.id, port !== undefined ? stubSize(port) : terminalSize(n.id));
+    }
+
+  return { nodes, edges, view, streamNumbers, sizes };
 }
 
 // A COMPOSITE node (a sector): `children` + `connections` instead of a
@@ -720,7 +882,7 @@ export function flowsheetToGraph(
 // connection's `to` is the tear name) gets its output renamed to the tear name,
 // AND any connection `from <tearname>` references the same tear name on the
 // consumer side -- a single name, just like the C++ engine treats it after
-// flattening.  The longest-path layout then draws a back-edge that visually
+// flattening.  The automatic layout then draws a back-edge that visually
 // closes the recycle loop.
 // Normalise BOTH connection grammars to edges {name, from, to}: the named-edge
 // dict `connections { liquor { from A; to B; } }` (the KEY is the stream ID) and

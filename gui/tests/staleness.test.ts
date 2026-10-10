@@ -55,7 +55,7 @@ describe("staleness: the fingerprint", () => {
     expect(fingerprintCase(commented)).toBe(fingerprintCase(base));
   });
 
-  it("IGNORES the .cho marker -- the canvas auto-saves a layout on every drag", () => {
+  it("IGNORES the .cho marker -- the canvas writes a layout there when asked", () => {
     //  On a LOCAL case the bridge watches the folder, so the layout write comes
     //  straight back into the store as new caseFiles.  Hashing it would dim a
     //  current result because somebody moved a box.

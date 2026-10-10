@@ -66,6 +66,11 @@ interface TearData {
   num?: number;
   /** draw the solver's CUT mark on this recycle (the `recycle` chip) */
   showCut?: boolean;
+  /** the y of the horizontal run, chosen by the automatic layout */
+  routeY?: number;
+  /** how far each vertical leg stands off its box (automatic layout) */
+  sourceOutset?: number;
+  targetOutset?: number;
   [k: string]: unknown;
 }
 
@@ -97,12 +102,20 @@ export function TearEdge({
   // Source-side: from (sourceX, sourceY), step OUT (right), DOWN to bus.
   // Target-side: from (targetX, targetY), step OUT (left), DOWN to bus.
   // The sign of `outset` flips so each side juts AWAY from its node.
-  const sX = sourceX + outset;
-  const tX = targetX - outset;
+  //  The layout may stand a leg further off (just outside its whole COLUMN,
+  //  so it never drops through a wider neighbour): `sourceOutset` /
+  //  `targetOutset`, else the jut above.
+  const sX = sourceX + (typeof td.sourceOutset === "number" ? td.sourceOutset : outset);
+  const tX = targetX - (typeof td.targetOutset === "number" ? td.targetOutset : outset);
   // The underbus depth is draggable: a stored center.y overrides the default
   // drop (persisted per case, same mechanism as a forward edge's bend).  Clamp
   // so the bus can never rise ABOVE the row (it must stay a U-turn).
-  const defaultBusY = Math.max(sourceY, targetY) + drop;
+  //  The automatic layout (case/flowsheetLayout.ts, C59) chooses the depth of
+  //  the run -- below or ABOVE every box the loop spans, in its own lane --
+  //  and hands it over as `routeY`.  Absent (a caller with no layout), the
+  //  old default: just below the lower of the two ends.
+  const routeY = typeof td.routeY === "number" ? td.routeY : undefined;
+  const defaultBusY = routeY ?? Math.max(sourceY, targetY) + drop;
   // A dragged center.y positions the underbus directly (no clamp -- the earlier
   // clamp pinned it near the row and read as "the center will not move").
   const busY = td.center?.y ?? defaultBusY;
@@ -110,17 +123,22 @@ export function TearEdge({
 
   // Build the SVG path with rounded corners at each turn.  Standard
   // SVG `Q` (quadratic Bezier) for the corners; the radius is small so
-  // it reads as a 90-deg turn with a hint of bevel.
+  // it reads as a 90-deg turn with a hint of bevel.  The legs may run DOWN
+  // (a run below the train) or UP (a run above it): `vs` / `vt` carry the
+  // sign of each vertical leg, `h` the direction of the run.
+  const vs = busY >= sourceY ? 1 : -1;
+  const vt = busY >= targetY ? 1 : -1;
+  const h = sX >= tX ? 1 : -1;
   const d = [
     `M ${sourceX} ${sourceY}`,
     `L ${sX - radius} ${sourceY}`,
-    `Q ${sX} ${sourceY} ${sX} ${sourceY + radius}`,
-    `L ${sX} ${busY - radius}`,
-    `Q ${sX} ${busY} ${sX - radius} ${busY}`,
-    `L ${tX + radius} ${busY}`,
-    `Q ${tX} ${busY} ${tX} ${busY - radius}`,
-    `L ${tX} ${targetY + radius}`,
-    `Q ${tX} ${targetY} ${tX - radius} ${targetY}`,
+    `Q ${sX} ${sourceY} ${sX} ${sourceY + vs * radius}`,
+    `L ${sX} ${busY - vs * radius}`,
+    `Q ${sX} ${busY} ${sX - h * radius} ${busY}`,
+    `L ${tX + h * radius} ${busY}`,
+    `Q ${tX} ${busY} ${tX} ${busY - vt * radius}`,
+    `L ${tX} ${targetY + vt * radius}`,
+    `Q ${tX} ${targetY} ${tX + radius} ${targetY}`,
     `L ${targetX} ${targetY}`,
   ].join(" ");
 

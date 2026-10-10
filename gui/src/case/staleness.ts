@@ -56,7 +56,8 @@ License
       comment is not physics; hashing it would make every re-read of an
       unchanged file look like an edit.
     * the `.cho` MARKER, which is the GUI's home for the saved canvas layout.
-      The canvas auto-saves it on every node drag, and on a local case the
+      The canvas writes it when the reader asks ("Save layout to case"; it
+      wrote it on every drag until 2026-10-10), and on a local case the
       bridge watcher then swaps the refreshed files back into the store -- so
       hashing it would dim a perfectly current result because somebody moved
       a box.

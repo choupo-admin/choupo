@@ -115,9 +115,9 @@ export function UnitNode({ id, data, selected }: NodeProps) {
   //  quarter of the card to barely more; the card is what is big.  With the
   //  badge row and the parameter lines gone the box is a fraction of its
   //  height, so 56 px DOMINATES it and still leaves a SMALLER footprint than
-  //  the 41 px full node -- which matters, because siblings are laid out at
-  //  Y_STEP 130 in toGraph.ts and a full node is already taller than its own
-  //  lane.  Growing the symbol any other way makes that crowding worse.
+  //  the 41 px full node -- which matters, because the automatic layout
+  //  (case/flowsheetLayout.ts) spaces siblings by the FULL card's estimated
+  //  height.  Growing the symbol any other way makes that spacing grow.
   const symbolPx = symbolSizeFor(showDetails);
   const icon = unitIconFor(unit.type, 18);
   const label = UNIT_LABEL[unit.type] ?? unit.type;

@@ -13,9 +13,10 @@ export default defineConfig({
     strictPort: true,
     host: "127.0.0.1",
     watch: {
-      // The `.cho` layout marker is GUI view-state the app writes ITSELF on
-      // every stream drag (auto-save to the case folder).  Vite must NOT treat
-      // it as a source change, or HMR reloads the case mid-drag -- a loop.
+      // The `.cho` layout marker is GUI view-state the app writes ITSELF
+      // ("Save layout to case"; on every drag until 2026-10-10).  Vite must
+      // NOT treat it as a source change, or HMR reloads the case under the
+      // reader -- a loop.
       ignored: ["**/*.cho"],
     },
     fs: {
