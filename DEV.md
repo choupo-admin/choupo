@@ -2120,7 +2120,13 @@ those 45 tutorials of their arrangement.  The refused pull was git doing its
 job: an uncommitted saved layout met an upstream restructure that deleted
 the folders it described.  The remedy is the workflow, not the code: commit
 a layout you want kept, or discard it (`git checkout -- <marker>`).  Revisit
-only if it recurs on a case that was NOT restructured.
+only if it recurs on a case that was NOT restructured.  CORRECTED 2026-10-10 (C59): the
+judgement above rested on a FALSE reading -- `layout.ts:114-120` says the
+marker is written only by "Save layout to case", but `FlowCanvas.tsx` wrote
+the tracked `.cho` AUTOMATICALLY on every drag whenever the app was served
+on localhost.  That, not a deliberate save, is how Vítor's markers changed.
+C59 removed the automatic write; "Save layout to case" is now the only
+write.  The 45 curated layouts still ship.
 
 **C56. "FRACTAL" LEAVES THE PROJECT'S SURFACES (the 2026-10-09 naming
 ruling, scheduled by the 2026-10-10 batch).**  Status: dispatched
