@@ -2029,6 +2029,46 @@ only if it recurs on a case that was NOT restructured.
 **C56. "FRACTAL" LEAVES THE PROJECT'S SURFACES (the 2026-10-09 naming
 ruling, scheduled by the 2026-10-10 batch).**  Status: dispatched
 2026-10-10.
+BUILT 2026-10-10 on branch `claude/c56-no-fractal` (NOT merged).  Measured
+before: `git grep -i fractal` = 326 hits in 124 files.  Swept to the
+vocabulary of the ruling -- "a plant and its sectors", "a sectored case /
+plant", "the sectored layout", "flattening the sectors", and "the folder
+cascade" for the `constant/` walk-up the old texts called the fractal
+cascade -- in every live surface: the five guides that carried it (sources
+and rebuilt PDFs; the tutorials guide regenerated from the cases),
+`docs/ai/` (case-layout.md now says once what the layout was formerly
+called), README.md, CLAUDE.md (§3, §6, §10), the current-state
+architecture docs (stream-state-architecture.md says once that the graph
+was formerly called fractal), the tutorial READMEs, header comments and
+four `description` strings, every GUI string (the Open-Case category label
+"Plant design (sectors)", the PropertyPanel sector card, the tear lesson's
+limit), the one engine string a run writes (`SolutionWriter.cpp`'s
+per-branch snapshot header), and the comments and gate messages in src/,
+bin/ and gui/.  Wording only: every edited src/ and gui/ file keeps its line
+count, so no `file:line` citation moved.  The word now stands only in
+dated records (`docs/design/`, `docs/architecture/archive/`,
+`docs/TUTORIAL-QA-*`, `decision-records.md`, the A4-A6 handoff, this file),
+in the two SEALED `sucrose.dat` records (a comment edit moves their sha256
+-- a re-seal is a curation act, not wording), in three lines that explain
+the old name, and in the four files another general held that day
+(`src/reporting/{Report.H,StreamTableReport.cpp,Topology.H}`,
+`gui/src/case/toGraph.ts`).  Gate: `check_glossary_bans` gained a SECOND
+PASS over every tracked file with its own exemptions (the `true`
+exemptions do not carry over), a "formerly called" line accepted, the four
+held files listed as PENDING so each fails as STALE the day it is swept;
+five by-hand sabotages (the word in a tutorial README, in CLAUDE.md, an
+innocent file exempted, a blind `git ls-files`, and the old `true` ban
+still firing), all caught.  NOT renamed, PROPOSED to Vítor because each
+is a key rather than wording: the witness class `sealedFractalPlant`
+(`tutorials/WITNESSES`, `generated/caseManifest.json`,
+`docs/architecture/ownership-index.md`; `bin/runTests --witnesses` reads
+it) -> `sealedSectoredPlant`.  MEASURED on the way, NOT a premise to
+build on: "we only have two levels" is true of every case and of the
+vocabulary, but `Flowsheet.cpp` `flattenNode` (:256, recursive call at
+:842) recurses with no depth limit and `StreamOwnership.H:92-96` writes its
+rule for any depth -- the two levels are a convention of the corpus, not a
+refusal of the engine (the Developer Guide says so).  Whether to REFUSE a
+sector nested in a sector is an architecture decision, Vítor's.
 
 **C54. THE SECOND "HOW CHOUPO WORKS" EDUTOOL: HOW TO READ A RUN'S LOG
 (Vítor, 2026-10-09, verbatim: "Faz esse!", answering the commander's ranked
