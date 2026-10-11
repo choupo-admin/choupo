@@ -134,9 +134,9 @@ small, and answered wrongly twice: the symbol was enlarged 34 -> 41 px and
 Vítor came back.  Measured, **the symbol is not small; the box is big** -- a
 full node carries the symbol, the name, a type badge and up to three
 parameter lines, so the silhouette is about a QUARTER of its own card, and
-the card is already taller than its lane (`toGraph.ts` lays siblings out at
-`Y_STEP = 130`).  Enlarging inside that card cannot fix the ratio without
-making the crowding worse.  So the `details` chip REMOVES the badge row and
+the automatic layout spaces siblings by that full card's height (a fixed
+130 px lane until 2026-10-10).  Enlarging inside that card cannot fix the
+ratio without making the drawing grow.  So the `details` chip REMOVES the badge row and
 the parameter lines; the box shrinks, and the symbol grows into what frees.
 At 56 px on a short box the silhouette dominates AND the node still has a
 smaller footprint than the 41 px full one -- the only option that improves
@@ -406,8 +406,28 @@ back to the dicts (the dict topology is immutable from the GUI).
   stream attaches (per-unit `<unitId>\0<handleId>` overrides).
 - **Per-case layout persistence.**  Node positions, viewport, edge
   bend-centres, and connection-point overrides are saved to
-  `localStorage`, keyed by case, and reloaded on next open.  Cleared by
-  the usual "reset layout" affordance; never touches disk.
+  `localStorage`, keyed by case, and reloaded on next open.  Never
+  touches disk on its own.
+
+**THE FIRST DRAWING IS THE AUTOMATIC LAYOUT; AFTER THE READER ARRANGES
+IT, NOTHING MOVES (Vítor, 2026-10-10, DEV.md 4c C59).**  Precedence: this
+browser's working copy > the case's curated `.cho` snapshot > the
+automatic layout (`gui/src/case/flowsheetLayout.ts`: a layered drawing,
+flow left to right, declared tears as the recycles routed above or below
+the train, feeds beside their consumer and products beside their
+producer, crossings reduced, the main train straight).  The moment the
+reader moves ANY node, connection point or edge bend, the WHOLE drawing
+is snapshotted -- every node, including the ones nobody touched -- so a
+later improvement of the algorithm never reshuffles the untouched nodes
+around the moved one.  A node the saved arrangement does not name (a unit
+added to the case since, a stub the snapshot predates) is placed by the
+automatic layout relative to a saved neighbour, moving no saved node.
+The way back is the canvas's `layout` menu: **Automatic layout** (this
+browser only), **Case layout (.cho)** when the case ships one, and **Save
+layout to case** -- the ONE write of the tracked `.cho`, explicit, on a
+local bridge only.  The canvas used to write the `.cho` on every drag;
+that made an arrangement a local modification a `git pull` refused
+(C55), and is gone.
 
 ### Stream-class show/hide
 The canvas carries view-only toggles (NOT case data) to show/hide

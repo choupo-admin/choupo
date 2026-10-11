@@ -19,6 +19,7 @@ import {
   symbolSizeFor, nodeMinHeight,
   SYMBOL_PX_FULL, SYMBOL_PX_SIMPLE, MIN_BOX_PX, PORT_PITCH_PX,
 } from "../src/case/nodeDetail";
+import { unitCardSize } from "../src/case/toGraph";
 
 describe("the claim the detail chip rests on", () => {
   it("the SIMPLE node's symbol is bigger than the full one's", () => {
@@ -31,9 +32,11 @@ describe("the claim the detail chip rests on", () => {
     //  A full node carries symbol + name + badge row + up to three parameter
     //  lines.  If the simple floor ever grew past that there would be no
     //  point to the chip: the sheet would be growing to make the drawing
-    //  grow, which is the trap this replaced.  130 is toGraph.ts's Y_STEP --
-    //  the lane a sibling gets -- so the floor must stay well inside it.
-    expect(MIN_BOX_PX).toBeLessThan(130);
+    //  grow, which is the trap this replaced.  The bound is the height the
+    //  automatic layout reserves for a full node with NO parameter line
+    //  (toGraph.ts unitCardSize) -- the smallest full card there is.
+    const fullCard = unitCardSize({ name: "U", type: "mixer", in: "a", outputs: ["b"], operation: {} }, false);
+    expect(MIN_BOX_PX).toBeLessThan(fullCard.height);
     expect(MIN_BOX_PX).toBeGreaterThan(SYMBOL_PX_SIMPLE);
   });
 });

@@ -115,10 +115,10 @@ export interface FlowsheetView {
   streams: { [name: string]: StreamSpec };
   units: UnitSpec[];
   /** Set of stream names that are TEAR streams (internal recycle for a
-   *  composite, or a flat-case tearStreams list).  Used by the layout
-   *  pass to exclude tear edges from the longest-path layering: a tear
-   *  must render as a back-edge, not pull its producer's downstream
-   *  consumer one layer further to the right. */
+   *  composite, or a flat-case tearStreams list).  The automatic layout
+   *  (flowsheetLayout.ts) takes each as a BACK edge: a tear must render as
+   *  a recycle, not pull its producer's downstream consumer one layer
+   *  further to the right. */
   tearStreams?: Set<string>;
   /** For a COMPOSITE (parent of sectors): a renamed boundary outlet ->
    *  its child-qualified origin, e.g. "Stack" -> "DRYING/ExhaustClean".

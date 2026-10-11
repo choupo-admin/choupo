@@ -93,8 +93,10 @@ import { StreamTerminal } from "./StreamTerminal.js";
 import { TearEdge } from "./TearEdge.js";
 import { WaypointEdge } from "./WaypointEdge.js";
 import { UnitNode } from "./UnitNode.js";
-import { loadLayout, saveLayout, layoutFromChoText, layoutToChoText, mergeLayouts,
+import { loadLayout, saveLayout, clearLayout, snapshotLayout, layoutFromChoText,
+  layoutToChoText, mergeLayouts,
   type XY, type HandlePos, type CaseLayout } from "../state/layout.js";
+import { placeUnsavedNodes } from "../case/flowsheetLayout.js";
 import { runControl } from "../case/runControl.js";
 import { readFlag, writeFlag, NODE_DETAILS_KEY } from "../state/prefs.js";
 import { operationScratch } from "../case/scratch.js";
@@ -450,14 +452,19 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   );
   const choText = markerPath ? rawFiles?.[markerPath] : undefined;
 
-  // Persisted "last screen state" for THIS case: node positions, viewport,
-  // and per-edge bend centres.  Reloaded when the case (or its `.cho`)
-  // changes.  Applying a stored position over the auto-layout is what makes
-  // the user's arrangement stick across reloads.
+  // THE PRECEDENCE (DEV.md 4c C59, Vítor 2026-10-10): this browser's WORKING
+  // COPY of the arrangement (localStorage, written the moment the reader moves
+  // anything, and then a snapshot of EVERY node) > the case's curated `.cho`
+  // snapshot > the automatic layout (case/flowsheetLayout.ts, already in
+  // `graph`).  Reloaded when the case, its `.cho`, or the `layout` menu
+  // changes it (`layoutEpoch`).
+  const [layoutEpoch, setLayoutEpoch] = useState(0);
   const layout = useMemo(
-    () => mergeLayouts(loadLayout(tutorialName), layoutFromChoText(choText)),
-    [tutorialName, choText],
+    () => { void layoutEpoch; return mergeLayouts(loadLayout(tutorialName), layoutFromChoText(choText)); },
+    [tutorialName, choText, layoutEpoch],
   );
+  const curatedLayout = useMemo(
+    () => Object.keys(layoutFromChoText(choText).nodes).length > 0, [choText]);
   const [edgeCenters, setEdgeCenters] = useState<{ [id: string]: XY }>(layout.edges);
   const edgeCentersRef = useRef(edgeCenters);
   useEffect(() => { edgeCentersRef.current = edgeCenters; }, [edgeCenters]);
@@ -470,20 +477,48 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   useEffect(() => { handlePosRef.current = handlePos; }, [handlePos]);
   useEffect(() => { setHandlePos(layout.handles); }, [layout]);
 
+  // Where every node is drawn.  A SAVED position is used exactly; a node the
+  // saved arrangement does not name (a unit added to the case since, a stub
+  // the snapshot predates) is placed by the automatic layout RELATIVE TO A
+  // SAVED NEIGHBOUR -- a stub beside its owner -- and moves no saved node.
+  const placed = useMemo(() => {
+    const neighbours = new Map<string, string[]>();
+    for (const e of graph.edges) {
+      neighbours.set(e.source, [...(neighbours.get(e.source) ?? []), e.target]);
+      neighbours.set(e.target, [...(neighbours.get(e.target) ?? []), e.source]);
+    }
+    const owner = new Map<string, string>();
+    for (const n of graph.nodes) {
+      const o = (n.data as { ownerUnit?: unknown }).ownerUnit;
+      if (typeof o === "string") owner.set(n.id, `unit:${o}`);
+    }
+    return placeUnsavedNodes(
+      graph.nodes.map((n) => n.id),
+      new Map(graph.nodes.map((n) => [n.id, n.position])),
+      layout.nodes,
+      (id) => {
+        const s = graph.sizes.get(id);
+        return s ? { w: s.width, h: s.height } : { w: 190, h: 84 };
+      },
+      (id) => neighbours.get(id) ?? [],
+      (id) => owner.get(id),
+    );
+  }, [graph, layout]);
   const applyStored = useCallback(
     (n: Node): Node => {
-      const pos = layout.nodes[n.id];
+      const pos = placed.get(n.id);
       return pos ? {...n, position: pos } : n;
     },
-    [layout],
+    [placed],
   );
 
   // User-mutable node state (drives drag).  Seeded from `graph`; reseeded
-  // if the set of node ids changes (e.g. user opens a different case).
+  // if the set of node ids changes (e.g. user opens a different case) or the
+  // `layout` menu replaced the arrangement.
   const [nodes, setNodes] = useState<Node[]>(graph.nodes.map(applyStored));
   const seededIds = useRef("");
   useEffect(() => {
-    const ids = graph.nodes.map((n) => n.id).sort().join(",");
+    const ids = graph.nodes.map((n) => n.id).sort().join(",") + `|${layoutEpoch}`;
     if (ids !== seededIds.current) {
       seededIds.current = ids;
       setNodes(graph.nodes.map(applyStored));
@@ -529,55 +564,56 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     [tutorialName, localBridgeHost],
   );
 
-  // Snapshot the live arrangement (positions, viewport, edge bends, handles).
-  const buildLayout = useCallback((): CaseLayout => {
-    const pos: { [id: string]: XY } = {};
-    for (const n of reactFlow.getNodes()) pos[n.id] = { x: n.position.x, y: n.position.y };
-    return {
-      nodes: pos,
-      viewport: reactFlow.getViewport(),
-      edges: edgeCentersRef.current,
-      handles: handlePosRef.current,
-    };
-  }, [reactFlow]);
+  // Snapshot the live arrangement (EVERY node's position, viewport, edge
+  // bends, handles) -- state/layout.ts `snapshotLayout` says why it is whole.
+  const buildLayout = useCallback((): CaseLayout => snapshotLayout(
+    reactFlow.getNodes(), edgeCentersRef.current, handlePosRef.current, reactFlow.getViewport(),
+  ), [reactFlow]);
 
-  // AUTO-SAVE to the case's `.cho` on disk (Vitor's preference: no button
-  // needed -- the arrangement just lives in the folder).  Debounced so a
-  // continuous drag writes once on settle, and BEST-EFFORT: if the bridge is
-  // down (pure-WASM / offline) we silently keep only the localStorage copy --
-  // no toast spam on every drag.  The marker carries GUI-only view state, not
-  // physics, so this does not touch the dicts the solver reads.
-  const autoSaveTimer = useRef<number | undefined>(undefined);
-  const autoSaveFailed = useRef(false);   // notify at most once per session
-  const autoSaveMarker = useCallback(() => {
-    if (!markerLoc) {
-      console.warn("[choupo] layout auto-save skipped: case has no disk home", { tutorialName });
-      return;  // no disk home -> localStorage only
-    }
-    if (autoSaveTimer.current !== undefined) window.clearTimeout(autoSaveTimer.current);
-    autoSaveTimer.current = window.setTimeout(() => {
-      const text = layoutToChoText(buildLayout());
-      void writeCaseFile(markerLoc, markerRel, text)
-        .catch((e) => {
-          console.error("[choupo] layout auto-save FAILED", e);
-          if (!autoSaveFailed.current) {
-            autoSaveFailed.current = true;
-            notifications.show({
-              title: "Layout not saved to folder",
-              message: `${(e as Error).message}. Restart the bridge (bin/runGui)? Your arrangement is still kept in the browser.`,
-              color: "red", autoClose: false,
-            });
-          }
-        });
-    }, 600);
-  }, [markerLoc, markerRel, buildLayout, tutorialName]);
+  // THE READER'S ARRANGEMENT IS THE WORKING COPY, AND ONLY THE WORKING COPY.
+  // Every commit -- a node dropped, a connection point slid, an edge bend
+  // moved or reset -- writes the WHOLE snapshot to this browser's
+  // localStorage.  It never writes the case's `.cho`: that file is tracked,
+  // and writing it on a drag (which this canvas did, on localhost, until
+  // 2026-10-10) turned an arrangement into a local modification that a
+  // `git pull` refused (DEV.md 4c C55).  Writing the `.cho` is an explicit
+  // act, in the `layout` menu below.
+  const commitWorkingCopy = useCallback(() => {
+    saveLayout(tutorialName, buildLayout());
+  }, [tutorialName, buildLayout]);
+  const persistNodePositions = commitWorkingCopy;
 
-  // Persist on every layout commit: localStorage (synchronous, always) +
-  // the on-disk `.cho` (debounced, best-effort).
-  const persistNodePositions = useCallback(() => {
-    saveLayout(tutorialName, { nodes: buildLayout().nodes });
-    autoSaveMarker();
-  }, [tutorialName, buildLayout, autoSaveMarker]);
+  // The `layout` menu.  AUTOMATIC: draw the case with the automatic layout
+  // again (its `.cho`, if it ships one, is left alone on disk -- this
+  // browser's working copy is what changes).  CASE LAYOUT: drop the working
+  // copy and go back to the `.cho` the case ships.  SAVE TO CASE: the one
+  // explicit write of the `.cho`, offered only where a local bridge can.
+  const autoArrange = useCallback(() => {
+    if (curatedLayout)
+      saveLayout(tutorialName, snapshotLayout(graph.nodes, {}, {}));
+    else clearLayout(tutorialName);
+    setLayoutEpoch((e) => e + 1);
+    window.setTimeout(() => reactFlow.fitView({ padding: 0.25, maxZoom: 1.1, duration: 200 }), 50);
+  }, [curatedLayout, tutorialName, graph, reactFlow]);
+  const restoreCaseLayout = useCallback(() => {
+    clearLayout(tutorialName);
+    setLayoutEpoch((e) => e + 1);
+    window.setTimeout(() => reactFlow.fitView({ padding: 0.25, maxZoom: 1.1, duration: 200 }), 50);
+  }, [tutorialName, reactFlow]);
+  const saveLayoutToCase = useCallback(() => {
+    if (!markerLoc) return;
+    void writeCaseFile(markerLoc, markerRel, layoutToChoText(buildLayout()))
+      .then(() => notifications.show({
+        title: "Layout saved to the case",
+        message: `${markerRel} now carries this arrangement.  It is a tracked file: commit it to share the layout, or discard it.`,
+        color: "teal",
+      }))
+      .catch((e) => notifications.show({
+        title: "Layout not saved to the case",
+        message: `${(e as Error).message}. Restart the bridge (bin/runGui)? Your arrangement is still kept in the browser.`,
+        color: "red", autoClose: false,
+      }));
+  }, [markerLoc, markerRel, buildLayout]);
 
 
   // Edge bend-centre handlers: live state while dragging, persisted once on
@@ -595,8 +631,8 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     [],
   );
   const commitEdgeCenters = useCallback(
-    () => { saveLayout(tutorialName, { edges: edgeCentersRef.current }); autoSaveMarker(); },
-    [tutorialName, autoSaveMarker],
+    () => commitWorkingCopy(),
+    [commitWorkingCopy],
   );
 
   // Connection-point handlers (same live-then-commit pattern as edges).
@@ -614,8 +650,8 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     [],
   );
   const commitHandles = useCallback(
-    () => { saveLayout(tutorialName, { handles: handlePosRef.current }); autoSaveMarker(); },
-    [tutorialName, autoSaveMarker],
+    () => commitWorkingCopy(),
+    [commitWorkingCopy],
   );
 
   // Fit the whole flowsheet into view ONCE per case load (after the nodes
@@ -968,6 +1004,9 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         const isUtility = utilityCat !== null && utilityCat !== "";
         const isEnergy = (e.data as { kind?: string } | undefined)?.kind === "energy";
         const isTear   = (e.data as { kind?: string } | undefined)?.kind === "tear";
+        //  A back edge of a cycle nobody declared a tear for: ROUTED like a
+        //  recycle (toGraph / flowsheetLayout.ts), drawn with no cut mark.
+        const isBack   = (e.data as { backEdge?: boolean } | undefined)?.backEdge === true;
         const isDuty   = (e.data as { kind?: string } | undefined)?.kind === "duty";
         const isRecipe = (e.data as { kind?: string } | undefined)?.kind === "recipe";
         //  ONE evaluation of what this wire IS: it paints the stroke below
@@ -1020,7 +1059,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           // Forward edges use the draggable-bend `waypoint` edge (topology
           // stays fixed; only the orthogonal bend slides).  Tears keep
           // their dedicated under-row router.
-          type: isTear ? "tear" : "waypoint",
+          type: isTear || isBack ? "tear" : "waypoint",
           data: {
 ...(e.data as object),
             center: edgeCenters[e.id],
@@ -1030,7 +1069,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             showNumbers: show.numbers,
             //  The CUT MARK on a tear is always drawn (the plan's fact); the
             //  `recycle` chip lights the LOOP instead (C42), never hides a pipe.
-            showCut: true,
+            showCut: !isBack,
             dashKind: dashKind !== "process"
               ? dashKind : (ps?.phase === "empty" ? "empty" : "process"),
             num: numberOf(label),   // ABSOLUTE number (overrides toGraph local)
@@ -1323,14 +1362,46 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                  keeps its SYMBOL and its NAME and drops the type badge and
                  the parameter lines -- the box SHRINKS and the symbol grows
                  into it, which is the only way to make the silhouette
-                 dominate without pushing neighbours apart (siblings are laid
-                 out at Y_STEP 130 in toGraph.ts, and a full node is already
-                 taller than that).  The details are not lost: a single click
+                 dominate without pushing neighbours apart (the automatic
+                 layout spaces siblings by the full card's height).  The
+                 details are not lost: a single click
                  opens the Properties card with the whole schema-driven
                  operation block, which is a SUPERSET of these lines.  */}
             <ShowChip color="blue" label="details" present
               checked={showDetails} onChange={onDetails}
               emptyHint="" />
+            {/*  THE WAY BACK (DEV.md 4c C59).  Once the reader has moved
+                 anything the arrangement is theirs and the automatic layout
+                 moves nothing -- so the return to it must be explicit, and
+                 so must the one write of the case's tracked `.cho`.  */}
+            <Popover position="bottom-start" withArrow shadow="md">
+              <Popover.Target>
+                <Button size="compact-xs" variant="default"
+                  title="Arrange the flowsheet: automatic layout, the case's own layout, or save this one to the case">
+                  layout
+                </Button>
+              </Popover.Target>
+              <Popover.Dropdown p={6}>
+                <Stack gap={4}>
+                  <Button size="compact-xs" variant="subtle" onClick={autoArrange}
+                    title="Draw the flowsheet with the automatic layout again (this browser only; no file is written)">
+                    Automatic layout
+                  </Button>
+                  {curatedLayout && (
+                    <Button size="compact-xs" variant="subtle" onClick={restoreCaseLayout}
+                      title="Forget this browser's arrangement and go back to the layout the case ships in its .cho">
+                      Case layout (.cho)
+                    </Button>
+                  )}
+                  {markerLoc && (
+                    <Button size="compact-xs" variant="subtle" onClick={saveLayoutToCase}
+                      title={`Write this arrangement into ${markerRel} -- a tracked file: commit it to share, or discard it`}>
+                      Save layout to case
+                    </Button>
+                  )}
+                </Stack>
+              </Popover.Dropdown>
+            </Popover>
           </Group>
         </Box>
         {/* Legend, top-left (below the filters).  Only shown when a run

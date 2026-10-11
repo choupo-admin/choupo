@@ -15,8 +15,8 @@
  * carries the symbol, the name, a type badge and up to three parameter
  * lines, so the silhouette is roughly a quarter of its own card.  Enlarging
  * it inside that card cannot fix the ratio without making the card bigger
- * still, and the card is ALREADY taller than its lane: `toGraph.ts` lays
- * siblings out at `Y_STEP = 130`.
+ * still, and the automatic layout (`flowsheetLayout.ts`, since 2026-10-10;
+ * a fixed 130 px lane before) spaces siblings by that full card's height.
  *
  * So the detail chip works the other way round: it REMOVES the badge row and
  * the parameter lines, the box shrinks, and the symbol grows into the space
