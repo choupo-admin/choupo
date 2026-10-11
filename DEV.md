@@ -1991,6 +1991,29 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C64. AN EDUTOOL ON LARGE PRESSURE LETDOWN: CHOKED FLOW, CAVITATION,
+FLASHING, NOISE AND HOW INDUSTRY STAGES THE DROP (Vítor, 2026-10-11,
+verbatim: "sabes como habitualmente se dá a redução de pressão de mais de
+10x de uma corrente num processo químico? Isso sempre me preocupou, porque
+do ponto de vista de válvulas pode ser um problema de desgaste e de ruído",
+then "Achas que vale a pena criar um EduTool sobre isto?" and, to the
+commander's scope, "Faz e se puder coloca muitas imagens e esquemas!").**
+Measured before dispatch: the engine has a `valve` unit, an isenthalpic
+Joule-Thomson throttle that flashes adiabatically at P_out
+(`src/unitOperations/valve/Valve.H`), and NO valve sizing (no Cv, no choked
+or cavitation check, no noise); the green-ammonia basic design lets its
+liquid NH3 down 167 -> 22 bar and 22 -> 2 bar through `LetdownHP` and
+`StorageFlash` (`tutorials/plant/greenAmmoniaBasicDesign/system/
+flowsheetDict:72-73,105-110`).  Scope approved: one letdown with the engine
+running (outlet vapour fraction, temperature, volume growth); gas choked
+flow; liquid vena-contracta pressure vs vapour pressure, cavitation vs
+flashing; remedies (staged trims with a stages slider, valve at the vessel,
+hardened trim, power-recovery turbine as the alternative); noise
+qualitative or a labelled estimate; valve-style factors (F_L, x_T) are
+reader-declared assumptions, never a transcribed table; MANY drawings and
+schematics (Vítor's explicit ask).  The engine-side valve sizer is a later
+item, not this slice.  Status: dispatched 2026-10-11.
+
 **C63. THE DCF GETS ITS START-UP YEARS: A MULTI-YEAR CONSTRUCTION, A
 RAMP-UP AND START-UP COSTS (Vítor, 2026-10-11, verbatim: "Sabes se foi feita
 a análise económica com anos de arranque e capital circulante e fundo de
