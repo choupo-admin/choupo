@@ -2022,6 +2022,9 @@ from the case's package, API 520 Part I gas (critical/subcritical) and
 liquid equations and the API 521 fire case, every coefficient's source
 named, every default announced; NOT costed (no Turton set; said, and the
 cost total does not move).  Status: dispatched 2026-10-11.
+MERGED 2026-10-11 (6edf2a640) after the commander's validation on the branch
+head: `--gui` 31/0, greenAmmoniaBasicDesign + IndustrialN2 + relief01/02
+4/0, `check_relief_valve`, `check_source_licence`, `check_design_sheet`.
 BUILT 2026-10-11 on branch `claude/c62-relief`, NOT merged (the general's
 report has the validation): `reliefValve` (`src/postProcessing/sizing/
 ReliefValveSize.{H,cpp}`, the arithmetic in `ReliefArithmetic.H`), ten valves
