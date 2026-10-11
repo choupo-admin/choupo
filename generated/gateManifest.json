@@ -1150,6 +1150,11 @@
       "exit": 0,
       "claim": "check_unit_duty_allocation: OK -- every boundary heat duty a unit publishes reaches the utility allocation through ONE home (reporting::unitHeatDuties); source: one home, 6 duty port(s) read; witness: Converter -> steamGenerationHP, credit -15635712 EUR/yr, 1 unserved counted; coverage: 16 published duty/duties over 6 case(s), each with a row; undeclared: auto-pick coolingWater, never the credit; refusals: 4/4 fired with their reason.  NOT CHECKED: whether a declared price is right, the GUI half (gui/tests/reactorDutyStub.test.ts), and the pinch / utilities-consumption readers, which ask other questions.",
       "seconds": 0.8
+    },
+    "check_relief_valve": {
+      "exit": 0,
+      "claim": "check_relief_valve: OK -- the C++ relief arithmetic (ReliefArithmetic.H) reproduces the numbers the overpressure EduTool's test pins for API 520 Examples 1, 2 and 5 (1e-9), C(1.35), F2 and 1 psi (1e-12), and shares every constant with overpressure.ts; 10 relief valves of greenAmmoniaBasicDesign recompute (set = the protected item's pressureDesign, P1 from the 10 %/3 psi and 21 % ladder, every scenario's area from its published W, T, Z, k, M or rho, the fire load from the protected item's D, H and inventory level, the governing area the largest, the API 526 letter the smallest above it), none is costed and the capital total stays complete; 7 fixture runs: the sheet's relief {} block, a declared coefficient silent and an undeclared one announced, and 5 refusals by name (order, tubeRupture, an unnamed outlet, a supercritical fire case, a fire case with no inventory).  NOT CHECKED: API 520/521 and ASME VIII themselves (none was read), whether a scenario is credible, and the fluid properties (the package's).",
+      "seconds": 3.4
     }
   }
 }

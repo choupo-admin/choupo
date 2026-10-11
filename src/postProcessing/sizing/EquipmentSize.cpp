@@ -33,6 +33,7 @@ License
 #include "CycloneSize.H"
 #include "CompressorSize.H"
 #include "VesselSize.H"
+#include "ReliefValveSize.H"
 #include "EvaporatorSize.H"
 #include "ShellTubeHX.H"
 #include "SprayDryerSize.H"
@@ -95,6 +96,13 @@ void EquipmentSize::registerBuiltins()
     //  and `crystalliser` are, because the sizer reads that unit's own KPI.
     registerType("pfr",
         []{ return std::make_unique<CatalystBedSize>(); });
+    //  THE FIRST ITEM A UNIT REALISES THAT PROTECTS ANOTHER (2026-10-11,
+    //  DEV.md 4c C62): a pressure-relief valve, one more item of the unit it
+    //  protects, sized from that item's design pressure and the declared
+    //  scenarios, and NOT costed.  The word names the EQUIPMENT, not a unit
+    //  type, because no flowsheet unit is a relief valve.
+    registerType("reliefValve",
+        []{ return std::make_unique<ReliefValveSize>(); });
 }
 
 } // namespace Choupo

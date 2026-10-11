@@ -2022,6 +2022,22 @@ from the case's package, API 520 Part I gas (critical/subcritical) and
 liquid equations and the API 521 fire case, every coefficient's source
 named, every default announced; NOT costed (no Turton set; said, and the
 cost total does not move).  Status: dispatched 2026-10-11.
+BUILT 2026-10-11 on branch `claude/c62-relief`, NOT merged (the general's
+report has the validation): `reliefValve` (`src/postProcessing/sizing/
+ReliefValveSize.{H,cpp}`, the arithmetic in `ReliefArithmetic.H`), ten valves
+in `greenAmmoniaBasicDesign` (the four compressors' discharges, the three bed
+shells, the three drums -- blocked gas and liquid lines, fire on LetdownHP
+and StorageFlash; NO fire on the beds (gas-filled) or the Separator (its
+liquid is above ammonia's Pc at the fire relieving pressure, refused by
+name)); 162 golden rows APPENDED, none moved; the capital total unchanged and
+complete.  Gate `check_relief_valve`.  Record
+`docs/design/a-relief-valve-is-a-sized-item.md`.  OPEN for Vitor: (1) the 14
+API 526 orifice areas reached through MIT `fluids`, against
+`docs/design/process-safety-audit.md`'s no-grant classification of the API
+standards; (2) the EduTool's limit "Choupo has no relief model" was
+corrected (bury the absence) -- the lesson text is his; (3) `CompressorSize`
+publishes `pressureDesign` with a SILENT 1.0 bar default when undeclared
+(found, not fixed: fixing it announces on every corpus compressor without one).
 
 **C61. AN EDUTOOL ON DESIGNING FOR OVERPRESSURE (Vítor, 2026-10-11,
 verbatim: "E depois outro sobre design de sistemas para lidar com a sobre

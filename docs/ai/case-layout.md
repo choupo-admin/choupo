@@ -566,6 +566,50 @@ density or a price you cannot source is declared as an assumption in a
 comment, in those words.  Worked case:
 `tutorials/plant/ammoniaStaged04_kinetic`.
 
+**A PRESSURE-RELIEF VALVE IS ONE MORE ITEM OF THE UNIT IT PROTECTS
+(2026-10-11, DEV.md 4c C62).**  `type reliefValve` sizes a relief valve on the
+DECLARED credible scenarios of an item already sized above it:
+
+```
+{
+    unitName    LetdownHP;              // the PROTECTED unit
+    type        reliefValve;
+    material    SS304;                  // the valve body
+    designRules
+    {
+        // protects  shell;             // only where the unit realises several items (a `pfr` bed)
+        scenarios
+        (
+            { scenario blockedOutlet;  outlet LetdownGas; }      // `outlet` only if the unit has several
+            { scenario blockedOutlet;  outlet LetdownLiquid; }
+            { scenario fire;  environmentFactor 1.0;  drainage adequate; }   // both REQUIRED
+        );
+        // KdVapour 0.975; KdLiquid 0.65; Kb 1; Kc 1; Kw 1; Kv 1;   else each ANNOUNCED
+        // backPressure 0.5 bar;                                    // GAUGE; else 0, announced
+    }
+}
+```
+
+The entry must come AFTER the protected unit's own sizing entry: the SET
+PRESSURE is that item's published `pressureDesign` (gauge -- the MAWP, one
+valve set at it), read and never typed.  `blockedOutlet` relieves the named
+outlet's own flow at its own temperature and composition at P1 = MAWP x 1.10
+(or + 3 psi) + 1 atm -- a vapour by the API 520 gas equation (critical or
+subcritical against the back pressure), a liquid by the liquid one; a
+two-phase stream is refused.  `fire` reads the wetted area from the protected
+vessel's own D and H and the liquid level from its declared `inventory {}`
+(the held liquid's `fraction` and `stream`), Q = C F A^0.82 (API 521), P1 =
+MAWP x 1.21 + 1 atm, the liquid's bubble point at P1 on the case's package,
+and the latent heat of the incipient vapour; a liquid at or above its main
+component's critical point at P1 is refused.  Z and k = Cp_ig/(Cp_ig - R)
+come from the case's package.  Governing = the largest area; the API 526
+letter is the smallest not below it.  Named and refused: `tubeRupture`,
+`controlValveFailure`, `coolingFailure`, `runawayReaction`,
+`thermalExpansion`.  NOT COSTED: the costing table lists the valve as NOT
+COSTED and the capital total does not move.  Sheet: `design/<unit>/psv`,
+with a `relief {}` block naming each scenario's stream, phase and regime and
+the governing one.  Worked case: `tutorials/plant/greenAmmoniaBasicDesign`.
+
 **A VESSEL SIZED BY SPACE VELOCITY DECLARES WHICH GAS VOLUME (2026-10-05).**
 `type vessel` builds its volume from ONE of `volume` (m3, author-set),
 `residenceTime` (s, on the ACTUAL gas flow at the unit's T and P) or

@@ -24,4 +24,5 @@ reports
     energyBalance {}
     computed      {}
     spreadsheet   {}
+    design        {}     // reports/design/sizing.csv: every sized item, the relief valves included
 }

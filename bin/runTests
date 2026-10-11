@@ -5882,6 +5882,22 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/equippin.$$
 
+    # Relief-valve gate (2026-10-11, DEV.md 4c C62): the `reliefValve` sizer's
+    # arithmetic is the overpressure EduTool's (a probe against
+    # ReliefArithmetic.H reproduces the numbers its TypeScript test pins for
+    # API 520 Examples 1, 2 and 5), the green-ammonia basic design's valves
+    # recompute from their own published inputs and stay uncosted, and the
+    # refusals fire by name on a small fixture.
+    if "$ROOT/bin/curate/check_relief_valve.py" > /tmp/reliefvalve.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "relief-valve-gate" "$(gate_claim check_relief_valve /tmp/reliefvalve.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_relief_valve.py)\n" "relief-valve-gate"
+        cat /tmp/reliefvalve.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/reliefvalve.$$
+
     # Energy-boundary pinned gate (2026-09-05): the plant-boundary first law
     # the energyBalance report decides now travels on the result as
     # `globalEnergyBoundary`; every steady case that publishes it pins its

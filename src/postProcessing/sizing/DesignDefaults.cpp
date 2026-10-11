@@ -101,6 +101,71 @@ const Assumption columnSump
     " residence time here is what makes a column's level control difficult"
 };
 
+//  ------------------------------------------------------------------------
+//  THE RELIEF VALVE (2026-10-11, DEV.md 4c C62).  The preliminary-sizing
+//  values the open `fluids` implementation of API 520 Part I carries as its
+//  defaults (fluids/safety_valve.py, MIT licence; API 520 itself was NOT
+//  read).  A CITED default is still a default: the certified coefficient of
+//  the valve actually bought replaces each of them.
+//  ------------------------------------------------------------------------
+const Assumption reliefKdVapour
+{
+    "KdVapour", 0.975, "-",
+    "the effective discharge coefficient of a gas or vapour relief valve for"
+    " preliminary sizing (API 520 Part I as the open `fluids` library carries"
+    " it); the certified coefficient of the valve bought replaces it, and a"
+    " rupture disc upstream lowers it"
+};
+
+const Assumption reliefKdLiquid
+{
+    "KdLiquid", 0.65, "-",
+    "the effective discharge coefficient of a liquid relief valve for"
+    " preliminary sizing (API 520 Part I as `fluids` carries it); the"
+    " certified coefficient of the valve bought replaces it"
+};
+
+const Assumption reliefKb
+{
+    "Kb", 1.0, "-",
+    "the back-pressure correction of a gas relief valve: 1 is a conventional"
+    " valve discharging against a back pressure low enough not to reduce its"
+    " capacity -- a balanced-bellows valve against a high one takes less"
+};
+
+const Assumption reliefKc
+{
+    "Kc", 1.0, "-",
+    "the combination correction: 1 means no rupture disc upstream of the"
+    " valve (an uncertified disc-valve combination takes 0.9)"
+};
+
+const Assumption reliefKw
+{
+    "Kw", 1.0, "-",
+    "the back-pressure correction of a liquid relief valve: 1 is a"
+    " conventional valve, and `fluids` returns 1 for a balanced one below 15 %"
+    " gauge back pressure"
+};
+
+const Assumption reliefKv
+{
+    "Kv", 1.0, "-",
+    "the viscosity correction of a liquid relief valve: 1 neglects viscosity,"
+    " which `fluids` quotes API 520 10th ed. as recommending below 0.1 Pa.s;"
+    " a viscous liquid needs the Reynolds-number correction"
+};
+
+const Assumption reliefBackPressure
+{
+    "backPressure", 0.0, "Pa",
+    "the GAUGE pressure at the valve outlet while it relieves (declare it"
+    " with its unit, e.g. `backPressure 0.5 bar;`): 0 is a"
+    " discharge to atmosphere with no built-up back pressure.  A valve"
+    " discharging into a flare header sees more, which can make the flow"
+    " subcritical and the valve larger"
+};
+
 scalar valueOr(const DictPtr&     designRules,
                const Assumption&  a,
                const std::string& equipment,

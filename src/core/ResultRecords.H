@@ -181,6 +181,34 @@ struct ExchangerService
     bool present() const { return !tube.role.empty(); }
 };
 
+//  WHAT A RELIEF DEVICE WAS SIZED FOR (2026-10-11, DEV.md 4c C62).  The
+//  `reliefValve` sizer evaluates every DECLARED credible scenario and sizes
+//  the device on the one needing the largest area.  Every NUMBER of every
+//  scenario is a `values` entry under the scenario's key prefix (so the golden
+//  `equipment` kind pins it); what is here are the WORDS a number cannot
+//  carry -- which scenario, which stream, which phase, which flow regime, which
+//  one governs, which orifice letter -- and the sheet writer prints them as a
+//  `relief {}` block.  Sheet-only, like `ExchangerService`: not emitted in the
+//  result JSON.  EMPTY (`present()` false) on every item but a relief device.
+struct ReliefScenario
+{
+    std::string prefix;      // the `values` key prefix: `blocked_<stream>`, `fire`
+    std::string scenario;    // blockedOutlet | fire
+    std::string stream;      // the relieved stream, or the liquid that boils
+    std::string phase;       // vapour | liquid  (what passes the device)
+    std::string regime;      // critical | subcritical | liquid
+};
+
+struct ReliefService
+{
+    std::string                 protects;    // the protected item's id
+    std::vector<ReliefScenario> scenarios;
+    std::string                 governing;   // the governing scenario's prefix
+    std::string                 orifice;     // API 526 letter; empty: none selected
+
+    bool present() const { return !protects.empty(); }
+};
+
 // Geometric / mechanical sizing of a single piece of equipment, as
 // produced by the SizingPass (vessel diameter, height, wall thickness,
 // heat exchanger area, etc.).  Named `EquipmentSizing` rather than
@@ -361,6 +389,23 @@ struct EquipmentSizing
     //  WHAT FLOWS ON EACH SIDE, for a DESIGNED exchanger only (2026-10-07,
     //  DEV.md 4c C51; see `ExchangerService` above).  Sheet-only.
     ExchangerService                             exchanger;
+
+    //  WHAT A RELIEF DEVICE WAS SIZED FOR (2026-10-11, DEV.md 4c C62; see
+    //  `ReliefService` above).  Sheet-only.
+    ReliefService                                relief;
+
+    //  AN ITEM OUTSIDE THE COSTING SCOPE, AND WHY (2026-10-11, DEV.md 4c C62).
+    //  EMPTY on every item the costing pass prices -- which is every item
+    //  that existed before this field -- so nothing they reach changes.
+    //  NON-EMPTY means the item is sized and is deliberately NOT priced, and
+    //  the sentence says why: the costing pass lists it under its own heading
+    //  and does NOT count it as a failure, so a total that never claimed to
+    //  include it does not read INCOMPLETE because of it.  This is not the
+    //  tray stack's refusal: an item the costing model COULD price but lacks
+    //  a declared input for is refused and makes the total INCOMPLETE; an
+    //  item no cost correlation in this engine covers at all (a relief valve)
+    //  is said to be outside the scope, once, by the sizer that knows it.
+    std::string                                  notCostedBecause;
 
     void assume(const std::string& key)
     {

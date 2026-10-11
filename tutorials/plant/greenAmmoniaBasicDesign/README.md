@@ -155,6 +155,70 @@ assumed U); the NPV at the base case's appraisal knobs is −329 M EUR
 against −493 M EUR. The NPV moved because the energy bill did, not the
 capital.
 
+### The relief valves (DEV.md 4c C62)
+
+Ten pressure-relief valves are sized as `reliefValve` items of the sizing
+pass, each one more item of the unit it protects (`design/<unit>/psv`). The
+**set pressure is read** from the protected item's own `pressureDesign`
+(gauge, the MAWP; one valve set at it), never typed; the **scenarios are
+declared** in `system/postDict`, because which causes of overpressure are
+credible is the designer's judgement; the valve is sized by API 520 Part I
+on every scenario and governed by the one needing the largest area:
+
+| protected item | set (barg) | scenarios | governing | rate (kg/h) | A required (mm²) | API 526 |
+|---|---|---|---|---|---|---|
+| N2Boost | 34 | discharge blocked | gas | 41 181 | 1691 | L |
+| MakeupComp1 | 74 | discharge blocked | gas | 50 071 | 1651 | L |
+| MakeupComp2 | 167 | discharge blocked | gas | 50 071 | 758 | J |
+| RecycleComp | 167 | discharge blocked | gas | 109 370 | 1373 | L |
+| Bed1/shell | 167 | outlet blocked | gas at 788 K | 159 440 | 3269 | P |
+| Bed2/shell | 167 | outlet blocked | gas at 767 K | 159 440 | 3165 | P |
+| Bed3/shell | 167 | outlet blocked | gas at 738 K | 159 440 | 3058 | P |
+| Separator | 167 | gas line, liquid line | gas line | 109 463 | 1355 | L |
+| LetdownHP | 22 | gas line, liquid line, fire | liquid line | 49 849 | 354 | H |
+| StorageFlash | 2 | gas line, liquid line, fire | liquid line | 49 172 | 1140 | K |
+
+The fire cases are much smaller (LetdownHP 48 kW of fire heat, 183 kg/h of
+vapour, 11 mm²; StorageFlash 447 kW, 1262 kg/h, 553 mm²): these drums are
+small and half full, so a blocked liquid line -- the level controller
+failing shut and the drum filling -- is what sizes them. Every number of
+every scenario is on its sheet and in the result JSON (pinned).
+
+Read these before quoting them:
+
+* **Relief does not cure an under-rated shell.** The run warns that four
+  items -- Bed1, Bed2, Bed3 and the Separator -- are designed at 167 bar in
+  stainless steels whose material record rates 100 bar (`[rating]
+  WARNING`). A valve set at 167 barg protects a vessel built for 167 barg;
+  it does nothing for one that could not be built to it. The materials are
+  NOT changed here: that moves the cost goldens and is the owner's call.
+* **The coefficients are preliminary.** No `Kd`, `Kb`, `Kc`, `Kw`, `Kv` or
+  back pressure is declared, so the engine takes the preliminary-sizing
+  values (0.975 gas, 0.65 liquid, the corrections 1, discharge to
+  atmosphere) and ANNOUNCES each one. A flare header's back pressure and a
+  vendor's certified coefficient replace them.
+* **The fluid is the stream as solved, carried to the relieving pressure.**
+  A blocked line relieves that stream's own flow at its own temperature;
+  the Separator's vapour, at 184.7 bar abs and -20 °C, is relieved as the
+  gas it is at 140 bar -- it is not re-flashed, although some ammonia
+  would condense there. A compressor's blocked discharge is relieved at its
+  normal flow, which over-states what a centrifugal machine delivers
+  against a closed valve (it surges) and is the full displacement of a
+  reciprocating one.
+* **No fire case on the beds or the Separator.** A bed holds gas and no
+  liquid, so nothing boils to carry the fire's heat away (its wall fails
+  first: a depressuring question). The Separator's liquid at its fire
+  relieving pressure (1.21 x 167 barg) is above ammonia's critical pressure
+  and does not boil; declaring the scenario makes the run refuse by name.
+* **Not modelled:** tube rupture (the API 521 rule was not verified), a
+  control valve failing open (no valve capacity is declared), two-phase
+  relief, the relief header, the knock-out drum and the flare. **No valve
+  is costed**: this engine carries no relief-device cost correlation and
+  invents none, so the capital total is the same as without them and says
+  so (`NOT COSTED`). API 520, API 521 and ASME VIII were not read: the
+  equations and percentages are the overpressure EduTool's, reached through
+  the open `fluids` library and the DIERS fire document.
+
 ### The first law
 
 The plant's first law closes to 1.76 kW. Every bed is adiabatic and

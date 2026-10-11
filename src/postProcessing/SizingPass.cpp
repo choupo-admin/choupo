@@ -90,7 +90,13 @@ void reportInventory(const SimulationResult& result,
     std::vector<std::string> notDeclared;
     for (const auto& [id, sz] : result.sizings)
     {
-        if (!sz.inventory.present()) { notDeclared.push_back(id); continue; }
+        //  A relief valve holds nothing worth listing (2026-10-11, C62): it
+        //  is left out of the "not declared" list rather than padding it.
+        if (!sz.inventory.present())
+        {
+            if (!sz.relief.present()) notDeclared.push_back(id);
+            continue;
+        }
         for (const auto& h : sz.inventory.phases)
             std::cout << "  " << std::left << std::setw(22) << id
                       << std::setw(8)  << h.phase
@@ -284,6 +290,10 @@ int SizingPass::run(SimulationResult& result)
         //  neither a volume nor an area.
         else if (dims.values.count("m_catalyst_kg"))
         { sizeKey = sized("m_catalyst_kg"); sizeVal = dims.values.at("m_catalyst_kg"); }
+        //  A RELIEF VALVE'S SIZE IS ITS REQUIRED EFFECTIVE AREA (2026-10-11,
+        //  DEV.md 4c C62), in mm2 as API 520 states it.
+        else if (dims.values.count("A_relief"))
+        { sizeKey = sized("A_relief"); sizeVal = dims.values.at("A_relief"); }
         //  NO CANONICAL SIZE IS SAID, NOT PRINTED AS ZERO.  This column
         //  used to fall through to an empty key and `0.0000`, and a zero
         //  volume is a CLAIM -- the same reason a port with no state is
@@ -343,7 +353,11 @@ int SizingPass::run(SimulationResult& result)
         //  not tell the condenser from the reboiler.
         if (!dims.equipmentTag.empty())
             std::cout << "        item: " << dims.equipmentTag
-                      << "   (sized and costed as " << dims.equipmentType
+                      << (dims.notCostedBecause.empty()
+                              ? "   (sized and costed as "
+                              : "   (sized as ")
+                      << dims.equipmentType
+                      << (dims.notCostedBecause.empty() ? "" : ", NOT costed")
                       << "; sheet -> design/.../" << uname << "/"
                       << dims.equipmentTag << ")\n";
 

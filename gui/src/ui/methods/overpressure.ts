@@ -25,10 +25,13 @@
   the component records those witnesses carry.  What this file computes is
   the relief-sizing ARITHMETIC on those numbers -- the published equations of
   API STD 520 Part I and API STD 521 -- which is a calculation procedure, not
-  a property, and which the engine does not have (DEV.md 4c C61: no relief
-  model exists in src/, and adding one is architecture, not this slice).  The
-  precedent is bodeMath.ts / batchMembraneMath.ts: a lesson's own arithmetic,
-  with its own tests.
+  a property.  When this page was written the engine had none of it (DEV.md
+  4c C61); since C62 the `reliefValve` sizer carries the same equations in
+  C++ (src/postProcessing/sizing/ReliefArithmetic.H), and
+  bin/curate/check_relief_valve.py holds the two to the numbers this file's
+  test pins and to the same constants -- edit one, and that gate names the
+  other.  The precedent for keeping a lesson's own copy is bodeMath.ts /
+  batchMembraneMath.ts: a lesson's own arithmetic, with its own tests.
 
   WHERE EACH CONSTANT WAS READ, and what could not be read.
     * The gas (critical and subcritical) and liquid equations, with their

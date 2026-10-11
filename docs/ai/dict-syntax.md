@@ -761,7 +761,11 @@ word -- `distillationColumn` and, since 2026-09-26, `pfr` (`pressureDesign`
 REQUIRED; `L_over_D` else announced default; `catalystBulkDensity` and
 `catalystPrice` optional, each enabling one half of the catalyst charge and
 refused by name at cost time when absent), and `vessel`, whose
-`spaceVelocity` REQUIRES `spaceVelocityBasis normal|actual;` since 2026-10-05.
+`spaceVelocity` REQUIRES `spaceVelocityBasis normal|actual;` since 2026-10-05;
+and, since 2026-10-11, `reliefValve` (one more item of a unit already sized:
+`scenarios ( { scenario blockedOutlet|fire; ... } )` REQUIRED, the set
+pressure READ from the protected item, the coefficients announced when
+defaulted, NOT costed).
 
 Auto-init and ratings are emitted in the result JSON (`advisories`) and
 surfaced by the GUI (an amber run-complete toast + a list in the Streams

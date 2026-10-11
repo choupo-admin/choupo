@@ -1914,11 +1914,12 @@ discharge disperses safely (e.g. steam, air, inert). Flammable/toxic
 streams route to a \textbf{closed flare header \(\rightarrow\) knockout drum \(\rightarrow\) flare},
 sized so flare-tip exit velocity stays below
 \textasciitilde{}\textbf{0.5 Mach} and grade-level radiation stays under
-**\textasciitilde6.3 kW/m\textsuperscript{2}** at the fence (API 521). Choupo has \textbf{no relief
-model}: no unit relieves a stream, and no PSV-vent enthalpy or flare duty
-appears in any ledger.  The EduTool \emph{Designing for overpressure}
-sizes a relief device from engine-computed fluid properties (Z, k, latent
-heat); the relieving rate and the device are the reader's.
+**\textasciitilde6.3 kW/m\textsuperscript{2}** at the fence (API 521). Choupo \textbf{sizes a relief valve but does not model
+relief}: the sizing pass's \texttt{reliefValve} item sizes one valve per
+protected item on its declared blocked-outlet and fire scenarios, by the
+same equations as the EduTool \emph{Designing for overpressure} (worked
+case: \texttt{greenAmmoniaBasicDesign}), but no unit relieves a stream, and
+no PSV-vent enthalpy or flare duty appears in any ledger.
 
 \textbf{Spacing/segregation (Pareto).} Fired heaters and flares are
 ignition sources --- keep \textbf{\textasciitilde15 m} from process

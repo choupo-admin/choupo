@@ -2045,6 +2045,22 @@ whole postDict line and took the entry's braces with it, refusing the RUN --
 a probe must remove the statement, not the line).  Record:
 [`docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md`](docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md).
 
+**A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
+4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one
+more item (`psv`) of the PROTECTED unit, declared AFTER that unit's entry,
+its set pressure READ from the protected item's `pressureDesign` (one home,
+gauge), sized by API 520 Part I on DECLARED `blockedOutlet` / `fire`
+scenarios with the case's own Z, k and bubble point; the coefficients are
+`designDefault`s, announced when taken.  NOT COSTED through
+`EquipmentSizing::notCostedBecause` -- listed apart, never a failure, so no
+total moves or reads INCOMPLETE; an item the model COULD price but lacks an
+input for still refuses (the tray rule).  The C++ arithmetic
+(`sizing/ReliefArithmetic.H`) and the EduTool's TypeScript are ONE procedure
+in two homes, so a gate holds each to the other's pinned examples.  Trap: a
+design-sheet key as long as the pad ran into its value -- `setw` is a
+minimum.  Gate: `check_relief_valve`.  Record:
+[`docs/design/a-relief-valve-is-a-sized-item.md`](docs/design/a-relief-valve-is-a-sized-item.md).
+
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
 The doctrine says a check that cannot run must not PASS; the MIRROR is just as
 bad — **it must not FAIL either, it must REFUSE.**  `bin/drive-app` filed "no
