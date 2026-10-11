@@ -2031,10 +2031,12 @@ and StorageFlash; NO fire on the beds (gas-filled) or the Separator (its
 liquid is above ammonia's Pc at the fire relieving pressure, refused by
 name)); 162 golden rows APPENDED, none moved; the capital total unchanged and
 complete.  Gate `check_relief_valve`.  Record
-`docs/design/a-relief-valve-is-a-sized-item.md`.  OPEN for Vitor: (1) the 14
-API 526 orifice areas reached through MIT `fluids`, against
-`docs/design/process-safety-audit.md`'s no-grant classification of the API
-standards; (2) the EduTool's limit "Choupo has no relief model" was
+`docs/design/a-relief-valve-is-a-sized-item.md`.  The API 526 orifice
+letter, built first, was REMOVED the same day on the commander's ruling (a
+no-grant standard's table is not freed by the MIT library that carries it,
+C16); the REQUIRED area is published and `check_source_licence` refuses the
+letter table by its values.  OPEN for Vitor: (1) none on the letter; (2) the
+EduTool's limit "Choupo has no relief model" was
 corrected (bury the absence) -- the lesson text is his; (3) `CompressorSize`
 publishes `pressureDesign` with a SILENT 1.0 bar default when undeclared
 (found, not fixed: fixing it announces on every corpus compressor without one).

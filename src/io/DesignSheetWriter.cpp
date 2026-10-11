@@ -467,11 +467,10 @@ std::size_t write(const std::string&                       caseRoot,
                  "relief\n{\n";
             o << "    protects    \"" << r.protects << "\";\n";
             o << "    governing   " << r.governing << ";\n";
-            if (!r.orifice.empty())
-                o << "    orifice     " << r.orifice << ";\n";
-            else
-                o << "    //  no API 526 orifice letter is large enough for one"
-                     " valve\n";
+            o << "    //  the lettered orifice is NOT selected: the letter areas"
+                 " are in API 526,\n    //  a no-grant source, and are not"
+                 " reproduced here -- `A_relief` is the\n    //  REQUIRED"
+                 " effective area\n";
             o << "    scenarios\n    (\n";
             for (const auto& s : r.scenarios)
             {

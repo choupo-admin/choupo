@@ -232,6 +232,110 @@ EXCLUDED_TABLES = {
     },
 }
 
+#  A TABLE OF A NO-GRANT STANDARD, CARRIED BY AN OPEN LIBRARY (2026-10-11,
+#  DEV.md 4c C62, the commander's ruling).  API STD 526's lettered orifice
+#  areas (D..T) are a TABLE of a standard this project classes as no-grant
+#  (docs/design/process-safety-audit.md), and the MIT licence of the open
+#  `fluids` library that carries them is its author's grant over his CODE --
+#  it does not relicense the table, exactly as the thermo package's copy of
+#  the ChemSep .ipd tables above is not freed by its MIT licence (C16).  The
+#  relief-valve sizer therefore publishes the REQUIRED area and selects no
+#  letter.  The equations of API 520 Part I stay: they are facts with a
+#  citation, not an arrangement (the C61 posture).
+#
+#  WHAT IS MATCHED is the table's own SIGNATURE, not a name: five or more of
+#  its distinctive areas -- in square inches or converted to mm2 -- inside
+#  one 600-character window of any SOURCE file (src/, gui/src, gui/tests,
+#  bin/, tutorials/, data/standards/, docs/ prose).  A sentence that NAMES
+#  API 526 enters no value and passes.  Identifiers the copied table travels
+#  under (`API526_A...` in that library, the `api526Select` / `api526 = {`
+#  this tree carried for an afternoon) are matched too.  This file is exempt
+#  from its own scan, because it states the signature.
+#
+#  SABOTAGES, by hand, 2026-10-11 (each restored, the gate re-run to exit 0):
+#    L0  the first run of this arm, before the relief gate was cleaned, caught
+#        `api526Select` in bin/curate/check_relief_valve.py's probe.
+#    L1  the in2 areas appended, unnamed, to ReliefArithmetic.H: caught (6).
+#    L2  the mm2 areas appended to a design record's prose: caught (5).
+#    L3  FOUR in2 areas only: passes, by design -- the threshold is the
+#        signature, and four numbers are not a table.  Said, not hidden.
+EXCLUDED_STANDARD_TABLES = {
+    "API STD 526 orifice-letter areas": {
+        "values": [
+            #  in2 (the distinctive ones; 16.00 and 26.00 are too common)
+            ("0.196", "0.307", "0.503", "1.287", "1.838", "2.853", "4.34",
+             "6.38", "11.05"),
+            #  the same areas in mm2, by their leading digits
+            ("126.4", "198.0", "324.5", "506.4", "830.3", "1185.8", "1840.6",
+             "2322.5", "4116.1", "7129.0", "10322."),
+        ],
+        "identifiers": re.compile(r'\bAPI526_A\w*\b|\bapi526Select\b|\bapi526\s*=\s*\{'),
+        "why": "a table of API STD 526, a no-grant standard; the MIT licence of "
+               "the library that carries it does not relicense it",
+    },
+}
+STANDARD_TABLE_ROOTS = ["src", "gui/src", "gui/tests", "bin", "tutorials",
+                        "data/standards", "docs"]
+STANDARD_TABLE_SUFFIXES = {".H", ".h", ".cpp", ".ts", ".tsx", ".js", ".py",
+                           ".md", ".tex", ".dat", ""}
+
+
+def _table_hits(text, values):
+    """Positions of the table's values, matched as whole numbers."""
+    out = []
+    for v in values:
+        for m in re.finditer(r'(?<![0-9.])' + re.escape(v), text):
+            out.append((m.start(), v))
+    return sorted(out)
+
+
+def standard_table_violations():
+    """Files that reproduce a no-grant standard's table, and the scan size."""
+    found, nscan = [], 0
+    me = Path(__file__).resolve()
+    for root in STANDARD_TABLE_ROOTS:
+        base = ROOT / root
+        if not base.is_dir():
+            continue
+        for f in base.rglob("*"):
+            if not f.is_file() or f.resolve() == me or "node_modules" in f.parts:
+                continue
+            if f.suffix not in STANDARD_TABLE_SUFFIXES:
+                continue
+            try:
+                if f.stat().st_size > 2_000_000:
+                    continue
+                text = f.read_text(errors="ignore")
+            except OSError:
+                continue
+            nscan += 1
+            rel = f.relative_to(ROOT).as_posix()
+            for cls, ex in EXCLUDED_STANDARD_TABLES.items():
+                ident = ex["identifiers"].search(text)
+                if ident:
+                    found.append(f"{rel}: `{ident.group(0)}` -- {cls} ({ex['why']})")
+                    continue
+                hit = None
+                for values in ex["values"]:
+                    #  Cheap first: a file holding fewer than five of the
+                    #  strings anywhere cannot hold five in one window.
+                    if sum(1 for v in values if v in text) < 5:
+                        continue
+                    hits = _table_hits(text, values)
+                    for i in range(len(hits)):
+                        win = {v for (pos, v) in hits[i:] if pos - hits[i][0] <= 600}
+                        if len(win) >= 5:
+                            hit = win
+                            break
+                    if hit:
+                        break
+                if hit:
+                    found.append(f"{rel}: {len(hit)} of the table's areas "
+                                 f"({', '.join(sorted(hit))}) within 600 "
+                                 f"characters -- {cls} ({ex['why']})")
+    return found, nscan
+
+
 #  Databank names this gate KNOWS to look for.  A name here that is NOT in
 #  ACCEPTED_DATABANK fails as encumbered.  (The NEVER-list aggregators above
 #  stay in ENCUMBERED, which never has an accepted branch.)
@@ -447,6 +551,17 @@ def main() -> int:
                 violations.append(f"{rel}:{n}  {hit.group(0)} cited AS the "
                                   f"authority (not 'via')\n        {line.strip()[:110]}")
 
+    std_found, std_nscan = standard_table_violations()
+    if std_found or std_nscan < 1000:
+        print("check_source_licence: FAILED")
+        if std_nscan < 1000:
+            print(f"  only {std_nscan} source file(s) scanned for a no-grant "
+                  "standard's table against a floor of 1000; the scan surface "
+                  "has collapsed.")
+        for v in std_found:
+            print("  NO-GRANT STANDARD TABLE: " + v)
+        return 1
+
     stale = sorted(set(PINNED) - pinned_seen)
     stale += [f"{s} (NC_COMPILATION)"
               for s in sorted(set(NC_COMPILATION) - nc_seen)]
@@ -535,7 +650,11 @@ def main() -> int:
           f"{accepted_txt} -- and that acceptance has a SCOPE: "
           f"{len(EXCLUDED_TABLES)} excluded interaction-parameter table "
           f"classes (ChemSep .ipd, the thermo package's copy) are named as "
-          f"a value's origin by no record.  Every source ruled on here has a thirdParty/ card and "
+          f"a value's origin by no record.  No source file reproduces a "
+          f"no-grant standard's table ({len(EXCLUDED_STANDARD_TABLES)} class: "
+          f"the API STD 526 orifice-letter areas, matched by their VALUES "
+          f"over {std_nscan} source files, not by the name).  "
+          f"Every source ruled on here has a thirdParty/ card and "
           f"every card on disk is named by a gate ({len(on_disk)} card(s)).")
     #  THE MANIFEST READS ONLY THE FIRST LINE.  gate_manifest.py captures
     #  `line[0]` as the gate's claim, so a claim printed on a second line is

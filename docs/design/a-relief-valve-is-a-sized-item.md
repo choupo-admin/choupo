@@ -48,8 +48,13 @@ relief header, a flare, a depressuring calculation.
 * **Coefficients** (`KdVapour` 0.975, `KdLiquid` 0.65, `Kb`, `Kc`, `Kw`, `Kv`
   1, `backPressure` 0 gauge): `designDefault` entries, announced when taken,
   silent when declared.
-* **Governing** = the largest area; **API 526** letter = the smallest whose
-  area is not below it (the table as the open `fluids` library carries it).
+* **Governing** = the largest area, published as the REQUIRED effective area.
+  **No API 526 orifice letter is selected** (the commander's ruling, same
+  day): the letter areas are a TABLE of API 526, a no-grant standard, and a
+  shipped table is not relicensed by its courier (C16) -- the MIT licence of
+  `fluids` covers its code, not the table.  The equations stay: facts with a
+  citation.  `check_source_licence` refuses the table by its VALUES anywhere
+  in the source tree.
 * **Not costed**: `EquipmentSizing::notCostedBecause`.  The costing pass lists
   such an item under NOT COSTED and does not count it as a failure, so the
   total neither moves nor reads INCOMPLETE.  This differs on purpose from the
@@ -80,14 +85,13 @@ the remedy the arm reads -- recorded in the gate.
 
 ## What the sources are, and are not
 
-API 520, API 521, API 526 and ASME VIII were NOT read.  Every equation,
-percentage and orifice area arrived through the open `fluids` library (MIT)
-and the DIERS fire document, as the C61 EduTool records.
-`docs/design/process-safety-audit.md` classes the API standards as no-grant
-sources; C61 took the equations through `fluids`, and this slice adds the
-fourteen API 526 orifice areas by the same route.  Whether a list of standard
-orifice dimensions reached through an MIT library is acceptable in the public
-tree is put to Vítor, not decided here.
+API 520, API 521 and ASME VIII were NOT read.  Every equation and
+percentage arrived through the open `fluids` library (MIT) and the DIERS fire
+document, as the C61 EduTool records.  `docs/design/process-safety-audit.md`
+classes the API standards as no-grant sources: their EQUATIONS are facts and
+are carried with a citation (the C61 posture); their TABLES are not.  The
+first build of this slice added the fourteen API 526 orifice areas through
+`fluids` and selected a letter; it was REMOVED the same day on that rule.
 
 ## Not done
 

@@ -1005,8 +1005,6 @@ utility RecycleComp            power.electricity.duty_kW 955.789473684      1e-4
 utility RecycleComp            power.electricity.T -1                 1e-4
 utility RecycleComp            power.electricity.kg_s 0                  1e-4
 utility RecycleComp            power.electricity.eur_h 95.6554105263      1e-4
-equipment Bed1/psv               basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_Bed1/shell,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_Bed1Out);_API_526_orifice_P_(the_smallest_letter_not_below_it,_areas_as_the_open_`fluids`_library_tabulates_API_526);_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
-equipment Bed1/psv               values.A_orifice 4116.1208        1e-4
 equipment Bed1/psv               values.A_relief  3269.13276291    1e-4
 equipment Bed1/psv               values.P_back_gauge 0                1e-4
 equipment Bed1/psv               values.P_set_gauge 167              1e-4
@@ -1017,8 +1015,6 @@ equipment Bed1/psv               values.blocked_Bed1Out_T1 788.107499522    1e-4
 equipment Bed1/psv               values.blocked_Bed1Out_W 159440.369257    1e-4
 equipment Bed1/psv               values.blocked_Bed1Out_Z 1.05374169515    1e-4
 equipment Bed1/psv               values.blocked_Bed1Out_k 1.35090669254    1e-4
-equipment Bed2/psv               basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_Bed2/shell,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_Bed2Out);_API_526_orifice_P_(the_smallest_letter_not_below_it,_areas_as_the_open_`fluids`_library_tabulates_API_526);_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
-equipment Bed2/psv               values.A_orifice 4116.1208        1e-4
 equipment Bed2/psv               values.A_relief  3164.88027934    1e-4
 equipment Bed2/psv               values.P_back_gauge 0                1e-4
 equipment Bed2/psv               values.P_set_gauge 167              1e-4
@@ -1029,8 +1025,6 @@ equipment Bed2/psv               values.blocked_Bed2Out_T1 767.188825571    1e-4
 equipment Bed2/psv               values.blocked_Bed2Out_W 159439.961032    1e-4
 equipment Bed2/psv               values.blocked_Bed2Out_Z 1.05386797611    1e-4
 equipment Bed2/psv               values.blocked_Bed2Out_k 1.33800886235    1e-4
-equipment Bed3/psv               basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_Bed3/shell,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_HotEffluent);_API_526_orifice_P_(the_smallest_letter_not_below_it,_areas_as_the_open_`fluids`_library_tabulates_API_526);_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
-equipment Bed3/psv               values.A_orifice 4116.1208        1e-4
 equipment Bed3/psv               values.A_relief  3058.17770796    1e-4
 equipment Bed3/psv               values.P_back_gauge 0                1e-4
 equipment Bed3/psv               values.P_set_gauge 167              1e-4
@@ -1041,8 +1035,6 @@ equipment Bed3/psv               values.blocked_HotEffluent_T1 737.980241512    
 equipment Bed3/psv               values.blocked_HotEffluent_W 159439.662411    1e-4
 equipment Bed3/psv               values.blocked_HotEffluent_Z 1.05404858925    1e-4
 equipment Bed3/psv               values.blocked_HotEffluent_k 1.33020487975    1e-4
-equipment LetdownHP/psv          basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_LetdownHP,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_LetdownLiquid);_API_526_orifice_H_(the_smallest_letter_not_below_it,_areas_as_the_open_`fluids`_library_tabulates_API_526);_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
-equipment LetdownHP/psv          values.A_orifice 506.4506         1e-4
 equipment LetdownHP/psv          values.A_relief  353.872291755    1e-4
 equipment LetdownHP/psv          values.P_back_gauge 0                1e-4
 equipment LetdownHP/psv          values.P_set_gauge 22               1e-4
@@ -1071,8 +1063,6 @@ equipment LetdownHP/psv          values.fire_Z    0.854592234485   1e-4
 equipment LetdownHP/psv          values.fire_k    1.3083490153     1e-4
 equipment LetdownHP/psv          values.fire_lambda 15374.9810588    1e-4
 equipment LetdownHP/psv          values.fire_level 0.5              1e-4
-equipment MakeupComp1/psv        basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_MakeupComp1,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_Makeup67);_API_526_orifice_L_(the_smallest_letter_not_below_it,_areas_as_the_open_`fluids`_library_tabulates_API_526);_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
-equipment MakeupComp1/psv        values.A_orifice 1840.64148       1e-4
 equipment MakeupComp1/psv        values.A_relief  1650.74075815    1e-4
 equipment MakeupComp1/psv        values.P_back_gauge 0                1e-4
 equipment MakeupComp1/psv        values.P_set_gauge 74               1e-4
@@ -1083,8 +1073,6 @@ equipment MakeupComp1/psv        values.blocked_Makeup67_T1 420.212129343    1e-
 equipment MakeupComp1/psv        values.blocked_Makeup67_W 50071.424445     1e-4
 equipment MakeupComp1/psv        values.blocked_Makeup67_Z 1.03824993537    1e-4
 equipment MakeupComp1/psv        values.blocked_Makeup67_k 1.39804998306    1e-4
-equipment MakeupComp2/psv        basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_MakeupComp2,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_Makeup150);_API_526_orifice_J_(the_smallest_letter_not_below_it,_areas_as_the_open_`fluids`_library_tabulates_API_526);_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
-equipment MakeupComp2/psv        values.A_orifice 830.32092        1e-4
 equipment MakeupComp2/psv        values.A_relief  757.97705282     1e-4
 equipment MakeupComp2/psv        values.P_back_gauge 0                1e-4
 equipment MakeupComp2/psv        values.P_set_gauge 167              1e-4
@@ -1095,8 +1083,6 @@ equipment MakeupComp2/psv        values.blocked_Makeup150_T1 424.570143358    1e
 equipment MakeupComp2/psv        values.blocked_Makeup150_W 50071.424445     1e-4
 equipment MakeupComp2/psv        values.blocked_Makeup150_Z 1.08828380393    1e-4
 equipment MakeupComp2/psv        values.blocked_Makeup150_k 1.39788568285    1e-4
-equipment N2Boost/psv            basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_N2Boost,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_N2Compressed);_API_526_orifice_L_(the_smallest_letter_not_below_it,_areas_as_the_open_`fluids`_library_tabulates_API_526);_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
-equipment N2Boost/psv            values.A_orifice 1840.64148       1e-4
 equipment N2Boost/psv            values.A_relief  1691.11837498    1e-4
 equipment N2Boost/psv            values.P_back_gauge 0                1e-4
 equipment N2Boost/psv            values.P_set_gauge 34               1e-4
@@ -1107,8 +1093,6 @@ equipment N2Boost/psv            values.blocked_N2Compressed_T1 473.769161677   
 equipment N2Boost/psv            values.blocked_N2Compressed_W 41180.864445     1e-4
 equipment N2Boost/psv            values.blocked_N2Compressed_Z 1.01844988151    1e-4
 equipment N2Boost/psv            values.blocked_N2Compressed_k 1.3925803046     1e-4
-equipment RecycleComp/psv        basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_RecycleComp,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_CompRecycle);_API_526_orifice_L_(the_smallest_letter_not_below_it,_areas_as_the_open_`fluids`_library_tabulates_API_526);_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
-equipment RecycleComp/psv        values.A_orifice 1840.64148       1e-4
 equipment RecycleComp/psv        values.A_relief  1373.48306491    1e-4
 equipment RecycleComp/psv        values.P_back_gauge 0                1e-4
 equipment RecycleComp/psv        values.P_set_gauge 167              1e-4
@@ -1119,8 +1103,6 @@ equipment RecycleComp/psv        values.blocked_CompRecycle_T1 260.596516423    
 equipment RecycleComp/psv        values.blocked_CompRecycle_W 109369.701647    1e-4
 equipment RecycleComp/psv        values.blocked_CompRecycle_Z 1.09893686863    1e-4
 equipment RecycleComp/psv        values.blocked_CompRecycle_k 1.40297808485    1e-4
-equipment Separator/psv          basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_Separator,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_UnreactedGas);_API_526_orifice_L_(the_smallest_letter_not_below_it,_areas_as_the_open_`fluids`_library_tabulates_API_526);_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
-equipment Separator/psv          values.A_orifice 1840.64148       1e-4
 equipment Separator/psv          values.A_relief  1354.66371958    1e-4
 equipment Separator/psv          values.P_back_gauge 0                1e-4
 equipment Separator/psv          values.P_set_gauge 167              1e-4
@@ -1137,8 +1119,6 @@ equipment Separator/psv          values.blocked_UnreactedGas_T1 253.15          
 equipment Separator/psv          values.blocked_UnreactedGas_W 109462.74498     1e-4
 equipment Separator/psv          values.blocked_UnreactedGas_Z 1.0988476509     1e-4
 equipment Separator/psv          values.blocked_UnreactedGas_k 1.40342888153    1e-4
-equipment StorageFlash/psv       basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_StorageFlash,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_ProductNH3);_API_526_orifice_K_(the_smallest_letter_not_below_it,_areas_as_the_open_`fluids`_library_tabulates_API_526);_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
-equipment StorageFlash/psv       values.A_orifice 1185.80408       1e-4
 equipment StorageFlash/psv       values.A_relief  1140.40156565    1e-4
 equipment StorageFlash/psv       values.P_back_gauge 0                1e-4
 equipment StorageFlash/psv       values.P_set_gauge 2                1e-4
@@ -1167,3 +1147,13 @@ equipment StorageFlash/psv       values.fire_Z    0.962643697277   1e-4
 equipment StorageFlash/psv       values.fire_k    1.31629375207    1e-4
 equipment StorageFlash/psv       values.fire_lambda 21675.1450434    1e-4
 equipment StorageFlash/psv       values.fire_level 0.5              1e-4
+equipment Bed1/psv               basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_Bed1/shell,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_Bed1Out);_the_lettered_orifice_is_NOT_selected_--_the_letter_areas_are_in_API_526,_a_no-grant_source,_not_reproduced_here;_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
+equipment Bed2/psv               basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_Bed2/shell,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_Bed2Out);_the_lettered_orifice_is_NOT_selected_--_the_letter_areas_are_in_API_526,_a_no-grant_source,_not_reproduced_here;_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
+equipment Bed3/psv               basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_Bed3/shell,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_HotEffluent);_the_lettered_orifice_is_NOT_selected_--_the_letter_areas_are_in_API_526,_a_no-grant_source,_not_reproduced_here;_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
+equipment LetdownHP/psv          basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_LetdownHP,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_LetdownLiquid);_the_lettered_orifice_is_NOT_selected_--_the_letter_areas_are_in_API_526,_a_no-grant_source,_not_reproduced_here;_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
+equipment MakeupComp1/psv        basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_MakeupComp1,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_Makeup67);_the_lettered_orifice_is_NOT_selected_--_the_letter_areas_are_in_API_526,_a_no-grant_source,_not_reproduced_here;_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
+equipment MakeupComp2/psv        basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_MakeupComp2,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_Makeup150);_the_lettered_orifice_is_NOT_selected_--_the_letter_areas_are_in_API_526,_a_no-grant_source,_not_reproduced_here;_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
+equipment N2Boost/psv            basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_N2Boost,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_N2Compressed);_the_lettered_orifice_is_NOT_selected_--_the_letter_areas_are_in_API_526,_a_no-grant_source,_not_reproduced_here;_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
+equipment RecycleComp/psv        basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_RecycleComp,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_CompRecycle);_the_lettered_orifice_is_NOT_selected_--_the_letter_areas_are_in_API_526,_a_no-grant_source,_not_reproduced_here;_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
+equipment Separator/psv          basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_Separator,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_UnreactedGas);_the_lettered_orifice_is_NOT_selected_--_the_letter_areas_are_in_API_526,_a_no-grant_source,_not_reproduced_here;_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact
+equipment StorageFlash/psv       basis            ONE_relief_valve_set_at_the_protected_item's_design_pressure_(read_from_StorageFlash,_gauge);_every_declared_scenario_sized_by_API_520_Part_I_at_its_relieving_pressure_(MAWP_+_10_%_or_3_psi;_fire_+_21_%),_the_governing_one_the_largest_area_(blocked_ProductNH3);_the_lettered_orifice_is_NOT_selected_--_the_letter_areas_are_in_API_526,_a_no-grant_source,_not_reproduced_here;_Z_the_package's_EoS_vapour_root_and_k_=_Cp_ig/(Cp_ig_-_R)_at_each_relieving_state;_NOT_COSTED exact

@@ -523,26 +523,13 @@ std::vector<EquipmentSizing> ReliefValveSize::size(const std::string& unitName,
     }
 
     d.set("A_relief", Agov, "mm2");
-    const auto* o = reliefMath::api526Select(Agov);
-    std::string orificeWords;
-    if (o)
-    {
-        d.relief.orifice = std::string(1, o->letter);
-        d.set("A_orifice", o->area_in2 * reliefMath::mm2PerIn2, "mm2");
-        orificeWords = "API 526 orifice " + d.relief.orifice + " (the smallest"
-            " letter not below it, areas as the open `fluids` library tabulates"
-            " API 526)";
-    }
-    else
-        orificeWords = "NO API 526 orifice: the required area exceeds the"
-            " largest letter, T -- one valve cannot pass it";
-
     d.basis = "ONE relief valve set at the protected item's design pressure"
               " (read from " + item->itemId() + ", gauge); every declared"
               " scenario sized by API 520 Part I at its relieving pressure"
               " (MAWP + 10 % or 3 psi; fire + 21 %), the governing one the"
-              " largest area (" + d.relief.governing + "); " + orificeWords
-            + "; Z the package's EoS vapour root and k = Cp_ig/(Cp_ig - R) at"
+              " largest area (" + d.relief.governing + "); the lettered"
+              " orifice is NOT selected -- the letter areas are in API 526, a"
+              " no-grant source, not reproduced here; Z the package's EoS vapour root and k = Cp_ig/(Cp_ig - R) at"
               " each relieving state; NOT COSTED";
     return { d };
 }

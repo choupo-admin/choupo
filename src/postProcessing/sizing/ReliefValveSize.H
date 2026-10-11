@@ -90,10 +90,10 @@ Description
     through `designDefault::valueOr` when used and silent when declared.
 
     THE GOVERNING CASE is the scenario needing the largest area; the sheet
-    lists every scenario and marks it.  The API 526 orifice letter is the
-    smallest whose area (as `fluids` tabulates API 526) is not below that
-    area; larger than the largest letter, no letter is selected and the sheet
-    says one valve cannot pass it.
+    lists every scenario and marks it.  The REQUIRED effective area is
+    published and the lettered orifice is NOT selected: the letter areas are
+    a table of API STD 526, a no-grant source, and are not reproduced here
+    (a shipped table is not relicensed by the library that carries it).
 
     NOT COSTED.  This engine carries no cost correlation for a relief device
     and none is invented: the item says so in `notCostedBecause`, the costing

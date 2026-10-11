@@ -602,8 +602,10 @@ vessel's own D and H and the liquid level from its declared `inventory {}`
 MAWP x 1.21 + 1 atm, the liquid's bubble point at P1 on the case's package,
 and the latent heat of the incipient vapour; a liquid at or above its main
 component's critical point at P1 is refused.  Z and k = Cp_ig/(Cp_ig - R)
-come from the case's package.  Governing = the largest area; the API 526
-letter is the smallest not below it.  Named and refused: `tubeRupture`,
+come from the case's package.  Governing = the largest area, published as
+the REQUIRED effective area; NO API 526 orifice letter is selected (its
+area table is a no-grant standard's, not reproduced -- `check_source_licence`
+refuses it).  Named and refused: `tubeRupture`,
 `controlValveFailure`, `coolingFailure`, `runawayReaction`,
 `thermalExpansion`.  NOT COSTED: the costing table lists the valve as NOT
 COSTED and the capital total does not move.  Sheet: `design/<unit>/psv`,

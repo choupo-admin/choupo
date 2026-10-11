@@ -165,24 +165,29 @@ declared** in `system/postDict`, because which causes of overpressure are
 credible is the designer's judgement; the valve is sized by API 520 Part I
 on every scenario and governed by the one needing the largest area:
 
-| protected item | set (barg) | scenarios | governing | rate (kg/h) | A required (mm²) | API 526 |
-|---|---|---|---|---|---|---|
-| N2Boost | 34 | discharge blocked | gas | 41 181 | 1691 | L |
-| MakeupComp1 | 74 | discharge blocked | gas | 50 071 | 1651 | L |
-| MakeupComp2 | 167 | discharge blocked | gas | 50 071 | 758 | J |
-| RecycleComp | 167 | discharge blocked | gas | 109 370 | 1373 | L |
-| Bed1/shell | 167 | outlet blocked | gas at 788 K | 159 440 | 3269 | P |
-| Bed2/shell | 167 | outlet blocked | gas at 767 K | 159 440 | 3165 | P |
-| Bed3/shell | 167 | outlet blocked | gas at 738 K | 159 440 | 3058 | P |
-| Separator | 167 | gas line, liquid line | gas line | 109 463 | 1355 | L |
-| LetdownHP | 22 | gas line, liquid line, fire | liquid line | 49 849 | 354 | H |
-| StorageFlash | 2 | gas line, liquid line, fire | liquid line | 49 172 | 1140 | K |
+| protected item | set (barg) | scenarios | governing | rate (kg/h) | A required (mm²) |
+|---|---|---|---|---|---|
+| N2Boost | 34 | discharge blocked | gas | 41 181 | 1691 |
+| MakeupComp1 | 74 | discharge blocked | gas | 50 071 | 1651 |
+| MakeupComp2 | 167 | discharge blocked | gas | 50 071 | 758 |
+| RecycleComp | 167 | discharge blocked | gas | 109 370 | 1373 |
+| Bed1/shell | 167 | outlet blocked | gas at 788 K | 159 440 | 3269 |
+| Bed2/shell | 167 | outlet blocked | gas at 767 K | 159 440 | 3165 |
+| Bed3/shell | 167 | outlet blocked | gas at 738 K | 159 440 | 3058 |
+| Separator | 167 | gas line, liquid line | gas line | 109 463 | 1355 |
+| LetdownHP | 22 | gas line, liquid line, fire | liquid line | 49 849 | 354 |
+| StorageFlash | 2 | gas line, liquid line, fire | liquid line | 49 172 | 1140 |
 
 The fire cases are much smaller (LetdownHP 48 kW of fire heat, 183 kg/h of
 vapour, 11 mm²; StorageFlash 447 kW, 1262 kg/h, 553 mm²): these drums are
 small and half full, so a blocked liquid line -- the level controller
 failing shut and the drum filling -- is what sizes them. Every number of
-every scenario is on its sheet and in the result JSON (pinned).
+every scenario is on its sheet and in the result JSON (pinned).  The
+**lettered orifice is not selected**: the letter areas are a table of API
+526, a no-grant standard, and are not reproduced here (the MIT licence of
+the library that carries them does not relicense them), so the sheet
+publishes the REQUIRED effective area and the vendor's letter is the
+reader's.
 
 Read these before quoting them:
 

@@ -17,8 +17,8 @@ Namespace
 Description
     THE RELIEF-SIZING ARITHMETIC, and nothing else: the published equations
     of API STD 520 Part I (gas or vapour, critical and subcritical; liquid),
-    the API STD 521 fire heat input, the allowed accumulation of ASME VIII-1,
-    and the API STD 526 orifice letters.  Pure functions of numbers: no
+    the API STD 521 fire heat input and the allowed accumulation of ASME
+    VIII-1.  Pure functions of numbers: no
     dictionary, no thermodynamic package, no sizing record -- the sizer that
     calls them (`ReliefValveSize`) supplies every fluid property from the
     case's own package and says where each came from.
@@ -50,9 +50,13 @@ Description
         ASME BPVC VIII-1 UG-125(c) as a secondary summary quotes it.  The Code
         was NOT read.  The 16 % multiple-device allowance is not offered: the
         sizer models ONE device per protected item.
-      * The API 526 letter areas D..T in square inches: `fluids`'
-        `API526_A_sq_inch` (same file, same licence), which cites API STD 526.
-        The standard itself was NOT read.
+      * NO API STD 526 ORIFICE TABLE, deliberately (the commander's ruling,
+        2026-10-11, DEV.md 4c C62): the lettered orifice areas are a TABLE of
+        a no-grant standard, and a shipped table is not relicensed by its
+        courier (CLAUDE.md, C16) -- the MIT licence of the library that
+        carries them does not free them.  The equations are facts with a
+        citation; the letter table is not reproduced, and
+        `check_source_licence` refuses it anywhere in the tree.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -60,7 +64,6 @@ Description
 #include "core/Types.H"
 
 #include <algorithm>
-#include <array>
 #include <cmath>
 
 namespace Choupo {
@@ -195,25 +198,6 @@ inline scalar fireCoefficientSI(bool adequate)
 inline scalar fireHeatInput(scalar A_wet_m2, scalar F, bool adequate)
 {
     return fireCoefficientSI(adequate) * F * std::pow(A_wet_m2, fireExponent);
-}
-
-//  ---- API STD 526 orifice letters ---------------------------------------------
-
-//  Letter and effective area [in2], smallest first (fluids' API526_A_sq_inch).
-struct Orifice { char letter; scalar area_in2; };
-constexpr std::array<Orifice, 14> api526 = {{
-    {'D', 0.110}, {'E', 0.196}, {'F', 0.307}, {'G', 0.503}, {'H', 0.785},
-    {'J', 1.287}, {'K', 1.838}, {'L', 2.853}, {'M', 3.60},  {'N', 4.34},
-    {'P', 6.38},  {'Q', 11.05}, {'R', 16.00}, {'T', 26.00} }};
-constexpr scalar mm2PerIn2 = 25.4 * 25.4;
-
-//  The smallest API 526 orifice whose area is at least `A_mm2`, or nullptr
-//  when one valve of the largest letter cannot pass it.
-inline const Orifice* api526Select(scalar A_mm2)
-{
-    for (const auto& o : api526)
-        if (o.area_in2 * mm2PerIn2 >= A_mm2) return &o;
-    return nullptr;
 }
 
 } // namespace reliefMath

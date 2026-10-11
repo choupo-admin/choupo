@@ -33,7 +33,10 @@ WHAT THIS CHECKS:
       (or rho) by the API 520 equations written a THIRD time in Python; the
       fire load is recomputed from the protected item's own D and H and the
       published level, Q = C F A^0.82, and W = Q / lambda x M; the governing
-      area is the largest; the API 526 letter is the smallest not below it.
+      area is the largest; NO API 526 letter or orifice area is published
+      (the letter table is a no-grant standard's, not reproduced -- the
+      commander's ruling; `check_source_licence` refuses the table itself),
+      and the basis says the lettered orifice is not selected and why.
       No psv item carries a cost, and the run's TOTALS line neither moved to
       INCOMPLETE nor omits a priced item: it equals the sum of the priced
       items' totals.
@@ -114,11 +117,6 @@ def rel(a, b):
 PATM = 101325.0
 PSI = 0.45359237 * 9.80665 / (0.0254 * 0.0254)
 RHO_W = 999.0107539518483
-API526_IN2 = [("D", 0.110), ("E", 0.196), ("F", 0.307), ("G", 0.503),
-              ("H", 0.785), ("J", 1.287), ("K", 1.838), ("L", 2.853),
-              ("M", 3.60), ("N", 4.34), ("P", 6.38), ("Q", 11.05),
-              ("R", 16.00), ("T", 26.00)]
-
 
 def p1_abs(set_g_pa, fire):
     if fire:
@@ -170,8 +168,6 @@ int main()
     std::printf("C0 %.17g\nSUB %.17g\nLIQ %.17g\nRHOW %.17g\n", api520C0, api520Subcritical, api520Liquid, waterRefDensity);
     std::printf("FA %.17g\nFI %.17g\nFX %.17g\n", fireCAdequate, fireCInadequate, fireExponent);
     std::printf("AS %.17g\nASP %.17g\nAF %.17g\nPATM %.17g\n", accumulationSingle, accumulationSingleMinPsi, accumulationFire, pAtmPa);
-    const Orifice* o = api526Select(3269.0);
-    std::printf("orifice %c\n", o ? o->letter : '-');
     return 0;
 }
 '''
@@ -256,8 +252,6 @@ def arm_a():
     if rel(float(v["fireSI"][0]), fire_c_si(True)) > 1e-12 \
             or round(float(v["fireSI"][0]) / 1000, 1) != 43.2:
         fails.append("(a) the fire coefficient in SI is not 21 000 Btu/h/ft2^0.82 converted (43.2)")
-    if v["orifice"][0] != "P":
-        fails.append("(a) 3269 mm2 does not select API 526 orifice P")
     return got
 
 
@@ -369,13 +363,9 @@ def check_valve(item_id, it, items, where):
     if rel(v["A_relief"], amax) > 1e-12:
         fails.append("%s %s: A_relief %.9g is not the largest scenario area %.9g"
                      % (where, item_id, v["A_relief"], amax))
-    pick = next((L, a * 645.16) for L, a in API526_IN2 if a * 645.16 >= v["A_relief"]) \
-        if v["A_relief"] <= 26.0 * 645.16 else None
-    if pick is None:
-        if "A_orifice" in v:
-            fails.append("%s %s: an orifice is published above the largest letter" % (where, item_id))
-    elif rel(v.get("A_orifice", -1), pick[1]) > 1e-12 or ("orifice " + pick[0] + " ") not in it["basis"]:
-        fails.append("%s %s: the API 526 orifice is not %s (%.6g mm2)" % (where, item_id, pick[0], pick[1]))
+    if "A_orifice" in v or "orifice is NOT selected" not in it["basis"]:
+        fails.append("%s %s: an orifice area is published, or the basis does not say the "
+                     "lettered orifice is NOT selected" % (where, item_id))
 
 
 def arm_b():
@@ -462,6 +452,9 @@ def arm_c():
             t = sheet.read_text()
             if not re.search(r'^relief\s*\{', t, re.M) or not re.search(r'^\s+governing\s+\w+;', t, re.M):
                 fails.append("(c) the psv sheet carries no relief {} block naming the governing scenario")
+            if re.search(r'^\s+orifice\s+\w+;', t, re.M) or "orifice is NOT selected" not in t:
+                fails.append("(c) the psv sheet names an orifice letter, or does not say the "
+                             "lettered orifice is NOT selected")
             body = re.search(r'^sizing\s*\{(.*?)^\}', t, re.M | re.S)
             for line in (body.group(1).splitlines() if body else []):
                 if line.strip() and not re.match(r'^\s+\S+\s+\S', line):
@@ -530,8 +523,8 @@ def main():
           "(set = the protected item's pressureDesign, P1 from the 10 %%/3 psi and "
           "21 %% ladder, every scenario's area from its published W, T, Z, k, M or "
           "rho, the fire load from the protected item's D, H and inventory level, "
-          "the governing area the largest, the API 526 letter the smallest above "
-          "it), none is costed and the capital total stays complete; %d fixture "
+          "the governing area the largest, no API 526 letter selected and the "
+          "basis saying why), none is costed and the capital total stays complete; %d fixture "
           "runs: the sheet's relief {} block, a declared coefficient silent and an "
           "undeclared one announced, and 5 refusals by name (order, tubeRupture, "
           "an unnamed outlet, a supercritical fire case, a fire case with no "

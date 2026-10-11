@@ -187,7 +187,7 @@ struct ExchangerService
 //  scenario is a `values` entry under the scenario's key prefix (so the golden
 //  `equipment` kind pins it); what is here are the WORDS a number cannot
 //  carry -- which scenario, which stream, which phase, which flow regime, which
-//  one governs, which orifice letter -- and the sheet writer prints them as a
+//  one governs -- and the sheet writer prints them as a
 //  `relief {}` block.  Sheet-only, like `ExchangerService`: not emitted in the
 //  result JSON.  EMPTY (`present()` false) on every item but a relief device.
 struct ReliefScenario
@@ -204,7 +204,6 @@ struct ReliefService
     std::string                 protects;    // the protected item's id
     std::vector<ReliefScenario> scenarios;
     std::string                 governing;   // the governing scenario's prefix
-    std::string                 orifice;     // API 526 letter; empty: none selected
 
     bool present() const { return !protects.empty(); }
 };

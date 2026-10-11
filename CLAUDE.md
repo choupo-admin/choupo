@@ -2051,7 +2051,10 @@ more item (`psv`) of the PROTECTED unit, declared AFTER that unit's entry,
 its set pressure READ from the protected item's `pressureDesign` (one home,
 gauge), sized by API 520 Part I on DECLARED `blockedOutlet` / `fire`
 scenarios with the case's own Z, k and bubble point; the coefficients are
-`designDefault`s, announced when taken.  NOT COSTED through
+`designDefault`s, announced when taken.  The REQUIRED area is published and
+NO API 526 letter is selected: the letter areas are a no-grant standard's
+table, not freed by the MIT library that carries them (C16's rule), and
+`check_source_licence` refuses them by their values.  NOT COSTED through
 `EquipmentSizing::notCostedBecause` -- listed apart, never a failure, so no
 total moves or reads INCOMPLETE; an item the model COULD price but lacks an
 input for still refuses (the tray rule).  The C++ arithmetic
