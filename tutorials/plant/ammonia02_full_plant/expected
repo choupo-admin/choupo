@@ -49,11 +49,11 @@ kpi     converter              y_N2             0.215429679667   1e-4
 kpi     converter              y_NH3            0.107483153501   1e-4
 kpi     economics              COM_d            212919178.107    1e-4
 kpi     economics              FCI              55272204.6518    1e-4
-kpi     economics              IRR              0.341647911072   1e-4
-kpi     economics              NPV              103568804.819    1e-4
+kpi     economics              IRR              0.293505897522   1e-4
+kpi     economics              NPV              100252472.54     1e-4
 kpi     economics              TCI              63563035.3496    1e-4
 kpi     economics              WC               8290830.69777    1e-4
-kpi     economics              paybackYears     3.58418483862    1e-4
+kpi     economics              paybackYears     3.80462926498    1e-4
 kpi     economics              revenue          239167294.557    1e-4
 kpi     letdown                F_alpha          0.971862875259   1e-4
 kpi     letdown                F_beta           0.00750227557924 1e-4
@@ -279,3 +279,6 @@ boundary mass                   utility_excluded_kg_per_h 9007500          1e-4
 boundary global                 W_shaft_kW       28000            1e-4
 kpi     economics              C_UT             40187661.352     1e-4
 kpi     economics              C_UT_credit      0                1e-4
+kpi     economics              C_RM             122517804.658    1e-4
+kpi     economics              grossMargin_RM   116649489.899    1e-4
+kpi     economics              grossMargin_RM_UT 76461828.5474    1e-4
