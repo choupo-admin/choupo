@@ -2009,6 +2009,31 @@ equations need (M, Z, k = Cp/Cv, latent heat) taken from the engine where
 it can supply them; DISPOSAL (knock-out drum, flare, scrubber -- the C60
 Bhopal thread); and two-phase runaway venting as the bridge back to C60's
 cooling-failure lesson.  Status: dispatched 2026-10-11, after C60 merged.
+DONE 2026-10-11, merged: `overpressure` (construction, 14 steps, four
+benches) on the Process safety shelf, linked both ways with
+`process-safety`.  Engine: `propertyPoint` gains `Hvap_<comp>`
+(`src/propertyOps/PropertyEvaluator.cpp:192`, the record's Watson latent
+heat, refused at or above Tc; no golden moved).  Witnesses
+`tutorials/props/safety/relief01_ammonia_loop_gas` (both C57 converter
+feeds at relieving pressure: the 50 bar loop needs a 4.65x larger orifice,
+2976 vs 13 842 mm2 -- C60 lesson 2 seen from the relief side) and
+`relief02_acetone_fire_case` (889 kW, 7584 kg/h, 1079 mm2 at T_bubble
+394.11 K; acetone, not toluene, because toluene's Antoine record ends below
+its own Tb).  API 520/521 and ASME VIII were NOT read: the gas/liquid
+equations come from the open `fluids` library (MIT) and reproduce the
+standard's Examples 1, 2 and 5 to 1e-9; the fire equation from the DIERS
+Users Group document citing API 521 6th ed.; the page says so for each;
+Leung's omega method is NAMED, its equations absent (no open copy found).
+Validated on the merge: `--gui` 29/0, the five safety cases 5/0, `--fast`
+71/0 (+5 deliberate), `check_method_tools`.  Not seen on the WASM engine
+in a browser.  Findings outside scope: the Design Guide's relief chapter
+(i) says the +1.7 bar floor dominates under ~7 barg -- the two rules cross
+at 17 barg; (ii) claims Choupo models the relieved stream and puts the
+PSV-vent enthalpy and flare duty in the first-law ledger -- no relief model
+exists in `src/`; (iii) labels 43.2 F A^0.82 as "43-70 kW/m2" (it is a
+duty in kW for A in m2, not a flux); (iv) its tube-rupture "2/3 rule" may
+be superseded in current API 521 (unverified); `toluene.dat`'s Antoine
+range ends below its Tb; acetone, N2, H2, NH3, Ar carry no `reviewStatus`.
 
 **C60. AN EDUTOOL ON PROCESS SAFETY: GALL AND KLETZ, THE COOLING-FAILURE
 SCENARIO, AND INHERENT SAFETY ON THE AMMONIA LOOP (Vítor, 2026-10-11,
