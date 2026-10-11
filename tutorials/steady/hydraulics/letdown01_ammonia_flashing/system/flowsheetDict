@@ -1,0 +1,110 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  letdown01_ammonia_flashing -- A LARGE PRESSURE LETDOWN, WITH THE ENGINE
+  RUNNING (DEV.md 4c C64, the "Large pressure letdown" EduTool).
+
+  THE QUESTION.  The liquid ammonia that leaves a synthesis loop's
+  separator at 140 bar has to reach an atmospheric store.  That is a
+  pressure ratio of about 140, and it is taken in two throttles, each
+  followed by a drum that lets the released gas go.  What does the stream
+  look like on the far side of each valve -- its temperature, how much of
+  it is vapour, and how much SPACE it now occupies?  And what does the
+  same throttle do to a gas -- the loop purge -- let down to a fuel header?
+
+  WHERE THE STATES COME FROM.
+    * RawLiquid (0/RawLiquid) -- the converged separator liquid of
+      tutorials/plant/greenAmmoniaBasicDesign (converged/RawLiquid),
+      copied to the digit: 140 bar, 253.15 K, 2927 kmol/h of ammonia
+      carrying the H2, N2 and Ar the separator dissolved in it.
+      gui/tests/letdown.test.ts holds the copy to the plant's own file.
+    * the two pressures, 20 bar and 1.01325 bar -- the plant's own
+      LetdownHP and StorageFlash drums
+      (greenAmmoniaBasicDesign/LetdownHP/system/flowsheetDict,
+      .../StorageFlash/system/flowsheetDict).
+    * Purge (0/Purge) -- the same plant's converged purge gas (140 bar,
+      253.15 K, mostly H2 and N2), copied to the digit.
+    * 2 bar for the purge's fuel header -- AUTHOR-SET for the lesson.  The
+      plant sends its purge to a boundary and models no letdown of it; no
+      real fuel system is described by this number.
+
+  WHAT IS DIFFERENT FROM THE PLANT, AND WHY.  The plant takes each drop as
+  an ISOTHERMAL flash whose temperature it declares (253.15 K at 20 bar,
+  238.15 K at 1 atm) -- a hidden valve and a hidden heat exchanger in one
+  box (see credo01_valve_heater_drum).  Here each drop is a `valve`, an
+  isenthalpic throttle (src/unitOperations/valve/Valve.H): the outlet
+  temperature and vapour fraction are RESULTS, and the drum after it has
+  no knobs at all, inheriting T and P from the valve.  The plant's own
+  StorageFlash header names the adiabatic letdown as the real one.
+
+  WHAT THE VALVE PUBLISHES.  Besides T_out and vf, the valve's volumetric
+  flow on both sides (Q_in, Q_out, volumeRatio, rho_in, rho_out), built
+  from the package's own phase densities -- homogeneous, no slip.  The
+  liquid density is the NH3 record's Vliq carried in T by Rackett, and the
+  dissolved H2, N2 and Ar, which have no liquid density at 253 K, are
+  priced at the density of the rest; the run says so.
+
+  Package: the plant's own (Henry for the dissolved gases in ammonia, SRK
+  for the vapour), copied with its case-local Ar-NH3 pair.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    //  The first throttle: separator liquid, 140 -> 20 bar.  Below the
+    //  pressure it left the separator at, the dissolved gas comes out at
+    //  once -- the liquid was saturated with it at 140 bar.
+    {
+        name        ValveHP;
+        type        valve;
+        in          RawLiquid;
+        outputs     ( ThrottledHP );
+        operation
+        {
+            P       20 bar;
+        }
+    }
+    {
+        name        DrumHP;
+        type        isothermalFlash;
+        in          ThrottledHP;
+        outputs     ( LetdownLiquid  LetdownGas );
+        operation   { }             // NO knobs: T and P from ThrottledHP
+    }
+    //  The second throttle: 20 bar -> the atmospheric store.  Below the
+    //  ammonia's own vapour pressure, the ammonia itself boils.
+    {
+        name        ValveLP;
+        type        valve;
+        in          LetdownLiquid;
+        outputs     ( ThrottledLP );
+        operation
+        {
+            P       1.01325 bar;
+        }
+    }
+    {
+        name        DrumLP;
+        type        isothermalFlash;
+        in          ThrottledLP;
+        outputs     ( ProductNH3  FlashGas );
+        operation   { }
+    }
+    //  The gas: the loop purge, 140 -> 2 bar.  A pressure ratio of 70 --
+    //  far beyond the critical ratio of any gas.
+    {
+        name        PurgeValve;
+        type        valve;
+        in          Purge;
+        outputs     ( FuelGas );
+        operation
+        {
+            P       2 bar;          // author-set fuel header, see above
+        }
+    }
+);

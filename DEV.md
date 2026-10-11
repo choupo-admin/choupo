@@ -2013,6 +2013,34 @@ qualitative or a labelled estimate; valve-style factors (F_L, x_T) are
 reader-declared assumptions, never a transcribed table; MANY drawings and
 schematics (Vítor's explicit ask).  The engine-side valve sizer is a later
 item, not this slice.  Status: dispatched 2026-10-11.
+BUILT 2026-10-11 on branch `claude/c64-letdown`, NOT merged (the general's
+report has the validation).  CORRECTION to the dispatch measurement above:
+the plant's letdowns are 140 -> 20 bar and 20 -> 1.01325 bar (the
+separator is at 140 bar, `Separator/system/flowsheetDict`), and both are
+ISOTHERMAL flashes at a declared T, not throttles -- no valve exists in that
+plant.  `letdown` (construction, 16 steps, five benches, eight inline-SVG
+drawings) on "Hydraulics & control", not "Process safety" (the page's
+question is how a restriction takes a drop -- the pump-system page's
+neighbour; safety is linked, both ways with `overpressure` by a `leadsTo`
+each).  Engine: the `valve` publishes its volumetric flow (Q_in, Q_out,
+rho_in/out, volumeRatio, x_mass_out) and its T-Newton's maxIter 30 -> 200
+(a nearly pure liquid flashed across Psat creeps; no existing iterate
+moves).  Witnesses `tutorials/steady/hydraulics/letdown01_ammonia_flashing`
+(the plant's separator liquid and purge, copied to the digit: ValveLP
+253.02 -> 238.88 K, vf 0.0490, volume x42.6; purge 140 -> 2 bar) and
+`tutorials/props/hydraulics/letdown02_valve_fluid_properties` (purge k, Z;
+Psat_NH3 at 253.02 K).  IEC 60534 was NOT read: every valve relation via the
+open `fluids` control_valve module (MIT), F_L and x_T reader-declared with
+that library's keyword defaults.  FOUND, not fixed (Vítor's): (i) the valve
+balances on its own surface (Hliquid/Hvapour, a Watson latent and an
+ideal-gas vapour with no pressure term), so letdown01's first law is open by
+38.66 kW (pinned in check_energy_closure, the credo01 family) and a GAS
+throttle shows no Joule-Thomson effect; the fix (pricing through
+`flashState::priceState`) moves credo01/inletState01 goldens; (ii) the NH3
+record's `Vliq` 2.50e-5 m3/mol is ammonia's density at its normal boiling
+point, not at 25 C where `ThermoPackage::density` anchors it, so liquid
+ammonia comes out ~13 % dense at 253 K (cross-checked against CoolProp);
+every pump, pipe, tank and sizer pricing liquid ammonia inherits it.
 
 **C63. THE DCF GETS ITS START-UP YEARS: A MULTI-YEAR CONSTRUCTION, A
 RAMP-UP AND START-UP COSTS (Vítor, 2026-10-11, verbatim: "Sabes se foi feita

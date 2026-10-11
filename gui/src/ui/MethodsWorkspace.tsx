@@ -292,6 +292,9 @@ const ProcessSafetyTool = lazy(() =>
 const OverpressureTool = lazy(() =>
   import("./methods/OverpressureTool.js")
     .then((m) => ({ default: m.OverpressureTool })));
+const LetdownTool = lazy(() =>
+  import("./methods/LetdownTool.js")
+    .then((m) => ({ default: m.LetdownTool })));
 const WegsteinTool = lazy(() =>
   import("./methods/WegsteinTool.js")
     .then((m) => ({ default: m.WegsteinTool })));
@@ -512,6 +515,7 @@ export function MethodsWorkspace() {
             : tool === "front-end-loading" ? <FrontEndLoadingTool />
             : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "overpressure" ? <OverpressureTool />
+            : tool === "letdown" ? <LetdownTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />

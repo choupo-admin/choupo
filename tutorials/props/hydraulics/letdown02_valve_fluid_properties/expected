@@ -1,0 +1,30 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    purge                  Cp_ig            28.9239504326      1e-4
+diag    purge                  H_R              -132.650841607     1e-4
+diag    purge                  H_ig             -2297.81017849     1e-4
+diag    purge                  H_real           -2430.46102009     1e-4
+diag    purge                  P                14000000           1e-4
+diag    purge                  S_R              -0.999810503255    1e-4
+diag    purge                  S_ig             103.584345511      1e-4
+diag    purge                  S_real           102.584535008      1e-4
+diag    purge                  T                253.15             1e-4
+diag    purge                  Z                1.06874405854      1e-4
+diag    purge                  gamma            1.40342888153      1e-4
+diag    purge                  v_molar          0.000160678509513  1e-4
+diag    liquidLP               Cp_ig            34.2366654977      1e-4
+diag    liquidLP               H_R              -2189.37566723     1e-4
+diag    liquidLP               H_ig             -47485.3033251     1e-4
+diag    liquidLP               H_real           -49674.6789923     1e-4
+diag    liquidLP               P                2000000            1e-4
+diag    liquidLP               Psat_NH3         189427.488435      1e-4
+diag    liquidLP               S_R              -6.25599077911     1e-4
+diag    liquidLP               S_ig             162.157350344      1e-4
+diag    liquidLP               S_real           155.901359565      1e-4
+diag    liquidLP               T                253.0199413        1e-4
+diag    liquidLP               Z                0.626222924934     1e-4
+diag    liquidLP               Z_liquid         0.0306684054414    1e-4
+diag    liquidLP               gamma            1.32074676125      1e-4
+diag    liquidLP               v_molar          0.000658700362391  1e-4
+diag    liquidLP               v_molar_liq      3.22589432196e-05  1e-4

@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Meta-control for tutorial letdown01_ammonia_flashing -- the engine half of
+  the "Large pressure letdown" EduTool (DEV.md 4c C64).  See
+  system/flowsheetDict for what the case asks and where every number comes
+  from.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Pressure letdown: the green-ammonia separator liquid throttled 140 -> 20 -> 1 bar (flashing), and the loop purge 140 -> 2 bar (choked gas)";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}
