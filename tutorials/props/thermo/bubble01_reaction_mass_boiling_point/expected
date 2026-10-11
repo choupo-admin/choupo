@@ -1,0 +1,16 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    reactionMassBubblePoint Cp_ig            73.3777733752      1e-4
+diag    reactionMassBubblePoint H_R              0                  1e-4
+diag    reactionMassBubblePoint H_ig             -334788.670229     1e-4
+diag    reactionMassBubblePoint H_real           -334788.670229     1e-4
+diag    reactionMassBubblePoint P                101300             1e-4
+diag    reactionMassBubblePoint S_R              0                  1e-4
+diag    reactionMassBubblePoint S_ig             297.421125497      1e-4
+diag    reactionMassBubblePoint S_real           297.421125497      1e-4
+diag    reactionMassBubblePoint T                330                1e-4
+diag    reactionMassBubblePoint T_bubble         362.340104804      1e-4
+diag    reactionMassBubblePoint Z                1                  1e-4
+diag    reactionMassBubblePoint gamma            1.12779034023      1e-4
+diag    reactionMassBubblePoint v_molar          0.0270856136618    1e-4

@@ -49,7 +49,11 @@
   and the interlock at `fraction 0`.
 
   The default t_f is 50 s after the last portion, where the accumulation
-  of this dosing schedule is close to its largest.
+  of this dosing schedule is close to its largest.  That is NOT where the
+  temperature after a failure is largest: early in the dosing the
+  accumulation heats a smaller mass (Stoessel's M_f/M(t) correction), so
+  the MTSR -- the largest T_cf over every instant -- comes earlier; the
+  EduTool shows where.
 
   PEDAGOGICAL, NOT QUANTITATIVE, for the reasons batch26 gives.  One more:
   the reactor's volume is held at its declared value while the dosing adds
