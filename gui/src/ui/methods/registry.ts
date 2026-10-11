@@ -1204,8 +1204,10 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  propertyPoint witnesses compute in the browser (relief01, the ammonia
   //  loop gas; relief02, an acetone drum in a fire).  The sizing arithmetic
   //  is the page's own (overpressure.ts) -- the engine has no relief model.
-  //  No `theory`: the Theory Guide has no relief chapter; the Design Guide's
-  //  is deep-linked from the page.  First version, for Vitor's review.
+  //  `theory` is the SRK chapter, because the Theory Guide has no relief
+  //  chapter and the Z the gas equation needs is the SRK vapour root; the
+  //  Design Guide's relief chapter is deep-linked from the page itself.
+  //  First version, for Vitor's review.
   {
     id: "overpressure",
     label: "Designing for overpressure: scenarios, devices and relief sizing",
@@ -1221,6 +1223,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "needs a relief valve about four and a half times larger -- where "
       + "the relief goes after the valve, and why a runaway vent is "
       + "two-phase and larger.",
+    theory: "ch:cubic-eos",
   },
   //  Route screening (C24, 2026-09-29): three known routes to methanol
   //  through the paper filters, cheapest first -- margin, atom economy,
