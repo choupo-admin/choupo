@@ -2271,6 +2271,28 @@ probes clean on the page at 1400 and 390 px (the full walk was disturbed
 by a concurrent dev server).  OPEN: the witnesses' `constant/reactions`
 comment still calls -26.06 kJ/mol "the authoritative value" -- it goes
 with the reserved acetic-acid decision.
+SECOND REVIEW 2026-10-11 (relayed by Vítor: "Podes ver se há algo que se
+possa aceitar?"), ALL SEVEN points accepted on their content: (1) a
+runaway witness must not RUN on a known thermodynamic inconsistency -- the
+esterification is replaced by an explicitly FICTITIOUS exothermic reaction
+with coherent declared properties (the acetic-acid record stays its own
+item); (2) a flow-limited pump limits the RATE, not the TOTAL that can
+enter -- what removes the dependence on the interlock is a dosing tank
+whose whole charge, plus what has accumulated, respects the thermal
+limit; (3) the MTSR search must include the instants right after each
+dose (the page sampled 50 s after), and the page must tell apart the
+chosen instant, the estimated maximum and the engine-confirmed maximum;
+(4) the class of a chosen instant is not the class of the process, and
+MTT(t) - T_cf(t) is examined over the run, with the bubble-point pressure
+stated; (5) "refrigerated" is not a layer that cannot be switched off;
+(6) inventory is n = PV/(ZRT), not P x V, and total risk needs scenarios,
+frequencies, protections and exposure beyond sizing -- the converter-feed
+volumetric-flow ratio (~4.4x at 50 bar, with the engine's Z) is the
+concrete lesson; (7) editorial: Gall was a paediatrician and Kletz a
+chemist, not "two engineers"; caveats BEFORE the simulation; code paths
+into a collapsible technical note; minimum-boiling azeotropes named; the
+mixture cp varies with composition while the component cp are constant.
+Dispatched 2026-10-11.
 
 **C59. THE AUTOMATIC FLOWSHEET LAYOUT IS SPAGHETTI; MAKE IT READABLE, ALWAYS
 (Vítor, 2026-10-10, verbatim: "o layout do flowsheet parece esparguete!
