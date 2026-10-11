@@ -79,7 +79,10 @@ safety course*, in its own words, and it says so.
 *Engine.*  Nothing.  A grep for relief / safety valve / PSV / rupture disk /
 blowdown / flare / API 52x across `src/` returns only false positives (`PSA`
 the adsorber, `SQP` the optimiser).  There is no relief device, no scenario,
-no relief load, no orifice sizing, no depressurisation, no flare.
+no relief load, no orifice sizing, no depressurisation, no flare.  (Superseded in part, 2026-10-11, DEV.md 4c C62: the
+sizing pass now sizes a relief VALVE -- `reliefValve`, blocked-outlet and fire
+scenarios, an API 526 orifice -- as an uncosted item; still no unit relieves,
+no depressurisation, no flare.)
 
 *Foundations a relief calculation would stand on, all present:*
 

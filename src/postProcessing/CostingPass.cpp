@@ -118,8 +118,11 @@ int CostingPass::run(SimulationResult& result)
     //  the unit realises one item -- so every case that predates the column
     //  sizer keeps exactly the width, and the columns, it had.
     std::size_t wName = 14;
+    //  An item outside the costing scope gets no row, so it does not widen
+    //  the table either.
     for (const auto& [item, dim] : result.sizings)
-    { (void)dim; wName = std::max(wName, item.size() + 2); }
+        if (dim.notCostedBecause.empty())
+            wName = std::max(wName, item.size() + 2);
 
     std::cout << "  " << std::left
               << std::setw(int(wName)) << "unit"
@@ -136,9 +139,15 @@ int CostingPass::run(SimulationResult& result)
     scalar totalModule     = 0.0;
     int    failures = 0;
     std::vector<std::string> notCosted;
+    //  ITEMS OUTSIDE THE COSTING SCOPE (2026-10-11, DEV.md 4c C62): sized,
+    //  deliberately not priced, and said so by the sizer that knows why.  They
+    //  are NOT failures, so they do not make the total read INCOMPLETE; they
+    //  are listed under the totals, so the total never silently claims them.
+    std::vector<const EquipmentSizing*> outOfScope;
 
     for (const auto& [item, dim] : result.sizings)
     {
+        if (!dim.notCostedBecause.empty()) { outOfScope.push_back(&dim); continue; }
         try {
             //  AN ITEM WITH NO CONSTRUCTION MATERIAL IS NOT A REGISTRY
             //  ERROR (2026-09-26): a catalyst charge is not built of one,
@@ -195,6 +204,17 @@ int CostingPass::run(SimulationResult& result)
               << std::setw(14) << std::fixed << std::setprecision(0) << totalPurchased
               << std::setw(14) << totalBareMod
               << std::setw(14) << totalModule << "\n";
+
+    //  Printed only when such an item exists, so every other case's table
+    //  is character-for-character what it was.
+    if (!outOfScope.empty())
+    {
+        std::cout << "  NOT COSTED (outside the costing scope, not counted as"
+                     " failures -- the total above excludes them):\n";
+        for (const auto* sz : outOfScope)
+            std::cout << "    " << sz->itemId() << "  -- "
+                      << sz->notCostedBecause << "\n";
+    }
 
     //  WHERE THE MONEY IS, BY SECTOR.  Capital allocation is the question a
     //  plant's hierarchy exists to answer -- "the extraction sector is 41 %

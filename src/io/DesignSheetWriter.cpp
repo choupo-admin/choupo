@@ -88,6 +88,12 @@ std::string entry(const std::string& key, scalar v, const std::string& unit,
 {
     std::ostringstream o;
     o << "    " << std::left << std::setw(int(pad)) << key;
+    //  A KEY AS LONG AS THE PAD STILL GETS ITS SPACE (2026-10-11, C62).
+    //  `setw` is a minimum: a key of 22 characters or more ran straight into
+    //  its value (`blocked_LetdownGas_P1_abs25.21325 bar;`), which no
+    //  dictionary parser reads as two tokens.  Every key shorter than the pad
+    //  -- every key any sizer wrote before the relief valve -- is unchanged.
+    if (key.size() >= pad) o << ' ';
     if (unit == "-")
         o << "[0 0 0 0 0] " << num(v);
     else if (unit.empty())
@@ -443,6 +449,40 @@ std::size_t write(const std::string&                       caseRoot,
             keys("fromUnit", x.fromUnit);
             keys("fromRecord", x.fromRecord);
             o << "}\n";
+        }
+
+        //  ---- WHAT A RELIEF VALVE WAS SIZED FOR (2026-10-11, DEV.md 4c C62)
+        //  The WORDS of each scenario -- which stream, which phase, which flow
+        //  regime -- and which one governs; every NUMBER is in `sizing {}`
+        //  under the scenario's prefix.  Written only for a relief device, so
+        //  every other sheet is character-for-character what it was.
+        if (sz.relief.present())
+        {
+            const auto& r = sz.relief;
+            o << "\n//  What the valve was sized for.  Each scenario's numbers"
+                 " are the `sizing {}`\n//  keys that begin with its prefix;"
+                 " the governing scenario needs the largest\n//  area and sets"
+                 " `A_relief`.  NOT COSTED: no cost correlation for a relief"
+                 "\n//  device exists in this engine, and none is invented.\n"
+                 "relief\n{\n";
+            o << "    protects    \"" << r.protects << "\";\n";
+            o << "    governing   " << r.governing << ";\n";
+            o << "    //  the lettered orifice is NOT selected: the letter areas"
+                 " are in API 526,\n    //  a no-grant source, and are not"
+                 " reproduced here -- `A_relief` is the\n    //  REQUIRED"
+                 " effective area\n";
+            o << "    scenarios\n    (\n";
+            for (const auto& s : r.scenarios)
+            {
+                o << "        {\n";
+                o << "            prefix      " << s.prefix << ";\n";
+                o << "            scenario    " << s.scenario << ";\n";
+                o << "            stream      \"" << s.stream << "\";\n";
+                o << "            phase       " << s.phase << ";\n";
+                o << "            regime      " << s.regime << ";\n";
+                o << "        }\n";
+            }
+            o << "    );\n}\n";
         }
 
         //  ---- WHAT THE ITEM HOLDS (2026-10-07, DEV.md 4c C44 slice 3) --

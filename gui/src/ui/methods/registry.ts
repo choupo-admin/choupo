@@ -1206,7 +1206,9 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  C60 page: the reader drives the sizing on fluid properties two
   //  propertyPoint witnesses compute in the browser (relief01, the ammonia
   //  loop gas; relief02, an acetone drum in a fire).  The sizing arithmetic
-  //  is the page's own (overpressure.ts) -- the engine has no relief model.
+  //  is the page's own (overpressure.ts); since C62 the engine's
+  //  `reliefValve` sizer carries the same equations, held to them by
+  //  check_relief_valve.
   //  `theory` is the SRK chapter, because the Theory Guide has no relief
   //  chapter and the Z the gas equation needs is the SRK vapour root; the
   //  Design Guide's relief chapter is deep-linked from the page itself.

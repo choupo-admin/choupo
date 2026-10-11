@@ -560,11 +560,13 @@ export const OVERPRESSURE_LIMITS: readonly LessonLimit[] = [
       + "sizing constants are also derived from first principles.  Read the "
       + "standard before using any of it." },
   { id: "no-engine-model",
-    title: "Choupo has no relief model",
+    title: "Choupo sizes a relief valve; it does not model relief",
     body: "The engine computes the fluid properties (Z, k, the relieving "
-      + "temperature, the latent heat); the sizing arithmetic is this page's "
-      + "own and is not a unit operation or a sizer anywhere in src/.  No "
-      + "flowsheet case relieves, and no balance ever sees a relief stream." },
+      + "temperature, the latent heat).  This page's arithmetic is its own, "
+      + "and the engine's reliefValve sizer (a sizing-pass item, worked in "
+      + "the green-ammonia basic design) carries the same equations, held to "
+      + "the same published examples by a gate.  No flowsheet case relieves, "
+      + "and no balance ever sees a relief stream." },
   { id: "ideal-k",
     title: "k is the ideal-gas ratio",
     body: "The gas equation is derived for an ideal gas with Z as a "

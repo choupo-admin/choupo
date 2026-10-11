@@ -107,6 +107,20 @@ extern const Assumption vesselLoverD;         //  3.0  -- and it is NOT 2.5
 extern const Assumption columnDisengagement;  //  m, above the top tray
 extern const Assumption columnSump;           //  m, below the bottom tray
 
+//  THE RELIEF VALVE'S COEFFICIENTS AND BACK PRESSURE (2026-10-11, DEV.md 4c
+//  C62).  The preliminary-sizing values API 520 Part I's equations are used
+//  with before a vendor's certified numbers exist, as the open `fluids`
+//  implementation carries them (fluids/safety_valve.py, MIT; the standard
+//  itself was NOT read).  Each is the vendor's or the installation's number in
+//  a real design, which is why each is announced when it is taken.
+extern const Assumption reliefKdVapour;       //  0.975
+extern const Assumption reliefKdLiquid;       //  0.65
+extern const Assumption reliefKb;             //  1.0
+extern const Assumption reliefKc;             //  1.0
+extern const Assumption reliefKw;             //  1.0
+extern const Assumption reliefKv;             //  1.0
+extern const Assumption reliefBackPressure;   //  0 Pa, gauge
+
 //  The declared value, or `a.value` ANNOUNCED.
 //
 //  On the default path it does three things and they are one act: it prints

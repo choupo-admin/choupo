@@ -47,6 +47,17 @@
                       the bed's envelope.  Each bed is its own shell here;
                       a real converter stacks them in one.
 
+    the relief valves (DEV.md 4c C62)
+                      `reliefValve` items: one more item of each PROTECTED
+                      unit (design/<unit>/psv), its set pressure READ from
+                      that unit's sized pressureDesign, sized by API 520
+                      Part I on every DECLARED scenario (blockedOutlet,
+                      fire) and governed by the largest area.  NOT COSTED --
+                      no relief-device cost correlation exists in this
+                      engine, so the capital total is unchanged and the
+                      costing table lists them as NOT COSTED.  README, "The
+                      relief valves", has the table and what it does not say.
+
   WHAT IS NOT DECLARED THAT THE BASE CASE DECLARED: the converter's
   inventory (the bed voids).  The `pfr` sizer publishes no held volume of
   gas, so the beds are listed as NOT DECLARED rather than given one.
@@ -225,6 +236,57 @@ sizing
                         corrosionAllow 0.003;  jointEfficiency 1.0; }
           inventory { held ( { stream ProductNH3;    fraction 0.50; }     // liquid level -- ASSUMED
                              { stream FlashGas;      fraction 0.50; } ); } }
+
+        //  ---- the pressure-relief valves (DEV.md 4c C62; see the header) --
+        //  One entry per PROTECTED unit, AFTER that unit's own entry: the set
+        //  pressure is READ from the item sized above (its pressureDesign,
+        //  gauge), never typed here.  `material` is the valve BODY.  Each
+        //  scenario is the designer's judgement of what can happen; the
+        //  valve is sized on the one needing the largest area.
+        //  No `Kd`, `Kb`, `Kc`, `Kw`, `Kv` or `backPressure` is declared, so
+        //  the engine's preliminary-sizing defaults are taken and ANNOUNCED
+        //  (`[assumed]`, and `assumed (...)` on each sheet): declare the
+        //  vendor's certified numbers and the flare header's back pressure to
+        //  own them.
+        { unitName N2Boost;      type reliefValve;  material carbonSteel;
+          designRules { scenarios ( { scenario blockedOutlet; } ); } }   // discharge closed: the whole N2 flow
+        { unitName MakeupComp1;  type reliefValve;  material carbonSteel;
+          designRules { scenarios ( { scenario blockedOutlet; } ); } }
+        { unitName MakeupComp2;  type reliefValve;  material carbonSteel;
+          designRules { scenarios ( { scenario blockedOutlet; } ); } }
+        { unitName RecycleComp;  type reliefValve;  material SS304;
+          designRules { scenarios ( { scenario blockedOutlet; } ); } }
+        //  The beds: a blocked converter outlet, the loop flow still coming.
+        //  NO fire case: a bed holds gas and no liquid -- nothing boils to
+        //  carry the fire's heat away, so a relief valve does not protect a
+        //  gas-filled shell in a fire (its wall overheats first); that is a
+        //  depressuring / fireproofing question, not a relief load.
+        { unitName Bed1;  type reliefValve;  material SS316;
+          designRules { protects shell;  scenarios ( { scenario blockedOutlet; } ); } }
+        { unitName Bed2;  type reliefValve;  material SS316;
+          designRules { protects shell;  scenarios ( { scenario blockedOutlet; } ); } }
+        { unitName Bed3;  type reliefValve;  material SS316;
+          designRules { protects shell;  scenarios ( { scenario blockedOutlet; } ); } }
+        //  The three drums: either outlet can close (the gas line, or the
+        //  level-controlled liquid line), and a pool fire boils the liquid
+        //  their declared `inventory` holds -- its `fraction` is the level.
+        //  environmentFactor 1.0 = a bare vessel; drainage adequate = prompt
+        //  fire-fighting and drainage.  Both AUTHOR-SET.
+        //  The Separator has NO fire case: at its fire relieving pressure
+        //  (1.21 x 167 barg) the liquid ammonia is above its critical
+        //  pressure and does not boil -- declare it and the run refuses by
+        //  name; that is a supercritical, transient calculation.
+        { unitName Separator;    type reliefValve;  material SS304;
+          designRules { scenarios ( { scenario blockedOutlet;  outlet UnreactedGas; }
+                                    { scenario blockedOutlet;  outlet RawLiquid; } ); } }
+        { unitName LetdownHP;    type reliefValve;  material SS304;
+          designRules { scenarios ( { scenario blockedOutlet;  outlet LetdownGas; }
+                                    { scenario blockedOutlet;  outlet LetdownLiquid; }
+                                    { scenario fire;  environmentFactor 1.0;  drainage adequate; } ); } }
+        { unitName StorageFlash; type reliefValve;  material SS304;
+          designRules { scenarios ( { scenario blockedOutlet;  outlet FlashGas; }
+                                    { scenario blockedOutlet;  outlet ProductNH3; }
+                                    { scenario fire;  environmentFactor 1.0;  drainage adequate; } ); } }
     );
 
     //  ---- storage: attached to a boundary stream (see the header) ----

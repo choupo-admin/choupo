@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 157 records already exist
+## 1. Why an index, when 158 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 157 design records, **106 state a rejected alternative and 51 do not** —
+- Of 158 design records, **107 state a rejected alternative and 51 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -67,6 +67,7 @@ direction is an error.
 
 | record | kind | alt | status |
 |---|---|---|---|
+| [`a-relief-valve-is-a-sized-item.md`](../design/a-relief-valve-is-a-sized-item.md) | ADR | yes | **SHIPPED 2026-10-11 on a branch, not merged** -- commission C62 on a stated default: a pressure-relief valve is a SIZING-PASS item (`reliefValve`), one more item (`psv`) of the unit it protects, its set pressure READ from that item's `pressureDesign`, sized by API 520 Part I on DECLARED `blockedOutlet` and `fire` scenarios with the case's own Z, k and bubble point, the governing one the largest area (the REQUIRED area; NO API 526 letter -- the letter areas are a no-grant standard's table, removed on the commander's ruling, and `check_source_licence` refuses them by value), and NOT costed (`notCostedBecause`: listed apart, the total neither moves nor reads INCOMPLETE).  The C++ arithmetic (`ReliefArithmetic.H`) is held to the overpressure EduTool's TypeScript by `check_relief_valve` (7 by-hand sabotages, one survived and is recorded).  REJECTED: a relief UNIT that relieves a stream; typing the set pressure; a default scenario. |
 | [`a-solid-in-a-declared-reaction-set.md`](../design/a-solid-in-a-declared-reaction-set.md) | ADR | yes | **SHIPPED 2026-09-27** -- commission C14 slice 2: `equilibriumReactor` carries a PURE-SOLID phase (graphite): a solid participant leaves ln Q and enters ln K through its pure-solid standard potential, its column carries ln a_s while ABSENT and n_s/F while PRESENT, and the phase set is decided as the `gibbsReactor` decides it (solid-free solve, activity test, re-solve with it present); a pure-solid component no declared reaction touches publishes its activity from the outlet's element potentials, refused by name where the fluid has none.  ONE home with slice 1 (`PureSolidPhase.{H,cpp}`: the rung, the threshold, the verdict, the KPI names), 33 of 33 gibbs/REquil/gibbsMap cases byte-identical against the parent build.  Witness `equil04_reforming_carbon_declared_pathways` (Gibbs and the complete set deposit 0.217 mol graphite per mol CH4; the list without Boudouard and cracking forms none and publishes a_C 1.580, a supersaturated outlet the declaration asserts); EduTool `declared-pathways` example `carbon-formation`.  REJECTED: pricing the solid inside `Reaction::equilibrium`, ln n for a solid, a present-mode-first phase test, a single chosen route for the observer's activity |
 | [`an-equilibrium-that-runs-to-completion.md`](../design/an-equilibrium-that-runs-to-completion.md) | ADR | yes | **SHIPPED 2026-09-27** -- follow-up to C11: `equilibriumReactor` solves on x = ln n with the INVARIANTS of the declared set (W (n - n0) = 0, nu w = 0) instead of on the extents, so a reaction that runs almost to completion converges (ammonia to NO at 1100 K, ln Kp 121.5: NH3 at 1.7e-14 of the outlet, where the extent solver stalled at residual 17.86 behind its 1e-12 floor and its subtraction); the C11 500 K stall had the same cause.  Analytic Jacobian, independence checked on nu up front (the refusal names the reaction), step control after Gordon & McBride's CEA, extents recovered by weighted least squares, ln Kp carried from `Reaction::equilibrium` (the `1e-300` floor gone); a species below a double and a Kp beyond one are ANNOUNCED.  Witness `equil03_ammonia_oxidation_declared_pathways`.  REJECTED: loosening the floor, extents with a log barrier (still a subtraction), a per-reaction change of variable, reusing the Gibbs solver with W as elements, a fallback from extents to ln n, ln n without step control (measured to fail) |
 | [`a-declared-pathway-and-its-approach.md`](../design/a-declared-pathway-and-its-approach.md) | ADR | yes | **SHIPPED 2026-09-27** -- commission C11: `equilibriumReactor` (the DECLARED-reaction level of equilibrium) reads `temperatureApproach` as a MAGNITUDE, global or per reaction in constant/reactions (0 exempts), its sign assigned PER REACTION from the thermicity AS IT RUNS (a probe solve at the physical T; sign(extent) x dH as written), the rule in ONE home (`src/unitOperations/reactor/TemperatureApproach.H`) that `GibbsReactor::approachDirection` now calls too; the reactor stays isothermal, only each Kp moves; absent the key, 29 of 29 gibbs/REquil/gibbsMap cases byte-identical against the parent build.  Witness `equil02_methanol_declared_pathways`: one syngas, Gibbs over every species makes methane, the complete reaction set reproduces it, the list without methanation makes methanol; EduTool `declared-pathways` (Vitor's scope change: a new tool, not a third page).  REJECTED: the as-written sign (it moves a backward-running reaction past equilibrium, and the witness's own shift runs backward); inventing a graphite record or a catalyst citation; loosening the interior floor to force the Ostwald witness.  NOT BUILDABLE, recorded: carbon deposition (no solid-carbon record, no pure-solid phase -- both built for the `gibbsReactor` on 2026-09-27 by C14 slice 1, `graphite.dat` + `GibbsMethod::solve`, witness `gibbs11_carbon_deposition`; this reactor's half BUILT the same day by slice 2, see `a-solid-in-a-declared-reaction-set.md`, witness `equil04_reforming_carbon_declared_pathways`) and ammonia oxidation (ln K 121.5, the unconverted NH3 below the extent formulation's resolution) -- the second BUILT the same day, see `an-equilibrium-that-runs-to-completion.md` |
@@ -311,7 +312,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**51 of 157 records state no rejected alternative.**  For a FORUM or a STUDY
+**51 of 158 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

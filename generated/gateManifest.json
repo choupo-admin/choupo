@@ -933,8 +933,8 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 1180 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (6 card(s)).",
-      "seconds": 0.7
+      "claim": "check_source_licence: OK -- 1180 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 13705 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (6 card(s)).",
+      "seconds": 3.9
     },
     "check_species_citation": {
       "exit": 0,
@@ -1150,6 +1150,11 @@
       "exit": 0,
       "claim": "check_unit_duty_allocation: OK -- every boundary heat duty a unit publishes reaches the utility allocation through ONE home (reporting::unitHeatDuties); source: one home, 6 duty port(s) read; witness: Converter -> steamGenerationHP, credit -15635712 EUR/yr, 1 unserved counted; coverage: 16 published duty/duties over 6 case(s), each with a row; undeclared: auto-pick coolingWater, never the credit; refusals: 4/4 fired with their reason.  NOT CHECKED: whether a declared price is right, the GUI half (gui/tests/reactorDutyStub.test.ts), and the pinch / utilities-consumption readers, which ask other questions.",
       "seconds": 0.8
+    },
+    "check_relief_valve": {
+      "exit": 0,
+      "claim": "check_relief_valve: OK -- the C++ relief arithmetic (ReliefArithmetic.H) reproduces the numbers the overpressure EduTool's test pins for API 520 Examples 1, 2 and 5 (1e-9), C(1.35), F2 and 1 psi (1e-12), and shares every constant with overpressure.ts; 10 relief valves of greenAmmoniaBasicDesign recompute (set = the protected item's pressureDesign, P1 from the 10 %/3 psi and 21 % ladder, every scenario's area from its published W, T, Z, k, M or rho, the fire load from the protected item's D, H and inventory level, the governing area the largest, no API 526 letter selected and the basis saying why), none is costed and the capital total stays complete; 7 fixture runs: the sheet's relief {} block, a declared coefficient silent and an undeclared one announced, and 5 refusals by name (order, tubeRupture, an unnamed outlet, a supercritical fire case, a fire case with no inventory).  NOT CHECKED: API 520/521 and ASME VIII themselves (none was read), whether a scenario is credible, and the fluid properties (the package's).",
+      "seconds": 3.3
     }
   }
 }
