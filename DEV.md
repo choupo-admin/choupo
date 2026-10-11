@@ -2042,6 +2042,21 @@ point, not at 25 C where `ThermoPackage::density` anchors it, so liquid
 ammonia comes out ~13 % dense at 253 K (cross-checked against CoolProp);
 every pump, pipe, tank and sizer pricing liquid ammonia inherits it.
 
+MERGED 2026-10-11 (C64): `letdown` on "Hydraulics & control" (the
+general's reasoned choice), 16 steps, eight SVG schematics, the ammonia
+letdown run live (witnesses `letdown01_ammonia_flashing`,
+`letdown02_valve_fluid_properties`); the valve publishes volume KPIs and
+its iteration cap is 200.  Validated on the merge: the five valve/relief
+cases 5/0, `--fast` 71/0, the general's `--gui` 31/0 (main moved only in
+DEV.md since).  FOUND, open: (i) the valve's energy balance is on its own
+surface (Watson latent, ideal-gas vapour) -- letdown01 leaves 38.66 kW
+unexplained, pinned like credo01; the fix is `flashState::priceState`
+and moves credo01/inletState01 goldens; (ii) `NH3.dat` `Vliq` is the
+density at Tb, anchored by the engine at 25 C: liquid NH3 ~13 % too dense
+at 253 K; (iii) `NH3.dat` `liquidViscosity` is regressed from Engineering
+Toolbox, a no-grant source; (iv) H2-NH3 Henry pair used ~35 K below its
+range (announced).
+
 **C63. THE DCF GETS ITS START-UP YEARS: A MULTI-YEAR CONSTRUCTION, A
 RAMP-UP AND START-UP COSTS (Vítor, 2026-10-11, verbatim: "Sabes se foi feita
 a análise económica com anos de arranque e capital circulante e fundo de
