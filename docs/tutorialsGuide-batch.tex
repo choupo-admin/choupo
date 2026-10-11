@@ -1624,6 +1624,94 @@ one isothermal batch reactor, one declared dH\_rxn, one hand-checkable jacket du
 \goldmore{13}
 \end{tutgolden}
 
+\clearpage
+\tutentry{batch26\_cooling\_failure}{tutorials/batch/reactor/batch26\_cooling\_failure}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Cooling failure on a batch esterification: isothermal at 330 K, the jacket stops at t\_f, the accumulated ethanol drives T to the MTSR}
+\begin{tutnarrative}
+a BATCH exothermic reaction held at T\_p by its jacket, and what happens when the jacket stops.
+
+The reaction is batch02's mass-conserving esterification, AcOH + EtOH $\to$ EtOAc + H2O, first order in ethanol, with the heat of reaction the engine resolves from the species' standardThermochemistry (printed in the run log, per mol of ethanol). The whole charge -- equimolar acid and ethanol -- is in the vessel at t = 0. That is what makes a batch the WORST case for thermal safety: at t = 0 all of the reactant is unconverted, so a cooling failure at the start releases the whole adiabatic temperature rise.
+
+THE SCENARIO (the recipe below):
+
+t < t\_f isothermal at T\_p = 330 K; the jacket removes the heat of reaction (the energy ledger records that duty) t = t\_f `setParameter reactor adiabatic 1` -- the jacket stops t > t\_f adiabatic: the ethanol still unconverted at t\_f (the ACCUMULATION, X\_ac) reacts and heats the mass to T\_cf
+
+The thermal-safety estimate is T\_cf = T\_p + X\_ac $\ast$ dT\_ad (a batch's mass does not change, so Stoessel's semi-batch mass correction is 1), with dT\_ad the adiabatic rise of the full charge from T\_p (run this case with the failure at t = 0 to have the engine compute it). The engine's T\_cf is T\_final of a failure run; the EduTool puts the two side by side. The MTSR is the largest T\_cf over every failure instant: for a batch, the failure at t = 0.
+
+`value 0` on the same event keeps the jacket working: the same case then runs the normal isothermal batch, which is how the EduTool draws X\_ac(t).
+
+PEDAGOGICAL, NOT QUANTITATIVE (the batch02/batch06 caveat, repeated): a thermal-safety teaching witness -- neither its kinetics nor its thermal excursion are data for real acetic acid / ethanol esterification. The Arrhenius constants are illustrative (constant/reactions); the liquid heat of reaction the run prints is several times too large, because aceticAcid.dat pairs a MONOMER ideal-gas formation datum with a heat of vaporisation to the DIMERISED vapour (DEV.md 4c C60, a curation decision reserved for the owner; this case does not change the record); the liquid heat capacities are constant (degree-0 polynomials); and the vessel has no vapour phase -- past the mixture's boiling point a real open vessel would boil and a closed one would pressurise. The MTSR is defined on exactly that hypothetical, which is why it is compared with the boiling point (MTT) rather than trusted beyond it.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{2.43798975002e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{2.40048221541e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{2.37547719233e-15}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{2.43798975002e-15}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{1}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{2.60132730347e-15}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{0.98161925}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{0.98161925}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{2.55351295664e-15}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{0.0185}
+\goldmore{21}
+\end{tutgolden}
+
+\clearpage
+\tutentry{batch27\_semibatch\_dosing}{tutorials/batch/reactor/batch27\_semibatch\_dosing}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (dosingTank) at (0.0,-1.7) {\textbf{dosingTank}\\[-1pt]{\tiny batchAccumulator}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (heldFeed) at (0.0,-3.4) {\textbf{heldFeed}\\[-1pt]{\tiny batchAccumulator}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Semi-batch esterification: ethanol dosed in 16 portions over 4 h at 330 K, the jacket fails after the last portion, the small accumulation keeps the MTSR low}
+\begin{tutnarrative}
+the SAME reaction as batch26, the same totals, the same T\_p, run SEMI-BATCH: the acetic acid is in the reactor and the ethanol is DOSED, a sixteenth at a time every 15 minutes, over four hours. Then the jacket fails.
+
+This is the inherently safer answer to batch26 in Kletz's sense of limiting what is there: a batch reactor holds all of its reactant at t = 0; a dosed reactor holds only what it has been given and has not yet converted. That unconverted inventory -- the ACCUMULATION -- is what a cooling failure turns into temperature, so limiting it limits the maximum temperature of the synthesis reaction (MTSR). The lever is the DOSING RATE against the REACTION RATE: dose faster than the reaction consumes and the reactor fills with unreacted ethanol, which is a batch again.
+
+THE DOSING is written as portions, each a recipe `transfer` from the dosing tank, because a recipe transfer is what choupoBatch has: a batchReactor carries no continuous feed. Portion-wise addition is also how a hazardous reagent is often added in practice. Each transfer moves a FRACTION of what is left in the tank (1/16, then 1/15, ... then 1), so every portion is 1/16 of the ethanol. The dosing tank is at T\_p, so the feed brings no sensible-heat effect (a cold feed would take some of the reaction's heat; this case leaves that out on purpose).
+
+THE TWO SAFETY EVENTS come first in the recipe:
+
+1. the COOLING FAILURE at t\_f (`adiabatic 1`; `0` keeps the jacket); 2. the DOSING INTERLOCK at the same instant: the methodology's assumption that the feed stops when the cooling does. A recipe transfer has no valve, so the interlock is written as what it achieves -- everything left in the dosing tank is moved to `heldFeed`, a vessel nothing is ever dosed from, and every later portion moves a fraction of an empty tank, which is nothing. `fraction 0` is the interlock FAILING: nothing is held back, the pump keeps dosing into an adiabatic reactor. In a plant an interlock is a sensor, a logic solver and a valve, each of which can fail; here it is one line, and the EduTool runs it both ways.
+
+Normal operation, for the accumulation curve: the failure at `value 0` and the interlock at `fraction 0`.
+
+The default t\_f is 50 s after the last portion, where the accumulation of this dosing schedule is close to its largest. That is NOT where the temperature after a failure is largest: early in the dosing the accumulation heats a smaller mass (Stoessel's M\_f/M(t) correction), so the MTSR -- the largest T\_cf over every instant -- comes earlier; the EduTool shows where.
+
+PEDAGOGICAL, NOT QUANTITATIVE, for the reasons batch26 gives. One more: the reactor's volume is held at its declared value while the dosing adds liquid (a batchReactor does not grow its volume on a charge). The rate law is first order in ethanol and zero order in the acid, so the extent rate k n\_EtOH does not depend on V and this changes no number here; a rate law with a concentration term of another order would be wrong.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{6.37628088467e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{6.15123567698e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{6.87638134621e-15}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{6.87638134621e-15}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{16}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{6.78607122645e-15}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{0.98161925}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{0.98161925}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{6.66133814775e-15}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{0.0185}
+\goldmore{57}
+\end{tutgolden}
+
 \subsection{recipes}
 \grouptheory{recipes}
 \clearpage

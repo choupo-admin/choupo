@@ -2269,7 +2269,12 @@ its own total.  Making `design`/`economics` default is RESERVED.  Gate:
 **A NUMBER YOU CANNOT TRACE IS A NUMBER YOU CANNOT DEFEND — leg 4 (2026-08-27).**
 `DictAudit` reaches `postDict`, `solverDict` and `outerDict` (PURE parameter
 files; the walker reads `entries_` DIRECTLY — never `subDict()`, which
-`note()`); `constructionPeriod` ANNOUNCES and does not refuse; the costing
+`note()`); `constructionPeriod` is HONOURED since 2026-10-11 (DEV.md 4c
+C63: a declared `capitalSchedule`, refused when N > 1 and absent, beside an
+opt-in `rampUp` and `startupCostFraction`; year 0 stays the end of
+construction, the placement is CAPCOST 2017's, a case declaring none of it
+is unchanged; record
+[`docs/design/the-start-up-years-of-a-cash-flow.md`](docs/design/the-start-up-years-of-a-cash-flow.md)); the costing
 table prints its own arithmetic (a provenance line too coarse to reproduce is
 worse than none); a missing-key refusal names the closest match.  NEVER EDIT
 `bin/runTests` WHILE IT RUNS; `bin/curate/runtests_verdict.py` is the ONE home

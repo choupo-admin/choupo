@@ -1,0 +1,188 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  economics03_startup_years -- THE START-UP YEARS OF A DISCOUNTED CASH FLOW
+  (DEV.md 4c C63).  The plant, its sizing and its costing are
+  ammonia02_full_plant's, unchanged; only the `economics {}` block below
+  differs, by four keys:
+
+      constructionPeriod  3;                 capital over THREE years
+      capitalSchedule     ( 0.3 0.5 0.2 );   FCI share at the END of each
+      rampUp              ( 0.6 0.85 );      production in operating years 1, 2
+      startupCostFraction 0.10;              start-up cost = 0.10 x FCI, year 1
+
+  Every one of them is an AUTHOR-SET ASSUMPTION, not a datum.
+
+  THE TIMELINE (CAPCOST 2017's placement; the reference instant is
+  Choupo's -- see EconomicsPass.cpp `readTimeline`).  Year 0 is the END of
+  construction, the start-up instant.  Construction year k of 3 spends its
+  fraction at t = k - 3, so years -2, -1, 0; the working capital is invested
+  at t = 0; the plant operates in years 1..15.  Every year is discounted by
+  1/(1+i)^t, so an outflow at t < 0 is COMPOUNDED to start-up.
+
+  CHECK IT BY HAND (i = 0.10, tau = 0.21; the run prints every input):
+    FCI = 55 272 205,  WC = 0.15 FCI = 8 290 831,  d = FCI/9 = 6 141 356,
+    R = 239 167 295,   C_OL = 1 041 193,  C_RM + C_UT = 162 705 466,
+    COM_d,t = 0.180 FCI + 2.73 C_OL + 1.23 p_t (C_RM + C_UT)
+            = 12 791 455 + p_t x 200 127 723.
+    t = -2   -0.3 FCI          = -16 581 661   x 1.21 = -20 063 810
+    t = -1   -0.5 FCI          = -27 636 102   x 1.10 = -30 399 713
+    t =  0   -0.2 FCI - WC     = -19 345 272   x 1.00 = -19 345 272
+    t =  1   p = 0.6:  R_1 = 143 500 377,  COM_d,1 = 132 868 089,
+             start-up S = 0.10 FCI = 5 527 220 (an EXPENSE of year 1),
+             taxable = R_1 - COM_d,1 - S - d = -1 036 288  (a tax CREDIT,
+             -217 621: the pass's standing convention that a loss offsets
+             other income),
+             CF_1 = taxable x (1 - tau) + d = 5 322 688
+    t =  2   p = 0.85: R_2 = 203 292 200,  COM_d,2 = 182 900 020,
+             CF_2 = (R_2 - COM_d,2 - d)(1 - tau) + d = 17 399 508
+    t >= 3   full production, CF = 22 025 697 (20 736 012 once the
+             depreciation ends after year 9; + WC at t = 15)
+  The run's NPV is 78 315 195 EUR at start-up (58 839 365 at the start of
+  construction, CAPCOST's year 0: / 1.1^3), the IRR 22.06 %, the discounted
+  payback 5.43 operating years.  The one-year twin, ammonia02_full_plant
+  with one construction year and none of these keys, would be at
+  NPV 103 568 805 and IRR 34.16 % -- the difference is what the start-up
+  years cost.
+
+  THE WORKING CAPITAL DOES NOT FOLLOW THE RAMP-UP: it is invested in full at
+  t = 0, and the run says so ([assumed] economics).
+
+  What follows is ammonia02_full_plant's own header, unchanged.
+
+  postDict -- the ammonia plant's sizing -> costing -> economics chain.
+    1. sizing     -- the two COMPRESSORS (by shaft power), the two HEAT
+                     EXCHANGERS (by area), and -- through the `vessel` sizer on
+                     an AUTHOR-DECLARED basis -- the CONVERTER (catalyst volume)
+                     and the two flash DRUMS (vapour residence).  The
+                     equilibrium units emit no volume of their own, which is
+                     correct: an equilibrium reactor has no length scale.  What
+                     is NOT sized at all: T101, T201, the mixer and the purge
+                     splitter, so this CAPEX is PARTIAL in units as well as in
+                     provenance.
+    2. costing    -- Guthrie/Turton purchased + bare-module cost, CEPCI-updated
+                     to 2026, in EUR.  The syngas compressor is far above the
+                     correlation's 3000 kW range -> the pass flags the
+                     extrapolation.
+    3. economics  -- revenue (NH3), raw-material (syngas makeup), utilities
+                     (compressor electricity + cooling water), DCF -> NPV, IRR,
+                     payback.  Prices in constant/economics (refuse if absent).
+
+  READ THIS ABOUT THE RETURNS.  The OPEX + revenue side is realistic and
+  feedstock-DOMINATED (raw materials the bulk of COM_d -- exactly why ammonia
+  margins track the gas price).
+
+  WHAT STAGE OF DESIGN THIS IS, said where a reader audits rather than left to
+  be inferred.  The economics block declares `estimateClass 4` -- AACE 18R-97's
+  STUDY OR FEASIBILITY class, 1-15 % of complete project definition, method
+  "equipment factored or parametric", and the converter is sized by exactly
+  that method: a SPACE VELOCITY applied to this run's own throughput,
+  DECLARED in grammar the engine parses --
+
+      spaceVelocity 20000;  spaceVelocityBasis normal;  flowKey N_in_mol_s;
+
+  so V = Q_normal(inlet) / SV, with Q_normal the converter INLET gas at
+  273.15 K and 101325 Pa (ideal gas), the convention published GHSVs use,
+  and the volume moves with the flowsheet instead of standing still while
+  it does.  Until 2026-10-05 the volume was a TYPED 80 m3 under a comment
+  claiming ~20000 Nm3/(m3 h); measured, 80 m3 at this run's inlet was
+  11 360 Nm3/(m3 h), and Vitor ruled that the case declare the rule instead
+  (DEV.md C35 item 9).  The 20000 is an ASSUMED feasibility figure, not a
+  datum for this catalyst.  It is the first of the three volumes a
+  converter gets in a real project -- space velocity at feasibility, an
+  integrated rate law with an effectiveness factor at FEED, a licensor's
+  guaranteed charge at detailed design -- and it is enough to cost a vessel and
+  not enough to build one.  The design sheet says so in its own `basis` field
+  ("catalyst V = Q_normal/SV ..."), and this paragraph says why that is the
+  RIGHT answer at this class rather than a gap.  Read `ammonia03_quench_converter` for the
+  opposite posture: it declares no volume, refuses to cost the converter, and
+  says that inventing one converts `unsized` into `falsely sized`.  Both are
+  honest; they answer different questions.
+
+  With the sized loop units costed -- and the high-pressure CONVERTER + SEPARATOR
+  (thick ASME walls at 220 bar, F_P ~ 36) now DOMINATING the CAPEX -- the
+  in-battery-limits FCI is ~55 MEUR (it was ~67 MEUR with the typed 80 m3
+  converter); the loop shows NPV ~ +104 MEUR at 10%, IRR ~ 34%, payback
+  ~ 3.6 yr (the economics KPIs as of 2026-10-05; the golden is the
+  authority, these words are not) -- healthy because the NH3-vs-syngas
+  price spread here is a mid-cycle teaching figure and the syngas island's
+  capital sits outside the battery limits.  What remains OUTSIDE this
+  battery limit is the upstream SYNGAS ISLAND (steam reformer + air separation)
+  + the refrigeration package -- a grassroots single-train plant is ~300-500 MEUR
+  of total FCI.  So this is a faithful SYNTHESIS-LOOP appraisal, honest that the
+  syngas generation is a separate (larger) investment.  Within the loop, every
+  unit operation carries its own sizing and cost -- the doctrine Vitor set.
+\*---------------------------------------------------------------------------*/
+sizing
+{
+    units
+    (
+        { unitName makeupComp;  type compressor;  material SS316;
+          designRules { pressureDesign 250.0; } }
+        { unitName recycleComp; type compressor;  material SS316;
+          designRules { pressureDesign 205.0; } }
+        { unitName FEHE;        type shellTubeHX;  material SS316;
+          designRules { U 550.0;  LMTD 150.0;  pressureDesign 220.0; } }
+        { unitName waterCooler; type shellTubeHX;  material carbonSteel;
+          designRules { U 700.0;  LMTD 60.0;   pressureDesign 200.0; } }
+
+        // The CONVERTER: a high-pressure catalyst vessel.  The volume is NOT
+        // here; the RULE is (see the header): V = Q_normal(inlet) / SV.
+        // Sized as a tall thick-wall vessel at 220 bar.
+        { unitName converter;   type vessel;  material SS316;
+          designRules { spaceVelocity 20000;        // 1/h, Nm3 gas / (m3 catalyst h) -- ASSUMED
+                        spaceVelocityBasis normal;  // the basis the number is quoted on
+                        flowKey N_in_mol_s;         // GHSV is on the INLET gas
+                        L_over_D 6.0;  pressureDesign 220.0;
+                        corrosionAllow 0.004; } }
+
+        // The high-pressure SEPARATOR: a knock-out drum, ~45 s of vapour holdup.
+        { unitName separator;   type vessel;  material SS316;
+          designRules { residenceTime 45.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;  pressureDesign 220.0; } }
+
+        // The product LET-DOWN drum at 20 bar (smaller, carbon steel).
+        { unitName letdown;     type vessel;  material carbonSteel;
+          designRules { residenceTime 60.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;  pressureDesign 25.0; } }
+    );
+}
+costing
+{
+    method   Turton;
+    year     2026;
+    cepci    820;
+    cepci2001 397;
+    usdToEur 0.92;
+}
+economics
+{
+    method              discountedCashFlow;
+    projectLife         15;
+    //  THE START-UP YEARS -- the four keys this witness exists for
+    //  (DEV.md 4c C63).  Every value is an AUTHOR-SET ASSUMPTION chosen so
+    //  each key moves a number a reader can recompute; none is a datum.
+    constructionPeriod  3;                  // yr
+    capitalSchedule     ( 0.3 0.5 0.2 );    // FCI share at the END of each
+                                            // construction year (sums to 1)
+    rampUp              ( 0.6 0.85 );       // production fraction, operating
+                                            // years 1 and 2; 1 from year 3
+    startupCostFraction 0.10;               // x FCI, expensed in year 1
+    discountRate        0.10;
+    taxRate             0.21;
+    depreciation        straightLine;
+    depreciableLife     9;
+    salvageFraction     0.0;
+    workingCapital      0.15;
+    streamFactor        0.90;
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    estimateClass       4;
+    refuseOnMissingPrice 1;
+}

@@ -49,9 +49,17 @@ Description
         depreciation is NOT in COM_d (the classic double-count trap).
       DCF -------------------------------------------------------------
         d_t  = FCI / depreciableLife               (straight line)
-        CF_t = (R - COM_d - d_t)*(1-tau) + d_t
-        timeline: -FCI at year 0; -WC at startup; +WC (untaxed) and
-        salvage*(1-tau) at end-of-life.
+        CF_t = (R_t - COM_d,t - S_t - d_t)*(1-tau) + d_t
+        timeline: year 0 = END of construction (start-up).  Construction
+        year k of Nc (`constructionPeriod`) spends its `capitalSchedule`
+        fraction of FCI at t = k - Nc <= 0; -WC at t = 0; operation in
+        years 1..projectLife at the `rampUp` production fraction p_t
+        (R_t = p_t R, COM_d,t = 0.180 FCI + 2.73 C_OL + 1.23 p_t (C_RM +
+        C_UT + C_WT)); the start-up cost S = startupCostFraction x FCI is
+        expensed in year 1; +WC (untaxed) and salvage*(1-tau) at
+        end-of-life.  One construction year and no ramp-up = the old
+        timeline: -FCI - WC at t = 0, full production from year 1.  The
+        placement is CAPCOST 2017's (DEV.md 4c C63; see readTimeline).
         NPV(i) = S CF_t/(1+i)^t ;  IRR = root of NPV(i)=0.
 
     Glass-box / numerical-honesty credo:

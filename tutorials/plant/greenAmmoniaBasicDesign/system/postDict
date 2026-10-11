@@ -314,7 +314,18 @@ economics
 {
     method              discountedCashFlow;
     projectLife         15;          // yr -- assumption (ammonia02's)
-    constructionPeriod  1;
+    //  THE START-UP YEARS (DEV.md 4c C63).  Every number in this group is
+    //  an AUTHOR-SET ASSUMPTION for a basic design, not a datum and not
+    //  read from any source: change them and the appraisal follows.
+    constructionPeriod  3;                    // yr of construction -- assumption
+    capitalSchedule     ( 0.25 0.45 0.30 );   // FCI share spent at the END of
+                                              // each construction year (sums
+                                              // to 1) -- assumption
+    rampUp              ( 0.70 0.90 );        // production fraction of operating
+                                              // years 1 and 2, full from year 3
+                                              // -- assumption
+    startupCostFraction 0.08;                 // start-up cost, x FCI, expensed in
+                                              // operating year 1 -- assumption
     discountRate        0.10;        // assumption
     taxRate             0.21;        // assumption
     depreciation        straightLine;

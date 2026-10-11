@@ -2012,6 +2012,29 @@ them byte-identical; `ammonia02`'s NPV rows MOVE (it finally honours its 2
 years) and go to Vítor as a list before any record; `greenAmmoniaBasicDesign`
 declares the new keys as labelled assumptions, its moved rows also listed.
 Status: dispatched 2026-10-11.
+BUILT 2026-10-11 on branch `claude/c63-startup-years`, NOT merged (the
+general's report has the validation): `constructionPeriod` + a REQUIRED
+`capitalSchedule` when N > 1 (FCI share at the END of each construction
+year, sum 1, refused otherwise), `rampUp` (revenue and the variable group
+1.23 (C_RM + C_UT + C_WT) scale; 0.180 FCI and 2.73 C_OL do not),
+`startupCostFraction` (x FCI, an expense of operating year 1); the WC is
+invested in full at the end of construction and does NOT follow the ramp-up
+(announced).  The placement was read cell by cell from CAPCOST 2017; year 0
+STAYS the end of construction (start-up), so the construction years are
+compounded forward and every one-year case is byte-identical (measured on
+the ten economics cases: eight identical, ChemicalPlantTutorial one stderr
+line -- the postDict audit's menu now lists the four keys).  The
+announcement "constructionPeriod is not implemented" is retired.  Witness
+`economics03_startup_years` (recorded, new); gate `check_cost_provenance`
+arm (r) recomputes its timeline row by row (4 by-hand sabotages, none
+survived).  Moved and NOT recorded:
+ammonia02 NPV 103 568 805 -> 100 252 473, IRR 0.3416 -> 0.2935, payback
+3.584 -> 3.805 yr (its `( 0.6 0.4 )`, CAPCOST's two-year example);
+greenAmmoniaBasicDesign NPV -328 925 057 -> -329 516 187.  OPEN for Vítor:
+the start-up cost's tax treatment (expensed in year 1) and the WC-not-ramped
+rule are stated defaults no source was read for; CAPCOST's COM_d labour
+factor is 2.76 against this pass's 2.73 (found, not touched).  Record
+`docs/design/the-start-up-years-of-a-cash-flow.md`.
 
 **C62. THE GREEN-AMMONIA BASIC DESIGN: WHAT IS SIZED, AND RELIEF VALVES
 SIZED AT THIS STAGE (Vítor, 2026-10-11, verbatim: "Podes ver se o processo
@@ -4918,6 +4941,8 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
      this same plant publishes an NPV discounted over a one-year
      construction while declaring two.  Those are the things to build, and
      they are a different and much smaller job than building an appraisal.
+     (The construction schedule, the ramp-up and a start-up cost were BUILT
+     2026-10-11, C63; escalation was not.)
 
 **C5. What this file CANNOT recover.**  The assistant recovered C2-C4 by
      reading this session's own transcript on disk, which is why they are

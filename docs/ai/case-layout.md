@@ -772,6 +772,35 @@ other at COM_d per kg of product -- never at the sales price.  Published as
 object, and `reports/economics/workingCapital.csv`, with 0.15 x FCI printed
 beside it for comparison.  Worked case: `tutorials/plant/greenAmmoniaIndustrialN2`.
 
+**THE START-UP YEARS: CONSTRUCTION, RAMP-UP, START-UP COST (2026-10-11).**  Four
+opt-in keys in the same `economics {}` block; a case declaring none of them (and
+`constructionPeriod 1;` or no such key) keeps the one-year timeline, FCI and WC
+at year 0 and full production from year 1:
+
+```
+constructionPeriod  3;                  // whole years
+capitalSchedule     ( 0.3 0.5 0.2 );    // FCI share spent at the END of each
+                                        // construction year; must sum to 1
+rampUp              ( 0.6 0.85 );       // production fraction of the first
+                                        // operating years; 1 thereafter
+startupCostFraction 0.10;               // start-up cost x FCI, operating year 1
+```
+
+Year 0 is the END of construction (start-up): construction year k of N spends
+its fraction at t = k - N <= 0 (compounded to start-up by 1/(1+i)^t), the WC is
+invested at t = 0, operation runs years 1..`projectLife` -- the placement of
+CAPCOST 2017, the costing program of Turton et al.; the run also prints the NPV
+at the START of construction (its year 0).  `constructionPeriod` above 1 with
+no `capitalSchedule` REFUSES (a split nobody chose moves the NPV).  The ramp-up
+scales the revenue and the variable group of COM_d, 1.23 (C_RM + C_UT + C_WT);
+0.180 FCI and 2.73 C_OL stay.  The WC is invested in full at t = 0 and does
+NOT follow the ramp-up (announced).  The start-up cost is an expense of year 1,
+deducted from its taxable income, not depreciated.  The year-by-year table is
+printed in the run and written to `reports/economics/cashFlow.csv` (two more
+columns, `productionFraction` and `startupCost_<cur>`, only when any key is
+declared).  Worked case: `tutorials/steady/economics/economics03_startup_years`
+(its postDict checks the cash flow by hand).
+
 ## Where a numerical option lives — the four homes are INTENTIONAL
 
 Settled 2026-08-04 (Vítor, option A of

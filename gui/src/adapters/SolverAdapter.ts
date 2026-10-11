@@ -677,13 +677,21 @@ export interface RunResult {
 }
 
 /** One row of the year-by-year discounted-cash-flow table (the income / cash-
- *  flow statement).  Year 0 is construction (the investment outflow); years
- *  1..N are operating years.  Monetary fields in the report currency. */
+ *  flow statement).  Years <= 0 are construction (the capital outflows; year 0
+ *  is the end of construction, the start-up instant, where the working capital
+ *  is invested); years 1..N are operating years.  One construction year gives
+ *  rows 0..N.  Monetary fields in the report currency. */
 export interface CashFlowRow {
   year: number;
-  investment: number;     // FCI + WC outflow (year 0), <0
+  investment: number;     // capital outflow (construction years), <0
+  /** Production fraction of the ramp-up (0 in construction).  Present only
+   *  when the case declared the start-up years (DEV.md 4c C63). */
+  productionFraction?: number;
   revenue: number;
   opex: number;           // COM_d (no depreciation)
+  /** Start-up cost, an expense of operating year 1.  Present only when the
+   *  case declared the start-up years. */
+  startupCost?: number;
   depreciation: number;
   taxableIncome: number;
   tax: number;

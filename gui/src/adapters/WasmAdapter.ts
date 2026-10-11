@@ -661,6 +661,13 @@ function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
       ? e.cashFlow.map((r) => ({
           year: n(r.year), investment: n(r.investment), revenue: n(r.revenue),
           opex: n(r.opex), depreciation: n(r.depreciation),
+          //  The start-up years (C63): the engine writes these two keys
+          //  only when the case declared a timeline, so their ABSENCE is
+          //  kept as absence rather than read as a zero.
+          ...(typeof r.productionFraction === "number"
+            ? { productionFraction: r.productionFraction } : {}),
+          ...(typeof r.startupCost === "number"
+            ? { startupCost: r.startupCost } : {}),
           taxableIncome: n(r.taxableIncome), tax: n(r.tax),
           afterTaxProfit: n(r.afterTaxProfit), cashFlow: n(r.cashFlow),
           discountFactor: n(r.discountFactor), discountedCF: n(r.discountedCF),
@@ -773,6 +780,7 @@ interface ResultPayload {
     discountRate?: number; taxRate?: number;
     projectLife?: number; estimateClass?: number; accLo?: number; accHi?: number;
     cashFlow?: { year: number; investment: number; revenue: number; opex: number;
+      productionFraction?: number; startupCost?: number;
       depreciation: number; taxableIncome: number; tax: number; afterTaxProfit: number;
       cashFlow: number; discountFactor: number; discountedCF: number;
       cumulativeDCF: number }[];
