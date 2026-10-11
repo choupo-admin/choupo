@@ -1991,6 +1991,52 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C61. AN EDUTOOL ON DESIGNING FOR OVERPRESSURE (Vítor, 2026-10-11,
+verbatim: "E depois outro sobre design de sistemas para lidar com a sobre
+pressão").**  Measured before anything is proposed: the engine has NO relief
+model of any kind (`grep -i relief src/` finds only the SQP watchdog,
+`src/solver/SQP.cpp:346`); the Design Guide's rules of thumb carry a relief
+chapter that `rules-of-thumb` deep-links to.  Default scope (stated, Vítor
+may reverse it; built AFTER C60, because both edit
+`gui/src/ui/methods/registry.ts`): the relief SCENARIOS and why the sizing
+case is the worst credible one (blocked outlet, external fire, cooling or
+reflux failure, runaway reaction, tube rupture, thermal expansion); the
+DEVICES and the pressure ladder they sit on (operating, set, MAWP,
+accumulation); SIZING with the published equations, each cited to its
+standard and edition and never a table transcribed (gas/vapour critical
+flow, liquid, the fire-case heat input), with the fluid properties the
+equations need (M, Z, k = Cp/Cv, latent heat) taken from the engine where
+it can supply them; DISPOSAL (knock-out drum, flare, scrubber -- the C60
+Bhopal thread); and two-phase runaway venting as the bridge back to C60's
+cooling-failure lesson.  Status: RECORDED, not dispatched.
+
+**C60. AN EDUTOOL ON PROCESS SAFETY: GALL AND KLETZ, THE COOLING-FAILURE
+SCENARIO, AND INHERENT SAFETY ON THE AMMONIA LOOP (Vítor, 2026-10-11,
+verbatim: "Então acho que podes por isso num edutool de segurança", answering
+the commander's proposal in the same conversation: Gall's "fail-safe systems
+fail by failing to fail safe" read beside Kletz's "what you don't have can't
+leak", with Bhopal and Flixborough as the cases; lesson 1 the Stoessel
+cooling-failure scenario (MTSR against the boiling point and the
+decomposition onset, and semi-batch dosing as the inherent remedy); lesson 2
+inherent safety against economics on the C57 ammonia cases, 150 vs 50 bar).**
+Measured before dispatch: no EduTool on safety exists (registry searched;
+`rules-of-thumb` defers safety to "the named standard",
+`gui/src/ui/methods/registry.ts:549`); `batch02_adiabatic` runs the
+esterification from 320 K to ~428 K and states its kinetics are pedagogical,
+not quantitative (`tutorials/batch/reactor/batch06_adaptive_runaway/system/
+flowsheetDict:46` says the same of its twin); `batchReactor` has two modes
+only, Isothermal and Adiabatic, and a recipe `setParameter` moves only the
+setpoint T (`src/unitOperations/batch/BatchReactor.H:155`,
+`BatchReactor.cpp:569-574`), so a cooling failure mid-batch is not one
+declaration today; `dynamicCSTR` carries a jacket (`UA`, `T_jacket` as an
+MV, `src/unitOperations/dynamic/DynamicCSTR.H:184-185`); the van Heerden
+ignition/extinction tool exists (`vanheerden`) and is the CSTR's half of
+Semenov's picture, to be linked, not duplicated.  The C57 numbers: H2
+converted per pass 29.7 % at 150 bar against 19.6 % at 50 bar, gross margin
+24.58 against 23.46 M EUR/yr; whether the larger recycle at 50 bar raises
+the hazardous inventory is NOT measured and is the point that makes lesson
+2 honest.  Status: dispatched 2026-10-11.
+
 **C59. THE AUTOMATIC FLOWSHEET LAYOUT IS SPAGHETTI; MAKE IT READABLE, ALWAYS
 (Vítor, 2026-10-10, verbatim: "o layout do flowsheet parece esparguete!
 Consegues gerar um layout mais optimizado que seja fácil de ler? E fazer isso
