@@ -2069,6 +2069,37 @@ of the change); the live bundle carries `process-safety` and the live
 `choupoBatch.wasm` carries the `[cooling failure]` announcement.  Still not
 seen rendering in a browser from here (the container's proxy breaks
 headless Chromium on the live site).
+REVIEW 2026-10-11 (a second opinion Vítor relayed, "tu é que és
+responsável pelo conteúdo"): twelve points, all ACCEPTED on their technical
+content -- T_D24 is the temperature at which TMR_ad = 24 h, NOT a
+decomposition onset; the semi-batch MTSR needs the instantaneous-mass
+correction IN the equation; MTT as min(Tb_i) is a PROXY (the engine's own
+bubble point at the failure-time composition is better where it can be
+run); class 1 and class 5 sentences were absolute; a cooling failure with
+the feed still running is a COMPOUND scenario, not Stoessel's MTSR;
+inherent safety means safety no longer DEPENDS on the interlock, not that
+there is none; Bhopal's layers were unavailable, disabled or inadequate,
+not all simply "did not work"; the ammonia cases change T as well as P
+(733 -> 673 K), so the conversion drop is not pressure alone; the ammonia
+conclusion overreached (no inventory, so no verdict on total risk);
+"four times the ammonia" is the RECYCLE flow, not the inventory; and the
+thesis must say protection layers are still needed for the hazard that
+remains.  Page follow-up dispatched the same day.
+ENGINE/DATA FINDING behind point 3 (measured by the commander, NOT fixed):
+the witnesses' liquid heat of reaction is -25.95 kJ/mol at 330 K
+(`[reaction heat]` line of batch26), against about -3.6 kJ/mol measured
+calorimetrically for the liquid esterification (the reviewer's citation, to
+be read).  Cause: the liquid rung is Hf_gas - Hvap_Watson(298) + int Cp_liq
+(`src/thermo/Component.cpp`, `h_formation` cross-phase leg), and
+`aceticAcid.dat` pairs a MONOMER ideal-gas datum (`dHf_298 -432250`) with
+an `HvapTb 24390` that is the vaporisation to the ASSOCIATED (dimerising)
+vapour -- two vapour bases in one record.  Watson then gives ~28.2 kJ/mol
+at 298 K, so the engine's liquid acetic acid sits ~-460 kJ/mol where the
+tabulated liquid value is ~-484 (to be verified against the primary).  It
+reaches every LIQUID-phase use of acetic acid's enthalpy (about 37 cases
+declare the component).  RESERVED for Vítor: it is a curation decision on
+a record (which vapour basis the record speaks, and whether the dimer is
+priced) and it moves goldens across the corpus.
 
 **C59. THE AUTOMATIC FLOWSHEET LAYOUT IS SPAGHETTI; MAKE IT READABLE, ALWAYS
 (Vítor, 2026-10-10, verbatim: "o layout do flowsheet parece esparguete!
