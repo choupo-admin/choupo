@@ -286,6 +286,9 @@ const RunLogTool = lazy(() =>
 const FrontEndLoadingTool = lazy(() =>
   import("./methods/FrontEndLoadingTool.js")
     .then((m) => ({ default: m.FrontEndLoadingTool })));
+const ProcessSafetyTool = lazy(() =>
+  import("./methods/ProcessSafetyTool.js")
+    .then((m) => ({ default: m.ProcessSafetyTool })));
 const WegsteinTool = lazy(() =>
   import("./methods/WegsteinTool.js")
     .then((m) => ({ default: m.WegsteinTool })));
@@ -504,6 +507,7 @@ export function MethodsWorkspace() {
             : tool === "case-assembly" ? <CaseAssemblyTool />
             : tool === "run-log" ? <RunLogTool />
             : tool === "front-end-loading" ? <FrontEndLoadingTool />
+            : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />

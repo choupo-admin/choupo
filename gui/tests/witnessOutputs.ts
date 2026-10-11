@@ -146,6 +146,25 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "design/Chiller/shellTubeHX",
     readBy: ["hxDatasheet.test.ts"],
   },
+  //  The process-safety EduTool (C60): the two cooling-failure witnesses'
+  //  trajectories, and the converged loop streams of the two feasibility
+  //  cases the inventory lesson compares.
+  {
+    caseDir: "tutorials/batch/reactor/batch26_cooling_failure",
+    file: "trajectory.csv",
+    readBy: ["processSafety.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/reactor/batch27_semibatch_dosing",
+    file: "trajectory.csv",
+    readBy: ["processSafety.test.ts"],
+  },
+  ...["greenAmmoniaFeasibility", "greenAmmoniaFeasibility50bar"].flatMap(
+    (c) => ["Recycle", "PreheatedFeed", "HotEffluent"].map((s) => ({
+      caseDir: `tutorials/plant/${c}`,
+      file: `converged/${s}`,
+      readBy: ["processSafety.test.ts"],
+    }))),
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

@@ -7,9 +7,10 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*--------------------------------*- Choupo -*----------------------------------*\
-  0/internalStates/heldFeed -- empty.  The dosing interlock moves into it
-  whatever is left in the dosing tank when the cooling fails, so that no
-  later portion reaches the reactor (see system/flowsheetDict).
+  0/internalStates/heldFeed -- the initial HOLDUP of 'heldFeed': empty.
+  The dosing interlock moves into it whatever is left in the dosing tank
+  when the cooling fails, so that no later portion reaches the reactor
+  (see system/flowsheetDict).
 \*-----------------------------------------------------------------------------*/
 
 recordType  internalState;

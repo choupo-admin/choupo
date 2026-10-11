@@ -7,8 +7,9 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*--------------------------------*- Choupo -*----------------------------------*\
-  0/internalStates/dosingTank -- the ethanol to be dosed: the other half of
-  batch26's charge, held at T_p so that dosing brings no sensible heat.
+  0/internalStates/dosingTank -- the initial HOLDUP of 'dosingTank': the
+  ethanol to be dosed, the other half of batch26's charge, held at T_p so
+  that dosing brings no sensible heat.
 \*-----------------------------------------------------------------------------*/
 
 recordType  internalState;
