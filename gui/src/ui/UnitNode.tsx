@@ -46,7 +46,8 @@ import { UNIT_LABEL, unitIconFor } from "./unitIcons.js";
 import { symbolOf } from "../case/unitFamily";
 import { symbolSizeFor, nodeMinHeight } from "../case/nodeDetail.js";
 import { operationSchemaFor, type OperationSchema } from "../case/operationSchemas.js";
-import { COLUMN_TYPES, HEAT_DUTY_TYPES, COOLING_DUTY_TYPES, PHASE_SPLIT_TYPES } from "../case/dutyTypes.js";
+import { COLUMN_TYPES, HEAT_DUTY_TYPES, PHASE_SPLIT_TYPES } from "../case/dutyTypes.js";
+import { DUTY_TIER_COLOUR, type DutyTier } from "../case/dutySign.js";
 import { useStore } from "../state/store.js";
 import {
   type DisplayPrefs,
@@ -55,6 +56,10 @@ import {
 
 interface UnitNodeData {
   unit: UnitSpec;
+  /** A single-duty unit: the pre-run sign of its duty and the side its stub
+   *  docks on (toGraph, case/dutySign.ts). */
+  dutyQTier?: DutyTier;
+  dutyQSide?: "above" | "below";
   /** True when this node has its OWN case folder (a sector with a.cho),
    *  so double-clicking it opens that sub-case in a new window.  Computed
    *  in FlowCanvas; rendered here as a small external-link mark. */
@@ -257,12 +262,15 @@ export function UnitNode({ id, data, selected }: NodeProps) {
           dashed duty stub, so its edge docks HERE (bottom if heating, top if
           cooling) instead of bunching onto the material-stream handle. */}
       {HEAT_DUTY_TYPES.has(unit.type) && (() => {
-        const q = (unit.operation as { Q?: unknown }).Q;
-        const heating = typeof q === "number" ? q >= 0 : !COOLING_DUTY_TYPES.has(unit.type);
+        //  The side and the sign are toGraph's ONE evaluation
+        //  (case/dutySign.ts + toGraph `dutyQSide`), so the anchor sits
+        //  exactly where the stub docks.
+        const d = data as UnitNodeData;
+        const tier = d.dutyQTier ?? "unknown";
         return (
           <Handle id="Q" type="target" isConnectable={false}
-            position={heating ? Position.Bottom : Position.Top}
-            style={{ left: "50%", background: heating ? "#e8590c" : "#22b8cf",
+            position={d.dutyQSide === "above" ? Position.Top : Position.Bottom}
+            style={{ left: "50%", background: DUTY_TIER_COLOUR[tier],
                      width: 8, height: 8, pointerEvents: "none" }} />
         );
       })()}

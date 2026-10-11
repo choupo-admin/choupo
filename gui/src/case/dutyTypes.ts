@@ -36,8 +36,10 @@ export const HEAT_DUTY_TYPES = new Set([
 ]);
 
 // Of HEAT_DUTY_TYPES, the ones whose duty is COOLING by construction (stub docks
-// above, cyan ❄; a missing dict Q is read as cooling, not heating).  Shared by
-// toGraph.ts (tier guess) and UnitNode.tsx (handle side) so the two agree.
+// above, cyan ❄; a missing dict Q is read as cooling).  Read by ONE home,
+// case/dutySign.ts `preRunDutyTier`, whose answer toGraph.ts hands to the
+// stub, its wire and UnitNode.tsx's anchor -- any other type's pre-run sign
+// is what its declaration implies, or "unknown", never "heating" by default.
 export const COOLING_DUTY_TYPES = new Set(["cooler", "crystalliser"]);
 
 // Rotating equipment that crosses the boundary as ELECTRICITY: a ⚡ power stub.
