@@ -1996,7 +1996,7 @@ verbatim: "E depois outro sobre design de sistemas para lidar com a sobre
 pressão").**  Measured before anything is proposed: the engine has NO relief
 model of any kind (`grep -i relief src/` finds only the SQP watchdog,
 `src/solver/SQP.cpp:346`); the Design Guide's rules of thumb carry a relief
-chapter that `rules-of-thumb` deep-links to.  Default scope (stated, Vítor
+chapter that `rules-of-thumb` deep-links to (`docs/designGuide.tex:1841`, "Pressure relief, flare & safety basics", which names API STD 520/521/526 as the controlling standards); the `propertyPoint` props op already prints and publishes gamma = Cp/Cv and Z (`src/propertyOps/PropertyPoint.cpp:122-154`), the two fluid properties the gas-relief equation needs.  Default scope (stated, Vítor
 may reverse it; built AFTER C60, because both edit
 `gui/src/ui/methods/registry.ts`): the relief SCENARIOS and why the sizing
 case is the worst credible one (blocked outlet, external fire, cooling or
