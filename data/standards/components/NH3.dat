@@ -26,7 +26,14 @@ Pc          113.59;             // bar
 omega       0.252;              // [-]
 Tb          239.82;             // K
 HvapTb      23330;              // J/mol
-Vliq        2.50e-5;            // m^3/mol
+Vliq        2.8245e-5;          // m^3/mol, saturated liquid at 25 C (10.03 bar)
+//  THE 25 C VALUE, which is what the field means (`Component::Vliq()`,
+//  src/thermo/Component.H:97, "liquid molar volume at 25 C"; anchored there by
+//  ThermoPackage's Rackett, src/thermo/ThermoPackage.cpp:1940-1966).  Until
+//  2026-10-11 this read 2.50e-5 -- ammonia's molar volume at its NORMAL
+//  BOILING POINT (239.8 K), which the engine then carried as if it were the
+//  25 C one, so liquid ammonia came out ~13 % too dense at 253 K (DEV.md 4c
+//  C64, C65 item b).  See provenance { Vliq }.
 //  ANCHOR, never an input.  The engine DERIVES the Hildebrand
 //  parameter from HvapTb and Vliq (the tree stores no derivative);
 //  this is what ChemSep v8.3 computed independently, so the
@@ -81,6 +88,14 @@ provenance
     vaporPressure  "individual literature value -- primary re-citation pending (IST review)";
     constants      "cross-checked vs CoolProp 7.2.0 reference EOS";
     standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), ideal-gas, 298 K";
+    Vliq
+    {
+        origin       literature;
+        method       "saturated-liquid density at 298.15 K from the reference equation of state, 602.96 kg/m3 (p_sat 1.003 MPa); Vm = M/rho with M = 17.0305 g/mol";
+        citation     "Gao, Wu, Bell, Harvey & Lemmon, J. Phys. Chem. Ref. Data 52, 013102 (2023), doi:10.1063/5.0128269 (NIST manuscript, tsapps.nist.gov pub_id 935147), evaluated with CoolProp 8.0.0 (MIT), whose implementation reproduces the paper's Table 7 check values to 6e-7 and Monogenidou et al. (2018) Table 6's 600.17 kg/m3 at 300 K to 1e-7";
+        uncertainty  "0.1 % in saturated-liquid density between 195 and 400 K (the paper's own statement)";
+        note         "molar volume at the NORMAL BOILING POINT from the same equation is 2.4984e-5 m3/mol (681.65 kg/m3 at 239.82 K) -- the value this field carried until 2026-10-11";
+    }
     liquidViscosity
     {
         origin       regressed;

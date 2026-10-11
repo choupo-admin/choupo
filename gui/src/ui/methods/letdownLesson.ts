@@ -586,8 +586,10 @@ export const LETDOWN_LIMITS: readonly LessonLimit[] = [
       + "about an eighth too high: the record's Vliq matches ammonia at its "
       + "normal boiling point, not at 25 °C where the engine anchors it.  "
       + "So the inlet volumetric flows here are about an eighth low and the "
-      + "volume ratios about an eighth high.  The record is the curator's "
-      + "to correct; this page does not." },
+      + "volume ratios about an eighth high.  The catalogue record has since "
+      + "been corrected to the 25 °C value; the witness runs its own sealed "
+      + "copy of the record, which keeps the old value until the case is "
+      + "re-imported, so the numbers on this page still carry the error." },
   { id: "homogeneous",
     title: "The two phases move together",
     body: "The outlet volume is homogeneous: no slip between the vapour and "
