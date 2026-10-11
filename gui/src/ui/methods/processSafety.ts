@@ -20,17 +20,23 @@
 
   ZERO PHYSICS IN TYPESCRIPT, and what that leaves here.  Every temperature,
   every accumulation and every flow is the ENGINE's, read off a run the page
-  makes in the browser.  What this file computes is the methodology's own
-  arithmetic ON those numbers -- a ratio (the accumulation), a sum (the
-  estimate T_p + X_ac dT_ad, put beside the engine's MTSR so the two can be
-  compared), the five-way comparison that is the criticality class, and the
-  loop's per-pass conversion from the converter's own feed and effluent.
+  makes in the browser -- and so is the technical limit MTT, the bubble point
+  of the reactor contents at the failure instant, from a choupoProps run of
+  bubble01 on the reactor case's own thermodynamics.  What this file
+  computes is the methodology's own arithmetic ON those numbers -- a ratio
+  (the accumulation), Stoessel's estimate of the temperature after a cooling
+  failure, T_p + X_ac dT_ad M_f/M(t), put beside the engine's so the two can
+  be compared (the masses are the run's own amounts times the records'
+  molar masses), the five-way comparison that is the criticality class, and
+  the loop's per-pass conversion from the converter's own feed and effluent.
   Two numbers are NOT the engine's, and both are labelled as such where they
-  are drawn: the decomposition onset T_D24 (no record here carries one, so it
-  is an assumption the reader sets) and the technical limit MTT, whose
-  default is the lowest normal boiling point among the witness's own
-  component records -- a declared choice, read from the records, not a
-  bubble point the engine solved.
+  are drawn: T_D24 -- the temperature at which the adiabatic time to maximum
+  rate of the secondary decomposition is 24 h -- which no record here can
+  supply (it needs decomposition kinetics, measured by calorimetry), so it
+  is an assumption the reader sets; and the MTT PROXY the page shows beside
+  the bubble point, the lowest normal boiling point among the witness's own
+  component records, which is a number of the right size and not the
+  boiling point of the reaction mass.
 \*---------------------------------------------------------------------------*/
 
 import type { DictOverride } from "../../case/methodRun.js";
@@ -42,6 +48,10 @@ export const SAFETY_WITNESS_BATCH = "batch/reactor/batch26_cooling_failure";
 export const SAFETY_WITNESS_SEMI = "batch/reactor/batch27_semibatch_dosing";
 export const SAFETY_WITNESS_NH3_150 = "plant/greenAmmoniaFeasibility";
 export const SAFETY_WITNESS_NH3_50 = "plant/greenAmmoniaFeasibility50bar";
+/** The props witness that computes the bubble point of a reaction mass of
+ *  these four components on the reactor case's own thermodynamics (its
+ *  constant/ is a copy of batch26's sealed constant/). */
+export const SAFETY_WITNESS_BUBBLE = "props/thermo/bubble01_reaction_mass_boiling_point";
 
 const FLOWSHEET = "system/flowsheetDict";
 
@@ -50,6 +60,8 @@ const FLOWSHEET = "system/flowsheetDict";
  *  it and it is the reactant the semi-batch witness doses). */
 export const REACTOR = "reactor";
 export const DOSED = "ethanol";
+/** The four species of the reaction mass, as the records name them. */
+export const SPECIES = ["aceticAcid", "ethanol", "ethylAcetate", "water"] as const;
 
 /** The semi-batch witness's dosing schedule, as its flowsheetDict declares
  *  it.  A COPY of the dict's numbers, held to them by the test -- the page
@@ -60,6 +72,13 @@ export const PORTION_SPACING_S = 900;
  *  portion's instant would leave the order of the two events to the
  *  driver's sort, so the page never asks for one. */
 export const FAIL_AFTER_PORTION_S = 50;
+/** The portion the semi-batch knob starts after: where Stoessel's
+ *  mass-corrected estimate, read on the witness's own normal-operation
+ *  trajectory, has its maximum -- the semi-batch's MTSR instant -- held to
+ *  that trajectory by the test.  Early-middle of the dosing, NOT the last
+ *  portion: the accumulation is largest late, the mass it heats smallest
+ *  early. */
+export const DEFAULT_PORTION = 4;
 
 /** The batch witness's failure-time knob range [s]: past an hour the
  *  remaining accumulation is a few per cent and the run's horizon (6000 s)
@@ -159,13 +178,15 @@ export function at(s: Series, t: number): number {
 }
 
 export interface FailureReading {
-  /** The highest reactor temperature the run reached [K]: the MTSR when the
-   *  adiabatic leg has finished. */
+  /** The highest reactor temperature the run reached [K]: T_cf, the
+   *  temperature after a cooling failure at that run's instant, when the
+   *  adiabatic leg has finished.  (The MTSR is the largest T_cf over every
+   *  instant the failure could happen; one run is one instant.) */
   Tmax: number;
   /** The temperature at the start of the run [K] (T_p). */
   T0: number;
   /** True when the temperature was still climbing at the end of the run, so
-   *  Tmax is a lower bound on the MTSR rather than the MTSR. */
+   *  Tmax is a lower bound on T_cf rather than T_cf. */
   stillRising: boolean;
 }
 
@@ -180,9 +201,108 @@ export function readFailure(traj: TrajectoryData | undefined): FailureReading | 
   };
 }
 
-/** The methodology's estimate, MTSR = T_p + X_ac dT_ad, at every row. */
-export function mtsrEstimate(X: Series, Tp: number, dTad: number): Series {
-  return { t: X.t, y: X.y.map((x) => Tp + x * dTad) };
+/** The molar masses the witness's component records declare [kg/kmol],
+ *  read from the raw files the page runs. */
+export function recordMolarMasses(
+  raw: { [rel: string]: string } | undefined,
+): { [comp: string]: number } {
+  const out: { [comp: string]: number } = {};
+  if (!raw) return out;
+  for (const [rel, body] of Object.entries(raw)) {
+    const m = /^constant\/components\/([A-Za-z0-9_]+)\.dat$/.exec(rel);
+    if (!m) continue;
+    const mw = /^MW\s+([0-9.eE+-]+)\s*;/m.exec(body);
+    if (mw) out[m[1]!] = Number(mw[1]);
+  }
+  return out;
+}
+
+/** The mass ratio M_f / M(t) of Stoessel's semi-batch form: the mass of
+ *  everything the batch will ever be given (every vessel, the run's first
+ *  row) over the mass in the REACTOR at t.  1 for a batch, whose mass does
+ *  not change.  Null when a species has no molar mass or a column is
+ *  missing -- never a ratio of 1 put in its place. */
+export function massRatio(
+  traj: TrajectoryData | undefined, mw: { [comp: string]: number },
+): Series | null {
+  if (!traj || traj.t.length === 0) return null;
+  let Mf = 0;
+  for (const [k, v] of Object.entries(traj.vars)) {
+    const m = /\.n_([A-Za-z0-9_]+)$/.exec(k);
+    if (!m || v.length === 0) continue;
+    const w = mw[m[1]!];
+    if (w === undefined) return null;
+    Mf += v[0]! * w;
+  }
+  const cols: [number[], number][] = [];
+  for (const sp of SPECIES) {
+    const c = column(traj, `${REACTOR}.n_${sp}`);
+    const w = mw[sp];
+    if (!c || w === undefined) return null;
+    cols.push([c, w]);
+  }
+  const y = traj.t.map((_, i) => {
+    let M = 0;
+    for (const [c, w] of cols) M += c[i]! * w;
+    return M > 0 ? Mf / M : NaN;
+  });
+  return { t: traj.t, y };
+}
+
+/** Stoessel's estimate of the temperature reached if the cooling fails at
+ *  t, T_cf(t) = T_p + X_ac(t) dT_ad M_f/M(t), at every row.  `ratio` null
+ *  drops the mass correction (the constant-mass form, exact for a batch). */
+export function tcfEstimate(
+  X: Series, Tp: number, dTad: number, ratio: Series | null,
+): Series {
+  return { t: X.t, y: X.y.map((x, i) =>
+    Tp + x * dTad * (ratio ? ratio.y[i]! : 1)) };
+}
+
+/** The largest value of a series and where it is: the MTSR of an estimate
+ *  curve is its maximum over the failure instants. */
+export function maxOf(s: Series): { t: number; y: number } | null {
+  let best: { t: number; y: number } | null = null;
+  s.y.forEach((y, i) => {
+    if (Number.isFinite(y) && (best === null || y > best.y)) best = { t: s.t[i]!, y };
+  });
+  return best;
+}
+
+/** The reactor's mole fractions at t, from a run's trajectory: the
+ *  composition whose bubble point is the MTT at that failure instant. */
+export function reactorComposition(
+  traj: TrajectoryData | undefined, t: number,
+): { [comp: string]: number } | null {
+  if (!traj) return null;
+  const n: { [comp: string]: number } = {};
+  let sum = 0;
+  for (const sp of SPECIES) {
+    const c = column(traj, `${REACTOR}.n_${sp}`);
+    if (!c) return null;
+    const v = Math.max(0, at({ t: traj.t, y: c }, t));
+    n[sp] = v;
+    sum += v;
+  }
+  if (!(sum > 0)) return null;
+  for (const sp of SPECIES) n[sp] = n[sp]! / sum;
+  return n;
+}
+
+/** The four composition lines of the bubble-point witness, rewritten.
+ *  Mole fractions rounded to 1e-9 so a run key does not change on the
+ *  last digit of an interpolation. */
+export function bubbleOverrides(x: { [comp: string]: number }): DictOverride[] {
+  return SPECIES.map((sp) => ({
+    file: "system/propsDict", key: sp,
+    value: Math.round((x[sp] ?? 0) * 1e9) / 1e9, unit: "" }));
+}
+
+/** The bubble point the props run computed [K], or null. */
+export function readBubble(r: RunResult | null | undefined): number | null {
+  const op = r?.operationResults?.find((o) => o.name === "reactionMassBubblePoint");
+  const v = op?.diagnostics?.["T_bubble"];
+  return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
 /** A run-wide KPI, or null when the run did not publish it. */
@@ -193,16 +313,19 @@ export function kpi(r: RunResult | null | undefined, unit: string, key: string):
 
 // ---- The criticality classes ------------------------------------------------
 //
-//  Stoessel's five classes, as tabulated by Molecules 30 (2025) 2939, Table
-//  11, citing F. Stoessel, Thermal Safety of Chemical Processes (Wiley-VCH
-//  2008; 2nd ed. 2020).  The book itself was not read for this page; the
-//  table is the secondary source's, and the page says so.
+//  Stoessel's five classes, as tabulated by Y. Sheng et al., Molecules 30
+//  (2025) 2939, Table 11, citing F. Stoessel, Thermal Safety of Chemical
+//  Processes (Wiley-VCH 2008; 2nd ed. 2020).  The book itself was not read
+//  for this page; the table is the secondary source's, and the page says
+//  so.  The same paper (section 3.3) defines T_D24 as the temperature at
+//  which the time to maximum rate under adiabatic conditions is 24 h, read
+//  off TMR_ad(T) curves from adiabatic calorimetry -- not an onset.
 //
 //    1  T_p <= MTSR < MTT  < T_D24
 //    2  T_p <= MTSR < T_D24 < MTT
 //    3  T_p <= MTT <= MTSR < T_D24
 //    4  T_p <= MTT < T_D24 < MTSR
-//    5  T_p <  T_D24 < MTSR (with MTT on either side of MTSR)
+//    5  T_p <  T_D24 < MTSR < MTT  or  T_p < T_D24 < MTT < MTSR
 
 export type CriticalityClass = 1 | 2 | 3 | 4 | 5;
 
@@ -225,23 +348,28 @@ export function criticalityClass(
   return { cls: 3 };
 }
 
-/** What each class asks of the designer, in our words. */
+/** What each ordering implies, in our words (not a quotation).  None of
+ *  these is a verdict on a real process: a class is a screen that orders
+ *  four temperatures, and the measures are the designer's. */
 export const CLASS_MEANING: Readonly<Record<CriticalityClass, string>> = {
-  1: "the runaway cannot reach the boiling point, and decomposition is "
-    + "further away still: the process is thermally safe if the mass is "
-    + "never held for long at the MTT",
-  2: "the runaway cannot reach the boiling point, but the decomposition "
-    + "onset lies below it: safe only if the mass is not held at the MTSR "
-    + "for long",
-  3: "the runaway reaches the boiling point first, and decomposition is "
-    + "above it: the boiling (evaporative cooling, reflux or venting) is "
-    + "the barrier, and it must be designed for that duty",
-  4: "the runaway passes the boiling point and the decomposition onset "
-    + "lies beyond it: the boiling barrier must work, or decomposition "
-    + "follows",
-  5: "the decomposition onset lies below the boiling point and the "
-    + "runaway passes it: nothing in the physics stops the decomposition. "
-    + "The process must be redesigned",
+  1: "the synthesis runaway reaches neither the technical limit (MTT) nor "
+    + "T_D24: a cooling failure alone takes the mass neither to boiling nor "
+    + "into the range where the decomposition becomes fast",
+  2: "the synthesis runaway stays below both limits, but T_D24 lies below "
+    + "the MTT, so boiling would not come first to cap a later rise: the "
+    + "situation stays acceptable provided the mass is not left at elevated "
+    + "temperature for long after the failure",
+  3: "the synthesis runaway reaches the MTT but not T_D24: boiling "
+    + "(evaporative cooling, reflux or venting) can act as a barrier, "
+    + "provided the condenser or vent it relies on is designed for that duty",
+  4: "the synthesis runaway passes the MTT and would pass T_D24: boiling "
+    + "can stop it only if the evaporative cooling or relief is designed for "
+    + "that duty; if it does not act, the decomposition can be triggered",
+  5: "T_D24 lies below the MTT and the synthesis runaway passes it: the "
+    + "runaway can enter the region where secondary decomposition becomes "
+    + "fast before boiling can act.  Ordinary cooling or relief alone is "
+    + "not an adequate basis of safety; process modification should be "
+    + "considered",
 };
 
 // ---- The technical limit from the witness's own records ---------------------
@@ -249,10 +377,11 @@ export const CLASS_MEANING: Readonly<Record<CriticalityClass, string>> = {
 export interface RecordTb { component: string; Tb: number }
 
 /** Every `Tb` the witness's component records declare, read from the raw
- *  files the page runs.  The MTT default is the LOWEST: a declared choice
- *  for this page (an ideal mixture boils between its components' boiling
- *  points, and real esters, ethanol and water form azeotropes that boil
- *  lower still), never a bubble point the engine solved. */
+ *  files the page runs.  The LOWEST is the MTT PROXY the page shows beside
+ *  the engine's bubble point: a number of the right size, never the boiling
+ *  point of the reaction mass (an ideal mixture boils between its
+ *  components' boiling points, and real esters, ethanol and water form
+ *  azeotropes that boil lower still). */
 export function recordBoilingPoints(
   raw: { [rel: string]: string } | undefined,
 ): RecordTb[] {
