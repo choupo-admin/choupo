@@ -2064,6 +2064,62 @@ edges between one vessel pair are an ACCEPTED_REGRESSIONS entry in
 `batchReactor` keeps its declared volume when a charge lands in a
 non-empty vessel; (4) an isothermal charge at another temperature is reset
 to the setpoint with no energy record (`BatchUnitOperation::chargeFrom`).
+ONLINE 2026-10-11: publish-site 38140117111 succeeded (the first WASM build
+of the change); the live bundle carries `process-safety` and the live
+`choupoBatch.wasm` carries the `[cooling failure]` announcement.  Still not
+seen rendering in a browser from here (the container's proxy breaks
+headless Chromium on the live site).
+REVIEW 2026-10-11 (a second opinion Vítor relayed, "tu é que és
+responsável pelo conteúdo"): twelve points, all ACCEPTED on their technical
+content -- T_D24 is the temperature at which TMR_ad = 24 h, NOT a
+decomposition onset; the semi-batch MTSR needs the instantaneous-mass
+correction IN the equation; MTT as min(Tb_i) is a PROXY (the engine's own
+bubble point at the failure-time composition is better where it can be
+run); class 1 and class 5 sentences were absolute; a cooling failure with
+the feed still running is a COMPOUND scenario, not Stoessel's MTSR;
+inherent safety means safety no longer DEPENDS on the interlock, not that
+there is none; Bhopal's layers were unavailable, disabled or inadequate,
+not all simply "did not work"; the ammonia cases change T as well as P
+(733 -> 673 K), so the conversion drop is not pressure alone; the ammonia
+conclusion overreached (no inventory, so no verdict on total risk);
+"four times the ammonia" is the RECYCLE flow, not the inventory; and the
+thesis must say protection layers are still needed for the hazard that
+remains.  Page follow-up dispatched the same day.
+ENGINE/DATA FINDING behind point 3 (measured by the commander, NOT fixed):
+the witnesses' liquid heat of reaction is -25.95 kJ/mol at 330 K
+(`[reaction heat]` line of batch26), against about -3.6 kJ/mol measured
+calorimetrically for the liquid esterification (the reviewer's citation, to
+be read).  Cause: the liquid rung is Hf_gas - Hvap_Watson(298) + int Cp_liq
+(`src/thermo/Component.cpp`, `h_formation` cross-phase leg), and
+`aceticAcid.dat` pairs a MONOMER ideal-gas datum (`dHf_298 -432250`) with
+an `HvapTb 24390` that is the vaporisation to the ASSOCIATED (dimerising)
+vapour -- two vapour bases in one record.  Watson then gives ~28.2 kJ/mol
+at 298 K, so the engine's liquid acetic acid sits ~-460 kJ/mol where the
+tabulated liquid value is ~-484 (to be verified against the primary).  It
+reaches every LIQUID-phase use of acetic acid's enthalpy (about 37 cases
+declare the component).  RESERVED for Vítor: it is a curation decision on
+a record (which vapour basis the record speaks, and whether the dimer is
+priced) and it moves goldens across the corpus.
+REVIEW DONE 2026-10-11, merged (branch claude/c60-review, b3239460a):
+all twelve points taken; the MTT default is now the ENGINE's bubble point
+of the reactor contents at the failure instant (new props witness
+`bubble01_reaction_mass_boiling_point`, run live by the page; the min-Tb
+value stays as a labelled proxy); the semi-batch estimate with the mass
+correction tracks the engine within ~1 K over 22 failure runs (6.6 K low
+without it), which moved the worst dosing instant to portion 4; the
+acetic-acid finding is shown on the page as a limitation, reproduced from
+the records by a test (the tree's own dimer record: the saturated vapour
+is ~82 % dimer at 25 C; breaking it costs ~25.9 kJ per mol of acid, which
+brings the liquid heat of reaction to about zero).  NOT read: Golikova et
+al. 2020 (paywalled) -- cited as unread, its number not quoted; Stoessel's
+book (the mass-ratio form is read from Chen et al. 2016, which cites it);
+the Bhopal scrubber-capacity point was dropped, no read source states it.
+Validated on the branch after its last commit (main had not moved):
+`--gui` 29/0, the three cases 3/0; checkGui's off-screen and occlusion
+probes clean on the page at 1400 and 390 px (the full walk was disturbed
+by a concurrent dev server).  OPEN: the witnesses' `constant/reactions`
+comment still calls -26.06 kJ/mol "the authoritative value" -- it goes
+with the reserved acetic-acid decision.
 
 **C59. THE AUTOMATIC FLOWSHEET LAYOUT IS SPAGHETTI; MAKE IT READABLE, ALWAYS
 (Vítor, 2026-10-10, verbatim: "o layout do flowsheet parece esparguete!

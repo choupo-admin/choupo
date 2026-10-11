@@ -1,0 +1,189 @@
+// [imported] origin "data/standards/components/water.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Water  (H2O, CAS 7732-18-5)
+  Warning: Antoine fit accurate for 273-373 K only.
+           Above ~373 K use steam tables or a proper EoS (IAPWS).
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), the Antoine
+           fit, the Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).  K_b/K_f
+           and the Andrade/Vogel viscosity fits repeat the same pending
+           re-citation at their blocks; UNIQUAC r,q are the van der Waals
+           values (Abrams-Prausnitz) as used by Popken 2000, Table 2.
+\*---------------------------------------------------------------------------*/
+
+name        water;
+formula     H2O;
+CAS         7732-18-5;
+
+//  The substance-level fact the SystemClassifier contract requires of every
+//  component inside an electrolyte system (settled 2026-07-26; ABSENT is
+//  UNKNOWN and is refused there, with the curation remedy named).  The
+//  solvent takes no part in the speciation NETWORK as a solute: it IS the
+//  medium.  Its autoprotolysis is a network reaction with its own record,
+//  and its VLE is the Raoult leg (p_w = a_w * psat) declared by the phase's
+//  property method -- not an equilibrium constant.
+//  PROMOTED from the flashComplex case 2026-08-02: it was the ONE genuinely
+//  case-carried fact among ten records, and its absence here is why that
+//  case had to mirror water at all.
+aqueousSpeciation  none;
+
+MW          18.015;
+Tc          647.14;
+Pc          220.64;
+omega       0.3449;
+Tb          373.15;
+HvapTb      40660;
+Vliq        1.807e-5;
+diffusionVolume  13.1;          // Fuller diffusion volume [-]
+
+
+standardThermochemistry
+{
+    dHf_298   -241826.0;        // J/mol  -- ideal-gas reference
+    s_298     188.834;         // J/(mol·K)  -- third-law absolute
+    referenceState idealGas;   // explicit: these two are the GAS-phase datum
+
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.40221   1838.675   -31.737);
+    Trange        (273  373);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (32.243   1.924e-3   1.0555e-5   -3.596e-9);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (75.5);
+    Trange        (273  373);
+}
+
+// Ebulioscopic / cryoscopic constants for water (v0.28+):
+//   K_b = 0.512 K * kg / mol  (boiling-point elevation, ΔT = K_b · m)
+//   K_f = 1.853 K * kg / mol  (freezing-point depression, ΔT = K_f · m)
+// Reference: individual literature values -- primary re-citation pending (IST review).
+//
+// K_b IS AN ANCHOR, NOT THE ANSWER (2026-08-05).  The engine DERIVES it from
+// this record's own Tb / MW / HvapTb -- K_b = R*Tb^2*M/dHvap -- and uses the
+// value below only to validate that derivation, announcing the comparison.
+// The two had drifted 0.18 % apart, which fed straight into every BPE.
+//
+// K_f IS AN ANCHOR TOO, since 2026-08-07 -- and it reached that status by the
+// route its own note demanded.  For one day this paragraph said K_f was
+// REFERENCE-ONLY: parsed, consumed by nothing, and underivable because no
+// record in the tree declared a heat of fusion.  Both halves stopped being
+// true the moment the `sublimation { Hfus }` and `triplePoint { T }` blocks
+// below were curated.  The engine now derives
+//
+//     K_f = R * Tf^2 * M / dHfus  =  1.8603 K.kg/mol
+//
+// from this record's own triple-point temperature, MW and Hfus, and the 1.853
+// below validates that derivation exactly as 0.512 validates K_b.  They are
+// 0.39 % apart: two independent primaries disagreeing is a FINDING, not an
+// error, and the calorimetric datum is the one that wins.
+//  ---- FUSION: the datum the freezing model needs -------------------------
+//  Added 2026-08-07 for SolidPhase's pure-crystal reference fugacity.  Before
+//  this, ZERO of the 247 component records carried a fusion enthalpy -- the
+//  two apparent matches in the tree were both COMMENTS explaining its absence,
+//  including the one twelve lines above.
+//
+//  CROSS-CHECKED AGAINST THIS RECORD'S OWN K_f, which is the point of putting
+//  them in the same file:
+//
+//      K_f = R Tf^2 M / dHfus = 8.3145 x 273.15^2 x 0.0180153 / 6008
+//          = 1.8602        against the declared K_f 1.853
+//
+//  0.4 % apart.  Two independent primaries disagreeing is a FINDING, not an
+//  error, and the direction is settled by the K_b precedent (2026-08-05):
+//  dHfus is the MEASURED calorimetric datum and K_f is the DERIVED dilute
+//  limit, so K_f became the validating anchor and stopped being a status
+//  note -- which is what the paragraph above now records.
+triplePoint
+{
+    T    273.16;        // K
+    P    611.657;       // Pa
+    //  source: IAPWS, the triple point of ordinary water; T is the pre-2019
+    //  defining fixed point of the kelvin and is still the accepted value.
+}
+
+sublimation
+{
+    Hfus   6008.0;      // J/mol at the melting point
+    //  source: IAPWS -- enthalpy of fusion of ice Ih, 333.4 J/g x 18.0153
+    //  g/mol.  Quoted as 6.01 kJ/mol in the usual handbooks.
+    //
+    //  NOTE THE 0.01 K APPROXIMATION, since nothing else will say it: the
+    //  fusion model uses `triplePoint.T` (273.16 K) as the melting
+    //  temperature, while fusion at 1 bar is at 273.15 K.  There is no Tfus
+    //  field in the grammar.  The error in dG_fus is under 0.3 J/mol and is
+    //  announced here rather than hidden; if a case ever needs better, the
+    //  remedy is a Tfus field, not a fudged Hfus.
+}
+
+ebulioscopic
+{
+    K_b   0.512;
+    K_f   1.853;    // ANCHOR: the engine derives 1.8603 from Hfus/triplePoint
+}
+
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
+associationFactor  2.6;
+liquidViscosity
+{
+    andrade { A -13.03; B 1796.1; }
+    vogel   { A -10.5366; B 541.4; C 144.0; }
+}
+
+groups
+{
+    unifac ( { group H2O; count 1; } );
+}
+
+uniquac
+{
+    r   0.9200;
+    q   1.4000;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}
+
+pcsaft
+{
+    // Associating (2B: one donor + one acceptor) -- the water set of
+    // Gross & Sadowski 2002, whose Table 1 lists water with TWO
+    // association sites: this parameter set was FITTED AS 2B and is
+    // meaningless under any other scheme (curated first as 4C, which
+    // over-associated so strongly the ethanol/water flash collapsed --
+    // the scheme is part of the fit, not a free choice).  A 4C water
+    // from later literature is a DIFFERENT parameter set; curate it as
+    // its own trio if ever needed.  Known published trade-off of this
+    // set: Psat accurate (about -0.2% at 358 K, +4% at 298 K) while the
+    // ambient liquid density reads about -7.5% (922 kg/m3 vs 997).
+    m           1.0656;
+    sigma       3.0007;
+    epsilonK    366.51;
+    assocScheme 2B;
+    epsAB_K     2500.7;
+    kappaAB     0.034868;
+    source      "Gross & Sadowski, Ind. Eng. Chem. Res. 41 (2002) 5510, Table 1 (water, 2 sites)";
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1076-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7732-18-5";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+}

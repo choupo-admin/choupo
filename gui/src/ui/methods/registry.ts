@@ -1190,12 +1190,15 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "(Gall beside Kletz's 'what you don't have, can't leak'), read "
       + "through the Flixborough Court of Inquiry and the Bhopal protection "
       + "that existed on paper; Stoessel's cooling-failure scenario run by "
-      + "the engine -- the accumulation, the MTSR against the boiling point "
-      + "and an assumed decomposition onset, the five criticality classes -- "
-      + "on a batch and on the same reaction dosed, with a dosing interlock "
-      + "that can fail; and a 50 bar ammonia loop that converts less per "
-      + "pass, circulates more gas and four times the ammonia, and earns "
-      + "less, so that attenuation is not simply safer.",
+      + "the engine -- the accumulation, the MTSR with the dosed reactor's "
+      + "mass correction, against the reaction mass's bubble point and an "
+      + "assumed T_D24 (where the decomposition's adiabatic time to maximum "
+      + "rate is 24 h), the five criticality classes -- on a batch and on "
+      + "the same reaction dosed, with a dosing interlock that can fail; and "
+      + "a 50 bar ammonia loop that converts less per pass, circulates more "
+      + "gas and about four times as much ammonia in the recycle stream, and "
+      + "earns less, so that the engine cannot call it safer without sizing "
+      + "the equipment.",
     theory: "ch:batch-adiabatic",
   },
   //  COMMISSIONED 2026-10-11 (DEV.md 4c C61): "E depois outro sobre design

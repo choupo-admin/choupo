@@ -25,19 +25,28 @@
                reaction (the energy ledger records that duty)
      t = t_f   `setParameter reactor adiabatic 1` -- the jacket stops
      t > t_f   adiabatic: the ethanol still unconverted at t_f (the
-               ACCUMULATION, X_ac) reacts and heats the mass to the MTSR
+               ACCUMULATION, X_ac) reacts and heats the mass to T_cf
 
-  The thermal-safety estimate is MTSR = T_p + X_ac * dT_ad, with dT_ad the
-  adiabatic rise of the full charge from T_p (run this case with the
-  failure at t = 0 to have the engine compute it).  The engine's MTSR is
-  T_final of a failure run; the EduTool puts the two side by side.
+  The thermal-safety estimate is T_cf = T_p + X_ac * dT_ad (a batch's
+  mass does not change, so Stoessel's semi-batch mass correction is 1),
+  with dT_ad the adiabatic rise of the full charge from T_p (run this case
+  with the failure at t = 0 to have the engine compute it).  The engine's
+  T_cf is T_final of a failure run; the EduTool puts the two side by side.
+  The MTSR is the largest T_cf over every failure instant: for a batch,
+  the failure at t = 0.
 
   `value 0` on the same event keeps the jacket working: the same case then
   runs the normal isothermal batch, which is how the EduTool draws X_ac(t).
 
   PEDAGOGICAL, NOT QUANTITATIVE (the batch02/batch06 caveat, repeated):
-  the Arrhenius constants are illustrative (constant/reactions), the
-  liquid heat capacities are constant (degree-0 polynomials), and the
+  a thermal-safety teaching witness -- neither its kinetics nor its thermal
+  excursion are data for real acetic acid / ethanol esterification.  The
+  Arrhenius constants are illustrative (constant/reactions); the liquid
+  heat of reaction the run prints is several times too large, because
+  aceticAcid.dat pairs a MONOMER ideal-gas formation datum with a heat of
+  vaporisation to the DIMERISED vapour (DEV.md 4c C60, a curation decision
+  reserved for the owner; this case does not change the record); the
+  liquid heat capacities are constant (degree-0 polynomials); and the
   vessel has no vapour phase -- past the mixture's boiling point a real
   open vessel would boil and a closed one would pressurise.  The MTSR is
   defined on exactly that hypothetical, which is why it is compared with
