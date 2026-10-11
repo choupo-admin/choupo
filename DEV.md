@@ -1991,6 +1991,38 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C62. THE GREEN-AMMONIA BASIC DESIGN: WHAT IS SIZED, AND RELIEF VALVES
+SIZED AT THIS STAGE (Vítor, 2026-10-11, verbatim: "Podes ver se o processo
+green amónia já tem tudo dimensionado detalhadamente? Podes se por o
+dimensionamento das válvulas de alívio de pressão nesta fase?").**
+Measured on `greenAmmoniaBasicDesign` at 7afaa05c2 (fresh run): SIZED -- 4
+compressors, 8 shell-and-tube exchangers by Kern, 3 catalyst beds (shell +
+declared catalyst charge), 3 vessels (Separator, LetdownHP, StorageFlash),
+2 NH3 storage tanks (23 sheets under `design/`).  NOT sized or not
+detailed: (a) the converter is three separate straight cylinders, no common
+pressure shell, no internals and NO bed pressure drop (no Ergun); (b) the
+beds and the Separator run at a 167 bar design pressure in SS316/SS304
+whose material record rates 100 bar (`[rating] WARNING`, four items) -- the
+priced shells are not buildable as declared; (c) the beds' wall uses the
+engine's default corrosion allowance and joint efficiency (announced
+`[assumed]`); (d) the boiling-utility films are DECLARED (HP steam 5000,
+NH3 refrigerant 2500 W/m2K) and the condensing films are not credited
+(WaterCooler, Chiller over-size, said by the sizer); (e) Gnielinski is used
+outside its Pr window on seven exchangers (the H2/N2 mixture's Pr falls
+below 0.5 -- plausible for a light/heavy gas mixture, not checked) and the
+tube friction factor outside its Re window on all eight; (f) no piping,
+valves, pumps or instruments; (g) no relief device anywhere -- the engine
+has no relief model (C61).  Decision taken on a stated default (Vítor may
+reverse): relief devices are a SIZING-PASS item like the catalyst charge --
+a `reliefValve` sizer in `src/postProcessing/sizing/`, one entry per
+protected unit with its DECLARED credible scenarios, the governing case the
+largest required area, a sheet at `design/<unit>/psv`, set pressure read
+from the protected item's own design pressure (one home), fluid properties
+from the case's package, API 520 Part I gas (critical/subcritical) and
+liquid equations and the API 521 fire case, every coefficient's source
+named, every default announced; NOT costed (no Turton set; said, and the
+cost total does not move).  Status: dispatched 2026-10-11.
+
 **C61. AN EDUTOOL ON DESIGNING FOR OVERPRESSURE (Vítor, 2026-10-11,
 verbatim: "E depois outro sobre design de sistemas para lidar com a sobre
 pressão").**  Measured before anything is proposed: the engine has NO relief
