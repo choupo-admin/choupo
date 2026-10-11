@@ -2004,7 +2004,24 @@ early draw edges across the whole canvas.  A case's curated layout in its
 `.cho` (`gui/src/state/layout.ts`, written only by "Save layout to case")
 keeps precedence (C55).  "Always" read as: the automatic layout is the one
 every case without a curated layout gets, and new cases are drawn by it.
-Status: dispatched to a general, branch `claude/c59-flowsheet-layout`.
+DONE 2026-10-11 (merged): `gui/src/case/flowsheetLayout.ts` (pure, no
+dependency; layered with balanced feed/product layers, virtual nodes,
+port-aware barycenter sweeps, median + pool-adjacent-violators coordinates,
+recycle runs above/below in their own lanes), measured by
+`layoutMetrics.ts` over every tutorial view (`flowsheetLayoutCorpus.test.ts`
+pins: no overlap, never worse than the frozen old layout, totals better).
+Vítor's rule (2026-10-10, "a primeira vez ... é feita por ti; depois de o
+user arranjar já não mexes"): working copy > curated `.cho` > automatic;
+any move snapshots every node; a new node is placed beside a saved
+neighbour; a `layout` menu returns to the automatic or the case layout.
+The four green-ammonia `.cho` layouts were machine-written and are emptied.
+REPORTED, not changed (may be Vítor's own): curated layouts scoring worse
+than automatic -- ammonia02_full_plant, hda, lithiumBrinePlant,
+ChemicalPlantTutorial CONCENTRATION/FERMENTATION,
+crystalliser09_KHT_KCl_series, column07_naphtaliSandholm (an overlap),
+designSpec01_triple_equal_areas.  Residual: many-product plants share one
+vertical trunk; ed06's energy wires cross its power stubs; no real-browser
+drag exercised (rules tested as pure functions).
 
 **C58. AN EDUTOOL ON FRONT-END LOADING: HOW INDUSTRY STAGES A PROCESS
 DESIGN (Vítor, 2026-10-10, verbatim: "Podes fazer um EduTool sobre O que a
