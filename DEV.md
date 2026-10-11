@@ -2064,6 +2064,11 @@ edges between one vessel pair are an ACCEPTED_REGRESSIONS entry in
 `batchReactor` keeps its declared volume when a charge lands in a
 non-empty vessel; (4) an isothermal charge at another temperature is reset
 to the setpoint with no energy record (`BatchUnitOperation::chargeFrom`).
+ONLINE 2026-10-11: publish-site 38140117111 succeeded (the first WASM build
+of the change); the live bundle carries `process-safety` and the live
+`choupoBatch.wasm` carries the `[cooling failure]` announcement.  Still not
+seen rendering in a browser from here (the container's proxy breaks
+headless Chromium on the live site).
 
 **C59. THE AUTOMATIC FLOWSHEET LAYOUT IS SPAGHETTI; MAKE IT READABLE, ALWAYS
 (Vítor, 2026-10-10, verbatim: "o layout do flowsheet parece esparguete!
