@@ -2008,7 +2008,7 @@ flow, liquid, the fire-case heat input), with the fluid properties the
 equations need (M, Z, k = Cp/Cv, latent heat) taken from the engine where
 it can supply them; DISPOSAL (knock-out drum, flare, scrubber -- the C60
 Bhopal thread); and two-phase runaway venting as the bridge back to C60's
-cooling-failure lesson.  Status: RECORDED, not dispatched.
+cooling-failure lesson.  Status: dispatched 2026-10-11, after C60 merged.
 
 **C60. AN EDUTOOL ON PROCESS SAFETY: GALL AND KLETZ, THE COOLING-FAILURE
 SCENARIO, AND INHERENT SAFETY ON THE AMMONIA LOOP (Vítor, 2026-10-11,
@@ -2036,6 +2036,34 @@ converted per pass 29.7 % at 150 bar against 19.6 % at 50 bar, gross margin
 24.58 against 23.46 M EUR/yr; whether the larger recycle at 50 bar raises
 the hazardous inventory is NOT measured and is the point that makes lesson
 2 honest.  Status: dispatched 2026-10-11.
+DONE 2026-10-11, merged 46b76a412: `process-safety` (notes, seven live
+runs) on a NEW shelf "Process safety".  Engine: `setParameter <reactor>
+adiabatic 1` takes the cooling away mid-batch (`BatchReactor.cpp`, refuses
+another value, a second failure, cooling coming back, and a reactor with no
+heat of reaction; the adiabatic data check has one home,
+`requireAdiabaticData_`); no existing golden moved.  Witnesses
+`batch26_cooling_failure` (MTSR 394.84 K, hand estimate 395.42 K) and
+`batch27_semibatch_dosing` (342-348 K; 395.6 K when the dosing interlock
+fails).  Lesson 2 measured: at 50 bar the loop recycles ~4.2x the ammonia
+(1220 vs 289 kmol/h) and earns less; no vessel is sized, so no inventory
+is claimed.  Sources: Flixborough quoted from the Court of Inquiry report;
+Gall PARAPHRASED (book not reachable) and said so; Stoessel's classes from
+a secondary source (Molecules 30 (2025) 2939), said so; T_D24 a labelled
+reader assumption.  Validated on the merge: `--gui` 29/0, batch reactor +
+recipes + combustion + ctrl07 20/0 (+2 deliberate EXPECTED-FAIL),
+`check_wasm_dialect`, `check_mass_closure`, `check_time_state_layout`,
+`check_fastset` -- which was RED on main since C57 (the three ammonia
+families had no FASTSET line; two added, BasicDesign excluded at 3.03 s).
+NOT seen: the page in a browser on the WASM engine (no emscripten here;
+publish-site builds it).  OPEN, found by the general, not fixed: (1) the
+C59 layout routes each parallel recipe edge separately -- batch27's 17
+edges between one vessel pair are an ACCEPTED_REGRESSIONS entry in
+`flowsheetLayoutCorpus.test.ts`; parallel edges should bundle; (2)
+`choupoSemiContinuous`'s header claims fed-batch (`main.cpp:37`,
+`DynamicDriver.cpp:38`) but no dynamic unit can grow its volume; (3)
+`batchReactor` keeps its declared volume when a charge lands in a
+non-empty vessel; (4) an isothermal charge at another temperature is reset
+to the setpoint with no energy record (`BatchUnitOperation::chargeFrom`).
 
 **C59. THE AUTOMATIC FLOWSHEET LAYOUT IS SPAGHETTI; MAKE IT READABLE, ALWAYS
 (Vítor, 2026-10-10, verbatim: "o layout do flowsheet parece esparguete!
