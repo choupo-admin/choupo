@@ -469,6 +469,18 @@ KNOWN_OPEN_KW = {
     "tutorials/steady/distillation/shortcut01_benzene_toluene": -1.0804,
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 42.8610,
     "tutorials/steady/heat/coolingTower01_merkel": 1.5666,
+    #  JOINED 2026-10-11 (DEV.md 4c C64), measured from the case's own
+    #  globalEnergyBoundary line on the day it was written: the `valve`
+    #  balances H_out = H_in on ITS OWN surface (Hliquid/Hvapour with a Tref
+    #  -- a Watson latent heat and an ideal-gas vapour, no pressure term),
+    #  while the report prices the same streams on the formation surface
+    #  with SRK.  ValveLP (liquid ammonia flashing 20 bar -> 1 atm) leaves
+    #  -39.50 kW of it, ValveHP +0.40 and the purge's gas valve +0.44 (the
+    #  Joule-Thomson effect the unit does not compute).  The same family as
+    #  credo01_valve_heater_drum's pin above; the fix is the valve pricing
+    #  through `flashState::priceState`, which moves both existing valve
+    #  cases' goldens and is therefore Vitor's list, not this slice's.
+    "tutorials/steady/hydraulics/letdown01_ammonia_flashing": 38.6639,
     "tutorials/steady/userops/userOp01_yield_reactor": 2.1701,
 }
 

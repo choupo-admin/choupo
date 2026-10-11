@@ -29,6 +29,7 @@ License
 #include "Valve.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
+#include "thermo/PricedDensity.H"
 #include "solver/NewtonRaphson.H"
 
 #include <cmath>
@@ -137,7 +138,16 @@ int Valve::solve(const DictPtr& dict,
 
     solver::NROptions nro;
     nro.tolerance          = 1.0;          // J/mol
-    nro.maxIter            = 30;
+    //  200, not 30 (2026-10-11, DEV.md 4c C64).  A nearly pure liquid
+    //  throttled below its vapour pressure -- liquid ammonia, 20 bar ->
+    //  1 atm -- puts the root on the steep, kinked stretch of H(T) where
+    //  the whole latent heat is taken over a fraction of a kelvin.  The
+    //  central difference across 1 K straddles that kink, so the Newton
+    //  creeps (measured: 40 iterations to 1 J/mol on
+    //  letdown01_ammonia_flashing's ValveLP) and 30 refused a run that
+    //  converges.  A case that converged within 30 takes exactly the
+    //  same iterates and is byte-identical.
+    nro.maxIter            = 200;
     nro.lower              = 200.0;
     nro.upper              = 700.0;
     nro.bracket            = true;
@@ -208,6 +218,129 @@ int Valve::solve(const DictPtr& dict,
     kpis_["dT"]    = Tout - Tfeed;
     kpis_["vf"]    = vf;
     kpis_["F"]     = F;
+
+    // -- What the throttle does to the SPACE the stream occupies ----------
+    //
+    //  Added 2026-10-11 (DEV.md 4c C64, the pressure-letdown EduTool).  A
+    //  liquid let down across its bubble pressure leaves the valve as a
+    //  two-phase mixture, and the volume it occupies grows -- by an order of
+    //  magnitude or more when the outlet pressure is low -- which is why the
+    //  outlet of a flashing letdown is a velocity, erosion and noise problem
+    //  and not only a temperature one.  The page that teaches it must not
+    //  type a density into TypeScript, so the valve publishes the volumetric
+    //  flow it already has every number for: the phase split (the flash at
+    //  each end) and the package's own phase densities
+    //  (`ThermoPackage::density`, the ONE home -- the liquid by the record's
+    //  Vliq anchored on Rackett, the vapour by the EoS).
+    //
+    //  HOMOGENEOUS, NO SLIP: Q = m_L/rho_L + m_V/rho_V, the phases moving
+    //  together.  A liquid carrying dissolved gases above their critical
+    //  temperature (H2 and N2 in liquid ammonia) is priced over the
+    //  components that HAVE a liquid density (`pricedDensity`, the same
+    //  choice the storage tank makes), said once per run.  When a density
+    //  cannot be had the volumetric KPIs are NOT published and the reason is
+    //  printed -- a missing number, never a guessed one.  Nothing above this
+    //  block reads it, so T_out and vf are untouched.
+    try
+    {
+        auto molarMass = [&](const sVector& c)                  // kg/kmol
+        {
+            scalar m = 0.0, s = 0.0;
+            for (std::size_t i = 0; i < n; ++i)
+                if (i < c.size() && c[i] > 0.0)
+                { m += c[i] * thermo.comp(i).MW(); s += c[i]; }
+            return s > 0.0 ? m / s : 0.0;
+        };
+        auto liquidRho = [&](scalar T, scalar P, const sVector& x)
+        {
+            const auto sel = pricedDensity::select(thermo, T, P, x,
+                                                   DensityPhase::Liquid);
+            if (!(sel.keptFraction > 0.0))
+                throw std::runtime_error("no component of the liquid has a"
+                                         " liquid density");
+            static bool announced = false;
+            if (sel.droppedFraction > 0.0 && !announced)
+            {
+                std::cout << "[valve] liquid density priced without "
+                          << sel.dropped << " (mole fraction "
+                          << std::scientific << std::setprecision(3)
+                          << sel.droppedFraction << std::fixed
+                          << "): no liquid density exists for them at "
+                          << T << " K; their mass is carried at the density"
+                             " of the rest\n";
+                announced = true;
+            }
+            return thermo.density(T, P, sel.zPriced, DensityPhase::Liquid);
+        };
+        //  One end of the valve: mass flow [kg/s] and volumetric flow
+        //  [m3/s], with the phase densities it was built from.
+        struct End { scalar m = 0, Q = 0, rhoL = 0, rhoV = 0, xMass = 0; };
+        auto endOf = [&](scalar T, scalar P, scalar beta,
+                         const sVector& x, const sVector& y)
+        {
+            End e;
+            const scalar mV = beta > 0.0 ? beta * F * molarMass(y) : 0.0;
+            const scalar mL = beta < 1.0 ? (1.0 - beta) * F * molarMass(x) : 0.0;
+            e.m = mL + mV;
+            if (mL > 0.0) { e.rhoL = liquidRho(T, P, x);  e.Q += mL / e.rhoL; }
+            if (mV > 0.0)
+            {
+                e.rhoV = thermo.density(T, P, y, DensityPhase::Vapour);
+                e.Q += mV / e.rhoV;
+            }
+            e.xMass = e.m > 0.0 ? mV / e.m : 0.0;
+            if (!(e.Q > 0.0) || !std::isfinite(e.Q))
+                throw std::runtime_error("non-physical volumetric flow");
+            return e;
+        };
+        constexpr scalar edge = 1.0e-12;
+        End in;
+        if (vfFeed <= edge)          in = endOf(Tfeed, Pfeed, 0.0, z, z);
+        else if (vfFeed >= 1 - edge) in = endOf(Tfeed, Pfeed, 1.0, z, z);
+        else
+        {
+            FlashInput fin; fin.F = F; fin.T = Tfeed; fin.P = Pfeed; fin.z = z;
+            std::string scIn;
+            const FlashSolution s =
+                flashState::flashDiscardingSupercriticalSplit(fin, thermo,
+                                                              iopts, scIn);
+            in = endOf(Tfeed, Pfeed, s.V_over_F, s.x, s.y);
+        }
+        if (lastSol.liquidLiquid || lastSol.threePhase)
+            throw std::runtime_error("the outlet holds a second liquid, which"
+                                     " this homogeneous volume does not price");
+        const End out = (vf <= edge) ? endOf(Tout, Pout, 0.0, z, z)
+                      : (vf >= 1 - edge) ? endOf(Tout, Pout, 1.0, z, z)
+                      : endOf(Tout, Pout, vf, lastSol.x, lastSol.y);
+
+        kpis_["massFlow"]     = in.m;
+        kpis_["Q_in"]         = in.Q;
+        kpis_["Q_out"]        = out.Q;
+        kpis_["rho_in"]       = in.m / in.Q;
+        kpis_["rho_out"]      = out.m / out.Q;
+        kpis_["volumeRatio"]  = out.Q / in.Q;
+        kpis_["x_mass_out"]   = out.xMass;
+        if (out.rhoL > 0.0) kpis_["rho_L_out"] = out.rhoL;
+        if (out.rhoV > 0.0) kpis_["rho_V_out"] = out.rhoV;
+
+        std::cout << "  Volume (homogeneous, no slip):\n"
+                  << std::scientific << std::setprecision(5)
+                  << "    Q_in   = " << in.Q  << " m3/s   rho_in  = "
+                  << std::fixed << std::setprecision(3) << in.m / in.Q
+                  << " kg/m3\n"
+                  << std::scientific << std::setprecision(5)
+                  << "    Q_out  = " << out.Q << " m3/s   rho_out = "
+                  << std::fixed << std::setprecision(3) << out.m / out.Q
+                  << " kg/m3\n"
+                  << "    Q_out/Q_in = " << std::setprecision(3)
+                  << out.Q / in.Q << "   vapour mass fraction out = "
+                  << std::setprecision(6) << out.xMass << "\n\n";
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "  [valve] volumetric flow NOT published: " << e.what()
+                  << "\n\n";
+    }
 
     return r.converged ? 0 : 1;
 }

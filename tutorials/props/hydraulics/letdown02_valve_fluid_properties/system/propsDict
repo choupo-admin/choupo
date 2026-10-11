@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  letdown02_valve_fluid_properties -- THE TWO FLUID PROPERTIES A LETDOWN
+  VALVE IS JUDGED BY (DEV.md 4c C64, the "Large pressure letdown" EduTool).
+
+  The throttles themselves run in tutorials/steady/hydraulics/
+  letdown01_ammonia_flashing.  A valve's hydraulic regime is decided by
+  two more numbers, which a flowsheet unit does not publish, so this props
+  case computes them at the two valve inlets of that case:
+
+    * the GAS: the loop purge at 140 bar and 253.15 K, let down to a fuel
+      header.  Whether its flow is choked is decided by the ratio of
+      specific heats k = Cp/Cv -- propertyPoint's `gamma`,
+      Cp_ig/(Cp_ig - R), the ideal-gas ratio the critical-pressure-ratio
+      formula is derived with -- and the SRK compressibility Z.
+    * the LIQUID: the 20 bar drum liquid of letdown01, at the temperature
+      its first throttle left it (253.0199413 K, copied from that case's
+      converged/LetdownLiquid; gui/tests/letdown.test.ts holds it to the
+      ValveHP T_out golden).  Whether its second throttle cavitates or
+      flashes is decided by the ammonia's VAPOUR PRESSURE at that
+      temperature, Psat_NH3 (the record's Antoine curve), against the
+      pressure at the valve's vena contracta.
+
+  Compositions are the component flows in kmol/h exactly as letdown01's
+  converged streams print them; propertyPoint normalises them.  The
+  liquid's dissolved H2, N2 and Ar do not enter Psat_NH3 -- that key is
+  the pure ammonia's vapour pressure, the P_v of the valve-sizing
+  equations.  The gas that the drum liquid still holds comes out on any
+  drop below 20 bar, and that is letdown01's to show, not this case's.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        purge;
+        type        propertyPoint;
+        state
+        {
+            T            253.15 K;
+            P            14000000 Pa;
+            composition  { N2 2.427913344;  H2 9.433545835;
+                           NH3 0.2629407274;  Ar 0.03840712276; }
+        }
+    }
+    {
+        name        liquidLP;
+        type        propertyPoint;
+        state
+        {
+            T            253.0199413 K;
+            P            2000000 Pa;
+            composition  { N2 0.7167062524;  H2 1.209636462;
+                           NH3 2925.747927;  Ar 0.03405023605; }
+        }
+        properties  ( Psat_NH3 );
+    }
+);
