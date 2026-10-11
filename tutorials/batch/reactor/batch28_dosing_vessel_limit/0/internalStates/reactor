@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/reactor -- the initial HOLDUP of 'reactor'.  Only
+  reactant A and the solvent are charged: 5 mol A and 15 mol S, batch26's
+  amounts.  Reactant B, batch26's other 5 mol, waits in the day tank (a
+  quarter) and in storage (three quarters).
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "reactor";
+equipment   batchReactor;
+
+holdup
+{
+    T            330.0 K;          // T_p
+    P            1.013 bar;
+    V            0.0025;           // m^3 (batch26's, held while dosing adds liquid; the rate is first order in B, so V cancels from the extent rate)
+    totalMoles   0.02;             // kmol
+    molarComposition  { reactantA 0.25;  reactantB 0.0;  productP 0.0;  solventS 0.75; }
+}

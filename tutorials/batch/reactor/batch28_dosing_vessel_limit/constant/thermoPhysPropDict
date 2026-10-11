@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the FICTITIOUS teaching system of the
+  process-safety EduTool (DEV.md 4c C60): reactants A and B, product P,
+  inert solvent S, every record case-local and author-set (see the header
+  of constant/components/reactantA.dat).
+
+  An IDEAL liquid, DECLARED (Raoult, gamma = 1 identically), over an ideal
+  gas.  For this fictitious mixture the ideality is not an approximation of
+  something else: it is part of the definition.  It also means the mixture
+  has no azeotrope, so its bubble point always lies between the normal
+  boiling points of the components present.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( reactantA  reactantB  productP  solventS );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

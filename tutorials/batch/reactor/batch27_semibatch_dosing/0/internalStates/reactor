@@ -7,9 +7,9 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*--------------------------------*- Choupo -*----------------------------------*\
-  0/internalStates/reactor -- the initial HOLDUP of 'reactor'.  Only the
-  acetic acid is charged: half of batch26's 18.5 mol.  The other half,
-  the ethanol, waits in the dosing tank.
+  0/internalStates/reactor -- the initial HOLDUP of 'reactor'.  Only
+  reactant A and the solvent are charged: 5 mol A and 15 mol S, batch26's
+  amounts.  Reactant B, batch26's other 5 mol, waits in the dosing tank.
 \*-----------------------------------------------------------------------------*/
 
 recordType  internalState;
@@ -21,7 +21,7 @@ holdup
 {
     T            330.0 K;          // T_p
     P            1.013 bar;
-    V            0.001;            // m^3 (held while dosing adds liquid; the rate is first order in ethanol, so V cancels from the extent rate)
-    totalMoles   0.00925;          // kmol
-    molarComposition  { ethanol 0.0;  aceticAcid 1.0;  ethylAcetate 0.0;  water 0.0; }
+    V            0.0025;           // m^3 (batch26's, held while dosing adds liquid; the rate is first order in B, so V cancels from the extent rate)
+    totalMoles   0.02;             // kmol
+    molarComposition  { reactantA 0.25;  reactantB 0.0;  productP 0.0;  solventS 0.75; }
 }

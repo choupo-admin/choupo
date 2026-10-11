@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch28_dosing_vessel_limit / system/controlDict
+
+  WHAT THIS CASE IS: batch27's semi-batch on the SAME fictitious reaction
+  and schedule, with ONE change: the vessel connected to the reactor -- a
+  DAY TANK -- holds only a quarter of reactant B, and is refilled from
+  storage, batch-wise, only when it is empty (DEV.md 4c C60, second
+  review).  Whatever a feed failure does, what can enter the reactor is
+  bounded by what the day tank holds: the whole tank plus what has
+  accumulated keeps T_cf below the limits, so the protection no longer
+  depends on the dosing interlock.  A witness of the EduTool "Process
+  safety" (gui/src/ui/methods/ProcessSafetyTool.tsx).
+
+  WHAT IS MEASURED AND WHAT IS NOT: as batch26 -- the substances are
+  fictitious and every property an author-set teaching assumption; nothing
+  is, or could be, validated against a measured reactor.  Narrative:
+  system/flowsheetDict header.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Semi-batch with a day tank that holds a quarter of B (fictitious A + B -> P in solvent S): the cooling fails and the whole day tank enters the reactor at once; T_cf stays low";
+
+verbosity     2;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         18000;    // s   (5 h: four of dosing, one to finish converting)
+deltaT          0.5;      // s   (the same step as batch26 and batch27)
+writeInterval   50;       // s   (one trajectory row per 50 s)
+
+//  No <t>/ time directories: the trajectory is what this case is read by,
+//  and a restart from the middle of the scenario is not its question.
+solutionControl
+{
+    write       false;
+}

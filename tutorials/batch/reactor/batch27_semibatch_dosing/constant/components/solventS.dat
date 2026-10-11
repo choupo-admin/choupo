@@ -1,0 +1,94 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Component: solventS -- a FICTITIOUS substance, NOT A REAL ONE:
+  the INERT solvent: it takes part in no reaction.
+
+  One of the four records of the process-safety teaching reaction
+  A + B -> P in the inert solvent S (DEV.md 4c C60, second review).  Every
+  number below is an AUTHOR-SET TEACHING ASSUMPTION or is DERIVED from
+  those by the rule written beside it; none is a measurement and none may
+  be cited as data.  There is no formula and no CAS number, because there
+  are no elements behind it.
+
+  WHY THE NUMBERS ARE COHERENT BY CONSTRUCTION -- the reason this record
+  exists (the first version of the lesson ran on a real esterification
+  whose acetic-acid record paired a monomer ideal-gas datum with a heat of
+  vaporisation to the dimerised vapour, so its liquid heat of reaction was
+  several times too large):
+
+    * Antoine (author-set) -> Tb, the temperature where it gives 1.01325
+      bar (derived);
+    * HvapTb = R Tb^2 ln(10) B/(Tb + C)^2, the Clausius-Clapeyron latent
+      heat of THIS Antoine at Tb (derived) -- one vapour, the same one the
+      vapour pressure describes;
+    * Tc = Tb/0.65 (derived; Guldberg's rule, Tb ~ 2/3 Tc) and omega from
+      Pitzer's definition, -log10(Psat(0.7 Tc)/Pc) - 1, on this Antoine
+      (derived; Pc author-set);
+    * Cp_liquid constant (author-set); Cp_idealGas constant and DERIVED so
+      that d(Hvap)/dT = Cp_ig - Cp_liq holds at Tb with the slope of the
+      Watson latent heat the engine uses;
+    * the formation datum is on a FICTITIOUS reference: no elements stand
+      behind it, and only the DIFFERENCES between the four records carry
+      meaning -- the heat of reaction, which is the only use any case here
+      makes of it.  A, B and S carry round author-set values; P's is
+      derived so that the LIQUID heat of reaction, priced the way the
+      engine prices a liquid (formation datum - Watson Hvap(298.15 K) +
+      Cp_liq (T - 298.15 K)), is -60.000 kJ per mol of B (to 0.01 J/mol);
+    * Cp_liq(P) = Cp_liq(A) + Cp_liq(B), so the heat of reaction does not
+      depend on temperature (Kirchhoff, dCp = 0) and the reactor's
+      adiabatic energy balance, which reads one heat of reaction, is the
+      exact first law on these records; and MW(P) = MW(A) + MW(B), so mass
+      is conserved.
+
+  The liquid is declared IDEAL in the case (Raoult, gamma = 1): an ideal
+  mixture has no azeotrope, so its bubble point lies between the boiling
+  points of the components it contains.
+\*---------------------------------------------------------------------------*/
+
+name        solventS;
+CAS         00-00-0;              // none: not a real substance
+reviewStatus unverified;          // fictitious: nothing to verify against; the
+                                  //   derived values are recomputed from the
+                                  //   author-set ones by the rules above
+
+MW          90.0;                // g/mol      author-set
+Tc          592.3;                // K          derived: Tb/0.65
+Pc          38.0;                 // bar        author-set
+omega       0.2494;               // -          derived: Pitzer, on the Antoine
+Tb          385.01;               // K          derived: Antoine = 1.01325 bar
+HvapTb      33881;                // J/mol      derived: Clausius-Clapeyron at Tb
+Vliq        1.000e-4;             // m^3/mol    author-set (MW / 900 kg/m^3)
+
+standardThermochemistry
+{
+    dHf_298   -280000.0;          // J/mol  author-set, FICTITIOUS reference (see header)
+    s_298     380.0;              // J/(mol K)  author-set; enters only the printed S_ig of a props run
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.0053   1339.9   -50.0);   // log10 P_bar = A - B/(T + C), author-set
+    Trange        (250  500);                  // defined by construction over this window
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (107.9);                      // J/(mol K)  derived (header)
+    Trange        (250  500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (170.0);                     // J/(mol K)  author-set
+    Trange        (250  500);
+}

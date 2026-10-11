@@ -12,29 +12,32 @@
   limit MTT of an open vessel at atmospheric pressure.
 
   The mass is the one in tutorials/batch/reactor/batch26_cooling_failure
-  (and batch27, the same reaction dosed): acetic acid, ethanol, ethyl
-  acetate and water.  constant/ is a COPY of batch26's sealed constant/
-  (the same records under the same manifest, the same thermoPhysPropDict;
-  only the reactor's own constant/reactions is left out, because no
-  property operation reads it), so the boiling point below is computed on
-  exactly the thermodynamics the reactor case declares: an IDEAL liquid
-  (Raoult, gamma = 1) over an ideal gas.
+  (and batch27/batch28, the same reaction dosed): the FICTITIOUS reactants
+  A and B, their product P and the inert solvent S.  constant/ is a COPY of
+  batch26's sealed constant/ (the same four authored records under the same
+  manifest, the same thermoPhysPropDict; only the reactor's own
+  constant/reactions is left out, because no property operation reads it),
+  so the boiling point below is computed on exactly the thermodynamics the
+  reactor case declares: an IDEAL liquid (Raoult, gamma = 1) over an ideal
+  gas, at the reactor's pressure, 1.013 bar.
 
   The composition is the reactor's at batch26's shipped cooling failure
-  (t_f = 600 s; mole fractions of the trajectory row at 600 s, 39.3 % of
-  the ethanol converted).  The process-safety EduTool rewrites the four
-  lines with the reactor contents at the failure instant the reader
-  chooses, read from the engine's own trajectory, and reads T_bubble back.
-  ONE KEY PER LINE: the GUI's override anchors on a key at the start of a
-  line, so a composition written on one line is a knob that silently
-  misses.
+  (t_f = 600 s; mole fractions of the trajectory row at 600 s, 39.3 % of B
+  converted).  The process-safety EduTool rewrites the four lines with the
+  reactor contents at the failure instant the reader chooses, read from the
+  engine's own trajectory, and reads T_bubble back.  ONE KEY PER LINE: the
+  GUI's override anchors on a key at the start of a line, so a composition
+  written on one line is a knob that silently misses.
 
-  WHAT THIS IS NOT.  The real quaternary is far from ideal -- ethyl
-  acetate, ethanol and water form azeotropes that boil below every pure
-  component -- so the ideal bubble point is the reactor case's own model
-  answer, not a measured boiling point.  And it is a bubble point at the
+  WHAT THIS IS AND IS NOT.  The mixture is ideal BY DEFINITION (the
+  substances are fictitious and the case declares it so), so it has no
+  azeotrope: its bubble point lies between the normal boiling points of
+  the components present -- here between B's (345.01 K) and P's
+  (479.99 K), and much nearer the light end, because the volatile
+  components dominate the vapour pressure.  It is a bubble point at the
   failure instant: as a runaway converts the mass, its composition, and so
-  its boiling point, moves.
+  its boiling point, moves -- upward here, as the light reactants become
+  the heavy product.
 \*---------------------------------------------------------------------------*/
 
 operations
@@ -48,10 +51,10 @@ operations
             P       1.013 bar;      // the reactor's pressure (batch26 0/internalStates/reactor)
             composition
             {
-                aceticAcid      0.303502;
-                ethanol         0.303502;
-                ethylAcetate    0.196498;
-                water           0.196498;
+                reactantA       0.131756705;
+                reactantB       0.131756705;
+                productP        0.085304119;
+                solventS        0.651182471;
             }
         }
         properties  ( T_bubble );

@@ -8,8 +8,8 @@
 \*-----------------------------------------------------------------------------*/
 /*--------------------------------*- Choupo -*----------------------------------*\
   0/internalStates/dosingTank -- the initial HOLDUP of 'dosingTank': the
-  ethanol to be dosed, the other half of batch26's charge, held at T_p so
-  that dosing brings no sensible heat.
+  5 mol of reactant B to be dosed, batch26's, held at T_p so that dosing
+  into the isothermal reactor brings no sensible heat.
 \*-----------------------------------------------------------------------------*/
 
 recordType  internalState;
@@ -21,7 +21,7 @@ holdup
 {
     T            330.0 K;          // T_p
     P            1.013 bar;
-    V            0.0005;           // m^3
-    totalMoles   0.00925;          // kmol
-    molarComposition  { ethanol 1.0;  aceticAcid 0.0;  ethylAcetate 0.0;  water 0.0; }
+    V            0.00045;          // m^3 (5 mol x Vliq of B)
+    totalMoles   0.005;            // kmol
+    molarComposition  { reactantA 0.0;  reactantB 1.0;  productP 0.0;  solventS 0.0; }
 }

@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application  choupoProps;
-description  "The boiling point of a reaction mass: the bubble point of the esterification batch's contents, the technical limit (MTT) of a cooling-failure scenario";
+description  "The boiling point of a reaction mass: the bubble point of the cooling-failure batch's contents (fictitious A + B -> P in solvent S, ideal), the technical limit (MTT) of the scenario";
 verbosity    2;

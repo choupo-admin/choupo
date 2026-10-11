@@ -1,0 +1,54 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-08-24";
+    importerVersion    "3";
+    //  2026-10-11 (DEV.md 4c C60, second review): the four records are
+    //  FICTITIOUS and AUTHORED for this case -- adopted, never installed
+    //  from the catalogue (no catalogue record could be the origin of a
+    //  substance that does not exist).  The sealed case still runs only
+    //  from its own constant/.
+    records
+    {
+        "components/productP.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-10-11";
+        }
+        "components/reactantA.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-10-11";
+        }
+        "components/reactantB.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-10-11";
+        }
+        "components/solventS.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-10-11";
+        }
+    }
+}
