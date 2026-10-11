@@ -38,6 +38,11 @@ Description
         dn_i/dt  =  Σ_r  ν_{i,r}  ·  r_r(T, n)  ·  V
 
     Mode `isothermal`  → T held at T_setpoint, no energy balance.
+                         A recipe `setParameter <unit> adiabatic 1` takes
+                         the cooling away mid-batch: from that instant the
+                         reactor is adiabatic, starting at the T it was held
+                         at (the thermal-safety cooling-failure scenario;
+                         `adiabatic 0` keeps the jacket working).
     Mode `adiabatic`   → energy balance added:
 
         dT/dt  =  −  Σ_r  r_r(T, n) · V · ΔH_r   /   ( Σ_i n_i · Cp_liq_i(T) )
@@ -153,6 +158,10 @@ private:
     };
 
     enum class Mode { Isothermal, Adiabatic };
+
+    //- The data the adiabatic energy balance reads; refuses by name.  Called
+    //  at initialise (declared adiabatic) and at a recipe cooling failure.
+    void requireAdiabaticData_() const;
 
     // Adiabatic energy basis:
     //   LiquidDH      Σ r·V·ΔH_rxn over liquid Cp (the legacy, default path).

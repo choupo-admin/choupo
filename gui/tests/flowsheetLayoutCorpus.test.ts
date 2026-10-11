@@ -132,7 +132,19 @@ const sum = (rows: Row[], k: "old" | "neu", f: keyof LayoutMetrics) =>
 
 // Views where the new drawing scores worse than the old, each with the
 // reason it is accepted.  Empty is the goal; an entry needs a sentence.
-const ACCEPTED_REGRESSIONS: { [id: string]: string } = {};
+const ACCEPTED_REGRESSIONS: { [id: string]: string } = {
+  //  C60, 2026-10-11: the first witness with MANY recipe transfers between
+  //  ONE pair of vessels (sixteen dosing portions dosingTank -> reactor,
+  //  plus the interlock's dosingTank -> heldFeed).  The layout draws each
+  //  dashed recipe edge as its own route, so seventeen parallel soft edges
+  //  cost length (6769 against 2622) and one pass through a box that the
+  //  old stacking happened not to pay.  The defect is in how parallel soft
+  //  edges are routed (they could share one route), not in this witness;
+  //  it is REPORTED to the commander, not fixed in the safety slice.
+  "batch/reactor/batch27_semibatch_dosing":
+    "seventeen parallel recipe-transfer edges between one pair of vessels;"
+    + " parallel soft edges are routed one by one (reported with C60)",
+};
 
 describe("automatic flowsheet layout over the corpus (C59)", () => {
   const auto = ROWS.filter((r) => !r.curated);

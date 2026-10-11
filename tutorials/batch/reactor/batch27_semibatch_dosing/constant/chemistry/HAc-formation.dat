@@ -1,0 +1,11 @@
+// [imported] origin "data/standards/chemistry/HAc-formation.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+// Dissolved molecular acetic acid from its masters (catalogue formation
+// convention):  Acetate- + H+  =  HAc(aq),  logK25 = pKa = 4.756.
+// dH: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 --
+// the ionisation HAc = Acetate + H is dH_ion = -0.41 kJ/mol, so the
+// FORMATION here carries +410 J/mol (sign flipped with the direction).
+species HAc; ion "CH3COOH"; z 0; masters ( { ion Acetate; nu 1; } { ion H; nu 1; } );
+      logK25 4.756; dH 410; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 (acetic acid ionisation, pKa 4.756, dH_ion -0.41 kJ/mol)";

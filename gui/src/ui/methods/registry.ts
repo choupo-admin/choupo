@@ -70,7 +70,7 @@ export type MethodToolId =
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
-  | "front-end-loading";
+  | "front-end-loading" | "process-safety";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -130,6 +130,16 @@ export const METHOD_DISCIPLINES = [
   //  is a heat-integration construction first, whatever it later saves.
   //  Moving a tool is an editorial act, taken by the owner, never by drift.
   "Process design & economics",
+  //  THE SHELF FOR PROCESS SAFETY (2026-10-11, DEV.md 4c C60, and C61 --
+  //  designing for overpressure -- joins it next).  Thermal runaway, the
+  //  cooling-failure scenario, inherent safety against protective layers:
+  //  none of it is reaction engineering's question (how fast, how much) or
+  //  design-and-economics' (in what order, at what cost), though it borrows
+  //  from both.  Filing it under either would bend that shelf's name for the
+  //  first tool that does not fit.  It sits after design & economics because
+  //  a student meets it once a process exists to be made safe, and before
+  //  the numerics, which are about how the simulator answers.
+  "Process safety",
   //  THE SHELF THE NUMERICS LIVE ON (2026-09-12).  Three tools arrived at
   //  once -- choosing a tear, closing it with Wegstein, and the constrained
   //  QP inside every SQP step -- and not one of them is hydraulics, control,
@@ -1165,6 +1175,28 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  estimate class qualifies, and its own warning that a DCF inherits
     //  every uncertainty upstream of it.
     theory: "ch:economics",
+  },
+  //  COMMISSIONED 2026-10-11 (DEV.md 4c C60): "Então acho que podes por
+  //  isso num edutool de segurança".  A NOTES page with seven engine runs in
+  //  it: two cooling-failure witnesses (batch26/batch27, the batchReactor's
+  //  `setParameter adiabatic 1`) and the two C57 feasibility loops.  First
+  //  version, for Vitor's review.
+  {
+    id: "process-safety",
+    label: "Process safety: remove the hazard before you add a layer",
+    discipline: "Process safety", kind: "notes",
+    status: "live",
+    teaches: "Why every protective layer is itself a system that can fail "
+      + "(Gall beside Kletz's 'what you don't have, can't leak'), read "
+      + "through the Flixborough Court of Inquiry and the Bhopal protection "
+      + "that existed on paper; Stoessel's cooling-failure scenario run by "
+      + "the engine -- the accumulation, the MTSR against the boiling point "
+      + "and an assumed decomposition onset, the five criticality classes -- "
+      + "on a batch and on the same reaction dosed, with a dosing interlock "
+      + "that can fail; and a 50 bar ammonia loop that converts less per "
+      + "pass, circulates more gas and four times the ammonia, and earns "
+      + "less, so that attenuation is not simply safer.",
+    theory: "ch:batch-adiabatic",
   },
   //  Route screening (C24, 2026-09-29): three known routes to methanol
   //  through the paper filters, cheapest first -- margin, atom economy,

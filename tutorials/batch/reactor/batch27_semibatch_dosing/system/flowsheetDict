@@ -1,0 +1,224 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch27_semibatch_dosing  --  the SAME reaction as batch26, the same
+  totals, the same T_p, run SEMI-BATCH: the acetic acid is in the reactor
+  and the ethanol is DOSED, a sixteenth at a time every 15 minutes, over
+  four hours.  Then the jacket fails.
+
+  This is the inherently safer answer to batch26 in Kletz's sense of
+  limiting what is there: a batch reactor holds all of its reactant at
+  t = 0; a dosed reactor holds only what it has been given and has not
+  yet converted.  That unconverted inventory -- the ACCUMULATION -- is
+  what a cooling failure turns into temperature, so limiting it limits the
+  maximum temperature of the synthesis reaction (MTSR).  The lever is the
+  DOSING RATE against the REACTION RATE: dose faster than the reaction
+  consumes and the reactor fills with unreacted ethanol, which is a batch
+  again.
+
+  THE DOSING is written as portions, each a recipe `transfer` from the
+  dosing tank, because a recipe transfer is what choupoBatch has: a
+  batchReactor carries no continuous feed.  Portion-wise addition is also
+  how a hazardous reagent is often added in practice.  Each transfer moves
+  a FRACTION of what is left in the tank (1/16, then 1/15, ... then 1), so
+  every portion is 1/16 of the ethanol.  The dosing tank is at T_p, so
+  the feed brings no sensible-heat effect (a cold feed would take some of
+  the reaction's heat; this case leaves that out on purpose).
+
+  THE TWO SAFETY EVENTS come first in the recipe:
+
+    1. the COOLING FAILURE at t_f (`adiabatic 1`; `0` keeps the jacket);
+    2. the DOSING INTERLOCK at the same instant: the methodology's
+       assumption that the feed stops when the cooling does.  A recipe
+       transfer has no valve, so the interlock is written as what it
+       achieves -- everything left in the dosing tank is moved to
+       `heldFeed`, a vessel nothing is ever dosed from, and every later
+       portion moves a fraction of an empty tank, which is nothing.
+       `fraction 0` is the interlock FAILING: nothing is held back, the
+       pump keeps dosing into an adiabatic reactor.  In a plant an
+       interlock is a sensor, a logic solver and a valve, each of which can
+       fail; here it is one line, and the EduTool runs it both ways.
+
+  Normal operation, for the accumulation curve: the failure at `value 0`
+  and the interlock at `fraction 0`.
+
+  The default t_f is 50 s after the last portion, where the accumulation
+  of this dosing schedule is close to its largest.
+
+  PEDAGOGICAL, NOT QUANTITATIVE, for the reasons batch26 gives.  One more:
+  the reactor's volume is held at its declared value while the dosing adds
+  liquid (a batchReactor does not grow its volume on a charge).  The rate
+  law is first order in ethanol and zero order in the acid, so the extent
+  rate k n_EtOH does not depend on V and this changes no number here; a
+  rate law with a concentration term of another order would be wrong.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        operation
+        {
+            mode         isothermal;       // held by the jacket until the recipe takes it away
+            T_setpoint   330 K;            // T_p, the process temperature
+        }
+
+        reaction    esterification_etac_exo;  // see constant/reactions
+    }
+
+    {
+        name        dosingTank;            // the ethanol to be dosed
+        type        batchAccumulator;
+    }
+
+    {
+        name        heldFeed;              // where the interlock puts the feed it stops
+        type        batchAccumulator;
+    }
+);
+
+recipe
+(
+    //  1. THE COOLING FAILURE.  `value 1`: from this instant the jacket
+    //  removes no heat.  `value 0`: it keeps working.
+    {
+        time        13550;      // s   t_f, the moment the cooling fails
+        action      setParameter;
+        unit        reactor;
+        key         adiabatic;
+        value       1;
+    }
+
+    //  2. THE DOSING INTERLOCK, at the same instant.  `fraction 1`: what is
+    //  left in the dosing tank is held back.  `fraction 0`: the interlock
+    //  fails and the remaining portions are dosed into a hot reactor.
+    {
+        time        13550;      // s   the same t_f
+        action      transfer;
+        from        dosingTank;
+        to          heldFeed;
+        fraction    1;
+    }
+
+    //  3. THE DOSING SCHEDULE: 16 portions, one every 900 s.
+    {
+        time        0;       // s   portion 1 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.0625;  // 1/16 of what is left
+    }
+    {
+        time        900;     // s   portion 2 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.0666666666667;  // 1/15 of what is left
+    }
+    {
+        time        1800;    // s   portion 3 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.0714285714286;  // 1/14 of what is left
+    }
+    {
+        time        2700;    // s   portion 4 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.0769230769231;  // 1/13 of what is left
+    }
+    {
+        time        3600;    // s   portion 5 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.0833333333333;  // 1/12 of what is left
+    }
+    {
+        time        4500;    // s   portion 6 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.0909090909091;  // 1/11 of what is left
+    }
+    {
+        time        5400;    // s   portion 7 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.1;  // 1/10 of what is left
+    }
+    {
+        time        6300;    // s   portion 8 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.111111111111;  // 1/9 of what is left
+    }
+    {
+        time        7200;    // s   portion 9 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.125;  // 1/8 of what is left
+    }
+    {
+        time        8100;    // s   portion 10 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.142857142857;  // 1/7 of what is left
+    }
+    {
+        time        9000;    // s   portion 11 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.166666666667;  // 1/6 of what is left
+    }
+    {
+        time        9900;    // s   portion 12 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.2;  // 1/5 of what is left
+    }
+    {
+        time        10800;   // s   portion 13 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.25;  // 1/4 of what is left
+    }
+    {
+        time        11700;   // s   portion 14 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.333333333333;  // 1/3 of what is left
+    }
+    {
+        time        12600;   // s   portion 15 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    0.5;  // 1/2 of what is left
+    }
+    {
+        time        13500;   // s   portion 16 of 16
+        action      transfer;
+        from        dosingTank;
+        to          reactor;
+        fraction    1;  // 1/1 of what is left
+    }
+);

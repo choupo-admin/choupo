@@ -11,10 +11,11 @@
     "Reaction engineering",
     "Hydraulics & control",
     "Process design & economics",
+    "Process safety",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 52,
-  "registryTools": 52,
+  "liveTools": 53,
+  "registryTools": 53,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -372,6 +373,13 @@
       "discipline": "Process design & economics",
       "teaches": "How an owner buys a process design in stages separated by gates (Front-End Loading, FEL), with FEED / basic engineering as the engineering work inside FEL-3, and why sources number the stages differently; what each stage decides, at what simulation fidelity, with which deliverables and which AACE 18R-97 estimate class; the range of ranges drawn as overlapping bands around your own point estimate; when two options whose difference lies inside the band are not yet decided by cost; and where Choupo stands at each stage, from the ammonia ladder to the green-ammonia base case.",
       "href": "/app/?workspace=methods&tool=front-end-loading"
+    },
+    {
+      "id": "process-safety",
+      "label": "Process safety: remove the hazard before you add a layer",
+      "discipline": "Process safety",
+      "teaches": "Why every protective layer is itself a system that can fail (Gall beside Kletz's 'what you don't have, can't leak'), read through the Flixborough Court of Inquiry and the Bhopal protection that existed on paper; Stoessel's cooling-failure scenario run by the engine -- the accumulation, the MTSR against the boiling point and an assumed decomposition onset, the five criticality classes -- on a batch and on the same reaction dosed, with a dosing interlock that can fail; and a 50 bar ammonia loop that converts less per pass, circulates more gas and four times the ammonia, and earns less, so that attenuation is not simply safer.",
+      "href": "/app/?workspace=methods&tool=process-safety"
     },
     {
       "id": "route-screening",

@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/dosingTank -- the initial HOLDUP of 'dosingTank': the
+  ethanol to be dosed, the other half of batch26's charge, held at T_p so
+  that dosing brings no sensible heat.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "dosingTank";
+equipment   batchAccumulator;
+
+holdup
+{
+    T            330.0 K;          // T_p
+    P            1.013 bar;
+    V            0.0005;           // m^3
+    totalMoles   0.00925;          // kmol
+    molarComposition  { ethanol 1.0;  aceticAcid 0.0;  ethylAcetate 0.0;  water 0.0; }
+}

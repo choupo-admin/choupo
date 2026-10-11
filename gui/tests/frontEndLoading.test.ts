@@ -259,8 +259,10 @@ describe("the registry", () => {
     expect(t?.status).toBe("live");
     expect(t?.discipline).toBe("Process design & economics");
     const d = [...METHOD_DISCIPLINES];
-    expect(d.indexOf("Process design & economics"))
-      .toBe(d.indexOf("Flowsheeting & numerics") - 1);
+    //  Before the numerics, with only the process-safety shelf (C60, which
+    //  builds on a process designed and costed) between them.
+    expect(d.slice(d.indexOf("Process design & economics") + 1,
+      d.indexOf("Flowsheeting & numerics"))).toEqual(["Process safety"]);
     expect(`${t!.label} ${t!.teaches}`).toContain("Front-End Loading");
     expect(t!.teaches).toContain("FEED");
   });

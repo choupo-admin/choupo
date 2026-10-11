@@ -1,0 +1,75 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch26_cooling_failure  --  a BATCH exothermic reaction held at T_p by
+  its jacket, and what happens when the jacket stops.
+
+  The reaction is batch02's mass-conserving esterification,
+  AcOH + EtOH -> EtOAc + H2O, first order in ethanol, with the heat of
+  reaction the engine resolves from the species' standardThermochemistry
+  (printed in the run log, per mol of ethanol).  The whole charge --
+  equimolar acid and ethanol -- is in the vessel at t = 0.  That is what
+  makes a batch the WORST case for thermal safety: at t = 0 all of the
+  reactant is unconverted, so a cooling failure at the start releases the
+  whole adiabatic temperature rise.
+
+  THE SCENARIO (the recipe below):
+
+     t < t_f   isothermal at T_p = 330 K; the jacket removes the heat of
+               reaction (the energy ledger records that duty)
+     t = t_f   `setParameter reactor adiabatic 1` -- the jacket stops
+     t > t_f   adiabatic: the ethanol still unconverted at t_f (the
+               ACCUMULATION, X_ac) reacts and heats the mass to the MTSR
+
+  The thermal-safety estimate is MTSR = T_p + X_ac * dT_ad, with dT_ad the
+  adiabatic rise of the full charge from T_p (run this case with the
+  failure at t = 0 to have the engine compute it).  The engine's MTSR is
+  T_final of a failure run; the EduTool puts the two side by side.
+
+  `value 0` on the same event keeps the jacket working: the same case then
+  runs the normal isothermal batch, which is how the EduTool draws X_ac(t).
+
+  PEDAGOGICAL, NOT QUANTITATIVE (the batch02/batch06 caveat, repeated):
+  the Arrhenius constants are illustrative (constant/reactions), the
+  liquid heat capacities are constant (degree-0 polynomials), and the
+  vessel has no vapour phase -- past the mixture's boiling point a real
+  open vessel would boil and a closed one would pressurise.  The MTSR is
+  defined on exactly that hypothetical, which is why it is compared with
+  the boiling point (MTT) rather than trusted beyond it.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        operation
+        {
+            mode         isothermal;       // held by the jacket until the recipe takes it away
+            T_setpoint   330 K;            // T_p, the process temperature
+        }
+
+        reaction    esterification_etac_exo;  // see constant/reactions
+    }
+);
+
+recipe
+(
+    //  THE COOLING FAILURE.  `value 1`: from this instant the jacket removes
+    //  no heat and the reactor is adiabatic.  `value 0`: the jacket keeps
+    //  working (normal operation; nothing changes).
+    {
+        time        600;        // s   t_f, the moment the cooling fails
+        action      setParameter;
+        unit        reactor;
+        key         adiabatic;
+        value       1;
+    }
+);
